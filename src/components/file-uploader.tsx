@@ -67,7 +67,7 @@ export function FileUploaderForm() {
     setData(result);
 
     if (result) {
-      router.push("/data");
+      router.push("/dashboard");
     }
   }
 
