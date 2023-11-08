@@ -1,41 +1,4 @@
-export type Hero =
-  | Ana
-  | Ashe
-  | Baptiste
-  | Bastion
-  | Brigitte
-  | Cassidy
-  | Doomfist
-  | Dva
-  | Echo
-  | Genji
-  | Hanzo
-  | Illari
-  | JunkerQueen
-  | Junkrat
-  | Kiriko
-  | Lifeweaver
-  | Lucio
-  | Mei
-  | Mercy
-  | Moira
-  | Orisa
-  | Pharah
-  | Reaper
-  | Reinhardt
-  | Roadhog
-  | Sigma
-  | Sojourn
-  | Soldier76
-  | Sombra
-  | Symmetra
-  | Torbjorn
-  | Tracer
-  | Widowmaker
-  | Winston
-  | WreckingBall
-  | Zarya
-  | Zenyatta;
+export type Hero = Support | Tank | DPS;
 
 export type HeroName = Hero["name"];
 
@@ -149,6 +112,11 @@ export type Pharah = {
   image: "pharah.png";
 };
 
+export type Ramattra = {
+  name: "Ramattra";
+  image: "ramattra.png";
+};
+
 export type Reaper = {
   name: "Reaper";
   image: "reaper.png";
@@ -223,3 +191,45 @@ export type Zenyatta = {
   name: "Zenyatta";
   image: "zenyatta.png";
 };
+
+export type Tank =
+  | Dva
+  | Doomfist
+  | JunkerQueen
+  | Orisa
+  | Ramattra
+  | Reinhardt
+  | Roadhog
+  | Sigma
+  | Winston
+  | WreckingBall
+  | Zarya;
+export type DPS =
+  | Ashe
+  | Bastion
+  | Cassidy
+  | Echo
+  | Genji
+  | Hanzo
+  | Junkrat
+  | Mei
+  | Pharah
+  | Reaper
+  | Sojourn
+  | Soldier76
+  | Sombra
+  | Symmetra
+  | Torbjorn
+  | Tracer
+  | Widowmaker;
+export type Support =
+  | Ana
+  | Baptiste
+  | Brigitte
+  | Illari
+  | Kiriko
+  | Lifeweaver
+  | Lucio
+  | Mercy
+  | Moira
+  | Zenyatta;
