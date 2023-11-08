@@ -16,6 +16,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { parseData } from "@/lib/parser";
+import { useContext } from "react";
+import { ParserDataContext } from "@/lib/parser-context";
+import { useRouter } from "next/navigation";
 
 export function FileUploader() {
   return (
@@ -47,6 +50,9 @@ const formSchema = z.object({
 });
 
 export function FileUploaderForm() {
+  const { setData } = useContext(ParserDataContext);
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -58,7 +64,11 @@ export function FileUploaderForm() {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     const result = await parseData(values.file);
-    console.log(result);
+    setData(result);
+
+    if (result) {
+      router.push("/data");
+    }
   }
 
   return (
