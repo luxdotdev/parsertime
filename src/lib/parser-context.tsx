@@ -4,12 +4,12 @@ import { createContext, useState } from "react";
 import { ParserData } from "../../types/parser";
 
 type ParserDataContextType = {
-  data: ParserData | null;
-  setData: (data: ParserData | null) => void;
+  data: ParserData;
+  setData: (data: ParserData) => void;
 };
 
 export const ParserDataContext = createContext<ParserDataContextType>({
-  data: null,
+  data: null as unknown as ParserData,
   setData: () => {},
 });
 
@@ -18,7 +18,7 @@ export function ParserDataProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [data, setData] = useState<ParserData | null>(null);
+  const [data, setData] = useState<ParserData>(null as unknown as ParserData);
 
   return (
     <ParserDataContext.Provider value={{ data, setData }}>
