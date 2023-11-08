@@ -220,3 +220,22 @@ export type UltimateStartTable = {
   hero_duplicated: number;
   ultimate_id: number;
 };
+
+export type ParserData = {
+  defensive_assist: DefensiveAssistTable[];
+  hero_spawn: HeroSpawnTable[];
+  hero_swap: HeroSwapTable[];
+  kill: KillTable[];
+  match_start: MatchStartTable[];
+  objective_captured: ObjectiveCapturedTable[];
+  objective_updated: ObjectiveUpdatedTable[];
+  offensive_assist: OffensiveAssistTable[];
+  payload_progress: PayloadProgressTable[];
+  player_stat: PlayerStatTable[];
+  round_end: RoundEndTable[];
+  round_start: RoundStartTable[];
+  setup_complete: SetupCompleteTable[];
+  ultimate_charged: UltimateChargedTable[];
+  ultimate_end: UltimateEndTable[];
+  ultimate_start: UltimateStartTable[];
+};
