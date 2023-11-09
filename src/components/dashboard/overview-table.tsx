@@ -1,6 +1,5 @@
 "use client";
 
-import { CaretSortIcon } from "@radix-ui/react-icons";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -26,7 +25,6 @@ import {
 } from "@/components/ui/table";
 import { HeroName, heroRoleMapping } from "../../../types/heroes";
 import { ParserData, PlayerStatTableRow } from "../../../types/parser";
-import { Input } from "@/components/ui/input";
 
 export type PlayerData = {
   id: number;
@@ -220,7 +218,7 @@ function determineRole(heroName: HeroName) {
 
 function aggregatePlayerData(rows: PlayerStatTableRow[]): PlayerData[] {
   const playerMap = new Map<string, PlayerData>();
-  const latestMatchTimeMap = new Map<string, number>();
+  const playerMaxMatchTime = new Map<string, number>();
   const teamElimsMap = new Map<string, number>();
 
   rows.forEach((row, index) => {
@@ -250,13 +248,12 @@ function aggregatePlayerData(rows: PlayerStatTableRow[]): PlayerData[] {
     ] = row;
 
     let player = playerMap.get(playerName);
-    const latestMatchTime = latestMatchTimeMap.get(playerName) || 0;
 
     // Update team total eliminations
     const currentTeamElims = teamElimsMap.get(playerTeam) || 0;
     teamElimsMap.set(playerTeam, currentTeamElims + eliminations);
 
-    if (!player || matchTime > latestMatchTime) {
+    if (!player) {
       player = {
         id: index, // You need to define how you want to handle the ID
         playerName,
@@ -276,9 +273,11 @@ function aggregatePlayerData(rows: PlayerStatTableRow[]): PlayerData[] {
         ultsUsed: 0,
         timePlayed: 0,
       };
+    }
 
-      // Update the latest match time for this player
-      latestMatchTimeMap.set(playerName, matchTime);
+    const currentMaxTime = playerMaxMatchTime.get(playerName) || 0;
+    if (matchTime > currentMaxTime) {
+      playerMaxMatchTime.set(playerName, matchTime);
     }
 
     // Update the stats
@@ -309,6 +308,19 @@ function aggregatePlayerData(rows: PlayerStatTableRow[]): PlayerData[] {
     player.dmgToHealsRatio = round(player.dmgToHealsRatio);
 
     playerMap.set(playerName, player);
+  });
+
+  // Set time played for each player
+  playerMaxMatchTime.forEach((maxTime, playerName) => {
+    const player = playerMap.get(playerName) || {
+      // ... Initialize other fields for the player
+      timePlayed: 0,
+      // ... Other fields
+    };
+
+    // Set time played in minutes
+    player.timePlayed = round(maxTime / 60);
+    playerMap.set(playerName, player as PlayerData);
   });
 
   return Array.from(playerMap.values());
