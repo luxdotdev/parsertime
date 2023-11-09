@@ -46,7 +46,7 @@ type ReducedPlayerStat = {
   time_played: number;
 };
 
-export default function TeamSwitcher({ className }: TeamSwitcherProps) {
+export default function PlayerSwitcher({ className }: TeamSwitcherProps) {
   const [open, setOpen] = React.useState(false);
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false);
   const [selectedPlayer, setSelectedPlayer] = React.useState<Player>({
