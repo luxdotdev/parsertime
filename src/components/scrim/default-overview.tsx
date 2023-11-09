@@ -1,6 +1,6 @@
 "use client";
 
-import { OverviewTable } from "@/components/dashboard/overview-table";
+import { OverviewTable } from "@/components/scrim/overview-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ParserDataContext } from "@/lib/parser-context";
 import { useContext } from "react";

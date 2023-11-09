@@ -1,5 +1,5 @@
-import { OverviewTable } from "@/components/dashboard/overview-table";
-import { SelectedPlayerContext } from "@/components/dashboard/player-switcher";
+import { OverviewTable } from "@/components/scrim/overview-table";
+import { SelectedPlayerContext } from "@/components/scrim/player-switcher";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ParserDataContext } from "@/lib/parser-context";
 import { aggregatePlayerData } from "@/lib/player-table-data";
