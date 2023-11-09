@@ -1,5 +1,5 @@
 import * as XLSX from "xlsx";
-import { EventType, ParserData } from "../../types/parser";
+import { EventType, ParserData } from "@/types/parser";
 
 export async function parseData(file: File) {
   const reader = new FileReader();

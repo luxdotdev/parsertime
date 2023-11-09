@@ -21,7 +21,7 @@ import { ParserDataContext } from "@/lib/parser-context";
 import { cn, toHero } from "@/lib/utils";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 import * as React from "react";
-import { PlayerStatTableRow } from "../../../types/parser";
+import { PlayerStatTableRow } from "@/types/parser";
 
 interface TeamGroup {
   label: string;

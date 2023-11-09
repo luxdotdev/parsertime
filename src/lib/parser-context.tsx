@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useState } from "react";
-import { ParserData } from "../../types/parser";
+import { ParserData } from "@/types/parser";
 
 type ParserDataContextType = {
   data: ParserData;
