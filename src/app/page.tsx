@@ -1,4 +1,4 @@
-import { FileUploader, FileUploaderForm } from "@/components/file-uploader";
+import { FileUploaderForm } from "@/components/file-uploader";
 import Image from "next/image";
 
 export default async function Home() {
