@@ -10,21 +10,14 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { SignedIn, UserButton, currentUser } from "@clerk/nextjs";
 
-export async function UserNav() {
-  const user = await currentUser();
-
-  console.log(user);
-
+export function UserNav() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
+            <AvatarImage src="/avatars/01.png" alt="@shadcn" />
             <AvatarFallback>SC</AvatarFallback>
           </Avatar>
         </Button>
@@ -32,11 +25,9 @@ export async function UserNav() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">
-              {user?.firstName} {user?.lastName}
-            </p>
+            <p className="text-sm font-medium leading-none">shadcn</p>
             <p className="text-xs leading-none text-muted-foreground">
-              {user?.emailAddresses[0].emailAddress}
+              m@example.com
             </p>
           </div>
         </DropdownMenuLabel>
