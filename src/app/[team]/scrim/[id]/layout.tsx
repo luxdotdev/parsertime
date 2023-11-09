@@ -1,6 +1,6 @@
 import { SelectedPlayerProvider } from "@/components/scrim/player-switcher";
 
-export default function DashboardLayout({
+export default function ScrimDashboardLayout({
   children,
 }: {
   children: React.ReactNode;
