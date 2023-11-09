@@ -54,12 +54,7 @@ export default function PlayerSwitcher({ className }: TeamSwitcherProps) {
     SelectedPlayerContext
   );
 
-  let { data } = React.useContext(ParserDataContext);
-  let dataFromLocalStorage = localStorage.getItem("data");
-
-  if (!data) {
-    data = JSON.parse(dataFromLocalStorage ?? "{}");
-  }
+  const { data } = React.useContext(ParserDataContext);
 
   function getMostPlayedHeroes(
     playerRawStats: PlayerStatTableRow[]

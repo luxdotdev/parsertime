@@ -6,12 +6,7 @@ import { ParserDataContext } from "@/lib/parser-context";
 import { useContext } from "react";
 
 export function DefaultOverview() {
-  let { data } = useContext(ParserDataContext);
-  let dataFromLocalStorage = localStorage.getItem("data");
-
-  if (!data) {
-    data = JSON.parse(dataFromLocalStorage ?? "{}");
-  }
+  const { data } = useContext(ParserDataContext);
 
   const finalRound = data?.round_end[data?.round_end.length - 1];
 

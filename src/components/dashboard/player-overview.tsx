@@ -7,13 +7,8 @@ import { table } from "console";
 import { useContext } from "react";
 
 export function PlayerOverview() {
-  let { data } = useContext(ParserDataContext);
+  const { data } = useContext(ParserDataContext);
   let { selectedPlayer } = useContext(SelectedPlayerContext);
-  let dataFromLocalStorage = localStorage.getItem("data");
-
-  if (!data) {
-    data = JSON.parse(dataFromLocalStorage ?? "{}");
-  }
 
   const finalRound = data?.round_end[data?.round_end.length - 1];
 
