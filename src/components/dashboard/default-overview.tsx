@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ParserDataContext } from "@/lib/parser-context";
 import { useContext } from "react";
 
-export function Overview() {
+export function DefaultOverview() {
   let { data } = useContext(ParserDataContext);
   let dataFromLocalStorage = localStorage.getItem("data");
 
