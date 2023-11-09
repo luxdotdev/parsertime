@@ -50,7 +50,7 @@ export default function PlayerSwitcher({ className }: TeamSwitcherProps) {
   const [open, setOpen] = React.useState(false);
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false);
   const [selectedPlayer, setSelectedPlayer] = React.useState<Player>({
-    label: "Default (No Team)",
+    label: "Default",
     value: "default",
   });
 
@@ -203,7 +203,7 @@ export default function PlayerSwitcher({ className }: TeamSwitcherProps) {
                   <CommandItem
                     onSelect={() => {
                       setSelectedPlayer({
-                        label: "Default (No Team)",
+                        label: "Default",
                         value: "default",
                       });
                     }}
@@ -211,16 +211,16 @@ export default function PlayerSwitcher({ className }: TeamSwitcherProps) {
                     <Avatar className="mr-2 h-5 w-5">
                       <AvatarImage
                         src={`/heroes/default.png`}
-                        alt={"Default (No Team)"}
+                        alt={"Default"}
                         // className="grayscale"
                       />
                       <AvatarFallback>SC</AvatarFallback>
                     </Avatar>
-                    Default (No Team)
+                    Default
                     <CheckIcon
                       className={cn(
                         "ml-auto h-4 w-4",
-                        selectedPlayer.label === "Default (No Team)"
+                        selectedPlayer.label === "Default"
                           ? "opacity-100"
                           : "opacity-0"
                       )}
