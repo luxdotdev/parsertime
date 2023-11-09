@@ -1,8 +1,8 @@
-import { DefaultOverview } from "@/components/dashboard/default-overview";
-import { MainNav } from "@/components/dashboard/main-nav";
-import PlayerSwitcher from "@/components/dashboard/player-switcher";
-import { Search } from "@/components/dashboard/search";
-import { UserNav } from "@/components/dashboard/user-nav";
+import { ScrimList } from "@/components/dashboard/scrim-list";
+import { DefaultOverview } from "@/components/scrim/default-overview";
+import { MainNav } from "@/components/scrim/main-nav";
+import { Search } from "@/components/scrim/search";
+import { UserNav } from "@/components/scrim/user-nav";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -12,7 +12,6 @@ export default function DashboardPage() {
       <div className="hidden flex-col md:flex">
         <div className="border-b">
           <div className="flex h-16 items-center px-4">
-            <PlayerSwitcher />
             <MainNav className="mx-6" />
             <div className="ml-auto flex items-center space-x-4">
               <Search />
@@ -33,7 +32,7 @@ export default function DashboardPage() {
               <TabsTrigger value="notifications">Notifications</TabsTrigger>
             </TabsList>
             <TabsContent value="overview" className="space-y-4">
-              <DefaultOverview />
+              <ScrimList />
             </TabsContent>
           </Tabs>
         </div>
