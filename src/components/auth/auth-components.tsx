@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { signIn, signOut } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-export function SignIn({
+export function SignInButton({
   provider,
   ...props
 }: { provider?: string } & React.ComponentPropsWithRef<typeof Button>) {
@@ -20,7 +20,9 @@ export function SignIn({
   );
 }
 
-export function SignOut(props: React.ComponentPropsWithRef<typeof Button>) {
+export function SignOutButton(
+  props: React.ComponentPropsWithRef<typeof Button>
+) {
   return (
     <form
       action={async () => {
@@ -29,9 +31,9 @@ export function SignOut(props: React.ComponentPropsWithRef<typeof Button>) {
       }}
       className="w-full"
     >
-      <Button variant="ghost" className="w-full p-0" {...props}>
+      <button variant="ghost" className="w-full p-0" {...props}>
         Sign Out
-      </Button>
+      </button>
     </form>
   );
 }
