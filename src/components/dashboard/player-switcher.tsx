@@ -49,10 +49,10 @@ type ReducedPlayerStat = {
 export default function PlayerSwitcher({ className }: TeamSwitcherProps) {
   const [open, setOpen] = React.useState(false);
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false);
-  const [selectedPlayer, setSelectedPlayer] = React.useState<Player>({
-    label: "Default",
-    value: "default",
-  });
+
+  const { selectedPlayer, setSelectedPlayer } = React.useContext(
+    SelectedPlayerContext
+  );
 
   let { data } = React.useContext(ParserDataContext);
   let dataFromLocalStorage = localStorage.getItem("data");
@@ -238,5 +238,40 @@ export default function PlayerSwitcher({ className }: TeamSwitcherProps) {
         </PopoverContent>
       </Popover>
     </Dialog>
+  );
+}
+
+type PlayerContextType = {
+  selectedPlayer: Player;
+  setSelectedPlayer: React.Dispatch<React.SetStateAction<Player>>;
+};
+
+export const SelectedPlayerContext = React.createContext<PlayerContextType>({
+  selectedPlayer: {
+    label: "Default",
+    value: "default",
+  },
+  setSelectedPlayer: () => {},
+});
+
+export function SelectedPlayerProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [selectedPlayer, setSelectedPlayer] = React.useState<Player>({
+    label: "Default",
+    value: "default",
+  });
+
+  return (
+    <SelectedPlayerContext.Provider
+      value={{
+        selectedPlayer: selectedPlayer,
+        setSelectedPlayer: setSelectedPlayer,
+      }}
+    >
+      {children}
+    </SelectedPlayerContext.Provider>
   );
 }
