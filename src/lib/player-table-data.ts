@@ -19,6 +19,7 @@ export type PlayerData = {
   dmgToHealsRatio: number;
   ultsCharged: number;
   ultsUsed: number;
+  mostPlayedHero: HeroName;
 };
 
 export function round(value: number) {
@@ -34,6 +35,7 @@ export function aggregatePlayerData(rows: PlayerStatTableRow[]): PlayerData[] {
   const playerMap = new Map<string, PlayerData>();
   const playerMaxMatchTime = new Map<string, number>();
   const teamElimsMap = new Map<string, number>();
+  const heroTimeMap = new Map<string, Map<HeroName, number>>();
 
   rows.forEach((row, index) => {
     const [
@@ -86,6 +88,7 @@ export function aggregatePlayerData(rows: PlayerStatTableRow[]): PlayerData[] {
         ultsCharged: 0,
         ultsUsed: 0,
         timePlayed: 0,
+        mostPlayedHero: playerHero,
       };
     }
 
@@ -93,6 +96,17 @@ export function aggregatePlayerData(rows: PlayerStatTableRow[]): PlayerData[] {
     if (matchTime > currentMaxTime) {
       playerMaxMatchTime.set(playerName, matchTime);
     }
+
+    // Update hero time for each player
+    let heroTimes = heroTimeMap.get(playerName);
+    if (!heroTimes) {
+      heroTimes = new Map<HeroName, number>();
+      heroTimeMap.set(playerName, heroTimes);
+    }
+    heroTimes.set(
+      playerHero,
+      (heroTimes.get(playerHero) || 0) + hero_time_played
+    );
 
     // Update the stats
     player.kills += finalBlows;
@@ -122,6 +136,24 @@ export function aggregatePlayerData(rows: PlayerStatTableRow[]): PlayerData[] {
     player.dmgToHealsRatio = round(player.dmgToHealsRatio);
 
     playerMap.set(playerName, player);
+  });
+
+  heroTimeMap.forEach((heroTimes, playerName) => {
+    let mostPlayedHero = "None";
+    let maxTime = 0;
+
+    heroTimes.forEach((time, hero) => {
+      if (time > maxTime) {
+        mostPlayedHero = hero;
+        maxTime = time;
+      }
+    });
+
+    const playerData = playerMap.get(playerName);
+    if (playerData) {
+      playerData.mostPlayedHero = mostPlayedHero as HeroName;
+      playerMap.set(playerName, playerData);
+    }
   });
 
   // Set time played for each player

@@ -45,7 +45,7 @@ export function PlayerOverview() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {selectedPlayerData?.playerName}
+              {selectedPlayerData?.mostPlayedHero}
             </div>
           </CardContent>
         </Card>
