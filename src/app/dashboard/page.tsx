@@ -9,6 +9,8 @@ import { ModeToggle } from "@/components/theme-switcher";
 import { DefaultOverview } from "@/components/dashboard/default-overview";
 import { useContext } from "react";
 import { PlayerOverview } from "@/components/dashboard/player-overview";
+import { UserNav } from "@/components/dashboard/user-nav";
+import { Search } from "@/components/dashboard/search";
 
 export default function DashboardPage() {
   const { selectedPlayer } = useContext(SelectedPlayerContext);
@@ -21,7 +23,8 @@ export default function DashboardPage() {
             <PlayerSwitcher />
             <MainNav className="mx-6" />
             <div className="ml-auto flex items-center space-x-4">
-              <ModeToggle />
+              <Search />
+              <UserNav />
             </div>
           </div>
         </div>
