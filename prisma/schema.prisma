@@ -1,0 +1,364 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+model Scrim {
+  id        Int         @id @default(autoincrement())
+  name      String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  scrimData ScrimData[]
+}
+
+enum EventType {
+  defensive_assist
+  hero_spawn
+  hero_swap
+  kill
+  match_start
+  objective_capture
+  objective_updated
+  offensive_assist
+  payload_progress
+  player_stat
+  round_end
+  round_start
+  setup_complete
+  ultimate_charged
+  ultimate_end
+  ultimate_start
+}
+
+model ScrimData {
+  id                 Int                 @id @default(autoincrement())
+  scrimId            Int
+  userId             Int
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  Scrim              Scrim               @relation(fields: [scrimId], references: [id])
+  defensive_assist   DefensiveAssist[]
+  hero_spawn         HeroSpawn[]
+  hero_swap          HeroSwap[]
+  kill               Kill[]
+  match_start        MatchStart[]
+  objective_captured ObjectiveCaptured[]
+  objective_updated  ObjectiveUpdated[]
+  offensive_assist   OffensiveAssist[]
+  payload_progress   PayloadProgress[]
+  player_stat        PlayerStat[]
+  round_end          RoundEnd[]
+  round_start        RoundStart[]
+  setup_complete     SetupComplete[]
+  ultimate_charged   UltimateCharged[]
+  ultimate_end       UltimateEnd[]
+  ultimate_start     UltimateStart[]
+
+  @@index([scrimId])
+}
+
+model DefensiveAssist {
+  id              Int        @id @default(autoincrement())
+  event_type      EventType  @default(defensive_assist)
+  match_time      Float
+  player_team     String
+  player_name     String
+  player_hero     String
+  hero_duplicated Boolean
+  ScrimData       ScrimData? @relation(fields: [scrimDataId], references: [id])
+  scrimDataId     Int?
+
+  @@index([scrimDataId])
+}
+
+model HeroSpawn {
+  id               Int        @id @default(autoincrement())
+  event_type       EventType  @default(hero_spawn)
+  match_time       Float
+  player_team      String
+  player_name      String
+  player_hero      String
+  previous_hero    String?
+  hero_time_played Float
+  ScrimData        ScrimData? @relation(fields: [scrimDataId], references: [id])
+  scrimDataId      Int?
+
+  @@index([scrimDataId])
+}
+
+model HeroSwap {
+  id               Int        @id @default(autoincrement())
+  event_type       EventType  @default(hero_swap)
+  match_time       Float
+  player_team      String
+  player_name      String
+  player_hero      String
+  previous_hero    String
+  hero_time_played Float
+  ScrimData        ScrimData? @relation(fields: [scrimDataId], references: [id])
+  scrimDataId      Int?
+
+  @@index([scrimDataId])
+}
+
+model Kill {
+  id               Int       @id @default(autoincrement())
+  event_type       EventType @default(kill)
+  match_time       Float
+  attacker_team    String
+  attacker_name    String
+  attacker_hero    String
+  victim_team      String
+  victim_name      String
+  victim_hero      String
+  event_ability    String
+  event_damage     Int
+  is_critical_hit  Boolean
+  is_environmental Boolean
+
+  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
+  scrimDataId Int?
+
+  @@index([scrimDataId])
+}
+
+model MatchStart {
+  id          Int       @id @default(autoincrement())
+  event_type  EventType @default(match_start)
+  match_time  Float
+  map_name    String
+  map_type    String
+  team_1_name String
+  team_2_name String
+
+  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
+  scrimDataId Int?
+
+  @@index([scrimDataId])
+}
+
+model ObjectiveCaptured {
+  id                      Int       @id @default(autoincrement())
+  event_type              EventType @default(objective_capture)
+  match_time              Float
+  round_number            Int
+  capturing_team          String
+  objective_index         Int
+  control_team_1_progress Float
+  control_team_2_progress Float
+  match_time_remaining    Float
+
+  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
+  scrimDataId Int?
+
+  @@index([scrimDataId])
+}
+
+model ObjectiveUpdated {
+  id                       Int       @id @default(autoincrement())
+  event_type               EventType @default(objective_updated)
+  match_time               Float
+  round_number             Int
+  previous_objective_index Int
+  current_objective_index  Int
+
+  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
+  scrimDataId Int?
+
+  @@index([scrimDataId])
+}
+
+model OffensiveAssist {
+  id              Int       @id @default(autoincrement())
+  event_type      EventType @default(offensive_assist)
+  match_time      Float
+  player_team     String
+  player_name     String
+  player_hero     String
+  hero_duplicated Boolean
+
+  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
+  scrimDataId Int?
+
+  @@index([scrimDataId])
+}
+
+model PayloadProgress {
+  id                       Int       @id @default(autoincrement())
+  event_type               EventType @default(payload_progress)
+  match_time               Float
+  round_number             Int
+  capturing_team           String
+  objective_index          Int
+  payload_capture_progress Float
+
+  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
+  scrimDataId Int?
+
+  @@index([scrimDataId])
+}
+
+model PlayerStat {
+  id                           Int       @id @default(autoincrement())
+  event_type                   EventType @default(player_stat)
+  match_time                   Float
+  round_number                 Int
+  player_team                  String
+  player_name                  String
+  player_hero                  String
+  eliminations                 Int
+  final_blows                  Int
+  deaths                       Int
+  all_damage_dealt             Float
+  barrier_damage_dealt         Float
+  hero_damage_dealt            Float
+  healing_dealt                Float
+  healing_received             Float
+  self_healing                 Float
+  damage_taken                 Float
+  damage_blocked               Float
+  defensive_assists            Int
+  offensive_assists            Int
+  ultimates_earned             Int
+  ultimates_used               Int
+  multikill_best               Int
+  multikills                   Int
+  solo_kills                   Int
+  objective_kills              Int
+  environmental_kills          Int
+  environmental_deaths         Int
+  critical_hits                Int
+  critical_hit_accuracy        Float
+  scoped_accuracy              Float
+  scoped_critical_hit_accuracy Float
+  scoped_critical_hit_kills    Int
+  shots_fired                  Int
+  shots_hit                    Int
+  shots_missed                 Int
+  scoped_shots                 Int
+  scoped_shots_hit             Int
+  weapon_accuracy              Float
+  hero_time_played             Float
+
+  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
+  scrimDataId Int?
+
+  @@index([scrimDataId])
+}
+
+model RoundEnd {
+  id                      Int       @id @default(autoincrement())
+  event_type              EventType @default(round_end)
+  match_time              Float
+  round_number            Int
+  capturing_team          String
+  team_1_score            Int
+  team_2_score            Int
+  objective_index         Int
+  control_team_1_progress Float
+  control_team_2_progress Float
+  match_time_remaining    Float
+
+  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
+  scrimDataId Int?
+
+  @@index([scrimDataId])
+}
+
+model RoundStart {
+  id              Int       @id @default(autoincrement())
+  event_type      EventType @default(round_start)
+  match_time      Float
+  round_number    Int
+  capturing_team  String
+  team_1_score    Int
+  team_2_score    Int
+  objective_index Int
+
+  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
+  scrimDataId Int?
+
+  @@index([scrimDataId])
+}
+
+model SetupComplete {
+  id                   Int       @id @default(autoincrement())
+  event_type           EventType @default(setup_complete)
+  match_time           Float
+  round_number         Int
+  match_time_remaining Float
+
+  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
+  scrimDataId Int?
+
+  @@index([scrimDataId])
+}
+
+model UltimateCharged {
+  id              Int       @id @default(autoincrement())
+  event_type      EventType @default(ultimate_charged)
+  match_time      Float
+  player_team     String
+  player_name     String
+  player_hero     String
+  hero_duplicated Boolean
+  ultimate_id     Int
+
+  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
+  scrimDataId Int?
+
+  @@index([scrimDataId])
+}
+
+model UltimateEnd {
+  id              Int       @id @default(autoincrement())
+  event_type      EventType @default(ultimate_end)
+  match_time      Float
+  player_team     String
+  player_name     String
+  player_hero     String
+  hero_duplicated Boolean
+  ultimate_id     Int
+
+  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
+  scrimDataId Int?
+
+  @@index([scrimDataId])
+}
+
+model UltimateStart {
+  id              Int       @id @default(autoincrement())
+  event_type      EventType @default(ultimate_start)
+  match_time      Float
+  player_team     String
+  player_name     String
+  player_hero     String
+  hero_duplicated Boolean
+  ultimate_id     Int
+
+  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
+  scrimDataId Int?
+
+  @@index([scrimDataId])
+}
