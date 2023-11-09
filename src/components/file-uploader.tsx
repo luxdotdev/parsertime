@@ -66,6 +66,13 @@ export function FileUploaderForm() {
     const result = await parseData(values.file);
     setData(result);
 
+    if (!localStorage.getItem("data")) {
+      localStorage.setItem("data", JSON.stringify(result));
+    } else {
+      localStorage.removeItem("data");
+      localStorage.setItem("data", JSON.stringify(result));
+    }
+
     if (result) {
       router.push("/dashboard");
     }
