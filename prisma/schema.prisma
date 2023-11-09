@@ -17,6 +17,7 @@ model User {
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  scrim     Scrim[]
 }
 
 enum UserRole {
@@ -25,11 +26,27 @@ enum UserRole {
 }
 
 model Scrim {
-  id        Int         @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   name      String
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  scrimData ScrimData[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  maps      Map[]
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
+
+  @@index([userId])
+}
+
+model Map {
+  id        Int       @id @default(autoincrement())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  mapData   MapData[]
+  Scrim     Scrim?    @relation(fields: [scrimId], references: [id])
+  scrimId   Int?
+
+  @@index([scrimId])
 }
 
 enum EventType {
@@ -51,13 +68,13 @@ enum EventType {
   ultimate_start
 }
 
-model ScrimData {
+model MapData {
   id                 Int                 @id @default(autoincrement())
   scrimId            Int
   userId             Int
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
-  Scrim              Scrim               @relation(fields: [scrimId], references: [id])
+  Scrim              Map                 @relation(fields: [scrimId], references: [id])
   defensive_assist   DefensiveAssist[]
   hero_spawn         HeroSpawn[]
   hero_swap          HeroSwap[]
@@ -79,47 +96,47 @@ model ScrimData {
 }
 
 model DefensiveAssist {
-  id              Int        @id @default(autoincrement())
-  event_type      EventType  @default(defensive_assist)
+  id              Int       @id @default(autoincrement())
+  event_type      EventType @default(defensive_assist)
   match_time      Float
   player_team     String
   player_name     String
   player_hero     String
   hero_duplicated Boolean
-  ScrimData       ScrimData? @relation(fields: [scrimDataId], references: [id])
-  scrimDataId     Int?
+  MapData         MapData?  @relation(fields: [MapDataId], references: [id])
+  MapDataId       Int?
 
-  @@index([scrimDataId])
+  @@index([MapDataId])
 }
 
 model HeroSpawn {
-  id               Int        @id @default(autoincrement())
-  event_type       EventType  @default(hero_spawn)
+  id               Int       @id @default(autoincrement())
+  event_type       EventType @default(hero_spawn)
   match_time       Float
   player_team      String
   player_name      String
   player_hero      String
   previous_hero    String?
   hero_time_played Float
-  ScrimData        ScrimData? @relation(fields: [scrimDataId], references: [id])
-  scrimDataId      Int?
+  MapData          MapData?  @relation(fields: [MapDataId], references: [id])
+  MapDataId        Int?
 
-  @@index([scrimDataId])
+  @@index([MapDataId])
 }
 
 model HeroSwap {
-  id               Int        @id @default(autoincrement())
-  event_type       EventType  @default(hero_swap)
+  id               Int       @id @default(autoincrement())
+  event_type       EventType @default(hero_swap)
   match_time       Float
   player_team      String
   player_name      String
   player_hero      String
   previous_hero    String
   hero_time_played Float
-  ScrimData        ScrimData? @relation(fields: [scrimDataId], references: [id])
-  scrimDataId      Int?
+  MapData          MapData?  @relation(fields: [MapDataId], references: [id])
+  MapDataId        Int?
 
-  @@index([scrimDataId])
+  @@index([MapDataId])
 }
 
 model Kill {
@@ -137,10 +154,10 @@ model Kill {
   is_critical_hit  Boolean
   is_environmental Boolean
 
-  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
-  scrimDataId Int?
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
 
-  @@index([scrimDataId])
+  @@index([MapDataId])
 }
 
 model MatchStart {
@@ -152,10 +169,10 @@ model MatchStart {
   team_1_name String
   team_2_name String
 
-  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
-  scrimDataId Int?
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
 
-  @@index([scrimDataId])
+  @@index([MapDataId])
 }
 
 model ObjectiveCaptured {
@@ -169,10 +186,10 @@ model ObjectiveCaptured {
   control_team_2_progress Float
   match_time_remaining    Float
 
-  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
-  scrimDataId Int?
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
 
-  @@index([scrimDataId])
+  @@index([MapDataId])
 }
 
 model ObjectiveUpdated {
@@ -183,10 +200,10 @@ model ObjectiveUpdated {
   previous_objective_index Int
   current_objective_index  Int
 
-  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
-  scrimDataId Int?
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
 
-  @@index([scrimDataId])
+  @@index([MapDataId])
 }
 
 model OffensiveAssist {
@@ -198,10 +215,10 @@ model OffensiveAssist {
   player_hero     String
   hero_duplicated Boolean
 
-  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
-  scrimDataId Int?
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
 
-  @@index([scrimDataId])
+  @@index([MapDataId])
 }
 
 model PayloadProgress {
@@ -213,10 +230,10 @@ model PayloadProgress {
   objective_index          Int
   payload_capture_progress Float
 
-  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
-  scrimDataId Int?
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
 
-  @@index([scrimDataId])
+  @@index([MapDataId])
 }
 
 model PlayerStat {
@@ -261,10 +278,10 @@ model PlayerStat {
   weapon_accuracy              Float
   hero_time_played             Float
 
-  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
-  scrimDataId Int?
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
 
-  @@index([scrimDataId])
+  @@index([MapDataId])
 }
 
 model RoundEnd {
@@ -280,10 +297,10 @@ model RoundEnd {
   control_team_2_progress Float
   match_time_remaining    Float
 
-  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
-  scrimDataId Int?
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
 
-  @@index([scrimDataId])
+  @@index([MapDataId])
 }
 
 model RoundStart {
@@ -296,10 +313,10 @@ model RoundStart {
   team_2_score    Int
   objective_index Int
 
-  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
-  scrimDataId Int?
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
 
-  @@index([scrimDataId])
+  @@index([MapDataId])
 }
 
 model SetupComplete {
@@ -309,10 +326,10 @@ model SetupComplete {
   round_number         Int
   match_time_remaining Float
 
-  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
-  scrimDataId Int?
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
 
-  @@index([scrimDataId])
+  @@index([MapDataId])
 }
 
 model UltimateCharged {
@@ -325,10 +342,10 @@ model UltimateCharged {
   hero_duplicated Boolean
   ultimate_id     Int
 
-  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
-  scrimDataId Int?
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
 
-  @@index([scrimDataId])
+  @@index([MapDataId])
 }
 
 model UltimateEnd {
@@ -341,10 +358,10 @@ model UltimateEnd {
   hero_duplicated Boolean
   ultimate_id     Int
 
-  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
-  scrimDataId Int?
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
 
-  @@index([scrimDataId])
+  @@index([MapDataId])
 }
 
 model UltimateStart {
@@ -357,8 +374,8 @@ model UltimateStart {
   hero_duplicated Boolean
   ultimate_id     Int
 
-  ScrimData   ScrimData? @relation(fields: [scrimDataId], references: [id])
-  scrimDataId Int?
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
 
-  @@index([scrimDataId])
+  @@index([MapDataId])
 }
