@@ -2,7 +2,7 @@ import { DefaultOverview } from "@/components/scrim/default-overview";
 import { MainNav } from "@/components/scrim/main-nav";
 import PlayerSwitcher from "@/components/scrim/player-switcher";
 import { Search } from "@/components/scrim/search";
-import { UserNav } from "@/components/scrim/user-nav";
+import { UserNav } from "@/components/user-nav";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
