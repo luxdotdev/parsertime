@@ -1,17 +1,21 @@
 import { ScrimList } from "@/components/dashboard/scrim-list";
-import { DefaultOverview } from "@/components/scrim/default-overview";
-import { MainNav } from "@/components/scrim/main-nav";
-import { Search } from "@/components/scrim/search";
-import { UserNav } from "@/components/scrim/user-nav";
+import { TeamSwitcher } from "@/components/dashboard/team-switcher";
+import { MainNav } from "@/components/dashboard/main-nav";
+import { Search } from "@/components/dashboard/search";
+import { UserNav } from "@/components/user-nav";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { auth } from "@/lib/auth";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const session = await auth();
+
   return (
     <>
       <div className="hidden flex-col md:flex">
         <div className="border-b">
           <div className="flex h-16 items-center px-4">
+            <TeamSwitcher session={session} />
             <MainNav className="mx-6" />
             <div className="ml-auto flex items-center space-x-4">
               <Search />
