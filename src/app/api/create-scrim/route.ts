@@ -9,12 +9,9 @@ export async function POST(request: Request, response: Response) {
   const body = req.body;
 
   if (!session) {
-    return {
+    return new Response("Unauthorized", {
       status: 401,
-      body: {
-        message: "Unauthorized",
-      },
-    };
+    });
   }
 
   const userId = await prisma.user.findUnique({
@@ -50,5 +47,9 @@ export async function POST(request: Request, response: Response) {
         },
       },
     },
+  });
+
+  return new Response("OK", {
+    status: 200,
   });
 }
