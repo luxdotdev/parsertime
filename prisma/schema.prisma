@@ -50,8 +50,8 @@ model User {
   accounts      Account[]
   sessions      Session[]
   role          UserRole  @default(USER)
-  Team          Team?     @relation(fields: [teamId], references: [id])
   teamId        Int?
+  teams         Team[]
 
   @@index([teamId])
 }
@@ -71,6 +71,7 @@ model Team {
   updatedAt DateTime @updatedAt
   users     User[]
   scrims    Scrim[]
+  ownerId   String
 }
 
 enum UserRole {
