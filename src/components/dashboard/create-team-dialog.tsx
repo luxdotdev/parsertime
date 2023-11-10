@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -31,6 +32,7 @@ export function CreateTeamDialog({
   setNewTeamCreated: (created: boolean) => void;
 }) {
   const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -40,6 +42,7 @@ export function CreateTeamDialog({
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    setLoading(true);
     fetch("/api/create-team", {
       method: "POST",
       body: JSON.stringify(values),
@@ -51,13 +54,14 @@ export function CreateTeamDialog({
           title: "Team created!",
           description: "Your team has been created successfully.",
         });
+        setLoading(false);
       } else {
         toast({
           variant: "destructive",
           title: "Error",
           description: `An error occurred: ${res.statusText} (${res.status})`,
         });
-        console.error(res);
+        setLoading(false);
       }
     });
   }
@@ -92,10 +96,13 @@ export function CreateTeamDialog({
             <Button
               variant="outline"
               onClick={() => setShowNewTeamDialog(false)}
+              disabled={loading}
             >
               Cancel
             </Button>
-            <Button type="submit">Continue</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Creating team..." : "Create team"}
+            </Button>
           </DialogFooter>
         </form>
       </Form>
