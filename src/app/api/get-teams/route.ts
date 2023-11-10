@@ -1,6 +1,5 @@
 import { auth } from "@/lib/auth";
 import { PrismaClient } from "@prisma/client";
-import { NextApiRequest, NextApiResponse } from "next";
 
 export type Team = {
   id: number;
@@ -14,7 +13,7 @@ export type GetTeamsResponse = {
   teams: Team[];
 };
 
-export async function GET(req: NextApiRequest) {
+export async function GET(req: Request) {
   const prisma = new PrismaClient();
   const session = await auth();
 
