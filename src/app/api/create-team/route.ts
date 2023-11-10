@@ -77,10 +77,7 @@ export async function POST(request: Request, response: Response) {
 }
 
 export async function GET(request: Request, response: Response) {
-  return {
+  return new Response("Method not allowed", {
     status: 405,
-    body: {
-      message: "Method not allowed",
-    },
-  };
+  });
 }
