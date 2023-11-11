@@ -1,9 +1,5 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 dependencies:
   '@auth/prisma-adapter':
     specifier: ^1.0.5
@@ -95,6 +91,9 @@ dependencies:
   '@radix-ui/react-tooltip':
     specifier: ^1.0.7
     version: 1.0.7(@types/react-dom@18.2.15)(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
+  '@sendgrid/mail':
+    specifier: ^7.7.0
+    version: 7.7.0
   '@tanstack/react-table':
     specifier: ^8.10.7
     version: 8.10.7(react-dom@18.2.0)(react@18.2.0)
@@ -1881,6 +1880,33 @@ packages:
     resolution: {integrity: sha512-6i/8UoL0P5y4leBIGzvkZdS85RDMG9y1ihZzmTZQ5LdHUYmZ7pKFoj8X0236s3lusPs1Fa5HTQUpwI+UfTcmeA==}
     dev: true
 
+  /@sendgrid/client@7.7.0:
+    resolution: {integrity: sha512-SxH+y8jeAQSnDavrTD0uGDXYIIkFylCo+eDofVmZLQ0f862nnqbC3Vd1ej6b7Le7lboyzQF6F7Fodv02rYspuA==}
+    engines: {node: 6.* || 8.* || >=10.*}
+    dependencies:
+      '@sendgrid/helpers': 7.7.0
+      axios: 0.26.1
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
+  /@sendgrid/helpers@7.7.0:
+    resolution: {integrity: sha512-3AsAxfN3GDBcXoZ/y1mzAAbKzTtUZ5+ZrHOmWQ279AuaFXUNCh9bPnRpN504bgveTqoW+11IzPg3I0WVgDINpw==}
+    engines: {node: '>= 6.0.0'}
+    dependencies:
+      deepmerge: 4.3.1
+    dev: false
+
+  /@sendgrid/mail@7.7.0:
+    resolution: {integrity: sha512-5+nApPE9wINBvHSUxwOxkkQqM/IAAaBYoP9hw7WwgDNQPxraruVqHizeTitVtKGiqWCKm2mnjh4XGN3fvFLqaw==}
+    engines: {node: 6.* || 8.* || >=10.*}
+    dependencies:
+      '@sendgrid/client': 7.7.0
+      '@sendgrid/helpers': 7.7.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
   /@swc/helpers@0.5.2:
     resolution: {integrity: sha512-E4KcWTpoLHqwPHLxidpOqQbcrZVgi0rsmmZXUle1jXmJfuIf/UWpczUJ7MZZ5tlxytgJXyp0w4PGkkeLiuIdZw==}
     dependencies:
@@ -2223,6 +2249,14 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
+  /axios@0.26.1:
+    resolution: {integrity: sha512-fPwcX4EvnSHuInCMItEhAGnaSEXRBjtzh9fOtsE6E1G6p7vl7edEeZe11QHf18+6+9gR5PbKV/sGKNaD8YaMeA==}
+    dependencies:
+      follow-redirects: 1.15.3
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
   /axobject-query@3.2.1:
     resolution: {integrity: sha512-jsyHu61e6N4Vbz/v18DHwWYKK0bSWLqn47eeDSKPB7m8tqMHF9YJ+mhIk2lVteyZrY8tnSj/jHOv4YiTCuCJgg==}
     dependencies:
@@ -2437,6 +2471,11 @@ packages:
   /deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
     dev: true
+
+  /deepmerge@4.3.1:
+    resolution: {integrity: sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==}
+    engines: {node: '>=0.10.0'}
+    dev: false
 
   /define-data-property@1.1.1:
     resolution: {integrity: sha512-E7uGkTzkk1d0ByLeSc6ZsFS79Axg+m1P/VsgYsxHgiuc3tFSj+MjMIwe90FC4lOAZzNBdY7kkO2P2wKdsQ1vgQ==}
@@ -2948,6 +2987,16 @@ packages:
   /flatted@3.2.9:
     resolution: {integrity: sha512-36yxDn5H7OFZQla0/jFJmbIKTdZAQHngCedGxiMmpNfEZM0sdEeT+WczLQrjK6D7o2aiyLYDnkw0R3JK0Qv1RQ==}
     dev: true
+
+  /follow-redirects@1.15.3:
+    resolution: {integrity: sha512-1VzOtuEM8pC9SFU1E+8KfTjZyMztRsgEfwQl44z8A25uy13jSzTj6dyK2Df52iV0vgHCfBwLhDWevLn95w5v6Q==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+    dev: false
 
   /for-each@0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
@@ -4560,3 +4609,7 @@ packages:
   /zod@3.22.4:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
     dev: false
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
