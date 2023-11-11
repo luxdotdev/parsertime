@@ -90,6 +90,7 @@ export async function createNewScrimFromParsedData(
   );
   const payload_progress = await createPayloadProgressRows(prisma, data, scrim);
   const player_stat = await createPlayerStatRows(prisma, data, scrim);
+  const point_progress = await createPointProgressRows(prisma, data, scrim);
   const round_end = await createRoundEndRows(prisma, data, scrim);
   const round_start = await createRoundStartRows(prisma, data, scrim);
   const setup_complete = await createSetupCompleteRows(prisma, data, scrim);
@@ -136,7 +137,7 @@ export async function createNewScrimFromParsedData(
         connect: [...player_stat.map((stat) => ({ id: stat.id }))],
       },
       point_progress: {
-        connect: [...payload_progress.map((progress) => ({ id: progress.id }))],
+        connect: [...point_progress.map((progress) => ({ id: progress.id }))],
       },
       round_end: {
         connect: [...round_end.map((end) => ({ id: end.id }))],
