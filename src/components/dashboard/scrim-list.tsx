@@ -18,18 +18,22 @@ export async function ScrimList() {
     },
   });
 
-  const scrims = await prisma.scrim.findMany({
+  const userCreatedScrims = await prisma.scrim.findMany({
+    where: {
+      creatorId: userData[0].id,
+    },
+  });
+
+  const teamScrims = await prisma.scrim.findMany({
     where: {
       teamId: userData[0].teamId ?? 0,
     },
   });
 
-  console.log(scrims);
-
   return (
     <main>
-      {scrims.length > 0 && <div />}
-      {scrims.length === 0 && <EmptyScrimList />}
+      {userCreatedScrims.length > 0 && <p>{userCreatedScrims.length}</p>}
+      {userCreatedScrims.length === 0 && <EmptyScrimList />}
     </main>
   );
 }
