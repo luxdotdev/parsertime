@@ -5,14 +5,43 @@ import { Search } from "@/components/scrim/search";
 import { UserNav } from "@/components/user-nav";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PrismaClient } from "@prisma/client";
 
-export default function ScrimDashboardPage() {
+export default async function ScrimDashboardPage({
+  params,
+  searchParams,
+}: {
+  params: { team: string; id: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  const prisma = new PrismaClient();
+  const id = parseInt(params.id);
+
+  const uniquePlayerRowsByHeroTimePlayed = await prisma.playerStat.findMany({
+    where: {
+      scrimId: id,
+    },
+    select: {
+      player_name: true,
+      player_team: true,
+      player_hero: true,
+      hero_time_played: true,
+    },
+    orderBy: {
+      hero_time_played: "desc",
+    },
+    distinct: ["player_name"],
+  });
+
   return (
     <>
       <div className="hidden flex-col md:flex">
         <div className="border-b">
           <div className="flex h-16 items-center px-4">
-            <PlayerSwitcher />
+            <PlayerSwitcher
+              scrimId={id}
+              mostPlayedHeroes={uniquePlayerRowsByHeroTimePlayed}
+            />
             <MainNav className="mx-6" />
             <div className="ml-auto flex items-center space-x-4">
               <Search />
@@ -33,7 +62,7 @@ export default function ScrimDashboardPage() {
               <TabsTrigger value="notifications">Notifications</TabsTrigger>
             </TabsList>
             <TabsContent value="overview" className="space-y-4">
-              <DefaultOverview />
+              <DefaultOverview id={id} />
             </TabsContent>
           </Tabs>
         </div>

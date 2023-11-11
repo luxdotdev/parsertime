@@ -17,11 +17,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ParserDataContext } from "@/lib/parser-context";
 import { cn, toHero } from "@/lib/utils";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
-import { PlayerStatTableRow } from "@/types/parser";
 
 interface TeamGroup {
   label: string;
@@ -39,76 +38,56 @@ type PopoverTriggerProps = React.ComponentPropsWithoutRef<
 
 interface TeamSwitcherProps extends PopoverTriggerProps {}
 
-type ReducedPlayerStat = {
-  player_name: string;
+type MostPlayedHeroesType = {
   player_team: string;
-  most_played_hero: string;
-  time_played: number;
-};
+  player_name: string;
+  player_hero: string;
+  hero_time_played: number;
+}[];
 
-export default function PlayerSwitcher({ className }: TeamSwitcherProps) {
+export default function PlayerSwitcher({
+  className,
+  mostPlayedHeroes,
+  scrimId,
+}: TeamSwitcherProps & {
+  mostPlayedHeroes: MostPlayedHeroesType;
+  scrimId: number;
+}) {
   const [open, setOpen] = React.useState(false);
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false);
+  const [selectedPlayer, setSelectedPlayer] = React.useState<Player>({
+    label: "Default",
+    value: "default",
+  });
+  const [avatar, setAvatar] = React.useState<string>("default");
 
-  const { selectedPlayer, setSelectedPlayer } = React.useContext(
-    SelectedPlayerContext
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams()!;
+
+  React.useEffect(() => {
+    const playerExists = mostPlayedHeroes.find(
+      (playerStat) => playerStat.player_name === searchParams.get("player")
+    );
+
+    if (searchParams.has("player") && !playerExists) {
+      router.push(pathname);
+    }
+  }, [mostPlayedHeroes, pathname, router, searchParams]);
+
+  // Get a new searchParams string by merging the current
+  // searchParams with a provided key/value pair
+  const createQueryString = React.useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams);
+      params.set(name, value);
+
+      return params.toString();
+    },
+    [searchParams]
   );
 
-  const { data } = React.useContext(ParserDataContext);
-
-  function getMostPlayedHeroes(
-    playerRawStats: PlayerStatTableRow[]
-  ): ReducedPlayerStat[] {
-    const playerHeroTimes: {
-      [playerName: string]: { [heroName: string]: number };
-    } = {};
-
-    playerRawStats.forEach((stat) => {
-      const playerName: string = stat[4];
-      const heroName: string = stat[5];
-      const heroTimePlayed = stat[stat.length - 1] as number; // Corrected to the last element for "hero time played"
-
-      if (!playerHeroTimes[playerName]) {
-        playerHeroTimes[playerName] = {};
-      }
-
-      if (!playerHeroTimes[playerName][heroName]) {
-        playerHeroTimes[playerName][heroName] = 0;
-      }
-
-      playerHeroTimes[playerName][heroName] += heroTimePlayed;
-    });
-
-    const mostPlayedHeroes: ReducedPlayerStat[] = Object.keys(
-      playerHeroTimes
-    ).map((playerName) => {
-      const heroes = playerHeroTimes[playerName];
-      let mostPlayedHero = "";
-      let maxTime = 0;
-
-      Object.entries(heroes).forEach(([heroName, timePlayed]) => {
-        if (timePlayed > maxTime) {
-          maxTime = timePlayed;
-          mostPlayedHero = heroName;
-        }
-      });
-
-      // Find any stat entry for this player to get their team name
-      const playerTeam =
-        playerRawStats.find((stat) => stat[4] === playerName)?.[3] || "Unknown";
-
-      return {
-        player_name: playerName,
-        player_team: playerTeam,
-        most_played_hero: mostPlayedHero,
-        time_played: maxTime,
-      };
-    });
-
-    return mostPlayedHeroes;
-  }
-
-  function createTeamGroups(playerStats: ReducedPlayerStat[]): TeamGroup[] {
+  function createTeamGroups(playerStats: MostPlayedHeroesType): TeamGroup[] {
     const teamGroupsMap = new Map<string, TeamGroup>();
 
     // Organize player stats by team
@@ -124,7 +103,7 @@ export default function PlayerSwitcher({ className }: TeamSwitcherProps) {
       // Add the player and their most played hero to the team
       teamGroup.players.push({
         label: playerStat.player_name,
-        value: playerStat.most_played_hero,
+        value: playerStat.player_hero,
       });
     });
 
@@ -132,8 +111,7 @@ export default function PlayerSwitcher({ className }: TeamSwitcherProps) {
     return Array.from(teamGroupsMap.values());
   }
 
-  const playerStats = getMostPlayedHeroes(data.player_stat);
-  const teams = createTeamGroups(playerStats).sort((a, b) =>
+  const teams = createTeamGroups(mostPlayedHeroes).sort((a, b) =>
     a.label.localeCompare(b.label)
   );
 
@@ -153,7 +131,7 @@ export default function PlayerSwitcher({ className }: TeamSwitcherProps) {
                 src={`/heroes/${toHero(selectedPlayer.value)}.png`}
                 alt={selectedPlayer.label}
               />
-              <AvatarFallback>SC</AvatarFallback>
+              <AvatarFallback>lux</AvatarFallback>
             </Avatar>
             {selectedPlayer.label}
             <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
@@ -170,6 +148,11 @@ export default function PlayerSwitcher({ className }: TeamSwitcherProps) {
                     <CommandItem
                       key={player.label}
                       onSelect={() => {
+                        router.push(
+                          pathname +
+                            "?" +
+                            createQueryString("player", player.label)
+                        );
                         setSelectedPlayer(player);
                       }}
                       className="text-sm"
@@ -202,6 +185,7 @@ export default function PlayerSwitcher({ className }: TeamSwitcherProps) {
                 <DialogTrigger asChild>
                   <CommandItem
                     onSelect={() => {
+                      router.push(pathname);
                       setSelectedPlayer({
                         label: "Default",
                         value: "default",
