@@ -44,7 +44,7 @@ export type HeroSpawnTableRow = [
   player_team: PlayerTeam,
   player_name: string,
   player_hero: HeroName,
-  previous_hero: HeroName | null,
+  previous_hero: number | null,
   hero_time_played: number
 ];
 
@@ -69,8 +69,8 @@ export type KillTableRow = [
   victim_hero: HeroName,
   event_ability: EventAbility,
   event_damage: number,
-  is_critical_hit: boolean,
-  is_environmental: boolean
+  is_critical_hit: string,
+  is_environmental: number | string
 ];
 
 export type MatchStartTableRow = [
