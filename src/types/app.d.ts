@@ -8,6 +8,7 @@ const envVariables = z.object({
   DISCORD_CLIENT_SECRET: z.string(),
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
+  SENDGRID_API_KEY: z.string(),
 });
 
 envVariables.parse(process.env);
