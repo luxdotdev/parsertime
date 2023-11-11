@@ -13,6 +13,24 @@ export async function POST(req: NextRequest) {
     });
   }
 
+  const hasMatchEnd = await prisma.matchEnd.findFirst({
+    where: {
+      scrimId: parseInt(id),
+    },
+  });
+
+  const hasPayloadProgress = await prisma.payloadProgress.findFirst({
+    where: {
+      scrimId: parseInt(id),
+    },
+  });
+
+  const hasPointProgress = await prisma.pointProgress.findFirst({
+    where: {
+      scrimId: parseInt(id),
+    },
+  });
+
   await prisma.scrim.delete({
     where: {
       id: parseInt(id),
@@ -55,6 +73,14 @@ export async function POST(req: NextRequest) {
     },
   });
 
+  if (hasMatchEnd) {
+    await prisma.matchEnd.deleteMany({
+      where: {
+        scrimId: parseInt(id),
+      },
+    });
+  }
+
   await prisma.matchStart.deleteMany({
     where: {
       scrimId: parseInt(id),
@@ -79,17 +105,27 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  await prisma.payloadProgress.deleteMany({
-    where: {
-      scrimId: parseInt(id),
-    },
-  });
+  if (hasPayloadProgress) {
+    await prisma.payloadProgress.deleteMany({
+      where: {
+        scrimId: parseInt(id),
+      },
+    });
+  }
 
   await prisma.playerStat.deleteMany({
     where: {
       scrimId: parseInt(id),
     },
   });
+
+  if (hasPointProgress) {
+    await prisma.pointProgress.deleteMany({
+      where: {
+        scrimId: parseInt(id),
+      },
+    });
+  }
 
   await prisma.roundEnd.deleteMany({
     where: {
