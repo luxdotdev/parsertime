@@ -6,8 +6,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { UserAuthForm } from "@/components/auth/user-auth-form";
 
 export const metadata: Metadata = {
-  title: "Authentication",
-  description: "Authentication forms built using the components.",
+  title: "Sign Up",
+  description: "Sign up for an account.",
 };
 
 export default function AuthenticationPage() {
