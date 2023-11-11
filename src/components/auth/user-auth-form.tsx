@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Icons } from "@/components/icons";
+import { signIn } from "next-auth/react";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -46,11 +47,11 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 disabled={isLoading}
               />
             </div>
-            <Button disabled={isLoading}>
+            <Button /*disabled={isLoading}*/ disabled>
               {isLoading && (
                 <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Sign In with Email
+              Sign In with Email (coming soon)
             </Button>
           </div>
         </form>
@@ -64,7 +65,12 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             </span>
           </div>
         </div>
-        <Button variant="outline" type="button" disabled={isLoading}>
+        <Button
+          variant="outline"
+          type="button"
+          disabled={isLoading}
+          onClick={() => signIn("github")}
+        >
           {isLoading ? (
             <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
           ) : (
@@ -72,7 +78,12 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           )}{" "}
           Github
         </Button>
-        <Button variant="outline" type="button" disabled={isLoading}>
+        <Button
+          variant="outline"
+          type="button"
+          disabled={isLoading}
+          onClick={() => signIn("google")}
+        >
           {isLoading ? (
             <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
           ) : (
@@ -80,7 +91,12 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           )}{" "}
           Google
         </Button>
-        <Button variant="outline" type="button" disabled={isLoading}>
+        <Button
+          variant="outline"
+          type="button"
+          disabled={isLoading}
+          onClick={() => signIn("discord")}
+        >
           {isLoading ? (
             <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
           ) : (
