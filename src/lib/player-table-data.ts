@@ -1,5 +1,5 @@
 import { HeroName, heroRoleMapping } from "@/types/heroes";
-import { PlayerStatTableRow } from "@/types/parser";
+import { PlayerStatRows } from "@/types/prisma";
 
 export type PlayerData = {
   id: number;
@@ -31,50 +31,25 @@ export function determineRole(heroName: HeroName) {
   return heroRoleMapping[heroName] || "Flex";
 }
 
-export function aggregatePlayerData(rows: PlayerStatTableRow[]): PlayerData[] {
+export function aggregatePlayerData(rows: PlayerStatRows): PlayerData[] {
   const playerMap = new Map<string, PlayerData>();
   const playerMaxMatchTime = new Map<string, number>();
   const teamElimsMap = new Map<string, number>();
   const heroTimeMap = new Map<string, Map<HeroName, number>>();
 
   rows.forEach((row, index) => {
-    const [
-      _eventType,
-      matchTime,
-      _roundNumber,
-      playerTeam,
-      playerName,
-      playerHero,
-      eliminations,
-      finalBlows,
-      deaths,
-      _allDamageDealt,
-      _barrierDamageDealt,
-      heroDamageDealt,
-      healingDealt,
-      healingReceived,
-      _selfHealing,
-      damageTaken,
-      _damageBlocked,
-      _defensiveAssists,
-      offensiveAssists,
-      ultimatesEarned,
-      ultimatesUsed,
-      hero_time_played,
-    ] = row;
-
-    let player = playerMap.get(playerName);
+    let player = playerMap.get(row.player_name);
 
     // Update team total eliminations
-    const currentTeamElims = teamElimsMap.get(playerTeam) || 0;
-    teamElimsMap.set(playerTeam, currentTeamElims + eliminations);
+    const currentTeamElims = teamElimsMap.get(row.player_team) || 0;
+    teamElimsMap.set(row.player_team, currentTeamElims + row.eliminations);
 
     if (!player) {
       player = {
         id: index, // You need to define how you want to handle the ID
-        playerName,
-        role: determineRole(playerHero),
-        playerTeam,
+        playerName: row.player_name,
+        role: determineRole(row.player_hero as HeroName),
+        playerTeam: row.player_team,
         kills: 0,
         assists: 0,
         deaths: 0,
@@ -88,37 +63,37 @@ export function aggregatePlayerData(rows: PlayerStatTableRow[]): PlayerData[] {
         ultsCharged: 0,
         ultsUsed: 0,
         timePlayed: 0,
-        mostPlayedHero: playerHero,
+        mostPlayedHero: row.player_hero as HeroName,
       };
     }
 
-    const currentMaxTime = playerMaxMatchTime.get(playerName) || 0;
-    if (matchTime > currentMaxTime) {
-      playerMaxMatchTime.set(playerName, matchTime);
+    const currentMaxTime = playerMaxMatchTime.get(row.player_name) || 0;
+    if (row.match_time > currentMaxTime) {
+      playerMaxMatchTime.set(row.player_name, row.match_time);
     }
 
     // Update hero time for each player
-    let heroTimes = heroTimeMap.get(playerName);
+    let heroTimes = heroTimeMap.get(row.player_name);
     if (!heroTimes) {
       heroTimes = new Map<HeroName, number>();
-      heroTimeMap.set(playerName, heroTimes);
+      heroTimeMap.set(row.player_name, heroTimes);
     }
     heroTimes.set(
-      playerHero,
-      (heroTimes.get(playerHero) || 0) + hero_time_played
+      row.player_hero as HeroName,
+      (heroTimes.get(row.player_hero as HeroName) || 0) + row.hero_time_played
     );
 
     // Update the stats
-    player.kills += finalBlows;
-    player.assists += offensiveAssists;
-    player.deaths += deaths;
-    player.heroDmgDealt += heroDamageDealt;
-    player.dmgReceived += damageTaken;
-    player.healingReceived += healingReceived;
-    player.healingDealt += healingDealt;
-    player.ultsCharged += ultimatesEarned;
-    player.ultsUsed += ultimatesUsed;
-    player.timePlayed += hero_time_played;
+    player.kills += row.final_blows;
+    player.assists += row.offensive_assists;
+    player.deaths += row.deaths;
+    player.heroDmgDealt += row.hero_damage_dealt;
+    player.dmgReceived += row.damage_taken;
+    player.healingReceived += row.healing_received;
+    player.healingDealt += row.healing_dealt;
+    player.ultsCharged += row.ultimates_earned;
+    player.ultsUsed += row.ultimates_used;
+    player.timePlayed += row.hero_time_played;
 
     // Recalculate ratios - you will need to define these calculations
     player.kd = player.deaths !== 0 ? player.kills / player.deaths : 0;
@@ -135,7 +110,7 @@ export function aggregatePlayerData(rows: PlayerStatTableRow[]): PlayerData[] {
     player.healingDealt = round(player.healingDealt);
     player.dmgToHealsRatio = round(player.dmgToHealsRatio);
 
-    playerMap.set(playerName, player);
+    playerMap.set(row.player_name, player);
   });
 
   heroTimeMap.forEach((heroTimes, playerName) => {
