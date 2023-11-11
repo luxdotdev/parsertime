@@ -126,10 +126,9 @@ enum EventType {
 model MapData {
   id                 Int                 @id @default(autoincrement())
   scrimId            Int
-  userId             Int
+  userId             String
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
-  Scrim              Map                 @relation(fields: [scrimId], references: [id])
   defensive_assist   DefensiveAssist[]
   hero_spawn         HeroSpawn[]
   hero_swap          HeroSwap[]
@@ -146,32 +145,38 @@ model MapData {
   ultimate_charged   UltimateCharged[]
   ultimate_end       UltimateEnd[]
   ultimate_start     UltimateStart[]
+  Map                Map?                @relation(fields: [mapId], references: [id])
+  mapId              Int?
 
   @@index([scrimId])
+  @@index([mapId])
 }
 
 model DefensiveAssist {
   id              Int       @id @default(autoincrement())
+  scrimId         Int
   event_type      EventType @default(defensive_assist)
   match_time      Float
   player_team     String
   player_name     String
   player_hero     String
-  hero_duplicated Boolean
+  hero_duplicated Int
   MapData         MapData?  @relation(fields: [MapDataId], references: [id])
   MapDataId       Int?
 
+  @@index([scrimId])
   @@index([MapDataId])
 }
 
 model HeroSpawn {
   id               Int       @id @default(autoincrement())
+  scrimId          Int
   event_type       EventType @default(hero_spawn)
   match_time       Float
   player_team      String
   player_name      String
   player_hero      String
-  previous_hero    String?
+  previous_hero    Int?
   hero_time_played Float
   MapData          MapData?  @relation(fields: [MapDataId], references: [id])
   MapDataId        Int?
@@ -181,6 +186,7 @@ model HeroSpawn {
 
 model HeroSwap {
   id               Int       @id @default(autoincrement())
+  scrimId          Int
   event_type       EventType @default(hero_swap)
   match_time       Float
   player_team      String
@@ -191,11 +197,13 @@ model HeroSwap {
   MapData          MapData?  @relation(fields: [MapDataId], references: [id])
   MapDataId        Int?
 
+  @@index([scrimId])
   @@index([MapDataId])
 }
 
 model Kill {
   id               Int       @id @default(autoincrement())
+  scrimId          Int
   event_type       EventType @default(kill)
   match_time       Float
   attacker_team    String
@@ -206,17 +214,19 @@ model Kill {
   victim_hero      String
   event_ability    String
   event_damage     Int
-  is_critical_hit  Boolean
-  is_environmental Boolean
+  is_critical_hit  String
+  is_environmental String
 
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
 
+  @@index([scrimId])
   @@index([MapDataId])
 }
 
 model MatchStart {
   id          Int       @id @default(autoincrement())
+  scrimId     Int
   event_type  EventType @default(match_start)
   match_time  Float
   map_name    String
@@ -227,11 +237,13 @@ model MatchStart {
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
 
+  @@index([scrimId])
   @@index([MapDataId])
 }
 
 model ObjectiveCaptured {
   id                      Int       @id @default(autoincrement())
+  scrimId                 Int
   event_type              EventType @default(objective_capture)
   match_time              Float
   round_number            Int
@@ -244,11 +256,13 @@ model ObjectiveCaptured {
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
 
+  @@index([scrimId])
   @@index([MapDataId])
 }
 
 model ObjectiveUpdated {
   id                       Int       @id @default(autoincrement())
+  scrimId                  Int
   event_type               EventType @default(objective_updated)
   match_time               Float
   round_number             Int
@@ -258,26 +272,30 @@ model ObjectiveUpdated {
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
 
+  @@index([scrimId])
   @@index([MapDataId])
 }
 
 model OffensiveAssist {
   id              Int       @id @default(autoincrement())
+  scrimId         Int
   event_type      EventType @default(offensive_assist)
   match_time      Float
   player_team     String
   player_name     String
   player_hero     String
-  hero_duplicated Boolean
+  hero_duplicated Int
 
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
 
+  @@index([scrimId])
   @@index([MapDataId])
 }
 
 model PayloadProgress {
   id                       Int       @id @default(autoincrement())
+  scrimId                  Int
   event_type               EventType @default(payload_progress)
   match_time               Float
   round_number             Int
@@ -288,11 +306,13 @@ model PayloadProgress {
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
 
+  @@index([scrimId])
   @@index([MapDataId])
 }
 
 model PlayerStat {
   id                           Int       @id @default(autoincrement())
+  scrimId                      Int
   event_type                   EventType @default(player_stat)
   match_time                   Float
   round_number                 Int
@@ -336,11 +356,13 @@ model PlayerStat {
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
 
+  @@index([scrimId])
   @@index([MapDataId])
 }
 
 model RoundEnd {
   id                      Int       @id @default(autoincrement())
+  scrimId                 Int
   event_type              EventType @default(round_end)
   match_time              Float
   round_number            Int
@@ -355,11 +377,13 @@ model RoundEnd {
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
 
+  @@index([scrimId])
   @@index([MapDataId])
 }
 
 model RoundStart {
   id              Int       @id @default(autoincrement())
+  scrimId         Int
   event_type      EventType @default(round_start)
   match_time      Float
   round_number    Int
@@ -371,11 +395,13 @@ model RoundStart {
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
 
+  @@index([scrimId])
   @@index([MapDataId])
 }
 
 model SetupComplete {
   id                   Int       @id @default(autoincrement())
+  scrimId              Int
   event_type           EventType @default(setup_complete)
   match_time           Float
   round_number         Int
@@ -384,53 +410,60 @@ model SetupComplete {
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
 
+  @@index([scrimId])
   @@index([MapDataId])
 }
 
 model UltimateCharged {
   id              Int       @id @default(autoincrement())
+  scrimId         Int
   event_type      EventType @default(ultimate_charged)
   match_time      Float
   player_team     String
   player_name     String
   player_hero     String
-  hero_duplicated Boolean
+  hero_duplicated Int
   ultimate_id     Int
 
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
 
+  @@index([scrimId])
   @@index([MapDataId])
 }
 
 model UltimateEnd {
   id              Int       @id @default(autoincrement())
+  scrimId         Int
   event_type      EventType @default(ultimate_end)
   match_time      Float
   player_team     String
   player_name     String
   player_hero     String
-  hero_duplicated Boolean
+  hero_duplicated Int
   ultimate_id     Int
 
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
 
+  @@index([scrimId])
   @@index([MapDataId])
 }
 
 model UltimateStart {
   id              Int       @id @default(autoincrement())
+  scrimId         Int
   event_type      EventType @default(ultimate_start)
   match_time      Float
   player_team     String
   player_name     String
   player_hero     String
-  hero_duplicated Boolean
+  hero_duplicated Int
   ultimate_id     Int
 
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
 
+  @@index([scrimId])
   @@index([MapDataId])
 }
