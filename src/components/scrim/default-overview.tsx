@@ -1,14 +1,24 @@
-"use client";
-
 import { OverviewTable } from "@/components/scrim/overview-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ParserDataContext } from "@/lib/parser-context";
-import { useContext } from "react";
+import { PrismaClient } from "@prisma/client";
 
-export function DefaultOverview() {
-  const { data } = useContext(ParserDataContext);
+export async function DefaultOverview({ id }: { id: number }) {
+  const prisma = new PrismaClient();
 
-  const finalRound = data?.round_end[data?.round_end.length - 1];
+  const playerStats = await prisma.playerStat.findMany({
+    where: {
+      scrimId: id,
+    },
+  });
+
+  const finalRound = await prisma.roundEnd.findFirst({
+    where: {
+      scrimId: id,
+    },
+    orderBy: {
+      round_number: "desc",
+    },
+  });
 
   return (
     <>
@@ -21,7 +31,7 @@ export function DefaultOverview() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {(finalRound[1] / 60).toFixed(2)} minutes
+              {((finalRound?.match_time ?? 0) / 60).toFixed(2)} minutes
             </div>
           </CardContent>
         </Card>
@@ -104,7 +114,7 @@ export function DefaultOverview() {
             <CardTitle>Overview</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
-            <OverviewTable data={data} />
+            <OverviewTable playerStats={playerStats} />
           </CardContent>
         </Card>
       </div>

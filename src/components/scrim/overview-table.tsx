@@ -24,7 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PlayerData, aggregatePlayerData } from "@/lib/player-table-data";
-import { ParserData } from "@/types/parser";
+import { PlayerStatRows, ScrimData } from "@/types/prisma";
 
 export const columns: ColumnDef<PlayerData>[] = [
   {
@@ -187,7 +187,11 @@ export const columns: ColumnDef<PlayerData>[] = [
   },
 ];
 
-export function OverviewTable({ data }: { data: ParserData }) {
+export function OverviewTable({
+  playerStats,
+}: {
+  playerStats: PlayerStatRows;
+}) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -196,7 +200,7 @@ export function OverviewTable({ data }: { data: ParserData }) {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const tableData = aggregatePlayerData(data.player_stat);
+  const tableData = aggregatePlayerData(playerStats);
 
   const table = useReactTable({
     data: tableData,
