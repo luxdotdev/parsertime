@@ -2,12 +2,14 @@ import {
   DefensiveAssist,
   HeroSpawn,
   Kill,
+  MatchEnd,
   MatchStart,
   ObjectiveCaptured,
   ObjectiveUpdated,
   OffensiveAssist,
   PayloadProgress,
   PlayerStat,
+  PointProgress,
   RoundEnd,
   RoundStart,
   SetupComplete,
@@ -19,12 +21,14 @@ import {
 export type DefensiveAssistRows = DefensiveAssist[];
 export type HeroSpawnRows = HeroSpawn[];
 export type KillRows = Kill[];
+export type MatchEndRows = MatchEnd[];
 export type MatchStartRows = MatchStart[];
 export type ObjectiveCapturedRows = ObjectiveCaptured[];
 export type ObjectiveUpdatedRows = ObjectiveUpdated[];
 export type OffensiveAssistRows = OffensiveAssist[];
 export type PayloadProgressRows = PayloadProgress[];
 export type PlayerStatRows = PlayerStat[];
+export type PointProgressRows = PointProgress[];
 export type RoundEndRows = RoundEnd[];
 export type RoundStartRows = RoundStart[];
 export type SetupCompleteRows = SetupComplete[];

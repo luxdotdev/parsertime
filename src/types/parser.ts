@@ -73,6 +73,14 @@ export type KillTableRow = [
   is_environmental: number | string
 ];
 
+export type MatchEndTableRow = [
+  event_type: "match_end",
+  match_time: number,
+  round_number: number,
+  team_1_score: number,
+  team_2_score: number
+];
+
 export type MatchStartTableRow = [
   event_type: "match_start",
   match_time: number,
@@ -161,6 +169,15 @@ export type PlayerStatTableRow = [
   hero_time_played: number
 ];
 
+export type PointProgressTableRow = [
+  event_type: "point_progress",
+  match_time: number,
+  round_number: number,
+  capturing_team: PlayerTeam,
+  objective_index: number,
+  point_capture_progress: number
+];
+
 export type RoundEndTableRow = [
   event_type: "round_end",
   match_time: number,
@@ -226,12 +243,14 @@ export type ParserData = {
   hero_spawn: HeroSpawnTableRow[];
   hero_swap: HeroSwapTableRow[];
   kill: KillTableRow[];
+  match_end?: MatchEndTableRow[];
   match_start: MatchStartTableRow[];
   objective_captured: ObjectiveCapturedTableRow[];
   objective_updated: ObjectiveUpdatedTableRow[];
   offensive_assist: OffensiveAssistTableRow[];
   payload_progress: PayloadProgressTableRow[];
   player_stat: PlayerStatTableRow[];
+  point_progress: PointProgressTableRow[];
   round_end: RoundEndTableRow[];
   round_start: RoundStartTableRow[];
   setup_complete: SetupCompleteTableRow[];
