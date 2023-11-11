@@ -12,6 +12,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { auth, signOut } from "@/lib/auth";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export async function UserNav() {
   const session = await auth();
@@ -42,10 +44,12 @@ export async function UserNav() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            Profile
-            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-          </DropdownMenuItem>
+          <Link href="/dashboard">
+            <DropdownMenuItem>
+              Dashboard
+              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </Link>
           <DropdownMenuItem>
             Billing
             <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
