@@ -71,6 +71,7 @@ export async function createNewScrimFromParsedData(
   const hero_spawns = await createHeroSpawnRows(prisma, data, scrim);
   const hero_swaps = await createHeroSwapRows(prisma, data, scrim);
   const kills = await createKillRows(prisma, data, scrim);
+  const match_end = await createMatchEndRows(prisma, data, scrim);
   const match_starts = await createMatchStartRows(prisma, data, scrim);
   const objective_captured = await createObjectiveCapturedRows(
     prisma,
@@ -113,6 +114,9 @@ export async function createNewScrimFromParsedData(
       kill: {
         connect: [...kills.map((kill) => ({ id: kill.id }))],
       },
+      match_end: {
+        connect: [...match_end.map((end) => ({ id: end.id }))],
+      },
       match_start: {
         connect: [...match_starts.map((start) => ({ id: start.id }))],
       },
@@ -130,6 +134,9 @@ export async function createNewScrimFromParsedData(
       },
       player_stat: {
         connect: [...player_stat.map((stat) => ({ id: stat.id }))],
+      },
+      point_progress: {
+        connect: [...payload_progress.map((progress) => ({ id: progress.id }))],
       },
       round_end: {
         connect: [...round_end.map((end) => ({ id: end.id }))],
@@ -288,6 +295,38 @@ export async function createKillRows(
   return killsByScrimId;
 }
 
+export async function createMatchEndRows(
+  prisma: PrismaClient,
+  data: ParserData,
+  scrim: { id: number }
+) {
+  if (
+    typeof data.match_end === "undefined" ||
+    data.match_end.length === 0 ||
+    !data.match_end
+  ) {
+    return [];
+  }
+
+  await prisma.matchEnd.createMany({
+    data: data.match_end.map((end) => ({
+      scrimId: scrim.id,
+      match_time: end[1],
+      round_number: end[2],
+      team_1_score: end[3],
+      team_2_score: end[4],
+    })),
+  });
+
+  const matchEndsByScrimId = await prisma.matchEnd.findMany({
+    where: {
+      scrimId: scrim.id,
+    },
+  });
+
+  return matchEndsByScrimId;
+}
+
 export async function createMatchStartRows(
   prisma: PrismaClient,
   data: ParserData,
@@ -394,6 +433,14 @@ export async function createPayloadProgressRows(
   data: ParserData,
   scrim: { id: number }
 ) {
+  if (
+    typeof data.payload_progress === "undefined" ||
+    data.payload_progress.length === 0 ||
+    !data.payload_progress
+  ) {
+    return [];
+  }
+
   await prisma.payloadProgress.createMany({
     data: data.payload_progress.map((progress) => ({
       scrimId: scrim.id,
@@ -472,6 +519,39 @@ export async function createPlayerStatRows(
   return playerStatsByScrimId;
 }
 
+export async function createPointProgressRows(
+  prisma: PrismaClient,
+  data: ParserData,
+  scrim: { id: number }
+) {
+  if (
+    typeof data.point_progress === "undefined" ||
+    data.point_progress.length === 0 ||
+    !data.point_progress
+  ) {
+    return [];
+  }
+
+  await prisma.pointProgress.createMany({
+    data: data.point_progress.map((progress) => ({
+      scrimId: scrim.id,
+      match_time: progress[1],
+      round_number: progress[2],
+      capturing_team: progress[3],
+      objective_index: progress[4],
+      point_capture_progress: progress[5],
+    })),
+  });
+
+  const pointProgressesByScrimId = await prisma.pointProgress.findMany({
+    where: {
+      scrimId: scrim.id,
+    },
+  });
+
+  return pointProgressesByScrimId;
+}
+
 export async function createRoundEndRows(
   prisma: PrismaClient,
   data: ParserData,
@@ -482,7 +562,7 @@ export async function createRoundEndRows(
       scrimId: scrim.id,
       match_time: end[1],
       round_number: end[2],
-      capturing_team: end[3],
+      capturing_team: String(end[3]),
       team_1_score: end[4],
       team_2_score: end[5],
       objective_index: end[6],
@@ -511,7 +591,7 @@ export async function createRoundStartRows(
       scrimId: scrim.id,
       match_time: start[1],
       round_number: start[2],
-      capturing_team: start[3],
+      capturing_team: String(start[3]),
       team_1_score: start[4],
       team_2_score: start[5],
       objective_index: start[6],
@@ -587,7 +667,7 @@ export async function createUltimateEndRows(
       match_time: end[1],
       player_team: end[2],
       player_name: end[3],
-      player_hero: end[4],
+      player_hero: end[4] ?? "",
       hero_duplicated: end[5],
       ultimate_id: end[6],
     })),
