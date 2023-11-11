@@ -35,6 +35,8 @@ export async function createNewScrimFromParsedData(
   data: ParserData,
   session: Session
 ) {
+  await prisma.$connect();
+
   const userId = await prisma.user.findUnique({
     where: {
       email: session.user?.email ?? "",
@@ -174,6 +176,8 @@ export async function createNewScrimFromParsedData(
       },
     },
   });
+
+  await prisma.$disconnect();
 }
 
 export async function createDefensiveAssistsRows(
