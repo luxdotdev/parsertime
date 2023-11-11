@@ -50,6 +50,7 @@ export async function createNewScrimFromParsedData(
       name: "New Scrim",
       date: new Date(),
       createdAt: new Date(),
+      creatorId: userId.id,
     },
   });
 
@@ -152,6 +153,7 @@ export async function createNewScrimFromParsedData(
   const map = await prisma.map.create({
     data: {
       name: "New Map",
+      scrimId: scrim.id,
       mapData: {
         connect: {
           id: mapData.id,
