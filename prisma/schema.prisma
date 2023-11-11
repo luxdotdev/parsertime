@@ -110,11 +110,13 @@ enum EventType {
   hero_spawn
   hero_swap
   kill
+  match_end
   match_start
   objective_capture
   objective_updated
   offensive_assist
   payload_progress
+  point_progress
   player_stat
   round_end
   round_start
@@ -134,12 +136,14 @@ model MapData {
   hero_spawn         HeroSpawn[]
   hero_swap          HeroSwap[]
   kill               Kill[]
+  match_end          MatchEnd[]
   match_start        MatchStart[]
   objective_captured ObjectiveCaptured[]
   objective_updated  ObjectiveUpdated[]
   offensive_assist   OffensiveAssist[]
   payload_progress   PayloadProgress[]
   player_stat        PlayerStat[]
+  point_progress     PointProgress[]
   round_end          RoundEnd[]
   round_start        RoundStart[]
   setup_complete     SetupComplete[]
@@ -217,6 +221,22 @@ model Kill {
   event_damage     Int
   is_critical_hit  String
   is_environmental String
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model MatchEnd {
+  id           Int       @id @default(autoincrement())
+  scrimId      Int
+  event_type   EventType @default(match_end)
+  match_time   Float
+  round_number Int
+  team_1_score Int
+  team_2_score Int
 
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
@@ -353,6 +373,23 @@ model PlayerStat {
   scoped_shots_hit             Int
   weapon_accuracy              Float
   hero_time_played             Float
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model PointProgress {
+  id                     Int       @id @default(autoincrement())
+  scrimId                Int
+  event_type             EventType @default(point_progress)
+  match_time             Float
+  round_number           Int
+  capturing_team         String
+  objective_index        Int
+  point_capture_progress Float
 
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
