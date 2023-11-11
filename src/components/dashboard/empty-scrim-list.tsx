@@ -159,7 +159,7 @@ export function EmptyScrimList() {
                         ref={inputRef}
                         type="file"
                         accept=".xlsx"
-                        className="sr-only"
+                        className="sr-only max-w-0"
                       />
                     </>
                   </FormControl>
