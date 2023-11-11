@@ -48,7 +48,11 @@ export function EmptyScrimList() {
   const { toast } = useToast();
 
   async function handleFile(file: File) {
-    console.log(file);
+    toast({
+      title: "Creating scrim...",
+      description: "We are processing your data. Please wait.",
+      duration: 5000,
+    });
 
     const data = await parseData(file);
 
