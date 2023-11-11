@@ -12,6 +12,7 @@ export function PlayerOverview() {
 
   const finalRound = data?.round_end[data?.round_end.length - 1];
 
+  // @ts-expect-error WIP
   const tableData = aggregatePlayerData(data.player_stat);
   const selectedPlayerData = tableData.find(
     (player) => player.playerName === selectedPlayer.label

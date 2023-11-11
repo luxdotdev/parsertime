@@ -41,5 +41,10 @@ export async function GET(req: Request) {
     }),
   };
 
-  return Response.json(teamResponse);
+  return new Response(JSON.stringify(teamResponse), {
+    headers: {
+      "content-type": "application/json",
+    },
+    status: 200,
+  });
 }
