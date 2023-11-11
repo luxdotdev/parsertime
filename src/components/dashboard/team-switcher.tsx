@@ -7,7 +7,7 @@ import {
 } from "@radix-ui/react-icons";
 import * as React from "react";
 
-import { GetTeamsResponse } from "@/app/api/get-teams/route";
+import { GetTeamsResponse } from "@/app/api/(team)/get-teams/route";
 import { CreateTeamDialog } from "@/components/dashboard/create-team-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Session } from "next-auth";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
@@ -43,6 +44,21 @@ export function TeamSwitcher({
     []
   );
   const [newTeamCreated, setNewTeamCreated] = React.useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams()!;
+
+  // Get a new searchParams string by merging the current
+  // searchParams with a provided key/value pair
+  const createQueryString = React.useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams);
+      params.set(name, value);
+
+      return params.toString();
+    },
+    [searchParams]
+  );
 
   function getTeams() {
     fetch("/api/get-teams")
@@ -121,6 +137,15 @@ export function TeamSwitcher({
                     <CommandItem
                       key={team.value}
                       onSelect={() => {
+                        if (team.value === "individual") {
+                          router.push(pathname);
+                        } else {
+                          router.push(
+                            pathname +
+                              "?" +
+                              createQueryString("team", team.label)
+                          );
+                        }
                         setSelectedTeam(team);
                         setOpen(false);
                       }}
