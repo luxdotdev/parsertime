@@ -8,10 +8,9 @@ export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get("id");
 
   if (!id) {
-    return {
+    return new Response("No id provided", {
       status: 400,
-      body: "No ID provided",
-    };
+    });
   }
 
   const data = await getScrimDataById(prisma, parseInt(id));
