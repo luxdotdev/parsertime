@@ -88,6 +88,7 @@ model Scrim {
   maps      Map[]
   Team      Team?    @relation(fields: [teamId], references: [id])
   teamId    Int?
+  creatorId String
 
   @@index([teamId])
 }
