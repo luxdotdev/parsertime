@@ -1,4 +1,4 @@
-import { SignInButton, SignOutButton } from "@/components/auth/auth-components";
+import { SignOutButton } from "@/components/auth/auth-components";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,13 +11,16 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { auth, signOut } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export async function UserNav() {
   const session = await auth();
-  if (!session?.user) return <SignInButton />;
+  if (!session?.user) {
+    redirect("/sign-in");
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
