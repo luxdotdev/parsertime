@@ -29,6 +29,17 @@ export default function HeroComponent() {
               Use without Signing In
             </Button>
           </div>
+          <div>
+            <p>
+              Already have an account?{" "}
+              <Link
+                href="/sign-in"
+                className="text-zinc-900 dark:text-zinc-100 font-semibold"
+              >
+                Sign In
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>
