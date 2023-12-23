@@ -9,10 +9,13 @@ import { Label } from "@/components/ui/label";
 import { Icons } from "@/components/icons";
 import { signIn } from "next-auth/react";
 
+import { z } from "zod";
+
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [email, setEmail] = React.useState("");
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
@@ -45,13 +48,31 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 autoComplete="email"
                 autoCorrect="off"
                 disabled={isLoading}
+                onChange={(e) => {
+                  const email = z
+                    .string()
+                    .email()
+                    .safeParse(e.target.value.toLowerCase());
+
+                  if (email.success) {
+                    setEmail(email.data);
+                  } else {
+                    setEmail("");
+                  }
+                }}
               />
             </div>
-            <Button /*disabled={isLoading}*/ disabled>
+            <Button
+              type="button"
+              disabled={isLoading}
+              onClick={() => {
+                signIn("email", { email: email });
+              }}
+            >
               {isLoading && (
                 <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Sign In with Email (coming soon)
+              Sign In with Email
             </Button>
           </div>
         </form>
