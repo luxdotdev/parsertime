@@ -27,7 +27,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 1. Clone the repository:
    ```sh
-   git clone [repository URL]
+   git clone https://github.com/lucasdoell/parsertime.git
    ```
 2. Install NPM packages:
    ```sh
