@@ -82,7 +82,7 @@ export const config = {
 
 export const { handlers, auth, signIn, signOut } = NextAuth(config);
 
-export async function isAuthedForScrim(id: number) {
+export async function isAuthedToViewScrim(id: number) {
   const session = await auth();
   if (!session) {
     return false;
