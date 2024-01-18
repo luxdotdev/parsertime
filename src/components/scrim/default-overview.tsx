@@ -1,8 +1,8 @@
 import { OverviewTable } from "@/components/scrim/overview-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { removeDuplicateRows } from "@/lib/utils";
 import { PlayerStatRows } from "@/types/prisma";
 import { PrismaClient } from "@prisma/client";
-import { z } from "zod";
 
 export async function DefaultOverview({ id }: { id: number }) {
   const prisma = new PrismaClient();
@@ -33,25 +33,27 @@ export async function DefaultOverview({ id }: { id: number }) {
    * 3. Finally, the query filters the results to include only those records that match the given `scrimId`,
    *    effectively returning statistics for players in the final round of the specified scrim.
    */
-  const playerStatRowsByFinalRound = await prisma.$queryRaw<PlayerStatRows>`
-    SELECT
-      ps.*
-    FROM
-        PlayerStat ps
-        INNER JOIN (
-            SELECT
-                scrimId,
-                MAX(round_number) as max_round
-            FROM
-                PlayerStat
-            WHERE
-                scrimId = ${id}
-            GROUP BY
-                scrimId
-        ) as max_rounds ON ps.scrimId = max_rounds.scrimId
-        AND ps.round_number = max_rounds.max_round
-    WHERE
-        ps.scrimId = ${id}`;
+  const playerStatRowsByFinalRound = removeDuplicateRows(
+    await prisma.$queryRaw<PlayerStatRows>`
+      SELECT
+        ps.*
+      FROM
+          PlayerStat ps
+          INNER JOIN (
+              SELECT
+                  scrimId,
+                  MAX(round_number) as max_round
+              FROM
+                  PlayerStat
+              WHERE
+                  scrimId = ${id}
+              GROUP BY
+                  scrimId
+          ) as max_rounds ON ps.scrimId = max_rounds.scrimId
+          AND ps.round_number = max_rounds.max_round
+      WHERE
+          ps.scrimId = ${id}`
+  );
 
   return (
     <>
