@@ -48,10 +48,8 @@ type MostPlayedHeroesType = {
 export default function PlayerSwitcher({
   className,
   mostPlayedHeroes,
-  scrimId,
 }: TeamSwitcherProps & {
   mostPlayedHeroes: MostPlayedHeroesType;
-  scrimId: number;
 }) {
   const [open, setOpen] = React.useState(false);
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false);
@@ -59,7 +57,6 @@ export default function PlayerSwitcher({
     label: "Default",
     value: "default",
   });
-  const [avatar, setAvatar] = React.useState<string>("default");
 
   const router = useRouter();
   const pathname = usePathname();
