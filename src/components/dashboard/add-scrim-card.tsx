@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Form, useForm } from "react-hook-form";
 import { z } from "zod";
 

@@ -7,6 +7,7 @@ import NextAuth, { NextAuthConfig } from "next-auth";
 import isEmail from "validator/lib/isEmail";
 import { render } from "@react-email/render";
 import MagicLinkEmail from "@/components/email/magic-link";
+import NoAuthCard from "@/components/auth/no-auth";
 
 const prisma = new PrismaClient();
 
@@ -80,3 +81,30 @@ export const config = {
 } satisfies NextAuthConfig;
 
 export const { handlers, auth, signIn, signOut } = NextAuth(config);
+
+export async function isAuthedForScrim(id: number) {
+  const session = await auth();
+  if (!session) {
+    return false;
+  }
+
+  const user = await prisma.user.findFirst({
+    where: {
+      email: session?.user?.email,
+    },
+  });
+
+  const scrim = await prisma.scrim.findFirst({
+    where: {
+      id: id,
+    },
+  });
+
+  // if user is not scrim creator or team member return no auth card
+  if (user?.id !== scrim?.creatorId || user?.teamId !== scrim?.teamId) {
+    return false;
+  }
+
+  // if user is authed return null
+  return true;
+}
