@@ -1,4 +1,4 @@
-import { OverviewTable } from "@/components/scrim/overview-table";
+import { OverviewTable } from "@/components/map/overview-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { removeDuplicateRows } from "@/lib/utils";
 import { PlayerStatRows } from "@/types/prisma";
@@ -9,13 +9,13 @@ export async function DefaultOverview({ id }: { id: number }) {
 
   const playerStats = await prisma.playerStat.findMany({
     where: {
-      scrimId: id,
+      MapDataId: id,
     },
   });
 
   const finalRound = await prisma.roundEnd.findFirst({
     where: {
-      scrimId: id,
+      MapDataId: id,
     },
     orderBy: {
       round_number: "desc",
@@ -25,12 +25,12 @@ export async function DefaultOverview({ id }: { id: number }) {
   /**
    * This query performs the following operations:
    * 1. It first creates a subquery that selects the maximum round number (i.e., the final round)
-   *    for a given scrim (`scrimId`). This is achieved by grouping the `PlayerStat` records
-   *    by `scrimId` and calculating the maximum `round_number` for each group.
+   *    for a given map (`MapDataId`). This is achieved by grouping the `PlayerStat` records
+   *    by `MapDataId` and calculating the maximum `round_number` for each group.
    * 2. The main query then joins the results of this subquery with the original `PlayerStat` table.
-   *    This join is based on matching the `scrimId` and the `round_number` with the calculated maximum
+   *    This join is based on matching the `MapDataId` and the `round_number` with the calculated maximum
    *    round number from the subquery.
-   * 3. Finally, the query filters the results to include only those records that match the given `scrimId`,
+   * 3. Finally, the query filters the results to include only those records that match the given `MapDataId`,
    *    effectively returning statistics for players in the final round of the specified scrim.
    */
   const playerStatRowsByFinalRound = removeDuplicateRows(
@@ -41,19 +41,21 @@ export async function DefaultOverview({ id }: { id: number }) {
           PlayerStat ps
           INNER JOIN (
               SELECT
-                  scrimId,
+                  MapDataId,
                   MAX(round_number) as max_round
               FROM
                   PlayerStat
               WHERE
-                  scrimId = ${id}
+                  MapDataId = ${id}
               GROUP BY
-                  scrimId
-          ) as max_rounds ON ps.scrimId = max_rounds.scrimId
+                  MapDataId
+          ) as max_rounds ON ps.MapDataId = max_rounds.MapDataId
           AND ps.round_number = max_rounds.max_round
       WHERE
-          ps.scrimId = ${id}`
-  );
+          ps.MapDataId = ${id}`
+  )
+    // sort by team name
+    .sort((a, b) => a.player_team.localeCompare(b.player_team));
 
   return (
     <>
