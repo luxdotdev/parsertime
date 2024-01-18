@@ -39,7 +39,6 @@ export default async function ScrimDashboardPage({
         <div className="border-b">
           <div className="flex h-16 items-center px-4">
             <PlayerSwitcher
-              scrimId={id}
               mostPlayedHeroes={uniquePlayerRowsByHeroTimePlayed}
             />
             <MainNav className="mx-6" />
