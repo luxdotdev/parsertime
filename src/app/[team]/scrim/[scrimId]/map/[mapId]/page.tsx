@@ -6,6 +6,8 @@ import { UserNav } from "@/components/user-nav";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PrismaClient } from "@prisma/client";
+import { auth } from "@/lib/auth";
+import NoAuthCard from "@/components/auth/no-auth";
 
 export default async function MapDashboardPage({
   params,
@@ -14,6 +16,27 @@ export default async function MapDashboardPage({
 }) {
   const prisma = new PrismaClient();
   const id = parseInt(params.mapId);
+
+  const session = await auth();
+  if (!session) {
+    return NoAuthCard();
+  }
+
+  const user = await prisma.user.findFirst({
+    where: {
+      email: session?.user?.email,
+    },
+  });
+
+  const scrim = await prisma.scrim.findFirst({
+    where: {
+      id: id,
+    },
+  });
+
+  if (user?.id !== scrim?.creatorId || user?.teamId !== scrim?.teamId) {
+    return NoAuthCard();
+  }
 
   const uniquePlayerRowsByHeroTimePlayed = await prisma.playerStat.findMany({
     where: {
