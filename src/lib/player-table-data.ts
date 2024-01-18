@@ -1,3 +1,4 @@
+import { round } from "@/lib/utils";
 import { HeroName, heroRoleMapping } from "@/types/heroes";
 import { PlayerStatRows } from "@/types/prisma";
 
@@ -21,11 +22,6 @@ export type PlayerData = {
   ultsUsed: number;
   mostPlayedHero: HeroName;
 };
-
-export function round(value: number) {
-  // round to 2 decimal places
-  return Math.round((value + Number.EPSILON) * 100) / 100;
-}
 
 export function determineRole(heroName: HeroName) {
   return heroRoleMapping[heroName] || "Flex";
