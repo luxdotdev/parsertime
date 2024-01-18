@@ -6,8 +6,6 @@ import { UserNav } from "@/components/user-nav";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PrismaClient } from "@prisma/client";
-import { isAuthedToViewScrim } from "@/lib/auth";
-import NoAuthCard from "@/components/auth/no-auth";
 
 export default async function MapDashboardPage({
   params,
@@ -16,11 +14,6 @@ export default async function MapDashboardPage({
 }) {
   const prisma = new PrismaClient();
   const id = parseInt(params.mapId);
-
-  const isAuthed = await isAuthedToViewScrim(id);
-  if (!isAuthed) {
-    return <NoAuthCard />;
-  }
 
   const uniquePlayerRowsByHeroTimePlayed = await prisma.playerStat.findMany({
     where: {
