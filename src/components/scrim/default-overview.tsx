@@ -1,6 +1,8 @@
 import { OverviewTable } from "@/components/scrim/overview-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PlayerStatRows } from "@/types/prisma";
 import { PrismaClient } from "@prisma/client";
+import { z } from "zod";
 
 export async function DefaultOverview({ id }: { id: number }) {
   const prisma = new PrismaClient();
@@ -19,6 +21,37 @@ export async function DefaultOverview({ id }: { id: number }) {
       round_number: "desc",
     },
   });
+
+  /**
+   * This query performs the following operations:
+   * 1. It first creates a subquery that selects the maximum round number (i.e., the final round)
+   *    for a given scrim (`scrimId`). This is achieved by grouping the `PlayerStat` records
+   *    by `scrimId` and calculating the maximum `round_number` for each group.
+   * 2. The main query then joins the results of this subquery with the original `PlayerStat` table.
+   *    This join is based on matching the `scrimId` and the `round_number` with the calculated maximum
+   *    round number from the subquery.
+   * 3. Finally, the query filters the results to include only those records that match the given `scrimId`,
+   *    effectively returning statistics for players in the final round of the specified scrim.
+   */
+  const playerStatRowsByFinalRound = await prisma.$queryRaw<PlayerStatRows>`
+    SELECT
+      ps.*
+    FROM
+        PlayerStat ps
+        INNER JOIN (
+            SELECT
+                scrimId,
+                MAX(round_number) as max_round
+            FROM
+                PlayerStat
+            WHERE
+                scrimId = ${id}
+            GROUP BY
+                scrimId
+        ) as max_rounds ON ps.scrimId = max_rounds.scrimId
+        AND ps.round_number = max_rounds.max_round
+    WHERE
+        ps.scrimId = ${id}`;
 
   return (
     <>
@@ -114,7 +147,7 @@ export async function DefaultOverview({ id }: { id: number }) {
             <CardTitle>Overview</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
-            <OverviewTable playerStats={playerStats} />
+            <OverviewTable playerStats={playerStatRowsByFinalRound} />
           </CardContent>
         </Card>
       </div>
