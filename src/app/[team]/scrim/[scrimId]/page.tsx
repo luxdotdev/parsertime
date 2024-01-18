@@ -1,7 +1,7 @@
-import { DefaultOverview } from "@/components/scrim/default-overview";
-import { MainNav } from "@/components/scrim/main-nav";
-import PlayerSwitcher from "@/components/scrim/player-switcher";
-import { Search } from "@/components/scrim/search";
+import { DefaultOverview } from "@/components/map/default-overview";
+import { MainNav } from "@/components/map/main-nav";
+import PlayerSwitcher from "@/components/map/player-switcher";
+import { Search } from "@/components/map/search";
 import { UserNav } from "@/components/user-nav";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,11 +11,11 @@ export default async function ScrimDashboardPage({
   params,
   searchParams,
 }: {
-  params: { team: string; id: string };
+  params: { team: string; scrimId: string };
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const prisma = new PrismaClient();
-  const id = parseInt(params.id);
+  const id = parseInt(params.scrimId);
 
   const uniquePlayerRowsByHeroTimePlayed = await prisma.playerStat.findMany({
     where: {

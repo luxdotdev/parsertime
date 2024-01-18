@@ -1,4 +1,4 @@
-import { SelectedPlayerProvider } from "@/components/scrim/player-switcher";
+import { SelectedPlayerProvider } from "@/components/map/player-switcher";
 
 export default function MapDashboardLayout({
   children,
