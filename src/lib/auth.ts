@@ -7,7 +7,6 @@ import NextAuth, { NextAuthConfig } from "next-auth";
 import isEmail from "validator/lib/isEmail";
 import { render } from "@react-email/render";
 import MagicLinkEmail from "@/components/email/magic-link";
-import NoAuthCard from "@/components/auth/no-auth";
 
 const prisma = new PrismaClient();
 
