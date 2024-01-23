@@ -1,5 +1,5 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
+import { $Enums, PrismaClient } from "@prisma/client";
 import GithubProvider from "next-auth/providers/github";
 import DiscordProvider from "next-auth/providers/discord";
 import GoogleProvider from "next-auth/providers/google";
@@ -99,11 +99,16 @@ export async function isAuthedToViewScrim(id: number) {
     },
   });
 
-  // if user is not scrim creator or team member return no auth card
+  // if user is admin return true
+  if (user?.role === $Enums.UserRole.ADMIN) {
+    return true;
+  }
+
+  // if user is not scrim creator or team member return false
   if (user?.id !== scrim?.creatorId || user?.teamId !== scrim?.teamId) {
     return false;
   }
 
-  // if user is authed return null
+  // if user is correctly authed return true
   return true;
 }
