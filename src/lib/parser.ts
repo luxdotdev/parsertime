@@ -193,6 +193,14 @@ export async function createDefensiveAssistsRows(
   data: ParserData,
   scrim: { id: number }
 ) {
+  if (
+    typeof data.defensive_assist === "undefined" ||
+    data.defensive_assist.length === 0 ||
+    !data.defensive_assist
+  ) {
+    return [];
+  }
+
   await prisma.defensiveAssist.createMany({
     data: data.defensive_assist.map((assist) => ({
       scrimId: scrim.id,
@@ -218,6 +226,14 @@ export async function createHeroSpawnRows(
   data: ParserData,
   scrim: { id: number }
 ) {
+  if (
+    typeof data.hero_spawn === "undefined" ||
+    data.hero_spawn.length === 0 ||
+    !data.hero_spawn
+  ) {
+    return [];
+  }
+
   await prisma.heroSpawn.createMany({
     data: data.hero_spawn.map((spawn) => ({
       scrimId: scrim.id,
@@ -244,6 +260,14 @@ export async function createHeroSwapRows(
   data: ParserData,
   scrim: { id: number }
 ) {
+  if (
+    typeof data.hero_swap === "undefined" ||
+    data.hero_swap.length === 0 ||
+    !data.hero_swap
+  ) {
+    return [];
+  }
+
   await prisma.heroSwap.createMany({
     data: data.hero_swap.map((swap) => ({
       scrimId: scrim.id,
@@ -270,6 +294,14 @@ export async function createKillRows(
   data: ParserData,
   scrim: { id: number }
 ) {
+  if (
+    typeof data.kill === "undefined" ||
+    data.kill.length === 0 ||
+    !data.kill
+  ) {
+    return [];
+  }
+
   await prisma.kill.createMany({
     data: data.kill.map((kill) => ({
       scrimId: scrim.id,
@@ -333,6 +365,14 @@ export async function createMatchStartRows(
   data: ParserData,
   scrim: { id: number }
 ) {
+  if (
+    typeof data.match_start === "undefined" ||
+    data.match_start.length === 0 ||
+    !data.match_start
+  ) {
+    return [];
+  }
+
   await prisma.matchStart.createMany({
     data: data.match_start.map((start) => ({
       scrimId: scrim.id,
@@ -358,6 +398,14 @@ export async function createObjectiveCapturedRows(
   data: ParserData,
   scrim: { id: number }
 ) {
+  if (
+    typeof data.objective_captured === "undefined" ||
+    data.objective_captured.length === 0 ||
+    !data.objective_captured
+  ) {
+    return [];
+  }
+
   await prisma.objectiveCaptured.createMany({
     data: data.objective_captured.map((capture) => ({
       scrimId: scrim.id,
@@ -385,6 +433,14 @@ export async function createObjectiveUpdatedRows(
   data: ParserData,
   scrim: { id: number }
 ) {
+  if (
+    typeof data.objective_updated === "undefined" ||
+    data.objective_updated.length === 0 ||
+    !data.objective_updated
+  ) {
+    return [];
+  }
+
   await prisma.objectiveUpdated.createMany({
     data: data.objective_updated.map((update) => ({
       scrimId: scrim.id,
@@ -409,6 +465,14 @@ export async function createOffensiveAssistRows(
   data: ParserData,
   scrim: { id: number }
 ) {
+  if (
+    typeof data.offensive_assist === "undefined" ||
+    data.offensive_assist.length === 0 ||
+    !data.offensive_assist
+  ) {
+    return [];
+  }
+
   await prisma.offensiveAssist.createMany({
     data: data.offensive_assist.map((assist) => ({
       scrimId: scrim.id,
@@ -467,6 +531,14 @@ export async function createPlayerStatRows(
   data: ParserData,
   scrim: { id: number }
 ) {
+  if (
+    typeof data.player_stat === "undefined" ||
+    data.player_stat.length === 0 ||
+    !data.kill
+  ) {
+    return [];
+  }
+
   await prisma.playerStat.createMany({
     data: data.player_stat.map((stat) => ({
       scrimId: scrim.id,
@@ -558,6 +630,14 @@ export async function createRoundEndRows(
   data: ParserData,
   scrim: { id: number }
 ) {
+  if (
+    typeof data.round_end === "undefined" ||
+    data.round_end.length === 0 ||
+    !data.round_end
+  ) {
+    return [];
+  }
+
   await prisma.roundEnd.createMany({
     data: data.round_end.map((end) => ({
       scrimId: scrim.id,
@@ -587,6 +667,14 @@ export async function createRoundStartRows(
   data: ParserData,
   scrim: { id: number }
 ) {
+  if (
+    typeof data.round_start === "undefined" ||
+    data.round_start.length === 0 ||
+    !data.round_start
+  ) {
+    return [];
+  }
+
   await prisma.roundStart.createMany({
     data: data.round_start.map((start) => ({
       scrimId: scrim.id,
@@ -613,6 +701,14 @@ export async function createSetupCompleteRows(
   data: ParserData,
   scrim: { id: number }
 ) {
+  if (
+    typeof data.setup_complete === "undefined" ||
+    data.setup_complete.length === 0 ||
+    !data.setup_complete
+  ) {
+    return [];
+  }
+
   await prisma.setupComplete.createMany({
     data: data.setup_complete.map((complete) => ({
       scrimId: scrim.id,
@@ -636,6 +732,14 @@ export async function createUltimateChargedRows(
   data: ParserData,
   scrim: { id: number }
 ) {
+  if (
+    typeof data.ultimate_charged === "undefined" ||
+    data.ultimate_charged.length === 0 ||
+    !data.ultimate_charged
+  ) {
+    return [];
+  }
+
   await prisma.ultimateCharged.createMany({
     data: data.ultimate_charged.map((charged) => ({
       scrimId: scrim.id,
@@ -662,6 +766,14 @@ export async function createUltimateEndRows(
   data: ParserData,
   scrim: { id: number }
 ) {
+  if (
+    typeof data.ultimate_end === "undefined" ||
+    data.ultimate_end.length === 0 ||
+    !data.ultimate_end
+  ) {
+    return [];
+  }
+
   await prisma.ultimateEnd.createMany({
     data: data.ultimate_end.map((end) => ({
       scrimId: scrim.id,
@@ -688,6 +800,14 @@ export async function createUltimateStartRows(
   data: ParserData,
   scrim: { id: number }
 ) {
+  if (
+    typeof data.ultimate_start === "undefined" ||
+    data.ultimate_start.length === 0 ||
+    !data.ultimate_start
+  ) {
+    return [];
+  }
+
   await prisma.ultimateStart.createMany({
     data: data.ultimate_start.map((start) => ({
       scrimId: scrim.id,
