@@ -6,9 +6,21 @@ import { UserNav } from "@/components/user-nav";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { auth } from "@/lib/auth";
+import { $Enums, PrismaClient } from "@prisma/client";
+import { AdminScrimView } from "@/components/dashboard/admin-scrim-view";
 
 export default async function DashboardPage() {
   const session = await auth();
+
+  const prisma = new PrismaClient();
+
+  const userData = await prisma.user.findFirst({
+    where: {
+      email: session?.user?.email,
+    },
+  });
+
+  const isAdmin = userData?.role === $Enums.UserRole.ADMIN;
 
   return (
     <>
@@ -29,14 +41,17 @@ export default async function DashboardPage() {
             <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
           </div>
           <Tabs defaultValue="overview" className="space-y-4">
-            <TabsList>
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
-              <TabsTrigger value="reports">Reports</TabsTrigger>
-              <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            </TabsList>
+            {isAdmin && (
+              <TabsList>
+                <TabsTrigger value="overview">Your Scrims</TabsTrigger>
+                <TabsTrigger value="admin">Admin View</TabsTrigger>
+              </TabsList>
+            )}
             <TabsContent value="overview" className="space-y-4">
               <ScrimList />
+            </TabsContent>
+            <TabsContent value="admin" className="space-y-4">
+              <AdminScrimView />
             </TabsContent>
           </Tabs>
         </div>
