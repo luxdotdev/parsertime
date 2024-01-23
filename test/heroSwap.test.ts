@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { $Enums, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { createHeroSwapRows } from "../src/lib/parser";
 
 const prisma = new PrismaClient({
@@ -44,3 +44,5 @@ test("should return empty array", async () => {
 
   expect(heroSwapRow).toEqual([]);
 });
+
+prisma.$disconnect();
