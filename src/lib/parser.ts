@@ -36,8 +36,6 @@ export async function createNewScrimFromParsedData(
   data: CreateScrimRequestData,
   session: Session
 ) {
-  await prisma.$connect();
-
   const userId = await prisma.user.findUnique({
     where: {
       email: session.user?.email ?? "",
@@ -62,113 +60,6 @@ export async function createNewScrimFromParsedData(
     data: {
       scrimId: scrim.id,
       userId: userId.id,
-    },
-  });
-
-  const firstMap = data.map;
-
-  const defensive_assists = await createDefensiveAssistsRows(
-    prisma,
-    firstMap,
-    scrim
-  );
-  const hero_spawns = await createHeroSpawnRows(prisma, firstMap, scrim);
-  const hero_swaps = await createHeroSwapRows(prisma, firstMap, scrim);
-  const kills = await createKillRows(prisma, firstMap, scrim);
-  const match_end = await createMatchEndRows(prisma, firstMap, scrim);
-  const match_starts = await createMatchStartRows(prisma, firstMap, scrim);
-  const objective_captured = await createObjectiveCapturedRows(
-    prisma,
-    firstMap,
-    scrim
-  );
-  const objective_updated = await createObjectiveUpdatedRows(
-    prisma,
-    firstMap,
-    scrim
-  );
-  const offensive_assists = await createOffensiveAssistRows(
-    prisma,
-    firstMap,
-    scrim
-  );
-  const payload_progress = await createPayloadProgressRows(
-    prisma,
-    firstMap,
-    scrim
-  );
-  const player_stat = await createPlayerStatRows(prisma, firstMap, scrim);
-  const point_progress = await createPointProgressRows(prisma, firstMap, scrim);
-  const round_end = await createRoundEndRows(prisma, firstMap, scrim);
-  const round_start = await createRoundStartRows(prisma, firstMap, scrim);
-  const setup_complete = await createSetupCompleteRows(prisma, firstMap, scrim);
-  const ultimate_charged = await createUltimateChargedRows(
-    prisma,
-    firstMap,
-    scrim
-  );
-  const ultimate_end = await createUltimateEndRows(prisma, firstMap, scrim);
-  const ultimate_start = await createUltimateStartRows(prisma, firstMap, scrim);
-
-  await prisma.mapData.update({
-    where: {
-      id: mapData.id,
-    },
-    data: {
-      defensive_assist: {
-        connect: [...defensive_assists.map((assist) => ({ id: assist.id }))],
-      },
-      hero_spawn: {
-        connect: [...hero_spawns.map((spawn) => ({ id: spawn.id }))],
-      },
-      hero_swap: {
-        connect: [...hero_swaps.map((swap) => ({ id: swap.id }))],
-      },
-      kill: {
-        connect: [...kills.map((kill) => ({ id: kill.id }))],
-      },
-      match_end: {
-        connect: [...match_end.map((end) => ({ id: end.id }))],
-      },
-      match_start: {
-        connect: [...match_starts.map((start) => ({ id: start.id }))],
-      },
-      objective_captured: {
-        connect: [...objective_captured.map((capture) => ({ id: capture.id }))],
-      },
-      objective_updated: {
-        connect: [...objective_updated.map((update) => ({ id: update.id }))],
-      },
-      offensive_assist: {
-        connect: [...offensive_assists.map((assist) => ({ id: assist.id }))],
-      },
-      payload_progress: {
-        connect: [...payload_progress.map((progress) => ({ id: progress.id }))],
-      },
-      player_stat: {
-        connect: [...player_stat.map((stat) => ({ id: stat.id }))],
-      },
-      point_progress: {
-        connect: [...point_progress.map((progress) => ({ id: progress.id }))],
-      },
-      round_end: {
-        connect: [...round_end.map((end) => ({ id: end.id }))],
-      },
-      round_start: {
-        connect: [...round_start.map((start) => ({ id: start.id }))],
-      },
-      setup_complete: {
-        connect: [...setup_complete.map((complete) => ({ id: complete.id }))],
-      },
-      ultimate_charged: {
-        connect: [...ultimate_charged.map((charged) => ({ id: charged.id }))],
-      },
-      ultimate_end: {
-        connect: [...ultimate_end.map((end) => ({ id: end.id }))],
-      },
-      ultimate_start: {
-        connect: [...ultimate_start.map((start) => ({ id: start.id }))],
-      },
     },
   });
 
@@ -197,13 +88,33 @@ export async function createNewScrimFromParsedData(
     },
   });
 
-  await prisma.$disconnect();
+  const firstMap = data.map;
+
+  await createDefensiveAssistsRows(prisma, firstMap, scrim, map.id);
+  await createHeroSpawnRows(prisma, firstMap, scrim, map.id);
+  await createHeroSwapRows(prisma, firstMap, scrim, map.id);
+  await createKillRows(prisma, firstMap, scrim, map.id);
+  await createMatchEndRows(prisma, firstMap, scrim, map.id);
+  await createMatchStartRows(prisma, firstMap, scrim, map.id);
+  await createObjectiveCapturedRows(prisma, firstMap, scrim, map.id);
+  await createObjectiveUpdatedRows(prisma, firstMap, scrim, map.id);
+  await createOffensiveAssistRows(prisma, firstMap, scrim, map.id);
+  await createPayloadProgressRows(prisma, firstMap, scrim, map.id);
+  await createPlayerStatRows(prisma, firstMap, scrim, map.id);
+  await createPointProgressRows(prisma, firstMap, scrim, map.id);
+  await createRoundEndRows(prisma, firstMap, scrim, map.id);
+  await createRoundStartRows(prisma, firstMap, scrim, map.id);
+  await createSetupCompleteRows(prisma, firstMap, scrim, map.id);
+  await createUltimateChargedRows(prisma, firstMap, scrim, map.id);
+  await createUltimateEndRows(prisma, firstMap, scrim, map.id);
+  await createUltimateStartRows(prisma, firstMap, scrim, map.id);
 }
 
 export async function createDefensiveAssistsRows(
   prisma: PrismaClient,
   data: ParserData,
-  scrim: { id: number }
+  scrim: { id: number },
+  mapId: number
 ) {
   if (
     typeof data.defensive_assist === "undefined" ||
@@ -221,6 +132,7 @@ export async function createDefensiveAssistsRows(
       player_name: assist[3],
       player_hero: assist[4],
       hero_duplicated: assist[5],
+      MapDataId: mapId,
     })),
   });
 
@@ -236,7 +148,8 @@ export async function createDefensiveAssistsRows(
 export async function createHeroSpawnRows(
   prisma: PrismaClient,
   data: ParserData,
-  scrim: { id: number }
+  scrim: { id: number },
+  mapId: number
 ) {
   if (
     typeof data.hero_spawn === "undefined" ||
@@ -255,6 +168,7 @@ export async function createHeroSpawnRows(
       player_hero: spawn[4],
       previous_hero: spawn[5],
       hero_time_played: spawn[6],
+      MapDataId: mapId,
     })),
   });
 
@@ -270,7 +184,8 @@ export async function createHeroSpawnRows(
 export async function createHeroSwapRows(
   prisma: PrismaClient,
   data: ParserData,
-  scrim: { id: number }
+  scrim: { id: number },
+  mapId: number
 ) {
   if (
     typeof data.hero_swap === "undefined" ||
@@ -289,6 +204,7 @@ export async function createHeroSwapRows(
       player_hero: swap[4],
       previous_hero: swap[5],
       hero_time_played: swap[6],
+      MapDataId: mapId,
     })),
   });
 
@@ -304,7 +220,8 @@ export async function createHeroSwapRows(
 export async function createKillRows(
   prisma: PrismaClient,
   data: ParserData,
-  scrim: { id: number }
+  scrim: { id: number },
+  mapId: number
 ) {
   if (
     typeof data.kill === "undefined" ||
@@ -328,6 +245,7 @@ export async function createKillRows(
       event_damage: kill[9],
       is_critical_hit: kill[10],
       is_environmental: String(kill[11]),
+      MapDataId: mapId,
     })),
   });
 
@@ -343,7 +261,8 @@ export async function createKillRows(
 export async function createMatchEndRows(
   prisma: PrismaClient,
   data: ParserData,
-  scrim: { id: number }
+  scrim: { id: number },
+  mapId: number
 ) {
   if (
     typeof data.match_end === "undefined" ||
@@ -360,6 +279,7 @@ export async function createMatchEndRows(
       round_number: end[2],
       team_1_score: end[3],
       team_2_score: end[4],
+      MapDataId: mapId,
     })),
   });
 
@@ -375,7 +295,8 @@ export async function createMatchEndRows(
 export async function createMatchStartRows(
   prisma: PrismaClient,
   data: ParserData,
-  scrim: { id: number }
+  scrim: { id: number },
+  mapId: number
 ) {
   if (
     typeof data.match_start === "undefined" ||
@@ -393,6 +314,7 @@ export async function createMatchStartRows(
       map_type: start[3],
       team_1_name: start[4],
       team_2_name: start[5],
+      MapDataId: mapId,
     })),
   });
 
@@ -408,7 +330,8 @@ export async function createMatchStartRows(
 export async function createObjectiveCapturedRows(
   prisma: PrismaClient,
   data: ParserData,
-  scrim: { id: number }
+  scrim: { id: number },
+  mapId: number
 ) {
   if (
     typeof data.objective_captured === "undefined" ||
@@ -428,6 +351,7 @@ export async function createObjectiveCapturedRows(
       control_team_1_progress: capture[5],
       control_team_2_progress: capture[6],
       match_time_remaining: capture[7],
+      MapDataId: mapId,
     })),
   });
 
@@ -443,7 +367,8 @@ export async function createObjectiveCapturedRows(
 export async function createObjectiveUpdatedRows(
   prisma: PrismaClient,
   data: ParserData,
-  scrim: { id: number }
+  scrim: { id: number },
+  mapId: number
 ) {
   if (
     typeof data.objective_updated === "undefined" ||
@@ -460,6 +385,7 @@ export async function createObjectiveUpdatedRows(
       round_number: update[2],
       previous_objective_index: update[3],
       current_objective_index: update[4],
+      MapDataId: mapId,
     })),
   });
 
@@ -475,7 +401,8 @@ export async function createObjectiveUpdatedRows(
 export async function createOffensiveAssistRows(
   prisma: PrismaClient,
   data: ParserData,
-  scrim: { id: number }
+  scrim: { id: number },
+  mapId: number
 ) {
   if (
     typeof data.offensive_assist === "undefined" ||
@@ -493,6 +420,7 @@ export async function createOffensiveAssistRows(
       player_name: assist[3],
       player_hero: assist[4],
       hero_duplicated: assist[5],
+      MapDataId: mapId,
     })),
   });
 
@@ -508,7 +436,8 @@ export async function createOffensiveAssistRows(
 export async function createPayloadProgressRows(
   prisma: PrismaClient,
   data: ParserData,
-  scrim: { id: number }
+  scrim: { id: number },
+  mapId: number
 ) {
   if (
     typeof data.payload_progress === "undefined" ||
@@ -526,6 +455,7 @@ export async function createPayloadProgressRows(
       capturing_team: progress[3],
       objective_index: progress[4],
       payload_capture_progress: progress[5],
+      MapDataId: mapId,
     })),
   });
 
@@ -541,7 +471,8 @@ export async function createPayloadProgressRows(
 export async function createPlayerStatRows(
   prisma: PrismaClient,
   data: ParserData,
-  scrim: { id: number }
+  scrim: { id: number },
+  mapId: number
 ) {
   if (
     typeof data.player_stat === "undefined" ||
@@ -592,6 +523,7 @@ export async function createPlayerStatRows(
       scoped_shots_hit: stat[36],
       weapon_accuracy: stat[37],
       hero_time_played: stat[38],
+      MapDataId: mapId,
     })),
   });
 
@@ -607,7 +539,8 @@ export async function createPlayerStatRows(
 export async function createPointProgressRows(
   prisma: PrismaClient,
   data: ParserData,
-  scrim: { id: number }
+  scrim: { id: number },
+  mapId: number
 ) {
   if (
     typeof data.point_progress === "undefined" ||
@@ -625,6 +558,7 @@ export async function createPointProgressRows(
       capturing_team: progress[3],
       objective_index: progress[4],
       point_capture_progress: progress[5],
+      MapDataId: mapId,
     })),
   });
 
@@ -640,7 +574,8 @@ export async function createPointProgressRows(
 export async function createRoundEndRows(
   prisma: PrismaClient,
   data: ParserData,
-  scrim: { id: number }
+  scrim: { id: number },
+  mapId: number
 ) {
   if (
     typeof data.round_end === "undefined" ||
@@ -662,6 +597,7 @@ export async function createRoundEndRows(
       control_team_1_progress: end[7],
       control_team_2_progress: end[8],
       match_time_remaining: end[9],
+      MapDataId: mapId,
     })),
   });
 
@@ -677,7 +613,8 @@ export async function createRoundEndRows(
 export async function createRoundStartRows(
   prisma: PrismaClient,
   data: ParserData,
-  scrim: { id: number }
+  scrim: { id: number },
+  mapId: number
 ) {
   if (
     typeof data.round_start === "undefined" ||
@@ -696,6 +633,7 @@ export async function createRoundStartRows(
       team_1_score: start[4],
       team_2_score: start[5],
       objective_index: start[6],
+      MapDataId: mapId,
     })),
   });
 
@@ -711,7 +649,8 @@ export async function createRoundStartRows(
 export async function createSetupCompleteRows(
   prisma: PrismaClient,
   data: ParserData,
-  scrim: { id: number }
+  scrim: { id: number },
+  mapId: number
 ) {
   if (
     typeof data.setup_complete === "undefined" ||
@@ -727,6 +666,7 @@ export async function createSetupCompleteRows(
       match_time: complete[1],
       round_number: complete[2],
       match_time_remaining: complete[3],
+      MapDataId: mapId,
     })),
   });
 
@@ -742,7 +682,8 @@ export async function createSetupCompleteRows(
 export async function createUltimateChargedRows(
   prisma: PrismaClient,
   data: ParserData,
-  scrim: { id: number }
+  scrim: { id: number },
+  mapId: number
 ) {
   if (
     typeof data.ultimate_charged === "undefined" ||
@@ -761,6 +702,7 @@ export async function createUltimateChargedRows(
       player_hero: charged[4],
       hero_duplicated: charged[5],
       ultimate_id: charged[6],
+      MapDataId: mapId,
     })),
   });
 
@@ -776,7 +718,8 @@ export async function createUltimateChargedRows(
 export async function createUltimateEndRows(
   prisma: PrismaClient,
   data: ParserData,
-  scrim: { id: number }
+  scrim: { id: number },
+  mapId: number
 ) {
   if (
     typeof data.ultimate_end === "undefined" ||
@@ -795,6 +738,7 @@ export async function createUltimateEndRows(
       player_hero: end[4] ?? "",
       hero_duplicated: end[5],
       ultimate_id: end[6],
+      MapDataId: mapId,
     })),
   });
 
@@ -810,7 +754,8 @@ export async function createUltimateEndRows(
 export async function createUltimateStartRows(
   prisma: PrismaClient,
   data: ParserData,
-  scrim: { id: number }
+  scrim: { id: number },
+  mapId: number
 ) {
   if (
     typeof data.ultimate_start === "undefined" ||
@@ -829,6 +774,7 @@ export async function createUltimateStartRows(
       player_hero: start[4],
       hero_duplicated: start[5],
       ultimate_id: start[6],
+      MapDataId: mapId,
     })),
   });
 
