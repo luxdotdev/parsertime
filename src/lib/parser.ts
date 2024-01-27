@@ -1,6 +1,5 @@
 import { CreateScrimRequestData } from "@/app/api/(scrim)/create-scrim/route";
 import { EventType, ParserData } from "@/types/parser";
-import { PrismaClient } from "@prisma/client";
 import { Session } from "next-auth";
 import * as XLSX from "xlsx";
 import prisma from "@/lib/prisma";
