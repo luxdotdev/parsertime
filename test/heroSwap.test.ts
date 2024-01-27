@@ -20,15 +20,10 @@ test("should return the generated hero swap row", async () => {
     player_hero: "Ana",
     previous_hero: "Baptiste",
     hero_time_played: 0,
-    MapDataId: null,
+    MapDataId: 100,
   };
 
-  const heroSwapRow = await createHeroSwapRows(
-    prisma,
-    data as any,
-    { id: 1 },
-    1
-  );
+  const heroSwapRow = await createHeroSwapRows(data as any, { id: 1 }, 100);
 
   // Destructure the id from the result and compare the rest of the properties
   const { id, ...restOfHeroSwapRow } = heroSwapRow[0];
@@ -45,12 +40,7 @@ test("should return the generated hero swap row", async () => {
 test("should return empty array", async () => {
   const data = {};
 
-  const heroSwapRow = await createHeroSwapRows(
-    prisma,
-    data as any,
-    { id: 1 },
-    1
-  );
+  const heroSwapRow = await createHeroSwapRows(data as any, { id: 1 }, 1);
 
   expect(heroSwapRow).toEqual([]);
 });
