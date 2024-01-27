@@ -129,7 +129,7 @@ export function AddScrimCard() {
 
   return (
     <Form {...form}>
-      <form onDragEnter={handleDrag}>
+      <form /*onDragEnter={handleDrag}*/>
         <FormField
           control={form.control}
           name="file"
@@ -138,13 +138,13 @@ export function AddScrimCard() {
               <FormItem>
                 <Card
                   className={cn(
-                    "max-w-md h-48 flex flex-col justify-center items-center border-dashed",
-                    dragActive && "border-green-500"
+                    "max-w-md h-48 flex flex-col justify-center items-center border-dashed"
+                    // dragActive && "border-green-500"
                   )}
-                  onDragEnter={handleDrag}
-                  onDragLeave={handleDrag}
-                  onDragOver={handleDrag}
-                  onDrop={handleDrop}
+                  // onDragEnter={handleDrag}
+                  // onDragLeave={handleDrag}
+                  // onDragOver={handleDrag}
+                  // onDrop={handleDrop}
                 >
                   <CardHeader className="text-xl text-center">
                     <span className="inline-flex items-center justify-center space-x-2">
@@ -153,16 +153,16 @@ export function AddScrimCard() {
                     </span>
                   </CardHeader>
                   <CardDescription className="pb-4">
-                    Drag and drop or choose a file...
+                    Click the button to create a scrim.
                   </CardDescription>
                   <CardContent className="flex justify-center items-center">
-                    <Input
+                    {/* <Input
                       type="file"
                       onChange={handleChange}
                       className="w-64"
                       accept=".xlsx"
                     />
-                    <div className="pl-2" />
+                    <div className="pl-2" /> */}
                     <CreateScrimButton />
                   </CardContent>
                 </Card>
