@@ -9,11 +9,39 @@ export async function AdminScrimView() {
 
   const scrimData = await prisma.scrim.findMany();
 
+  let scrims = [];
+
+  for (const scrim of scrimData) {
+    const teamName = await prisma.team.findFirst({
+      where: {
+        id: scrim.teamId ?? 0,
+      },
+    });
+
+    const creatorName = await prisma.user.findMany({
+      where: {
+        id: scrim.creatorId,
+      },
+    });
+
+    scrims.push({
+      id: scrim.id,
+      name: scrim.name,
+      createdAt: scrim.createdAt,
+      updatedAt: scrim.updatedAt,
+      date: scrim.date,
+      teamId: scrim.teamId,
+      creatorId: scrim.creatorId,
+      team: teamName?.name ?? "Uncategorized",
+      creator: creatorName[0].name ?? "Unknown",
+    });
+  }
+
   return (
     <main>
-      {scrimData.length > 0 && (
+      {scrims.length > 0 && (
         <Card className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-          {scrimData.map((scrim) => (
+          {scrims.map((scrim) => (
             <ScrimCard key={scrim.id} scrim={scrim} />
           ))}
 

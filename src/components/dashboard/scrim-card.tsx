@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import Link from "next/link";
 
 type Scrim = {
@@ -16,17 +11,22 @@ type Scrim = {
   date: Date;
   teamId: number | null;
   creatorId: string;
+  team: string;
+  creator: string;
 };
 
 export function ScrimCard({ scrim }: { scrim: Scrim }) {
   return (
     <Link href={`/${scrim.teamId ?? "uncategorized"}/scrim/${scrim.id}`}>
       <Card className="max-w-md h-48">
-        <CardHeader>{scrim.name}</CardHeader>
-        <CardDescription className="pl-6">
-          {scrim.createdAt.toDateString()}
-        </CardDescription>
-        <CardContent>Scrim was created</CardContent>
+        <CardHeader className="text-lg font-semibold">{scrim.name}</CardHeader>
+        <CardContent>
+          Scrim Date: {scrim.date.toDateString()}
+          <br />
+          Team: {scrim.team}
+          <br />
+          Creator: {scrim.creator}
+        </CardContent>
       </Card>
     </Link>
   );
