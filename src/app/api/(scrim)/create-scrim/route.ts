@@ -3,11 +3,18 @@ import { createNewScrimFromParsedData } from "@/lib/parser";
 import { ParserData } from "@/types/parser";
 import { PrismaClient } from "@prisma/client";
 
+export type CreateScrimRequestData = {
+  name: string;
+  team: string;
+  date: string;
+  map: ParserData;
+};
+
 export async function POST(request: Request, response: Response) {
   const prisma = new PrismaClient();
   const session = await auth();
 
-  const data: ParserData = await request.json();
+  const data: CreateScrimRequestData = await request.json();
 
   if (!session) {
     return new Response("Unauthorized", {

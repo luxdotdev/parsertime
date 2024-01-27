@@ -1,3 +1,4 @@
+import { CreateScrimRequestData } from "@/app/api/(scrim)/create-scrim/route";
 import { EventType, ParserData } from "@/types/parser";
 import { PrismaClient } from "@prisma/client";
 import { Session } from "next-auth";
@@ -32,7 +33,7 @@ export async function parseData(file: File) {
 
 export async function createNewScrimFromParsedData(
   prisma: PrismaClient,
-  data: ParserData,
+  data: CreateScrimRequestData,
   session: Session
 ) {
   await prisma.$connect();
@@ -49,10 +50,11 @@ export async function createNewScrimFromParsedData(
 
   const scrim = await prisma.scrim.create({
     data: {
-      name: "New Scrim",
-      date: new Date(),
+      name: data.name ?? "New Scrim",
+      date: data.date ?? new Date(),
       createdAt: new Date(),
       creatorId: userId.id,
+      teamId: parseInt(data.team),
     },
   });
 
@@ -63,40 +65,50 @@ export async function createNewScrimFromParsedData(
     },
   });
 
+  const firstMap = data.map;
+
   const defensive_assists = await createDefensiveAssistsRows(
     prisma,
-    data,
+    firstMap,
     scrim
   );
-  const hero_spawns = await createHeroSpawnRows(prisma, data, scrim);
-  const hero_swaps = await createHeroSwapRows(prisma, data, scrim);
-  const kills = await createKillRows(prisma, data, scrim);
-  const match_end = await createMatchEndRows(prisma, data, scrim);
-  const match_starts = await createMatchStartRows(prisma, data, scrim);
+  const hero_spawns = await createHeroSpawnRows(prisma, firstMap, scrim);
+  const hero_swaps = await createHeroSwapRows(prisma, firstMap, scrim);
+  const kills = await createKillRows(prisma, firstMap, scrim);
+  const match_end = await createMatchEndRows(prisma, firstMap, scrim);
+  const match_starts = await createMatchStartRows(prisma, firstMap, scrim);
   const objective_captured = await createObjectiveCapturedRows(
     prisma,
-    data,
+    firstMap,
     scrim
   );
   const objective_updated = await createObjectiveUpdatedRows(
     prisma,
-    data,
+    firstMap,
     scrim
   );
   const offensive_assists = await createOffensiveAssistRows(
     prisma,
-    data,
+    firstMap,
     scrim
   );
-  const payload_progress = await createPayloadProgressRows(prisma, data, scrim);
-  const player_stat = await createPlayerStatRows(prisma, data, scrim);
-  const point_progress = await createPointProgressRows(prisma, data, scrim);
-  const round_end = await createRoundEndRows(prisma, data, scrim);
-  const round_start = await createRoundStartRows(prisma, data, scrim);
-  const setup_complete = await createSetupCompleteRows(prisma, data, scrim);
-  const ultimate_charged = await createUltimateChargedRows(prisma, data, scrim);
-  const ultimate_end = await createUltimateEndRows(prisma, data, scrim);
-  const ultimate_start = await createUltimateStartRows(prisma, data, scrim);
+  const payload_progress = await createPayloadProgressRows(
+    prisma,
+    firstMap,
+    scrim
+  );
+  const player_stat = await createPlayerStatRows(prisma, firstMap, scrim);
+  const point_progress = await createPointProgressRows(prisma, firstMap, scrim);
+  const round_end = await createRoundEndRows(prisma, firstMap, scrim);
+  const round_start = await createRoundStartRows(prisma, firstMap, scrim);
+  const setup_complete = await createSetupCompleteRows(prisma, firstMap, scrim);
+  const ultimate_charged = await createUltimateChargedRows(
+    prisma,
+    firstMap,
+    scrim
+  );
+  const ultimate_end = await createUltimateEndRows(prisma, firstMap, scrim);
+  const ultimate_start = await createUltimateStartRows(prisma, firstMap, scrim);
 
   await prisma.mapData.update({
     where: {
