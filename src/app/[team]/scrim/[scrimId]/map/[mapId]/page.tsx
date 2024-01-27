@@ -5,14 +5,13 @@ import { Search } from "@/components/map/search";
 import { UserNav } from "@/components/user-nav";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
 export default async function MapDashboardPage({
   params,
 }: {
   params: { team: string; mapId: string };
 }) {
-  const prisma = new PrismaClient();
   const id = parseInt(params.mapId);
 
   const uniquePlayerRowsByHeroTimePlayed = await prisma.playerStat.findMany({

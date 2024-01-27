@@ -3,10 +3,9 @@ import { EmptyScrimList } from "@/components/dashboard/empty-scrim-list";
 import { ScrimCard } from "@/components/dashboard/scrim-card";
 import { Card } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
 export async function ScrimList() {
-  const prisma = new PrismaClient();
   const session = await auth();
 
   let scrims = [];

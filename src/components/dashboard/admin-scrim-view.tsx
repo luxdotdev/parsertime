@@ -2,11 +2,9 @@ import { AddScrimCard } from "@/components/dashboard/add-scrim-card";
 import { EmptyScrimList } from "@/components/dashboard/empty-scrim-list";
 import { ScrimCard } from "@/components/dashboard/scrim-card";
 import { Card } from "@/components/ui/card";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
 export async function AdminScrimView() {
-  const prisma = new PrismaClient();
-
   const scrimData = await prisma.scrim.findMany();
 
   let scrims = [];

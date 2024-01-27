@@ -1,10 +1,8 @@
 import { getScrimDataById } from "@/lib/get-scrim-data";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const prisma = new PrismaClient();
-
   const id = req.nextUrl.searchParams.get("id");
 
   if (!id) {
@@ -13,7 +11,7 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  const data = await getScrimDataById(prisma, parseInt(id));
+  const data = await getScrimDataById(parseInt(id));
   return new Response(JSON.stringify(data), {
     headers: {
       "content-type": "application/json",

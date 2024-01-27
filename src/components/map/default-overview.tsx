@@ -2,11 +2,9 @@ import { OverviewTable } from "@/components/map/overview-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { removeDuplicateRows } from "@/lib/utils";
 import { PlayerStatRows } from "@/types/prisma";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
 export async function DefaultOverview({ id }: { id: number }) {
-  const prisma = new PrismaClient();
-
   const playerStats = await prisma.playerStat.findMany({
     where: {
       MapDataId: id,

@@ -6,13 +6,12 @@ import { UserNav } from "@/components/user-nav";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { auth } from "@/lib/auth";
-import { $Enums, PrismaClient } from "@prisma/client";
+import { $Enums } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import { AdminScrimView } from "@/components/dashboard/admin-scrim-view";
 
 export default async function DashboardPage() {
   const session = await auth();
-
-  const prisma = new PrismaClient();
 
   const userData = await prisma.user.findFirst({
     where: {

@@ -1,22 +1,22 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
-export async function getScrimDataById(prisma: PrismaClient, id: number) {
-  const defensiveAssists = await getDefensiveAssistsByScrimId(prisma, id);
-  const heroSpawns = await getHeroSpawnsById(prisma, id);
-  const heroSwaps = await getHeroSwapsById(prisma, id);
-  const kills = await getKillsById(prisma, id);
-  const matchStart = await getMatchStartById(prisma, id);
-  const objectiveCaptured = await getObjectiveCapturedById(prisma, id);
-  const objectiveUpdated = await getObjectiveUpdatedById(prisma, id);
-  const offensiveAssists = await getOffensiveAssistsById(prisma, id);
-  const payloadProgress = await getPayloadProgressById(prisma, id);
-  const playerStats = await getPlayerStatsById(prisma, id);
-  const roundEnd = await getRoundEndById(prisma, id);
-  const roundStart = await getRoundStartById(prisma, id);
-  const setupComplete = await getSetupCompleteById(prisma, id);
-  const ultimateCharged = await getUltimateChargedById(prisma, id);
-  const ultimateEnd = await getUltimateEndById(prisma, id);
-  const ultimateStart = await getUltimateStartById(prisma, id);
+export async function getScrimDataById(id: number) {
+  const defensiveAssists = await getDefensiveAssistsByScrimId(id);
+  const heroSpawns = await getHeroSpawnsById(id);
+  const heroSwaps = await getHeroSwapsById(id);
+  const kills = await getKillsById(id);
+  const matchStart = await getMatchStartById(id);
+  const objectiveCaptured = await getObjectiveCapturedById(id);
+  const objectiveUpdated = await getObjectiveUpdatedById(id);
+  const offensiveAssists = await getOffensiveAssistsById(id);
+  const payloadProgress = await getPayloadProgressById(id);
+  const playerStats = await getPlayerStatsById(id);
+  const roundEnd = await getRoundEndById(id);
+  const roundStart = await getRoundStartById(id);
+  const setupComplete = await getSetupCompleteById(id);
+  const ultimateCharged = await getUltimateChargedById(id);
+  const ultimateEnd = await getUltimateEndById(id);
+  const ultimateStart = await getUltimateStartById(id);
 
   const data = {
     defensiveAssists,
@@ -40,10 +40,7 @@ export async function getScrimDataById(prisma: PrismaClient, id: number) {
   return data;
 }
 
-export async function getDefensiveAssistsByScrimId(
-  prisma: PrismaClient,
-  id: number
-) {
+export async function getDefensiveAssistsByScrimId(id: number) {
   const data = await prisma.defensiveAssist.findMany({
     where: {
       scrimId: id,
@@ -53,7 +50,7 @@ export async function getDefensiveAssistsByScrimId(
   return data;
 }
 
-export async function getHeroSpawnsById(prisma: PrismaClient, id: number) {
+export async function getHeroSpawnsById(id: number) {
   const data = await prisma.heroSpawn.findMany({
     where: {
       scrimId: id,
@@ -63,7 +60,7 @@ export async function getHeroSpawnsById(prisma: PrismaClient, id: number) {
   return data;
 }
 
-export async function getHeroSwapsById(prisma: PrismaClient, id: number) {
+export async function getHeroSwapsById(id: number) {
   const data = await prisma.heroSwap.findMany({
     where: {
       scrimId: id,
@@ -73,7 +70,7 @@ export async function getHeroSwapsById(prisma: PrismaClient, id: number) {
   return data;
 }
 
-export async function getKillsById(prisma: PrismaClient, id: number) {
+export async function getKillsById(id: number) {
   const data = await prisma.kill.findMany({
     where: {
       scrimId: id,
@@ -83,7 +80,7 @@ export async function getKillsById(prisma: PrismaClient, id: number) {
   return data;
 }
 
-export async function getMatchStartById(prisma: PrismaClient, id: number) {
+export async function getMatchStartById(id: number) {
   const data = await prisma.matchStart.findMany({
     where: {
       scrimId: id,
@@ -93,10 +90,7 @@ export async function getMatchStartById(prisma: PrismaClient, id: number) {
   return data;
 }
 
-export async function getObjectiveCapturedById(
-  prisma: PrismaClient,
-  id: number
-) {
+export async function getObjectiveCapturedById(id: number) {
   const data = await prisma.objectiveCaptured.findMany({
     where: {
       scrimId: id,
@@ -106,10 +100,7 @@ export async function getObjectiveCapturedById(
   return data;
 }
 
-export async function getObjectiveUpdatedById(
-  prisma: PrismaClient,
-  id: number
-) {
+export async function getObjectiveUpdatedById(id: number) {
   const data = await prisma.objectiveUpdated.findMany({
     where: {
       scrimId: id,
@@ -119,10 +110,7 @@ export async function getObjectiveUpdatedById(
   return data;
 }
 
-export async function getOffensiveAssistsById(
-  prisma: PrismaClient,
-  id: number
-) {
+export async function getOffensiveAssistsById(id: number) {
   const data = await prisma.offensiveAssist.findMany({
     where: {
       scrimId: id,
@@ -132,7 +120,7 @@ export async function getOffensiveAssistsById(
   return data;
 }
 
-export async function getPayloadProgressById(prisma: PrismaClient, id: number) {
+export async function getPayloadProgressById(id: number) {
   const data = await prisma.payloadProgress.findMany({
     where: {
       scrimId: id,
@@ -142,7 +130,7 @@ export async function getPayloadProgressById(prisma: PrismaClient, id: number) {
   return data;
 }
 
-export async function getPlayerStatsById(prisma: PrismaClient, id: number) {
+export async function getPlayerStatsById(id: number) {
   const data = await prisma.playerStat.findMany({
     where: {
       scrimId: id,
@@ -152,7 +140,7 @@ export async function getPlayerStatsById(prisma: PrismaClient, id: number) {
   return data;
 }
 
-export async function getRoundEndById(prisma: PrismaClient, id: number) {
+export async function getRoundEndById(id: number) {
   const data = await prisma.roundEnd.findMany({
     where: {
       scrimId: id,
@@ -162,7 +150,7 @@ export async function getRoundEndById(prisma: PrismaClient, id: number) {
   return data;
 }
 
-export async function getRoundStartById(prisma: PrismaClient, id: number) {
+export async function getRoundStartById(id: number) {
   const data = await prisma.roundStart.findMany({
     where: {
       scrimId: id,
@@ -172,7 +160,7 @@ export async function getRoundStartById(prisma: PrismaClient, id: number) {
   return data;
 }
 
-export async function getSetupCompleteById(prisma: PrismaClient, id: number) {
+export async function getSetupCompleteById(id: number) {
   const data = await prisma.setupComplete.findMany({
     where: {
       scrimId: id,
@@ -182,7 +170,7 @@ export async function getSetupCompleteById(prisma: PrismaClient, id: number) {
   return data;
 }
 
-export async function getUltimateChargedById(prisma: PrismaClient, id: number) {
+export async function getUltimateChargedById(id: number) {
   const data = await prisma.ultimateCharged.findMany({
     where: {
       scrimId: id,
@@ -192,7 +180,7 @@ export async function getUltimateChargedById(prisma: PrismaClient, id: number) {
   return data;
 }
 
-export async function getUltimateEndById(prisma: PrismaClient, id: number) {
+export async function getUltimateEndById(id: number) {
   const data = await prisma.ultimateEnd.findMany({
     where: {
       scrimId: id,
@@ -202,7 +190,7 @@ export async function getUltimateEndById(prisma: PrismaClient, id: number) {
   return data;
 }
 
-export async function getUltimateStartById(prisma: PrismaClient, id: number) {
+export async function getUltimateStartById(id: number) {
   const data = await prisma.ultimateStart.findMany({
     where: {
       scrimId: id,

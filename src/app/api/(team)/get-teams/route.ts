@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
 export type Team = {
   id: number;
@@ -14,7 +14,6 @@ export type GetTeamsResponse = {
 };
 
 export async function GET(req: Request) {
-  const prisma = new PrismaClient();
   const session = await auth();
 
   const userId = await prisma.user.findUnique({

@@ -3,6 +3,7 @@ import { EventType, ParserData } from "@/types/parser";
 import { PrismaClient } from "@prisma/client";
 import { Session } from "next-auth";
 import * as XLSX from "xlsx";
+import prisma from "@/lib/prisma";
 
 export async function parseData(file: File) {
   const reader = new FileReader();
@@ -32,7 +33,6 @@ export async function parseData(file: File) {
 }
 
 export async function createNewScrimFromParsedData(
-  prisma: PrismaClient,
   data: CreateScrimRequestData,
   session: Session
 ) {
@@ -90,28 +90,27 @@ export async function createNewScrimFromParsedData(
 
   const firstMap = data.map;
 
-  await createDefensiveAssistsRows(prisma, firstMap, scrim, map.id);
-  await createHeroSpawnRows(prisma, firstMap, scrim, map.id);
-  await createHeroSwapRows(prisma, firstMap, scrim, map.id);
-  await createKillRows(prisma, firstMap, scrim, map.id);
-  await createMatchEndRows(prisma, firstMap, scrim, map.id);
-  await createMatchStartRows(prisma, firstMap, scrim, map.id);
-  await createObjectiveCapturedRows(prisma, firstMap, scrim, map.id);
-  await createObjectiveUpdatedRows(prisma, firstMap, scrim, map.id);
-  await createOffensiveAssistRows(prisma, firstMap, scrim, map.id);
-  await createPayloadProgressRows(prisma, firstMap, scrim, map.id);
-  await createPlayerStatRows(prisma, firstMap, scrim, map.id);
-  await createPointProgressRows(prisma, firstMap, scrim, map.id);
-  await createRoundEndRows(prisma, firstMap, scrim, map.id);
-  await createRoundStartRows(prisma, firstMap, scrim, map.id);
-  await createSetupCompleteRows(prisma, firstMap, scrim, map.id);
-  await createUltimateChargedRows(prisma, firstMap, scrim, map.id);
-  await createUltimateEndRows(prisma, firstMap, scrim, map.id);
-  await createUltimateStartRows(prisma, firstMap, scrim, map.id);
+  await createDefensiveAssistsRows(firstMap, scrim, map.id);
+  await createHeroSpawnRows(firstMap, scrim, map.id);
+  await createHeroSwapRows(firstMap, scrim, map.id);
+  await createKillRows(firstMap, scrim, map.id);
+  await createMatchEndRows(firstMap, scrim, map.id);
+  await createMatchStartRows(firstMap, scrim, map.id);
+  await createObjectiveCapturedRows(firstMap, scrim, map.id);
+  await createObjectiveUpdatedRows(firstMap, scrim, map.id);
+  await createOffensiveAssistRows(firstMap, scrim, map.id);
+  await createPayloadProgressRows(firstMap, scrim, map.id);
+  await createPlayerStatRows(firstMap, scrim, map.id);
+  await createPointProgressRows(firstMap, scrim, map.id);
+  await createRoundEndRows(firstMap, scrim, map.id);
+  await createRoundStartRows(firstMap, scrim, map.id);
+  await createSetupCompleteRows(firstMap, scrim, map.id);
+  await createUltimateChargedRows(firstMap, scrim, map.id);
+  await createUltimateEndRows(firstMap, scrim, map.id);
+  await createUltimateStartRows(firstMap, scrim, map.id);
 }
 
 export async function createDefensiveAssistsRows(
-  prisma: PrismaClient,
   data: ParserData,
   scrim: { id: number },
   mapId: number
@@ -146,7 +145,6 @@ export async function createDefensiveAssistsRows(
 }
 
 export async function createHeroSpawnRows(
-  prisma: PrismaClient,
   data: ParserData,
   scrim: { id: number },
   mapId: number
@@ -182,7 +180,6 @@ export async function createHeroSpawnRows(
 }
 
 export async function createHeroSwapRows(
-  prisma: PrismaClient,
   data: ParserData,
   scrim: { id: number },
   mapId: number
@@ -218,7 +215,6 @@ export async function createHeroSwapRows(
 }
 
 export async function createKillRows(
-  prisma: PrismaClient,
   data: ParserData,
   scrim: { id: number },
   mapId: number
@@ -259,7 +255,6 @@ export async function createKillRows(
 }
 
 export async function createMatchEndRows(
-  prisma: PrismaClient,
   data: ParserData,
   scrim: { id: number },
   mapId: number
@@ -293,7 +288,6 @@ export async function createMatchEndRows(
 }
 
 export async function createMatchStartRows(
-  prisma: PrismaClient,
   data: ParserData,
   scrim: { id: number },
   mapId: number
@@ -328,7 +322,6 @@ export async function createMatchStartRows(
 }
 
 export async function createObjectiveCapturedRows(
-  prisma: PrismaClient,
   data: ParserData,
   scrim: { id: number },
   mapId: number
@@ -365,7 +358,6 @@ export async function createObjectiveCapturedRows(
 }
 
 export async function createObjectiveUpdatedRows(
-  prisma: PrismaClient,
   data: ParserData,
   scrim: { id: number },
   mapId: number
@@ -399,7 +391,6 @@ export async function createObjectiveUpdatedRows(
 }
 
 export async function createOffensiveAssistRows(
-  prisma: PrismaClient,
   data: ParserData,
   scrim: { id: number },
   mapId: number
@@ -434,7 +425,6 @@ export async function createOffensiveAssistRows(
 }
 
 export async function createPayloadProgressRows(
-  prisma: PrismaClient,
   data: ParserData,
   scrim: { id: number },
   mapId: number
@@ -469,7 +459,6 @@ export async function createPayloadProgressRows(
 }
 
 export async function createPlayerStatRows(
-  prisma: PrismaClient,
   data: ParserData,
   scrim: { id: number },
   mapId: number
@@ -537,7 +526,6 @@ export async function createPlayerStatRows(
 }
 
 export async function createPointProgressRows(
-  prisma: PrismaClient,
   data: ParserData,
   scrim: { id: number },
   mapId: number
@@ -572,7 +560,6 @@ export async function createPointProgressRows(
 }
 
 export async function createRoundEndRows(
-  prisma: PrismaClient,
   data: ParserData,
   scrim: { id: number },
   mapId: number
@@ -611,7 +598,6 @@ export async function createRoundEndRows(
 }
 
 export async function createRoundStartRows(
-  prisma: PrismaClient,
   data: ParserData,
   scrim: { id: number },
   mapId: number
@@ -647,7 +633,6 @@ export async function createRoundStartRows(
 }
 
 export async function createSetupCompleteRows(
-  prisma: PrismaClient,
   data: ParserData,
   scrim: { id: number },
   mapId: number
@@ -680,7 +665,6 @@ export async function createSetupCompleteRows(
 }
 
 export async function createUltimateChargedRows(
-  prisma: PrismaClient,
   data: ParserData,
   scrim: { id: number },
   mapId: number
@@ -716,7 +700,6 @@ export async function createUltimateChargedRows(
 }
 
 export async function createUltimateEndRows(
-  prisma: PrismaClient,
   data: ParserData,
   scrim: { id: number },
   mapId: number
@@ -752,7 +735,6 @@ export async function createUltimateEndRows(
 }
 
 export async function createUltimateStartRows(
-  prisma: PrismaClient,
   data: ParserData,
   scrim: { id: number },
   mapId: number

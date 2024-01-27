@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { createNewScrimFromParsedData } from "@/lib/parser";
 import { ParserData } from "@/types/parser";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
 export type CreateScrimRequestData = {
   name: string;
@@ -11,7 +11,6 @@ export type CreateScrimRequestData = {
 };
 
 export async function POST(request: Request, response: Response) {
-  const prisma = new PrismaClient();
   const session = await auth();
 
   const data: CreateScrimRequestData = await request.json();
@@ -22,7 +21,7 @@ export async function POST(request: Request, response: Response) {
     });
   }
 
-  await createNewScrimFromParsedData(prisma, data, session);
+  await createNewScrimFromParsedData(data, session);
 
   return new Response("OK", {
     status: 200,
