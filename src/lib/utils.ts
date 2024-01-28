@@ -37,6 +37,19 @@ export function toHero(name: string) {
 }
 
 /**
+ * Converts a string to title case.
+ *
+ * @param {string} str - The string to convert to title case.
+ * @returns {string} The title case string.
+ */
+export function toTitleCase(str: string): string {
+  return str
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+}
+
+/**
  * Removes duplicate rows from an array of player stat rows based on all fields except the 'id'.
  *
  * This function iterates over the provided array of row objects and identifies duplicates

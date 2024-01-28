@@ -4,6 +4,7 @@ import { Session } from "next-auth";
 import * as XLSX from "xlsx";
 import prisma from "@/lib/prisma";
 import { CreateMapRequestData } from "@/app/api/(scrim)/add-map/route";
+import { toTitleCase } from "@/lib/utils";
 
 export async function parseData(file: File) {
   const reader = new FileReader();
@@ -133,7 +134,7 @@ export async function createNewMap(
 
   const map = await prisma.map.create({
     data: {
-      name: data.map.match_start[0][2] ?? "New Map",
+      name: toTitleCase(data.map.match_start[0][2]) ?? "New Map",
       scrimId: data.scrimId,
       mapData: {
         connect: {
