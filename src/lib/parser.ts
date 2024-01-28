@@ -7,7 +7,29 @@ import { CreateMapRequestData } from "@/app/api/(scrim)/add-map/route";
 import { toTitleCase } from "@/lib/utils";
 import { headers } from "@/lib/headers";
 
-export async function parseDataFromTxt(file: File) {
+const XLSX_FILE =
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+const TXT_FILE = "text/plain";
+
+/**
+ * Parses a file and returns a JSON object with the data
+ *
+ * @param file - The file to parse
+ * @returns {Promise<ParserData>} - The parsed data
+ */
+export async function parseData(file: File) {
+  switch (file.type) {
+    case XLSX_FILE:
+      return await parseDataFromXLSX(file);
+    case TXT_FILE:
+      return await parseDataFromTXT(file);
+    default:
+      throw new Error("Invalid file type");
+  }
+}
+
+export async function parseDataFromTXT(file: File) {
   const fileContent =
     process.env.NODE_ENV !== "test"
       ? await file?.text()
@@ -25,12 +47,15 @@ export async function parseDataFromTxt(file: File) {
     environmentalIndex: 11,
   };
 
-  // Function to check and convert a value to a number if applicable
-  const convertToNumberIfApplicable = (
+  // Function to check and convert a value to a number if applicable or replace empty strings with null
+  const convertToNumberOrReplaceEmpty = (
     value: string,
     eventType: string,
     index: number
   ) => {
+    if (value === "") {
+      return null; // Replace empty strings with null
+    }
     if (
       eventType === "kill" &&
       (index === killSkipIndexes.eventAbilityIndex ||
@@ -50,11 +75,11 @@ export async function parseDataFromTxt(file: File) {
       if (!categorizedData[eventType]) {
         categorizedData[eventType] = [headers[eventType]]; // Prepend headers
       }
-      // Convert values to numbers where applicable
+      // Convert values to numbers where applicable and replace empty strings with null
       const convertedLine = line.map((value, index) =>
-        convertToNumberIfApplicable(value, eventType, index)
+        convertToNumberOrReplaceEmpty(value, eventType, index)
       );
-      // @ts-expect-error
+      // @ts-expect-error - type is agnostic
       categorizedData[eventType].push(convertedLine);
     }
   });
