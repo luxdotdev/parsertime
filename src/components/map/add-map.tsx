@@ -11,7 +11,7 @@ import { FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
-import { parseDataFromXLSX } from "@/lib/parser";
+import { parseData } from "@/lib/parser";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
@@ -21,9 +21,12 @@ import { Form, useForm } from "react-hook-form";
 import { z } from "zod";
 import { usePathname } from "next/navigation";
 
-const ACCEPTED_FILE_TYPES = [
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-];
+const XLSX =
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+const TXT = "text/plain";
+
+const ACCEPTED_FILE_TYPES = [XLSX, TXT];
 
 const MAX_FILE_SIZE = 1000000; // 1MB in bytes
 
@@ -57,7 +60,7 @@ export function AddMapCard() {
       duration: 5000,
     });
 
-    const data = await parseDataFromXLSX(file);
+    const data = await parseData(file);
 
     const res = await fetch(`/api/add-map?id=${scrimId}`, {
       method: "POST",
@@ -165,7 +168,7 @@ export function AddMapCard() {
                       type="file"
                       onChange={handleChange}
                       className="w-64"
-                      accept=".xlsx"
+                      accept=".xlsx, .txt"
                     />
                     <div className="pl-2" />
                   </CardContent>

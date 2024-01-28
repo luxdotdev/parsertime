@@ -32,7 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-import { parseDataFromXLSX } from "@/lib/parser";
+import { parseData } from "@/lib/parser";
 import { cn } from "@/lib/utils";
 import { ParserData } from "@/types/parser";
 import Link from "next/link";
@@ -41,6 +41,7 @@ import { useEffect, useState } from "react";
 
 const ACCEPTED_FILE_TYPES = [
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "text/plain",
 ];
 
 const MAX_FILE_SIZE = 1000000; // 1MB in bytes
@@ -96,12 +97,12 @@ export function ScrimCreationForm() {
       if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
         toast({
           title: "Invalid file type",
-          description: ".xlsx files are accepted.",
+          description: ".xlsx and .txt files are accepted.",
         });
         return;
       }
 
-      const data = await parseDataFromXLSX(file);
+      const data = await parseData(file);
       setMapData(data);
       console.log(data);
     }
@@ -243,7 +244,7 @@ export function ScrimCreationForm() {
                   onChange={handleFile}
                   type="file"
                   className="w-64"
-                  accept=".xlsx"
+                  accept=".xlsx, .txt"
                 />
               </FormControl>
               <FormDescription>
