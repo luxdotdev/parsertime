@@ -5,6 +5,88 @@ import * as XLSX from "xlsx";
 import prisma from "@/lib/prisma";
 import { CreateMapRequestData } from "@/app/api/(scrim)/add-map/route";
 import { toTitleCase } from "@/lib/utils";
+import { headers } from "@/lib/headers";
+
+export async function parseDataFromTxt(file: File) {
+  const fileContent =
+    process.env.NODE_ENV !== "test"
+      ? await file?.text()
+      : (file as unknown as string); // cast to string because we're in test mode
+
+  const lines = fileContent!.split("\n").map((line) => line.split(","));
+
+  // remove first element of each array
+  lines.forEach((line) => line.shift());
+
+  // Indexes for the 'kill' event type to skip parsing
+  const killSkipIndexes = {
+    eventAbilityIndex: 8,
+    criticalHitIndex: 10,
+    environmentalIndex: 11,
+  };
+
+  // Function to check and convert a value to a number if applicable
+  const convertToNumberIfApplicable = (
+    value: string,
+    eventType: string,
+    index: number
+  ) => {
+    if (
+      eventType === "kill" &&
+      (index === killSkipIndexes.eventAbilityIndex ||
+        index === killSkipIndexes.criticalHitIndex ||
+        index === killSkipIndexes.environmentalIndex)
+    ) {
+      return value; // Skip conversion for specific fields in 'kill' event
+    }
+    const parsedValue = parseFloat(value);
+    return isNaN(parsedValue) ? value : parsedValue;
+  };
+
+  const categorizedData: Record<string, string[][]> = {};
+  lines.forEach((line) => {
+    const eventType = line[0];
+    if (headers[eventType]) {
+      if (!categorizedData[eventType]) {
+        categorizedData[eventType] = [headers[eventType]]; // Prepend headers
+      }
+      // Convert values to numbers where applicable
+      const convertedLine = line.map((value, index) =>
+        convertToNumberIfApplicable(value, eventType, index)
+      );
+      // @ts-expect-error
+      categorizedData[eventType].push(convertedLine);
+    }
+  });
+
+  // Create a new workbook
+  const workbook = XLSX.utils.book_new();
+
+  // Get event types sorted alphabetically
+  const sortedEventTypes = Object.keys(categorizedData).sort();
+
+  // Create a sheet for each sorted event type and add data
+  sortedEventTypes.forEach((eventType) => {
+    const ws = XLSX.utils.aoa_to_sheet(categorizedData[eventType]);
+    XLSX.utils.book_append_sheet(workbook, ws, eventType);
+  });
+
+  const sheetName = workbook.SheetNames as EventType[];
+
+  const result: Partial<ParserData> = {};
+
+  // for each sheet, convert to json and add it to the result object.
+  for (const sheet of sheetName) {
+    const json = XLSX.utils
+      .sheet_to_json(workbook.Sheets[sheet], {
+        header: 1,
+      })
+      .slice(1);
+    result[sheet] = json as any; // cast to any because we don't know the exact type
+  }
+
+  return result as ParserData; // cast to ParserData because we know the structure matches
+}
 
 export async function parseDataFromXLSX(file: File) {
   const reader = new FileReader();
