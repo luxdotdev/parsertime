@@ -1,7 +1,6 @@
 import { auth } from "@/lib/auth";
 import { createNewScrimFromParsedData } from "@/lib/parser";
 import { ParserData } from "@/types/parser";
-import prisma from "@/lib/prisma";
 
 export type CreateScrimRequestData = {
   name: string;
