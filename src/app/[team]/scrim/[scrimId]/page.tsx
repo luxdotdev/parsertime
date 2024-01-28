@@ -70,7 +70,7 @@ export default async function ScrimDashboardPage({
                       href={`/${params.team}/scrim/${params.scrimId}/map/${map.id}`}
                     >
                       <CardHeader>
-                        <h3 className="text-3xl font-semibold tracking-tight z-10 text-stroke">
+                        <h3 className="text-3xl font-semibold tracking-tight z-10 text-stroke dark:dark-text-stroke">
                           {map.name}
                         </h3>
                       </CardHeader>

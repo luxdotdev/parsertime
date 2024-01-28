@@ -77,6 +77,10 @@
 
 @layer components {
   .text-stroke {
+    -webkit-text-stroke: 0.5px white;
+  }
+
+  .dark-text-stroke {
     -webkit-text-stroke: 1px black;
   }
 
