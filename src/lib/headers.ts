@@ -79,6 +79,14 @@ export const headers: Record<string, string[]> = {
     "Player Hero",
     "Hero Duplicated",
   ],
+  payload_progress: [
+    "event_type",
+    "Match Time",
+    "Round Number",
+    "Capturing Team",
+    "Objective Index",
+    "Payload Capture Progress",
+  ],
   player_stat: [
     "event_type",
     "Match Time",
