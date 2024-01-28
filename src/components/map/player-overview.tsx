@@ -2,12 +2,11 @@ import { SelectedPlayerContext } from "@/components/map/player-switcher";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ParserDataContext } from "@/lib/parser-context";
 import { aggregatePlayerData } from "@/lib/player-table-data";
-import { table } from "console";
 import { useContext } from "react";
 
 export function PlayerOverview() {
   const { data } = useContext(ParserDataContext);
-  let { selectedPlayer } = useContext(SelectedPlayerContext);
+  const { selectedPlayer } = useContext(SelectedPlayerContext);
 
   const finalRound = data?.round_end[data?.round_end.length - 1];
 
