@@ -7,7 +7,7 @@ import prisma from "@/lib/prisma";
 export async function AdminScrimView() {
   const scrimData = await prisma.scrim.findMany();
 
-  let scrims = [];
+  const scrims = [];
 
   for (const scrim of scrimData) {
     const teamName = await prisma.team.findFirst({

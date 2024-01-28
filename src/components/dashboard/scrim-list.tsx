@@ -8,7 +8,7 @@ import prisma from "@/lib/prisma";
 export async function ScrimList() {
   const session = await auth();
 
-  let scrims = [];
+  const scrims = [];
 
   const userData = await prisma.user.findMany({
     where: {
