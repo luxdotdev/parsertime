@@ -1,21 +1,15 @@
 import { AddMapCard } from "@/components/map/add-map";
 import { Search } from "@/components/map/search";
 import { ModeToggle } from "@/components/theme-switcher";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { UserNav } from "@/components/user-nav";
 import prisma from "@/lib/prisma";
 import { toKebabCase } from "@/lib/utils";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 
 export default async function ScrimDashboardPage({
   params,
-  searchParams,
 }: {
   params: { team: string; scrimId: string };
   searchParams: { [key: string]: string | string[] | undefined };

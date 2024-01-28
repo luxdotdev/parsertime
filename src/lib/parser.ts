@@ -107,6 +107,7 @@ export async function parseDataFromTXT(file: File) {
         header: 1,
       })
       .slice(1);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     result[sheet] = json as any; // cast to any because we don't know the exact type
   }
 
@@ -134,6 +135,7 @@ export async function parseDataFromXLSX(file: File) {
         header: 1,
       })
       .slice(1);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     result[sheet] = json as any; // cast to any because we don't know the exact type
   }
 

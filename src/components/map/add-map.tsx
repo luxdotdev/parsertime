@@ -1,6 +1,5 @@
 "use client";
 
-import { CreateScrimButton } from "@/components/dashboard/create-scrim";
 import {
   Card,
   CardContent,
@@ -141,7 +140,7 @@ export function AddMapCard() {
         <FormField
           control={form.control}
           name="file"
-          render={({ field }) => (
+          render={() => (
             <>
               <FormItem>
                 <Card

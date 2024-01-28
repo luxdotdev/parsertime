@@ -1,7 +1,6 @@
 "use client";
 
 import { CreateScrimButton } from "@/components/dashboard/create-scrim";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
   Form,
@@ -17,7 +16,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { parseDataFromXLSX } from "@/lib/parser";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";

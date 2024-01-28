@@ -24,7 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PlayerData, aggregatePlayerData } from "@/lib/player-table-data";
-import { PlayerStatRows, ScrimData } from "@/types/prisma";
+import { PlayerStatRows } from "@/types/prisma";
 
 export const columns: ColumnDef<PlayerData>[] = [
   {
