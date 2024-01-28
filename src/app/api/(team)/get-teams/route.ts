@@ -13,7 +13,7 @@ export type GetTeamsResponse = {
   teams: Team[];
 };
 
-export async function GET(req: Request) {
+export async function GET() {
   const session = await auth();
 
   const userId = await prisma.user.findUnique({

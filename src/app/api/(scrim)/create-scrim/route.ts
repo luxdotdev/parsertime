@@ -9,7 +9,7 @@ export type CreateScrimRequestData = {
   map: ParserData;
 };
 
-export async function POST(request: Request, response: Response) {
+export async function POST(request: Request) {
   const session = await auth();
 
   const data: CreateScrimRequestData = await request.json();

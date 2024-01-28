@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
-export async function POST(request: Request, response: Response) {
+export async function POST(request: Request) {
   const session = await auth();
 
   const userId = await prisma.user.findUnique({
