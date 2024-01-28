@@ -11,7 +11,7 @@ import { FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
-import { parseData } from "@/lib/parser";
+import { parseDataFromXLSX } from "@/lib/parser";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
@@ -52,7 +52,7 @@ export function AddScrimCard() {
       duration: 5000,
     });
 
-    const data = await parseData(file);
+    const data = await parseDataFromXLSX(file);
 
     const res = await fetch("/api/create-scrim", {
       method: "POST",

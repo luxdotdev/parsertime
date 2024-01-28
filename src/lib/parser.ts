@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 import { CreateMapRequestData } from "@/app/api/(scrim)/add-map/route";
 import { toTitleCase } from "@/lib/utils";
 
-export async function parseData(file: File) {
+export async function parseDataFromXLSX(file: File) {
   const reader = new FileReader();
 
   const data = await new Promise((resolve, reject) => {

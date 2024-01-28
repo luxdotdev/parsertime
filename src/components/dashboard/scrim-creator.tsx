@@ -32,7 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-import { parseData } from "@/lib/parser";
+import { parseDataFromXLSX } from "@/lib/parser";
 import { cn } from "@/lib/utils";
 import { ParserData } from "@/types/parser";
 import Link from "next/link";
@@ -101,7 +101,7 @@ export function ScrimCreationForm() {
         return;
       }
 
-      const data = await parseData(file);
+      const data = await parseDataFromXLSX(file);
       setMapData(data);
       console.log(data);
     }

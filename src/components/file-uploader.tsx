@@ -15,7 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { parseData } from "@/lib/parser";
+import { parseDataFromXLSX } from "@/lib/parser";
 import { useContext } from "react";
 import { ParserDataContext } from "@/lib/parser-context";
 import { useRouter } from "next/navigation";
@@ -63,7 +63,7 @@ export function FileUploaderForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    const result = await parseData(values.file);
+    const result = await parseDataFromXLSX(values.file);
     setData(result);
 
     if (result) {
