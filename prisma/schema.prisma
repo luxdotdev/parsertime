@@ -165,7 +165,7 @@ model DefensiveAssist {
   player_team     String
   player_name     String
   player_hero     String
-  hero_duplicated Int
+  hero_duplicated String
   MapData         MapData?  @relation(fields: [MapDataId], references: [id])
   MapDataId       Int?
 
@@ -305,7 +305,7 @@ model OffensiveAssist {
   player_team     String
   player_name     String
   player_hero     String
-  hero_duplicated Int
+  hero_duplicated String
 
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
@@ -460,7 +460,7 @@ model UltimateCharged {
   player_team     String
   player_name     String
   player_hero     String
-  hero_duplicated Int
+  hero_duplicated String
   ultimate_id     Int
 
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
@@ -478,7 +478,7 @@ model UltimateEnd {
   player_team     String
   player_name     String
   player_hero     String
-  hero_duplicated Int
+  hero_duplicated String
   ultimate_id     Int
 
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
@@ -496,7 +496,7 @@ model UltimateStart {
   player_team     String
   player_name     String
   player_hero     String
-  hero_duplicated Int
+  hero_duplicated String
   ultimate_id     Int
 
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
