@@ -52,7 +52,7 @@ export function AddMapCard() {
     const scrimId = pathname.split("/")[3];
 
     toast({
-      title: "Creating scrim...",
+      title: "Creating map...",
       description: "We are processing your data. Please wait.",
       duration: 5000,
     });
