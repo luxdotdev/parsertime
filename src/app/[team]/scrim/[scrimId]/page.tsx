@@ -1,11 +1,10 @@
-import { DefaultOverview } from "@/components/map/default-overview";
-import { MainNav } from "@/components/map/main-nav";
-import PlayerSwitcher from "@/components/map/player-switcher";
+import { AddMapCard } from "@/components/map/add-map";
 import { Search } from "@/components/map/search";
-import { UserNav } from "@/components/user-nav";
 import { ModeToggle } from "@/components/theme-switcher";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PrismaClient } from "@prisma/client";
+import { Card, CardHeader } from "@/components/ui/card";
+import { UserNav } from "@/components/user-nav";
+import prisma from "@/lib/prisma";
+import Link from "next/link";
 
 export default async function ScrimDashboardPage({
   params,
@@ -14,23 +13,12 @@ export default async function ScrimDashboardPage({
   params: { team: string; scrimId: string };
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const prisma = new PrismaClient();
   const id = parseInt(params.scrimId);
 
-  const uniquePlayerRowsByHeroTimePlayed = await prisma.playerStat.findMany({
+  const maps = await prisma.map.findMany({
     where: {
       scrimId: id,
     },
-    select: {
-      player_name: true,
-      player_team: true,
-      player_hero: true,
-      hero_time_played: true,
-    },
-    orderBy: {
-      hero_time_played: "desc",
-    },
-    distinct: ["player_name"],
   });
 
   return (
@@ -38,10 +26,6 @@ export default async function ScrimDashboardPage({
       <div className="hidden flex-col md:flex">
         <div className="border-b">
           <div className="flex h-16 items-center px-4">
-            <PlayerSwitcher
-              mostPlayedHeroes={uniquePlayerRowsByHeroTimePlayed}
-            />
-            <MainNav className="mx-6" />
             <div className="ml-auto flex items-center space-x-4">
               <Search />
               <ModeToggle />
@@ -53,17 +37,43 @@ export default async function ScrimDashboardPage({
           <div className="flex items-center justify-between space-y-2">
             <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
           </div>
-          <Tabs defaultValue="overview" className="space-y-4">
-            <TabsList>
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
-              <TabsTrigger value="reports">Reports</TabsTrigger>
-              <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            </TabsList>
-            <TabsContent value="overview" className="space-y-4">
-              <DefaultOverview id={id} />
-            </TabsContent>
-          </Tabs>
+          <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight pb-2">
+            Maps
+          </h3>
+          {maps.length > 0 ? (
+            maps.map((map) => (
+              <>
+                <Card className="max-w-md h-28">
+                  <Link
+                    key={map.id}
+                    href={`/${params.team}/scrim/${params.scrimId}/map/${map.id}`}
+                  >
+                    <CardHeader>
+                      <h3 className="text-2xl font-semibold tracking-tight">
+                        {map.name}
+                      </h3>
+                    </CardHeader>
+                    <div className="flex flex-col items-center justify-center space-y-2 h-[36rem]"></div>
+                  </Link>
+                </Card>
+                <div className="pb-1" />
+              </>
+            ))
+          ) : (
+            <Card>
+              <CardHeader>
+                <h3 className="text-2xl font-semibold tracking-tight">
+                  No Maps
+                </h3>
+              </CardHeader>
+              <div className="flex flex-col items-center justify-center space-y-2 h-[36rem]">
+                <p className="text-gray-500">
+                  No maps have been created for this scrim.
+                </p>
+              </div>
+            </Card>
+          )}
+          <AddMapCard />
         </div>
       </div>
     </>
