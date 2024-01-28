@@ -50,6 +50,27 @@ export function toTitleCase(str: string): string {
 }
 
 /**
+ * Converts a string to kebab case.
+ *
+ * @param {string} str - The string to convert to kebab case.
+ * @returns {string} The kebab case string.
+ */
+export function toKebabCase(str: string): string {
+  return (
+    str
+      // Normalize the string and remove accents
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      // Convert to lowercase
+      .toLowerCase()
+      // Remove special characters
+      .replace(/[^\w\s]/g, "")
+      // Replace spaces with hyphens
+      .replace(/\s+/g, "-")
+  );
+}
+
+/**
  * Removes duplicate rows from an array of player stat rows based on all fields except the 'id'.
  *
  * This function iterates over the provided array of row objects and identifies duplicates
