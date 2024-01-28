@@ -248,7 +248,7 @@ export function ScrimCreationForm() {
                 />
               </FormControl>
               <FormDescription>
-                Upload the first map of the scrim. Only .xlsx files are
+                Upload the first map of the scrim. Only .xlsx and .txt files are
                 accepted, and max file size is 1MB. You can add more maps after
                 the scrim is created.
               </FormDescription>
