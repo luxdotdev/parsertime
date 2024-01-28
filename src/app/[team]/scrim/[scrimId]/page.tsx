@@ -42,10 +42,9 @@ export default async function ScrimDashboardPage({
           </h3>
           {maps.length > 0 ? (
             maps.map((map) => (
-              <>
+              <div key={map.id}>
                 <Card className="max-w-md h-28">
                   <Link
-                    key={map.id}
                     href={`/${params.team}/scrim/${params.scrimId}/map/${map.id}`}
                   >
                     <CardHeader>
@@ -57,7 +56,7 @@ export default async function ScrimDashboardPage({
                   </Link>
                 </Card>
                 <div className="pb-1" />
-              </>
+              </div>
             ))
           ) : (
             <Card>
