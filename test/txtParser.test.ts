@@ -1,7 +1,7 @@
 import { test, expect } from "vitest";
 import * as fs from "fs";
 import * as XLSX from "xlsx";
-import { parseDataFromTxt } from "@/lib/parser";
+import { parseDataFromTXT } from "@/lib/parser";
 import { EventType, ParserData } from "@/types/parser";
 
 test("should be equivalent to control data", async () => {
@@ -11,9 +11,24 @@ test("should be equivalent to control data", async () => {
   );
 
   // @ts-expect-error - cannot pass File type in node
-  const workbook1 = await parseDataFromTxt(file);
+  const workbook1 = await parseDataFromTXT(file);
   const workbook2 = await local_parseDataFromXLSX(
     "./test/samples/Log-2024-01-22-20-02-45_parsed.xlsx"
+  );
+
+  expect(workbook2).toEqual(workbook1);
+});
+
+test("should be equivalent to control data v2", async () => {
+  const file = await fs.readFileSync(
+    "./test/samples/Log-2024-01-22-20-21-43.txt",
+    "utf8"
+  );
+
+  // @ts-expect-error - cannot pass File type in node
+  const workbook1 = await parseDataFromTXT(file);
+  const workbook2 = await local_parseDataFromXLSX(
+    "./test/samples/Log-2024-01-22-20-21-43_parsed.xlsx"
   );
 
   expect(workbook2).toEqual(workbook1);

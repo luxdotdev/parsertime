@@ -1,0 +1,498 @@
+[00:00:00] ,match_start,0,Watchpoint: Gibraltar,Escort,Team 1,Team 2
+[00:00:00] ,round_start,0,1,Team 2,0,0,0
+[00:00:12] ,hero_spawn,0,Team 2,SwagWolf18,Brigitte,0,0
+[00:00:13] ,hero_spawn,0,Team 2,Aramori,Ana,0,0
+[00:00:14] ,hero_spawn,0,Team 2,Naku,Pharah,0,0
+[00:00:16] ,hero_spawn,0,Team 2,YourDeepRest,Ashe,0,0
+[00:00:23] ,hero_spawn,0,Team 1,DanielPlays,Winston,0,0
+[00:00:24] ,hero_spawn,0,Team 2,Blåhaj,Ramattra,0,0
+[00:00:24] ,hero_spawn,0,Team 1,Spingar,Widowmaker,0,0
+[00:00:27] ,hero_swap,0,Team 2,Blåhaj,Winston,Ramattra,0
+[00:00:32] ,hero_spawn,0,Team 1,Flakies,Genji,0,0
+[00:00:42] ,hero_spawn,0,Team 1,Georan,Brigitte,0,0
+[00:00:43] ,hero_spawn,0,Team 1,YAI,Ana,0,0
+[00:01:10] ,hero_swap,0,Team 2,Naku,Genji,Pharah,0
+[00:01:22] ,hero_swap,0,Team 2,YourDeepRest,Echo,Ashe,0
+[00:01:26] ,hero_swap,0,Team 2,Naku,Ashe,Genji,0
+[00:01:29] ,hero_swap,0,Team 2,YourDeepRest,Bastion,Echo,0
+[00:01:30] ,hero_swap,0,Team 1,Flakies,Tracer,Genji,0
+[00:01:36] ,hero_swap,0,Team 2,Naku,Sojourn,Ashe,0
+[00:01:39] ,hero_swap,0,Team 2,YourDeepRest,Ashe,Bastion,0
+[00:01:43] ,hero_swap,0,Team 2,Naku,Genji,Sojourn,0
+[00:02:00] ,setup_complete,0,1,239.99
+[00:02:24] ,payload_progress,24.06,1,Team 2,0,10.02
+[00:02:32] ,kill,31.87,Team 1,Flakies,Tracer,Team 2,SwagWolf18,Brigitte,Primary Fire,1.60,0,0
+[00:02:32] ,defensive_assist,32.00,Team 1,YAI,Ana,0
+[00:02:33] ,defensive_assist,32.11,Team 1,Georan,Brigitte,0
+[00:02:57] ,kill,56.89,Team 1,DanielPlays,Winston,Team 2,Naku,Genji,Primary Fire,4.68,0,0
+[00:02:57] ,offensive_assist,56.99,Team 1,Georan,Brigitte,0
+[00:02:57] ,defensive_assist,56.99,Team 1,Georan,Brigitte,0
+[00:02:58] ,defensive_assist,57.37,Team 1,YAI,Ana,0
+[00:03:13] ,kill,72.54,Team 2,YourDeepRest,Ashe,Team 1,Flakies,Tracer,Primary Fire,70,0,0
+[00:03:13] ,ultimate_charged,72.78,Team 2,Aramori,Ana,0,1
+[00:03:13] ,ultimate_charged,72.99,Team 1,DanielPlays,Winston,0,1
+[00:03:13] ,offensive_assist,72.99,Team 2,SwagWolf18,Brigitte,0
+[00:03:13] ,defensive_assist,72.99,Team 2,SwagWolf18,Brigitte,0
+[00:03:20] ,ultimate_start,79.45,Team 2,Aramori,Ana,0,1
+[00:03:21] ,ultimate_start,80.84,Team 1,DanielPlays,Winston,0,1
+[00:03:23] ,ultimate_charged,82.36,Team 1,YAI,Ana,0,1
+[00:03:25] ,ultimate_charged,84.68,Team 2,Blåhaj,Winston,0,1
+[00:03:26] ,ultimate_start,85.24,Team 2,Blåhaj,Winston,0,1
+[00:03:28] ,ultimate_end,87.58,Team 2,Aramori,Ana,0,1
+[00:03:30] ,payload_progress,89.87,1,Team 2,0,20.02
+[00:03:31] ,ultimate_end,90.84,Team 1,DanielPlays,Winston,0,1
+[00:03:33] ,kill,92.43,Team 2,Naku,Genji,Team 1,Spingar,Widowmaker,Ability 1,35.36,0,0
+[00:03:35] ,ultimate_charged,94.09,Team 1,Georan,Brigitte,0,1
+[00:03:36] ,ultimate_end,95.24,Team 2,Blåhaj,Winston,0,1
+[00:03:40] ,ultimate_charged,99.47,Team 1,Flakies,Tracer,0,1
+[00:03:46] ,ultimate_start,105.51,Team 1,YAI,Ana,0,1
+[00:03:47] ,kill,106.39,Team 2,Naku,Genji,Team 1,YAI,Ana,Melee,17.33,0,0
+[00:03:47] ,ultimate_start,106.59,Team 1,Georan,Brigitte,0,1
+[00:03:47] ,defensive_assist,106.76,Team 2,Aramori,Ana,0
+[00:03:47] ,defensive_assist,106.83,Team 2,SwagWolf18,Brigitte,0
+[00:03:49] ,kill,108.97,Team 2,Aramori,Ana,Team 1,Georan,Brigitte,Primary Fire,15.28,0,0
+[00:03:49] ,ultimate_end,108.97,Team 1,Georan,Brigitte,0,1
+[00:03:50] ,defensive_assist,109.11,Team 2,Aramori,Ana,0
+[00:03:50] ,defensive_assist,109.18,Team 2,SwagWolf18,Brigitte,0
+[00:03:52] ,kill,111.40,Team 1,Flakies,Tracer,Team 2,Naku,Genji,Primary Fire,0.32,0,0
+[00:03:52] ,defensive_assist,111.45,Team 1,YAI,Ana,0
+[00:03:52] ,offensive_assist,111.51,Team 1,Georan,Brigitte,0
+[00:03:52] ,defensive_assist,111.51,Team 1,Georan,Brigitte,0
+[00:03:54] ,ultimate_end,113.64,Team 1,YAI,Ana,0,1
+[00:03:55] ,ultimate_start,114.44,Team 1,Flakies,Tracer,0,1
+[00:03:55] ,kill,114.55,Team 2,YourDeepRest,Ashe,Team 1,Flakies,Tracer,Primary Fire,47.48,0,0
+[00:03:55] ,ultimate_end,114.63,Team 1,Flakies,Tracer,0,1
+[00:03:55] ,defensive_assist,114.73,Team 2,Aramori,Ana,0
+[00:03:55] ,defensive_assist,114.81,Team 2,SwagWolf18,Brigitte,0
+[00:03:56] ,kill,115.51,Team 1,Flakies,Tracer,Team 2,SwagWolf18,Brigitte,Ultimate,200,0,0
+[00:04:00] ,kill,120.01,Team 1,Spingar,Widowmaker,Team 2,Aramori,Ana,Primary Fire,200,True,0
+[00:04:03] ,ultimate_charged,122.59,Team 2,YourDeepRest,Ashe,0,1
+[00:04:09] ,payload_progress,128.54,1,Team 2,0,30.02
+[00:04:10] ,ultimate_charged,129.99,Team 1,Spingar,Widowmaker,0,1
+[00:04:13] ,ultimate_start,132.25,Team 2,YourDeepRest,Ashe,0,1
+[00:04:15] ,ultimate_start,134.57,Team 1,Spingar,Widowmaker,0,1
+[00:04:17] ,kill,136.14,Team 1,Spingar,Widowmaker,Team 2,YourDeepRest,Ashe,Primary Fire,65.84,True,0
+[00:04:17] ,defensive_assist,136.35,Team 1,YAI,Ana,0
+[00:04:17] ,defensive_assist,136.36,Team 1,Georan,Brigitte,0
+[00:04:19] ,kill,138.49,Team 2,YourDeepRest,Ashe,Team 1,DanielPlays,Winston,Ultimate,10.97,0,0
+[00:04:21] ,kill,140.56,Team 2,Naku,Genji,Team 1,Spingar,Widowmaker,Secondary Fire,36.40,True,0
+[00:04:21] ,ultimate_end,140.56,Team 1,Spingar,Widowmaker,0,1
+[00:04:25] ,ultimate_end,144.51,Team 2,YourDeepRest,Ashe,0,1
+[00:04:25] ,ultimate_charged,144.62,Team 2,SwagWolf18,Brigitte,0,1
+[00:04:28] ,kill,147.47,Team 2,Naku,Genji,Team 1,Georan,Brigitte,Secondary Fire,10.50,0,0
+[00:04:28] ,offensive_assist,147.73,Team 2,SwagWolf18,Brigitte,0
+[00:04:28] ,defensive_assist,147.73,Team 2,SwagWolf18,Brigitte,0
+[00:04:29] ,objective_updated,148.56,1,0,1
+[00:04:29] ,objective_captured,148.56,1,Team 2,1,0,0,241.43
+[00:04:29] ,ultimate_charged,148.87,Team 2,Naku,Genji,0,1
+[00:04:33] ,kill,152.10,Team 2,SwagWolf18,Brigitte,Team 1,Flakies,Tracer,Primary Fire,33.28,0,0
+[00:04:33] ,defensive_assist,152.42,Team 2,SwagWolf18,Brigitte,0
+[00:04:38] ,kill,157.75,Team 2,Blåhaj,Winston,Team 1,YAI,Ana,Melee,12.60,0,0
+[00:04:38] ,defensive_assist,158.04,Team 2,SwagWolf18,Brigitte,0
+[00:04:43] ,hero_swap,162.10,Team 1,Flakies,Genji,Tracer,162.10
+[00:04:46] ,payload_progress,165.46,1,Team 2,1,40.02
+[00:05:02] ,payload_progress,181.10,1,Team 2,1,50.02
+[00:05:14] ,kill,193.80,Team 2,Blåhaj,Winston,Team 1,Flakies,Genji,Primary Fire,5.19,0,0
+[00:05:15] ,defensive_assist,194.24,Team 2,SwagWolf18,Brigitte,0
+[00:05:15] ,defensive_assist,194.28,Team 2,Aramori,Ana,0
+[00:05:17] ,payload_progress,196.72,1,Team 2,1,60.02
+[00:05:19] ,ultimate_charged,199.01,Team 2,Blåhaj,Winston,0,2
+[00:05:20] ,ultimate_start,199.62,Team 2,Blåhaj,Winston,0,2
+[00:05:24] ,kill,203.11,Team 2,SwagWolf18,Brigitte,Team 1,Georan,Brigitte,Ability 1,26.98,0,0
+[00:05:25] ,kill,204.95,Team 2,YourDeepRest,Ashe,Team 1,DanielPlays,Winston,Primary Fire,14.55,0,0
+[00:05:25] ,defensive_assist,205.10,Team 2,Aramori,Ana,0
+[00:05:29] ,kill,208.71,Team 2,Blåhaj,Winston,Team 1,Spingar,Widowmaker,Ultimate,135,0,True
+[00:05:30] ,objective_updated,209.15,1,1,2
+[00:05:30] ,objective_captured,209.15,1,Team 2,2,0,0,270.87
+[00:05:30] ,ultimate_end,209.64,Team 2,Blåhaj,Winston,0,2
+[00:05:39] ,hero_swap,218.72,Team 1,Spingar,Sojourn,Widowmaker,218.72
+[00:05:44] ,ultimate_charged,223.68,Team 1,YAI,Ana,0,2
+[00:05:44] ,payload_progress,223.70,1,Team 2,2,70.01
+[00:05:46] ,ultimate_charged,225.62,Team 2,Aramori,Ana,0,2
+[00:05:56] ,kill,236.00,Team 2,SwagWolf18,Brigitte,Team 1,DanielPlays,Winston,Ability 1,60.34,0,0
+[00:05:56] ,defensive_assist,236.07,Team 2,SwagWolf18,Brigitte,0
+[00:05:57] ,offensive_assist,236.15,Team 2,Aramori,Ana,0
+[00:05:57] ,defensive_assist,236.15,Team 2,Aramori,Ana,0
+[00:05:59] ,payload_progress,238.28,1,Team 2,2,80.02
+[00:06:08] ,kill,247.55,Team 1,Spingar,Sojourn,Team 2,YourDeepRest,Ashe,Primary Fire,8.84,0,0
+[00:06:12] ,ultimate_start,252.08,Team 2,Aramori,Ana,0,2
+[00:06:13] ,ultimate_start,252.92,Team 2,Naku,Genji,0,1
+[00:06:17] ,ultimate_charged,256.80,Team 1,Georan,Brigitte,0,2
+[00:06:17] ,kill,257.04,Team 2,Aramori,Ana,Team 1,Georan,Brigitte,Primary Fire,3.11,0,0
+[00:06:18] ,defensive_assist,257.23,Team 2,SwagWolf18,Brigitte,0
+[00:06:18] ,kill,257.52,Team 1,DanielPlays,Winston,Team 2,Naku,Genji,Primary Fire,2.98,0,0
+[00:06:18] ,ultimate_end,257.52,Team 2,Naku,Genji,0,1
+[00:06:18] ,ultimate_end,257.53,Team 2,Aramori,Ana,0,2
+[00:06:18] ,offensive_assist,257.63,Team 1,YAI,Ana,0
+[00:06:18] ,defensive_assist,257.63,Team 1,YAI,Ana,0
+[00:06:18] ,offensive_assist,257.66,Team 1,Georan,Brigitte,0
+[00:06:18] ,defensive_assist,257.66,Team 1,Georan,Brigitte,0
+[00:06:20] ,kill,259.24,Team 2,Blåhaj,Winston,Team 1,Flakies,Genji,Primary Fire,5.16,0,0
+[00:06:20] ,defensive_assist,259.55,Team 2,SwagWolf18,Brigitte,0
+[00:06:27] ,payload_progress,266.67,1,Team 2,2,90.02
+[00:06:28] ,kill,268.09,Team 1,Spingar,Sojourn,Team 2,Aramori,Ana,Secondary Fire,128,0,0
+[00:06:30] ,ultimate_charged,269.88,Team 1,DanielPlays,Winston,0,2
+[00:06:34] ,kill,273.13,Team 1,Spingar,Sojourn,Team 2,SwagWolf18,Brigitte,Primary Fire,4.92,0,0
+[00:06:34] ,defensive_assist,273.15,Team 1,YAI,Ana,0
+[00:06:56] ,ultimate_charged,295.34,Team 2,YourDeepRest,Ashe,0,2
+[00:07:00] ,ultimate_charged,299.71,Team 1,Spingar,Sojourn,0,2
+[00:07:06] ,ultimate_start,305.40,Team 1,YAI,Ana,0,2
+[00:07:07] ,ultimate_start,306.81,Team 2,SwagWolf18,Brigitte,0,1
+[00:07:13] ,ultimate_charged,312.17,Team 1,Flakies,Genji,0,2
+[00:07:14] ,ultimate_end,313.53,Team 1,YAI,Ana,0,2
+[00:07:16] ,kill,315.70,Team 2,YourDeepRest,Ashe,Team 1,DanielPlays,Winston,Primary Fire,39.13,0,0
+[00:07:16] ,offensive_assist,315.96,Team 2,SwagWolf18,Brigitte,0
+[00:07:16] ,defensive_assist,315.96,Team 2,SwagWolf18,Brigitte,0
+[00:07:17] ,ultimate_end,316.81,Team 2,SwagWolf18,Brigitte,0,1
+[00:07:19] ,kill,319.06,Team 1,Flakies,Genji,Team 2,Blåhaj,Winston,Secondary Fire,15.38,0,0
+[00:07:20] ,offensive_assist,319.21,Team 1,Georan,Brigitte,0
+[00:07:20] ,defensive_assist,319.21,Team 1,Georan,Brigitte,0
+[00:07:29] ,kill,328.72,Team 2,YourDeepRest,Ashe,Team 1,Spingar,Sojourn,Primary Fire,48.64,0,0
+[00:07:29] ,defensive_assist,329.12,Team 2,SwagWolf18,Brigitte,0
+[00:07:34] ,ultimate_start,333.22,Team 2,YourDeepRest,Ashe,0,2
+[00:07:38] ,kill,338.04,Team 2,YourDeepRest,Ashe,Team 1,Georan,Brigitte,Primary Fire,47.42,True,0
+[00:07:38] ,defensive_assist,338.06,Team 2,SwagWolf18,Brigitte,0
+[00:07:46] ,kill,345.54,Team 2,Naku,Genji,Team 1,Flakies,Genji,Ability 1,38,0,0
+[00:07:46] ,ultimate_end,345.55,Team 2,YourDeepRest,Ashe,0,2
+[00:07:46] ,defensive_assist,345.65,Team 2,Aramori,Ana,0
+[00:07:49] ,kill,348.61,Team 1,Spingar,Sojourn,Team 2,Naku,Genji,Secondary Fire,74,0,0
+[00:07:49] ,kill,349.01,Team 2,Blåhaj,Winston,Team 1,Spingar,Sojourn,Primary Fire,0.95,0,0
+[00:07:52] ,kill,351.72,Team 2,YourDeepRest,Ashe,Team 1,YAI,Ana,Ability 2,1.56,0,0
+[00:07:52] ,defensive_assist,351.73,Team 2,Aramori,Ana,0
+[00:07:53] ,defensive_assist,352.18,Team 2,SwagWolf18,Brigitte,0
+[00:07:54] ,ultimate_charged,354.04,Team 2,Blåhaj,Winston,0,3
+[00:07:55] ,ultimate_start,354.53,Team 1,DanielPlays,Winston,0,2
+[00:07:55] ,ultimate_start,354.84,Team 1,Georan,Brigitte,0,2
+[00:07:55] ,ultimate_charged,355.06,Team 2,Aramori,Ana,0,3
+[00:07:55] ,ultimate_start,355.08,Team 2,Blåhaj,Winston,0,3
+[00:08:05] ,ultimate_end,364.53,Team 1,DanielPlays,Winston,0,2
+[00:08:05] ,ultimate_end,364.83,Team 1,Georan,Brigitte,0,2
+[00:08:05] ,ultimate_end,365.07,Team 2,Blåhaj,Winston,0,3
+[00:08:14] ,ultimate_start,373.63,Team 1,Spingar,Sojourn,0,2
+[00:08:15] ,ultimate_start,374.42,Team 2,Aramori,Ana,0,3
+[00:08:17] ,ultimate_start,376.34,Team 1,Flakies,Genji,0,2
+[00:08:19] ,kill,378.37,Team 1,Flakies,Genji,Team 2,Aramori,Ana,Ultimate,45.24,0,0
+[00:08:22] ,kill,381.42,Team 1,Flakies,Genji,Team 2,YourDeepRest,Ashe,Ultimate,98.74,0,0
+[00:08:22] ,kill,381.79,Team 1,DanielPlays,Winston,Team 2,Naku,Genji,Melee,24.32,0,0
+[00:08:22] ,kill,381.93,Team 1,Spingar,Sojourn,Team 2,Blåhaj,Winston,Ultimate,40.20,0,0
+[00:08:22] ,ultimate_end,381.95,Team 2,Aramori,Ana,0,3
+[00:08:23] ,defensive_assist,382.19,Team 1,Georan,Brigitte,0
+[00:08:23] ,defensive_assist,382.24,Team 1,YAI,Ana,0
+[00:08:23] ,ultimate_end,382.37,Team 1,Spingar,Sojourn,0,2
+[00:08:23] ,kill,383.09,Team 2,SwagWolf18,Brigitte,Team 1,Flakies,Genji,Primary Fire,35.20,0,0
+[00:08:23] ,ultimate_end,383.09,Team 1,Flakies,Genji,0,2
+[00:08:24] ,defensive_assist,383.17,Team 2,SwagWolf18,Brigitte,0
+[00:08:24] ,defensive_assist,383.21,Team 2,Aramori,Ana,0
+[00:08:33] ,kill,392.29,Team 1,DanielPlays,Winston,Team 2,SwagWolf18,Brigitte,Primary Fire,4.25,0,0
+[00:08:33] ,defensive_assist,392.57,Team 1,YAI,Ana,0
+[00:08:33] ,hero_swap,392.79,Team 2,Naku,Tracer,Genji,392.79
+[00:08:56] ,ultimate_charged,416.07,Team 1,YAI,Ana,0,3
+[00:08:59] ,kill,418.68,Team 2,YourDeepRest,Ashe,Team 1,YAI,Ana,Ability 2,1.68,0,0
+[00:08:59] ,offensive_assist,418.89,Team 2,Aramori,Ana,0
+[00:08:59] ,defensive_assist,418.90,Team 2,SwagWolf18,Brigitte,0
+[00:09:03] ,kill,423.10,Team 2,Blåhaj,Winston,Team 1,Georan,Brigitte,Primary Fire,2.19,0,0
+[00:09:03] ,defensive_assist,423.17,Team 2,SwagWolf18,Brigitte,0
+[00:09:03] ,offensive_assist,423.18,Team 2,Aramori,Ana,0
+[00:09:03] ,defensive_assist,423.18,Team 2,Aramori,Ana,0
+[00:09:10] ,ultimate_charged,430.00,Team 2,SwagWolf18,Brigitte,0,2
+[00:09:11] ,ultimate_charged,430.59,Team 2,YourDeepRest,Ashe,0,3
+[00:09:11] ,ultimate_start,431.09,Team 2,SwagWolf18,Brigitte,0,2
+[00:09:12] ,kill,431.82,Team 2,YourDeepRest,Ashe,Team 1,Flakies,Genji,Ability 2,1.47,0,0
+[00:09:12] ,defensive_assist,432.08,Team 2,SwagWolf18,Brigitte,0
+[00:09:12] ,defensive_assist,432.11,Team 2,Aramori,Ana,0
+[00:09:13] ,kill,432.98,Team 2,Naku,Tracer,Team 1,Spingar,Sojourn,Primary Fire,0.26,0,0
+[00:09:13] ,defensive_assist,433.04,Team 2,SwagWolf18,Brigitte,0
+[00:09:16] ,kill,435.81,Team 2,Aramori,Ana,Team 1,DanielPlays,Winston,Primary Fire,13.18,0,0
+[00:09:16] ,offensive_assist,435.86,Team 2,SwagWolf18,Brigitte,0
+[00:09:16] ,defensive_assist,435.86,Team 2,SwagWolf18,Brigitte,0
+[00:09:18] ,ultimate_start,438.20,Team 2,YourDeepRest,Ashe,0,3
+[00:09:21] ,kill,440.57,Team 2,YourDeepRest,Ashe,Team 1,Georan,Brigitte,Ability 1,32.11,0,0
+[00:09:21] ,defensive_assist,441.00,Team 2,SwagWolf18,Brigitte,0
+[00:09:21] ,ultimate_end,441.09,Team 2,SwagWolf18,Brigitte,0,2
+[00:09:23] ,player_stat,442.81,1,Team 2,YourDeepRest,Ashe,20,11,3,11475.37,2098.93,9376.45,0,1883.95,0,2757.03,0,0,0,3,3,0,0,0,8,0,0,24,0.20,0.46,0.18,0,345,119,164,160,73,0.42,442.81
+[00:09:23] ,player_stat,442.81,1,Team 2,YourDeepRest,Echo,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:09:23] ,player_stat,442.81,1,Team 2,YourDeepRest,Bastion,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:09:23] ,player_stat,442.81,1,Team 1,Flakies,Genji,3,3,5,3877.57,1463.38,2414.18,0,1539.35,0,2554.35,0,0,0,1,1,0,0,0,1,0,0,6,0.10,0,0,0,438,63,317,0,0,0.17,280.70
+[00:09:23] ,player_stat,442.81,1,Team 1,Flakies,Tracer,4,3,3,2227.04,546.50,1680.54,0,412.00,212.40,1053.28,0,0,0,1,1,0,0,1,1,0,0,23,0.10,0,0,0,922,237,569,0,0,0.29,162.10
+[00:09:23] ,player_stat,442.81,1,Team 2,Blåhaj,Ramattra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:09:23] ,player_stat,442.81,1,Team 2,Blåhaj,Winston,16,5,2,8181.42,1733.97,6446.45,0,7322.25,0,9094.49,8821.16,0,0,3,3,0,0,1,2,1,0,0,0,0,0,0,25,9,13,0,0,0.41,442.81
+[00:09:23] ,player_stat,442.81,1,Team 1,DanielPlays,Winston,9,4,5,7209.48,1687.17,5507.91,0,7304.38,0,11267.86,7184.52,0,0,2,2,0,0,1,1,0,0,0,0,0,0,0,16,5,10,0,0,0.33,442.81
+[00:09:23] ,player_stat,442.81,1,Team 2,SwagWolf18,Brigitte,10,4,4,2905.07,1015.63,1888.45,6276.43,1374.07,514.56,2191.41,1662.15,22,4,2,2,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,442.81
+[00:09:23] ,player_stat,442.81,1,Team 1,YAI,Ana,2,0,4,3513.86,1986.68,1467.18,7643.20,1073.62,63.27,2026.62,0,8,1,3,2,0,0,0,0,0,0,0,0,0.74,0,0,246,23,71,89,66,0.24,442.81
+[00:09:23] ,player_stat,442.81,1,Team 2,Naku,Pharah,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:09:23] ,player_stat,442.81,1,Team 2,Naku,Genji,14,5,5,4941.22,1782.00,3159.23,0,1749.41,0,2749.41,0,0,0,1,1,0,0,1,4,0,0,15,0.22,0,0,0,417,69,283,0,0,0.20,392.79
+[00:09:23] ,player_stat,442.81,1,Team 2,Naku,Ashe,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:09:23] ,player_stat,442.81,1,Team 2,Naku,Sojourn,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:09:23] ,player_stat,442.81,1,Team 2,Naku,Tracer,6,1,0,939.02,467.70,471.32,0,103.56,85,241.56,0,0,0,0,0,0,0,0,4,0,0,3,0.03,0,0,0,460,89,277,0,0,0.24,50.02
+[00:09:23] ,player_stat,442.81,1,Team 2,Aramori,Ana,10,3,3,4474.38,2003.48,2470.90,6125.71,1002.41,114.05,1602.41,0,11,3,3,3,0,0,0,1,0,0,0,0,0.67,0,0,257,36,86,105,70,0.30,442.81
+[00:09:23] ,player_stat,442.81,1,Team 1,Spingar,Widowmaker,2,2,3,2273.29,1021.48,1251.81,0,608.75,0,1133.75,0,0,0,1,1,0,0,1,0,0,1,4,0.16,0.36,0.30,2,96,25,45,28,10,0.36,218.72
+[00:09:23] ,player_stat,442.81,1,Team 1,Spingar,Sojourn,8,5,3,7036.88,2798.08,4238.80,0,1182.85,0,1782.85,0,0,0,1,1,0,0,3,3,0,0,50,0.18,0,0,0,1075,281,571,0,0,0.33,224.09
+[00:09:23] ,round_end,442.81,1,Team 2,0,3,3,0,0,37.34
+[00:09:23] ,objective_updated,442.81,1,2,3
+[00:09:23] ,objective_captured,442.81,1,Team 2,3,0,0,37.34
+[00:09:23] ,player_stat,442.81,1,Team 1,Georan,Brigitte,5,0,7,3315.88,980,2075.88,6445.18,2450.56,858.06,3994.08,1917.18,7,4,2,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,442.81
+[00:09:31] ,ultimate_end,442.81,Team 2,YourDeepRest,Ashe,0,3
+[00:09:35] ,objective_updated,442.81,2,3,0
+[00:09:35] ,round_start,442.81,2,Team 1,0,3,0
+[00:09:35] ,hero_spawn,442.81,Team 2,Aramori,Ana,,0
+[00:09:36] ,hero_spawn,442.81,Team 2,YourDeepRest,Ashe,,0
+[00:09:37] ,hero_spawn,442.81,Team 2,Blåhaj,Winston,,0
+[00:09:37] ,hero_spawn,442.81,Team 1,Georan,Brigitte,,0
+[00:09:38] ,hero_spawn,442.81,Team 1,DanielPlays,Winston,,0
+[00:09:42] ,hero_spawn,442.81,Team 2,SwagWolf18,Brigitte,,0
+[00:09:49] ,hero_spawn,442.81,Team 2,Naku,Tracer,,0
+[00:09:49] ,hero_spawn,442.81,Team 1,Flakies,Genji,,0
+[00:09:51] ,hero_swap,442.81,Team 1,Flakies,Tracer,Genji,0
+[00:10:07] ,hero_spawn,442.81,Team 1,YAI,Ana,,0
+[00:10:09] ,hero_spawn,442.81,Team 1,Spingar,Sojourn,,0
+[00:10:56] ,hero_swap,442.81,Team 1,Spingar,Widowmaker,Sojourn,0
+[00:11:24] ,setup_complete,442.81,2,239.99
+[00:11:35] ,kill,453.88,Team 2,Naku,Tracer,Team 1,Spingar,Widowmaker,Melee,25,0,0
+[00:11:50] ,payload_progress,469.15,2,Team 1,0,10.02
+[00:12:06] ,payload_progress,484.78,2,Team 1,0,20.02
+[00:12:20] ,kill,498.74,Team 1,Spingar,Widowmaker,Team 2,Aramori,Ana,Primary Fire,200,True,0
+[00:12:40] ,kill,518.98,Team 1,Spingar,Widowmaker,Team 2,YourDeepRest,Ashe,Primary Fire,186.98,True,0
+[00:12:40] ,ultimate_charged,518.98,Team 1,Spingar,Widowmaker,0,3
+[00:12:46] ,payload_progress,524.56,2,Team 1,0,30.02
+[00:12:49] ,ultimate_charged,527.86,Team 1,YAI,Ana,0,4
+[00:12:52] ,ultimate_start,531.15,Team 1,Spingar,Widowmaker,0,3
+[00:13:01] ,kill,540.11,Team 1,Flakies,Tracer,Team 2,Naku,Tracer,Primary Fire,9.84,True,0
+[00:13:02] ,defensive_assist,540.25,Team 1,Georan,Brigitte,0
+[00:13:05] ,ultimate_charged,544.06,Team 1,DanielPlays,Winston,0,3
+[00:13:06] ,kill,544.57,Team 1,Spingar,Widowmaker,Team 2,YourDeepRest,Ashe,Primary Fire,197.76,True,0
+[00:13:07] ,ultimate_end,546.15,Team 1,Spingar,Widowmaker,0,3
+[00:13:14] ,ultimate_charged,553.14,Team 2,Aramori,Ana,0,4
+[00:13:15] ,ultimate_charged,553.46,Team 2,SwagWolf18,Brigitte,0,3
+[00:13:15] ,ultimate_start,553.88,Team 2,Aramori,Ana,0,4
+[00:13:15] ,ultimate_start,554.20,Team 2,SwagWolf18,Brigitte,0,3
+[00:13:16] ,kill,554.72,Team 1,DanielPlays,Winston,Team 2,Aramori,Ana,Melee,27.20,0,0
+[00:13:16] ,defensive_assist,554.77,Team 1,YAI,Ana,0
+[00:13:16] ,ultimate_charged,554.84,Team 2,Blåhaj,Winston,0,4
+[00:13:17] ,ultimate_start,556.08,Team 2,Blåhaj,Winston,0,4
+[00:13:21] ,ultimate_charged,559.84,Team 2,Naku,Tracer,0,2
+[00:13:23] ,ultimate_end,562.00,Team 2,Aramori,Ana,0,4
+[00:13:24] ,kill,562.27,Team 2,SwagWolf18,Brigitte,Team 1,Flakies,Tracer,Ability 1,40,0,0
+[00:13:24] ,offensive_assist,562.35,Team 2,Aramori,Ana,0
+[00:13:25] ,ultimate_start,563.30,Team 2,Naku,Tracer,0,2
+[00:13:25] ,ultimate_end,563.49,Team 2,Naku,Tracer,0,2
+[00:13:25] ,ultimate_start,564.16,Team 1,DanielPlays,Winston,0,3
+[00:13:25] ,ultimate_end,564.19,Team 2,SwagWolf18,Brigitte,0,3
+[00:13:27] ,hero_swap,565.55,Team 2,Aramori,Kiriko,Ana,122.74
+[00:13:27] ,ultimate_end,566.08,Team 2,Blåhaj,Winston,0,4
+[00:13:29] ,ultimate_charged,567.84,Team 1,Flakies,Tracer,0,3
+[00:13:31] ,kill,569.53,Team 1,Georan,Brigitte,Team 2,Blåhaj,Winston,Primary Fire,0.52,0,0
+[00:13:31] ,offensive_assist,569.80,Team 1,YAI,Ana,0
+[00:13:31] ,defensive_assist,569.80,Team 1,YAI,Ana,0
+[00:13:31] ,defensive_assist,569.82,Team 1,Georan,Brigitte,0
+[00:13:34] ,kill,572.86,Team 1,DanielPlays,Winston,Team 2,SwagWolf18,Brigitte,Ultimate,37.91,0,0
+[00:13:34] ,ultimate_charged,572.89,Team 1,Georan,Brigitte,0,3
+[00:13:35] ,ultimate_end,574.15,Team 1,DanielPlays,Winston,0,3
+[00:13:36] ,kill,574.95,Team 1,Georan,Brigitte,Team 2,Naku,Tracer,Primary Fire,12.84,0,0
+[00:13:36] ,defensive_assist,574.97,Team 1,YAI,Ana,0
+[00:13:36] ,defensive_assist,574.98,Team 1,Georan,Brigitte,0
+[00:13:39] ,kill,577.38,Team 2,Aramori,Kiriko,Team 1,DanielPlays,Winston,0,43.67,True,0
+[00:13:39] ,offensive_assist,577.82,Team 2,SwagWolf18,Brigitte,0
+[00:13:39] ,defensive_assist,577.82,Team 2,SwagWolf18,Brigitte,0
+[00:13:42] ,ultimate_charged,580.84,Team 2,YourDeepRest,Ashe,0,4
+[00:13:43] ,ultimate_start,581.61,Team 2,YourDeepRest,Ashe,0,4
+[00:13:46] ,kill,584.42,Team 2,YourDeepRest,Ashe,Team 1,Georan,Brigitte,Primary Fire,133.38,True,0
+[00:13:48] ,hero_swap,586.23,Team 2,SwagWolf18,Lúcio,Brigitte,143.42
+[00:13:49] ,kill,587.59,Team 1,Spingar,Widowmaker,Team 2,YourDeepRest,Ashe,Primary Fire,200,True,0
+[00:13:49] ,ultimate_start,587.84,Team 1,YAI,Ana,0,4
+[00:13:51] ,ultimate_start,590.08,Team 1,Flakies,Tracer,0,3
+[00:13:52] ,ultimate_end,590.27,Team 1,Flakies,Tracer,0,3
+[00:13:54] ,kill,592.30,Team 1,Spingar,Widowmaker,Team 2,Blåhaj,Winston,Primary Fire,114.26,True,0
+[00:13:54] ,offensive_assist,592.34,Team 1,YAI,Ana,0
+[00:13:54] ,ultimate_end,593.02,Team 2,YourDeepRest,Ashe,0,4
+[00:13:56] ,kill,594.69,Team 1,Spingar,Widowmaker,Team 2,Naku,Tracer,Primary Fire,150,True,0
+[00:13:57] ,ultimate_end,595.95,Team 1,YAI,Ana,0,4
+[00:13:59] ,hero_swap,597.58,Team 2,YourDeepRest,Widowmaker,Ashe,154.77
+[00:14:12] ,kill,610.61,Team 2,YourDeepRest,Widowmaker,Team 1,Spingar,Widowmaker,Primary Fire,175,True,0
+[00:14:12] ,kill,610.65,Team 1,YAI,Ana,Team 2,SwagWolf18,Lúcio,Melee,10.56,0,0
+[00:14:12] ,defensive_assist,610.69,Team 1,YAI,Ana,0
+[00:14:17] ,ultimate_start,615.86,Team 1,Georan,Brigitte,0,3
+[00:14:23] ,kill,621.41,Team 1,DanielPlays,Winston,Team 2,Aramori,Kiriko,Melee,24.80,0,0
+[00:14:23] ,offensive_assist,621.50,Team 1,Georan,Brigitte,0
+[00:14:23] ,defensive_assist,621.50,Team 1,Georan,Brigitte,0
+[00:14:23] ,defensive_assist,621.55,Team 1,YAI,Ana,0
+[00:14:24] ,kill,623.13,Team 1,Flakies,Tracer,Team 2,YourDeepRest,Widowmaker,Primary Fire,1,True,0
+[00:14:25] ,defensive_assist,623.36,Team 1,Georan,Brigitte,0
+[00:14:25] ,kill,623.69,Team 1,Georan,Brigitte,Team 2,Blåhaj,Winston,Primary Fire,5.69,0,0
+[00:14:25] ,defensive_assist,623.84,Team 1,Georan,Brigitte,0
+[00:14:25] ,offensive_assist,623.89,Team 1,YAI,Ana,0
+[00:14:25] ,defensive_assist,623.89,Team 1,YAI,Ana,0
+[00:14:27] ,objective_updated,625.74,2,0,1
+[00:14:27] ,objective_captured,625.74,2,Team 1,1,0,0,207.05
+[00:14:27] ,ultimate_end,625.85,Team 1,Georan,Brigitte,0,3
+[00:14:28] ,kill,626.73,Team 1,YAI,Ana,Team 2,Naku,Tracer,Primary Fire,19.40,0,0
+[00:14:28] ,offensive_assist,627.13,Team 1,Georan,Brigitte,0
+[00:14:28] ,defensive_assist,627.13,Team 1,Georan,Brigitte,0
+[00:14:43] ,ultimate_charged,642.10,Team 1,Spingar,Widowmaker,0,4
+[00:14:53] ,payload_progress,651.36,2,Team 1,1,40.01
+[00:14:54] ,ultimate_start,652.73,Team 1,Spingar,Widowmaker,0,4
+[00:15:08] ,kill,666.39,Team 1,Spingar,Widowmaker,Team 2,Blåhaj,Winston,Primary Fire,49.41,True,0
+[00:15:08] ,offensive_assist,666.57,Team 1,Georan,Brigitte,0
+[00:15:08] ,defensive_assist,666.57,Team 1,Georan,Brigitte,0
+[00:15:08] ,offensive_assist,666.61,Team 1,YAI,Ana,0
+[00:15:08] ,defensive_assist,666.61,Team 1,YAI,Ana,0
+[00:15:08] ,payload_progress,667.00,2,Team 1,1,50.01
+[00:15:09] ,ultimate_end,667.73,Team 1,Spingar,Widowmaker,0,4
+[00:15:09] ,kill,667.88,Team 1,Spingar,Widowmaker,Team 2,YourDeepRest,Widowmaker,Primary Fire,175,True,0
+[00:15:11] ,kill,669.78,Team 1,Spingar,Widowmaker,Team 2,Aramori,Kiriko,Primary Fire,200,True,0
+[00:15:17] ,ultimate_charged,676.11,Team 2,Naku,Tracer,0,3
+[00:15:18] ,kill,676.42,Team 1,Spingar,Widowmaker,Team 2,Naku,Tracer,Primary Fire,82.36,True,0
+[00:15:24] ,payload_progress,682.61,2,Team 1,1,60.02
+[00:15:30] ,ultimate_charged,688.62,Team 1,YAI,Ana,0,5
+[00:15:31] ,objective_updated,689.82,2,1,2
+[00:15:31] ,objective_captured,689.82,2,Team 1,2,0,0,232.94
+[00:15:31] ,ultimate_charged,689.99,Team 1,Flakies,Tracer,0,4
+[00:15:32] ,ultimate_start,691.10,Team 1,YAI,Ana,0,5
+[00:15:37] ,ultimate_charged,695.80,Team 2,Aramori,Kiriko,0,5
+[00:15:41] ,ultimate_end,699.22,Team 1,YAI,Ana,0,5
+[00:15:41] ,ultimate_charged,699.49,Team 1,DanielPlays,Winston,0,4
+[00:15:44] ,ultimate_start,702.39,Team 2,Aramori,Kiriko,0,5
+[00:15:44] ,ultimate_end,702.75,Team 2,Aramori,Kiriko,0,5
+[00:15:44] ,ultimate_start,702.85,Team 2,Aramori,Kiriko,0,5
+[00:15:47] ,ultimate_charged,705.46,Team 2,Blåhaj,Winston,0,5
+[00:15:48] ,ultimate_start,706.83,Team 1,DanielPlays,Winston,0,4
+[00:15:51] ,ultimate_start,709.41,Team 2,Blåhaj,Winston,0,5
+[00:15:52] ,ultimate_charged,710.16,Team 2,SwagWolf18,Lúcio,0,4
+[00:15:55] ,ultimate_end,713.52,Team 2,Aramori,Kiriko,0,5
+[00:15:55] ,ultimate_start,713.61,Team 2,SwagWolf18,Lúcio,0,4
+[00:15:55] ,ultimate_charged,713.92,Team 1,Spingar,Widowmaker,0,5
+[00:15:58] ,ultimate_end,716.83,Team 1,DanielPlays,Winston,0,4
+[00:16:01] ,kill,719.27,Team 1,Spingar,Widowmaker,Team 2,YourDeepRest,Widowmaker,Primary Fire,130.33,True,0
+[00:16:01] ,ultimate_end,719.40,Team 2,Blåhaj,Winston,0,5
+[00:16:01] ,defensive_assist,719.64,Team 1,Georan,Brigitte,0
+[00:16:01] ,ultimate_start,720.12,Team 2,Naku,Tracer,0,3
+[00:16:02] ,ultimate_end,720.31,Team 2,Naku,Tracer,0,3
+[00:16:03] ,ultimate_end,721.26,Team 2,SwagWolf18,Lúcio,0,4
+[00:16:08] ,kill,726.98,Team 1,Flakies,Tracer,Team 2,SwagWolf18,Lúcio,Primary Fire,5.00,0,0
+[00:16:12] ,hero_swap,730.82,Team 2,YourDeepRest,Sojourn,Widowmaker,133.24
+[00:16:13] ,kill,732.03,Team 1,DanielPlays,Winston,Team 2,Blåhaj,Winston,Primary Fire,1.85,0,0
+[00:16:14] ,payload_progress,732.26,2,Team 1,2,70.01
+[00:16:14] ,defensive_assist,732.37,Team 1,Georan,Brigitte,0
+[00:16:14] ,offensive_assist,732.43,Team 1,YAI,Ana,0
+[00:16:14] ,defensive_assist,732.43,Team 1,YAI,Ana,0
+[00:16:17] ,kill,735.15,Team 1,Spingar,Widowmaker,Team 2,Naku,Tracer,Melee,26.53,0,0
+[00:16:17] ,defensive_assist,735.17,Team 1,Georan,Brigitte,0
+[00:16:17] ,defensive_assist,735.25,Team 1,YAI,Ana,0
+[00:16:20] ,kill,738.19,Team 1,DanielPlays,Winston,Team 2,Aramori,Kiriko,Primary Fire,4.68,0,0
+[00:16:20] ,offensive_assist,738.50,Team 1,Georan,Brigitte,0
+[00:16:20] ,defensive_assist,738.50,Team 1,Georan,Brigitte,0
+[00:16:22] ,ultimate_charged,740.27,Team 1,Georan,Brigitte,0,4
+[00:16:28] ,hero_swap,746.35,Team 2,SwagWolf18,Brigitte,Lúcio,160.12
+[00:16:28] ,payload_progress,746.79,2,Team 1,2,80.01
+[00:16:30] ,hero_swap,748.19,Team 2,Aramori,Ana,Kiriko,182.64
+[00:16:38] ,ultimate_start,756.50,Team 1,Spingar,Widowmaker,0,5
+[00:16:49] ,payload_progress,767.68,2,Team 1,2,90.02
+[00:16:53] ,ultimate_end,771.50,Team 1,Spingar,Widowmaker,0,5
+[00:16:58] ,ultimate_start,776.63,Team 1,Flakies,Tracer,0,4
+[00:16:58] ,ultimate_end,776.83,Team 1,Flakies,Tracer,0,4
+[00:16:59] ,kill,777.99,Team 1,Flakies,Tracer,Team 2,YourDeepRest,Sojourn,Ultimate,195,0,0
+[00:17:10] ,kill,788.37,Team 2,SwagWolf18,Brigitte,Team 1,DanielPlays,Winston,Primary Fire,22.73,0,0
+[00:17:10] ,offensive_assist,788.71,Team 2,Aramori,Ana,0
+[00:17:10] ,defensive_assist,788.85,Team 2,SwagWolf18,Brigitte,0
+[00:17:10] ,kill,789.11,Team 1,Flakies,Tracer,Team 2,Blåhaj,Winston,Primary Fire,5.58,True,0
+[00:17:23] ,ultimate_charged,801.45,Team 1,YAI,Ana,0,6
+[00:17:24] ,ultimate_start,802.16,Team 1,YAI,Ana,0,6
+[00:17:32] ,ultimate_end,810.28,Team 1,YAI,Ana,0,6
+[00:17:36] ,ultimate_charged,814.76,Team 2,Naku,Tracer,0,4
+[00:17:37] ,ultimate_start,815.99,Team 2,Naku,Tracer,0,4
+[00:17:38] ,ultimate_end,816.18,Team 2,Naku,Tracer,0,4
+[00:17:39] ,kill,817.32,Team 2,Naku,Tracer,Team 1,YAI,Ana,Ultimate,195,0,0
+[00:17:39] ,kill,817.80,Team 2,Blåhaj,Winston,Team 1,Spingar,Widowmaker,Primary Fire,2.80,0,0
+[00:17:39] ,defensive_assist,817.97,Team 2,SwagWolf18,Brigitte,0
+[00:17:43] ,kill,821.94,Team 2,YourDeepRest,Sojourn,Team 1,Flakies,Tracer,Primary Fire,2.94,True,0
+[00:17:44] ,defensive_assist,822.19,Team 2,SwagWolf18,Brigitte,0
+[00:17:46] ,kill,824.51,Team 2,Blåhaj,Winston,Team 1,Georan,Brigitte,Primary Fire,0.90,0,0
+[00:17:46] ,defensive_assist,824.93,Team 2,Aramori,Ana,0
+[00:17:57] ,hero_swap,835.82,Team 1,Spingar,Echo,Widowmaker,393.01
+[00:18:13] ,ultimate_charged,851.52,Team 1,Flakies,Tracer,0,5
+[00:18:18] ,ultimate_charged,856.13,Team 2,Aramori,Ana,0,6
+[00:18:25] ,ultimate_charged,863.63,Team 2,YourDeepRest,Sojourn,0,5
+[00:18:25] ,kill,863.63,Team 2,YourDeepRest,Sojourn,Team 1,Spingar,Echo,Secondary Fire,158.26,True,0
+[00:18:30] ,ultimate_charged,868.66,Team 2,SwagWolf18,Brigitte,0,5
+[00:18:30] ,kill,868.70,Team 2,Blåhaj,Winston,Team 1,Flakies,Tracer,Melee,29.31,0,0
+[00:18:31] ,defensive_assist,869.11,Team 2,Aramori,Ana,0
+[00:18:31] ,offensive_assist,869.18,Team 2,SwagWolf18,Brigitte,0
+[00:18:31] ,defensive_assist,869.18,Team 2,SwagWolf18,Brigitte,0
+[00:18:42] ,ultimate_charged,880.32,Team 2,Blåhaj,Winston,0,6
+[00:19:03] ,ultimate_charged,901.46,Team 1,DanielPlays,Winston,0,5
+[00:19:05] ,ultimate_start,903.49,Team 1,Flakies,Tracer,0,5
+[00:19:05] ,ultimate_end,903.68,Team 1,Flakies,Tracer,0,5
+[00:19:06] ,kill,904.58,Team 1,Flakies,Tracer,Team 2,SwagWolf18,Brigitte,Ultimate,200,0,0
+[00:19:07] ,ultimate_start,905.68,Team 2,YourDeepRest,Sojourn,0,5
+[00:19:08] ,ultimate_start,906.99,Team 2,Aramori,Ana,0,6
+[00:19:09] ,kill,908.02,Team 2,YourDeepRest,Sojourn,Team 1,Flakies,Tracer,Ultimate,65,0,0
+[00:19:10] ,offensive_assist,908.11,Team 2,Aramori,Ana,0
+[00:19:10] ,defensive_assist,908.11,Team 2,Aramori,Ana,0
+[00:19:10] ,offensive_assist,908.15,Team 2,SwagWolf18,Brigitte,0
+[00:19:10] ,ultimate_start,908.56,Team 1,Georan,Brigitte,0,4
+[00:19:12] ,kill,911.01,Team 2,YourDeepRest,Sojourn,Team 1,Spingar,Echo,Ultimate,32.98,0,0
+[00:19:13] ,offensive_assist,911.41,Team 2,Aramori,Ana,0
+[00:19:13] ,ultimate_start,911.70,Team 2,Blåhaj,Winston,0,6
+[00:19:15] ,kill,913.90,Team 2,YourDeepRest,Sojourn,Team 1,YAI,Ana,Ultimate,152.89,0,0
+[00:19:16] ,offensive_assist,914.22,Team 2,Aramori,Ana,0
+[00:19:16] ,ultimate_end,914.41,Team 2,YourDeepRest,Sojourn,0,5
+[00:19:17] ,ultimate_end,915.12,Team 2,Aramori,Ana,0,6
+[00:19:18] ,kill,916.22,Team 1,Georan,Brigitte,Team 2,YourDeepRest,Sojourn,Primary Fire,28.50,0,0
+[00:19:18] ,ultimate_charged,916.69,Team 2,Naku,Tracer,0,5
+[00:19:20] ,ultimate_end,918.56,Team 1,Georan,Brigitte,0,4
+[00:19:22] ,ultimate_start,920.04,Team 2,SwagWolf18,Brigitte,0,5
+[00:19:22] ,hero_swap,921.00,Team 1,Spingar,Genji,Echo,85.19
+[00:19:23] ,ultimate_end,921.69,Team 2,Blåhaj,Winston,0,6
+[00:19:25] ,kill,923.42,Team 2,Blåhaj,Winston,Team 1,Georan,Brigitte,Melee,1.16,0,0
+[00:19:25] ,offensive_assist,923.61,Team 2,Aramori,Ana,0
+[00:19:25] ,defensive_assist,923.61,Team 2,Aramori,Ana,0
+[00:19:25] ,defensive_assist,923.64,Team 2,SwagWolf18,Brigitte,0
+[00:19:25] ,ultimate_start,923.90,Team 1,DanielPlays,Winston,0,5
+[00:19:32] ,ultimate_end,930.04,Team 2,SwagWolf18,Brigitte,0,5
+[00:19:35] ,ultimate_end,933.89,Team 1,DanielPlays,Winston,0,5
+[00:19:38] ,ultimate_start,936.11,Team 2,Naku,Tracer,0,5
+[00:19:38] ,ultimate_end,936.31,Team 2,Naku,Tracer,0,5
+[00:19:38] ,hero_swap,936.42,Team 1,Georan,Kiriko,Brigitte,493.61
+[00:19:38] ,kill,936.59,Team 2,YourDeepRest,Sojourn,Team 1,DanielPlays,Winston,Primary Fire,6.02,0,0
+[00:19:38] ,ultimate_charged,936.61,Team 1,YAI,Ana,0,7
+[00:19:38] ,defensive_assist,936.77,Team 2,Aramori,Ana,0
+[00:19:38] ,offensive_assist,936.80,Team 2,SwagWolf18,Brigitte,0
+[00:19:38] ,defensive_assist,936.80,Team 2,SwagWolf18,Brigitte,0
+[00:19:38] ,kill,936.96,Team 1,YAI,Ana,Team 2,Naku,Tracer,Primary Fire,16.72,0,0
+[00:19:41] ,ultimate_start,939.30,Team 1,YAI,Ana,0,7
+[00:19:41] ,kill,939.74,Team 2,Blåhaj,Winston,Team 1,Flakies,Tracer,Melee,2.44,0,0
+[00:19:41] ,kill,939.78,Team 2,YourDeepRest,Sojourn,Team 1,YAI,Ana,Secondary Fire,182,True,0
+[00:19:42] ,defensive_assist,940.03,Team 2,SwagWolf18,Brigitte,0
+[00:19:42] ,defensive_assist,940.03,Team 2,SwagWolf18,Brigitte,0
+[00:19:45] ,kill,943.84,Team 2,SwagWolf18,Brigitte,Team 1,Spingar,Genji,Primary Fire,7.39,0,0
+[00:19:45] ,ultimate_end,943.85,Team 1,YAI,Ana,0,7
+[00:19:46] ,offensive_assist,944.24,Team 2,Aramori,Ana,0
+[00:19:46] ,defensive_assist,944.24,Team 2,Aramori,Ana,0
+[00:19:46] ,defensive_assist,944.27,Team 2,SwagWolf18,Brigitte,0
+[00:19:49] ,round_end,947.39,2,Team 1,2,3,2,0,0,0
+[00:19:49] ,match_end,947.39,2,2,3
+[00:19:49] ,player_stat,947.39,2,Team 2,YourDeepRest,Ashe,22,12,6,14549.37,2864.27,11685.10,0,2215.25,0,3688.33,0,0,0,4,4,0,0,0,10,0,0,27,0.18,0.47,0.15,1,442,154,204,197,93,0.43,597.58
+[00:19:49] ,player_stat,947.39,2,Team 2,YourDeepRest,Echo,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:19:49] ,player_stat,947.39,2,Team 2,YourDeepRest,Bastion,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:19:49] ,player_stat,947.39,2,Team 2,YourDeepRest,Widowmaker,1,1,3,972.93,369.76,603.17,0,238.62,0,917.13,0,0,0,0,0,0,0,1,0,0,0,1,0.06,0.25,0.20,1,73,16,30,20,5,0.35,133.24
+[00:19:49] ,player_stat,947.39,2,Team 2,YourDeepRest,Sojourn,10,7,2,3717.27,1322.25,2395.02,0,822.05,0,1222.05,0,0,0,1,1,0,0,0,4,0,0,26,0.13,0,0,0,921,195,595,0,0,0.25,216.57
+[00:19:49] ,player_stat,947.39,2,Team 1,Flakies,Genji,3,3,5,3877.57,1463.38,2414.18,0,1539.35,0,2554.35,0,0,0,1,1,0,0,0,1,0,0,6,0.10,0,0,0,438,63,317,0,0,0.17,280.70
+[00:19:49] ,player_stat,947.39,2,Team 1,Flakies,Tracer,17,9,8,10774.55,3795.01,6894.55,0,1686.00,1165.83,4041.76,0,0,0,4,4,0,0,3,7,0,0,147,0.14,0,0,0,4634,1059,2887,0,0,0.27,666.68
+[00:19:49] ,player_stat,947.39,2,Team 2,Blåhaj,Ramattra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:19:49] ,player_stat,947.39,2,Team 2,Blåhaj,Winston,25,10,8,15136.44,2747.11,12388.32,0,13814.17,0,19458.48,15922.75,0,0,6,6,0,0,1,7,1,0,0,0,0,0,0,58,22,33,0,0,0.40,947.39
+[00:19:49] ,player_stat,947.39,2,Team 1,DanielPlays,Winston,19,9,8,14792.93,2707.40,12071.13,0,15068.63,0,22726.59,15049.35,0,0,5,5,0,0,2,3,0,0,0,0,0,0,0,38,10,23,0,0,0.30,947.39
+[00:19:49] ,player_stat,947.39,2,Team 2,SwagWolf18,Brigitte,18,7,6,5802.03,1855.63,3945.40,11829.49,3251.62,1276.54,4468.96,3225.38,32,8,4,4,0,0,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,787.27
+[00:19:49] ,player_stat,947.39,2,Team 2,SwagWolf18,Lúcio,0,0,2,1965.47,860,1105.47,1269.69,885.26,286.75,1286.26,0,0,0,1,1,0,0,0,0,0,0,4,0.10,0,0,0,237,42,155,0,0,0.21,160.12
+[00:19:49] ,player_stat,947.39,2,Team 1,YAI,Ana,10,3,7,7207.81,3628.64,3384.17,15155.88,2085.06,139.11,3653.06,0,17,6,7,6,0,0,0,2,0,0,0,0,0.70,0,0,501,49,152,187,131,0.24,947.39
+[00:19:49] ,player_stat,947.39,2,Team 2,Naku,Pharah,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:19:49] ,player_stat,947.39,2,Team 2,Naku,Genji,14,5,5,4941.22,1782.00,3159.23,0,1749.41,0,2749.41,0,0,0,1,1,0,0,1,4,0,0,15,0.22,0,0,0,417,69,283,0,0,0.20,392.79
+[00:19:49] ,player_stat,947.39,2,Team 2,Naku,Ashe,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:19:49] ,player_stat,947.39,2,Team 2,Naku,Sojourn,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:19:49] ,player_stat,947.39,2,Team 2,Naku,Tracer,14,3,7,8549.27,2805.27,5744.00,0,1076.75,982.77,3220.61,0,0,0,4,4,0,0,2,6,0,0,87,0.08,0,0,0,4344,1087,2732,0,0,0.28,554.60
+[00:19:49] ,player_stat,947.39,2,Team 2,Aramori,Ana,14,3,5,7848.83,3692.30,4156.53,9784.02,2141.42,301.15,3143.34,0,17,10,5,5,0,0,0,3,0,0,0,0,0.64,0,0,450,61,160,181,116,0.28,764.75
+[00:19:49] ,player_stat,947.39,2,Team 2,Aramori,Kiriko,1,1,3,2044.81,585,1459.81,2301.00,997.45,0,1677.45,0,0,0,1,1,0,0,0,0,0,0,6,0.23,0,0,0,104,26,65,0,0,0.29,182.64
+[00:19:49] ,player_stat,947.39,2,Team 1,Spingar,Widowmaker,20,14,6,9646.87,2118.46,7527.41,0,1708.13,0,2758.13,0,0,0,4,4,1,3,6,3,0,1,26,0.28,0.50,0.43,13,305,92,141,107,54,0.39,611.73
+[00:19:49] ,player_stat,947.39,2,Team 1,Spingar,Sojourn,8,5,3,7036.88,2798.08,4238.80,0,1182.85,0,1782.85,0,0,0,1,1,0,0,3,3,0,0,50,0.18,0,0,0,1075,281,571,0,0,0.33,224.09
+[00:19:49] ,player_stat,947.39,2,Team 1,Spingar,Echo,0,0,2,1281.71,500,781.71,0,473.83,0,873.83,0,0,0,0,0,0,0,0,0,0,0,1,0.03,0,0,0,195,33,137,0,0,0.19,85.19
+[00:19:49] ,player_stat,947.39,2,Team 1,Spingar,Genji,0,0,1,628.47,380,248.47,0,165.58,0,365.58,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,39,9,21,0,0,0.30,26.39
+[00:19:49] ,player_stat,947.39,2,Team 1,Georan,Brigitte,14,4,10,6288.76,1757.16,4271.60,12058.60,5688.77,1973.76,7885.91,3834.23,19,8,4,4,0,0,1,4,0,0,0,0,0,0,0,0,0,0,0,0,0,936.42
+[00:19:49] ,player_stat,947.39,2,Team 1,Georan,Kiriko,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10.97
