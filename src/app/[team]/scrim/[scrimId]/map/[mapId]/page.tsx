@@ -7,6 +7,7 @@ import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
+import { toTitleCase } from "@/lib/utils";
 
 export default async function MapDashboardPage({
   params,
@@ -66,7 +67,7 @@ export default async function MapDashboardPage({
           </div>
           <div className="flex items-center justify-between space-y-2">
             <h2 className="text-3xl font-bold tracking-tight">
-              {mapName?.map_name ?? "Dashboard"}
+              {toTitleCase(mapName?.map_name ?? "Dashboard")}
             </h2>
           </div>
           <Tabs defaultValue="overview" className="space-y-4">
