@@ -35,7 +35,7 @@ export type DefensiveAssistTableRow = [
   player_team: PlayerTeam,
   player_name: string,
   player_hero: HeroName,
-  hero_duplicated: number
+  hero_duplicated: string
 ];
 
 export type HeroSpawnTableRow = [
@@ -115,7 +115,7 @@ export type OffensiveAssistTableRow = [
   player_team: PlayerTeam,
   player_name: string,
   player_hero: HeroName,
-  hero_duplicated: number
+  hero_duplicated: string
 ];
 
 export type PayloadProgressTableRow = [
@@ -214,7 +214,7 @@ export type UltimateChargedTableRow = [
   player_team: PlayerTeam,
   player_name: string,
   player_hero: HeroName,
-  hero_duplicated: number,
+  hero_duplicated: string,
   ultimate_id: number
 ];
 
@@ -224,7 +224,7 @@ export type UltimateEndTableRow = [
   player_team: PlayerTeam,
   player_name: string,
   player_hero: HeroName,
-  hero_duplicated: number,
+  hero_duplicated: string,
   ultimate_id: number
 ];
 
@@ -234,7 +234,7 @@ export type UltimateStartTableRow = [
   player_team: PlayerTeam,
   player_name: string,
   player_hero: HeroName,
-  hero_duplicated: number,
+  hero_duplicated: string,
   ultimate_id: number
 ];
 
