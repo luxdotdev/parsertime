@@ -3,6 +3,7 @@ import { EventType, ParserData } from "@/types/parser";
 import { Session } from "next-auth";
 import * as XLSX from "xlsx";
 import prisma from "@/lib/prisma";
+import { CreateMapRequestData } from "@/app/api/(scrim)/add-map/route";
 
 export async function parseData(file: File) {
   const reader = new FileReader();
@@ -107,6 +108,72 @@ export async function createNewScrimFromParsedData(
   await createUltimateChargedRows(firstMap, scrim, map.id);
   await createUltimateEndRows(firstMap, scrim, map.id);
   await createUltimateStartRows(firstMap, scrim, map.id);
+}
+
+export async function createNewMap(
+  data: CreateMapRequestData,
+  session: Session
+) {
+  const userId = await prisma.user.findUnique({
+    where: {
+      email: session.user?.email ?? "",
+    },
+  });
+
+  if (!userId) {
+    throw new Error("User not found");
+  }
+
+  const mapData = await prisma.mapData.create({
+    data: {
+      scrimId: data.scrimId,
+      userId: userId.id,
+    },
+  });
+
+  const map = await prisma.map.create({
+    data: {
+      name: data.map.match_start[0][2] ?? "New Map",
+      scrimId: data.scrimId,
+      mapData: {
+        connect: {
+          id: mapData.id,
+        },
+      },
+    },
+  });
+
+  await prisma.scrim.update({
+    where: {
+      id: data.scrimId,
+    },
+    data: {
+      maps: {
+        connect: {
+          id: map.id,
+        },
+      },
+    },
+  });
+
+  await createDefensiveAssistsRows(data.map, { id: data.scrimId }, map.id);
+  await createHeroSpawnRows(data.map, { id: data.scrimId }, map.id);
+  await createHeroSwapRows(data.map, { id: data.scrimId }, map.id);
+  await createKillRows(data.map, { id: data.scrimId }, map.id);
+  await createMatchEndRows(data.map, { id: data.scrimId }, map.id);
+  await createMatchStartRows(data.map, { id: data.scrimId }, map.id);
+  await createObjectiveCapturedRows(data.map, { id: data.scrimId }, map.id);
+  await createObjectiveUpdatedRows(data.map, { id: data.scrimId }, map.id);
+  await createOffensiveAssistRows(data.map, { id: data.scrimId }, map.id);
+  await createPayloadProgressRows(data.map, { id: data.scrimId }, map.id);
+  await createPlayerStatRows(data.map, { id: data.scrimId }, map.id);
+  await createPointProgressRows(data.map, { id: data.scrimId }, map.id);
+  await createRoundEndRows(data.map, { id: data.scrimId }, map.id);
+  await createRoundStartRows(data.map, { id: data.scrimId }, map.id);
+  await createSetupCompleteRows(data.map, { id: data.scrimId }, map.id);
+  await createUltimateChargedRows(data.map, { id: data.scrimId }, map.id);
+  await createUltimateEndRows(data.map, { id: data.scrimId }, map.id);
+  await createUltimateStartRows(data.map, { id: data.scrimId }, map.id);
 }
 
 export async function createDefensiveAssistsRows(
