@@ -1,0 +1,445 @@
+[00:00:00] ,match_start,0,Ilios,Control,Team 1,Team 2
+[00:00:00] ,objective_updated,0,1,0,2
+[00:00:00] ,round_start,0,1,0,0,0,2
+[00:00:10] ,hero_spawn,0,Team 2,Aramori,Genji,0,0
+[00:00:11] ,hero_spawn,0,Team 1,Georan,Lúcio,0,0
+[00:00:19] ,hero_swap,0,Team 2,Aramori,Baptiste,Genji,0
+[00:00:19] ,hero_spawn,0,Team 1,DanielPlays,Doomfist,0,0
+[00:00:21] ,hero_spawn,0,Team 1,YAI,Baptiste,0,0
+[00:00:25] ,hero_swap,0,Team 1,DanielPlays,Mauga,Doomfist,0
+[00:00:35] ,hero_spawn,0,Team 2,SwagWolf18,Lúcio,0,0
+[00:00:41] ,hero_spawn,0,Team 2,Blåhaj,Ramattra,0,0
+[00:00:58] ,hero_swap,0,Team 1,DanielPlays,Doomfist,Mauga,0
+[00:00:59] ,hero_spawn,0,Team 1,Spingar,Tracer,0,0
+[00:01:12] ,hero_spawn,0,Team 1,Flakies,Genji,0,0
+[00:01:16] ,hero_swap,0,Team 1,Flakies,Echo,Genji,0
+[00:01:18] ,hero_spawn,0,Team 2,Naku,Mei,0,0
+[00:01:21] ,hero_spawn,0,Team 2,YourDeepRest,Sojourn,0,0
+[00:01:53] ,hero_swap,0,Team 1,Spingar,Symmetra,Tracer,0
+[00:01:57] ,hero_swap,0,Team 1,DanielPlays,Mauga,Doomfist,0
+[00:01:58] ,hero_swap,0,Team 1,DanielPlays,Ramattra,Mauga,0
+[00:02:03] ,setup_complete,0,1,29.99
+[00:02:07] ,hero_swap,3.62,Team 1,Spingar,Tracer,Symmetra,3.62
+[00:02:30] ,kill,26.82,Team 1,DanielPlays,Ramattra,Team 2,YourDeepRest,Sojourn,Ability 1,49.80,0,0
+[00:02:30] ,defensive_assist,26.83,Team 1,YAI,Baptiste,0
+[00:02:30] ,defensive_assist,27.26,Team 1,Georan,Lúcio,0
+[00:02:31] ,kill,27.65,Team 1,Spingar,Tracer,Team 2,Aramori,Baptiste,Primary Fire,2,0,0
+[00:02:35] ,point_progress,31.89,1,All Teams,2,33.38
+[00:02:36] ,kill,33.38,Team 1,Flakies,Echo,Team 2,Blåhaj,Ramattra,Primary Fire,17.41,True,0
+[00:02:36] ,offensive_assist,33.42,Team 1,Georan,Lúcio,0
+[00:02:36] ,defensive_assist,33.42,Team 1,Georan,Lúcio,0
+[00:02:36] ,defensive_assist,33.46,Team 1,YAI,Baptiste,0
+[00:02:36] ,offensive_assist,33.47,Team 1,DanielPlays,Ramattra,0
+[00:02:38] ,kill,34.94,Team 1,Flakies,Echo,Team 2,Naku,Mei,Ability 2,0.72,0,0
+[00:02:38] ,defensive_assist,35.33,Team 1,YAI,Baptiste,0
+[00:02:39] ,point_progress,36.45,1,All Teams,2,66.74
+[00:02:41] ,hero_swap,37.65,Team 2,Aramori,Moira,Baptiste,37.65
+[00:02:41] ,objective_captured,38.18,1,Team 1,2,0.01,0,0
+[00:02:43] ,kill,40.24,Team 1,Spingar,Tracer,Team 2,SwagWolf18,Lúcio,Primary Fire,2.57,0,0
+[00:02:43] ,offensive_assist,40.42,Team 1,Georan,Lúcio,0
+[00:03:10] ,kill,66.78,Team 2,YourDeepRest,Sojourn,Team 1,Georan,Lúcio,Secondary Fire,22.16,0,0
+[00:03:10] ,defensive_assist,66.85,Team 2,Aramori,Moira,0
+[00:03:14] ,kill,70.56,Team 1,Spingar,Tracer,Team 2,Aramori,Moira,Primary Fire,4.11,0,0
+[00:03:18] ,kill,75.23,Team 2,SwagWolf18,Lúcio,Team 1,Flakies,Echo,Melee,0.60,0,0
+[00:03:20] ,ultimate_charged,76.54,Team 1,Spingar,Tracer,0,1
+[00:03:22] ,kill,78.83,Team 1,DanielPlays,Ramattra,Team 2,Blåhaj,Ramattra,Ability 1,11.26,0,0
+[00:03:22] ,defensive_assist,79.02,Team 1,YAI,Baptiste,0
+[00:03:32] ,ultimate_start,88.96,Team 1,Spingar,Tracer,0,1
+[00:03:32] ,ultimate_end,89.15,Team 1,Spingar,Tracer,0,1
+[00:03:32] ,ultimate_charged,89.42,Team 2,SwagWolf18,Lúcio,0,1
+[00:03:33] ,ultimate_start,89.64,Team 2,SwagWolf18,Lúcio,0,1
+[00:03:36] ,ultimate_charged,93.05,Team 1,Flakies,Echo,0,1
+[00:03:39] ,ultimate_charged,95.95,Team 1,DanielPlays,Ramattra,0,1
+[00:03:40] ,ultimate_start,96.94,Team 1,DanielPlays,Ramattra,0,1
+[00:03:40] ,ultimate_end,97.48,Team 2,SwagWolf18,Lúcio,0,1
+[00:03:42] ,ultimate_charged,98.86,Team 1,YAI,Baptiste,0,1
+[00:03:48] ,ultimate_end,104.57,Team 1,DanielPlays,Ramattra,0,1
+[00:03:50] ,ultimate_start,107.48,Team 1,YAI,Baptiste,0,1
+[00:03:52] ,echo_duplicate_start,108.65,Team 1,Flakies,Echo,Ramattra,1
+[00:03:55] ,echo_duplicate_end,112.44,Team 1,Flakies,Echo,1
+[00:03:58] ,ultimate_charged,114.81,Team 2,YourDeepRest,Sojourn,0,1
+[00:03:59] ,ultimate_start,115.90,Team 2,YourDeepRest,Sojourn,0,1
+[00:04:01] ,ultimate_end,117.99,Team 1,YAI,Baptiste,0,1
+[00:04:05] ,kill,122.27,Team 2,YourDeepRest,Sojourn,Team 1,YAI,Baptiste,Ability 2,9.81,0,0
+[00:04:05] ,offensive_assist,122.31,Team 2,SwagWolf18,Lúcio,0
+[00:04:06] ,defensive_assist,122.70,Team 2,Aramori,Moira,0
+[00:04:08] ,ultimate_end,124.63,Team 2,YourDeepRest,Sojourn,0,1
+[00:04:08] ,kill,124.65,Team 2,YourDeepRest,Sojourn,Team 1,Spingar,Tracer,Secondary Fire,150,True,0
+[00:04:08] ,defensive_assist,125.05,Team 2,Aramori,Moira,0
+[00:04:09] ,kill,125.64,Team 1,DanielPlays,Ramattra,Team 2,SwagWolf18,Lúcio,Ability 1,45.74,0,0
+[00:04:09] ,ultimate_charged,125.71,Team 2,Naku,Mei,0,1
+[00:04:09] ,offensive_assist,125.96,Team 1,Georan,Lúcio,0
+[00:04:09] ,defensive_assist,125.96,Team 1,Georan,Lúcio,0
+[00:04:09] ,defensive_assist,125.99,Team 1,YAI,Baptiste,0
+[00:04:10] ,ultimate_charged,126.84,Team 2,Blåhaj,Ramattra,0,1
+[00:04:10] ,kill,127.02,Team 2,YourDeepRest,Sojourn,Team 1,DanielPlays,Ramattra,Primary Fire,0.69,0,0
+[00:04:10] ,defensive_assist,127.40,Team 2,Aramori,Moira,0
+[00:04:10] ,offensive_assist,127.43,Team 2,SwagWolf18,Lúcio,0
+[00:04:10] ,defensive_assist,127.43,Team 2,SwagWolf18,Lúcio,0
+[00:04:10] ,offensive_assist,127.45,Team 2,Naku,Mei,0
+[00:04:10] ,offensive_assist,127.47,Team 2,Blåhaj,Ramattra,0
+[00:04:13] ,kill,130.22,Team 2,YourDeepRest,Sojourn,Team 1,Flakies,Echo,Secondary Fire,91.65,True,0
+[00:04:13] ,defensive_assist,130.23,Team 2,Aramori,Moira,0
+[00:04:14] ,ultimate_charged,131.05,Team 2,Aramori,Moira,0,1
+[00:04:15] ,kill,132.30,Team 2,YourDeepRest,Sojourn,Team 1,Georan,Lúcio,Primary Fire,0.28,0,0
+[00:04:16] ,defensive_assist,132.59,Team 2,Aramori,Moira,0
+[00:04:16] ,offensive_assist,132.67,Team 2,Blåhaj,Ramattra,0
+[00:04:16] ,point_progress,133.16,1,Team 2,2,33.46
+[00:04:18] ,point_progress,134.49,1,Team 2,2,66.66
+[00:04:19] ,objective_captured,135.84,1,Team 2,2,81.39,0.01,0
+[00:04:28] ,ultimate_charged,144.99,Team 1,Georan,Lúcio,0,1
+[00:04:39] ,ultimate_charged,156.42,Team 1,Spingar,Tracer,0,2
+[00:04:41] ,kill,158.07,Team 1,Spingar,Tracer,Team 2,Blåhaj,Ramattra,Primary Fire,1.47,0,0
+[00:04:41] ,defensive_assist,158.45,Team 1,YAI,Baptiste,0
+[00:04:43] ,kill,160.42,Team 1,Spingar,Tracer,Team 2,Naku,Mei,Primary Fire,1.41,0,0
+[00:04:44] ,defensive_assist,160.79,Team 1,YAI,Baptiste,0
+[00:04:45] ,ultimate_start,161.72,Team 2,Aramori,Moira,0,1
+[00:04:48] ,ultimate_start,164.63,Team 1,Georan,Lúcio,0,1
+[00:04:50] ,point_progress,166.87,1,Team 1,2,33.49
+[00:04:51] ,kill,167.64,Team 2,YourDeepRest,Sojourn,Team 1,Flakies,Echo,Primary Fire,5.60,0,0
+[00:04:52] ,kill,169.05,Team 1,Spingar,Tracer,Team 2,SwagWolf18,Lúcio,Primary Fire,3.12,0,0
+[00:04:52] ,defensive_assist,169.23,Team 1,Georan,Lúcio,0
+[00:04:52] ,defensive_assist,169.26,Team 1,YAI,Baptiste,0
+[00:04:53] ,ultimate_end,170.22,Team 2,Aramori,Moira,0,1
+[00:04:54] ,point_progress,170.92,1,Team 1,2,66.77
+[00:04:55] ,ultimate_end,172.38,Team 1,Georan,Lúcio,0,1
+[00:04:57] ,kill,173.85,Team 1,Georan,Lúcio,Team 2,YourDeepRest,Sojourn,Primary Fire,25.62,True,0
+[00:04:57] ,defensive_assist,173.93,Team 1,Georan,Lúcio,0
+[00:04:58] ,objective_captured,175.24,1,Team 1,2,81.40,32.83,0
+[00:05:06] ,kill,183.31,Team 1,DanielPlays,Ramattra,Team 2,Aramori,Moira,0,0.82,0,0
+[00:05:06] ,offensive_assist,183.34,Team 1,Georan,Lúcio,0
+[00:05:06] ,defensive_assist,183.36,Team 1,YAI,Baptiste,0
+[00:05:15] ,ultimate_start,191.91,Team 2,Naku,Mei,0,1
+[00:05:17] ,ultimate_start,193.84,Team 2,Blåhaj,Ramattra,0,1
+[00:05:18] ,ultimate_charged,195.20,Team 1,Flakies,Echo,0,2
+[00:05:19] ,echo_duplicate_start,196.37,Team 1,Flakies,Echo,Ramattra,2
+[00:05:20] ,kill,196.76,Team 2,Blåhaj,Ramattra,Team 1,YAI,Baptiste,Ultimate,21.20,0,0
+[00:05:20] ,offensive_assist,197.05,Team 2,Naku,Mei,0
+[00:05:21] ,ultimate_end,198.02,Team 2,Naku,Mei,0,1
+[00:05:23] ,ultimate_start,199.86,Team 1,Spingar,Tracer,0,2
+[00:05:23] ,ultimate_end,200.05,Team 1,Spingar,Tracer,0,2
+[00:05:24] ,kill,200.90,Team 1,Spingar,Tracer,Team 2,YourDeepRest,Sojourn,Ultimate,195,0,0
+[00:05:24] ,kill,201.50,Team 1,Flakies,Echo,Team 2,Blåhaj,Ramattra,0,3.58,0,0
+[00:05:24] ,ultimate_end,201.50,Team 2,Blåhaj,Ramattra,0,1
+[00:05:25] ,offensive_assist,201.70,Team 1,Georan,Lúcio,0
+[00:05:30] ,ultimate_charged,206.78,Team 2,SwagWolf18,Lúcio,0,2
+[00:05:30] ,kill,206.99,Team 1,Spingar,Tracer,Team 2,SwagWolf18,Lúcio,Primary Fire,2.13,0,0
+[00:05:33] ,kill,210.25,Team 1,Spingar,Tracer,Team 2,Naku,Mei,Melee,4.20,0,0
+[00:05:34] ,offensive_assist,210.60,Team 1,DanielPlays,Ramattra,0
+[00:05:34] ,offensive_assist,210.64,Team 1,Georan,Lúcio,0
+[00:05:35] ,echo_duplicate_end,212.51,Team 1,Flakies,Echo,2
+[00:05:38] ,player_stat,215.26,1,Team 2,SwagWolf18,Lúcio,4,1,4,2009.60,285,1724.60,2856.04,1006.64,586.70,1835.20,0,1,2,2,1,0,0,0,1,0,0,7,0.09,0,0,0,300,74,209,0,0,0.26,215.26
+[00:05:38] ,player_stat,215.26,1,Team 1,DanielPlays,Doomfist,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:05:38] ,player_stat,215.26,1,Team 1,DanielPlays,Mauga,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:05:38] ,player_stat,215.26,1,Team 1,DanielPlays,Ramattra,12,4,1,5046.26,845,4201.26,0,3292.92,0,5262.06,1311,0,2,1,1,0,0,0,4,0,0,22,0.09,0,0,0,1258,256,893,0,0,0.22,215.26
+[00:05:38] ,player_stat,215.26,1,Team 2,Naku,Mei,3,0,3,10538.92,432.80,2038.84,0,1900.17,303.28,2961.17,1831.04,0,2,1,1,0,0,0,3,0,0,0,0,0,0,0,265,142,122,0,0,0.54,215.26
+[00:05:38] ,player_stat,215.26,1,Team 2,Blåhaj,Ramattra,5,1,4,3284.78,391.28,2680.94,0,1453.29,0,4387.15,1547,0,2,1,1,0,0,0,3,0,0,6,0.04,0,0,0,746,171,555,0,0,0.24,215.26
+[00:05:38] ,player_stat,215.26,1,Team 1,Georan,Lúcio,6,1,2,1570.41,300,1270.41,2439.35,880.97,498.65,1360.61,0,5,6,1,1,0,0,0,2,0,0,6,0.11,0,0,0,264,54,198,0,0,0.21,215.26
+[00:05:38] ,player_stat,215.26,1,Team 2,YourDeepRest,Sojourn,8,7,3,3624.30,351,3178.30,0,1894.44,0,2670.44,0,0,0,1,1,0,0,1,2,0,0,24,0.09,0,0,0,912,258,612,0,0,0.30,215.26
+[00:05:38] ,player_stat,215.26,1,Team 2,Aramori,Genji,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:05:38] ,player_stat,215.26,1,Team 2,Aramori,Baptiste,0,0,1,44.45,0,44.45,309.20,30.98,0,230.98,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,18,2,16,0,0,0.11,37.65
+[00:05:38] ,player_stat,215.26,1,Team 2,Aramori,Moira,2,0,2,1242.95,212.80,1030.15,2953.98,1013.98,426.22,1413.98,0,6,0,1,1,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,177.61
+[00:05:38] ,player_stat,215.26,1,Team 1,Flakies,Genji,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:05:38] ,player_stat,215.26,1,Team 1,Flakies,Echo,9,3,3,4178.51,644,3451.51,0,552.77,0,1628.71,361.88,0,0,2,4,0,0,0,3,0,0,9,0.07,0,0,0,784,130,497,0,0,0.21,215.26
+[00:05:38] ,player_stat,215.26,1,Team 1,Spingar,Tracer,13,9,1,4013.27,439.04,3532.23,0,511.86,197.78,882.04,0,0,0,2,2,0,0,2,2,0,0,44,0.08,0,0,0,1642,530,1091,0,0,0.33,211.64
+[00:05:38] ,player_stat,215.26,1,Team 1,Spingar,Symmetra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3.62
+[00:05:38] ,round_end,215.26,1,0,1,0,2,100,32.83,0
+[00:05:38] ,player_stat,215.26,1,Team 1,YAI,Baptiste,4,0,2,2193.50,1150,1043.50,3754.61,1134.15,337.76,1601.35,0,9,0,1,1,0,0,0,1,0,0,4,0.09,0,0,0,192,46,106,0,0,0.30,215.26
+[00:05:48] ,objective_updated,215.26,2,2,0
+[00:05:49] ,round_start,215.26,2,0,1,0,0
+[00:05:58] ,hero_swap,215.26,Team 2,Aramori,Ana,Moira,0
+[00:06:21] ,hero_swap,215.26,Team 2,Aramori,Baptiste,Ana,0
+[00:06:26] ,hero_swap,215.26,Team 1,Spingar,Symmetra,Tracer,0
+[00:06:29] ,setup_complete,215.26,2,29.99
+[00:06:33] ,hero_swap,219.29,Team 1,Spingar,Tracer,Symmetra,4.03
+[00:07:00] ,point_progress,247.03,2,All Teams,0,33.48
+[00:07:02] ,point_progress,248.46,2,All Teams,0,66.98
+[00:07:03] ,objective_captured,249.96,2,Team 2,0,0,0.01,0
+[00:07:04] ,kill,250.72,Team 2,Blåhaj,Ramattra,Team 1,DanielPlays,Ramattra,Ability 1,25.37,0,0
+[00:07:04] ,defensive_assist,251.04,Team 2,Aramori,Baptiste,0
+[00:07:07] ,kill,253.74,Team 1,Georan,Lúcio,Team 2,SwagWolf18,Lúcio,Secondary Fire,175,0,True
+[00:07:07] ,kill,253.74,Team 2,Blåhaj,Ramattra,Team 1,YAI,Baptiste,Ability 1,7.63,0,0
+[00:07:07] ,defensive_assist,253.74,Team 1,YAI,Baptiste,0
+[00:07:07] ,offensive_assist,253.98,Team 2,SwagWolf18,Lúcio,0
+[00:07:13] ,kill,259.31,Team 2,Aramori,Baptiste,Team 1,Georan,Lúcio,Primary Fire,11.14,0,0
+[00:07:13] ,offensive_assist,259.56,Team 2,Blåhaj,Ramattra,0
+[00:07:16] ,kill,262.78,Team 2,YourDeepRest,Sojourn,Team 1,Spingar,Tracer,Secondary Fire,44,0,0
+[00:07:17] ,defensive_assist,263.24,Team 2,Aramori,Baptiste,0
+[00:07:46] ,ultimate_charged,292.97,Team 2,Aramori,Baptiste,0,2
+[00:07:51] ,ultimate_charged,297.13,Team 1,Spingar,Tracer,0,3
+[00:07:51] ,kill,297.24,Team 1,Spingar,Tracer,Team 2,Naku,Mei,Primary Fire,2.76,0,0
+[00:07:52] ,kill,299.00,Team 2,YourDeepRest,Sojourn,Team 1,Flakies,Echo,Primary Fire,7,0,0
+[00:07:52] ,defensive_assist,299.03,Team 2,SwagWolf18,Lúcio,0
+[00:07:53] ,defensive_assist,299.43,Team 2,Aramori,Baptiste,0
+[00:07:53] ,ultimate_start,299.61,Team 2,Aramori,Baptiste,0,2
+[00:08:04] ,ultimate_end,310.11,Team 2,Aramori,Baptiste,0,2
+[00:08:04] ,kill,310.50,Team 1,Georan,Lúcio,Team 2,Blåhaj,Ramattra,Primary Fire,3.65,0,0
+[00:08:04] ,offensive_assist,310.72,Team 1,DanielPlays,Ramattra,0
+[00:08:04] ,defensive_assist,310.74,Team 1,Georan,Lúcio,0
+[00:08:04] ,defensive_assist,310.75,Team 1,YAI,Baptiste,0
+[00:08:05] ,ultimate_start,311.09,Team 1,Spingar,Tracer,0,3
+[00:08:05] ,ultimate_end,311.28,Team 1,Spingar,Tracer,0,3
+[00:08:05] ,ultimate_charged,311.60,Team 2,SwagWolf18,Lúcio,0,3
+[00:08:05] ,kill,311.62,Team 2,Aramori,Baptiste,Team 1,Spingar,Tracer,Melee,25,0,0
+[00:08:06] ,ultimate_charged,312.45,Team 1,Georan,Lúcio,0,2
+[00:08:06] ,kill,312.85,Team 2,SwagWolf18,Lúcio,Team 1,YAI,Baptiste,Melee,4.06,0,0
+[00:08:06] ,point_progress,312.93,2,Team 1,0,33.38
+[00:08:08] ,ultimate_start,314.72,Team 2,SwagWolf18,Lúcio,0,3
+[00:08:10] ,kill,316.66,Team 2,Aramori,Baptiste,Team 1,Georan,Lúcio,Primary Fire,16.40,0,0
+[00:08:10] ,defensive_assist,316.82,Team 2,Aramori,Baptiste,0
+[00:08:10] ,defensive_assist,316.93,Team 2,SwagWolf18,Lúcio,0
+[00:08:13] ,ultimate_charged,319.84,Team 2,YourDeepRest,Sojourn,0,2
+[00:08:14] ,kill,320.72,Team 2,SwagWolf18,Lúcio,Team 1,DanielPlays,Ramattra,Primary Fire,35.10,True,0
+[00:08:14] ,defensive_assist,321.04,Team 2,Aramori,Baptiste,0
+[00:08:15] ,defensive_assist,321.15,Team 2,SwagWolf18,Lúcio,0
+[00:08:16] ,ultimate_end,322.51,Team 2,SwagWolf18,Lúcio,0,3
+[00:08:22] ,ultimate_charged,328.27,Team 1,YAI,Baptiste,0,2
+[00:08:23] ,ultimate_charged,329.28,Team 1,DanielPlays,Ramattra,0,2
+[00:08:23] ,hero_swap,329.92,Team 1,Spingar,Sojourn,Tracer,110.62
+[00:08:25] ,ultimate_charged,331.69,Team 1,Flakies,Echo,0,3
+[00:08:27] ,kill,333.45,Team 1,Flakies,Echo,Team 2,Aramori,Baptiste,Ability 2,2.40,0,0
+[00:08:37] ,echo_duplicate_start,343.59,Team 1,Flakies,Echo,Ramattra,3
+[00:08:41] ,kill,347.32,Team 1,Spingar,Sojourn,Team 2,YourDeepRest,Sojourn,Secondary Fire,56.86,0,0
+[00:08:44] ,ultimate_charged,350.44,Team 2,Blåhaj,Ramattra,0,2
+[00:08:45] ,ultimate_start,351.24,Team 2,Blåhaj,Ramattra,0,2
+[00:08:46] ,kill,352.22,Team 2,Blåhaj,Ramattra,Team 1,Georan,Lúcio,Ultimate,56.38,0,0
+[00:08:46] ,defensive_assist,352.65,Team 2,SwagWolf18,Lúcio,0
+[00:08:50] ,echo_duplicate_end,356.09,Team 1,Flakies,Echo,3
+[00:08:51] ,kill,357.64,Team 1,DanielPlays,Ramattra,Team 2,Naku,Mei,Ability 1,10,0,0
+[00:08:52] ,kill,358.09,Team 1,Spingar,Sojourn,Team 2,Blåhaj,Ramattra,Secondary Fire,119.93,0,0
+[00:08:52] ,ultimate_end,358.09,Team 2,Blåhaj,Ramattra,0,2
+[00:08:52] ,defensive_assist,358.21,Team 1,YAI,Baptiste,0
+[00:08:53] ,kill,359.85,Team 1,Flakies,Echo,Team 2,SwagWolf18,Lúcio,Ability 2,11.72,0,0
+[00:08:54] ,defensive_assist,360.09,Team 1,YAI,Baptiste,0
+[00:08:55] ,point_progress,362.02,2,Team 1,0,33.57
+[00:08:57] ,point_progress,363.62,2,Team 1,0,66.68
+[00:08:59] ,objective_captured,365.37,2,Team 1,0,0.01,96.19,0
+[00:09:03] ,ultimate_charged,369.27,Team 2,Naku,Mei,0,2
+[00:09:32] ,point_progress,398.41,2,Team 2,0,33.49
+[00:09:34] ,ultimate_start,400.09,Team 2,Naku,Mei,0,2
+[00:09:35] ,ultimate_start,401.39,Team 1,YAI,Baptiste,0,2
+[00:09:35] ,ultimate_start,402.00,Team 1,DanielPlays,Ramattra,0,2
+[00:09:37] ,point_progress,403.26,2,Team 2,0,66.77
+[00:09:37] ,ultimate_start,403.63,Team 1,Georan,Lúcio,0,2
+[00:09:38] ,point_progress,404.59,2,Team 2,0,99.97
+[00:09:38] ,objective_captured,404.61,2,Team 2,0,32.71,96.20,0
+[00:09:39] ,ultimate_end,405.98,Team 2,Naku,Mei,0,2
+[00:09:43] ,kill,409.24,Team 1,DanielPlays,Ramattra,Team 2,Blåhaj,Ramattra,Ultimate,5.38,0,0
+[00:09:43] ,offensive_assist,409.42,Team 1,Georan,Lúcio,0
+[00:09:43] ,defensive_assist,409.42,Team 1,Georan,Lúcio,0
+[00:09:43] ,defensive_assist,409.44,Team 1,YAI,Baptiste,0
+[00:09:45] ,ultimate_end,411.34,Team 1,Georan,Lúcio,0,2
+[00:09:45] ,ultimate_charged,411.52,Team 2,Aramori,Baptiste,0,3
+[00:09:45] ,ultimate_end,411.90,Team 1,YAI,Baptiste,0,2
+[00:09:46] ,ultimate_end,412.33,Team 1,DanielPlays,Ramattra,0,2
+[00:09:46] ,ultimate_start,412.92,Team 2,Aramori,Baptiste,0,3
+[00:09:48] ,kill,414.44,Team 1,Flakies,Echo,Team 2,Naku,Mei,Secondary Fire,18.08,0,0
+[00:09:48] ,kill,414.52,Team 1,Spingar,Sojourn,Team 2,Aramori,Baptiste,Secondary Fire,64.28,0,0
+[00:09:48] ,offensive_assist,414.57,Team 1,DanielPlays,Ramattra,0
+[00:09:48] ,offensive_assist,414.59,Team 1,Georan,Lúcio,0
+[00:09:48] ,defensive_assist,414.59,Team 1,Georan,Lúcio,0
+[00:09:48] ,defensive_assist,414.60,Team 1,YAI,Baptiste,0
+[00:09:48] ,defensive_assist,414.60,Team 1,YAI,Baptiste,0
+[00:09:48] ,ultimate_start,414.65,Team 2,YourDeepRest,Sojourn,0,2
+[00:09:52] ,point_progress,418.35,2,Team 1,0,33.37
+[00:09:52] ,ultimate_charged,418.49,Team 2,SwagWolf18,Lúcio,0,4
+[00:09:53] ,point_progress,419.72,2,Team 1,0,66.88
+[00:09:54] ,objective_captured,421.05,2,Team 1,0,32.72,99.99,0
+[00:09:55] ,kill,421.11,Team 2,YourDeepRest,Sojourn,Team 1,Georan,Lúcio,Ultimate,200,0,0
+[00:09:55] ,offensive_assist,421.13,Team 2,Aramori,Baptiste,0
+[00:09:57] ,ultimate_end,423.39,Team 2,YourDeepRest,Sojourn,0,2
+[00:09:57] ,ultimate_end,423.43,Team 2,Aramori,Baptiste,0,3
+[00:10:03] ,kill,429.06,Team 1,Spingar,Sojourn,Team 2,SwagWolf18,Lúcio,Secondary Fire,53.56,0,0
+[00:10:03] ,ultimate_charged,429.06,Team 1,Spingar,Sojourn,0,4
+[00:10:03] ,defensive_assist,429.16,Team 1,YAI,Baptiste,0
+[00:10:11] ,ultimate_charged,437.94,Team 1,Flakies,Echo,0,4
+[00:10:28] ,ultimate_start,454.51,Team 1,Spingar,Sojourn,0,4
+[00:10:29] ,echo_duplicate_start,455.38,Team 1,Flakies,Echo,Ramattra,4
+[00:10:30] ,kill,456.74,Team 1,Spingar,Sojourn,Team 2,SwagWolf18,Lúcio,Ultimate,75.00,0,0
+[00:10:32] ,kill,458.82,Team 1,DanielPlays,Ramattra,Team 2,Blåhaj,Ramattra,Ability 1,52.32,0,0
+[00:10:33] ,defensive_assist,459.23,Team 1,YAI,Baptiste,0
+[00:10:37] ,ultimate_end,463.25,Team 1,Spingar,Sojourn,0,4
+[00:10:37] ,kill,463.54,Team 1,Spingar,Sojourn,Team 2,Naku,Mei,Secondary Fire,69.08,True,0
+[00:10:37] ,offensive_assist,463.90,Team 1,Georan,Lúcio,0
+[00:10:38] ,ultimate_charged,464.06,Team 1,Flakies,Echo,Ramattra,5
+[00:10:38] ,ultimate_start,464.51,Team 1,Flakies,Echo,Ramattra,5
+[00:10:38] ,kill,464.74,Team 1,Flakies,Echo,Team 2,Aramori,Baptiste,Ultimate,45.44,0,0
+[00:10:38] ,offensive_assist,464.85,Team 1,Georan,Lúcio,0
+[00:10:39] ,kill,465.41,Team 1,DanielPlays,Ramattra,Team 2,YourDeepRest,Sojourn,Ability 1,43.84,0,0
+[00:10:39] ,offensive_assist,465.79,Team 1,Georan,Lúcio,0
+[00:10:39] ,defensive_assist,465.82,Team 1,YAI,Baptiste,0
+[00:10:42] ,ultimate_end,468.51,Team 1,Flakies,Echo,Ramattra,5
+[00:10:45] ,echo_duplicate_end,471.50,Team 1,Flakies,Echo,4
+[00:10:48] ,hero_swap,474.73,Team 2,Aramori,Ana,Baptiste,259.47
+[00:11:14] ,kill,500.69,Team 1,Flakies,Echo,Team 2,Aramori,Ana,Ability 2,2.20,0,0
+[00:11:14] ,point_progress,500.79,2,Team 2,0,33.37
+[00:11:15] ,ultimate_start,501.45,Team 2,SwagWolf18,Lúcio,0,4
+[00:11:15] ,kill,501.49,Team 2,YourDeepRest,Sojourn,Team 1,Flakies,Echo,Secondary Fire,106,0,0
+[00:11:16] ,point_progress,502.13,2,Team 2,0,66.87
+[00:11:17] ,objective_captured,503.83,2,Team 2,0,99.99,99.99,0
+[00:11:22] ,player_stat,508.84,2,Team 2,SwagWolf18,Lúcio,9,3,8,4552.23,545,4007.23,6154.71,2277.97,1347.24,3966.53,0,5,3,4,3,0,0,0,4,0,1,18,0.10,0,0,0,720,187,497,0,0,0.27,508.84
+[00:11:22] ,player_stat,508.84,2,Team 1,YAI,Baptiste,7,0,4,3086.41,1351.17,1735.23,9133.82,2089.18,615.87,3083.22,0,19,0,2,2,0,0,0,2,0,0,8,0.10,0,0,0,400,80,268,0,0,0.23,508.84
+[00:11:22] ,player_stat,508.84,2,Team 1,DanielPlays,Doomfist,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:11:22] ,player_stat,508.84,2,Team 1,DanielPlays,Mauga,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:11:22] ,player_stat,508.84,2,Team 1,DanielPlays,Ramattra,23,8,3,10328.96,1654.56,8549.40,0,7573.21,0,12903.27,4722.21,0,4,2,2,2,3,1,9,0,0,74,0.14,0,0,0,2947,544,2172,0,0,0.20,508.84
+[00:11:22] ,player_stat,508.84,2,Team 2,Naku,Mei,6,0,7,22227.09,1522.80,4219.10,0,3341.11,448.74,5543.58,2466.20,0,2,2,2,0,0,0,5,0,0,0,0,0,0,0,556,316,212,0,0,0.60,508.84
+[00:11:22] ,player_stat,508.84,2,Team 2,Blåhaj,Ramattra,10,4,8,7725.58,1324.16,6128.86,0,2798.62,0,8842.17,3382.09,0,3,2,2,0,0,0,6,0,0,35,0.09,0,0,0,2221,378,1726,0,0,0.18,508.84
+[00:11:22] ,player_stat,508.84,2,Team 1,Georan,Lúcio,12,2,6,3446.98,745,2701.98,5085.88,1805.71,1007.08,3085.35,0,8,11,2,2,0,0,0,5,1,0,10,0.10,0,0,0,557,103,418,0,0,0.20,508.84
+[00:11:22] ,player_stat,508.84,2,Team 2,YourDeepRest,Sojourn,16,11,5,9423.11,1318.08,7945.03,0,4885.58,0,6168.58,0,0,0,2,2,0,0,2,6,0,0,49,0.08,0,0,0,2211,580,1473,0,0,0.28,508.84
+[00:11:22] ,player_stat,508.84,2,Team 1,Flakies,Genji,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:11:22] ,player_stat,508.84,2,Team 1,Flakies,Echo,19,8,5,9324.53,1301.40,7815.13,0,1994.66,0,4027.29,626.88,0,0,5,9,0,0,2,8,0,0,36,0.13,0,0,0,1695,284,1176,0,0,0.19,508.84
+[00:11:22] ,player_stat,508.84,2,Team 1,Spingar,Tracer,14,10,3,5596.71,493.04,4936.68,0,646.22,302.78,1421.40,0,0,0,3,3,0,0,3,3,0,0,51,0.07,0,0,0,2258,784,1425,0,0,0.35,322.27
+[00:11:22] ,player_stat,508.84,2,Team 1,Spingar,Symmetra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7.65
+[00:11:22] ,player_stat,508.84,2,Team 1,Spingar,Sojourn,9,6,0,3267.69,303.12,2839.57,0,906.31,0,1045.31,0,0,0,1,1,0,0,0,3,0,0,22,0.13,0,0,0,786,173,595,0,0,0.23,178.92
+[00:11:22] ,round_end,508.84,2,0,1,1,0,99.99,100,0
+[00:11:22] ,player_stat,508.84,2,Team 2,Aramori,Genji,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:11:22] ,player_stat,508.84,2,Team 2,Aramori,Baptiste,5,3,4,2583.02,426.25,2084.84,4673.41,1625.14,608.71,2425.14,0,5,1,2,2,0,0,1,4,0,0,8,0.09,0,0,0,274,92,164,0,0,0.36,297.12
+[00:11:22] ,player_stat,508.84,2,Team 2,Aramori,Moira,2,0,2,1242.95,212.80,1030.15,2953.98,1013.98,426.22,1413.98,0,6,0,1,1,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,177.61
+[00:11:22] ,player_stat,508.84,2,Team 2,Aramori,Ana,0,0,1,113.12,0,113.12,287.96,18.00,0,218,0,0,0,0,0,0,0,0,0,0,0,0,0,0.67,0,0,13,2,5,9,6,0.29,34.10
+[00:11:23] ,ultimate_end,508.84,Team 2,SwagWolf18,Lúcio,0,4
+[00:11:32] ,objective_updated,508.84,3,0,1
+[00:11:33] ,round_start,508.84,3,0,1,1,1
+[00:11:59] ,hero_swap,508.84,Team 2,Aramori,Kiriko,Ana,0
+[00:12:04] ,hero_swap,508.84,Team 1,Spingar,Symmetra,Sojourn,0
+[00:12:13] ,setup_complete,508.84,3,29.99
+[00:12:17] ,hero_swap,512.50,Team 1,Spingar,Sojourn,Symmetra,3.66
+[00:12:36] ,kill,531.80,Team 2,YourDeepRest,Sojourn,Team 1,Spingar,Sojourn,Secondary Fire,92,0,0
+[00:12:36] ,defensive_assist,532.03,Team 2,Aramori,Kiriko,0
+[00:12:45] ,point_progress,540.63,3,All Teams,1,33.38
+[00:12:47] ,point_progress,542.40,3,All Teams,1,66.68
+[00:12:47] ,kill,543.17,Team 1,DanielPlays,Ramattra,Team 2,Blåhaj,Ramattra,Ability 1,8.79,0,0
+[00:12:47] ,offensive_assist,543.30,Team 1,Georan,Lúcio,0
+[00:12:47] ,defensive_assist,543.30,Team 1,Georan,Lúcio,0
+[00:12:47] ,defensive_assist,543.35,Team 1,YAI,Baptiste,0
+[00:12:49] ,objective_captured,544.93,3,Team 2,1,0,0.01,0
+[00:13:03] ,point_progress,558.73,3,Team 1,1,33.49
+[00:13:05] ,point_progress,560.60,3,Team 1,1,66.98
+[00:13:06] ,objective_captured,562.22,3,Team 1,1,0.01,14.41,0
+[00:13:13] ,kill,568.55,Team 1,Flakies,Echo,Team 2,SwagWolf18,Lúcio,Ability 2,10.12,0,0
+[00:13:13] ,defensive_assist,568.71,Team 1,YAI,Baptiste,0
+[00:13:16] ,kill,571.40,Team 2,YourDeepRest,Sojourn,Team 1,Flakies,Echo,Secondary Fire,27.19,0,0
+[00:13:16] ,defensive_assist,571.48,Team 2,Aramori,Kiriko,0
+[00:13:21] ,kill,576.64,Team 1,Spingar,Sojourn,Team 2,YourDeepRest,Sojourn,Secondary Fire,129.56,True,0
+[00:13:21] ,offensive_assist,576.69,Team 1,Georan,Lúcio,0
+[00:13:21] ,defensive_assist,576.69,Team 1,Georan,Lúcio,0
+[00:13:21] ,kill,576.87,Team 1,Georan,Lúcio,Team 2,Aramori,Kiriko,Primary Fire,20.28,True,0
+[00:13:27] ,kill,583.34,Team 1,Spingar,Sojourn,Team 2,Blåhaj,Ramattra,Secondary Fire,49.21,True,0
+[00:13:28] ,offensive_assist,583.73,Team 1,Georan,Lúcio,0
+[00:13:28] ,defensive_assist,583.74,Team 1,YAI,Baptiste,0
+[00:13:30] ,kill,586.20,Team 1,Georan,Lúcio,Team 2,Naku,Mei,Primary Fire,13.26,True,0
+[00:13:38] ,ultimate_charged,593.80,Team 1,YAI,Baptiste,0,3
+[00:13:52] ,ultimate_charged,607.92,Team 2,YourDeepRest,Sojourn,0,3
+[00:13:52] ,kill,608.05,Team 2,YourDeepRest,Sojourn,Team 1,Spingar,Sojourn,Primary Fire,12.76,True,0
+[00:13:52] ,defensive_assist,608.14,Team 2,Aramori,Kiriko,0
+[00:13:58] ,ultimate_start,613.61,Team 2,YourDeepRest,Sojourn,0,3
+[00:13:58] ,ultimate_charged,614.12,Team 2,Aramori,Kiriko,0,4
+[00:14:00] ,echo_duplicate_start,615.82,Team 1,Flakies,Echo,Sojourn,5
+[00:14:02] ,echo_duplicate_end,617.43,Team 1,Flakies,Echo,5
+[00:14:03] ,kill,619.13,Team 2,Naku,Mei,Team 1,Flakies,Echo,Primary Fire,4.99,0,0
+[00:14:04] ,defensive_assist,619.40,Team 2,Aramori,Kiriko,0
+[00:14:04] ,offensive_assist,619.47,Team 2,SwagWolf18,Lúcio,0
+[00:14:04] ,defensive_assist,619.47,Team 2,SwagWolf18,Lúcio,0
+[00:14:07] ,ultimate_end,622.36,Team 2,YourDeepRest,Sojourn,0,3
+[00:14:09] ,point_progress,625.30,3,Team 2,1,33.46
+[00:14:11] ,point_progress,627.13,3,Team 2,1,66.66
+[00:14:13] ,objective_captured,628.96,3,Team 2,1,55.65,14.43,0
+[00:14:14] ,ultimate_charged,630.21,Team 1,Spingar,Sojourn,0,5
+[00:14:16] ,ultimate_charged,631.43,Team 1,DanielPlays,Ramattra,0,3
+[00:14:16] ,kill,632.31,Team 1,Georan,Lúcio,Team 2,YourDeepRest,Sojourn,Primary Fire,24.16,True,0
+[00:14:17] ,ultimate_charged,633.22,Team 1,Georan,Lúcio,0,3
+[00:14:18] ,kill,634.05,Team 1,YAI,Baptiste,Team 2,SwagWolf18,Lúcio,Primary Fire,4.89,0,0
+[00:14:20] ,ultimate_start,636.29,Team 2,Aramori,Kiriko,0,4
+[00:14:21] ,ultimate_end,636.64,Team 2,Aramori,Kiriko,0,4
+[00:14:21] ,ultimate_start,636.75,Team 2,Aramori,Kiriko,0,4
+[00:14:22] ,ultimate_start,637.68,Team 1,YAI,Baptiste,0,3
+[00:14:24] ,kill,640.05,Team 1,YAI,Baptiste,Team 2,Blåhaj,Ramattra,Primary Fire,1.03,0,0
+[00:14:24] ,offensive_assist,640.06,Team 1,DanielPlays,Ramattra,0
+[00:14:24] ,offensive_assist,640.09,Team 1,Georan,Lúcio,0
+[00:14:24] ,defensive_assist,640.11,Team 1,YAI,Baptiste,0
+[00:14:25] ,kill,640.83,Team 1,DanielPlays,Ramattra,Team 2,Aramori,Kiriko,Ability 1,40,0,0
+[00:14:25] ,offensive_assist,641.04,Team 1,Georan,Lúcio,0
+[00:14:25] ,defensive_assist,641.05,Team 1,YAI,Baptiste,0
+[00:14:28] ,point_progress,643.45,3,Team 1,1,33.59
+[00:14:28] ,ultimate_charged,643.77,Team 2,SwagWolf18,Lúcio,0,5
+[00:14:29] ,kill,644.70,Team 1,Flakies,Echo,Team 2,Naku,Mei,Ability 2,5.16,0,0
+[00:14:29] ,offensive_assist,644.81,Team 1,YAI,Baptiste,0
+[00:14:29] ,defensive_assist,644.81,Team 1,YAI,Baptiste,0
+[00:14:29] ,point_progress,645.20,3,Team 1,1,66.99
+[00:14:31] ,objective_captured,646.52,3,Team 1,1,55.67,29.05,0
+[00:14:31] ,ultimate_end,646.59,Team 2,Aramori,Kiriko,0,4
+[00:14:32] ,ultimate_end,648.19,Team 1,YAI,Baptiste,0,3
+[00:14:34] ,ultimate_charged,649.77,Team 2,Blåhaj,Ramattra,0,3
+[00:15:03] ,ultimate_charged,678.76,Team 2,Naku,Mei,0,3
+[00:15:07] ,ultimate_start,682.71,Team 2,Naku,Mei,0,3
+[00:15:08] ,ultimate_start,684.10,Team 1,DanielPlays,Ramattra,0,3
+[00:15:09] ,ultimate_start,684.76,Team 2,SwagWolf18,Lúcio,0,5
+[00:15:10] ,ultimate_start,685.37,Team 2,Blåhaj,Ramattra,0,3
+[00:15:11] ,ultimate_start,686.45,Team 1,Georan,Lúcio,0,3
+[00:15:11] ,kill,687.27,Team 2,YourDeepRest,Sojourn,Team 1,DanielPlays,Ramattra,Secondary Fire,105.71,0,0
+[00:15:11] ,ultimate_end,687.27,Team 1,DanielPlays,Ramattra,0,3
+[00:15:12] ,defensive_assist,687.56,Team 2,Aramori,Kiriko,0
+[00:15:12] ,defensive_assist,687.60,Team 2,SwagWolf18,Lúcio,0
+[00:15:12] ,offensive_assist,687.65,Team 2,Naku,Mei,0
+[00:15:13] ,ultimate_end,688.45,Team 2,Naku,Mei,0,3
+[00:15:16] ,ultimate_start,691.63,Team 1,Spingar,Sojourn,0,5
+[00:15:17] ,ultimate_charged,692.31,Team 1,Flakies,Echo,0,6
+[00:15:17] ,ultimate_end,692.63,Team 2,SwagWolf18,Lúcio,0,5
+[00:15:18] ,ultimate_end,694.10,Team 1,Georan,Lúcio,0,3
+[00:15:18] ,echo_duplicate_start,694.26,Team 1,Flakies,Echo,Ramattra,6
+[00:15:21] ,ultimate_end,696.45,Team 2,Blåhaj,Ramattra,0,3
+[00:15:21] ,kill,696.66,Team 1,Spingar,Sojourn,Team 2,SwagWolf18,Lúcio,Ultimate,78.62,0,0
+[00:15:24] ,hero_swap,699.45,Team 1,DanielPlays,Doomfist,Ramattra,190.62
+[00:15:25] ,ultimate_end,700.38,Team 1,Spingar,Sojourn,0,5
+[00:15:25] ,defensive_assist,701.21,Team 2,SwagWolf18,Lúcio,0
+[00:15:25] ,kill,701.21,Team 2,YourDeepRest,Sojourn,Team 1,Spingar,Sojourn,Primary Fire,8.10,0,0
+[00:15:26] ,defensive_assist,701.64,Team 2,Aramori,Kiriko,0
+[00:15:28] ,ultimate_charged,704.19,Team 1,Flakies,Echo,Ramattra,7
+[00:15:29] ,ultimate_start,704.38,Team 1,Flakies,Echo,Ramattra,7
+[00:15:30] ,kill,705.87,Team 1,Georan,Lúcio,Team 2,Blåhaj,Ramattra,Secondary Fire,12.05,0,0
+[00:15:31] ,defensive_assist,706.30,Team 1,YAI,Baptiste,0
+[00:15:31] ,defensive_assist,706.31,Team 1,Georan,Lúcio,0
+[00:15:31] ,kill,706.65,Team 1,Flakies,Echo,Team 2,Naku,Mei,Ultimate,40.33,0,0
+[00:15:31] ,defensive_assist,706.76,Team 1,YAI,Baptiste,0
+[00:15:32] ,player_stat,707.48,3,Team 2,SwagWolf18,Lúcio,11,3,11,5816.53,810,5006.53,8477.34,3486.82,1952.36,5867.38,0,8,4,5,4,0,0,0,4,0,1,22,0.09,0,0,0,975,242,683,0,0,0.26,707.48
+[00:15:32] ,player_stat,707.48,3,Team 1,YAI,Baptiste,13,2,4,4723.97,1726.17,2997.79,13049.75,2867.11,833.47,3861.15,0,27,1,3,3,0,0,0,5,0,0,9,0.07,0,0,0,577,135,374,0,0,0.27,707.48
+[00:15:32] ,player_stat,707.48,3,Team 1,DanielPlays,Doomfist,0,0,0,0,0,0,0,150,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8.03
+[00:15:32] ,player_stat,707.48,3,Team 1,DanielPlays,Mauga,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:15:32] ,player_stat,707.48,3,Team 1,DanielPlays,Ramattra,28,10,4,14255.30,2351.36,11778.94,0,10115.35,0,16902.71,6094.21,0,5,3,3,2,3,1,12,0,0,94,0.11,0,0,0,4293,826,3120,0,0,0.21,699.45
+[00:15:32] ,player_stat,707.48,3,Team 2,Naku,Mei,8,1,10,33659.93,2357.80,5472.33,0,5056.90,892.64,8234.46,4371.60,0,3,3,3,0,0,0,5,0,0,0,0,0,0,0,850,420,350,0,0,0.55,707.48
+[00:15:32] ,player_stat,707.48,3,Team 1,Georan,Lúcio,20,6,6,5385.91,1170,4215.91,6804.27,2845.39,1446.46,4433.03,0,11,16,3,3,0,0,1,8,1,0,21,0.12,0,0,0,832,175,598,0,0,0.23,707.48
+[00:15:32] ,player_stat,707.48,3,Team 2,YourDeepRest,Sojourn,22,16,7,13450.46,1693.68,11596.78,0,6857.58,0,8831.50,0,0,0,3,3,0,0,2,6,0,0,69,0.08,0,0,0,3184,837,2153,0,0,0.28,707.48
+[00:15:32] ,player_stat,707.48,3,Team 2,Aramori,Genji,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:15:32] ,player_stat,707.48,3,Team 2,Aramori,Baptiste,5,3,4,2583.02,426.25,2084.84,4673.41,1625.14,608.71,2425.14,0,5,1,2,2,0,0,1,4,0,0,8,0.09,0,0,0,274,92,164,0,0,0.36,297.12
+[00:15:32] ,player_stat,707.48,3,Team 2,Aramori,Moira,2,0,2,1242.95,212.80,1030.15,2953.98,1013.98,426.22,1413.98,0,6,0,1,1,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,177.61
+[00:15:32] ,player_stat,707.48,3,Team 2,Aramori,Ana,0,0,1,113.12,0,113.12,287.96,18.00,0,218,0,0,0,0,0,0,0,0,0,0,0,0,0,0.67,0,0,13,2,5,9,6,0.29,34.10
+[00:15:32] ,player_stat,707.48,3,Team 2,Aramori,Kiriko,1,0,2,809.24,225,584.24,4040.08,663.64,0,1248.68,0,6,0,1,1,0,0,0,0,0,0,2,0.13,0,0,0,62,15,42,0,0,0.26,198.64
+[00:15:32] ,player_stat,707.48,3,Team 1,Flakies,Genji,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:15:32] ,player_stat,707.48,3,Team 1,Flakies,Echo,25,11,7,13850.68,2264.60,11378.08,0,2889.56,0,5818.97,1210.48,0,0,8,12,0,0,2,8,0,0,40,0.11,0,0,0,2303,380,1637,0,0,0.19,707.48
+[00:15:32] ,player_stat,707.48,3,Team 1,Spingar,Tracer,14,10,3,5596.71,493.04,4936.68,0,646.22,302.78,1421.40,0,0,0,3,3,0,0,3,3,0,0,51,0.07,0,0,0,2258,784,1425,0,0,0.35,322.27
+[00:15:32] ,player_stat,707.48,3,Team 1,Spingar,Symmetra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11.31
+[00:15:32] ,player_stat,707.48,3,Team 1,Spingar,Sojourn,19,9,3,8269.62,1232.56,6912.06,0,1760.75,0,2544.75,0,0,0,2,2,0,0,0,7,0,0,55,0.14,0,0,0,1618,403,1106,0,0,0.27,373.90
+[00:15:32] ,round_end,707.48,3,0,2,1,1,100,29.05,0
+[00:15:32] ,player_stat,707.48,3,Team 2,Blåhaj,Ramattra,13,4,12,11158.23,1579.16,9056.51,0,4368.72,0,13980.31,4866.13,0,3,3,3,0,0,0,7,0,0,49,0.10,0,0,0,3023,482,2371,0,0,0.17,707.48
+[00:15:32] ,ultimate_end,707.48,Team 1,Flakies,Echo,0,7
+[00:15:32] ,echo_duplicate_end,707.48,Team 1,Flakies,Echo,6
+[00:15:33] ,player_stat,707.48,3,Team 2,YourDeepRest,Sojourn,22,16,7,13450.46,1693.68,11596.78,0,6857.58,0,8831.50,0,0,0,3,3,0,0,2,6,0,0,69,0.08,0,0,0,3184,837,2153,0,0,0.28,707.48
+[00:15:33] ,round_end,707.48,3,0,2,1,1,100,29.05,0
+[00:15:33] ,match_end,707.48,3,2,1
+[00:15:33] ,player_stat,707.48,3,Team 2,SwagWolf18,Lúcio,11,3,11,5816.53,810,5006.53,8477.34,3486.82,1952.36,5867.38,0,8,4,5,4,0,0,0,4,0,1,22,0.09,0,0,0,975,242,683,0,0,0.26,707.48
+[00:15:33] ,player_stat,707.48,3,Team 1,YAI,Baptiste,13,2,4,4723.97,1726.17,2997.79,13049.75,2867.11,833.47,3861.15,0,27,1,3,3,0,0,0,5,0,0,9,0.07,0,0,0,577,135,374,0,0,0.27,707.48
+[00:15:33] ,player_stat,707.48,3,Team 1,DanielPlays,Doomfist,0,0,0,0,0,0,0,150,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8.03
+[00:15:33] ,player_stat,707.48,3,Team 1,DanielPlays,Mauga,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:15:33] ,player_stat,707.48,3,Team 1,DanielPlays,Ramattra,28,10,4,14255.30,2351.36,11778.94,0,10115.35,0,16902.71,6094.21,0,5,3,3,2,3,1,12,0,0,94,0.11,0,0,0,4293,826,3120,0,0,0.21,699.45
+[00:15:33] ,player_stat,707.48,3,Team 2,Naku,Mei,8,1,10,33659.93,2357.80,5472.33,0,5056.90,892.64,8234.46,4371.60,0,3,3,3,0,0,0,5,0,0,0,0,0,0,0,850,420,350,0,0,0.55,707.48
+[00:15:33] ,player_stat,707.48,3,Team 2,Blåhaj,Ramattra,13,4,12,11158.23,1579.16,9056.51,0,4368.72,0,13980.31,4866.13,0,3,3,3,0,0,0,7,0,0,49,0.10,0,0,0,3023,482,2371,0,0,0.17,707.48
+[00:15:33] ,player_stat,707.48,3,Team 1,Georan,Lúcio,20,6,6,5385.91,1170,4215.91,6804.27,2845.39,1446.46,4433.03,0,11,16,3,3,0,0,1,8,1,0,21,0.12,0,0,0,832,175,598,0,0,0.23,707.48
+[00:15:33] ,player_stat,707.48,3,Team 2,Aramori,Genji,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:15:33] ,player_stat,707.48,3,Team 2,Aramori,Baptiste,5,3,4,2583.02,426.25,2084.84,4673.41,1625.14,608.71,2425.14,0,5,1,2,2,0,0,1,4,0,0,8,0.09,0,0,0,274,92,164,0,0,0.36,297.12
+[00:15:33] ,player_stat,707.48,3,Team 2,Aramori,Moira,2,0,2,1242.95,212.80,1030.15,2953.98,1013.98,426.22,1413.98,0,6,0,1,1,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,177.61
+[00:15:33] ,player_stat,707.48,3,Team 2,Aramori,Ana,0,0,1,113.12,0,113.12,287.96,18.00,0,218,0,0,0,0,0,0,0,0,0,0,0,0,0,0.67,0,0,13,2,5,9,6,0.29,34.10
+[00:15:33] ,player_stat,707.48,3,Team 2,Aramori,Kiriko,1,0,2,809.24,225,584.24,4040.08,663.64,0,1248.68,0,6,0,1,1,0,0,0,0,0,0,2,0.13,0,0,0,62,15,42,0,0,0.26,198.64
+[00:15:33] ,player_stat,707.48,3,Team 1,Flakies,Genji,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:15:33] ,player_stat,707.48,3,Team 1,Flakies,Echo,25,11,7,13850.68,2264.60,11378.08,0,2889.56,0,5818.97,1210.48,0,0,8,12,0,0,2,8,0,0,40,0.11,0,0,0,2303,380,1637,0,0,0.19,707.48
+[00:15:33] ,player_stat,707.48,3,Team 1,Spingar,Tracer,14,10,3,5596.71,493.04,4936.68,0,646.22,302.78,1421.40,0,0,0,3,3,0,0,3,3,0,0,51,0.07,0,0,0,2258,784,1425,0,0,0.35,322.27
+[00:15:33] ,player_stat,707.48,3,Team 1,Spingar,Symmetra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11.31
+[00:15:33] ,player_stat,707.48,3,Team 1,Spingar,Sojourn,19,9,3,8269.62,1232.56,6912.06,0,1760.75,0,2544.75,0,0,0,2,2,0,0,0,7,0,0,55,0.14,0,0,0,1618,403,1106,0,0,0.27,373.90
