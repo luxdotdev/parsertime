@@ -107,6 +107,8 @@ model Map {
 
 enum EventType {
   defensive_assist
+  echo_duplicate_end
+  echo_duplicate_start
   hero_spawn
   hero_swap
   kill
@@ -127,31 +129,33 @@ enum EventType {
 }
 
 model MapData {
-  id                 Int                 @id @default(autoincrement())
-  scrimId            Int
-  userId             String
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  defensive_assist   DefensiveAssist[]
-  hero_spawn         HeroSpawn[]
-  hero_swap          HeroSwap[]
-  kill               Kill[]
-  match_end          MatchEnd[]
-  match_start        MatchStart[]
-  objective_captured ObjectiveCaptured[]
-  objective_updated  ObjectiveUpdated[]
-  offensive_assist   OffensiveAssist[]
-  payload_progress   PayloadProgress[]
-  player_stat        PlayerStat[]
-  point_progress     PointProgress[]
-  round_end          RoundEnd[]
-  round_start        RoundStart[]
-  setup_complete     SetupComplete[]
-  ultimate_charged   UltimateCharged[]
-  ultimate_end       UltimateEnd[]
-  ultimate_start     UltimateStart[]
-  Map                Map?                @relation(fields: [mapId], references: [id])
-  mapId              Int?
+  id                   Int                  @id @default(autoincrement())
+  scrimId              Int
+  userId               String
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  defensive_assist     DefensiveAssist[]
+  echo_duplicate_end   EchoDuplicateEnd[]
+  echo_duplicate_start EchoDuplicateStart[]
+  hero_spawn           HeroSpawn[]
+  hero_swap            HeroSwap[]
+  kill                 Kill[]
+  match_end            MatchEnd[]
+  match_start          MatchStart[]
+  objective_captured   ObjectiveCaptured[]
+  objective_updated    ObjectiveUpdated[]
+  offensive_assist     OffensiveAssist[]
+  payload_progress     PayloadProgress[]
+  player_stat          PlayerStat[]
+  point_progress       PointProgress[]
+  round_end            RoundEnd[]
+  round_start          RoundStart[]
+  setup_complete       SetupComplete[]
+  ultimate_charged     UltimateCharged[]
+  ultimate_end         UltimateEnd[]
+  ultimate_start       UltimateStart[]
+  Map                  Map?                 @relation(fields: [mapId], references: [id])
+  mapId                Int?
 
   @@index([scrimId])
   @@index([mapId])
@@ -168,6 +172,41 @@ model DefensiveAssist {
   hero_duplicated String
   MapData         MapData?  @relation(fields: [MapDataId], references: [id])
   MapDataId       Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model EchoDuplicateEnd {
+  id          Int       @id @default(autoincrement())
+  scrimId     Int
+  event_type  EventType @default(echo_duplicate_end)
+  match_time  Float
+  player_team String
+  player_name String
+  player_hero String
+  ultimate_id Int
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model EchoDuplicateStart {
+  id              Int       @id @default(autoincrement())
+  scrimId         Int
+  event_type      EventType @default(echo_duplicate_start)
+  match_time      Float
+  player_team     String
+  player_name     String
+  player_hero     String
+  hero_duplicated String
+  ultimate_id     Int
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
 
   @@index([scrimId])
   @@index([MapDataId])
