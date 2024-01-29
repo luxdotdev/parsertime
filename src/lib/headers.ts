@@ -7,6 +7,23 @@ export const headers: Record<string, string[]> = {
     "Player Hero",
     "Hero Duplicated",
   ],
+  echo_duplicate_end: [
+    "event_type",
+    "Match Time",
+    "Player Team",
+    "Player Name",
+    "Player Hero",
+    "Ultimate ID",
+  ],
+  echo_duplicate_start: [
+    "event_type",
+    "Match Time",
+    "Player Team",
+    "Player Name",
+    "Player Hero",
+    "Hero Duplicated",
+    "Ultimate ID",
+  ],
   hero_spawn: [
     "event_type",
     "Match Time",

@@ -201,6 +201,8 @@ export async function createNewScrimFromParsedData(
   const firstMap = data.map;
 
   await createDefensiveAssistsRows(firstMap, scrim, map.id);
+  await createEchoDuplicateEndRows(firstMap, scrim, map.id);
+  await createEchoDuplicateStartRows(firstMap, scrim, map.id);
   await createHeroSpawnRows(firstMap, scrim, map.id);
   await createHeroSwapRows(firstMap, scrim, map.id);
   await createKillRows(firstMap, scrim, map.id);
@@ -267,6 +269,8 @@ export async function createNewMap(
   });
 
   await createDefensiveAssistsRows(data.map, { id: data.scrimId }, map.id);
+  await createEchoDuplicateEndRows(data.map, { id: data.scrimId }, map.id);
+  await createEchoDuplicateStartRows(data.map, { id: data.scrimId }, map.id);
   await createHeroSpawnRows(data.map, { id: data.scrimId }, map.id);
   await createHeroSwapRows(data.map, { id: data.scrimId }, map.id);
   await createKillRows(data.map, { id: data.scrimId }, map.id);
@@ -318,6 +322,77 @@ export async function createDefensiveAssistsRows(
   });
 
   return defensiveAssistsByScrimId;
+}
+
+export async function createEchoDuplicateEndRows(
+  data: ParserData,
+  scrim: { id: number },
+  mapId: number
+) {
+  if (
+    typeof data.echo_duplicate_end === "undefined" ||
+    data.echo_duplicate_end.length === 0 ||
+    !data.echo_duplicate_end
+  ) {
+    return [];
+  }
+
+  await prisma.echoDuplicateEnd.createMany({
+    data: data.echo_duplicate_end.map((duplicateEnd) => ({
+      scrimId: scrim.id,
+      match_time: duplicateEnd[1],
+      player_team: duplicateEnd[2],
+      player_name: duplicateEnd[3],
+      player_hero: duplicateEnd[4],
+      ultimate_id: duplicateEnd[5],
+      MapDataId: mapId,
+    })),
+  });
+
+  const echoDuplicateEndsByScrimId = await prisma.echoDuplicateEnd.findMany({
+    where: {
+      scrimId: scrim.id,
+    },
+  });
+
+  return echoDuplicateEndsByScrimId;
+}
+
+export async function createEchoDuplicateStartRows(
+  data: ParserData,
+  scrim: { id: number },
+  mapId: number
+) {
+  if (
+    typeof data.echo_duplicate_start === "undefined" ||
+    data.echo_duplicate_start.length === 0 ||
+    !data.echo_duplicate_start
+  ) {
+    return [];
+  }
+
+  await prisma.echoDuplicateStart.createMany({
+    data: data.echo_duplicate_start.map((duplicateStart) => ({
+      scrimId: scrim.id,
+      match_time: duplicateStart[1],
+      player_team: duplicateStart[2],
+      player_name: duplicateStart[3],
+      player_hero: duplicateStart[4],
+      hero_duplicated: duplicateStart[5],
+      ultimate_id: duplicateStart[6],
+      MapDataId: mapId,
+    })),
+  });
+
+  const echoDuplicateStartsByScrimId = await prisma.echoDuplicateStart.findMany(
+    {
+      where: {
+        scrimId: scrim.id,
+      },
+    }
+  );
+
+  return echoDuplicateStartsByScrimId;
 }
 
 export async function createHeroSpawnRows(

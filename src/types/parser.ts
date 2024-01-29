@@ -38,6 +38,25 @@ export type DefensiveAssistTableRow = [
   hero_duplicated: string
 ];
 
+export type EchoDuplicateEndTableRow = [
+  event_type: "echo_duplicate_end",
+  match_time: number,
+  player_team: PlayerTeam,
+  player_name: string,
+  player_hero: HeroName,
+  ultimate_id: number
+];
+
+export type EchoDuplicateStartTableRow = [
+  event_type: "echo_duplicate_start",
+  match_time: number,
+  player_team: PlayerTeam,
+  player_name: string,
+  player_hero: HeroName,
+  hero_duplicated: string,
+  ultimate_id: number
+];
+
 export type HeroSpawnTableRow = [
   event_type: "hero_spawn",
   match_time: number,
@@ -240,6 +259,8 @@ export type UltimateStartTableRow = [
 
 export type ParserData = {
   defensive_assist: DefensiveAssistTableRow[];
+  echo_duplicate_end?: EchoDuplicateEndTableRow[];
+  echo_duplicate_start?: EchoDuplicateStartTableRow[];
   hero_spawn: HeroSpawnTableRow[];
   hero_swap: HeroSwapTableRow[];
   kill: KillTableRow[];
