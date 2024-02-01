@@ -16,7 +16,7 @@ const TXT_FILE = "text/plain";
  * Parses a file and returns a JSON object with the data
  *
  * @param file - The file to parse
- * @returns {Promise<ParserData>} - The parsed data
+ * @returns {Promise<ParserData>} The parsed data
  */
 export async function parseData(file: File) {
   switch (file.type) {
