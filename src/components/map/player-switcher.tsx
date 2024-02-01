@@ -60,29 +60,23 @@ export default function PlayerSwitcher({
 
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams()!;
+
+  const mapUrl = pathname.split("/").slice(0, 6).join("/");
 
   React.useEffect(() => {
-    const playerExists = mostPlayedHeroes.find(
-      (playerStat) => playerStat.player_name === searchParams.get("player")
-    );
-
-    if (searchParams.has("player") && !playerExists) {
-      router.push(pathname);
+    const playerId = pathname.split("/").pop();
+    if (playerId) {
+      const player = mostPlayedHeroes.find(
+        (player) => player.player_name === playerId
+      );
+      if (player) {
+        setSelectedPlayer({
+          label: player.player_name,
+          value: player.player_hero,
+        });
+      }
     }
-  }, [mostPlayedHeroes, pathname, router, searchParams]);
-
-  // Get a new searchParams string by merging the current
-  // searchParams with a provided key/value pair
-  const createQueryString = React.useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams);
-      params.set(name, value);
-
-      return params.toString();
-    },
-    [searchParams]
-  );
+  }, [mostPlayedHeroes, pathname]);
 
   function createTeamGroups(playerStats: MostPlayedHeroesType): TeamGroup[] {
     const teamGroupsMap = new Map<string, TeamGroup>();
@@ -145,12 +139,7 @@ export default function PlayerSwitcher({
                     <CommandItem
                       key={player.label}
                       onSelect={() => {
-                        router.push(
-                          pathname +
-                            "?" +
-                            createQueryString("player", player.label)
-                        );
-                        setSelectedPlayer(player);
+                        router.push(`${mapUrl}/player/${player.label}`);
                       }}
                       className="text-sm"
                     >
@@ -182,7 +171,7 @@ export default function PlayerSwitcher({
                 <DialogTrigger asChild>
                   <CommandItem
                     onSelect={() => {
-                      router.push(pathname);
+                      router.push(mapUrl);
                       setSelectedPlayer({
                         label: "Default",
                         value: "default",
