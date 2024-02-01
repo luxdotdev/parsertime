@@ -70,8 +70,19 @@ export const columns: ColumnDef<PlayerData>[] = [
     enableColumnFilter: false,
   },
   {
+    accessorKey: "eliminations",
+    header: "Eliminations",
+    cell: ({ row }) => (
+      <div className="capitalize text-right">
+        {row.getValue("eliminations")}
+      </div>
+    ),
+    enableSorting: false,
+    enableColumnFilter: false,
+  },
+  {
     accessorKey: "kills",
-    header: "Kills",
+    header: "Final Blows",
     cell: ({ row }) => (
       <div className="capitalize text-right">{row.getValue("kills")}</div>
     ),

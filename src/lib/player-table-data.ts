@@ -8,6 +8,7 @@ export type PlayerData = {
   role: string;
   playerTeam: string;
   timePlayed: number;
+  eliminations: number;
   kills: number;
   assists: number;
   deaths: number;
@@ -46,6 +47,7 @@ export function aggregatePlayerData(rows: PlayerStatRows): PlayerData[] {
         playerName: row.player_name,
         role: determineRole(row.player_hero as HeroName),
         playerTeam: row.player_team,
+        eliminations: 0,
         kills: 0,
         assists: 0,
         deaths: 0,
@@ -80,6 +82,7 @@ export function aggregatePlayerData(rows: PlayerStatRows): PlayerData[] {
     );
 
     // Update the stats
+    player.eliminations += row.eliminations;
     player.kills += row.final_blows;
     player.assists += row.offensive_assists;
     player.deaths += row.deaths;
