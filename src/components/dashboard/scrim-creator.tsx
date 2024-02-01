@@ -69,7 +69,6 @@ export function ScrimCreationForm() {
     fetch("/api/get-teams")
       .then((res) => res.json() as Promise<GetTeamsResponse>)
       .then((data) => {
-        console.log(data);
         const newTeams = data.teams.map((team) => ({
           label: team.name,
           value: team.id.toString(),
@@ -104,7 +103,6 @@ export function ScrimCreationForm() {
 
       const data = await parseData(file);
       setMapData(data);
-      console.log(data);
     }
   }
 
@@ -113,6 +111,12 @@ export function ScrimCreationForm() {
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
+    toast({
+      title: "Creating scrim",
+      description: "Please wait...",
+      duration: 5000,
+    });
+
     data.map = mapData;
 
     const res = await fetch("/api/create-scrim", {
@@ -135,8 +139,6 @@ export function ScrimCreationForm() {
         variant: "destructive",
       });
     }
-
-    console.log(res);
   }
 
   return (
