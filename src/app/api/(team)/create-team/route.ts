@@ -1,6 +1,11 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
+type CreateTeamRequestData = {
+  name: string;
+  users: { id: string }[];
+};
+
 export async function POST(request: Request) {
   const session = await auth();
 
@@ -10,7 +15,7 @@ export async function POST(request: Request) {
     },
   });
 
-  const req = await request.json();
+  const req = (await request.json()) as CreateTeamRequestData;
 
   if (!session) {
     return new Response("Unauthorized", {

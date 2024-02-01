@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
 
   const id = req.nextUrl.searchParams.get("id") ?? "";
 
-  const data: ParserData = await req.json();
+  const data = (await req.json()) as ParserData;
 
   if (!session) {
     return new Response("Unauthorized", {

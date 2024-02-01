@@ -12,7 +12,7 @@ export type CreateScrimRequestData = {
 export async function POST(request: Request) {
   const session = await auth();
 
-  const data: CreateScrimRequestData = await request.json();
+  const data = (await request.json()) as CreateScrimRequestData;
 
   if (!session) {
     return new Response("Unauthorized", {

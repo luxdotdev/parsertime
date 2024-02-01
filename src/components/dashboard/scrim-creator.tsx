@@ -67,8 +67,8 @@ export function ScrimCreationForm() {
 
   function getTeams() {
     fetch("/api/get-teams")
-      .then((res) => res.json())
-      .then((data: GetTeamsResponse) => {
+      .then((res) => res.json() as Promise<GetTeamsResponse>)
+      .then((data) => {
         console.log(data);
         const newTeams = data.teams.map((team) => ({
           label: team.name,

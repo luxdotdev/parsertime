@@ -62,7 +62,7 @@ export const config = {
         });
 
         if (!response.ok) {
-          const { errors } = await response.json();
+          const { errors } = (await response.json()) as { errors: string[] };
           throw new Error(JSON.stringify(errors));
         }
       },
