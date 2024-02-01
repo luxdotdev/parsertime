@@ -36,8 +36,9 @@ class Logger {
   }
 
   private static shouldLog(level: LogLevel): boolean {
-    // Adjust logic here for more sophisticated filtering based on environment
-    return !this.isProduction || this.logLevel.includes(level);
+    // Since logging is required in all environments, including production,
+    // this function now always returns true.
+    return true;
   }
 }
 
