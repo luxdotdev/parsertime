@@ -81,8 +81,6 @@ export function AddMapCard() {
         variant: "destructive",
       });
     }
-
-    console.log(res);
   }
 
   function handleDrag(e: React.DragEvent) {
