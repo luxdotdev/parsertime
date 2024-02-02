@@ -20,13 +20,20 @@ export async function ScrimList({
     },
   });
 
-  const userCreatedScrims = await prisma.scrim.findMany({
+  const userViewableScrims = await prisma.scrim.findMany({
     where: {
-      creatorId: userData[0].id,
+      OR: [
+        {
+          creatorId: userData[0].id,
+        },
+        {
+          teamId: userData[0].teamId,
+        },
+      ],
     },
   });
 
-  for (const scrim of userCreatedScrims) {
+  for (const scrim of userViewableScrims) {
     const teamName = await prisma.team.findFirst({
       where: {
         id: scrim.teamId ?? 0,
