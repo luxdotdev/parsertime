@@ -83,6 +83,16 @@ export function TeamSwitcher({
     }
   }, [newTeamCreated]);
 
+  React.useEffect(() => {
+    if (searchParams.get("team")) {
+      const teamId = parseInt(searchParams.get("team") as string);
+      const team = teams.find((team) => parseInt(team.value) === teamId);
+      if (team) {
+        setSelectedTeam(team);
+      }
+    }
+  }, [searchParams, teams]);
+
   const groups = [
     {
       label: "Individual",
@@ -142,8 +152,9 @@ export function TeamSwitcher({
                           router.push(
                             pathname +
                               "?" +
-                              createQueryString("team", team.label)
+                              createQueryString("team", team.value)
                           );
+                          router.refresh();
                         }
                         setSelectedTeam(team);
                         setOpen(false);

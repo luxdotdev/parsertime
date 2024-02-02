@@ -5,10 +5,14 @@ import { Card } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
-export async function ScrimList() {
+export async function ScrimList({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   const session = await auth();
 
-  const scrims = [];
+  let scrims = [];
 
   const userData = await prisma.user.findMany({
     where: {
@@ -46,6 +50,12 @@ export async function ScrimList() {
       team: teamName?.name ?? "Uncategorized",
       creator: creatorName[0].name ?? "Unknown",
     });
+  }
+
+  if (searchParams?.team) {
+    scrims = scrims.filter(
+      (scrim) => scrim.teamId === parseInt(searchParams.team as string)
+    );
   }
 
   return (
