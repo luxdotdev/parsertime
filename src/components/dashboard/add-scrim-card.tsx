@@ -69,7 +69,7 @@ export function AddScrimCard() {
     } else {
       toast({
         title: "Error",
-        description: "Something went wrong.",
+        description: `An error occurred: ${res.statusText} (${res.status})`,
         duration: 5000,
         variant: "destructive",
       });
