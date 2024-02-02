@@ -101,6 +101,9 @@ dependencies:
   '@react-email/render':
     specifier: ^0.0.10
     version: 0.0.10
+  '@react-email/tailwind':
+    specifier: ^0.0.14
+    version: 0.0.14(react@18.2.0)
   '@sendgrid/mail':
     specifier: ^7.7.0
     version: 7.7.0
@@ -2349,6 +2352,15 @@ packages:
     dependencies:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /@react-email/tailwind@0.0.14(react@18.2.0):
+    resolution: {integrity: sha512-SRRcm08zxrAR5XozaW0X+GAJlTJITakZe0UXBiFZDlSDBLwFMxjaGuQwccqNF0LxDnxmduxYB71mzEAqecgTZg==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: 18.2.0
+    dependencies:
+      react: 18.2.0
     dev: false
 
   /@react-email/text@0.0.6(react@18.2.0):
