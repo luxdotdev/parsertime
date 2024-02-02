@@ -111,3 +111,35 @@ export async function isAuthedToViewScrim(id: number) {
   // if user is correctly authed return true
   return true;
 }
+
+export async function isAuthedToViewTeam(id: number) {
+  const session = await auth();
+  if (!session) {
+    return false;
+  }
+
+  const user = await prisma.user.findFirst({
+    where: {
+      email: session?.user?.email,
+    },
+  });
+
+  if (!user) {
+    return false;
+  }
+
+  const teamMembersById = await prisma.team.findFirst({
+    where: {
+      id: id,
+    },
+    select: {
+      users: true,
+    },
+  });
+
+  if (teamMembersById?.users?.some((u) => u.id === user.id)) {
+    return true;
+  } else {
+    return false;
+  }
+}
