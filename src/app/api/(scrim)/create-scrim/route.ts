@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     });
   }
 
-  Logger.log("Creating new scrim for user: ", session?.user?.id);
+  Logger.log("Creating new scrim for user: ", session.user?.email);
 
   await createNewScrimFromParsedData(data, session);
 

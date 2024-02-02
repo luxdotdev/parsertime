@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
 
   if (teamInviteToken.email !== (session?.user?.email ?? testingEmail)) {
     Logger.error(
-      `User ${session?.user?.id} tried to join team ${teamInviteToken.teamId} with a token that doesn't belong to them`
+      `User ${session?.user?.email} tried to join team ${teamInviteToken.teamId} with a token that doesn't belong to them`
     );
     return new Response("Unauthorized to join team", {
       status: 400,
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
   });
 
   Logger.log(
-    `User ${session?.user?.id ?? testingEmail} joined team ${
+    `User ${session?.user?.email ?? testingEmail} joined team ${
       teamInviteToken.teamId
     }`
   );
