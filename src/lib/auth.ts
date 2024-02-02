@@ -92,20 +92,32 @@ export async function isAuthedToViewScrim(id: number) {
     },
   });
 
-  const scrim = await prisma.scrim.findFirst({
-    where: {
-      id: id,
-    },
-  });
-
   // if user is admin return true
   if (user?.role === $Enums.UserRole.ADMIN) {
     return true;
   }
 
-  // if user is not scrim creator or team member return false
-  if (user?.id !== scrim?.creatorId || user?.teamId !== scrim?.teamId) {
-    return false;
+  const listOfViewableScrims = await prisma.scrim.findMany({
+    where: {
+      OR: [
+        {
+          creatorId: user?.id,
+        },
+        {
+          Team: {
+            users: {
+              some: {
+                id: user?.id,
+              },
+            },
+          },
+        },
+      ],
+    },
+  });
+
+  if (listOfViewableScrims.some((scrim) => scrim.id === id)) {
+    return true;
   }
 
   // if user is correctly authed return true
