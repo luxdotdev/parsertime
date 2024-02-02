@@ -7,7 +7,7 @@ import prisma from "@/lib/prisma";
 export async function AdminScrimView() {
   const scrimData = await prisma.scrim.findMany();
 
-  const scrims = [];
+  let scrims = [];
 
   for (const scrim of scrimData) {
     const teamName = await prisma.team.findFirst({
@@ -34,6 +34,10 @@ export async function AdminScrimView() {
       creator: creatorName[0].name ?? "Unknown",
     });
   }
+
+  scrims = scrims.sort((a, b) => {
+    return a.date > b.date ? 1 : -1;
+  });
 
   return (
     <main>
