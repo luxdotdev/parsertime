@@ -10,7 +10,11 @@ import { $Enums } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { AdminScrimView } from "@/components/dashboard/admin-scrim-view";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   const session = await auth();
 
   const userData = await prisma.user.findFirst({
@@ -47,7 +51,7 @@ export default async function DashboardPage() {
               </TabsList>
             )}
             <TabsContent value="overview" className="space-y-4">
-              <ScrimList />
+              <ScrimList searchParams={searchParams} />
             </TabsContent>
             <TabsContent value="admin" className="space-y-4">
               <AdminScrimView />
