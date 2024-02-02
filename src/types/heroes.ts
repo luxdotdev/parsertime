@@ -87,6 +87,11 @@ export type Lucio = {
   image: "lucio.png";
 };
 
+export type Mauga = {
+  name: "Mauga";
+  image: "mauga.png";
+};
+
 export type Mei = {
   name: "Mei";
   image: "mei.png";
@@ -196,6 +201,7 @@ export type Tank =
   | Dva
   | Doomfist
   | JunkerQueen
+  | Mauga
   | Orisa
   | Ramattra
   | Reinhardt
@@ -252,6 +258,7 @@ export const heroRoleMapping: Record<HeroName, string> = {
   Kiriko: "Support",
   Lifeweaver: "Support",
   Lúcio: "Support",
+  Mauga: "Tank",
   Mei: "Damage",
   Mercy: "Support",
   Moira: "Support",
