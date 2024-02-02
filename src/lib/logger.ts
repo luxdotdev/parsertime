@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-console */
+
 /**
  * To avoid using explicit console.log statements, we can use a logger to log messages to the console.
  * This allows us to easily search for and replace all console.log statements in the future.
