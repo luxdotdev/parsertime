@@ -43,10 +43,9 @@ export function toHero(name: string) {
  * @returns {string} The title case string.
  */
 export function toTitleCase(str: string): string {
-  return str
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(" ");
+  return str.replace(/\w\S*/g, (word) => {
+    return word.charAt(0).toUpperCase() + word.substr(1).toLowerCase();
+  });
 }
 
 /**
