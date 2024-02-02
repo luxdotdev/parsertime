@@ -6,6 +6,7 @@ import prisma from "@/lib/prisma";
 import { CreateMapRequestData } from "@/app/api/(scrim)/add-map/route";
 import { toTitleCase } from "@/lib/utils";
 import { headers } from "@/lib/headers";
+import Logger from "@/lib/logger";
 
 const XLSX_FILE =
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
@@ -153,6 +154,7 @@ export async function createNewScrimFromParsedData(
   });
 
   if (!userId) {
+    Logger.error("User not found for session: ", session);
     throw new Error("User not found");
   }
 
@@ -165,6 +167,8 @@ export async function createNewScrimFromParsedData(
       teamId: parseInt(data.team),
     },
   });
+
+  Logger.log("Scrim created: ", scrim, session);
 
   const mapData = await prisma.mapData.create({
     data: {
@@ -255,6 +259,8 @@ export async function createNewMap(
     },
   });
 
+  Logger.log("Map created: ", map, session);
+
   await prisma.scrim.update({
     where: {
       id: data.scrimId,
@@ -300,6 +306,12 @@ export async function createDefensiveAssistsRows(
     data.defensive_assist.length === 0 ||
     !data.defensive_assist
   ) {
+    Logger.log(
+      "No defensive assists found for map: ",
+      mapId,
+      "scrim: ",
+      scrim.id
+    );
     return [];
   }
 
@@ -334,6 +346,12 @@ export async function createEchoDuplicateEndRows(
     data.echo_duplicate_end.length === 0 ||
     !data.echo_duplicate_end
   ) {
+    Logger.log(
+      "No echo duplicate ends found for map: ",
+      mapId,
+      "scrim: ",
+      scrim.id
+    );
     return [];
   }
 
@@ -368,6 +386,12 @@ export async function createEchoDuplicateStartRows(
     data.echo_duplicate_start.length === 0 ||
     !data.echo_duplicate_start
   ) {
+    Logger.log(
+      "No echo duplicate starts found for map: ",
+      mapId,
+      "scrim: ",
+      scrim.id
+    );
     return [];
   }
 
@@ -405,6 +429,7 @@ export async function createHeroSpawnRows(
     data.hero_spawn.length === 0 ||
     !data.hero_spawn
   ) {
+    Logger.log("No hero spawns found for map: ", mapId, "scrim: ", scrim.id);
     return [];
   }
 
@@ -440,6 +465,7 @@ export async function createHeroSwapRows(
     data.hero_swap.length === 0 ||
     !data.hero_swap
   ) {
+    Logger.log("No hero swaps found for map: ", mapId, "scrim: ", scrim.id);
     return [];
   }
 
@@ -475,6 +501,7 @@ export async function createKillRows(
     data.kill.length === 0 ||
     !data.kill
   ) {
+    Logger.log("No kills found for map: ", mapId, "scrim: ", scrim.id);
     return [];
   }
 
@@ -515,6 +542,7 @@ export async function createMatchEndRows(
     data.match_end.length === 0 ||
     !data.match_end
   ) {
+    Logger.log("No match ends found for map: ", mapId, "scrim: ", scrim.id);
     return [];
   }
 
@@ -548,6 +576,7 @@ export async function createMatchStartRows(
     data.match_start.length === 0 ||
     !data.match_start
   ) {
+    Logger.log("No match starts found for map: ", mapId, "scrim: ", scrim.id);
     return [];
   }
 
@@ -582,6 +611,12 @@ export async function createObjectiveCapturedRows(
     data.objective_captured.length === 0 ||
     !data.objective_captured
   ) {
+    Logger.log(
+      "No objective captures found for map: ",
+      mapId,
+      "scrim: ",
+      scrim.id
+    );
     return [];
   }
 
@@ -618,6 +653,12 @@ export async function createObjectiveUpdatedRows(
     data.objective_updated.length === 0 ||
     !data.objective_updated
   ) {
+    Logger.log(
+      "No objective updates found for map: ",
+      mapId,
+      "scrim: ",
+      scrim.id
+    );
     return [];
   }
 
@@ -651,6 +692,12 @@ export async function createOffensiveAssistRows(
     data.offensive_assist.length === 0 ||
     !data.offensive_assist
   ) {
+    Logger.log(
+      "No offensive assists found for map: ",
+      mapId,
+      "scrim: ",
+      scrim.id
+    );
     return [];
   }
 
@@ -685,6 +732,12 @@ export async function createPayloadProgressRows(
     data.payload_progress.length === 0 ||
     !data.payload_progress
   ) {
+    Logger.log(
+      "No payload progress found for map: ",
+      mapId,
+      "scrim: ",
+      scrim.id
+    );
     return [];
   }
 
@@ -719,6 +772,7 @@ export async function createPlayerStatRows(
     data.player_stat.length === 0 ||
     !data.kill
   ) {
+    Logger.log("No player stats found for map: ", mapId, "scrim: ", scrim.id);
     return [];
   }
 
@@ -786,6 +840,7 @@ export async function createPointProgressRows(
     data.point_progress.length === 0 ||
     !data.point_progress
   ) {
+    Logger.log("No point progress found for map: ", mapId, "scrim: ", scrim.id);
     return [];
   }
 
@@ -820,6 +875,7 @@ export async function createRoundEndRows(
     data.round_end.length === 0 ||
     !data.round_end
   ) {
+    Logger.log("No round ends found for map: ", mapId, "scrim: ", scrim.id);
     return [];
   }
 
@@ -858,6 +914,7 @@ export async function createRoundStartRows(
     data.round_start.length === 0 ||
     !data.round_start
   ) {
+    Logger.log("No round starts found for map: ", mapId, "scrim: ", scrim.id);
     return [];
   }
 
@@ -893,6 +950,12 @@ export async function createSetupCompleteRows(
     data.setup_complete.length === 0 ||
     !data.setup_complete
   ) {
+    Logger.log(
+      "No setup completes found for map: ",
+      mapId,
+      "scrim: ",
+      scrim.id
+    );
     return [];
   }
 
@@ -925,6 +988,12 @@ export async function createUltimateChargedRows(
     data.ultimate_charged.length === 0 ||
     !data.ultimate_charged
   ) {
+    Logger.log(
+      "No ultimate charges found for map: ",
+      mapId,
+      "scrim: ",
+      scrim.id
+    );
     return [];
   }
 
@@ -960,6 +1029,7 @@ export async function createUltimateEndRows(
     data.ultimate_end.length === 0 ||
     !data.ultimate_end
   ) {
+    Logger.log("No ultimate ends found for map: ", mapId, "scrim: ", scrim.id);
     return [];
   }
 
@@ -995,6 +1065,12 @@ export async function createUltimateStartRows(
     data.ultimate_start.length === 0 ||
     !data.ultimate_start
   ) {
+    Logger.log(
+      "No ultimate starts found for map: ",
+      mapId,
+      "scrim: ",
+      scrim.id
+    );
     return [];
   }
 
