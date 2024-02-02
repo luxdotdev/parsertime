@@ -79,6 +79,14 @@ enum UserRole {
   USER
 }
 
+model TeamInviteToken {
+  id      Int      @id @default(autoincrement())
+  teamId  Int
+  email   String
+  token   String   @unique
+  expires DateTime
+}
+
 model Scrim {
   id        Int      @id @default(autoincrement())
   name      String
