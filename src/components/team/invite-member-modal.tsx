@@ -49,7 +49,6 @@ export default function InviteMemberModal({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
 
-    console.log("params.teamId", params.teamId);
     const getToken = await fetch(
       `/api/create-team-invite?id=${params.teamId}`,
       {
@@ -67,7 +66,6 @@ export default function InviteMemberModal({
     }
 
     const token = (await getToken.json()) as { token: string };
-    console.log("token", token);
 
     const res = await fetch(
       `/api/send-team-invite?email=${values.email}&token=${token.token}`,
