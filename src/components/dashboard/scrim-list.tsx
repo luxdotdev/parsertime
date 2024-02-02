@@ -22,14 +22,13 @@ export async function ScrimList({
 
   const userViewableScrims = await prisma.scrim.findMany({
     where: {
-      OR: [
-        {
-          creatorId: userData[0].id,
+      Team: {
+        users: {
+          some: {
+            id: userData[0].id,
+          },
         },
-        {
-          teamId: userData[0].teamId,
-        },
-      ],
+      },
     },
   });
 
