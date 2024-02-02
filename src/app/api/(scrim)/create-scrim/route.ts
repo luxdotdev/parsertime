@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import Logger from "@/lib/logger";
 import { createNewScrimFromParsedData } from "@/lib/parser";
 import { ParserData } from "@/types/parser";
 
@@ -15,10 +16,14 @@ export async function POST(request: Request) {
   const data = (await request.json()) as CreateScrimRequestData;
 
   if (!session) {
+    Logger.warn("Unauthorized request to create scrim");
+
     return new Response("Unauthorized", {
       status: 401,
     });
   }
+
+  Logger.log("Creating new scrim for user: ", session?.user?.id);
 
   await createNewScrimFromParsedData(data, session);
 

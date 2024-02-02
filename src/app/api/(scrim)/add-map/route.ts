@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import Logger from "@/lib/logger";
 import { createNewMap } from "@/lib/parser";
 import { ParserData } from "@/types/parser";
 import { NextRequest } from "next/server";
@@ -16,6 +17,8 @@ export async function POST(req: NextRequest) {
   const data = (await req.json()) as ParserData;
 
   if (!session) {
+    Logger.warn("Unauthorized request to add map");
+
     return new Response("Unauthorized", {
       status: 401,
     });

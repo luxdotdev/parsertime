@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 
 type CreateTeamRequestData = {
@@ -18,6 +19,8 @@ export async function POST(request: Request) {
   const req = (await request.json()) as CreateTeamRequestData;
 
   if (!session) {
+    Logger.warn("Unauthorized request to create team API");
+
     return new Response("Unauthorized", {
       status: 401,
     });

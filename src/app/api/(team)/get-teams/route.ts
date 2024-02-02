@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 
 export type Team = {
@@ -15,6 +16,14 @@ export type GetTeamsResponse = {
 
 export async function GET() {
   const session = await auth();
+
+  if (!session) {
+    Logger.warn("Unauthorized request to get teams API");
+
+    return new Response("Unauthorized", {
+      status: 401,
+    });
+  }
 
   const userId = await prisma.user.findUnique({
     where: {
