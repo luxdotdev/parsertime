@@ -20,6 +20,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
     setIsLoading(true);
+    signIn("email", { email: email });
   }
 
   // fix LastPass hydration issue
