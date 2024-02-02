@@ -33,7 +33,18 @@ export async function GET() {
 
   const teams = await prisma.team.findMany({
     where: {
-      ownerId: userId?.id,
+      OR: [
+        {
+          ownerId: userId?.id,
+        },
+        {
+          users: {
+            some: {
+              id: userId?.id,
+            },
+          },
+        },
+      ],
     },
   });
 
