@@ -26,13 +26,6 @@ export default async function TokenPage({
     redirect("/team/join?error=invalid-token");
   }
 
-  if (teamInviteToken.email !== session.user?.email) {
-    Logger.error(
-      `User ${session?.user?.email} tried to join team ${teamInviteToken.teamId} with a token that doesn't belong to them`
-    );
-    redirect("/team/join?error=invalid-token");
-  }
-
   await prisma.team.update({
     where: {
       id: teamInviteToken.teamId,
@@ -40,7 +33,7 @@ export default async function TokenPage({
     data: {
       users: {
         connect: {
-          email: session.user.email,
+          email: session?.user?.email ?? "",
         },
       },
     },
@@ -53,7 +46,7 @@ export default async function TokenPage({
   });
 
   Logger.log(
-    `User ${session.user.email} joined team ${teamInviteToken.teamId}`
+    `User ${session?.user?.email} joined team ${teamInviteToken.teamId}`
   );
 
   const teams = await prisma.team.findMany({
