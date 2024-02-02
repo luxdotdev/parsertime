@@ -66,6 +66,21 @@ export default async function TokenPage({
     },
   });
 
+  const user = await prisma.user.findFirst({
+    where: {
+      email: session?.user?.email,
+    },
+  });
+
+  prisma.user.update({
+    where: {
+      id: user?.id,
+    },
+    data: {
+      teamId: teamInviteToken.teamId,
+    },
+  });
+
   Logger.log("User now belongs to team: " + JSON.stringify(teams));
   redirect("/team/join/success");
 }
