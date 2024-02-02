@@ -28,7 +28,7 @@ export default async function TokenPage({
 
   if (teamInviteToken.email !== session.user?.email) {
     Logger.error(
-      `User ${session?.user?.id} tried to join team ${teamInviteToken.teamId} with a token that doesn't belong to them`
+      `User ${session?.user?.email} tried to join team ${teamInviteToken.teamId} with a token that doesn't belong to them`
     );
     redirect("/team/join?error=invalid-token");
   }
@@ -52,7 +52,9 @@ export default async function TokenPage({
     },
   });
 
-  Logger.log(`User ${session.user.id} joined team ${teamInviteToken.teamId}`);
+  Logger.log(
+    `User ${session.user.email} joined team ${teamInviteToken.teamId}`
+  );
 
   const teams = await prisma.team.findMany({
     where: {
