@@ -44,7 +44,10 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  return new Response("OK", {
+  return new Response(JSON.stringify({ token: inviteToken }), {
     status: 200,
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 }
