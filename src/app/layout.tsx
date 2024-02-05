@@ -11,7 +11,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Parsertime",
-  description: "Parsertime is a tool for analyzing Overwatch League matches.",
+  description: "Parsertime is a tool for analyzing Overwatch scrims.",
 };
 
 export default function RootLayout({
