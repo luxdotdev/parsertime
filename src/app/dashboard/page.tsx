@@ -9,12 +9,13 @@ import { auth } from "@/lib/auth";
 import { $Enums } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { AdminScrimView } from "@/components/dashboard/admin-scrim-view";
+import { SearchParams } from "@/types/next";
 
-export default async function DashboardPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
+type Props = {
+  searchParams: SearchParams;
+};
+
+export default async function DashboardPage({ searchParams }: Props) {
   const session = await auth();
 
   const userData = await prisma.user.findFirst({

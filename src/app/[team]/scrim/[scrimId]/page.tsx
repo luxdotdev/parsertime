@@ -5,15 +5,16 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { UserNav } from "@/components/user-nav";
 import prisma from "@/lib/prisma";
 import { toKebabCase } from "@/lib/utils";
+import { SearchParams } from "@/types/next";
 import Image from "next/image";
 import Link from "next/link";
 
-export default async function ScrimDashboardPage({
-  params,
-}: {
+type Props = {
   params: { team: string; scrimId: string };
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
+  searchParams: SearchParams;
+};
+
+export default async function ScrimDashboardPage({ params }: Props) {
   const id = parseInt(params.scrimId);
 
   const scrim = await prisma.scrim.findFirst({

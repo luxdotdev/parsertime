@@ -4,12 +4,13 @@ import { ScrimCard } from "@/components/dashboard/scrim-card";
 import { Card } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { SearchParams } from "@/types/next";
 
-export async function ScrimList({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
+type Props = {
+  searchParams: SearchParams;
+};
+
+export async function ScrimList({ searchParams }: Props) {
   const session = await auth();
 
   let scrims = [];
