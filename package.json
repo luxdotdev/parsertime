@@ -60,6 +60,7 @@
     "react-day-picker": "^8.9.1",
     "react-dom": "^18",
     "react-hook-form": "^7.48.2",
+    "recharts": "^2.11.0",
     "tailwind-merge": "^2.0.0",
     "tailwindcss-animate": "^1.0.7",
     "uploadthing": "^5.7.4",
