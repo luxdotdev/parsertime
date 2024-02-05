@@ -5,12 +5,6 @@ import { PlayerStatRows } from "@/types/prisma";
 import prisma from "@/lib/prisma";
 
 export async function DefaultOverview({ id }: { id: number }) {
-  const playerStats = await prisma.playerStat.findMany({
-    where: {
-      MapDataId: id,
-    },
-  });
-
   const finalRound = await prisma.roundEnd.findFirst({
     where: {
       MapDataId: id,
@@ -63,6 +57,19 @@ export async function DefaultOverview({ id }: { id: number }) {
             <CardTitle className="text-sm font-medium">
               Total Match Time
             </CardTitle>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              className="h-4 w-4 text-muted-foreground"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
