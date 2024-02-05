@@ -8,12 +8,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { toTitleCase } from "@/lib/utils";
+import { Metadata } from "next";
+import { SearchParams } from "@/types/next";
 
-export default async function PlayerDashboardPage({
-  params,
-}: {
+type Props = {
   params: { team: string; scrimId: string; mapId: string; playerId: string };
-}) {
+  searchParams: SearchParams;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const playerName = params.playerId;
+
+  return {
+    title: `${playerName} Overview | Parsertime`,
+  };
+}
+
+export default async function PlayerDashboardPage({ params }: Props) {
   const id = parseInt(params.mapId);
 
   const uniquePlayerRowsByHeroTimePlayed = await prisma.playerStat.findMany({
