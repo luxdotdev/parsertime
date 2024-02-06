@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function DashboardLoading() {
   return (
     <>
-      <div className="hidden flex-col md:flex">
+      <div className="hidden flex-col md:flex min-h-[90vh]">
         <div className="border-b">
           <div className="flex h-16 items-center px-4">
             <Skeleton className="w-24 h-6" />
