@@ -2,7 +2,10 @@ import Statistics from "@/components/player/statistics";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import CardIcon from "@/components/ui/card-icon";
 import prisma from "@/lib/prisma";
-import { removeDuplicateRows } from "@/lib/utils";
+import {
+  removeDuplicateRows,
+  removeDuplicateRowsForFletaDeadlift,
+} from "@/lib/utils";
 import { PlayerStatRows } from "@/types/prisma";
 
 export async function DefaultOverview({
@@ -44,6 +47,35 @@ export async function DefaultOverview({
           AND ps.player_name = ${playerName}`
   );
 
+  const team = playerStatsByFinalRound[0]?.player_team;
+
+  const teamFinalBlows = removeDuplicateRowsForFletaDeadlift(
+    await prisma.playerStat.findMany({
+      where: {
+        MapDataId: id,
+        player_team: team,
+        round_number: finalRound?.round_number,
+      },
+      select: {
+        final_blows: true,
+        player_hero: true,
+      },
+    })
+  );
+
+  const teamTotalFinalBlows = teamFinalBlows.reduce(
+    (acc, { final_blows }) => acc + final_blows,
+    0
+  );
+
+  const playerFinalBlows = playerStatsByFinalRound.reduce(
+    (acc, { final_blows }) => acc + final_blows,
+    0
+  );
+
+  const playerFletaDeadliftPercentage =
+    (playerFinalBlows / (teamTotalFinalBlows - playerFinalBlows)) * 100;
+
   return (
     <>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -65,18 +97,22 @@ export async function DefaultOverview({
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Subscriptions</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Fleta Deadlift Percentage
+            </CardTitle>
             <CardIcon>
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+              <path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15" />
+              <path d="M11 12 5.12 2.2" />
+              <path d="m13 12 5.88-9.8" />
+              <path d="M8 7h8" />
+              <circle cx="12" cy="17" r="5" />
+              <path d="M12 18v-2h-.5" />
             </CardIcon>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+2350</div>
-            <p className="text-xs text-muted-foreground">
-              +180.1% from last month
-            </p>
+            <div className="text-2xl font-bold">
+              {playerFletaDeadliftPercentage.toFixed(2)}%
+            </div>
           </CardContent>
         </Card>
         <Card>

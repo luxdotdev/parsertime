@@ -153,3 +153,22 @@ export function removeDuplicateRows(rows: PlayerStatRows): PlayerStatRows {
     }
   });
 }
+
+export function removeDuplicateRowsForFletaDeadlift(
+  rows: { final_blows: number; player_hero: string }[]
+) {
+  const uniqueSet = new Set();
+  return rows.filter((row) => {
+    const uniqueString = JSON.stringify({
+      finalBlows: row.final_blows,
+      playerHero: row.player_hero,
+    });
+
+    if (uniqueSet.has(uniqueString)) {
+      return false;
+    } else {
+      uniqueSet.add(uniqueString);
+      return true;
+    }
+  });
+}
