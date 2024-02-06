@@ -1,6 +1,8 @@
 import { PlayerStatRows } from "@/types/prisma";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import prisma from "@/lib/prisma";
+import { Kill } from "@prisma/client";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -172,4 +174,41 @@ export function removeDuplicateRowsForFletaDeadlift(
       return true;
     }
   });
+}
+
+export async function groupKillsIntoFights(mapId: number) {
+  type Fight = {
+    kills: Kill[];
+    start: number;
+    end: number;
+  };
+
+  const killsByMapId = await prisma.kill.findMany({
+    where: {
+      MapDataId: mapId,
+    },
+  });
+
+  if (killsByMapId.length === 0) return [];
+
+  const fights: Fight[] = [];
+  let currentFight: Fight | null = null;
+
+  killsByMapId.forEach((kill) => {
+    if (!currentFight || kill.match_time - currentFight.end > 18) {
+      // If there's no current fight or we're past the 20 second window, start a new fight
+      currentFight = {
+        kills: [kill],
+        start: kill.match_time,
+        end: kill.match_time,
+      };
+      fights.push(currentFight);
+    } else {
+      // Otherwise, add the kill to the current fight and update the end time
+      currentFight.kills.push(kill);
+      currentFight.end = kill.match_time;
+    }
+  });
+
+  return fights;
 }
