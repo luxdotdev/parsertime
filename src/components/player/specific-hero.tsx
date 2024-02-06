@@ -74,9 +74,11 @@ export default function SpecificHero({
               </CardContent>
               <CardFooter>
                 <div className="text-sm text-muted-foreground">
-                  {(playerStat.eliminations /
-                    toMins(playerStat.hero_time_played)) *
-                    10}{" "}
+                  {round(
+                    (playerStat.eliminations /
+                      toMins(playerStat.hero_time_played)) *
+                      10
+                  )}{" "}
                   eliminations per 10 minutes
                 </div>
               </CardFooter>
@@ -99,8 +101,10 @@ export default function SpecificHero({
               </CardContent>
               <CardFooter>
                 <div className="text-sm text-muted-foreground">
-                  {(playerStat.deaths / toMins(playerStat.hero_time_played)) *
-                    10}{" "}
+                  {round(
+                    (playerStat.deaths / toMins(playerStat.hero_time_played)) *
+                      10
+                  )}{" "}
                   deaths per 10 minutes
                 </div>
               </CardFooter>
@@ -122,9 +126,11 @@ export default function SpecificHero({
               </CardContent>
               <CardFooter>
                 <div className="text-sm text-muted-foreground">
-                  {(playerStat.ultimates_used /
-                    toMins(playerStat.hero_time_played)) *
-                    10}{" "}
+                  {round(
+                    (playerStat.ultimates_used /
+                      toMins(playerStat.hero_time_played)) *
+                      10
+                  )}{" "}
                   ultimates used per 10 minutes
                 </div>
               </CardFooter>
@@ -228,9 +234,11 @@ export default function SpecificHero({
                   </CardContent>
                   <CardFooter>
                     <div className="text-sm text-muted-foreground">
-                      {(playerStat.final_blows /
-                        toMins(playerStat.hero_time_played)) *
-                        10}{" "}
+                      {round(
+                        (playerStat.final_blows /
+                          toMins(playerStat.hero_time_played)) *
+                          10
+                      )}{" "}
                       final blows per 10 minutes
                     </div>
                   </CardFooter>
@@ -258,9 +266,11 @@ export default function SpecificHero({
                   </CardContent>
                   <CardFooter>
                     <div className="text-sm text-muted-foreground">
-                      {(playerStat.solo_kills /
-                        toMins(playerStat.hero_time_played)) *
-                        10}{" "}
+                      {round(
+                        (playerStat.solo_kills /
+                          toMins(playerStat.hero_time_played)) *
+                          10
+                      )}{" "}
                       solo kills per 10 minutes
                     </div>
                   </CardFooter>

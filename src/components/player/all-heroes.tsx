@@ -84,17 +84,19 @@ export default function AllHeroes({
               </CardContent>
               <CardFooter>
                 <div className="text-sm text-muted-foreground">
-                  {(playerStats.reduce(
-                    (acc, stat) => acc + stat.eliminations,
-                    0
-                  ) /
-                    toMins(
-                      playerStats.reduce(
-                        (acc, stat) => acc + stat.hero_time_played,
-                        0
-                      )
-                    )) *
-                    10}{" "}
+                  {round(
+                    (playerStats.reduce(
+                      (acc, stat) => acc + stat.eliminations,
+                      0
+                    ) /
+                      toMins(
+                        playerStats.reduce(
+                          (acc, stat) => acc + stat.hero_time_played,
+                          0
+                        )
+                      )) *
+                      10
+                  )}{" "}
                   eliminations per 10 minutes
                 </div>
               </CardFooter>
@@ -118,14 +120,16 @@ export default function AllHeroes({
               </CardContent>
               <CardFooter>
                 <div className="text-sm text-muted-foreground">
-                  {(playerStats.reduce((acc, stat) => acc + stat.deaths, 0) /
-                    toMins(
-                      playerStats.reduce(
-                        (acc, stat) => acc + stat.hero_time_played,
-                        0
-                      )
-                    )) *
-                    10}{" "}
+                  {round(
+                    (playerStats.reduce((acc, stat) => acc + stat.deaths, 0) /
+                      toMins(
+                        playerStats.reduce(
+                          (acc, stat) => acc + stat.hero_time_played,
+                          0
+                        )
+                      )) *
+                      10
+                  )}{" "}
                   deaths per 10 minutes
                 </div>
               </CardFooter>
@@ -151,17 +155,19 @@ export default function AllHeroes({
               </CardContent>
               <CardFooter>
                 <div className="text-sm text-muted-foreground">
-                  {(playerStats.reduce(
-                    (acc, stat) => acc + stat.ultimates_used,
-                    0
-                  ) /
-                    toMins(
-                      playerStats.reduce(
-                        (acc, stat) => acc + stat.hero_time_played,
-                        0
-                      )
-                    )) *
-                    10}{" "}
+                  {round(
+                    (playerStats.reduce(
+                      (acc, stat) => acc + stat.ultimates_used,
+                      0
+                    ) /
+                      toMins(
+                        playerStats.reduce(
+                          (acc, stat) => acc + stat.hero_time_played,
+                          0
+                        )
+                      )) *
+                      10
+                  )}{" "}
                   ultimates used per 10 minutes
                 </div>
               </CardFooter>
@@ -305,17 +311,19 @@ export default function AllHeroes({
                   </CardContent>
                   <CardFooter>
                     <div className="text-sm text-muted-foreground">
-                      {(playerStats.reduce(
-                        (acc, stat) => acc + stat.final_blows,
-                        0
-                      ) /
-                        toMins(
-                          playerStats.reduce(
-                            (acc, stat) => acc + stat.hero_time_played,
-                            0
-                          )
-                        )) *
-                        10}{" "}
+                      {round(
+                        (playerStats.reduce(
+                          (acc, stat) => acc + stat.final_blows,
+                          0
+                        ) /
+                          toMins(
+                            playerStats.reduce(
+                              (acc, stat) => acc + stat.hero_time_played,
+                              0
+                            )
+                          )) *
+                          10
+                      )}{" "}
                       final blows per 10 minutes
                     </div>
                   </CardFooter>
@@ -347,17 +355,19 @@ export default function AllHeroes({
                   </CardContent>
                   <CardFooter>
                     <div className="text-sm text-muted-foreground">
-                      {(playerStats.reduce(
-                        (acc, stat) => acc + stat.solo_kills,
-                        0
-                      ) /
-                        toMins(
-                          playerStats.reduce(
-                            (acc, stat) => acc + stat.hero_time_played,
-                            0
-                          )
-                        )) *
-                        10}{" "}
+                      {round(
+                        (playerStats.reduce(
+                          (acc, stat) => acc + stat.solo_kills,
+                          0
+                        ) /
+                          toMins(
+                            playerStats.reduce(
+                              (acc, stat) => acc + stat.hero_time_played,
+                              0
+                            )
+                          )) *
+                          10
+                      )}{" "}
                       solo kills per 10 minutes
                     </div>
                   </CardFooter>
