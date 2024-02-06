@@ -33,6 +33,7 @@ export function toHero(name: string) {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/\s/g, "")
+    .replace(":", "")
     .toLowerCase();
 }
 
