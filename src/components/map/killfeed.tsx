@@ -1,4 +1,4 @@
-import { OverviewTable } from "@/components/map/overview-table";
+import { KillfeedTable } from "@/components/map/killfeed-table";
 import {
   Card,
   CardContent,
@@ -6,10 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { groupKillsIntoFights, removeDuplicateRows } from "@/lib/utils";
-import { PlayerStatRows } from "@/types/prisma";
 import prisma from "@/lib/prisma";
-import { KillfeedTable } from "@/components/map/killfeed-table";
+import { groupKillsIntoFights } from "@/lib/utils";
 
 export async function Killfeed({ id }: { id: number }) {
   const finalRound = await prisma.roundEnd.findFirst({
