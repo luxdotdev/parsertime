@@ -27,10 +27,12 @@ export async function UserNav() {
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
             <AvatarImage
-              src={session?.user?.image || "/heroes/default"}
+              src={
+                session?.user?.image ||
+                `https://avatar.vercel.sh/${session?.user?.name}.png`
+              }
               alt={session?.user?.name || "User"}
             />
-            <AvatarFallback>SC</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
