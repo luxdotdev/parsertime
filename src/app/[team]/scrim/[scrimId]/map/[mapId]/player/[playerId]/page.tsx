@@ -1,4 +1,4 @@
-import { DefaultOverview } from "@/components/map/default-overview";
+import { DefaultOverview } from "@/components/player/default-overview";
 import { MainNav } from "@/components/map/main-nav";
 import PlayerSwitcher from "@/components/map/player-switcher";
 import { Search } from "@/components/map/search";
@@ -89,7 +89,7 @@ export default async function PlayerDashboardPage({ params }: Props) {
               <TabsTrigger value="notifications">Notifications</TabsTrigger>
             </TabsList>
             <TabsContent value="overview" className="space-y-4">
-              <DefaultOverview id={id} />
+              <DefaultOverview id={id} playerName={params.playerId} />
             </TabsContent>
           </Tabs>
         </div>
