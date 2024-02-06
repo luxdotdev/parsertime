@@ -34,15 +34,15 @@ export async function DefaultOverview({ id }: { id: number }) {
           INNER JOIN (
               SELECT
                   MapDataId,
-                  MAX(round_number) as max_round
+                  MAX(match_time) as max_time
               FROM
                   PlayerStat
               WHERE
                   MapDataId = ${id}
               GROUP BY
                   MapDataId
-          ) as max_rounds ON ps.MapDataId = max_rounds.MapDataId
-          AND ps.round_number = max_rounds.max_round
+          ) as max_time ON ps.MapDataId = max_time.MapDataId
+          AND ps.match_time = max_time.max_time
       WHERE
           ps.MapDataId = ${id}`
   )
