@@ -64,7 +64,7 @@ export default function PlayerSwitcher({
   const mapUrl = pathname.split("/").slice(0, 6).join("/");
 
   React.useEffect(() => {
-    const playerId = pathname.split("/").pop();
+    const playerId = decodeURIComponent(pathname.split("/").pop()!);
     if (playerId) {
       const player = mostPlayedHeroes.find(
         (player) => player.player_name === playerId
