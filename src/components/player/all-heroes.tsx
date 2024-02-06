@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import CardIcon from "@/components/ui/card-icon";
-import { round, toHero, toMins } from "@/lib/utils";
+import { round, toMins } from "@/lib/utils";
 import { HeroName, heroRoleMapping } from "@/types/heroes";
 import { PlayerStatRows } from "@/types/prisma";
 import Image from "next/image";
@@ -18,7 +18,6 @@ export default function AllHeroes({
   playerStats: PlayerStatRows;
 }) {
   const hero = playerStats[0].player_hero as HeroName;
-  const playerStat = playerStats[0];
   const role = heroRoleMapping[hero];
 
   return (
@@ -75,9 +74,11 @@ export default function AllHeroes({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {playerStats.reduce(
-                    (acc, stat) => acc + stat.eliminations,
-                    0
+                  {round(
+                    playerStats.reduce(
+                      (acc, stat) => acc + stat.eliminations,
+                      0
+                    )
                   )}{" "}
                   Eliminations
                 </div>
@@ -114,7 +115,9 @@ export default function AllHeroes({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {playerStats.reduce((acc, stat) => acc + stat.deaths, 0)}{" "}
+                  {round(
+                    playerStats.reduce((acc, stat) => acc + stat.deaths, 0)
+                  )}{" "}
                   Deaths
                 </div>
               </CardContent>
@@ -146,9 +149,11 @@ export default function AllHeroes({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {playerStats.reduce(
-                    (acc, stat) => acc + stat.ultimates_used,
-                    0
+                  {round(
+                    playerStats.reduce(
+                      (acc, stat) => acc + stat.ultimates_used,
+                      0
+                    )
                   )}{" "}
                   Ultimates Used
                 </div>
@@ -183,9 +188,11 @@ export default function AllHeroes({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {playerStats.reduce(
-                    (acc, stat) => acc + stat.hero_damage_dealt,
-                    0
+                  {round(
+                    playerStats.reduce(
+                      (acc, stat) => acc + stat.hero_damage_dealt,
+                      0
+                    )
                   )}{" "}
                   Hero Damage Dealt
                 </div>
@@ -222,9 +229,11 @@ export default function AllHeroes({
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {playerStats.reduce(
-                        (acc, stat) => acc + stat.damage_blocked,
-                        0
+                      {round(
+                        playerStats.reduce(
+                          (acc, stat) => acc + stat.damage_blocked,
+                          0
+                        )
                       )}{" "}
                       Damage Blocked
                     </div>
@@ -261,9 +270,11 @@ export default function AllHeroes({
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {playerStats.reduce(
-                        (acc, stat) => acc + stat.damage_taken,
-                        0
+                      {round(
+                        playerStats.reduce(
+                          (acc, stat) => acc + stat.damage_taken,
+                          0
+                        )
                       )}{" "}
                       Damage Taken
                     </div>
@@ -302,9 +313,11 @@ export default function AllHeroes({
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {playerStats.reduce(
-                        (acc, stat) => acc + stat.final_blows,
-                        0
+                      {round(
+                        playerStats.reduce(
+                          (acc, stat) => acc + stat.final_blows,
+                          0
+                        )
                       )}{" "}
                       Final Blows
                     </div>
@@ -346,9 +359,11 @@ export default function AllHeroes({
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {playerStats.reduce(
-                        (acc, stat) => acc + stat.solo_kills,
-                        0
+                      {round(
+                        playerStats.reduce(
+                          (acc, stat) => acc + stat.solo_kills,
+                          0
+                        )
                       )}{" "}
                       Solo Kills
                     </div>
@@ -426,9 +441,11 @@ export default function AllHeroes({
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {playerStats.reduce(
-                        (acc, stat) => acc + stat.healing_received,
-                        0
+                      {round(
+                        playerStats.reduce(
+                          (acc, stat) => acc + stat.healing_received,
+                          0
+                        )
                       )}{" "}
                       Healing Received
                     </div>
