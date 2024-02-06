@@ -70,6 +70,16 @@ export function toKebabCase(str: string): string {
 }
 
 /**
+ * Returns the number of minutes from a number of seconds.
+ *
+ * @param {number} value - The number of seconds.
+ * @returns {number} The number of minutes.
+ */
+export function toMins(value: number) {
+  return Math.floor(value / 60);
+}
+
+/**
  * Removes duplicate rows from an array of player stat rows based on all fields except the 'id'.
  *
  * This function iterates over the provided array of row objects and identifies duplicates
