@@ -13,7 +13,7 @@ export function cn(...inputs: ClassValue[]) {
  * @returns {number} The rounded number.
  */
 export function round(value: number) {
-  return Math.round((value + Number.EPSILON) * 100) / 100;
+  return (Math.round((value + Number.EPSILON) * 100) / 100).toFixed(2);
 }
 
 /**
