@@ -71,8 +71,10 @@ export default async function PlayerDashboardPage({ params }: Props) {
         <div className="flex-1 space-y-4 p-8 pt-6">
           <div>
             <h4 className="text-gray-600 dark:text-gray-400">
-              <Link href={`/${params.team}/scrim/${params.scrimId}`}>
-                &larr; Back to scrim overview
+              <Link
+                href={`/${params.team}/scrim/${params.scrimId}/map/${params.mapId}`}
+              >
+                &larr; Back to default overview
               </Link>
             </h4>
           </div>
