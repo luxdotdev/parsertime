@@ -17,7 +17,7 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const playerName = params.playerId;
+  const playerName = decodeURIComponent(params.playerId);
 
   return {
     title: `${playerName} Overview | Parsertime`,
