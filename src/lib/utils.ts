@@ -34,6 +34,7 @@ export function toHero(name: string) {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/\s/g, "")
     .replace(":", "")
+    .replace(".", "")
     .toLowerCase();
 }
 
