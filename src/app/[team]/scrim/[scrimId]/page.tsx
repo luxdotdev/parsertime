@@ -3,9 +3,11 @@ import { Search } from "@/components/map/search";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { UserNav } from "@/components/user-nav";
+import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { toKebabCase } from "@/lib/utils";
 import { SearchParams } from "@/types/next";
+import { $Enums } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -16,6 +18,7 @@ type Props = {
 
 export default async function ScrimDashboardPage({ params }: Props) {
   const id = parseInt(params.scrimId);
+  const session = await auth();
 
   const scrim = await prisma.scrim.findFirst({
     where: {
@@ -28,6 +31,16 @@ export default async function ScrimDashboardPage({ params }: Props) {
       scrimId: id,
     },
   });
+
+  const user = await prisma.user.findFirst({
+    where: {
+      email: session?.user?.email,
+    },
+  });
+
+  const hasPerms =
+    user?.role === $Enums.UserRole.MANAGER ||
+    user?.role === $Enums.UserRole.ADMIN;
 
   return (
     <>
@@ -82,10 +95,10 @@ export default async function ScrimDashboardPage({ params }: Props) {
                   </Card>
                 </div>
               ))}
-              <AddMapCard />
+              {hasPerms && <AddMapCard />}
             </div>
           ) : (
-            <AddMapCard />
+            <>{hasPerms && <AddMapCard />}</>
           )}
         </div>
       </div>
