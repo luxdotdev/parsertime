@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 import {
   removeDuplicateRows,
   removeDuplicateRowsForFletaDeadlift,
+  round,
 } from "@/lib/utils";
 import { PlayerStatRows } from "@/types/prisma";
 
@@ -111,7 +112,7 @@ export async function DefaultOverview({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {playerFletaDeadliftPercentage.toFixed(2)}%
+              {round(playerFletaDeadliftPercentage)}%
             </div>
           </CardContent>
         </Card>
