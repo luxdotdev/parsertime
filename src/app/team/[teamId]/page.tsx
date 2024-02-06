@@ -40,7 +40,9 @@ export default async function Team({ params }: { params: { teamId: string } }) {
               <div key={user.id} className="p-2 w-1/3">
                 <Card className="max-w-md relative h-36">
                   <Image
-                    src={user.image ?? "https://avatar.vercel.sh/user.png"}
+                    src={
+                      user.image ?? `https://avatar.vercel.sh/${user.email}.png`
+                    }
                     alt={
                       user.name
                         ? `Profile picture of ${user.name}`
