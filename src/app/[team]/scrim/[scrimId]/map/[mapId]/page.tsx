@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { toTitleCase } from "@/lib/utils";
+import { Killfeed } from "@/components/map/killfeed";
 
 export default async function MapDashboardPage({
   params,
@@ -73,12 +74,15 @@ export default async function MapDashboardPage({
           <Tabs defaultValue="overview" className="space-y-4">
             <TabsList>
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              <TabsTrigger value="killfeed">Killfeed</TabsTrigger>
               <TabsTrigger value="reports">Reports</TabsTrigger>
               <TabsTrigger value="notifications">Notifications</TabsTrigger>
             </TabsList>
             <TabsContent value="overview" className="space-y-4">
               <DefaultOverview id={id} />
+            </TabsContent>
+            <TabsContent value="killfeed" className="space-y-4">
+              <Killfeed id={id} />
             </TabsContent>
           </Tabs>
         </div>
