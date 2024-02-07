@@ -86,9 +86,8 @@ export default async function ScrimDashboardPage({ params }: Props) {
                         <Image
                           src={`/maps/${toKebabCase(map.name)}.webp`}
                           alt={map.name}
-                          layout="fill"
-                          objectFit="cover"
-                          className="rounded-md"
+                          fill
+                          className="object-cover rounded-md"
                         />
                       </CardContent>
                     </Link>
