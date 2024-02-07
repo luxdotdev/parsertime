@@ -6,7 +6,10 @@ import {
   EnterIcon,
   EnvelopeClosedIcon,
   GearIcon,
+  LaptopIcon,
+  MoonIcon,
   PersonIcon,
+  SunIcon,
 } from "@radix-ui/react-icons";
 import * as React from "react";
 
@@ -22,6 +25,7 @@ import {
   CommandShortcut,
 } from "@/components/ui/command";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 
 export function CommandDialogMenu() {
   const [open, setOpen] = React.useState(false);
@@ -29,6 +33,7 @@ export function CommandDialogMenu() {
     []
   );
   const router = useRouter();
+  const { setTheme } = useTheme();
 
   function getTeams() {
     fetch("/api/get-teams")
@@ -125,6 +130,21 @@ export function CommandDialogMenu() {
               <GearIcon className="mr-2 h-4 w-4" />
               <span>Settings</span>
               <CommandShortcut>⌘S</CommandShortcut>
+            </CommandItem>
+          </CommandGroup>
+          <CommandSeparator />
+          <CommandGroup heading="Theme">
+            <CommandItem onSelect={() => runCommand(() => setTheme("light"))}>
+              <SunIcon className="mr-2 h-4 w-4" />
+              Light
+            </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => setTheme("dark"))}>
+              <MoonIcon className="mr-2 h-4 w-4" />
+              Dark
+            </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => setTheme("system"))}>
+              <LaptopIcon className="mr-2 h-4 w-4" />
+              System
             </CommandItem>
           </CommandGroup>
         </CommandList>
