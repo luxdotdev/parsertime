@@ -1,8 +1,8 @@
 "use client";
 
 import {
+  ChevronRightIcon,
   DashboardIcon,
-  DoubleArrowRightIcon,
   EnterIcon,
   EnvelopeClosedIcon,
   GearIcon,
@@ -102,7 +102,7 @@ export function CommandDialogMenu() {
                       )
                     }
                   >
-                    <DoubleArrowRightIcon className="mr-2 h-4 w-4" />
+                    <ChevronRightIcon className="mr-2 h-4 w-4" />
                     <span>View Scrims: {team.label}</span>
                   </CommandItem>
                 ))}
