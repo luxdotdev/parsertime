@@ -31,16 +31,14 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <ParserDataProvider>
-            {children}
-            <Suspense>
-              <StaffToolbar />
-            </Suspense>
-          </ParserDataProvider>
+          <ParserDataProvider>{children}</ParserDataProvider>
           <Toaster />
           <SpeedInsights />
           <Analytics />
           <CommandDialogMenu />
+          <Suspense>
+            <StaffToolbar />
+          </Suspense>
         </ThemeProvider>
       </body>
     </html>
