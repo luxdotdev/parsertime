@@ -6,6 +6,7 @@ import { ParserDataProvider } from "@/lib/parser-context";
 import { Toaster } from "@/components/ui/toaster";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
+import { CommandDialogMenu } from "@/components/command-menu";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,6 +33,7 @@ export default function RootLayout({
           <Toaster />
           <SpeedInsights />
           <Analytics />
+          <CommandDialogMenu />
         </ThemeProvider>
       </body>
     </html>
