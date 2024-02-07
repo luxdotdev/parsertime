@@ -75,7 +75,7 @@ export function AddScrimCard() {
       });
     }
 
-    console.log(res);
+    // console.log(res);
   }
 
   function handleDrag(e: React.DragEvent) {
