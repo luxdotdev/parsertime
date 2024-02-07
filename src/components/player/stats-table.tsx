@@ -235,7 +235,7 @@ export function StatsTable({ data: playerStat }: { data: PlayerStat }) {
     },
     {
       stat: "Critical Hit Accuracy",
-      value: `${playerStat.critical_hit_accuracy * 100}%`,
+      value: `${round(playerStat.critical_hit_accuracy * 100)}%`,
       per10: "--:--",
     },
     {
@@ -245,7 +245,7 @@ export function StatsTable({ data: playerStat }: { data: PlayerStat }) {
     },
     {
       stat: "Scoped Critical Hit Accuracy",
-      value: `${playerStat.scoped_critical_hit_accuracy * 100}%`,
+      value: `${round(playerStat.scoped_critical_hit_accuracy * 100)}%`,
       per10: "--:--",
     },
     {
@@ -255,7 +255,7 @@ export function StatsTable({ data: playerStat }: { data: PlayerStat }) {
     },
     {
       stat: "Weapon Accuracy",
-      value: `${playerStat.weapon_accuracy * 100}%`,
+      value: `${round(playerStat.weapon_accuracy * 100)}%`,
       per10: "--:--",
     },
   ];
