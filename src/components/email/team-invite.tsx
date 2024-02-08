@@ -45,7 +45,7 @@ export const TeamInviteUserEmail = ({
           <Container className="border border-solid border-[#eaeaea] rounded my-[40px] mx-auto p-[20px] max-w-[465px]">
             <Section className="mt-[32px]">
               <Img
-                src={`https://react-email-demo-7s5r0trkn-resend.vercel.app/static/vercel-logo.png`}
+                src={`https://parsertime.app/parsertime.png`}
                 width="40"
                 height="37"
                 alt="Vercel"
