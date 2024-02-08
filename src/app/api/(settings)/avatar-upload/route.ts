@@ -45,8 +45,24 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
         try {
           // Run any logic after the file upload completed
-          // const { userId } = JSON.parse(tokenPayload);
-          // await db.update({ avatar: blob.url, userId });
+          const { userId } = JSON.parse(tokenPayload as string) as {
+            userId: string;
+          };
+
+          const user = await prisma.user.findUnique({
+            where: { id: userId },
+          });
+
+          if (!user) {
+            throw new Error("User not found");
+          }
+
+          await prisma.user.update({
+            where: { id: user?.id },
+            data: {
+              image: blob.url,
+            },
+          });
         } catch (error) {
           throw new Error("Could not update user");
         }
