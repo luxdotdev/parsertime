@@ -46,9 +46,9 @@ export const TeamInviteUserEmail = ({
             <Section className="mt-[32px]">
               <Img
                 src={`https://parsertime.app/parsertime.png`}
-                width="40"
-                height="37"
-                alt="Vercel"
+                width="50"
+                height="50"
+                alt="Parsertime Logo"
                 className="my-0 mx-auto"
               />
             </Section>
