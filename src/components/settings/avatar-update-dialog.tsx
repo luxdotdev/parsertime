@@ -11,6 +11,7 @@ import { User } from "@prisma/client";
 import { useCallback, useState } from "react";
 import Cropper, { Area } from "react-easy-crop";
 import { upload } from "@vercel/blob/client";
+import Logger from "@/lib/logger";
 
 async function getCroppedImg(
   file: File,
@@ -88,9 +89,9 @@ export function AvatarUpdateDialog({
         handleUploadUrl: "/api/avatar-upload?userId=" + user.id,
       });
 
-      console.log(url);
+      Logger.log("new avatar uploaded for user: ", user.email, url);
     } catch (e) {
-      console.error(e);
+      Logger.log(e);
     }
   };
 
