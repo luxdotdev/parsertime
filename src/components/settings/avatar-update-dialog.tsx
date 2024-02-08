@@ -23,7 +23,6 @@ async function getCroppedImg(
 
   return new Promise((resolve, reject) => {
     image.onload = () => {
-      const { width, height } = image;
       canvas.width = pixelCrop.width;
       canvas.height = pixelCrop.height;
 
@@ -47,7 +46,7 @@ async function getCroppedImg(
           return;
         }
         resolve(blob);
-      }, "image/jpeg");
+      }, "image/png");
     };
     image.src = URL.createObjectURL(file);
   });
