@@ -1,12 +1,18 @@
 import { Metadata } from "next";
-import Image from "next/image";
 
 import { Separator } from "@/components/ui/separator";
 import { SidebarNav } from "@/components/settings/sidebar-nav";
+import { TeamSwitcher } from "@/components/dashboard/team-switcher";
+import { MainNav } from "@/components/dashboard/main-nav";
+import { Search } from "@/components/dashboard/search";
+import { ModeToggle } from "@/components/theme-switcher";
+import { UserNav } from "@/components/user-nav";
+import Footer from "@/components/footer";
+import { auth } from "@/lib/auth";
 
 export const metadata: Metadata = {
-  title: "Forms",
-  description: "Advanced form example using react-hook-form and Zod.",
+  title: "Settings | Parsertime",
+  description: "Manage your account settings and preferences.",
 };
 
 const sidebarNavItems = [
@@ -20,30 +26,29 @@ interface SettingsLayoutProps {
   children: React.ReactNode;
 }
 
-export default function SettingsLayout({ children }: SettingsLayoutProps) {
+export default async function SettingsLayout({
+  children,
+}: SettingsLayoutProps) {
+  const session = await auth();
+
   return (
     <>
-      <div className="md:hidden">
-        <Image
-          src="/examples/forms-light.png"
-          width={1280}
-          height={791}
-          alt="Forms"
-          className="block dark:hidden"
-        />
-        <Image
-          src="/examples/forms-dark.png"
-          width={1280}
-          height={791}
-          alt="Forms"
-          className="hidden dark:block"
-        />
+      <div className="border-b">
+        <div className="flex h-16 items-center px-4">
+          <TeamSwitcher session={session} />
+          <MainNav className="mx-6" />
+          <div className="ml-auto flex items-center space-x-4">
+            <Search />
+            <ModeToggle />
+            <UserNav />
+          </div>
+        </div>
       </div>
-      <div className="hidden space-y-6 p-10 pb-16 md:block">
+      <div className="hidden space-y-6 p-10 pb-16 md:block min-h-[90vh]">
         <div className="space-y-0.5">
           <h2 className="text-2xl font-bold tracking-tight">Settings</h2>
           <p className="text-muted-foreground">
-            Manage your account settings and set e-mail preferences.
+            Manage your account settings and preferences.
           </p>
         </div>
         <Separator className="my-6" />
@@ -54,6 +59,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
           <div className="flex-1 lg:max-w-2xl">{children}</div>
         </div>
       </div>
+      <Footer />
     </>
   );
 }
