@@ -37,16 +37,16 @@ export function MainNav({
         Teams
       </Link>
       <Link
-        href="/"
-        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-      >
-        Products
-      </Link>
-      <Link
-        href="/"
+        href="/settings"
         className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
       >
         Settings
+      </Link>
+      <Link
+        href="mailto:help@parsertime.app"
+        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+      >
+        Contact
       </Link>
     </nav>
   );
