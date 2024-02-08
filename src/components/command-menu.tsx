@@ -6,6 +6,7 @@ import {
   EnterIcon,
   EnvelopeClosedIcon,
   GearIcon,
+  HomeIcon,
   LaptopIcon,
   MoonIcon,
   PersonIcon,
@@ -92,6 +93,10 @@ export function CommandDialogMenu() {
             >
               <EnterIcon className="mr-2 h-4 w-4" />
               <span>Sign In</span>
+            </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => router.push("/"))}>
+              <HomeIcon className="mr-2 h-4 w-4" />
+              <span>Home</span>
             </CommandItem>
           </CommandGroup>
           {teams.length > 0 && (
