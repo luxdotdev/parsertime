@@ -121,7 +121,9 @@ export function CommandDialogMenu() {
           )}
           <CommandSeparator />
           <CommandGroup heading="Settings">
-            <CommandItem>
+            <CommandItem
+              onSelect={() => runCommand(() => router.push("/settings"))}
+            >
               <PersonIcon className="mr-2 h-4 w-4" />
               <span>Profile</span>
               <CommandShortcut>⌘P</CommandShortcut>
