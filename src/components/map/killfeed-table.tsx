@@ -11,7 +11,6 @@ import {
 import { cn, toHero } from "@/lib/utils";
 import { Kill } from "@prisma/client";
 import Image from "next/image";
-import { Fragment } from "react";
 
 type Fight = {
   kills: Kill[];
