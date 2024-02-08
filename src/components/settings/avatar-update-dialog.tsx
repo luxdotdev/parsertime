@@ -12,6 +12,8 @@ import { useCallback, useState } from "react";
 import Cropper, { Area } from "react-easy-crop";
 import { upload } from "@vercel/blob/client";
 import Logger from "@/lib/logger";
+import { toast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 async function getCroppedImg(
   file: File,
@@ -67,6 +69,8 @@ export function AvatarUpdateDialog({
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const onCropComplete = useCallback(
     (croppedArea: Area, croppedAreaPixels: Area) => {
@@ -77,6 +81,8 @@ export function AvatarUpdateDialog({
 
   const handleCropImage = async () => {
     if (!selectedFile || !croppedAreaPixels) return;
+
+    setLoading(true);
 
     try {
       const croppedImage = await getCroppedImg(
@@ -89,8 +95,38 @@ export function AvatarUpdateDialog({
         handleUploadUrl: "/api/avatar-upload?userId=" + user.id,
       });
 
-      Logger.log("new avatar uploaded for user: ", user.email, url);
+      const res = await fetch("/api/update-avatar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: user.id, image: url }),
+      });
+
+      if (res.ok) {
+        setLoading(false);
+        toast({
+          title: "Avatar updated successfully",
+          description: "Your avatar has been updated successfully.",
+          duration: 5000,
+        });
+        setIsOpen(false);
+        router.refresh();
+      } else {
+        setLoading(false);
+        toast({
+          title: "An error occurred",
+          description: `An error occurred: ${res.statusText} (${res.status})`,
+          duration: 5000,
+        });
+      }
     } catch (e) {
+      setLoading(false);
+      toast({
+        title: "An error occurred",
+        description: "An error occurred while updating your avatar.",
+        duration: 5000,
+      });
       Logger.log(e);
     }
   };
@@ -120,7 +156,9 @@ export function AvatarUpdateDialog({
         </div>
 
         <DialogFooter>
-          <Button onClick={handleCropImage}>Save changes</Button>
+          <Button onClick={handleCropImage} disabled={loading}>
+            {loading ? "Updating..." : "Save Changes"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
