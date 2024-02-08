@@ -10,7 +10,7 @@ import {
 import { User } from "@prisma/client";
 import { useCallback, useState } from "react";
 import Cropper, { Area } from "react-easy-crop";
-import { put } from "@vercel/blob";
+import { upload } from "@vercel/blob/client";
 
 async function getCroppedImg(
   file: File,
@@ -84,9 +84,9 @@ export function AvatarUpdateDialog({
         croppedAreaPixels,
         0 // rotation if necessary
       );
-      // uploadImageToBackend(croppedImage);
-      const { url } = await put("avatars/" + user.id, croppedImage, {
+      const { url } = await upload("avatars/" + user.id, croppedImage, {
         access: "public",
+        handleUploadUrl: "/api/avatar-upload?userId=" + user.id,
       });
 
       console.log(url);
