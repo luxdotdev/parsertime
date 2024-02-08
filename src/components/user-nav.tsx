@@ -55,7 +55,9 @@ export async function UserNav() {
           <Link href="/team">
             <DropdownMenuItem>Teams</DropdownMenuItem>
           </Link>
-          <DropdownMenuItem>Settings</DropdownMenuItem>
+          <Link href="/settings">
+            <DropdownMenuItem>Settings</DropdownMenuItem>
+          </Link>
           <DropdownMenuItem>New Team</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
