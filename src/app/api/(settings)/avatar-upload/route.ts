@@ -31,7 +31,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         }
 
         return {
-          allowedContentTypes: ["image/jpeg", "image/png", "image/gif"],
           tokenPayload: JSON.stringify({
             userId: user.id,
           }),
