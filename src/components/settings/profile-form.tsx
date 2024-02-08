@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -17,32 +16,21 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
 import { User } from "@prisma/client";
 import Image from "next/image";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const profileFormSchema = z.object({
-  username: z
+  name: z
     .string()
     .min(2, {
-      message: "Username must be at least 2 characters.",
+      message: "Name must be at least 2 characters.",
     })
     .max(30, {
-      message: "Username must not be longer than 30 characters.",
+      message: "Name must not be longer than 30 characters.",
     }),
-  email: z
-    .string({
-      required_error: "Please select an email to display.",
-    })
-    .email(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
@@ -51,25 +39,40 @@ export function ProfileForm({ user }: { user: User }) {
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      username: user.name ?? "",
+      name: user.name ?? "",
     },
     mode: "onChange",
   });
 
-  function onSubmit(data: ProfileFormValues) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-      duration: 5000,
+  async function onSubmit(data: ProfileFormValues) {
+    const res = await fetch("/api/update-name", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
     });
+
+    if (res.ok) {
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been successfully updated.",
+        duration: 5000,
+      });
+      router.refresh();
+    } else {
+      toast({
+        title: "An error occurred",
+        description: `An error occurred: ${res.statusText} (${res.status})`,
+        variant: "destructive",
+        duration: 5000,
+      });
+    }
   }
 
   const handleAvatarClick = () => {
@@ -98,7 +101,7 @@ export function ProfileForm({ user }: { user: User }) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="username"
+          name="name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Username</FormLabel>
@@ -151,32 +154,6 @@ export function ProfileForm({ user }: { user: User }) {
           </FormDescription>
           <FormMessage />
         </FormItem>
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a verified email to display" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="m@example.com">m@example.com</SelectItem>
-                  <SelectItem value="m@google.com">m@google.com</SelectItem>
-                  <SelectItem value="m@support.com">m@support.com</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormDescription>
-                You can manage verified email addresses in your{" "}
-                <Link href="/examples/forms">email settings</Link>.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <Button type="submit">Update profile</Button>
       </form>
     </Form>
