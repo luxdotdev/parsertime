@@ -29,6 +29,12 @@ export default function Footer() {
             Teams
           </Link>
           <Link
+            href="/settings"
+            className="text-sm text-gray-600 transition-colors duration-300 dark:text-gray-300 hover:text-black dark:hover:text-white"
+          >
+            Settings
+          </Link>
+          <Link
             href="mailto:help@parsertime.app"
             className="text-sm text-gray-600 transition-colors duration-300 dark:text-gray-300 hover:text-black dark:hover:text-white"
           >
