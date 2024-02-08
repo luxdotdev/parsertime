@@ -1,9 +1,20 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   return (
     <footer className="border-t border-zinc-800">
       <div className="container flex flex-col items-center justify-between px-6 py-8 mx-auto lg:flex-row">
+        <Link href="/">
+          <Image
+            src="/parsertime.png"
+            alt=""
+            width={50}
+            height={50}
+            className="w-auto h-7 dark:invert"
+          />
+        </Link>
+
         <div className="flex flex-wrap items-center justify-center gap-4 mt-6 lg:gap-6 lg:mt-0">
           <Link
             href="/dashboard"
