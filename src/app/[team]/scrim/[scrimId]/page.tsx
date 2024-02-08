@@ -1,5 +1,5 @@
 import { AddMapCard } from "@/components/map/add-map";
-import { Search } from "@/components/map/search";
+import { Search } from "@/components/dashboard/search";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { UserNav } from "@/components/user-nav";

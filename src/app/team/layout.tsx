@@ -1,6 +1,6 @@
 import { TeamSwitcher } from "@/components/dashboard/team-switcher";
 import { MainNav } from "@/components/dashboard/main-nav";
-import { Search } from "@/components/map/search";
+import { Search } from "@/components/dashboard/search";
 import { ModeToggle } from "@/components/theme-switcher";
 import { UserNav } from "@/components/user-nav";
 import { auth } from "@/lib/auth";
