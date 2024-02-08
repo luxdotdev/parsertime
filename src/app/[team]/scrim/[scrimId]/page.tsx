@@ -39,6 +39,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
   });
 
   const hasPerms =
+    user?.id === scrim?.creatorId ||
     user?.role === $Enums.UserRole.MANAGER ||
     user?.role === $Enums.UserRole.ADMIN;
 
