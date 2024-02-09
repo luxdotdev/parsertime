@@ -297,7 +297,7 @@ export default function SpecificHero({
                     <div className="text-sm text-muted-foreground">
                       {round(
                         (playerStat.healing_dealt /
-                          toMins(playerStat.healing_dealt)) *
+                          toMins(playerStat.hero_time_played)) *
                           10
                       )}{" "}
                       healing dealt per 10 minutes
