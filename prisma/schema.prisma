@@ -70,6 +70,7 @@ model Team {
   name      String
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
+  image     String?
   users     User[]
   scrims    Scrim[]
   ownerId   String
