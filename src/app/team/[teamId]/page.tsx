@@ -4,7 +4,47 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { $Enums, User } from "@prisma/client";
+import { Metadata } from "next";
 import Image from "next/image";
+
+type Props = {
+  params: { teamId: string };
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const teamId = decodeURIComponent(params.teamId);
+
+  const team = await prisma.team.findFirst({
+    where: {
+      id: parseInt(teamId),
+    },
+    select: {
+      name: true,
+    },
+  });
+
+  const teamName = team?.name ?? "Team";
+
+  return {
+    title: `${teamName} Overview | Parsertime`,
+    description: `Overview for ${teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+    openGraph: {
+      title: `${teamName} Overview | Parsertime`,
+      description: `Overview for ${teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+      url: "https://parsertime.app",
+      type: "website",
+      siteName: "Parsertime",
+      images: [
+        {
+          url: `https://parsertime.app/api/og?title=${teamName} Overview`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+      locale: "en_US",
+    },
+  };
+}
 
 export default async function Team({ params }: { params: { teamId: string } }) {
   const session = await auth();
