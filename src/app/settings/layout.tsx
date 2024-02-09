@@ -13,6 +13,21 @@ import { auth } from "@/lib/auth";
 export const metadata: Metadata = {
   title: "Settings | Parsertime",
   description: "Manage your account settings and preferences.",
+  openGraph: {
+    title: "Settings | Parsertime",
+    description: "Manage your account settings and preferences.",
+    url: "https://parsertime.app",
+    type: "website",
+    siteName: "Parsertime",
+    images: [
+      {
+        url: `https://parsertime.app/api/og?title=Settings`,
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: "en_US",
+  },
 };
 
 const sidebarNavItems = [
