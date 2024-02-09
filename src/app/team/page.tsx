@@ -8,6 +8,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Teams | Parsertime",
@@ -60,8 +61,22 @@ export default async function TeamPage() {
           {userTeams.length > 0 &&
             userTeams.map((team) => (
               <div key={team.id} className="p-2 w-1/3">
-                <Card className="max-w-md relative">
+                <Card className="max-w-md relative min-h-[144px]">
                   <Link href={`/team/${team.id}`}>
+                    <Image
+                      src={
+                        team.image ??
+                        `https://avatar.vercel.sh/${team.name}.png`
+                      }
+                      alt={
+                        team.name
+                          ? `Avatar for ${team.name}`
+                          : "Default team avatar"
+                      }
+                      width={100}
+                      height={100}
+                      className="rounded-full float-right p-4"
+                    />
                     <CardHeader>
                       <h3 className="text-3xl font-semibold tracking-tight z-10">
                         {team.name}
