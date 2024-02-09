@@ -49,6 +49,13 @@ export async function GET() {
             },
           },
         },
+        {
+          managers: {
+            some: {
+              userId: userId?.id,
+            },
+          },
+        },
       ],
     },
   });
