@@ -1,9 +1,14 @@
 import { AddMemberCard } from "@/components/team/add-member-card";
+import { UserCardButtons } from "@/components/team/user-card-buttons";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { $Enums, User } from "@prisma/client";
 import Image from "next/image";
 
 export default async function Team({ params }: { params: { teamId: string } }) {
+  const session = await auth();
+
   const teamId = parseInt(params.teamId);
 
   const teamData = await prisma.team.findFirst({
@@ -20,6 +25,30 @@ export default async function Team({ params }: { params: { teamId: string } }) {
       users: true,
     },
   })) ?? { users: [] };
+
+  const teamManagers = (await prisma.team.findFirst({
+    where: {
+      id: teamId,
+    },
+    select: {
+      managers: true,
+    },
+  })) ?? { managers: [] };
+
+  const user = await prisma.user.findFirst({
+    where: {
+      email: session?.user?.email,
+    },
+  });
+
+  const hasPerms =
+    user?.id === teamData?.ownerId ||
+    user?.role === $Enums.UserRole.MANAGER ||
+    user?.role === $Enums.UserRole.ADMIN;
+
+  function userIsManager(user: User) {
+    return teamManagers.managers.some((manager) => manager.userId === user?.id);
+  }
 
   return (
     <>
@@ -38,7 +67,7 @@ export default async function Team({ params }: { params: { teamId: string } }) {
           <div className="flex flex-wrap -m-2">
             {teamMembers?.users.map((user) => (
               <div key={user.id} className="p-2 w-1/3">
-                <Card className="max-w-md relative h-36">
+                <Card className="max-w-md relative min-h-[144px]">
                   <Image
                     src={
                       user.image ?? `https://avatar.vercel.sh/${user.email}.png`
@@ -55,17 +84,22 @@ export default async function Team({ params }: { params: { teamId: string } }) {
                   <CardHeader className="flex">
                     <div>
                       <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-                        {user.name}
+                        {user.name} {userIsManager(user) && "(Manager)"}{" "}
+                        {user.id === teamData?.ownerId && "(Owner)"}{" "}
+                        {user.name === session?.user?.name && "(You)"}
                       </h4>
                     </div>
                   </CardHeader>
                   <CardContent>
                     <p>{user.email}</p>
                   </CardContent>
+                  {hasPerms && user.email !== session?.user?.email && (
+                    <UserCardButtons user={user} managers={teamManagers} />
+                  )}
                 </Card>
               </div>
             ))}
-            <AddMemberCard />
+            {hasPerms && <AddMemberCard />}
           </div>
         )}
       </div>
