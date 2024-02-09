@@ -90,7 +90,7 @@ export function AvatarUpdateDialog({
         croppedAreaPixels,
         0 // rotation if necessary
       );
-      const { url } = await upload("avatars/" + user.id, croppedImage, {
+      const { url } = await upload(`avatars/${user.id}.png`, croppedImage, {
         access: "public",
         handleUploadUrl: "/api/avatar-upload?userId=" + user.id,
       });

@@ -90,10 +90,14 @@ export function AvatarUpdateDialog({
         croppedAreaPixels,
         0 // rotation if necessary
       );
-      const { url } = await upload("team-avatars/" + team.id, croppedImage, {
-        access: "public",
-        handleUploadUrl: "/api/team-avatar-upload?teamId=" + team.id,
-      });
+      const { url } = await upload(
+        `team-avatars/${team.id}.png`,
+        croppedImage,
+        {
+          access: "public",
+          handleUploadUrl: "/api/team-avatar-upload?teamId=" + team.id,
+        }
+      );
 
       const res = await fetch("/api/update-team-avatar", {
         method: "POST",
