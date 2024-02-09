@@ -9,8 +9,23 @@ import { redirect } from "next/navigation";
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "Sign In",
-  description: "Sign up for an account.",
+  title: `Sign In | Parsertime`,
+  description: `Sign in to your account. Parsertime is a tool for analyzing Overwatch scrims.`,
+  openGraph: {
+    title: `Sign In | Parsertime`,
+    description: `Sign in to your account. Parsertime is a tool for analyzing Overwatch scrims.`,
+    url: "https://parsertime.app",
+    type: "website",
+    siteName: "Parsertime",
+    images: [
+      {
+        url: `https://parsertime.app/api/og?title=Parsertime`,
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: "en_US",
+  },
 };
 
 export default async function AuthenticationPage() {
