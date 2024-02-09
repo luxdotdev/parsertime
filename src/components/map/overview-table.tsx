@@ -37,9 +37,7 @@ export const columns: ColumnDef<PlayerData>[] = [
   {
     accessorKey: "playerName",
     header: "Player Name",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("playerName")}</div>
-    ),
+    cell: ({ row }) => <div className="">{row.getValue("playerName")}</div>,
     enableSorting: true,
     sortingFn: "basic",
     filterFn: "includesString",
