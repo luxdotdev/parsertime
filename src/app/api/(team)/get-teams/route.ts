@@ -1,14 +1,7 @@
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
-
-export type Team = {
-  id: number;
-  name: string;
-  createdAt: Date;
-  updatedAt: Date;
-  ownerId: string;
-};
+import { Team } from "@prisma/client";
 
 export type GetTeamsResponse = {
   teams: Team[];
@@ -56,6 +49,7 @@ export async function GET() {
         createdAt: team.createdAt,
         updatedAt: team.updatedAt,
         ownerId: team.ownerId,
+        image: team.image,
       };
     }),
   };
