@@ -38,8 +38,21 @@ export default async function ScrimDashboardPage({ params }: Props) {
     },
   });
 
+  const isManager =
+    (await prisma.team.findFirst({
+      where: {
+        id: scrim?.teamId ?? 0,
+        managers: {
+          some: {
+            userId: user?.id,
+          },
+        },
+      },
+    })) !== null;
+
   const hasPerms =
     user?.id === scrim?.creatorId ||
+    isManager ||
     user?.role === $Enums.UserRole.MANAGER ||
     user?.role === $Enums.UserRole.ADMIN;
 
