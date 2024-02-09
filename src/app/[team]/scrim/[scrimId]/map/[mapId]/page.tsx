@@ -9,12 +9,54 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { toTitleCase } from "@/lib/utils";
 import { Killfeed } from "@/components/map/killfeed";
+import { Metadata } from "next";
+import { SearchParams } from "@/types/next";
 
-export default async function MapDashboardPage({
-  params,
-}: {
+type Props = {
   params: { team: string; scrimId: string; mapId: string };
-}) {
+  searchParams: SearchParams;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const mapId = decodeURIComponent(params.mapId);
+
+  const mapName = await prisma.matchStart.findFirst({
+    where: {
+      MapDataId: parseInt(mapId),
+    },
+    select: {
+      map_name: true,
+    },
+  });
+
+  return {
+    title: `${mapName?.map_name || "Map"} Overview | Parsertime`,
+    description: `Map overview for ${
+      mapName?.map_name || "Map"
+    } on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+    openGraph: {
+      title: `${mapName?.map_name || "Map"} Overview | Parsertime`,
+      description: `Map overview for ${
+        mapName?.map_name || "Map"
+      } on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+      url: "https://parsertime.app",
+      type: "website",
+      siteName: "Parsertime",
+      images: [
+        {
+          url: `https://parsertime.app/api/og?title=${
+            mapName?.map_name || "Map"
+          } Overview`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+      locale: "en_US",
+    },
+  };
+}
+
+export default async function MapDashboardPage({ params }: Props) {
   const id = parseInt(params.mapId);
 
   const uniquePlayerRowsByHeroTimePlayed = await prisma.playerStat.findMany({
