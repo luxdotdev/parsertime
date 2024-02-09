@@ -36,13 +36,13 @@ type PopoverTriggerProps = React.ComponentPropsWithoutRef<
 
 interface TeamSwitcherProps extends PopoverTriggerProps {}
 
+type Team = { label: string; value: string; image: string | null };
+
 export function TeamSwitcher({
   className,
   session,
 }: TeamSwitcherProps & { session: Session | null }) {
-  const [teams, setTeams] = React.useState<{ label: string; value: string }[]>(
-    []
-  );
+  const [teams, setTeams] = React.useState<Team[]>([]);
   const [newTeamCreated, setNewTeamCreated] = React.useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -67,6 +67,7 @@ export function TeamSwitcher({
         const newTeams = data.teams.map((team) => ({
           label: team.name,
           value: team.id.toString(),
+          image: team.image,
         }));
         setTeams(newTeams);
       });
@@ -100,6 +101,7 @@ export function TeamSwitcher({
         {
           label: session?.user?.name ?? "Individual",
           value: "individual",
+          image: session?.user?.image ?? null,
         },
       ],
     },
@@ -126,7 +128,10 @@ export function TeamSwitcher({
           >
             <Avatar className="mr-2 h-5 w-5">
               <AvatarImage
-                src={`https://avatar.vercel.sh/${selectedTeam.value}.png`}
+                src={
+                  selectedTeam.image ??
+                  `https://avatar.vercel.sh/${selectedTeam.value}.png`
+                }
                 alt={selectedTeam.label}
               />
               <AvatarFallback>SC</AvatarFallback>
@@ -163,7 +168,10 @@ export function TeamSwitcher({
                     >
                       <Avatar className="mr-2 h-5 w-5">
                         <AvatarImage
-                          src={`https://avatar.vercel.sh/${team.label}.png`}
+                          src={
+                            team.image ??
+                            `https://avatar.vercel.sh/${team.label}.png`
+                          }
                           alt={team.label}
                           className="grayscale"
                         />
