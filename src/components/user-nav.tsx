@@ -58,7 +58,9 @@ export async function UserNav() {
           <Link href="/settings">
             <DropdownMenuItem>Settings</DropdownMenuItem>
           </Link>
-          <DropdownMenuItem>New Team</DropdownMenuItem>
+          <Link href="mailto:help@parsertime.app">
+            <DropdownMenuItem>Contact</DropdownMenuItem>
+          </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
