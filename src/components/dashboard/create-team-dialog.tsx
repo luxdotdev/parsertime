@@ -71,7 +71,8 @@ export function CreateTeamDialog({
       <DialogHeader>
         <DialogTitle>Create team</DialogTitle>
         <DialogDescription>
-          Add a new team to manage products and customers.
+          Add a new team to categorize your scrims and invite your players to
+          view and manage your scrims.
         </DialogDescription>
       </DialogHeader>
 
