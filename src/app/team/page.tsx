@@ -6,7 +6,28 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { UserNav } from "@/components/user-nav";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Teams | Parsertime",
+  description: "Parsertime is a tool for analyzing Overwatch scrims.",
+  openGraph: {
+    title: `Teams | Parsertime`,
+    description: `Parsertime is a tool for analyzing Overwatch scrims.`,
+    url: "https://parsertime.app",
+    type: "website",
+    siteName: "Parsertime",
+    images: [
+      {
+        url: `https://parsertime.app/api/og?title=Teams`,
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: "en_US",
+  },
+};
 
 export default async function TeamPage() {
   const session = await auth();
