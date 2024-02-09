@@ -10,11 +10,47 @@ import { SearchParams } from "@/types/next";
 import { $Enums } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
+import { Metadata } from "next";
 
 type Props = {
   params: { team: string; scrimId: string };
   searchParams: SearchParams;
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const scrimId = decodeURIComponent(params.scrimId);
+
+  const scrim = await prisma.scrim.findFirst({
+    where: {
+      id: parseInt(scrimId),
+    },
+    select: {
+      name: true,
+    },
+  });
+
+  const scrimName = scrim?.name ?? "Scrim";
+
+  return {
+    title: `${scrimName} Overview | Parsertime`,
+    description: `Overview for ${scrimName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+    openGraph: {
+      title: `${scrimName} Overview | Parsertime`,
+      description: `Overview for ${scrimName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+      url: "https://parsertime.app",
+      type: "website",
+      siteName: "Parsertime",
+      images: [
+        {
+          url: `https://parsertime.app/api/og?title=${scrimName} Overview`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+      locale: "en_US",
+    },
+  };
+}
 
 export default async function ScrimDashboardPage({ params }: Props) {
   const id = parseInt(params.scrimId);
