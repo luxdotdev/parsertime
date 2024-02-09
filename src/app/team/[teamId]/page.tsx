@@ -1,6 +1,8 @@
 import { AddMemberCard } from "@/components/team/add-member-card";
+import { TeamSettingsForm } from "@/components/team/team-settings-form";
 import { UserCardButtons } from "@/components/team/user-card-buttons";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { $Enums, User } from "@prisma/client";
@@ -99,49 +101,63 @@ export default async function Team({ params }: { params: { teamId: string } }) {
           </h2>
         </div>
 
-        <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-          Members
-        </h3>
+        <Tabs defaultValue="members" className="space-y-4">
+          {hasPerms && (
+            <TabsList>
+              <TabsTrigger value="members">Members</TabsTrigger>
+              <TabsTrigger value="settings">Settings</TabsTrigger>
+            </TabsList>
+          )}
+          <TabsContent value="members" className="space-y-4">
+            <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+              Members
+            </h3>
 
-        {teamMembers?.users.length > 0 && (
-          <div className="flex flex-wrap -m-2">
-            {teamMembers?.users.map((user) => (
-              <div key={user.id} className="p-2 w-1/3">
-                <Card className="max-w-md relative min-h-[144px]">
-                  <Image
-                    src={
-                      user.image ?? `https://avatar.vercel.sh/${user.email}.png`
-                    }
-                    alt={
-                      user.name
-                        ? `Profile picture of ${user.name}`
-                        : "Default user avatar"
-                    }
-                    width={100}
-                    height={100}
-                    className="rounded-full float-right p-4"
-                  />
-                  <CardHeader className="flex">
-                    <div>
-                      <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-                        {user.name} {userIsManager(user) && "(Manager)"}{" "}
-                        {user.id === teamData?.ownerId && "(Owner)"}{" "}
-                        {user.name === session?.user?.name && "(You)"}
-                      </h4>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p>{user.email}</p>
-                  </CardContent>
-                  {hasPerms && user.email !== session?.user?.email && (
-                    <UserCardButtons user={user} managers={teamManagers} />
-                  )}
-                </Card>
+            {teamMembers?.users.length > 0 && (
+              <div className="flex flex-wrap -m-2">
+                {teamMembers?.users.map((user) => (
+                  <div key={user.id} className="p-2 w-1/3">
+                    <Card className="max-w-md relative min-h-[144px]">
+                      <Image
+                        src={
+                          user.image ??
+                          `https://avatar.vercel.sh/${user.email}.png`
+                        }
+                        alt={
+                          user.name
+                            ? `Profile picture of ${user.name}`
+                            : "Default user avatar"
+                        }
+                        width={100}
+                        height={100}
+                        className="rounded-full float-right p-4"
+                      />
+                      <CardHeader className="flex">
+                        <div>
+                          <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
+                            {user.name} {userIsManager(user) && "(Manager)"}{" "}
+                            {user.id === teamData?.ownerId && "(Owner)"}{" "}
+                            {user.name === session?.user?.name && "(You)"}
+                          </h4>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <p>{user.email}</p>
+                      </CardContent>
+                      {hasPerms && user.email !== session?.user?.email && (
+                        <UserCardButtons user={user} managers={teamManagers} />
+                      )}
+                    </Card>
+                  </div>
+                ))}
+                {hasPerms && <AddMemberCard />}
               </div>
-            ))}
-            {hasPerms && <AddMemberCard />}
-          </div>
-        )}
+            )}
+          </TabsContent>
+          <TabsContent value="settings" className="space-y-4">
+            <TeamSettingsForm team={teamData!} />
+          </TabsContent>
+        </Tabs>
       </div>
     </>
   );
