@@ -23,6 +23,7 @@ interface TeamInviteUserEmailProps {
   invitedByUsername?: string;
   invitedByEmail?: string;
   teamName?: string;
+  teamImage?: string;
   inviteLink?: string;
 }
 
@@ -32,6 +33,7 @@ export const TeamInviteUserEmail = ({
   invitedByUsername,
   invitedByEmail,
   teamName,
+  teamImage,
   inviteLink,
 }: TeamInviteUserEmailProps) => {
   const previewText = `Join ${invitedByUsername} on Parsertime`;
@@ -90,7 +92,7 @@ export const TeamInviteUserEmail = ({
                 <Column align="left">
                   <Img
                     className="rounded-full"
-                    src={`https://avatar.vercel.sh/${teamName}.png`}
+                    src={teamImage}
                     width="64"
                     height="64"
                   />

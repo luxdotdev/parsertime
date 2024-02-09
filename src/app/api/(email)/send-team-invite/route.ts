@@ -73,6 +73,7 @@ export async function POST(req: NextRequest) {
       invitedByUsername: inviter.name ?? "Unknown",
       invitedByEmail: inviter.email ?? "Unknown",
       teamName: team.name ?? "Unknown",
+      teamImage: team.image ?? `https://avatar.vercel.sh/${team.name}.png`,
       inviteLink: `${baseUrl}/team/join/${inviteToken}`,
     })
   );
