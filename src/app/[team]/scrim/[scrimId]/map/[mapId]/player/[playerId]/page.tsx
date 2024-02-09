@@ -21,6 +21,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: `${playerName} Overview | Parsertime`,
+    description: `Player overview for ${playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+    openGraph: {
+      title: `${playerName} Overview | Parsertime`,
+      description: `Player overview for ${playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+      url: "https://parsertime.app",
+      type: "website",
+      siteName: "Parsertime",
+      images: [
+        {
+          url: `https://parsertime.app/api/og?title=${playerName} Overview`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+      locale: "en_US",
+    },
   };
 }
 
