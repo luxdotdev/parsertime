@@ -5,7 +5,7 @@ export const metadata: Metadata = {
     template: "%s Overview | Parsertime",
     default: "Player Overview | Parsertime",
   },
-  description: "Parsertime is a tool for analyzing Overwatch League matches.",
+  description: "Parsertime is a tool for analyzing Overwatch scrims.",
 };
 
 export default function PlayerDashboardLayout({
