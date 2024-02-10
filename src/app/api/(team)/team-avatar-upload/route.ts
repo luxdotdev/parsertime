@@ -4,8 +4,23 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { auth } from "@/lib/auth";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const session = await auth();
+
+  if (!session || !session.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const userId = await prisma.user.findUnique({
+    where: { email: session.user.email ?? "" },
+  });
+
+  if (!userId) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+
   const body = (await request.json()) as HandleUploadBody;
   const teamId = request.nextUrl.searchParams.get("teamId");
 
@@ -20,11 +35,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     analytics: true,
   });
 
-  // Limit the requests to 5 per minute per team
-  const identifier = `api/image-upload/${teamId}`;
+  // Limit the requests to 5 per minute per user
+  const identifier = `api/image-upload/${userId}`;
   const { success } = await ratelimit.limit(identifier);
 
   if (!success) {
+    Logger.log("Rate limit exceeded for team", teamId, userId);
     return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
   }
 
