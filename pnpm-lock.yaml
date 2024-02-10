@@ -130,6 +130,9 @@ dependencies:
   '@upstash/ratelimit':
     specifier: ^1.0.1
     version: 1.0.1
+  '@upstash/redis':
+    specifier: ^1.28.3
+    version: 1.28.3
   '@vercel/analytics':
     specifier: ^1.1.2
     version: 1.1.2
