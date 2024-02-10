@@ -2,6 +2,8 @@ import Logger from "@/lib/logger";
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const body = (await request.json()) as HandleUploadBody;
@@ -9,6 +11,21 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   if (!userId) {
     return NextResponse.json({ error: "userId is required" }, { status: 400 });
+  }
+
+  // Create a new ratelimiter, that allows 5 requests per 1 minute
+  const ratelimit = new Ratelimit({
+    redis: Redis.fromEnv(),
+    limiter: Ratelimit.slidingWindow(5, "1 m"),
+    analytics: true,
+  });
+
+  // Limit the requests to 5 per minute per user
+  const identifier = userId;
+  const { success } = await ratelimit.limit(identifier);
+
+  if (!success) {
+    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
   }
 
   try {
