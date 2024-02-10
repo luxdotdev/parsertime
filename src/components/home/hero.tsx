@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function HeroComponent() {
   return (
-    <div className="h-[40rem] w-full bg-black flex flex-col items-center justify-center overflow-hidden rounded-md">
+    <div className="h-[40rem] w-full bg-black flex flex-col items-center justify-center rounded-md">
       <Image
         src="/parsertime.png"
         alt="Parsertime"
