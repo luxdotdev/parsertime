@@ -1,14 +1,11 @@
-import { MainNav } from "@/components/dashboard/main-nav";
-import { Search } from "@/components/dashboard/search";
-import { TeamSwitcher } from "@/components/dashboard/team-switcher";
-import { ModeToggle } from "@/components/theme-switcher";
 import { Card, CardHeader } from "@/components/ui/card";
-import { UserNav } from "@/components/user-nav";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { $Enums } from "@prisma/client";
 import { Metadata } from "next";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Teams | Parsertime",
@@ -49,6 +46,12 @@ export default async function TeamPage() {
     },
   });
 
+  const allTeams = await prisma.team.findMany();
+
+  const hasPerms =
+    userData?.role === $Enums.UserRole.ADMIN ||
+    userData?.role === $Enums.UserRole.MANAGER;
+
   return (
     <>
       <div className="hidden flex-col md:flex">
@@ -58,34 +61,76 @@ export default async function TeamPage() {
               Manage Your Teams
             </h2>
           </div>
-          {userTeams.length > 0 &&
-            userTeams.map((team) => (
-              <div key={team.id} className="p-2 w-1/3">
-                <Card className="max-w-md relative min-h-[144px]">
-                  <Link href={`/team/${team.id}`}>
-                    <Image
-                      src={
-                        team.image ??
-                        `https://avatar.vercel.sh/${team.name}.png`
-                      }
-                      alt={
-                        team.name
-                          ? `Avatar for ${team.name}`
-                          : "Default team avatar"
-                      }
-                      width={100}
-                      height={100}
-                      className="rounded-full float-right p-4"
-                    />
-                    <CardHeader>
-                      <h3 className="text-3xl font-semibold tracking-tight z-10">
-                        {team.name}
-                      </h3>
-                    </CardHeader>
-                  </Link>
-                </Card>
-              </div>
-            ))}
+          <Tabs defaultValue="teams" className="space-y-4">
+            {hasPerms && (
+              <TabsList>
+                <TabsTrigger value="teams">Teams</TabsTrigger>
+                <TabsTrigger value="admin">Admin View</TabsTrigger>
+              </TabsList>
+            )}
+
+            <TabsContent value="teams" className="grid grid-cols-4 gap-4">
+              {userTeams.length > 0 &&
+                userTeams.map((team) => (
+                  <div key={team.id} className="p-2 w-1/3">
+                    <Card className="relative min-h-[144px] md:w-60 xl:w-96">
+                      <Link href={`/team/${team.id}`}>
+                        <Image
+                          src={
+                            team.image ??
+                            `https://avatar.vercel.sh/${team.name}.png`
+                          }
+                          alt={
+                            team.name
+                              ? `Avatar for ${team.name}`
+                              : "Default team avatar"
+                          }
+                          width={100}
+                          height={100}
+                          className="rounded-full float-right p-4"
+                        />
+                        <CardHeader>
+                          <h3 className="text-3xl font-semibold tracking-tight z-10">
+                            {team.name}
+                          </h3>
+                        </CardHeader>
+                      </Link>
+                    </Card>
+                  </div>
+                ))}
+            </TabsContent>
+            <TabsContent value="admin" className="grid grid-cols-4 gap-4">
+              <>
+                {allTeams.map((team) => (
+                  <div key={team.id} className="p-2 w-1/3">
+                    <Card className="relative min-h-[144px] md:w-60 xl:w-96">
+                      <Link href={`/team/${team.id}`}>
+                        <Image
+                          src={
+                            team.image ??
+                            `https://avatar.vercel.sh/${team.name}.png`
+                          }
+                          alt={
+                            team.name
+                              ? `Avatar for ${team.name}`
+                              : "Default team avatar"
+                          }
+                          width={100}
+                          height={100}
+                          className="rounded-full float-right p-4"
+                        />
+                        <CardHeader>
+                          <h3 className="text-3xl font-semibold tracking-tight z-10">
+                            {team.name}
+                          </h3>
+                        </CardHeader>
+                      </Link>
+                    </Card>
+                  </div>
+                ))}
+              </>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </>
