@@ -36,7 +36,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   });
 
   // Limit the requests to 5 per minute per user
-  const identifier = `api/image-upload/${userId}`;
+  const identifier = `api/image-upload/${userId.id}`;
   const { success } = await ratelimit.limit(identifier);
 
   if (!success) {
