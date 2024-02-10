@@ -44,6 +44,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
   }
 
+  Logger.log("Uploading avatar for user", userId);
+
   try {
     const jsonResponse = await handleUpload({
       body,
