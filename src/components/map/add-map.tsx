@@ -127,9 +127,11 @@ export function AddMapCard() {
 
   if (!isClient)
     return (
-      <Card className="border-dashed">
-        <Skeleton className="w-24 h-24" />
-      </Card>
+      <div className="p-2 w-1/3">
+        <Card className="p-2 h-48 max-w-md border-dashed">
+          <Skeleton className="max-w-md h-full flex flex-col" />
+        </Card>
+      </div>
     );
 
   return (
