@@ -1,10 +1,19 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { SparklesCore } from "@/components/ui/sparkles";
+import Image from "next/image";
 
 export default function HeroComponent() {
   return (
     <div className="h-[40rem] w-full bg-black flex flex-col items-center justify-center overflow-hidden rounded-md">
+      <Image
+        src="/parsertime.png"
+        alt="Parsertime"
+        width={800}
+        height={800}
+        className="h-48 w-48 invert"
+      />
+
       <h1 className="md:text-7xl text-3xl lg:text-9xl font-bold text-center text-white relative z-20">
         Parsertime
       </h1>
