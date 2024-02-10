@@ -15,6 +15,22 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Parsertime",
   description: "Parsertime is a tool for analyzing Overwatch scrims.",
+  metadataBase: new URL("https://parsertime.app"),
+  openGraph: {
+    title: `Parsertime`,
+    description: `Parsertime is a tool for analyzing Overwatch scrims.`,
+    url: "https://parsertime.app",
+    type: "website",
+    siteName: "Parsertime",
+    images: [
+      {
+        url: `https://parsertime.app/api/og?title=Parsertime`,
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: "en_US",
+  },
 };
 
 export default function RootLayout({
