@@ -140,6 +140,10 @@ export async function isAuthedToViewTeam(id: number) {
     return false;
   }
 
+  if (user.role === $Enums.UserRole.ADMIN) {
+    return true;
+  }
+
   const teamMembersById = await prisma.team.findFirst({
     where: {
       id: id,
