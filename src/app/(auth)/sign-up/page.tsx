@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     siteName: "Parsertime",
     images: [
       {
-        url: `https://parsertime.app/api/og?title=Parsertime`,
+        url: `https://parsertime.app/opengraph-image.png`,
         width: 1200,
         height: 630,
       },
