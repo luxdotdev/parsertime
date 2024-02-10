@@ -21,7 +21,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   });
 
   // Limit the requests to 5 per minute per team
-  const identifier = teamId;
+  const identifier = `api/image-upload/${teamId}`;
   const { success } = await ratelimit.limit(identifier);
 
   if (!success) {
