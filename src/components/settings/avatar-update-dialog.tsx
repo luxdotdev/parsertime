@@ -124,7 +124,8 @@ export function AvatarUpdateDialog({
       setLoading(false);
       toast({
         title: "An error occurred",
-        description: "An error occurred while updating your avatar.",
+        description:
+          "An error occurred while updating your avatar. Please try again later or contact support.",
         duration: 5000,
       });
       Logger.log(e);
