@@ -69,40 +69,43 @@ export default async function TeamPage() {
               </TabsList>
             )}
 
-            <TabsContent value="teams" className="grid grid-cols-4 gap-4">
-              {userTeams.length > 0 &&
-                userTeams.map((team) => (
-                  <div key={team.id} className="p-2 w-1/3">
-                    <Card className="relative min-h-[144px] md:w-60 xl:w-96">
-                      <Link href={`/team/${team.id}`}>
-                        <Image
-                          src={
-                            team.image ??
-                            `https://avatar.vercel.sh/${team.name}.png`
-                          }
-                          alt={
-                            team.name
-                              ? `Avatar for ${team.name}`
-                              : "Default team avatar"
-                          }
-                          width={100}
-                          height={100}
-                          className="rounded-full float-right p-4"
-                        />
-                        <CardHeader>
-                          <h3 className="text-3xl font-semibold tracking-tight z-10">
-                            {team.name}
-                          </h3>
-                        </CardHeader>
-                      </Link>
-                    </Card>
-                  </div>
-                ))}
+            <TabsContent value="teams" className="space-y-4">
+              {userTeams.length > 0 && (
+                <Card className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+                  {userTeams.map((team) => (
+                    <div key={team.id} className="p-2">
+                      <Card className="relative min-h-[144px] md:w-60 xl:w-96">
+                        <Link href={`/team/${team.id}`}>
+                          <Image
+                            src={
+                              team.image ??
+                              `https://avatar.vercel.sh/${team.name}.png`
+                            }
+                            alt={
+                              team.name
+                                ? `Avatar for ${team.name}`
+                                : "Default team avatar"
+                            }
+                            width={100}
+                            height={100}
+                            className="rounded-full float-right p-4"
+                          />
+                          <CardHeader>
+                            <h3 className="text-3xl font-semibold tracking-tight z-10">
+                              {team.name}
+                            </h3>
+                          </CardHeader>
+                        </Link>
+                      </Card>
+                    </div>
+                  ))}
+                </Card>
+              )}
             </TabsContent>
-            <TabsContent value="admin" className="grid grid-cols-4 gap-4">
-              <>
+            <TabsContent value="admin" className="space-y-4">
+              <Card className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
                 {allTeams.map((team) => (
-                  <div key={team.id} className="p-2 w-1/3">
+                  <div key={team.id} className="p-2">
                     <Card className="relative min-h-[144px] md:w-60 xl:w-96">
                       <Link href={`/team/${team.id}`}>
                         <Image
@@ -128,7 +131,7 @@ export default async function TeamPage() {
                     </Card>
                   </div>
                 ))}
-              </>
+              </Card>
             </TabsContent>
           </Tabs>
         </div>
