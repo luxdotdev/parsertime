@@ -2,6 +2,10 @@ import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { del, list } from "@vercel/blob";
 
+const VALID_IMAGE_URL_HOSTS = {
+  vercel_blob: "public.blob.vercel-storage.com",
+};
+
 export async function DELETE() {
   const usersWithImages = await prisma.user.findMany({
     where: {
@@ -16,7 +20,7 @@ export async function DELETE() {
 
   const userImages = usersWithImages.map((user) => user.image) as string[];
   const userBlobs = userImages.filter((url) =>
-    url.includes("vercel-storage.com")
+    url.includes(VALID_IMAGE_URL_HOSTS.vercel_blob)
   );
 
   const teamsWithImages = await prisma.team.findMany({
