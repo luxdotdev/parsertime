@@ -36,7 +36,7 @@ export async function DELETE() {
 
   const teamImages = teamsWithImages.map((team) => team.image) as string[];
   const teamBlobs = teamImages.filter((url) =>
-    url.includes("vercel-storage.com")
+    url.includes(VALID_IMAGE_URL_HOSTS.vercel_blob)
   );
 
   // Get all blobs
