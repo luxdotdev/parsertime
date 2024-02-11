@@ -30,23 +30,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 
   return {
-    title: `${mapName?.map_name || "Map"} Overview | Parsertime`,
-    description: `Map overview for ${
+    title: `${toTitleCase(mapName?.map_name || "Map")} Overview | Parsertime`,
+    description: `Map overview for ${toTitleCase(
       mapName?.map_name || "Map"
-    } on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+    )} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
     openGraph: {
-      title: `${mapName?.map_name || "Map"} Overview | Parsertime`,
-      description: `Map overview for ${
+      title: `${toTitleCase(mapName?.map_name || "Map")} Overview | Parsertime`,
+      description: `Map overview for ${toTitleCase(
         mapName?.map_name || "Map"
-      } on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+      )} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
       url: "https://parsertime.app",
       type: "website",
       siteName: "Parsertime",
       images: [
         {
-          url: `https://parsertime.app/api/og?title=${
+          url: `https://parsertime.app/api/og?title=${toTitleCase(
             mapName?.map_name || "Map"
-          } Overview`,
+          )} Overview`,
           width: 1200,
           height: 630,
         },
