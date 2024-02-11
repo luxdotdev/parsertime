@@ -2,13 +2,12 @@ import { expect, test } from "vitest";
 import { PrismaClient } from "@prisma/client";
 import { createHeroSwapRows } from "../src/lib/parser";
 
-const prisma = new PrismaClient({
-  datasourceUrl: process.env.TEST_DB_URL,
-});
+if (!process.env.GH_ACTION) {
+  const prisma = new PrismaClient({
+    datasourceUrl: process.env.TEST_DB_URL,
+  });
 
-test.skipIf(process.env.GH_ACTION)(
-  "should return the generated hero swap row",
-  async () => {
+  test("should return the generated hero swap row", async () => {
     const newHeroSwapRow = [1, 1000, "Team 1", "lux", "Ana", "Baptiste", 0];
 
     const data = { hero_swap: [newHeroSwapRow] };
@@ -37,15 +36,15 @@ test.skipIf(process.env.GH_ACTION)(
     });
 
     expect(restOfHeroSwapRow).toEqual(expectedRow);
-  }
-);
+  });
 
-test.skipIf(process.env.GH_ACTION)("should return empty array", async () => {
-  const data = {};
+  test("should return empty array", async () => {
+    const data = {};
 
-  const heroSwapRow = await createHeroSwapRows(data as any, { id: 1 }, 1);
+    const heroSwapRow = await createHeroSwapRows(data as any, { id: 1 }, 1);
 
-  expect(heroSwapRow).toEqual([]);
-});
+    expect(heroSwapRow).toEqual([]);
+  });
 
-prisma.$disconnect();
+  prisma.$disconnect();
+}
