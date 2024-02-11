@@ -49,7 +49,9 @@ export async function DELETE() {
     await del(url);
   }
 
-  return new Response(`Deleted ${filteredBlobs.length} unused blobs`, {
+  Logger.log(`Deleted ${filteredBlobs.length} unused blobs`);
+
+  return new Response(`OK`, {
     status: 200,
   });
 }
