@@ -10,7 +10,7 @@ on:
     branches: ["main"]
 
 env:
-  DATABASE_URL: ${{ secrets.TEST_DB_URL }}
+  TEST_DB_URL: ${{ secrets.TEST_DB_URL }}
 
 jobs:
   build:
