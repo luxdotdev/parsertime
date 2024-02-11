@@ -52,6 +52,21 @@ test("should be equivalent to control data v3", async () => {
   );
 });
 
+test.todo("should be equivalent to control data v4", async () => {
+  const file = await fs.readFileSync(
+    "./test/samples/Log-2023-12-12-22-15-10.txt",
+    "utf8"
+  );
+
+  // @ts-expect-error - cannot pass File type in node
+  const workbook1 = await parseDataFromTXT(file);
+  const workbook2 = await local_parseDataFromXLSX(
+    "./test/samples/Log-2023-12-12-22-15-10_parsed.xlsx"
+  );
+
+  expect(workbook2).toEqual(workbook1);
+});
+
 async function local_parseDataFromXLSX(fileName: string) {
   // read the file binary
   const file = await fs.readFileSync(fileName, "binary");
