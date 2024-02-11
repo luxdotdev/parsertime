@@ -26,7 +26,7 @@ export default function ScrimLoading() {
           </p>
           <div className="flex flex-wrap -m-2">
             {/* Simulate loading for maps */}
-            {Array.from({ length: 3 }).map((_, index) => (
+            {Array.from({ length: 6 }).map((_, index) => (
               <div key={index} className="p-2 w-1/3">
                 <Card className="max-w-md h-48">
                   <Skeleton className="w-full h-full" />
