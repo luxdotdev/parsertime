@@ -3,6 +3,10 @@
     {
       "path": "/api/delete-expired-tokens",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/delete-unused-blobs",
+      "schedule": "0 0 * * *"
     }
   ]
 }
