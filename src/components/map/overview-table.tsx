@@ -25,6 +25,12 @@ import {
 } from "@/components/ui/table";
 import { PlayerData, aggregatePlayerData } from "@/lib/player-table-data";
 import { PlayerStatRows } from "@/types/prisma";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export const columns: ColumnDef<PlayerData>[] = [
   {
@@ -196,6 +202,26 @@ export const columns: ColumnDef<PlayerData>[] = [
   },
 ];
 
+const tooltips = {
+  playerName: "The player's name.",
+  role: "The role the player played.",
+  playerTeam: "The team the player played for.",
+  timePlayed: "The time the player played.",
+  eliminations: "The number of eliminations the player had.",
+  kills: "The number of final blows the player had.",
+  assists: "The number of assists the player had.",
+  deaths: "The number of deaths the player had.",
+  kd: "The player's kill/death ratio.",
+  kad: "The player's kill/assist/death ratio.",
+  heroDmgDealt: "The amount of hero damage the player dealt.",
+  dmgReceived: "The amount of damage the player received.",
+  healingReceived: "The amount of healing the player received.",
+  healingDealt: "The amount of healing the player dealt.",
+  dmgToHealsRatio: "The player's damage dealt to healing received ratio.",
+  ultsCharged: "The number of ultimates the player charged.",
+  ultsUsed: "The number of ultimates the player used.",
+};
+
 export function OverviewTable({
   playerStats,
 }: {
@@ -241,12 +267,23 @@ export function OverviewTable({
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext()
+                                )}
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {tooltips[
+                              header.column.id as keyof typeof tooltips
+                            ] || ""}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </TableHead>
                   );
                 })}
