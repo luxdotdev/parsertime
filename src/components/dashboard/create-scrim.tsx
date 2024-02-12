@@ -10,12 +10,17 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Dialog } from "@radix-ui/react-dialog";
+import { track } from "@vercel/analytics";
 
 export function CreateScrimButton() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Create Scrim</Button>
+        <Button
+          onClick={() => track("Create Scrim", { location: "Dashboard" })}
+        >
+          Create Scrim
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
