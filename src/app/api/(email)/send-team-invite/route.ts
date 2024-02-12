@@ -2,6 +2,7 @@ import TeamInviteUserEmail from "@/components/email/team-invite";
 import { render } from "@react-email/render";
 import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
+import { track } from "@vercel/analytics/server";
 
 export async function POST(req: NextRequest) {
   const inviteeEmail = req.nextUrl.searchParams.get("email");
@@ -101,6 +102,14 @@ export async function POST(req: NextRequest) {
     const { errors } = (await response.json()) as { errors: string[] };
     throw new Error(JSON.stringify(errors));
   }
+
+  await track("Email Sent", { type: "Team Invite" });
+
+  await track("Team Invite Sent", {
+    user: inviter.email,
+    team: team.name,
+    invitee: inviteeEmail,
+  });
 
   return new Response("OK", {
     status: 200,

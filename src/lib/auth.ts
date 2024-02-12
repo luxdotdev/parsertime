@@ -1,5 +1,5 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { $Enums, PrismaClient } from "@prisma/client";
+import { $Enums } from "@prisma/client";
 import GithubProvider from "next-auth/providers/github";
 import DiscordProvider from "next-auth/providers/discord";
 import GoogleProvider from "next-auth/providers/google";
@@ -8,6 +8,7 @@ import isEmail from "validator/lib/isEmail";
 import { render } from "@react-email/render";
 import MagicLinkEmail from "@/components/email/magic-link";
 import prisma from "@/lib/prisma";
+import { track } from "@vercel/analytics/server";
 
 export const config = {
   adapter: PrismaAdapter(prisma),
@@ -60,6 +61,8 @@ export const config = {
           },
           method: "POST",
         });
+
+        await track("Email Sent", { type: "Magic Link" });
 
         if (!response.ok) {
           const { errors } = (await response.json()) as { errors: string[] };
