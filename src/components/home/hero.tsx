@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { SparklesCore } from "@/components/ui/sparkles";
 import Image from "next/image";
+import { track } from "@vercel/analytics";
 
 export default function HeroComponent() {
   return (
@@ -39,18 +40,32 @@ export default function HeroComponent() {
 
         <div className="flex flex-col justify-center space-y-4 text-center">
           <div className="w-full max-w-sm space-y-2 mx-auto">
-            <Button className="bg-white text-black p-2" type="submit" asChild>
+            <Button
+              className="bg-white text-black p-2"
+              type="submit"
+              asChild
+              onClick={() => track("Sign Up", { location: "Home" })}
+            >
               <Link href="/sign-up">Sign Up</Link>
             </Button>
             <span className="px-2" />
-            <Button variant="outline" className="text-zinc-100" type="submit">
+            <Button
+              variant="outline"
+              className="text-zinc-100"
+              type="submit"
+              onClick={() => track("Use Locally", { location: "Home" })}
+            >
               Use without Signing In
             </Button>
           </div>
           <div>
             <p className="text-white">
               Already have an account?{" "}
-              <Link href="/sign-in" className="text-zinc-100 font-semibold">
+              <Link
+                href="/sign-in"
+                className="text-zinc-100 font-semibold"
+                onClick={() => track("Sign In", { location: "Home" })}
+              >
                 Sign In
               </Link>
             </p>
