@@ -13,7 +13,7 @@ env:
   TEST_DB_URL: ${{ secrets.TEST_DB_URL }}
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     strategy:
