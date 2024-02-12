@@ -10,6 +10,7 @@ import { Icons } from "@/components/icons";
 import { signIn } from "next-auth/react";
 
 import { z } from "zod";
+import { track } from "@vercel/analytics";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -67,6 +68,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               type="button"
               disabled={isLoading}
               onClick={() => {
+                track("Sign In", { location: "Auth form", method: "Email" });
                 signIn("email", { email: email });
               }}
             >
@@ -91,7 +93,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           variant="outline"
           type="button"
           disabled={isLoading}
-          onClick={() => signIn("github")}
+          onClick={() => {
+            track("Sign In", { location: "Auth form", method: "Github" });
+            signIn("github");
+          }}
         >
           {isLoading ? (
             <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
@@ -104,7 +109,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           variant="outline"
           type="button"
           disabled={isLoading}
-          onClick={() => signIn("google")}
+          onClick={() => {
+            track("Sign In", { location: "Auth form", method: "Google" });
+            signIn("google");
+          }}
         >
           {isLoading ? (
             <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
@@ -117,7 +125,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           variant="outline"
           type="button"
           disabled={isLoading}
-          onClick={() => signIn("discord")}
+          onClick={() => {
+            track("Sign In", { location: "Auth form", method: "Discord" });
+            signIn("discord");
+          }}
         >
           {isLoading ? (
             <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
