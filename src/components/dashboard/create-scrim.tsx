@@ -16,11 +16,7 @@ export function CreateScrimButton() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          onClick={() => track("Create Scrim", { location: "Dashboard" })}
-        >
-          Create Scrim
-        </Button>
+        <Button>Create Scrim</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

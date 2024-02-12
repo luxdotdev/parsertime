@@ -38,6 +38,7 @@ import { ParserData } from "@/types/parser";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { track } from "@vercel/analytics";
 
 const ACCEPTED_FILE_TYPES = [
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -258,7 +259,12 @@ export function ScrimCreationForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button
+          type="submit"
+          onClick={() => track("Create Scrim", { location: "Dashboard" })}
+        >
+          Submit
+        </Button>
       </form>
     </Form>
   );
