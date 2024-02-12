@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { auth } from "@/lib/auth";
+import { track } from "@vercel/analytics/server";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const session = await auth();
@@ -77,6 +78,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         // Use ngrok or similar to get the full upload flow
 
         Logger.log("blob upload completed", blob, tokenPayload);
+        await track("Image Upload", { label: "User Avatar" });
 
         try {
           // Run any logic after the file upload completed
