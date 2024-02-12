@@ -58,7 +58,11 @@ export default function HeroComponent() {
           <div>
             <p className="text-white">
               Already have an account?{" "}
-              <Link href="/sign-in" className="text-zinc-100 font-semibold">
+              <Link
+                href="/sign-in"
+                className="text-zinc-100 font-semibold"
+                onClick={() => track("Sign In", { location: "Home" })}
+              >
                 Sign In
               </Link>
             </p>

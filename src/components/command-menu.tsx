@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/command";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
+import { track } from "@vercel/analytics";
 
 export function CommandDialogMenu() {
   const [open, setOpen] = React.useState(false);
@@ -89,7 +90,10 @@ export function CommandDialogMenu() {
               <span>Teams</span>
             </CommandItem>
             <CommandItem
-              onSelect={() => runCommand(() => router.push("/sign-in"))}
+              onSelect={() => {
+                track("Sign In", { location: "Command Menu" });
+                runCommand(() => router.push("/sign-in"));
+              }}
             >
               <EnterIcon className="mr-2 h-4 w-4" />
               <span>Sign In</span>
