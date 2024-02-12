@@ -1,6 +1,4 @@
-import { FileUploaderForm } from "@/components/file-uploader";
 import HeroComponent from "@/components/home/hero";
-import Image from "next/image";
 
 export default async function Home() {
   return (
