@@ -41,7 +41,9 @@ export const config = {
           throw new Error("Invalid email address");
         }
 
-        const emailHtml = render(MagicLinkEmail({ magicLink: url }));
+        const emailHtml = render(
+          MagicLinkEmail({ magicLink: url, username: email })
+        );
 
         const response = await fetch("https://api.sendgrid.com/v3/mail/send", {
           body: JSON.stringify({
