@@ -51,23 +51,14 @@ export default function HeroComponent() {
               <Link href="/sign-up">Sign Up</Link>
             </Button>
             <span className="px-2" />
-            <Button
-              variant="outline"
-              className="text-zinc-100"
-              type="submit"
-              onClick={() => track("Use Locally", { location: "Home" })}
-            >
+            <Button variant="outline" className="text-zinc-100" type="submit">
               Use without Signing In
             </Button>
           </div>
           <div>
             <p className="text-white">
               Already have an account?{" "}
-              <Link
-                href="/sign-in"
-                className="text-zinc-100 font-semibold"
-                onClick={() => track("Sign In", { location: "Home" })}
-              >
+              <Link href="/sign-in" className="text-zinc-100 font-semibold">
                 Sign In
               </Link>
             </p>
