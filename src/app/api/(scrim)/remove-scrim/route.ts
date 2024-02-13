@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
+import { $Enums } from "@prisma/client";
 import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -21,9 +22,63 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  const user = await prisma.user.findFirst({
+    where: {
+      email: session?.user?.email ?? "lucas@lux.dev",
+    },
+  });
+
+  if (!user) {
+    return new Response("User not found", {
+      status: 404,
+    });
+  }
+
   if (!id) {
     return new Response("Missing ID", {
       status: 400,
+    });
+  }
+
+  const scrim = await prisma.scrim.findFirst({
+    where: {
+      id: parseInt(id),
+    },
+  });
+
+  if (!scrim) {
+    return new Response("Scrim not found", {
+      status: 404,
+    });
+  }
+
+  let isManager = false;
+
+  if (scrim.teamId !== 0) {
+    // scrim is associated with a team
+    const managers = await prisma.team.findFirst({
+      where: {
+        id: scrim.teamId ?? 0,
+      },
+      select: {
+        managers: true,
+      },
+    });
+
+    // check if user is a manager
+    isManager =
+      managers?.managers.some((manager) => manager.userId === user.id) ?? false;
+  }
+
+  const hasPerms =
+    user.role === $Enums.UserRole.ADMIN || // Admins can delete anything
+    user.role === $Enums.UserRole.MANAGER || // Managers can delete anything
+    user.id === scrim.creatorId || // Creators can delete their own scrims
+    isManager; // Managers of the scrim's team can delete the scrim
+
+  if (!hasPerms) {
+    return new Response("Unauthorized", {
+      status: 401,
     });
   }
 
