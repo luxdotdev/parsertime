@@ -19,7 +19,6 @@ import { toast } from "@/components/ui/use-toast";
 import { Scrim } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { DangerZone } from "@/components/scrim/danger-zone";
 
 const profileFormSchema = z.object({
   name: z
@@ -113,8 +112,6 @@ export function EditScrimForm({ scrim }: { scrim: Scrim }) {
             </FormItem>
           )}
         />
-
-        <DangerZone scrim={scrim} />
 
         <Button type="submit" disabled={loading}>
           Update scrim

@@ -18,7 +18,7 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteInput, setDeleteInput] = useState("");
   const [deleteEnabled, setDeleteEnabled] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
   }, [deleteInput, scrim.name]);
 
   async function handleDelete() {
-    setLoading(true);
+    setDeleteLoading(true);
     const res = await fetch(`/api/remove-scrim?id=${scrim.id}`, {
       method: "POST",
     });
@@ -47,7 +47,7 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
       });
     }
 
-    setLoading(false);
+    setDeleteLoading(false);
   }
 
   // fix LastPass hydration issue
@@ -92,8 +92,7 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
             <div className="flex justify-end space-x-4 mt-4">
               <Button
                 variant="destructive"
-                type="submit"
-                disabled={!deleteEnabled || loading}
+                disabled={!deleteEnabled || deleteLoading}
                 onClick={handleDelete}
               >
                 Delete

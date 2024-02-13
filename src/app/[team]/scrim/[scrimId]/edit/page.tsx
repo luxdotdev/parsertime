@@ -6,6 +6,7 @@ import { ModeToggle } from "@/components/theme-switcher";
 import { UserNav } from "@/components/user-nav";
 import { MainNav } from "@/components/dashboard/main-nav";
 import Link from "next/link";
+import { DangerZone } from "@/components/scrim/danger-zone";
 
 type Props = {
   params: { team: string; scrimId: string };
@@ -49,6 +50,8 @@ export default async function EditScrimPage({ params }: Props) {
         <EditScrimForm scrim={scrim} />
 
         <div className="p-4" />
+
+        <DangerZone scrim={scrim} />
       </main>
     </div>
   );
