@@ -11,6 +11,7 @@ import { $Enums } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { Metadata } from "next";
+import { Pencil2Icon } from "@radix-ui/react-icons";
 
 type Props = {
   params: { team: string; scrimId: string };
@@ -110,7 +111,15 @@ export default async function ScrimDashboardPage({ params }: Props) {
           </h4>
           <div className="flex items-center justify-between space-y-2">
             <h2 className="text-3xl font-bold tracking-tight">
-              {scrim?.name ?? "New Scrim"}
+              <span className="flex items-center space-x-2">
+                {scrim?.name ?? "New Scrim"}{" "}
+                <Link
+                  className="pl-2"
+                  href={`/${params.team}/scrim/${params.scrimId}/edit`}
+                >
+                  <Pencil2Icon className="w-6 h-6" />
+                </Link>
+              </span>
             </h2>
           </div>
           <h4 className="scroll-m-20 text-xl font-semibold tracking-tight pb-4">
