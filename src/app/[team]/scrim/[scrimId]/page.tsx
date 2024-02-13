@@ -113,12 +113,14 @@ export default async function ScrimDashboardPage({ params }: Props) {
             <h2 className="text-3xl font-bold tracking-tight">
               <span className="flex items-center space-x-2">
                 {scrim?.name ?? "New Scrim"}{" "}
-                <Link
-                  className="pl-2"
-                  href={`/${params.team}/scrim/${params.scrimId}/edit`}
-                >
-                  <Pencil2Icon className="w-6 h-6" />
-                </Link>
+                {hasPerms && (
+                  <Link
+                    className="pl-2"
+                    href={`/${params.team}/scrim/${params.scrimId}/edit`}
+                  >
+                    <Pencil2Icon className="w-6 h-6" />
+                  </Link>
+                )}
               </span>
             </h2>
           </div>
