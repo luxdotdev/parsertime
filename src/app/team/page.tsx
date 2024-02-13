@@ -74,7 +74,7 @@ export default async function TeamPage() {
                 <Card className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
                   {userTeams.map((team) => (
                     <div key={team.id} className="p-2">
-                      <Card className="relative min-h-[144px] md:w-60 xl:w-96">
+                      <Card className="relative min-h-[144px] md:w-60 xl:w-80">
                         <Link href={`/team/${team.id}`}>
                           <Image
                             src={
@@ -106,7 +106,7 @@ export default async function TeamPage() {
               <Card className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
                 {allTeams.map((team) => (
                   <div key={team.id} className="p-2">
-                    <Card className="relative min-h-[144px] md:w-60 xl:w-96">
+                    <Card className="relative min-h-[144px] md:w-60 xl:w-80">
                       <Link href={`/team/${team.id}`}>
                         <Image
                           src={
