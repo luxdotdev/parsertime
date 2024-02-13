@@ -7,24 +7,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Scrim } from "@prisma/client";
 import { Pencil2Icon } from "@radix-ui/react-icons";
 import Link from "next/link";
 
-type Scrim = {
-  id: number;
-  name: string;
-  createdAt: Date;
-  updatedAt: Date;
-  date: Date;
-  teamId: number | null;
-  creatorId: string;
-  team: string;
-  creator: string;
-};
+type Props = { scrim: Scrim & { team: string; creator: string } };
 
-export function ScrimCard({ scrim }: { scrim: Scrim }) {
+export function ScrimCard({ scrim }: Props) {
   return (
-    <Link href={`/${scrim.teamId ?? "uncategorized"}/scrim/${scrim.id}`}>
+    <Link href={`/${scrim.teamId}/scrim/${scrim.id}`}>
       <Card className="max-w-md h-48">
         <CardHeader className="text-lg font-semibold">
           <div className="flex items-center justify-between">
