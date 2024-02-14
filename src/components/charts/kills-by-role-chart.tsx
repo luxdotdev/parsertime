@@ -7,6 +7,7 @@ import {
   BarChart,
   CartesianGrid,
   Legend,
+  ResponsiveContainer,
   Tooltip,
   TooltipProps,
   XAxis,
@@ -100,35 +101,37 @@ export function KillsByRoleChart({ team1Kills, team2Kills, teamNames }: Props) {
   ];
 
   return (
-    <BarChart
-      width={600}
-      height={500}
-      data={data}
-      margin={{
-        top: 20,
-        right: 30,
-        left: 20,
-        bottom: 5,
-      }}
-    >
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="name" />
-      <YAxis />
-      <Legend />
-      <Tooltip content={<CustomTooltip teamNames={teamNames} />} />
-      <Bar
-        dataKey="team1Kills"
-        fill="#0ea5e9"
-        name={teamNames[0]}
-        stackId="a"
-      />
-      <Bar
-        dataKey="team2Kills"
-        fill="#ef4444"
-        name={teamNames[1]}
-        stackId="a"
-        radius={[4, 4, 0, 0]}
-      />
-    </BarChart>
+    <ResponsiveContainer width="100%" height={500}>
+      <BarChart
+        width={600}
+        height={500}
+        data={data}
+        margin={{
+          top: 20,
+          right: 30,
+          left: 20,
+          bottom: 5,
+        }}
+      >
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="name" />
+        <YAxis />
+        <Legend />
+        <Tooltip content={<CustomTooltip teamNames={teamNames} />} />
+        <Bar
+          dataKey="team1Kills"
+          fill="#0ea5e9"
+          name={teamNames[0]}
+          stackId="a"
+        />
+        <Bar
+          dataKey="team2Kills"
+          fill="#ef4444"
+          name={teamNames[1]}
+          stackId="a"
+          radius={[4, 4, 0, 0]}
+        />
+      </BarChart>
+    </ResponsiveContainer>
   );
 }

@@ -7,6 +7,7 @@ import {
   BarChart,
   CartesianGrid,
   Legend,
+  ResponsiveContainer,
   Tooltip,
   TooltipProps,
   XAxis,
@@ -78,68 +79,72 @@ export function DamageByRoundChart({
   return (
     <>
       {data.length > 1 && (
-        <AreaChart
-          width={600}
-          height={500}
-          data={data}
-          margin={{
-            top: 20,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <defs>
-            <linearGradient id="colorTeam1" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
-            </linearGradient>
-            <linearGradient id="colorTeam2" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
-            </linearGradient>
-          </defs>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Legend />
-          <Tooltip content={<CustomTooltip teamNames={teamNames} />} />
-          <Area
-            type="monotone"
-            dataKey="team1Damage"
-            stroke="#0ea5e9"
-            fill="url(#colorTeam1)"
-            name={teamNames[0]}
-          />
-          <Area
-            type="monotone"
-            dataKey="team2Damage"
-            stroke="#ef4444"
-            fill="url(#colorTeam2)"
-            name={teamNames[1]}
-          />
-        </AreaChart>
+        <ResponsiveContainer width="100%" height={500}>
+          <AreaChart
+            width={600}
+            height={500}
+            data={data}
+            margin={{
+              top: 20,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
+            <defs>
+              <linearGradient id="colorTeam1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="colorTeam2" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Legend />
+            <Tooltip content={<CustomTooltip teamNames={teamNames} />} />
+            <Area
+              type="monotone"
+              dataKey="team1Damage"
+              stroke="#0ea5e9"
+              fill="url(#colorTeam1)"
+              name={teamNames[0]}
+            />
+            <Area
+              type="monotone"
+              dataKey="team2Damage"
+              stroke="#ef4444"
+              fill="url(#colorTeam2)"
+              name={teamNames[1]}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
       )}
       {data.length === 1 && (
-        <BarChart
-          width={600}
-          height={500}
-          data={data}
-          margin={{
-            top: 20,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Legend />
-          <Tooltip content={<CustomTooltip teamNames={teamNames} />} />
-          <Bar dataKey="team1Damage" fill="#0ea5e9" name={teamNames[0]} />
-          <Bar dataKey="team2Damage" fill="#ef4444" name={teamNames[1]} />
-        </BarChart>
+        <ResponsiveContainer width="100%" height={500}>
+          <BarChart
+            width={600}
+            height={500}
+            data={data}
+            margin={{
+              top: 20,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Legend />
+            <Tooltip content={<CustomTooltip teamNames={teamNames} />} />
+            <Bar dataKey="team1Damage" fill="#0ea5e9" name={teamNames[0]} />
+            <Bar dataKey="team2Damage" fill="#ef4444" name={teamNames[1]} />
+          </BarChart>
+        </ResponsiveContainer>
       )}
     </>
   );

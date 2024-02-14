@@ -6,6 +6,7 @@ import {
   Legend,
   Line,
   LineChart,
+  ResponsiveContainer,
   Tooltip,
   TooltipProps,
   XAxis,
@@ -85,34 +86,36 @@ export function KillsByFightChart({ fights, teamNames }: Props) {
   data.pop();
 
   return (
-    <LineChart
-      width={1000}
-      height={500}
-      data={data}
-      margin={{
-        top: 20,
-        right: 30,
-        left: 20,
-        bottom: 5,
-      }}
-    >
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="matchTime" interval={3} domain={[0, "dataMax"]} />
-      <YAxis interval={0} />
-      <Legend />
-      <Tooltip content={<CustomTooltip teamNames={teamNames} />} />
-      <Line
-        type="monotone"
-        dataKey="team1Kills"
-        stroke="#0ea5e9"
-        name="Team 1"
-      />
-      <Line
-        type="monotone"
-        dataKey="team2Kills"
-        stroke="#ef4444"
-        name="Team 2"
-      />
-    </LineChart>
+    <ResponsiveContainer width="100%" height={500}>
+      <LineChart
+        width={1000}
+        height={500}
+        data={data}
+        margin={{
+          top: 20,
+          right: 30,
+          left: 20,
+          bottom: 5,
+        }}
+      >
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="matchTime" interval={3} domain={[0, "dataMax"]} />
+        <YAxis interval={0} />
+        <Legend />
+        <Tooltip content={<CustomTooltip teamNames={teamNames} />} />
+        <Line
+          type="monotone"
+          dataKey="team1Kills"
+          stroke="#0ea5e9"
+          name="Team 1"
+        />
+        <Line
+          type="monotone"
+          dataKey="team2Kills"
+          stroke="#ef4444"
+          name="Team 2"
+        />
+      </LineChart>
+    </ResponsiveContainer>
   );
 }
