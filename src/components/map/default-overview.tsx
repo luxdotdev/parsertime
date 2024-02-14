@@ -202,9 +202,22 @@ export async function DefaultOverview({ id }: { id: number }) {
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              {mapType !== $Enums.MapType.Push
-                ? `Winner: ${calculateWinner()}`
-                : "Not supported for Push due to limitations with the scrim code. :("}
+              {mapType !== $Enums.MapType.Push ? (
+                <>
+                  Winner:{" "}
+                  <span
+                    className={
+                      calculateWinner() === matchDetails?.team_1_name
+                        ? "text-blue-500"
+                        : "text-red-500"
+                    }
+                  >
+                    {calculateWinner()}
+                  </span>
+                </>
+              ) : (
+                "Not supported for Push due to limitations with the scrim code. :("
+              )}
             </p>
           </CardFooter>
         </Card>
@@ -224,9 +237,21 @@ export async function DefaultOverview({ id }: { id: number }) {
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              {team1Damage > team2Damage
-                ? `${matchDetails?.team_1_name} dealt more hero damage this map.`
-                : `${matchDetails?.team_2_name} dealt more hero damage this map.`}
+              {team1Damage > team2Damage ? (
+                <>
+                  <span className="text-blue-500">
+                    {matchDetails?.team_1_name}
+                  </span>{" "}
+                  dealt more hero damage this map.
+                </>
+              ) : (
+                <>
+                  <span className="text-red-500">
+                    {matchDetails?.team_2_name}
+                  </span>{" "}
+                  dealt more hero damage this map.
+                </>
+              )}
             </p>
           </CardFooter>
         </Card>
@@ -247,9 +272,21 @@ export async function DefaultOverview({ id }: { id: number }) {
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              {team1Healing > team2Healing
-                ? `${matchDetails?.team_1_name} healed more this map.`
-                : `${matchDetails?.team_2_name} healed more this map.`}
+              {team1Healing > team2Healing ? (
+                <>
+                  <span className="text-blue-500">
+                    {matchDetails?.team_1_name}
+                  </span>{" "}
+                  healed more this map.
+                </>
+              ) : (
+                <>
+                  <span className="text-red-500">
+                    {matchDetails?.team_2_name}
+                  </span>{" "}
+                  healed more this map.
+                </>
+              )}
             </p>
           </CardFooter>
         </Card>
