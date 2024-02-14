@@ -151,6 +151,14 @@ enum EventType {
   ultimate_start
 }
 
+enum MapType {
+  Control
+  Escort
+  Flashpoint
+  Hybrid
+  Push
+}
+
 model MapData {
   id                   Int                  @id @default(autoincrement())
   scrimId              Int
@@ -313,7 +321,7 @@ model MatchStart {
   event_type  EventType @default(match_start)
   match_time  Float
   map_name    String
-  map_type    String
+  map_type    MapType
   team_1_name String
   team_2_name String
 
