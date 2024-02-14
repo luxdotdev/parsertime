@@ -1,22 +1,5 @@
+import { $Enums } from "@prisma/client";
 import { HeroName } from "./heroes";
-
-export type EventType =
-  | "defensive_assist"
-  | "hero_spawn"
-  | "hero_swap"
-  | "kill"
-  | "match_start"
-  | "objective_captured"
-  | "objective_updated"
-  | "offensive_assist"
-  | "payload_progress"
-  | "player_stat"
-  | "round_end"
-  | "round_start"
-  | "setup_complete"
-  | "ultimate_charged"
-  | "ultimate_end"
-  | "ultimate_start";
 
 type DefaultPlayerTeam = "Team 1" | "Team 2";
 type PlayerTeam = DefaultPlayerTeam | string; // not sure how it handles custom team names
@@ -104,7 +87,7 @@ export type MatchStartTableRow = [
   event_type: "match_start",
   match_time: number,
   map_name: string,
-  map_type: string,
+  map_type: $Enums.MapType,
   team_1_name: string,
   team_2_name: string
 ];
@@ -266,7 +249,7 @@ export type ParserData = {
   kill: KillTableRow[];
   match_end?: MatchEndTableRow[];
   match_start: MatchStartTableRow[];
-  objective_captured: ObjectiveCapturedTableRow[];
+  objective_capture: ObjectiveCapturedTableRow[];
   objective_updated: ObjectiveUpdatedTableRow[];
   offensive_assist: OffensiveAssistTableRow[];
   payload_progress: PayloadProgressTableRow[];
