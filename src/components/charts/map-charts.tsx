@@ -130,7 +130,7 @@ export async function MapCharts({ id }: { id: number }) {
       </Card>
       <Card className="col-span-3">
         <CardHeader>
-          <CardTitle>Kills By Role Chart</CardTitle>
+          <CardTitle>Final Blows By Role Chart</CardTitle>
         </CardHeader>
         <CardContent className="pl-2">
           <KillsByRoleChart
@@ -141,9 +141,10 @@ export async function MapCharts({ id }: { id: number }) {
         </CardContent>
         <CardFooter>
           <p className="text-sm text-gray-500">
-            This chart shows the number of kills by role for each team. The
-            roles are split into Tank, Damage, and Support. The x-axis
-            represents the role, and the y-axis represents the number of kills.
+            This chart shows the number of final blows by role for each team.
+            The roles are split into Tank, Damage, and Support. The x-axis
+            represents the role, and the y-axis represents the number of final
+            blows.
           </p>
         </CardFooter>
       </Card>
