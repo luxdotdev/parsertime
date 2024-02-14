@@ -85,7 +85,13 @@ export function KillsByRoleChart({ team1Kills, team2Kills, teamNames }: Props) {
       <Legend />
       <Tooltip />
       <Bar dataKey="team1Kills" fill="#0ea5e9" label="Team 1" stackId="a" />
-      <Bar dataKey="team2Kills" fill="#ef4444" label="Team 2" stackId="a" />
+      <Bar
+        dataKey="team2Kills"
+        fill="#ef4444"
+        label="Team 2"
+        stackId="a"
+        radius={[4, 4, 0, 0]}
+      />
     </BarChart>
   );
 }
