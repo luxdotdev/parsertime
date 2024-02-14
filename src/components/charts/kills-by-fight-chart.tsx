@@ -1,31 +1,15 @@
 "use client";
 
-import { TODO } from "@/types/utils";
 import { Kill } from "@prisma/client";
 import {
-  LineChart,
+  CartesianGrid,
+  Legend,
   Line,
+  LineChart,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  Customized,
 } from "recharts";
-
-function CustomizedDot(props: TODO) {
-  const { cx, cy, stroke, payload, value } = props;
-
-  if (value === 0) {
-    return null;
-  }
-
-  return (
-    <svg x={cx - 10} y={cy - 10} width={20} height={20} fill="#8884d8">
-      <circle cx={10} cy={10} r={10} fill="#8884d8" />
-    </svg>
-  );
-}
 
 type Data = {
   matchTime: number;
@@ -72,7 +56,6 @@ export function KillsByFightChart({ fights, teamNames }: Props) {
     <LineChart width={1000} height={500} data={data}>
       <CartesianGrid strokeDasharray="3 3" />
       <XAxis dataKey="matchTime" interval={3} domain={[0, "dataMax"]} />
-      {/* range from -5 to 5 */}
       <YAxis domain={[-6, 6]} interval={0} />
       <Legend />
       <Tooltip />
@@ -81,14 +64,12 @@ export function KillsByFightChart({ fights, teamNames }: Props) {
         dataKey="team1Kills"
         stroke="#0ea5e9"
         label="Team 1"
-        // dot={<CustomizedDot />}
       />
       <Line
         type="monotone"
         dataKey="team2Kills"
         stroke="#ef4444"
         label="Team 2"
-        // dot={<CustomizedDot />}
       />
     </LineChart>
   );
