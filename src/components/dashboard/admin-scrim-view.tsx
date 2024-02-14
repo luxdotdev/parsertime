@@ -32,6 +32,7 @@ export async function AdminScrimView() {
       creatorId: scrim.creatorId,
       team: teamName?.name ?? "Uncategorized",
       creator: creatorName[0].name ?? "Unknown",
+      hasPerms: true,
     });
   }
 
