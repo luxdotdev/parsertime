@@ -7,15 +7,47 @@ import {
   Line,
   LineChart,
   Tooltip,
+  TooltipProps,
   XAxis,
   YAxis,
 } from "recharts";
+import {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 
 type Data = {
   matchTime: number;
   team1Kills: number;
   team2Kills: number;
 }[];
+
+function CustomTooltip({
+  active,
+  payload,
+  label,
+  teamNames,
+}: TooltipProps<ValueType, NameType> & {
+  teamNames: readonly [string, string];
+}) {
+  if (active && payload && payload.length) {
+    return (
+      <div className="z-50 overflow-hidden rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
+        <h3 className="text-base">Time: {label}</h3>
+        <p className="text-sm">
+          <strong className="text-blue-500">{teamNames[0]}</strong>:{" "}
+          {payload[0].value}
+        </p>
+        <p className="text-sm">
+          <strong className="text-red-500">{teamNames[1]}</strong>:{" "}
+          {payload[1].value}
+        </p>
+      </div>
+    );
+  }
+
+  return null;
+}
 
 type Props = {
   fights: Kill[][];
@@ -68,18 +100,18 @@ export function KillsByFightChart({ fights, teamNames }: Props) {
       <XAxis dataKey="matchTime" interval={3} domain={[0, "dataMax"]} />
       <YAxis interval={0} />
       <Legend />
-      <Tooltip />
+      <Tooltip content={<CustomTooltip teamNames={teamNames} />} />
       <Line
         type="monotone"
         dataKey="team1Kills"
         stroke="#0ea5e9"
-        label="Team 1"
+        name="Team 1"
       />
       <Line
         type="monotone"
         dataKey="team2Kills"
         stroke="#ef4444"
-        label="Team 2"
+        name="Team 2"
       />
     </LineChart>
   );
