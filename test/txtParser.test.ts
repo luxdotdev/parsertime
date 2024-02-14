@@ -2,7 +2,8 @@ import { test, expect } from "vitest";
 import * as fs from "fs";
 import * as XLSX from "xlsx";
 import { parseDataFromTXT } from "@/lib/parser";
-import { EventType, ParserData } from "@/types/parser";
+import { ParserData } from "@/types/parser";
+import { $Enums } from "@prisma/client";
 
 test("should be equivalent to control data", async () => {
   const file = await fs.readFileSync(
@@ -72,7 +73,7 @@ async function local_parseDataFromXLSX(fileName: string) {
   const file = await fs.readFileSync(fileName, "binary");
 
   const workbook = XLSX.read(file, { type: "binary" });
-  const sheetName = workbook.SheetNames as EventType[];
+  const sheetName = workbook.SheetNames as $Enums.EventType[];
 
   const result: Partial<ParserData> = {};
 
