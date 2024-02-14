@@ -88,6 +88,16 @@ export async function MapCharts({ id }: { id: number }) {
         <CardContent className="pl-2">
           <KillsByFightChart fights={fights} teamNames={teamNames} />
         </CardContent>
+        <CardFooter>
+          <p className="text-sm text-gray-500">
+            Kills are grouped by 15 second intervals. This chart shows the
+            cumulative kills for each team at each interval. The x-axis
+            represents the time in seconds, and the y-axis represents the
+            cumulative kills. Team 1 is represented with positive numbers, while
+            Team 2 is represented with negative numbers. The chart resets to 0
+            after each fight.
+          </p>
+        </CardFooter>
       </Card>
       <Card className="col-span-full">
         <CardHeader>
@@ -100,6 +110,13 @@ export async function MapCharts({ id }: { id: number }) {
             teamNames={teamNames}
           />
         </CardContent>
+        <CardFooter>
+          <p className="text-sm text-gray-500">
+            This chart shows the number of kills by role for each team. The
+            roles are split into Tank, Damage, and Support. The x-axis
+            represents the role, and the y-axis represents the number of kills.
+          </p>
+        </CardFooter>
       </Card>
     </div>
   );
