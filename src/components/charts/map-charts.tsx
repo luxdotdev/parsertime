@@ -80,12 +80,6 @@ export async function MapCharts({ id }: { id: number }) {
     },
   });
 
-  const numberOfRounds = await prisma.roundStart.count({
-    where: {
-      MapDataId: id,
-    },
-  });
-
   const team1DamageByRound = await prisma.playerStat.groupBy({
     by: ["round_number"],
     where: {
