@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { SearchParams } from "@/types/next";
+import { $Enums } from "@prisma/client";
 
 type Props = {
   searchParams: SearchParams;
@@ -15,23 +16,27 @@ export async function ScrimList({ searchParams }: Props) {
 
   let scrims = [];
 
-  const userData = await prisma.user.findMany({
+  const userData = await prisma.user.findFirst({
     where: {
       email: session?.user?.email,
     },
   });
 
+  if (!userData) {
+    return <EmptyScrimList />;
+  }
+
   const userViewableScrims = await prisma.scrim.findMany({
     where: {
       OR: [
         {
-          creatorId: userData[0].id,
+          creatorId: userData.id,
         },
         {
           Team: {
             users: {
               some: {
-                id: userData[0].id,
+                id: userData.id,
               },
             },
           },
@@ -53,6 +58,11 @@ export async function ScrimList({ searchParams }: Props) {
       },
     });
 
+    const hasPerms =
+      userData.role === $Enums.UserRole.ADMIN ||
+      userData.role === $Enums.UserRole.MANAGER ||
+      userData.id === scrim.creatorId;
+
     scrims.push({
       id: scrim.id,
       name: scrim.name,
@@ -63,6 +73,7 @@ export async function ScrimList({ searchParams }: Props) {
       creatorId: scrim.creatorId,
       team: teamName?.name ?? "Uncategorized",
       creator: creatorName[0].name ?? "Unknown",
+      hasPerms,
     });
   }
 

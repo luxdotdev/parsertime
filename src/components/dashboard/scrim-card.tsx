@@ -11,7 +11,9 @@ import { Scrim } from "@prisma/client";
 import { Pencil2Icon } from "@radix-ui/react-icons";
 import Link from "next/link";
 
-type Props = { scrim: Scrim & { team: string; creator: string } };
+type Props = {
+  scrim: Scrim & { team: string; creator: string; hasPerms: boolean };
+};
 
 export function ScrimCard({ scrim }: Props) {
   return (
@@ -20,16 +22,18 @@ export function ScrimCard({ scrim }: Props) {
         <CardHeader className="text-lg font-semibold">
           <div className="flex items-center justify-between">
             <span>{scrim.name}</span>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link href={`/${scrim.teamId}/scrim/${scrim.id}/edit`}>
-                    <Pencil2Icon className="w-4 h-4" />
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent>Edit</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            {scrim.hasPerms && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link href={`/${scrim.teamId}/scrim/${scrim.id}/edit`}>
+                      <Pencil2Icon className="w-4 h-4" />
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>Edit</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
           </div>
         </CardHeader>
         <CardContent>
