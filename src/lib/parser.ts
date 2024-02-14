@@ -4,7 +4,8 @@ import { headers } from "@/lib/headers";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { toTitleCase } from "@/lib/utils";
-import { EventType, ParserData } from "@/types/parser";
+import { ParserData } from "@/types/parser";
+import { $Enums } from "@prisma/client";
 import { Session } from "next-auth";
 import * as XLSX from "xlsx";
 
@@ -97,7 +98,7 @@ export async function parseDataFromTXT(file: File) {
     XLSX.utils.book_append_sheet(workbook, ws, eventType);
   });
 
-  const sheetName = workbook.SheetNames as EventType[];
+  const sheetName = workbook.SheetNames as $Enums.EventType[];
 
   const result: Partial<ParserData> = {};
 
@@ -125,7 +126,7 @@ export async function parseDataFromXLSX(file: File) {
   });
 
   const workbook = XLSX.read(data, { type: "binary" });
-  const sheetName = workbook.SheetNames as EventType[];
+  const sheetName = workbook.SheetNames as $Enums.EventType[];
 
   const result: Partial<ParserData> = {};
 
@@ -642,9 +643,9 @@ export async function createObjectiveCapturedRows(
   mapId: number
 ) {
   if (
-    typeof data.objective_captured === "undefined" ||
-    data.objective_captured.length === 0 ||
-    !data.objective_captured
+    typeof data.objective_capture === "undefined" ||
+    data.objective_capture.length === 0 ||
+    !data.objective_capture
   ) {
     Logger.log(
       "No objective captures found for map: ",
@@ -656,7 +657,7 @@ export async function createObjectiveCapturedRows(
   }
 
   await prisma.objectiveCaptured.createMany({
-    data: data.objective_captured.map((capture) => ({
+    data: data.objective_capture.map((capture) => ({
       scrimId: scrim.id,
       match_time: capture[1],
       round_number: capture[2],
