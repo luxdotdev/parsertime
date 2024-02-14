@@ -1,3 +1,4 @@
+import { DamageByRoundChart } from "@/components/charts/damage-by-round-chart";
 import { KillsByFightChart } from "@/components/charts/kills-by-fight-chart";
 import { KillsByRoleChart } from "@/components/charts/kills-by-role-chart";
 import {
@@ -79,8 +80,36 @@ export async function MapCharts({ id }: { id: number }) {
     },
   });
 
+  const numberOfRounds = await prisma.roundStart.count({
+    where: {
+      MapDataId: id,
+    },
+  });
+
+  const team1DamageByRound = await prisma.playerStat.groupBy({
+    by: ["round_number"],
+    where: {
+      MapDataId: id,
+      player_team: team1Name,
+    },
+    _sum: {
+      hero_damage_dealt: true,
+    },
+  });
+
+  const team2DamageByRound = await prisma.playerStat.groupBy({
+    by: ["round_number"],
+    where: {
+      MapDataId: id,
+      player_team: team2Name,
+    },
+    _sum: {
+      hero_damage_dealt: true,
+    },
+  });
+
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
       <Card className="col-span-full">
         <CardHeader>
           <CardTitle>Kills By Fight Chart</CardTitle>
@@ -99,7 +128,7 @@ export async function MapCharts({ id }: { id: number }) {
           </p>
         </CardFooter>
       </Card>
-      <Card className="col-span-full">
+      <Card className="col-span-3">
         <CardHeader>
           <CardTitle>Kills By Role Chart</CardTitle>
         </CardHeader>
@@ -115,6 +144,26 @@ export async function MapCharts({ id }: { id: number }) {
             This chart shows the number of kills by role for each team. The
             roles are split into Tank, Damage, and Support. The x-axis
             represents the role, and the y-axis represents the number of kills.
+          </p>
+        </CardFooter>
+      </Card>
+      <Card className="col-span-3">
+        <CardHeader>
+          <CardTitle>Hero Damage By Round Chart</CardTitle>
+        </CardHeader>
+        <CardContent className="pl-2">
+          <DamageByRoundChart
+            team1DamageByRound={team1DamageByRound}
+            team2DamageByRound={team2DamageByRound}
+            teamNames={teamNames}
+          />
+        </CardContent>
+        <CardFooter>
+          <p className="text-sm text-gray-500">
+            This chart shows the hero damage done by round for each team. The
+            x-axis represents the round, and the y-axis represents the damage
+            done. Note that the damage is cumulative, so the damage done in
+            round 2 includes the damage done in round 1.
           </p>
         </CardFooter>
       </Card>
