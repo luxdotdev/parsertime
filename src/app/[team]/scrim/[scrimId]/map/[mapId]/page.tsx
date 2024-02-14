@@ -11,6 +11,7 @@ import { toTitleCase } from "@/lib/utils";
 import { Killfeed } from "@/components/map/killfeed";
 import { Metadata } from "next";
 import { SearchParams } from "@/types/next";
+import { MapCharts } from "@/components/charts/map-charts";
 
 type Props = {
   params: { team: string; scrimId: string; mapId: string };
@@ -117,7 +118,7 @@ export default async function MapDashboardPage({ params }: Props) {
             <TabsList>
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="killfeed">Killfeed</TabsTrigger>
-              <TabsTrigger value="reports">Reports</TabsTrigger>
+              <TabsTrigger value="charts">Charts</TabsTrigger>
               <TabsTrigger value="notifications">Notifications</TabsTrigger>
             </TabsList>
             <TabsContent value="overview" className="space-y-4">
@@ -125,6 +126,9 @@ export default async function MapDashboardPage({ params }: Props) {
             </TabsContent>
             <TabsContent value="killfeed" className="space-y-4">
               <Killfeed id={id} />
+            </TabsContent>
+            <TabsContent value="charts" className="space-y-4">
+              <MapCharts id={id} />
             </TabsContent>
           </Tabs>
         </div>
