@@ -53,10 +53,20 @@ export function KillsByFightChart({ fights, teamNames }: Props) {
   data.pop();
 
   return (
-    <LineChart width={1000} height={500} data={data}>
+    <LineChart
+      width={1000}
+      height={500}
+      data={data}
+      margin={{
+        top: 20,
+        right: 30,
+        left: 20,
+        bottom: 5,
+      }}
+    >
       <CartesianGrid strokeDasharray="3 3" />
       <XAxis dataKey="matchTime" interval={3} domain={[0, "dataMax"]} />
-      <YAxis domain={[-6, 6]} interval={0} />
+      <YAxis interval={0} />
       <Legend />
       <Tooltip />
       <Line
