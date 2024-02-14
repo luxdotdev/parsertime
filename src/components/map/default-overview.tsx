@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { removeDuplicateRows } from "@/lib/utils";
+import { removeDuplicateRows, round } from "@/lib/utils";
 import { PlayerStatRows } from "@/types/prisma";
 import prisma from "@/lib/prisma";
 import CardIcon from "@/components/ui/card-icon";
@@ -78,6 +78,14 @@ export async function DefaultOverview({ id }: { id: number }) {
   )
     // sort by team name
     .sort((a, b) => a.player_team.localeCompare(b.player_team));
+
+  const team1Damage = playerStatRowsByFinalRound
+    .filter((player) => player.player_team === matchDetails?.team_1_name)
+    .reduce((acc, player) => acc + player.hero_damage_dealt, 0);
+
+  const team2Damage = playerStatRowsByFinalRound
+    .filter((player) => player.player_team === matchDetails?.team_2_name)
+    .reduce((acc, player) => acc + player.hero_damage_dealt, 0);
 
   function calculateScore() {
     switch (mapType) {
@@ -194,18 +202,25 @@ export async function DefaultOverview({ id }: { id: number }) {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sales</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Hero Damage Dealt
+            </CardTitle>
             <CardIcon>
-              <rect width="20" height="14" x="2" y="5" rx="2" />
-              <path d="M2 10h20" />
+              <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
             </CardIcon>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+12,234</div>
-            <p className="text-xs text-muted-foreground">
-              +19% from last month
-            </p>
+            <div className="text-2xl font-bold">
+              {round(team1Damage)} - {round(team2Damage)}
+            </div>
           </CardContent>
+          <CardFooter>
+            <p className="text-xs text-muted-foreground">
+              {team1Damage > team2Damage
+                ? `${matchDetails?.team_1_name} dealt more hero damage this map.`
+                : `${matchDetails?.team_2_name} dealt more hero damage this map.`}
+            </p>
+          </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
