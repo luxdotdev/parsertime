@@ -107,13 +107,13 @@ export function KillsByFightChart({ fights, teamNames }: Props) {
           type="monotone"
           dataKey="team1Kills"
           stroke="#0ea5e9"
-          name="Team 1"
+          name={teamNames[0]}
         />
         <Line
           type="monotone"
           dataKey="team2Kills"
           stroke="#ef4444"
-          name="Team 2"
+          name={teamNames[1]}
         />
       </LineChart>
     </ResponsiveContainer>
