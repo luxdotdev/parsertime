@@ -138,8 +138,8 @@ export default async function ScrimDashboardPage({ params }: Props) {
                     <Link
                       href={`/${params.team}/scrim/${params.scrimId}/map/${map.id}`}
                     >
-                      <CardHeader>
-                        <h3 className="text-3xl font-semibold tracking-tight z-10 text-stroke dark:dark-text-stroke">
+                      <CardHeader className="">
+                        <h3 className="text-3xl font-semibold tracking-tight z-10 text-white">
                           {map.name}
                         </h3>
                       </CardHeader>
@@ -148,7 +148,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
                           src={`/maps/${toKebabCase(map.name)}.webp`}
                           alt={map.name}
                           fill
-                          className="object-cover rounded-md"
+                          className="object-cover rounded-md brightness-[0.65]"
                         />
                       </CardContent>
                     </Link>
