@@ -122,13 +122,12 @@ export function KillsByRoleChart({ team1Kills, team2Kills, teamNames }: Props) {
           dataKey="team1Kills"
           fill="#0ea5e9"
           name={teamNames[0]}
-          stackId="a"
+          radius={[4, 4, 0, 0]}
         />
         <Bar
           dataKey="team2Kills"
           fill="#ef4444"
           name={teamNames[1]}
-          stackId="a"
           radius={[4, 4, 0, 0]}
         />
       </BarChart>
