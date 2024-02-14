@@ -101,7 +101,7 @@ export function KillsByRoleChart({ team1Kills, team2Kills, teamNames }: Props) {
 
   return (
     <BarChart
-      width={1000}
+      width={600}
       height={500}
       data={data}
       margin={{
