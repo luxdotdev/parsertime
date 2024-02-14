@@ -87,6 +87,14 @@ export async function DefaultOverview({ id }: { id: number }) {
     .filter((player) => player.player_team === matchDetails?.team_2_name)
     .reduce((acc, player) => acc + player.hero_damage_dealt, 0);
 
+  const team1Healing = playerStatRowsByFinalRound
+    .filter((player) => player.player_team === matchDetails?.team_1_name)
+    .reduce((acc, player) => acc + player.healing_dealt, 0);
+
+  const team2Healing = playerStatRowsByFinalRound
+    .filter((player) => player.player_team === matchDetails?.team_2_name)
+    .reduce((acc, player) => acc + player.healing_dealt, 0);
+
   function calculateScore() {
     switch (mapType) {
       case $Enums.MapType.Control:
@@ -224,17 +232,26 @@ export async function DefaultOverview({ id }: { id: number }) {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Now</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Team Healing Dealt
+            </CardTitle>
             <CardIcon>
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+              <path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27" />
             </CardIcon>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+573</div>
-            <p className="text-xs text-muted-foreground">
-              +201 since last hour
-            </p>
+            <div className="text-2xl font-bold">
+              {round(team1Healing)} - {round(team2Healing)}
+            </div>
           </CardContent>
+          <CardFooter>
+            <p className="text-xs text-muted-foreground">
+              {team1Healing > team2Healing
+                ? `${matchDetails?.team_1_name} healed more this map.`
+                : `${matchDetails?.team_2_name} healed more this map.`}
+            </p>
+          </CardFooter>
         </Card>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
