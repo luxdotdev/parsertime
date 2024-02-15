@@ -4,6 +4,31 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import prisma from "@/lib/prisma";
 import { HeroName, heroRoleMapping } from "@/types/heroes";
 
+type PlayerToSort = {
+  player_name: string;
+  player_hero: string;
+};
+
+function sortByRole(a: PlayerToSort, b: PlayerToSort) {
+  const rolePriority: Record<"Tank" | "Damage" | "Support", number> = {
+    Damage: 1,
+    Tank: 2,
+    Support: 3,
+  };
+
+  const aRolePriority =
+    rolePriority[heroRoleMapping[a.player_hero as HeroName]];
+  const bRolePriority =
+    rolePriority[heroRoleMapping[b.player_hero as HeroName]];
+
+  if (aRolePriority === bRolePriority) {
+    // If roles are the same, optionally sort by player name
+    return a.player_name.localeCompare(b.player_name);
+  }
+
+  return aRolePriority - bRolePriority;
+}
+
 export async function ComparePlayers({ id }: { id: number }) {
   const teamNames = await prisma.matchStart.findFirst({
     where: {
@@ -26,24 +51,8 @@ export async function ComparePlayers({ id }: { id: number }) {
     },
   });
 
-  const rolePriority: Record<"Tank" | "Damage" | "Support", number> = {
-    Damage: 1,
-    Tank: 2,
-    Support: 3,
-  };
-
   const team1PlayersSorted = team1Players.sort((a, b) => {
-    const aRolePriority =
-      rolePriority[heroRoleMapping[a.player_hero as HeroName]];
-    const bRolePriority =
-      rolePriority[heroRoleMapping[b.player_hero as HeroName]];
-
-    if (aRolePriority === bRolePriority) {
-      // If roles are the same, optionally sort by player name
-      return a.player_name.localeCompare(b.player_name);
-    }
-
-    return aRolePriority - bRolePriority;
+    return sortByRole(a, b);
   });
 
   const team1PlayersUnique = Array.from(
@@ -62,17 +71,7 @@ export async function ComparePlayers({ id }: { id: number }) {
   });
 
   const team2PlayersSorted = team2Players.sort((a, b) => {
-    const aRolePriority =
-      rolePriority[heroRoleMapping[a.player_hero as HeroName]];
-    const bRolePriority =
-      rolePriority[heroRoleMapping[b.player_hero as HeroName]];
-
-    if (aRolePriority === bRolePriority) {
-      // If roles are the same, optionally sort by player name
-      return a.player_name.localeCompare(b.player_name);
-    }
-
-    return aRolePriority - bRolePriority;
+    return sortByRole(a, b);
   });
 
   const team2PlayersUnique = Array.from(
