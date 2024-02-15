@@ -97,6 +97,7 @@ export type MercyRezTableRow = [
   match_time: number,
   resurrecter_team: PlayerTeam,
   resurrecter_player: string,
+  resurrecter_hero: HeroName,
   resurrectee_team: PlayerTeam,
   resurrectee_player: string,
   resurrectee_hero: HeroName
