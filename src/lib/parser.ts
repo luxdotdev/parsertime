@@ -207,6 +207,7 @@ export async function createNewScrimFromParsedData(
 
   try {
     await createDefensiveAssistsRows(firstMap, scrim, map.id);
+    await createDvaRemechRows(firstMap, scrim, map.id);
     await createEchoDuplicateEndRows(firstMap, scrim, map.id);
     await createEchoDuplicateStartRows(firstMap, scrim, map.id);
     await createHeroSpawnRows(firstMap, scrim, map.id);
@@ -221,6 +222,7 @@ export async function createNewScrimFromParsedData(
     await createPayloadProgressRows(firstMap, scrim, map.id);
     await createPlayerStatRows(firstMap, scrim, map.id);
     await createPointProgressRows(firstMap, scrim, map.id);
+    await createRemechChargedRows(firstMap, scrim, map.id);
     await createRoundEndRows(firstMap, scrim, map.id);
     await createRoundStartRows(firstMap, scrim, map.id);
     await createSetupCompleteRows(firstMap, scrim, map.id);
@@ -299,6 +301,7 @@ export async function createNewMap(
 
   try {
     await createDefensiveAssistsRows(data.map, { id: data.scrimId }, map.id);
+    await createDvaRemechRows(data.map, { id: data.scrimId }, map.id);
     await createEchoDuplicateEndRows(data.map, { id: data.scrimId }, map.id);
     await createEchoDuplicateStartRows(data.map, { id: data.scrimId }, map.id);
     await createHeroSpawnRows(data.map, { id: data.scrimId }, map.id);
@@ -313,6 +316,7 @@ export async function createNewMap(
     await createPayloadProgressRows(data.map, { id: data.scrimId }, map.id);
     await createPlayerStatRows(data.map, { id: data.scrimId }, map.id);
     await createPointProgressRows(data.map, { id: data.scrimId }, map.id);
+    await createRemechChargedRows(data.map, { id: data.scrimId }, map.id);
     await createRoundEndRows(data.map, { id: data.scrimId }, map.id);
     await createRoundStartRows(data.map, { id: data.scrimId }, map.id);
     await createSetupCompleteRows(data.map, { id: data.scrimId }, map.id);
@@ -372,6 +376,41 @@ export async function createDefensiveAssistsRows(
   });
 
   return defensiveAssistsByScrimId;
+}
+
+export async function createDvaRemechRows(
+  data: ParserData,
+  scrim: { id: number },
+  mapId: number
+) {
+  if (
+    typeof data.dva_remech === "undefined" ||
+    data.dva_remech.length === 0 ||
+    !data.dva_remech
+  ) {
+    Logger.log("No D.Va remechs found for map: ", mapId, "scrim: ", scrim.id);
+    return [];
+  }
+
+  await prisma.dvaRemech.createMany({
+    data: data.dva_remech.map((remech) => ({
+      scrimId: scrim.id,
+      match_time: remech[1],
+      player_team: remech[2],
+      player_name: remech[3],
+      player_hero: remech[4],
+      ultimate_id: remech[5],
+      MapDataId: mapId,
+    })),
+  });
+
+  const dvaRemechsByScrimId = await prisma.dvaRemech.findMany({
+    where: {
+      scrimId: scrim.id,
+    },
+  });
+
+  return dvaRemechsByScrimId;
 }
 
 export async function createEchoDuplicateEndRows(
@@ -938,6 +977,47 @@ export async function createPointProgressRows(
   });
 
   return pointProgressesByScrimId;
+}
+
+export async function createRemechChargedRows(
+  data: ParserData,
+  scrim: { id: number },
+  mapId: number
+) {
+  if (
+    typeof data.remech_charged === "undefined" ||
+    data.remech_charged.length === 0 ||
+    !data.remech_charged
+  ) {
+    Logger.log(
+      "No remech chargeds found for map: ",
+      mapId,
+      "scrim: ",
+      scrim.id
+    );
+    return [];
+  }
+
+  await prisma.remechCharged.createMany({
+    data: data.remech_charged.map((charged) => ({
+      scrimId: scrim.id,
+      match_time: charged[1],
+      player_team: charged[2],
+      player_name: charged[3],
+      player_hero: charged[4],
+      hero_duplicated: charged[5],
+      ultimate_id: charged[6],
+      MapDataId: mapId,
+    })),
+  });
+
+  const remechChargedsByScrimId = await prisma.remechCharged.findMany({
+    where: {
+      scrimId: scrim.id,
+    },
+  });
+
+  return remechChargedsByScrimId;
 }
 
 export async function createRoundEndRows(
