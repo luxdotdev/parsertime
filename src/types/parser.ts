@@ -21,6 +21,15 @@ export type DefensiveAssistTableRow = [
   hero_duplicated: string
 ];
 
+export type DvaRemechTableRow = [
+  event_type: "dva_remech",
+  match_time: number,
+  player_team: PlayerTeam,
+  player_name: string,
+  player_hero: HeroName,
+  ultimate_id: number
+];
+
 export type EchoDuplicateEndTableRow = [
   event_type: "echo_duplicate_end",
   match_time: number,
@@ -189,6 +198,16 @@ export type PointProgressTableRow = [
   capturing_team: PlayerTeam,
   objective_index: number,
   point_capture_progress: number
+];
+
+export type RemechChargedTableRow = [
+  event_type: "remech_charged",
+  match_time: number,
+  player_team: PlayerTeam,
+  player_name: string,
+  player_hero: HeroName,
+  hero_duplicated: string,
+  ultimate_id: number
 ];
 
 export type RoundEndTableRow = [
