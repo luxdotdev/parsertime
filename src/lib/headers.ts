@@ -7,6 +7,14 @@ export const headers: Record<string, string[]> = {
     "Player Hero",
     "Hero Duplicated",
   ],
+  dva_remech: [
+    "event_type",
+    "Match Time",
+    "Player Team",
+    "Player Name",
+    "Player Hero",
+    "Hero Duplicated",
+  ],
   echo_duplicate_end: [
     "event_type",
     "Match Time",
@@ -161,6 +169,15 @@ export const headers: Record<string, string[]> = {
     "Capturing Team",
     "Objective Index",
     "Point Capture Progress",
+  ],
+  remech_charged: [
+    "event_type",
+    "Match Time",
+    "Player Team",
+    "Player Name",
+    "Player Hero",
+    "Hero Duplicated",
+    "Ultimate ID",
   ],
   round_end: [
     "event_type",
