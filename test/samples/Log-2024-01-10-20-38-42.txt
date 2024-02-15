@@ -1,0 +1,224 @@
+[00:00:00] ,match_start,0,Watchpoint: Gibraltar,Escort,Team 1,Team 2
+[00:00:00] ,round_start,0,1,Team 2,0,0,0
+[00:00:07] ,hero_spawn,0,Team 2,Guitar,Sojourn,0,0
+[00:00:10] ,hero_spawn,0,Team 2,TWEENER,Junkrat,0,0
+[00:00:12] ,hero_swap,0,Team 2,TWEENER,Tracer,Junkrat,0
+[00:00:16] ,hero_spawn,0,Team 1,YAI,Ana,0,0
+[00:00:19] ,hero_spawn,0,Team 1,Spingar,Widowmaker,0,0
+[00:00:29] ,hero_spawn,0,Team 1,Georan,Brigitte,0,0
+[00:00:31] ,hero_spawn,0,Team 2,LiquidOx,D.Va,0,0
+[00:00:39] ,hero_spawn,0,Team 1,Flakies,Genji,0,0
+[00:00:41] ,hero_spawn,0,Team 2,ShadowTracer,Ana,0,0
+[00:00:50] ,hero_spawn,0,Team 2,Beagle,Brigitte,0,0
+[00:00:53] ,hero_spawn,0,Team 1,Jinhyeok,D.Va,0,0
+[00:02:03] ,hero_swap,0,Team 2,TWEENER,Widowmaker,Tracer,0
+[00:02:37] ,setup_complete,0,1,239.99
+[00:02:52] ,hero_swap,14.67,Team 2,TWEENER,Tracer,Widowmaker,14.67
+[00:03:06] ,payload_progress,29.17,1,Team 2,0,10.02
+[00:03:27] ,kill,50.53,Team 1,Spingar,Widowmaker,Team 2,ShadowTracer,Ana,Primary Fire,200,True,0
+[00:03:28] ,defensive_assist,50.91,Team 1,YAI,Ana,0
+[00:03:50] ,payload_progress,73.16,1,Team 2,0,20.01
+[00:04:05] ,ultimate_charged,88.00,Team 1,Spingar,Widowmaker,0,1
+[00:04:06] ,ultimate_charged,89.00,Team 1,Flakies,Genji,0,1
+[00:04:10] ,ultimate_charged,93.63,Team 1,Jinhyeok,D.Va,0,1
+[00:04:11] ,ultimate_charged,93.72,Team 1,YAI,Ana,0,1
+[00:04:13] ,ultimate_charged,96.00,Team 2,LiquidOx,D.Va,0,1
+[00:04:14] ,ultimate_charged,97.32,Team 2,ShadowTracer,Ana,0,1
+[00:04:30] ,ultimate_charged,112.67,Team 2,TWEENER,Tracer,0,1
+[00:04:35] ,kill,118.31,Team 1,Spingar,Widowmaker,Team 2,Beagle,Brigitte,Primary Fire,200,True,0
+[00:04:42] ,remech_charged,124.68,Team 2,LiquidOx,D.Va,0,2
+[00:04:44] ,ultimate_charged,127.43,Team 2,LiquidOx,D.Va,0,3
+[00:04:44] ,dva_remech,127.43,Team 2,LiquidOx,D.Va,3
+[00:04:49] ,ultimate_start,132.36,Team 2,TWEENER,Tracer,0,1
+[00:04:49] ,ultimate_end,132.56,Team 2,TWEENER,Tracer,0,1
+[00:04:53] ,ultimate_charged,136.62,Team 2,Guitar,Sojourn,0,1
+[00:04:57] ,kill,140.37,Team 1,Jinhyeok,D.Va,Team 2,ShadowTracer,Ana,Ability 1,109.72,0,True
+[00:04:57] ,defensive_assist,140.64,Team 1,Georan,Brigitte,0
+[00:04:58] ,ultimate_start,141.28,Team 2,LiquidOx,D.Va,0,3
+[00:04:59] ,remech_charged,142.51,Team 2,LiquidOx,D.Va,0,4
+[00:05:00] ,ultimate_end,142.85,Team 2,LiquidOx,D.Va,0,4
+[00:05:01] ,kill,144.48,Team 1,Spingar,Widowmaker,Team 2,LiquidOx,D.Va,Primary Fire,107.28,0,0
+[00:05:02] ,kill,144.70,Team 2,Guitar,Sojourn,Team 1,Jinhyeok,D.Va,Secondary Fire,96,True,0
+[00:05:02] ,ultimate_start,144.80,Team 1,Jinhyeok,D.Va,0,1
+[00:05:02] ,ultimate_start,145.57,Team 2,LiquidOx,D.Va,0,4
+[00:05:02] ,ultimate_end,145.57,Team 2,LiquidOx,D.Va,0,4
+[00:05:03] ,ultimate_end,146.38,Team 1,Jinhyeok,D.Va,0,1
+[00:05:07] ,ultimate_charged,149.79,Team 1,Georan,Brigitte,0,1
+[00:05:11] ,hero_swap,154.48,Team 2,LiquidOx,Winston,D.Va,154.48
+[00:05:21] ,ultimate_charged,164.01,Team 2,Beagle,Brigitte,0,1
+[00:05:27] ,ultimate_start,169.80,Team 2,ShadowTracer,Ana,0,1
+[00:05:34] ,kill,176.75,Team 2,TWEENER,Tracer,Team 1,Spingar,Widowmaker,Melee,21.40,0,0
+[00:05:35] ,ultimate_end,177.93,Team 2,ShadowTracer,Ana,0,1
+[00:05:42] ,ultimate_start,184.82,Team 1,YAI,Ana,0,1
+[00:05:43] ,ultimate_start,186.22,Team 1,Flakies,Genji,0,1
+[00:05:44] ,kill,187.44,Team 1,Flakies,Genji,Team 2,ShadowTracer,Ana,Ultimate,131.40,0,0
+[00:05:44] ,ultimate_start,187.57,Team 2,Beagle,Brigitte,0,1
+[00:05:44] ,offensive_assist,187.62,Team 1,YAI,Ana,0
+[00:05:47] ,ultimate_start,190.18,Team 2,Guitar,Sojourn,0,1
+[00:05:50] ,ultimate_end,192.95,Team 1,YAI,Ana,0,1
+[00:05:52] ,ultimate_end,194.80,Team 1,Flakies,Genji,0,1
+[00:05:52] ,ultimate_charged,194.92,Team 2,TWEENER,Tracer,0,2
+[00:05:53] ,kill,196.37,Team 1,Jinhyeok,D.Va,Team 2,Guitar,Sojourn,0,0.83,True,0
+[00:05:53] ,ultimate_end,196.37,Team 2,Guitar,Sojourn,0,1
+[00:05:53] ,defensive_assist,196.60,Team 1,Georan,Brigitte,0
+[00:05:54] ,ultimate_end,197.57,Team 2,Beagle,Brigitte,0,1
+[00:06:01] ,kill,204.12,Team 1,Spingar,Widowmaker,Team 2,LiquidOx,Winston,Primary Fire,74.40,0,0
+[00:06:01] ,offensive_assist,204.60,Team 1,Georan,Brigitte,0
+[00:06:01] ,defensive_assist,204.60,Team 1,Georan,Brigitte,0
+[00:06:02] ,ultimate_start,205.16,Team 2,TWEENER,Tracer,0,2
+[00:06:02] ,ultimate_end,205.35,Team 2,TWEENER,Tracer,0,2
+[00:06:07] ,kill,210.25,Team 1,Flakies,Genji,Team 2,TWEENER,Tracer,Ability 1,14,0,0
+[00:06:07] ,defensive_assist,210.68,Team 1,YAI,Ana,0
+[00:06:24] ,ultimate_start,227.39,Team 1,Spingar,Widowmaker,0,1
+[00:06:31] ,kill,234.55,Team 1,Spingar,Widowmaker,Team 2,LiquidOx,Winston,Primary Fire,42.71,0,0
+[00:06:31] ,defensive_assist,234.64,Team 1,Georan,Brigitte,0
+[00:06:31] ,defensive_assist,234.69,Team 1,YAI,Ana,0
+[00:06:37] ,kill,239.85,Team 1,Georan,Brigitte,Team 2,Guitar,Sojourn,Ability 1,50.12,0,0
+[00:06:38] ,ultimate_charged,241.38,Team 1,Jinhyeok,D.Va,0,2
+[00:06:39] ,ultimate_end,242.41,Team 1,Spingar,Widowmaker,0,1
+[00:06:42] ,player_stat,245.05,1,Team 2,Beagle,Brigitte,0,0,1,490.50,0,490.50,2958.29,336.62,154.92,638.63,437.98,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,245.05
+[00:06:42] ,player_stat,245.05,1,Team 1,Flakies,Genji,6,2,0,5103.58,890.25,4213.33,0,2455.51,0,2470.71,0,0,0,1,1,0,0,0,1,0,0,19,0.15,0,0,0,471,128,285,0,0,0.31,245.05
+[00:06:42] ,player_stat,245.05,1,Team 2,LiquidOx,D.Va,0,0,1,1724.57,42.27,1681.30,0,3524.94,0,4923.10,1714,0,0,3,3,0,0,0,0,0,0,79,0.09,0,0,0,4220,890,2710,0,0,0.25,154.48
+[00:06:42] ,player_stat,245.05,1,Team 2,LiquidOx,Winston,0,0,2,1078.19,8.64,1069.55,0,1146.91,0,2261.41,1950.00,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,2,3,0,0,0.40,90.56
+[00:06:42] ,player_stat,245.05,1,Team 1,Georan,Brigitte,2,1,0,951.62,105,846.62,3432.81,1358.88,377.26,1358.88,338.63,4,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,245.05
+[00:06:42] ,player_stat,245.05,1,Team 1,Spingar,Widowmaker,5,5,1,2466.30,212.16,2254.14,0,453.02,0,628.02,0,0,0,1,1,0,0,1,1,0,0,6,0.26,0.46,0.22,2,50,23,25,39,18,0.48,245.05
+[00:06:42] ,player_stat,245.05,1,Team 1,YAI,Ana,0,0,0,1128.06,398.33,729.73,5108.69,331.22,0,331.22,0,3,1,1,1,0,0,0,0,0,0,0,0,0.75,0,0,145,11,40,81,61,0.22,245.05
+[00:06:42] ,player_stat,245.05,1,Team 1,Jinhyeok,D.Va,4,1,1,4719.29,782.24,3885.23,0,4017.86,0,4903.90,4411,0,0,2,1,0,0,0,0,1,0,230,0.12,0,0,0,6534,1869,3847,0,0,0.33,245.05
+[00:06:42] ,player_stat,245.05,1,Team 2,TWEENER,Junkrat,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:06:42] ,player_stat,245.05,1,Team 2,TWEENER,Tracer,1,1,1,2738.21,18,2720.21,0,618.40,430.64,1252.20,0,0,0,2,2,0,0,1,0,0,0,40,0.10,0,0,0,1304,421,735,0,0,0.36,230.38
+[00:06:42] ,player_stat,245.05,1,Team 2,TWEENER,Widowmaker,0,0,0,84,0,84,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.50,0,0,3,1,2,2,1,0.33,14.67
+[00:06:42] ,player_stat,245.05,1,Team 2,ShadowTracer,Ana,0,0,3,902.35,62.72,839.63,3499.53,528.35,29,1211.07,0,0,0,1,1,0,0,0,0,0,1,0,0,0.67,0,0,119,11,41,30,20,0.21,245.05
+[00:06:42] ,player_stat,245.05,1,Team 2,Guitar,Sojourn,1,1,2,2976.93,207,2769.93,0,1255.93,0,1655.93,0,0,0,1,1,0,0,1,0,0,0,25,0.10,0,0,0,1061,247,632,0,0,0.28,245.05
+[00:06:42] ,round_end,245.05,1,Team 2,0,0,0,0,0,0
+[00:06:53] ,round_start,245.05,2,Team 1,0,3,0
+[00:06:55] ,hero_spawn,245.05,Team 2,TWEENER,Tracer,,0
+[00:06:55] ,hero_spawn,245.05,Team 1,Georan,Brigitte,,0
+[00:06:55] ,hero_spawn,245.05,Team 2,Guitar,Sojourn,,0
+[00:06:56] ,hero_spawn,245.05,Team 1,Jinhyeok,D.Va,,0
+[00:06:56] ,hero_spawn,245.05,Team 1,Spingar,Widowmaker,,0
+[00:07:19] ,hero_spawn,245.05,Team 2,Beagle,Brigitte,,0
+[00:07:19] ,hero_spawn,245.05,Team 1,YAI,Ana,,0
+[00:07:26] ,hero_spawn,245.05,Team 2,ShadowTracer,Ana,,0
+[00:07:30] ,hero_spawn,245.05,Team 1,Flakies,Genji,,0
+[00:07:35] ,hero_swap,245.05,Team 2,Guitar,Genji,Sojourn,0
+[00:07:54] ,hero_spawn,245.05,Team 2,LiquidOx,D.Va,,0
+[00:08:35] ,hero_swap,245.05,Team 1,Flakies,Tracer,Genji,0
+[00:08:41] ,setup_complete,245.05,2,239.99
+[00:08:48] ,kill,252.12,Team 1,Spingar,Widowmaker,Team 2,Beagle,Brigitte,Primary Fire,200,True,0
+[00:08:53] ,kill,256.32,Team 2,Guitar,Genji,Team 1,Spingar,Widowmaker,Secondary Fire,7,0,0
+[00:09:02] ,kill,265.47,Team 1,Flakies,Tracer,Team 2,TWEENER,Tracer,Primary Fire,0.52,0,0
+[00:09:02] ,defensive_assist,265.62,Team 1,Georan,Brigitte,0
+[00:09:02] ,defensive_assist,265.71,Team 1,YAI,Ana,0
+[00:09:10] ,payload_progress,273.49,2,Team 1,0,10.02
+[00:09:25] ,payload_progress,289.13,2,Team 1,0,20.02
+[00:09:38] ,kill,302.04,Team 2,Guitar,Genji,Team 1,Spingar,Widowmaker,Primary Fire,175,True,0
+[00:09:54] ,ultimate_charged,317.63,Team 1,Jinhyeok,D.Va,0,3
+[00:09:58] ,ultimate_start,321.54,Team 1,Jinhyeok,D.Va,0,3
+[00:09:58] ,ultimate_charged,322.10,Team 1,YAI,Ana,0,2
+[00:09:59] ,remech_charged,322.80,Team 1,Jinhyeok,D.Va,0,4
+[00:10:01] ,ultimate_end,324.81,Team 1,Jinhyeok,D.Va,0,4
+[00:10:02] ,ultimate_charged,326.19,Team 2,TWEENER,Tracer,0,3
+[00:10:10] ,ultimate_charged,333.43,Team 2,LiquidOx,D.Va,0,5
+[00:10:12] ,kill,336.10,Team 1,Georan,Brigitte,Team 2,TWEENER,Tracer,Primary Fire,24,0,0
+[00:10:12] ,defensive_assist,336.23,Team 1,Georan,Brigitte,0
+[00:10:14] ,ultimate_charged,337.46,Team 2,ShadowTracer,Ana,0,2
+[00:10:15] ,ultimate_charged,338.39,Team 1,Flakies,Tracer,0,2
+[00:10:24] ,ultimate_start,347.94,Team 1,Flakies,Tracer,0,2
+[00:10:24] ,ultimate_end,348.13,Team 1,Flakies,Tracer,0,2
+[00:10:25] ,ultimate_start,349.04,Team 2,LiquidOx,D.Va,0,5
+[00:10:26] ,ultimate_start,349.30,Team 2,ShadowTracer,Ana,0,2
+[00:10:27] ,remech_charged,350.29,Team 2,LiquidOx,D.Va,0,6
+[00:10:27] ,ultimate_end,350.61,Team 2,LiquidOx,D.Va,0,6
+[00:10:27] ,ultimate_charged,351.11,Team 2,Guitar,Genji,0,2
+[00:10:28] ,ultimate_start,351.65,Team 2,Guitar,Genji,0,2
+[00:10:29] ,dva_remech,352.37,Team 2,LiquidOx,D.Va,6
+[00:10:29] ,kill,353.14,Team 2,Guitar,Genji,Team 1,YAI,Ana,Ability 1,37.88,0,0
+[00:10:30] ,defensive_assist,353.55,Team 2,Beagle,Brigitte,0
+[00:10:30] ,offensive_assist,353.59,Team 2,ShadowTracer,Ana,0
+[00:10:30] ,ultimate_charged,354.18,Team 1,Spingar,Widowmaker,0,2
+[00:10:34] ,ultimate_end,357.43,Team 2,ShadowTracer,Ana,0,2
+[00:10:35] ,kill,359.18,Team 1,Spingar,Widowmaker,Team 2,Guitar,Genji,Primary Fire,7,0,0
+[00:10:35] ,ultimate_end,359.18,Team 2,Guitar,Genji,0,2
+[00:10:36] ,offensive_assist,359.26,Team 1,Georan,Brigitte,0
+[00:10:36] ,defensive_assist,359.26,Team 1,Georan,Brigitte,0
+[00:10:41] ,kill,365.23,Team 2,LiquidOx,D.Va,Team 1,Georan,Brigitte,0,3.91,0,0
+[00:10:57] ,ultimate_start,380.50,Team 1,Spingar,Widowmaker,0,2
+[00:11:05] ,ultimate_charged,388.31,Team 2,Beagle,Brigitte,0,2
+[00:11:05] ,ultimate_charged,388.87,Team 1,Jinhyeok,D.Va,0,5
+[00:11:06] ,kill,389.66,Team 1,Spingar,Widowmaker,Team 2,Guitar,Genji,Primary Fire,1.00,0,0
+[00:11:06] ,defensive_assist,389.84,Team 1,Georan,Brigitte,0
+[00:11:06] ,defensive_assist,389.88,Team 1,YAI,Ana,0
+[00:11:11] ,ultimate_start,394.34,Team 2,Beagle,Brigitte,0,2
+[00:11:12] ,ultimate_end,395.52,Team 1,Spingar,Widowmaker,0,2
+[00:11:18] ,ultimate_start,402.08,Team 1,Jinhyeok,D.Va,0,5
+[00:11:20] ,remech_charged,403.35,Team 1,Jinhyeok,D.Va,0,6
+[00:11:21] ,ultimate_end,404.34,Team 2,Beagle,Brigitte,0,2
+[00:11:22] ,ultimate_end,405.33,Team 1,Jinhyeok,D.Va,0,6
+[00:11:22] ,ultimate_start,405.73,Team 1,YAI,Ana,0,2
+[00:11:30] ,ultimate_end,413.86,Team 1,YAI,Ana,0,2
+[00:11:36] ,ultimate_charged,419.69,Team 1,Georan,Brigitte,0,2
+[00:11:36] ,kill,419.78,Team 2,Guitar,Genji,Team 1,Georan,Brigitte,Secondary Fire,13.47,0,0
+[00:11:36] ,defensive_assist,419.85,Team 2,Beagle,Brigitte,0
+[00:11:39] ,ultimate_charged,422.42,Team 2,TWEENER,Tracer,0,4
+[00:11:43] ,ultimate_charged,426.68,Team 1,Flakies,Tracer,0,3
+[00:11:49] ,kill,432.87,Team 2,Guitar,Genji,Team 1,Flakies,Tracer,Secondary Fire,26.92,0,0
+[00:11:49] ,offensive_assist,433.02,Team 2,Beagle,Brigitte,0
+[00:11:49] ,defensive_assist,433.02,Team 2,Beagle,Brigitte,0
+[00:11:49] ,defensive_assist,433.05,Team 2,ShadowTracer,Ana,0
+[00:11:57] ,ultimate_charged,440.30,Team 2,ShadowTracer,Ana,0,3
+[00:11:59] ,ultimate_start,442.44,Team 2,TWEENER,Tracer,0,4
+[00:11:59] ,ultimate_end,442.63,Team 2,TWEENER,Tracer,0,4
+[00:12:01] ,kill,445.05,Team 2,Guitar,Genji,Team 1,Spingar,Widowmaker,Melee,14.46,0,0
+[00:12:01] ,defensive_assist,445.27,Team 2,ShadowTracer,Ana,0
+[00:12:02] ,kill,445.78,Team 2,Guitar,Genji,Team 1,YAI,Ana,Ability 1,45.81,0,0
+[00:12:11] ,hero_swap,455.06,Team 1,Spingar,Genji,Widowmaker,210.01
+[00:12:16] ,ultimate_charged,459.45,Team 2,LiquidOx,D.Va,0,7
+[00:12:42] ,ultimate_charged,486.19,Team 1,Jinhyeok,D.Va,0,7
+[00:12:46] ,ultimate_start,489.34,Team 2,ShadowTracer,Ana,0,3
+[00:12:46] ,ultimate_charged,489.34,Team 2,Guitar,Genji,0,3
+[00:12:46] ,ultimate_start,489.66,Team 2,Guitar,Genji,0,3
+[00:12:46] ,ultimate_start,490.19,Team 1,Georan,Brigitte,0,2
+[00:12:47] ,kill,491.05,Team 2,TWEENER,Tracer,Team 1,YAI,Ana,Primary Fire,4.76,True,0
+[00:12:48] ,defensive_assist,491.34,Team 2,Beagle,Brigitte,0
+[00:12:48] ,offensive_assist,491.38,Team 2,ShadowTracer,Ana,0
+[00:12:48] ,ultimate_start,491.49,Team 1,Jinhyeok,D.Va,0,7
+[00:12:49] ,remech_charged,492.75,Team 1,Jinhyeok,D.Va,0,8
+[00:12:49] ,ultimate_end,493.06,Team 1,Jinhyeok,D.Va,0,8
+[00:12:51] ,dva_remech,495.12,Team 1,Jinhyeok,D.Va,8
+[00:12:52] ,kill,495.86,Team 1,Flakies,Tracer,Team 2,LiquidOx,D.Va,Primary Fire,6,0,0
+[00:12:52] ,remech_charged,495.86,Team 2,LiquidOx,D.Va,0,8
+[00:12:52] ,kill,495.89,Team 2,Guitar,Genji,Team 1,Georan,Brigitte,Ultimate,46.11,0,0
+[00:12:52] ,defensive_assist,495.89,Team 1,Georan,Brigitte,0
+[00:12:52] ,ultimate_end,495.89,Team 1,Georan,Brigitte,0,2
+[00:12:52] ,offensive_assist,496.09,Team 2,ShadowTracer,Ana,0
+[00:12:53] ,kill,496.89,Team 2,Guitar,Genji,Team 1,Flakies,Tracer,Ultimate,165,0,0
+[00:12:53] ,offensive_assist,497.03,Team 2,ShadowTracer,Ana,0
+[00:12:53] ,ultimate_end,497.09,Team 2,Guitar,Genji,0,3
+[00:12:54] ,ultimate_end,497.48,Team 2,ShadowTracer,Ana,0,3
+[00:12:59] ,ultimate_charged,502.39,Team 2,Beagle,Brigitte,0,3
+[00:13:00] ,kill,503.46,Team 2,Beagle,Brigitte,Team 1,Spingar,Genji,Primary Fire,17.12,0,0
+[00:13:00] ,defensive_assist,503.57,Team 2,Beagle,Brigitte,0
+[00:13:01] ,defensive_assist,504.98,Team 2,Beagle,Brigitte,0
+[00:13:01] ,kill,504.98,Team 2,Guitar,Genji,Team 1,Jinhyeok,D.Va,Secondary Fire,22.76,0,0
+[00:13:01] ,defensive_assist,505.01,Team 2,ShadowTracer,Ana,0
+[00:13:04] ,ultimate_start,507.52,Team 2,Beagle,Brigitte,0,3
+[00:13:05] ,hero_swap,508.88,Team 1,Georan,Lúcio,Brigitte,263.83
+[00:13:05] ,player_stat,508.88,2,Team 2,Beagle,Brigitte,3,1,2,1563.95,0,1563.95,7612.62,913.62,382.18,1474.81,1037.83,6,1,3,3,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,508.88
+[00:13:05] ,player_stat,508.88,2,Team 1,YAI,Ana,2,0,3,2315.02,407.29,1907.73,10172.78,1117.39,60,1747.39,0,5,1,2,2,0,0,0,0,0,0,0,0,0.71,0,0,301,26,90,140,100,0.22,508.88
+[00:13:05] ,round_end,508.88,2,Team 1,0,3,0,0,0,0
+[00:13:05] ,match_end,508.88,2,0,3
+[00:13:05] ,player_stat,508.88,2,Team 1,Flakies,Genji,6,2,0,5103.58,890.25,4213.33,0,2455.51,0,2470.71,0,0,0,1,1,0,0,0,1,0,0,19,0.15,0,0,0,471,128,285,0,0,0.31,245.05
+[00:13:05] ,player_stat,508.88,2,Team 1,Flakies,Tracer,2,2,2,3473.34,201.98,3271.34,0,831.49,459.63,1603.56,0,0,0,2,1,0,0,0,1,0,0,62,0.11,0,0,0,1988,584,1180,0,0,0.33,263.83
+[00:13:05] ,player_stat,508.88,2,Team 2,LiquidOx,D.Va,3,1,2,5874.45,59.24,5752.65,0,9840.99,0,12877.74,5813.60,0,0,5,6,0,0,0,0,0,0,277,0.08,0,0,0,14258,3259,8990,0,0,0.27,418.32
+[00:13:05] ,player_stat,508.88,2,Team 2,LiquidOx,Winston,0,0,2,1078.19,8.64,1069.55,0,1146.91,0,2261.41,1950.00,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,2,3,0,0,0.40,90.56
+[00:13:05] ,player_stat,508.88,2,Team 1,Georan,Brigitte,4,2,3,1610.62,105,1505.62,6020.31,1940.50,563.07,2640.50,977.00,9,2,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,508.88
+[00:13:05] ,player_stat,508.88,2,Team 1,Georan,Lúcio,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:13:05] ,player_stat,508.88,2,Team 1,Spingar,Widowmaker,9,8,4,5787.71,332.16,5455.55,0,1303.42,0,2003.42,0,0,0,2,2,0,0,2,1,0,0,18,0.17,0.51,0.20,3,225,109,97,81,41,0.53,455.06
+[00:13:05] ,player_stat,508.88,2,Team 1,Spingar,Genji,0,0,1,915.40,81,834.40,0,212.30,0,412.30,0,0,0,0,0,0,0,0,0,0,0,3,0.10,0,0,0,81,29,49,0,0,0.37,53.82
+[00:13:05] ,player_stat,508.88,2,Team 1,Jinhyeok,D.Va,6,1,2,10189.39,970.16,9167.42,0,9086.62,0,12356.15,9914,0,0,5,7,0,0,0,0,1,0,461,0.10,0,0,0,13905,4729,7330,0,0,0.39,508.88
+[00:13:05] ,player_stat,508.88,2,Team 2,TWEENER,Junkrat,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:13:05] ,player_stat,508.88,2,Team 2,TWEENER,Tracer,9,2,3,6042.51,66,5976.51,0,1587.49,955.85,3024.50,0,0,0,4,4,0,0,1,2,0,0,83,0.08,0,0,0,3200,1084,1800,0,0,0.38,494.21
+[00:13:05] ,player_stat,508.88,2,Team 2,TWEENER,Widowmaker,0,0,0,84,0,84,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.50,0,0,3,1,2,2,1,0.33,14.67
+[00:13:05] ,player_stat,508.88,2,Team 2,ShadowTracer,Ana,1,0,3,1714.69,98.56,1616.13,9486.72,1604.22,89,2430.34,0,3,4,3,3,0,0,0,1,0,1,0,0,0.65,0,0,311,26,108,113,74,0.19,508.88
+[00:13:05] ,player_stat,508.88,2,Team 2,Guitar,Sojourn,1,1,2,2976.93,207,2769.93,0,1255.93,0,1655.93,0,0,0,1,1,0,0,1,0,0,0,25,0.10,0,0,0,1061,247,632,0,0,0.28,245.05
+[00:13:05] ,player_stat,508.88,2,Team 2,Guitar,Genji,11,10,2,4850.25,537.56,4312.67,0,2259.01,0,2659.01,0,0,0,2,2,0,0,1,2,0,0,14,0.15,0,0,0,368,96,235,0,0,0.29,263.83
