@@ -7,15 +7,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import CardIcon from "@/components/ui/card-icon";
-import { round, toMins } from "@/lib/utils";
+import { cn, round, toMins } from "@/lib/utils";
 import { HeroName, heroRoleMapping } from "@/types/heroes";
 import { PlayerStatRows } from "@/types/prisma";
 import Image from "next/image";
 
 export default function AllHeroes({
   playerStats,
+  showTable = true,
 }: {
   playerStats: PlayerStatRows;
+  showTable?: boolean;
 }) {
   const hero = playerStats[0].player_hero as HeroName;
   const role = heroRoleMapping[hero];
@@ -26,7 +28,7 @@ export default function AllHeroes({
         All Heroes
       </h1>
       <div className="flex flex-1">
-        <div className="w-1/2 p-2">
+        <div className={cn("p-2", showTable && "w-1/2")}>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <Image
@@ -80,7 +82,7 @@ export default function AllHeroes({
                       0
                     )
                   )}{" "}
-                  Eliminations
+                  {showTable ? "Eliminations" : "Elims"}
                 </div>
               </CardContent>
               <CardFooter>
@@ -473,9 +475,11 @@ export default function AllHeroes({
             )}
           </div>
         </div>
-        <div className="w-1/2 p-2">
-          <StatsTable data={playerStats[0]} />
-        </div>
+        {showTable && (
+          <div className="w-1/2 p-2">
+            <StatsTable data={playerStats[0]} />
+          </div>
+        )}
       </div>
     </main>
   );

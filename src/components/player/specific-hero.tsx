@@ -7,15 +7,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import CardIcon from "@/components/ui/card-icon";
-import { round, toHero, toMins } from "@/lib/utils";
+import { cn, round, toHero, toMins } from "@/lib/utils";
 import { HeroName, heroRoleMapping } from "@/types/heroes";
 import { PlayerStatRows } from "@/types/prisma";
 import Image from "next/image";
 
 export default function SpecificHero({
   playerStats,
+  showTable = true,
 }: {
   playerStats: PlayerStatRows;
+  showTable?: boolean;
 }) {
   const hero = playerStats[0].player_hero as HeroName;
   const playerStat = playerStats[0];
@@ -27,7 +29,7 @@ export default function SpecificHero({
         {hero}
       </h1>
       <div className="flex flex-1">
-        <div className="w-1/2 p-2">
+        <div className={cn("p-2", showTable && "w-1/2")}>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <Image
@@ -69,7 +71,8 @@ export default function SpecificHero({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {playerStat.eliminations} Eliminations
+                  {playerStat.eliminations}{" "}
+                  {showTable ? "Eliminations" : "Elims"}
                 </div>
               </CardContent>
               <CardFooter>
@@ -333,9 +336,11 @@ export default function SpecificHero({
             )}
           </div>
         </div>
-        <div className="w-1/2 p-2">
-          <StatsTable data={playerStat} />
-        </div>
+        {showTable && (
+          <div className="w-1/2 p-2">
+            <StatsTable data={playerStat} />
+          </div>
+        )}
       </div>
     </main>
   );
