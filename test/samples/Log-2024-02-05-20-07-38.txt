@@ -1,0 +1,516 @@
+[00:00:00] ,match_start,0,Lijiang Tower (Lunar New Year),Control,Team 1,Team 2
+[00:00:00] ,objective_updated,0,1,0,2
+[00:00:00] ,round_start,0,1,0,0,0,2
+[00:00:07] ,hero_spawn,0,Team 1,Guitar,Junkrat,0,0
+[00:00:10] ,hero_spawn,0,Team 2,chap,Mei,0,0
+[00:00:15] ,hero_spawn,0,Team 2,OTD,Reinhardt,0,0
+[00:00:17] ,hero_spawn,0,Team 2,マーシー,Lúcio,0,0
+[00:00:22] ,hero_spawn,0,Team 1,Spingar,Sojourn,0,0
+[00:00:22] ,hero_spawn,0,Team 2,Goul,Junkrat,0,0
+[00:00:26] ,hero_spawn,0,Team 1,Georan,Lúcio,0,0
+[00:00:26] ,hero_swap,0,Team 2,chap,Symmetra,Mei,0
+[00:00:34] ,hero_spawn,0,Team 2,Tetsu,Baptiste,0,0
+[00:00:41] ,hero_spawn,0,Team 1,Jinhyeok,Ramattra,0,0
+[00:00:51] ,hero_spawn,0,Team 1,YAI,Baptiste,0,0
+[00:00:58] ,hero_swap,0,Team 1,Guitar,Symmetra,Junkrat,0
+[00:01:01] ,hero_swap,0,Team 1,Guitar,Mei,Symmetra,0
+[00:01:07] ,hero_swap,0,Team 1,Spingar,Symmetra,Sojourn,0
+[00:01:10] ,setup_complete,0,1,29.99
+[00:01:14] ,hero_swap,3.86,Team 1,Spingar,Sojourn,Symmetra,3.86
+[00:01:51] ,kill,40.13,Team 2,OTD,Reinhardt,Team 1,Jinhyeok,Ramattra,Primary Fire,70.55,0,0
+[00:01:51] ,defensive_assist,40.43,Team 2,Tetsu,Baptiste,0
+[00:01:51] ,offensive_assist,40.48,Team 2,Goul,Junkrat,0
+[00:01:51] ,offensive_assist,40.51,Team 2,マーシー,Lúcio,0
+[00:01:51] ,defensive_assist,40.51,Team 2,マーシー,Lúcio,0
+[00:01:54] ,point_progress,43.15,1,All Teams,2,33.40
+[00:01:55] ,point_progress,44.93,1,All Teams,2,66.70
+[00:01:56] ,kill,46.00,Team 2,Goul,Junkrat,Team 1,Guitar,Mei,Ability 1,62.11,0,0
+[00:01:56] ,defensive_assist,46.08,Team 2,Tetsu,Baptiste,0
+[00:01:57] ,offensive_assist,46.16,Team 2,マーシー,Lúcio,0
+[00:01:57] ,defensive_assist,46.16,Team 2,マーシー,Lúcio,0
+[00:01:57] ,point_progress,47.06,1,All Teams,2,99.90
+[00:01:57] ,objective_captured,47.07,1,Team 2,2,0,0.01,0
+[00:02:00] ,kill,49.71,Team 1,Spingar,Sojourn,Team 2,Goul,Junkrat,Primary Fire,3,0,0
+[00:02:00] ,offensive_assist,49.84,Team 1,Guitar,Mei,0
+[00:02:00] ,defensive_assist,49.89,Team 1,YAI,Baptiste,0
+[00:02:00] ,offensive_assist,49.94,Team 1,Georan,Lúcio,0
+[00:02:18] ,ultimate_charged,67.53,Team 2,Tetsu,Baptiste,0,1
+[00:02:21] ,ultimate_start,70.97,Team 2,Tetsu,Baptiste,0,1
+[00:02:23] ,kill,72.13,Team 1,Spingar,Sojourn,Team 2,Tetsu,Baptiste,Primary Fire,7.51,0,0
+[00:02:30] ,kill,79.26,Team 1,Spingar,Sojourn,Team 2,マーシー,Lúcio,Secondary Fire,105.64,0,0
+[00:02:32] ,ultimate_end,81.48,Team 2,Tetsu,Baptiste,0,1
+[00:02:32] ,kill,82.04,Team 1,Georan,Lúcio,Team 2,chap,Symmetra,Secondary Fire,6.74,0,0
+[00:02:33] ,defensive_assist,82.28,Team 1,YAI,Baptiste,0
+[00:02:33] ,offensive_assist,82.41,Team 1,Jinhyeok,Ramattra,0
+[00:02:34] ,point_progress,83.95,1,Team 1,2,33.47
+[00:02:35] ,kill,84.72,Team 2,OTD,Reinhardt,Team 1,Georan,Lúcio,Ability 1,140.36,0,0
+[00:02:36] ,kill,85.55,Team 1,Guitar,Mei,Team 2,Goul,Junkrat,Secondary Fire,47.32,0,0
+[00:02:36] ,point_progress,85.72,1,Team 1,2,67.17
+[00:02:37] ,ultimate_charged,86.84,Team 1,Spingar,Sojourn,0,1
+[00:02:38] ,ultimate_charged,87.31,Team 1,YAI,Baptiste,0,1
+[00:02:38] ,objective_captured,87.50,1,Team 1,2,0.01,33.69,0
+[00:02:52] ,ultimate_charged,101.32,Team 2,OTD,Reinhardt,0,1
+[00:02:58] ,ultimate_charged,107.32,Team 1,Guitar,Mei,0,1
+[00:02:59] ,ultimate_start,108.63,Team 1,YAI,Baptiste,0,1
+[00:03:02] ,ultimate_start,111.10,Team 2,OTD,Reinhardt,0,1
+[00:03:03] ,ultimate_start,112.67,Team 1,Spingar,Sojourn,0,1
+[00:03:04] ,kill,113.75,Team 1,Spingar,Sojourn,Team 2,Goul,Junkrat,Ultimate,200,0,0
+[00:03:04] ,ultimate_end,113.85,Team 2,OTD,Reinhardt,0,1
+[00:03:04] ,offensive_assist,113.90,Team 1,YAI,Baptiste,0
+[00:03:06] ,ultimate_charged,115.35,Team 1,Jinhyeok,Ramattra,0,1
+[00:03:06] ,kill,115.39,Team 1,Spingar,Sojourn,Team 2,chap,Symmetra,Ultimate,102.78,0,0
+[00:03:06] ,defensive_assist,115.67,Team 1,Georan,Lúcio,0
+[00:03:08] ,kill,117.18,Team 1,YAI,Baptiste,Team 2,OTD,Reinhardt,Primary Fire,22.81,0,0
+[00:03:08] ,offensive_assist,117.56,Team 1,Georan,Lúcio,0
+[00:03:08] ,defensive_assist,117.56,Team 1,Georan,Lúcio,0
+[00:03:09] ,kill,118.99,Team 1,Spingar,Sojourn,Team 2,Tetsu,Baptiste,Ultimate,64.28,0,0
+[00:03:09] ,defensive_assist,119.00,Team 1,YAI,Baptiste,0
+[00:03:10] ,ultimate_end,119.15,Team 1,YAI,Baptiste,0,1
+[00:03:10] ,offensive_assist,119.37,Team 1,Guitar,Mei,0
+[00:03:12] ,ultimate_end,121.40,Team 1,Spingar,Sojourn,0,1
+[00:03:12] ,ultimate_charged,122.01,Team 2,chap,Symmetra,0,1
+[00:03:15] ,kill,124.14,Team 1,Spingar,Sojourn,Team 2,マーシー,Lúcio,Secondary Fire,140.36,True,0
+[00:03:15] ,defensive_assist,124.20,Team 1,YAI,Baptiste,0
+[00:03:29] ,ultimate_charged,139.01,Team 2,Goul,Junkrat,0,1
+[00:03:31] ,ultimate_charged,141.07,Team 2,マーシー,Lúcio,0,1
+[00:03:33] ,kill,142.43,Team 1,Spingar,Sojourn,Team 2,Tetsu,Baptiste,Primary Fire,3.22,0,0
+[00:03:34] ,ultimate_start,143.33,Team 2,chap,Symmetra,0,1
+[00:03:37] ,ultimate_start,146.13,Team 1,Guitar,Mei,0,1
+[00:03:38] ,ultimate_start,147.25,Team 2,マーシー,Lúcio,0,1
+[00:03:38] ,ultimate_start,147.39,Team 2,Goul,Junkrat,0,1
+[00:03:40] ,kill,149.65,Team 2,Goul,Junkrat,Team 1,Georan,Lúcio,Ultimate,200,0,0
+[00:03:40] ,kill,150.05,Team 2,OTD,Reinhardt,Team 1,YAI,Baptiste,Primary Fire,50,0,0
+[00:03:41] ,ultimate_end,150.16,Team 2,Goul,Junkrat,0,1
+[00:03:42] ,kill,151.33,Team 1,Guitar,Mei,Team 2,chap,Symmetra,Secondary Fire,19.74,True,0
+[00:03:42] ,offensive_assist,151.43,Team 1,Georan,Lúcio,0
+[00:03:42] ,ultimate_end,151.97,Team 1,Guitar,Mei,0,1
+[00:03:42] ,ultimate_charged,152.02,Team 1,Georan,Lúcio,0,1
+[00:03:43] ,kill,152.53,Team 1,Jinhyeok,Ramattra,Team 2,マーシー,Lúcio,Ability 1,51.36,0,0
+[00:03:43] ,offensive_assist,152.76,Team 1,Guitar,Mei,0
+[00:03:43] ,offensive_assist,152.82,Team 1,Georan,Lúcio,0
+[00:03:45] ,ultimate_end,154.98,Team 2,マーシー,Lúcio,0,1
+[00:03:46] ,ultimate_end,155.57,Team 2,chap,Symmetra,0,1
+[00:03:47] ,kill,156.57,Team 2,OTD,Reinhardt,Team 1,Guitar,Mei,Primary Fire,80,0,0
+[00:03:47] ,kill,156.92,Team 1,Spingar,Sojourn,Team 2,Goul,Junkrat,Secondary Fire,104.87,0,0
+[00:03:49] ,kill,158.65,Team 1,Jinhyeok,Ramattra,Team 2,OTD,Reinhardt,0,2.35,0,0
+[00:03:49] ,offensive_assist,158.87,Team 1,Guitar,Mei,0
+[00:03:52] ,hero_swap,161.34,Team 2,chap,Mei,Symmetra,161.34
+[00:03:57] ,hero_swap,166.92,Team 2,Goul,Sojourn,Junkrat,166.92
+[00:04:25] ,ultimate_start,194.84,Team 1,Jinhyeok,Ramattra,0,1
+[00:04:26] ,ultimate_start,195.27,Team 1,Georan,Lúcio,0,1
+[00:04:26] ,kill,195.41,Team 1,Jinhyeok,Ramattra,Team 2,Goul,Sojourn,Ultimate,5.83,0,0
+[00:04:26] ,offensive_assist,195.57,Team 1,Georan,Lúcio,0
+[00:04:26] ,defensive_assist,195.57,Team 1,Georan,Lúcio,0
+[00:04:26] ,defensive_assist,195.67,Team 1,YAI,Baptiste,0
+[00:04:26] ,ultimate_charged,195.83,Team 2,OTD,Reinhardt,0,2
+[00:04:27] ,ultimate_charged,196.23,Team 2,Tetsu,Baptiste,0,2
+[00:04:28] ,ultimate_start,197.57,Team 2,Tetsu,Baptiste,0,2
+[00:04:29] ,ultimate_start,198.42,Team 2,OTD,Reinhardt,0,2
+[00:04:31] ,ultimate_end,200.65,Team 1,Jinhyeok,Ramattra,0,1
+[00:04:32] ,ultimate_end,201.18,Team 2,OTD,Reinhardt,0,2
+[00:04:33] ,point_progress,202.66,1,Team 2,2,33.39
+[00:04:33] ,ultimate_end,203.00,Team 1,Georan,Lúcio,0,1
+[00:04:38] ,ultimate_end,208.09,Team 2,Tetsu,Baptiste,0,2
+[00:04:44] ,ultimate_charged,213.28,Team 1,YAI,Baptiste,0,2
+[00:04:44] ,ultimate_charged,213.34,Team 1,Spingar,Sojourn,0,2
+[00:04:45] ,ultimate_start,214.38,Team 1,YAI,Baptiste,0,2
+[00:04:45] ,ultimate_start,214.38,Team 1,Spingar,Sojourn,0,2
+[00:04:45] ,kill,214.81,Team 1,Georan,Lúcio,Team 2,Tetsu,Baptiste,Primary Fire,5.39,0,0
+[00:04:45] ,offensive_assist,214.83,Team 1,Guitar,Mei,0
+[00:04:45] ,defensive_assist,214.88,Team 1,Georan,Lúcio,0
+[00:04:45] ,defensive_assist,214.99,Team 1,YAI,Baptiste,0
+[00:04:49] ,kill,218.21,Team 1,Jinhyeok,Ramattra,Team 2,chap,Mei,0,4.12,0,0
+[00:04:49] ,defensive_assist,218.30,Team 1,YAI,Baptiste,0
+[00:04:49] ,offensive_assist,218.59,Team 1,Guitar,Mei,0
+[00:04:49] ,offensive_assist,218.62,Team 1,Georan,Lúcio,0
+[00:04:50] ,kill,220.08,Team 1,Spingar,Sojourn,Team 2,OTD,Reinhardt,Ultimate,37.65,True,0
+[00:04:51] ,defensive_assist,220.16,Team 1,YAI,Baptiste,0
+[00:04:51] ,offensive_assist,220.17,Team 1,Jinhyeok,Ramattra,0
+[00:04:51] ,offensive_assist,220.46,Team 1,Guitar,Mei,0
+[00:04:51] ,offensive_assist,220.51,Team 1,Georan,Lúcio,0
+[00:04:53] ,ultimate_end,223.12,Team 1,Spingar,Sojourn,0,2
+[00:04:55] ,ultimate_end,224.90,Team 1,YAI,Baptiste,0,2
+[00:04:55] ,kill,225.10,Team 1,Guitar,Mei,Team 2,Goul,Sojourn,Secondary Fire,26,0,0
+[00:04:56] ,defensive_assist,225.26,Team 1,YAI,Baptiste,0
+[00:05:00] ,player_stat,229.23,1,Team 2,chap,Mei,0,0,1,3871.29,175,704.29,0,294.64,156.34,544.64,798.00,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,314,143,145,0,0,0.50,67.90
+[00:05:00] ,player_stat,229.23,1,Team 2,chap,Symmetra,2,0,3,2509.68,751.99,1693.37,0,811.54,0,1825.30,1761.12,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,35,7,27,0,0,0.21,161.34
+[00:05:00] ,player_stat,229.23,1,Team 1,Guitar,Junkrat,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:05:00] ,player_stat,229.23,1,Team 1,Guitar,Symmetra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:05:00] ,player_stat,229.23,1,Team 1,Guitar,Mei,11,3,2,13601.03,2210.12,3073.95,0,2157.52,558.04,2846.10,2570.32,0,7,1,1,0,0,1,4,0,0,0,0,0,0,0,676,285,242,0,0,0.54,229.23
+[00:05:00] ,player_stat,229.23,1,Team 1,Jinhyeok,Ramattra,10,4,1,8346.81,3643.88,4071.73,0,3161.94,0,4621.01,2309.12,0,2,1,1,0,0,0,5,0,0,24,0.06,0,0,0,1741,404,814,0,0,0.33,229.23
+[00:05:00] ,player_stat,229.23,1,Team 2,Goul,Junkrat,4,2,4,3535.20,1517.45,1882.06,0,500.95,0,1300.95,0,0,1,1,1,0,0,1,1,0,0,0,0,0,0,0,83,13,62,0,0,0.17,166.92
+[00:05:00] ,player_stat,229.23,1,Team 2,Goul,Sojourn,0,0,2,609.17,0,509.17,0,62.21,0,462.21,0,0,0,0,0,0,0,0,0,0,0,5,0.11,0,0,0,233,45,185,0,0,0.20,62.31
+[00:05:00] ,player_stat,229.23,1,Team 2,Tetsu,Baptiste,1,0,4,1725.93,550,1125.93,5363.83,1158.89,400.48,1958.89,0,2,0,2,2,0,0,0,1,0,0,2,0.04,0,0,0,194,54,121,0,0,0.31,229.23
+[00:05:00] ,player_stat,229.23,1,Team 1,YAI,Baptiste,4,1,1,3554.68,2358.02,1111.66,4664.69,870.97,202.66,1070.97,0,9,1,2,2,0,0,0,3,0,0,5,0.10,0,0,0,307,52,155,0,0,0.25,229.23
+[00:05:00] ,player_stat,229.23,1,Team 1,Georan,Lúcio,8,2,2,2487.53,1085,1377.53,1829.20,562.69,288.81,962.69,0,4,7,1,1,0,0,0,3,0,0,4,0.07,0,0,0,329,61,212,0,0,0.22,229.23
+[00:05:00] ,player_stat,229.23,1,Team 2,マーシー,Lúcio,1,0,3,1514.25,565,924.25,2790.02,705.04,475.17,1693.56,0,2,2,1,1,0,0,0,1,0,0,5,0.14,0,0,0,266,37,205,0,0,0.15,229.23
+[00:05:00] ,player_stat,229.23,1,Team 1,Spingar,Sojourn,17,10,0,7775.28,2074.70,5000.14,0,960.50,0,1035.50,0,0,0,2,2,1,4,2,8,0,0,26,0.08,0,0,0,1132,333,611,0,0,0.35,225.38
+[00:05:00] ,player_stat,229.23,1,Team 1,Spingar,Symmetra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3.86
+[00:05:00] ,round_end,229.23,1,0,1,0,2,100,33.69,0
+[00:05:00] ,player_stat,229.23,1,Team 2,OTD,Reinhardt,4,4,3,5102.19,1320,3697.19,0,5049.47,0,6849.47,8812.60,0,0,2,2,0,0,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,229.23
+[00:05:10] ,objective_updated,229.23,2,2,1
+[00:05:11] ,round_start,229.23,2,0,1,0,1
+[00:05:19] ,hero_swap,229.23,Team 2,マーシー,Mercy,Lúcio,0
+[00:05:27] ,hero_swap,229.23,Team 1,Spingar,Symmetra,Sojourn,0
+[00:05:36] ,hero_swap,229.23,Team 2,マーシー,Lúcio,Mercy,0
+[00:05:39] ,hero_swap,229.23,Team 2,Goul,Pharah,Sojourn,0
+[00:05:39] ,hero_swap,229.23,Team 2,マーシー,Mercy,Lúcio,0
+[00:05:48] ,hero_swap,229.23,Team 2,chap,Symmetra,Mei,0
+[00:06:08] ,hero_swap,229.23,Team 2,OTD,Roadhog,Reinhardt,0
+[00:06:13] ,hero_swap,229.23,Team 2,Tetsu,Kiriko,Baptiste,0
+[00:06:23] ,setup_complete,229.23,2,29.99
+[00:06:27] ,hero_swap,233.19,Team 1,Spingar,Sojourn,Symmetra,3.95
+[00:06:27] ,hero_swap,233.41,Team 2,chap,Tracer,Symmetra,4.18
+[00:06:36] ,kill,241.94,Team 2,Goul,Pharah,Team 1,YAI,Baptiste,Primary Fire,121.84,0,0
+[00:06:36] ,offensive_assist,242.20,Team 2,マーシー,Mercy,0
+[00:06:43] ,kill,248.94,Team 2,Tetsu,Kiriko,Team 1,Guitar,Mei,0,14.68,0,0
+[00:06:43] ,defensive_assist,249.19,Team 2,Tetsu,Kiriko,0
+[00:06:43] ,offensive_assist,249.21,Team 2,OTD,Roadhog,0
+[00:06:45] ,kill,250.91,Team 2,Goul,Pharah,Team 1,Spingar,Sojourn,Primary Fire,20.99,0,0
+[00:06:45] ,offensive_assist,251.15,Team 2,マーシー,Mercy,0
+[00:06:49] ,kill,255.42,Team 2,OTD,Roadhog,Team 1,Jinhyeok,Ramattra,Primary Fire,29.16,0,0
+[00:06:50] ,offensive_assist,255.77,Team 2,Tetsu,Kiriko,0
+[00:06:50] ,defensive_assist,255.77,Team 2,Tetsu,Kiriko,0
+[00:06:53] ,hero_swap,258.94,Team 1,Guitar,Tracer,Mei,29.71
+[00:06:55] ,hero_swap,260.91,Team 1,Spingar,Soldier: 76,Sojourn,27.72
+[00:06:55] ,point_progress,261.26,2,All Teams,1,33.78
+[00:06:57] ,point_progress,263.04,2,All Teams,1,67.08
+[00:06:59] ,objective_captured,264.79,2,Team 2,1,0,0.01,0
+[00:07:21] ,kill,287.06,Team 1,Jinhyeok,Ramattra,Team 2,Tetsu,Kiriko,Ability 1,5.72,0,0
+[00:07:21] ,offensive_assist,287.25,Team 1,Georan,Lúcio,0
+[00:07:21] ,defensive_assist,287.25,Team 1,Georan,Lúcio,0
+[00:07:21] ,defensive_assist,287.30,Team 1,YAI,Baptiste,0
+[00:07:24] ,kill,289.76,Team 2,Goul,Pharah,Team 1,Spingar,Soldier: 76,Primary Fire,50,0,0
+[00:07:24] ,offensive_assist,290.13,Team 2,マーシー,Mercy,0
+[00:07:29] ,kill,295.62,Team 2,Goul,Pharah,Team 1,Guitar,Tracer,Primary Fire,77.53,0,0
+[00:07:30] ,offensive_assist,295.75,Team 2,OTD,Roadhog,0
+[00:07:30] ,offensive_assist,295.78,Team 2,マーシー,Mercy,0
+[00:07:30] ,kill,296.58,Team 1,Jinhyeok,Ramattra,Team 2,OTD,Roadhog,0,3.31,0,0
+[00:07:30] ,offensive_assist,296.67,Team 1,Georan,Lúcio,0
+[00:07:30] ,defensive_assist,296.67,Team 1,Georan,Lúcio,0
+[00:07:30] ,defensive_assist,296.71,Team 1,YAI,Baptiste,0
+[00:07:31] ,kill,297.19,Team 1,YAI,Baptiste,Team 2,chap,Tracer,Primary Fire,21.92,0,0
+[00:07:33] ,point_progress,299.52,2,Team 1,1,33.57
+[00:07:35] ,point_progress,300.85,2,Team 1,1,66.78
+[00:07:36] ,objective_captured,302.19,2,Team 1,1,0.01,31.17,0
+[00:07:39] ,ultimate_charged,305.54,Team 2,Goul,Pharah,0,2
+[00:07:39] ,kill,305.58,Team 1,Jinhyeok,Ramattra,Team 2,Goul,Pharah,Ability 1,11.16,0,0
+[00:07:39] ,defensive_assist,305.62,Team 1,Georan,Lúcio,0
+[00:07:39] ,defensive_assist,305.63,Team 1,YAI,Baptiste,0
+[00:07:43] ,kill,309.01,Team 1,Spingar,Soldier: 76,Team 2,マーシー,Mercy,Primary Fire,23,True,0
+[00:07:43] ,offensive_assist,309.36,Team 1,Georan,Lúcio,0
+[00:07:50] ,ultimate_charged,316.52,Team 1,Jinhyeok,Ramattra,0,2
+[00:07:58] ,ultimate_charged,324.39,Team 2,chap,Tracer,0,2
+[00:08:03] ,kill,329.11,Team 1,Spingar,Soldier: 76,Team 2,Goul,Pharah,Primary Fire,10.20,0,0
+[00:08:06] ,mercy_rez,332.44,Team 2,マーシー,Mercy,Team 2,Goul,Pharah
+[00:08:09] ,kill,334.90,Team 2,chap,Tracer,Team 1,Guitar,Tracer,Primary Fire,3.01,0,0
+[00:08:09] ,offensive_assist,335.22,Team 2,OTD,Roadhog,0
+[00:08:10] ,ultimate_charged,336.12,Team 2,OTD,Roadhog,0,3
+[00:08:13] ,ultimate_start,338.95,Team 2,OTD,Roadhog,0,3
+[00:08:14] ,ultimate_charged,340.39,Team 1,Georan,Lúcio,0,2
+[00:08:15] ,ultimate_charged,341.09,Team 1,Spingar,Soldier: 76,0,3
+[00:08:16] ,kill,342.45,Team 2,OTD,Roadhog,Team 1,Jinhyeok,Ramattra,Ultimate,10.04,0,0
+[00:08:17] ,defensive_assist,342.76,Team 2,Tetsu,Kiriko,0
+[00:08:20] ,kill,346.23,Team 2,OTD,Roadhog,Team 1,YAI,Baptiste,Ultimate,23.83,0,0
+[00:08:20] ,ultimate_end,346.45,Team 2,OTD,Roadhog,0,3
+[00:08:20] ,defensive_assist,346.52,Team 2,Tetsu,Kiriko,0
+[00:08:21] ,kill,347.06,Team 2,Goul,Pharah,Team 1,Spingar,Soldier: 76,Ability 2,78.93,0,True
+[00:08:21] ,offensive_assist,347.45,Team 2,マーシー,Mercy,0
+[00:08:21] ,defensive_assist,347.45,Team 2,マーシー,Mercy,0
+[00:08:26] ,kill,351.91,Team 2,Goul,Pharah,Team 1,Georan,Lúcio,Primary Fire,5.58,0,0
+[00:08:26] ,offensive_assist,352.13,Team 2,マーシー,Mercy,0
+[00:08:27] ,point_progress,353.68,2,Team 2,1,33.66
+[00:08:29] ,point_progress,355.01,2,Team 2,1,66.86
+[00:08:29] ,ultimate_charged,355.27,Team 2,Tetsu,Kiriko,0,3
+[00:08:30] ,objective_captured,356.34,2,Team 2,1,45.13,31.19,0
+[00:08:31] ,ultimate_charged,357.22,Team 2,マーシー,Mercy,0,2
+[00:08:45] ,ultimate_start,371.01,Team 2,chap,Tracer,0,2
+[00:08:45] ,ultimate_end,371.20,Team 2,chap,Tracer,0,2
+[00:08:52] ,ultimate_charged,378.09,Team 1,YAI,Baptiste,0,3
+[00:08:54] ,ultimate_charged,380.04,Team 1,Guitar,Tracer,0,2
+[00:08:55] ,ultimate_start,381.20,Team 1,Guitar,Tracer,0,2
+[00:08:55] ,ultimate_end,381.39,Team 1,Guitar,Tracer,0,2
+[00:08:56] ,kill,382.38,Team 1,Guitar,Tracer,Team 2,Goul,Pharah,Ultimate,183.24,0,0
+[00:08:58] ,ultimate_start,384.06,Team 2,マーシー,Mercy,0,2
+[00:08:58] ,ultimate_start,384.63,Team 1,YAI,Baptiste,0,3
+[00:09:02] ,kill,388.62,Team 1,YAI,Baptiste,Team 2,Tetsu,Kiriko,Primary Fire,17.60,0,0
+[00:09:03] ,defensive_assist,388.81,Team 1,YAI,Baptiste,0
+[00:09:08] ,kill,394.04,Team 1,Spingar,Soldier: 76,Team 2,chap,Tracer,Secondary Fire,31.62,0,0
+[00:09:08] ,offensive_assist,394.42,Team 1,YAI,Baptiste,0
+[00:09:08] ,defensive_assist,394.42,Team 1,YAI,Baptiste,0
+[00:09:09] ,ultimate_end,395.14,Team 1,YAI,Baptiste,0,3
+[00:09:11] ,kill,397.05,Team 2,OTD,Roadhog,Team 2,OTD,Roadhog,0,34.85,0,True
+[00:09:11] ,offensive_assist,397.26,Team 1,YAI,Baptiste,0
+[00:09:11] ,defensive_assist,397.26,Team 1,YAI,Baptiste,0
+[00:09:13] ,ultimate_end,399.05,Team 2,マーシー,Mercy,0,2
+[00:09:16] ,kill,402.55,Team 1,YAI,Baptiste,Team 2,マーシー,Mercy,Primary Fire,4,0,0
+[00:09:18] ,point_progress,404.58,2,Team 1,1,33.46
+[00:09:20] ,point_progress,405.93,2,Team 1,1,67.06
+[00:09:21] ,hero_swap,407.04,Team 2,OTD,Ramattra,Roadhog,177.81
+[00:09:21] ,objective_captured,407.25,2,Team 1,1,45.15,73.61,0
+[00:09:45] ,ultimate_start,431.10,Team 2,Tetsu,Kiriko,0,3
+[00:09:45] ,ultimate_end,431.44,Team 2,Tetsu,Kiriko,0,3
+[00:09:45] ,ultimate_start,431.53,Team 2,Tetsu,Kiriko,0,3
+[00:09:47] ,ultimate_start,433.10,Team 1,Spingar,Soldier: 76,0,3
+[00:09:49] ,ultimate_start,434.73,Team 2,Goul,Pharah,0,2
+[00:09:49] ,kill,435.45,Team 1,YAI,Baptiste,Team 2,OTD,Ramattra,Primary Fire,12.66,0,0
+[00:09:50] ,defensive_assist,435.79,Team 1,YAI,Baptiste,0
+[00:09:50] ,ultimate_start,435.79,Team 1,Georan,Lúcio,0,2
+[00:09:50] ,defensive_assist,435.80,Team 1,Spingar,Soldier: 76,0
+[00:09:50] ,offensive_assist,435.84,Team 1,Jinhyeok,Ramattra,0
+[00:09:50] ,kill,435.96,Team 1,Spingar,Soldier: 76,Team 2,Goul,Pharah,Ultimate,9.32,0,0
+[00:09:50] ,ultimate_end,435.96,Team 2,Goul,Pharah,0,2
+[00:09:52] ,kill,438.46,Team 1,YAI,Baptiste,Team 2,Tetsu,Kiriko,Primary Fire,3,0,0
+[00:09:52] ,defensive_assist,438.52,Team 1,Georan,Lúcio,0
+[00:09:52] ,defensive_assist,438.64,Team 1,YAI,Baptiste,0
+[00:09:53] ,kill,439.32,Team 1,Spingar,Soldier: 76,Team 2,マーシー,Mercy,Ultimate,10,0,0
+[00:09:53] ,defensive_assist,439.45,Team 1,Georan,Lúcio,0
+[00:09:54] ,ultimate_end,440.30,Team 1,Spingar,Soldier: 76,0,3
+[00:09:56] ,ultimate_end,442.27,Team 2,Tetsu,Kiriko,0,3
+[00:09:57] ,ultimate_end,443.52,Team 1,Georan,Lúcio,0,2
+[00:09:59] ,ultimate_charged,445.37,Team 1,Guitar,Tracer,0,3
+[00:10:06] ,kill,451.82,Team 1,Spingar,Soldier: 76,Team 2,chap,Tracer,Primary Fire,13.45,0,0
+[00:10:21] ,ultimate_start,467.25,Team 1,Guitar,Tracer,0,3
+[00:10:21] ,ultimate_end,467.44,Team 1,Guitar,Tracer,0,3
+[00:10:25] ,ultimate_start,470.93,Team 1,Jinhyeok,Ramattra,0,2
+[00:10:26] ,kill,472.05,Team 1,Jinhyeok,Ramattra,Team 2,Tetsu,Kiriko,Ultimate,27.92,0,0
+[00:10:26] ,offensive_assist,472.36,Team 1,Georan,Lúcio,0
+[00:10:26] ,defensive_assist,472.43,Team 1,YAI,Baptiste,0
+[00:10:27] ,kill,473.03,Team 2,chap,Tracer,Team 1,YAI,Baptiste,Primary Fire,3.19,0,0
+[00:10:27] ,offensive_assist,473.36,Team 2,マーシー,Mercy,0
+[00:10:27] ,defensive_assist,473.36,Team 2,マーシー,Mercy,0
+[00:10:30] ,defensive_assist,476.64,Team 2,マーシー,Mercy,0
+[00:10:30] ,kill,476.64,Team 2,Goul,Pharah,Team 1,Spingar,Soldier: 76,Primary Fire,62.19,0,0
+[00:10:32] ,ultimate_end,477.73,Team 1,Jinhyeok,Ramattra,0,2
+[00:10:33] ,ultimate_charged,479.55,Team 2,chap,Tracer,0,3
+[00:10:36] ,ultimate_start,482.05,Team 2,chap,Tracer,0,3
+[00:10:36] ,ultimate_end,482.24,Team 2,chap,Tracer,0,3
+[00:10:36] ,kill,482.62,Team 2,Goul,Pharah,Team 1,Guitar,Tracer,Primary Fire,93.25,0,0
+[00:10:37] ,defensive_assist,482.77,Team 2,マーシー,Mercy,0
+[00:10:46] ,point_progress,492.40,2,Team 2,1,33.38
+[00:10:46] ,kill,492.53,Team 2,chap,Tracer,Team 1,Jinhyeok,Ramattra,Melee,0.08,0,0
+[00:10:46] ,defensive_assist,492.65,Team 2,マーシー,Mercy,0
+[00:10:48] ,point_progress,493.82,2,Team 2,1,66.78
+[00:10:49] ,objective_captured,495.34,2,Team 2,1,99.99,73.63,0
+[00:10:54] ,ultimate_charged,499.87,Team 2,マーシー,Mercy,0,3
+[00:11:11] ,ultimate_start,516.79,Team 2,マーシー,Mercy,0,3
+[00:11:24] ,ultimate_charged,529.82,Team 2,OTD,Ramattra,0,4
+[00:11:24] ,ultimate_start,530.49,Team 2,OTD,Ramattra,0,4
+[00:11:25] ,kill,531.50,Team 2,OTD,Ramattra,Team 1,Jinhyeok,Ramattra,Ultimate,2.94,0,0
+[00:11:25] ,defensive_assist,531.58,Team 2,Tetsu,Kiriko,0
+[00:11:25] ,offensive_assist,531.61,Team 2,マーシー,Mercy,0
+[00:11:25] ,defensive_assist,531.61,Team 2,マーシー,Mercy,0
+[00:11:26] ,ultimate_end,531.77,Team 2,マーシー,Mercy,0,3
+[00:11:27] ,ultimate_charged,533.55,Team 1,YAI,Baptiste,0,4
+[00:11:29] ,kill,534.72,Team 1,Spingar,Soldier: 76,Team 2,Tetsu,Kiriko,Primary Fire,4.92,0,0
+[00:11:29] ,offensive_assist,534.84,Team 1,Georan,Lúcio,0
+[00:11:29] ,ultimate_start,534.86,Team 1,YAI,Baptiste,0,4
+[00:11:29] ,defensive_assist,534.92,Team 1,YAI,Baptiste,0
+[00:11:29] ,offensive_assist,534.96,Team 1,Jinhyeok,Ramattra,0
+[00:11:30] ,kill,536.25,Team 2,Goul,Pharah,Team 1,YAI,Baptiste,Primary Fire,9.60,0,0
+[00:11:30] ,offensive_assist,536.32,Team 2,マーシー,Mercy,0
+[00:11:30] ,defensive_assist,536.32,Team 2,マーシー,Mercy,0
+[00:11:30] ,kill,536.44,Team 2,OTD,Ramattra,Team 1,Georan,Lúcio,Ultimate,30.72,0,0
+[00:11:31] ,offensive_assist,536.71,Team 2,Tetsu,Kiriko,0
+[00:11:31] ,defensive_assist,536.71,Team 2,Tetsu,Kiriko,0
+[00:11:31] ,defensive_assist,536.78,Team 2,マーシー,Mercy,0
+[00:11:31] ,ultimate_end,537.13,Team 2,OTD,Ramattra,0,4
+[00:11:32] ,kill,538.36,Team 2,chap,Tracer,Team 1,Spingar,Soldier: 76,Primary Fire,0.45,0,0
+[00:11:32] ,defensive_assist,538.60,Team 2,Tetsu,Kiriko,0
+[00:11:33] ,defensive_assist,538.65,Team 2,マーシー,Mercy,0
+[00:11:38] ,mercy_rez,543.93,Team 2,マーシー,Mercy,Team 2,Tetsu,Kiriko
+[00:11:39] ,ultimate_charged,544.84,Team 2,chap,Tracer,0,4
+[00:11:39] ,ultimate_end,545.37,Team 1,YAI,Baptiste,0,4
+[00:11:40] ,kill,546.04,Team 2,Goul,Pharah,Team 1,Guitar,Tracer,Primary Fire,142.50,0,0
+[00:11:40] ,offensive_assist,546.18,Team 2,マーシー,Mercy,0
+[00:11:40] ,defensive_assist,546.18,Team 2,マーシー,Mercy,0
+[00:11:40] ,offensive_assist,546.26,Team 2,OTD,Ramattra,0
+[00:11:42] ,player_stat,548.00,2,Team 2,chap,Mei,0,0,1,3871.29,175,704.29,0,294.64,156.34,544.64,798.00,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,314,143,145,0,0,0.50,67.90
+[00:11:42] ,player_stat,548.00,2,Team 2,chap,Symmetra,2,0,3,2509.68,751.99,1693.37,0,811.54,0,1825.30,1761.12,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,35,7,27,0,0,0.21,165.51
+[00:11:42] ,player_stat,548.00,2,Team 2,chap,Tracer,12,4,3,3856.87,107.48,3629.38,0,734.56,627.85,1812.41,0,0,0,3,2,0,0,0,4,0,0,60,0.11,0,0,0,2480,567,1862,0,0,0.23,314.59
+[00:11:42] ,player_stat,548.00,2,Team 1,Jinhyeok,Ramattra,20,8,5,14465.76,4070.08,9464.48,0,5384.75,0,9990.69,3786.61,0,4,2,2,0,0,0,10,0,0,82,0.09,0,0,0,3528,951,2016,0,0,0.32,548.00
+[00:11:42] ,player_stat,548.00,2,Team 2,Goul,Junkrat,4,2,4,3535.20,1517.45,1882.06,0,500.95,0,1300.95,0,0,1,1,1,0,0,1,1,0,0,0,0,0,0,0,83,13,62,0,0,0.17,166.92
+[00:11:42] ,player_stat,548.00,2,Team 2,Goul,Sojourn,0,0,2,609.17,0,509.17,0,62.21,0,462.21,0,0,0,0,0,0,0,0,0,0,0,5,0.11,0,0,0,233,45,185,0,0,0.20,62.31
+[00:11:42] ,player_stat,548.00,2,Team 2,Goul,Pharah,13,9,4,4910.50,897.62,4000.39,0,3043.63,0,3893.62,0,0,0,1,1,0,0,0,4,1,0,0,0,0,0,0,165,53,104,0,0,0.34,318.77
+[00:11:42] ,player_stat,548.00,2,Team 2,Tetsu,Baptiste,1,0,4,1725.93,550,1125.93,5363.83,1158.89,400.48,1958.89,0,2,0,2,2,0,0,0,1,0,0,2,0.04,0,0,0,194,54,121,0,0,0.31,229.23
+[00:11:42] ,player_stat,548.00,2,Team 2,Tetsu,Kiriko,5,1,5,1579.69,56.25,1410.94,3893.30,1154.04,0,2154.04,0,7,2,1,1,0,0,0,3,0,0,2,0.06,0,0,0,138,36,101,0,0,0.26,318.77
+[00:11:42] ,player_stat,548.00,2,Team 2,OTD,Reinhardt,4,4,3,5102.19,1320,3697.19,0,5049.47,0,6849.47,8812.60,0,0,2,2,0,0,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,229.23
+[00:11:42] ,player_stat,548.00,2,Team 2,OTD,Roadhog,7,3,2,2663.53,272.50,2391.03,2573.08,5033.38,2573.08,6433.38,0,0,3,1,1,0,0,0,5,0,1,17,0.07,0,0,0,1120,240,830,0,0,0.22,177.81
+[00:11:42] ,player_stat,548.00,2,Team 2,OTD,Ramattra,3,2,1,1900.54,143.64,1756.90,0,1806.85,0,2818.78,1858.09,0,1,1,1,0,0,0,3,0,0,24,0.13,0,0,0,1024,180,815,0,0,0.18,140.96
+[00:11:42] ,player_stat,548.00,2,Team 2,マーシー,Lúcio,1,0,3,1514.25,565,924.25,2790.02,705.04,475.17,1693.56,0,2,2,1,1,0,0,0,1,0,0,5,0.14,0,0,0,266,37,205,0,0,0.15,229.23
+[00:11:42] ,player_stat,548.00,2,Team 2,マーシー,Mercy,0,0,3,0,0,0,5104.46,864.83,256.01,1464.83,0,10,10,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,318.77
+[00:11:42] ,round_end,548.00,2,0,1,1,1,99.99,100,0
+[00:11:42] ,player_stat,548.00,2,Team 1,Guitar,Junkrat,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:11:42] ,player_stat,548.00,2,Team 1,Guitar,Symmetra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:11:42] ,player_stat,548.00,2,Team 1,Guitar,Mei,11,3,3,13916.03,2210.12,3388.95,0,2263.77,558.04,3202.35,2570.32,0,7,1,1,0,0,1,4,0,0,0,0,0,0,0,711,318,244,0,0,0.57,258.94
+[00:11:42] ,player_stat,548.00,2,Team 1,Guitar,Tracer,8,1,4,3298.10,339.21,2958.89,0,659.44,719.51,2077.58,0,0,0,2,2,0,0,0,3,0,0,48,0.10,0,0,0,1750,503,1165,0,0,0.30,289.06
+[00:11:42] ,player_stat,548.00,2,Team 1,YAI,Baptiste,12,6,5,6422.73,2645.70,3673.82,7245.53,1940.85,352.55,3131.35,0,19,3,4,4,0,0,0,7,0,0,15,0.10,0,0,0,607,150,345,0,0,0.30,548.00
+[00:11:42] ,player_stat,548.00,2,Team 1,Georan,Lúcio,12,2,4,4485.03,1415,3005.03,4386.65,1406.59,874.55,2206.59,0,9,12,2,2,0,0,0,7,0,0,10,0.08,0,0,0,701,130,497,0,0,0.21,548.00
+[00:11:42] ,player_stat,548.00,2,Team 1,Spingar,Sojourn,17,10,1,8143.12,2074.70,5367.98,0,1103.41,0,1378.41,0,0,0,2,2,1,4,2,8,0,0,27,0.08,0,0,0,1193,358,646,0,0,0.36,253.10
+[00:11:42] ,player_stat,548.00,2,Team 1,Spingar,Symmetra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7.81
+[00:11:42] ,player_stat,548.00,2,Team 1,Spingar,Soldier: 76,8,7,4,6003.08,475,5268.08,437.87,937.93,423.07,1737.93,0,1,0,1,1,0,0,3,2,0,1,23,0.09,0,0,0,649,268,354,0,0,0.43,287.10
+[00:11:43] ,hero_swap,548.00,Team 1,YAI,Kiriko,Baptiste,0
+[00:11:52] ,objective_updated,548.00,3,1,0
+[00:11:53] ,round_start,548.00,3,0,1,1,0
+[00:12:01] ,hero_swap,548.00,Team 1,YAI,Baptiste,Kiriko,0
+[00:12:12] ,hero_swap,548.00,Team 2,Tetsu,Baptiste,Kiriko,0
+[00:12:19] ,hero_swap,548.00,Team 1,Spingar,Sojourn,Soldier: 76,0
+[00:12:20] ,hero_swap,548.00,Team 1,Guitar,Mei,Tracer,0
+[00:12:22] ,hero_swap,548.00,Team 2,chap,Symmetra,Tracer,0
+[00:12:23] ,hero_swap,548.00,Team 1,Guitar,Symmetra,Mei,0
+[00:12:23] ,hero_swap,548.00,Team 2,Tetsu,Kiriko,Baptiste,0
+[00:13:20] ,setup_complete,548.00,3,29.99
+[00:13:25] ,hero_swap,552.29,Team 2,chap,Tracer,Symmetra,4.29
+[00:13:40] ,kill,567.42,Team 2,Goul,Pharah,Team 1,Spingar,Sojourn,Primary Fire,49.79,0,0
+[00:13:40] ,offensive_assist,567.79,Team 2,マーシー,Mercy,0
+[00:13:43] ,kill,570.52,Team 2,Goul,Pharah,Team 1,Guitar,Symmetra,Primary Fire,31.88,0,0
+[00:13:43] ,defensive_assist,570.55,Team 2,Tetsu,Kiriko,0
+[00:13:43] ,offensive_assist,570.62,Team 2,マーシー,Mercy,0
+[00:13:43] ,kill,570.74,Team 1,Jinhyeok,Ramattra,Team 2,Tetsu,Kiriko,Ability 1,24.80,0,0
+[00:13:43] ,defensive_assist,571.10,Team 1,YAI,Baptiste,0
+[00:13:45] ,kill,572.33,Team 1,YAI,Baptiste,Team 2,OTD,Ramattra,Primary Fire,13.64,0,0
+[00:13:45] ,offensive_assist,572.46,Team 1,Georan,Lúcio,0
+[00:13:45] ,defensive_assist,572.46,Team 1,Georan,Lúcio,0
+[00:13:45] ,defensive_assist,572.52,Team 1,YAI,Baptiste,0
+[00:13:46] ,kill,574.18,Team 2,Goul,Pharah,Team 1,Georan,Lúcio,Ability 2,177.96,0,True
+[00:13:47] ,offensive_assist,574.36,Team 2,マーシー,Mercy,0
+[00:13:47] ,defensive_assist,574.36,Team 2,マーシー,Mercy,0
+[00:13:50] ,hero_swap,577.41,Team 1,Spingar,Tracer,Sojourn,29.41
+[00:13:53] ,hero_swap,580.51,Team 1,Guitar,Soldier: 76,Symmetra,32.51
+[00:13:54] ,kill,581.70,Team 2,chap,Tracer,Team 1,YAI,Baptiste,Primary Fire,0.36,0,0
+[00:13:54] ,defensive_assist,581.91,Team 2,マーシー,Mercy,0
+[00:14:06] ,kill,593.23,Team 1,Jinhyeok,Ramattra,Team 2,マーシー,Mercy,Ability 1,28.50,0,0
+[00:14:06] ,point_progress,593.71,3,All Teams,0,33.36
+[00:14:10] ,point_progress,597.71,3,All Teams,0,66.85
+[00:14:11] ,kill,598.46,Team 2,Goul,Pharah,Team 1,Jinhyeok,Ramattra,Primary Fire,73.22,0,0
+[00:14:12] ,kill,599.32,Team 1,Spingar,Tracer,Team 2,chap,Tracer,Primary Fire,3,0,0
+[00:14:12] ,objective_captured,599.99,3,Team 2,0,0,0.01,0
+[00:14:25] ,point_progress,612.27,3,Team 1,0,33.58
+[00:14:25] ,kill,612.61,Team 1,Guitar,Soldier: 76,Team 2,Tetsu,Kiriko,Primary Fire,17.11,0,0
+[00:14:25] ,defensive_assist,612.83,Team 1,Georan,Lúcio,0
+[00:14:25] ,defensive_assist,612.91,Team 1,YAI,Baptiste,0
+[00:14:27] ,kill,614.83,Team 1,Guitar,Soldier: 76,Team 2,OTD,Ramattra,Primary Fire,9.26,0,0
+[00:14:28] ,offensive_assist,615.18,Team 1,Georan,Lúcio,0
+[00:14:28] ,defensive_assist,615.18,Team 1,Georan,Lúcio,0
+[00:14:28] ,defensive_assist,615.23,Team 1,YAI,Baptiste,0
+[00:14:29] ,point_progress,616.37,3,Team 1,0,66.75
+[00:14:30] ,point_progress,617.69,3,Team 1,0,99.95
+[00:14:30] ,objective_captured,617.71,3,Team 1,0,0.01,14.77,0
+[00:14:48] ,ultimate_charged,636.05,Team 1,Spingar,Tracer,0,4
+[00:15:00] ,kill,648.05,Team 1,Spingar,Tracer,Team 2,Tetsu,Kiriko,Primary Fire,4,0,0
+[00:15:03] ,kill,650.99,Team 1,YAI,Baptiste,Team 2,OTD,Ramattra,Primary Fire,4.81,0,0
+[00:15:03] ,offensive_assist,651.04,Team 1,Jinhyeok,Ramattra,0
+[00:15:03] ,ultimate_charged,651.05,Team 2,chap,Tracer,0,5
+[00:15:04] ,ultimate_charged,651.31,Team 2,Goul,Pharah,0,3
+[00:15:04] ,offensive_assist,651.37,Team 1,Georan,Lúcio,0
+[00:15:04] ,defensive_assist,651.44,Team 1,YAI,Baptiste,0
+[00:15:14] ,hero_swap,661.85,Team 2,OTD,Winston,Ramattra,113.84
+[00:15:14] ,ultimate_charged,661.94,Team 1,YAI,Baptiste,0,5
+[00:15:15] ,kill,662.77,Team 1,Spingar,Tracer,Team 2,マーシー,Mercy,Primary Fire,0.68,0,0
+[00:15:15] ,offensive_assist,663.09,Team 1,Georan,Lúcio,0
+[00:15:17] ,ultimate_charged,664.95,Team 2,マーシー,Mercy,0,4
+[00:15:22] ,ultimate_start,669.33,Team 2,chap,Tracer,0,5
+[00:15:22] ,ultimate_end,669.52,Team 2,chap,Tracer,0,5
+[00:15:29] ,ultimate_charged,676.94,Team 1,Jinhyeok,Ramattra,0,3
+[00:15:38] ,ultimate_start,685.42,Team 2,マーシー,Mercy,0,4
+[00:15:38] ,kill,685.80,Team 2,OTD,Winston,Team 1,Georan,Lúcio,Melee,29.50,0,0
+[00:15:43] ,ultimate_charged,690.26,Team 2,Tetsu,Kiriko,0,4
+[00:15:43] ,ultimate_start,691.00,Team 1,YAI,Baptiste,0,5
+[00:15:45] ,kill,693.11,Team 1,YAI,Baptiste,Team 2,OTD,Winston,Primary Fire,3.96,0,0
+[00:15:46] ,kill,693.72,Team 2,Tetsu,Kiriko,Team 1,Guitar,Soldier: 76,0,34.55,True,0
+[00:15:46] ,defensive_assist,694.08,Team 2,Tetsu,Kiriko,0
+[00:15:47] ,offensive_assist,694.15,Team 2,マーシー,Mercy,0
+[00:15:47] ,defensive_assist,694.15,Team 2,マーシー,Mercy,0
+[00:15:49] ,ultimate_start,696.18,Team 1,Jinhyeok,Ramattra,0,3
+[00:15:49] ,ultimate_start,696.69,Team 2,Goul,Pharah,0,3
+[00:15:50] ,ultimate_charged,697.44,Team 1,Guitar,Soldier: 76,0,4
+[00:15:50] ,kill,697.62,Team 1,Jinhyeok,Ramattra,Team 2,Goul,Pharah,Ultimate,21.74,0,0
+[00:15:50] ,ultimate_end,697.62,Team 2,Goul,Pharah,0,3
+[00:15:50] ,kill,697.86,Team 1,Spingar,Tracer,Team 2,Tetsu,Kiriko,Primary Fire,3.18,0,0
+[00:15:50] ,mercy_rez,697.91,Team 2,マーシー,Mercy,Team 2,OTD,Winston
+[00:15:50] ,offensive_assist,697.99,Team 1,YAI,Baptiste,0
+[00:15:50] ,defensive_assist,697.99,Team 1,YAI,Baptiste,0
+[00:15:50] ,defensive_assist,697.99,Team 1,YAI,Baptiste,0
+[00:15:53] ,ultimate_end,700.40,Team 2,マーシー,Mercy,0,4
+[00:15:54] ,ultimate_end,701.50,Team 1,YAI,Baptiste,0,5
+[00:15:54] ,ultimate_end,701.97,Team 1,Jinhyeok,Ramattra,0,3
+[00:16:01] ,kill,709.05,Team 1,Jinhyeok,Ramattra,Team 2,OTD,Winston,Ability 1,20.71,0,0
+[00:16:02] ,defensive_assist,709.23,Team 1,YAI,Baptiste,0
+[00:16:08] ,kill,715.50,Team 1,Georan,Lúcio,Team 2,chap,Tracer,Primary Fire,4.12,0,0
+[00:16:08] ,defensive_assist,715.72,Team 1,Georan,Lúcio,0
+[00:16:20] ,kill,727.54,Team 1,Spingar,Tracer,Team 2,Tetsu,Kiriko,Primary Fire,0.44,0,0
+[00:16:20] ,offensive_assist,727.57,Team 1,Jinhyeok,Ramattra,0
+[00:16:22] ,ultimate_charged,729.89,Team 1,Georan,Lúcio,0,3
+[00:16:27] ,kill,734.86,Team 1,Jinhyeok,Ramattra,Team 2,OTD,Winston,Ability 1,35.71,0,0
+[00:16:27] ,kill,734.89,Team 2,Goul,Pharah,Team 1,Spingar,Tracer,Primary Fire,90.70,0,0
+[00:16:27] ,offensive_assist,734.99,Team 1,Georan,Lúcio,0
+[00:16:27] ,defensive_assist,734.99,Team 1,Georan,Lúcio,0
+[00:16:27] ,offensive_assist,735.02,Team 2,マーシー,Mercy,0
+[00:16:27] ,defensive_assist,735.02,Team 2,マーシー,Mercy,0
+[00:16:27] ,defensive_assist,735.10,Team 1,YAI,Baptiste,0
+[00:16:28] ,kill,735.98,Team 1,Guitar,Soldier: 76,Team 2,Goul,Pharah,Primary Fire,16.56,0,0
+[00:16:28] ,defensive_assist,736.05,Team 1,YAI,Baptiste,0
+[00:16:29] ,ultimate_start,737.00,Team 1,Guitar,Soldier: 76,0,4
+[00:16:32] ,kill,739.18,Team 1,Guitar,Soldier: 76,Team 2,マーシー,Mercy,Ultimate,9,0,0
+[00:16:32] ,defensive_assist,739.34,Team 1,YAI,Baptiste,0
+[00:16:34] ,ultimate_start,741.71,Team 1,Georan,Lúcio,0,3
+[00:16:35] ,kill,742.38,Team 1,Guitar,Soldier: 76,Team 2,chap,Tracer,Ultimate,6,0,0
+[00:16:35] ,defensive_assist,742.60,Team 1,YAI,Baptiste,0
+[00:16:36] ,player_stat,744.01,3,Team 1,Guitar,Junkrat,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:16:36] ,player_stat,744.01,3,Team 1,Guitar,Symmetra,1,0,1,1043.31,256.00,787.31,0,190.16,0,390.16,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,1,0,0,0,32.51
+[00:16:36] ,player_stat,744.01,3,Team 1,Guitar,Mei,11,3,3,13916.03,2210.12,3388.95,0,2263.77,558.04,3202.35,2570.32,0,7,1,1,0,0,1,4,0,0,0,0,0,0,0,711,318,244,0,0,0.57,258.94
+[00:16:36] ,player_stat,744.01,3,Team 1,Guitar,Tracer,8,1,4,3298.10,339.21,2958.89,0,659.44,719.51,2077.58,0,0,0,2,2,0,0,0,3,0,0,48,0.10,0,0,0,1750,503,1165,0,0,0.30,289.06
+[00:16:36] ,player_stat,744.01,3,Team 1,Guitar,Soldier: 76,9,5,1,2572.14,456,2116.14,168.73,897.26,168.73,1097.26,0,0,0,1,1,0,0,0,3,0,0,7,0.06,0,0,0,370,109,237,0,0,0.32,163.49
+[00:16:36] ,player_stat,744.01,3,Team 1,Jinhyeok,Ramattra,31,13,6,19057.74,5349.08,12777.46,0,7393.32,0,13323.65,4591.21,0,6,3,3,0,0,1,15,0,0,119,0.10,0,0,0,4662,1188,2806,0,0,0.30,744.01
+[00:16:36] ,player_stat,744.01,3,Team 2,Goul,Junkrat,4,2,4,3535.20,1517.45,1882.06,0,500.95,0,1300.95,0,0,1,1,1,0,0,1,1,0,0,0,0,0,0,0,83,13,62,0,0,0.17,166.92
+[00:16:36] ,player_stat,744.01,3,Team 2,Goul,Sojourn,0,0,2,609.17,0,509.17,0,62.21,0,462.21,0,0,0,0,0,0,0,0,0,0,0,5,0.11,0,0,0,233,45,185,0,0,0.20,62.31
+[00:16:36] ,player_stat,744.01,3,Team 2,Goul,Pharah,19,13,6,8348.59,1122.65,6787.44,0,4234.24,0,5507.36,0,0,0,2,2,0,0,0,6,2,0,0,0,0,0,0,255,91,155,0,0,0.37,514.77
+[00:16:36] ,player_stat,744.01,3,Team 2,Tetsu,Baptiste,1,0,4,1725.93,550,1125.93,5363.83,1158.89,400.48,1958.89,0,2,0,2,2,0,0,0,1,0,0,2,0.04,0,0,0,194,54,121,0,0,0.31,229.23
+[00:16:36] ,player_stat,744.01,3,Team 2,Tetsu,Kiriko,7,2,10,2672.64,146.25,2413.89,5413.76,1698.33,0,3698.32,0,9,2,2,1,0,0,0,4,0,0,9,0.18,0,0,0,198,51,143,0,0,0.26,514.77
+[00:16:36] ,player_stat,744.01,3,Team 2,OTD,Reinhardt,4,4,3,5102.19,1320,3697.19,0,5049.47,0,6849.47,8812.60,0,0,2,2,0,0,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,229.23
+[00:16:36] ,player_stat,744.01,3,Team 2,OTD,Roadhog,7,3,2,2663.53,272.50,2391.03,2573.08,5033.38,2573.08,6433.38,0,0,3,1,1,0,0,0,5,0,1,17,0.07,0,0,0,1120,240,830,0,0,0.22,177.81
+[00:16:36] ,player_stat,744.01,3,Team 2,OTD,Ramattra,5,2,4,2919.35,143.64,2775.71,0,2904.74,0,6022.16,3635.09,0,1,1,1,0,0,0,3,0,0,54,0.19,0,0,0,1618,282,1304,0,0,0.18,254.80
+[00:16:36] ,player_stat,744.01,3,Team 2,OTD,Winston,2,1,3,1226.50,99.60,1126.90,0,565.47,0,2065.47,1930,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,9,5,4,0,0,0.56,82.16
+[00:16:36] ,player_stat,744.01,3,Team 1,YAI,Baptiste,20,9,6,8845.02,3645.70,5096.12,10157.46,2676.95,667.27,4067.45,0,31,4,5,5,0,0,0,11,0,0,19,0.08,0,0,0,854,225,479,0,0,0.32,744.01
+[00:16:36] ,player_stat,744.01,3,Team 1,YAI,Kiriko,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:16:36] ,player_stat,744.01,3,Team 1,Georan,Lúcio,20,3,6,5616.15,1825,3726.15,5654.72,1828.60,1116.71,3028.60,0,14,17,3,3,0,0,0,12,0,1,13,0.08,0,0,0,867,169,606,0,0,0.22,744.01
+[00:16:36] ,player_stat,744.01,3,Team 2,マーシー,Lúcio,1,0,3,1514.25,565,924.25,2790.02,705.04,475.17,1693.56,0,2,2,1,1,0,0,0,1,0,0,5,0.14,0,0,0,266,37,205,0,0,0.15,229.23
+[00:16:36] ,player_stat,744.01,3,Team 2,マーシー,Mercy,0,0,6,60,0,60,7723.64,1495.57,627.84,2695.57,0,14,15,3,3,0,0,0,0,0,0,1,0.50,0,0,0,10,2,8,0,0,0.20,514.77
+[00:16:36] ,player_stat,744.01,3,Team 1,Spingar,Sojourn,17,10,2,8473.42,2308.70,5464.28,0,1120.70,0,1595.70,0,0,0,2,2,1,4,2,8,0,0,28,0.08,0,0,0,1277,371,691,0,0,0.35,282.51
+[00:16:36] ,player_stat,744.01,3,Team 1,Spingar,Symmetra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7.81
+[00:16:36] ,player_stat,744.01,3,Team 1,Spingar,Soldier: 76,8,7,4,6003.08,475,5268.08,437.87,937.93,423.07,1737.93,0,1,0,1,1,0,0,3,2,0,1,23,0.09,0,0,0,649,268,354,0,0,0.43,287.10
+[00:16:36] ,player_stat,744.01,3,Team 1,Spingar,Tracer,10,5,1,2894.46,72,2822.46,0,518.29,491.00,1159.29,0,0,0,1,1,0,0,1,4,0,0,64,0.15,0,0,0,1284,434,839,0,0,0.34,166.60
+[00:16:36] ,round_end,744.01,3,0,2,1,0,100,14.77,0
+[00:16:36] ,player_stat,744.01,3,Team 2,chap,Mei,0,0,1,3871.29,175,704.29,0,294.64,156.34,544.64,798.00,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,314,143,145,0,0,0.50,67.90
+[00:16:36] ,player_stat,744.01,3,Team 2,chap,Symmetra,2,0,3,2509.68,751.99,1693.37,0,811.54,0,1825.30,1761.12,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,35,7,27,0,0,0.21,169.80
+[00:16:36] ,player_stat,744.01,3,Team 2,chap,Tracer,15,5,6,6230.19,497.45,5588.73,0,1478.46,1154.95,3506.91,0,0,0,4,3,0,0,0,6,0,0,89,0.10,0,0,0,4094,936,3042,0,0,0.24,506.31
+[00:16:37] ,ultimate_end,744.01,Team 1,Guitar,Soldier: 76,0,4
+[00:16:37] ,round_end,744.01,3,0,2,1,0,100,14.77,0
+[00:16:37] ,match_end,744.01,3,2,1
+[00:16:37] ,player_stat,744.01,3,Team 2,chap,Mei,0,0,1,3871.29,175,704.29,0,294.64,156.34,544.64,798.00,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,314,143,145,0,0,0.50,67.90
+[00:16:37] ,player_stat,744.01,3,Team 2,chap,Symmetra,2,0,3,2509.68,751.99,1693.37,0,811.54,0,1825.30,1761.12,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,35,7,27,0,0,0.21,169.80
+[00:16:37] ,player_stat,744.01,3,Team 2,chap,Tracer,15,5,6,6230.19,497.45,5588.73,0,1478.46,1154.95,3506.91,0,0,0,4,3,0,0,0,6,0,0,89,0.10,0,0,0,4094,936,3042,0,0,0.24,506.31
+[00:16:37] ,player_stat,744.01,3,Team 1,Guitar,Junkrat,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:16:37] ,player_stat,744.01,3,Team 1,Guitar,Symmetra,1,0,1,1043.31,256.00,787.31,0,190.16,0,390.16,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,1,0,0,0,32.51
+[00:16:37] ,player_stat,744.01,3,Team 1,Guitar,Mei,11,3,3,13916.03,2210.12,3388.95,0,2263.77,558.04,3202.35,2570.32,0,7,1,1,0,0,1,4,0,0,0,0,0,0,0,711,318,244,0,0,0.57,258.94
+[00:16:37] ,player_stat,744.01,3,Team 1,Guitar,Tracer,8,1,4,3298.10,339.21,2958.89,0,659.44,719.51,2077.58,0,0,0,2,2,0,0,0,3,0,0,48,0.10,0,0,0,1750,503,1165,0,0,0.30,289.06
+[00:16:37] ,player_stat,744.01,3,Team 1,Guitar,Soldier: 76,9,5,1,2572.14,456,2116.14,168.73,897.26,168.73,1097.26,0,0,0,1,1,0,0,0,3,0,0,7,0.06,0,0,0,370,109,237,0,0,0.32,163.49
+[00:16:37] ,player_stat,744.01,3,Team 1,Jinhyeok,Ramattra,31,13,6,19057.74,5349.08,12777.46,0,7393.32,0,13323.65,4591.21,0,6,3,3,0,0,1,15,0,0,119,0.10,0,0,0,4662,1188,2806,0,0,0.30,744.01
+[00:16:37] ,player_stat,744.01,3,Team 2,Goul,Junkrat,4,2,4,3535.20,1517.45,1882.06,0,500.95,0,1300.95,0,0,1,1,1,0,0,1,1,0,0,0,0,0,0,0,83,13,62,0,0,0.17,166.92
+[00:16:37] ,player_stat,744.01,3,Team 2,Goul,Sojourn,0,0,2,609.17,0,509.17,0,62.21,0,462.21,0,0,0,0,0,0,0,0,0,0,0,5,0.11,0,0,0,233,45,185,0,0,0.20,62.31
+[00:16:37] ,player_stat,744.01,3,Team 2,Goul,Pharah,19,13,6,8348.59,1122.65,6787.44,0,4234.24,0,5507.36,0,0,0,2,2,0,0,0,6,2,0,0,0,0,0,0,255,91,155,0,0,0.37,514.77
+[00:16:37] ,player_stat,744.01,3,Team 2,Tetsu,Baptiste,1,0,4,1725.93,550,1125.93,5363.83,1158.89,400.48,1958.89,0,2,0,2,2,0,0,0,1,0,0,2,0.04,0,0,0,194,54,121,0,0,0.31,229.23
+[00:16:37] ,player_stat,744.01,3,Team 2,Tetsu,Kiriko,7,2,10,2672.64,146.25,2413.89,5413.76,1698.33,0,3698.32,0,9,2,2,1,0,0,0,4,0,0,9,0.18,0,0,0,198,51,143,0,0,0.26,514.77
+[00:16:37] ,player_stat,744.01,3,Team 2,OTD,Reinhardt,4,4,3,5102.19,1320,3697.19,0,5049.47,0,6849.47,8812.60,0,0,2,2,0,0,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,229.23
+[00:16:37] ,player_stat,744.01,3,Team 2,OTD,Roadhog,7,3,2,2663.53,272.50,2391.03,2573.08,5033.38,2573.08,6433.38,0,0,3,1,1,0,0,0,5,0,1,17,0.07,0,0,0,1120,240,830,0,0,0.22,177.81
+[00:16:37] ,player_stat,744.01,3,Team 2,OTD,Ramattra,5,2,4,2919.35,143.64,2775.71,0,2904.74,0,6022.16,3635.09,0,1,1,1,0,0,0,3,0,0,54,0.19,0,0,0,1618,282,1304,0,0,0.18,254.80
+[00:16:37] ,player_stat,744.01,3,Team 2,OTD,Winston,2,1,3,1226.50,99.60,1126.90,0,565.47,0,2065.47,1930,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,9,5,4,0,0,0.56,82.16
+[00:16:37] ,player_stat,744.01,3,Team 1,YAI,Baptiste,20,9,6,8845.02,3645.70,5096.12,10157.46,2676.95,667.27,4067.45,0,31,4,5,5,0,0,0,11,0,0,19,0.08,0,0,0,854,225,479,0,0,0.32,744.01
+[00:16:37] ,player_stat,744.01,3,Team 1,YAI,Kiriko,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:16:37] ,player_stat,744.01,3,Team 1,Georan,Lúcio,20,3,6,5616.15,1825,3726.15,5654.72,1828.60,1116.71,3028.60,0,14,17,3,3,0,0,0,12,0,1,13,0.08,0,0,0,867,169,606,0,0,0.22,744.01
+[00:16:37] ,player_stat,744.01,3,Team 2,マーシー,Lúcio,1,0,3,1514.25,565,924.25,2790.02,705.04,475.17,1693.56,0,2,2,1,1,0,0,0,1,0,0,5,0.14,0,0,0,266,37,205,0,0,0.15,229.23
+[00:16:37] ,player_stat,744.01,3,Team 2,マーシー,Mercy,0,0,6,60,0,60,7723.64,1495.57,627.84,2695.57,0,14,15,3,3,0,0,0,0,0,0,1,0.50,0,0,0,10,2,8,0,0,0.20,514.77
+[00:16:37] ,player_stat,744.01,3,Team 1,Spingar,Sojourn,17,10,2,8473.42,2308.70,5464.28,0,1120.70,0,1595.70,0,0,0,2,2,1,4,2,8,0,0,28,0.08,0,0,0,1277,371,691,0,0,0.35,282.51
+[00:16:37] ,player_stat,744.01,3,Team 1,Spingar,Symmetra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7.81
+[00:16:37] ,player_stat,744.01,3,Team 1,Spingar,Soldier: 76,8,7,4,6003.08,475,5268.08,437.87,937.93,423.07,1737.93,0,1,0,1,1,0,0,3,2,0,1,23,0.09,0,0,0,649,268,354,0,0,0.43,287.10
+[00:16:37] ,player_stat,744.01,3,Team 1,Spingar,Tracer,10,5,1,2894.46,72,2822.46,0,518.29,491.00,1159.29,0,0,0,1,1,0,0,1,4,0,0,64,0.15,0,0,0,1284,434,839,0,0,0.34,166.60
