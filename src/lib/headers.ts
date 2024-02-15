@@ -71,6 +71,16 @@ export const headers: Record<string, string[]> = {
     "Team 1 Name",
     "Team 2 Name",
   ],
+  mercy_rez: [
+    "event_type",
+    "Match Time",
+    "Resurrecter Team",
+    "Resurrecter Player",
+    "Resurrecter Hero",
+    "Resurrectee Team",
+    "Resurrectee Player",
+    "Resurrectee Hero",
+  ],
   objective_captured: [
     "event_type",
     "Match Time",
