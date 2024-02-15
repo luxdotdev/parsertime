@@ -1005,7 +1005,7 @@ export async function createRemechChargedRows(
       player_team: charged[2],
       player_name: charged[3],
       player_hero: charged[4],
-      hero_duplicated: charged[5],
+      hero_duplicated: String(charged[5]),
       ultimate_id: charged[6],
       MapDataId: mapId,
     })),
