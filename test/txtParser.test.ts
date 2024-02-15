@@ -35,6 +35,9 @@ test("should be equivalent to control data v2", async () => {
   expect(workbook2).toEqual(workbook1);
 });
 
+/**
+ * This test checks for echo duplicate events to be handled correctly.
+ */
 test("should be equivalent to control data v3", async () => {
   const file = await fs.readFileSync(
     "./test/samples/Log-2024-01-22-21-35-38.txt",
@@ -53,6 +56,9 @@ test("should be equivalent to control data v3", async () => {
   );
 });
 
+/**
+ * This test is skipped because there is an issue with stats appearing as **** in the control data.
+ */
 test.todo("should be equivalent to control data v4", async () => {
   const file = await fs.readFileSync(
     "./test/samples/Log-2023-12-12-22-15-10.txt",
@@ -66,6 +72,24 @@ test.todo("should be equivalent to control data v4", async () => {
   );
 
   expect(workbook2).toEqual(workbook1);
+});
+
+/**
+ * This test checks for mercy rez events to be handled correctly.
+ */
+test("should be equivalent to control data v5", async () => {
+  const file = await fs.readFileSync(
+    "./test/samples/Log-2024-02-05-20-07-38.txt",
+    "utf8"
+  );
+
+  // @ts-expect-error - cannot pass File type in node
+  const workbook1 = await parseDataFromTXT(file);
+  const workbook2 = await local_parseDataFromXLSX(
+    "./test/samples/Log-2024-02-05-20-07-38_parsed.xlsx"
+  );
+
+  expect(workbook2.mercy_rez).toEqual(workbook1.mercy_rez);
 });
 
 async function local_parseDataFromXLSX(fileName: string) {
