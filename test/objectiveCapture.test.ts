@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { PrismaClient } from "@prisma/client";
+import { ObjectiveCaptured, PrismaClient } from "@prisma/client";
 import { createObjectiveCapturedRows } from "../src/lib/parser";
 import { ObjectiveCapturedTableRow, ParserData } from "@/types/parser";
 
@@ -23,7 +23,7 @@ test("should return the generated objective capture row", async () => {
     objective_capture: [newObjectiveCapturedRow],
   };
 
-  const expectedRow = {
+  const expectedRow: Omit<ObjectiveCaptured, "id"> = {
     scrimId: 1,
     event_type: "objective_capture",
     match_time: 100,
@@ -57,13 +57,13 @@ test("should return the generated objective capture row", async () => {
 test("should return empty array", async () => {
   const data = {};
 
-  const heroSwapRow = await createObjectiveCapturedRows(
+  const objCaptureRow = await createObjectiveCapturedRows(
     data as any,
     { id: 1 },
     1
   );
 
-  expect(heroSwapRow).toEqual([]);
+  expect(objCaptureRow).toEqual([]);
 });
 
 prisma.$disconnect();
