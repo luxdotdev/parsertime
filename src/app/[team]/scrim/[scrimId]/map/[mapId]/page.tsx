@@ -12,6 +12,7 @@ import { Killfeed } from "@/components/map/killfeed";
 import { Metadata } from "next";
 import { SearchParams } from "@/types/next";
 import { MapCharts } from "@/components/charts/map-charts";
+import { ComparePlayers } from "@/components/map/compare-players";
 
 type Props = {
   params: { team: string; scrimId: string; mapId: string };
@@ -119,7 +120,7 @@ export default async function MapDashboardPage({ params }: Props) {
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="killfeed">Killfeed</TabsTrigger>
               <TabsTrigger value="charts">Charts</TabsTrigger>
-              <TabsTrigger value="notifications">Notifications</TabsTrigger>
+              <TabsTrigger value="compare">Compare</TabsTrigger>
             </TabsList>
             <TabsContent value="overview" className="space-y-4">
               <DefaultOverview id={id} />
@@ -129,6 +130,9 @@ export default async function MapDashboardPage({ params }: Props) {
             </TabsContent>
             <TabsContent value="charts" className="space-y-4">
               <MapCharts id={id} />
+            </TabsContent>
+            <TabsContent value="compare" className="space-y-4">
+              <ComparePlayers id={id} />
             </TabsContent>
           </Tabs>
         </div>
