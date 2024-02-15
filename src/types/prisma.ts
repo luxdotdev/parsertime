@@ -4,6 +4,7 @@ import {
   Kill,
   MatchEnd,
   MatchStart,
+  MercyRez,
   ObjectiveCaptured,
   ObjectiveUpdated,
   OffensiveAssist,
@@ -23,6 +24,7 @@ export type HeroSpawnRows = HeroSpawn[];
 export type KillRows = Kill[];
 export type MatchEndRows = MatchEnd[];
 export type MatchStartRows = MatchStart[];
+export type MercyRezRows = MercyRez[];
 export type ObjectiveCapturedRows = ObjectiveCaptured[];
 export type ObjectiveUpdatedRows = ObjectiveUpdated[];
 export type OffensiveAssistRows = OffensiveAssist[];
