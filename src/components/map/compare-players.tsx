@@ -80,7 +80,7 @@ export async function ComparePlayers({ id }: { id: number }) {
   );
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
+    <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
       <Card className="col-span-3">
         <CardHeader>
           <CardTitle>{teamNames?.team_1_name || "Team 1"}</CardTitle>
