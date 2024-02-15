@@ -137,6 +137,7 @@ enum EventType {
   kill
   match_end
   match_start
+  mercy_rez
   objective_capture
   objective_updated
   offensive_assist
@@ -187,6 +188,7 @@ model MapData {
   ultimate_start       UltimateStart[]
   Map                  Map?                 @relation(fields: [mapId], references: [id])
   mapId                Int?
+  MercyRez             MercyRez[]
 
   @@index([scrimId])
   @@index([mapId])
@@ -324,6 +326,25 @@ model MatchStart {
   map_type    MapType
   team_1_name String
   team_2_name String
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model MercyRez {
+  id                 Int       @id @default(autoincrement())
+  scrimId            Int
+  event_type         EventType @default(mercy_rez)
+  match_time         Float
+  resurrecter_team   String
+  resurrecter_player String
+  resurrecter_hero   String
+  resurrectee_team   String
+  resurrectee_player String
+  resurrectee_hero   String
 
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
