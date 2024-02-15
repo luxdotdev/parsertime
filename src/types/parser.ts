@@ -92,6 +92,16 @@ export type MatchStartTableRow = [
   team_2_name: string
 ];
 
+export type MercyRezTableRow = [
+  event_type: "mercy_rez",
+  match_time: number,
+  resurrecter_team: PlayerTeam,
+  resurrecter_player: string,
+  resurrectee_team: PlayerTeam,
+  resurrectee_player: string,
+  resurrectee_hero: HeroName
+];
+
 export type ObjectiveCapturedTableRow = [
   event_type: "objective_captured",
   match_time: number,
@@ -249,6 +259,7 @@ export type ParserData = {
   kill: KillTableRow[];
   match_end?: MatchEndTableRow[];
   match_start: MatchStartTableRow[];
+  mercy_rez?: MercyRezTableRow[];
   objective_capture: ObjectiveCapturedTableRow[];
   objective_updated: ObjectiveUpdatedTableRow[];
   offensive_assist: OffensiveAssistTableRow[];
