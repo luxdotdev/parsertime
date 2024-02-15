@@ -272,6 +272,7 @@ export type UltimateStartTableRow = [
 
 export type ParserData = {
   defensive_assist: DefensiveAssistTableRow[];
+  dva_remech: DvaRemechTableRow[];
   echo_duplicate_end?: EchoDuplicateEndTableRow[];
   echo_duplicate_start?: EchoDuplicateStartTableRow[];
   hero_spawn: HeroSpawnTableRow[];
@@ -286,6 +287,7 @@ export type ParserData = {
   payload_progress: PayloadProgressTableRow[];
   player_stat: PlayerStatTableRow[];
   point_progress: PointProgressTableRow[];
+  remech_charged: RemechChargedTableRow[];
   round_end: RoundEndTableRow[];
   round_start: RoundStartTableRow[];
   setup_complete: SetupCompleteTableRow[];
