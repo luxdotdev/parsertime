@@ -92,6 +92,24 @@ test("should be equivalent to control data v5", async () => {
   expect(workbook2.mercy_rez).toEqual(workbook1.mercy_rez);
 });
 
+/**
+ * This test checks for D.Va events to be handled correctly.
+ */
+test("should be equivalent to control data v6", async () => {
+  const file = await fs.readFileSync(
+    "./test/samples/Log-2024-01-10-20-38-42.txt",
+    "utf8"
+  );
+
+  // @ts-expect-error - cannot pass File type in node
+  const workbook1 = await parseDataFromTXT(file);
+  const workbook2 = await local_parseDataFromXLSX(
+    "./test/samples/Log-2024-01-10-20-38-42_parsed.xlsx"
+  );
+
+  expect(workbook2).toEqual(workbook1);
+});
+
 async function local_parseDataFromXLSX(fileName: string) {
   // read the file binary
   const file = await fs.readFileSync(fileName, "binary");
