@@ -214,6 +214,7 @@ export async function createNewScrimFromParsedData(
     await createKillRows(firstMap, scrim, map.id);
     await createMatchEndRows(firstMap, scrim, map.id);
     await createMatchStartRows(firstMap, scrim, map.id);
+    await createMercyRezRows(firstMap, scrim, map.id);
     await createObjectiveCapturedRows(firstMap, scrim, map.id);
     await createObjectiveUpdatedRows(firstMap, scrim, map.id);
     await createOffensiveAssistRows(firstMap, scrim, map.id);
@@ -305,6 +306,7 @@ export async function createNewMap(
     await createKillRows(data.map, { id: data.scrimId }, map.id);
     await createMatchEndRows(data.map, { id: data.scrimId }, map.id);
     await createMatchStartRows(data.map, { id: data.scrimId }, map.id);
+    await createMercyRezRows(data.map, { id: data.scrimId }, map.id);
     await createObjectiveCapturedRows(data.map, { id: data.scrimId }, map.id);
     await createObjectiveUpdatedRows(data.map, { id: data.scrimId }, map.id);
     await createOffensiveAssistRows(data.map, { id: data.scrimId }, map.id);
@@ -635,6 +637,43 @@ export async function createMatchStartRows(
   });
 
   return matchStartsByScrimId;
+}
+
+export async function createMercyRezRows(
+  data: ParserData,
+  scrim: { id: number },
+  mapId: number
+) {
+  if (
+    typeof data.mercy_rez === "undefined" ||
+    data.mercy_rez.length === 0 ||
+    !data.mercy_rez
+  ) {
+    Logger.log("No mercy rezzes found for map: ", mapId, "scrim: ", scrim.id);
+    return [];
+  }
+
+  await prisma.mercyRez.createMany({
+    data: data.mercy_rez.map((rez) => ({
+      scrimId: scrim.id,
+      match_time: rez[1],
+      resurrecter_team: rez[2],
+      resurrecter_player: rez[3],
+      resurrecter_hero: rez[4],
+      resurrectee_team: rez[5],
+      resurrectee_player: rez[6],
+      resurrectee_hero: rez[7],
+      MapDataId: mapId,
+    })),
+  });
+
+  const mercyRezzesByScrimId = await prisma.mercyRez.findMany({
+    where: {
+      scrimId: scrim.id,
+    },
+  });
+
+  return mercyRezzesByScrimId;
 }
 
 export async function createObjectiveCapturedRows(
