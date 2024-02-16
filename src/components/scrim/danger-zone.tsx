@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -61,12 +61,14 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
 
   return (
     <Card className="max-w-lg border-red-500 dark:border-red-700">
-      <CardTitle className="py-2 pl-6 text-red-500 dark:text-red-700">
-        Danger Zone
-      </CardTitle>
+      <CardHeader>
+        <CardTitle className="text-red-500 dark:text-red-700">
+          Danger Zone
+        </CardTitle>
+      </CardHeader>
       <CardContent>
         <h3 className="text-lg font-semibold">Delete Scrim</h3>
-        <p className="pb-2">
+        <p className="pb-4">
           Once you delete a scrim, there is no going back. Please be certain.
         </p>
         <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
