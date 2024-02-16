@@ -1,17 +1,26 @@
 import { expect, test } from "vitest";
-import { PrismaClient } from "@prisma/client";
+import { HeroSwap, PrismaClient } from "@prisma/client";
 import { createHeroSwapRows } from "../src/lib/parser";
+import { HeroSwapTableRow, ParserData } from "@/types/parser";
 
 const prisma = new PrismaClient({
   datasourceUrl: process.env.TEST_DB_URL,
 });
 
 test("should return the generated hero swap row", async () => {
-  const newHeroSwapRow = [1, 1000, "Team 1", "lux", "Ana", "Baptiste", 0];
+  const newHeroSwapRow: HeroSwapTableRow = [
+    "hero_swap",
+    1000,
+    "Team 1",
+    "lux",
+    "Ana",
+    "Baptiste",
+    0,
+  ];
 
-  const data = { hero_swap: [newHeroSwapRow] };
+  const data: Pick<ParserData, "hero_swap"> = { hero_swap: [newHeroSwapRow] };
 
-  const expectedRow = {
+  const expectedRow: Omit<HeroSwap, "id"> = {
     scrimId: 1,
     event_type: "hero_swap",
     match_time: 1000,
