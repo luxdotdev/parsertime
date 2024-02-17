@@ -9,6 +9,7 @@ import { render } from "@react-email/render";
 import MagicLinkEmail from "@/components/email/magic-link";
 import prisma from "@/lib/prisma";
 import { track } from "@vercel/analytics/server";
+import Logger from "@/lib/logger";
 
 export const config = {
   adapter: PrismaAdapter(prisma),
@@ -76,6 +77,14 @@ export const config = {
   callbacks: {
     async redirect({ baseUrl }) {
       return `${baseUrl}/dashboard`;
+    },
+  },
+  events: {
+    async signIn({ user, isNewUser }) {
+      if (isNewUser) {
+        Logger.log("New user signed up", { user });
+        await track("New User", { email: user.email ?? "unknown" });
+      }
     },
   },
   pages: {
