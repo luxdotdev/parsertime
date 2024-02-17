@@ -1,5 +1,5 @@
 import { SignOutButton } from "@/components/auth/auth-components";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { auth } from "@/lib/auth";
+import { ExternalLinkIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -60,6 +61,14 @@ export async function UserNav() {
           </Link>
           <Link href="mailto:help@parsertime.app">
             <DropdownMenuItem>Contact</DropdownMenuItem>
+          </Link>
+          <Link href="https://docs.parsertime.app" target="_blank">
+            <DropdownMenuItem>
+              Docs
+              <DropdownMenuShortcut>
+                <ExternalLinkIcon />
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
