@@ -40,6 +40,13 @@ export default function Footer() {
           >
             Contact
           </Link>
+          <Link
+            href="https://docs.parsertime.app"
+            target="_blank"
+            className="text-sm text-gray-600 transition-colors duration-300 dark:text-gray-300 hover:text-black dark:hover:text-white"
+          >
+            Docs
+          </Link>
         </div>
 
         <p className="mt-6 text-sm text-gray-500 lg:mt-0 dark:text-gray-400">
