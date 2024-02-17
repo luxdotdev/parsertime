@@ -5,11 +5,13 @@ import {
   DashboardIcon,
   EnterIcon,
   EnvelopeClosedIcon,
+  ExternalLinkIcon,
   GearIcon,
   HomeIcon,
   LaptopIcon,
   MoonIcon,
   PersonIcon,
+  ReaderIcon,
   SunIcon,
 } from "@radix-ui/react-icons";
 import * as React from "react";
@@ -84,10 +86,17 @@ export function CommandDialogMenu() {
               <span>Dashboard</span>
             </CommandItem>
             <CommandItem
-              onSelect={() => runCommand(() => router.push("/team"))}
+              onSelect={() =>
+                runCommand(() =>
+                  window.open("https://docs.parsertime.app", "_blank")
+                )
+              }
             >
-              <PersonIcon className="mr-2 h-4 w-4" />
-              <span>Teams</span>
+              <ReaderIcon className="mr-2 h-4 w-4" />
+              <span>Docs</span>
+              <CommandShortcut>
+                <ExternalLinkIcon />
+              </CommandShortcut>
             </CommandItem>
             <CommandItem
               onSelect={() => {
@@ -107,6 +116,12 @@ export function CommandDialogMenu() {
             <>
               <CommandSeparator />
               <CommandGroup heading="Teams">
+                <CommandItem
+                  onSelect={() => runCommand(() => router.push("/team"))}
+                >
+                  <PersonIcon className="mr-2 h-4 w-4" />
+                  <span>View Teams</span>
+                </CommandItem>
                 {teams.map((team) => (
                   <CommandItem
                     key={team.value}
