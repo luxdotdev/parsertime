@@ -48,6 +48,13 @@ export function MainNav({
       >
         Contact
       </Link>
+      <Link
+        href="https://docs.parsertime.app"
+        target="_blank"
+        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+      >
+        Docs
+      </Link>
     </nav>
   );
 }
