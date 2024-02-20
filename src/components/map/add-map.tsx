@@ -79,8 +79,8 @@ export function AddMapCard() {
         title: "Error",
         description: (
           <p>
-            An error occurred: {res.statusText} ({res.status}). Please read the
-            docs{" "}
+            An error occurred: {await res.text()} ({res.status}). Please read
+            the docs{" "}
             <Link
               href="https://docs.parsertime.app/#common-errors"
               target="_blank"
