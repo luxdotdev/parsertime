@@ -25,11 +25,25 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  await createNewMap({ map: data, scrimId: parseInt(id) }, session);
+  try {
+    await createNewMap({ map: data, scrimId: parseInt(id) }, session);
 
-  await track("Create Map", { user: session.user.email });
+    await track("Create Map", { user: session.user.email });
 
-  return new Response("OK", {
-    status: 200,
-  });
+    return new Response("OK", {
+      status: 200,
+    });
+  } catch (e: unknown) {
+    Logger.error("Error adding map", e);
+
+    if (e instanceof Error) {
+      return new Response(e.message, {
+        status: 500,
+      });
+    }
+
+    return new Response("Internal Server Error", {
+      status: 500,
+    });
+  }
 }
