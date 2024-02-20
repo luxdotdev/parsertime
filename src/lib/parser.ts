@@ -247,7 +247,7 @@ export async function createNewScrimFromParsedData(
 
     Logger.log("Scrim and map deleted: ", scrim.id, map.id);
 
-    throw new Error("Error creating map data");
+    throw new Error("Invalid Log Format");
   }
 }
 
