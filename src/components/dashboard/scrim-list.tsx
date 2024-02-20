@@ -2,6 +2,7 @@ import { AddScrimCard } from "@/components/dashboard/add-scrim-card";
 import { EmptyScrimList } from "@/components/dashboard/empty-scrim-list";
 import { ScrimCard } from "@/components/dashboard/scrim-card";
 import { Card } from "@/components/ui/card";
+import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { SearchParams } from "@/types/next";
@@ -16,11 +17,7 @@ export async function ScrimList({ searchParams }: Props) {
 
   let scrims = [];
 
-  const userData = await prisma.user.findFirst({
-    where: {
-      email: session?.user?.email,
-    },
-  });
+  const userData = await getUser(session?.user?.email);
 
   if (!userData) {
     return <EmptyScrimList />;

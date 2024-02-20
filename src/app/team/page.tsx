@@ -1,5 +1,6 @@
 import { Card, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
@@ -30,11 +31,7 @@ export const metadata: Metadata = {
 export default async function TeamPage() {
   const session = await auth();
 
-  const userData = await prisma.user.findFirst({
-    where: {
-      email: session?.user?.email,
-    },
-  });
+  const userData = await getUser(session?.user?.email);
 
   const userTeams = await prisma.team.findMany({
     where: {

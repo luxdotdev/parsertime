@@ -3,6 +3,7 @@ import { render } from "@react-email/render";
 import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { track } from "@vercel/analytics/server";
+import { getUser } from "@/data/user-dto";
 
 export async function POST(req: NextRequest) {
   const inviteeEmail = req.nextUrl.searchParams.get("email");
@@ -31,11 +32,7 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const inviter = await prisma.user.findFirst({
-    where: {
-      email: teamInviteToken?.email,
-    },
-  });
+  const inviter = await getUser(teamInviteToken?.email);
 
   if (!inviter) {
     return new Response("Inviter not found", {
@@ -55,11 +52,7 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const user = await prisma.user.findFirst({
-    where: {
-      email: inviteeEmail,
-    },
-  });
+  const user = await getUser(inviteeEmail);
 
   if (!user) {
     return new Response("User not found", {

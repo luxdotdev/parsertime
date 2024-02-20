@@ -1,3 +1,4 @@
+import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { User } from "@prisma/client";
@@ -42,11 +43,7 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const authedUser = await prisma.user.findFirst({
-    where: {
-      email: session.user.email,
-    },
-  });
+  const authedUser = await getUser(session.user.email);
 
   if (!authedUser) {
     return new Response("Unauthorized", {

@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
+import { getUser } from "@/data/user-dto";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -47,11 +48,7 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const authedUser = await prisma.user.findFirst({
-    where: {
-      email: session?.user?.email,
-    },
-  });
+  const authedUser = await getUser(session?.user?.email);
 
   if (!authedUser && !devTokenAuthed) {
     return new Response("Unauthorized", {

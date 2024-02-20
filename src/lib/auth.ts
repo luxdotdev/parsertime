@@ -10,6 +10,7 @@ import MagicLinkEmail from "@/components/email/magic-link";
 import prisma from "@/lib/prisma";
 import { track } from "@vercel/analytics/server";
 import Logger from "@/lib/logger";
+import { getUser } from "@/data/user-dto";
 
 export const config = {
   adapter: PrismaAdapter(prisma),
@@ -100,11 +101,7 @@ export async function isAuthedToViewScrim(id: number) {
     return false;
   }
 
-  const user = await prisma.user.findFirst({
-    where: {
-      email: session?.user?.email,
-    },
-  });
+  const user = await getUser(session?.user?.email);
 
   // if user is admin return true
   if (user?.role === $Enums.UserRole.ADMIN) {

@@ -12,6 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Metadata } from "next";
 import { Pencil2Icon } from "@radix-ui/react-icons";
+import { getUser } from "@/data/user-dto";
 
 type Props = {
   params: { team: string; scrimId: string };
@@ -69,11 +70,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
     },
   });
 
-  const user = await prisma.user.findFirst({
-    where: {
-      email: session?.user?.email,
-    },
-  });
+  const user = await getUser(session?.user?.email);
 
   const isManager =
     (await prisma.team.findFirst({

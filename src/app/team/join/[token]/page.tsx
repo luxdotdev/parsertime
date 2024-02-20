@@ -1,3 +1,4 @@
+import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
@@ -59,11 +60,7 @@ export default async function TokenPage({
     },
   });
 
-  const user = await prisma.user.findFirst({
-    where: {
-      email: session?.user?.email,
-    },
-  });
+  const user = await getUser(session?.user?.email);
 
   prisma.user.update({
     where: {

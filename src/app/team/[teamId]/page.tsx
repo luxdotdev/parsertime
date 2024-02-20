@@ -3,6 +3,7 @@ import { TeamSettingsForm } from "@/components/team/team-settings-form";
 import { UserCardButtons } from "@/components/team/user-card-buttons";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { $Enums, User } from "@prisma/client";
@@ -77,11 +78,7 @@ export default async function Team({ params }: { params: { teamId: string } }) {
     },
   })) ?? { managers: [] };
 
-  const user = await prisma.user.findFirst({
-    where: {
-      email: session?.user?.email,
-    },
-  });
+  const user = await getUser(session?.user?.email);
 
   const hasPerms =
     user?.id === teamData?.ownerId ||

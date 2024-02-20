@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
+import { getUser } from "@/data/user-dto";
 
 type UpdateNameBody = {
   name: string;
@@ -18,11 +19,7 @@ export async function POST(req: NextRequest) {
 
   const body = (await req.json()) as UpdateNameBody;
 
-  const user = await prisma.user.findFirst({
-    where: {
-      email: session.user.email,
-    },
-  });
+  const user = await getUser(session.user.email);
 
   if (!user) {
     return new Response("Unauthorized", {

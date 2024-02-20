@@ -1,3 +1,4 @@
+import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
@@ -22,11 +23,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const user = await prisma.user.findFirst({
-    where: {
-      email: session?.user?.email ?? "lucas@lux.dev",
-    },
-  });
+  const user = await getUser(session?.user?.email ?? "lucas@lux.dev");
 
   if (!user) {
     return new Response("User not found", {
