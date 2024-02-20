@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon } from "@radix-ui/react-icons";
+import { CalendarIcon, ExternalLinkIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -135,7 +135,21 @@ export function ScrimCreationForm() {
     } else {
       toast({
         title: "Error",
-        description: `An error occurred: ${res.statusText} (${res.status})`,
+        description: (
+          <p>
+            An error occurred: {res.statusText} ({res.status}). Please read the
+            docs{" "}
+            <Link
+              href="https://docs.parsertime.app/#common-errors"
+              target="_blank"
+              className="underline"
+            >
+              here
+            </Link>{" "}
+            <ExternalLinkIcon className="h-4 w-4 inline" /> to see if the error
+            can be resolved.
+          </p>
+        ),
         duration: 5000,
         variant: "destructive",
       });
