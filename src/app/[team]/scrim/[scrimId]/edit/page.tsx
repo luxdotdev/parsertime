@@ -7,6 +7,7 @@ import { UserNav } from "@/components/user-nav";
 import { MainNav } from "@/components/dashboard/main-nav";
 import Link from "next/link";
 import { DangerZone } from "@/components/scrim/danger-zone";
+import { getScrim } from "@/data/scrim-dto";
 
 type Props = {
   params: { team: string; scrimId: string };
@@ -14,11 +15,7 @@ type Props = {
 };
 
 export default async function EditScrimPage({ params }: Props) {
-  const scrim = await prisma.scrim.findFirst({
-    where: {
-      id: parseInt(params.scrimId),
-    },
-  });
+  const scrim = await getScrim(parseInt(params.scrimId));
 
   if (!scrim) {
     return <div>Scrim not found</div>;
