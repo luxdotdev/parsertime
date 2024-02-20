@@ -334,7 +334,7 @@ export async function createNewMap(
 
     Logger.log("Map deleted: ", map.id);
 
-    throw new Error("Error creating map data");
+    throw new Error("Invalid Log Format");
   }
 }
 
