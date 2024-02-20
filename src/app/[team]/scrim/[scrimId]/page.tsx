@@ -13,6 +13,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { Pencil2Icon } from "@radix-ui/react-icons";
 import { getUser } from "@/data/user-dto";
+import { getScrim } from "@/data/scrim-dto";
 
 type Props = {
   params: { team: string; scrimId: string };
@@ -58,11 +59,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
   const id = parseInt(params.scrimId);
   const session = await auth();
 
-  const scrim = await prisma.scrim.findFirst({
-    where: {
-      id: id,
-    },
-  });
+  const scrim = await getScrim(id);
 
   const maps = await prisma.map.findMany({
     where: {

@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
 import { getUser } from "@/data/user-dto";
+import { getScrim } from "@/data/scrim-dto";
 
 type UpdateNameBody = {
   name: string;
@@ -38,11 +39,7 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  const scrim = await prisma.scrim.findFirst({
-    where: {
-      id: body.scrimId,
-    },
-  });
+  const scrim = await getScrim(body.scrimId);
 
   if (!scrim) {
     return new Response("Scrim not found", {

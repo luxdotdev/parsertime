@@ -1,3 +1,4 @@
+import { getScrim } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
@@ -37,11 +38,7 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const scrim = await prisma.scrim.findFirst({
-    where: {
-      id: parseInt(id),
-    },
-  });
+  const scrim = await getScrim(parseInt(id));
 
   if (!scrim) {
     return new Response("Scrim not found", {
