@@ -1,6 +1,7 @@
 import { AdminScrimView } from "@/components/dashboard/admin-scrim-view";
 import { ScrimList } from "@/components/dashboard/scrim-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { SearchParams } from "@/types/next";
@@ -34,11 +35,7 @@ export const metadata: Metadata = {
 export default async function DashboardPage({ searchParams }: Props) {
   const session = await auth();
 
-  const userData = await prisma.user.findFirst({
-    where: {
-      email: session?.user?.email,
-    },
-  });
+  const userData = await getUser(session?.user?.email);
 
   const isAdmin = userData?.role === $Enums.UserRole.ADMIN;
 
