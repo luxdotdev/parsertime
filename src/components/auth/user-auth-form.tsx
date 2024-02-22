@@ -11,6 +11,7 @@ import { signIn } from "next-auth/react";
 
 import { z } from "zod";
 import { track } from "@vercel/analytics";
+import { EnvelopeOpenIcon } from "@radix-ui/react-icons";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -75,6 +76,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               {isLoading && (
                 <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
               )}
+              <EnvelopeOpenIcon className="mr-2 h-4 w-4" />
               Sign In with Email
             </Button>
           </div>
