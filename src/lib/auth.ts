@@ -11,6 +11,9 @@ import prisma from "@/lib/prisma";
 import { track } from "@vercel/analytics/server";
 import Logger from "@/lib/logger";
 import { getUser } from "@/data/user-dto";
+import { get } from "@vercel/edge-config";
+
+type Availability = "public" | "private";
 
 export const config = {
   adapter: PrismaAdapter(prisma),
@@ -76,6 +79,22 @@ export const config = {
     },
   ],
   callbacks: {
+    async signIn({ user, account, profile, email, credentials }) {
+      if (!user.email) return false;
+
+      // get app availability from edge config
+      const status = (await get("availability")) as Availability;
+
+      if (status === "public") return true;
+
+      // get list of allowed user emails from edge config
+      const allowedUsers = (await get("allowedUsers")) as string[];
+
+      if (allowedUsers.includes(user.email)) return true;
+
+      Logger.log("User not authorized for private access", { user });
+      return false;
+    },
     async redirect({ baseUrl }) {
       return `${baseUrl}/dashboard`;
     },
