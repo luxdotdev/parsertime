@@ -31,9 +31,14 @@ export default function AuthErrorPage({ searchParams }: Props) {
           help@parsertime.app.
         </Link>
       </p>
-      <Button className="mx-auto" asChild>
-        <Link href="/">Back to Home</Link>
-      </Button>
+      <div className="flex space-x-4">
+        <Button className="mx-auto" variant="outline" asChild>
+          <Link href="/">Back to Home</Link>
+        </Button>
+        <Button className="mx-auto" asChild>
+          <Link href="/sign-in">Sign In</Link>
+        </Button>
+      </div>
     </div>
   );
 }
