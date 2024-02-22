@@ -109,6 +109,8 @@ export const config = {
   },
   pages: {
     signIn: "/sign-in",
+    error: "/auth-error",
+    verifyRequest: "/verify-request",
   },
 } satisfies NextAuthConfig;
 
