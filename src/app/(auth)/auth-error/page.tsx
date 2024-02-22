@@ -4,7 +4,12 @@ import Link from "next/link";
 
 type Props = { searchParams: SearchParams };
 
-type Error = "Configuration" | "AccessDenied" | "Verification" | "Default";
+type Error =
+  | "Configuration"
+  | "AccessDenied"
+  | "Verification"
+  | "AuthorizedCallbackError"
+  | "Default";
 
 export default function AuthErrorPage({ searchParams }: Props) {
   const error = searchParams.error as Error;
@@ -13,6 +18,8 @@ export default function AuthErrorPage({ searchParams }: Props) {
     Configuration:
       "There was an error with the server configuration. Please contact support.",
     AccessDenied:
+      "Access was denied. The app may be in private beta. Please contact support if you believe this to be in error.",
+    AuthorizedCallbackError:
       "Access was denied. The app may be in private beta. Please contact support if you believe this to be in error.",
     Verification:
       "The token has expired or has already been used. Please try again.",
@@ -23,7 +30,8 @@ export default function AuthErrorPage({ searchParams }: Props) {
     <div className="flex flex-col items-center justify-center h-[90vh] p-6 space-y-6 text-center">
       <h1 className="text-3xl font-bold">There was an error signing in</h1>
       <p className="max-w-[600px] text-gray-500 dark:text-gray-400">
-        <span className="font-bold">Error:</span> {errorMessages[error]}
+        <span className="font-bold">Error:</span>{" "}
+        {errorMessages[error] ?? errorMessages.Default}
       </p>
       <p className="max-w-[600px] text-gray-500 dark:text-gray-400">
         Please try again. If the problem persists, please contact support at{" "}
