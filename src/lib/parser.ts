@@ -721,9 +721,9 @@ export async function createObjectiveCapturedRows(
   mapId: number
 ) {
   if (
-    typeof data.objective_capture === "undefined" ||
-    data.objective_capture.length === 0 ||
-    !data.objective_capture
+    typeof data.objective_captured === "undefined" ||
+    data.objective_captured.length === 0 ||
+    !data.objective_captured
   ) {
     Logger.log(
       "No objective captures found for map: ",
@@ -735,7 +735,7 @@ export async function createObjectiveCapturedRows(
   }
 
   await prisma.objectiveCaptured.createMany({
-    data: data.objective_capture.map((capture) => ({
+    data: data.objective_captured.map((capture) => ({
       scrimId: scrim.id,
       match_time: capture[1],
       round_number: capture[2],
