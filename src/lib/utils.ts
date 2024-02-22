@@ -195,8 +195,8 @@ export async function groupKillsIntoFights(mapId: number) {
   let currentFight: Fight | null = null;
 
   killsByMapId.forEach((kill) => {
-    if (!currentFight || kill.match_time - currentFight.end > 18) {
-      // If there's no current fight or we're past the 20 second window, start a new fight
+    if (!currentFight || kill.match_time - currentFight.end > 15) {
+      // If there's no current fight or we're past the 15 second window, start a new fight
       currentFight = {
         kills: [kill],
         start: kill.match_time,
