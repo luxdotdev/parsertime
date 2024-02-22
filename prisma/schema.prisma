@@ -139,7 +139,7 @@ enum EventType {
   match_end
   match_start
   mercy_rez
-  objective_capture
+  objective_captured
   objective_updated
   offensive_assist
   payload_progress
@@ -377,7 +377,7 @@ model MercyRez {
 model ObjectiveCaptured {
   id                      Int       @id @default(autoincrement())
   scrimId                 Int
-  event_type              EventType @default(objective_capture)
+  event_type              EventType @default(objective_captured)
   match_time              Float
   round_number            Int
   capturing_team          String
