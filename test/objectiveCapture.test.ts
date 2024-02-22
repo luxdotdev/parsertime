@@ -19,13 +19,13 @@ test("should return the generated objective capture row", async () => {
     0,
   ];
 
-  const data: Pick<ParserData, "objective_capture"> = {
-    objective_capture: [newObjectiveCapturedRow],
+  const data: Pick<ParserData, "objective_captured"> = {
+    objective_captured: [newObjectiveCapturedRow],
   };
 
   const expectedRow: Omit<ObjectiveCaptured, "id"> = {
     scrimId: 1,
-    event_type: "objective_capture",
+    event_type: "objective_captured",
     match_time: 100,
     round_number: 1,
     capturing_team: "Team 1",
