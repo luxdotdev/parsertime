@@ -19,6 +19,7 @@ import { toast } from "@/components/ui/use-toast";
 import { Scrim } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 const profileFormSchema = z.object({
   name: z
@@ -114,7 +115,13 @@ export function EditScrimForm({ scrim }: { scrim: Scrim }) {
         />
 
         <Button type="submit" disabled={loading}>
-          Update scrim
+          {loading ? (
+            <>
+              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" /> Updating...
+            </>
+          ) : (
+            "Update scrim"
+          )}
         </Button>
       </form>
     </Form>

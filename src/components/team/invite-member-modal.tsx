@@ -19,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -130,7 +131,14 @@ export default function InviteMemberModal({
                 Cancel
               </Button>
               <Button type="submit" disabled={loading}>
-                {loading ? "Sending invite..." : "Send Invite"}
+                {loading ? (
+                  <>
+                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                    Sending invite...
+                  </>
+                ) : (
+                  "Send Invite"
+                )}
               </Button>
             </DialogFooter>
           </form>

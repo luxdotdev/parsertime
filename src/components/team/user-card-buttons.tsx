@@ -14,6 +14,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/use-toast";
 import { User } from "@prisma/client";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -171,7 +172,14 @@ export function UserCardButtons({ user, managers }: Props) {
                     onClick={handlePromoteToManager}
                     disabled={promotionLoading}
                   >
-                    Promote to Manager
+                    {promotionLoading ? (
+                      <>
+                        <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
+                        Promoting...
+                      </>
+                    ) : (
+                      "Promote to Manager"
+                    )}
                   </Button>
                 </DialogFooter>
               </DialogHeader>
@@ -207,7 +215,14 @@ export function UserCardButtons({ user, managers }: Props) {
                     onClick={handleDemoteToMember}
                     disabled={demotionLoading}
                   >
-                    Demote to Member
+                    {demotionLoading ? (
+                      <>
+                        <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
+                        Demoting...
+                      </>
+                    ) : (
+                      "Demote to Member"
+                    )}
                   </Button>
                 </DialogFooter>
               </DialogHeader>
@@ -240,7 +255,14 @@ export function UserCardButtons({ user, managers }: Props) {
                   onClick={handleRemoveFromTeam}
                   disabled={removalLoading}
                 >
-                  Remove from Team
+                  {removalLoading ? (
+                    <>
+                      <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
+                      Removing...
+                    </>
+                  ) : (
+                    "Remove from Team"
+                  )}
                 </Button>
               </DialogFooter>
             </DialogHeader>

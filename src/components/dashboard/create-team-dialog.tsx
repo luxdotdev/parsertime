@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -102,7 +103,14 @@ export function CreateTeamDialog({
               Cancel
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? "Creating team..." : "Create team"}
+              {loading ? (
+                <>
+                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" /> Creating
+                  team...
+                </>
+              ) : (
+                "Create team"
+              )}
             </Button>
           </DialogFooter>
         </form>

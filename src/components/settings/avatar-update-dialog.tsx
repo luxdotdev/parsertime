@@ -14,6 +14,7 @@ import { upload } from "@vercel/blob/client";
 import Logger from "@/lib/logger";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 async function getCroppedImg(
   file: File,
@@ -158,7 +159,13 @@ export function AvatarUpdateDialog({
 
         <DialogFooter>
           <Button onClick={handleCropImage} disabled={loading}>
-            {loading ? "Updating..." : "Save Changes"}
+            {loading ? (
+              <>
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" /> Updating...
+              </>
+            ) : (
+              "Save Changes"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

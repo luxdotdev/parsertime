@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { Scrim } from "@prisma/client";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -97,7 +98,14 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
                 disabled={!deleteEnabled || deleteLoading}
                 onClick={handleDelete}
               >
-                Delete
+                {deleteLoading ? (
+                  <>
+                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  "Delete Scrim"
+                )}
               </Button>
               <Button
                 variant="secondary"
