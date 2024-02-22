@@ -281,7 +281,7 @@ export type ParserData = {
   match_end?: MatchEndTableRow[];
   match_start: MatchStartTableRow[];
   mercy_rez?: MercyRezTableRow[];
-  objective_capture: ObjectiveCapturedTableRow[];
+  objective_captured: ObjectiveCapturedTableRow[];
   objective_updated: ObjectiveUpdatedTableRow[];
   offensive_assist: OffensiveAssistTableRow[];
   payload_progress: PayloadProgressTableRow[];
