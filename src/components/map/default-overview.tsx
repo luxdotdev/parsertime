@@ -11,6 +11,7 @@ import { PlayerStatRows } from "@/types/prisma";
 import prisma from "@/lib/prisma";
 import CardIcon from "@/components/ui/card-icon";
 import { $Enums } from "@prisma/client";
+import { getFinalRoundStats } from "@/data/scrim-dto";
 
 export async function DefaultOverview({ id }: { id: number }) {
   const finalRound = await prisma.roundEnd.findFirst({
@@ -44,54 +45,21 @@ export async function DefaultOverview({ id }: { id: number }) {
 
   const mapType = matchDetails ? matchDetails.map_type : $Enums.MapType.Control;
 
-  /**
-   * This query performs the following operations:
-   * 1. It first creates a subquery that selects the maximum round number (i.e., the final round)
-   *    for a given map (`MapDataId`). This is achieved by grouping the `PlayerStat` records
-   *    by `MapDataId` and calculating the maximum `round_number` for each group.
-   * 2. The main query then joins the results of this subquery with the original `PlayerStat` table.
-   *    This join is based on matching the `MapDataId` and the `round_number` with the calculated maximum
-   *    round number from the subquery.
-   * 3. Finally, the query filters the results to include only those records that match the given `MapDataId`,
-   *    effectively returning statistics for players in the final round of the specified scrim.
-   */
-  const playerStatRowsByFinalRound = removeDuplicateRows(
-    await prisma.$queryRaw<PlayerStatRows>`
-      SELECT
-        ps.*
-      FROM
-          PlayerStat ps
-          INNER JOIN (
-              SELECT
-                  MapDataId,
-                  MAX(match_time) as max_time
-              FROM
-                  PlayerStat
-              WHERE
-                  MapDataId = ${id}
-              GROUP BY
-                  MapDataId
-          ) as max_time ON ps.MapDataId = max_time.MapDataId
-          AND ps.match_time = max_time.max_time
-      WHERE
-          ps.MapDataId = ${id}`
-  )
-    // sort by team name
-    .sort((a, b) => a.player_team.localeCompare(b.player_team));
+  const finalRoundStats = await getFinalRoundStats(id);
 
-  const team1Damage = playerStatRowsByFinalRound
+  const team1Damage = finalRoundStats
     .filter((player) => player.player_team === matchDetails?.team_1_name)
     .reduce((acc, player) => acc + player.hero_damage_dealt, 0);
 
-  const team2Damage = playerStatRowsByFinalRound
+  const team2Damage = finalRoundStats
     .filter((player) => player.player_team === matchDetails?.team_2_name)
     .reduce((acc, player) => acc + player.hero_damage_dealt, 0);
 
-  const team1Healing = playerStatRowsByFinalRound
+  const team1Healing = finalRoundStats
     .filter((player) => player.player_team === matchDetails?.team_1_name)
     .reduce((acc, player) => acc + player.healing_dealt, 0);
 
-  const team2Healing = playerStatRowsByFinalRound
+  const team2Healing = finalRoundStats
     .filter((player) => player.player_team === matchDetails?.team_2_name)
     .reduce((acc, player) => acc + player.healing_dealt, 0);
 
@@ -297,7 +265,7 @@ export async function DefaultOverview({ id }: { id: number }) {
             <CardTitle>Overview</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
-            <OverviewTable playerStats={playerStatRowsByFinalRound} />
+            <OverviewTable playerStats={finalRoundStats} />
           </CardContent>
         </Card>
       </div>
