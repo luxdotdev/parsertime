@@ -1,5 +1,5 @@
-import { CreateMapRequestData } from "@/app/api/(scrim)/add-map/route";
-import { CreateScrimRequestData } from "@/app/api/(scrim)/create-scrim/route";
+import { CreateMapRequestData } from "@/app/api/scrim/add-map/route";
+import { CreateScrimRequestData } from "@/app/api/scrim/create-scrim/route";
 import { headers } from "@/lib/headers";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
