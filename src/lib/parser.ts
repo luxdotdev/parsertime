@@ -100,20 +100,20 @@ export async function parseDataFromTXT(file: File) {
 
   const sheetName = workbook.SheetNames as $Enums.EventType[];
 
-  const result: Partial<ParserData> = {};
+  const result = {} as ParserData;
 
   // for each sheet, convert to json and add it to the result object.
   for (const sheet of sheetName) {
-    const json = XLSX.utils
-      .sheet_to_json(workbook.Sheets[sheet], {
-        header: 1,
-      })
-      .slice(1);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    result[sheet] = json as any; // cast to any because we don't know the exact type
+    const ws = workbook.Sheets[sheet];
+    const json = XLSX.utils.sheet_to_json(ws, { header: 1 }).slice(1);
+
+    // @ts-expect-error - Dynamic assignment of varying types based on sheet names.
+    // TypeScript cannot infer the correct type for `json` as it depends on the runtime sheet name.
+    // We ensure at runtime that `json` conforms to the expected structure of `ParserData`.
+    result[sheet] = json;
   }
 
-  return result as ParserData; // cast to ParserData because we know the structure matches
+  return result;
 }
 
 export async function parseDataFromXLSX(file: File) {
@@ -128,20 +128,20 @@ export async function parseDataFromXLSX(file: File) {
   const workbook = XLSX.read(data, { type: "binary" });
   const sheetName = workbook.SheetNames as $Enums.EventType[];
 
-  const result: Partial<ParserData> = {};
+  const result = {} as ParserData;
 
   // for each sheet, convert to json and add it to the result object.
   for (const sheet of sheetName) {
-    const json = XLSX.utils
-      .sheet_to_json(workbook.Sheets[sheet], {
-        header: 1,
-      })
-      .slice(1);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    result[sheet] = json as any; // cast to any because we don't know the exact type
+    const ws = workbook.Sheets[sheet];
+    const json = XLSX.utils.sheet_to_json(ws, { header: 1 }).slice(1);
+
+    // @ts-expect-error - Dynamic assignment of varying types based on sheet names.
+    // TypeScript cannot infer the correct type for `json` as it depends on the runtime sheet name.
+    // We ensure at runtime that `json` conforms to the expected structure of `ParserData`.
+    result[sheet] = json;
   }
 
-  return result as ParserData; // cast to ParserData because we know the structure matches
+  return result;
 }
 
 export async function createNewScrimFromParsedData(
