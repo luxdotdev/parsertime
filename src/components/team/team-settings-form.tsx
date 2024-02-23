@@ -65,8 +65,8 @@ export function TeamSettingsForm({ team }: { team: Team }) {
 
     if (res.ok) {
       toast({
-        title: "Profile updated",
-        description: "Your profile has been successfully updated.",
+        title: "Team profile updated",
+        description: "Your team profile has been successfully updated.",
         duration: 5000,
       });
       router.refresh();
@@ -159,7 +159,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
           </FormDescription>
           <FormMessage />
         </FormItem>
-        <Button type="submit">Update profile</Button>
+        <Button type="submit">Update team profile</Button>
       </form>
     </Form>
   );
