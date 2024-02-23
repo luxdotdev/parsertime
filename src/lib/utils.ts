@@ -80,7 +80,7 @@ export function toKebabCase(str: string): string {
  * @returns {number} The number of minutes.
  */
 export function toMins(value: number) {
-  return Math.floor(value / 60);
+  return round(value / 60);
 }
 
 /**
