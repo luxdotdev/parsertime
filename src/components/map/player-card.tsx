@@ -5,32 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AllHeroes from "@/components/player/all-heroes";
 import SpecificHero from "@/components/player/specific-hero";
+import { getPlayerFinalStats } from "@/data/scrim-dto";
 
 type Props = { id: number; playerName: string };
 
 export default async function PlayerCard({ playerName, id }: Props) {
-  const playerStatsByFinalRound = removeDuplicateRows(
-    await prisma.$queryRaw<PlayerStatRows>`
-      SELECT
-          ps.*
-      FROM
-          PlayerStat ps
-          INNER JOIN (
-              SELECT
-                  MapDataId,
-                  MAX(match_time) as max_time
-              FROM
-                  PlayerStat
-              WHERE
-                  MapDataId = ${id}
-              GROUP BY
-                  MapDataId
-          ) as max_time ON ps.MapDataId = max_time.MapDataId
-          AND ps.match_time = max_time.max_time
-      WHERE
-          ps.MapDataId = ${id}
-          AND ps.player_name = ${playerName}`
-  );
+  const playerStatsByFinalRound = await getPlayerFinalStats(id, playerName);
 
   const playerStats = playerStatsByFinalRound.filter(
     (stat) => stat.hero_time_played > 0

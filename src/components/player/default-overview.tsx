@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import CardIcon from "@/components/ui/card-icon";
+import { getPlayerFinalStats } from "@/data/scrim-dto";
 import prisma from "@/lib/prisma";
 import {
   groupKillsIntoFights,
@@ -34,27 +35,9 @@ export async function DefaultOverview({
     },
   });
 
-  const playerStatsByFinalRound = removeDuplicateRows(
-    await prisma.$queryRaw<PlayerStatRows>`
-      SELECT
-          ps.*
-      FROM
-          PlayerStat ps
-          INNER JOIN (
-              SELECT
-                  MapDataId,
-                  MAX(match_time) as max_time
-              FROM
-                  PlayerStat
-              WHERE
-                  MapDataId = ${id}
-              GROUP BY
-                  MapDataId
-          ) as max_time ON ps.MapDataId = max_time.MapDataId
-          AND ps.match_time = max_time.max_time
-      WHERE
-          ps.MapDataId = ${id}
-          AND ps.player_name = ${playerNameDecoded}`
+  const playerStatsByFinalRound = await getPlayerFinalStats(
+    id,
+    playerNameDecoded
   );
 
   const team = playerStatsByFinalRound[0]?.player_team;
