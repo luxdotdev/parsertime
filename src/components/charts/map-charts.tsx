@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import prisma from "@/lib/prisma";
-import { Kill, PlayerStat } from "@prisma/client";
+import { Kill } from "@prisma/client";
 
 async function groupKillsByInterval(id: number, maxInterval: number) {
   // Fetch the data
