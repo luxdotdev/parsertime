@@ -11,7 +11,7 @@ import { toTitleCase } from "@/lib/utils";
 import { Killfeed } from "@/components/map/killfeed";
 import { Metadata } from "next";
 import { SearchParams } from "@/types/next";
-import { MapCharts } from "@/components/charts/map-charts";
+import { MapCharts } from "@/components/charts/map/map-charts";
 import { ComparePlayers } from "@/components/map/compare-players";
 
 type Props = {
