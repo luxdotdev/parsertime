@@ -96,11 +96,11 @@ export function AvatarUpdateDialog({
         croppedImage,
         {
           access: "public",
-          handleUploadUrl: "/api/team-avatar-upload?teamId=" + team.id,
+          handleUploadUrl: "/api/team/avatar-upload?teamId=" + team.id,
         }
       );
 
-      const res = await fetch("/api/update-team-avatar", {
+      const res = await fetch("/api/team/update-avatar", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

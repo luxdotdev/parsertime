@@ -53,7 +53,7 @@ export function EditScrimForm({ scrim }: { scrim: Scrim }) {
       scrimId: scrim.id,
     };
 
-    const res = await fetch("/api/update-scrim-name", {
+    const res = await fetch("/api/scrim/update-scrim-name", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

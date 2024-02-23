@@ -55,7 +55,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
       teamId: team.id,
     };
 
-    const res = await fetch("/api/update-team-name", {
+    const res = await fetch("/api/team/update-name", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

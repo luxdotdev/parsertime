@@ -51,7 +51,7 @@ export default function InviteMemberModal({
     setLoading(true);
 
     const getToken = await fetch(
-      `/api/create-team-invite?id=${params.teamId}`,
+      `/api/team/create-team-invite?id=${params.teamId}`,
       {
         method: "POST",
       }

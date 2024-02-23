@@ -50,7 +50,7 @@ export function ProfileForm({ user }: { user: User }) {
   });
 
   async function onSubmit(data: ProfileFormValues) {
-    const res = await fetch("/api/update-name", {
+    const res = await fetch("/api/user/update-name", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

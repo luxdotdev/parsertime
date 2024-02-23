@@ -62,7 +62,7 @@ export function AddMapCard() {
 
     const data = await parseData(file);
 
-    const res = await fetch(`/api/add-map?id=${scrimId}`, {
+    const res = await fetch(`/api/scrim/add-map?id=${scrimId}`, {
       method: "POST",
       body: JSON.stringify(data),
     });

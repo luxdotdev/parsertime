@@ -61,7 +61,7 @@ export function TeamSwitcher({
   );
 
   function getTeams() {
-    fetch("/api/get-teams")
+    fetch("/api/team/get-teams")
       .then((res) => res.json() as Promise<GetTeamsResponse>)
       .then((data) => {
         const newTeams = data.teams.map((team) => ({

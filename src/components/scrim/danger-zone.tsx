@@ -28,7 +28,7 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
 
   async function handleDelete() {
     setDeleteLoading(true);
-    const res = await fetch(`/api/remove-scrim?id=${scrim.id}`, {
+    const res = await fetch(`/api/scrim/remove-scrim?id=${scrim.id}`, {
       method: "POST",
     });
 

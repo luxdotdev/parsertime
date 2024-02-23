@@ -44,7 +44,7 @@ export function CreateTeamDialog({
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
-    fetch("/api/create-team", {
+    fetch("/api/team/create-team", {
       method: "POST",
       body: JSON.stringify(values),
     }).then((res) => {

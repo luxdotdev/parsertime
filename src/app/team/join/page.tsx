@@ -44,7 +44,7 @@ export default function TeamJoinPage() {
 
     const tokenString = toInviteToken(token);
 
-    const res = await fetch(`/api/join-team?token=${tokenString}`, {
+    const res = await fetch(`/api/team/join-team?token=${tokenString}`, {
       method: "POST",
     });
 

@@ -54,7 +54,7 @@ export function AddScrimCard() {
 
     const data = await parseDataFromXLSX(file);
 
-    const res = await fetch("/api/create-scrim", {
+    const res = await fetch("/api/scrim/create-scrim", {
       method: "POST",
       body: JSON.stringify(data),
     });

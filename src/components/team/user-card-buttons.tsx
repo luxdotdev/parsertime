@@ -50,7 +50,7 @@ export function UserCardButtons({ user, managers }: Props) {
   async function handlePromoteToManager() {
     setPromotionLoading(true);
 
-    const res = await fetch(`/api/promote-user`, {
+    const res = await fetch(`/api/team/promote-user`, {
       method: "POST",
       body: JSON.stringify({
         teamId: teamId,
@@ -79,7 +79,7 @@ export function UserCardButtons({ user, managers }: Props) {
   async function handleDemoteToMember() {
     setDemotionLoading(true);
 
-    const res = await fetch(`/api/demote-user`, {
+    const res = await fetch(`/api/team/demote-user`, {
       method: "POST",
       body: JSON.stringify({
         teamId: teamId,
@@ -108,7 +108,7 @@ export function UserCardButtons({ user, managers }: Props) {
   async function handleRemoveFromTeam() {
     setRemovalLoading(true);
 
-    const res = await fetch(`/api/remove-user-from-team`, {
+    const res = await fetch(`/api/team/remove-user-from-team`, {
       method: "POST",
       body: JSON.stringify({
         teamId: teamId,

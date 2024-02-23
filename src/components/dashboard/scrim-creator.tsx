@@ -67,7 +67,7 @@ export function ScrimCreationForm() {
   const router = useRouter();
 
   function getTeams() {
-    fetch("/api/get-teams-with-perms")
+    fetch("/api/team/get-teams-with-perms")
       .then((res) => res.json() as Promise<GetTeamsResponse>)
       .then((data) => {
         const newTeams = data.teams.map((team) => ({
@@ -120,7 +120,7 @@ export function ScrimCreationForm() {
 
     data.map = mapData;
 
-    const res = await fetch("/api/create-scrim", {
+    const res = await fetch("/api/scrim/create-scrim", {
       method: "POST",
       body: JSON.stringify(data),
     });
