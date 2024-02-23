@@ -1,6 +1,6 @@
-import { DamageByRoundChart } from "@/components/charts/damage-by-round-chart";
-import { KillsByFightChart } from "@/components/charts/kills-by-fight-chart";
-import { KillsByRoleChart } from "@/components/charts/kills-by-role-chart";
+import { DamageByRoundChart } from "@/components/charts/map/damage-by-round-chart";
+import { KillsByFightChart } from "@/components/charts/map/kills-by-fight-chart";
+import { KillsByRoleChart } from "@/components/charts/map/kills-by-role-chart";
 import {
   Card,
   CardContent,
