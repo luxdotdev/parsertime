@@ -7,7 +7,7 @@ import {
 } from "@radix-ui/react-icons";
 import * as React from "react";
 
-import { GetTeamsResponse } from "@/app/api/(team)/get-teams/route";
+import { GetTeamsResponse } from "@/app/api/team/get-teams/route";
 import { CreateTeamDialog } from "@/components/dashboard/create-team-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";

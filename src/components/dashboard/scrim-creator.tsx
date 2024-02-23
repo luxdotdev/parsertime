@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { GetTeamsResponse } from "@/app/api/(team)/get-teams/route";
+import { GetTeamsResponse } from "@/app/api/team/get-teams/route";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {

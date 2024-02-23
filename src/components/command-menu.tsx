@@ -16,7 +16,7 @@ import {
 } from "@radix-ui/react-icons";
 import * as React from "react";
 
-import { GetTeamsResponse } from "@/app/api/(team)/get-teams/route";
+import { GetTeamsResponse } from "@/app/api/team/get-teams/route";
 import {
   CommandDialog,
   CommandEmpty,
