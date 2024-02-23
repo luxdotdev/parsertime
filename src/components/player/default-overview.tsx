@@ -11,11 +11,9 @@ import { getPlayerFinalStats } from "@/data/scrim-dto";
 import prisma from "@/lib/prisma";
 import {
   groupKillsIntoFights,
-  removeDuplicateRows,
   removeDuplicateRowsForFletaDeadlift,
   round,
 } from "@/lib/utils";
-import { PlayerStatRows } from "@/types/prisma";
 
 export async function DefaultOverview({
   id,

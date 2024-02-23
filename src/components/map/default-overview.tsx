@@ -6,12 +6,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { removeDuplicateRows, round } from "@/lib/utils";
-import { PlayerStatRows } from "@/types/prisma";
-import prisma from "@/lib/prisma";
 import CardIcon from "@/components/ui/card-icon";
-import { $Enums } from "@prisma/client";
 import { getFinalRoundStats } from "@/data/scrim-dto";
+import prisma from "@/lib/prisma";
+import { round } from "@/lib/utils";
+import { $Enums } from "@prisma/client";
 
 export async function DefaultOverview({ id }: { id: number }) {
   const finalRound = await prisma.roundEnd.findFirst({

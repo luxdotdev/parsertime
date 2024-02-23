@@ -1,10 +1,7 @@
-import { removeDuplicateRows } from "@/lib/utils";
-import prisma from "@/lib/prisma";
-import { PlayerStatRows } from "@/types/prisma";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AllHeroes from "@/components/player/all-heroes";
 import SpecificHero from "@/components/player/specific-hero";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getPlayerFinalStats } from "@/data/scrim-dto";
 
 type Props = { id: number; playerName: string };
