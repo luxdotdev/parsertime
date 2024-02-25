@@ -422,7 +422,7 @@ export default function AllHeroes({
                         ) /
                           toMins(
                             playerStats.reduce(
-                              (acc, stat) => acc + stat.healing_dealt,
+                              (acc, stat) => acc + stat.hero_time_played,
                               0
                             )
                           )) *
@@ -461,7 +461,7 @@ export default function AllHeroes({
                         ) /
                           toMins(
                             playerStats.reduce(
-                              (acc, stat) => acc + stat.healing_received,
+                              (acc, stat) => acc + stat.hero_time_played,
                               0
                             )
                           )) *
