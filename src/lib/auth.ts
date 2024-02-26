@@ -13,6 +13,7 @@ import Logger from "@/lib/logger";
 import { getUser } from "@/data/user-dto";
 import { get } from "@vercel/edge-config";
 import { createHash, randomBytes } from "crypto";
+import { newUserWebhookConstructor, sendDiscordWebhook } from "@/lib/webhooks";
 
 type Availability = "public" | "private";
 
@@ -103,7 +104,14 @@ export const config = {
   events: {
     async signIn({ user, isNewUser }) {
       if (isNewUser) {
+        // Log new user signups
         Logger.log("New user signed up", { user });
+
+        // Send a Discord webhook for new user signups
+        const wh = newUserWebhookConstructor(user);
+        await sendDiscordWebhook(process.env.DISCORD_WEBHOOK_URL, wh);
+
+        // Track new user signups with Vercel Analytics
         await track("New User", { email: user.email ?? "unknown" });
       }
     },
