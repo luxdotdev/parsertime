@@ -15,12 +15,22 @@ import { auth } from "@/lib/auth";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import prisma from "@/lib/prisma";
+import { $Enums } from "@prisma/client";
 
 export async function UserNav() {
   const session = await auth();
   if (!session?.user) {
     redirect("/sign-in");
   }
+
+  const user = await prisma.user.findFirst({
+    where: {
+      email: session?.user?.email,
+    },
+  });
+
+  const isAdmin = user?.role === $Enums.UserRole.ADMIN;
 
   return (
     <DropdownMenu>
@@ -71,6 +81,14 @@ export async function UserNav() {
             </DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>
+        {isAdmin && (
+          <>
+            <DropdownMenuSeparator />
+            <Link href="/settings/admin">
+              <DropdownMenuItem>Admin</DropdownMenuItem>
+            </Link>
+          </>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <SignOutButton />
