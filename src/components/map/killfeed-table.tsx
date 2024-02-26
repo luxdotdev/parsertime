@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Table,
   TableBody,
@@ -11,6 +13,7 @@ import {
 import { cn, toHero } from "@/lib/utils";
 import { Kill } from "@prisma/client";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 type Fight = {
   kills: Kill[];
@@ -27,6 +30,12 @@ export function KillfeedTable({
   team1: string;
   team2: string;
 }) {
+  const pathname = usePathname();
+  const teamId = pathname.split("/")[1];
+
+  const environmentalString =
+    teamId === "1" ? "Limit Testing" : "Environmental";
+
   return (
     <>
       {fights.map((fight, i) => (
@@ -58,11 +67,23 @@ export function KillfeedTable({
                           "h-8 w-8 border-2 rounded",
                           kill.attacker_team === team1
                             ? "border-blue-500"
-                            : "border-red-500"
+                            : "border-red-500",
+                          kill.attacker_name === kill.victim_name
+                            ? "opacity-0"
+                            : ""
                         )}
                       />
                     </div>
-                    <div className="w-32">{kill.attacker_name}</div>
+                    <div
+                      className={cn(
+                        "w-32",
+                        kill.attacker_name === kill.victim_name
+                          ? "opacity-0"
+                          : ""
+                      )}
+                    >
+                      {kill.attacker_name}
+                    </div>
                     <div className="pr-16">&rarr;</div>
                     <div className="pr-2">
                       <Image
@@ -82,7 +103,13 @@ export function KillfeedTable({
                   </span>
                 </TableCell>
                 <TableCell>
-                  {kill.event_ability === "0"
+                  {kill.attacker_name === kill.victim_name
+                    ? kill.is_environmental
+                      ? environmentalString
+                      : kill.event_ability === "0"
+                      ? "Primary Fire"
+                      : kill.event_ability
+                    : kill.event_ability === "0"
                     ? "Primary Fire"
                     : kill.event_ability}
                 </TableCell>
