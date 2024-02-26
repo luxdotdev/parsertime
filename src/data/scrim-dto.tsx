@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { cache } from "react";
 import { PlayerStatRows } from "@/types/prisma";
 import { removeDuplicateRows } from "@/lib/utils";
+import { Scrim } from "@prisma/client";
 
 async function getScrimFn(id: number) {
   return await prisma.scrim.findFirst({
@@ -13,6 +14,35 @@ async function getScrimFn(id: number) {
 }
 
 export const getScrim = cache(getScrimFn);
+
+async function getUserViewableScrimsFn(id: string) {
+  return await prisma.scrim.findMany({
+    where: {
+      OR: [
+        {
+          creatorId: id,
+        },
+        {
+          Team: {
+            users: {
+              some: {
+                id: id,
+              },
+            },
+          },
+        },
+      ],
+    },
+  });
+}
+
+/**
+ * Returns the scrims that a user is allowed to view.
+ *
+ * @param {string} id The ID of the user.
+ * @returns {Scrim[]} The scrims that the user is allowed to view.
+ */
+export const getUserViewableScrims = cache(getUserViewableScrimsFn);
 
 /**
  * This query performs the following operations:
@@ -57,8 +87,8 @@ async function getFinalRoundStatsFn(id: number) {
  * Returns the statistics for the final round of a map.
  * This function is cached for performance.
  *
- * @param id The ID of the map.
- * @returns The statistics for the final round of the specified map.
+ * @param {number} id The ID of the map.
+ * @returns {PlayerStatRows} The statistics for the final round of the specified map.
  * @see {@link PlayerStatRows}
  */
 export const getFinalRoundStats = cache(getFinalRoundStatsFn);
@@ -92,7 +122,8 @@ async function getFinalRoundStatsForPlayerFn(id: number, playerName: string) {
  * Returns the statistics for the final round of a map for a specific player.
  * This function is cached for performance.
  *
- * @param id The ID of the map.
- * @param playerName The name of the player.
+ * @param {number} id The ID of the map.
+ * @param {string} playerName The name of the player.
+ * @returns {PlayerStatRows} The statistics for the final round of the specified map for the specified player.
  */
 export const getPlayerFinalStats = cache(getFinalRoundStatsForPlayerFn);
