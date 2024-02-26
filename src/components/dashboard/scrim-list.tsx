@@ -2,6 +2,7 @@ import { AddScrimCard } from "@/components/dashboard/add-scrim-card";
 import { EmptyScrimList } from "@/components/dashboard/empty-scrim-list";
 import { ScrimCard } from "@/components/dashboard/scrim-card";
 import { Card } from "@/components/ui/card";
+import { getUserViewableScrims } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
@@ -23,24 +24,7 @@ export async function ScrimList({ searchParams }: Props) {
     return <EmptyScrimList />;
   }
 
-  const userViewableScrims = await prisma.scrim.findMany({
-    where: {
-      OR: [
-        {
-          creatorId: userData.id,
-        },
-        {
-          Team: {
-            users: {
-              some: {
-                id: userData.id,
-              },
-            },
-          },
-        },
-      ],
-    },
-  });
+  const userViewableScrims = await getUserViewableScrims(userData.id);
 
   for (const scrim of userViewableScrims) {
     const teamName = await prisma.team.findFirst({
