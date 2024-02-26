@@ -12,9 +12,7 @@ async function getScrimFn(id: number) {
   });
 }
 
-export const getScrim = cache(async (id: number) => {
-  return getScrimFn(id);
-});
+export const getScrim = cache(getScrimFn);
 
 /**
  * This query performs the following operations:
@@ -63,9 +61,7 @@ async function getFinalRoundStatsFn(id: number) {
  * @returns The statistics for the final round of the specified map.
  * @see PlayerStatRows
  */
-export const getFinalRoundStats = cache(async (id: number) => {
-  return getFinalRoundStatsFn(id);
-});
+export const getFinalRoundStats = cache(getFinalRoundStatsFn);
 
 async function getFinalRoundStatsForPlayerFn(id: number, playerName: string) {
   return removeDuplicateRows(
@@ -99,8 +95,4 @@ async function getFinalRoundStatsForPlayerFn(id: number, playerName: string) {
  * @param id The ID of the map.
  * @param playerName The name of the player.
  */
-export const getPlayerFinalStats = cache(
-  async (id: number, playerName: string) => {
-    return getFinalRoundStatsForPlayerFn(id, playerName);
-  }
-);
+export const getPlayerFinalStats = cache(getFinalRoundStatsForPlayerFn);
