@@ -12,6 +12,7 @@ import { track } from "@vercel/analytics/server";
 import Logger from "@/lib/logger";
 import { getUser } from "@/data/user-dto";
 import { get } from "@vercel/edge-config";
+import { createHash, randomBytes } from "crypto";
 
 type Availability = "public" | "private";
 
@@ -190,4 +191,58 @@ export async function isAuthedToViewTeam(id: number) {
   } else {
     return false;
   }
+}
+
+/**
+ * Allows an admin to impersonate another user by generating a token and a callback URL.
+ * This URL can be used to sign in as the user. Please use this feature responsibly.
+ *
+ * @param email {string} - The email of the user to impersonate
+ * @returns {Promise<string>} The callback URL
+ */
+export async function getImpersonateUrl(email: string) {
+  const token = randomBytes(32).toString("hex");
+
+  await prisma.verificationToken.create({
+    data: {
+      identifier: email,
+      token: hashToken(token),
+      expires: new Date(Date.now() + 60000),
+    },
+  });
+
+  const params = new URLSearchParams({
+    callbackUrl: process.env.NEXTAUTH_URL,
+    email,
+    token,
+  });
+
+  Logger.log(
+    "Impersonation URL generated for user: ",
+    { email },
+    `${process.env.NEXTAUTH_URL}/api/auth/callback/email?${params}`
+  );
+
+  return `${process.env.NEXTAUTH_URL}/api/auth/callback/email?${params}`;
+}
+
+/**
+ * Hashes a token using SHA256 and a secret.
+ *
+ * @param token {string} - The token to hash
+ * @param options {object} - Options
+ * @param options.noSecret {boolean} - If true, the secret will not be added to the token
+ * @returns {string} The hashed token
+ */
+export function hashToken(
+  token: string,
+  {
+    noSecret = false,
+  }: {
+    noSecret?: boolean;
+  } = {}
+) {
+  return createHash("sha256")
+    .update(`${token}${noSecret ? "" : process.env.NEXTAUTH_SECRET}`)
+    .digest("hex");
 }
