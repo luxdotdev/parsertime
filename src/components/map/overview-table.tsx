@@ -31,6 +31,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import Link from "next/link";
 
 export const columns: ColumnDef<PlayerData>[] = [
   {
@@ -43,7 +44,17 @@ export const columns: ColumnDef<PlayerData>[] = [
   {
     accessorKey: "playerName",
     header: "Player Name",
-    cell: ({ row }) => <div className="">{row.getValue("playerName")}</div>,
+    cell: ({ row }) => (
+      <button
+        onClick={() =>
+          (window.location.href = `${
+            window.location.href
+          }/player/${encodeURIComponent(row.getValue("playerName"))}`)
+        }
+      >
+        {row.getValue("playerName")}
+      </button>
+    ),
     enableSorting: true,
     sortingFn: "basic",
     filterFn: "includesString",
@@ -203,7 +214,8 @@ export const columns: ColumnDef<PlayerData>[] = [
 ];
 
 const tooltips = {
-  playerName: "The player's name.",
+  playerName:
+    "The player's name. Click on their name to view their statistics.",
   role: "The role the player played.",
   playerTeam: "The team the player played for.",
   timePlayed: "The time the player played.",
