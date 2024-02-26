@@ -15,8 +15,8 @@ import { auth } from "@/lib/auth";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
+import { getUser } from "@/data/user-dto";
 
 export async function UserNav() {
   const session = await auth();
@@ -24,11 +24,7 @@ export async function UserNav() {
     redirect("/sign-in");
   }
 
-  const user = await prisma.user.findFirst({
-    where: {
-      email: session?.user?.email,
-    },
-  });
+  const user = await getUser(session?.user?.email);
 
   const isAdmin = user?.role === $Enums.UserRole.ADMIN;
 
