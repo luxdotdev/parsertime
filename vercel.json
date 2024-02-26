@@ -1,7 +1,7 @@
 {
   "crons": [
     {
-      "path": "/api/delete-expired-tokens",
+      "path": "/api/team/delete-expired-tokens",
       "schedule": "0 0 * * *"
     },
     {
