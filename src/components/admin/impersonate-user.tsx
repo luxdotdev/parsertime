@@ -17,12 +17,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
-import { getImpersonateUrl } from "@/lib/auth";
+import { Switch } from "@/components/ui/switch";
 
 const adminFormSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
+  isProd: z.boolean().default(true),
 });
 
 type AdminFormValues = z.infer<typeof adminFormSchema>;
@@ -30,6 +31,9 @@ type AdminFormValues = z.infer<typeof adminFormSchema>;
 export function ImpersonateUserForm() {
   const form = useForm<AdminFormValues>({
     resolver: zodResolver(adminFormSchema),
+    defaultValues: {
+      isProd: true,
+    },
   });
 
   async function onSubmit(data: AdminFormValues) {
@@ -93,6 +97,28 @@ export function ImpersonateUserForm() {
                 This is the email of the user you want to impersonate.
               </FormDescription>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="isProd"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>Use Production Environment URL</FormLabel>
+                <FormDescription>
+                  If enabled, the impersonation URL will be generated for the
+                  production environment. If disabled, the impersonation URL
+                  will be generated for the development environment.
+                </FormDescription>
+              </div>
             </FormItem>
           )}
         />
