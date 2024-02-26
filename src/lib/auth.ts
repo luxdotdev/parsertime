@@ -208,7 +208,11 @@ export async function isAuthedToViewTeam(id: number) {
  * @param email {string} - The email of the user to impersonate
  * @returns {Promise<string>} The callback URL
  */
-export async function getImpersonateUrl(email: string) {
+export async function getImpersonateUrl(email: string, isProd = true) {
+  const callbackUrl = isProd
+    ? "https://parsertime.app"
+    : "http://localhost:3000";
+
   const token = randomBytes(32).toString("hex");
 
   await prisma.verificationToken.create({
@@ -220,7 +224,7 @@ export async function getImpersonateUrl(email: string) {
   });
 
   const params = new URLSearchParams({
-    callbackUrl: process.env.NEXTAUTH_URL,
+    callbackUrl,
     email,
     token,
   });
@@ -228,10 +232,10 @@ export async function getImpersonateUrl(email: string) {
   Logger.log(
     "Impersonation URL generated for user: ",
     { email },
-    `${process.env.NEXTAUTH_URL}/api/auth/callback/email?${params}`
+    `${callbackUrl}/api/auth/callback/email?${params}`
   );
 
-  return `${process.env.NEXTAUTH_URL}/api/auth/callback/email?${params}`;
+  return `${callbackUrl}/api/auth/callback/email?${params}`;
 }
 
 /**
