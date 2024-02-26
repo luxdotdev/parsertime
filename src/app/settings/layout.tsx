@@ -9,6 +9,8 @@ import { ModeToggle } from "@/components/theme-switcher";
 import { UserNav } from "@/components/user-nav";
 import Footer from "@/components/footer";
 import { auth } from "@/lib/auth";
+import prisma from "@/lib/prisma";
+import { $Enums } from "@prisma/client";
 
 export const metadata: Metadata = {
   title: "Settings | Parsertime",
@@ -37,6 +39,14 @@ const sidebarNavItems = [
   },
 ];
 
+const adminNavItems = [
+  ...sidebarNavItems,
+  {
+    title: "Admin",
+    href: "/settings/admin",
+  },
+];
+
 interface SettingsLayoutProps {
   children: React.ReactNode;
 }
@@ -45,6 +55,14 @@ export default async function SettingsLayout({
   children,
 }: SettingsLayoutProps) {
   const session = await auth();
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email: session?.user?.email ?? "",
+    },
+  });
+
+  const isAdmin = user?.role === $Enums.UserRole.ADMIN;
 
   return (
     <>
@@ -69,7 +87,7 @@ export default async function SettingsLayout({
         <Separator className="my-6" />
         <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
           <aside className="-mx-4 lg:w-1/5">
-            <SidebarNav items={sidebarNavItems} />
+            <SidebarNav items={isAdmin ? adminNavItems : sidebarNavItems} />
           </aside>
           <div className="flex-1 lg:max-w-2xl">{children}</div>
         </div>
