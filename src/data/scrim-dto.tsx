@@ -59,7 +59,7 @@ async function getFinalRoundStatsFn(id: number) {
  *
  * @param id The ID of the map.
  * @returns The statistics for the final round of the specified map.
- * @see PlayerStatRows
+ * @see {@link PlayerStatRows}
  */
 export const getFinalRoundStats = cache(getFinalRoundStatsFn);
 
