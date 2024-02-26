@@ -24,9 +24,9 @@ export async function POST(req: NextRequest) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const body = (await req.json()) as { email: string };
+  const body = (await req.json()) as { email: string; isProd: boolean };
 
-  const url = await getImpersonateUrl(body.email);
+  const url = await getImpersonateUrl(body.email, body.isProd);
 
   return new Response(JSON.stringify({ url }), {
     headers: {
