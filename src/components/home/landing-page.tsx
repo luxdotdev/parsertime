@@ -125,12 +125,12 @@ export default async function LandingPage() {
   ];
 
   return (
-    <div className="bg-black">
+    <div className="bg-white dark:bg-black">
       <main>
         {/* Hero section */}
-        <div className="relative isolate overflow-hidden">
+        <div className="relative isolate overflow-hidden bg-white dark:bg-black">
           <svg
-            className="absolute inset-0 -z-10 h-full w-full stroke-white/10 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
+            className="absolute inset-0 -z-10 h-full w-full stroke-gray-200 dark:stroke-white/10 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
             aria-hidden="true"
           >
             <defs>
@@ -141,6 +141,18 @@ export default async function LandingPage() {
                 x="50%"
                 y={-1}
                 patternUnits="userSpaceOnUse"
+                className="hidden dark:flex"
+              >
+                <path d="M.5 200V.5H200" fill="none" />
+              </pattern>
+              <pattern
+                id="0787a7c5-978c-4f66-83c7-11c213f99cb7"
+                width={200}
+                height={200}
+                x="50%"
+                y={-1}
+                patternUnits="userSpaceOnUse"
+                className="flex dark:hidden"
               >
                 <path d="M.5 200V.5H200" fill="none" />
               </pattern>
@@ -149,6 +161,12 @@ export default async function LandingPage() {
               <path
                 d="M-200 0h201v201h-201Z M600 0h201v201h-201Z M-400 600h201v201h-201Z M200 800h201v201h-201Z"
                 strokeWidth={0}
+                className="hidden dark:flex"
+              />
+              <path
+                d="M.5 200V.5H200"
+                fill="none"
+                className="flex dark:hidden"
               />
             </svg>
             <rect
@@ -156,10 +174,18 @@ export default async function LandingPage() {
               height="100%"
               strokeWidth={0}
               fill="url(#983e3e4c-de6d-4c3f-8d64-b9761d1534cc)"
+              className="hidden dark:flex"
+            />
+            <rect
+              width="100%"
+              height="100%"
+              strokeWidth={0}
+              fill="url(#0787a7c5-978c-4f66-83c7-11c213f99cb7)"
+              className="flex dark:hidden"
             />
           </svg>
           <div
-            className="absolute left-[calc(50%-4rem)] top-10 -z-10 transform-gpu blur-3xl sm:left-[calc(50%-18rem)] lg:left-48 lg:top-[calc(50%-30rem)] xl:left-[calc(50%-24rem)]"
+            className="absolute left-[calc(50%-4rem)] top-10 -z-10 transform-gpu blur-3xl sm:left-[calc(50%-18rem)] lg:left-48 lg:top-[calc(50%-30rem)] xl:left-[calc(50%-24rem)] hidden dark:flex"
             aria-hidden="true"
           >
             <div
@@ -173,30 +199,30 @@ export default async function LandingPage() {
           <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-40 lg:flex lg:px-8 lg:pt-40">
             <div className="mx-auto max-w-2xl flex-shrink-0 lg:mx-0 lg:max-w-xl lg:pt-8">
               <Image
-                className="h-12 invert"
+                className="h-12 dark:invert"
                 height={48}
                 width={48}
                 src="/parsertime.png"
-                alt="Your Company"
+                alt="Parsertime Logo"
               />
               <div className="mt-24 sm:mt-32 lg:mt-16">
                 <Link href="#" className="inline-flex space-x-6">
-                  <span className="rounded-full bg-sky-500/10 px-3 py-1 text-sm font-semibold leading-6 text-sky-400 ring-1 ring-inset ring-sky-500/20">
+                  <span className="rounded-full bg-sky-600/10 dark:bg-sky-500/10 px-3 py-1 text-sm font-semibold leading-6 text-sky-600 dark:text-sky-400 ring-1 ring-inset ring-sky-600/20 dark:ring-sky-500/20">
                     Latest updates
                   </span>
-                  <span className="inline-flex items-center space-x-2 text-sm font-medium leading-6 text-gray-300">
+                  <span className="inline-flex items-center space-x-2 text-sm font-medium leading-6 text-gray-600 dark:text-gray-300">
                     <span>Just shipped v1.0</span>
                     <ChevronRightIcon
-                      className="h-5 w-5 text-gray-500"
+                      className="h-5 w-5 text-gray-400 dark:text-gray-500"
                       aria-hidden="true"
                     />
                   </span>
                 </Link>
               </div>
-              <h1 className="mt-10 text-4xl font-bold tracking-tight text-white sm:text-6xl">
+              <h1 className="mt-10 text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
                 Revolutionize your scrim experience
               </h1>
-              <p className="mt-6 text-lg leading-8 text-gray-300">
+              <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
                 Using our platform, you can visualize your scrim data, track
                 individual player performance, and more. Invite your players to
                 your team and allow them to see their stats.
@@ -207,7 +233,7 @@ export default async function LandingPage() {
                 </Button>
                 <Link
                   href="#"
-                  className="text-sm font-semibold leading-6 text-white"
+                  className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
                 >
                   Live demo <span aria-hidden="true">→</span>
                 </Link>
@@ -217,7 +243,7 @@ export default async function LandingPage() {
                   Already have an account?{" "}
                   <Link
                     href="/sign-in"
-                    className="font-semibold leading-6 text-white"
+                    className="font-semibold leading-6 text-gray-900 dark:text-white"
                   >
                     Sign In <span aria-hidden="true">→</span>
                   </Link>
@@ -231,7 +257,14 @@ export default async function LandingPage() {
                   alt="App screenshot"
                   width={2432}
                   height={1442}
-                  className="w-[76rem] rounded-md bg-white/5 shadow-2xl ring-1 ring-white/10"
+                  className="w-[76rem] rounded-md bg-white/5 shadow-2xl ring-1 ring-white/10 hidden dark:flex"
+                />
+                <Image
+                  src="/player_page_light.png"
+                  alt="App screenshot"
+                  width={2432}
+                  height={1442}
+                  className="w-[76rem] rounded-md bg-white/5 shadow-2xl ring-1 ring-white/10 dark:hidden"
                 />
               </div>
             </div>
@@ -240,40 +273,40 @@ export default async function LandingPage() {
 
         {/* Logo cloud */}
         <div className="mx-auto mt-8 max-w-7xl px-6 sm:mt-16 lg:px-8">
-          <h2 className="text-center text-lg font-semibold leading-8 text-white">
+          <h2 className="text-center text-lg font-semibold leading-8 text-gray-900 dark:text-white">
             Used by a variety of teams for stat tracking
           </h2>
           <div className="mx-auto mt-10 grid max-w-lg grid-cols-4 items-center gap-x-8 gap-y-10 sm:max-w-xl sm:grid-cols-6 sm:gap-x-10 lg:mx-0 lg:max-w-none lg:grid-cols-5">
             <Image
-              className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
+              className="col-span-2 max-h-12 w-full object-contain lg:col-span-1 invert dark:invert-0"
               src="/teams/stclair.svg"
               alt="St. Clair College"
               width={158}
               height={48}
             />
             <Image
-              className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
+              className="col-span-2 max-h-12 w-full object-contain lg:col-span-1 invert dark:invert-0"
               src="/teams/cornell.svg"
               alt="Cornell University"
               width={158}
               height={48}
             />
             <Image
-              className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
+              className="col-span-2 max-h-12 w-full object-contain lg:col-span-1 invert dark:invert-0"
               src="/teams/fiu.svg"
               alt="Florida International University"
               width={158}
               height={48}
             />
             <Image
-              className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
+              className="col-span-2 max-h-12 w-full object-contain lg:col-span-1 invert dark:invert-0"
               src="/teams/gsu.svg"
               alt="Georgia State University"
               width={158}
               height={48}
             />
             <Image
-              className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
+              className="col-span-2 max-h-12 w-full object-contain lg:col-span-1 invert dark:invert-0"
               src="/teams/stclair.svg"
               alt="St. Clair College"
               width={158}
@@ -285,13 +318,13 @@ export default async function LandingPage() {
         {/* Feature section */}
         <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-56 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-base font-semibold leading-7 text-sky-400">
+            <h2 className="text-base font-semibold leading-7 text-sky-600 dark:text-sky-400">
               Improve faster
             </h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
               Everything you need to improve your team performance
             </p>
-            <p className="mt-6 text-lg leading-8 text-gray-300">
+            <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
               Streamline your improvement process with our platform. Gain
               insight into your players&apos; and teams&apos; strengths and
               weaknesses. See their biggest areas of improvement and adjust your
@@ -302,21 +335,21 @@ export default async function LandingPage() {
             <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
               {primaryFeatures.map((feature) => (
                 <div key={feature.name} className="flex flex-col">
-                  <dt className="text-base font-semibold leading-7 text-white">
-                    <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-sky-500">
+                  <dt className="text-base font-semibold leading-7 text-gray-900 dark:text-white">
+                    <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg text-sky-600 dark:bg-sky-500">
                       <feature.icon
-                        className="h-6 w-6 text-white"
+                        className="h-6 w-6 dark:text-white"
                         aria-hidden="true"
                       />
                     </div>
                     {feature.name}
                   </dt>
-                  <dd className="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-300">
+                  <dd className="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-600 dark:text-gray-300">
                     <p className="flex-auto">{feature.description}</p>
                     <p className="mt-6">
                       <Link
                         href={feature.href}
-                        className="text-sm font-semibold leading-6 text-sky-400"
+                        className="text-sm font-semibold leading-6 text-sky-600 dark:text-sky-400"
                       >
                         Learn more <span aria-hidden="true">→</span>
                       </Link>
@@ -332,13 +365,13 @@ export default async function LandingPage() {
         <div className="mt-32 sm:mt-56">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto max-w-2xl sm:text-center">
-              <h2 className="text-base font-semibold leading-7 text-sky-400">
+              <h2 className="text-base font-semibold leading-7 text-sky-600 dark:text-sky-400">
                 Everything you need
               </h2>
-              <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
                 Scrim stats at your fingertips
               </p>
-              <p className="mt-6 text-lg leading-8 text-gray-300">
+              <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
                 See your stats after your scrims instead of only relying on
                 replay codes. Our platform allows you to keep your data no
                 matter what happens to your replays.
@@ -350,22 +383,29 @@ export default async function LandingPage() {
               <Image
                 src="/team_charts.png"
                 alt="App screenshot"
-                className=" rounded-xl shadow-2xl ring-1 ring-white/10"
+                className="rounded-xl shadow-2xl ring-1 ring-white/10 hidden dark:flex"
+                width={2432}
+                height={1442}
+              />
+              <Image
+                src="/team_charts_light.png"
+                alt="App screenshot"
+                className="rounded-xl shadow-2xl ring-1 ring-gray-900/10 flex dark:hidden"
                 width={2432}
                 height={1442}
               />
               <div className="relative" aria-hidden="true">
-                <div className="absolute -inset-x-20 bottom-0 bg-gradient-to-t from-black pt-[7%]" />
+                <div className="absolute -inset-x-20 bottom-0 bg-gradient-to-t from-white dark:from-black pt-[7%]" />
               </div>
             </div>
           </div>
           <div className="mx-auto mt-16 max-w-7xl px-6 sm:mt-20 md:mt-24 lg:px-8">
-            <dl className="mx-auto grid max-w-2xl grid-cols-1 gap-x-6 gap-y-10 text-base leading-7 text-gray-300 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-3 lg:gap-x-8 lg:gap-y-16">
+            <dl className="mx-auto grid max-w-2xl grid-cols-1 gap-x-6 gap-y-10 text-base leading-7 text-gray-600 dark:text-gray-300 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-3 lg:gap-x-8 lg:gap-y-16">
               {secondaryFeatures.map((feature) => (
                 <div key={feature.name} className="relative pl-9">
-                  <dt className="inline font-semibold text-white">
+                  <dt className="inline font-semibold text-gray-900 dark:text-white">
                     <feature.icon
-                      className="absolute left-1 top-1 h-5 w-5 text-sky-500"
+                      className="absolute left-1 top-1 h-5 w-5 text-sky-600 dark:text-sky-500"
                       aria-hidden="true"
                     />
                     {feature.name}
@@ -380,23 +420,23 @@ export default async function LandingPage() {
         {/* Stats */}
         <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-56 lg:px-8">
           <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl">
-            <h2 className="text-base font-semibold leading-8 text-sky-400">
+            <h2 className="text-base font-semibold leading-8 text-sky-600 dark:text-sky-400">
               Our track record
             </h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
               Trusted by the best
             </p>
-            <p className="mt-6 text-lg leading-8 text-gray-300">
+            <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
               We&apos;re proud to work with top teams and coaches to create
               better experiences for everyone. Our platform is built to suit the
               needs of collegiate and professional teams.
             </p>
           </div>
-          <dl className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-10 text-white sm:mt-20 sm:grid-cols-2 sm:gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-4">
+          <dl className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-10 text-gray-900 dark:text-white sm:mt-20 sm:grid-cols-2 sm:gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-4">
             {stats.map((stat) => (
               <div
                 key={stat.id}
-                className="flex flex-col gap-y-3 border-l border-white/10 pl-6"
+                className="flex flex-col gap-y-3 border-l border-gray-900/10 dark:border-white/10 pl-6"
               >
                 <dt className="text-sm leading-6">{stat.name}</dt>
                 <dd className="order-first text-3xl font-semibold tracking-tight">
@@ -410,36 +450,62 @@ export default async function LandingPage() {
         {/* CTA section */}
         <div className="relative isolate mt-32 px-6 py-32 sm:mt-56 sm:py-40 lg:px-8">
           <svg
-            className="absolute inset-0 -z-10 h-full w-full stroke-white/10 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
+            className="absolute inset-0 -z-10 h-full w-full stroke-gray-200 dark:stroke-white/10 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
             aria-hidden="true"
           >
             <defs>
               <pattern
-                id="1d4240dd-898f-445f-932d-e2872fd12de3"
+                id="983e3e4c-de6d-4c3f-8d64-b9761d1534cc"
                 width={200}
                 height={200}
                 x="50%"
-                y={0}
+                y={-1}
                 patternUnits="userSpaceOnUse"
+                className="hidden dark:flex"
+              >
+                <path d="M.5 200V.5H200" fill="none" />
+              </pattern>
+              <pattern
+                id="0787a7c5-978c-4f66-83c7-11c213f99cb7"
+                width={200}
+                height={200}
+                x="50%"
+                y={-1}
+                patternUnits="userSpaceOnUse"
+                className="flex dark:hidden"
               >
                 <path d="M.5 200V.5H200" fill="none" />
               </pattern>
             </defs>
-            <svg x="50%" y={0} className="overflow-visible fill-gray-800/20">
+            <svg x="50%" y={-1} className="overflow-visible fill-gray-800/20">
               <path
                 d="M-200 0h201v201h-201Z M600 0h201v201h-201Z M-400 600h201v201h-201Z M200 800h201v201h-201Z"
                 strokeWidth={0}
+                className="hidden dark:flex"
+              />
+              <path
+                d="M.5 200V.5H200"
+                fill="none"
+                className="flex dark:hidden"
               />
             </svg>
             <rect
               width="100%"
               height="100%"
               strokeWidth={0}
-              fill="url(#1d4240dd-898f-445f-932d-e2872fd12de3)"
+              fill="url(#983e3e4c-de6d-4c3f-8d64-b9761d1534cc)"
+              className="hidden dark:flex"
+            />
+            <rect
+              width="100%"
+              height="100%"
+              strokeWidth={0}
+              fill="url(#0787a7c5-978c-4f66-83c7-11c213f99cb7)"
+              className="flex dark:hidden"
             />
           </svg>
           <div
-            className="absolute inset-x-0 top-10 -z-10 flex transform-gpu justify-center overflow-hidden blur-3xl"
+            className="absolute inset-x-0 top-10 -z-10 transform-gpu justify-center overflow-hidden blur-3xl hidden dark:flex"
             aria-hidden="true"
           >
             <div
@@ -451,12 +517,12 @@ export default async function LandingPage() {
             />
           </div>
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
               Ready to get started?
               <br />
               Start using our app today.
             </h2>
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-300">
+            <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-600 dark:text-gray-300">
               Sign up and start using our platform today. We&apos;re excited to
               change the way you think about coaching.
             </p>
@@ -466,7 +532,7 @@ export default async function LandingPage() {
               </Button>
               <Link
                 href="#"
-                className="text-sm font-semibold leading-6 text-white"
+                className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
               >
                 Learn more <span aria-hidden="true">→</span>
               </Link>
@@ -481,14 +547,14 @@ export default async function LandingPage() {
           Footer
         </h2>
         <div className="mx-auto max-w-7xl px-6 pb-8 pt-4 lg:px-8">
-          <div className="border-t border-white/10 pt-8 md:flex md:items-center md:justify-between">
+          <div className="border-t border-gray-900/10 dark:border-white/10 pt-8 md:flex md:items-center md:justify-between">
             <div className="flex space-x-6 md:order-2">
               {footerNavigation.social.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
                   target="_blank"
-                  className="text-gray-500 hover:text-gray-400"
+                  className="text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
                 >
                   <span className="sr-only">{item.name}</span>
                   <item.icon className="h-6 w-6" aria-hidden="true" />
