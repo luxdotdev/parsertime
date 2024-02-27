@@ -246,35 +246,35 @@ export default async function LandingPage() {
           <div className="mx-auto mt-10 grid max-w-lg grid-cols-4 items-center gap-x-8 gap-y-10 sm:max-w-xl sm:grid-cols-6 sm:gap-x-10 lg:mx-0 lg:max-w-none lg:grid-cols-5">
             <Image
               className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
-              src="/stclair.svg"
+              src="/teams/stclair.svg"
               alt="St. Clair College"
               width={158}
               height={48}
             />
             <Image
               className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
-              src="/cornell.svg"
+              src="/teams/cornell.svg"
               alt="Cornell University"
               width={158}
               height={48}
             />
             <Image
               className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
-              src="/fiu.svg"
+              src="/teams/fiu.svg"
               alt="Florida International University"
               width={158}
               height={48}
             />
             <Image
               className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
-              src="/cornell.svg"
+              src="/teams/gsu.svg"
               alt="Cornell University"
               width={158}
               height={48}
             />
             <Image
               className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
-              src="/stclair.svg"
+              src="/teams/stclair.svg"
               alt="St. Clair College"
               width={158}
               height={48}
