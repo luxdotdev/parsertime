@@ -268,7 +268,7 @@ export default async function LandingPage() {
             <Image
               className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
               src="/teams/gsu.svg"
-              alt="Cornell University"
+              alt="Georgia State University"
               width={158}
               height={48}
             />
