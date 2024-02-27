@@ -15,7 +15,7 @@ import { get } from "@vercel/edge-config";
 import { createHash, randomBytes } from "crypto";
 import { newUserWebhookConstructor, sendDiscordWebhook } from "@/lib/webhooks";
 
-type Availability = "public" | "private";
+export type Availability = "public" | "private";
 
 export const config = {
   adapter: PrismaAdapter(prisma),
