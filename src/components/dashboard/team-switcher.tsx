@@ -134,7 +134,7 @@ export function TeamSwitcher({
                 }
                 alt={selectedTeam.label}
               />
-              <AvatarFallback>SC</AvatarFallback>
+              <AvatarFallback>PT</AvatarFallback>
             </Avatar>
             {selectedTeam.label}
             <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
@@ -175,7 +175,7 @@ export function TeamSwitcher({
                           alt={team.label}
                           className="grayscale"
                         />
-                        <AvatarFallback>SC</AvatarFallback>
+                        <AvatarFallback>PT</AvatarFallback>
                       </Avatar>
                       {team.label}
                       <CheckIcon

@@ -122,7 +122,7 @@ export default function PlayerSwitcher({
                 src={`/heroes/${toHero(selectedPlayer.value)}.png`}
                 alt={selectedPlayer.label}
               />
-              <AvatarFallback>lux</AvatarFallback>
+              <AvatarFallback>PT</AvatarFallback>
             </Avatar>
             {selectedPlayer.label}
             <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
@@ -149,7 +149,7 @@ export default function PlayerSwitcher({
                           alt={player.label}
                           // className="grayscale"
                         />
-                        <AvatarFallback>SC</AvatarFallback>
+                        <AvatarFallback>PT</AvatarFallback>
                       </Avatar>
                       {player.label} {/* Use player.label directly here */}
                       <CheckIcon
@@ -184,7 +184,7 @@ export default function PlayerSwitcher({
                         alt={"Default"}
                         // className="grayscale"
                       />
-                      <AvatarFallback>SC</AvatarFallback>
+                      <AvatarFallback>PT</AvatarFallback>
                     </Avatar>
                     Default
                     <CheckIcon
