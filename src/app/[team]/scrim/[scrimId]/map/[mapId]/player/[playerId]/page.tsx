@@ -43,6 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PlayerDashboardPage({ params }: Props) {
   const id = parseInt(params.mapId);
+  const playerName = decodeURIComponent(params.playerId);
 
   const uniquePlayerRowsByHeroTimePlayed = await prisma.playerStat.findMany({
     where: {
@@ -106,10 +107,10 @@ export default async function PlayerDashboardPage({ params }: Props) {
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
             </TabsList>
             <TabsContent value="overview" className="space-y-4">
-              <DefaultOverview id={id} playerName={params.playerId} />
+              <DefaultOverview id={id} playerName={playerName} />
             </TabsContent>
             <TabsContent value="analytics" className="space-y-4">
-              <PlayerCharts id={id} playerName={params.playerId} />
+              <PlayerCharts id={id} playerName={playerName} />
             </TabsContent>
           </Tabs>
         </div>
