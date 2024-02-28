@@ -1,5 +1,4 @@
-import { DamageByRoundChart } from "@/components/charts/player/damage-by-round-chart";
-import { HealingByRoundChart } from "@/components/charts/player/healing-by-round-chart";
+import { PlayerStatByRoundChart } from "@/components/charts/player/player-stat-by-round-chart";
 import {
   Card,
   CardContent,
@@ -94,8 +93,9 @@ export async function PlayerCharts({ id, playerName }: Props) {
           <CardTitle>Hero Damage By Round Chart</CardTitle>
         </CardHeader>
         <CardContent className="pl-2">
-          <DamageByRoundChart
-            playerDamageByRound={dmgSumByRound}
+          <PlayerStatByRoundChart
+            stat="hero_damage_dealt"
+            playerStatByRound={dmgSumByRound}
             playerName={playerName}
             playerTeam={playerTeam}
           />
@@ -115,8 +115,9 @@ export async function PlayerCharts({ id, playerName }: Props) {
             <CardTitle>Healing By Round Chart</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
-            <HealingByRoundChart
-              playerHealingByRound={healingSumByRound}
+            <PlayerStatByRoundChart
+              stat="healing_dealt"
+              playerStatByRound={healingSumByRound}
               playerName={playerName}
               playerTeam={playerTeam}
             />
