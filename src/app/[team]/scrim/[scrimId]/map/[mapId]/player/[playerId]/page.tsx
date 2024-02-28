@@ -10,7 +10,7 @@ import Link from "next/link";
 import { toTitleCase } from "@/lib/utils";
 import { Metadata } from "next";
 import { SearchParams } from "@/types/next";
-// import { PlayerCharts } from "@/components/charts/player/player-charts";
+import { PlayerCharts } from "@/components/charts/player/player-charts";
 
 type Props = {
   params: { team: string; scrimId: string; mapId: string; playerId: string };
@@ -108,9 +108,9 @@ export default async function PlayerDashboardPage({ params }: Props) {
             <TabsContent value="overview" className="space-y-4">
               <DefaultOverview id={id} playerName={params.playerId} />
             </TabsContent>
-            {/* <TabsContent value="analytics" className="space-y-4">
+            <TabsContent value="analytics" className="space-y-4">
               <PlayerCharts id={id} playerName={params.playerId} />
-            </TabsContent> */}
+            </TabsContent>
           </Tabs>
         </div>
       </div>
