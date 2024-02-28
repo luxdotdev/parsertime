@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getPlayerFinalStats } from "@/data/scrim-dto";
-import { Stat, sumStatByRound } from "@/lib/player-charts";
+import { NonMappableStat, Stat, sumStatByRound } from "@/lib/player-charts";
 import prisma from "@/lib/prisma";
 import { HeroName, heroRoleMapping } from "@/types/heroes";
 
@@ -15,8 +15,6 @@ type Props = {
   id: number;
   playerName: string;
 };
-
-type NonMappableStat = "round_number" | "player_hero" | "hero_time_played";
 
 export async function PlayerCharts({ id, playerName }: Props) {
   async function getStatByRound<T extends keyof Omit<Stat, NonMappableStat>>(
