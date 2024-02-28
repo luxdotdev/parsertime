@@ -8,7 +8,17 @@ type RequiredStats = {
 };
 
 // Specifies keys from PlayerStat that are not used in Stat calculations.
-type UnusedKeys = "id" | "scrimId" | "match_time" | "event_type" | "MapDataId";
+type UnusedKeys =
+  | "id"
+  | "scrimId"
+  | "event_type"
+  | "match_time"
+  | "round_number"
+  | "player_team"
+  | "player_name"
+  | "player_hero"
+  | "hero_time_played"
+  | "MapDataId";
 
 // Represents a refined version of PlayerStat tailored for specific statistical operations.
 // It includes all required properties and a subset of optional properties from PlayerStat,
