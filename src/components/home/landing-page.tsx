@@ -70,7 +70,7 @@ const secondaryFeatures = [
   {
     name: "Fast and reliable.",
     description:
-      "We're built on top of the latest cloud infrastructure. Our platform is fast and reliable.",
+      "We're built on top of the latest cloud infrastructure. Speed is never an issue. We're always up and running.",
     icon: CloudIcon,
   },
   {
