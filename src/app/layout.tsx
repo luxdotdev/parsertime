@@ -9,6 +9,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { CommandDialogMenu } from "@/components/command-menu";
 import { Suspense } from "react";
 import { StaffToolbar } from "@/components/staff-toolbar";
+import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -39,8 +40,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className="h-full">
+      <body className={cn(inter.className, "h-full")}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
