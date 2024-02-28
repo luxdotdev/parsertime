@@ -14,7 +14,7 @@ type UnusedKeys = "id" | "scrimId" | "match_time" | "event_type" | "MapDataId";
 // It includes all required properties and a subset of optional properties from PlayerStat,
 // excluding those listed in UnusedKeys.
 export type Stat = Prettify<
-  Partial<Omit<PlayerStat, UnusedKeys | keyof RequiredStats>> & RequiredStats
+  RequiredStats & Partial<Omit<PlayerStat, UnusedKeys | keyof RequiredStats>>
 >;
 
 /**
