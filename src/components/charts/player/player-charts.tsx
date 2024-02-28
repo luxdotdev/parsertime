@@ -16,8 +16,10 @@ type Props = {
   playerName: string;
 };
 
+type NonMappableStat = "round_number" | "player_hero" | "hero_time_played";
+
 export async function PlayerCharts({ id, playerName }: Props) {
-  async function getStatByRound<T extends keyof Stat>(
+  async function getStatByRound<T extends keyof Omit<Stat, NonMappableStat>>(
     stat: T
   ): Promise<Array<{ round_number: number } & Record<T, number>>> {
     const playerStatByRound = (await prisma.playerStat.findMany({

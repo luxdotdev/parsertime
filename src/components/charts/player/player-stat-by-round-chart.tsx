@@ -65,12 +65,11 @@ type Props<T extends keyof Stat> = {
   playerTeam: "Team1" | "Team2";
 };
 
-export function PlayerStatByRoundChart<T extends keyof Stat>({
-  stat,
-  playerStatByRound,
-  playerName,
-  playerTeam,
-}: Props<T>) {
+type NonMappableStat = "round_number" | "player_hero" | "hero_time_played";
+
+export function PlayerStatByRoundChart<
+  T extends keyof Omit<Stat, NonMappableStat>
+>({ stat, playerStatByRound, playerName, playerTeam }: Props<T>) {
   const data: Data = playerStatByRound.map((round, index) => ({
     name: `Round ${index + 1}`,
     playerStat: roundNum(Number(round[stat as keyof typeof round]) ?? 0),
