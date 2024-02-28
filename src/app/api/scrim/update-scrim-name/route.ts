@@ -28,14 +28,9 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const userIsManager = await prisma.team.findFirst({
+  const userIsManager = await prisma.teamManager.findFirst({
     where: {
-      id: user.teamId ?? 0,
-      managers: {
-        some: {
-          userId: user.id,
-        },
-      },
+      userId: user.id,
     },
   });
 
@@ -48,7 +43,7 @@ export async function POST(req: NextRequest) {
   }
 
   const hasPerms =
-    userIsManager || // user is a manager of the team
+    userIsManager !== null || // user is a manager of the team
     user.id === scrim.creatorId || // user created the scrim
     user.role === $Enums.UserRole.ADMIN || // user is an admin
     user.role === $Enums.UserRole.MANAGER; // user is a manager
