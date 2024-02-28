@@ -18,7 +18,7 @@ import {
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
 import { cn, round as roundNum } from "@/lib/utils";
-import { Stat } from "@/lib/player-charts";
+import { NonMappableStat, Stat } from "@/lib/player-charts";
 
 type Data = {
   name: string;
@@ -56,7 +56,7 @@ function CustomTooltip({
   return null;
 }
 
-type Props<T extends keyof Stat> = {
+type Props<T extends keyof Omit<Stat, NonMappableStat>> = {
   stat: T;
   playerStatByRound: ({
     round_number: number;
@@ -64,8 +64,6 @@ type Props<T extends keyof Stat> = {
   playerName: string;
   playerTeam: "Team1" | "Team2";
 };
-
-type NonMappableStat = "round_number" | "player_hero" | "hero_time_played";
 
 export function PlayerStatByRoundChart<
   T extends keyof Omit<Stat, NonMappableStat>
