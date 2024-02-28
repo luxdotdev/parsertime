@@ -17,7 +17,9 @@ type Props = {
 };
 
 export async function PlayerCharts({ id, playerName }: Props) {
-  async function getStatByRound(stat: keyof Stat) {
+  async function getStatByRound<T extends keyof Stat>(
+    stat: T
+  ): Promise<Array<{ round_number: number } & Record<T, number>>> {
     const playerStatByRound = (await prisma.playerStat.findMany({
       where: {
         MapDataId: id,
