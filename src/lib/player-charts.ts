@@ -27,6 +27,11 @@ export type Stat = Prettify<
   RequiredStats & Partial<Omit<PlayerStat, UnusedKeys | keyof RequiredStats>>
 >;
 
+export type NonMappableStat =
+  | "round_number"
+  | "player_hero"
+  | "hero_time_played";
+
 /**
  * Sums a specified statistic across rounds for a collection of player statistics,
  * ensuring that each hero's contribution is counted once per round. The function
