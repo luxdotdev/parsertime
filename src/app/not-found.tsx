@@ -29,27 +29,19 @@ export default function NotFound() {
               Sorry, we couldn&apos;t find the page you&apos;re looking for.
             </p>
             <div className="mt-10">
-              <a
-                href="#"
+              <Link
+                href="/"
                 className="text-sm font-semibold leading-7 text-sky-600 dark:text-sky-400"
               >
                 <span aria-hidden="true">&larr;</span> Back to home
-              </a>
+              </Link>
             </div>
           </div>
         </main>
         <footer className="self-end lg:col-span-2 lg:col-start-1 lg:row-start-3">
           <div className="border-t border-gray-100 dark:border-gray-900 bg-gray-50 dark:bg-zinc-950 py-10">
             <nav className="mx-auto flex w-full max-w-7xl items-center gap-x-4 px-6 text-sm leading-7 text-gray-600 lg:px-8">
-              <a href="#">Contact support</a>
-              <svg
-                viewBox="0 0 2 2"
-                aria-hidden="true"
-                className="h-0.5 w-0.5 fill-gray-300"
-              >
-                <circle cx={1} cy={1} r={1} />
-              </svg>
-              <a href="#">Status</a>
+              <Link href="mailto:help@parsertime.app">Contact support</Link>
             </nav>
           </div>
         </footer>
