@@ -56,24 +56,24 @@ function CustomTooltip({
   return null;
 }
 
-type Props = {
-  stat: keyof Stat;
+type Props<T extends keyof Stat> = {
+  stat: T;
   playerStatByRound: ({
     round_number: number;
-  } & Record<string, number>)[];
+  } & Record<T, number>)[];
   playerName: string;
   playerTeam: "Team1" | "Team2";
 };
 
-export function PlayerStatByRoundChart({
+export function PlayerStatByRoundChart<T extends keyof Stat>({
   stat,
   playerStatByRound,
   playerName,
   playerTeam,
-}: Props) {
+}: Props<T>) {
   const data: Data = playerStatByRound.map((round, index) => ({
     name: `Round ${index + 1}`,
-    playerStat: roundNum(Number(round[stat]) ?? 0),
+    playerStat: roundNum(Number(round[stat as keyof typeof round]) ?? 0),
   }));
 
   return (
