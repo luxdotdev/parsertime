@@ -144,7 +144,7 @@ export async function MapCharts({ id }: { id: number }) {
       </Card>
       <Card className="col-span-3">
         <CardHeader>
-          <CardTitle>Hero Damage By Round Chart</CardTitle>
+          <CardTitle>Cumulative Hero Damage By Round Chart</CardTitle>
         </CardHeader>
         <CardContent className="pl-2">
           <DamageByRoundChart
