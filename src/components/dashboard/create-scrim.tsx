@@ -10,11 +10,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Dialog } from "@radix-ui/react-dialog";
-import { track } from "@vercel/analytics";
+import { useState } from "react";
 
 export function CreateScrimButton() {
+  const [open, setOpen] = useState(false);
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>Create Scrim</Button>
       </DialogTrigger>
@@ -24,7 +26,7 @@ export function CreateScrimButton() {
           <DialogDescription></DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <ScrimCreationForm />
+          <ScrimCreationForm setOpen={setOpen} />
         </div>
       </DialogContent>
     </Dialog>

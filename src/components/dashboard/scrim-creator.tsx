@@ -60,7 +60,11 @@ const FormSchema = z.object({
   map: z.any(),
 });
 
-export function ScrimCreationForm() {
+export function ScrimCreationForm({
+  setOpen,
+}: {
+  setOpen: (open: boolean) => void;
+}) {
   const [teams, setTeams] = useState<{ label: string; value: string }[]>([]);
   const [mapData, setMapData] = useState<ParserData>();
   const { toast } = useToast();
@@ -132,6 +136,7 @@ export function ScrimCreationForm() {
         duration: 5000,
       });
       router.refresh();
+      setOpen(false);
     } else {
       toast({
         title: "Error",
