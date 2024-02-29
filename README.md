@@ -1,7 +1,8 @@
 # Parsertime
 
 [![Website](https://img.shields.io/website?style=for-the-badge&labelColor=000&up_message=Operational&url=https%3A%2F%2Fparsertime.app)](https://parsertime.app)
-[![GitHub followers](https://img.shields.io/github/followers/lucasdoell?logo=github&style=for-the-badge&labelColor=000)](https://github.com/lucasdoell)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/lucasdoell/parsertime/vitest.yml?style=for-the-badge&label=Tests&labelColor=000)
+![GitHub Repo stars](https://img.shields.io/github/stars/lucasdoell/parsertime?style=for-the-badge&labelColor=000)
 
 This is the repository for Parsertime, a web app written to help collegiate Overwatch players track their performance in scrims.
 
