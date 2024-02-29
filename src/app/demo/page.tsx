@@ -96,7 +96,6 @@ export default async function MapDashboardPage({ params }: Props) {
             <div className="ml-auto flex items-center space-x-4">
               <Search />
               <ModeToggle />
-              <UserNav />
             </div>
           </div>
         </div>

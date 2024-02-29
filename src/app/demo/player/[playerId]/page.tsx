@@ -82,7 +82,6 @@ export default async function PlayerDashboardDemoPage({ params }: Props) {
             <div className="ml-auto flex items-center space-x-4">
               <Search />
               <ModeToggle />
-              <UserNav />
             </div>
           </div>
         </div>
