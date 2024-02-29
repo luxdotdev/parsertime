@@ -1,7 +1,10 @@
 # Parsertime
 
 <p align="center">
-  <img src="https://parsertime.app/icon.png" alt="OWL Bot" width="200" />
+  <a href="https://parsertime.app">
+    <img src="https://parsertime.app/icon.png" height="96">
+    <h3 align="center">Parsertime</h3>
+  </a>
 </p>
 
 [![Website](https://img.shields.io/website?style=for-the-badge&labelColor=000&up_message=Operational&url=https%3A%2F%2Fparsertime.app)](https://parsertime.app)
