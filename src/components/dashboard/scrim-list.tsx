@@ -1,7 +1,5 @@
-import { AddScrimCard } from "@/components/dashboard/add-scrim-card";
 import { EmptyScrimList } from "@/components/dashboard/empty-scrim-list";
-import { ScrimCard } from "@/components/dashboard/scrim-card";
-import { Card } from "@/components/ui/card";
+import { ScrimPagination } from "@/components/dashboard/scrim-pagination";
 import { getUserViewableScrims } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
@@ -70,15 +68,7 @@ export async function ScrimList({ searchParams }: Props) {
 
   return (
     <main>
-      {scrims.length > 0 && (
-        <Card className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-          {scrims.map((scrim) => (
-            <ScrimCard key={scrim.id} scrim={scrim} />
-          ))}
-
-          <AddScrimCard />
-        </Card>
-      )}
+      {scrims.length > 0 && <ScrimPagination scrims={scrims} />}
 
       {scrims.length === 0 && <EmptyScrimList />}
     </main>
