@@ -232,7 +232,7 @@ export default async function LandingPage() {
                   <Link href="/sign-up">Get started</Link>
                 </Button>
                 <Link
-                  href="#"
+                  href="/demo"
                   className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
                 >
                   Live demo <span aria-hidden="true">→</span>
