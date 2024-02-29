@@ -22,7 +22,7 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const mapName = await prisma.matchStart.findFirst({
     where: {
-      MapDataId: 100,
+      MapDataId: 316,
     },
     select: {
       map_name: true,
@@ -30,13 +30,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 
   return {
-    title: `${toTitleCase(mapName?.map_name || "Map")} Overview | Parsertime`,
-    description: `Map overview for ${toTitleCase(
+    title: `${toTitleCase(mapName?.map_name || "Map")} Demo | Parsertime`,
+    description: `Demo for ${toTitleCase(
       mapName?.map_name || "Map"
     )} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
     openGraph: {
-      title: `${toTitleCase(mapName?.map_name || "Map")} Overview | Parsertime`,
-      description: `Map overview for ${toTitleCase(
+      title: `${toTitleCase(mapName?.map_name || "Map")} Demo | Parsertime`,
+      description: `Demo overview for ${toTitleCase(
         mapName?.map_name || "Map"
       )} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
       url: "https://parsertime.app",
@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         {
           url: `https://parsertime.app/api/og?title=${toTitleCase(
             mapName?.map_name || "Map"
-          )} Overview`,
+          )} Demo`,
           width: 1200,
           height: 630,
         },
@@ -57,7 +57,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function MapDashboardPage({ params }: Props) {
-  const id = 100;
+  const id = 316;
 
   const uniquePlayerRowsByHeroTimePlayed = await prisma.playerStat.findMany({
     where: {
