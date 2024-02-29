@@ -2,7 +2,6 @@ import { DefaultOverview } from "@/components/map/default-overview";
 import { MainNav } from "@/components/dashboard/main-nav";
 import PlayerSwitcher from "@/components/map/player-switcher";
 import { Search } from "@/components/dashboard/search";
-import { UserNav } from "@/components/user-nav";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import prisma from "@/lib/prisma";
