@@ -1,3 +1,4 @@
+import DemoBanner from "@/components/demo/banner";
 import { SelectedPlayerProvider } from "@/components/map/player-switcher";
 
 export default function MapDashboardLayout({
@@ -7,6 +8,7 @@ export default function MapDashboardLayout({
 }) {
   return (
     <>
+      <DemoBanner />
       <SelectedPlayerProvider>{children}</SelectedPlayerProvider>
     </>
   );
