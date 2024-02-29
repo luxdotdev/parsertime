@@ -307,8 +307,8 @@ export default async function LandingPage() {
             />
             <Image
               className="col-span-2 max-h-12 w-full object-contain lg:col-span-1 invert dark:invert-0"
-              src="/teams/stclair.svg"
-              alt="St. Clair College"
+              src="/teams/vlln.png"
+              alt="VLLN"
               width={158}
               height={48}
             />
