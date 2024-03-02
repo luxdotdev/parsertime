@@ -21,12 +21,10 @@ import { useEffect, useState } from "react";
 type Props = {
   user: User;
   managers: {
-    managers: {
-      id: number;
-      teamId: number;
-      userId: string;
-    }[];
-  };
+    id: number;
+    teamId: number;
+    userId: string;
+  }[];
 };
 
 export function UserCardButtons({ user, managers }: Props) {
@@ -43,9 +41,7 @@ export function UserCardButtons({ user, managers }: Props) {
 
   const router = useRouter();
 
-  const isManager = managers.managers.some(
-    (manager) => manager.userId === user.id
-  );
+  const isManager = managers.some((manager) => manager.userId === user.id);
 
   async function handlePromoteToManager() {
     setPromotionLoading(true);

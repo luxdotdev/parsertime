@@ -69,25 +69,23 @@ export default async function Team({ params }: { params: { teamId: string } }) {
     },
   })) ?? { users: [] };
 
-  const teamManagers = (await prisma.team.findFirst({
+  const teamManagers = await prisma.teamManager.findMany({
     where: {
-      id: teamId,
+      teamId: teamId,
     },
-    select: {
-      managers: true,
-    },
-  })) ?? { managers: [] };
+  });
 
   const user = await getUser(session?.user?.email);
 
+  function userIsManager(user: User) {
+    return teamManagers.some((manager) => manager.userId === user.id);
+  }
+
   const hasPerms =
+    userIsManager(user!) ||
     user?.id === teamData?.ownerId ||
     user?.role === $Enums.UserRole.MANAGER ||
     user?.role === $Enums.UserRole.ADMIN;
-
-  function userIsManager(user: User) {
-    return teamManagers.managers.some((manager) => manager.userId === user?.id);
-  }
 
   return (
     <>
