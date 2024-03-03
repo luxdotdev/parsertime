@@ -81,7 +81,7 @@ const secondaryFeatures = [
   },
 ];
 
-type IconProps = Omit<SVGProps<SVGSVGElement>, "fill | viewbox">;
+type IconProps = Omit<SVGProps<SVGSVGElement>, "fill" | "viewbox">;
 
 const footerNavigation = {
   social: [
