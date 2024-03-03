@@ -3,7 +3,7 @@ import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
+import { kv } from "@vercel/kv";
 import { auth } from "@/lib/auth";
 import { track } from "@vercel/analytics/server";
 
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   // Create a new ratelimiter, that allows 5 requests per 1 minute
   const ratelimit = new Ratelimit({
-    redis: Redis.fromEnv(),
+    redis: kv,
     limiter: Ratelimit.slidingWindow(5, "1 m"),
     analytics: true,
   });
