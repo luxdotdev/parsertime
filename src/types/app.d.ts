@@ -18,6 +18,8 @@ const envVariables = z.object({
   NEXTAUTH_URL: z.string(),
   DEV_TOKEN: z.string(),
   DISCORD_WEBHOOK_URL: z.string(),
+  STRIPE_PUBLISHABLE_KEY: z.string(),
+  STRIPE_SECRET_KEY: z.string(),
 });
 
 envVariables.parse(process.env);
