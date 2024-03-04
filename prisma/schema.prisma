@@ -53,8 +53,16 @@ model User {
   teamId        Int?
   teams         Team[]
   managedTeams  TeamManager[]
+  stripeId      String?
+  billingPlan   BillingPlan   @default(FREE)
 
   @@index([teamId])
+}
+
+enum BillingPlan {
+  FREE
+  BASIC
+  PREMIUM
 }
 
 model VerificationToken {
