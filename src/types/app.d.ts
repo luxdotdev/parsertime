@@ -24,6 +24,7 @@ const envVariables = z.object({
   // Stripe keys
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string(),
   STRIPE_SECRET_KEY: z.string(),
+  STRIPE_WEBHOOK_SECRET: z.string(),
 
   // Misc
   SENDGRID_API_KEY: z.string(),
