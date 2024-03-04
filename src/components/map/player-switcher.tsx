@@ -61,7 +61,10 @@ export default function PlayerSwitcher({
   const router = useRouter();
   const pathname = usePathname();
 
-  const mapUrl = pathname.split("/").slice(0, 6).join("/");
+  const mapUrl =
+    pathname.split("/")[1] === "demo"
+      ? "/demo"
+      : pathname.split("/").slice(0, 6).join("/");
 
   React.useEffect(() => {
     const playerId = decodeURIComponent(pathname.split("/").pop()!);
