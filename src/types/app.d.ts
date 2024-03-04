@@ -22,7 +22,7 @@ const envVariables = z.object({
   GOOGLE_CLIENT_SECRET: z.string(),
 
   // Stripe keys
-  STRIPE_PUBLISHABLE_KEY: z.string(),
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string(),
   STRIPE_SECRET_KEY: z.string(),
 
   // Misc
