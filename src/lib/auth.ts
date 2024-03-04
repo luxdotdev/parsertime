@@ -14,6 +14,7 @@ import { getUser } from "@/data/user-dto";
 import { get } from "@vercel/edge-config";
 import { createHash, randomBytes } from "crypto";
 import { newUserWebhookConstructor, sendDiscordWebhook } from "@/lib/webhooks";
+import { stripe } from "@/lib/stripe";
 
 export type Availability = "public" | "private";
 
@@ -114,6 +115,23 @@ export const config = {
         // Track new user signups with Vercel Analytics
         await track("New User", { email: user.email ?? "unknown" });
       }
+    },
+    async createUser({ user }) {
+      const customer = await stripe.customers.create({
+        email: user.email!,
+        name: user.name ?? undefined,
+      });
+
+      prisma.user.update({
+        where: {
+          email: user.email!,
+        },
+        data: {
+          stripeId: customer.id,
+        },
+      });
+
+      Logger.log("Stripe customer created", { user });
     },
   },
   pages: {
