@@ -53,7 +53,7 @@ model User {
   teamId        Int?
   teams         Team[]
   managedTeams  TeamManager[]
-  stripeId      String?
+  stripeId      String?       @unique
   billingPlan   BillingPlan   @default(FREE)
 
   @@index([teamId])
