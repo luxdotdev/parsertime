@@ -4,6 +4,7 @@ import { stripe } from "@/lib/stripe";
 import Logger from "@/lib/logger";
 import { TODO } from "@/types/utils";
 import { track } from "@vercel/analytics/server";
+import { handleSubscriptionEvent } from "@/lib/billing-plans";
 
 const relevantEvents = new Set([
   "product.created",
@@ -64,11 +65,7 @@ export async function POST(req: Request) {
         case "customer.subscription.updated":
         case "customer.subscription.deleted":
           const subscription = event.data.object as Stripe.Subscription;
-          Logger.log(
-            subscription.id,
-            subscription.customer as string,
-            event.type === "customer.subscription.created"
-          );
+          await handleSubscriptionEvent(subscription, event.type);
           break;
         case "checkout.session.completed":
           const checkoutSession = event.data.object as Stripe.Checkout.Session;
