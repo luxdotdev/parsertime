@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import Logger from "@/lib/logger";
 import { TODO } from "@/types/utils";
+import { track } from "@vercel/analytics/server";
 
 const relevantEvents = new Set([
   "product.created",
@@ -12,6 +13,7 @@ const relevantEvents = new Set([
   "price.updated",
   "price.deleted",
   "checkout.session.completed",
+  "customer.created",
   "customer.subscription.created",
   "customer.subscription.updated",
   "customer.subscription.deleted",
@@ -20,7 +22,10 @@ const relevantEvents = new Set([
 export async function POST(req: Request) {
   const body = await req.text();
   const sig = req.headers.get("stripe-signature") as string;
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  const webhookSecret =
+    process.env.NODE_ENV === "production"
+      ? process.env.STRIPE_WEBHOOK_SECRET
+      : process.env.STRIPE_WEBHOOK_SECRET_LOCAL;
   let event: Stripe.Event;
 
   try {
@@ -49,6 +54,11 @@ export async function POST(req: Request) {
           break;
         case "product.deleted":
           Logger.log(event.data.object as Stripe.Product);
+          break;
+        case "customer.created":
+          const customer = event.data.object as Stripe.Customer;
+          Logger.log("New customer", customer);
+          await track("New Customer", { customerId: customer.id });
           break;
         case "customer.subscription.created":
         case "customer.subscription.updated":
