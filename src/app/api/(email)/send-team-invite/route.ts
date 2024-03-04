@@ -4,6 +4,9 @@ import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { track } from "@vercel/analytics/server";
 import { getUser } from "@/data/user-dto";
+import sendgrid from "@sendgrid/mail";
+
+sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
 
 export async function POST(req: NextRequest) {
   const inviteeEmail = req.nextUrl.searchParams.get("email");
@@ -72,28 +75,17 @@ export async function POST(req: NextRequest) {
     })
   );
 
-  const response = await fetch("https://api.sendgrid.com/v3/mail/send", {
-    body: JSON.stringify({
-      personalizations: [{ to: [{ email: inviteeEmail }] }],
-      from: { email: "noreply@lux.dev" },
+  try {
+    await sendgrid.send({
+      to: inviteeEmail,
+      from: "noreply@lux.dev",
       subject: `Join ${team.name} on Parsertime`,
-      content: [
-        {
-          type: "text/html",
-          value: emailHtml,
-        },
-      ],
-    }),
-    headers: {
-      Authorization: `Bearer ${process.env.SENDGRID_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    method: "POST",
-  });
-
-  if (!response.ok) {
-    const { errors } = (await response.json()) as { errors: string[] };
-    throw new Error(JSON.stringify(errors));
+      html: emailHtml,
+    });
+  } catch (error) {
+    return new Response("Error sending email", {
+      status: 500,
+    });
   }
 
   await track("Email Sent", { type: "Team Invite" });

@@ -15,8 +15,11 @@ import { get } from "@vercel/edge-config";
 import { createHash, randomBytes } from "crypto";
 import { newUserWebhookConstructor, sendDiscordWebhook } from "@/lib/webhooks";
 import { stripe } from "@/lib/stripe";
+import sendgrid from "@sendgrid/mail";
 
 export type Availability = "public" | "private";
+
+sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
 
 export const config = {
   adapter: PrismaAdapter(prisma),
@@ -53,31 +56,19 @@ export const config = {
           MagicLinkEmail({ magicLink: url, username: email })
         );
 
-        const response = await fetch("https://api.sendgrid.com/v3/mail/send", {
-          body: JSON.stringify({
-            personalizations: [{ to: [{ email }] }],
-            from: { email: "noreply@lux.dev" },
+        try {
+          await sendgrid.send({
+            to: email,
+            from: "noreply@lux.dev",
             subject: "Sign in to Parsertime",
-            content: [
-              {
-                type: "text/html",
-                value: emailHtml,
-              },
-            ],
-          }),
-          headers: {
-            Authorization: `Bearer ${process.env.SENDGRID_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-        });
+            html: emailHtml,
+          });
+        } catch (e) {
+          Logger.error("Error sending email", e);
+          throw new Error("Error sending email");
+        }
 
         await track("Email Sent", { type: "Magic Link" });
-
-        if (!response.ok) {
-          const { errors } = (await response.json()) as { errors: string[] };
-          throw new Error(JSON.stringify(errors));
-        }
       },
     },
   ],
