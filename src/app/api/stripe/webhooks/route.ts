@@ -7,17 +7,12 @@ import { track } from "@vercel/analytics/server";
 import { handleSubscriptionEvent } from "@/lib/billing-plans";
 
 const relevantEvents = new Set([
-  "product.created",
-  "product.updated",
-  "product.deleted",
-  "price.created",
-  "price.updated",
-  "price.deleted",
-  "checkout.session.completed",
   "customer.created",
+  "customer.deleted",
+  "checkout.session.completed",
   "customer.subscription.created",
-  "customer.subscription.updated",
   "customer.subscription.deleted",
+  "customer.subscription.updated",
 ]);
 
 export async function POST(req: Request) {
@@ -42,24 +37,14 @@ export async function POST(req: Request) {
   if (relevantEvents.has(event.type)) {
     try {
       switch (event.type) {
-        case "product.created":
-        case "product.updated":
-          Logger.log(event.data.object as Stripe.Product);
-          break;
-        case "price.created":
-        case "price.updated":
-          Logger.log(event.data.object as Stripe.Price);
-          break;
-        case "price.deleted":
-          Logger.log(event.data.object as Stripe.Price);
-          break;
-        case "product.deleted":
-          Logger.log(event.data.object as Stripe.Product);
-          break;
         case "customer.created":
           const customer = event.data.object as Stripe.Customer;
           Logger.log("New customer", customer);
           await track("New Customer", { customerId: customer.id });
+          break;
+        case "customer.deleted":
+          Logger.log("Deleted customer", event.data.object);
+          await track("Deleted Customer", { customerId: event.data.object.id });
           break;
         case "customer.subscription.created":
         case "customer.subscription.updated":
