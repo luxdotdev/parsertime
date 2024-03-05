@@ -15,5 +15,7 @@ export default async function TeamLayout({
     return NoAuthCard();
   }
 
+  // Must be wrapped in an element due to Next.js Server Component typing
+  // eslint-disable-next-line react/jsx-no-useless-fragment
   return <>{children}</>;
 }
