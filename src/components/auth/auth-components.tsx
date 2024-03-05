@@ -31,7 +31,7 @@ export function SignOutButton(
       }}
       className="w-full"
     >
-      <button variant="ghost" className="w-full p-0" {...props}>
+      <button className="w-full p-0" {...props}>
         Sign Out
       </button>
     </form>
