@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import { createCheckout } from "@/lib/stripe";
+import { createCheckout, getCustomerPortalUrl } from "@/lib/stripe";
 import { toTitleCase } from "@/lib/utils";
 import { CheckIcon, MinusIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
@@ -96,13 +96,26 @@ export default async function PricingPage() {
   const session = await auth();
   const user = await getUser(session?.user?.email);
 
-  const plan = toTitleCase(user?.billingPlan ?? "Free");
+  const plan = toTitleCase(user?.billingPlan ?? "");
+
+  async function getLink(tier: string) {
+    if (session) {
+      if (plan === "Free") {
+        const checkout = await createCheckout(session, tier);
+        return checkout.url;
+      } else {
+        return await getCustomerPortalUrl(user!);
+      }
+    }
+
+    return "/dashboard";
+  }
 
   const tiers = [
     {
       name: "Free",
       id: "tier-free",
-      href: "/dashboard",
+      href: (await getLink("Free")) ?? "/sign-in",
       priceMonthly: "$0",
       description: "For people who want to try out Parsertime.",
       mostPopular: false,
@@ -110,7 +123,7 @@ export default async function PricingPage() {
     {
       name: "Basic",
       id: "tier-basic",
-      href: (await createCheckout(session, "Basic")).url ?? "/sign-in",
+      href: (await getLink("Basic")) ?? "/sign-in",
       priceMonthly: "$10",
       description: "For teams that are ready to grow with Parsertime.",
       mostPopular: true,
@@ -118,7 +131,7 @@ export default async function PricingPage() {
     {
       name: "Premium",
       id: "tier-premium",
-      href: (await createCheckout(session, "Premium")).url ?? "/sign-in",
+      href: (await getLink("Premium")) ?? "/sign-in",
       priceMonthly: "$15",
       description:
         "For larger teams that want to take their productivity to the next level.",
