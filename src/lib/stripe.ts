@@ -1,5 +1,6 @@
 import { getUser } from "@/data/user-dto";
 import { BillingPlans } from "@/types/billing-plans";
+import { User } from "@prisma/client";
 import { Stripe as TStripe, loadStripe } from "@stripe/stripe-js";
 import { get } from "@vercel/edge-config";
 import { Session } from "next-auth";
@@ -67,4 +68,18 @@ export async function createCheckout(
   }
 
   return checkoutSession;
+}
+
+export async function getCustomerPortalUrl(user: User) {
+  const baseUrl =
+    process.env.NODE_ENV === "production"
+      ? "https://parsertime.app"
+      : "http://localhost:3000";
+
+  const session = await stripe.billingPortal.sessions.create({
+    customer: user.stripeId!,
+    return_url: `${baseUrl}/settings`,
+  });
+
+  return session.url;
 }
