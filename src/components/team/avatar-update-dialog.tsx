@@ -96,7 +96,7 @@ export function AvatarUpdateDialog({
         croppedImage,
         {
           access: "public",
-          handleUploadUrl: "/api/team/avatar-upload?teamId=" + team.id,
+          handleUploadUrl: `/api/team/avatar-upload?teamId=${team.id}`,
         }
       );
 
