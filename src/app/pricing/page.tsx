@@ -103,9 +103,8 @@ export default async function PricingPage() {
       if (plan === "Free") {
         const checkout = await createCheckout(session, tier);
         return checkout.url;
-      } else {
-        return await getCustomerPortalUrl(user!);
       }
+      return await getCustomerPortalUrl(user!);
     }
 
     return "/dashboard";
