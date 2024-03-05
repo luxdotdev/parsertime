@@ -115,7 +115,7 @@ export default async function PricingPage() {
     {
       name: "Free",
       id: "tier-free",
-      href: (await getLink("Free")) ?? "/sign-in",
+      href: "/dashboard",
       priceMonthly: "$0",
       description: "For people who want to try out Parsertime.",
       mostPopular: false,
