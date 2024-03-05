@@ -195,9 +195,7 @@ export async function isAuthedToViewTeam(id: number) {
   }
 
   const teamMembersById = await prisma.team.findFirst({
-    where: {
-      id: id,
-    },
+    where: { id },
     select: {
       users: true,
     },
@@ -205,9 +203,8 @@ export async function isAuthedToViewTeam(id: number) {
 
   if (teamMembersById?.users?.some((u) => u.id === user.id)) {
     return true;
-  } else {
-    return false;
   }
+  return false;
 }
 
 /**

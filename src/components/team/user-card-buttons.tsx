@@ -49,7 +49,7 @@ export function UserCardButtons({ user, managers }: Props) {
     const res = await fetch(`/api/team/promote-user`, {
       method: "POST",
       body: JSON.stringify({
-        teamId: teamId,
+        teamId,
         userId: user.id,
       }),
     });
@@ -78,7 +78,7 @@ export function UserCardButtons({ user, managers }: Props) {
     const res = await fetch(`/api/team/demote-user`, {
       method: "POST",
       body: JSON.stringify({
-        teamId: teamId,
+        teamId,
         userId: user.id,
       }),
     });
@@ -107,7 +107,7 @@ export function UserCardButtons({ user, managers }: Props) {
     const res = await fetch(`/api/team/remove-user-from-team`, {
       method: "POST",
       body: JSON.stringify({
-        teamId: teamId,
+        teamId,
         userId: user.id,
       }),
     });

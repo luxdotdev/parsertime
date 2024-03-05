@@ -7,9 +7,7 @@ import { Scrim } from "@prisma/client";
 
 async function getScrimFn(id: number) {
   return await prisma.scrim.findFirst({
-    where: {
-      id: id,
-    },
+    where: { id },
   });
 }
 
@@ -25,9 +23,7 @@ async function getUserViewableScrimsFn(id: string) {
         {
           Team: {
             users: {
-              some: {
-                id: id,
-              },
+              some: { id },
             },
           },
         },

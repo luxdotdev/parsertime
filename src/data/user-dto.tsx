@@ -9,9 +9,7 @@ async function getUserFn(email: string | null | undefined) {
   }
 
   const user = await prisma.user.findFirst({
-    where: {
-      email: email,
-    },
+    where: { email },
   });
 
   if (!user) {

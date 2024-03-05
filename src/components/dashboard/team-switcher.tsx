@@ -107,7 +107,7 @@ export function TeamSwitcher({
     },
     {
       label: "Teams",
-      teams: teams,
+      teams,
     },
   ];
 
@@ -155,9 +155,10 @@ export function TeamSwitcher({
                           router.push(pathname);
                         } else {
                           router.push(
-                            pathname +
-                              "?" +
-                              createQueryString("team", team.value)
+                            `${pathname}?${createQueryString(
+                              "team",
+                              team.value
+                            )}`
                           );
                           router.refresh();
                         }
