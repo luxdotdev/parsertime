@@ -134,40 +134,38 @@ export function AddScrimCard() {
           control={form.control}
           name="file"
           render={({ field }) => (
-            <>
-              <FormItem>
-                <Card
-                  className={cn(
-                    "max-w-md h-48 flex flex-col justify-center items-center border-dashed"
-                    // dragActive && "border-green-500"
-                  )}
-                  // onDragEnter={handleDrag}
-                  // onDragLeave={handleDrag}
-                  // onDragOver={handleDrag}
-                  // onDrop={handleDrop}
-                >
-                  <CardHeader className="text-xl text-center">
-                    <span className="inline-flex items-center justify-center space-x-2">
-                      <PlusCircledIcon className="h-6 w-6" />{" "}
-                      <span>Add a scrim...</span>
-                    </span>
-                  </CardHeader>
-                  <CardDescription className="pb-4">
-                    Click the button to create a scrim.
-                  </CardDescription>
-                  <CardContent className="flex justify-center items-center">
-                    {/* <Input
+            <FormItem>
+              <Card
+                className={cn(
+                  "max-w-md h-48 flex flex-col justify-center items-center border-dashed"
+                  // dragActive && "border-green-500"
+                )}
+                // onDragEnter={handleDrag}
+                // onDragLeave={handleDrag}
+                // onDragOver={handleDrag}
+                // onDrop={handleDrop}
+              >
+                <CardHeader className="text-xl text-center">
+                  <span className="inline-flex items-center justify-center space-x-2">
+                    <PlusCircledIcon className="h-6 w-6" />{" "}
+                    <span>Add a scrim...</span>
+                  </span>
+                </CardHeader>
+                <CardDescription className="pb-4">
+                  Click the button to create a scrim.
+                </CardDescription>
+                <CardContent className="flex justify-center items-center">
+                  {/* <Input
                       type="file"
                       onChange={handleChange}
                       className="w-64"
                       accept=".xlsx"
                     />
                     <div className="pl-2" /> */}
-                    <CreateScrimButton />
-                  </CardContent>
-                </Card>
-              </FormItem>
-            </>
+                  <CreateScrimButton />
+                </CardContent>
+              </Card>
+            </FormItem>
           )}
         />
       </form>

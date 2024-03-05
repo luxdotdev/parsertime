@@ -50,58 +50,25 @@ export default async function TeamPage() {
     userData?.role === $Enums.UserRole.MANAGER;
 
   return (
-    <>
-      <div className="hidden flex-col md:flex">
-        <div className="flex-1 space-y-4 p-8 pt-6">
-          <div className="flex items-center justify-between space-y-2">
-            <h2 className="text-3xl font-bold tracking-tight">
-              {hasPerms ? "Manage Your Teams" : "View Your Teams"}
-            </h2>
-          </div>
-          <Tabs defaultValue="teams" className="space-y-4">
-            {hasPerms && (
-              <TabsList>
-                <TabsTrigger value="teams">Teams</TabsTrigger>
-                <TabsTrigger value="admin">Admin View</TabsTrigger>
-              </TabsList>
-            )}
+    <div className="hidden flex-col md:flex">
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <div className="flex items-center justify-between space-y-2">
+          <h2 className="text-3xl font-bold tracking-tight">
+            {hasPerms ? "Manage Your Teams" : "View Your Teams"}
+          </h2>
+        </div>
+        <Tabs defaultValue="teams" className="space-y-4">
+          {hasPerms && (
+            <TabsList>
+              <TabsTrigger value="teams">Teams</TabsTrigger>
+              <TabsTrigger value="admin">Admin View</TabsTrigger>
+            </TabsList>
+          )}
 
-            <TabsContent value="teams" className="space-y-4">
-              {userTeams.length > 0 && (
-                <Card className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-                  {userTeams.map((team) => (
-                    <div key={team.id} className="p-2">
-                      <Card className="relative min-h-[144px] md:w-60 xl:w-80">
-                        <Link href={`/team/${team.id}`}>
-                          <Image
-                            src={
-                              team.image ??
-                              `https://avatar.vercel.sh/${team.name}.png`
-                            }
-                            alt={
-                              team.name
-                                ? `Avatar for ${team.name}`
-                                : "Default team avatar"
-                            }
-                            width={100}
-                            height={100}
-                            className="rounded-full float-right p-4"
-                          />
-                          <CardHeader>
-                            <h3 className="text-3xl font-semibold tracking-tight z-10">
-                              {team.name}
-                            </h3>
-                          </CardHeader>
-                        </Link>
-                      </Card>
-                    </div>
-                  ))}
-                </Card>
-              )}
-            </TabsContent>
-            <TabsContent value="admin" className="space-y-4">
+          <TabsContent value="teams" className="space-y-4">
+            {userTeams.length > 0 && (
               <Card className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-                {allTeams.map((team) => (
+                {userTeams.map((team) => (
                   <div key={team.id} className="p-2">
                     <Card className="relative min-h-[144px] md:w-60 xl:w-80">
                       <Link href={`/team/${team.id}`}>
@@ -129,10 +96,41 @@ export default async function TeamPage() {
                   </div>
                 ))}
               </Card>
-            </TabsContent>
-          </Tabs>
-        </div>
+            )}
+          </TabsContent>
+          <TabsContent value="admin" className="space-y-4">
+            <Card className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+              {allTeams.map((team) => (
+                <div key={team.id} className="p-2">
+                  <Card className="relative min-h-[144px] md:w-60 xl:w-80">
+                    <Link href={`/team/${team.id}`}>
+                      <Image
+                        src={
+                          team.image ??
+                          `https://avatar.vercel.sh/${team.name}.png`
+                        }
+                        alt={
+                          team.name
+                            ? `Avatar for ${team.name}`
+                            : "Default team avatar"
+                        }
+                        width={100}
+                        height={100}
+                        className="rounded-full float-right p-4"
+                      />
+                      <CardHeader>
+                        <h3 className="text-3xl font-semibold tracking-tight z-10">
+                          {team.name}
+                        </h3>
+                      </CardHeader>
+                    </Link>
+                  </Card>
+                </div>
+              ))}
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
-    </>
+    </div>
   );
 }
