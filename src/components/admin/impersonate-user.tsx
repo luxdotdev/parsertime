@@ -87,11 +87,7 @@ export function ImpersonateUserForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input
-                  placeholder={"lucas@lux.dev"}
-                  defaultValue=""
-                  {...field}
-                />
+                <Input placeholder="lucas@lux.dev" defaultValue="" {...field} />
               </FormControl>
               <FormDescription>
                 This is the email of the user you want to impersonate.
