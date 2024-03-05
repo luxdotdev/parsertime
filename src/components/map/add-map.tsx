@@ -14,12 +14,11 @@ import { parseData } from "@/lib/parser";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ExternalLinkIcon, PlusCircledIcon } from "@radix-ui/react-icons";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Form, useForm } from "react-hook-form";
 import { z } from "zod";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
 
 const XLSX =
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
@@ -156,39 +155,37 @@ export function AddMapCard() {
           control={form.control}
           name="file"
           render={() => (
-            <>
-              <FormItem>
-                <Card
-                  className={cn(
-                    "max-w-md h-48 flex flex-col justify-center items-center border-dashed",
-                    dragActive && "border-green-500"
-                  )}
-                  onDragEnter={handleDrag}
-                  onDragLeave={handleDrag}
-                  onDragOver={handleDrag}
-                  onDrop={handleDrop}
-                >
-                  <CardHeader className="text-xl text-center">
-                    <span className="inline-flex items-center justify-center space-x-2">
-                      <PlusCircledIcon className="h-6 w-6" />{" "}
-                      <span>Add a map...</span>
-                    </span>
-                  </CardHeader>
-                  <CardDescription className="pb-4">
-                    Drag and drop or select a file to upload.
-                  </CardDescription>
-                  <CardContent className="flex justify-center items-center">
-                    <Input
-                      type="file"
-                      onChange={handleChange}
-                      className="w-64"
-                      accept=".xlsx, .txt"
-                    />
-                    <div className="pl-2" />
-                  </CardContent>
-                </Card>
-              </FormItem>
-            </>
+            <FormItem>
+              <Card
+                className={cn(
+                  "max-w-md h-48 flex flex-col justify-center items-center border-dashed",
+                  dragActive && "border-green-500"
+                )}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
+              >
+                <CardHeader className="text-xl text-center">
+                  <span className="inline-flex items-center justify-center space-x-2">
+                    <PlusCircledIcon className="h-6 w-6" />{" "}
+                    <span>Add a map...</span>
+                  </span>
+                </CardHeader>
+                <CardDescription className="pb-4">
+                  Drag and drop or select a file to upload.
+                </CardDescription>
+                <CardContent className="flex justify-center items-center">
+                  <Input
+                    type="file"
+                    onChange={handleChange}
+                    className="w-64"
+                    accept=".xlsx, .txt"
+                  />
+                  <div className="pl-2" />
+                </CardContent>
+              </Card>
+            </FormItem>
           )}
         />
       </form>
