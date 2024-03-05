@@ -1,6 +1,7 @@
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
+import { BillingPlans } from "@/types/billing-plans";
 import { $Enums } from "@prisma/client";
 import { get } from "@vercel/edge-config";
 import Stripe from "stripe";
@@ -9,13 +10,6 @@ type SubscriptionEvent =
   | "customer.subscription.created"
   | "customer.subscription.updated"
   | "customer.subscription.deleted";
-
-type BillingPlans = {
-  id: string;
-  name: $Enums.BillingPlan;
-  price: number;
-  teamSize: number;
-}[];
 
 export async function handleSubscriptionEvent(
   subscription: Stripe.Subscription,
