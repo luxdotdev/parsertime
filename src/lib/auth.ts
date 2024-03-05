@@ -113,7 +113,7 @@ export const config = {
         name: user.name ?? undefined,
       });
 
-      prisma.user.update({
+      const updatedUser = await prisma.user.update({
         where: {
           email: user.email!,
         },
@@ -122,7 +122,7 @@ export const config = {
         },
       });
 
-      Logger.log("Stripe customer created", { user });
+      Logger.log("Stripe customer created", { updatedUser });
     },
   },
   pages: {
