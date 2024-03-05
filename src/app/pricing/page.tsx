@@ -193,13 +193,10 @@ export default async function PricingPage() {
               >
                 {tier.name === "Free" ? "Get Started" : "Buy plan"}
               </Link>
-              <ul
-                role="list"
-                className="mt-10 space-y-4 text-sm leading-6 text-gray-900 dark:text-white"
-              >
+              <ul className="mt-10 space-y-4 text-sm leading-6 text-gray-900 dark:text-white">
                 {sections.map((section) => (
                   <li key={section.name}>
-                    <ul role="list" className="space-y-4">
+                    <ul className="space-y-4">
                       {section.features.map((feature) =>
                         feature.tiers[
                           tier.name as keyof typeof feature.tiers
