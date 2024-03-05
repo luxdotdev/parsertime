@@ -88,74 +88,72 @@ export default async function ScrimDashboardPage({ params }: Props) {
     user?.role === $Enums.UserRole.ADMIN;
 
   return (
-    <>
-      <div className="hidden flex-col md:flex min-h-[90vh]">
-        <div className="border-b">
-          <div className="flex h-16 items-center px-4">
-            <div className="ml-auto flex items-center space-x-4">
-              <Search />
-              <ModeToggle />
-              <UserNav />
-            </div>
+    <div className="hidden flex-col md:flex min-h-[90vh]">
+      <div className="border-b">
+        <div className="flex h-16 items-center px-4">
+          <div className="ml-auto flex items-center space-x-4">
+            <Search />
+            <ModeToggle />
+            <UserNav />
           </div>
-        </div>
-        <div className="flex-1 space-y-4 p-8 pt-6">
-          <h4 className="text-gray-600 dark:text-gray-400">
-            <Link href={`/dashboard`}>&larr; Back to dashboard</Link>
-          </h4>
-          <div className="flex items-center justify-between space-y-2">
-            <h2 className="text-3xl font-bold tracking-tight">
-              <span className="flex items-center space-x-2">
-                {scrim?.name ?? "New Scrim"}{" "}
-                {hasPerms && (
-                  <Link
-                    className="pl-2"
-                    href={`/${params.team}/scrim/${params.scrimId}/edit`}
-                  >
-                    <Pencil2Icon className="w-6 h-6" />
-                  </Link>
-                )}
-              </span>
-            </h2>
-          </div>
-          <h4 className="scroll-m-20 text-xl font-semibold tracking-tight pb-4">
-            {scrim?.date.toDateString() ?? "No Date"}
-          </h4>
-          <p className="scroll-m-20 text-2xl font-semibold tracking-tight pb-2">
-            Maps
-          </p>
-          {maps.length > 0 ? (
-            <div className="flex flex-wrap -m-2">
-              {maps.map((map) => (
-                <div key={map.id} className="p-2 w-1/3">
-                  <Card className="max-w-md h-48 bg-cover relative">
-                    <Link
-                      href={`/${params.team}/scrim/${params.scrimId}/map/${map.id}`}
-                    >
-                      <CardHeader className="">
-                        <h3 className="text-3xl font-semibold tracking-tight z-10 text-white">
-                          {map.name}
-                        </h3>
-                      </CardHeader>
-                      <CardContent>
-                        <Image
-                          src={`/maps/${toKebabCase(map.name)}.webp`}
-                          alt={map.name}
-                          fill
-                          className="object-cover rounded-md brightness-[0.65]"
-                        />
-                      </CardContent>
-                    </Link>
-                  </Card>
-                </div>
-              ))}
-              {hasPerms && <AddMapCard />}
-            </div>
-          ) : (
-            <>{hasPerms && <AddMapCard />}</>
-          )}
         </div>
       </div>
-    </>
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <h4 className="text-gray-600 dark:text-gray-400">
+          <Link href="/dashboard">&larr; Back to dashboard</Link>
+        </h4>
+        <div className="flex items-center justify-between space-y-2">
+          <h2 className="text-3xl font-bold tracking-tight">
+            <span className="flex items-center space-x-2">
+              {scrim?.name ?? "New Scrim"}{" "}
+              {hasPerms && (
+                <Link
+                  className="pl-2"
+                  href={`/${params.team}/scrim/${params.scrimId}/edit`}
+                >
+                  <Pencil2Icon className="w-6 h-6" />
+                </Link>
+              )}
+            </span>
+          </h2>
+        </div>
+        <h4 className="scroll-m-20 text-xl font-semibold tracking-tight pb-4">
+          {scrim?.date.toDateString() ?? "No Date"}
+        </h4>
+        <p className="scroll-m-20 text-2xl font-semibold tracking-tight pb-2">
+          Maps
+        </p>
+        {maps.length > 0 ? (
+          <div className="flex flex-wrap -m-2">
+            {maps.map((map) => (
+              <div key={map.id} className="p-2 w-1/3">
+                <Card className="max-w-md h-48 bg-cover relative">
+                  <Link
+                    href={`/${params.team}/scrim/${params.scrimId}/map/${map.id}`}
+                  >
+                    <CardHeader className="">
+                      <h3 className="text-3xl font-semibold tracking-tight z-10 text-white">
+                        {map.name}
+                      </h3>
+                    </CardHeader>
+                    <CardContent>
+                      <Image
+                        src={`/maps/${toKebabCase(map.name)}.webp`}
+                        alt={map.name}
+                        fill
+                        className="object-cover rounded-md brightness-[0.65]"
+                      />
+                    </CardContent>
+                  </Link>
+                </Card>
+              </div>
+            ))}
+            {hasPerms && <AddMapCard />}
+          </div>
+        ) : (
+          <div>{hasPerms && <AddMapCard />}</div>
+        )}
+      </div>
+    </div>
   );
 }
