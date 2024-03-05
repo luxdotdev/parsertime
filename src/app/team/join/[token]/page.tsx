@@ -71,6 +71,6 @@ export default async function TokenPage({
     },
   });
 
-  Logger.log("User now belongs to team: " + JSON.stringify(teams));
+  Logger.log(`User now belongs to team: ${JSON.stringify(teams)}`);
   redirect("/team/join/success");
 }
