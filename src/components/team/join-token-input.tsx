@@ -59,11 +59,11 @@ export function JoinTokenInput({
       {token.map((char, index) => (
         <>
           {index === 5 || index === 9 || index === 14 ? (
-            <span key={index}>-</span>
+            <span key={char}>-</span>
           ) : null}{" "}
           {/* Add dashes visually */}
           <Input
-            key={index}
+            key={char}
             type="text"
             maxLength={1}
             value={char}

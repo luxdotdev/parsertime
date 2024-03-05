@@ -39,7 +39,7 @@ export function KillfeedTable({
   return (
     <>
       {fights.map((fight, i) => (
-        <Table key={i}>
+        <Table key={fight.start}>
           <TableCaption>Fight {i + 1}</TableCaption>
           <TableHeader>
             <TableRow>
@@ -53,7 +53,7 @@ export function KillfeedTable({
           </TableHeader>
           <TableBody>
             {fight.kills.map((kill, j) => (
-              <TableRow key={j}>
+              <TableRow key={kill.id}>
                 <TableCell>{kill.match_time}</TableCell>
                 <TableCell>
                   <span className="flex items-center space-x-2">
