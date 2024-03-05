@@ -35,7 +35,7 @@ export default function AuthErrorPage({ searchParams }: Props) {
       </p>
       <p className="max-w-[600px] text-gray-500 dark:text-gray-400">
         Please try again. If the problem persists, please contact support at{" "}
-        <Link href={"mailto:help@parsertime.app"} className="underline">
+        <Link href="mailto:help@parsertime.app" className="underline">
           help@parsertime.app.
         </Link>
       </p>
