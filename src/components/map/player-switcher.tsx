@@ -182,11 +182,7 @@ export default function PlayerSwitcher({
                     }}
                   >
                     <Avatar className="mr-2 h-5 w-5">
-                      <AvatarImage
-                        src={`/heroes/default.png`}
-                        alt={"Default"}
-                        // className="grayscale"
-                      />
+                      <AvatarImage src="/heroes/default.png" alt="Default" />
                       <AvatarFallback>PT</AvatarFallback>
                     </Avatar>
                     Default
@@ -234,10 +230,7 @@ export function SelectedPlayerProvider({
 
   return (
     <SelectedPlayerContext.Provider
-      value={{
-        selectedPlayer: selectedPlayer,
-        setSelectedPlayer: setSelectedPlayer,
-      }}
+      value={{ selectedPlayer, setSelectedPlayer }}
     >
       {children}
     </SelectedPlayerContext.Provider>
