@@ -8,8 +8,9 @@ import Link from "next/link";
 
 const navigation = [
   { name: "Home", href: "/" },
-  { name: "Dashboard", href: "/dashboard" },
   { name: "Pricing", href: "/pricing" },
+  { name: "Demo", href: "/demo" },
+  { name: "Docs", href: "https://docs.parsertime.app" },
   { name: "Company", href: "https://lux.dev" },
 ];
 
@@ -47,7 +48,7 @@ export default function Header() {
             <Link
               key={item.name}
               href={item.href}
-              target={item.href === "https://lux.dev" ? "_blank" : undefined}
+              target={item.href.startsWith("https://") ? "_blank" : undefined}
               className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
             >
               {item.name}
@@ -97,7 +98,7 @@ export default function Header() {
                     key={item.name}
                     href={item.href}
                     target={
-                      item.href === "https://lux.dev" ? "_blank" : undefined
+                      item.href.startsWith("https://") ? "_blank" : undefined
                     }
                     className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-black"
                   >
