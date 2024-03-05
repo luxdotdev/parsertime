@@ -18,11 +18,9 @@ export default async function ScrimDashboardLayout({
   }
 
   return (
-    <>
-      <SelectedPlayerProvider>
-        {children}
-        <Footer />
-      </SelectedPlayerProvider>
-    </>
+    <SelectedPlayerProvider>
+      {children}
+      <Footer />
+    </SelectedPlayerProvider>
   );
 }
