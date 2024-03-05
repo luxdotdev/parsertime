@@ -150,10 +150,9 @@ export function removeDuplicateRows(rows: PlayerStatRows): PlayerStatRows {
     // Check if this unique string is already in the set
     if (uniqueSet.has(uniqueString)) {
       return false; // Duplicate found, filter out this row
-    } else {
-      uniqueSet.add(uniqueString); // Add to set and keep this row
-      return true;
     }
+    uniqueSet.add(uniqueString); // Add to set and keep this row
+    return true;
   });
 }
 
@@ -169,10 +168,9 @@ export function removeDuplicateRowsForFletaDeadlift(
 
     if (uniqueSet.has(uniqueString)) {
       return false;
-    } else {
-      uniqueSet.add(uniqueString);
-      return true;
     }
+    uniqueSet.add(uniqueString);
+    return true;
   });
 }
 
