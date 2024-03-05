@@ -70,7 +70,7 @@ export function PlayerStatByRoundChart<
 >({ stat, playerStatByRound, playerName, playerTeam }: Props<T>) {
   const data: Data = playerStatByRound.map((round, index) => ({
     name: `Round ${index + 1}`,
-    playerStat: roundNum(Number(round[stat as keyof typeof round]) ?? 0),
+    playerStat: roundNum(round[stat as keyof typeof round]),
   }));
 
   return (
