@@ -70,45 +70,41 @@ export default async function PlayerDashboardDemoPage({ params }: Props) {
   });
 
   return (
-    <>
-      <div className="hidden flex-col md:flex">
-        <div className="border-b">
-          <div className="flex h-16 items-center px-4">
-            <PlayerSwitcher
-              mostPlayedHeroes={uniquePlayerRowsByHeroTimePlayed}
-            />
-            <MainNav className="mx-6" />
-            <div className="ml-auto flex items-center space-x-4">
-              <Search />
-              <ModeToggle />
-            </div>
+    <div className="hidden flex-col md:flex">
+      <div className="border-b">
+        <div className="flex h-16 items-center px-4">
+          <PlayerSwitcher mostPlayedHeroes={uniquePlayerRowsByHeroTimePlayed} />
+          <MainNav className="mx-6" />
+          <div className="ml-auto flex items-center space-x-4">
+            <Search />
+            <ModeToggle />
           </div>
-        </div>
-        <div className="flex-1 space-y-4 p-8 pt-6">
-          <div>
-            <h4 className="text-gray-600 dark:text-gray-400">
-              <Link href={`/demo`}>&larr; Back to default overview</Link>
-            </h4>
-          </div>
-          <div className="flex items-center justify-between space-y-2">
-            <h2 className="text-3xl font-bold tracking-tight">
-              {toTitleCase(mapName?.map_name ?? "Dashboard")}
-            </h2>
-          </div>
-          <Tabs defaultValue="overview" className="space-y-4">
-            <TabsList>
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            </TabsList>
-            <TabsContent value="overview" className="space-y-4">
-              <DefaultOverview id={id} playerName={playerName} />
-            </TabsContent>
-            <TabsContent value="analytics" className="space-y-4">
-              <PlayerCharts id={id} playerName={playerName} />
-            </TabsContent>
-          </Tabs>
         </div>
       </div>
-    </>
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <div>
+          <h4 className="text-gray-600 dark:text-gray-400">
+            <Link href={`/demo`}>&larr; Back to default overview</Link>
+          </h4>
+        </div>
+        <div className="flex items-center justify-between space-y-2">
+          <h2 className="text-3xl font-bold tracking-tight">
+            {toTitleCase(mapName?.map_name ?? "Dashboard")}
+          </h2>
+        </div>
+        <Tabs defaultValue="overview" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          </TabsList>
+          <TabsContent value="overview" className="space-y-4">
+            <DefaultOverview id={id} playerName={playerName} />
+          </TabsContent>
+          <TabsContent value="analytics" className="space-y-4">
+            <PlayerCharts id={id} playerName={playerName} />
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
   );
 }

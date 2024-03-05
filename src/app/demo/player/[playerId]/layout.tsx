@@ -13,5 +13,5 @@ export default function PlayerDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return children;
 }
