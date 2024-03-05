@@ -282,7 +282,7 @@ export default async function PricingPage() {
                       </div>
                       {tier.name === plan ? (
                         <Link
-                          href="/dashboard"
+                          href="/settings"
                           className={classNames(
                             tier.mostPopular
                               ? "bg-sky-600 text-white hover:bg-sky-500 dark:bg-sky-500 dark:hover:bg-sky-400 dark:focus-visible:outline-sky-600"
