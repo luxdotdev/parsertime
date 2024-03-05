@@ -5,9 +5,5 @@ export default function MapDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <>
-      <SelectedPlayerProvider>{children}</SelectedPlayerProvider>
-    </>
-  );
+  return <SelectedPlayerProvider>{children}</SelectedPlayerProvider>;
 }
