@@ -112,7 +112,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
               <FormLabel>Display Name</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={"Esports at Cornell"}
+                  placeholder="Esports at Cornell"
                   defaultValue={team.name ?? ""}
                   className="max-w-lg"
                   {...field}

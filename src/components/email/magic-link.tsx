@@ -31,7 +31,7 @@ export const MagicLinkEmail = ({
         <Container className="border border-solid border-[#eaeaea] rounded my-[40px] mx-auto p-[20px] max-w-[465px]">
           <Section className="mt-[32px]">
             <Img
-              src={`https://parsertime.app/parsertime.png`}
+              src="https://parsertime.app/parsertime.png"
               width="50"
               height="50"
               alt="Parsertime Logo"

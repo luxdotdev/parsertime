@@ -84,7 +84,7 @@ export default async function PlayerDashboardDemoPage({ params }: Props) {
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div>
           <h4 className="text-gray-600 dark:text-gray-400">
-            <Link href={`/demo`}>&larr; Back to default overview</Link>
+            <Link href="/demo">&larr; Back to default overview</Link>
           </h4>
         </div>
         <div className="flex items-center justify-between space-y-2">

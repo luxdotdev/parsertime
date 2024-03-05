@@ -107,7 +107,7 @@ export function ProfileForm({ user }: { user: User }) {
               <FormLabel>Username</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={"lux"}
+                  placeholder="lux"
                   defaultValue={user.name ?? ""}
                   {...field}
                 />

@@ -99,7 +99,7 @@ export function EditScrimForm({ scrim }: { scrim: Scrim }) {
               <FormLabel>Display Name</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={"FIU Panthers vs UF Gators"}
+                  placeholder="FIU Panthers vs UF Gators"
                   defaultValue={scrim.name ?? ""}
                   className="max-w-lg"
                   {...field}

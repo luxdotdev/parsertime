@@ -47,7 +47,7 @@ export const TeamInviteUserEmail = ({
           <Container className="border border-solid border-[#eaeaea] rounded my-[40px] mx-auto p-[20px] max-w-[465px]">
             <Section className="mt-[32px]">
               <Img
-                src={`https://parsertime.app/parsertime.png`}
+                src="https://parsertime.app/parsertime.png"
                 width="50"
                 height="50"
                 alt="Parsertime Logo"
@@ -83,7 +83,7 @@ export const TeamInviteUserEmail = ({
                 </Column>
                 <Column align="center">
                   <Img
-                    src={`https://parsertime.app/team-invite-arrow.png`}
+                    src="https://parsertime.app/team-invite-arrow.png"
                     width="12"
                     height="9"
                     alt="invited you to"

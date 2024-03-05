@@ -32,7 +32,7 @@ export default function AllHeroes({
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <Image
-                src={`/heroes/default.png`}
+                src="/heroes/default.png"
                 alt={`An image of ${hero}'s Overwatch hero portrait.`}
                 width={256}
                 height={256}
