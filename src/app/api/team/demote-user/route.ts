@@ -14,9 +14,8 @@ export async function POST(req: NextRequest) {
       return new Response("Unauthorized", {
         status: 401,
       });
-    } else {
-      Logger.log("Authorized with dev token");
     }
+    Logger.log("Authorized with dev token");
   }
 
   const { teamId, userId } = (await req.json()) as {

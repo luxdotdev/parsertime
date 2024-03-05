@@ -19,9 +19,8 @@ export async function POST(req: NextRequest) {
       return new Response("Unauthorized", {
         status: 401,
       });
-    } else {
-      Logger.log("Authorized removal of scrim with dev token");
     }
+    Logger.log("Authorized removal of scrim with dev token");
   }
 
   const user = await getUser(session?.user?.email ?? "lucas@lux.dev");

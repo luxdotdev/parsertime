@@ -16,9 +16,8 @@ export async function POST(req: NextRequest) {
       return new Response("Unauthorized", {
         status: 401,
       });
-    } else {
-      Logger.log("Authorized request to create team invite using dev token");
     }
+    Logger.log("Authorized request to create team invite using dev token");
   }
 
   const teamId = req.nextUrl.searchParams.get("id")

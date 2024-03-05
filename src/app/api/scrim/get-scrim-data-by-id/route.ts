@@ -11,9 +11,8 @@ export async function GET(req: NextRequest) {
     return new Response("Unauthorized", {
       status: 401,
     });
-  } else {
-    Logger.log("Authorized request with dev token to get scrim data by id");
   }
+  Logger.log("Authorized request with dev token to get scrim data by id");
 
   if (!id) {
     return new Response("No id provided", {

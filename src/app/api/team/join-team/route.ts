@@ -15,9 +15,8 @@ export async function POST(req: NextRequest) {
       return new Response("Unauthorized", {
         status: 401,
       });
-    } else {
-      Logger.log("Authorized request to create team invite using dev token");
     }
+    Logger.log("Authorized request to create team invite using dev token");
   }
 
   const token = req.nextUrl.searchParams.get("token");
@@ -77,7 +76,7 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  Logger.log("User now belongs to team: " + JSON.stringify(teams));
+  Logger.log(`User now belongs to team: ${JSON.stringify(teams)}`);
 
   return new Response("OK", {
     status: 200,
