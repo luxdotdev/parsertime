@@ -3,6 +3,7 @@
 import { AddScrimCard } from "@/components/dashboard/add-scrim-card";
 import { ScrimCard } from "@/components/dashboard/scrim-card";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Pagination,
   PaginationContent,
@@ -11,6 +12,15 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Scrim } from "@prisma/client";
 import { useState } from "react";
 
@@ -20,17 +30,64 @@ type Props = {
 
 export function ScrimPagination({ scrims }: Props) {
   const [currPage, setCurrPage] = useState(1);
+  const [filter, setFilter] = useState("");
+  const [search, setSearch] = useState("");
 
-  // Calculate the number of pages
   const pageSize = 15;
-  const pages = Math.ceil(scrims.length / pageSize);
 
-  // Get the scrims for the current page
+  // Sort scrims based on the filter
+  const sortedScrims = scrims.sort((a, b) => {
+    if (filter === "date-asc") {
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    }
+    if (filter === "date-desc") {
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    }
+    return 0; // No sorting applied
+  });
+
+  // Filter and search logic combined
+  const filteredAndSearchedScrims = sortedScrims.filter((scrim) => {
+    const matchesSearch = scrim.name
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    return matchesSearch;
+  });
+
+  // Pagination logic
+  const pages = Math.ceil(filteredAndSearchedScrims.length / pageSize);
   const startIndex = (currPage - 1) * pageSize;
-  const currentPageScrims = scrims.slice(startIndex, startIndex + pageSize);
+  const currentPageScrims = filteredAndSearchedScrims.slice(
+    startIndex,
+    startIndex + pageSize
+  );
 
   return (
-    <Card className="">
+    <Card>
+      <span className="inline-flex p-4 gap-2">
+        <Select onValueChange={(v) => setFilter(v)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Select a filter</SelectLabel>
+              <SelectItem value="date-asc">Date (Ascending)</SelectItem>
+              <SelectItem value="date-desc">Date (Descending)</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
+        <Input
+          type="search"
+          placeholder="Search..."
+          className="md:w-[100px] lg:w-[260px]"
+          onChange={(e) => {
+            setSearch(e.target.value);
+          }}
+        />
+      </span>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
         {currentPageScrims.map((scrim) => (
           <ScrimCard key={scrim.id} scrim={scrim} />
