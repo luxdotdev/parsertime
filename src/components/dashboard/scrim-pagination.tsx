@@ -48,10 +48,16 @@ export function ScrimPagination({ scrims }: Props) {
 
   // Filter and search logic combined
   const filteredAndSearchedScrims = sortedScrims.filter((scrim) => {
-    const matchesSearch = scrim.name
-      .toLowerCase()
-      .includes(search.toLowerCase());
-    return matchesSearch;
+    if (search.startsWith("team:")) {
+      const teamName = search.slice(5).toLowerCase(); // Extract team name from search query
+      return scrim.team.toLowerCase().includes(teamName);
+    }
+    if (search.startsWith("creator:")) {
+      const creatorName = search.slice(8).toLowerCase(); // Extract creator name from search query
+      return scrim.creator.toLowerCase().includes(creatorName);
+    }
+    // General search by scrim name
+    return scrim.name.toLowerCase().includes(search.toLowerCase());
   });
 
   // Pagination logic
