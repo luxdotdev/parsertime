@@ -12,7 +12,12 @@ const sections = [
     name: "Features",
     features: [
       {
-        name: "Individual Teams",
+        name: "Individual Scrims",
+        tiers: { Free: true, Basic: true, Premium: true },
+        comingSoon: false,
+      },
+      {
+        name: "Join Teams via Invite",
         tiers: { Free: true, Basic: true, Premium: true },
         comingSoon: false,
       },
@@ -22,12 +27,12 @@ const sections = [
         comingSoon: false,
       },
       {
-        name: "Private Teams",
+        name: "Create Teams",
         tiers: { Basic: true, Premium: true },
         comingSoon: false,
       },
       {
-        name: "Team members",
+        name: "Team Members",
         tiers: { Basic: "Up to 5 users", Premium: "Up to 15 users" },
         comingSoon: false,
       },
@@ -37,7 +42,7 @@ const sections = [
     name: "Statistics",
     features: [
       {
-        name: "Advanced analytics",
+        name: "Advanced Analytics",
         tiers: { Free: true, Basic: true, Premium: true },
         comingSoon: false,
       },
