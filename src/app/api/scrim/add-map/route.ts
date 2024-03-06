@@ -5,7 +5,7 @@ import { ParserData } from "@/types/parser";
 import { track } from "@vercel/analytics/server";
 import { NextRequest } from "next/server";
 
-export type CreateMapRequestData = {
+export type CreateNewMapArgs = {
   scrimId: number;
   map: ParserData;
 };

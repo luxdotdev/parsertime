@@ -1,4 +1,4 @@
-import { CreateMapRequestData } from "@/app/api/scrim/add-map/route";
+import { CreateNewMapArgs } from "@/app/api/scrim/add-map/route";
 import { CreateScrimRequestData } from "@/app/api/scrim/create-scrim/route";
 import { headers } from "@/lib/headers";
 import Logger from "@/lib/logger";
@@ -251,10 +251,7 @@ export async function createNewScrimFromParsedData(
   }
 }
 
-export async function createNewMap(
-  data: CreateMapRequestData,
-  session: Session
-) {
+export async function createNewMap(data: CreateNewMapArgs, session: Session) {
   const userId = await prisma.user.findUnique({
     where: {
       email: session.user?.email ?? "",
