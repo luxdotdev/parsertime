@@ -1,0 +1,21 @@
+{
+  "name": "@lux/prettier-config",
+  "private": true,
+  "version": "0.1.0",
+  "main": "index.mjs",
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "format": "prettier --check \"**/*.{mjs,json}\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^4.1.1",
+    "prettier": "^3.2.4",
+    "prettier-plugin-tailwindcss": "^0.5.11"
+  },
+  "devDependencies": {
+    "@lux/tsconfig": "^0.1.0",
+    "typescript": "^5.3.3"
+  },
+  "prettier": "@lux/prettier-config"
+}
