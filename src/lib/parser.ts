@@ -1,6 +1,5 @@
 import { CreateNewMapArgs } from "@/app/api/scrim/add-map/route";
 import { CreateScrimRequestData } from "@/app/api/scrim/create-scrim/route";
-import { getUser } from "@/data/user-dto";
 import { headers } from "@/lib/headers";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
@@ -149,7 +148,11 @@ export async function createNewScrimFromParsedData(
   data: CreateScrimRequestData,
   session: Session
 ) {
-  const userId = await getUser(session.user?.email);
+  const userId = await prisma.user.findFirst({
+    where: {
+      email: session.user?.email,
+    },
+  });
 
   if (!userId) {
     Logger.error("User not found for session: ", session);
@@ -249,7 +252,11 @@ export async function createNewScrimFromParsedData(
 }
 
 export async function createNewMap(data: CreateNewMapArgs, session: Session) {
-  const userId = await getUser(session.user?.email);
+  const userId = await prisma.user.findFirst({
+    where: {
+      email: session.user?.email,
+    },
+  });
 
   if (!userId) {
     throw new Error("User not found");
