@@ -15,7 +15,7 @@ This is the repository for Parsertime, a web app written to help collegiate Over
 
 ## What's inside?
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app). It uses [Tailwind CSS](https://tailwindcss.com/) for styling, [Prisma](https://prisma.io) for the ORM, and [PlanetScale](https://planetscale.com/) for the database. It is deployed on [Vercel](https://vercel.com/).
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app). It uses [Tailwind CSS](https://tailwindcss.com/) for styling, [Prisma](https://prisma.io) for the ORM, and [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres) for the database. It is deployed on [Vercel](https://vercel.com/).
 
 ## Features
 
@@ -28,7 +28,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 - **Frontend**: Next.js, Tailwind CSS
 - **Backend**: Prisma ORM
-- **Database**: MySQL, hosted on PlanetScale
+- **Database**: Vercel Postgres (Neon)
 - **Deployment**: Vercel
 
 ## Getting Started
@@ -57,5 +57,4 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 - [Next.js](https://nextjs.org/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [Prisma](https://www.prisma.io/)
-- [PlanetScale](https://planetscale.com/)
 - [Vercel](https://vercel.com/)
