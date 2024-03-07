@@ -42,37 +42,35 @@ export const getUserViewableScrims = cache(getUserViewableScrimsFn);
 
 /**
  * This query performs the following operations:
- * 1. It first creates a subquery that selects the maximum round number (i.e., the final round)
+ * 1. It first creates a subquery that selects the maximum match time (i.e., the final round time)
  *    for a given map (`MapDataId`). This is achieved by grouping the `PlayerStat` records
- *    by `MapDataId` and calculating the maximum `round_number` for each group.
+ *    by `MapDataId` and calculating the maximum `match_time` for each group.
  * 2. The main query then joins the results of this subquery with the original `PlayerStat` table.
- *    This join is based on matching the `MapDataId` and the `round_number` with the calculated maximum
- *    round number from the subquery.
- * 3. Finally, the query filters the results to include only those records that match the given `MapDataId`,
- *    effectively returning statistics for players in the final round of the specified scrim.
+ *    This join is based on matching the `MapDataId` and the `match_time` with the calculated maximum
+ *    match time from the subquery.
+ * 3. Finally, the query implicitly filters the results to include only those records that match the given `MapDataId`,
+ *    effectively returning statistics for players at the final match time of the specified scrim.
  */
 async function getFinalRoundStatsFn(id: number) {
   return (
     removeDuplicateRows(
       await prisma.$queryRaw<PlayerStatRows>`
         SELECT
-          ps.*
+            ps.*
         FROM
-            PlayerStat ps
+            "PlayerStat" ps
             INNER JOIN (
                 SELECT
-                    MapDataId,
-                    MAX(match_time) as max_time
+                    "MapDataId",
+                    MAX("match_time") AS max_time
                 FROM
-                    PlayerStat
+                    "PlayerStat"
                 WHERE
-                    MapDataId = ${id}
+                    "MapDataId" = ${id}
                 GROUP BY
-                    MapDataId
-            ) as max_time ON ps.MapDataId = max_time.MapDataId
-            AND ps.match_time = max_time.max_time
-        WHERE
-            ps.MapDataId = ${id}`
+                    "MapDataId"
+            ) AS max_time ON ps."MapDataId" = max_time."MapDataId"
+            AND ps."match_time" = max_time.max_time`
     )
       // sort by team name
       .sort((a, b) => a.player_team.localeCompare(b.player_team))
@@ -95,22 +93,22 @@ async function getFinalRoundStatsForPlayerFn(id: number, playerName: string) {
       SELECT
           ps.*
       FROM
-          PlayerStat ps
+          "PlayerStat" ps
           INNER JOIN (
               SELECT
-                  MapDataId,
-                  MAX(match_time) as max_time
+                  "MapDataId",
+                  MAX("match_time") AS max_time
               FROM
-                  PlayerStat
+                  "PlayerStat"
               WHERE
-                  MapDataId = ${id}
+                  "MapDataId" = ${id}
               GROUP BY
-                  MapDataId
-          ) as max_time ON ps.MapDataId = max_time.MapDataId
-          AND ps.match_time = max_time.max_time
+                  "MapDataId"
+          ) AS max_time ON ps."MapDataId" = max_time."MapDataId"
+          AND ps."match_time" = max_time.max_time
       WHERE
-          ps.MapDataId = ${id}
-          AND ps.player_name = ${playerName}`
+          ps."MapDataId" = ${id}
+          AND ps."player_name" = ${playerName}`
   );
 }
 
