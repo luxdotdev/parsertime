@@ -68,8 +68,13 @@ export async function ScrimList({ searchParams }: Props) {
 
   return (
     <main>
-      {scrims.length > 0 && <ScrimPagination scrims={scrims} />}
-
+      {scrims.length > 0 && (
+        <ScrimPagination
+          scrims={scrims.sort((a, b) => {
+            return a.date > b.date ? -1 : a.date < b.date ? 1 : 0;
+          })}
+        />
+      )}
       {scrims.length === 0 && <EmptyScrimList />}
     </main>
   );
