@@ -1,3 +1,4 @@
+import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
@@ -10,11 +11,7 @@ type CreateTeamRequestData = {
 export async function POST(request: Request) {
   const session = await auth();
 
-  const userId = await prisma.user.findUnique({
-    where: {
-      email: session?.user?.email ?? "",
-    },
-  });
+  const userId = await getUser(session?.user?.email);
 
   const req = (await request.json()) as CreateTeamRequestData;
 

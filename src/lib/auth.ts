@@ -180,11 +180,7 @@ export async function isAuthedToViewTeam(id: number) {
     return false;
   }
 
-  const user = await prisma.user.findFirst({
-    where: {
-      email: session?.user?.email,
-    },
-  });
+  const user = await getUser(session?.user?.email);
 
   if (!user) {
     return false;

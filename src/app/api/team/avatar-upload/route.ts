@@ -6,6 +6,7 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { kv } from "@vercel/kv";
 import { auth } from "@/lib/auth";
 import { track } from "@vercel/analytics/server";
+import { getUser } from "@/data/user-dto";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const session = await auth();
@@ -14,9 +15,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const userId = await prisma.user.findUnique({
-    where: { email: session.user.email ?? "" },
-  });
+  const userId = await getUser(session.user.email);
 
   if (!userId) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });

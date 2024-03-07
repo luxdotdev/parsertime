@@ -1,3 +1,4 @@
+import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { NextRequest } from "next/server";
@@ -11,11 +12,7 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  const userId = await prisma.user.findUnique({
-    where: {
-      email: session.user.email ?? "",
-    },
-  });
+  const userId = await getUser(session.user.email);
 
   if (!userId) {
     return new Response("Unauthorized", {

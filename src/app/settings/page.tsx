@@ -7,6 +7,7 @@ import { toTitleCase } from "@/lib/utils";
 import Link from "next/link";
 import { getCustomerPortalUrl } from "@/lib/stripe";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
+import { getUser } from "@/data/user-dto";
 
 export default async function SettingsProfilePage() {
   const session = await auth();
@@ -14,11 +15,7 @@ export default async function SettingsProfilePage() {
     redirect("/sign-in");
   }
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session.user.email ?? "",
-    },
-  });
+  const user = await getUser(session.user.email);
 
   if (!user) {
     redirect("/sign-up");

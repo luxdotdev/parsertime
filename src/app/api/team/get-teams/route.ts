@@ -1,3 +1,4 @@
+import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
@@ -18,11 +19,7 @@ export async function GET() {
     });
   }
 
-  const userId = await prisma.user.findUnique({
-    where: {
-      email: session?.user?.email ?? "",
-    },
-  });
+  const userId = await getUser(session?.user?.email);
 
   const teams = await prisma.team.findMany({
     where: {

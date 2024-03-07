@@ -11,6 +11,7 @@ import Footer from "@/components/footer";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
+import { getUser } from "@/data/user-dto";
 
 export const metadata: Metadata = {
   title: "Settings | Parsertime",
@@ -56,11 +57,7 @@ export default async function SettingsLayout({
 }: SettingsLayoutProps) {
   const session = await auth();
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session?.user?.email ?? "",
-    },
-  });
+  const user = await getUser(session?.user?.email);
 
   const isAdmin = user?.role === $Enums.UserRole.ADMIN;
 

@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import Logger from "@/lib/logger";
+import { getUser } from "@/data/user-dto";
 
 type TeamAvatarUpdateBody = {
   teamId: string;
@@ -38,11 +39,7 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const authedUser = await prisma.user.findUnique({
-    where: {
-      email: session.user.email ?? "",
-    },
-  });
+  const authedUser = await getUser(session.user.email);
 
   if (!authedUser) {
     Logger.log("User not found", session.user.email);

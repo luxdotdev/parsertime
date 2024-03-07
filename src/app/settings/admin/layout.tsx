@@ -2,6 +2,7 @@ import NoAuthCard from "@/components/auth/no-auth";
 import { auth } from "@/lib/auth";
 import { $Enums } from "@prisma/client";
 import prisma from "@/lib/prisma";
+import { getUser } from "@/data/user-dto";
 
 export default async function AdminLayout({
   children,
@@ -10,11 +11,7 @@ export default async function AdminLayout({
 }) {
   const session = await auth();
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session?.user?.email ?? "",
-    },
-  });
+  const user = await getUser(session?.user?.email);
 
   if (user?.role !== $Enums.UserRole.ADMIN) {
     return NoAuthCard();

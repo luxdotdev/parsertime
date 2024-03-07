@@ -6,6 +6,7 @@ import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
 import NoAuthCard from "@/components/auth/no-auth";
 import { ImpersonateUserForm } from "@/components/admin/impersonate-user";
+import { getUser } from "@/data/user-dto";
 
 export default async function AdminSettingsPage() {
   const session = await auth();
@@ -13,11 +14,7 @@ export default async function AdminSettingsPage() {
     redirect("/sign-in");
   }
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session.user.email ?? "",
-    },
-  });
+  const user = await getUser(session.user.email);
 
   if (!user) {
     redirect("/sign-up");
