@@ -13,6 +13,7 @@
       "persistent": true,
       "cache": false
     },
+    "test": {},
     "format": {
       "outputs": ["node_modules/.cache/.prettiercache"],
       "outputMode": "new-only"
