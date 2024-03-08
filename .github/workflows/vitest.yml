@@ -32,5 +32,4 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "pnpm"
       - run: pnpm install
-      - run: pnpm dlx prisma generate
       - run: pnpm test
