@@ -8,6 +8,7 @@
     "clean": "git clean -xdf node_modules dist .next",
     "clean:workspaces": "turbo clean",
     "dev": "cross-env FORCE_COLOR=1 turbo dev --parallel",
+    "test": "turbo test",
     "format": "turbo format --continue -- --cache --cache-location='node_modules/.cache/.prettiercache' --ignore-path='../../.gitignore'",
     "format:fix": "turbo format --continue -- --write --cache --cache-location='node_modules/.cache/.prettiercache' --ignore-path='../../.gitignore'",
     "lint": "turbo lint --continue -- --cache --cache-location 'node_modules/.cache/.eslintcache' && manypkg check",
