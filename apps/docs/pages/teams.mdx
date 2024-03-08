@@ -1,0 +1,49 @@
+import { Callout } from '../components/callout'
+
+# Teams
+Parsertime supports creating teams and inviting players to view and manage scrims. 
+
+## Creating A Team
+The `Create Team` button can be found in the team selector dropdown. You can view this on the dashboard.
+![Team Selector](/team-selector.png)
+
+Once you have created a team, you will be able to assign scrims and invite players.
+
+![Create Scrim Team Dropdown](/create-scrim-team-dropdown.png)
+
+## Inviting Players
+You can invite players to your team by email. Navigate to the Teams page and select your 
+team from the available options. Here you will see a list of your team members. 
+
+![Player dashboard](/player-dashboard.png)
+*This page also allows you to remove players from your team or assign them as a manager.
+As a manager, they will be able to create scrims and maps for your team.*
+
+Click the Invite Member button and enter an email to send them an invite. They'll 
+receive an email that looks like this from `noreply@lux.dev`:
+
+![Team Invite Email](/team-invite.png)
+
+<Callout type="warning" emoji="⚠️">
+  You can only send invites to players who have an account on Parsertime.
+  Trying to invite a player who does not have an account will result in a 404 error.
+</Callout>
+
+Team invite tokens are valid for 7 days. If the player does not accept the invite within
+that time, you will need to send them a new invite. Please note that they are also
+single use. If the player accepts the invite, the token will be invalidated.
+
+## Editing Team Details
+On the team page, you can select the Settings tab to change team details.
+
+![Team Settings](/team-settings.png)
+
+### Team Display Name
+This is the name that is displayed within the app's UI and on team invite emails. 
+Add a new name in the text box and click the Update Profile button to change your name.
+
+### Team Avatar
+This is the image that is used for the team. You can add a new avatar by 
+clicking on your current one. This will prompt the file selector. Once you 
+pick a file, you can crop it and save your changes with the dialog below:
+![Edit Avatar](/edit-avatar.png)

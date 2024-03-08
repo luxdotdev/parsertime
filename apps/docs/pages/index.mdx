@@ -1,0 +1,85 @@
+import { Callout } from "../components/callout"
+
+# Introduction
+
+<Callout type="warning" emoji="⚠️">
+    This documentation is a work in progress. If you have any questions, 
+    please reach out to us on [Discord](https://discord.gg/svz3qhVDXM) 
+    or send us an email at [help@parsertime.app](mailto:help@parsertime.app).
+</Callout>
+ 
+Welcome to Parsertime! This is the home for our documentation. Here you 
+can learn more about our platform, how to use it, and more.
+
+## What is Parsertime?
+Parsertime is a tool used to visualize the data collected from Overwatch 
+scrim logs. You can create an account, form a team, upload your scrims, and 
+invite your team to view their data. You can see graphs for damage, eliminations, 
+fights, and view data and statistics for both teams and individual players. 
+
+## Collecting Scrim Logs
+To gather your data, you must first turn on *Gameplay > Enable Workshop Inspector 
+Log File* in your Overwatch settings. This setting can be found here:
+![A screenshot of Overwatch 2 Settings](https://i.imgur.com/seP1eMT.png)
+Once this is enabled, use the [ScrimTime workshop code](https://workshop.codes/DKEEH) to 
+gather the logs. Turn on `Enable Log Generator` in Workshop Settings. The logs will be 
+exported to your `Documents/Overwatch/Workshop` folder. It is recommended to make sure 
+you delete any logs that are only 1kb; incomplete logs can be generated which does not 
+work well with Parsertime.
+
+### What stats are collected?
+By default, the following stats are collected:
+- Match Start & End
+- Round Start & End
+- Objective Captures
+- Control Point Progress Increment
+- Payload Progress Increment
+- Kills & Deaths
+- Offensive & Defensive Assists
+- Hero Spawn
+- Hero Swaps
+- Ultimates Charged & Used
+- D.Va Demechs & Remechs
+- D.Va Remech Charged
+- Echo Duplicates
+- Mercy Resurrects
+- Player Stat Summary
+
+We are able to visualize these stats for each map.
+
+## Uploading Scrim Logs
+Once you are signed in, you can create and upload new scrims from the dashboard. Click 
+the button labeled `Create Scrim`. Add a title, assign a team, pick a date, and upload 
+the logs for the first map (you can add the rest later). 
+
+### Common Errors
+<Callout type="warning" emoji="⚠️">
+    This documentation is a work in progress. Not all errors are documented here. 
+    If you have any questions, please reach out to us 
+    on [Discord](https://discord.gg/svz3qhVDXM) or send us an email at
+    [help@parsertime.app](mailto:help@parsertime.app).
+</Callout>
+
+#### Invalid Log Format (500)
+If you try to create the scrim and see an `Invalid Log Format (500)` error, try to search 
+through the logs and see if any of the stats are appearing as `****`. Sometimes, the log 
+generator runs into issues and cannot correctly add the stats. If this happens, replace 
+the stat with the number you believe is accurate. Once you reupload the logs, the scrim 
+should create successfully.
+
+#### Internal Server Error (500)
+If you see this error, it is likely that the mistake is on our end. Please reach out to
+us via email or Discord and we will help you resolve the issue. You can find us on
+[Discord](https://discord.gg/svz3qhVDXM) or by emailing us at 
+[help@parsertime.app](mailto:help@parsertime.app).
+
+#### Unauthorized (401)
+If you see this error, it is likely that your session has expired. Try logging out and
+back in. If the issue persists, please reach out to us via email or Discord and we will
+help you resolve the issue. You can find us on [Discord](https://discord.gg/svz3qhVDXM)
+or by emailing us at [help@parsertime.app](mailto:help@parsertime.app).
+
+Another reason you may see this error is if you are trying to upload a map to a scrim
+created for a team that you are not a manager of. If you are a manager of the team, try
+logging out and back in. If the issue persists, please reach out to us for further 
+assistance.
