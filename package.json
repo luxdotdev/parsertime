@@ -5,6 +5,8 @@
   "packageManager": "pnpm@8.15.1",
   "scripts": {
     "build": "turbo build",
+    "build:web": "turbo build --filter=web",
+    "build:docs": "turbo build --filter=docs",
     "clean": "git clean -xdf node_modules dist .next",
     "clean:workspaces": "turbo clean",
     "dev": "cross-env FORCE_COLOR=1 turbo dev --parallel",
