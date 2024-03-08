@@ -1,7 +1,7 @@
 # Parsertime
 
 <p align="center">
-  <a href="https://parsertime.app">
+  <a href="https://parsertime.app/">
     <img src="https://parsertime.app/icon.png" height="96">
     <h3 align="center">Parsertime</h3>
   </a>
