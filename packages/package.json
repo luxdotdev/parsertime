@@ -11,7 +11,7 @@
         "src/*"
       ]
     }
-  }
+  },
   "license": "MIT",
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
@@ -19,8 +19,7 @@
     "format": "prettier --check \"**/*.{mjs,ts,md,json}\"",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "@lux/eslint-config": "0.2.0",
     "@lux/prettier-config": "^0.1.0",

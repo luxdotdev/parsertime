@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "pnpm with-env next build",
+    "postinstall": "prisma generate",
     "clean": "git clean -xdf .next .turbo node_modules",
     "dev": "pnpm with-env next dev",
     "lint": "next lint",

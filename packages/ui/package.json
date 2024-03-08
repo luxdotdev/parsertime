@@ -5,7 +5,6 @@
   "scripts": {
     "clean": "git clean -xdf .turbo node_modules",
     "format": "prettier --check \"**/*.{ts,tsx}\"",
-    "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -58,8 +57,7 @@
   "eslintConfig": {
     "root": true,
     "extends": [
-      "@lux/eslint-config/base",
-      "@lux/eslint-config/react"
+      "@lux/eslint-config/base"
     ]
   },
   "prettier": "@lux/prettier-config",
