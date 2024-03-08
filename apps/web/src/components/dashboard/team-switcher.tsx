@@ -52,6 +52,7 @@ export function TeamSwitcher({
   // searchParams with a provided key/value pair
   const createQueryString = React.useCallback(
     (name: string, value: string) => {
+      // @ts-expect-error - ReadonlyURLSearchParams is assignable to URLSearchParams
       const params = new URLSearchParams(searchParams);
       params.set(name, value);
 
