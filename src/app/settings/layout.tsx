@@ -38,6 +38,10 @@ const sidebarNavItems = [
     title: "Profile",
     href: "/settings",
   },
+  {
+    title: "Discord",
+    href: "/settings/discord",
+  },
 ];
 
 const adminNavItems = [
