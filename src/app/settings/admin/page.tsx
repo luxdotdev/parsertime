@@ -1,12 +1,10 @@
-import { Separator } from "@/components/ui/separator";
-import { ProfileForm } from "@/components/settings/profile-form";
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import prisma from "@/lib/prisma";
-import { $Enums } from "@prisma/client";
-import NoAuthCard from "@/components/auth/no-auth";
 import { ImpersonateUserForm } from "@/components/admin/impersonate-user";
+import NoAuthCard from "@/components/auth/no-auth";
+import { Separator } from "@/components/ui/separator";
 import { getUser } from "@/data/user-dto";
+import { auth } from "@/lib/auth";
+import { $Enums } from "@prisma/client";
+import { redirect } from "next/navigation";
 
 export default async function AdminSettingsPage() {
   const session = await auth();
