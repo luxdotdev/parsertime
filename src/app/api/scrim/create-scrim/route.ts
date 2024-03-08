@@ -23,6 +23,14 @@ export async function POST(request: Request) {
     });
   }
 
+  if (data.map === null) {
+    Logger.warn("Invalid map data");
+
+    return new Response("Invalid map data", {
+      status: 400,
+    });
+  }
+
   Logger.log("Creating new scrim for user: ", session.user?.email);
 
   await createNewScrimFromParsedData(data, session);
