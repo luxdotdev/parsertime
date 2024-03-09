@@ -102,8 +102,6 @@ export async function MapCharts({ id }: { id: number }) {
     },
   });
 
-  console.log(team1DamageByRound);
-
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
       <Card className="col-span-full">
