@@ -136,9 +136,11 @@ export default async function Team({ params }: { params: { teamId: string } }) {
                     <CardContent>
                       <p>{user.email}</p>
                     </CardContent>
-                    {hasPerms && user.email !== session?.user?.email && (
-                      <UserCardButtons user={user} managers={teamManagers} />
-                    )}
+                    {hasPerms &&
+                      user.email !== session?.user?.email &&
+                      user.id !== teamData?.ownerId && (
+                        <UserCardButtons user={user} managers={teamManagers} />
+                      )}
                   </Card>
                 </div>
               ))}
