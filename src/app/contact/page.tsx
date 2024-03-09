@@ -1,5 +1,6 @@
 "use client";
 
+import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -10,30 +11,49 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import Logger from "@/lib/logger";
 import { EnvelopeIcon, UserGroupIcon } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ExternalLinkIcon } from "@radix-ui/react-icons";
+import { EnvelopeOpenIcon, ExternalLinkIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
-  name: z.string().min(1),
-  email: z.string().email(),
-  message: z.string().min(1),
+  name: z
+    .string({
+      required_error: "A name is required.",
+    })
+    .min(1),
+  email: z
+    .string({
+      required_error: "An email is required.",
+    })
+    .email({
+      message: "Please enter a valid email address.",
+    }),
+  message: z
+    .string({
+      required_error: "A message is required.",
+    })
+    .min(1, {
+      message: "Please enter a message.",
+    }),
 });
 
 export default function ContactPage() {
+  const [loading, setLoading] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
   async function handleSubmit(data: z.infer<typeof formSchema>) {
+    setLoading(true);
+
     try {
       const res = await fetch("/api/send-contact-form-email", {
         method: "POST",
@@ -65,6 +85,8 @@ export default function ContactPage() {
         duration: 5000,
       });
     }
+
+    setLoading(false);
   }
   // fix LastPass hydration issue
   const [isClient, setIsClient] = useState(false);
@@ -285,8 +307,19 @@ export default function ContactPage() {
                 <Button
                   type="submit"
                   className="rounded-md bg-sky-500 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-sky-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
+                  disabled={loading}
                 >
-                  Send message
+                  {loading ? (
+                    <>
+                      <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <EnvelopeOpenIcon className="mr-2 h-4 w-4" />
+                      Send message
+                    </>
+                  )}
                 </Button>
               </div>
             </div>
