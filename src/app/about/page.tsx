@@ -150,7 +150,7 @@ export default function AboutPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="bg-black">
+    <div className="bg-white dark:bg-black">
       {/* Header */}
       <header className="absolute inset-x-0 top-0 z-50">
         <nav
@@ -172,7 +172,7 @@ export default function AboutPage() {
           <div className="flex lg:hidden">
             <button
               type="button"
-              className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-400"
+              className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-600 dark:text-gray-400"
               onClick={() => setMobileMenuOpen(true)}
             >
               <span className="sr-only">Open main menu</span>
@@ -184,7 +184,7 @@ export default function AboutPage() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-sm font-semibold leading-6 text-white"
+                className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
               >
                 {item.name}
               </Link>
@@ -193,7 +193,7 @@ export default function AboutPage() {
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
             <Link
               href="/sign-in"
-              className="text-sm font-semibold leading-6 text-white"
+              className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
             >
               Log in <span aria-hidden="true">&rarr;</span>
             </Link>
@@ -206,7 +206,7 @@ export default function AboutPage() {
           onClose={setMobileMenuOpen}
         >
           <div className="fixed inset-0 z-50" />
-          <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-gray-900 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-white/10">
+          <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white dark:bg-gray-900 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 dark:sm:ring-white/10">
             <div className="flex items-center justify-between">
               <Link href="/" className="-m-1.5 p-1.5">
                 <span className="sr-only">Parsertime</span>
@@ -220,7 +220,7 @@ export default function AboutPage() {
               </Link>
               <button
                 type="button"
-                className="-m-2.5 rounded-md p-2.5 text-gray-400"
+                className="-m-2.5 rounded-md p-2.5 text-gray-600 dark:text-gray-400"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <span className="sr-only">Close menu</span>
@@ -234,7 +234,7 @@ export default function AboutPage() {
                     <Link
                       key={item.name}
                       href={item.href}
-                      className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-gray-800"
+                      className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-200 dark:text-white dark:hover:bg-gray-800"
                     >
                       {item.name}
                     </Link>
@@ -243,7 +243,7 @@ export default function AboutPage() {
                 <div className="py-6">
                   <Link
                     href="/sign-in"
-                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800"
+                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-200 dark:text-white dark:hover:bg-gray-800"
                   >
                     Log in
                   </Link>
@@ -272,10 +272,10 @@ export default function AboutPage() {
         {/* Header section */}
         <div className="px-6 pt-14 lg:px-8">
           <div className="mx-auto max-w-2xl pt-24 text-center sm:pt-40">
-            <h2 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
+            <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
               We love Overwatch
             </h2>
-            <p className="mt-6 text-lg leading-8 text-gray-300">
+            <p className="mt-6 text-lg leading-8 text-gray-700 dark:text-gray-300">
               That&apos;s why we&apos;re building a better way to track your
               performance. See your team&apos;s stats, track your performance
               over time, and see how you evolve as a player and as a team.
@@ -286,7 +286,7 @@ export default function AboutPage() {
         {/* Content section */}
         <div className="mx-auto mt-20 max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
-            <div className="grid max-w-xl grid-cols-1 gap-8 text-base leading-7 text-gray-300 lg:max-w-none lg:grid-cols-2">
+            <div className="grid max-w-xl grid-cols-1 gap-8 text-base leading-7 text-gray-700 dark:text-gray-300 lg:max-w-none lg:grid-cols-2">
               <div>
                 <p>
                   Parsertime was originally created as an internal tool for FIU
@@ -322,7 +322,7 @@ export default function AboutPage() {
                   <Link
                     href="https://github.com/luxdotdev/parsertime"
                     target="_blank"
-                    className="text-sky-400"
+                    className="text-sky-600 dark:text-sky-400"
                   >
                     here
                   </Link>
@@ -334,12 +334,12 @@ export default function AboutPage() {
               {stats.map((stat) => (
                 <div
                   key={stat.label}
-                  className="flex flex-col-reverse gap-y-3 border-l border-white/20 pl-6"
+                  className="flex flex-col-reverse gap-y-3 border-l border-gray-900/20 dark:border-white/20 pl-6"
                 >
-                  <dt className="text-base leading-7 text-gray-300">
+                  <dt className="text-base leading-7 text-gray-700 dark:text-gray-300">
                     {stat.label}
                   </dt>
-                  <dd className="text-3xl font-semibold tracking-tight text-white">
+                  <dd className="text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
                     {stat.value}
                   </dd>
                 </div>
@@ -360,19 +360,19 @@ export default function AboutPage() {
         {/* Values section */}
         <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-40 lg:px-8">
           <div className="mx-auto max-w-2xl lg:mx-0">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
               Our values
             </h2>
-            <p className="mt-6 text-lg leading-8 text-gray-300">
+            <p className="mt-6 text-lg leading-8 text-gray-700 dark:text-gray-300">
               Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores
               impedit perferendis suscipit eaque, iste dolor cupiditate
               blanditiis.
             </p>
           </div>
-          <dl className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 text-base leading-7 text-gray-300 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:gap-x-16">
+          <dl className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 text-base leading-7 text-gray-700 dark:text-gray-300 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:gap-x-16">
             {values.map((value) => (
               <div key={value.name} className="relative pl-9">
-                <dt className="inline font-semibold text-white">
+                <dt className="inline font-semibold text-gray-900 dark:text-white">
                   <value.icon
                     className="absolute left-1 top-1 h-5 w-5 text-sky-500"
                     aria-hidden="true"
@@ -388,10 +388,10 @@ export default function AboutPage() {
         {/* Team section */}
         {/* <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-40 lg:px-8">
           <div className="mx-auto max-w-2xl lg:mx-0">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
               Our team
             </h2>
-            <p className="mt-6 text-lg leading-8 text-gray-300">
+            <p className="mt-6 text-lg leading-8 text-gray-700 dark:text-gray-300">
               Excepturi repudiandae alias ut. Totam aut facilis. Praesentium in
               neque vel omnis. Eos error odio. Qui fugit voluptatibus eum culpa.
             </p>
@@ -406,10 +406,10 @@ export default function AboutPage() {
                   width={400}
                   height={400}
                 />
-                <h3 className="mt-6 text-lg font-semibold leading-8 tracking-tight text-white">
+                <h3 className="mt-6 text-lg font-semibold leading-8 tracking-tight text-gray-900 dark:text-white">
                   {person.name}
                 </h3>
-                <p className="text-base leading-7 text-gray-300">
+                <p className="text-base leading-7 text-gray-700 dark:text-gray-300">
                   {person.role}
                 </p>
                 <p className="text-sm leading-6 text-gray-500">
@@ -423,21 +423,21 @@ export default function AboutPage() {
         {/* CTA section */}
         <div className="relative isolate -z-10 mt-32 sm:mt-40">
           <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div className="mx-auto flex max-w-2xl flex-col gap-16 bg-white/5 px-6 py-16 ring-1 ring-white/10 sm:rounded-3xl sm:p-8 lg:mx-0 lg:max-w-none lg:flex-row lg:items-center lg:py-20 xl:gap-x-20 xl:px-20">
+            <div className="mx-auto flex max-w-2xl flex-col gap-16 bg-black/5 dark:bg-white/5 px-6 py-16 ring-1 ring-black/10 dark:ring-white/10 sm:rounded-3xl sm:p-8 lg:mx-0 lg:max-w-none lg:flex-row lg:items-center lg:py-20 xl:gap-x-20 xl:px-20">
               <img
                 className="h-96 w-full flex-none rounded-2xl object-cover shadow-xl lg:aspect-square lg:h-auto lg:max-w-sm"
                 src="https://images.unsplash.com/photo-1519338381761-c7523edc1f46?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80"
                 alt=""
               />
               <div className="w-full flex-auto">
-                <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
                   Join our team
                 </h2>
-                <p className="mt-6 text-lg leading-8 text-gray-300">
+                <p className="mt-6 text-lg leading-8 text-gray-700 dark:text-gray-300">
                   Lorem ipsum dolor sit amet consect adipisicing elit. Possimus
                   magnam voluptatum cupiditate veritatis in accusamus quisquam.
                 </p>
-                <ul className="mt-10 grid grid-cols-1 gap-x-8 gap-y-3 text-base leading-7 text-white sm:grid-cols-2">
+                <ul className="mt-10 grid grid-cols-1 gap-x-8 gap-y-3 text-base leading-7 text-gray-900 dark:text-white sm:grid-cols-2">
                   {benefits.map((benefit) => (
                     <li key={benefit} className="flex gap-x-3">
                       <CheckCircleIcon
@@ -451,7 +451,7 @@ export default function AboutPage() {
                 <div className="mt-10 flex">
                   <Link
                     href="#"
-                    className="text-sm font-semibold leading-6 text-sky-400"
+                    className="text-sm font-semibold leading-6 text-sky-600 dark:text-sky-400"
                   >
                     See our job postings <span aria-hidden="true">&rarr;</span>
                   </Link>
@@ -492,7 +492,7 @@ export default function AboutPage() {
                 src="/parsertime.png"
                 alt="Parsertime Logo"
               />
-              <p className="text-sm leading-6 text-gray-300">
+              <p className="text-sm leading-6 text-gray-700 dark:text-gray-300">
                 Building a better way to track your Overwatch performance.
               </p>
               <div className="flex space-x-6">
@@ -500,7 +500,7 @@ export default function AboutPage() {
                   <a
                     key={item.name}
                     href={item.href}
-                    className="text-gray-500 hover:text-gray-400"
+                    className="text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
                   >
                     <span className="sr-only">{item.name}</span>
                     <item.icon className="h-6 w-6" aria-hidden="true" />
@@ -511,7 +511,7 @@ export default function AboutPage() {
             <div className="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
               <div className="md:grid md:grid-cols-2 md:gap-8">
                 <div>
-                  <h3 className="text-sm font-semibold leading-6 text-white">
+                  <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">
                     Solutions
                   </h3>
                   <ul className="mt-6 space-y-4">
@@ -519,7 +519,7 @@ export default function AboutPage() {
                       <li key={item.name}>
                         <a
                           href={item.href}
-                          className="text-sm leading-6 text-gray-300 hover:text-white"
+                          className="text-sm leading-6 text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
                         >
                           {item.name}
                         </a>
@@ -528,7 +528,7 @@ export default function AboutPage() {
                   </ul>
                 </div>
                 <div className="mt-10 md:mt-0">
-                  <h3 className="text-sm font-semibold leading-6 text-white">
+                  <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">
                     Support
                   </h3>
                   <ul className="mt-6 space-y-4">
@@ -536,7 +536,7 @@ export default function AboutPage() {
                       <li key={item.name}>
                         <a
                           href={item.href}
-                          className="text-sm leading-6 text-gray-300 hover:text-white"
+                          className="text-sm leading-6 text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
                         >
                           {item.name}
                         </a>
@@ -547,7 +547,7 @@ export default function AboutPage() {
               </div>
               <div className="md:grid md:grid-cols-2 md:gap-8">
                 <div>
-                  <h3 className="text-sm font-semibold leading-6 text-white">
+                  <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">
                     Company
                   </h3>
                   <ul className="mt-6 space-y-4">
@@ -555,7 +555,7 @@ export default function AboutPage() {
                       <li key={item.name}>
                         <a
                           href={item.href}
-                          className="text-sm leading-6 text-gray-300 hover:text-white"
+                          className="text-sm leading-6 text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
                         >
                           {item.name}
                         </a>
@@ -564,7 +564,7 @@ export default function AboutPage() {
                   </ul>
                 </div>
                 <div className="mt-10 md:mt-0">
-                  <h3 className="text-sm font-semibold leading-6 text-white">
+                  <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">
                     Legal
                   </h3>
                   <ul className="mt-6 space-y-4">
@@ -572,7 +572,7 @@ export default function AboutPage() {
                       <li key={item.name}>
                         <a
                           href={item.href}
-                          className="text-sm leading-6 text-gray-300 hover:text-white"
+                          className="text-sm leading-6 text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
                         >
                           {item.name}
                         </a>
@@ -583,8 +583,8 @@ export default function AboutPage() {
               </div>
             </div>
           </div>
-          <div className="mt-16 border-t border-white/10 pt-8 sm:mt-20 lg:mt-24">
-            <p className="text-xs leading-5 text-gray-400">
+          <div className="mt-16 border-t border-black/10 dark:border-white/10 pt-8 sm:mt-20 lg:mt-24">
+            <p className="text-xs leading-5 text-gray-600 dark:text-gray-400">
               &copy; 2024 lux.dev. All rights reserved.
             </p>
           </div>
