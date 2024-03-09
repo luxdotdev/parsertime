@@ -43,7 +43,7 @@ export function MainNav({
         Settings
       </Link>
       <Link
-        href="mailto:help@parsertime.app"
+        href="/contact"
         className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
       >
         Contact

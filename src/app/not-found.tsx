@@ -41,7 +41,7 @@ export default function NotFound() {
         <footer className="self-end lg:col-span-2 lg:col-start-1 lg:row-start-3">
           <div className="border-t border-gray-100 dark:border-gray-900 bg-gray-50 dark:bg-zinc-950 py-10">
             <nav className="mx-auto flex w-full max-w-7xl items-center gap-x-4 px-6 text-sm leading-7 text-gray-600 lg:px-8">
-              <Link href="mailto:help@parsertime.app">Contact support</Link>
+              <Link href="/contact">Contact support</Link>
             </nav>
           </div>
         </footer>

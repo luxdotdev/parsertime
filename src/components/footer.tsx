@@ -35,7 +35,7 @@ export default function Footer() {
             Settings
           </Link>
           <Link
-            href="mailto:help@parsertime.app"
+            href="/contact"
             className="text-sm text-gray-600 transition-colors duration-300 dark:text-gray-300 hover:text-black dark:hover:text-white"
           >
             Contact
