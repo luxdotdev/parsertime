@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { DiscordLoginButton } from "@/components/settings/discord-login-button";
 
-export default async function DiscordSettingsPage() {
+export default async function LinkedAccountSettingsPage() {
   const session = await auth();
   if (!session || !session.user) {
     redirect("/sign-in");
