@@ -31,6 +31,11 @@ const nextConfig = {
         hostname: "s2qw9udutrlis7qk.public.blob.vercel-storage.com",
         port: "",
       },
+      {
+        protocol: "https",
+        hostname: "lux.dev",
+        port: "",
+      },
     ],
   },
 };
