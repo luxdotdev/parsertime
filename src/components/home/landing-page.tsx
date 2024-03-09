@@ -531,7 +531,7 @@ export default async function LandingPage() {
                 <Link href="/sign-up">Get started</Link>
               </Button>
               <Link
-                href="/pricing"
+                href="/about"
                 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
               >
                 Learn more <span aria-hidden="true">→</span>
