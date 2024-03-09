@@ -31,13 +31,13 @@ export default async function DiscordSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium">Discord Settings</h3>
+        <h3 className="text-lg font-medium">Linked Accounts</h3>
         <p className="text-sm text-muted-foreground">
           Manage linked account settings and preferences.
         </p>
       </div>
       <Separator />
-      {discordAccount ? (
+      {!discordAccount ? (
         <DiscordSettingsForm user={user} />
       ) : (
         <DiscordLoginButton />

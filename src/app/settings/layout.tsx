@@ -39,8 +39,8 @@ const sidebarNavItems = [
     href: "/settings",
   },
   {
-    title: "Discord",
-    href: "/settings/discord",
+    title: "Linked Accounts",
+    href: "/settings/accounts",
   },
 ];
 
