@@ -76,13 +76,13 @@ export default function ContactPage() {
   if (!isClient) return null;
 
   return (
-    <div className="relative isolate bg-black">
+    <div className="relative isolate bg-white dark:bg-black">
       <div className="mx-auto grid max-w-7xl grid-cols-1 lg:grid-cols-2">
         <div className="relative px-6 pb-20 pt-24 sm:pt-32 lg:static lg:px-8 lg:py-48">
           <div className="mx-auto max-w-xl lg:mx-0 lg:max-w-lg">
-            <div className="absolute inset-y-0 left-0 -z-10 w-full overflow-hidden ring-1 ring-white/5 lg:w-1/2">
+            <div className="absolute inset-y-0 left-0 -z-10 w-full bg-gray-100 dark:bg-black overflow-hidden ring-1 ring-gray-900/10 dark:ring-white/5 lg:w-1/2">
               <svg
-                className="absolute inset-0 h-full w-full stroke-gray-700 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
+                className="hidden dark:flex absolute inset-0 h-full w-full stroke-gray-200 dark:stroke-gray-700 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
                 aria-hidden="true"
               >
                 <defs>
@@ -100,7 +100,7 @@ export default function ContactPage() {
                 <svg
                   x="100%"
                   y={-1}
-                  className="overflow-visible fill-gray-800/20"
+                  className="overflow-visible fill-gray-200/20 dark:fill-gray-800/20"
                 >
                   <path d="M-470.5 0h201v201h-201Z" strokeWidth={0} />
                 </svg>
@@ -111,8 +111,35 @@ export default function ContactPage() {
                   fill="url(#54f88622-e7f8-4f1d-aaf9-c2f5e46dd1f2)"
                 />
               </svg>
+              <svg
+                className="dark:hidden absolute inset-0 h-full w-full stroke-gray-200 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
+                aria-hidden="true"
+              >
+                <defs>
+                  <pattern
+                    id="83fd4e5a-9d52-42fc-97b6-718e5d7ee527"
+                    width={200}
+                    height={200}
+                    x="100%"
+                    y={-1}
+                    patternUnits="userSpaceOnUse"
+                  >
+                    <path d="M130 200V.5M.5 .5H200" fill="none" />
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" strokeWidth={0} fill="white" />
+                <svg x="100%" y={-1} className="overflow-visible fill-gray-50">
+                  <path d="M-470.5 0h201v201h-201Z" strokeWidth={0} />
+                </svg>
+                <rect
+                  width="100%"
+                  height="100%"
+                  strokeWidth={0}
+                  fill="url(#83fd4e5a-9d52-42fc-97b6-718e5d7ee527)"
+                />
+              </svg>
               <div
-                className="absolute -left-56 top-[calc(100%-13rem)] transform-gpu blur-3xl lg:left-[max(-14rem,calc(100%-59rem))] lg:top-[calc(50%-7rem)]"
+                className="hidden dark:flex absolute -left-56 top-[calc(100%-13rem)] transform-gpu blur-3xl lg:left-[max(-14rem,calc(100%-59rem))] lg:top-[calc(50%-7rem)]"
                 aria-hidden="true"
               >
                 <div
@@ -124,26 +151,26 @@ export default function ContactPage() {
                 />
               </div>
             </div>
-            <h2 className="text-3xl font-bold tracking-tight text-white">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
               Get in touch
             </h2>
-            <p className="mt-6 text-lg leading-8 text-gray-300">
+            <p className="mt-6 text-lg leading-8 text-gray-700 dark:text-gray-300">
               Having issues with the app? Want to request a feature? We&apos;d
               love to hear from you! Send us a message and we&apos;ll get back
               to you as soon as we can.
             </p>
-            <dl className="mt-10 space-y-4 text-base leading-7 text-gray-300">
+            <dl className="mt-10 space-y-4 text-base leading-7 text-gray-700 dark:text-gray-300">
               <div className="flex gap-x-4">
                 <dt className="flex-none">
                   <span className="sr-only">Discord</span>
                   <UserGroupIcon
-                    className="h-7 w-6 text-gray-400"
+                    className="h-7 w-6 text-gray-800 dark:text-gray-400"
                     aria-hidden="true"
                   />
                 </dt>
                 <dd>
                   <Link
-                    className="hover:text-white"
+                    className="hover:text-black dark:hover:text-white"
                     href="https://discord.gg/svz3qhVDXM"
                   >
                     <span className="inline-flex items-center gap-1">
@@ -156,13 +183,13 @@ export default function ContactPage() {
                 <dt className="flex-none">
                   <span className="sr-only">Email</span>
                   <EnvelopeIcon
-                    className="h-7 w-6 text-gray-400"
+                    className="h-7 w-6 text-gray-800 dark:text-gray-400"
                     aria-hidden="true"
                   />
                 </dt>
                 <dd>
                   <Link
-                    className="hover:text-white"
+                    className="hover:text-black dark:hover:text-white"
                     href="mailto:help@parsertime.app"
                   >
                     help@parsertime.app
@@ -185,7 +212,7 @@ export default function ContactPage() {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="block text-sm font-semibold leading-6 text-white">
+                        <FormLabel className="block text-sm font-semibold leading-6 text-gray-900 dark:text-white">
                           Name
                         </FormLabel>
                         <FormControl>
@@ -196,7 +223,7 @@ export default function ContactPage() {
                             id="name"
                             autoComplete="given-name"
                             value={field.value}
-                            className="block w-full rounded-md border-0 bg-white/5 px-3.5 py-2 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6"
+                            className="block w-full rounded-md border-0 dark:bg-white/5 px-3.5 py-2 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-white/10 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:focus:ring-sky-500 sm:text-sm sm:leading-6"
                           />
                         </FormControl>
                         <FormMessage />
@@ -210,7 +237,7 @@ export default function ContactPage() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="block text-sm font-semibold leading-6 text-white">
+                        <FormLabel className="block text-sm font-semibold leading-6 text-gray-900 dark:text-white">
                           Email
                         </FormLabel>
                         <FormControl>
@@ -221,7 +248,7 @@ export default function ContactPage() {
                             id="email"
                             autoComplete="email"
                             value={field.value}
-                            className="block w-full rounded-md border-0 bg-white/5 px-3.5 py-2 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6"
+                            className="block w-full rounded-md border-0 dark:bg-white/5 px-3.5 py-2 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-white/10 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:focus:ring-sky-500 sm:text-sm sm:leading-6"
                           />
                         </FormControl>
                         <FormMessage />
@@ -235,7 +262,7 @@ export default function ContactPage() {
                     name="message"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="block text-sm font-semibold leading-6 text-white">
+                        <FormLabel className="block text-sm font-semibold leading-6 text-gray-900 dark:text-white">
                           Message
                         </FormLabel>
                         <FormControl>
@@ -245,7 +272,7 @@ export default function ContactPage() {
                             id="message"
                             autoComplete="message"
                             value={field.value}
-                            className="block w-full rounded-md border-0 bg-white/5 px-3.5 py-2 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6"
+                            className="block w-full rounded-md border-0 dark:bg-white/5 px-3.5 py-2 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-white/10 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:focus:ring-sky-500 sm:text-sm sm:leading-6"
                           />
                         </FormControl>
                         <FormMessage />
