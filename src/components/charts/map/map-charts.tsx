@@ -102,6 +102,8 @@ export async function MapCharts({ id }: { id: number }) {
     },
   });
 
+  console.log(team1DamageByRound);
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
       <Card className="col-span-full">
@@ -148,8 +150,12 @@ export async function MapCharts({ id }: { id: number }) {
         </CardHeader>
         <CardContent className="pl-2">
           <DamageByRoundChart
-            team1DamageByRound={team1DamageByRound}
-            team2DamageByRound={team2DamageByRound}
+            team1DamageByRound={team1DamageByRound.sort(
+              (a, b) => a.round_number - b.round_number
+            )}
+            team2DamageByRound={team2DamageByRound.sort(
+              (a, b) => a.round_number - b.round_number
+            )}
             teamNames={teamNames}
           />
         </CardContent>
