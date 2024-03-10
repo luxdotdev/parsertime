@@ -1,6 +1,3 @@
-"use client";
-
-import { Dialog } from "@headlessui/react";
 import {
   AcademicCapIcon,
   HandRaisedIcon,
@@ -9,19 +6,9 @@ import {
   ServerStackIcon,
   UserGroupIcon,
 } from "@heroicons/react/20/solid";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
-import { SVGProps, useState } from "react";
-
-const navigation = [
-  { name: "Home", href: "/" },
-  { name: "About", href: "/about" },
-  { name: "Pricing", href: "/pricing" },
-  { name: "Demo", href: "/demo" },
-  { name: "Docs", href: "https://docs.parsertime.app" },
-  { name: "Company", href: "https://lux.dev" },
-];
+import { SVGProps } from "react";
 
 const stats = [
   { label: "Started development", value: "Nov 2023" },
@@ -80,7 +67,7 @@ type IconProps = Omit<SVGProps<SVGSVGElement>, "fill" | "viewbox">;
 
 const footerNavigation = {
   solutions: [
-    { name: "Dashboard", href: "/about" },
+    { name: "Dashboard", href: "/dashboard" },
     { name: "Sign Up", href: "/sign-up" },
     { name: "Demo", href: "/demo" },
   ],
@@ -397,14 +384,17 @@ export default function AboutPage() {
               </p>
               <div className="flex space-x-6">
                 {footerNavigation.social.map((item) => (
-                  <a
+                  <Link
                     key={item.name}
                     href={item.href}
                     className="text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
+                    target={
+                      item.href.startsWith("https") ? "_blank" : undefined
+                    }
                   >
                     <span className="sr-only">{item.name}</span>
                     <item.icon className="h-6 w-6" aria-hidden="true" />
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -417,12 +407,15 @@ export default function AboutPage() {
                   <ul className="mt-6 space-y-4">
                     {footerNavigation.solutions.map((item) => (
                       <li key={item.name}>
-                        <a
+                        <Link
                           href={item.href}
                           className="text-sm leading-6 text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
+                          target={
+                            item.href.startsWith("https") ? "_blank" : undefined
+                          }
                         >
                           {item.name}
-                        </a>
+                        </Link>
                       </li>
                     ))}
                   </ul>
@@ -434,12 +427,15 @@ export default function AboutPage() {
                   <ul className="mt-6 space-y-4">
                     {footerNavigation.support.map((item) => (
                       <li key={item.name}>
-                        <a
+                        <Link
                           href={item.href}
                           className="text-sm leading-6 text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
+                          target={
+                            item.href.startsWith("https") ? "_blank" : undefined
+                          }
                         >
                           {item.name}
-                        </a>
+                        </Link>
                       </li>
                     ))}
                   </ul>
@@ -453,12 +449,15 @@ export default function AboutPage() {
                   <ul className="mt-6 space-y-4">
                     {footerNavigation.company.map((item) => (
                       <li key={item.name}>
-                        <a
+                        <Link
                           href={item.href}
                           className="text-sm leading-6 text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
+                          target={
+                            item.href.startsWith("https") ? "_blank" : undefined
+                          }
                         >
                           {item.name}
-                        </a>
+                        </Link>
                       </li>
                     ))}
                   </ul>
@@ -470,12 +469,15 @@ export default function AboutPage() {
                   <ul className="mt-6 space-y-4">
                     {footerNavigation.socials.map((item) => (
                       <li key={item.name}>
-                        <a
+                        <Link
                           href={item.href}
                           className="text-sm leading-6 text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
+                          target={
+                            item.href.startsWith("https") ? "_blank" : undefined
+                          }
                         >
                           {item.name}
-                        </a>
+                        </Link>
                       </li>
                     ))}
                   </ul>
