@@ -61,6 +61,12 @@ const team = [
     imageUrl: "/marketing/lucas.jpg",
     bio: "Software engineer, Top 500 Overwatch player, and head coach of FIU Panthers. Started Parsertime to help take his team to the next level. Lucas is passionate about building great products and helping teams succeed.",
   },
+  {
+    name: 'Robin "Zei" Sidhu',
+    role: "Strategic Consultant/Investor",
+    imageUrl: "/marketing/robin.png",
+    bio: "Zei is a coach for the top collegiate team St. Clair Saints. He recently led them to a 2nd place finish in the NACE Varsity Premiere 2023 fall semester. His favorite hobbies include crushing his players in TXCXX.",
+  },
 ];
 
 type IconProps = Omit<SVGProps<SVGSVGElement>, "fill" | "viewbox">;
