@@ -355,8 +355,15 @@ export default function AboutPage() {
               </div>
               <div className="relative mt-16 h-80 lg:mt-8">
                 <Image
-                  className="absolute left-0 top-0 w-[57rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10"
+                  className="hidden dark:flex absolute left-0 top-0 w-[57rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10"
                   src="/player_page.png"
+                  alt="App screenshot"
+                  width={1824}
+                  height={1080}
+                />
+                <Image
+                  className="dark:hidden absolute left-0 top-0 w-[57rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10"
+                  src="/player_page_light.png"
                   alt="App screenshot"
                   width={1824}
                   height={1080}
