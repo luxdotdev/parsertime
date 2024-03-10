@@ -67,6 +67,12 @@ const team = [
     imageUrl: "/marketing/robin.png",
     bio: "Zei is a coach for the top collegiate team St. Clair Saints. He recently led them to a 2nd place finish in the NACE Varsity Premiere 2023 fall semester. His favorite hobbies include crushing his players in TXCXX.",
   },
+  {
+    name: "Giovanni Panzetta",
+    role: "Developer",
+    imageUrl: "/marketing/gio.jpg",
+    bio: "Giovanni is a software engineer specializing in full-stack development. He's passionate about building great software and building good user experiences.",
+  },
 ];
 
 type IconProps = Omit<SVGProps<SVGSVGElement>, "fill" | "viewbox">;
