@@ -1,19 +1,18 @@
 "use client";
 
-import { SVGProps, useState } from "react";
 import { Dialog } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import {
   AcademicCapIcon,
-  CheckCircleIcon,
   HandRaisedIcon,
+  PresentationChartLineIcon,
   RocketLaunchIcon,
-  SparklesIcon,
-  SunIcon,
+  ServerStackIcon,
   UserGroupIcon,
 } from "@heroicons/react/20/solid";
-import Link from "next/link";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import Link from "next/link";
+import { SVGProps, useState } from "react";
 
 const navigation = [
   { name: "Home", href: "/" },
@@ -25,92 +24,80 @@ const navigation = [
 ];
 
 const stats = [
-  { label: "Business was founded", value: "2012" },
-  { label: "People on the team", value: "120+" },
-  { label: "Users on the platform", value: "250k" },
-  { label: "Paid out to creators", value: "$70M" },
+  { label: "Started development", value: "Nov 2023" },
+  { label: "Used internally", value: "Jan 2024" },
+  { label: "Scrims uploaded during beta", value: "50+" },
+  { label: "Player stats tracked during beta", value: "15,000+" },
 ];
 const values = [
   {
-    name: "Be world-class.",
+    name: "Convenience.",
     description:
-      "Lorem ipsum, dolor sit amet consectetur adipisicing elit aute id magna.",
-    icon: RocketLaunchIcon,
+      "Make it easy to track stats and see trends over time. Easily diagnose issues with your players.",
+    icon: PresentationChartLineIcon,
   },
   {
-    name: "Take responsibility.",
+    name: "Accessibility.",
     description:
-      "Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo.",
+      "We want to make it easy for any team to use Parsertime. We're always looking for ways to make the platform more accessible.",
     icon: HandRaisedIcon,
   },
   {
-    name: "Be supportive.",
+    name: "Community first.",
     description:
-      "Ac tincidunt sapien vehicula erat auctor pellentesque rhoncus voluptas blanditiis et.",
+      "Built by Overwatch players, for Overwatch players. We're dedicated to serving the community.",
     icon: UserGroupIcon,
   },
   {
-    name: "Always learning.",
+    name: "Open source.",
     description:
-      "Iure sed ab. Aperiam optio placeat dolor facere. Officiis pariatur eveniet atque et dolor.",
+      "We believe that the best tools are built in the open. Contributions are welcome!",
     icon: AcademicCapIcon,
   },
   {
-    name: "Share everything you know.",
+    name: "Continuous improvement.",
     description:
-      "Laudantium tempora sint ut consectetur ratione. Ut illum ut rem numquam fuga delectus.",
-    icon: SparklesIcon,
+      "We're always adding new features and improving the platform. We want to make the best app possible.",
+    icon: RocketLaunchIcon,
   },
   {
-    name: "Enjoy downtime.",
+    name: "Reliable and performant.",
     description:
-      "Culpa dolorem voluptatem velit autem rerum qui et corrupti. Quibusdam quo placeat.",
-    icon: SunIcon,
+      "Our platform is built to be fast and reliable. We want to make sure that it's always there for you.",
+    icon: ServerStackIcon,
   },
 ];
 const team = [
   {
     name: "Lucas Doell",
-    role: "Developer",
-    imageUrl: "https://lux.dev/images/linkedin.jpg",
-    location: "Ithaca, NY",
+    role: "Lead Developer",
+    imageUrl: "/marketing/lucas.jpg",
+    bio: "Software engineer, Top 500 Overwatch player, and head coach of FIU Panthers. Started Parsertime to help take his team to the next level. Lucas is passionate about building great products and helping teams succeed.",
   },
-];
-const benefits = [
-  "Competitive salaries",
-  "Flexible work hours",
-  "30 days of paid vacation",
-  "Annual team retreats",
-  "Benefits for you and your family",
-  "A great work environment",
 ];
 
 type IconProps = Omit<SVGProps<SVGSVGElement>, "fill" | "viewbox">;
 
 const footerNavigation = {
   solutions: [
-    { name: "Marketing", href: "#" },
-    { name: "Analytics", href: "#" },
-    { name: "Commerce", href: "#" },
-    { name: "Insights", href: "#" },
+    { name: "Dashboard", href: "/about" },
+    { name: "Sign Up", href: "/sign-up" },
+    { name: "Demo", href: "/demo" },
   ],
   support: [
-    { name: "Pricing", href: "#" },
-    { name: "Documentation", href: "#" },
-    { name: "Guides", href: "#" },
-    { name: "API Status", href: "#" },
+    { name: "Pricing", href: "/pricing" },
+    { name: "Documentation", href: "https://docs.parsertime.app" },
+    { name: "Discord", href: "https://discord.gg/svz3qhVDXM" },
+    { name: "Contact", href: "/contact" },
   ],
   company: [
-    { name: "About", href: "#" },
+    { name: "About", href: "https://lux.dev" },
     { name: "Blog", href: "#" },
-    { name: "Jobs", href: "#" },
-    { name: "Press", href: "#" },
-    { name: "Partners", href: "#" },
+    { name: "GitHub", href: "https://github.com/luxdotdev" },
   ],
-  legal: [
-    { name: "Claim", href: "#" },
-    { name: "Privacy", href: "#" },
-    { name: "Terms", href: "#" },
+  socials: [
+    { name: "Twitter", href: "https://twitter.com/lucasdoell" },
+    { name: "Bluesky", href: "https://bsky.app/profile/lux.dev" },
   ],
   social: [
     {
@@ -133,7 +120,7 @@ const footerNavigation = {
     },
     {
       name: "GitHub",
-      href: "https://github.com/lucasdoell",
+      href: "https://github.com/luxdotdev",
       icon: (props: IconProps) => (
         <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
           <path
@@ -269,7 +256,6 @@ export default function AboutPage() {
             }}
           />
         </div>
-
         {/* Header section */}
         <div className="px-6 pt-14 lg:px-8">
           <div className="mx-auto max-w-2xl pt-24 text-center sm:pt-40">
@@ -283,7 +269,6 @@ export default function AboutPage() {
             </p>
           </div>
         </div>
-
         {/* Content section */}
         <div className="mx-auto mt-20 max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
@@ -348,7 +333,6 @@ export default function AboutPage() {
             </dl>
           </div>
         </div>
-
         {/* Image section */}
         {/* <div className="mt-32 sm:mt-40 xl:mx-auto xl:max-w-7xl xl:px-8">
           <img
@@ -357,17 +341,14 @@ export default function AboutPage() {
             className="aspect-[9/4] w-full object-cover xl:rounded-3xl"
           />
         </div> */}
-
         {/* Values section */}
         <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-40 lg:px-8">
           <div className="mx-auto max-w-2xl lg:mx-0">
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-              Our values
+              Our features
             </h2>
             <p className="mt-6 text-lg leading-8 text-gray-700 dark:text-gray-300">
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores
-              impedit perferendis suscipit eaque, iste dolor cupiditate
-              blanditiis.
+              See how our platform can make a difference for your team.
             </p>
           </div>
           <dl className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 text-base leading-7 text-gray-700 dark:text-gray-300 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:gap-x-16">
@@ -387,90 +368,106 @@ export default function AboutPage() {
         </div>
 
         {/* Team section */}
-        {/* <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-40 lg:px-8">
-          <div className="mx-auto max-w-2xl lg:mx-0">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-              Our team
-            </h2>
-            <p className="mt-6 text-lg leading-8 text-gray-700 dark:text-gray-300">
-              Excepturi repudiandae alias ut. Totam aut facilis. Praesentium in
-              neque vel omnis. Eos error odio. Qui fugit voluptatibus eum culpa.
-            </p>
+        <div className="bg-white dark:bg-black py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl sm:text-center">
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+                Meet our team
+              </h2>
+              <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
+                We&apos;re a small team of passionate Overwatch players and
+                coaches who are dedicated to building a platform that works for
+                your team.
+              </p>
+            </div>
+            <ul className="mx-auto mt-20 grid max-w-2xl grid-cols-1 gap-x-6 gap-y-20 sm:grid-cols-2 lg:max-w-4xl lg:gap-x-8 xl:max-w-none">
+              {team.map((person) => (
+                <li
+                  key={person.name}
+                  className="flex flex-col gap-6 xl:flex-row"
+                >
+                  <Image
+                    className="aspect-[4/5] w-52 flex-none rounded-2xl object-cover"
+                    src={person.imageUrl}
+                    alt=""
+                    width={400}
+                    height={500}
+                  />
+                  <div className="flex-auto">
+                    <h3 className="text-lg font-semibold leading-8 tracking-tight text-gray-900 dark:text-white">
+                      {person.name}
+                    </h3>
+                    <p className="text-base leading-7 text-gray-600 dark:text-gray-300">
+                      {person.role}
+                    </p>
+                    <p className="mt-6 text-base leading-7 text-gray-600 dark:text-gray-300">
+                      {person.bio}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul className="mx-auto mt-20 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-3 xl:grid-cols-4">
-            {team.map((person) => (
-              <li key={person.name}>
-                <Image
-                  className="aspect-[14/13] w-full rounded-2xl object-cover"
-                  src={person.imageUrl}
-                  alt=""
-                  width={400}
-                  height={400}
-                />
-                <h3 className="mt-6 text-lg font-semibold leading-8 tracking-tight text-gray-900 dark:text-white">
-                  {person.name}
-                </h3>
-                <p className="text-base leading-7 text-gray-700 dark:text-gray-300">
-                  {person.role}
-                </p>
-                <p className="text-sm leading-6 text-gray-500">
-                  {person.location}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </div> */}
+        </div>
 
         {/* CTA section */}
-        <div className="relative isolate -z-10 mt-32 sm:mt-40">
-          <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div className="mx-auto flex max-w-2xl flex-col gap-16 bg-black/5 dark:bg-white/5 px-6 py-16 ring-1 ring-black/10 dark:ring-white/10 sm:rounded-3xl sm:p-8 lg:mx-0 lg:max-w-none lg:flex-row lg:items-center lg:py-20 xl:gap-x-20 xl:px-20">
-              <img
-                className="h-96 w-full flex-none rounded-2xl object-cover shadow-xl lg:aspect-square lg:h-auto lg:max-w-sm"
-                src="https://images.unsplash.com/photo-1519338381761-c7523edc1f46?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80"
-                alt=""
-              />
-              <div className="w-full flex-auto">
-                <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-                  Join our team
+        <div className="bg-white dark:bg-black">
+          <div className="mx-auto max-w-7xl py-24 sm:px-6 sm:py-32 lg:px-8">
+            <div className="relative isolate overflow-hidden bg-gray-950 px-6 pt-16 shadow-2xl sm:rounded-3xl sm:px-16 md:pt-24 lg:flex lg:gap-x-20 lg:px-24 lg:pt-0">
+              <svg
+                viewBox="0 0 1024 1024"
+                className="absolute left-1/2 top-1/2 -z-10 h-[64rem] w-[64rem] -translate-y-1/2 [mask-image:radial-gradient(closest-side,white,transparent)] sm:left-full sm:-ml-80 lg:left-1/2 lg:ml-0 lg:-translate-x-1/2 lg:translate-y-0"
+                aria-hidden="true"
+              >
+                <circle
+                  cx={512}
+                  cy={512}
+                  r={512}
+                  fill="url(#759c1415-0410-454c-8f7c-9a820de03641)"
+                  fillOpacity="0.7"
+                />
+                <defs>
+                  <radialGradient id="759c1415-0410-454c-8f7c-9a820de03641">
+                    <stop stopColor="#7775D6" />
+                    <stop offset={1} stopColor="#E935C1" />
+                  </radialGradient>
+                </defs>
+              </svg>
+              <div className="mx-auto max-w-md text-center lg:mx-0 lg:flex-auto lg:py-32 lg:text-left">
+                <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                  Boost your productivity.
+                  <br />
+                  Start using our app today.
                 </h2>
-                <p className="mt-6 text-lg leading-8 text-gray-700 dark:text-gray-300">
-                  Lorem ipsum dolor sit amet consect adipisicing elit. Possimus
-                  magnam voluptatum cupiditate veritatis in accusamus quisquam.
+                <p className="mt-6 text-lg leading-8 text-gray-300">
+                  Give your team the tools they need to succeed. Sign up for
+                  Parsertime today.
                 </p>
-                <ul className="mt-10 grid grid-cols-1 gap-x-8 gap-y-3 text-base leading-7 text-gray-900 dark:text-white sm:grid-cols-2">
-                  {benefits.map((benefit) => (
-                    <li key={benefit} className="flex gap-x-3">
-                      <CheckCircleIcon
-                        className="h-7 w-5 flex-none"
-                        aria-hidden="true"
-                      />
-                      {benefit}
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-10 flex">
+                <div className="mt-10 flex items-center justify-center gap-x-6 lg:justify-start">
                   <Link
-                    href="#"
-                    className="text-sm font-semibold leading-6 text-sky-600 dark:text-sky-400"
+                    href="/sign-up"
+                    className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                   >
-                    See our job postings <span aria-hidden="true">&rarr;</span>
+                    Sign up
+                  </Link>
+                  <Link
+                    href="/demo"
+                    className="text-sm font-semibold leading-6 text-white"
+                  >
+                    Try our demo <span aria-hidden="true">→</span>
                   </Link>
                 </div>
               </div>
+              <div className="relative mt-16 h-80 lg:mt-8">
+                <Image
+                  className="absolute left-0 top-0 w-[57rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10"
+                  src="/player_page.png"
+                  alt="App screenshot"
+                  width={1824}
+                  height={1080}
+                />
+              </div>
             </div>
-          </div>
-          <div
-            className="absolute inset-x-0 -top-16 -z-10 flex transform-gpu justify-center overflow-hidden blur-3xl"
-            aria-hidden="true"
-          >
-            <div
-              className="aspect-[1318/752] w-[82.375rem] flex-none bg-gradient-to-r from-[#80caff] to-[#4f46e5] opacity-25"
-              style={{
-                clipPath:
-                  "polygon(73.6% 51.7%, 91.7% 11.8%, 100% 46.4%, 97.4% 82.2%, 92.5% 84.9%, 75.7% 64%, 55.3% 47.5%, 46.5% 49.4%, 45% 62.9%, 50.3% 87.2%, 21.3% 64.1%, 0.1% 100%, 5.4% 51.1%, 21.4% 63.9%, 58.9% 0.2%, 73.6% 51.7%)",
-              }}
-            />
           </div>
         </div>
       </main>
@@ -513,7 +510,7 @@ export default function AboutPage() {
               <div className="md:grid md:grid-cols-2 md:gap-8">
                 <div>
                   <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">
-                    Solutions
+                    Platform
                   </h3>
                   <ul className="mt-6 space-y-4">
                     {footerNavigation.solutions.map((item) => (
@@ -566,10 +563,10 @@ export default function AboutPage() {
                 </div>
                 <div className="mt-10 md:mt-0">
                   <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">
-                    Legal
+                    Social
                   </h3>
                   <ul className="mt-6 space-y-4">
-                    {footerNavigation.legal.map((item) => (
+                    {footerNavigation.socials.map((item) => (
                       <li key={item.name}>
                         <a
                           href={item.href}
