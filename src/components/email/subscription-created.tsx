@@ -1,9 +1,8 @@
-import { BillingPlan, User } from "@prisma/client";
+import { toTitleCase } from "@/lib/utils";
+import { User } from "@prisma/client";
 import {
   Body,
-  Button,
   Container,
-  Column,
   Head,
   Heading,
   Hr,
@@ -11,12 +10,10 @@ import {
   Img,
   Link,
   Preview,
-  Row,
   Section,
   Text,
 } from "@react-email/components";
 import { Tailwind } from "@react-email/tailwind";
-import * as React from "react";
 
 interface SubscriptionEmailProps {
   user: User;
@@ -54,7 +51,8 @@ export const SubscriptionCreatedEmail = ({
             <Text className="text-black text-[14px] leading-[24px]">
               Thank you for subscribing to Parsertime! We&apos;re grateful for
               your support and can&apos;t wait to help you level up your
-              Overwatch experience. You are now on the {billingPlan} plan.
+              Overwatch experience. You are now on the{" "}
+              <strong>{toTitleCase(billingPlan)}</strong> plan.
             </Text>
             <Text className="text-black text-[14px] leading-[24px]">
               To manage your subscription, including updating your payment
