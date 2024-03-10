@@ -16,6 +16,9 @@ import { createHash, randomBytes } from "crypto";
 import { newUserWebhookConstructor, sendDiscordWebhook } from "@/lib/webhooks";
 import { stripe } from "@/lib/stripe";
 import sendgrid from "@sendgrid/mail";
+import UserOnboardingEmail from "@/components/email/onboarding";
+
+const isProd = process.env.NODE_ENV === "production";
 
 export type Availability = "public" | "private";
 
@@ -74,6 +77,8 @@ export const config = {
   ],
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
+      if (!isProd) return true; // allow all sign ins in dev
+
       if (!user.email) return false;
 
       // get app availability from edge config
@@ -105,6 +110,22 @@ export const config = {
 
         // Track new user signups with Vercel Analytics
         await track("New User", { email: user.email ?? "unknown" });
+
+        const emailHtml = render(
+          UserOnboardingEmail({ name: user.name ?? "user", email: user.email! })
+        );
+
+        try {
+          await sendgrid.send({
+            to: user.email!,
+            from: "noreply@lux.dev",
+            subject: `Welcome to Parsertime!`,
+            html: emailHtml,
+          });
+        } catch (e) {
+          Logger.error("Error sending email", e);
+          throw new Error("Error sending email");
+        }
       }
     },
     async createUser({ user }) {
