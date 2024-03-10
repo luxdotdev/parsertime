@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PlayerDashboardDemoPage({ params }: Props) {
-  const id = 316;
+  const id = 268;
   const playerName = decodeURIComponent(params.playerId);
 
   const uniquePlayerRowsByHeroTimePlayed = await prisma.playerStat.findMany({

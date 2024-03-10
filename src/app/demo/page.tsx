@@ -21,7 +21,7 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const mapName = await prisma.matchStart.findFirst({
     where: {
-      MapDataId: 316,
+      MapDataId: 268,
     },
     select: {
       map_name: true,
@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function MapDashboardPage({ params }: Props) {
-  const id = 316;
+  const id = 268;
 
   const uniquePlayerRowsByHeroTimePlayed = await prisma.playerStat.findMany({
     where: {
