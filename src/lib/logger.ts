@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-console */
+import { log } from "next-axiom";
 
 /**
  * To avoid using explicit console.log statements, we can use a logger to log messages to the console.
@@ -15,31 +16,36 @@ class Logger {
 
   static log(message: any, ...optionalParams: any[]) {
     if (this.shouldLog("log")) {
-      console.log(message, ...optionalParams);
+      log.debug(message, ...optionalParams);
     }
+    console.log(message, ...optionalParams);
   }
 
   static error(message: any, ...optionalParams: any[]) {
     if (this.shouldLog("error")) {
-      console.error(message, ...optionalParams);
+      log.error(message, ...optionalParams);
     }
+    console.error(message, ...optionalParams);
   }
 
   static warn(message: any, ...optionalParams: any[]) {
     if (this.shouldLog("warn")) {
-      console.warn(message, ...optionalParams);
+      log.warn(message, ...optionalParams);
     }
+    console.warn(message, ...optionalParams);
   }
 
   static info(message: any, ...optionalParams: any[]) {
     if (this.shouldLog("info")) {
-      console.info(message, ...optionalParams);
+      log.info(message, ...optionalParams);
     }
+    console.info(message, ...optionalParams);
   }
 
   private static shouldLog(level: LogLevel): boolean {
-    // Since logging is required in all environments, including production,
-    // this function now always returns true.
+    if (this.isProduction) {
+      return this.logLevel.includes(level);
+    }
     return true;
   }
 }
