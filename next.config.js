@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -40,7 +41,7 @@ const nextConfig = {
   },
 };
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const withVercelToolbar = require("@vercel/toolbar/plugins/next")();
+const { withAxiom } = require("next-axiom");
 
-module.exports = withVercelToolbar(nextConfig);
+module.exports = withAxiom(withVercelToolbar(nextConfig));
