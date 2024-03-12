@@ -165,15 +165,15 @@ export async function isAuthedToViewScrim(id: number) {
   const user = await getUser(session?.user?.email);
   if (!user) return false;
 
-  const scrim = await getScrim(id);
-  if (!scrim) return false;
-
-  if (scrim.guestMode) return true;
-
   // if user is admin return true
   if (user?.role === $Enums.UserRole.ADMIN) {
     return true;
   }
+
+  const scrim = await getScrim(id);
+  if (!scrim) return false;
+
+  if (scrim.guestMode) return true;
 
   const listOfViewableScrims = await getUserViewableScrims(user.id);
 
@@ -186,6 +186,38 @@ export async function isAuthedToViewScrim(id: number) {
   // - not in the list of viewable scrims
   // - scrim is not in guest mode
   return false;
+}
+
+export async function isAuthedToViewMap(scrimId: number, mapId: number) {
+  const session = await auth();
+  if (!session) {
+    return false;
+  }
+
+  const user = await getUser(session?.user?.email);
+  if (!user) return false;
+
+  // if user is admin return true
+  if (user?.role === $Enums.UserRole.ADMIN) {
+    return true;
+  }
+
+  const scrim = await getScrim(scrimId);
+  if (!scrim) return false;
+
+  const scrimMaps = await prisma.map.findMany({
+    where: {
+      scrimId,
+    },
+  });
+
+  if (!scrimMaps) return false;
+
+  const map = scrimMaps.find((m) => m.id === mapId);
+
+  if (!map) return false;
+
+  return true;
 }
 
 export async function isAuthedToViewTeam(id: number) {
