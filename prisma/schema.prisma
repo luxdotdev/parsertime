@@ -120,6 +120,7 @@ model Scrim {
   Team      Team?    @relation(fields: [teamId], references: [id])
   teamId    Int?
   creatorId String
+  guestMode Boolean  @default(false)
 
   @@index([teamId])
 }
