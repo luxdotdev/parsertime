@@ -20,6 +20,7 @@ import { Scrim } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { Switch } from "@/components/ui/switch";
 
 const profileFormSchema = z.object({
   name: z
@@ -30,6 +31,7 @@ const profileFormSchema = z.object({
     .max(30, {
       message: "Name must not be longer than 30 characters.",
     }),
+  guestMode: z.boolean(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
@@ -42,6 +44,7 @@ export function EditScrimForm({ scrim }: { scrim: Scrim }) {
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
       name: scrim.name ?? "",
+      guestMode: scrim.guestMode,
     },
     mode: "onChange",
   });
@@ -51,9 +54,10 @@ export function EditScrimForm({ scrim }: { scrim: Scrim }) {
     const reqBody = {
       name: data.name,
       scrimId: scrim.id,
+      guestMode: data.guestMode,
     };
 
-    const res = await fetch("/api/scrim/update-scrim-name", {
+    const res = await fetch("/api/scrim/update-scrim-options", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -110,6 +114,29 @@ export function EditScrimForm({ scrim }: { scrim: Scrim }) {
                 dashboard.
               </FormDescription>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="guestMode"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md  shadow">
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>Enable Guest Mode</FormLabel>
+                <FormDescription className="max-w-[450px]">
+                  If enabled, the scrim will be accessible to any logged in
+                  user. If disabled, only your team members will be able to
+                  access the scrim.
+                </FormDescription>
+              </div>
             </FormItem>
           )}
         />
