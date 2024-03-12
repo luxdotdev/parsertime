@@ -75,7 +75,7 @@ export async function DefaultOverview({ id }: { id: number }) {
         // account for game setting score to 3 to ensure map completion
         return `${team1Captures.length} - ${team2Captures.length}`;
       case $Enums.MapType.Push:
-        return "Not supported for Push";
+        return "N/A";
       default:
         return "N/A";
     }
@@ -127,7 +127,7 @@ export async function DefaultOverview({ id }: { id: number }) {
           : matchDetails.team_2_name;
 
       case $Enums.MapType.Push:
-        return "Not supported for Push";
+        return "N/A";
       default:
         return "N/A";
     }
