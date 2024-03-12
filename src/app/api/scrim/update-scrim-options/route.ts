@@ -5,9 +5,10 @@ import { $Enums } from "@prisma/client";
 import { getUser } from "@/data/user-dto";
 import { getScrim } from "@/data/scrim-dto";
 
-type UpdateNameBody = {
+type UpdateScrimBody = {
   name: string;
   scrimId: number;
+  guestMode: boolean;
 };
 
 export async function POST(req: NextRequest) {
@@ -18,7 +19,7 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const body = (await req.json()) as UpdateNameBody;
+  const body = (await req.json()) as UpdateScrimBody;
 
   const user = await getUser(session.user.email);
 
@@ -60,6 +61,7 @@ export async function POST(req: NextRequest) {
     },
     data: {
       name: body.name,
+      guestMode: body.guestMode,
     },
   });
 
