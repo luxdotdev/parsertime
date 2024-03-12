@@ -17,6 +17,7 @@ import { newUserWebhookConstructor, sendDiscordWebhook } from "@/lib/webhooks";
 import { stripe } from "@/lib/stripe";
 import sendgrid from "@sendgrid/mail";
 import UserOnboardingEmail from "@/components/email/onboarding";
+import { getScrim, getUserViewableScrims } from "@/data/scrim-dto";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -162,37 +163,29 @@ export async function isAuthedToViewScrim(id: number) {
   }
 
   const user = await getUser(session?.user?.email);
+  if (!user) return false;
+
+  const scrim = await getScrim(id);
+  if (!scrim) return false;
+
+  if (scrim.guestMode) return true;
 
   // if user is admin return true
   if (user?.role === $Enums.UserRole.ADMIN) {
     return true;
   }
 
-  const listOfViewableScrims = await prisma.scrim.findMany({
-    where: {
-      OR: [
-        {
-          creatorId: user?.id,
-        },
-        {
-          Team: {
-            users: {
-              some: {
-                id: user?.id,
-              },
-            },
-          },
-        },
-      ],
-    },
-  });
+  const listOfViewableScrims = await getUserViewableScrims(user.id);
 
   if (listOfViewableScrims.some((scrim) => scrim.id === id)) {
     return true;
   }
 
-  // if user is correctly authed return true
-  return true;
+  // Return false if the user fails all checks:
+  // - not an admin
+  // - not in the list of viewable scrims
+  // - scrim is not in guest mode
+  return false;
 }
 
 export async function isAuthedToViewTeam(id: number) {
