@@ -14,7 +14,7 @@ export default async function ScrimDashboardLayout({
   const isAuthed = await isAuthedToViewScrim(id);
 
   if (!isAuthed) {
-    return NoAuthCard();
+    return <NoAuthCard />;
   }
 
   return (
