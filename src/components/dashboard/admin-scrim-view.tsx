@@ -28,6 +28,7 @@ export async function AdminScrimView() {
       date: scrim.date,
       teamId: scrim.teamId,
       creatorId: scrim.creatorId,
+      guestMode: scrim.guestMode,
       team: teamName?.name ?? "Uncategorized",
       creator: creatorName[0].name ?? "Unknown",
       hasPerms: true,
