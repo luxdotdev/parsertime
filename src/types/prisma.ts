@@ -1,6 +1,10 @@
 import {
   DefensiveAssist,
+  DvaRemech,
+  EchoDuplicateEnd,
+  EchoDuplicateStart,
   HeroSpawn,
+  HeroSwap,
   Kill,
   MatchEnd,
   MatchStart,
@@ -11,6 +15,7 @@ import {
   PayloadProgress,
   PlayerStat,
   PointProgress,
+  RemechCharged,
   RoundEnd,
   RoundStart,
   SetupComplete,
@@ -20,7 +25,11 @@ import {
 } from "@prisma/client";
 
 export type DefensiveAssistRows = DefensiveAssist[];
+export type DvaRemechRows = DvaRemech[];
+export type EchoDuplicateEndRows = EchoDuplicateEnd[];
+export type EchoDuplicateStartRows = EchoDuplicateStart[];
 export type HeroSpawnRows = HeroSpawn[];
+export type HeroSwapRows = HeroSwap[];
 export type KillRows = Kill[];
 export type MatchEndRows = MatchEnd[];
 export type MatchStartRows = MatchStart[];
@@ -31,6 +40,7 @@ export type OffensiveAssistRows = OffensiveAssist[];
 export type PayloadProgressRows = PayloadProgress[];
 export type PlayerStatRows = PlayerStat[];
 export type PointProgressRows = PointProgress[];
+export type RemechChargedRows = RemechCharged[];
 export type RoundEndRows = RoundEnd[];
 export type RoundStartRows = RoundStart[];
 export type SetupCompleteRows = SetupComplete[];
@@ -38,21 +48,27 @@ export type UltimateChargedRows = UltimateCharged[];
 export type UltimteEndRows = UltimateEnd[];
 export type UltimateStartRows = UltimateStart[];
 
-export type ScrimData = {
-  defensive_assist: DefensiveAssistRows;
-  hero_spawn: HeroSpawnRows;
-  hero_swap: HeroSpawnRows;
-  kill: KillRows;
-  match_start: MatchStartRows;
-  objective_captured: ObjectiveCapturedRows;
-  objective_updated: ObjectiveUpdatedRows;
-  offensive_assist: OffensiveAssistRows;
-  payload_progress: PayloadProgressRows;
-  player_stat: PlayerStatRows;
-  round_end: RoundEndRows;
-  round_start: RoundStartRows;
-  setup_complete: SetupCompleteRows;
-  ultimate_charged: UltimateChargedRows;
-  ultimate_end: UltimteEndRows;
-  ultimate_start: UltimateStartRows;
-};
+export type Event =
+  | DefensiveAssist
+  | DvaRemech
+  | EchoDuplicateEnd
+  | EchoDuplicateStart
+  | HeroSpawn
+  | HeroSwap
+  | Kill
+  | MatchEnd
+  | MatchStart
+  | MercyRez
+  | ObjectiveCaptured
+  | ObjectiveUpdated
+  | OffensiveAssist
+  | PayloadProgress
+  | PlayerStat
+  | PointProgress
+  | RemechCharged
+  | RoundEnd
+  | RoundStart
+  | SetupComplete
+  | UltimateCharged
+  | UltimateEnd
+  | UltimateStart;
