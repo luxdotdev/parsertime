@@ -9,11 +9,7 @@ import {
 import CardIcon from "@/components/ui/card-icon";
 import { getPlayerFinalStats } from "@/data/scrim-dto";
 import prisma from "@/lib/prisma";
-import {
-  groupKillsIntoFights,
-  removeDuplicateRowsForFletaDeadlift,
-  round,
-} from "@/lib/utils";
+import { groupKillsIntoFights, removeDuplicateRows, round } from "@/lib/utils";
 
 export async function DefaultOverview({
   id,
@@ -40,7 +36,7 @@ export async function DefaultOverview({
 
   const team = playerStatsByFinalRound[0]?.player_team;
 
-  const teamFinalBlows = removeDuplicateRowsForFletaDeadlift(
+  const teamFinalBlows = removeDuplicateRows(
     await prisma.playerStat.findMany({
       where: {
         MapDataId: id,
@@ -48,6 +44,7 @@ export async function DefaultOverview({
         round_number: finalRound?.round_number,
       },
       select: {
+        id: true,
         final_blows: true,
         player_hero: true,
       },
