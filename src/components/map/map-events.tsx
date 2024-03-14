@@ -1,26 +1,26 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import prisma from "@/lib/prisma";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { getMapEvents } from "@/lib/get-map-events";
 
 export async function MapEvents({ id }: { id: number }) {
-  const matchStart = await prisma.matchStart.findFirst({
-    where: {
-      MapDataId: id,
-    },
-  });
-
-  const matchEnd = await prisma.matchEnd.findFirst({
-    where: {
-      MapDataId: id,
-    },
-  });
+  const events = await getMapEvents(id);
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
       <Card className="col-span-full">
         <CardHeader>
           <CardTitle>Events</CardTitle>
+          <CardDescription>
+            Events that occurred during the match. This includes objective
+            captures, rounds starting and ending, multikills, and more.
+          </CardDescription>
         </CardHeader>
-        <CardContent className="pl-2"></CardContent>
+        <CardContent className="pl-4">{events}</CardContent>
       </Card>
     </div>
   );
