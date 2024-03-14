@@ -90,7 +90,9 @@ export function toMins(value: number) {
  * @returns {string} The number of minutes and seconds in the format "m s".
  */
 export function toTimestamp(value: number) {
-  const mins = Math.floor(value / 60);
+  const mins = Math.floor(value / 60)
+    .toFixed(0)
+    .padStart(2, "0");
   const secs = (value % 60).toFixed(0).padStart(2, "0");
   return `${mins}m ${secs}s`;
 }
