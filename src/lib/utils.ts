@@ -84,87 +84,24 @@ export function toMins(value: number) {
 }
 
 /**
- * Removes duplicate rows from an array of player stat rows based on all fields except the 'id'.
+ * Returns a string in the format "m s" from a number of seconds.
  *
- * This function iterates over the provided array of row objects and identifies duplicates
- * by comparing a serialized string of all key-value pairs except the 'id'. It uses a Set
- * to keep track of unique entries and filters out any duplicates. The function is useful
- * for post-processing data fetched from a database where rows may contain duplicates
- * in all fields except their primary key ('id').
- *
- * @param {PlayerStatRows} rows - Array of player stat rows, each object representing a database row.
- * @returns {PlayerStatRows} An array of player stat rows, with duplicates removed.
- *
- * @example
- * // Assuming playerStatRows is an array of player stat rows from the database
- * const uniquePlayerStatRows = removeDuplicateRows(playerStatRows);
+ * @param {number} value - The number of seconds.
+ * @returns {string} The number of minutes and seconds in the format "m s".
  */
-export function removeDuplicateRows(rows: PlayerStatRows): PlayerStatRows {
-  const uniqueSet = new Set();
-  return rows.filter((row) => {
-    // Create a unique string for each row, excluding the 'id'
-    const uniqueString = JSON.stringify({
-      scrimId: row.scrimId,
-      eventType: row.event_type,
-      matchTime: row.match_time,
-      roundNumber: row.round_number,
-      playerTeam: row.player_team,
-      playerName: row.player_name,
-      playerHero: row.player_hero,
-      eliminations: row.eliminations,
-      finalBlows: row.final_blows,
-      deaths: row.deaths,
-      allDamageDealt: row.all_damage_dealt,
-      barrierDamageDealt: row.barrier_damage_dealt,
-      heroDamageDealt: row.hero_damage_dealt,
-      healingDealt: row.healing_dealt,
-      healingReceived: row.healing_received,
-      selfHealing: row.self_healing,
-      damageTaken: row.damage_taken,
-      damageBlocked: row.damage_blocked,
-      defensiveAssists: row.defensive_assists,
-      offensiveAssists: row.offensive_assists,
-      ultimatesEarned: row.ultimates_earned,
-      ultimatesUsed: row.ultimates_used,
-      multikillBest: row.multikill_best,
-      multikills: row.multikills,
-      soloKills: row.solo_kills,
-      objectiveKills: row.objective_kills,
-      environmentalKills: row.environmental_kills,
-      environmentalDeaths: row.environmental_deaths,
-      criticalHits: row.critical_hits,
-      criticalHitAccuracy: row.critical_hit_accuracy,
-      scopedAccuracy: row.scoped_accuracy,
-      scopedCriticalHitAccuracy: row.scoped_critical_hit_accuracy,
-      scopedCriticalHitKills: row.scoped_critical_hit_kills,
-      shotsFired: row.shots_fired,
-      shotsHit: row.shots_hit,
-      shotsMissed: row.shots_missed,
-      scopedShots: row.scoped_shots,
-      scopedShotsHit: row.scoped_shots_hit,
-      weaponAccuracy: row.weapon_accuracy,
-      heroTimePlayed: row.hero_time_played,
-      MapDataId: row.MapDataId,
-    });
-
-    // Check if this unique string is already in the set
-    if (uniqueSet.has(uniqueString)) {
-      return false; // Duplicate found, filter out this row
-    }
-    uniqueSet.add(uniqueString); // Add to set and keep this row
-    return true;
-  });
+export function toTimestamp(value: number) {
+  const mins = Math.floor(value / 60);
+  const secs = (value % 60).toFixed(0).padStart(2, "0");
+  return `${mins}m ${secs}s`;
 }
 
-export function removeDuplicateRowsForFletaDeadlift(
-  rows: { final_blows: number; player_hero: string }[]
-) {
-  const uniqueSet = new Set();
+export function removeDuplicateRows<T extends { id: number }>(rows: T[]): T[] {
+  const uniqueSet = new Set<string>();
   return rows.filter((row) => {
-    const uniqueString = JSON.stringify({
-      finalBlows: row.final_blows,
-      playerHero: row.player_hero,
-    });
+    // Destructure the row to separate `id` from the rest of the properties
+    const { id, ...rest } = row;
+
+    const uniqueString = JSON.stringify(rest);
 
     if (uniqueSet.has(uniqueString)) {
       return false;
