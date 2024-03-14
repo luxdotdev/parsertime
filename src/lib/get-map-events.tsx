@@ -67,6 +67,15 @@ function findMultikills(fights: Fight[]): MultikillEvent[] {
   return multikillEvents;
 }
 
+// Define event priority if they happen at the same time
+const priority: Record<string, number> = {
+  objective_captured: 0,
+  objective_updated: 1,
+  round_end: 2,
+  round_start: 3,
+  match_end: 4,
+};
+
 export async function getMapEvents(id: number) {
   const matchStart = await prisma.matchStart.findFirst({
     where: {
@@ -190,14 +199,6 @@ export async function getMapEvents(id: number) {
     .filter(Boolean) // Remove nulls
     .sort((a, b) => {
       if (a.match_time === b.match_time) {
-        // Define event priority if they happen at the same time
-        const priority: Record<string, number> = {
-          objective_captured: 0,
-          objective_updated: 1,
-          round_end: 2,
-          round_start: 3,
-        };
-
         return priority[a.event_type] - priority[b.event_type];
       }
       return a.match_time - b.match_time;
@@ -403,14 +404,6 @@ export async function getUltimatesUsedList(id: number) {
     .filter(Boolean)
     .sort((a, b) => {
       if (a.match_time === b.match_time) {
-        // Define event priority if they happen at the same time
-        const priority: Record<string, number> = {
-          objective_captured: 0,
-          objective_updated: 1,
-          round_end: 2,
-          round_start: 3,
-        };
-
         return priority[a.event_type] - priority[b.event_type];
       }
       return a.match_time - b.match_time;
