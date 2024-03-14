@@ -125,12 +125,6 @@ export async function getMapEvents(id: number) {
         })
       : [];
 
-  const payloadProgresses = await prisma.payloadProgress.findMany({
-    where: {
-      MapDataId: id,
-    },
-  });
-
   const kills = await prisma.kill.findMany({
     where: {
       MapDataId: id,
@@ -185,9 +179,9 @@ export async function getMapEvents(id: number) {
 
   const events = [
     matchStart,
+    matchEnd ? matchEnd : null,
     ...roundStarts,
     ...roundEnds,
-    matchEnd ? matchEnd : null,
     ...objectiveCaptureds,
     ...objectiveUpdateds,
     ...ultimateKills,
@@ -350,4 +344,142 @@ export async function getMapEvents(id: number) {
   });
 
   return eventList;
+}
+
+export async function getUltimatesUsedList(id: number) {
+  const ultimateStarts = (
+    await prisma.ultimateStart.findMany({
+      where: {
+        MapDataId: id,
+      },
+    })
+  )
+    // filter out ultimate starts that happen within 1 second for the same player
+    .filter((start, index, array) => {
+      const nextStart = array[index + 1];
+      if (nextStart) {
+        return nextStart.match_time - start.match_time > 1;
+      }
+      return true;
+    });
+
+  const matchStart = await prisma.matchStart.findFirst({
+    where: {
+      MapDataId: id,
+    },
+  });
+
+  if (!matchStart) return [];
+
+  const matchEnd = await prisma.matchEnd.findFirst({
+    where: {
+      MapDataId: id,
+    },
+  });
+
+  const roundStarts = await prisma.roundStart.findMany({
+    where: {
+      MapDataId: id,
+    },
+  });
+
+  const roundEnds = removeDuplicateRows(
+    await prisma.roundEnd.findMany({
+      where: {
+        MapDataId: id,
+      },
+    })
+  );
+
+  const fights = await groupKillsIntoFights(id);
+
+  const events = [
+    matchStart,
+    matchEnd ? matchEnd : null,
+    ...roundStarts,
+    ...roundEnds,
+    ...ultimateStarts,
+  ]
+    .filter(Boolean)
+    .sort((a, b) => {
+      if (a.match_time === b.match_time) {
+        // Define event priority if they happen at the same time
+        const priority: Record<string, number> = {
+          objective_captured: 0,
+          objective_updated: 1,
+          round_end: 2,
+          round_start: 3,
+        };
+
+        return priority[a.event_type] - priority[b.event_type];
+      }
+      return a.match_time - b.match_time;
+    });
+
+  return events.map((event: TODO) => {
+    switch (event.event_type) {
+      case "round_start":
+        return (
+          <p className="p-2 font-bold" key={event}>
+            {toTimestamp(event.match_time)} - Round {event.round_number} started
+          </p>
+        );
+      case "round_end":
+        return (
+          <div className="p-2 font-bold" key={event}>
+            <p>
+              {toTimestamp(event.match_time)} - Round {event.round_number} ended
+            </p>
+            <div className="py-3" />
+          </div>
+        );
+      case "match_end":
+        return (
+          <p className="p-2 font-bold" key={event}>
+            {toTimestamp(event.match_time)} - Match ended
+          </p>
+        );
+      case "match_start":
+        return (
+          <p className="p-2 font-bold" key={event}>
+            {toTimestamp(event.match_time)} - Match started
+            <div className="py-3" />
+          </p>
+        );
+      case "ultimate_start":
+        return (
+          <div className="flex items-center p-2 gap-2" key={event.id}>
+            {toTimestamp(event.match_time)} -{" "}
+            <span className="inline-flex items-center gap-1">
+              <Image
+                src={`/heroes/${toHero(event.player_hero)}.png`}
+                alt={`${event.player_name}'s hero`}
+                width={256}
+                height={256}
+                className={cn(
+                  "h-8 w-8 border-2 rounded",
+                  event.player_team === matchStart.team_1_name
+                    ? "border-blue-500"
+                    : "border-red-500"
+                )}
+              />
+              <span
+                className={cn(
+                  event.player_team === matchStart.team_1_name
+                    ? "text-blue-500"
+                    : "text-red-500"
+                )}
+              >
+                {event.player_name}
+              </span>
+            </span>{" "}
+            used their ultimate during fight{" "}
+            {fights.findIndex((fight) => {
+              return fight.end >= event.match_time;
+            }) + 1}
+            .
+          </div>
+        );
+    }
+  });
 }
