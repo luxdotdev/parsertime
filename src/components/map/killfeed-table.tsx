@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { cn, toHero } from "@/lib/utils";
+import { cn, toHero, toTimestamp } from "@/lib/utils";
 import { Kill } from "@prisma/client";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -115,8 +115,8 @@ export function KillfeedTable({
                 </TableCell>
                 {j === 0 ? (
                   <>
-                    <TableCell>{fight.start}</TableCell>
-                    <TableCell>{fight.end}</TableCell>
+                    <TableCell>{toTimestamp(fight.start)}</TableCell>
+                    <TableCell>{toTimestamp(fight.end)}</TableCell>
                     <TableCell>
                       {fight.kills.filter(
                         (kill) => kill.attacker_team === team1
