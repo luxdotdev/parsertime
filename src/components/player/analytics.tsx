@@ -30,6 +30,13 @@ export async function PlayerAnalytics({
     },
   });
 
+  const ultimateStarts = await prisma.ultimateStart.findMany({
+    where: {
+      MapDataId: id,
+      player_name: playerName,
+    },
+  });
+
   const ultKills = await prisma.kill.findMany({
     where: {
       MapDataId: id,
@@ -70,10 +77,16 @@ export async function PlayerAnalytics({
   // Calculate average time to use ultimate
   const ultimateUseTimes = [];
 
-  for (let i = 0; i < ultimateEnds.length; i++) {
-    const currentUltimateEnd = ultimateEnds[i];
+  // for each ultimate charged, find the next ultimate start and calculate the time between the two
+  for (let i = 0; i < ultimatesCharged.length; i++) {
+    const nextUltimateStart = ultimateStarts[i];
+    if (!nextUltimateStart) {
+      break;
+    }
+    const currentUltimateCharged = ultimatesCharged[i];
     const timeToUseUltimate =
-      currentUltimateEnd.match_time - ultimatesCharged[i].match_time;
+      nextUltimateStart.match_time - currentUltimateCharged.match_time;
+
     ultimateUseTimes.push(timeToUseUltimate);
   }
 
