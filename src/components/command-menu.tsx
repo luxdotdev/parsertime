@@ -4,9 +4,7 @@ import {
   ChevronRightIcon,
   DashboardIcon,
   EnterIcon,
-  EnvelopeClosedIcon,
   ExternalLinkIcon,
-  GearIcon,
   HomeIcon,
   LaptopIcon,
   MoonIcon,
@@ -14,7 +12,6 @@ import {
   ReaderIcon,
   SunIcon,
 } from "@radix-ui/react-icons";
-import * as React from "react";
 
 import { GetTeamsResponse } from "@/app/api/team/get-teams/route";
 import {
@@ -27,15 +24,15 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command";
-import { useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
 import { track } from "@vercel/analytics";
+import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
+import { CommandMenuContext } from "@/components/command-menu-provider";
+import { use, useCallback, useEffect, useState } from "react";
 
 export function CommandDialogMenu() {
-  const [open, setOpen] = React.useState(false);
-  const [teams, setTeams] = React.useState<{ label: string; value: string }[]>(
-    []
-  );
+  const { open, setOpen } = use(CommandMenuContext);
+  const [teams, setTeams] = useState<{ label: string; value: string }[]>([]);
   const router = useRouter();
   const { setTheme } = useTheme();
 
@@ -51,26 +48,17 @@ export function CommandDialogMenu() {
       });
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     getTeams();
   }, []);
 
-  React.useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setOpen((open) => !open);
-      }
-    };
-
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
-  }, []);
-
-  const runCommand = React.useCallback((command: () => unknown) => {
-    setOpen(false);
-    command();
-  }, []);
+  const runCommand = useCallback(
+    (command: () => unknown) => {
+      setOpen(false);
+      command();
+    },
+    [setOpen]
+  );
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
