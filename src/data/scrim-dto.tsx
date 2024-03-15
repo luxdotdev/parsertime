@@ -4,6 +4,7 @@ import { cache } from "react";
 import { PlayerStatRows } from "@/types/prisma";
 import { removeDuplicateRows } from "@/lib/utils";
 import { Scrim } from "@prisma/client";
+import { HeroName, heroRoleMapping } from "@/types/heroes";
 
 async function getScrimFn(id: number) {
   return await prisma.scrim.findFirst({
@@ -52,9 +53,14 @@ export const getUserViewableScrims = cache(getUserViewableScrimsFn);
  *    effectively returning statistics for players at the final match time of the specified scrim.
  */
 async function getFinalRoundStatsFn(id: number) {
-  return (
-    removeDuplicateRows(
-      await prisma.$queryRaw<PlayerStatRows>`
+  const priority = {
+    Damage: 1,
+    Tank: 2,
+    Support: 3,
+  };
+
+  return removeDuplicateRows(
+    await prisma.$queryRaw<PlayerStatRows>`
         WITH maxTime AS (
           SELECT
               MAX("match_time") AS max_time
@@ -70,10 +76,13 @@ async function getFinalRoundStatsFn(id: number) {
             INNER JOIN maxTime m ON ps."match_time" = m.max_time
         WHERE
             ps."MapDataId" = ${id}`
+  )
+    .sort(
+      (a, b) =>
+        priority[heroRoleMapping[a.player_hero as HeroName]] -
+        priority[heroRoleMapping[b.player_hero as HeroName]]
     )
-      // sort by team name
-      .sort((a, b) => a.player_team.localeCompare(b.player_team))
-  );
+    .sort((a, b) => a.player_team.localeCompare(b.player_team));
 }
 
 /**
