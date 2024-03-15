@@ -9,8 +9,10 @@ import {
 import CardIcon from "@/components/ui/card-icon";
 import { getFinalRoundStats } from "@/data/scrim-dto";
 import prisma from "@/lib/prisma";
-import { round } from "@/lib/utils";
+import { range, round } from "@/lib/utils";
 import { $Enums } from "@prisma/client";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { HeroName, heroRoleMapping } from "@/types/heroes";
 
 export async function DefaultOverview({ id }: { id: number }) {
   const finalRound = await prisma.roundEnd.findFirst({
@@ -45,6 +47,12 @@ export async function DefaultOverview({ id }: { id: number }) {
   const mapType = matchDetails ? matchDetails.map_type : $Enums.MapType.Control;
 
   const finalRoundStats = await getFinalRoundStats(id);
+
+  const playerStats = await prisma.playerStat.findMany({
+    where: {
+      MapDataId: id,
+    },
+  });
 
   const team1Damage = finalRoundStats
     .filter((player) => player.player_team === matchDetails?.team_1_name)
@@ -132,6 +140,15 @@ export async function DefaultOverview({ id }: { id: number }) {
         return "N/A";
     }
   }
+
+  const numberOfRounds =
+    mapType === $Enums.MapType.Flashpoint ? 5 : finalRound?.round_number ?? 1;
+
+  const priority = {
+    Damage: 1,
+    Tank: 2,
+    Support: 3,
+  };
 
   return (
     <>
@@ -264,7 +281,51 @@ export async function DefaultOverview({ id }: { id: number }) {
             <CardTitle>Overview</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
-            <OverviewTable playerStats={finalRoundStats} />
+            {numberOfRounds === 1 ? (
+              <OverviewTable playerStats={finalRoundStats} />
+            ) : (
+              <Tabs defaultValue="final" className="space-y-4">
+                <TabsList>
+                  <TabsTrigger value="final">Overview</TabsTrigger>
+                  {range(numberOfRounds).map((round) => (
+                    <TabsTrigger key={round} value={round.toString()}>
+                      Round {round + 1}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+                <TabsContent value="final" className="space-y-4">
+                  <OverviewTable playerStats={finalRoundStats} />
+                </TabsContent>
+                {range(numberOfRounds).map(async (round) => (
+                  <TabsContent
+                    key={round}
+                    value={round.toString()}
+                    className="space-y-4"
+                  >
+                    <OverviewTable
+                      key={round + 1}
+                      playerStats={playerStats
+                        .filter(
+                          (player) =>
+                            player.round_number ===
+                            round +
+                              (mapType === $Enums.MapType.Flashpoint ? 2 : 1)
+                        )
+                        .sort(
+                          (a, b) =>
+                            priority[
+                              heroRoleMapping[a.player_hero as HeroName]
+                            ] -
+                            priority[heroRoleMapping[b.player_hero as HeroName]]
+                        )
+                        .sort((a, b) =>
+                          a.player_team.localeCompare(b.player_team)
+                        )}
+                    />
+                  </TabsContent>
+                ))}
+              </Tabs>
+            )}
           </CardContent>
         </Card>
       </div>
