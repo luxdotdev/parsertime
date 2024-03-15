@@ -59,7 +59,7 @@ const team = [
     name: "Lucas Doell",
     role: "Lead Developer",
     imageUrl: "/marketing/lucas.jpg",
-    bio: "Software engineer, Top 500 Overwatch player, and head coach of FIU Panthers. Started Parsertime to help take his team to the next level. Lucas is passionate about building great products and helping teams succeed.",
+    bio: "Software engineer, Top 500 Overwatch player, former student at Cornell University, and head coach of FIU Panthers. He is passionate about building great software and helping teams succeed.",
   },
   {
     name: 'Robin "Zei" Sidhu',
@@ -72,6 +72,12 @@ const team = [
     role: "Developer",
     imageUrl: "/marketing/gio.jpg",
     bio: "Giovanni is a software engineer specializing in full-stack development. He's passionate about building great software and building good user experiences.",
+  },
+  {
+    name: "Xavier Park",
+    role: "Developer",
+    imageUrl: "/marketing/xavier.jpg",
+    bio: "Xavier is a statistics major at Cornell University. He is excited about the potential of data analytics in esports and is working to build excellent statistics for Overwatch teams.",
   },
 ];
 
