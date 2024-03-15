@@ -55,22 +55,21 @@ async function getFinalRoundStatsFn(id: number) {
   return (
     removeDuplicateRows(
       await prisma.$queryRaw<PlayerStatRows>`
+        WITH maxTime AS (
+          SELECT
+              MAX("match_time") AS max_time
+          FROM
+              "PlayerStat"
+          WHERE
+              "MapDataId" = ${id}
+        )
         SELECT
             ps.*
         FROM
             "PlayerStat" ps
-            INNER JOIN (
-                SELECT
-                    "MapDataId",
-                    MAX("match_time") AS max_time
-                FROM
-                    "PlayerStat"
-                WHERE
-                    "MapDataId" = ${id}
-                GROUP BY
-                    "MapDataId"
-            ) AS max_time ON ps."MapDataId" = max_time."MapDataId"
-            AND ps."match_time" = max_time.max_time`
+            INNER JOIN maxTime m ON ps."match_time" = m.max_time
+        WHERE
+            ps."MapDataId" = ${id}`
     )
       // sort by team name
       .sort((a, b) => a.player_team.localeCompare(b.player_team))
@@ -90,22 +89,19 @@ export const getFinalRoundStats = cache(getFinalRoundStatsFn);
 async function getFinalRoundStatsForPlayerFn(id: number, playerName: string) {
   return removeDuplicateRows(
     await prisma.$queryRaw<PlayerStatRows>`
+      WITH maxTime AS (
+        SELECT
+            MAX("match_time") AS max_time
+        FROM
+            "PlayerStat"
+        WHERE
+            "MapDataId" = ${id}
+      )
       SELECT
           ps.*
       FROM
           "PlayerStat" ps
-          INNER JOIN (
-              SELECT
-                  "MapDataId",
-                  MAX("match_time") AS max_time
-              FROM
-                  "PlayerStat"
-              WHERE
-                  "MapDataId" = ${id}
-              GROUP BY
-                  "MapDataId"
-          ) AS max_time ON ps."MapDataId" = max_time."MapDataId"
-          AND ps."match_time" = max_time.max_time
+          INNER JOIN maxTime m ON ps."match_time" = m.max_time
       WHERE
           ps."MapDataId" = ${id}
           AND ps."player_name" = ${playerName}`
