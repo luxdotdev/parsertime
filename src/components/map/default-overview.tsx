@@ -311,6 +311,9 @@ export async function DefaultOverview({ id }: { id: number }) {
                             round +
                               (mapType === $Enums.MapType.Flashpoint ? 2 : 1)
                         )
+                        .sort((a, b) =>
+                          a.player_name.localeCompare(b.player_name)
+                        )
                         .sort(
                           (a, b) =>
                             priority[

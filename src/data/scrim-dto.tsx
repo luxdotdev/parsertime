@@ -77,6 +77,7 @@ async function getFinalRoundStatsFn(id: number) {
         WHERE
             ps."MapDataId" = ${id}`
   )
+    .sort((a, b) => a.player_name.localeCompare(b.player_name))
     .sort(
       (a, b) =>
         priority[heroRoleMapping[a.player_hero as HeroName]] -
