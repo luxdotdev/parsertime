@@ -5,10 +5,11 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
-import { CommandDialogMenu } from "@/components/command-menu";
 import { Suspense } from "react";
 import { StaffToolbar } from "@/components/staff-toolbar";
 import { cn } from "@/lib/utils";
+import { CommandMenuProvider } from "@/components/command-menu-provider";
+import { CommandDialogMenu } from "@/components/command-menu";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -47,11 +48,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <CommandMenuProvider>
+            {children}
+            <CommandDialogMenu />
+          </CommandMenuProvider>
           <Toaster />
           <SpeedInsights />
           <Analytics />
-          <CommandDialogMenu />
           <Suspense>
             <StaffToolbar />
           </Suspense>
