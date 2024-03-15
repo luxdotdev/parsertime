@@ -113,6 +113,10 @@ export function removeDuplicateRows<T extends { id: number }>(rows: T[]): T[] {
   });
 }
 
+export function range(max: number) {
+  return Array.from({ length: max }, (_, i) => i);
+}
+
 export async function groupKillsIntoFights(mapId: number) {
   type Fight = {
     kills: Kill[];
