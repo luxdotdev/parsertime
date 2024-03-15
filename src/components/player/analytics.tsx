@@ -45,6 +45,12 @@ export async function PlayerAnalytics({
     },
   });
 
+  const roundEnds = await prisma.roundEnd.findMany({
+    where: {
+      MapDataId: id,
+    },
+  });
+
   // Calculate average time to ultimate
   // Take the first ultimate charged and the next ultimate end
   // Then take the next ultimate charged and the next ultimate end
@@ -74,24 +80,35 @@ export async function PlayerAnalytics({
   const averageTimeToUltimate =
     ultimateTimes.reduce((a, b) => a + b, 0) / ultimateTimes.length;
 
-  // Calculate average time to use ultimate
-  const ultimateUseTimes = [];
+  let totalUseTime = 0;
+  let validUltimates = 0;
 
-  // for each ultimate charged, find the next ultimate start and calculate the time between the two
-  for (let i = 0; i < ultimatesCharged.length; i++) {
-    const nextUltimateStart = ultimateStarts[i];
-    if (!nextUltimateStart) {
-      break;
+  ultimatesCharged.forEach((charged) => {
+    // Find the next ultimate start for the same player after this charged event
+    const nextStart = ultimateStarts.find(
+      (start) =>
+        start.player_name === charged.player_name &&
+        start.match_time > charged.match_time &&
+        start.ultimate_id === charged.ultimate_id
+    );
+
+    // Find the next round end event after this charged event
+    const nextRoundEnd = roundEnds.find(
+      (end) => end.match_time > charged.match_time
+    );
+
+    // Ensure the ultimate was started before the round ended or if there's no round end (last ultimate of the dataset)
+    if (
+      nextStart &&
+      (!nextRoundEnd || nextStart.match_time < nextRoundEnd.match_time)
+    ) {
+      totalUseTime += nextStart.match_time - charged.match_time;
+      validUltimates++;
     }
-    const currentUltimateCharged = ultimatesCharged[i];
-    const timeToUseUltimate =
-      nextUltimateStart.match_time - currentUltimateCharged.match_time;
+  });
 
-    ultimateUseTimes.push(timeToUseUltimate);
-  }
-
-  const averageTimeToUseUltimate =
-    ultimateUseTimes.reduce((a, b) => a + b, 0) / ultimateUseTimes.length;
+  const averageTimeToUseUlt =
+    validUltimates > 0 ? totalUseTime / validUltimates : 0;
 
   const killsPerUltimate = ultKills.length / ultimatesCharged.length;
 
@@ -134,7 +151,7 @@ export async function PlayerAnalytics({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {toTimestamp(averageTimeToUseUltimate)}
+              {toTimestamp(averageTimeToUseUlt)}
             </div>
           </CardContent>
           <CardFooter>
