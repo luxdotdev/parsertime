@@ -9,7 +9,7 @@ import {
 import CardIcon from "@/components/ui/card-icon";
 import { getFinalRoundStats } from "@/data/scrim-dto";
 import prisma from "@/lib/prisma";
-import { range, round } from "@/lib/utils";
+import { range, removeDuplicateRows, round } from "@/lib/utils";
 import { $Enums } from "@prisma/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HeroName, heroRoleMapping } from "@/types/heroes";
@@ -304,7 +304,7 @@ export async function DefaultOverview({ id }: { id: number }) {
                   >
                     <OverviewTable
                       key={round + 1}
-                      playerStats={playerStats
+                      playerStats={removeDuplicateRows(playerStats)
                         .filter(
                           (player) =>
                             player.round_number ===
