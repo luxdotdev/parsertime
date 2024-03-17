@@ -153,3 +153,60 @@ export async function groupKillsIntoFights(mapId: number) {
 
   return fights;
 }
+
+export async function groupPlayerKillsIntoFights(
+  mapId: number,
+  playerName: string
+) {
+  type Fight = {
+    kills: Kill[];
+    start: number;
+    end: number;
+  };
+
+  const killsByMapId = await prisma.kill.findMany({
+    where: {
+      MapDataId: mapId,
+    },
+  });
+
+  if (killsByMapId.length === 0) return [];
+
+  const fights: Fight[] = [];
+  let currentFight: Fight | null = null;
+
+  killsByMapId.forEach((kill) => {
+    // Check if the kill involves the player. Adjust this condition based on how playerName is represented in your Kill type
+    const involvesPlayer =
+      kill.attacker_name === playerName || kill.victim_name === playerName;
+
+    if (!currentFight || kill.match_time - currentFight.end > 15) {
+      // Start a new fight
+      if (involvesPlayer) {
+        // If this kill involves the player, start the fight with it
+        currentFight = {
+          kills: [kill],
+          start: kill.match_time,
+          end: kill.match_time,
+        };
+      } else {
+        // Otherwise, start a fight with no kills (yet)
+        currentFight = {
+          kills: [],
+          start: kill.match_time,
+          end: kill.match_time,
+        };
+      }
+      fights.push(currentFight);
+    } else if (involvesPlayer) {
+      // Add the kill to the current fight and update the end time if it involves the player
+      currentFight.kills.push(kill);
+      currentFight.end = kill.match_time;
+    } else {
+      // If the kill does not involve the player, we simply update the fight's end time without adding the kill
+      currentFight.end = kill.match_time;
+    }
+  });
+
+  return fights;
+}
