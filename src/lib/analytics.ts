@@ -374,3 +374,26 @@ export async function calculateXFactor(mapId: number, playerName: string) {
 
   return round(xFactor);
 }
+
+export async function calculateDroughtTime(id: number, playerName: string) {
+  const fights = await groupKillsIntoFights(id);
+
+  const playerKills = fights
+    .map((fight) =>
+      fight.kills.filter((kill) => kill.attacker_name === playerName)
+    )
+    .flat();
+
+  const droughts = playerKills.map((kill, index) => {
+    if (index === 0) {
+      return 0;
+    }
+
+    const previousKill = playerKills[index - 1];
+    return kill.match_time - previousKill.match_time;
+  });
+
+  const averageDrought = droughts.reduce((a, b) => a + b, 0) / droughts.length;
+
+  return round(averageDrought);
+}
