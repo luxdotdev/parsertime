@@ -243,7 +243,6 @@ export function ScrimCreationForm({
                     disabled={(date) =>
                       date > new Date() || date < new Date("2016-01-01")
                     }
-                    initialFocus
                   />
                 </PopoverContent>
               </Popover>
