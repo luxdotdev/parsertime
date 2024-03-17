@@ -343,7 +343,10 @@ export async function calculateXFactor(mapId: number, playerName: string) {
     GROUP BY
         "player_name"`;
 
-  const deathsPer10 = 0 - dPer10[0].deaths_per_10;
+  const deathsPer10 =
+    dPer10[0].deaths_per_10 > 5
+      ? 0 - dPer10[0].deaths_per_10 // If the player has more than 5 deaths per 10 minutes, they should be penalized
+      : 1 + dPer10[0].deaths_per_10; // If the player has less than 5 deaths per 10 minutes, they should be rewarded
 
   let xFactor = 0;
   switch (heroRole) {
