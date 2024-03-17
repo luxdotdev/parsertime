@@ -16,12 +16,14 @@ import {
 import {
   cn,
   groupPlayerKillsIntoFights,
+  removeDuplicateRows,
   toHero,
   toTimestamp,
 } from "@/lib/utils";
 import Image from "next/image";
 import prisma from "@/lib/prisma";
 import { KillfeedTable } from "@/components/map/killfeed-table";
+import { DmgTakenVsHealingReceivedChart } from "@/components/charts/player/dmg-taken-vs-healing-chart";
 
 export async function PlayerAnalytics({
   id,
@@ -45,6 +47,57 @@ export async function PlayerAnalytics({
   const fights = await groupPlayerKillsIntoFights(id, playerName);
 
   const xFactor = await calculateXFactor(id, playerName);
+
+  const allDamageTakensByRound = removeDuplicateRows(
+    await prisma.playerStat.findMany({
+      where: {
+        MapDataId: id,
+        player_name: playerName,
+      },
+      select: {
+        id: true,
+        round_number: true,
+        damage_taken: true,
+      },
+    })
+  );
+
+  const allHealingReceivedsByRound = removeDuplicateRows(
+    await prisma.playerStat.findMany({
+      where: {
+        MapDataId: id,
+        player_name: playerName,
+      },
+      select: {
+        id: true,
+        round_number: true,
+        healing_received: true,
+      },
+    })
+  );
+
+  // filter out different heroes and sum the damage taken and healing received by round
+  const damageTakenByRound = allDamageTakensByRound.reduce(
+    (acc, { round_number, damage_taken }) => {
+      if (!acc[round_number]) {
+        acc[round_number] = 0;
+      }
+      acc[round_number] += damage_taken;
+      return acc;
+    },
+    {} as Record<number, number>
+  );
+
+  const healingReceivedByRound = allHealingReceivedsByRound.reduce(
+    (acc, { round_number, healing_received }) => {
+      if (!acc[round_number]) {
+        acc[round_number] = 0;
+      }
+      acc[round_number] += healing_received;
+      return acc;
+    },
+    {} as Record<number, number>
+  );
 
   return (
     <main className="min-h-[65vh]">
@@ -259,6 +312,26 @@ export async function PlayerAnalytics({
               team2={match?.team_2_name ?? "Team 2"}
             />
           </CardContent>
+        </Card>
+        <Card className="col-span-full xl:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-sm font-medium">
+              Damage Taken vs Healing Received
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <DmgTakenVsHealingReceivedChart
+              damageTakenByRound={damageTakenByRound}
+              healingReceivedByRound={healingReceivedByRound}
+            />
+          </CardContent>
+          <CardFooter>
+            <p className="text-xs text-muted-foreground">
+              This chart shows the cumulative damage taken and healing received
+              by round. The x-axis represents the round number, and the y-axis
+              represents the cumulative damage taken or healing received.
+            </p>
+          </CardFooter>
         </Card>
       </div>
     </main>
