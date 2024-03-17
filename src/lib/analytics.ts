@@ -191,7 +191,9 @@ export async function getDuelWinrates(id: number, playerName: string) {
   });
 
   // Convert the aggregated object back into an array for easy mapping
-  return Object.values(duelsAggregation);
+  return Object.values(duelsAggregation).sort((a, b) =>
+    a.enemy_name.localeCompare(b.enemy_name)
+  );
 }
 
 async function calculateAverageDuelWinrate(id: number, playerName: string) {
