@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/card";
 import CardIcon from "@/components/ui/card-icon";
 import {
+  calculateDroughtTime,
   calculateXFactor,
   getAverageTimeToUseUlt,
   getAverageUltChargeTime,
@@ -35,6 +36,7 @@ export async function PlayerAnalytics({
   const averageTimeToUltimate = await getAverageUltChargeTime(id, playerName);
   const averageTimeToUseUlt = await getAverageTimeToUseUlt(id, playerName);
   const killsPerUltimate = await getKillsPerUltimate(id, playerName);
+  const droughtTime = await calculateDroughtTime(id, playerName);
 
   const duels = await getDuelWinrates(id, playerName);
 
@@ -120,7 +122,9 @@ export async function PlayerAnalytics({
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              The average time it takes to build an ultimate.
+              The average time it takes to build an ultimate. A lower time is
+              better, while a longer time might indicate that you are not doing
+              enough damage or healing.
             </p>
           </CardFooter>
         </Card>
@@ -144,34 +148,32 @@ export async function PlayerAnalytics({
           <CardFooter>
             <p className="text-xs text-muted-foreground">
               The average time it takes to use an ultimate after it&apos;s
-              charged.
+              charged. A longer time might indicate that you are not using your
+              ultimate effectively or are holding onto it for too long.
             </p>
           </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Average Number of Final Blows Per Ultimate
+              Average Drought Time
             </CardTitle>
             <CardIcon>
-              <circle cx="12" cy="12" r="10" />
-              <line x1="22" x2="18" y1="12" y2="12" />
-              <line x1="6" x2="2" y1="12" y2="12" />
-              <line x1="12" x2="12" y1="6" y2="2" />
-              <line x1="12" x2="12" y1="22" y2="18" />
+              <path d="M10 2h4" />
+              <path d="M4.6 11a8 8 0 0 0 1.7 8.7 8 8 0 0 0 8.7 1.7" />
+              <path d="M7.4 7.4a8 8 0 0 1 10.3 1 8 8 0 0 1 .9 10.2" />
+              <path d="m2 2 20 20" />
+              <path d="M12 12v-2" />
             </CardIcon>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {killsPerUltimate.toFixed(2)}
-            </div>
+            <div className="text-2xl font-bold">{toTimestamp(droughtTime)}</div>
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              The average number of{" "}
-              <span className="font-bold">final blows</span> a player gets with
-              their ultimate. Note that for some heroes, the ultimate ability
-              itself may not result in a kill.
+              The drought time is the average time between your most recent kill
+              and your next kill. A high drought time can indicate that you are
+              not participating in fights as often as you should be.
             </p>
           </CardFooter>
         </Card>
