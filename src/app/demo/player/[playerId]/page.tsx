@@ -10,6 +10,7 @@ import { toTitleCase } from "@/lib/utils";
 import { Metadata } from "next";
 import { SearchParams } from "@/types/next";
 import { PlayerCharts } from "@/components/charts/player/player-charts";
+import { PlayerAnalytics } from "@/components/player/analytics";
 
 type Props = {
   params: { team: string; scrimId: string; mapId: string; playerId: string };
@@ -96,11 +97,15 @@ export default async function PlayerDashboardDemoPage({ params }: Props) {
           <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="charts">Charts</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
             <DefaultOverview id={id} playerName={playerName} />
           </TabsContent>
           <TabsContent value="analytics" className="space-y-4">
+            <PlayerAnalytics id={id} playerName={playerName} />
+          </TabsContent>
+          <TabsContent value="charts" className="space-y-4">
             <PlayerCharts id={id} playerName={playerName} />
           </TabsContent>
         </Tabs>
