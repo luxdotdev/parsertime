@@ -11,6 +11,8 @@ import {
   PersonIcon,
   ReaderIcon,
   SunIcon,
+  DiscordLogoIcon,
+  EnvelopeOpenIcon,
 } from "@radix-ui/react-icons";
 
 import { GetTeamsResponse } from "@/app/api/team/get-teams/route";
@@ -132,6 +134,34 @@ export function CommandDialogMenu() {
           >
             <PersonIcon className="mr-2 h-4 w-4" />
             <span>Profile</span>
+          </CommandItem>
+          <CommandItem
+            onSelect={() => runCommand(() => router.push("/settings/accounts"))}
+          >
+            <PersonIcon className="mr-2 h-4 w-4" />
+            <span>Linked Accounts</span>
+          </CommandItem>
+        </CommandGroup>
+        <CommandSeparator />
+        <CommandGroup heading="Feedback">
+          <CommandItem
+            onSelect={() => runCommand(() => router.push("/contact"))}
+          >
+            <EnvelopeOpenIcon className="mr-2 h-4 w-4" />
+            <span>Contact Us</span>
+          </CommandItem>
+          <CommandItem
+            onSelect={() =>
+              runCommand(() =>
+                window.open("https://discord.gg/svz3qhVDXM", "_blank")
+              )
+            }
+          >
+            <DiscordLogoIcon className="mr-2 h-4 w-4" />
+            <span>Community Discord</span>
+            <CommandShortcut>
+              <ExternalLinkIcon />
+            </CommandShortcut>
           </CommandItem>
         </CommandGroup>
         <CommandSeparator />
