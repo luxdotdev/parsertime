@@ -331,7 +331,7 @@ export async function calculateXFactor(mapId: number, playerName: string) {
 
   type DeathsPer10 = { player_name: string; deaths_per_10: number };
 
-  const deathsPer10 = await prisma.$queryRaw<DeathsPer10[]>`
+  const dPer10 = await prisma.$queryRaw<DeathsPer10[]>`
     SELECT
         "player_name",
         (SUM(deaths) / SUM(hero_time_played / 600)) AS deaths_per_10
@@ -343,12 +343,14 @@ export async function calculateXFactor(mapId: number, playerName: string) {
     GROUP BY
         "player_name"`;
 
+  const deathsPer10 = 0 - dPer10[0].deaths_per_10;
+
   let xFactor = 0;
   switch (heroRole) {
     case "Damage":
       xFactor =
         playerFletaDeadliftPercentage * 0.5 +
-        deathsPer10[0].deaths_per_10 * 0.2 +
+        deathsPer10 * 0.2 +
         firstPickPercentage * 0.1 +
         duelWinratePercentage * 0.1 +
         fightReversalPercentage * 0.1;
@@ -357,7 +359,7 @@ export async function calculateXFactor(mapId: number, playerName: string) {
     case "Tank":
       xFactor =
         playerFletaDeadliftPercentage * 0.5 +
-        deathsPer10[0].deaths_per_10 * 0.2 +
+        deathsPer10 * 0.2 +
         firstDeathPercentage * 0.15 +
         duelWinratePercentage * 0.05 +
         fightReversalPercentage * 0.1;
@@ -366,7 +368,7 @@ export async function calculateXFactor(mapId: number, playerName: string) {
     case "Support":
       xFactor =
         playerFletaDeadliftPercentage * 0.5 +
-        deathsPer10[0].deaths_per_10 * 0.2 +
+        deathsPer10 * 0.2 +
         duelWinratePercentage * 0.15 +
         fightReversalPercentage * 0.15;
       break;
