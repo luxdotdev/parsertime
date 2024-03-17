@@ -37,8 +37,8 @@ export default async function LinkedAccountSettingsPage() {
         </p>
       </div>
       <Separator />
-      {!discordAccount ? (
-        <DiscordSettingsForm user={user} />
+      {discordAccount ? (
+        <p>Your Discord account is successfully linked.</p>
       ) : (
         <DiscordLoginButton />
       )}
