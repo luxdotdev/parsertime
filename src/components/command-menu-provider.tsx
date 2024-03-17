@@ -27,8 +27,10 @@ export function CommandMenuProvider({
     return () => document.removeEventListener("keydown", down);
   }, [open, setOpen]);
 
+  const value = React.useMemo(() => ({ open, setOpen }), [open, setOpen]);
+
   return (
-    <CommandMenuContext.Provider value={{ open, setOpen }}>
+    <CommandMenuContext.Provider value={value}>
       {children}
     </CommandMenuContext.Provider>
   );
