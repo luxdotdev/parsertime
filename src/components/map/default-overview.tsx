@@ -306,8 +306,8 @@ export async function DefaultOverview({ id }: { id: number }) {
                       key={round + 1}
                       playerStats={removeDuplicateRows(playerStats)
                         .filter(
-                          (player) =>
-                            player.round_number ===
+                          (stat) =>
+                            stat.round_number ===
                             round +
                               (mapType === $Enums.MapType.Flashpoint ? 2 : 1)
                         )
