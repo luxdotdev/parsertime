@@ -25,6 +25,7 @@ import Image from "next/image";
 import prisma from "@/lib/prisma";
 import { KillfeedTable } from "@/components/map/killfeed-table";
 import { DmgTakenVsHealingReceivedChart } from "@/components/charts/player/dmg-taken-vs-healing-chart";
+import { DmgDoneVsDmgTakenChart } from "@/components/charts/player/dmg-done-vs-dmg-taken-chart";
 
 export async function PlayerAnalytics({
   id,
@@ -78,6 +79,20 @@ export async function PlayerAnalytics({
     })
   );
 
+  const allHeroDamageDoneByRound = removeDuplicateRows(
+    await prisma.playerStat.findMany({
+      where: {
+        MapDataId: id,
+        player_name: playerName,
+      },
+      select: {
+        id: true,
+        round_number: true,
+        hero_damage_dealt: true,
+      },
+    })
+  );
+
   // filter out different heroes and sum the damage taken and healing received by round
   const damageTakenByRound = allDamageTakensByRound.reduce(
     (acc, { round_number, damage_taken }) => {
@@ -96,6 +111,17 @@ export async function PlayerAnalytics({
         acc[round_number] = 0;
       }
       acc[round_number] += healing_received;
+      return acc;
+    },
+    {} as Record<number, number>
+  );
+
+  const damageDoneByRound = allHeroDamageDoneByRound.reduce(
+    (acc, { round_number, hero_damage_dealt }) => {
+      if (!acc[round_number]) {
+        acc[round_number] = 0;
+      }
+      acc[round_number] += hero_damage_dealt;
       return acc;
     },
     {} as Record<number, number>
@@ -332,6 +358,26 @@ export async function PlayerAnalytics({
               This chart shows the cumulative damage taken and healing received
               by round. The x-axis represents the round number, and the y-axis
               represents the cumulative damage taken or healing received.
+            </p>
+          </CardFooter>
+        </Card>
+        <Card className="col-span-full xl:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-sm font-medium">
+              Hero Damage Dealt vs Damage Taken
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <DmgDoneVsDmgTakenChart
+              damageDoneByRound={damageDoneByRound}
+              damageTakenByRound={damageTakenByRound}
+            />
+          </CardContent>
+          <CardFooter>
+            <p className="text-xs text-muted-foreground">
+              This chart shows the hero damage dealt and damage taken by round.
+              The x-axis represents the round number, and the y-axis represents
+              the damage dealt or damage taken.
             </p>
           </CardFooter>
         </Card>
