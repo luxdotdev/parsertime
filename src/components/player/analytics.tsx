@@ -12,9 +12,15 @@ import {
   getDuelWinrates,
   getKillsPerUltimate,
 } from "@/lib/analytics";
-import { cn, toHero, toTimestamp } from "@/lib/utils";
+import {
+  cn,
+  groupPlayerKillsIntoFights,
+  toHero,
+  toTimestamp,
+} from "@/lib/utils";
 import Image from "next/image";
 import prisma from "@/lib/prisma";
+import { KillfeedTable } from "@/components/map/killfeed-table";
 
 export async function PlayerAnalytics({
   id,
@@ -34,6 +40,8 @@ export async function PlayerAnalytics({
       MapDataId: id,
     },
   });
+
+  const fights = await groupPlayerKillsIntoFights(id, playerName);
 
   return (
     <main className="min-h-[65vh]">
@@ -112,11 +120,15 @@ export async function PlayerAnalytics({
           </CardFooter>
         </Card>
         <Card></Card>
-        <Card className="col-span-2 2xl:col-span-1">
+        <Card className="col-span-full 2xl:col-span-1 max-h-[80vh] overflow-y-auto">
           <CardHeader>
             <CardTitle className="text-sm font-medium">
               Versus Other Players
             </CardTitle>
+            <p className="text-xs text-muted-foreground">
+              {playerName}&apos;s score and winrates against players on the
+              enemy team.
+            </p>
           </CardHeader>
           <CardContent>
             {duels.map((duel) => (
@@ -183,9 +195,13 @@ export async function PlayerAnalytics({
                 <span
                   className={cn(
                     duel.enemy_deaths > duel.enemy_kills
-                      ? "text-blue-500"
+                      ? duel.player_team === match?.team_1_name
+                        ? "text-blue-500"
+                        : "text-red-500"
                       : duel.enemy_deaths < duel.enemy_kills
-                      ? "text-red-500"
+                      ? duel.player_team === match?.team_1_name
+                        ? "text-red-500"
+                        : "text-blue-500"
                       : "text-purple-500"
                   )}
                 >
@@ -199,12 +215,26 @@ export async function PlayerAnalytics({
               </div>
             ))}
           </CardContent>
-          <CardFooter>
+          <CardFooter></CardFooter>
+        </Card>
+        <Card className="col-span-full 2xl:col-span-3 max-h-[80vh] overflow-y-auto">
+          <CardHeader>
+            <CardTitle className="text-sm font-medium">
+              Player Killfeed
+            </CardTitle>
             <p className="text-xs text-muted-foreground">
-              {playerName}&apos;s score and winrates against players on the
-              enemy team.
+              A list of all the final blows and deaths for {playerName} in this
+              match. Fights where {playerName} did not get a final blow are not
+              shown.
             </p>
-          </CardFooter>
+          </CardHeader>
+          <CardContent>
+            <KillfeedTable
+              fights={fights}
+              team1={match?.team_1_name ?? "Team 1"}
+              team2={match?.team_2_name ?? "Team 2"}
+            />
+          </CardContent>
         </Card>
       </div>
     </main>
