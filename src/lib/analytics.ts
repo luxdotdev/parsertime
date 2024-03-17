@@ -121,3 +121,72 @@ export async function getKillsPerUltimate(id: number, playerName: string) {
 
   return killsPerUltimate;
 }
+
+export async function getDuelWinrates(id: number, playerName: string) {
+  type AggregatedDuel = {
+    player_name: string;
+    player_hero: string;
+    player_team: string;
+    enemy_name: string;
+    enemy_hero: string;
+    enemy_team: string;
+    enemy_kills: number;
+    enemy_deaths: number;
+  };
+
+  const playerKills = await prisma.kill.findMany({
+    where: {
+      MapDataId: id,
+      attacker_name: playerName,
+    },
+  });
+
+  const playerDeaths = await prisma.kill.findMany({
+    where: {
+      MapDataId: id,
+      victim_name: playerName,
+    },
+  });
+
+  // Combine and aggregate kills and deaths
+  const duelsAggregation: { [key: string]: AggregatedDuel } = {};
+
+  playerKills.forEach((kill) => {
+    const key = `${kill.attacker_hero}-${kill.victim_hero}`;
+    if (!duelsAggregation[key]) {
+      duelsAggregation[key] = {
+        player_name: playerName,
+        player_hero: kill.attacker_hero,
+        player_team: kill.attacker_team,
+        enemy_name: kill.victim_name,
+        enemy_hero: kill.victim_hero,
+        enemy_team: kill.victim_team,
+        enemy_kills: 0,
+        enemy_deaths: 1, // Since this is from playerKills
+      };
+    } else {
+      duelsAggregation[key].enemy_deaths++;
+    }
+  });
+
+  playerDeaths.forEach((death) => {
+    const key = `${death.victim_hero}-${death.attacker_hero}`;
+    if (!duelsAggregation[key]) {
+      duelsAggregation[key] = {
+        player_name: playerName,
+        player_hero: death.victim_hero,
+        player_team: death.victim_team,
+        enemy_name: death.attacker_name,
+        enemy_hero: death.attacker_hero,
+        enemy_team: death.attacker_team,
+        enemy_kills: 1, // Since this is from playerDeaths
+        enemy_deaths: 0,
+      };
+    } else {
+      duelsAggregation[key].enemy_kills++;
+    }
+  });
+
+  // Convert the aggregated object back into an array for easy mapping
+  return Object.values(duelsAggregation);
+}
