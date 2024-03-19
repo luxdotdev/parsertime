@@ -134,7 +134,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
         {maps.length > 0 ? (
           <div className="flex flex-wrap -m-2">
             {maps.map((map) => (
-              <div key={map.id} className="p-2 w-1/3">
+              <div key={map.id} className="p-2 w-full md:w-1/3">
                 <Card className="max-w-md h-48 bg-cover relative">
                   <Link
                     href={`/${params.team}/scrim/${params.scrimId}/map/${map.id}`}
