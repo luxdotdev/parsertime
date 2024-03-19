@@ -103,8 +103,8 @@ export async function MapCharts({ id }: { id: number }) {
   });
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
-      <Card className="col-span-full">
+    <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
+      <Card className="col-span-full hidden md:grid">
         <CardHeader>
           <CardTitle>Kills By Fight Chart</CardTitle>
         </CardHeader>
