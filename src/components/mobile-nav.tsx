@@ -118,6 +118,7 @@ function MobileLink({
     <Link
       href={href}
       onClick={() => {
+        if (href.toString().startsWith("http")) return;
         router.push(href.toString());
         onOpenChange?.(false);
       }}
