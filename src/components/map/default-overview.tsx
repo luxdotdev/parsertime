@@ -275,7 +275,7 @@ export async function DefaultOverview({ id }: { id: number }) {
           </CardFooter>
         </Card>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+      <div className="hidden md:grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="col-span-full">
           <CardHeader>
             <CardTitle>Overview</CardTitle>
