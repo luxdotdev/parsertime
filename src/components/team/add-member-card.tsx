@@ -10,7 +10,7 @@ export function AddMemberCard() {
   const [showInviteMemberModal, setShowInviteMemberModal] = useState(false);
 
   return (
-    <div className="p-2 w-1/3">
+    <div className="p-2 w-full md:w-1/2 xl:w-1/3">
       <Card className="max-w-md h-36 flex flex-col justify-center items-center border-dashed">
         <CardHeader className="text-xl text-center">
           <span className="inline-flex items-center justify-center space-x-2">
