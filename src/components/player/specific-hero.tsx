@@ -29,7 +29,7 @@ export default function SpecificHero({
         {hero}
       </h1>
       <div className="flex flex-1">
-        <div className={cn("p-2", showTable && "w-1/2")}>
+        <div className={cn("p-2", showTable && "w-full lg:w-1/2")}>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <Image
@@ -337,7 +337,7 @@ export default function SpecificHero({
           </div>
         </div>
         {showTable && (
-          <div className="w-1/2 p-2">
+          <div className="w-1/2 p-2 hidden md:grid">
             <StatsTable data={playerStat} />
           </div>
         )}
