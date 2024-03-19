@@ -149,7 +149,7 @@ export function AddMapCard() {
     );
 
   return (
-    <Form {...form} className="p-2 w-1/3">
+    <Form {...form} className="p-2 w-full md:w-1/3">
       <form onDragEnter={handleDrag}>
         <FormField
           control={form.control}
