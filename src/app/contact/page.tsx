@@ -98,7 +98,7 @@ export default function ContactPage() {
   if (!isClient) return null;
 
   return (
-    <div className="relative isolate bg-white dark:bg-black h-[90vh]">
+    <div className="relative isolate bg-white dark:bg-black xl:h-[90vh]">
       <div className="mx-auto grid max-w-7xl grid-cols-1 lg:grid-cols-2">
         <div className="relative px-6 pb-20 pt-24 sm:pt-32 lg:static lg:px-8 lg:py-48">
           <div className="mx-auto max-w-xl lg:mx-0 lg:max-w-lg">
