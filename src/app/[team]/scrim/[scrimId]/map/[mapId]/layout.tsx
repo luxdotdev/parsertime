@@ -1,4 +1,5 @@
 import NoAuthCard from "@/components/auth/no-auth";
+import MobileBanner from "@/components/map/mobile-banner";
 import { SelectedPlayerProvider } from "@/components/map/player-switcher";
 import { isAuthedToViewMap } from "@/lib/auth";
 
@@ -18,5 +19,10 @@ export default async function MapDashboardLayout({
     return <NoAuthCard />;
   }
 
-  return <SelectedPlayerProvider>{children}</SelectedPlayerProvider>;
+  return (
+    <SelectedPlayerProvider>
+      <MobileBanner />
+      {children}
+    </SelectedPlayerProvider>
+  );
 }
