@@ -14,6 +14,7 @@ import { Metadata } from "next";
 import { Pencil2Icon } from "@radix-ui/react-icons";
 import { getUser } from "@/data/user-dto";
 import { getScrim } from "@/data/scrim-dto";
+import { MobileNav } from "@/components/mobile-nav";
 
 type Props = {
   params: { team: string; scrimId: string };
@@ -88,14 +89,21 @@ export default async function ScrimDashboardPage({ params }: Props) {
     user?.role === $Enums.UserRole.ADMIN;
 
   return (
-    <div className="hidden flex-col md:flex min-h-[90vh]">
+    <div className="flex-col md:flex min-h-[90vh]">
       <div className="border-b">
-        <div className="flex h-16 items-center px-4">
+        <div className="hidden md:flex h-16 items-center px-4">
           <div className="ml-auto flex items-center space-x-4">
             <Search />
             <ModeToggle />
             <UserNav />
           </div>
+        </div>
+      </div>
+      <div className="flex md:hidden h-16 items-center px-4">
+        <MobileNav session={session} />
+        <div className="ml-auto flex items-center space-x-4">
+          <ModeToggle />
+          <UserNav />
         </div>
       </div>
       <div className="flex-1 space-y-4 p-8 pt-6">
