@@ -72,13 +72,20 @@ export default async function PlayerDashboardPage({ params }: Props) {
   });
 
   return (
-    <div className="hidden flex-col md:flex">
+    <div className="flex-col md:flex">
       <div className="border-b">
-        <div className="flex h-16 items-center px-4">
+        <div className="hidden md:flex h-16 items-center px-4">
           <PlayerSwitcher mostPlayedHeroes={uniquePlayerRowsByHeroTimePlayed} />
           <MainNav className="mx-6" />
           <div className="ml-auto flex items-center space-x-4">
             <Search />
+            <ModeToggle />
+            <UserNav />
+          </div>
+        </div>
+        <div className="flex md:hidden h-16 items-center px-4">
+          <PlayerSwitcher mostPlayedHeroes={uniquePlayerRowsByHeroTimePlayed} />
+          <div className="ml-auto flex items-center space-x-4">
             <ModeToggle />
             <UserNav />
           </div>
