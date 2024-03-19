@@ -122,6 +122,7 @@ function MobileLink({
         onOpenChange?.(false);
       }}
       className={cn(className)}
+      target={href.toString().startsWith("http") ? "_blank" : undefined}
       {...props}
     >
       {children}
