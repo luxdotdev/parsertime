@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
@@ -10,8 +10,6 @@ import { StaffToolbar } from "@/components/staff-toolbar";
 import { cn } from "@/lib/utils";
 import { CommandMenuProvider } from "@/components/command-menu-provider";
 import { CommandDialogMenu } from "@/components/command-menu";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Parsertime",
@@ -41,7 +39,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full">
-      <body className={cn(inter.className, "h-full")}>
+      <body className={cn(GeistSans.className, "h-full")}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
