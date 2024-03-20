@@ -47,7 +47,7 @@ function CustomTooltip({
           >
             {playerName}
           </strong>
-          : {payload[0].value}
+          : {(payload[0].value as number).toFixed(2)}
         </p>
       </div>
     );

@@ -36,11 +36,11 @@ function CustomTooltip({
         <h3 className="text-base">{label}</h3>
         <p className="text-sm">
           <strong className="text-red-500">Damage Taken</strong>:{" "}
-          {payload[0].value}
+          {(payload[0].value as number).toFixed(2)}
         </p>
         <p className="text-sm">
           <strong className="text-emerald-500">Healing Received</strong>:{" "}
-          {payload[1].value}
+          {(payload[1].value as number).toFixed(2)}
         </p>
       </div>
     );
