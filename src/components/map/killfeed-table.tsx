@@ -56,7 +56,12 @@ export function KillfeedTable({
               <TableBody>
                 {fight.kills.map((kill, j) => (
                   <TableRow key={kill.id}>
-                    <TableCell>{kill.match_time}</TableCell>
+                    <TableCell>
+                      {kill.match_time.toFixed(2)}{" "}
+                      <span className="text-sm text-muted-foreground">
+                        ({toTimestamp(kill.match_time)})
+                      </span>
+                    </TableCell>
                     <TableCell>
                       <span className="flex items-center space-x-2">
                         <div className="pr-2">
