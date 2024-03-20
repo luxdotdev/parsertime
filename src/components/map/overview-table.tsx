@@ -14,7 +14,6 @@ import {
 } from "@tanstack/react-table";
 import * as React from "react";
 
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -31,6 +30,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn, toTimestamp } from "@/lib/utils";
+import { GeistMono } from "geist/font/mono";
 
 export const columns: ColumnDef<PlayerData>[] = [
   {
@@ -78,7 +79,9 @@ export const columns: ColumnDef<PlayerData>[] = [
     accessorKey: "timePlayed",
     header: "Time Played",
     cell: ({ row }) => (
-      <div className="capitalize text-right">{row.getValue("timePlayed")}</div>
+      <div className={cn(GeistMono.className, "capitalize text-right")}>
+        {toTimestamp(row.getValue<number>("timePlayed"))}
+      </div>
     ),
     enableSorting: false,
     enableColumnFilter: false,
@@ -87,7 +90,7 @@ export const columns: ColumnDef<PlayerData>[] = [
     accessorKey: "eliminations",
     header: "Eliminations",
     cell: ({ row }) => (
-      <div className="capitalize text-right">
+      <div className={cn(GeistMono.className, "capitalize text-right")}>
         {row.getValue("eliminations")}
       </div>
     ),
@@ -98,7 +101,9 @@ export const columns: ColumnDef<PlayerData>[] = [
     accessorKey: "kills",
     header: "Final Blows",
     cell: ({ row }) => (
-      <div className="capitalize text-right">{row.getValue("kills")}</div>
+      <div className={cn(GeistMono.className, "capitalize text-right")}>
+        {row.getValue("kills")}
+      </div>
     ),
     enableSorting: false,
     enableColumnFilter: false,
@@ -107,7 +112,9 @@ export const columns: ColumnDef<PlayerData>[] = [
     accessorKey: "assists",
     header: "Assists",
     cell: ({ row }) => (
-      <div className="capitalize text-right">{row.getValue("assists")}</div>
+      <div className={cn(GeistMono.className, "capitalize text-right")}>
+        {row.getValue("assists")}
+      </div>
     ),
     enableSorting: false,
     enableColumnFilter: false,
@@ -116,7 +123,9 @@ export const columns: ColumnDef<PlayerData>[] = [
     accessorKey: "deaths",
     header: "Deaths",
     cell: ({ row }) => (
-      <div className="capitalize text-right">{row.getValue("deaths")}</div>
+      <div className={cn(GeistMono.className, "capitalize text-right")}>
+        {row.getValue("deaths")}
+      </div>
     ),
     enableSorting: false,
     enableColumnFilter: false,
@@ -125,7 +134,9 @@ export const columns: ColumnDef<PlayerData>[] = [
     accessorKey: "kd",
     header: "K/D",
     cell: ({ row }) => (
-      <div className="capitalize text-right">{row.getValue("kd")}</div>
+      <div className={cn(GeistMono.className, "capitalize text-right")}>
+        {row.getValue<number>("kd").toFixed(2)}
+      </div>
     ),
     enableSorting: false,
     enableColumnFilter: false,
@@ -134,7 +145,9 @@ export const columns: ColumnDef<PlayerData>[] = [
     accessorKey: "kad",
     header: "KA/D",
     cell: ({ row }) => (
-      <div className="capitalize text-right">{row.getValue("kad")}</div>
+      <div className={cn(GeistMono.className, "capitalize text-right")}>
+        {row.getValue<number>("kad").toFixed(2)}
+      </div>
     ),
     enableSorting: false,
     enableColumnFilter: false,
@@ -143,8 +156,8 @@ export const columns: ColumnDef<PlayerData>[] = [
     accessorKey: "heroDmgDealt",
     header: "Hero Damage Dealt",
     cell: ({ row }) => (
-      <div className="capitalize text-right">
-        {row.getValue("heroDmgDealt")}
+      <div className={cn(GeistMono.className, "capitalize text-right")}>
+        {row.getValue<number>("heroDmgDealt").toFixed(2)}
       </div>
     ),
     enableSorting: false,
@@ -154,7 +167,9 @@ export const columns: ColumnDef<PlayerData>[] = [
     accessorKey: "dmgReceived",
     header: "Damage Received",
     cell: ({ row }) => (
-      <div className="capitalize text-right">{row.getValue("dmgReceived")}</div>
+      <div className={cn(GeistMono.className, "capitalize text-right")}>
+        {row.getValue<number>("dmgReceived").toFixed(2)}
+      </div>
     ),
     enableSorting: false,
     enableColumnFilter: false,
@@ -163,8 +178,8 @@ export const columns: ColumnDef<PlayerData>[] = [
     accessorKey: "healingReceived",
     header: "Healing Received",
     cell: ({ row }) => (
-      <div className="capitalize text-right">
-        {row.getValue("healingReceived")}
+      <div className={cn(GeistMono.className, "capitalize text-right")}>
+        {row.getValue<number>("healingReceived").toFixed(2)}
       </div>
     ),
     enableSorting: false,
@@ -174,8 +189,8 @@ export const columns: ColumnDef<PlayerData>[] = [
     accessorKey: "healingDealt",
     header: "Healing Dealt",
     cell: ({ row }) => (
-      <div className="capitalize text-right">
-        {row.getValue("healingDealt")}
+      <div className={cn(GeistMono.className, "capitalize text-right")}>
+        {row.getValue<number>("healingDealt").toFixed(2)}
       </div>
     ),
     enableSorting: false,
@@ -185,8 +200,8 @@ export const columns: ColumnDef<PlayerData>[] = [
     accessorKey: "dmgToHealsRatio",
     header: "Damage Dealt:Healing Received",
     cell: ({ row }) => (
-      <div className="capitalize text-right">
-        {row.getValue("dmgToHealsRatio")}
+      <div className={cn(GeistMono.className, "capitalize text-right")}>
+        {row.getValue<number>("dmgToHealsRatio").toFixed(2)}
       </div>
     ),
     enableSorting: false,
@@ -196,7 +211,9 @@ export const columns: ColumnDef<PlayerData>[] = [
     accessorKey: "ultsCharged",
     header: "Ultimates Charged",
     cell: ({ row }) => (
-      <div className="capitalize text-right">{row.getValue("ultsCharged")}</div>
+      <div className={cn(GeistMono.className, "capitalize text-right")}>
+        {row.getValue("ultsCharged")}
+      </div>
     ),
     enableSorting: false,
     enableColumnFilter: false,
@@ -205,7 +222,9 @@ export const columns: ColumnDef<PlayerData>[] = [
     accessorKey: "ultsUsed",
     header: "Ultimates Used",
     cell: ({ row }) => (
-      <div className="capitalize text-right">{row.getValue("ultsUsed")}</div>
+      <div className={cn(GeistMono.className, "capitalize text-right")}>
+        {row.getValue("ultsUsed")}
+      </div>
     ),
     enableSorting: false,
     enableColumnFilter: false,
