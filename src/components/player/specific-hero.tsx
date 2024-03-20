@@ -55,6 +55,14 @@ export default function SpecificHero({
                   {round(playerStat.hero_time_played / 60)} minutes
                 </div>
               </CardContent>
+              <CardFooter>
+                <div className="text-sm text-muted-foreground">
+                  {round(
+                    (playerStat.hero_time_played / playerStat.match_time) * 100
+                  )}
+                  % of match time
+                </div>
+              </CardFooter>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

@@ -60,6 +60,11 @@ export default function AllHeroes({
                   minutes
                 </div>
               </CardContent>
+              <CardFooter>
+                <div className="text-sm text-muted-foreground">
+                  100% of match time
+                </div>
+              </CardFooter>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
