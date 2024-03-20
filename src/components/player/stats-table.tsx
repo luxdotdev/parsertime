@@ -96,14 +96,14 @@ export function StatsTable({ data: playerStat }: { data: PlayerStat }) {
     },
     {
       stat: "All Damage Dealt",
-      value: playerStat.all_damage_dealt,
+      value: playerStat.all_damage_dealt.toFixed(2),
       per10: round(
         (playerStat.all_damage_dealt / toMins(playerStat.hero_time_played)) * 10
       ),
     },
     {
       stat: "Barrier Damage Dealt",
-      value: playerStat.barrier_damage_dealt,
+      value: playerStat.barrier_damage_dealt.toFixed(2),
       per10: round(
         (playerStat.barrier_damage_dealt /
           toMins(playerStat.hero_time_played)) *
@@ -112,7 +112,7 @@ export function StatsTable({ data: playerStat }: { data: PlayerStat }) {
     },
     {
       stat: "Hero Damage Dealt",
-      value: playerStat.hero_damage_dealt,
+      value: playerStat.hero_damage_dealt.toFixed(2),
       per10: round(
         (playerStat.hero_damage_dealt / toMins(playerStat.hero_time_played)) *
           10
@@ -120,35 +120,35 @@ export function StatsTable({ data: playerStat }: { data: PlayerStat }) {
     },
     {
       stat: "Healing Dealt",
-      value: playerStat.healing_dealt,
+      value: playerStat.healing_dealt.toFixed(2),
       per10: round(
         (playerStat.healing_dealt / toMins(playerStat.hero_time_played)) * 10
       ),
     },
     {
       stat: "Healing Received",
-      value: playerStat.healing_received,
+      value: playerStat.healing_received.toFixed(2),
       per10: round(
         (playerStat.healing_received / toMins(playerStat.hero_time_played)) * 10
       ),
     },
     {
       stat: "Self Healing",
-      value: playerStat.self_healing,
+      value: playerStat.self_healing.toFixed(2),
       per10: round(
         (playerStat.self_healing / toMins(playerStat.hero_time_played)) * 10
       ),
     },
     {
       stat: "Damage Taken",
-      value: playerStat.damage_taken,
+      value: playerStat.damage_taken.toFixed(2),
       per10: round(
         (playerStat.damage_taken / toMins(playerStat.hero_time_played)) * 10
       ),
     },
     {
       stat: "Damage Blocked",
-      value: playerStat.damage_blocked,
+      value: playerStat.damage_blocked.toFixed(2),
       per10: round(
         (playerStat.damage_blocked / toMins(playerStat.hero_time_played)) * 10
       ),
@@ -240,7 +240,7 @@ export function StatsTable({ data: playerStat }: { data: PlayerStat }) {
     },
     {
       stat: "Scoped Accuracy",
-      value: playerStat.scoped_accuracy,
+      value: `${round(playerStat.scoped_accuracy * 100)}%`,
       per10: "--:--",
     },
     {
