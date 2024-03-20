@@ -56,7 +56,7 @@ export default function AllHeroes({
                       (acc, stat) => acc + stat.hero_time_played,
                       0
                     ) / 60
-                  )}{" "}
+                  ).toFixed(2)}{" "}
                   minutes
                 </div>
               </CardContent>
@@ -200,7 +200,7 @@ export default function AllHeroes({
                       (acc, stat) => acc + stat.hero_damage_dealt,
                       0
                     )
-                  )}{" "}
+                  ).toFixed(2)}{" "}
                   Hero Damage Dealt
                 </div>
               </CardContent>
@@ -241,7 +241,7 @@ export default function AllHeroes({
                           (acc, stat) => acc + stat.damage_blocked,
                           0
                         )
-                      )}{" "}
+                      ).toFixed(2)}{" "}
                       Damage Blocked
                     </div>
                   </CardContent>
@@ -282,7 +282,7 @@ export default function AllHeroes({
                           (acc, stat) => acc + stat.damage_taken,
                           0
                         )
-                      )}{" "}
+                      ).toFixed(2)}{" "}
                       Damage Taken
                     </div>
                   </CardContent>
@@ -414,7 +414,7 @@ export default function AllHeroes({
                           (acc, stat) => acc + stat.healing_dealt,
                           0
                         )
-                      )}{" "}
+                      ).toFixed(2)}{" "}
                       Healing Dealt
                     </div>
                   </CardContent>
@@ -453,7 +453,7 @@ export default function AllHeroes({
                           (acc, stat) => acc + stat.healing_received,
                           0
                         )
-                      )}{" "}
+                      ).toFixed(2)}{" "}
                       Healing Received
                     </div>
                   </CardContent>

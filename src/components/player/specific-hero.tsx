@@ -52,14 +52,14 @@ export default function SpecificHero({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {round(playerStat.hero_time_played / 60)} minutes
+                  {round(playerStat.hero_time_played / 60).toFixed(2)} minutes
                 </div>
               </CardContent>
               <CardFooter>
                 <div className="text-sm text-muted-foreground">
                   {round(
                     (playerStat.hero_time_played / playerStat.match_time) * 100
-                  )}
+                  ).toFixed(2)}
                   % of match time
                 </div>
               </CardFooter>
@@ -157,7 +157,7 @@ export default function SpecificHero({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {playerStat.hero_damage_dealt} Hero Damage Dealt
+                  {playerStat.hero_damage_dealt.toFixed(2)} Hero Damage Dealt
                 </div>
               </CardContent>
               <CardFooter>
@@ -184,7 +184,7 @@ export default function SpecificHero({
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {playerStat.damage_blocked} Damage Blocked
+                      {playerStat.damage_blocked.toFixed(2)} Damage Blocked
                     </div>
                   </CardContent>
                   <CardFooter>
@@ -211,7 +211,7 @@ export default function SpecificHero({
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {playerStat.damage_taken} Damage Taken
+                      {playerStat.damage_taken.toFixed(2)} Damage Taken
                     </div>
                   </CardContent>
                   <CardFooter>
@@ -301,7 +301,7 @@ export default function SpecificHero({
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {playerStat.healing_dealt} Healing Dealt
+                      {playerStat.healing_dealt.toFixed(2)} Healing Dealt
                     </div>
                   </CardContent>
                   <CardFooter>
@@ -326,7 +326,7 @@ export default function SpecificHero({
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {playerStat.healing_received} Healing Received
+                      {playerStat.healing_received.toFixed(2)} Healing Received
                     </div>
                   </CardContent>
                   <CardFooter>
