@@ -22,8 +22,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { round, toMins } from "@/lib/utils";
+import { cn, round, toMins } from "@/lib/utils";
 import { PlayerStat } from "@prisma/client";
+import { GeistMono } from "geist/font/mono";
 
 type ColumnData = {
   stat: string;
@@ -42,7 +43,9 @@ export const columns: ColumnDef<ColumnData>[] = [
   {
     accessorKey: "value",
     header: "Total",
-    cell: ({ row }) => <div className="">{row.getValue("value")}</div>,
+    cell: ({ row }) => (
+      <div className={GeistMono.className}>{row.getValue("value")}</div>
+    ),
     enableSorting: true,
     sortingFn: "basic",
     filterFn: "includesString",
@@ -51,7 +54,9 @@ export const columns: ColumnDef<ColumnData>[] = [
     accessorKey: "per10",
     header: "Avg/10 min",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("per10")}</div>
+      <div className={cn(GeistMono.className, "capitalize")}>
+        {row.getValue("per10")}
+      </div>
     ),
     enableSorting: false,
     enableColumnFilter: false,
