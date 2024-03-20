@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import prisma from "@/lib/prisma";
-import { groupKillsIntoFights } from "@/lib/utils";
+import { groupKillsIntoFights, toTimestamp } from "@/lib/utils";
 
 export async function Killfeed({ id }: { id: number }) {
   const finalRound = await prisma.roundEnd.findFirst({
@@ -79,9 +79,14 @@ export async function Killfeed({ id }: { id: number }) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {((finalRound?.match_time ?? 0) / 60).toFixed(2)} minutes
+              {toTimestamp(finalRound?.match_time ?? 0)}
             </div>
           </CardContent>
+          <CardFooter>
+            <p className="text-xs text-muted-foreground">
+              {((finalRound?.match_time ?? 0) / 60).toFixed(2)} minutes
+            </p>
+          </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
