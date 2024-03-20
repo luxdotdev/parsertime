@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { cn, toHero, toTimestamp } from "@/lib/utils";
 import { Kill } from "@prisma/client";
+import { GeistMono } from "geist/font/mono";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
@@ -56,7 +57,7 @@ export function KillfeedTable({
               <TableBody>
                 {fight.kills.map((kill, j) => (
                   <TableRow key={kill.id}>
-                    <TableCell>
+                    <TableCell className={GeistMono.className}>
                       {kill.match_time.toFixed(2)}{" "}
                       <span className="text-sm text-muted-foreground">
                         ({toTimestamp(kill.match_time)})
