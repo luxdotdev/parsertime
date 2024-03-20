@@ -8,6 +8,7 @@ import {
 } from "@/lib/utils";
 import { TODO } from "@/types/utils";
 import { Kill } from "@prisma/client";
+import { GeistMono } from "geist/font/mono";
 import Image from "next/image";
 
 type MultikillEvent = {
@@ -216,7 +217,9 @@ export async function getMapEvents(id: number) {
       case "objective_captured":
         return (
           <p className="p-2" key={event}>
-            {toTimestamp(event.match_time)} -{" "}
+            <span className={GeistMono.className}>
+              {toTimestamp(event.match_time)} -{" "}
+            </span>
             <span
               className={cn(
                 event.capturing_team === matchStart.team_1_name
@@ -232,13 +235,19 @@ export async function getMapEvents(id: number) {
       case "objective_updated":
         return (
           <p className="p-2 font-bold" key={event}>
-            {toTimestamp(event.match_time)} - Point captured
+            <span className={GeistMono.className}>
+              {toTimestamp(event.match_time)} -{" "}
+            </span>
+            Point captured
           </p>
         );
       case "payload_progress":
         return (
           <p className="p-2" key={event}>
-            {toTimestamp(event.match_time)} - Payload progress:
+            <span className={GeistMono.className}>
+              {toTimestamp(event.match_time)} -{" "}
+            </span>{" "}
+            Payload progress:
             <span
               className={cn(
                 event.capturing_team === matchStart.team_1_name
@@ -254,8 +263,10 @@ export async function getMapEvents(id: number) {
       case "ultimate_kills":
         return (
           <div className="flex items-center p-2 gap-1" key={event}>
-            {toTimestamp(event.match_time)} -{" "}
-            <span className="inline-flex items-center gap-1">
+            <span className={GeistMono.className}>
+              {toTimestamp(event.match_time)} -{" "}
+            </span>
+            <span className="pl-1 inline-flex items-center gap-1">
               <Image
                 src={`/heroes/${toHero(event.player_hero)}.png`}
                 alt={`${event.player_name}'s hero`}
@@ -285,14 +296,20 @@ export async function getMapEvents(id: number) {
       case "round_start":
         return (
           <p className="p-2 font-bold" key={event}>
-            {toTimestamp(event.match_time)} - Round {event.round_number} started
+            <span className={GeistMono.className}>
+              {toTimestamp(event.match_time)} -{" "}
+            </span>{" "}
+            Round {event.round_number} started
           </p>
         );
       case "round_end":
         return (
           <div className="p-2 font-bold" key={event}>
             <p>
-              {toTimestamp(event.match_time)} - Round {event.round_number} ended
+              <span className={GeistMono.className}>
+                {toTimestamp(event.match_time)} -{" "}
+              </span>{" "}
+              Round {event.round_number} ended
             </p>
             <div className="py-3" />
           </div>
@@ -300,21 +317,29 @@ export async function getMapEvents(id: number) {
       case "match_end":
         return (
           <p className="p-2 font-bold" key={event}>
-            {toTimestamp(event.match_time)} - Match ended
+            <span className={GeistMono.className}>
+              {toTimestamp(event.match_time)} -{" "}
+            </span>{" "}
+            Match ended
           </p>
         );
       case "match_start":
         return (
           <p className="p-2 font-bold" key={event}>
-            {toTimestamp(event.match_time)} - Match started
+            <span className={GeistMono.className}>
+              {toTimestamp(event.match_time)} -{" "}
+            </span>{" "}
+            Match started
             <div className="py-3" />
           </p>
         );
       case "multikill":
         return (
           <div className="flex items-center p-2 gap-2" key={event}>
-            {toTimestamp(event.match_time)} - During fight{" "}
-            {event.fightIndex + 1},{" "}
+            <span className={GeistMono.className}>
+              {toTimestamp(event.match_time)} -{" "}
+            </span>
+            During fight {event.fightIndex + 1},{" "}
             <span className="inline-flex items-center gap-1">
               <Image
                 src={`/heroes/${toHero(event.player_hero)}.png`}
@@ -414,14 +439,20 @@ export async function getUltimatesUsedList(id: number) {
       case "round_start":
         return (
           <p className="p-2 font-bold" key={event}>
-            {toTimestamp(event.match_time)} - Round {event.round_number} started
+            <span className={GeistMono.className}>
+              {toTimestamp(event.match_time)} -{" "}
+            </span>
+            Round {event.round_number} started
           </p>
         );
       case "round_end":
         return (
           <div className="p-2 font-bold" key={event}>
             <p>
-              {toTimestamp(event.match_time)} - Round {event.round_number} ended
+              <span className={GeistMono.className}>
+                {toTimestamp(event.match_time)} -{" "}
+              </span>{" "}
+              Round {event.round_number} ended
             </p>
             <div className="py-3" />
           </div>
@@ -429,20 +460,28 @@ export async function getUltimatesUsedList(id: number) {
       case "match_end":
         return (
           <p className="p-2 font-bold" key={event}>
-            {toTimestamp(event.match_time)} - Match ended
+            <span className={GeistMono.className}>
+              {toTimestamp(event.match_time)} -{" "}
+            </span>{" "}
+            Match ended
           </p>
         );
       case "match_start":
         return (
           <p className="p-2 font-bold" key={event}>
-            {toTimestamp(event.match_time)} - Match started
+            <span className={GeistMono.className}>
+              {toTimestamp(event.match_time)} -{" "}
+            </span>
+            Match started
             <div className="py-3" />
           </p>
         );
       case "ultimate_start":
         return (
           <div className="flex items-center p-2 gap-2" key={event.id}>
-            {toTimestamp(event.match_time)} -{" "}
+            <span className={GeistMono.className}>
+              {toTimestamp(event.match_time)} -{" "}
+            </span>{" "}
             <span className="inline-flex items-center gap-1">
               <Image
                 src={`/heroes/${toHero(event.player_hero)}.png`}
