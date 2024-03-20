@@ -138,8 +138,7 @@ export function aggregatePlayerData(rows: PlayerStatRows): PlayerData[] {
       // ... Other fields
     };
 
-    // Set time played in minutes
-    player.timePlayed = round(maxTime / 60);
+    player.timePlayed = maxTime;
     playerMap.set(playerName, player as PlayerData);
   });
 
