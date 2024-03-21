@@ -1,3 +1,4 @@
+import { EmptyTeamView } from "@/components/team/empty-team-view";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getUser } from "@/data/user-dto";
@@ -97,6 +98,7 @@ export default async function TeamPage() {
                 ))}
               </Card>
             )}
+            {userTeams.length === 0 && <EmptyTeamView />}
           </TabsContent>
           <TabsContent value="admin" className="space-y-4">
             <Card className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
