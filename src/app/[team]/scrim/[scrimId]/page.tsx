@@ -15,6 +15,12 @@ import { Pencil2Icon } from "@radix-ui/react-icons";
 import { getUser } from "@/data/user-dto";
 import { getScrim } from "@/data/scrim-dto";
 import { MobileNav } from "@/components/mobile-nav";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type Props = {
   params: { team: string; scrimId: string };
@@ -119,7 +125,14 @@ export default async function ScrimDashboardPage({ params }: Props) {
                   className="pl-2"
                   href={`/${params.team}/scrim/${params.scrimId}/edit`}
                 >
-                  <Pencil2Icon className="w-6 h-6" />
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Pencil2Icon className="w-6 h-6" />
+                      </TooltipTrigger>
+                      <TooltipContent>Edit scrim</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </Link>
               )}
             </span>

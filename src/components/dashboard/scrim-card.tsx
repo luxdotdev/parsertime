@@ -30,7 +30,7 @@ export function ScrimCard({ scrim }: Props) {
                       <Pencil2Icon className="w-4 h-4" />
                     </Link>
                   </TooltipTrigger>
-                  <TooltipContent>Edit</TooltipContent>
+                  <TooltipContent>Edit scrim</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             )}
