@@ -69,7 +69,7 @@ export function DangerZone({ team }: { team: Team }) {
         description: "The team has been deleted.",
         duration: 5000,
       });
-      router.push("/dashboard");
+      router.push("/team");
     } else {
       toast({
         title: "Error",
