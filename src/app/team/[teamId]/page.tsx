@@ -1,4 +1,5 @@
 import { AddMemberCard } from "@/components/team/add-member-card";
+import { DangerZone } from "@/components/team/danger-zone";
 import { TeamSettingsForm } from "@/components/team/team-settings-form";
 import { UserCardButtons } from "@/components/team/user-card-buttons";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -150,6 +151,8 @@ export default async function Team({ params }: { params: { teamId: string } }) {
         </TabsContent>
         <TabsContent value="settings" className="space-y-4">
           <TeamSettingsForm team={teamData!} />
+          <div className="p-4" />
+          <DangerZone team={teamData!} />
         </TabsContent>
       </Tabs>
     </div>
