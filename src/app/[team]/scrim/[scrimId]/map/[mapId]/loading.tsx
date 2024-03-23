@@ -49,7 +49,7 @@ export default function MapDashboardLoading() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                <Skeleton className="w-24 h-6" />
+                <Skeleton className="w-24 h-8" />
               </div>
             </CardContent>
             <CardFooter>
@@ -70,7 +70,7 @@ export default function MapDashboardLoading() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                <Skeleton className="w-24 h-6" />
+                <Skeleton className="w-24 h-8" />
               </div>
             </CardContent>
             <CardFooter>
@@ -88,7 +88,7 @@ export default function MapDashboardLoading() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                <Skeleton className="w-24 h-6" />
+                <Skeleton className="w-24 h-8" />
               </div>
             </CardContent>
             <CardFooter>
@@ -107,7 +107,7 @@ export default function MapDashboardLoading() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                <Skeleton className="w-24 h-6" />
+                <Skeleton className="w-24 h-8" />
               </div>
             </CardContent>
             <CardFooter>
