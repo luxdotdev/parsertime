@@ -3,12 +3,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ScrimLoading() {
   return (
-    <div className="hidden flex-col md:flex min-h-[90vh]">
+    <div className="flex-col md:flex min-h-[90vh]">
       <div className="border-b">
         <div className="flex h-16 items-center px-4">
           <div className="ml-auto flex items-center space-x-4">
             {/* Placeholder for Search, ModeToggle, UserNav */}
-            <Skeleton className="md:w-[100px] lg:w-[300px] flex h-9 w-full rounded-md border border-input px-3 py-1" />
+            <Skeleton className="hidden md:w-[100px] lg:w-[300px] md:flex h-9 w-full rounded-md border border-input px-3 py-1" />
             <Skeleton className="w-9 h-9" />
             <Skeleton className="w-8 h-8 rounded-full" />
           </div>
@@ -27,7 +27,7 @@ export default function ScrimLoading() {
           {/* Simulate loading for maps */}
           {Array.from({ length: 6 }).map((_, index) => (
             // eslint-disable-next-line react/no-array-index-key -- Elements are not unique
-            <div key={index} className="p-2 w-1/3">
+            <div key={index} className="p-2 w-full md:w-1/3">
               <Card className="max-w-md h-48">
                 <Skeleton className="w-full h-full" />
               </Card>
