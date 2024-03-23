@@ -122,7 +122,7 @@ export async function DefaultOverview({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {round(playerFletaDeadliftPercentage)}%
+              {round(playerFletaDeadliftPercentage).toFixed(2)}%
             </div>
           </CardContent>
           <CardFooter>
@@ -146,7 +146,7 @@ export async function DefaultOverview({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {round(firstPickPercentage)}%
+              {round(firstPickPercentage).toFixed(2)}%
             </div>
           </CardContent>
           <CardFooter>
@@ -167,7 +167,7 @@ export async function DefaultOverview({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {round(firstDeathPercentage)}%
+              {round(firstDeathPercentage).toFixed(2)}%
             </div>
           </CardContent>
           <CardFooter>
