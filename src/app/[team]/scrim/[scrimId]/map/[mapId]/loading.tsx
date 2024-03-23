@@ -1,15 +1,16 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function DashboardLoading() {
+export default function MapDashboardLoading() {
   return (
-    <div className="hidden flex-col md:flex">
+    <div className="flex-col md:flex">
       <div className="border-b">
         <div className="flex h-16 items-center px-4">
           <Skeleton className="w-24 h-6" />
           <div className="ml-auto flex items-center space-x-4">
-            <Skeleton className="w-24 h-6" />
+            <Skeleton className="hidden md:flex w-24 h-6" />
             <Skeleton className="w-6 h-6" />
-            <Skeleton className="w-24 h-6" />S
+            <Skeleton className="md:hidden w-6 h-6" />
+            <Skeleton className="hidden md:flex w-24 h-6" />
           </div>
         </div>
       </div>
