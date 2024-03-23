@@ -285,7 +285,7 @@ export async function DefaultOverview({ id }: { id: number }) {
           <CardHeader>
             <CardTitle>Overview</CardTitle>
           </CardHeader>
-          <CardContent className="pl-2">
+          <CardContent>
             {numberOfRounds === 1 ? (
               <OverviewTable playerStats={finalRoundStats} />
             ) : (
