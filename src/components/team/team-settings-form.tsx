@@ -21,6 +21,13 @@ import { Team } from "@prisma/client";
 import Image from "next/image";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ClipboardCopyIcon } from "@radix-ui/react-icons";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const profileFormSchema = z.object({
   name: z
@@ -104,6 +111,46 @@ export function TeamSettingsForm({ team }: { team: Team }) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormItem>
+          <FormLabel>Team Invite Link</FormLabel>
+          <FormControl>
+            <div className="items-center">
+              <p>Your permanent team invite link (hover to reveal):</p>
+              <code className="p-1 rounded bg-zinc-800 text-zinc-800 hover:text-white transition-colors">
+                https://parsertime.app/team/join/
+                {btoa(team.createdAt.toISOString())}
+              </code>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <ClipboardCopyIcon
+                      className="h-5 w-5 inline-block ml-2 cursor-pointer"
+                      onClick={() => {
+                        navigator.clipboard.writeText(
+                          `https://parsertime.app/team/join/${btoa(
+                            team.createdAt.toISOString()
+                          )}`
+                        );
+                        toast({
+                          title: "Copied to clipboard",
+                          description:
+                            "The team invite link has been copied to your clipboard.",
+                          duration: 5000,
+                        });
+                      }}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>Click to copy</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          </FormControl>
+          <FormDescription>
+            Please note that inviting a user via the &quot;Invite User&quot;
+            button is much more secure. We suggest avoiding sharing this link
+            whenever possible.
+          </FormDescription>
+        </FormItem>
         <FormField
           control={form.control}
           name="name"
