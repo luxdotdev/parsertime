@@ -27,7 +27,7 @@ export default function AuthErrorPage({ searchParams }: Props) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-[90vh] p-6 space-y-6 text-center">
+    <div className="flex h-[90vh] flex-col items-center justify-center space-y-6 p-6 text-center">
       <h1 className="text-3xl font-bold">There was an error signing in</h1>
       <p className="max-w-[600px] text-gray-500 dark:text-gray-400">
         <span className="font-bold">Error:</span>{" "}

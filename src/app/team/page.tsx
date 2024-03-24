@@ -68,7 +68,7 @@ export default async function TeamPage() {
 
           <TabsContent value="teams" className="space-y-4">
             {userTeams.length > 0 && (
-              <Card className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+              <Card className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                 {userTeams.map((team) => (
                   <div key={team.id} className="p-2">
                     <Card className="relative min-h-[144px] md:w-60 xl:w-80">
@@ -85,10 +85,10 @@ export default async function TeamPage() {
                           }
                           width={100}
                           height={100}
-                          className="rounded-full float-right p-4"
+                          className="float-right rounded-full p-4"
                         />
                         <CardHeader>
-                          <h3 className="text-3xl font-semibold tracking-tight z-10">
+                          <h3 className="z-10 text-3xl font-semibold tracking-tight">
                             {team.name}
                           </h3>
                         </CardHeader>
@@ -101,7 +101,7 @@ export default async function TeamPage() {
             {userTeams.length === 0 && <EmptyTeamView />}
           </TabsContent>
           <TabsContent value="admin" className="space-y-4">
-            <Card className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+            <Card className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               {allTeams.map((team) => (
                 <div key={team.id} className="p-2">
                   <Card className="relative min-h-[144px] md:w-60 xl:w-80">
@@ -118,10 +118,10 @@ export default async function TeamPage() {
                         }
                         width={100}
                         height={100}
-                        className="rounded-full float-right p-4"
+                        className="float-right rounded-full p-4"
                       />
                       <CardHeader>
-                        <h3 className="text-3xl font-semibold tracking-tight z-10">
+                        <h3 className="z-10 text-3xl font-semibold tracking-tight">
                           {team.name}
                         </h3>
                       </CardHeader>

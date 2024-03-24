@@ -25,9 +25,9 @@ export default async function EditScrimPage({ params }: Props) {
   }
 
   return (
-    <div className="flex-col md:flex min-h-[90vh]">
+    <div className="min-h-[90vh] flex-col md:flex">
       <div className="border-b">
-        <div className="hidden md:flex h-16 items-center px-4">
+        <div className="hidden h-16 items-center px-4 md:flex">
           <MainNav className="mx-6" />
           <div className="ml-auto flex items-center space-x-4">
             <Search />
@@ -35,7 +35,7 @@ export default async function EditScrimPage({ params }: Props) {
             <UserNav />
           </div>
         </div>
-        <div className="flex md:hidden h-16 items-center px-4">
+        <div className="flex h-16 items-center px-4 md:hidden">
           <MobileNav session={session} />
           <div className="ml-auto flex items-center space-x-4">
             <ModeToggle />
@@ -44,13 +44,13 @@ export default async function EditScrimPage({ params }: Props) {
         </div>
       </div>
       <main className="container py-2">
-        <h4 className="text-gray-600 dark:text-gray-400 pb-2">
+        <h4 className="pb-2 text-gray-600 dark:text-gray-400">
           <Link href={`/${params.team}/scrim/${params.scrimId}`}>
             &larr; Back to scrim
           </Link>
         </h4>
 
-        <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight pb-2">
+        <h3 className="scroll-m-20 pb-2 text-2xl font-semibold tracking-tight">
           Edit Scrim Details
         </h3>
 

@@ -21,9 +21,9 @@ export default async function TeamLayout({
 
   return (
     <>
-      <div className="flex-col md:flex min-h-[90vh]">
+      <div className="min-h-[90vh] flex-col md:flex">
         <div className="border-b">
-          <div className="hidden md:flex h-16 items-center px-4">
+          <div className="hidden h-16 items-center px-4 md:flex">
             <TeamSwitcher session={session} />
             <MainNav className="mx-6" />
             <div className="ml-auto flex items-center space-x-4">
@@ -32,7 +32,7 @@ export default async function TeamLayout({
               <UserNav />
             </div>
           </div>
-          <div className="flex md:hidden h-16 items-center px-4">
+          <div className="flex h-16 items-center px-4 md:hidden">
             <MobileNav session={session} />
             <div className="ml-auto flex items-center space-x-4">
               <ModeToggle />

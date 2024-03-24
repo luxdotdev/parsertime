@@ -9,8 +9,8 @@ import Link from "next/link";
 
 export default function NoAuthCard() {
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <Card className="max-w-md h-48">
+    <div className="flex h-screen flex-col items-center justify-center">
+      <Card className="h-48 max-w-md">
         <CardHeader>Not Authorized</CardHeader>
         <CardContent>
           <p>

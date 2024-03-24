@@ -66,7 +66,7 @@ type Props<T extends keyof Omit<Stat, NonMappableStat>> = {
 };
 
 export function PlayerStatByRoundChart<
-  T extends keyof Omit<Stat, NonMappableStat>
+  T extends keyof Omit<Stat, NonMappableStat>,
 >({ stat, playerStatByRound, playerName, playerTeam }: Props<T>) {
   const data: Data = playerStatByRound.map((round, index) => ({
     name: `Round ${index + 1}`,

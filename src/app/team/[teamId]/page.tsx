@@ -107,10 +107,10 @@ export default async function Team({ params }: { params: { teamId: string } }) {
           </h3>
 
           {teamMembers?.users.length > 0 && (
-            <div className="flex flex-wrap -m-2">
+            <div className="-m-2 flex flex-wrap">
               {teamMembers?.users.map((user) => (
-                <div key={user.id} className="p-2 w-full md:w-1/2 xl:w-1/3">
-                  <Card className="max-w-md relative min-h-[144px]">
+                <div key={user.id} className="w-full p-2 md:w-1/2 xl:w-1/3">
+                  <Card className="relative min-h-[144px] max-w-md">
                     <Image
                       src={
                         user.image ??
@@ -123,7 +123,7 @@ export default async function Team({ params }: { params: { teamId: string } }) {
                       }
                       width={100}
                       height={100}
-                      className="rounded-full float-right p-4"
+                      className="float-right rounded-full p-4"
                     />
                     <CardHeader className="flex">
                       <div>

@@ -95,9 +95,9 @@ export default async function ScrimDashboardPage({ params }: Props) {
     user?.role === $Enums.UserRole.ADMIN;
 
   return (
-    <div className="flex-col md:flex min-h-[90vh]">
+    <div className="min-h-[90vh] flex-col md:flex">
       <div className="border-b">
-        <div className="hidden md:flex h-16 items-center px-4">
+        <div className="hidden h-16 items-center px-4 md:flex">
           <div className="ml-auto flex items-center space-x-4">
             <Search />
             <ModeToggle />
@@ -105,7 +105,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
           </div>
         </div>
       </div>
-      <div className="flex md:hidden h-16 items-center px-4">
+      <div className="flex h-16 items-center px-4 md:hidden">
         <MobileNav session={session} />
         <div className="ml-auto flex items-center space-x-4">
           <ModeToggle />
@@ -128,7 +128,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Pencil2Icon className="w-6 h-6" />
+                        <Pencil2Icon className="h-6 w-6" />
                       </TooltipTrigger>
                       <TooltipContent>Edit scrim</TooltipContent>
                     </Tooltip>
@@ -138,22 +138,22 @@ export default async function ScrimDashboardPage({ params }: Props) {
             </span>
           </h2>
         </div>
-        <h4 className="scroll-m-20 text-xl font-semibold tracking-tight pb-4">
+        <h4 className="scroll-m-20 pb-4 text-xl font-semibold tracking-tight">
           {scrim?.date.toDateString() ?? "No Date"}
         </h4>
-        <p className="scroll-m-20 text-2xl font-semibold tracking-tight pb-2">
+        <p className="scroll-m-20 pb-2 text-2xl font-semibold tracking-tight">
           Maps
         </p>
         {maps.length > 0 ? (
-          <div className="flex flex-wrap -m-2">
+          <div className="-m-2 flex flex-wrap">
             {maps.map((map) => (
-              <div key={map.id} className="p-2 w-full md:w-1/3">
-                <Card className="max-w-md h-48 bg-cover relative">
+              <div key={map.id} className="w-full p-2 md:w-1/3">
+                <Card className="relative h-48 max-w-md bg-cover">
                   <Link
                     href={`/${params.team}/scrim/${params.scrimId}/map/${map.id}`}
                   >
                     <CardHeader className="">
-                      <h3 className="text-3xl font-semibold tracking-tight z-10 text-white">
+                      <h3 className="z-10 text-3xl font-semibold tracking-tight text-white">
                         {map.name}
                       </h3>
                     </CardHeader>
@@ -162,7 +162,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
                         src={`/maps/${toKebabCase(map.name)}.webp`}
                         alt={map.name}
                         fill
-                        className="object-cover rounded-md brightness-[0.65]"
+                        className="rounded-md object-cover brightness-[0.65]"
                       />
                     </CardContent>
                   </Link>

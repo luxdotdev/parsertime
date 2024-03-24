@@ -151,7 +151,7 @@ export function ScrimCreationForm({
             >
               here
             </Link>{" "}
-            <ExternalLinkIcon className="h-4 w-4 inline" /> to see if the error
+            <ExternalLinkIcon className="inline h-4 w-4" /> to see if the error
             can be resolved.
           </p>
         ),

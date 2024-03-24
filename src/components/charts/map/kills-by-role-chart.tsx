@@ -33,7 +33,7 @@ type Data = [
     name: "Support";
     team1Kills: number;
     team2Kills: number;
-  }
+  },
 ];
 
 function CustomTooltip({

@@ -66,9 +66,9 @@ export default function TeamJoinPage() {
   }
 
   return (
-    <main className="flex flex-col items-center justify-center h-screen">
-      <div className="w-full max-w-6xl p-6 rounded-md shadow-md">
-        <h1 className="text-3xl font-bold text-center mb-4">
+    <main className="flex h-screen flex-col items-center justify-center">
+      <div className="w-full max-w-6xl rounded-md p-6 shadow-md">
+        <h1 className="mb-4 text-center text-3xl font-bold">
           Enter Your Invite Token
         </h1>
         <form className="flex flex-col space-y-4" onSubmit={handleSubmit}>

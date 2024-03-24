@@ -9,7 +9,7 @@ export default function NotFound() {
           <Link href="/">
             <span className="sr-only">Parsertime</span>
             <Image
-              className="h-10 w-auto sm:h-12 dark:invert"
+              className="h-10 w-auto dark:invert sm:h-12"
               src="/parsertime.png"
               alt=""
               width={40}
@@ -39,7 +39,7 @@ export default function NotFound() {
           </div>
         </main>
         <footer className="self-end lg:col-span-2 lg:col-start-1 lg:row-start-3">
-          <div className="border-t border-gray-100 dark:border-gray-900 bg-gray-50 dark:bg-zinc-950 py-10">
+          <div className="border-t border-gray-100 bg-gray-50 py-10 dark:border-gray-900 dark:bg-zinc-950">
             <nav className="mx-auto flex w-full max-w-7xl items-center gap-x-4 px-6 text-sm leading-7 text-gray-600 lg:px-8">
               <Link href="/contact">Contact support</Link>
             </nav>

@@ -121,7 +121,7 @@ const footerNavigation = {
 
 export default async function LandingPage() {
   const stats = (await get("landingPageStats")) as [
-    { id: string; name: string; value: string }
+    { id: string; name: string; value: string },
   ];
 
   return (
@@ -130,7 +130,7 @@ export default async function LandingPage() {
         {/* Hero section */}
         <div className="relative isolate overflow-hidden bg-white dark:bg-black">
           <svg
-            className="absolute inset-0 -z-10 h-full w-full stroke-gray-200 dark:stroke-white/10 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
+            className="absolute inset-0 -z-10 h-full w-full stroke-gray-200 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)] dark:stroke-white/10"
             aria-hidden="true"
           >
             <defs>
@@ -185,7 +185,7 @@ export default async function LandingPage() {
             />
           </svg>
           <div
-            className="absolute left-[calc(50%-4rem)] top-10 -z-10 transform-gpu blur-3xl sm:left-[calc(50%-18rem)] lg:left-48 lg:top-[calc(50%-30rem)] xl:left-[calc(50%-24rem)] hidden dark:flex"
+            className="absolute left-[calc(50%-4rem)] top-10 -z-10 hidden transform-gpu blur-3xl dark:flex sm:left-[calc(50%-18rem)] lg:left-48 lg:top-[calc(50%-30rem)] xl:left-[calc(50%-24rem)]"
             aria-hidden="true"
           >
             <div
@@ -207,7 +207,7 @@ export default async function LandingPage() {
               />
               <div className="mt-24 sm:mt-32 lg:mt-16">
                 <Link href="#" className="inline-flex space-x-6">
-                  <span className="rounded-full bg-sky-600/10 dark:bg-sky-500/10 px-3 py-1 text-sm font-semibold leading-6 text-sky-600 dark:text-sky-400 ring-1 ring-inset ring-sky-600/20 dark:ring-sky-500/20">
+                  <span className="rounded-full bg-sky-600/10 px-3 py-1 text-sm font-semibold leading-6 text-sky-600 ring-1 ring-inset ring-sky-600/20 dark:bg-sky-500/10 dark:text-sky-400 dark:ring-sky-500/20">
                     Latest updates
                   </span>
                   <span className="inline-flex items-center space-x-2 text-sm font-medium leading-6 text-gray-600 dark:text-gray-300">
@@ -257,7 +257,7 @@ export default async function LandingPage() {
                   alt="App screenshot"
                   width={2432}
                   height={1442}
-                  className="w-[76rem] rounded-md bg-white/5 shadow-2xl ring-1 ring-white/10 hidden dark:flex"
+                  className="hidden w-[76rem] rounded-md bg-white/5 shadow-2xl ring-1 ring-white/10 dark:flex"
                 />
                 <Image
                   src="/player_page_light.png"
@@ -278,35 +278,35 @@ export default async function LandingPage() {
           </h2>
           <div className="mx-auto mt-10 grid max-w-lg grid-cols-4 items-center gap-x-8 gap-y-10 sm:max-w-xl sm:grid-cols-6 sm:gap-x-10 lg:mx-0 lg:max-w-none lg:grid-cols-5">
             <Image
-              className="col-span-2 max-h-12 w-full object-contain lg:col-span-1 invert dark:invert-0"
+              className="col-span-2 max-h-12 w-full object-contain invert dark:invert-0 lg:col-span-1"
               src="/teams/stclair.svg"
               alt="St. Clair College"
               width={158}
               height={48}
             />
             <Image
-              className="col-span-2 max-h-12 w-full object-contain lg:col-span-1 invert dark:invert-0"
+              className="col-span-2 max-h-12 w-full object-contain invert dark:invert-0 lg:col-span-1"
               src="/teams/cornell.svg"
               alt="Cornell University"
               width={158}
               height={48}
             />
             <Image
-              className="col-span-2 max-h-12 w-full object-contain lg:col-span-1 invert dark:invert-0"
+              className="col-span-2 max-h-12 w-full object-contain invert dark:invert-0 lg:col-span-1"
               src="/teams/fiu.svg"
               alt="Florida International University"
               width={158}
               height={48}
             />
             <Image
-              className="col-span-2 max-h-12 w-full object-contain lg:col-span-1 invert dark:invert-0"
+              className="col-span-2 max-h-12 w-full object-contain invert dark:invert-0 lg:col-span-1"
               src="/teams/gsu.svg"
               alt="Georgia State University"
               width={158}
               height={48}
             />
             <Image
-              className="col-span-2 max-h-12 w-full object-contain lg:col-span-1 invert dark:invert-0"
+              className="col-span-2 max-h-12 w-full object-contain invert dark:invert-0 lg:col-span-1"
               src="/teams/vlln.png"
               alt="VLLN"
               width={158}
@@ -383,19 +383,19 @@ export default async function LandingPage() {
               <Image
                 src="/team_charts.png"
                 alt="App screenshot"
-                className="rounded-xl shadow-2xl ring-1 ring-white/10 hidden dark:flex"
+                className="hidden rounded-xl shadow-2xl ring-1 ring-white/10 dark:flex"
                 width={2432}
                 height={1442}
               />
               <Image
                 src="/team_charts_light.png"
                 alt="App screenshot"
-                className="rounded-xl shadow-2xl ring-1 ring-gray-900/10 flex dark:hidden"
+                className="flex rounded-xl shadow-2xl ring-1 ring-gray-900/10 dark:hidden"
                 width={2432}
                 height={1442}
               />
               <div className="relative" aria-hidden="true">
-                <div className="absolute -inset-x-20 bottom-0 bg-gradient-to-t from-white dark:from-black pt-[7%]" />
+                <div className="absolute -inset-x-20 bottom-0 bg-gradient-to-t from-white pt-[7%] dark:from-black" />
               </div>
             </div>
           </div>
@@ -436,7 +436,7 @@ export default async function LandingPage() {
             {stats.map((stat) => (
               <div
                 key={stat.id}
-                className="flex flex-col gap-y-3 border-l border-gray-900/10 dark:border-white/10 pl-6"
+                className="flex flex-col gap-y-3 border-l border-gray-900/10 pl-6 dark:border-white/10"
               >
                 <dt className="text-sm leading-6">{stat.name}</dt>
                 <dd className="order-first text-3xl font-semibold tracking-tight">
@@ -450,7 +450,7 @@ export default async function LandingPage() {
         {/* CTA section */}
         <div className="relative isolate mt-32 px-6 py-32 sm:mt-56 sm:py-40 lg:px-8">
           <svg
-            className="absolute inset-0 -z-10 h-full w-full stroke-gray-200 dark:stroke-white/10 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
+            className="absolute inset-0 -z-10 h-full w-full stroke-gray-200 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)] dark:stroke-white/10"
             aria-hidden="true"
           >
             <defs>
@@ -505,7 +505,7 @@ export default async function LandingPage() {
             />
           </svg>
           <div
-            className="absolute inset-x-0 top-10 -z-10 transform-gpu justify-center overflow-hidden blur-3xl hidden dark:flex"
+            className="absolute inset-x-0 top-10 -z-10 hidden transform-gpu justify-center overflow-hidden blur-3xl dark:flex"
             aria-hidden="true"
           >
             <div
@@ -547,7 +547,7 @@ export default async function LandingPage() {
           Footer
         </h2>
         <div className="mx-auto max-w-7xl px-6 pb-8 pt-4 lg:px-8">
-          <div className="border-t border-gray-900/10 dark:border-white/10 pt-8 md:flex md:items-center md:justify-between">
+          <div className="border-t border-gray-900/10 pt-8 dark:border-white/10 md:flex md:items-center md:justify-between">
             <div className="flex space-x-6 md:order-2">
               {footerNavigation.social.map((item) => (
                 <Link

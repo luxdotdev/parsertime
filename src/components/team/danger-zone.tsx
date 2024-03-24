@@ -119,10 +119,10 @@ export function DangerZone({ team }: { team: Team }) {
               </p>
               <Input
                 type="text"
-                className="border border-solid rounded p-2 w-full mt-4"
+                className="mt-4 w-full rounded border border-solid p-2"
                 onChange={(e) => setTransferInput(e.target.value)}
               />
-              <div className="flex justify-end space-x-4 mt-4">
+              <div className="mt-4 flex justify-end space-x-4">
                 <Button
                   variant="destructive"
                   disabled={transferLoading || !transferInput}
@@ -170,10 +170,10 @@ export function DangerZone({ team }: { team: Team }) {
               </p>
               <Input
                 type="text"
-                className="border border-solid rounded p-2 w-full mt-4"
+                className="mt-4 w-full rounded border border-solid p-2"
                 onChange={(e) => setDeleteInput(e.target.value)}
               />
-              <div className="flex justify-end space-x-4 mt-4">
+              <div className="mt-4 flex justify-end space-x-4">
                 <Button
                   variant="destructive"
                   disabled={!deleteEnabled || deleteLoading}

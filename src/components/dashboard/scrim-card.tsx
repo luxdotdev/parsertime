@@ -27,7 +27,7 @@ export function ScrimCard({ scrim }: Props) {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Link href={`/${scrim.teamId}/scrim/${scrim.id}/edit`}>
-                      <Pencil2Icon className="w-4 h-4" />
+                      <Pencil2Icon className="h-4 w-4" />
                     </Link>
                   </TooltipTrigger>
                   <TooltipContent>Edit scrim</TooltipContent>

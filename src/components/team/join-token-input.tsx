@@ -55,7 +55,7 @@ export function JoinTokenInput({
   };
 
   return (
-    <div className="flex gap-1 items-center">
+    <div className="flex items-center gap-1">
       {token.map((char, index) => (
         <>
           {index === 5 || index === 9 || index === 14 ? (

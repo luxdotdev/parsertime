@@ -287,7 +287,7 @@ export function StatsTable({ data: playerStat }: { data: PlayerStat }) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-xl border max-h-[29.5rem] overflow-y-scroll">
+      <div className="max-h-[29.5rem] overflow-y-scroll rounded-xl border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

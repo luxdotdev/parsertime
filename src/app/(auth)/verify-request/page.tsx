@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function VerifyRequestPage() {
   return (
-    <div className="flex flex-col items-center justify-center h-[90vh] p-6 space-y-6 text-center">
+    <div className="flex h-[90vh] flex-col items-center justify-center space-y-6 p-6 text-center">
       <h1 className="text-3xl font-bold">
         Check your email for a sign-in link
       </h1>

@@ -30,11 +30,11 @@ export function EmptyTeamView() {
   if (!isClient)
     return (
       <Card className="border-dashed">
-        <div className="flex flex-col items-center justify-center space-y-2 h-[36rem]">
-          <Skeleton className="w-28 h-8" />
-          <Skeleton className="w-96 h-5" />
-          <Skeleton className="w-64 h-8" />
-          <Skeleton className="w-24 h-8" />
+        <div className="flex h-[36rem] flex-col items-center justify-center space-y-2">
+          <Skeleton className="h-8 w-28" />
+          <Skeleton className="h-5 w-96" />
+          <Skeleton className="h-8 w-64" />
+          <Skeleton className="h-8 w-24" />
         </div>
       </Card>
     );
@@ -42,7 +42,7 @@ export function EmptyTeamView() {
   return (
     <Card className="border-dashed">
       <CardDescription>
-        <div className="flex flex-col items-center justify-center space-y-2 h-[36rem]">
+        <div className="flex h-[36rem] flex-col items-center justify-center space-y-2">
           <h2 className="text-2xl font-bold tracking-tight text-black dark:text-white">
             No Teams
           </h2>

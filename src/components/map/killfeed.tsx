@@ -186,7 +186,7 @@ export async function Killfeed({ id }: { id: number }) {
           </CardFooter>
         </Card>
       </div>
-      <div className="hidden md:grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+      <div className="hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-7">
         <Card className="col-span-full">
           <CardHeader>
             <CardTitle>Killfeed</CardTitle>

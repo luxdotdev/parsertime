@@ -116,7 +116,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
           <FormControl>
             <div className="items-center">
               <p>Your permanent team invite link (hover to reveal):</p>
-              <code className="p-1 rounded bg-zinc-800 text-zinc-800 hover:text-white transition-colors">
+              <code className="rounded bg-zinc-800 p-1 text-zinc-800 transition-colors hover:text-white">
                 https://parsertime.app/team/join/
                 {btoa(team.createdAt.toISOString())}
               </code>
@@ -124,7 +124,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <ClipboardCopyIcon
-                      className="h-5 w-5 inline-block ml-2 cursor-pointer"
+                      className="ml-2 inline-block h-5 w-5 cursor-pointer"
                       onClick={() => {
                         navigator.clipboard.writeText(
                           `https://parsertime.app/team/join/${btoa(
@@ -189,7 +189,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
                 width={800}
                 height={800}
                 alt="User avatar"
-                className="h-16 w-16 rounded-full cursor-pointer"
+                className="h-16 w-16 cursor-pointer rounded-full"
                 onClick={handleAvatarClick}
               />
               <AvatarUpdateDialog

@@ -102,9 +102,9 @@ export default function ContactPage() {
       <div className="mx-auto grid max-w-7xl grid-cols-1 lg:grid-cols-2">
         <div className="relative px-6 pb-20 pt-24 sm:pt-32 lg:static lg:px-8 lg:py-48">
           <div className="mx-auto max-w-xl lg:mx-0 lg:max-w-lg">
-            <div className="absolute inset-y-0 left-0 -z-10 w-full bg-gray-100 dark:bg-black overflow-hidden ring-1 ring-gray-900/10 dark:ring-white/5 lg:w-1/2">
+            <div className="absolute inset-y-0 left-0 -z-10 w-full overflow-hidden bg-gray-100 ring-1 ring-gray-900/10 dark:bg-black dark:ring-white/5 lg:w-1/2">
               <svg
-                className="hidden dark:flex absolute inset-0 h-full w-full stroke-gray-200 dark:stroke-gray-700 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
+                className="absolute inset-0 hidden h-full w-full stroke-gray-200 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)] dark:flex dark:stroke-gray-700"
                 aria-hidden="true"
               >
                 <defs>
@@ -134,7 +134,7 @@ export default function ContactPage() {
                 />
               </svg>
               <svg
-                className="dark:hidden absolute inset-0 h-full w-full stroke-gray-200 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
+                className="absolute inset-0 h-full w-full stroke-gray-200 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)] dark:hidden"
                 aria-hidden="true"
               >
                 <defs>
@@ -161,7 +161,7 @@ export default function ContactPage() {
                 />
               </svg>
               <div
-                className="hidden dark:flex absolute -left-56 top-[calc(100%-13rem)] transform-gpu blur-3xl lg:left-[max(-14rem,calc(100%-59rem))] lg:top-[calc(50%-7rem)]"
+                className="absolute -left-56 top-[calc(100%-13rem)] hidden transform-gpu blur-3xl dark:flex lg:left-[max(-14rem,calc(100%-59rem))] lg:top-[calc(50%-7rem)]"
                 aria-hidden="true"
               >
                 <div
@@ -245,7 +245,7 @@ export default function ContactPage() {
                             id="name"
                             autoComplete="given-name"
                             value={field.value}
-                            className="block w-full rounded-md border-0 dark:bg-white/5 px-3.5 py-2 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-white/10 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:focus:ring-sky-500 sm:text-sm sm:leading-6"
+                            className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:focus:ring-sky-500 sm:text-sm sm:leading-6"
                           />
                         </FormControl>
                         <FormMessage />
@@ -270,7 +270,7 @@ export default function ContactPage() {
                             id="email"
                             autoComplete="email"
                             value={field.value}
-                            className="block w-full rounded-md border-0 dark:bg-white/5 px-3.5 py-2 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-white/10 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:focus:ring-sky-500 sm:text-sm sm:leading-6"
+                            className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:focus:ring-sky-500 sm:text-sm sm:leading-6"
                           />
                         </FormControl>
                         <FormMessage />
@@ -294,7 +294,7 @@ export default function ContactPage() {
                             id="message"
                             autoComplete="message"
                             value={field.value}
-                            className="block w-full rounded-md border-0 dark:bg-white/5 px-3.5 py-2 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-white/10 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:focus:ring-sky-500 sm:text-sm sm:leading-6"
+                            className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:focus:ring-sky-500 sm:text-sm sm:leading-6"
                           />
                         </FormControl>
                         <FormMessage />

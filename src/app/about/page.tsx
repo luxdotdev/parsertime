@@ -220,7 +220,7 @@ export default function AboutPage() {
               {stats.map((stat) => (
                 <div
                   key={stat.label}
-                  className="flex flex-col-reverse gap-y-3 border-l border-gray-900/20 dark:border-white/20 pl-6"
+                  className="flex flex-col-reverse gap-y-3 border-l border-gray-900/20 pl-6 dark:border-white/20"
                 >
                   <dt className="text-base leading-7 text-gray-700 dark:text-gray-300">
                     {stat.label}
@@ -268,7 +268,7 @@ export default function AboutPage() {
         </div>
 
         {/* Team section */}
-        <div className="bg-white dark:bg-black py-24 sm:py-32">
+        <div className="bg-white py-24 dark:bg-black sm:py-32">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto max-w-2xl sm:text-center">
               <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
@@ -360,14 +360,14 @@ export default function AboutPage() {
               </div>
               <div className="relative mt-16 h-80 lg:mt-8">
                 <Image
-                  className="hidden dark:flex absolute left-0 top-0 w-[57rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10"
+                  className="absolute left-0 top-0 hidden w-[57rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10 dark:flex"
                   src="/player_page.png"
                   alt="App screenshot"
                   width={1824}
                   height={1080}
                 />
                 <Image
-                  className="dark:hidden absolute left-0 top-0 w-[57rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10"
+                  className="absolute left-0 top-0 w-[57rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10 dark:hidden"
                   src="/player_page_light.png"
                   alt="App screenshot"
                   width={1824}
@@ -503,7 +503,7 @@ export default function AboutPage() {
               </div>
             </div>
           </div>
-          <div className="mt-16 border-t border-black/10 dark:border-white/10 pt-8 sm:mt-20 lg:mt-24">
+          <div className="mt-16 border-t border-black/10 pt-8 dark:border-white/10 sm:mt-20 lg:mt-24">
             <p className="text-xs leading-5 text-gray-600 dark:text-gray-400">
               &copy; 2024 lux.dev. All rights reserved.
             </p>

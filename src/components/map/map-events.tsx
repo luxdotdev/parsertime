@@ -21,7 +21,7 @@ export async function MapEvents({ id }: { id: number }) {
             captures, rounds starting and ending, multikills, and more.
           </CardDescription>
         </CardHeader>
-        <CardContent className="pl-4 max-h-[150vh] overflow-y-auto">
+        <CardContent className="max-h-[150vh] overflow-y-auto pl-4">
           {events}
         </CardContent>
       </Card>
@@ -33,7 +33,7 @@ export async function MapEvents({ id }: { id: number }) {
             they occurred.
           </CardDescription>
         </CardHeader>
-        <CardContent className="pl-4 max-h-[150vh] overflow-y-auto">
+        <CardContent className="max-h-[150vh] overflow-y-auto pl-4">
           {ultimates}
         </CardContent>
       </Card>

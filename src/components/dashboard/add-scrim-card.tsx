@@ -123,7 +123,7 @@ export function AddScrimCard() {
   if (!isClient)
     return (
       <Card className="border-dashed">
-        <Skeleton className="w-24 h-24" />
+        <Skeleton className="h-24 w-24" />
       </Card>
     );
 
@@ -137,7 +137,7 @@ export function AddScrimCard() {
             <FormItem>
               <Card
                 className={cn(
-                  "max-w-md h-48 flex flex-col justify-center items-center border-dashed"
+                  "flex h-48 max-w-md flex-col items-center justify-center border-dashed"
                   // dragActive && "border-green-500"
                 )}
                 // onDragEnter={handleDrag}
@@ -145,7 +145,7 @@ export function AddScrimCard() {
                 // onDragOver={handleDrag}
                 // onDrop={handleDrop}
               >
-                <CardHeader className="text-xl text-center">
+                <CardHeader className="text-center text-xl">
                   <span className="inline-flex items-center justify-center space-x-2">
                     <PlusCircledIcon className="h-6 w-6" />{" "}
                     <span>Add a scrim...</span>
@@ -154,7 +154,7 @@ export function AddScrimCard() {
                 <CardDescription className="pb-4">
                   Click the button to create a scrim.
                 </CardDescription>
-                <CardContent className="flex justify-center items-center">
+                <CardContent className="flex items-center justify-center">
                   {/* <Input
                       type="file"
                       onChange={handleChange}

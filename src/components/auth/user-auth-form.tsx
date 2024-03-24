@@ -134,7 +134,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         {isLoading ? (
           <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
         ) : (
-          <Icons.discord className="pl-2 mr-2 h-4 w-4" />
+          <Icons.discord className="mr-2 h-4 w-4 pl-2" />
         )}{" "}
         Discord
       </Button>

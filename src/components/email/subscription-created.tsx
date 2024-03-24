@@ -31,30 +31,30 @@ export const SubscriptionCreatedEmail = ({
       <Head />
       <Preview>{previewText}</Preview>
       <Tailwind>
-        <Body className="bg-white my-auto mx-auto font-sans px-2">
-          <Container className="border border-solid border-[#eaeaea] rounded my-[40px] mx-auto p-[20px] max-w-[465px]">
+        <Body className="mx-auto my-auto bg-white px-2 font-sans">
+          <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Section className="mt-[32px]">
               <Img
                 src="https://parsertime.app/parsertime.png"
                 width="50"
                 height="50"
                 alt="Parsertime Logo"
-                className="my-0 mx-auto"
+                className="mx-auto my-0"
               />
             </Section>
-            <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
+            <Heading className="mx-0 my-[30px] p-0 text-center text-[24px] font-normal text-black">
               Thank you for subscribing!
             </Heading>
-            <Text className="text-black text-[14px] leading-[24px]">
+            <Text className="text-[14px] leading-[24px] text-black">
               Hello {user.email!},
             </Text>
-            <Text className="text-black text-[14px] leading-[24px]">
+            <Text className="text-[14px] leading-[24px] text-black">
               Thank you for subscribing to Parsertime! We&apos;re grateful for
               your support and can&apos;t wait to help you level up your
               Overwatch experience. You are now on the{" "}
               <strong>{toTitleCase(billingPlan)}</strong> plan.
             </Text>
-            <Text className="text-black text-[14px] leading-[24px]">
+            <Text className="text-[14px] leading-[24px] text-black">
               To manage your subscription, including updating your payment
               method, visit your{" "}
               <Link
@@ -65,7 +65,7 @@ export const SubscriptionCreatedEmail = ({
               </Link>{" "}
               and click &quot;Manage your subscription&quot;.
             </Text>
-            <Text className="text-black text-[14px] leading-[24px]">
+            <Text className="text-[14px] leading-[24px] text-black">
               If you have any questions or need help, feel free to reach out to
               us at{" "}
               <Link
@@ -77,8 +77,8 @@ export const SubscriptionCreatedEmail = ({
               . We appreciate your support and look forward to helping you
               improve your scrim experience!
             </Text>
-            <Hr className="border border-solid border-[#eaeaea] my-[26px] mx-0 w-full" />
-            <Text className="text-[#666666] text-[12px] leading-[24px]">
+            <Hr className="mx-0 my-[26px] w-full border border-solid border-[#eaeaea]" />
+            <Text className="text-[12px] leading-[24px] text-[#666666]">
               This invitation was intended for{" "}
               <span className="text-black">{user.email}</span>. If you were not
               expecting this invitation, you can ignore this email. If you are
@@ -93,7 +93,7 @@ export const SubscriptionCreatedEmail = ({
               .
             </Text>
             {process.env.NODE_ENV !== "production" && (
-              <Text className="text-[#666666] text-[12px] leading-[24px]">
+              <Text className="text-[12px] leading-[24px] text-[#666666]">
                 This email was sent from a development environment.
               </Text>
             )}

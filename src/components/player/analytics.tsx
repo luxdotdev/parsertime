@@ -226,7 +226,7 @@ export async function PlayerAnalytics({
             </p>
           </CardFooter>
         </Card>
-        <Card className="col-span-full 2xl:col-span-1 max-h-[80vh] overflow-y-auto">
+        <Card className="col-span-full max-h-[80vh] overflow-y-auto 2xl:col-span-1">
           <CardHeader>
             <CardTitle className="text-sm font-medium">
               Versus Other Players
@@ -250,7 +250,7 @@ export async function PlayerAnalytics({
                       width={256}
                       height={256}
                       className={cn(
-                        "h-12 w-12 border-2 rounded",
+                        "h-12 w-12 rounded border-2",
                         duel.player_team === match?.team_1_name
                           ? "border-blue-500"
                           : "border-red-500"
@@ -266,7 +266,7 @@ export async function PlayerAnalytics({
                       width={256}
                       height={256}
                       className={cn(
-                        "h-12 w-12 border-2 rounded",
+                        "h-12 w-12 rounded border-2",
                         duel.enemy_team === match?.team_1_name
                           ? "border-blue-500"
                           : "border-red-500"
@@ -275,7 +275,7 @@ export async function PlayerAnalytics({
                     <div className="text-lg font-medium">{duel.enemy_name}</div>
                   </div>
                 </div>
-                <div className="text-lg align-middle">
+                <div className="align-middle text-lg">
                   Score:{" "}
                   <span
                     className={cn(
@@ -305,10 +305,10 @@ export async function PlayerAnalytics({
                         ? "text-blue-500"
                         : "text-red-500"
                       : duel.enemy_deaths < duel.enemy_kills
-                      ? duel.player_team === match?.team_1_name
-                        ? "text-red-500"
-                        : "text-blue-500"
-                      : "text-purple-500"
+                        ? duel.player_team === match?.team_1_name
+                          ? "text-red-500"
+                          : "text-blue-500"
+                        : "text-purple-500"
                   )}
                 >
                   {(
@@ -322,7 +322,7 @@ export async function PlayerAnalytics({
             ))}
           </CardContent>
         </Card>
-        <Card className="col-span-full 2xl:col-span-3 max-h-[80vh] overflow-y-auto">
+        <Card className="col-span-full max-h-[80vh] overflow-y-auto 2xl:col-span-3">
           <CardHeader>
             <CardTitle className="text-sm font-medium">
               Player Killfeed

@@ -37,7 +37,7 @@ export default function SpecificHero({
                 alt={`An image of ${hero}'s Overwatch hero portrait.`}
                 width={256}
                 height={256}
-                className="p-2 rounded-2xl"
+                className="rounded-2xl p-2"
               />
             </Card>
             <Card>
@@ -345,7 +345,7 @@ export default function SpecificHero({
           </div>
         </div>
         {showTable && (
-          <div className="w-1/2 p-2 hidden md:grid">
+          <div className="hidden w-1/2 p-2 md:grid">
             <StatsTable data={playerStat} />
           </div>
         )}

@@ -145,7 +145,7 @@ export function AvatarUpdateDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="relative w-full h-96">
+        <div className="relative h-96 w-full">
           <Cropper
             image={URL.createObjectURL(selectedFile)}
             crop={crop}

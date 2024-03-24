@@ -262,18 +262,18 @@ export async function getMapEvents(id: number) {
         );
       case "ultimate_kills":
         return (
-          <div className="flex items-center p-2 gap-1" key={event}>
+          <div className="flex items-center gap-1 p-2" key={event}>
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
-            <span className="pl-1 inline-flex items-center gap-1">
+            <span className="inline-flex items-center gap-1 pl-1">
               <Image
                 src={`/heroes/${toHero(event.player_hero)}.png`}
                 alt={`${event.player_name}'s hero`}
                 width={256}
                 height={256}
                 className={cn(
-                  "h-8 w-8 border-2 rounded",
+                  "h-8 w-8 rounded border-2",
                   event.player_team === matchStart.team_1_name
                     ? "border-blue-500"
                     : "border-red-500"
@@ -335,7 +335,7 @@ export async function getMapEvents(id: number) {
         );
       case "multikill":
         return (
-          <div className="flex items-center p-2 gap-2" key={event}>
+          <div className="flex items-center gap-2 p-2" key={event}>
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
@@ -347,7 +347,7 @@ export async function getMapEvents(id: number) {
                 width={256}
                 height={256}
                 className={cn(
-                  "h-8 w-8 border-2 rounded",
+                  "h-8 w-8 rounded border-2",
                   event.player_team === matchStart.team_1_name
                     ? "border-blue-500"
                     : "border-red-500"
@@ -478,7 +478,7 @@ export async function getUltimatesUsedList(id: number) {
         );
       case "ultimate_start":
         return (
-          <div className="flex items-center p-2 gap-2" key={event.id}>
+          <div className="flex items-center gap-2 p-2" key={event.id}>
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>{" "}
@@ -489,7 +489,7 @@ export async function getUltimatesUsedList(id: number) {
                 width={256}
                 height={256}
                 className={cn(
-                  "h-8 w-8 border-2 rounded",
+                  "h-8 w-8 rounded border-2",
                   event.player_team === matchStart.team_1_name
                     ? "border-blue-500"
                     : "border-red-500"

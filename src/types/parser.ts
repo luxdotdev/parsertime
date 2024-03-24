@@ -18,7 +18,7 @@ export type DefensiveAssistTableRow = [
   player_team: PlayerTeam,
   player_name: string,
   player_hero: HeroName,
-  hero_duplicated: string
+  hero_duplicated: string,
 ];
 
 export type DvaRemechTableRow = [
@@ -27,7 +27,7 @@ export type DvaRemechTableRow = [
   player_team: PlayerTeam,
   player_name: string,
   player_hero: HeroName,
-  ultimate_id: number
+  ultimate_id: number,
 ];
 
 export type EchoDuplicateEndTableRow = [
@@ -36,7 +36,7 @@ export type EchoDuplicateEndTableRow = [
   player_team: PlayerTeam,
   player_name: string,
   player_hero: HeroName,
-  ultimate_id: number
+  ultimate_id: number,
 ];
 
 export type EchoDuplicateStartTableRow = [
@@ -46,7 +46,7 @@ export type EchoDuplicateStartTableRow = [
   player_name: string,
   player_hero: HeroName,
   hero_duplicated: string,
-  ultimate_id: number
+  ultimate_id: number,
 ];
 
 export type HeroSpawnTableRow = [
@@ -56,7 +56,7 @@ export type HeroSpawnTableRow = [
   player_name: string,
   player_hero: HeroName,
   previous_hero: number | null,
-  hero_time_played: number
+  hero_time_played: number,
 ];
 
 export type HeroSwapTableRow = [
@@ -66,7 +66,7 @@ export type HeroSwapTableRow = [
   player_name: string,
   player_hero: HeroName,
   previous_hero: HeroName,
-  hero_time_played: number
+  hero_time_played: number,
 ];
 
 export type KillTableRow = [
@@ -81,7 +81,7 @@ export type KillTableRow = [
   event_ability: EventAbility,
   event_damage: number,
   is_critical_hit: string,
-  is_environmental: number | string
+  is_environmental: number | string,
 ];
 
 export type MatchEndTableRow = [
@@ -89,7 +89,7 @@ export type MatchEndTableRow = [
   match_time: number,
   round_number: number,
   team_1_score: number,
-  team_2_score: number
+  team_2_score: number,
 ];
 
 export type MatchStartTableRow = [
@@ -98,7 +98,7 @@ export type MatchStartTableRow = [
   map_name: string,
   map_type: $Enums.MapType,
   team_1_name: string,
-  team_2_name: string
+  team_2_name: string,
 ];
 
 export type MercyRezTableRow = [
@@ -109,7 +109,7 @@ export type MercyRezTableRow = [
   resurrecter_hero: HeroName,
   resurrectee_team: PlayerTeam,
   resurrectee_player: string,
-  resurrectee_hero: HeroName
+  resurrectee_hero: HeroName,
 ];
 
 export type ObjectiveCapturedTableRow = [
@@ -120,7 +120,7 @@ export type ObjectiveCapturedTableRow = [
   objective_index: number,
   control_team_1_progress: number,
   control_team_2_progress: number,
-  match_time_remaining: number
+  match_time_remaining: number,
 ];
 
 export type ObjectiveUpdatedTableRow = [
@@ -128,7 +128,7 @@ export type ObjectiveUpdatedTableRow = [
   match_time: number,
   round_number: number,
   previous_objective_index: number,
-  current_objective_index: number
+  current_objective_index: number,
 ];
 
 export type OffensiveAssistTableRow = [
@@ -137,7 +137,7 @@ export type OffensiveAssistTableRow = [
   player_team: PlayerTeam,
   player_name: string,
   player_hero: HeroName,
-  hero_duplicated: string
+  hero_duplicated: string,
 ];
 
 export type PayloadProgressTableRow = [
@@ -146,7 +146,7 @@ export type PayloadProgressTableRow = [
   round_number: number,
   capturing_team: PlayerTeam,
   objective_index: number,
-  payload_capture_progress: number
+  payload_capture_progress: number,
 ];
 
 export type PlayerStatTableRow = [
@@ -188,7 +188,7 @@ export type PlayerStatTableRow = [
   scoped_shots: number,
   scoped_shots_hit: number,
   weapon_accuracy: number,
-  hero_time_played: number
+  hero_time_played: number,
 ];
 
 export type PointProgressTableRow = [
@@ -197,7 +197,7 @@ export type PointProgressTableRow = [
   round_number: number,
   capturing_team: PlayerTeam,
   objective_index: number,
-  point_capture_progress: number
+  point_capture_progress: number,
 ];
 
 export type RemechChargedTableRow = [
@@ -207,7 +207,7 @@ export type RemechChargedTableRow = [
   player_name: string,
   player_hero: HeroName,
   hero_duplicated: string,
-  ultimate_id: number
+  ultimate_id: number,
 ];
 
 export type RoundEndTableRow = [
@@ -220,7 +220,7 @@ export type RoundEndTableRow = [
   objective_index: number,
   control_team_1_progress: number,
   control_team_2_progress: number,
-  match_time_remaining: number
+  match_time_remaining: number,
 ];
 
 export type RoundStartTableRow = [
@@ -230,14 +230,14 @@ export type RoundStartTableRow = [
   capturing_team: PlayerTeam,
   team_1_score: number,
   team_2_score: number,
-  objective_index: number
+  objective_index: number,
 ];
 
 export type SetupCompleteTableRow = [
   event_type: "setup_complete",
   match_time: number,
   round_number: number,
-  match_time_remaining: number
+  match_time_remaining: number,
 ];
 
 export type UltimateChargedTableRow = [
@@ -247,7 +247,7 @@ export type UltimateChargedTableRow = [
   player_name: string,
   player_hero: HeroName,
   hero_duplicated: string,
-  ultimate_id: number
+  ultimate_id: number,
 ];
 
 export type UltimateEndTableRow = [
@@ -257,7 +257,7 @@ export type UltimateEndTableRow = [
   player_name: string,
   player_hero: HeroName,
   hero_duplicated: string,
-  ultimate_id: number
+  ultimate_id: number,
 ];
 
 export type UltimateStartTableRow = [
@@ -267,7 +267,7 @@ export type UltimateStartTableRow = [
   player_name: string,
   player_hero: HeroName,
   hero_duplicated: string,
-  ultimate_id: number
+  ultimate_id: number,
 ];
 
 export type ParserData = {

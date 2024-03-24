@@ -87,7 +87,7 @@ export function AddMapCard() {
             >
               here
             </Link>{" "}
-            <ExternalLinkIcon className="h-4 w-4 inline" /> to see if the error
+            <ExternalLinkIcon className="inline h-4 w-4" /> to see if the error
             can be resolved.
           </p>
         ),
@@ -141,15 +141,15 @@ export function AddMapCard() {
 
   if (!isClient)
     return (
-      <div className="p-2 w-1/3">
-        <Card className="p-2 h-48 max-w-md border-dashed">
-          <Skeleton className="max-w-md h-full flex flex-col" />
+      <div className="w-1/3 p-2">
+        <Card className="h-48 max-w-md border-dashed p-2">
+          <Skeleton className="flex h-full max-w-md flex-col" />
         </Card>
       </div>
     );
 
   return (
-    <Form {...form} className="p-2 w-full md:w-1/3">
+    <Form {...form} className="w-full p-2 md:w-1/3">
       <form onDragEnter={handleDrag}>
         <FormField
           control={form.control}
@@ -158,7 +158,7 @@ export function AddMapCard() {
             <FormItem>
               <Card
                 className={cn(
-                  "max-w-md h-48 flex flex-col justify-center items-center border-dashed",
+                  "flex h-48 max-w-md flex-col items-center justify-center border-dashed",
                   dragActive && "border-green-500"
                 )}
                 onDragEnter={handleDrag}
@@ -166,7 +166,7 @@ export function AddMapCard() {
                 onDragOver={handleDrag}
                 onDrop={handleDrop}
               >
-                <CardHeader className="text-xl text-center">
+                <CardHeader className="text-center text-xl">
                   <span className="inline-flex items-center justify-center space-x-2">
                     <PlusCircledIcon className="h-6 w-6" />{" "}
                     <span>Add a map...</span>
@@ -175,7 +175,7 @@ export function AddMapCard() {
                 <CardDescription className="pb-4">
                   Drag and drop or select a file to upload.
                 </CardDescription>
-                <CardContent className="flex justify-center items-center">
+                <CardContent className="flex items-center justify-center">
                   <Input
                     type="file"
                     onChange={handleChange}

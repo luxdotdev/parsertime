@@ -69,7 +69,7 @@ export default async function SettingsLayout({
   return (
     <>
       <div className="border-b">
-        <div className="hidden md:flex h-16 items-center px-4">
+        <div className="hidden h-16 items-center px-4 md:flex">
           <TeamSwitcher session={session} />
           <MainNav className="mx-6" />
           <div className="ml-auto flex items-center space-x-4">
@@ -78,7 +78,7 @@ export default async function SettingsLayout({
             <UserNav />
           </div>
         </div>
-        <div className="flex md:hidden h-16 items-center px-4">
+        <div className="flex h-16 items-center px-4 md:hidden">
           <MobileNav session={session} />
           <div className="ml-auto flex items-center space-x-4">
             <ModeToggle />
@@ -86,7 +86,7 @@ export default async function SettingsLayout({
           </div>
         </div>
       </div>
-      <div className="space-y-6 p-10 pb-16 md:block min-h-[90vh]">
+      <div className="min-h-[90vh] space-y-6 p-10 pb-16 md:block">
         <div className="space-y-0.5">
           <h2 className="text-2xl font-bold tracking-tight">Settings</h2>
           <p className="text-muted-foreground">

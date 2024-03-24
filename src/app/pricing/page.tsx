@@ -144,7 +144,7 @@ export default async function PricingPage() {
   ];
 
   return (
-    <div className="bg-white dark:bg-black py-24 sm:py-32">
+    <div className="bg-white py-24 dark:bg-black sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="text-base font-semibold leading-7 text-sky-600 dark:text-sky-400">
@@ -166,7 +166,7 @@ export default async function PricingPage() {
               key={tier.id}
               className={classNames(
                 tier.mostPopular
-                  ? "rounded-xl bg-gray-400/5 dark:bg-white/5 ring-1 ring-inset ring-gray-200 dark:ring-white/10"
+                  ? "rounded-xl bg-gray-400/5 ring-1 ring-inset ring-gray-200 dark:bg-white/5 dark:ring-white/10"
                   : "",
                 "p-8"
               )}
@@ -190,9 +190,9 @@ export default async function PricingPage() {
                 aria-describedby={tier.id}
                 className={classNames(
                   tier.mostPopular
-                    ? "bg-sky-600 dark:bg-sky-500 text-white hover:bg-sky-400 focus-visible:outline-sky-500"
-                    : "text-sky-600 dark:bg-white/10 dark:text-white hover:bg-white/20 focus-visible:outline-white",
-                  "mt-8 block rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                    ? "bg-sky-600 text-white hover:bg-sky-400 focus-visible:outline-sky-500 dark:bg-sky-500"
+                    : "text-sky-600 hover:bg-white/20 focus-visible:outline-white dark:bg-white/10 dark:text-white",
+                  "mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 )}
               >
                 {tier.name === "Free" ? "Get Started" : "Buy plan"}
@@ -300,8 +300,8 @@ export default async function PricingPage() {
                           className={classNames(
                             tier.mostPopular
                               ? "bg-sky-600 text-white hover:bg-sky-500 dark:bg-sky-500 dark:hover:bg-sky-400 dark:focus-visible:outline-sky-600"
-                              : "text-sky-600 ring-1 ring-inset ring-sky-200 hover:ring-sky-300 dark:ring-0 dark:bg-white/10 dark:hover:bg-white/20 dark:focus-visible:outline-white",
-                            "mt-8 block rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 dark:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:focus-visible:ring-0"
+                              : "text-sky-600 ring-1 ring-inset ring-sky-200 hover:ring-sky-300 dark:bg-white/10 dark:ring-0 dark:hover:bg-white/20 dark:focus-visible:outline-white",
+                            "mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:text-white dark:focus-visible:ring-0"
                           )}
                         >
                           Your Current Plan
@@ -312,8 +312,8 @@ export default async function PricingPage() {
                           className={classNames(
                             tier.mostPopular
                               ? "bg-sky-600 text-white hover:bg-sky-500 dark:bg-sky-500 dark:hover:bg-sky-400 dark:focus-visible:outline-sky-600"
-                              : "text-sky-600 ring-1 ring-inset ring-sky-200 hover:ring-sky-300 dark:ring-0 dark:bg-white/10 dark:hover:bg-white/20 dark:focus-visible:outline-white",
-                            "mt-8 block rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 dark:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:focus-visible:ring-0"
+                              : "text-sky-600 ring-1 ring-inset ring-sky-200 hover:ring-sky-300 dark:bg-white/10 dark:ring-0 dark:hover:bg-white/20 dark:focus-visible:outline-white",
+                            "mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:text-white dark:focus-visible:ring-0"
                           )}
                         >
                           {tier.name === "Free" ? "Get Started" : "Buy plan"}

@@ -75,7 +75,7 @@
   }
 
   ::selection {
-    @apply bg-sky-500 text-white bg-opacity-70;
+    @apply bg-sky-500 bg-opacity-70 text-white;
   }
 }
 

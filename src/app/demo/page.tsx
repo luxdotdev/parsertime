@@ -87,7 +87,7 @@ export default async function MapDashboardPage({ params }: Props) {
   return (
     <div className="flex-col md:flex">
       <div className="border-b">
-        <div className="hidden md:flex h-16 items-center px-4">
+        <div className="hidden h-16 items-center px-4 md:flex">
           <PlayerSwitcher mostPlayedHeroes={uniquePlayerRowsByHeroTimePlayed} />
           <MainNav className="mx-6" />
           <div className="ml-auto flex items-center space-x-4">
@@ -95,7 +95,7 @@ export default async function MapDashboardPage({ params }: Props) {
             <ModeToggle />
           </div>
         </div>
-        <div className="flex md:hidden h-16 items-center px-4">
+        <div className="flex h-16 items-center px-4 md:hidden">
           <PlayerSwitcher mostPlayedHeroes={uniquePlayerRowsByHeroTimePlayed} />
           <div className="ml-auto flex items-center space-x-4">
             <ModeToggle />
@@ -119,7 +119,7 @@ export default async function MapDashboardPage({ params }: Props) {
             <TabsTrigger value="killfeed" className="hidden md:flex">
               Killfeed
             </TabsTrigger>
-            <TabsTrigger value="killfeed" className="md:hidden flex">
+            <TabsTrigger value="killfeed" className="flex md:hidden">
               Kills
             </TabsTrigger>
             <TabsTrigger value="charts">Charts</TabsTrigger>

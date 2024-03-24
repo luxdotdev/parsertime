@@ -42,7 +42,7 @@ export default async function SettingsProfilePage() {
         ) : (
           <span className="inline-flex items-center">
             Manage your subscription{" "}
-            <ExternalLinkIcon className="w-4 h-4 ml-1" />
+            <ExternalLinkIcon className="ml-1 h-4 w-4" />
           </span>
         )}
       </Link>

@@ -30,29 +30,29 @@ export const SubscriptionDeletedEmail = ({ user }: SubscriptionEmailProps) => {
       <Head />
       <Preview>{previewText}</Preview>
       <Tailwind>
-        <Body className="bg-white my-auto mx-auto font-sans px-2">
-          <Container className="border border-solid border-[#eaeaea] rounded my-[40px] mx-auto p-[20px] max-w-[465px]">
+        <Body className="mx-auto my-auto bg-white px-2 font-sans">
+          <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Section className="mt-[32px]">
               <Img
                 src="https://parsertime.app/parsertime.png"
                 width="50"
                 height="50"
                 alt="Parsertime Logo"
-                className="my-0 mx-auto"
+                className="mx-auto my-0"
               />
             </Section>
-            <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
+            <Heading className="mx-0 my-[30px] p-0 text-center text-[24px] font-normal text-black">
               Your subscription has been cancelled.
             </Heading>
-            <Text className="text-black text-[14px] leading-[24px]">
+            <Text className="text-[14px] leading-[24px] text-black">
               Hello {user.email!},
             </Text>
-            <Text className="text-black text-[14px] leading-[24px]">
+            <Text className="text-[14px] leading-[24px] text-black">
               We&apos;re sorry to see you go! Your subscription to Parsertime
               has been cancelled. You will continue to have access to your plan
               features until your current billing period ends.
             </Text>
-            <Text className="text-black text-[14px] leading-[24px]">
+            <Text className="text-[14px] leading-[24px] text-black">
               To manage your subscription, including updating your payment
               method, visit your{" "}
               <Link
@@ -63,7 +63,7 @@ export const SubscriptionDeletedEmail = ({ user }: SubscriptionEmailProps) => {
               </Link>{" "}
               and click &quot;Manage your subscription&quot;.
             </Text>
-            <Text className="text-black text-[14px] leading-[24px]">
+            <Text className="text-[14px] leading-[24px] text-black">
               If you have any questions or need help, feel free to reach out to
               us at{" "}
               <Link
@@ -74,8 +74,8 @@ export const SubscriptionDeletedEmail = ({ user }: SubscriptionEmailProps) => {
               </Link>
               . We hope to see you back soon!
             </Text>
-            <Hr className="border border-solid border-[#eaeaea] my-[26px] mx-0 w-full" />
-            <Text className="text-[#666666] text-[12px] leading-[24px]">
+            <Hr className="mx-0 my-[26px] w-full border border-solid border-[#eaeaea]" />
+            <Text className="text-[12px] leading-[24px] text-[#666666]">
               This invitation was intended for{" "}
               <span className="text-black">{user.email}</span>. If you were not
               expecting this invitation, you can ignore this email. If you are
@@ -90,7 +90,7 @@ export const SubscriptionDeletedEmail = ({ user }: SubscriptionEmailProps) => {
               .
             </Text>
             {process.env.NODE_ENV !== "production" && (
-              <Text className="text-[#666666] text-[12px] leading-[24px]">
+              <Text className="text-[12px] leading-[24px] text-[#666666]">
                 This email was sent from a development environment.
               </Text>
             )}

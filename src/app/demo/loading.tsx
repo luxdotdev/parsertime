@@ -13,28 +13,28 @@ export default function MapDashboardLoading() {
     <div className="flex-col md:flex">
       <div className="border-b">
         <div className="flex h-16 items-center px-4">
-          <Skeleton className="w-24 h-6" />
+          <Skeleton className="h-6 w-24" />
           <div className="ml-auto flex items-center space-x-4">
-            <Skeleton className="hidden md:flex w-24 h-6" />
-            <Skeleton className="w-6 h-6" />
-            <Skeleton className="md:hidden w-6 h-6" />
-            <Skeleton className="hidden md:flex w-24 h-6" />
+            <Skeleton className="hidden h-6 w-24 md:flex" />
+            <Skeleton className="h-6 w-6" />
+            <Skeleton className="h-6 w-6 md:hidden" />
+            <Skeleton className="hidden h-6 w-24 md:flex" />
           </div>
         </div>
       </div>
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div>
           <h4 className="text-gray-600 dark:text-gray-400">
-            <Skeleton className="w-48 h-6" />
+            <Skeleton className="h-6 w-48" />
           </h4>
         </div>
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">
-            <Skeleton className="w-40 h-10" />
+            <Skeleton className="h-10 w-40" />
           </h2>
         </div>
         <div className="space-y-4">
-          <Skeleton className="w-96 h-8" />
+          <Skeleton className="h-8 w-96" />
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
@@ -49,11 +49,11 @@ export default function MapDashboardLoading() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                <Skeleton className="w-24 h-8" />
+                <Skeleton className="h-8 w-24" />
               </div>
             </CardContent>
             <CardFooter>
-              <Skeleton className="w-32 h-4" />
+              <Skeleton className="h-4 w-32" />
             </CardFooter>
           </Card>
           <Card>
@@ -70,11 +70,11 @@ export default function MapDashboardLoading() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                <Skeleton className="w-24 h-8" />
+                <Skeleton className="h-8 w-24" />
               </div>
             </CardContent>
             <CardFooter>
-              <Skeleton className="w-32 h-4" />
+              <Skeleton className="h-4 w-32" />
             </CardFooter>
           </Card>
           <Card>
@@ -88,11 +88,11 @@ export default function MapDashboardLoading() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                <Skeleton className="w-24 h-8" />
+                <Skeleton className="h-8 w-24" />
               </div>
             </CardContent>
             <CardFooter>
-              <Skeleton className="w-32 h-4" />
+              <Skeleton className="h-4 w-32" />
             </CardFooter>
           </Card>
           <Card>
@@ -107,25 +107,25 @@ export default function MapDashboardLoading() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                <Skeleton className="w-24 h-8" />
+                <Skeleton className="h-8 w-24" />
               </div>
             </CardContent>
             <CardFooter>
-              <Skeleton className="w-32 h-4" />
+              <Skeleton className="h-4 w-32" />
             </CardFooter>
           </Card>
         </div>
-        <div className="hidden md:grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <div className="hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-7">
           <Card className="col-span-full">
             <CardHeader>
               <CardTitle>Overview</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <Skeleton className="w-64 h-8" />
+                <Skeleton className="h-8 w-64" />
                 <div className="w-full">
                   <div className="rounded-md border">
-                    <Skeleton className="w-full h-96" />
+                    <Skeleton className="h-96 w-full" />
                   </div>
                 </div>
               </div>

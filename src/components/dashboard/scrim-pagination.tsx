@@ -70,7 +70,7 @@ export function ScrimPagination({ scrims }: Props) {
 
   return (
     <Card>
-      <span className="inline-flex p-4 gap-2">
+      <span className="inline-flex gap-2 p-4">
         <Select onValueChange={(v) => setFilter(v)}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Filter" />
@@ -94,7 +94,7 @@ export function ScrimPagination({ scrims }: Props) {
         />
       </span>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+      <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {currentPageScrims.map((scrim) => (
           <ScrimCard key={scrim.id} scrim={scrim} />
         ))}

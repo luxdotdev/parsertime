@@ -12,35 +12,35 @@ export default function PlayerDashboardLoading() {
   return (
     <div className="flex-col md:flex">
       <div className="border-b">
-        <div className="hidden md:flex h-16 items-center px-4">
-          <Skeleton className="w-24 h-6" />
+        <div className="hidden h-16 items-center px-4 md:flex">
+          <Skeleton className="h-6 w-24" />
           <div className="ml-auto flex items-center space-x-4">
-            <Skeleton className="hidden md:w-[100px] lg:w-[300px] md:flex h-9 w-full rounded-md border border-input px-3 py-1" />
-            <Skeleton className="w-9 h-9" />
-            <Skeleton className="w-8 h-8 rounded-full" />
+            <Skeleton className="hidden h-9 w-full rounded-md border border-input px-3 py-1 md:flex md:w-[100px] lg:w-[300px]" />
+            <Skeleton className="h-9 w-9" />
+            <Skeleton className="h-8 w-8 rounded-full" />
           </div>
         </div>
-        <div className="flex md:hidden h-16 items-center px-4">
-          <Skeleton className="w-24 h-6" />
+        <div className="flex h-16 items-center px-4 md:hidden">
+          <Skeleton className="h-6 w-24" />
           <div className="ml-auto flex items-center space-x-4">
-            <Skeleton className="w-9 h-9" />
-            <Skeleton className="w-8 h-8 rounded-full" />
+            <Skeleton className="h-9 w-9" />
+            <Skeleton className="h-8 w-8 rounded-full" />
           </div>
         </div>
       </div>
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div>
           <h4 className="text-gray-600 dark:text-gray-400">
-            <Skeleton className="w-48 h-6" />
+            <Skeleton className="h-6 w-48" />
           </h4>
         </div>
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">
-            <Skeleton className="w-40 h-10" />
+            <Skeleton className="h-10 w-40" />
           </h2>
         </div>
         <div className="space-y-4">
-          <Skeleton className="w-32 h-8" />
+          <Skeleton className="h-8 w-32" />
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
@@ -55,16 +55,16 @@ export default function PlayerDashboardLoading() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                <Skeleton className="w-24 h-6" />
+                <Skeleton className="h-6 w-24" />
               </div>
             </CardContent>
             <CardFooter>
-              <Skeleton className="w-32 h-4" />
+              <Skeleton className="h-4 w-32" />
             </CardFooter>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium align-baseline">
+              <CardTitle className="align-baseline text-sm font-medium">
                 Fleta Deadlift Percentage
               </CardTitle>
               <CardIcon>
@@ -78,11 +78,11 @@ export default function PlayerDashboardLoading() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                <Skeleton className="w-24 h-6" />
+                <Skeleton className="h-6 w-24" />
               </div>
             </CardContent>
             <CardFooter>
-              <Skeleton className="w-full h-8" />
+              <Skeleton className="h-8 w-full" />
             </CardFooter>
           </Card>
           <Card>
@@ -99,11 +99,11 @@ export default function PlayerDashboardLoading() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                <Skeleton className="w-24 h-6" />
+                <Skeleton className="h-6 w-24" />
               </div>
             </CardContent>
             <CardFooter>
-              <Skeleton className="w-full h-8" />
+              <Skeleton className="h-8 w-full" />
             </CardFooter>
           </Card>
           <Card>
@@ -117,11 +117,11 @@ export default function PlayerDashboardLoading() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                <Skeleton className="w-24 h-6" />
+                <Skeleton className="h-6 w-24" />
               </div>
             </CardContent>
             <CardFooter>
-              <Skeleton className="w-full h-8" />
+              <Skeleton className="h-8 w-full" />
             </CardFooter>
           </Card>
         </div>
@@ -133,41 +133,41 @@ export default function PlayerDashboardLoading() {
             <CardContent className="pl-4">
               <main>
                 <h1 className="scroll-m-20 pb-2 pl-2 text-3xl font-semibold tracking-tight first:mt-0">
-                  <Skeleton className="w-32 h-10" />
+                  <Skeleton className="h-10 w-32" />
                 </h1>
                 <div className="flex flex-1">
-                  <div className="p-2 w-full lg:w-1/2">
+                  <div className="w-full p-2 lg:w-1/2">
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                       <Card>
-                        <Skeleton className="w-full h-56" />
+                        <Skeleton className="h-56 w-full" />
                       </Card>
                       <Card>
-                        <Skeleton className="w-full h-56" />
+                        <Skeleton className="h-56 w-full" />
                       </Card>
                       <Card>
-                        <Skeleton className="w-full h-56" />
+                        <Skeleton className="h-56 w-full" />
                       </Card>
                       <Card>
-                        <Skeleton className="w-full h-56" />
+                        <Skeleton className="h-56 w-full" />
                       </Card>
                       <Card>
-                        <Skeleton className="w-full h-56" />
+                        <Skeleton className="h-56 w-full" />
                       </Card>
                       <Card>
-                        <Skeleton className="w-full h-56" />
+                        <Skeleton className="h-56 w-full" />
                       </Card>
                       <Card>
-                        <Skeleton className="w-full h-56" />
+                        <Skeleton className="h-56 w-full" />
                       </Card>
                       <Card>
-                        <Skeleton className="w-full h-56" />
+                        <Skeleton className="h-56 w-full" />
                       </Card>
                     </div>
                   </div>
-                  <div className="w-1/2 p-2 hidden md:grid">
+                  <div className="hidden w-1/2 p-2 md:grid">
                     <div className="space-y-4">
-                      <div className="rounded-xl border max-h-[29.5rem]">
-                        <Skeleton className="w-full h-[29.5rem]" />
+                      <div className="max-h-[29.5rem] rounded-xl border">
+                        <Skeleton className="h-[29.5rem] w-full" />
                       </div>
                     </div>
                   </div>

@@ -137,7 +137,7 @@ export function ProfileForm({ user }: { user: User }) {
                 width={800}
                 height={800}
                 alt="User avatar"
-                className="h-16 w-16 rounded-full cursor-pointer"
+                className="h-16 w-16 cursor-pointer rounded-full"
                 onClick={handleAvatarClick}
               />
               <AvatarUpdateDialog

@@ -14,7 +14,7 @@ export function DiscordLoginButton() {
         signIn("discord");
       }}
     >
-      <Icons.discord className="pl-2 mr-2 h-4 w-4" />
+      <Icons.discord className="mr-2 h-4 w-4 pl-2" />
       Sign In with Discord
     </Button>
   );

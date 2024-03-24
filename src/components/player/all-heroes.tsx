@@ -36,7 +36,7 @@ export default function AllHeroes({
                 alt={`An image of ${hero}'s Overwatch hero portrait.`}
                 width={256}
                 height={256}
-                className="p-6 rounded-2xl"
+                className="rounded-2xl p-6"
               />
             </Card>
             <Card>
@@ -481,7 +481,7 @@ export default function AllHeroes({
           </div>
         </div>
         {showTable && (
-          <div className="w-1/2 p-2 hidden md:grid">
+          <div className="hidden w-1/2 p-2 md:grid">
             <StatsTable data={playerStats[0]} />
           </div>
         )}

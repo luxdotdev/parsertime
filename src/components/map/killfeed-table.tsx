@@ -72,7 +72,7 @@ export function KillfeedTable({
                             width={256}
                             height={256}
                             className={cn(
-                              "h-8 w-8 border-2 rounded",
+                              "h-8 w-8 rounded border-2",
                               kill.attacker_team === team1
                                 ? "border-blue-500"
                                 : "border-red-500",
@@ -100,7 +100,7 @@ export function KillfeedTable({
                             width={256}
                             height={256}
                             className={cn(
-                              "h-8 w-8 border-2 rounded",
+                              "h-8 w-8 rounded border-2",
                               kill.victim_team === team1
                                 ? "border-blue-500"
                                 : "border-red-500"
@@ -115,11 +115,11 @@ export function KillfeedTable({
                         ? kill.is_environmental
                           ? environmentalString
                           : kill.event_ability === "0"
-                          ? "Primary Fire"
-                          : kill.event_ability
+                            ? "Primary Fire"
+                            : kill.event_ability
                         : kill.event_ability === "0"
-                        ? "Primary Fire"
-                        : kill.event_ability}
+                          ? "Primary Fire"
+                          : kill.event_ability}
                     </TableCell>
                     {j === 0 ? (
                       <>
