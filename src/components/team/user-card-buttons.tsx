@@ -11,12 +11,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/use-toast";
+import { ClientOnly } from "@/lib/client-only";
 import { User } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type Props = {
   user: User;
@@ -130,51 +130,129 @@ export function UserCardButtons({ user, managers }: Props) {
     }
   }
 
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) return <Skeleton className="w-4" />;
-
   return (
-    <CardFooter>
-      {!isManager && (
-        <div className="pr-2">
-          <Dialog
-            open={promotionDialogOpen}
-            onOpenChange={setPromotionDialogOpen}
-          >
+    <ClientOnly>
+      <CardFooter>
+        {!isManager && (
+          <div className="pr-2">
+            <Dialog
+              open={promotionDialogOpen}
+              onOpenChange={setPromotionDialogOpen}
+            >
+              <DialogTrigger>
+                <Button>Promote to Manager</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you absolutely sure?</DialogTitle>
+                  <DialogDescription>
+                    This will change the user&apos;s role from member to
+                    manager. This user will be able to manage the team and its
+                    resources.
+                  </DialogDescription>
+                  <DialogFooter>
+                    <Button
+                      variant="secondary"
+                      onClick={() => setPromotionDialogOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      onClick={handlePromoteToManager}
+                      disabled={promotionLoading}
+                    >
+                      {promotionLoading ? (
+                        <>
+                          <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
+                          Promoting...
+                        </>
+                      ) : (
+                        "Promote to Manager"
+                      )}
+                    </Button>
+                  </DialogFooter>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
+          </div>
+        )}
+
+        {isManager && (
+          <div className="pr-2">
+            <Dialog
+              open={demotionDialogOpen}
+              onOpenChange={setDemotionDialogOpen}
+            >
+              <DialogTrigger>
+                <Button>Demote to Member</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you absolutely sure?</DialogTitle>
+                  <DialogDescription>
+                    This will change the user&apos;s role from manager to
+                    member.
+                  </DialogDescription>
+                  <DialogFooter>
+                    <Button
+                      variant="secondary"
+                      onClick={() => setDemotionDialogOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      onClick={handleDemoteToMember}
+                      disabled={demotionLoading}
+                    >
+                      {demotionLoading ? (
+                        <>
+                          <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
+                          Demoting...
+                        </>
+                      ) : (
+                        "Demote to Member"
+                      )}
+                    </Button>
+                  </DialogFooter>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
+          </div>
+        )}
+
+        <div>
+          <Dialog open={removalDialogOpen} onOpenChange={setRemovalDialogOpen}>
             <DialogTrigger>
-              <Button>Promote to Manager</Button>
+              <Button variant="destructive">Remove from Team</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Are you absolutely sure?</DialogTitle>
                 <DialogDescription>
-                  This will change the user&apos;s role from member to manager.
-                  This user will be able to manage the team and its resources.
+                  This will remove the user from the team and they will lose
+                  access to all team resources.
                 </DialogDescription>
                 <DialogFooter>
                   <Button
                     variant="secondary"
-                    onClick={() => setPromotionDialogOpen(false)}
+                    onClick={() => setRemovalDialogOpen(false)}
                   >
                     Cancel
                   </Button>
                   <Button
                     variant="destructive"
-                    onClick={handlePromoteToManager}
-                    disabled={promotionLoading}
+                    onClick={handleRemoveFromTeam}
+                    disabled={removalLoading}
                   >
-                    {promotionLoading ? (
+                    {removalLoading ? (
                       <>
                         <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
-                        Promoting...
+                        Removing...
                       </>
                     ) : (
-                      "Promote to Manager"
+                      "Remove from Team"
                     )}
                   </Button>
                 </DialogFooter>
@@ -182,89 +260,7 @@ export function UserCardButtons({ user, managers }: Props) {
             </DialogContent>
           </Dialog>
         </div>
-      )}
-
-      {isManager && (
-        <div className="pr-2">
-          <Dialog
-            open={demotionDialogOpen}
-            onOpenChange={setDemotionDialogOpen}
-          >
-            <DialogTrigger>
-              <Button>Demote to Member</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Are you absolutely sure?</DialogTitle>
-                <DialogDescription>
-                  This will change the user&apos;s role from manager to member.
-                </DialogDescription>
-                <DialogFooter>
-                  <Button
-                    variant="secondary"
-                    onClick={() => setDemotionDialogOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={handleDemoteToMember}
-                    disabled={demotionLoading}
-                  >
-                    {demotionLoading ? (
-                      <>
-                        <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
-                        Demoting...
-                      </>
-                    ) : (
-                      "Demote to Member"
-                    )}
-                  </Button>
-                </DialogFooter>
-              </DialogHeader>
-            </DialogContent>
-          </Dialog>
-        </div>
-      )}
-
-      <div>
-        <Dialog open={removalDialogOpen} onOpenChange={setRemovalDialogOpen}>
-          <DialogTrigger>
-            <Button variant="destructive">Remove from Team</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Are you absolutely sure?</DialogTitle>
-              <DialogDescription>
-                This will remove the user from the team and they will lose
-                access to all team resources.
-              </DialogDescription>
-              <DialogFooter>
-                <Button
-                  variant="secondary"
-                  onClick={() => setRemovalDialogOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={handleRemoveFromTeam}
-                  disabled={removalLoading}
-                >
-                  {removalLoading ? (
-                    <>
-                      <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
-                      Removing...
-                    </>
-                  ) : (
-                    "Remove from Team"
-                  )}
-                </Button>
-              </DialogFooter>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
-      </div>
-    </CardFooter>
+      </CardFooter>
+    </ClientOnly>
   );
 }

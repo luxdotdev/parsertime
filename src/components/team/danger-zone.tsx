@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
+import { ClientOnly } from "@/lib/client-only";
 import { Team } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
@@ -82,123 +83,119 @@ export function DangerZone({ team }: { team: Team }) {
     setDeleteLoading(false);
   }
 
-  // fix LastPass hydration issue
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) return null;
-
   return (
-    <Card className="max-w-lg border-red-500 dark:border-red-700">
-      <CardHeader>
-        <CardTitle className="text-red-500 dark:text-red-700">
-          Danger Zone
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="pb-6">
-          <h3 className="text-lg font-semibold">Transfer Ownership</h3>
-          <p className="pb-4">
-            Once you transfer ownership, you will no longer be the owner of this
-            team.
-          </p>
-          <Dialog open={transferModalOpen} onOpenChange={setTransferModalOpen}>
-            <DialogTrigger>
-              <Button variant="destructive">Transfer Ownership</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <h2 className="text-lg font-semibold">Transfer Ownership</h2>
-              </DialogHeader>
-              <p>
-                Enter the email address of the user you want to transfer
-                ownership to.
-              </p>
-              <Input
-                type="text"
-                className="mt-4 w-full rounded border border-solid p-2"
-                onChange={(e) => setTransferInput(e.target.value)}
-              />
-              <div className="mt-4 flex justify-end space-x-4">
-                <Button
-                  variant="destructive"
-                  disabled={transferLoading || !transferInput}
-                  onClick={handleTransfer}
-                >
-                  {transferLoading ? (
-                    <>
-                      <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                      Transferring...
-                    </>
-                  ) : (
-                    "Transfer Ownership"
-                  )}
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={() => setTransferModalOpen(false)}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
+    <ClientOnly>
+      <Card className="max-w-lg border-red-500 dark:border-red-700">
+        <CardHeader>
+          <CardTitle className="text-red-500 dark:text-red-700">
+            Danger Zone
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="pb-6">
+            <h3 className="text-lg font-semibold">Transfer Ownership</h3>
+            <p className="pb-4">
+              Once you transfer ownership, you will no longer be the owner of
+              this team.
+            </p>
+            <Dialog
+              open={transferModalOpen}
+              onOpenChange={setTransferModalOpen}
+            >
+              <DialogTrigger>
+                <Button variant="destructive">Transfer Ownership</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <h2 className="text-lg font-semibold">Transfer Ownership</h2>
+                </DialogHeader>
+                <p>
+                  Enter the email address of the user you want to transfer
+                  ownership to.
+                </p>
+                <Input
+                  type="text"
+                  className="mt-4 w-full rounded border border-solid p-2"
+                  onChange={(e) => setTransferInput(e.target.value)}
+                />
+                <div className="mt-4 flex justify-end space-x-4">
+                  <Button
+                    variant="destructive"
+                    disabled={transferLoading || !transferInput}
+                    onClick={handleTransfer}
+                  >
+                    {transferLoading ? (
+                      <>
+                        <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                        Transferring...
+                      </>
+                    ) : (
+                      "Transfer Ownership"
+                    )}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => setTransferModalOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
 
-        <div>
-          <h3 className="text-lg font-semibold">Delete Team</h3>
-          <p className="pb-4">
-            Once you delete a team, there is no going back. Please be certain.
-          </p>
-          <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
-            <DialogTrigger>
-              <Button variant="destructive">Delete Team</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <h2 className="text-lg font-semibold">Delete Team</h2>
-              </DialogHeader>
-              <p>
-                Are you sure you want to delete the team{" "}
-                <strong>{team.name}</strong>? This action cannot be undone.
-              </p>
-              <p>
-                Type <strong>{team.name}</strong> to confirm.
-              </p>
-              <Input
-                type="text"
-                className="mt-4 w-full rounded border border-solid p-2"
-                onChange={(e) => setDeleteInput(e.target.value)}
-              />
-              <div className="mt-4 flex justify-end space-x-4">
-                <Button
-                  variant="destructive"
-                  disabled={!deleteEnabled || deleteLoading}
-                  onClick={handleDelete}
-                >
-                  {deleteLoading ? (
-                    <>
-                      <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                      Deleting...
-                    </>
-                  ) : (
-                    "Delete Team"
-                  )}
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={() => setDeleteModalOpen(false)}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </CardContent>
-    </Card>
+          <div>
+            <h3 className="text-lg font-semibold">Delete Team</h3>
+            <p className="pb-4">
+              Once you delete a team, there is no going back. Please be certain.
+            </p>
+            <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
+              <DialogTrigger>
+                <Button variant="destructive">Delete Team</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <h2 className="text-lg font-semibold">Delete Team</h2>
+                </DialogHeader>
+                <p>
+                  Are you sure you want to delete the team{" "}
+                  <strong>{team.name}</strong>? This action cannot be undone.
+                </p>
+                <p>
+                  Type <strong>{team.name}</strong> to confirm.
+                </p>
+                <Input
+                  type="text"
+                  className="mt-4 w-full rounded border border-solid p-2"
+                  onChange={(e) => setDeleteInput(e.target.value)}
+                />
+                <div className="mt-4 flex justify-end space-x-4">
+                  <Button
+                    variant="destructive"
+                    disabled={!deleteEnabled || deleteLoading}
+                    onClick={handleDelete}
+                  >
+                    {deleteLoading ? (
+                      <>
+                        <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                        Deleting...
+                      </>
+                    ) : (
+                      "Delete Team"
+                    )}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => setDeleteModalOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardContent>
+      </Card>
+    </ClientOnly>
   );
 }

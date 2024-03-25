@@ -15,9 +15,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
-import { useEffect, useState } from "react";
 import { Switch } from "@/components/ui/switch";
+import { toast } from "@/components/ui/use-toast";
+import { ClientOnly } from "@/lib/client-only";
 
 const adminFormSchema = z.object({
   email: z.string().email({
@@ -68,58 +68,55 @@ export function ImpersonateUserForm() {
     }
   }
 
-  // fix LastPass hydration issue
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) return null;
-
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="lucas@lux.dev" defaultValue="" {...field} />
-              </FormControl>
-              <FormDescription>
-                This is the email of the user you want to impersonate.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="isProd"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>Use Production Environment URL</FormLabel>
+    <ClientOnly>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="lucas@lux.dev"
+                    defaultValue=""
+                    {...field}
+                  />
+                </FormControl>
                 <FormDescription>
-                  If enabled, the impersonation URL will be generated for the
-                  production environment. If disabled, the impersonation URL
-                  will be generated for the development environment.
+                  This is the email of the user you want to impersonate.
                 </FormDescription>
-              </div>
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Impersonate User</Button>
-      </form>
-    </Form>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="isProd"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Use Production Environment URL</FormLabel>
+                  <FormDescription>
+                    If enabled, the impersonation URL will be generated for the
+                    production environment. If disabled, the impersonation URL
+                    will be generated for the development environment.
+                  </FormDescription>
+                </div>
+              </FormItem>
+            )}
+          />
+          <Button type="submit">Impersonate User</Button>
+        </form>
+      </Form>
+    </ClientOnly>
   );
 }

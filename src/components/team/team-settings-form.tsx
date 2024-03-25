@@ -16,18 +16,19 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
-import { Team } from "@prisma/client";
-import Image from "next/image";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { ClipboardCopyIcon } from "@radix-ui/react-icons";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { toast } from "@/components/ui/use-toast";
+import { ClientOnly } from "@/lib/client-only";
+import { Team } from "@prisma/client";
+import { ClipboardCopyIcon } from "@radix-ui/react-icons";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { ChangeEvent, useRef, useState } from "react";
 
 const profileFormSchema = z.object({
   name: z
@@ -99,115 +100,110 @@ export function TeamSettingsForm({ team }: { team: Team }) {
     }
   };
 
-  // fix LastPass hydration issue
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) return null;
-
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormItem>
-          <FormLabel>Team Invite Link</FormLabel>
-          <FormControl>
-            <div className="items-center">
-              <p>Your permanent team invite link (hover to reveal):</p>
-              <code className="rounded bg-zinc-800 p-1 text-zinc-800 transition-colors hover:text-white">
-                https://parsertime.app/team/join/
-                {btoa(team.createdAt.toISOString())}
-              </code>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <ClipboardCopyIcon
-                      className="ml-2 inline-block h-5 w-5 cursor-pointer"
-                      onClick={() => {
-                        navigator.clipboard.writeText(
-                          `https://parsertime.app/team/join/${btoa(
-                            team.createdAt.toISOString()
-                          )}`
-                        );
-                        toast({
-                          title: "Copied to clipboard",
-                          description:
-                            "The team invite link has been copied to your clipboard.",
-                          duration: 5000,
-                        });
-                      }}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>Click to copy</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-          </FormControl>
-          <FormDescription>
-            Please note that inviting a user via the &quot;Invite User&quot;
-            button is much more secure. We suggest avoiding sharing this link
-            whenever possible.
-          </FormDescription>
-        </FormItem>
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Display Name</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Esports at Cornell"
-                  defaultValue={team.name ?? ""}
-                  className="max-w-lg"
-                  {...field}
+    <ClientOnly>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <FormItem>
+            <FormLabel>Team Invite Link</FormLabel>
+            <FormControl>
+              <div className="items-center">
+                <p>Your permanent team invite link (hover to reveal):</p>
+                <code className="rounded bg-zinc-800 p-1 text-zinc-800 transition-colors hover:text-white">
+                  https://parsertime.app/team/join/
+                  {btoa(team.createdAt.toISOString())}
+                </code>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <ClipboardCopyIcon
+                        className="ml-2 inline-block h-5 w-5 cursor-pointer"
+                        onClick={() => {
+                          navigator.clipboard.writeText(
+                            `https://parsertime.app/team/join/${btoa(
+                              team.createdAt.toISOString()
+                            )}`
+                          );
+                          toast({
+                            title: "Copied to clipboard",
+                            description:
+                              "The team invite link has been copied to your clipboard.",
+                            duration: 5000,
+                          });
+                        }}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>Click to copy</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </FormControl>
+            <FormDescription>
+              Please note that inviting a user via the &quot;Invite User&quot;
+              button is much more secure. We suggest avoiding sharing this link
+              whenever possible.
+            </FormDescription>
+          </FormItem>
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Display Name</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Esports at Cornell"
+                    defaultValue={team.name ?? ""}
+                    className="max-w-lg"
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  This is your team&apos;s public display name.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormItem>
+            <FormLabel>Avatar</FormLabel>
+            <FormControl aria-readonly>
+              <>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
+                  accept="image/*"
+                  aria-label="File upload"
                 />
-              </FormControl>
-              <FormDescription>
-                This is your team&apos;s public display name.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormItem>
-          <FormLabel>Avatar</FormLabel>
-          <FormControl aria-readonly>
-            <>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                className="hidden"
-                accept="image/*"
-                aria-label="File upload"
-              />
-              <Image
-                src={team.image || `https://avatar.vercel.sh/${team.name}.png`}
-                width={800}
-                height={800}
-                alt="User avatar"
-                className="h-16 w-16 cursor-pointer rounded-full"
-                onClick={handleAvatarClick}
-              />
-              <AvatarUpdateDialog
-                team={team}
-                isOpen={avatarDialogOpen}
-                setIsOpen={setAvatarDialogOpen}
-                selectedFile={selectedFile}
-              />
-            </>
-          </FormControl>
-          <FormDescription>
-            This is your team&apos;s public avatar. Click on the avatar to
-            upload a custom one from your files.
-          </FormDescription>
-          <FormMessage />
-        </FormItem>
-        <Button type="submit">Update team profile</Button>
-      </form>
-    </Form>
+                <Image
+                  src={
+                    team.image || `https://avatar.vercel.sh/${team.name}.png`
+                  }
+                  width={800}
+                  height={800}
+                  alt="User avatar"
+                  className="h-16 w-16 cursor-pointer rounded-full"
+                  onClick={handleAvatarClick}
+                />
+                <AvatarUpdateDialog
+                  team={team}
+                  isOpen={avatarDialogOpen}
+                  setIsOpen={setAvatarDialogOpen}
+                  selectedFile={selectedFile}
+                />
+              </>
+            </FormControl>
+            <FormDescription>
+              This is your team&apos;s public avatar. Click on the avatar to
+              upload a custom one from your files.
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+          <Button type="submit">Update team profile</Button>
+        </form>
+      </Form>
+    </ClientOnly>
   );
 }

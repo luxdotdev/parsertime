@@ -17,10 +17,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
+import { ClientOnly } from "@/lib/client-only";
 import { User } from "@prisma/client";
 import Image from "next/image";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ChangeEvent, useRef, useState } from "react";
 
 const discordSettingsFormSchema = z.object({
   name: z
@@ -87,75 +88,68 @@ export function DiscordSettingsForm({ user }: { user: User }) {
     }
   };
 
-  // fix LastPass hydration issue
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) return null;
-
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Username</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="lux"
-                  defaultValue={user.name ?? ""}
-                  {...field}
+    <ClientOnly>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Username</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="lux"
+                    defaultValue={user.name ?? ""}
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  This is your public display name. It can be your real name or
+                  a pseudonym.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormItem>
+            <FormLabel>Avatar</FormLabel>
+            <FormControl aria-readonly>
+              <>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
+                  accept="image/*"
+                  aria-label="File upload"
                 />
-              </FormControl>
-              <FormDescription>
-                This is your public display name. It can be your real name or a
-                pseudonym.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormItem>
-          <FormLabel>Avatar</FormLabel>
-          <FormControl aria-readonly>
-            <>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                className="hidden"
-                accept="image/*"
-                aria-label="File upload"
-              />
-              <Image
-                src={user.image || "https://avatar.vercel.sh/parsertime.png"}
-                width={800}
-                height={800}
-                alt="User avatar"
-                className="h-16 w-16 cursor-pointer rounded-full"
-                onClick={handleAvatarClick}
-              />
-              <AvatarUpdateDialog
-                user={user}
-                isOpen={avatarDialogOpen}
-                setIsOpen={setAvatarDialogOpen}
-                selectedFile={selectedFile}
-              />
-            </>
-          </FormControl>
-          <FormDescription>
-            This is your public account avatar. Click on the avatar to upload a
-            custom one from your files.
-          </FormDescription>
-          <FormMessage />
-        </FormItem>
-        <Button type="submit">Update profile</Button>
-      </form>
-    </Form>
+                <Image
+                  src={user.image || "https://avatar.vercel.sh/parsertime.png"}
+                  width={800}
+                  height={800}
+                  alt="User avatar"
+                  className="h-16 w-16 cursor-pointer rounded-full"
+                  onClick={handleAvatarClick}
+                />
+                <AvatarUpdateDialog
+                  user={user}
+                  isOpen={avatarDialogOpen}
+                  setIsOpen={setAvatarDialogOpen}
+                  selectedFile={selectedFile}
+                />
+              </>
+            </FormControl>
+            <FormDescription>
+              This is your public account avatar. Click on the avatar to upload
+              a custom one from your files.
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+          <Button type="submit">Update profile</Button>
+        </form>
+      </Form>
+    </ClientOnly>
   );
 }

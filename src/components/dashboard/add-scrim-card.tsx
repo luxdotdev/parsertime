@@ -8,15 +8,14 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { FormField, FormItem } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
+import { ClientOnly } from "@/lib/client-only";
 import { parseDataFromXLSX } from "@/lib/parser";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Form, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -114,61 +113,50 @@ export function AddScrimCard() {
     },
   });
 
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient)
-    return (
-      <Card className="border-dashed">
-        <Skeleton className="h-24 w-24" />
-      </Card>
-    );
-
   return (
-    <Form {...form}>
-      <form /*onDragEnter={handleDrag}*/>
-        <FormField
-          control={form.control}
-          name="file"
-          render={({ field }) => (
-            <FormItem>
-              <Card
-                className={cn(
-                  "flex h-48 max-w-md flex-col items-center justify-center border-dashed"
-                  // dragActive && "border-green-500"
-                )}
-                // onDragEnter={handleDrag}
-                // onDragLeave={handleDrag}
-                // onDragOver={handleDrag}
-                // onDrop={handleDrop}
-              >
-                <CardHeader className="text-center text-xl">
-                  <span className="inline-flex items-center justify-center space-x-2">
-                    <PlusCircledIcon className="h-6 w-6" />{" "}
-                    <span>Add a scrim...</span>
-                  </span>
-                </CardHeader>
-                <CardDescription className="pb-4">
-                  Click the button to create a scrim.
-                </CardDescription>
-                <CardContent className="flex items-center justify-center">
-                  {/* <Input
+    <ClientOnly>
+      <Form {...form}>
+        <form /*onDragEnter={handleDrag}*/>
+          <FormField
+            control={form.control}
+            name="file"
+            render={({ field }) => (
+              <FormItem>
+                <Card
+                  className={cn(
+                    "flex h-48 max-w-md flex-col items-center justify-center border-dashed"
+                    // dragActive && "border-green-500"
+                  )}
+                  // onDragEnter={handleDrag}
+                  // onDragLeave={handleDrag}
+                  // onDragOver={handleDrag}
+                  // onDrop={handleDrop}
+                >
+                  <CardHeader className="text-center text-xl">
+                    <span className="inline-flex items-center justify-center space-x-2">
+                      <PlusCircledIcon className="h-6 w-6" />{" "}
+                      <span>Add a scrim...</span>
+                    </span>
+                  </CardHeader>
+                  <CardDescription className="pb-4">
+                    Click the button to create a scrim.
+                  </CardDescription>
+                  <CardContent className="flex items-center justify-center">
+                    {/* <Input
                       type="file"
                       onChange={handleChange}
                       className="w-64"
                       accept=".xlsx"
                     />
                     <div className="pl-2" /> */}
-                  <CreateScrimButton />
-                </CardContent>
-              </Card>
-            </FormItem>
-          )}
-        />
-      </form>
-    </Form>
+                    <CreateScrimButton />
+                  </CardContent>
+                </Card>
+              </FormItem>
+            )}
+          />
+        </form>
+      </Form>
+    </ClientOnly>
   );
 }

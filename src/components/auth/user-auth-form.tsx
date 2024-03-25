@@ -2,16 +2,17 @@
 
 import * as React from "react";
 
-import { cn } from "@/lib/utils";
+import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Icons } from "@/components/icons";
+import { cn } from "@/lib/utils";
 import { signIn } from "next-auth/react";
 
-import { z } from "zod";
-import { track } from "@vercel/analytics";
+import { ClientOnly } from "@/lib/client-only";
 import { EnvelopeOpenIcon } from "@radix-ui/react-icons";
+import { track } from "@vercel/analytics";
+import { z } from "zod";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -25,61 +26,54 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     signIn("email", { email });
   }
 
-  // fix LastPass hydration issue
-  const [isClient, setIsClient] = React.useState(false);
-
-  React.useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) return null;
-
   return (
     <div className={cn("grid gap-6", className)} {...props}>
-      <form onSubmit={onSubmit}>
-        <div className="grid gap-2">
-          <div className="grid gap-1">
-            <Label className="sr-only" htmlFor="email">
-              Email
-            </Label>
-            <Input
-              id="email"
-              placeholder="name@example.com"
-              type="email"
-              autoCapitalize="none"
-              autoComplete="email"
-              autoCorrect="off"
-              disabled={isLoading}
-              onChange={(e) => {
-                const email = z
-                  .string()
-                  .email()
-                  .safeParse(e.target.value.toLowerCase());
+      <ClientOnly>
+        <form onSubmit={onSubmit}>
+          <div className="grid gap-2">
+            <div className="grid gap-1">
+              <Label className="sr-only" htmlFor="email">
+                Email
+              </Label>
+              <Input
+                id="email"
+                placeholder="name@example.com"
+                type="email"
+                autoCapitalize="none"
+                autoComplete="email"
+                autoCorrect="off"
+                disabled={isLoading}
+                onChange={(e) => {
+                  const email = z
+                    .string()
+                    .email()
+                    .safeParse(e.target.value.toLowerCase());
 
-                if (email.success) {
-                  setEmail(email.data);
-                } else {
-                  setEmail("");
-                }
+                  if (email.success) {
+                    setEmail(email.data);
+                  } else {
+                    setEmail("");
+                  }
+                }}
+              />
+            </div>
+            <Button
+              type="button"
+              disabled={isLoading}
+              onClick={() => {
+                track("Sign In", { location: "Auth form", method: "Email" });
+                signIn("email", { email });
               }}
-            />
+            >
+              {isLoading && (
+                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              <EnvelopeOpenIcon className="mr-2 h-4 w-4" />
+              Sign In with Email
+            </Button>
           </div>
-          <Button
-            type="button"
-            disabled={isLoading}
-            onClick={() => {
-              track("Sign In", { location: "Auth form", method: "Email" });
-              signIn("email", { email });
-            }}
-          >
-            {isLoading && (
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            <EnvelopeOpenIcon className="mr-2 h-4 w-4" />
-            Sign In with Email
-          </Button>
-        </div>
-      </form>
+        </form>
+      </ClientOnly>
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t" />
