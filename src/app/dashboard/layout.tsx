@@ -3,6 +3,7 @@ import { Search } from "@/components/dashboard/search";
 import { TeamSwitcher } from "@/components/dashboard/team-switcher";
 import Footer from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
+import { TeamSwitcherProvider } from "@/components/team-switcher-provider";
 import { ModeToggle } from "@/components/theme-switcher";
 import { UserNav } from "@/components/user-nav";
 import { auth } from "@/lib/auth";
@@ -15,7 +16,7 @@ export default async function DashboardLayout({
   const session = await auth();
 
   return (
-    <>
+    <TeamSwitcherProvider>
       <div className="min-h-[90vh] flex-col md:flex">
         <div className="border-b">
           <div className="hidden h-16 items-center px-4 md:flex">
@@ -38,6 +39,6 @@ export default async function DashboardLayout({
         {children}
       </div>
       <Footer />
-    </>
+    </TeamSwitcherProvider>
   );
 }
