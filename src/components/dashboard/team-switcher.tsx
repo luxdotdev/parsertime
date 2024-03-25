@@ -29,6 +29,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Session } from "next-auth";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { TeamSwitcherContext } from "@/components/team-switcher-provider";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
@@ -47,18 +48,7 @@ export function TeamSwitcher({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams()!;
-
-  // Get a new searchParams string by merging the current
-  // searchParams with a provided key/value pair
-  const createQueryString = React.useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams);
-      params.set(name, value);
-
-      return params.toString();
-    },
-    [searchParams]
-  );
+  const { setTeamId } = React.use(TeamSwitcherContext);
 
   function getTeams() {
     fetch("/api/team/get-teams")
@@ -83,16 +73,6 @@ export function TeamSwitcher({
       setNewTeamCreated(false);
     }
   }, [newTeamCreated]);
-
-  React.useEffect(() => {
-    if (searchParams.get("team")) {
-      const teamId = parseInt(searchParams.get("team") as string);
-      const team = teams.find((team) => parseInt(team.value) === teamId);
-      if (team) {
-        setSelectedTeam(team);
-      }
-    }
-  }, [searchParams, teams]);
 
   const groups = [
     {
@@ -151,18 +131,12 @@ export function TeamSwitcher({
                     <CommandItem
                       key={team.value}
                       onSelect={() => {
-                        if (team.value === "individual") {
-                          router.push(pathname);
-                        } else {
-                          router.push(
-                            `${pathname}?${createQueryString(
-                              "team",
-                              team.value
-                            )}`
-                          );
-                          router.refresh();
-                        }
                         setSelectedTeam(team);
+                        setTeamId(
+                          team.value === "individual"
+                            ? undefined
+                            : parseInt(team.value)
+                        );
                         setOpen(false);
                       }}
                       className="text-sm"
