@@ -57,12 +57,6 @@ export async function ScrimList({ searchParams }: Props) {
     });
   }
 
-  if (searchParams?.team) {
-    scrims = scrims.filter(
-      (scrim) => scrim.teamId === parseInt(searchParams.team as string)
-    );
-  }
-
   scrims = scrims.sort((a, b) => {
     return a.date < b.date ? -1 : a.date > b.date ? 1 : 0;
   });
