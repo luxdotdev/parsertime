@@ -1,7 +1,9 @@
 "use client";
 
 import { AddScrimCard } from "@/components/dashboard/add-scrim-card";
+import { EmptyScrimList } from "@/components/dashboard/empty-scrim-list";
 import { ScrimCard } from "@/components/dashboard/scrim-card";
+import { TeamSwitcherContext } from "@/components/team-switcher-provider";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -22,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Scrim } from "@prisma/client";
-import { useState } from "react";
+import { use, useState } from "react";
 
 type Props = {
   scrims: Array<Scrim & { team: string; creator: string; hasPerms: boolean }>;
@@ -32,6 +34,16 @@ export function ScrimPagination({ scrims }: Props) {
   const [currPage, setCurrPage] = useState(1);
   const [filter, setFilter] = useState("");
   const [search, setSearch] = useState("");
+
+  const { teamId } = use(TeamSwitcherContext);
+
+  if (teamId) {
+    scrims = scrims.filter((scrim) => scrim.teamId === teamId);
+  }
+
+  if (scrims.length === 0) {
+    return <EmptyScrimList />;
+  }
 
   const pageSize = 15;
 
