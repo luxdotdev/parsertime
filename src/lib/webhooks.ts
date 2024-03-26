@@ -18,6 +18,10 @@ type DiscordWebhook = {
     thumbnail?: {
       url?: string;
     };
+    footer?: {
+      text?: string;
+      icon_url?: string;
+    };
   }[];
 };
 
@@ -39,6 +43,10 @@ export function newUserWebhookConstructor(user: User): DiscordWebhook {
         color: 0x0ea5e9,
         thumbnail: {
           url: user.image ?? `https://avatar.vercel.sh/${user.email}.png`,
+        },
+        footer: {
+          text: "Parsertime",
+          icon_url: "https://parsertime.app/parsertime.png",
         },
       },
     ],
