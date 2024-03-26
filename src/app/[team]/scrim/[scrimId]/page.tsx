@@ -68,11 +68,13 @@ export default async function ScrimDashboardPage({ params }: Props) {
 
   const scrim = await getScrim(id);
 
-  const maps = await prisma.map.findMany({
-    where: {
-      scrimId: id,
-    },
-  });
+  const maps = (
+    await prisma.map.findMany({
+      where: {
+        scrimId: id,
+      },
+    })
+  ).sort((a, b) => a.id - b.id);
 
   const user = await getUser(session?.user?.email);
 
