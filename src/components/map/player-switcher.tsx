@@ -18,8 +18,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn, toHero } from "@/lib/utils";
+import { HeroName, heroRoleMapping } from "@/types/heroes";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 
 interface TeamGroup {
@@ -105,9 +106,21 @@ export default function PlayerSwitcher({
     return Array.from(teamGroupsMap.values());
   }
 
-  const teams = createTeamGroups(mostPlayedHeroes).sort((a, b) =>
-    a.label.localeCompare(b.label)
-  );
+  const priority = {
+    Damage: 1,
+    Tank: 2,
+    Support: 3,
+  };
+
+  const teams = createTeamGroups(
+    mostPlayedHeroes
+      .sort((a, b) => a.player_name.localeCompare(b.player_name))
+      .sort(
+        (a, b) =>
+          priority[heroRoleMapping[a.player_hero as HeroName]] -
+          priority[heroRoleMapping[b.player_hero as HeroName]]
+      )
+  ).sort((a, b) => a.label.localeCompare(b.label));
 
   return (
     <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
