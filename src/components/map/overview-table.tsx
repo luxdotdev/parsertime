@@ -265,7 +265,10 @@ export function OverviewTable({
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const tableData = aggregatePlayerData(playerStats);
+  const tableData = React.useMemo(
+    () => aggregatePlayerData(playerStats),
+    [playerStats]
+  );
 
   const table = useReactTable({
     data: tableData,
@@ -300,12 +303,22 @@ export function OverviewTable({
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger>
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(
+                            {header.isPlaceholder ? null : header.column.getCanSort() ? (
+                              <Button
+                                variant="ghost"
+                                onClick={header.column.getToggleSortingHandler()}
+                              >
+                                {flexRender(
                                   header.column.columnDef.header,
                                   header.getContext()
                                 )}
+                              </Button>
+                            ) : (
+                              flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )
+                            )}
                           </TooltipTrigger>
                           <TooltipContent>
                             {tooltips[
