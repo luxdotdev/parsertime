@@ -14,6 +14,7 @@ import {
 } from "@tanstack/react-table";
 import * as React from "react";
 
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -32,6 +33,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn, toTimestamp } from "@/lib/utils";
 import { GeistMono } from "geist/font/mono";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 
 export const columns: ColumnDef<PlayerData>[] = [
   {
@@ -297,39 +299,44 @@ export function OverviewTable({
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            {header.isPlaceholder ? null : header.column.getCanSort() ? (
-                              <Button
-                                variant="ghost"
-                                onClick={header.column.getToggleSortingHandler()}
-                              >
-                                {flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
-                                )}
-                              </Button>
-                            ) : (
-                              flexRender(
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          {header.isPlaceholder ? null : header.column.getCanSort() ? (
+                            <Button
+                              variant="ghost"
+                              onClick={header.column.getToggleSortingHandler()}
+                              className="h-max p-1 w-min w-full"
+                            >
+                              {flexRender(
                                 header.column.columnDef.header,
                                 header.getContext()
-                              )
-                            )}
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            {tooltips[
-                              header.column.id as keyof typeof tooltips
-                            ] || ""}
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </TableHead>
-                  );
-                })}
+                              )}
+                              {{
+                                asc: <ChevronUpIcon className="min-w-5 w-5" />,
+                                desc: (
+                                  <ChevronDownIcon className="min-w-5 w-5" />
+                                ),
+                              }[header.column.getIsSorted() as string] ?? null}
+                            </Button>
+                          ) : (
+                            flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )
+                          )}
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          {tooltips[
+                            header.column.id as keyof typeof tooltips
+                          ] || ""}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
