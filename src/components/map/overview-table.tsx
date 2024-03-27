@@ -63,7 +63,7 @@ export const columns: ColumnDef<PlayerData>[] = [
     accessorKey: "role",
     header: "Role",
     cell: ({ row }) => <div className="capitalize">{row.getValue("role")}</div>,
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -72,7 +72,7 @@ export const columns: ColumnDef<PlayerData>[] = [
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("playerTeam")}</div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -83,7 +83,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {toTimestamp(row.getValue<number>("timePlayed"))}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -94,7 +94,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue("eliminations")}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -105,7 +105,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue("kills")}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -116,7 +116,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue("assists")}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -127,7 +127,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue("deaths")}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -138,7 +138,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue<number>("kd").toFixed(2)}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -149,7 +149,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue<number>("kad").toFixed(2)}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -160,7 +160,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue<number>("heroDmgDealt").toFixed(2)}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -171,7 +171,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue<number>("dmgReceived").toFixed(2)}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -182,7 +182,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue<number>("healingReceived").toFixed(2)}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -193,7 +193,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue<number>("healingDealt").toFixed(2)}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -204,7 +204,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue<number>("dmgToHealsRatio").toFixed(2)}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -215,7 +215,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue("ultsCharged")}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -226,7 +226,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue("ultsUsed")}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
 ];
