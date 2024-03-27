@@ -46,7 +46,7 @@ export function newUserWebhookConstructor(user: User): DiscordWebhook {
         },
         footer: {
           text: "Parsertime",
-          icon_url: "https://parsertime.app/parsertime.png",
+          icon_url: "https://parsertime.app/icon.png",
         },
       },
     ],
