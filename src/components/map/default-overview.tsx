@@ -12,7 +12,7 @@ import prisma from "@/lib/prisma";
 import { range, removeDuplicateRows, round, toTimestamp } from "@/lib/utils";
 import { $Enums } from "@prisma/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { HeroName, heroRoleMapping } from "@/types/heroes";
+import { HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
 
 export async function DefaultOverview({ id }: { id: number }) {
   const finalRound = await prisma.roundEnd.findFirst({
@@ -143,12 +143,6 @@ export async function DefaultOverview({ id }: { id: number }) {
 
   const numberOfRounds =
     mapType === $Enums.MapType.Flashpoint ? 5 : finalRound?.round_number ?? 1;
-
-  const priority = {
-    Damage: 1,
-    Tank: 2,
-    Support: 3,
-  };
 
   return (
     <>
@@ -321,10 +315,12 @@ export async function DefaultOverview({ id }: { id: number }) {
                         )
                         .sort(
                           (a, b) =>
-                            priority[
+                            heroPriority[
                               heroRoleMapping[a.player_hero as HeroName]
                             ] -
-                            priority[heroRoleMapping[b.player_hero as HeroName]]
+                            heroPriority[
+                              heroRoleMapping[b.player_hero as HeroName]
+                            ]
                         )
                         .sort((a, b) =>
                           a.player_team.localeCompare(b.player_team)
