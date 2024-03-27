@@ -282,3 +282,9 @@ export const heroRoleMapping: Record<HeroName, "Tank" | "Damage" | "Support"> =
     Zarya: "Tank",
     Zenyatta: "Support",
   };
+
+export const heroPriority = {
+  Damage: 1,
+  Tank: 2,
+  Support: 3,
+};
