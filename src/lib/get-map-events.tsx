@@ -153,6 +153,15 @@ export async function getMapEvents(id: number) {
     },
   });
 
+  const heroSwaps = await prisma.heroSwap.findMany({
+    where: {
+      MapDataId: id,
+      match_time: {
+        not: 0,
+      },
+    },
+  });
+
   const fights = await groupKillsIntoFights(id);
 
   const ultimateKills = ultimateStarts.flatMap((start) => {
@@ -194,6 +203,7 @@ export async function getMapEvents(id: number) {
     ...roundEnds,
     ...objectiveCaptureds,
     ...objectiveUpdateds,
+    ...heroSwaps,
     ...ultimateKills,
     ...multikillList,
   ]
@@ -259,6 +269,51 @@ export async function getMapEvents(id: number) {
             </span>{" "}
             {event.payload_capture_progress} meters
           </p>
+        );
+      case "hero_swap":
+        return (
+          <div className="flex items-center gap-1 p-2" key={event}>
+            <span className={GeistMono.className}>
+              {toTimestamp(event.match_time)} -{" "}
+            </span>
+            <span className="inline-flex items-center gap-1 pl-1">
+              <Image
+                src={`/heroes/${toHero(event.previous_hero)}.png`}
+                alt={`${event.player_name}'s hero`}
+                width={256}
+                height={256}
+                className={cn(
+                  "h-8 w-8 rounded border-2",
+                  event.player_team === matchStart.team_1_name
+                    ? "border-blue-500"
+                    : "border-red-500"
+                )}
+              />
+              <span
+                className={cn(
+                  event.player_team === matchStart.team_1_name
+                    ? "text-blue-500"
+                    : "text-red-500"
+                )}
+              >
+                {event.player_name}
+              </span>
+            </span>{" "}
+            swapped to{" "}
+            <Image
+              src={`/heroes/${toHero(event.player_hero)}.png`}
+              alt={`${event.player_name}'s new hero`}
+              width={256}
+              height={256}
+              className={cn(
+                "h-8 w-8 rounded border-2",
+                event.player_team === matchStart.team_1_name
+                  ? "border-blue-500"
+                  : "border-red-500"
+              )}
+            />{" "}
+            {event.player_hero}.
+          </div>
         );
       case "ultimate_kills":
         return (
