@@ -12,6 +12,8 @@ import { Metadata } from "next";
 import { SearchParams } from "@/types/next";
 import { PlayerCharts } from "@/components/charts/player/player-charts";
 import { PlayerAnalytics } from "@/components/player/analytics";
+import { GuestNav } from "@/components/guest-nav";
+import { auth } from "@/lib/auth";
 
 type Props = {
   params: { team: string; scrimId: string; mapId: string; playerId: string };
@@ -71,6 +73,17 @@ export default async function PlayerDashboardPage({ params }: Props) {
     },
   });
 
+  const session = await auth();
+
+  const visibility = (await prisma.scrim.findFirst({
+    where: {
+      id: parseInt(params.scrimId),
+    },
+    select: {
+      guestMode: true,
+    },
+  })) ?? { guestMode: false };
+
   return (
     <div className="flex-col md:flex">
       <div className="border-b">
@@ -80,14 +93,22 @@ export default async function PlayerDashboardPage({ params }: Props) {
           <div className="ml-auto flex items-center space-x-4">
             <Search />
             <ModeToggle />
-            <UserNav />
+            {session ? (
+              <UserNav />
+            ) : (
+              <GuestNav guestMode={visibility.guestMode} />
+            )}
           </div>
         </div>
         <div className="flex h-16 items-center px-4 md:hidden">
           <PlayerSwitcher mostPlayedHeroes={uniquePlayerRowsByHeroTimePlayed} />
           <div className="ml-auto flex items-center space-x-4">
             <ModeToggle />
-            <UserNav />
+            {session ? (
+              <UserNav />
+            ) : (
+              <GuestNav guestMode={visibility.guestMode} />
+            )}
           </div>
         </div>
       </div>

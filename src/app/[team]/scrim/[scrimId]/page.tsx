@@ -21,6 +21,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { GuestNav } from "@/components/guest-nav";
 
 type Props = {
   params: { team: string; scrimId: string };
@@ -96,6 +97,15 @@ export default async function ScrimDashboardPage({ params }: Props) {
     user?.role === $Enums.UserRole.MANAGER ||
     user?.role === $Enums.UserRole.ADMIN;
 
+  const visibility = (await prisma.scrim.findFirst({
+    where: {
+      id: parseInt(params.scrimId),
+    },
+    select: {
+      guestMode: true,
+    },
+  })) ?? { guestMode: false };
+
   return (
     <div className="min-h-[90vh] flex-col md:flex">
       <div className="border-b">
@@ -103,7 +113,11 @@ export default async function ScrimDashboardPage({ params }: Props) {
           <div className="ml-auto flex items-center space-x-4">
             <Search />
             <ModeToggle />
-            <UserNav />
+            {session ? (
+              <UserNav />
+            ) : (
+              <GuestNav guestMode={visibility.guestMode} />
+            )}
           </div>
         </div>
       </div>
@@ -111,7 +125,11 @@ export default async function ScrimDashboardPage({ params }: Props) {
         <MobileNav session={session} />
         <div className="ml-auto flex items-center space-x-4">
           <ModeToggle />
-          <UserNav />
+          {session ? (
+            <UserNav />
+          ) : (
+            <GuestNav guestMode={visibility.guestMode} />
+          )}
         </div>
       </div>
       <div className="flex-1 space-y-4 p-8 pt-6">

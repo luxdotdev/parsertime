@@ -14,6 +14,8 @@ import { SearchParams } from "@/types/next";
 import { MapCharts } from "@/components/charts/map/map-charts";
 import { ComparePlayers } from "@/components/map/compare-players";
 import { MapEvents } from "@/components/map/map-events";
+import { auth } from "@/lib/auth";
+import { GuestNav } from "@/components/guest-nav";
 
 type Props = {
   params: { team: string; scrimId: string; mapId: string };
@@ -61,6 +63,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function MapDashboardPage({ params }: Props) {
   const id = parseInt(params.mapId);
+  const session = await auth();
 
   const uniquePlayerRowsByHeroTimePlayed = await prisma.playerStat.findMany({
     where: {
@@ -87,6 +90,15 @@ export default async function MapDashboardPage({ params }: Props) {
     },
   });
 
+  const visibility = (await prisma.scrim.findFirst({
+    where: {
+      id: parseInt(params.scrimId),
+    },
+    select: {
+      guestMode: true,
+    },
+  })) ?? { guestMode: false };
+
   return (
     <div className="flex-col md:flex">
       <div className="border-b">
@@ -96,14 +108,22 @@ export default async function MapDashboardPage({ params }: Props) {
           <div className="ml-auto flex items-center space-x-4">
             <Search />
             <ModeToggle />
-            <UserNav />
+            {session ? (
+              <UserNav />
+            ) : (
+              <GuestNav guestMode={visibility.guestMode} />
+            )}
           </div>
         </div>
         <div className="flex h-16 items-center px-4 md:hidden">
           <PlayerSwitcher mostPlayedHeroes={uniquePlayerRowsByHeroTimePlayed} />
           <div className="ml-auto flex items-center space-x-4">
             <ModeToggle />
-            <UserNav />
+            {session ? (
+              <UserNav />
+            ) : (
+              <GuestNav guestMode={visibility.guestMode} />
+            )}
           </div>
         </div>
       </div>
