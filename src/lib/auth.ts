@@ -157,6 +157,11 @@ export const config = {
 export const { handlers, auth, signIn, signOut } = NextAuth(config);
 
 export async function isAuthedToViewScrim(id: number) {
+  const scrim = await getScrim(id);
+  if (!scrim) return false;
+
+  if (scrim.guestMode) return true;
+
   const session = await auth();
   if (!session) {
     return false;
@@ -169,11 +174,6 @@ export async function isAuthedToViewScrim(id: number) {
   if (user?.role === $Enums.UserRole.ADMIN) {
     return true;
   }
-
-  const scrim = await getScrim(id);
-  if (!scrim) return false;
-
-  if (scrim.guestMode) return true;
 
   const listOfViewableScrims = await getUserViewableScrims(user.id);
 
@@ -189,6 +189,11 @@ export async function isAuthedToViewScrim(id: number) {
 }
 
 export async function isAuthedToViewMap(scrimId: number, mapId: number) {
+  const scrim = await getScrim(scrimId);
+  if (!scrim) return false;
+
+  if (scrim.guestMode) return true;
+
   const session = await auth();
   if (!session) {
     return false;
@@ -201,9 +206,6 @@ export async function isAuthedToViewMap(scrimId: number, mapId: number) {
   if (user?.role === $Enums.UserRole.ADMIN) {
     return true;
   }
-
-  const scrim = await getScrim(scrimId);
-  if (!scrim) return false;
 
   const scrimMaps = await prisma.map.findMany({
     where: {
