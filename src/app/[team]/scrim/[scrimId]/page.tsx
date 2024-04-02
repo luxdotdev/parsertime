@@ -89,7 +89,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
           },
         },
       },
-    })) !== null;
+    })) !== null && session !== null;
 
   const hasPerms =
     user?.id === scrim?.creatorId ||
