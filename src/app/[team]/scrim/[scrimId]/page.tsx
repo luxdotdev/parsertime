@@ -80,14 +80,10 @@ export default async function ScrimDashboardPage({ params }: Props) {
   const user = await getUser(session?.user?.email);
 
   const isManager =
-    (await prisma.team.findFirst({
+    (await prisma.teamManager.findFirst({
       where: {
-        id: scrim?.teamId ?? 0,
-        managers: {
-          some: {
-            userId: user?.id,
-          },
-        },
+        teamId: scrim?.teamId ?? 0,
+        userId: user?.id,
       },
     })) !== null && session !== null;
 
