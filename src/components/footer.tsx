@@ -5,7 +5,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-zinc-200 dark:border-zinc-800">
       <div className="container mx-auto flex flex-col items-center justify-between px-6 py-8 lg:flex-row">
-        <Link href="/">
+        <Link href="/" aria-label="Home">
           <Image
             src="/parsertime.png"
             alt=""
