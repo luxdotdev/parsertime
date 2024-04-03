@@ -163,7 +163,7 @@ export function AddMapCard() {
                     Drag and drop or select a file to upload.
                   </CardDescription>
                   <CardContent className="flex items-center justify-center">
-                    <Label htmlFor="file" className="cursor-pointer pr-2">
+                    <Label htmlFor="file" className="hidden">
                       Add a file
                     </Label>
                     <Input
