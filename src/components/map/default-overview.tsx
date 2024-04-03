@@ -321,7 +321,10 @@ export async function DefaultOverview({ id }: { id: number }) {
           <CardHeader>
             <CardTitle>Overview</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex md:hidden">
+            <OverviewTable playerStats={finalRoundStats} />
+          </CardContent>
+          <CardContent className="hidden md:flex">
             {numberOfRounds === 1 ? (
               <OverviewTable playerStats={finalRoundStats} />
             ) : (
