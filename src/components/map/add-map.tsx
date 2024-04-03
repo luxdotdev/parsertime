@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card";
 import { FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
 import { parseData } from "@/lib/parser";
@@ -162,7 +163,11 @@ export function AddMapCard() {
                     Drag and drop or select a file to upload.
                   </CardDescription>
                   <CardContent className="flex items-center justify-center">
+                    <Label htmlFor="file" className="cursor-pointer pr-2">
+                      Add a file
+                    </Label>
                     <Input
+                      id="file"
                       type="file"
                       onChange={handleChange}
                       className="w-64"
