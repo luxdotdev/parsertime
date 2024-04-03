@@ -11,6 +11,7 @@ import { Metadata } from "next";
 import { SearchParams } from "@/types/next";
 import { PlayerCharts } from "@/components/charts/player/player-charts";
 import { PlayerAnalytics } from "@/components/player/analytics";
+import { getMostPlayedHeroes } from "@/data/player-dto";
 
 type Props = {
   params: { team: string; scrimId: string; mapId: string; playerId: string };
@@ -45,21 +46,7 @@ export default async function PlayerDashboardDemoPage({ params }: Props) {
   const id = 268;
   const playerName = decodeURIComponent(params.playerId);
 
-  const uniquePlayerRowsByHeroTimePlayed = await prisma.playerStat.findMany({
-    where: {
-      MapDataId: id,
-    },
-    select: {
-      player_name: true,
-      player_team: true,
-      player_hero: true,
-      hero_time_played: true,
-    },
-    orderBy: {
-      hero_time_played: "desc",
-    },
-    distinct: ["player_name"],
-  });
+  const mostPlayedHeroes = await getMostPlayedHeroes(id);
 
   const mapName = await prisma.matchStart.findFirst({
     where: {
@@ -74,7 +61,7 @@ export default async function PlayerDashboardDemoPage({ params }: Props) {
     <div className="flex-col md:flex">
       <div className="border-b">
         <div className="hidden h-16 items-center px-4 md:flex">
-          <PlayerSwitcher mostPlayedHeroes={uniquePlayerRowsByHeroTimePlayed} />
+          <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
           <MainNav className="mx-6" />
           <div className="ml-auto flex items-center space-x-4">
             <Search />
@@ -82,7 +69,7 @@ export default async function PlayerDashboardDemoPage({ params }: Props) {
           </div>
         </div>
         <div className="flex h-16 items-center px-4 md:hidden">
-          <PlayerSwitcher mostPlayedHeroes={uniquePlayerRowsByHeroTimePlayed} />
+          <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
           <div className="ml-auto flex items-center space-x-4">
             <ModeToggle />
           </div>
