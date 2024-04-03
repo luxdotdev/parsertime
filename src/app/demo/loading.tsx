@@ -115,20 +115,43 @@ export default function MapDashboardLoading() {
             </CardFooter>
           </Card>
         </div>
-        <div className="hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-7">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
           <Card className="col-span-full">
             <CardHeader>
               <CardTitle>Overview</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <Skeleton className="h-8 w-64" />
                 <div className="w-full">
                   <div className="rounded-md border">
-                    <Skeleton className="h-96 w-full" />
+                    <Skeleton className="h-[70vh] w-full md:h-96" />
                   </div>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <Card className="col-span-full">
+            <CardHeader>
+              <CardTitle>Analysis</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <ul className="list-outside list-disc pl-4">
+                <li>
+                  <Skeleton className="h-6 w-full md:w-1/2" />
+                  <Skeleton className="h-6 w-full md:hidden md:w-1/2" />
+                  <Skeleton className="h-6 w-full md:hidden md:w-1/2" />
+                </li>
+                <li>
+                  <Skeleton className="h-6 w-full md:w-1/2" />
+                  <Skeleton className="h-6 w-full md:hidden md:w-1/2" />
+                </li>
+                <li>
+                  <Skeleton className="h-6 w-full md:w-1/2" />
+                  <Skeleton className="h-6 w-full md:hidden md:w-1/2" />
+                </li>
+              </ul>
             </CardContent>
           </Card>
         </div>
