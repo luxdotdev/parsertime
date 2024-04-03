@@ -17,7 +17,7 @@ type Props = {
 
 export function ScrimCard({ scrim }: Props) {
   return (
-    <Link href={`/${scrim.teamId}/scrim/${scrim.id}`}>
+    <Link href={`/${scrim.teamId}/scrim/${scrim.id}`} aria-label="Edit scrim">
       <Card className="max-w-md sm:h-48 md:h-64 xl:h-48">
         <CardHeader className="text-lg font-semibold">
           <div className="flex items-center justify-between">

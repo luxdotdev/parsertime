@@ -140,6 +140,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
                 <Link
                   className="pl-2"
                   href={`/${params.team}/scrim/${params.scrimId}/edit`}
+                  aria-label="Edit scrim"
                 >
                   <TooltipProvider>
                     <Tooltip>
