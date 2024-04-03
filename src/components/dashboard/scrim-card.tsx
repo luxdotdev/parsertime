@@ -17,7 +17,7 @@ type Props = {
 
 export function ScrimCard({ scrim }: Props) {
   return (
-    <Link href={`/${scrim.teamId}/scrim/${scrim.id}`} aria-label="Edit scrim">
+    <Link href={`/${scrim.teamId}/scrim/${scrim.id}`}>
       <Card className="max-w-md sm:h-48 md:h-64 xl:h-48">
         <CardHeader className="text-lg font-semibold">
           <div className="flex items-center justify-between">
@@ -26,7 +26,10 @@ export function ScrimCard({ scrim }: Props) {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Link href={`/${scrim.teamId}/scrim/${scrim.id}/edit`}>
+                    <Link
+                      href={`/${scrim.teamId}/scrim/${scrim.id}/edit`}
+                      aria-label="Edit scrim"
+                    >
                       <Pencil2Icon className="h-4 w-4" />
                     </Link>
                   </TooltipTrigger>
