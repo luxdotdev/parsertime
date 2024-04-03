@@ -316,8 +316,8 @@ export async function DefaultOverview({ id }: { id: number }) {
           </CardFooter>
         </Card>
       </div>
-      <div className="hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-full">
+      <div className="flex gap-4 md:grid md:grid-cols-2 lg:grid-cols-7">
+        <Card className="max-w-full md:col-span-full">
           <CardHeader>
             <CardTitle>Overview</CardTitle>
           </CardHeader>
