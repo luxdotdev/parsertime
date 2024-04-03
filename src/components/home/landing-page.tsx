@@ -258,6 +258,7 @@ export default async function LandingPage() {
                   width={2432}
                   height={1442}
                   className="hidden w-[76rem] rounded-md bg-white/5 shadow-2xl ring-1 ring-white/10 dark:flex"
+                  priority
                 />
                 <Image
                   src="/player_page_light.png"
@@ -265,6 +266,7 @@ export default async function LandingPage() {
                   width={2432}
                   height={1442}
                   className="w-[76rem] rounded-md bg-white/5 shadow-2xl ring-1 ring-white/10 dark:hidden"
+                  priority
                 />
               </div>
             </div>
