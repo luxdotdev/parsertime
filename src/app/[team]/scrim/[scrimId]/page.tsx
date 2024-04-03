@@ -176,7 +176,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
                     <CardContent>
                       <Image
                         src={`/maps/${toKebabCase(map.name)}.webp`}
-                        alt={map.name}
+                        alt={`The loading screen art for ${map.name}.`}
                         fill
                         className="rounded-md object-cover brightness-[0.65]"
                       />
