@@ -215,7 +215,7 @@ export default async function LandingPage() {
                     Latest updates
                   </span>
                   <span className="inline-flex items-center space-x-2 text-sm font-medium leading-6 text-gray-600 dark:text-gray-300">
-                    <span>Parsertime Public Beta Release 🎉</span>
+                    <span>Public Beta Release 🎉</span>
                     <ChevronRightIcon
                       className="h-5 w-5 text-gray-400 dark:text-gray-500"
                       aria-hidden="true"
