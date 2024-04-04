@@ -182,9 +182,12 @@ export async function DefaultOverview({ id }: { id: number }) {
       return acc;
     }, {});
 
-  const playerWithMostFirstDeaths = Object.keys(firstDeaths).reduce((a, b) =>
-    firstDeaths[a] > firstDeaths[b] ? a : b
-  );
+  const playerWithMostFirstDeaths =
+    Object.keys(firstDeaths).length > 0
+      ? Object.keys(firstDeaths).reduce((a, b) =>
+          firstDeaths[a] > firstDeaths[b] ? a : b
+        )
+      : "null";
 
   return (
     <>
