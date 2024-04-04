@@ -206,12 +206,16 @@ export default async function LandingPage() {
                 alt="Parsertime Logo"
               />
               <div className="mt-24 sm:mt-32 lg:mt-16">
-                <Link href="#" className="inline-flex space-x-6">
+                <Link
+                  href="https://blog.lux.dev/blog/parsertime-public-beta/"
+                  target="_blank"
+                  className="inline-flex space-x-6"
+                >
                   <span className="rounded-full bg-sky-600/10 px-3 py-1 text-sm font-semibold leading-6 text-sky-600 ring-1 ring-inset ring-sky-600/20 dark:bg-sky-500/10 dark:text-sky-400 dark:ring-sky-500/20">
                     Latest updates
                   </span>
                   <span className="inline-flex items-center space-x-2 text-sm font-medium leading-6 text-gray-600 dark:text-gray-300">
-                    <span>Just shipped v1.0</span>
+                    <span>Parsertime Public Beta Release 🎉</span>
                     <ChevronRightIcon
                       className="h-5 w-5 text-gray-400 dark:text-gray-500"
                       aria-hidden="true"
