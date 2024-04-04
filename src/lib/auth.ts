@@ -192,6 +192,18 @@ export async function isAuthedToViewMap(scrimId: number, mapId: number) {
   const scrim = await getScrim(scrimId);
   if (!scrim) return false;
 
+  const scrimMaps = await prisma.map.findMany({
+    where: {
+      scrimId,
+    },
+  });
+
+  if (!scrimMaps) return false;
+
+  const map = scrimMaps.find((m) => m.id === mapId);
+
+  if (!map) return false;
+
   if (scrim.guestMode) return true;
 
   const session = await auth();
@@ -206,18 +218,6 @@ export async function isAuthedToViewMap(scrimId: number, mapId: number) {
   if (user?.role === $Enums.UserRole.ADMIN) {
     return true;
   }
-
-  const scrimMaps = await prisma.map.findMany({
-    where: {
-      scrimId,
-    },
-  });
-
-  if (!scrimMaps) return false;
-
-  const map = scrimMaps.find((m) => m.id === mapId);
-
-  if (!map) return false;
 
   return true;
 }
