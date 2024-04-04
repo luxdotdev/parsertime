@@ -14,7 +14,7 @@ const stats = [
   { label: "Started development", value: "Nov 2023" },
   { label: "Used internally", value: "Jan 2024" },
   { label: "Scrims uploaded during beta", value: "50+" },
-  { label: "Player stats tracked during beta", value: "15,000+" },
+  { label: "Player stats tracked during beta", value: "22,000+" },
 ];
 const values = [
   {
