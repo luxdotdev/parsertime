@@ -13,6 +13,7 @@ import {
   SunIcon,
   DiscordLogoIcon,
   EnvelopeOpenIcon,
+  Share2Icon,
 } from "@radix-ui/react-icons";
 
 import { GetTeamsResponse } from "@/app/api/team/get-teams/route";
@@ -28,15 +29,17 @@ import {
 } from "@/components/ui/command";
 import { track } from "@vercel/analytics";
 import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { CommandMenuContext } from "@/components/command-menu-provider";
 import { use, useCallback, useEffect, useState } from "react";
+import { toast } from "@/components/ui/use-toast";
 
 export function CommandDialogMenu() {
   const { open, setOpen } = use(CommandMenuContext);
   const [teams, setTeams] = useState<{ label: string; value: string }[]>([]);
   const router = useRouter();
   const { setTheme } = useTheme();
+  const pathname = usePathname();
 
   function getTeams() {
     fetch("/api/team/get-teams")
@@ -101,6 +104,34 @@ export function CommandDialogMenu() {
             <span>Home</span>
           </CommandItem>
         </CommandGroup>
+        {pathname.includes("/scrim/") && (
+          <>
+            <CommandSeparator />
+            <CommandGroup heading="Scrim">
+              <CommandItem
+                onSelect={() =>
+                  runCommand(() => {
+                    let link = window.location.href;
+                    if (link.includes("/edit")) {
+                      link = link.split("/edit")[0];
+                    }
+                    navigator.clipboard.writeText(link);
+                    toast({
+                      title: "Link Copied",
+                      description: `The link to this ${pathname.includes("/map") ? "map" : "scrim"} has been copied.`,
+                      duration: 5000,
+                    });
+                  })
+                }
+              >
+                <Share2Icon className="mr-2 h-4 w-4" />
+                <span>
+                  Share Link to {pathname.includes("/map") ? "Map" : "Scrim"}
+                </span>
+              </CommandItem>
+            </CommandGroup>
+          </>
+        )}
         {teams.length > 0 && (
           <>
             <CommandSeparator />
