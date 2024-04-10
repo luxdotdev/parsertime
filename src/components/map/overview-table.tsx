@@ -308,16 +308,16 @@ export function OverviewTable({
                             <Button
                               variant="ghost"
                               onClick={header.column.getToggleSortingHandler()}
-                              className="h-max p-1 w-min w-full"
+                              className="h-max w-full p-1"
                             >
                               {flexRender(
                                 header.column.columnDef.header,
                                 header.getContext()
                               )}
                               {{
-                                asc: <ChevronUpIcon className="min-w-5 w-5" />,
+                                asc: <ChevronUpIcon className="w-5 min-w-5" />,
                                 desc: (
-                                  <ChevronDownIcon className="min-w-5 w-5" />
+                                  <ChevronDownIcon className="w-5 min-w-5" />
                                 ),
                               }[header.column.getIsSorted() as string] ?? null}
                             </Button>
