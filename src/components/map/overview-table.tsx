@@ -14,6 +14,7 @@ import {
 } from "@tanstack/react-table";
 import * as React from "react";
 
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -32,6 +33,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn, toTimestamp } from "@/lib/utils";
 import { GeistMono } from "geist/font/mono";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 
 export const columns: ColumnDef<PlayerData>[] = [
   {
@@ -63,7 +65,7 @@ export const columns: ColumnDef<PlayerData>[] = [
     accessorKey: "role",
     header: "Role",
     cell: ({ row }) => <div className="capitalize">{row.getValue("role")}</div>,
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -72,7 +74,7 @@ export const columns: ColumnDef<PlayerData>[] = [
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("playerTeam")}</div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -83,7 +85,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {toTimestamp(row.getValue<number>("timePlayed"))}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -94,7 +96,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue("eliminations")}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -105,7 +107,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue("kills")}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -116,7 +118,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue("assists")}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -127,7 +129,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue("deaths")}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -138,7 +140,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue<number>("kd").toFixed(2)}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -149,7 +151,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue<number>("kad").toFixed(2)}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -160,7 +162,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue<number>("heroDmgDealt").toFixed(2)}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -171,7 +173,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue<number>("dmgReceived").toFixed(2)}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -182,7 +184,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue<number>("healingReceived").toFixed(2)}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -193,7 +195,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue<number>("healingDealt").toFixed(2)}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -204,7 +206,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue<number>("dmgToHealsRatio").toFixed(2)}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -215,7 +217,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue("ultsCharged")}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
   {
@@ -226,7 +228,7 @@ export const columns: ColumnDef<PlayerData>[] = [
         {row.getValue("ultsUsed")}
       </div>
     ),
-    enableSorting: false,
+    enableSorting: true,
     enableColumnFilter: false,
   },
 ];
@@ -265,7 +267,10 @@ export function OverviewTable({
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const tableData = aggregatePlayerData(playerStats);
+  const tableData = React.useMemo(
+    () => aggregatePlayerData(playerStats),
+    [playerStats]
+  );
 
   const table = useReactTable({
     data: tableData,
@@ -294,29 +299,44 @@ export function OverviewTable({
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
-                                )}
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            {tooltips[
-                              header.column.id as keyof typeof tooltips
-                            ] || ""}
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          {header.isPlaceholder ? null : header.column.getCanSort() ? (
+                            <Button
+                              variant="ghost"
+                              onClick={header.column.getToggleSortingHandler()}
+                              className="h-max p-1 w-min w-full"
+                            >
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                              {{
+                                asc: <ChevronUpIcon className="min-w-5 w-5" />,
+                                desc: (
+                                  <ChevronDownIcon className="min-w-5 w-5" />
+                                ),
+                              }[header.column.getIsSorted() as string] ?? null}
+                            </Button>
+                          ) : (
+                            flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )
+                          )}
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          {tooltips[
+                            header.column.id as keyof typeof tooltips
+                          ] || ""}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
