@@ -49,8 +49,8 @@ export default function NotFound() {
           <Image
             src="/not-found.avif"
             alt=""
+            fill
             className="absolute inset-0 h-full w-full object-cover"
-            layout="fill"
           />
         </div>
       </div>
