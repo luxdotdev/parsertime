@@ -3,9 +3,9 @@
 import {
   ColumnDef,
   ColumnFiltersState,
+  Header,
   SortingState,
   VisibilityState,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
@@ -15,14 +15,6 @@ import {
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { PlayerData, aggregatePlayerData } from "@/lib/player-table-data";
 import { PlayerStatRows } from "@/types/prisma";
 import {
@@ -34,6 +26,7 @@ import {
 import { cn, toTimestamp } from "@/lib/utils";
 import { GeistMono } from "geist/font/mono";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
+import { DataTable } from "../ui/data-table";
 
 export const columns: ColumnDef<PlayerData>[] = [
   {
@@ -45,7 +38,11 @@ export const columns: ColumnDef<PlayerData>[] = [
   },
   {
     accessorKey: "playerName",
-    header: "Player Name",
+    header: ({ header }) => (
+      <OverviewTableHeader tooltip={tooltips.playerName} header={header}>
+        Player Name
+      </OverviewTableHeader>
+    ),
     cell: ({ row }) => (
       <button
         onClick={() =>
@@ -63,14 +60,22 @@ export const columns: ColumnDef<PlayerData>[] = [
   },
   {
     accessorKey: "role",
-    header: "Role",
+    header: ({ header }) => (
+      <OverviewTableHeader tooltip={tooltips.role} header={header}>
+        Role
+      </OverviewTableHeader>
+    ),
     cell: ({ row }) => <div className="capitalize">{row.getValue("role")}</div>,
     enableSorting: true,
     enableColumnFilter: false,
   },
   {
     accessorKey: "playerTeam",
-    header: "Player Team",
+    header: ({ header }) => (
+      <OverviewTableHeader tooltip={tooltips.playerTeam} header={header}>
+        Player Team
+      </OverviewTableHeader>
+    ),
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("playerTeam")}</div>
     ),
@@ -79,7 +84,11 @@ export const columns: ColumnDef<PlayerData>[] = [
   },
   {
     accessorKey: "timePlayed",
-    header: "Time Played",
+    header: ({ header }) => (
+      <OverviewTableHeader tooltip={tooltips.timePlayed} header={header}>
+        Time Played
+      </OverviewTableHeader>
+    ),
     cell: ({ row }) => (
       <div className={cn(GeistMono.className, "text-right capitalize")}>
         {toTimestamp(row.getValue<number>("timePlayed"))}
@@ -90,7 +99,11 @@ export const columns: ColumnDef<PlayerData>[] = [
   },
   {
     accessorKey: "eliminations",
-    header: "Eliminations",
+    header: ({ header }) => (
+      <OverviewTableHeader tooltip={tooltips.eliminations} header={header}>
+        Eliminations
+      </OverviewTableHeader>
+    ),
     cell: ({ row }) => (
       <div className={cn(GeistMono.className, "text-right capitalize")}>
         {row.getValue("eliminations")}
@@ -101,7 +114,11 @@ export const columns: ColumnDef<PlayerData>[] = [
   },
   {
     accessorKey: "kills",
-    header: "Final Blows",
+    header: ({ header }) => (
+      <OverviewTableHeader tooltip={tooltips.kills} header={header}>
+        Final Blows
+      </OverviewTableHeader>
+    ),
     cell: ({ row }) => (
       <div className={cn(GeistMono.className, "text-right capitalize")}>
         {row.getValue("kills")}
@@ -112,7 +129,11 @@ export const columns: ColumnDef<PlayerData>[] = [
   },
   {
     accessorKey: "assists",
-    header: "Assists",
+    header: ({ header }) => (
+      <OverviewTableHeader tooltip={tooltips.assists} header={header}>
+        Assists
+      </OverviewTableHeader>
+    ),
     cell: ({ row }) => (
       <div className={cn(GeistMono.className, "text-right capitalize")}>
         {row.getValue("assists")}
@@ -123,7 +144,11 @@ export const columns: ColumnDef<PlayerData>[] = [
   },
   {
     accessorKey: "deaths",
-    header: "Deaths",
+    header: ({ header }) => (
+      <OverviewTableHeader tooltip={tooltips.deaths} header={header}>
+        Deaths
+      </OverviewTableHeader>
+    ),
     cell: ({ row }) => (
       <div className={cn(GeistMono.className, "text-right capitalize")}>
         {row.getValue("deaths")}
@@ -134,7 +159,11 @@ export const columns: ColumnDef<PlayerData>[] = [
   },
   {
     accessorKey: "kd",
-    header: "K/D",
+    header: ({ header }) => (
+      <OverviewTableHeader tooltip={tooltips.kd} header={header}>
+        K/D
+      </OverviewTableHeader>
+    ),
     cell: ({ row }) => (
       <div className={cn(GeistMono.className, "text-right capitalize")}>
         {row.getValue<number>("kd").toFixed(2)}
@@ -145,7 +174,11 @@ export const columns: ColumnDef<PlayerData>[] = [
   },
   {
     accessorKey: "kad",
-    header: "KA/D",
+    header: ({ header }) => (
+      <OverviewTableHeader tooltip={tooltips.kad} header={header}>
+        KA/D
+      </OverviewTableHeader>
+    ),
     cell: ({ row }) => (
       <div className={cn(GeistMono.className, "text-right capitalize")}>
         {row.getValue<number>("kad").toFixed(2)}
@@ -156,7 +189,11 @@ export const columns: ColumnDef<PlayerData>[] = [
   },
   {
     accessorKey: "heroDmgDealt",
-    header: "Hero Damage Dealt",
+    header: ({ header }) => (
+      <OverviewTableHeader tooltip={tooltips.heroDmgDealt} header={header}>
+        Hero Damage Dealt
+      </OverviewTableHeader>
+    ),
     cell: ({ row }) => (
       <div className={cn(GeistMono.className, "text-right capitalize")}>
         {row.getValue<number>("heroDmgDealt").toFixed(2)}
@@ -167,7 +204,11 @@ export const columns: ColumnDef<PlayerData>[] = [
   },
   {
     accessorKey: "dmgReceived",
-    header: "Damage Received",
+    header: ({ header }) => (
+      <OverviewTableHeader tooltip={tooltips.dmgReceived} header={header}>
+        Damage Received
+      </OverviewTableHeader>
+    ),
     cell: ({ row }) => (
       <div className={cn(GeistMono.className, "text-right capitalize")}>
         {row.getValue<number>("dmgReceived").toFixed(2)}
@@ -178,7 +219,11 @@ export const columns: ColumnDef<PlayerData>[] = [
   },
   {
     accessorKey: "healingReceived",
-    header: "Healing Received",
+    header: ({ header }) => (
+      <OverviewTableHeader tooltip={tooltips.healingReceived} header={header}>
+        Healing Received
+      </OverviewTableHeader>
+    ),
     cell: ({ row }) => (
       <div className={cn(GeistMono.className, "text-right capitalize")}>
         {row.getValue<number>("healingReceived").toFixed(2)}
@@ -189,7 +234,11 @@ export const columns: ColumnDef<PlayerData>[] = [
   },
   {
     accessorKey: "healingDealt",
-    header: "Healing Dealt",
+    header: ({ header }) => (
+      <OverviewTableHeader tooltip={tooltips.healingDealt} header={header}>
+        Healing Dealt
+      </OverviewTableHeader>
+    ),
     cell: ({ row }) => (
       <div className={cn(GeistMono.className, "text-right capitalize")}>
         {row.getValue<number>("healingDealt").toFixed(2)}
@@ -200,7 +249,11 @@ export const columns: ColumnDef<PlayerData>[] = [
   },
   {
     accessorKey: "dmgToHealsRatio",
-    header: "Damage Dealt:Healing Received",
+    header: ({ header }) => (
+      <OverviewTableHeader tooltip={tooltips.dmgToHealsRatio} header={header}>
+        Damage Dealt:Healing Received
+      </OverviewTableHeader>
+    ),
     cell: ({ row }) => (
       <div className={cn(GeistMono.className, "text-right capitalize")}>
         {row.getValue<number>("dmgToHealsRatio").toFixed(2)}
@@ -211,7 +264,11 @@ export const columns: ColumnDef<PlayerData>[] = [
   },
   {
     accessorKey: "ultsCharged",
-    header: "Ultimates Charged",
+    header: ({ header }) => (
+      <OverviewTableHeader tooltip={tooltips.ultsCharged} header={header}>
+        Ultimates Charged
+      </OverviewTableHeader>
+    ),
     cell: ({ row }) => (
       <div className={cn(GeistMono.className, "text-right capitalize")}>
         {row.getValue("ultsCharged")}
@@ -222,7 +279,11 @@ export const columns: ColumnDef<PlayerData>[] = [
   },
   {
     accessorKey: "ultsUsed",
-    header: "Ultimates Used",
+    header: ({ header }) => (
+      <OverviewTableHeader tooltip={tooltips.ultsUsed} header={header}>
+        Ultimates Used
+      </OverviewTableHeader>
+    ),
     cell: ({ row }) => (
       <div className={cn(GeistMono.className, "text-right capitalize")}>
         {row.getValue("ultsUsed")}
@@ -295,81 +356,45 @@ export function OverviewTable({
   return (
     <div className="w-full">
       <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          {header.isPlaceholder ? null : header.column.getCanSort() ? (
-                            <Button
-                              variant="ghost"
-                              onClick={header.column.getToggleSortingHandler()}
-                              className="h-max w-full p-1"
-                            >
-                              {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                              {{
-                                asc: <ChevronUpIcon className="w-5 min-w-5" />,
-                                desc: (
-                                  <ChevronDownIcon className="w-5 min-w-5" />
-                                ),
-                              }[header.column.getIsSorted() as string] ?? null}
-                            </Button>
-                          ) : (
-                            flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )
-                          )}
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          {tooltips[
-                            header.column.id as keyof typeof tooltips
-                          ] || ""}
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+        <DataTable table={table} />
       </div>
     </div>
   );
 }
+
+const OverviewTableHeader = ({
+  tooltip,
+  header,
+  children,
+}: {
+  tooltip?: string;
+  header: Header<PlayerData, unknown>;
+  children: React.ReactNode;
+}) => {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>
+          {header.isPlaceholder ? null : header.column.getCanSort() ? (
+            <Button
+              variant="ghost"
+              onClick={header.column.getToggleSortingHandler()}
+              className="h-max w-full p-1"
+            >
+              {!header.column.getIsSorted() && <span className="w-2" />}
+              {children}
+              {{
+                asc: <ChevronUpIcon className="w-4 min-w-4" />,
+                desc: <ChevronDownIcon className="w-4 min-w-4" />,
+              }[header.column.getIsSorted() as string] ?? null}
+              {!header.column.getIsSorted() && <span className="w-2" />}
+            </Button>
+          ) : (
+            children
+          )}
+        </TooltipTrigger>
+        <TooltipContent>{tooltip ?? ""}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
