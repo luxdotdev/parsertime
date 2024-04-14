@@ -69,7 +69,9 @@ export function JoinTokenInput({
             value={char}
             onChange={(e) => handleChange(index, e.target.value.toLowerCase())}
             onPaste={handlePaste}
-            ref={(el) => (inputRefs.current[index] = el)} // Assign ref for focus management
+            ref={(el: HTMLInputElement | null) => {
+              inputRefs.current[index] = el;
+            }}
             className="w-10 text-center"
           />
         </>
