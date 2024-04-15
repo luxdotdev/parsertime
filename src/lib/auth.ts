@@ -2,6 +2,7 @@ import MagicLinkEmail from "@/components/email/magic-link";
 import UserOnboardingEmail from "@/components/email/onboarding";
 import { getScrim, getUserViewableScrims } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
+import { sendEmail } from "@/lib/email";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
@@ -9,7 +10,6 @@ import { newUserWebhookConstructor, sendDiscordWebhook } from "@/lib/webhooks";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { $Enums } from "@prisma/client";
 import { render } from "@react-email/render";
-import sendgrid from "@sendgrid/mail";
 import { track } from "@vercel/analytics/server";
 import { get } from "@vercel/edge-config";
 import { createHash, randomBytes } from "crypto";
@@ -22,8 +22,6 @@ import isEmail from "validator/lib/isEmail";
 const isProd = process.env.NODE_ENV === "production";
 
 export type Availability = "public" | "private";
-
-sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
 
 export const config = {
   adapter: PrismaAdapter(prisma),
@@ -61,7 +59,7 @@ export const config = {
         );
 
         try {
-          await sendgrid.send({
+          await sendEmail({
             to: email,
             from: "noreply@lux.dev",
             subject: "Sign in to Parsertime",
@@ -117,7 +115,7 @@ export const config = {
         );
 
         try {
-          await sendgrid.send({
+          await sendEmail({
             to: user.email!,
             from: "noreply@lux.dev",
             subject: `Welcome to Parsertime!`,
