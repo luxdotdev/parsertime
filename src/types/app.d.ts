@@ -26,8 +26,12 @@ const envVariables = z.object({
   STRIPE_SECRET_KEY: z.string(),
   STRIPE_WEBHOOK_SECRET: z.string(),
 
+  // AWS SES keys
+  AWS_ACCESS_KEY_ID: z.string(),
+  AWS_SECRET_ACCESS_KEY: z.string(),
+  AWS_SES_REGION: z.string(),
+
   // Misc
-  SENDGRID_API_KEY: z.string(),
   NEXTAUTH_SECRET: z.string(),
   NEXTAUTH_URL: z.string(),
   DEV_TOKEN: z.string(),
