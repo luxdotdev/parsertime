@@ -11,7 +11,11 @@ import { $Enums } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { Metadata } from "next";
-import { Pencil2Icon } from "@radix-ui/react-icons";
+import {
+  ExclamationTriangleIcon,
+  ExternalLinkIcon,
+  Pencil2Icon,
+} from "@radix-ui/react-icons";
 import { getUser } from "@/data/user-dto";
 import { getScrim } from "@/data/scrim-dto";
 import { MobileNav } from "@/components/mobile-nav";
@@ -22,6 +26,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { GuestNav } from "@/components/guest-nav";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type Props = {
   params: { team: string; scrimId: string };
@@ -189,7 +194,25 @@ export default async function ScrimDashboardPage({ params }: Props) {
             {hasPerms && <AddMapCard />}
           </div>
         ) : (
-          <div>{hasPerms && <AddMapCard />}</div>
+          <>
+            <Alert variant="destructive" className="max-w-xl">
+              <ExclamationTriangleIcon className="h-4 w-4" />
+              <AlertTitle>
+                No maps have been added to this scrim yet!
+              </AlertTitle>
+              <AlertDescription>
+                Add maps to this scrim to start analyzing your games. If no maps
+                are added, the scrim will automatically be deleted within 24
+                hours. Need help?{" "}
+                <Link href="https://docs.parsertime.app" target="_blank">
+                  <span className="underline">Check out the documentation</span>{" "}
+                  <ExternalLinkIcon className="inline h-4 w-4" />
+                </Link>
+                .
+              </AlertDescription>
+            </Alert>
+            <div>{hasPerms && <AddMapCard />}</div>
+          </>
         )}
       </div>
     </div>
