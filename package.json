@@ -60,6 +60,7 @@
     "@vercel/kv": "^1.0.1",
     "@vercel/speed-insights": "^1.0.10",
     "@vercel/toolbar": "^0.1.13",
+    "aws-sdk": "^2.1599.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "cmdk": "^0.2.1",
