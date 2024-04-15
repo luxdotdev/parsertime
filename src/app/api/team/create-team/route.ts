@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     },
   });
 
-  await prisma.team.create({
+  const team = await prisma.team.create({
     data: {
       name: req.name,
       updatedAt: new Date(),
@@ -52,12 +52,6 @@ export async function POST(request: Request) {
     },
   });
 
-  const teamIds = await prisma.team.findMany({
-    where: {
-      name: req.name,
-    },
-  });
-
   await prisma.user.update({
     where: {
       id: userId?.id ?? "",
@@ -65,11 +59,9 @@ export async function POST(request: Request) {
     data: {
       teams: {
         connect: [
-          ...teamIds.map((team) => {
-            return {
-              id: team.id,
-            };
-          }),
+          {
+            id: team.id,
+          },
         ],
       },
     },
