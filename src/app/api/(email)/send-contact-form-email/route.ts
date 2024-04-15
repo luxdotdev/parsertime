@@ -1,7 +1,7 @@
 import ContactFormEmail from "@/components/email/contact-form";
+import { sendEmail } from "@/lib/email";
 import Logger from "@/lib/logger";
 import { render } from "@react-email/render";
-import sendgrid from "@sendgrid/mail";
 import { Ratelimit } from "@upstash/ratelimit";
 import { kv } from "@vercel/kv";
 import { NextRequest } from "next/server";
@@ -11,8 +11,6 @@ type ContactFormEmailBody = {
   email: string;
   message: string;
 };
-
-sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
 
 export async function POST(req: NextRequest) {
   // Create a new ratelimiter, that allows 5 requests per 1 minute
@@ -44,7 +42,7 @@ export async function POST(req: NextRequest) {
   );
 
   try {
-    await sendgrid.send({
+    await sendEmail({
       to: "help@parsertime.app",
       from: "noreply@lux.dev",
       subject: `New message from ${body.name} | Parsertime`,
