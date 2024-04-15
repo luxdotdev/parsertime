@@ -32,3 +32,8 @@ export async function DELETE() {
     status: 200,
   });
 }
+
+// This is necessary for using Vercel Cron Jobs
+export async function GET() {
+  return await DELETE();
+}
