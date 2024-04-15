@@ -13,11 +13,15 @@ export async function DELETE() {
     },
   });
 
-  Logger.log(
-    `Found the following scrims without maps: ${scrimsWithoutMaps
-      .map((scrim) => scrim.id)
-      .join(", ")}`
-  );
+  if (scrimsWithoutMaps.length === 0) {
+    Logger.log("No empty scrims found");
+  } else {
+    Logger.log(
+      `Found the following empty scrims: ${scrimsWithoutMaps
+        .map((scrim) => scrim.id)
+        .join(", ")}`
+    );
+  }
 
   for (const scrim of scrimsWithoutMaps) {
     Logger.log(`Deleting scrim ${scrim.id}`);
