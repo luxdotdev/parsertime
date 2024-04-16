@@ -172,6 +172,11 @@ export type Tracer = {
   image: "tracer.png";
 };
 
+export type Venture = {
+  name: "Venture";
+  image: "venture.png";
+};
+
 export type Widowmaker = {
   name: "Widowmaker";
   image: "widowmaker.png";
@@ -227,6 +232,7 @@ export type DPS =
   | Symmetra
   | Torbjorn
   | Tracer
+  | Venture
   | Widowmaker;
 export type Support =
   | Ana
@@ -276,6 +282,7 @@ export const heroRoleMapping: Record<HeroName, "Tank" | "Damage" | "Support"> =
     Symmetra: "Damage",
     Torbjörn: "Damage",
     Tracer: "Damage",
+    Venture: "Damage",
     Widowmaker: "Damage",
     Winston: "Tank",
     "Wrecking Ball": "Tank",
