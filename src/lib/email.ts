@@ -1,4 +1,4 @@
-import { SES } from "aws-sdk";
+import { SES } from "@aws-sdk/client-ses";
 
 type EmailArgs = {
   to: string;
@@ -35,6 +35,6 @@ export async function sendEmail(args: EmailArgs) {
   };
 
   const ses = new SES(config);
-  const res = await ses.sendEmail(email).promise();
+  const res = await ses.sendEmail(email);
   return res;
 }
