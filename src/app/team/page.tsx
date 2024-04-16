@@ -69,7 +69,44 @@ export default async function TeamPage() {
           <TabsContent value="teams" className="space-y-4">
             {userTeams.length > 0 && (
               <Card className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {userTeams.map((team) => (
+                {userTeams
+                  .sort((a, b) => (a.id > b.id ? 1 : -1))
+                  .map((team) => (
+                    <div key={team.id} className="p-2">
+                      <Card className="relative min-h-[144px] md:w-60 xl:w-80">
+                        <Link href={`/team/${team.id}`}>
+                          <Image
+                            src={
+                              team.image ??
+                              `https://avatar.vercel.sh/${team.name}.png`
+                            }
+                            alt={
+                              team.name
+                                ? `Avatar for ${team.name}`
+                                : "Default team avatar"
+                            }
+                            width={100}
+                            height={100}
+                            className="float-right rounded-full p-4"
+                          />
+                          <CardHeader>
+                            <h3 className="z-10 text-3xl font-semibold tracking-tight">
+                              {team.name}
+                            </h3>
+                          </CardHeader>
+                        </Link>
+                      </Card>
+                    </div>
+                  ))}
+              </Card>
+            )}
+            {userTeams.length === 0 && <EmptyTeamView />}
+          </TabsContent>
+          <TabsContent value="admin" className="space-y-4">
+            <Card className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {allTeams
+                .sort((a, b) => (a.id > b.id ? 1 : -1))
+                .map((team) => (
                   <div key={team.id} className="p-2">
                     <Card className="relative min-h-[144px] md:w-60 xl:w-80">
                       <Link href={`/team/${team.id}`}>
@@ -96,39 +133,6 @@ export default async function TeamPage() {
                     </Card>
                   </div>
                 ))}
-              </Card>
-            )}
-            {userTeams.length === 0 && <EmptyTeamView />}
-          </TabsContent>
-          <TabsContent value="admin" className="space-y-4">
-            <Card className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {allTeams.map((team) => (
-                <div key={team.id} className="p-2">
-                  <Card className="relative min-h-[144px] md:w-60 xl:w-80">
-                    <Link href={`/team/${team.id}`}>
-                      <Image
-                        src={
-                          team.image ??
-                          `https://avatar.vercel.sh/${team.name}.png`
-                        }
-                        alt={
-                          team.name
-                            ? `Avatar for ${team.name}`
-                            : "Default team avatar"
-                        }
-                        width={100}
-                        height={100}
-                        className="float-right rounded-full p-4"
-                      />
-                      <CardHeader>
-                        <h3 className="z-10 text-3xl font-semibold tracking-tight">
-                          {team.name}
-                        </h3>
-                      </CardHeader>
-                    </Link>
-                  </Card>
-                </div>
-              ))}
             </Card>
           </TabsContent>
         </Tabs>
