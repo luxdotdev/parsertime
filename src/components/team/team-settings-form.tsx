@@ -81,7 +81,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
     } else {
       toast({
         title: "An error occurred",
-        description: `An error occurred: ${res.statusText} (${res.status})`,
+        description: `An error occurred: ${await res.text()} (${res.status})`,
         variant: "destructive",
         duration: 5000,
       });
