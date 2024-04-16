@@ -86,7 +86,7 @@ export default function InviteMemberModal({
       toast({
         variant: "destructive",
         title: "Error",
-        description: `An error occurred: ${res.statusText} (${res.status})`,
+        description: `An error occurred: ${await res.text()} (${res.status})${res.status === 404 ? ". Have you ensured the user is signed up?" : ""}`,
       });
       setLoading(false);
     }
@@ -102,6 +102,7 @@ export default function InviteMemberModal({
           <DialogTitle>Invite Member</DialogTitle>
           <DialogDescription>
             Invite a new member to allow them to see your team&apos;s scrims.
+            The user must be signed up to receive the invite.
           </DialogDescription>
         </DialogHeader>
 
