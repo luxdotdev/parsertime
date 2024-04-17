@@ -2,6 +2,7 @@ import MagicLinkEmail from "@/components/email/magic-link";
 import UserOnboardingEmail from "@/components/email/onboarding";
 import { getScrim, getUserViewableScrims } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
+import { createShortLink } from "@/lib/link-service";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
@@ -56,8 +57,10 @@ export const config = {
           throw new Error("Invalid email address");
         }
 
+        const shortLink = await createShortLink(url);
+
         const emailHtml = render(
-          MagicLinkEmail({ magicLink: url, username: email })
+          MagicLinkEmail({ magicLink: shortLink, username: email })
         );
 
         try {
