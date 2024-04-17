@@ -1,17 +1,15 @@
 import SubscriptionCreatedEmail from "@/components/email/subscription-created";
 import SubscriptionDeletedEmail from "@/components/email/subscription-deleted";
 import SubscriptionUpdatedEmail from "@/components/email/subscription-updated";
+import { sendEmail } from "@/lib/email";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { BillingPlans } from "@/types/billing-plans";
 import { $Enums } from "@prisma/client";
 import { render } from "@react-email/render";
-import sendgrid from "@sendgrid/mail";
 import { get } from "@vercel/edge-config";
 import Stripe from "stripe";
-
-sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
 
 type SubscriptionEvent =
   | "customer.subscription.created"
@@ -62,7 +60,7 @@ export async function handleSubscriptionEvent(
       });
 
       try {
-        await sendgrid.send({
+        await sendEmail({
           to: user.email!,
           from: "noreply@lux.dev",
           subject: `Thank you for subscribing to Parsertime!`,
@@ -99,7 +97,7 @@ export async function handleSubscriptionEvent(
         "items" in event.data.previous_attributes
       ) {
         try {
-          await sendgrid.send({
+          await sendEmail({
             to: user.email!,
             from: "noreply@lux.dev",
             subject: `Your Parsertime subscription has been updated`,
@@ -129,7 +127,7 @@ export async function handleSubscriptionEvent(
       });
 
       try {
-        await sendgrid.send({
+        await sendEmail({
           to: user.email!,
           from: "noreply@lux.dev",
           subject: `Your subscription to Parsertime has been cancelled`,

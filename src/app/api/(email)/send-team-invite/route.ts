@@ -4,10 +4,8 @@ import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { track } from "@vercel/analytics/server";
 import { getUser } from "@/data/user-dto";
-import sendgrid from "@sendgrid/mail";
+import { sendEmail } from "@/lib/email";
 import { createShortLink } from "@/lib/link-service";
-
-sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
 
 export async function POST(req: NextRequest) {
   const inviteeEmail = req.nextUrl.searchParams.get("email");
@@ -81,7 +79,7 @@ export async function POST(req: NextRequest) {
   );
 
   try {
-    await sendgrid.send({
+    await sendEmail({
       to: inviteeEmail,
       from: "noreply@lux.dev",
       subject: `Join ${team.name} on Parsertime`,
