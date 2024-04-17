@@ -163,6 +163,7 @@ enum EventType {
 }
 
 enum MapType {
+  Clash
   Control
   Escort
   Flashpoint
