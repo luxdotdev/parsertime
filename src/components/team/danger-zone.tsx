@@ -74,7 +74,7 @@ export function DangerZone({ team }: { team: Team }) {
     } else {
       toast({
         title: "Error",
-        description: `An error occurred: ${res.statusText} (${res.status})`,
+        description: `An error occurred: ${await res.text()} (${res.status})`,
         duration: 5000,
         variant: "destructive",
       });

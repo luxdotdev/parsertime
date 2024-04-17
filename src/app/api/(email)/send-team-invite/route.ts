@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 import { track } from "@vercel/analytics/server";
 import { getUser } from "@/data/user-dto";
 import { sendEmail } from "@/lib/email";
+import { createShortLink } from "@/lib/link-service";
 
 export async function POST(req: NextRequest) {
   const inviteeEmail = req.nextUrl.searchParams.get("email");
@@ -61,6 +62,10 @@ export async function POST(req: NextRequest) {
     });
   }
 
+  const shortLink = await createShortLink(
+    `${baseUrl}/team/join/${inviteToken}`
+  );
+
   const emailHtml = render(
     TeamInviteUserEmail({
       username: inviteeEmail,
@@ -69,7 +74,7 @@ export async function POST(req: NextRequest) {
       invitedByEmail: inviter.email ?? "Unknown",
       teamName: team.name ?? "Unknown",
       teamImage: team.image ?? `https://avatar.vercel.sh/${team.name}.png`,
-      inviteLink: `${baseUrl}/team/join/${inviteToken}`,
+      inviteLink: shortLink,
     })
   );
 

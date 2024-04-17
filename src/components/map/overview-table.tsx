@@ -26,7 +26,11 @@ import {
 } from "@/components/ui/tooltip";
 import { cn, toTimestamp } from "@/lib/utils";
 import { GeistMono } from "geist/font/mono";
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
+import {
+  ChevronDownIcon,
+  ChevronUpDownIcon,
+  ChevronUpIcon,
+} from "@heroicons/react/20/solid";
 import {
   Table,
   TableBody,
@@ -432,13 +436,14 @@ const OverviewTableHeader = ({
               onClick={header.column.getToggleSortingHandler()}
               className="h-max w-full p-1"
             >
-              {!header.column.getIsSorted() && <span className="w-2" />}
               {children}
+              {!header.column.getIsSorted() && (
+                <ChevronUpDownIcon className="w-4 min-w-4" />
+              )}
               {{
                 asc: <ChevronUpIcon className="w-4 min-w-4" />,
                 desc: <ChevronDownIcon className="w-4 min-w-4" />,
               }[header.column.getIsSorted() as string] ?? null}
-              {!header.column.getIsSorted() && <span className="w-2" />}
             </Button>
           ) : (
             children

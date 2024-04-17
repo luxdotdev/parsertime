@@ -42,29 +42,29 @@ export function CreateTeamDialog({
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
-    fetch("/api/team/create-team", {
+    const res = await fetch("/api/team/create-team", {
       method: "POST",
       body: JSON.stringify(values),
-    }).then((res) => {
-      if (res.ok) {
-        setShowNewTeamDialog(false);
-        setNewTeamCreated(true);
-        toast({
-          title: "Team created!",
-          description: "Your team has been created successfully.",
-        });
-        setLoading(false);
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: `An error occurred: ${res.statusText} (${res.status})`,
-        });
-        setLoading(false);
-      }
     });
+
+    if (res.ok) {
+      setShowNewTeamDialog(false);
+      setNewTeamCreated(true);
+      toast({
+        title: "Team created!",
+        description: "Your team has been created successfully.",
+      });
+      setLoading(false);
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `An error occurred: ${await res.text()} (${res.status})`,
+      });
+      setLoading(false);
+    }
   }
 
   return (

@@ -66,7 +66,7 @@ export function UserCardButtons({ user, managers }: Props) {
       setPromotionLoading(false);
       toast({
         title: "An error occurred",
-        description: `An error occurred: ${res.statusText} (${res.status})`,
+        description: `An error occurred: ${await res.text()} (${res.status})`,
         duration: 5000,
       });
     }
@@ -95,7 +95,7 @@ export function UserCardButtons({ user, managers }: Props) {
       setDemotionLoading(false);
       toast({
         title: "An error occurred",
-        description: `An error occurred: ${res.statusText} (${res.status})`,
+        description: `An error occurred: ${await res.text()} (${res.status})`,
         duration: 5000,
       });
     }
@@ -124,7 +124,7 @@ export function UserCardButtons({ user, managers }: Props) {
       setRemovalLoading(false);
       toast({
         title: "An error occurred",
-        description: `An error occurred: ${res.statusText} (${res.status})`,
+        description: `An error occurred: ${await res.text()} (${res.status})`,
         duration: 5000,
       });
     }
