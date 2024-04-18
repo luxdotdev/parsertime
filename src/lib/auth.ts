@@ -195,10 +195,9 @@ export async function isAuthedToViewMap(scrimId: number, mapId: number) {
   const session = await auth();
 
   const user = await getUser(session?.user?.email);
-  if (!user) return false;
 
   // if user is admin return true
-  if (user?.role === $Enums.UserRole.ADMIN) {
+  if (user !== null && user?.role === $Enums.UserRole.ADMIN) {
     return true;
   }
 
@@ -222,6 +221,8 @@ export async function isAuthedToViewMap(scrimId: number, mapId: number) {
   if (!session) {
     return false;
   }
+
+  if (!user) return false;
 
   return true;
 }
