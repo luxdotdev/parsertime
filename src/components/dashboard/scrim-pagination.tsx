@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import {
   Pagination,
   PaginationContent,
+  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -25,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { Scrim } from "@prisma/client";
 import { use, useState } from "react";
+import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 
 type Props = {
   scrims: Array<Scrim & { team: string; creator: string; hasPerms: boolean }>;
@@ -41,11 +43,9 @@ export function ScrimPagination({ scrims }: Props) {
     scrims = scrims.filter((scrim) => scrim.teamId === teamId);
   }
 
-  if (scrims.length === 0) {
-    return <EmptyScrimList />;
-  }
-
   const pageSize = 15;
+  const siblingCount = 1; // Number of pages to show around the current page
+  const boundaryCount = 1; // Number of pages to show at the boundaries (start and end)
 
   // Sort scrims based on the filter
   const sortedScrims = scrims.sort((a, b) => {
@@ -79,6 +79,18 @@ export function ScrimPagination({ scrims }: Props) {
     startIndex,
     startIndex + pageSize
   );
+
+  const pagination = usePagination({
+    currentPage: currPage,
+    totalCount: filteredAndSearchedScrims.length,
+    siblingCount,
+    pageSize,
+    boundaryCount,
+  });
+
+  if (scrims.length === 0) {
+    return <EmptyScrimList />;
+  }
 
   return (
     <Card>
@@ -117,29 +129,51 @@ export function ScrimPagination({ scrims }: Props) {
           {pages > 1 && (
             <Pagination>
               <PaginationContent>
-                {currPage > 1 && (
-                  <PaginationPrevious
-                    onClick={() => setCurrPage(currPage - 1)}
-                    href="#"
-                  />
-                )}
-                {Array.from({ length: pages }, (_, index) => (
-                  <PaginationItem key={index}>
-                    <PaginationLink
-                      onClick={() => setCurrPage(index + 1)}
-                      aria-label={`Go to page ${index + 1}`}
-                      isActive={currPage === index + 1}
+                {pagination.hasPrevious && (
+                  <>
+                    <PaginationPrevious
+                      className="hidden md:flex"
+                      onClick={() => setCurrPage(currPage - 1)}
                       href="#"
-                    >
-                      {index + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
-                {currPage < pages && (
-                  <PaginationNext
-                    onClick={() => setCurrPage(currPage + 1)}
-                    href="#"
-                  />
+                    />
+                    <ChevronLeftIcon
+                      className="h-4 w-4 md:hidden"
+                      onClick={() => setCurrPage(currPage - 1)}
+                      href="#"
+                    />
+                  </>
+                )}
+                {pagination.pages.map((page, index) => {
+                  if (page === "...") {
+                    // Rendering ellipsis for skipped pages
+                    // eslint-disable-next-line react/no-array-index-key
+                    return <PaginationEllipsis key={`ellipsis-${index}`} />;
+                  }
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        onClick={() => setCurrPage(page as number)}
+                        isActive={currPage === page}
+                        href="#"
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
+                {pagination.hasNext && (
+                  <>
+                    <PaginationNext
+                      className="hidden md:flex"
+                      onClick={() => setCurrPage(currPage + 1)}
+                      href="#"
+                    />
+                    <ChevronRightIcon
+                      className="h-4 w-4 md:hidden"
+                      onClick={() => setCurrPage(currPage + 1)}
+                      href="#"
+                    />
+                  </>
                 )}
               </PaginationContent>
             </Pagination>
@@ -148,4 +182,79 @@ export function ScrimPagination({ scrims }: Props) {
       </div>
     </Card>
   );
+}
+
+function usePagination({
+  currentPage,
+  totalCount,
+  siblingCount = 1,
+  pageSize,
+  boundaryCount = 1,
+}: {
+  currentPage: number;
+  totalCount: number;
+  siblingCount?: number;
+  pageSize: number;
+  boundaryCount?: number;
+}) {
+  const totalPages = Math.ceil(totalCount / pageSize);
+
+  // If total pages are 5 or fewer, return the full range without ellipses.
+  if (totalPages <= 5) {
+    return {
+      currentPage,
+      totalPages,
+      hasPrevious: currentPage > 1,
+      hasNext: currentPage < totalPages,
+      pages: Array.from({ length: totalPages }, (_, idx) => idx + 1),
+    };
+  }
+
+  let pages = [] as Array<number | "...">;
+
+  // Define fixed boundaries if there are enough pages beyond the boundaryCount
+  const startPages = Array.from(
+    { length: Math.min(boundaryCount, totalPages) },
+    (_, idx) => idx + 1
+  );
+  const endPages = Array.from(
+    { length: Math.min(boundaryCount, totalPages) },
+    (_, idx) => totalPages - idx
+  ).reverse();
+
+  // Define dynamic range around the current page
+  const rangeStart = Math.max(boundaryCount + 1, currentPage - siblingCount);
+  const rangeEnd = Math.min(
+    totalPages - boundaryCount,
+    currentPage + siblingCount
+  );
+
+  pages = [...startPages];
+
+  // Include ellipsis if there's a gap between the last start page and the first page of the dynamic range
+  if (rangeStart > boundaryCount + 1) {
+    pages.push("...");
+  }
+
+  pages = pages.concat(
+    Array.from(
+      { length: rangeEnd - rangeStart + 1 },
+      (_, idx) => rangeStart + idx
+    )
+  );
+
+  // Include ellipsis if there's a gap between the last page of the dynamic range and the first end page
+  if (rangeEnd < totalPages - boundaryCount && totalPages > boundaryCount) {
+    pages.push("...");
+  }
+
+  pages = pages.concat(endPages);
+
+  return {
+    currentPage,
+    totalPages,
+    hasPrevious: currentPage > 1,
+    hasNext: currentPage < totalPages,
+    pages,
+  };
 }
