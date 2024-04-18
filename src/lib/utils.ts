@@ -249,9 +249,14 @@ export async function groupPlayerKillsIntoFights(
         };
         fights.push(currentFight);
       } else {
-        // Continue to next event if the current event does not involve the player
-        return;
+        // Otherwise, start a fight with no kills (yet)
+        currentFight = {
+          kills: [],
+          start: event.match_time,
+          end: event.match_time,
+        };
       }
+      fights.push(currentFight);
     } else if (involvesPlayer) {
       // Add the event to the current fight and update the end time
       currentFight.kills.push(event);
