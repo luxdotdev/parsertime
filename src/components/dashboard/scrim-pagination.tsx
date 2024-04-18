@@ -136,11 +136,14 @@ export function ScrimPagination({ scrims }: Props) {
                       onClick={() => setCurrPage(currPage - 1)}
                       href="#"
                     />
-                    <ChevronLeftIcon
-                      className="h-4 w-4 md:hidden"
-                      onClick={() => setCurrPage(currPage - 1)}
-                      href="#"
-                    />
+                    <PaginationItem className="md:hidden">
+                      <PaginationLink
+                        onClick={() => setCurrPage(currPage - 1)}
+                        href="#"
+                      >
+                        <ChevronLeftIcon className="h-4 w-4" />
+                      </PaginationLink>
+                    </PaginationItem>
                   </>
                 )}
                 {pagination.pages.map((page, index) => {
@@ -168,11 +171,14 @@ export function ScrimPagination({ scrims }: Props) {
                       onClick={() => setCurrPage(currPage + 1)}
                       href="#"
                     />
-                    <ChevronRightIcon
-                      className="h-4 w-4 md:hidden"
-                      onClick={() => setCurrPage(currPage + 1)}
-                      href="#"
-                    />
+                    <PaginationItem className="md:hidden">
+                      <PaginationLink
+                        onClick={() => setCurrPage(currPage + 1)}
+                        href="#"
+                      >
+                        <ChevronRightIcon className="h-4 w-4" />
+                      </PaginationLink>
+                    </PaginationItem>
                   </>
                 )}
               </PaginationContent>
