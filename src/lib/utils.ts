@@ -261,6 +261,9 @@ export async function groupPlayerKillsIntoFights(
       // Add the event to the current fight and update the end time
       currentFight.kills.push(event);
       currentFight.end = event.match_time;
+    } else {
+      // If the event does not involve the player, we simply update the fight's end time without adding the event
+      currentFight.end = event.match_time;
     }
   });
 
