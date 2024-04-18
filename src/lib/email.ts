@@ -16,7 +16,7 @@ const config = {
 export async function sendEmail(args: EmailArgs) {
   // Send email using AWS SES
   const email = {
-    Source: args.from,
+    Source: `lux.dev <${args.from}>`,
     Destination: {
       ToAddresses: [args.to],
     },
