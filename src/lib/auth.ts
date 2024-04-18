@@ -158,23 +158,25 @@ export const config = {
 export const { handlers, auth, signIn, signOut } = NextAuth(config);
 
 export async function isAuthedToViewScrim(id: number) {
+  const session = await auth();
+
+  const user = await getUser(session?.user?.email);
+
+  // if user is admin return true
+  if (user !== null && user?.role === $Enums.UserRole.ADMIN) {
+    return true;
+  }
+
   const scrim = await getScrim(id);
   if (!scrim) return false;
 
   if (scrim.guestMode) return true;
 
-  const session = await auth();
   if (!session) {
     return false;
   }
 
-  const user = await getUser(session?.user?.email);
   if (!user) return false;
-
-  // if user is admin return true
-  if (user?.role === $Enums.UserRole.ADMIN) {
-    return true;
-  }
 
   const listOfViewableScrims = await getUserViewableScrims(user.id);
 
@@ -190,6 +192,16 @@ export async function isAuthedToViewScrim(id: number) {
 }
 
 export async function isAuthedToViewMap(scrimId: number, mapId: number) {
+  const session = await auth();
+
+  const user = await getUser(session?.user?.email);
+  if (!user) return false;
+
+  // if user is admin return true
+  if (user?.role === $Enums.UserRole.ADMIN) {
+    return true;
+  }
+
   const scrim = await getScrim(scrimId);
   if (!scrim) return false;
 
@@ -207,17 +219,8 @@ export async function isAuthedToViewMap(scrimId: number, mapId: number) {
 
   if (scrim.guestMode) return true;
 
-  const session = await auth();
   if (!session) {
     return false;
-  }
-
-  const user = await getUser(session?.user?.email);
-  if (!user) return false;
-
-  // if user is admin return true
-  if (user?.role === $Enums.UserRole.ADMIN) {
-    return true;
   }
 
   return true;
