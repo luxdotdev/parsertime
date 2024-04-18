@@ -200,41 +200,62 @@ export async function groupPlayerKillsIntoFights(
     },
   });
 
+  const rezzesByMapId = await prisma.mercyRez.findMany({
+    where: {
+      MapDataId: mapId,
+    },
+  });
+
   if (killsByMapId.length === 0) return [];
+
+  const events = [
+    ...killsByMapId,
+    ...rezzesByMapId.map((rez) => ({
+      id: rez.id,
+      scrimId: rez.scrimId,
+      event_type: "mercy_rez" as $Enums.EventType,
+      match_time: rez.match_time,
+      attacker_team: rez.resurrecter_team,
+      attacker_name: rez.resurrecter_player,
+      attacker_hero: rez.resurrecter_hero,
+      victim_team: rez.resurrectee_team,
+      victim_name: rez.resurrectee_player,
+      victim_hero: rez.resurrectee_hero,
+      event_ability: "Resurrect",
+      event_damage: 0,
+      is_critical_hit: "0",
+      is_environmental: "0",
+      MapDataId: rez.MapDataId,
+    })),
+  ];
+
+  // Sorting events by match_time
+  events.sort((a, b) => a.match_time - b.match_time);
 
   const fights: Fight[] = [];
   let currentFight: Fight | null = null;
 
-  killsByMapId.forEach((kill) => {
-    // Check if the kill involves the player. Adjust this condition based on how playerName is represented in your Kill type
+  events.forEach((event) => {
     const involvesPlayer =
-      kill.attacker_name === playerName || kill.victim_name === playerName;
+      event.attacker_name === playerName || event.victim_name === playerName;
 
-    if (!currentFight || kill.match_time - currentFight.end > 15) {
+    if (!currentFight || event.match_time - currentFight.end > 15) {
       // Start a new fight
       if (involvesPlayer) {
-        // If this kill involves the player, start the fight with it
         currentFight = {
-          kills: [kill],
-          start: kill.match_time,
-          end: kill.match_time,
+          kills: [event],
+          start: event.match_time,
+          end: event.match_time,
         };
+        fights.push(currentFight);
       } else {
-        // Otherwise, start a fight with no kills (yet)
-        currentFight = {
-          kills: [],
-          start: kill.match_time,
-          end: kill.match_time,
-        };
+        // Continue to next event if the current event does not involve the player
+        return;
       }
-      fights.push(currentFight);
     } else if (involvesPlayer) {
-      // Add the kill to the current fight and update the end time if it involves the player
-      currentFight.kills.push(kill);
-      currentFight.end = kill.match_time;
-    } else {
-      // If the kill does not involve the player, we simply update the fight's end time without adding the kill
-      currentFight.end = kill.match_time;
+      // Add the event to the current fight and update the end time
+      currentFight.kills.push(event);
+      currentFight.end = event.match_time;
     }
   });
 
