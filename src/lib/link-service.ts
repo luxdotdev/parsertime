@@ -7,7 +7,7 @@ export async function createShortLink(url: string) {
 
   try {
     Logger.log(`Creating short link for ${url} at ${shortLink}`);
-    await kv.set(`link/${shortLink}`, url);
+    await kv.set(`link/${shortLink}`, url, { ex: 60 * 60 * 24 }); // key expires in 24 hours
   } catch (err) {
     Logger.error(err);
     return url;
