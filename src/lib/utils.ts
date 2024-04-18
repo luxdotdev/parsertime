@@ -2,7 +2,7 @@ import { PlayerStatRows } from "@/types/prisma";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import prisma from "@/lib/prisma";
-import { Kill } from "@prisma/client";
+import { $Enums, Kill } from "@prisma/client";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -130,24 +130,54 @@ export async function groupKillsIntoFights(mapId: number) {
     },
   });
 
-  if (killsByMapId.length === 0) return [];
+  const rezzesByMapId = await prisma.mercyRez.findMany({
+    where: {
+      MapDataId: mapId,
+    },
+  });
+
+  if (killsByMapId.length === 0 && rezzesByMapId.length === 0) return [];
+
+  const events = [
+    ...killsByMapId,
+    ...rezzesByMapId.map((rez) => ({
+      id: rez.id,
+      scrimId: rez.scrimId,
+      event_type: "mercy_rez" as $Enums.EventType,
+      match_time: rez.match_time,
+      attacker_team: rez.resurrecter_team,
+      attacker_name: rez.resurrecter_player,
+      attacker_hero: rez.resurrecter_hero,
+      victim_team: rez.resurrectee_team,
+      victim_name: rez.resurrectee_player,
+      victim_hero: rez.resurrectee_hero,
+      event_ability: "Resurrect",
+      event_damage: 0,
+      is_critical_hit: "0",
+      is_environmental: "0",
+      MapDataId: rez.MapDataId,
+    })),
+  ];
+
+  // Sorting events by match_time to properly sequence kills and rezzes
+  events.sort((a, b) => a.match_time - b.match_time);
 
   const fights: Fight[] = [];
   let currentFight: Fight | null = null;
 
-  killsByMapId.forEach((kill) => {
-    if (!currentFight || kill.match_time - currentFight.end > 15) {
-      // If there's no current fight or we're past the 15 second window, start a new fight
+  events.forEach((event) => {
+    if (!currentFight || event.match_time - currentFight.end > 15) {
+      // Start a new fight if no current fight or we're past the 15 second window
       currentFight = {
-        kills: [kill],
-        start: kill.match_time,
-        end: kill.match_time,
+        kills: [event],
+        start: event.match_time,
+        end: event.match_time,
       };
       fights.push(currentFight);
     } else {
-      // Otherwise, add the kill to the current fight and update the end time
-      currentFight.kills.push(kill);
-      currentFight.end = kill.match_time;
+      // Otherwise, add the event to the current fight and update the end time
+      currentFight.kills.push(event);
+      currentFight.end = event.match_time;
     }
   });
 
