@@ -15,14 +15,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { toast } from "@/components/ui/use-toast";
-import { ClientOnly } from "@/lib/client-only";
-import { Scrim } from "@prisma/client";
-import { ReloadIcon } from "@radix-ui/react-icons";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { GetTeamsResponse } from "@/app/api/team/get-teams-with-perms/route";
 import {
   Select,
   SelectContent,
@@ -32,6 +24,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "@/components/ui/use-toast";
+import { ClientOnly } from "@/lib/client-only";
+import { Scrim, Team } from "@prisma/client";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const profileFormSchema = z.object({
   name: z
@@ -48,9 +47,14 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
-export function EditScrimForm({ scrim }: { scrim: Scrim }) {
+export function EditScrimForm({
+  scrim,
+  teams,
+}: {
+  scrim: Scrim;
+  teams: Team[];
+}) {
   const [loading, setLoading] = useState(false);
-  const [teams, setTeams] = useState<{ label: string; value: string }[]>([]);
   const router = useRouter();
 
   const form = useForm<ProfileFormValues>({
@@ -97,22 +101,6 @@ export function EditScrimForm({ scrim }: { scrim: Scrim }) {
     }
     setLoading(false);
   }
-
-  function getTeams() {
-    fetch("/api/team/get-teams-with-perms")
-      .then((res) => res.json() as Promise<GetTeamsResponse>)
-      .then((data) => {
-        const newTeams = data.teams.map((team) => ({
-          label: team.name,
-          value: team.id.toString(),
-        }));
-        setTeams(newTeams);
-      });
-  }
-
-  useEffect(() => {
-    getTeams();
-  }, []);
 
   return (
     <ClientOnly>
@@ -161,10 +149,10 @@ export function EditScrimForm({ scrim }: { scrim: Scrim }) {
                         <SelectItem value="0">Individual</SelectItem>
                         {teams.map((team) => (
                           <SelectItem
-                            key={team.value}
-                            value={team.value.toString()}
+                            key={team.name}
+                            value={team.id.toString()}
                           >
-                            {team.label}
+                            {team.name}
                           </SelectItem>
                         ))}
                       </SelectGroup>
