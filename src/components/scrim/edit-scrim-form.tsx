@@ -64,8 +64,6 @@ export function EditScrimForm({ scrim }: { scrim: Scrim }) {
   });
 
   async function onSubmit(data: ProfileFormValues) {
-    console.log(data);
-
     setLoading(true);
     const reqBody = {
       name: data.name.trim(),
