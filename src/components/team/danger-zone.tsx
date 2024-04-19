@@ -1,13 +1,19 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
@@ -98,17 +104,17 @@ export function DangerZone({ team }: { team: Team }) {
               Once you transfer ownership, you will no longer be the owner of
               this team.
             </p>
-            <Dialog
+            <AlertDialog
               open={transferModalOpen}
               onOpenChange={setTransferModalOpen}
             >
-              <DialogTrigger>
+              <AlertDialogTrigger>
                 <Button variant="destructive">Transfer Ownership</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
                   <h2 className="text-lg font-semibold">Transfer Ownership</h2>
-                </DialogHeader>
+                </AlertDialogHeader>
                 <p>
                   Enter the email address of the user you want to transfer
                   ownership to.
@@ -140,8 +146,8 @@ export function DangerZone({ team }: { team: Team }) {
                     Cancel
                   </Button>
                 </div>
-              </DialogContent>
-            </Dialog>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
 
           <div>
@@ -149,14 +155,17 @@ export function DangerZone({ team }: { team: Team }) {
             <p className="pb-4">
               Once you delete a team, there is no going back. Please be certain.
             </p>
-            <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
-              <DialogTrigger>
+            <AlertDialog
+              open={deleteModalOpen}
+              onOpenChange={setDeleteModalOpen}
+            >
+              <AlertDialogTrigger>
                 <Button variant="destructive">Delete Team</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
                   <h2 className="text-lg font-semibold">Delete Team</h2>
-                </DialogHeader>
+                </AlertDialogHeader>
                 <p>
                   Are you sure you want to delete the team{" "}
                   <strong>{team.name}</strong>? This action cannot be undone.
@@ -191,10 +200,15 @@ export function DangerZone({ team }: { team: Team }) {
                     Cancel
                   </Button>
                 </div>
-              </DialogContent>
-            </Dialog>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </CardContent>
+        <CardFooter>
+          <p className="text-sm text-gray-500">
+            These are irreversible actions. Please be certain before proceeding.
+          </p>
+        </CardFooter>
       </Card>
     </ClientOnly>
   );
