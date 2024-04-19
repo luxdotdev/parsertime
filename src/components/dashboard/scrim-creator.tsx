@@ -123,6 +123,7 @@ export function ScrimCreationForm({
     });
 
     data.map = mapData;
+    data.name = data.name.trim(); // Remove leading/trailing whitespace
 
     const res = await fetch("/api/scrim/create-scrim", {
       method: "POST",
