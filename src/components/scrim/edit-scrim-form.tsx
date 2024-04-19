@@ -238,7 +238,7 @@ export function EditScrimForm({
             <FormLabel>Maps</FormLabel>
             <Accordion type="single" collapsible className="max-w-lg">
               {maps.map((map) => (
-                <AccordionItem key={map.id} value={map.name}>
+                <AccordionItem key={map.id} value={map.id.toString()}>
                   <AccordionTrigger>{map.name}</AccordionTrigger>
                   <AccordionContent>
                     <AlertDialog>
