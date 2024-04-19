@@ -53,7 +53,7 @@ export function EditScrimForm({ scrim }: { scrim: Scrim }) {
   async function onSubmit(data: ProfileFormValues) {
     setLoading(true);
     const reqBody = {
-      name: data.name,
+      name: data.name.trim(),
       scrimId: scrim.id,
       guestMode: data.guestMode,
     };
