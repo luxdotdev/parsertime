@@ -3,11 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
@@ -65,14 +65,14 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
           <p className="pb-4">
             Once you delete a scrim, there is no going back. Please be certain.
           </p>
-          <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
-            <DialogTrigger>
+          <AlertDialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
+            <AlertDialogTrigger>
               <Button variant="destructive">Delete Scrim</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
                 <h2 className="text-lg font-semibold">Delete Scrim</h2>
-              </DialogHeader>
+              </AlertDialogHeader>
               <p>
                 Are you sure you want to delete the scrim{" "}
                 <strong>{scrim.name}</strong>? This action cannot be undone.
@@ -107,8 +107,8 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
                   Cancel
                 </Button>
               </div>
-            </DialogContent>
-          </Dialog>
+            </AlertDialogContent>
+          </AlertDialog>
         </CardContent>
       </Card>
     </ClientOnly>
