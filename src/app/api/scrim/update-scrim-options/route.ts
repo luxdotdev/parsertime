@@ -7,6 +7,7 @@ import { getScrim } from "@/data/scrim-dto";
 
 type UpdateScrimBody = {
   name: string;
+  teamId: string;
   scrimId: number;
   guestMode: boolean;
 };
@@ -61,6 +62,7 @@ export async function POST(req: NextRequest) {
     },
     data: {
       name: body.name,
+      teamId: parseInt(body.teamId),
       guestMode: body.guestMode,
     },
   });
