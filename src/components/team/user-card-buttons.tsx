@@ -3,14 +3,14 @@
 import { Button } from "@/components/ui/button";
 import { CardFooter } from "@/components/ui/card";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
 import { User } from "@prisma/client";
@@ -135,22 +135,22 @@ export function UserCardButtons({ user, managers }: Props) {
       <CardFooter>
         {!isManager && (
           <div className="pr-2">
-            <Dialog
+            <AlertDialog
               open={promotionDialogOpen}
               onOpenChange={setPromotionDialogOpen}
             >
-              <DialogTrigger>
+              <AlertDialogTrigger>
                 <Button>Promote to Manager</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Are you absolutely sure?</DialogTitle>
-                  <DialogDescription>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
                     This will change the user&apos;s role from member to
                     manager. This user will be able to manage the team and its
                     resources.
-                  </DialogDescription>
-                  <DialogFooter>
+                  </AlertDialogDescription>
+                  <AlertDialogFooter>
                     <Button
                       variant="secondary"
                       onClick={() => setPromotionDialogOpen(false)}
@@ -171,30 +171,30 @@ export function UserCardButtons({ user, managers }: Props) {
                         "Promote to Manager"
                       )}
                     </Button>
-                  </DialogFooter>
-                </DialogHeader>
-              </DialogContent>
-            </Dialog>
+                  </AlertDialogFooter>
+                </AlertDialogHeader>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         )}
 
         {isManager && (
           <div className="pr-2">
-            <Dialog
+            <AlertDialog
               open={demotionDialogOpen}
               onOpenChange={setDemotionDialogOpen}
             >
-              <DialogTrigger>
+              <AlertDialogTrigger>
                 <Button>Demote to Member</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Are you absolutely sure?</DialogTitle>
-                  <DialogDescription>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
                     This will change the user&apos;s role from manager to
                     member.
-                  </DialogDescription>
-                  <DialogFooter>
+                  </AlertDialogDescription>
+                  <AlertDialogFooter>
                     <Button
                       variant="secondary"
                       onClick={() => setDemotionDialogOpen(false)}
@@ -215,26 +215,29 @@ export function UserCardButtons({ user, managers }: Props) {
                         "Demote to Member"
                       )}
                     </Button>
-                  </DialogFooter>
-                </DialogHeader>
-              </DialogContent>
-            </Dialog>
+                  </AlertDialogFooter>
+                </AlertDialogHeader>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         )}
 
         <div>
-          <Dialog open={removalDialogOpen} onOpenChange={setRemovalDialogOpen}>
-            <DialogTrigger>
+          <AlertDialog
+            open={removalDialogOpen}
+            onOpenChange={setRemovalDialogOpen}
+          >
+            <AlertDialogTrigger>
               <Button variant="destructive">Remove from Team</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Are you absolutely sure?</DialogTitle>
-                <DialogDescription>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
                   This will remove the user from the team and they will lose
                   access to all team resources.
-                </DialogDescription>
-                <DialogFooter>
+                </AlertDialogDescription>
+                <AlertDialogFooter>
                   <Button
                     variant="secondary"
                     onClick={() => setRemovalDialogOpen(false)}
@@ -255,10 +258,10 @@ export function UserCardButtons({ user, managers }: Props) {
                       "Remove from Team"
                     )}
                   </Button>
-                </DialogFooter>
-              </DialogHeader>
-            </DialogContent>
-          </Dialog>
+                </AlertDialogFooter>
+              </AlertDialogHeader>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </CardFooter>
     </ClientOnly>
