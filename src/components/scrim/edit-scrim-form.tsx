@@ -21,7 +21,17 @@ import { ClientOnly } from "@/lib/client-only";
 import { Scrim } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { GetTeamsResponse } from "@/app/api/team/get-teams-with-perms/route";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const profileFormSchema = z.object({
   name: z
@@ -32,6 +42,7 @@ const profileFormSchema = z.object({
     .max(30, {
       message: "Name must not be longer than 30 characters.",
     }),
+  teamId: z.string(),
   guestMode: z.boolean(),
 });
 
@@ -39,21 +50,26 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 export function EditScrimForm({ scrim }: { scrim: Scrim }) {
   const [loading, setLoading] = useState(false);
+  const [teams, setTeams] = useState<{ label: string; value: string }[]>([]);
   const router = useRouter();
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
       name: scrim.name ?? "",
+      teamId: (scrim.teamId ?? 0).toString(),
       guestMode: scrim.guestMode,
     },
     mode: "onChange",
   });
 
   async function onSubmit(data: ProfileFormValues) {
+    console.log(data);
+
     setLoading(true);
     const reqBody = {
       name: data.name.trim(),
+      teamId: data.teamId,
       scrimId: scrim.id,
       guestMode: data.guestMode,
     };
@@ -84,6 +100,22 @@ export function EditScrimForm({ scrim }: { scrim: Scrim }) {
     setLoading(false);
   }
 
+  function getTeams() {
+    fetch("/api/team/get-teams-with-perms")
+      .then((res) => res.json() as Promise<GetTeamsResponse>)
+      .then((data) => {
+        const newTeams = data.teams.map((team) => ({
+          label: team.name,
+          value: team.id.toString(),
+        }));
+        setTeams(newTeams);
+      });
+  }
+
+  useEffect(() => {
+    getTeams();
+  }, []);
+
   return (
     <ClientOnly>
       <Form {...form}>
@@ -105,6 +137,45 @@ export function EditScrimForm({ scrim }: { scrim: Scrim }) {
                 <FormDescription>
                   This is your scrim&apos;s name. This will show on your
                   dashboard.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="teamId"
+            render={({ field }) => (
+              <FormItem className="max-w-lg">
+                <FormLabel>Team</FormLabel>
+                <FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value.toString()}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a team" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Teams</SelectLabel>
+                        <SelectItem value="0">Individual</SelectItem>
+                        {teams.map((team) => (
+                          <SelectItem
+                            key={team.value}
+                            value={team.value.toString()}
+                          >
+                            {team.label}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormDescription>
+                  This is the team that will be associated with this scrim. You
+                  can assign scrims to teams that you manage or own.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
