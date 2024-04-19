@@ -27,10 +27,27 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
-import { Scrim, Team } from "@prisma/client";
+import { Scrim, Team, Map } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const profileFormSchema = z.object({
   name: z
@@ -50,9 +67,11 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 export function EditScrimForm({
   scrim,
   teams,
+  maps,
 }: {
   scrim: Scrim;
   teams: Team[];
+  maps: Map[];
 }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -88,6 +107,30 @@ export function EditScrimForm({
       toast({
         title: "Scrim updated",
         description: "Your scrim has been successfully updated.",
+        duration: 5000,
+      });
+      router.refresh();
+    } else {
+      toast({
+        title: "An error occurred",
+        description: `An error occurred: ${await res.text()} (${res.status})`,
+        variant: "destructive",
+        duration: 5000,
+      });
+    }
+    setLoading(false);
+  }
+
+  async function deleteMap(mapId: number) {
+    setLoading(true);
+    const res = await fetch(`/api/scrim/remove-map?id=${mapId}`, {
+      method: "POST",
+    });
+
+    if (res.ok) {
+      toast({
+        title: "Map deleted",
+        description: "The map has been deleted.",
         duration: 5000,
       });
       router.refresh();
@@ -172,7 +215,7 @@ export function EditScrimForm({
             control={form.control}
             name="guestMode"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md  shadow">
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md shadow">
                 <FormControl>
                   <Switch
                     checked={field.value}
@@ -190,6 +233,51 @@ export function EditScrimForm({
               </FormItem>
             )}
           />
+
+          <FormItem>
+            <FormLabel>Maps</FormLabel>
+            <Accordion type="single" collapsible className="max-w-lg">
+              {maps.map((map) => (
+                <AccordionItem key={map.id} value={map.name}>
+                  <AccordionTrigger>{map.name}</AccordionTrigger>
+                  <AccordionContent>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive">Delete</Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Are you absolutely sure?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently delete the map{" "}
+                            <strong>{map.name}</strong>. This action cannot be
+                            undone.
+                          </AlertDialogDescription>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => deleteMap(map.id)}
+                            >
+                              {loading ? (
+                                <>
+                                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
+                                  Deleting...
+                                </>
+                              ) : (
+                                "Delete"
+                              )}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogHeader>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </FormItem>
 
           <Button type="submit" disabled={loading}>
             {loading ? (
