@@ -402,3 +402,27 @@ export async function calculateDroughtTime(id: number, playerName: string) {
 
   return round(averageDrought);
 }
+
+export async function getAjaxes(id: number, playerName: string) {
+  const kills = await prisma.kill.findMany({
+    where: {
+      MapDataId: id,
+      victim_name: playerName,
+      victim_hero: "Lúcio",
+    },
+  });
+
+  const ultimateEnds = await prisma.ultimateEnd.findMany({
+    where: {
+      MapDataId: id,
+      player_name: playerName,
+    },
+  });
+
+  // if there is a kill and an ultimate end at the same match_time, it's an ajax
+  const ajaxes = kills.filter((kill) =>
+    ultimateEnds.some((end) => end.match_time === kill.match_time)
+  );
+
+  return ajaxes.length;
+}
