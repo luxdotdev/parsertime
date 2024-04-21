@@ -21,6 +21,7 @@ import {
 import { $Enums } from "@prisma/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
+import { getAjaxes } from "@/lib/analytics";
 
 export async function DefaultOverview({ id }: { id: number }) {
   const finalRound = await prisma.roundEnd.findFirst({
@@ -188,6 +189,10 @@ export async function DefaultOverview({ id }: { id: number }) {
           firstDeaths[a] > firstDeaths[b] ? a : b
         )
       : "null";
+
+  const lucioPlayers = finalRoundStats.filter(
+    (player) => player.player_hero === "Lúcio"
+  );
 
   return (
     <>
@@ -492,6 +497,40 @@ export async function DefaultOverview({ id }: { id: number }) {
                 </span>{" "}
                 first deaths out of {fights.length} fights.
               </li>
+              {lucioPlayers.length > 0 && (
+                <>
+                  {lucioPlayers.map(async (player) => {
+                    return (
+                      <li key={player.player_name}>
+                        <span
+                          className={cn(
+                            player.player_team === matchDetails?.team_1_name
+                              ? "text-blue-500"
+                              : "text-red-500"
+                          )}
+                        >
+                          {player.player_name}
+                        </span>{" "}
+                        played Lúcio this map and Ajaxed{" "}
+                        <span
+                          className={cn(
+                            player.player_team === matchDetails?.team_1_name
+                              ? "text-blue-500"
+                              : "text-red-500"
+                          )}
+                        >
+                          {await getAjaxes(id, player.player_name)}
+                        </span>{" "}
+                        time
+                        {(await getAjaxes(id, player.player_name)) === 1
+                          ? ""
+                          : "s"}
+                        .
+                      </li>
+                    );
+                  })}
+                </>
+              )}
             </ul>
           </CardContent>
         </Card>
