@@ -500,6 +500,9 @@ export async function DefaultOverview({ id }: { id: number }) {
               {lucioPlayers.length > 0 && (
                 <>
                   {lucioPlayers.map(async (player) => {
+                    const ajaxes = await getAjaxes(id, player.player_name);
+
+                    if (ajaxes === 0) return null;
                     return (
                       <li key={player.player_name}>
                         <span
@@ -519,13 +522,10 @@ export async function DefaultOverview({ id }: { id: number }) {
                               : "text-red-500"
                           )}
                         >
-                          {await getAjaxes(id, player.player_name)}
+                          {ajaxes}
                         </span>{" "}
                         time
-                        {(await getAjaxes(id, player.player_name)) === 1
-                          ? ""
-                          : "s"}
-                        .
+                        {ajaxes === 1 ? "" : "s"}.
                       </li>
                     );
                   })}
