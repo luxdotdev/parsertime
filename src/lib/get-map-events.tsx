@@ -7,7 +7,7 @@ import {
   toTimestamp,
 } from "@/lib/utils";
 import { TODO } from "@/types/utils";
-import { Kill } from "@prisma/client";
+import { $Enums, Kill, UltimateEnd } from "@prisma/client";
 import { GeistMono } from "geist/font/mono";
 import Image from "next/image";
 
@@ -196,6 +196,30 @@ export async function getMapEvents(id: number) {
 
   const multikillList = findMultikills(fights);
 
+  const lucioKills = await prisma.kill.findMany({
+    where: {
+      MapDataId: id,
+      victim_hero: "Lúcio",
+    },
+  });
+
+  const ajaxes = [] as UltimateEnd[];
+
+  lucioKills.forEach((kill) => {
+    const ajax = ultimateEnds.find(
+      (end) =>
+        end.player_name === kill.victim_name &&
+        end.match_time === kill.match_time
+    );
+
+    if (ajax) {
+      ajaxes.push({
+        ...ajax,
+        event_type: "ajax" as $Enums.EventType,
+      });
+    }
+  });
+
   const events = [
     matchStart,
     matchEnd ? matchEnd : null,
@@ -206,6 +230,7 @@ export async function getMapEvents(id: number) {
     ...heroSwaps,
     ...ultimateKills,
     ...multikillList,
+    ...ajaxes,
   ]
     .filter(Boolean) // Remove nulls
     .sort((a, b) => {
@@ -419,6 +444,42 @@ export async function getMapEvents(id: number) {
               </span>
             </span>{" "}
             got a multikill, killing {event.killTimes.length} players.
+          </div>
+        );
+      case "ajax":
+        return (
+          <div className="flex items-center gap-2 p-2" key={event}>
+            <span className={GeistMono.className}>
+              {toTimestamp(event.match_time)} -{" "}
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <Image
+                src={`/heroes/${toHero(event.player_hero)}.png`}
+                alt={`${event.player_name}'s hero`}
+                width={256}
+                height={256}
+                className={cn(
+                  "h-8 w-8 rounded border-2",
+                  event.player_team === matchStart.team_1_name
+                    ? "border-blue-500"
+                    : "border-red-500"
+                )}
+              />
+              <span
+                className={cn(
+                  event.player_team === matchStart.team_1_name
+                    ? "text-blue-500"
+                    : "text-red-500"
+                )}
+              >
+                {event.player_name}
+              </span>
+            </span>{" "}
+            Ajaxed during fight{" "}
+            {fights.findIndex((fight) => {
+              return fight.end >= event.match_time;
+            }) + 1}
+            .
           </div>
         );
     }
