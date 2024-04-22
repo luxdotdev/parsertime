@@ -97,13 +97,10 @@ const footerNavigation = {
   ],
   company: [
     { name: "About", href: "https://lux.dev" },
-    { name: "Blog", href: "#" },
+    { name: "Blog", href: "https://blog.lux.dev" },
     { name: "GitHub", href: "https://github.com/luxdotdev" },
   ],
-  socials: [
-    { name: "Twitter", href: "https://twitter.com/lucasdoell" },
-    { name: "Bluesky", href: "https://bsky.app/profile/lux.dev" },
-  ],
+  legal: [{ name: "Privacy Policy", href: "/privacy" }],
   social: [
     {
       name: "X",
@@ -482,10 +479,10 @@ export default function AboutPage() {
                 </div>
                 <div className="mt-10 md:mt-0">
                   <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">
-                    Social
+                    Legal
                   </h3>
                   <ul className="mt-6 space-y-4">
-                    {footerNavigation.socials.map((item) => (
+                    {footerNavigation.legal.map((item) => (
                       <li key={item.name}>
                         <Link
                           href={item.href}
