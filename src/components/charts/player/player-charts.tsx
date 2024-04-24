@@ -74,7 +74,7 @@ export async function PlayerCharts({ id, playerName }: Props) {
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
       <Card className="col-span-3">
         <CardHeader>
-          <CardTitle>Hero Damage By Round Chart</CardTitle>
+          <CardTitle>Hero Damage By Round</CardTitle>
         </CardHeader>
         <CardContent className="pl-2">
           <PlayerStatByRoundChart
@@ -96,7 +96,7 @@ export async function PlayerCharts({ id, playerName }: Props) {
       {playerRole === "Tank" && (
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle>Damage Mitigated By Round Chart</CardTitle>
+            <CardTitle>Damage Mitigated By Round</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
             <PlayerStatByRoundChart
@@ -120,7 +120,7 @@ export async function PlayerCharts({ id, playerName }: Props) {
       {playerRole === "Damage" && (
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle>Final Blows By Round Chart</CardTitle>
+            <CardTitle>Final Blows By Round</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
             <PlayerStatByRoundChart
@@ -143,7 +143,7 @@ export async function PlayerCharts({ id, playerName }: Props) {
       {playerRole === "Support" && (
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle>Healing By Round Chart</CardTitle>
+            <CardTitle>Healing By Round</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
             <PlayerStatByRoundChart
@@ -165,7 +165,7 @@ export async function PlayerCharts({ id, playerName }: Props) {
       )}
       <Card className="col-span-3">
         <CardHeader>
-          <CardTitle>Damage Taken By Round Chart</CardTitle>
+          <CardTitle>Damage Taken By Round</CardTitle>
         </CardHeader>
         <CardContent className="pl-2">
           <PlayerStatByRoundChart
@@ -186,7 +186,7 @@ export async function PlayerCharts({ id, playerName }: Props) {
       </Card>
       <Card className="col-span-3">
         <CardHeader>
-          <CardTitle>Healing Received By Round Chart</CardTitle>
+          <CardTitle>Healing Received By Round</CardTitle>
         </CardHeader>
         <CardContent className="pl-2">
           <PlayerStatByRoundChart
