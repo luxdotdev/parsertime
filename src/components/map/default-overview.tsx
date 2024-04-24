@@ -336,7 +336,10 @@ export async function DefaultOverview({ id }: { id: number }) {
             {numberOfRounds === 1 ? (
               <OverviewTable playerStats={finalRoundStats} />
             ) : (
-              <Tabs defaultValue="final" className="space-y-4">
+              <Tabs
+                defaultValue="final"
+                className="max-w-fit space-y-4 overflow-x-auto"
+              >
                 <TabsList>
                   <TabsTrigger value="final">Overview</TabsTrigger>
                   {range(numberOfRounds).map((round) => (
