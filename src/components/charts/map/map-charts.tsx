@@ -1,6 +1,7 @@
 import { DamageByRoundChart } from "@/components/charts/map/damage-by-round-chart";
 import { KillsByFightChart } from "@/components/charts/map/kills-by-fight-chart";
 import { KillsByRoleChart } from "@/components/charts/map/kills-by-role-chart";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Card,
   CardContent,
@@ -8,8 +9,36 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import prisma from "@/lib/prisma";
 import { Kill } from "@prisma/client";
+import { InfoCircledIcon, ExternalLinkIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
+
+function ChartTooltip() {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <InfoCircledIcon className="h-4 w-4" />
+        </TooltipTrigger>
+        <TooltipContent className="max-w-[280px]">
+          Looking for more information on charts?{" "}
+          <Link href="https://docs.parsertime.app/maps/charts" target="_blank">
+            <span className="underline">Check out the documentation</span>{" "}
+            <ExternalLinkIcon className="inline h-4 w-4" />
+          </Link>{" "}
+          to learn more.
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
 
 async function groupKillsByInterval(id: number, maxInterval: number) {
   // Fetch the data
@@ -106,7 +135,11 @@ export async function MapCharts({ id }: { id: number }) {
     <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
       <Card className="col-span-full hidden md:grid">
         <CardHeader>
-          <CardTitle>Kills By Fight</CardTitle>
+          <CardTitle>
+            <span className="inline-flex gap-1">
+              Kills By Fight <ChartTooltip />
+            </span>
+          </CardTitle>
         </CardHeader>
         <CardContent className="pl-2">
           <KillsByFightChart fights={fights} teamNames={teamNames} />
@@ -124,7 +157,11 @@ export async function MapCharts({ id }: { id: number }) {
       </Card>
       <Card className="col-span-3">
         <CardHeader>
-          <CardTitle>Final Blows By Role</CardTitle>
+          <CardTitle>
+            <span className="inline-flex gap-1">
+              Final Blows By Role <ChartTooltip />
+            </span>
+          </CardTitle>
         </CardHeader>
         <CardContent className="pl-2">
           <KillsByRoleChart
@@ -144,7 +181,11 @@ export async function MapCharts({ id }: { id: number }) {
       </Card>
       <Card className="col-span-3">
         <CardHeader>
-          <CardTitle>Cumulative Hero Damage By Round</CardTitle>
+          <CardTitle>
+            <span className="inline-flex gap-1">
+              Cumulative Hero Damage By Round <ChartTooltip />
+            </span>
+          </CardTitle>
         </CardHeader>
         <CardContent className="pl-2">
           <DamageByRoundChart
