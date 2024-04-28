@@ -1,7 +1,6 @@
 import { DamageByRoundChart } from "@/components/charts/map/damage-by-round-chart";
 import { KillsByFightChart } from "@/components/charts/map/kills-by-fight-chart";
 import { KillsByRoleChart } from "@/components/charts/map/kills-by-role-chart";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Card,
   CardContent,
@@ -9,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Link } from "@/components/ui/link";
 import {
   Tooltip,
   TooltipContent,
@@ -17,8 +17,7 @@ import {
 } from "@/components/ui/tooltip";
 import prisma from "@/lib/prisma";
 import { Kill } from "@prisma/client";
-import { InfoCircledIcon, ExternalLinkIcon } from "@radix-ui/react-icons";
-import Link from "next/link";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
 
 function ChartTooltip() {
   return (
@@ -29,9 +28,8 @@ function ChartTooltip() {
         </TooltipTrigger>
         <TooltipContent className="max-w-[280px]">
           Looking for more information on charts?{" "}
-          <Link href="https://docs.parsertime.app/maps/charts" target="_blank">
-            <span className="underline">Check out the documentation</span>{" "}
-            <ExternalLinkIcon className="inline h-4 w-4" />
+          <Link href="https://docs.parsertime.app/maps/charts" external>
+            Check out the documentation
           </Link>{" "}
           to learn more.
         </TooltipContent>
