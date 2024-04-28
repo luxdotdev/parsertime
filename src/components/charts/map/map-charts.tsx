@@ -106,7 +106,7 @@ export async function MapCharts({ id }: { id: number }) {
     <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
       <Card className="col-span-full hidden md:grid">
         <CardHeader>
-          <CardTitle>Kills By Fight Chart</CardTitle>
+          <CardTitle>Kills By Fight</CardTitle>
         </CardHeader>
         <CardContent className="pl-2">
           <KillsByFightChart fights={fights} teamNames={teamNames} />
@@ -124,7 +124,7 @@ export async function MapCharts({ id }: { id: number }) {
       </Card>
       <Card className="col-span-3">
         <CardHeader>
-          <CardTitle>Final Blows By Role Chart</CardTitle>
+          <CardTitle>Final Blows By Role</CardTitle>
         </CardHeader>
         <CardContent className="pl-2">
           <KillsByRoleChart
@@ -144,7 +144,7 @@ export async function MapCharts({ id }: { id: number }) {
       </Card>
       <Card className="col-span-3">
         <CardHeader>
-          <CardTitle>Cumulative Hero Damage By Round Chart</CardTitle>
+          <CardTitle>Cumulative Hero Damage By Round</CardTitle>
         </CardHeader>
         <CardContent className="pl-2">
           <DamageByRoundChart
