@@ -1,7 +1,6 @@
 import { CreateScrimButton } from "@/components/dashboard/create-scrim";
 import { Card, CardDescription } from "@/components/ui/card";
-import { ExternalLinkIcon } from "@radix-ui/react-icons";
-import Link from "next/link";
+import { Link } from "@/components/ui/link";
 
 export function EmptyScrimList() {
   return (
@@ -14,11 +13,8 @@ export function EmptyScrimList() {
           <p className="text-gray-500">Click the button to create a scrim.</p>
           <p className="p-2 text-gray-500">
             Unsure how to get the data for a scrim?{" "}
-            <Link href="https://docs.parsertime.app" target="_blank">
-              <span className="underline">
-                Check out our documentation here.
-              </span>{" "}
-              <ExternalLinkIcon className="inline h-4 w-4" />
+            <Link href="https://docs.parsertime.app" target="_blank" external>
+              Check out our documentation here.
             </Link>
           </p>
           <CreateScrimButton />
