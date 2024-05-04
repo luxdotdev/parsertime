@@ -7,7 +7,7 @@ import { $Enums } from "@prisma/client";
 import { fail } from "assert";
 
 test("should be equivalent to control data", async () => {
-  const file = await fs.readFileSync(
+  const file = fs.readFileSync(
     "./test/samples/Log-2024-01-22-20-02-45.txt",
     "utf8"
   );
@@ -22,7 +22,7 @@ test("should be equivalent to control data", async () => {
 });
 
 test("should be equivalent to control data v2", async () => {
-  const file = await fs.readFileSync(
+  const file = fs.readFileSync(
     "./test/samples/Log-2024-01-22-20-21-43.txt",
     "utf8"
   );
@@ -40,7 +40,7 @@ test("should be equivalent to control data v2", async () => {
  * This test checks for echo duplicate events to be handled correctly.
  */
 test("should be equivalent to control data v3", async () => {
-  const file = await fs.readFileSync(
+  const file = fs.readFileSync(
     "./test/samples/Log-2024-01-22-21-35-38.txt",
     "utf8"
   );
@@ -61,7 +61,7 @@ test("should be equivalent to control data v3", async () => {
  * This test is skipped because there is an issue with stats appearing as **** in the control data.
  */
 test.todo("should be equivalent to control data v4", async () => {
-  const file = await fs.readFileSync(
+  const file = fs.readFileSync(
     "./test/samples/Log-2023-12-12-22-15-10.txt",
     "utf8"
   );
@@ -79,7 +79,7 @@ test.todo("should be equivalent to control data v4", async () => {
  * This test checks for mercy rez events to be handled correctly.
  */
 test("should be equivalent to control data v5", async () => {
-  const file = await fs.readFileSync(
+  const file = fs.readFileSync(
     "./test/samples/Log-2024-02-05-20-07-38.txt",
     "utf8"
   );
@@ -97,7 +97,7 @@ test("should be equivalent to control data v5", async () => {
  * This test checks for D.Va events to be handled correctly.
  */
 test("should be equivalent to control data v6", async () => {
-  const file = await fs.readFileSync(
+  const file = fs.readFileSync(
     "./test/samples/Log-2024-01-10-20-38-42.txt",
     "utf8"
   );
@@ -115,7 +115,7 @@ test("should be equivalent to control data v6", async () => {
  * This test checks for Echo environmental deaths during ult to be handled correctly.
  */
 test("should correctly handle deaths linked to All Teams", async () => {
-  const file = await fs.readFileSync(
+  const file = fs.readFileSync(
     "./test/samples/Log-2024-05-03-20-06-06.txt",
     "utf8"
   );
@@ -134,7 +134,7 @@ test("should correctly handle deaths linked to All Teams", async () => {
 
 async function local_parseDataFromXLSX(fileName: string) {
   // read the file binary
-  const file = await fs.readFileSync(fileName, "binary");
+  const file = fs.readFileSync(fileName, "binary");
 
   const workbook = XLSX.read(file, { type: "binary" });
   const sheetName = workbook.SheetNames as $Enums.EventType[];
