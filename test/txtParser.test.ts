@@ -4,6 +4,7 @@ import * as XLSX from "xlsx";
 import { parseDataFromTXT } from "@/lib/parser";
 import { ParserData } from "@/types/parser";
 import { $Enums } from "@prisma/client";
+import { fail } from "assert";
 
 test("should be equivalent to control data", async () => {
   const file = await fs.readFileSync(
@@ -108,6 +109,27 @@ test("should be equivalent to control data v6", async () => {
   );
 
   expect(workbook2).toEqual(workbook1);
+});
+
+/**
+ * This test checks for Echo environmental deaths during ult to be handled correctly.
+ */
+test("should correctly handle deaths linked to All Teams", async () => {
+  const file = await fs.readFileSync(
+    "./test/samples/Log-2024-05-03-20-06-06.txt",
+    "utf8"
+  );
+
+  // @ts-expect-error - cannot pass File type in node
+  const workbook1 = await parseDataFromTXT(file);
+
+  for (const kill in workbook1.kill) {
+    if (workbook1.kill[kill][2] === "All Teams") {
+      fail("All Teams should not be present in kill events");
+    }
+  }
+
+  expect(workbook1).toBeDefined();
 });
 
 async function local_parseDataFromXLSX(fileName: string) {
