@@ -89,13 +89,14 @@ export async function parseDataFromTXT(file: File) {
   // If the attacker team is "All Teams", it means that:
   // - An Echo player died during ult
   // - possibly more? (need to check)
-  // - In this case, we need to replace the attacker team, name, and hero with the victim's team, name, and hero.
-  // - This is because we want to show this as a standard Environmental kill.
+  //
+  // In this case, we need to replace the attacker team, name, and hero with the victim's team, name, and hero.
+  // This is because we want to show this as a standard Environmental kill.
   for (const kill of categorizedData["kill"]) {
     if (kill[2] === "All Teams") {
-      kill[2] = kill[5];
-      kill[3] = kill[6];
-      kill[4] = kill[7];
+      kill[2] = kill[5]; // Set attacker team to victim team
+      kill[3] = kill[6]; // Set attacker name to victim name
+      kill[4] = kill[7]; // Set attacker hero to victim hero
     }
   }
 
