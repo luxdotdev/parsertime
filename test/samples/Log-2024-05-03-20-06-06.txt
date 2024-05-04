@@ -1,0 +1,453 @@
+[00:00:00] ,match_start,0,Lijiang Tower,Control,Team 1,Team 2
+[00:00:00] ,objective_updated,0,1,0,1
+[00:00:00] ,round_start,0,1,0,0,0,1
+[00:00:10] ,hero_spawn,0,Team 2,persephone,Lifeweaver,0,0
+[00:00:12] ,hero_spawn,0,Team 1,FatherKazoo,Roadhog,0,0
+[00:00:19] ,hero_spawn,0,Team 1,AMIBO,Lúcio,0,0
+[00:00:25] ,hero_spawn,0,Team 1,INSTINCT,Kiriko,0,0
+[00:00:28] ,hero_spawn,0,Team 2,bobzzzzzz6,Lúcio,0,0
+[00:00:32] ,hero_spawn,0,Team 2,bj0rkland,Winston,0,0
+[00:00:34] ,hero_swap,0,Team 2,bj0rkland,Zarya,Winston,0
+[00:00:35] ,hero_swap,0,Team 2,bj0rkland,Orisa,Zarya,0
+[00:00:36] ,hero_swap,0,Team 2,bj0rkland,Winston,Orisa,0
+[00:00:40] ,hero_swap,0,Team 2,bj0rkland,Ramattra,Winston,0
+[00:00:41] ,hero_swap,0,Team 2,bj0rkland,Winston,Ramattra,0
+[00:00:46] ,hero_spawn,0,Team 2,Blurr1Q5,Sombra,0,0
+[00:00:48] ,hero_spawn,0,Team 2,Duelan,Tracer,0,0
+[00:00:51] ,hero_spawn,0,Team 1,Retro,Venture,0,0
+[00:01:36] ,hero_swap,0,Team 2,persephone,Kiriko,Lifeweaver,0
+[00:01:37] ,hero_swap,0,Team 2,Duelan,Sojourn,Tracer,0
+[00:01:38] ,hero_swap,0,Team 2,Blurr1Q5,Tracer,Sombra,0
+[00:01:41] ,hero_swap,0,Team 1,FatherKazoo,Orisa,Roadhog,0
+[00:01:44] ,hero_swap,0,Team 1,Retro,Sojourn,Venture,0
+[00:01:45] ,hero_swap,0,Team 1,FatherKazoo,Doomfist,Orisa,0
+[00:01:47] ,hero_swap,0,Team 2,Duelan,Sombra,Sojourn,0
+[00:01:48] ,hero_spawn,0,Team 1,ǨǠŢŦ,Cassidy,0,0
+[00:01:49] ,hero_swap,0,Team 2,Blurr1Q5,Sojourn,Tracer,0
+[00:01:49] ,hero_swap,0,Team 2,Duelan,Tracer,Sombra,0
+[00:02:01] ,hero_swap,0,Team 1,FatherKazoo,Roadhog,Doomfist,0
+[00:03:08] ,hero_swap,0,Team 1,Retro,Symmetra,Sojourn,0
+[00:03:11] ,setup_complete,0,1,29.99
+[00:03:15] ,hero_swap,3.63,Team 1,Retro,Sojourn,Symmetra,3.63
+[00:03:36] ,kill,25.36,Team 1,Retro,Sojourn,Team 2,bobzzzzzz6,Lúcio,Secondary Fire,83.04,0,0
+[00:03:37] ,defensive_assist,25.52,Team 1,INSTINCT,Kiriko,0
+[00:03:48] ,kill,36.94,Team 1,INSTINCT,Kiriko,Team 2,Duelan,Tracer,0,35,True,0
+[00:03:50] ,offensive_assist,38.61,Team 1,AMIBO,Lúcio,0
+[00:03:50] ,kill,38.61,Team 1,FatherKazoo,Roadhog,Team 2,Blurr1Q5,Sojourn,Primary Fire,1.50,True,0
+[00:03:50] ,defensive_assist,38.69,Team 1,INSTINCT,Kiriko,0
+[00:03:51] ,kill,39.81,Team 1,Retro,Sojourn,Team 2,bj0rkland,Winston,Secondary Fire,115.48,0,0
+[00:03:52] ,point_progress,40.96,1,All Teams,1,33.49
+[00:03:53] ,point_progress,42.30,1,All Teams,1,67.09
+[00:03:55] ,point_progress,44.24,1,Team 2,1,0
+[00:03:55] ,objective_captured,44.24,1,Team 1,1,0,0,0
+[00:03:56] ,kill,44.93,Team 2,persephone,Kiriko,Team 2,persephone,Kiriko,0,169,0,True
+[00:04:31] ,kill,80.12,Team 1,FatherKazoo,Roadhog,Team 2,bobzzzzzz6,Lúcio,Primary Fire,8.75,0,0
+[00:04:32] ,offensive_assist,80.41,Team 1,AMIBO,Lúcio,0
+[00:04:32] ,defensive_assist,80.44,Team 1,INSTINCT,Kiriko,0
+[00:04:32] ,kill,81.05,Team 1,INSTINCT,Kiriko,Team 2,Blurr1Q5,Sojourn,0,75.50,True,0
+[00:04:32] ,offensive_assist,81.36,Team 1,AMIBO,Lúcio,0
+[00:04:32] ,defensive_assist,81.36,Team 1,AMIBO,Lúcio,0
+[00:04:33] ,point_progress,81.52,1,Team 2,1,33.47
+[00:04:33] ,kill,82.32,Team 2,bj0rkland,Winston,Team 1,ǨǠŢŦ,Cassidy,Primary Fire,1.05,0,0
+[00:04:34] ,defensive_assist,82.38,Team 2,persephone,Kiriko,0
+[00:04:34] ,kill,82.96,Team 1,FatherKazoo,Roadhog,Team 2,bj0rkland,Winston,Primary Fire,13.36,True,0
+[00:04:34] ,offensive_assist,83.24,Team 1,AMIBO,Lúcio,0
+[00:04:34] ,defensive_assist,83.24,Team 1,AMIBO,Lúcio,0
+[00:04:34] ,defensive_assist,83.29,Team 1,INSTINCT,Kiriko,0
+[00:04:36] ,kill,84.73,Team 2,persephone,Kiriko,Team 1,INSTINCT,Kiriko,0,92.50,True,0
+[00:04:39] ,kill,88.16,Team 1,AMIBO,Lúcio,Team 2,persephone,Kiriko,Secondary Fire,80.04,0,True
+[00:04:39] ,point_progress,88.25,1,Team 2,1,66.86
+[00:04:40] ,defensive_assist,88.38,Team 1,AMIBO,Lúcio,0
+[00:04:41] ,kill,89.74,Team 1,FatherKazoo,Roadhog,Team 2,Duelan,Tracer,Primary Fire,3.28,0,0
+[00:05:02] ,ultimate_charged,111.16,Team 2,persephone,Kiriko,0,1
+[00:05:12] ,ultimate_charged,120.86,Team 1,Retro,Sojourn,0,1
+[00:05:12] ,kill,120.86,Team 1,Retro,Sojourn,Team 2,bj0rkland,Winston,Primary Fire,7.25,0,0
+[00:05:12] ,defensive_assist,120.87,Team 1,INSTINCT,Kiriko,0
+[00:05:12] ,ultimate_charged,120.94,Team 1,ǨǠŢŦ,Cassidy,0,1
+[00:05:12] ,kill,120.94,Team 1,ǨǠŢŦ,Cassidy,Team 2,persephone,Kiriko,Primary Fire,93.75,True,0
+[00:05:12] ,offensive_assist,121.27,Team 1,FatherKazoo,Roadhog,0
+[00:05:15] ,ultimate_charged,123.99,Team 2,Duelan,Tracer,0,1
+[00:05:19] ,kill,127.71,Team 1,AMIBO,Lúcio,Team 2,Blurr1Q5,Sojourn,Melee,23.50,0,0
+[00:05:19] ,ultimate_start,127.90,Team 2,Duelan,Tracer,0,1
+[00:05:19] ,ultimate_end,128.09,Team 2,Duelan,Tracer,0,1
+[00:05:20] ,kill,128.97,Team 2,Duelan,Tracer,Team 1,ǨǠŢŦ,Cassidy,Ultimate,65.23,0,0
+[00:05:27] ,kill,136.25,Team 1,INSTINCT,Kiriko,Team 2,Duelan,Tracer,0,76,True,0
+[00:05:27] ,ultimate_charged,136.25,Team 1,INSTINCT,Kiriko,0,1
+[00:05:42] ,hero_swap,151.36,Team 2,Duelan,Venture,Tracer,151.36
+[00:05:43] ,ultimate_charged,152.36,Team 1,FatherKazoo,Roadhog,0,1
+[00:05:44] ,ultimate_charged,153.00,Team 1,AMIBO,Lúcio,0,1
+[00:05:45] ,ultimate_start,154.32,Team 1,INSTINCT,Kiriko,0,1
+[00:05:46] ,ultimate_end,154.68,Team 1,INSTINCT,Kiriko,0,1
+[00:05:46] ,ultimate_start,154.77,Team 1,INSTINCT,Kiriko,0,1
+[00:05:48] ,ultimate_start,157.27,Team 2,persephone,Kiriko,0,1
+[00:05:49] ,ultimate_end,157.54,Team 2,persephone,Kiriko,0,1
+[00:05:49] ,ultimate_start,157.64,Team 2,persephone,Kiriko,0,1
+[00:05:49] ,ultimate_start,157.75,Team 1,FatherKazoo,Roadhog,0,1
+[00:05:49] ,ultimate_charged,158.36,Team 2,bj0rkland,Winston,0,1
+[00:05:50] ,ultimate_start,158.85,Team 2,bj0rkland,Winston,0,1
+[00:05:53] ,ultimate_charged,162.20,Team 2,Blurr1Q5,Sojourn,0,1
+[00:05:54] ,point_progress,162.46,1,Team 2,1,33.39
+[00:05:54] ,ultimate_start,162.62,Team 1,ǨǠŢŦ,Cassidy,0,1
+[00:05:55] ,ultimate_charged,163.61,Team 2,bobzzzzzz6,Lúcio,0,1
+[00:05:55] ,point_progress,163.88,1,Team 2,1,66.69
+[00:05:56] ,objective_captured,165.22,1,Team 2,1,99.99,0.01,0
+[00:05:56] ,ultimate_end,165.26,Team 1,FatherKazoo,Roadhog,0,1
+[00:05:57] ,ultimate_end,165.51,Team 1,INSTINCT,Kiriko,0,1
+[00:05:58] ,kill,166.41,Team 1,ǨǠŢŦ,Cassidy,Team 2,persephone,Kiriko,Ultimate,202.33,0,0
+[00:05:58] ,offensive_assist,166.49,Team 1,AMIBO,Lúcio,0
+[00:05:58] ,ultimate_end,166.75,Team 1,ǨǠŢŦ,Cassidy,0,1
+[00:05:58] ,offensive_assist,166.87,Team 1,FatherKazoo,Roadhog,0
+[00:05:59] ,ultimate_start,168.19,Team 2,Blurr1Q5,Sojourn,0,1
+[00:05:59] ,ultimate_end,168.38,Team 2,persephone,Kiriko,0,1
+[00:06:00] ,ultimate_end,168.86,Team 2,bj0rkland,Winston,0,1
+[00:06:00] ,ultimate_start,168.86,Team 2,bobzzzzzz6,Lúcio,0,1
+[00:06:02] ,kill,170.71,Team 2,bj0rkland,Winston,Team 1,INSTINCT,Kiriko,Primary Fire,3.00,0,0
+[00:06:02] ,kill,170.87,Team 1,FatherKazoo,Roadhog,Team 2,Duelan,Venture,Primary Fire,23.53,0,0
+[00:06:02] ,ultimate_start,171.10,Team 1,AMIBO,Lúcio,0,1
+[00:06:02] ,defensive_assist,171.13,Team 1,INSTINCT,Kiriko,0
+[00:06:02] ,defensive_assist,171.15,Team 2,bobzzzzzz6,Lúcio,0
+[00:06:03] ,kill,171.52,Team 2,Blurr1Q5,Sojourn,Team 1,ǨǠŢŦ,Cassidy,Primary Fire,6.42,0,0
+[00:06:03] ,defensive_assist,171.63,Team 2,bobzzzzzz6,Lúcio,0
+[00:06:06] ,ultimate_start,175.21,Team 1,Retro,Sojourn,0,1
+[00:06:07] ,kill,175.95,Team 1,Retro,Sojourn,Team 2,bj0rkland,Winston,Ultimate,90.09,True,0
+[00:06:07] ,offensive_assist,176.30,Team 1,INSTINCT,Kiriko,0
+[00:06:07] ,defensive_assist,176.30,Team 1,INSTINCT,Kiriko,0
+[00:06:07] ,defensive_assist,176.35,Team 1,AMIBO,Lúcio,0
+[00:06:08] ,ultimate_end,176.59,Team 2,bobzzzzzz6,Lúcio,0,1
+[00:06:08] ,ultimate_end,176.93,Team 2,Blurr1Q5,Sojourn,0,1
+[00:06:10] ,ultimate_end,178.85,Team 1,AMIBO,Lúcio,0,1
+[00:06:10] ,point_progress,179.23,1,Team 1,1,33.48
+[00:06:13] ,kill,182.14,Team 1,Retro,Sojourn,Team 2,Blurr1Q5,Sojourn,Ultimate,120,0,0
+[00:06:15] ,ultimate_end,183.95,Team 1,Retro,Sojourn,0,1
+[00:06:17] ,point_progress,185.57,1,Team 1,1,67.23
+[00:06:22] ,point_progress,190.72,1,Team 1,1,99.91
+[00:06:22] ,objective_captured,190.74,1,Team 1,1,99.99,21.25,0
+[00:06:23] ,hero_swap,192.15,Team 2,Blurr1Q5,Genji,Sojourn,192.15
+[00:06:25] ,kill,193.94,Team 1,INSTINCT,Kiriko,Team 2,bobzzzzzz6,Lúcio,0,12.91,0,0
+[00:06:29] ,kill,197.61,Team 1,ǨǠŢŦ,Cassidy,Team 2,persephone,Kiriko,Primary Fire,40,True,0
+[00:06:32] ,kill,200.94,Team 2,bj0rkland,Winston,Team 1,Retro,Sojourn,Primary Fire,6.62,0,0
+[00:06:33] ,kill,201.64,Team 1,FatherKazoo,Roadhog,Team 2,bj0rkland,Winston,Melee,0.14,0,0
+[00:06:37] ,kill,206.01,Team 1,FatherKazoo,Roadhog,Team 2,Duelan,Venture,Melee,22.25,0,0
+[00:06:38] ,defensive_assist,206.41,Team 1,INSTINCT,Kiriko,0
+[00:06:38] ,offensive_assist,206.44,Team 1,AMIBO,Lúcio,0
+[00:06:38] ,defensive_assist,206.44,Team 1,AMIBO,Lúcio,0
+[00:06:42] ,kill,210.72,Team 1,ǨǠŢŦ,Cassidy,Team 2,Blurr1Q5,Genji,Primary Fire,60.63,0,0
+[00:06:42] ,offensive_assist,211.12,Team 1,INSTINCT,Kiriko,0
+[00:06:42] ,defensive_assist,211.12,Team 1,INSTINCT,Kiriko,0
+[00:06:46] ,kill,215.40,Team 1,FatherKazoo,Roadhog,Team 2,bobzzzzzz6,Lúcio,Primary Fire,3.19,0,0
+[00:06:49] ,player_stat,217.55,1,Team 1,Retro,Venture,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:06:49] ,player_stat,217.55,1,Team 1,Retro,Sojourn,11,5,1,5409.43,1604.83,3804.61,0,797.29,0,1303.71,0,0,0,1,1,0,0,3,5,0,0,24,0.09,0,0,0,1069,279,652,0,0,0.30,213.92
+[00:06:49] ,player_stat,217.55,1,Team 1,Retro,Symmetra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3.63
+[00:06:49] ,player_stat,217.55,1,Team 1,FatherKazoo,Roadhog,15,8,0,4400.47,1014.57,3385.90,1423.33,3144.46,1423.33,3910.63,0,0,2,1,1,0,0,1,8,0,0,50,0.18,0,0,0,1940,271,1545,0,0,0.15,217.55
+[00:06:49] ,player_stat,217.55,1,Team 1,FatherKazoo,Orisa,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:06:49] ,player_stat,217.55,1,Team 1,FatherKazoo,Doomfist,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:06:49] ,player_stat,217.55,1,Team 1,AMIBO,Lúcio,7,1,0,1378.86,414,964.86,2116.50,504.17,394.15,1025.55,0,5,6,1,1,0,0,0,2,1,0,3,0.10,0,0,0,353,30,279,0,0,0.10,217.55
+[00:06:49] ,player_stat,217.55,1,Team 2,bj0rkland,Winston,4,3,5,2185.84,0,2100.64,0,2532.28,0,6193.74,4177.63,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,24,12,12,0,0,0.50,217.55
+[00:06:49] ,player_stat,217.55,1,Team 2,bj0rkland,Zarya,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:06:49] ,player_stat,217.55,1,Team 2,bj0rkland,Orisa,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:06:49] ,player_stat,217.55,1,Team 2,bj0rkland,Ramattra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:06:49] ,player_stat,217.55,1,Team 1,ǨǠŢŦ,Cassidy,12,4,3,4073.64,919.23,3154.40,0,933.37,0,1932.30,0,0,0,1,1,0,0,1,5,0,0,9,0.20,0,0,0,148,46,83,0,0,0.36,217.55
+[00:06:49] ,player_stat,217.55,1,Team 1,INSTINCT,Kiriko,10,4,2,1602.44,225,1377.44,1878.73,328.50,0,1496.83,0,9,2,1,1,0,0,0,4,0,0,5,0.17,0,0,0,127,30,86,0,0,0.26,217.55
+[00:06:49] ,player_stat,217.55,1,Team 2,persephone,Lifeweaver,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:06:49] ,player_stat,217.55,1,Team 2,persephone,Kiriko,1,1,5,1429,0,1429,1960.59,354.91,0,1683.04,0,1,0,1,1,0,0,1,0,0,2,7,0.29,0,0,0,86,24,61,0,0,0.28,217.55
+[00:06:49] ,player_stat,217.55,1,Team 2,Blurr1Q5,Sombra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:06:49] ,player_stat,217.55,1,Team 2,Blurr1Q5,Tracer,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:06:49] ,player_stat,217.55,1,Team 2,Blurr1Q5,Sojourn,4,1,4,2642.88,0,2542.88,0,278.23,0,1329.83,0,0,0,1,1,0,0,0,0,0,0,19,0.12,0,0,0,656,160,485,0,0,0.25,192.15
+[00:06:49] ,player_stat,217.55,1,Team 2,Blurr1Q5,Genji,0,0,1,131,0,131,0,0,0,250,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,15,3,12,0,0,0.20,25.40
+[00:06:49] ,round_end,217.55,1,0,1,0,1,100,21.25,0
+[00:06:49] ,player_stat,217.55,1,Team 2,Duelan,Tracer,2,1,3,1213.04,0,1213.04,0,40.53,83.41,681.25,0,0,0,1,1,0,0,0,0,0,0,18,0.09,0,0,0,712,194,503,0,0,0.28,151.36
+[00:06:49] ,player_stat,217.55,1,Team 2,Duelan,Sojourn,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:06:49] ,player_stat,217.55,1,Team 2,Duelan,Sombra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:06:49] ,player_stat,217.55,1,Team 2,Duelan,Venture,1,0,2,574.06,0,574.06,0,243.40,0,810.76,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,13,4,9,0,0,0.31,66.19
+[00:06:49] ,player_stat,217.55,1,Team 2,bobzzzzzz6,Lúcio,0,0,4,1813.40,0,1678.40,1225.61,549.80,549.80,1907.59,0,2,0,1,1,0,0,0,0,0,0,7,0.10,0,0,0,230,67,162,0,0,0.29,217.55
+[00:06:59] ,objective_updated,217.55,2,1,2
+[00:07:00] ,round_start,217.55,2,0,1,0,2
+[00:07:09] ,hero_swap,217.55,Team 2,Duelan,Mei,Venture,0
+[00:07:12] ,hero_swap,217.55,Team 2,bj0rkland,Reinhardt,Winston,0
+[00:07:14] ,hero_swap,217.55,Team 2,Blurr1Q5,Symmetra,Genji,0
+[00:07:16] ,hero_swap,217.55,Team 1,FatherKazoo,Ramattra,Roadhog,0
+[00:07:17] ,hero_swap,217.55,Team 1,INSTINCT,Baptiste,Kiriko,0
+[00:07:22] ,hero_swap,217.55,Team 2,persephone,Baptiste,Kiriko,0
+[00:08:17] ,hero_swap,217.55,Team 1,Retro,Reaper,Sojourn,0
+[00:08:44] ,setup_complete,217.55,2,29.99
+[00:09:16] ,kill,248.91,Team 1,ǨǠŢŦ,Cassidy,Team 2,Duelan,Mei,Primary Fire,18.55,0,0
+[00:09:16] ,offensive_assist,249.15,Team 1,FatherKazoo,Ramattra,0
+[00:09:16] ,defensive_assist,249.19,Team 1,INSTINCT,Baptiste,0
+[00:09:16] ,offensive_assist,249.21,Team 1,AMIBO,Lúcio,0
+[00:09:16] ,point_progress,249.83,2,All Teams,2,33.58
+[00:09:21] ,point_progress,254.48,2,All Teams,2,66.77
+[00:09:22] ,kill,255.71,Team 1,Retro,Reaper,Team 2,persephone,Baptiste,Primary Fire,12.90,0,0
+[00:09:22] ,offensive_assist,255.81,Team 1,AMIBO,Lúcio,0
+[00:09:23] ,objective_captured,256.51,2,Team 2,2,0,0.01,0
+[00:09:29] ,kill,262.19,Team 1,ǨǠŢŦ,Cassidy,Team 2,bobzzzzzz6,Lúcio,Primary Fire,69.93,0,0
+[00:09:29] ,defensive_assist,262.36,Team 1,INSTINCT,Baptiste,0
+[00:09:29] ,offensive_assist,262.38,Team 1,AMIBO,Lúcio,0
+[00:09:32] ,kill,264.92,Team 2,Blurr1Q5,Symmetra,Team 1,Retro,Reaper,Primary Fire,17.26,0,0
+[00:09:32] ,kill,265.02,Team 1,AMIBO,Lúcio,Team 2,bj0rkland,Reinhardt,Secondary Fire,1.74,0,0
+[00:09:32] ,defensive_assist,265.18,Team 1,INSTINCT,Baptiste,0
+[00:09:32] ,offensive_assist,265.28,Team 2,bobzzzzzz6,Lúcio,0
+[00:09:33] ,kill,266.70,Team 1,ǨǠŢŦ,Cassidy,Team 2,Blurr1Q5,Symmetra,Primary Fire,24,0,0
+[00:09:34] ,defensive_assist,267.07,Team 1,INSTINCT,Baptiste,0
+[00:09:34] ,offensive_assist,267.08,Team 1,AMIBO,Lúcio,0
+[00:09:35] ,point_progress,267.98,2,Team 1,2,33.38
+[00:09:36] ,point_progress,269.42,2,Team 1,2,67.18
+[00:09:37] ,objective_captured,270.75,2,Team 1,2,0.01,11.87,0
+[00:10:00] ,ultimate_charged,293.57,Team 1,INSTINCT,Baptiste,0,2
+[00:10:05] ,ultimate_start,298.02,Team 1,INSTINCT,Baptiste,0,2
+[00:10:05] ,ultimate_charged,298.57,Team 2,bj0rkland,Reinhardt,0,2
+[00:10:06] ,ultimate_start,299.35,Team 2,bj0rkland,Reinhardt,0,2
+[00:10:07] ,point_progress,300.60,2,Team 2,2,33.58
+[00:10:09] ,ultimate_end,302.34,Team 2,bj0rkland,Reinhardt,0,2
+[00:10:09] ,point_progress,302.44,2,Team 2,2,66.68
+[00:10:10] ,kill,303.11,Team 1,FatherKazoo,Ramattra,Team 2,Duelan,Mei,Ability 1,115.62,0,0
+[00:10:10] ,offensive_assist,303.22,Team 1,INSTINCT,Baptiste,0
+[00:10:10] ,defensive_assist,303.22,Team 1,INSTINCT,Baptiste,0
+[00:10:10] ,kill,303.73,Team 1,FatherKazoo,Ramattra,Team 2,bj0rkland,Reinhardt,Ability 1,119.88,0,0
+[00:10:10] ,offensive_assist,303.83,Team 1,AMIBO,Lúcio,0
+[00:10:11] ,offensive_assist,304.15,Team 1,INSTINCT,Baptiste,0
+[00:10:11] ,defensive_assist,304.15,Team 1,INSTINCT,Baptiste,0
+[00:10:11] ,kill,304.63,Team 1,Retro,Reaper,Team 2,persephone,Baptiste,Primary Fire,3.84,0,0
+[00:10:11] ,offensive_assist,304.76,Team 1,AMIBO,Lúcio,0
+[00:10:11] ,defensive_assist,304.76,Team 1,AMIBO,Lúcio,0
+[00:10:12] ,offensive_assist,305.08,Team 1,FatherKazoo,Ramattra,0
+[00:10:12] ,defensive_assist,305.09,Team 1,INSTINCT,Baptiste,0
+[00:10:14] ,kill,307.81,Team 1,ǨǠŢŦ,Cassidy,Team 2,bobzzzzzz6,Lúcio,Primary Fire,115.68,True,0
+[00:10:15] ,defensive_assist,307.93,Team 1,INSTINCT,Baptiste,0
+[00:10:15] ,offensive_assist,308.02,Team 1,AMIBO,Lúcio,0
+[00:10:15] ,ultimate_end,308.53,Team 1,INSTINCT,Baptiste,0,2
+[00:10:20] ,kill,313.48,Team 1,ǨǠŢŦ,Cassidy,Team 2,Blurr1Q5,Symmetra,Primary Fire,118.03,True,0
+[00:10:20] ,defensive_assist,313.60,Team 1,INSTINCT,Baptiste,0
+[00:10:27] ,ultimate_charged,320.56,Team 1,FatherKazoo,Ramattra,0,2
+[00:10:43] ,ultimate_charged,336.56,Team 2,Blurr1Q5,Symmetra,0,2
+[00:10:48] ,ultimate_charged,341.65,Team 1,ǨǠŢŦ,Cassidy,0,2
+[00:10:49] ,ultimate_charged,342.56,Team 1,Retro,Reaper,0,2
+[00:10:50] ,ultimate_start,343.82,Team 1,ǨǠŢŦ,Cassidy,0,2
+[00:10:51] ,ultimate_charged,343.92,Team 2,bobzzzzzz6,Lúcio,0,2
+[00:10:51] ,kill,343.95,Team 1,Retro,Reaper,Team 2,Duelan,Mei,Primary Fire,9.72,0,0
+[00:10:51] ,ultimate_start,344.02,Team 1,FatherKazoo,Ramattra,0,2
+[00:10:51] ,defensive_assist,344.14,Team 1,INSTINCT,Baptiste,0
+[00:10:51] ,ultimate_start,344.21,Team 1,Retro,Reaper,0,2
+[00:10:51] ,ultimate_start,344.49,Team 2,bobzzzzzz6,Lúcio,0,2
+[00:10:52] ,ultimate_charged,345.05,Team 2,persephone,Baptiste,0,2
+[00:10:52] ,ultimate_start,345.34,Team 2,Blurr1Q5,Symmetra,0,2
+[00:10:54] ,ultimate_end,347.20,Team 1,Retro,Reaper,0,2
+[00:10:56] ,kill,349.49,Team 1,FatherKazoo,Ramattra,Team 2,bobzzzzzz6,Lúcio,Ultimate,0.64,0,0
+[00:10:56] ,ultimate_end,349.63,Team 1,ǨǠŢŦ,Cassidy,0,2
+[00:10:56] ,offensive_assist,349.81,Team 1,AMIBO,Lúcio,0
+[00:10:57] ,kill,350.43,Team 1,INSTINCT,Baptiste,Team 2,persephone,Baptiste,Primary Fire,23.19,0,0
+[00:10:57] ,offensive_assist,350.75,Team 1,AMIBO,Lúcio,0
+[00:10:58] ,kill,350.89,Team 2,bj0rkland,Reinhardt,Team 1,AMIBO,Lúcio,Primary Fire,72.24,0,0
+[00:10:58] ,defensive_assist,351.15,Team 2,persephone,Baptiste,0
+[00:10:58] ,defensive_assist,351.26,Team 2,bobzzzzzz6,Lúcio,0
+[00:10:58] ,kill,351.29,Team 1,FatherKazoo,Ramattra,Team 2,Blurr1Q5,Symmetra,Ultimate,21.86,0,0
+[00:10:58] ,ultimate_charged,351.58,Team 1,AMIBO,Lúcio,0,2
+[00:10:58] ,offensive_assist,351.68,Team 1,AMIBO,Lúcio,0
+[00:10:59] ,kill,352.24,Team 1,Retro,Reaper,Team 2,bj0rkland,Reinhardt,Melee,16.35,0,0
+[00:10:59] ,ultimate_end,352.30,Team 2,bobzzzzzz6,Lúcio,0,2
+[00:10:59] ,offensive_assist,352.53,Team 1,FatherKazoo,Ramattra,0
+[00:10:59] ,defensive_assist,352.59,Team 1,INSTINCT,Baptiste,0
+[00:10:59] ,offensive_assist,352.62,Team 1,AMIBO,Lúcio,0
+[00:11:00] ,ultimate_end,353.04,Team 1,FatherKazoo,Ramattra,0,2
+[00:11:04] ,ultimate_end,357.58,Team 2,Blurr1Q5,Symmetra,0,2
+[00:11:10] ,ultimate_charged,363.56,Team 2,Duelan,Mei,0,2
+[00:11:24] ,ultimate_start,377.16,Team 2,persephone,Baptiste,0,2
+[00:11:34] ,ultimate_end,387.67,Team 2,persephone,Baptiste,0,2
+[00:11:42] ,kill,394.97,Team 1,ǨǠŢŦ,Cassidy,Team 2,bobzzzzzz6,Lúcio,Primary Fire,129.75,True,0
+[00:11:44] ,ultimate_start,397.77,Team 2,Duelan,Mei,0,2
+[00:11:48] ,ultimate_start,400.95,Team 1,AMIBO,Lúcio,0,2
+[00:11:49] ,kill,402.10,Team 2,persephone,Baptiste,Team 1,Retro,Reaper,Primary Fire,12.80,True,0
+[00:11:50] ,kill,403.43,Team 1,ǨǠŢŦ,Cassidy,Team 2,Blurr1Q5,Symmetra,Primary Fire,31.79,0,0
+[00:11:50] ,ultimate_end,403.62,Team 2,Duelan,Mei,0,2
+[00:11:50] ,offensive_assist,403.77,Team 1,FatherKazoo,Ramattra,0
+[00:11:50] ,defensive_assist,403.83,Team 1,INSTINCT,Baptiste,0
+[00:11:51] ,defensive_assist,403.86,Team 1,AMIBO,Lúcio,0
+[00:11:52] ,ultimate_charged,405.57,Team 1,INSTINCT,Baptiste,0,3
+[00:11:53] ,ultimate_start,406.57,Team 1,INSTINCT,Baptiste,0,3
+[00:11:54] ,kill,406.85,Team 1,FatherKazoo,Ramattra,Team 2,bj0rkland,Reinhardt,Ability 1,90.06,0,0
+[00:11:54] ,offensive_assist,407.11,Team 1,INSTINCT,Baptiste,0
+[00:11:54] ,defensive_assist,407.11,Team 1,INSTINCT,Baptiste,0
+[00:11:54] ,offensive_assist,407.14,Team 1,AMIBO,Lúcio,0
+[00:11:54] ,defensive_assist,407.14,Team 1,AMIBO,Lúcio,0
+[00:11:55] ,ultimate_end,408.68,Team 1,AMIBO,Lúcio,0,2
+[00:11:57] ,kill,409.97,Team 1,AMIBO,Lúcio,Team 2,Duelan,Mei,Primary Fire,13.96,True,0
+[00:11:57] ,offensive_assist,410.34,Team 1,FatherKazoo,Ramattra,0
+[00:11:57] ,defensive_assist,410.39,Team 1,INSTINCT,Baptiste,0
+[00:11:57] ,defensive_assist,410.45,Team 1,AMIBO,Lúcio,0
+[00:11:58] ,ultimate_charged,411.33,Team 2,bj0rkland,Reinhardt,0,3
+[00:11:59] ,kill,412.08,Team 1,FatherKazoo,Ramattra,Team 2,persephone,Baptiste,Ability 1,20.72,0,0
+[00:11:59] ,defensive_assist,412.26,Team 1,INSTINCT,Baptiste,0
+[00:12:00] ,player_stat,413.72,2,Team 1,FatherKazoo,Roadhog,15,8,0,4400.47,1014.57,3385.90,1423.33,3144.46,1423.33,3910.63,0,0,2,1,1,0,0,1,8,0,0,50,0.18,0,0,0,1940,271,1545,0,0,0.15,217.55
+[00:12:00] ,player_stat,413.72,2,Team 1,FatherKazoo,Orisa,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:12:00] ,player_stat,413.72,2,Team 1,FatherKazoo,Doomfist,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:12:00] ,player_stat,413.72,2,Team 1,FatherKazoo,Ramattra,16,6,0,8157.00,2562.13,5067.87,0,3130.91,0,4790.95,3776.68,0,5,1,1,2,4,0,6,0,0,26,0.07,0,0,0,1676,348,980,0,0,0.26,196.17
+[00:12:00] ,player_stat,413.72,2,Team 1,AMIBO,Lúcio,15,3,1,4292.10,1674,2386.10,3817.15,1581.42,651.61,2904.59,0,9,18,2,2,0,0,0,5,1,0,15,0.16,0,0,0,730,95,518,0,0,0.15,413.72
+[00:12:00] ,player_stat,413.72,2,Team 2,bj0rkland,Winston,4,3,5,2185.84,0,2100.64,0,2532.28,0,6193.74,4177.63,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,24,12,12,0,0,0.50,217.55
+[00:12:00] ,player_stat,413.72,2,Team 2,bj0rkland,Zarya,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:12:00] ,player_stat,413.72,2,Team 2,bj0rkland,Orisa,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:12:00] ,player_stat,413.72,2,Team 2,bj0rkland,Ramattra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:12:00] ,player_stat,413.72,2,Team 2,bj0rkland,Reinhardt,2,1,4,4435.93,880,3455.93,0,2975.74,0,6155.54,7706.13,0,0,2,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,196.17
+[00:12:00] ,player_stat,413.72,2,Team 1,ǨǠŢŦ,Cassidy,23,11,3,11079.27,4501.80,5805.71,0,1802.39,0,3148.43,0,0,0,2,2,0,0,1,10,0,0,15,0.15,0,0,0,332,100,163,0,0,0.38,413.72
+[00:12:00] ,player_stat,413.72,2,Team 1,INSTINCT,Kiriko,10,4,2,1602.44,225,1377.44,1878.73,328.50,0,1496.83,0,9,2,1,1,0,0,0,4,0,0,5,0.17,0,0,0,127,30,86,0,0,0.26,217.55
+[00:12:00] ,player_stat,413.72,2,Team 1,INSTINCT,Baptiste,5,1,0,2248.74,1330,841.24,5038.14,514.28,162.02,1152.99,0,15,3,2,2,0,0,0,3,0,0,1,0.03,0,0,0,195,40,103,0,0,0.28,196.17
+[00:12:00] ,player_stat,413.72,2,Team 2,bobzzzzzz6,Lúcio,1,0,8,3603.64,378,2991.64,3541.60,1146.67,981.54,4039.13,0,3,1,2,2,0,0,0,1,0,0,16,0.13,0,0,0,516,128,363,0,0,0.26,413.72
+[00:12:00] ,player_stat,413.72,2,Team 2,Blurr1Q5,Sombra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:12:00] ,player_stat,413.72,2,Team 2,Blurr1Q5,Tracer,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:12:00] ,player_stat,413.72,2,Team 2,Blurr1Q5,Sojourn,4,1,4,2642.88,0,2542.88,0,278.23,0,1329.83,0,0,0,1,1,0,0,0,0,0,0,19,0.12,0,0,0,656,160,485,0,0,0.25,192.15
+[00:12:00] ,player_stat,413.72,2,Team 2,Blurr1Q5,Genji,0,0,1,131,0,131,0,0,0,250,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,15,3,12,0,0,0.20,25.40
+[00:12:00] ,player_stat,413.72,2,Team 2,Blurr1Q5,Symmetra,2,1,4,4069.33,862.19,3207.15,0,646.09,0,2146.09,1896.28,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,43,19,20,0,0,0.49,196.17
+[00:12:00] ,round_end,413.72,2,0,2,0,2,100,11.87,0
+[00:12:00] ,player_stat,413.72,2,Team 1,Retro,Venture,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:12:00] ,player_stat,413.72,2,Team 1,Retro,Sojourn,11,5,1,5409.43,1604.83,3804.61,0,797.29,0,1303.71,0,0,0,1,1,0,0,3,5,0,0,24,0.09,0,0,0,1069,279,652,0,0,0.30,213.92
+[00:12:00] ,player_stat,413.72,2,Team 1,Retro,Symmetra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3.63
+[00:12:00] ,player_stat,413.72,2,Team 1,Retro,Reaper,14,4,2,6820.72,1803.71,4663.65,0,2343.52,744.81,3098.81,0,0,0,1,1,2,4,0,2,0,0,80,0.12,0,0,0,2500,650,1502,0,0,0.30,196.17
+[00:12:00] ,player_stat,413.72,2,Team 2,Duelan,Tracer,2,1,3,1213.04,0,1213.04,0,40.53,83.41,681.25,0,0,0,1,1,0,0,0,0,0,0,18,0.09,0,0,0,712,194,503,0,0,0.28,151.36
+[00:12:00] ,player_stat,413.72,2,Team 2,Duelan,Sojourn,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:12:00] ,player_stat,413.72,2,Team 2,Duelan,Sombra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:12:00] ,player_stat,413.72,2,Team 2,Duelan,Venture,1,0,2,574.06,0,574.06,0,243.40,0,810.76,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,13,4,9,0,0,0.31,66.19
+[00:12:00] ,player_stat,413.72,2,Team 2,Duelan,Mei,0,0,4,7632.37,1012,2431.37,0,912.24,162.05,2112.24,936,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,268,71,108,0,0,0.40,196.17
+[00:12:00] ,player_stat,413.72,2,Team 2,persephone,Lifeweaver,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:12:00] ,player_stat,413.72,2,Team 2,persephone,Kiriko,1,1,5,1429,0,1429,1960.59,354.91,0,1683.04,0,1,0,1,1,0,0,1,0,0,2,7,0.29,0,0,0,86,24,61,0,0,0.28,217.55
+[00:12:00] ,player_stat,413.72,2,Team 2,persephone,Baptiste,1,1,4,2374.72,644.49,1730.23,3132.60,713.52,378.62,2099.89,0,1,0,1,1,0,0,1,0,0,0,8,0.11,0,0,0,258,76,147,0,0,0.34,196.17
+[00:12:04] ,ultimate_end,413.72,Team 1,INSTINCT,Baptiste,0,3
+[00:12:10] ,objective_updated,413.72,3,2,0
+[00:12:11] ,round_start,413.72,3,0,2,0,0
+[00:12:15] ,hero_swap,413.72,Team 2,bj0rkland,Ramattra,Reinhardt,0
+[00:12:27] ,hero_swap,413.72,Team 2,Duelan,Echo,Mei,0
+[00:12:50] ,hero_swap,413.72,Team 2,persephone,Kiriko,Baptiste,0
+[00:12:54] ,hero_swap,413.72,Team 2,Blurr1Q5,Sojourn,Symmetra,0
+[00:13:30] ,hero_swap,413.72,Team 1,FatherKazoo,Roadhog,Ramattra,0
+[00:13:33] ,hero_swap,413.72,Team 1,INSTINCT,Kiriko,Baptiste,0
+[00:13:38] ,hero_swap,413.72,Team 1,Retro,Sojourn,Reaper,0
+[00:13:53] ,hero_swap,413.72,Team 2,Blurr1Q5,Symmetra,Sojourn,0
+[00:14:49] ,hero_swap,413.72,Team 1,FatherKazoo,Mauga,Roadhog,0
+[00:14:53] ,hero_swap,413.72,Team 1,FatherKazoo,Roadhog,Mauga,0
+[00:15:00] ,hero_swap,413.72,Team 1,Retro,Symmetra,Sojourn,0
+[00:15:06] ,hero_swap,413.72,Team 1,INSTINCT,Ana,Kiriko,0
+[00:15:07] ,hero_swap,413.72,Team 1,INSTINCT,Kiriko,Ana,0
+[00:15:09] ,setup_complete,413.72,3,29.99
+[00:15:12] ,hero_swap,417.12,Team 1,Retro,Sojourn,Symmetra,3.41
+[00:15:14] ,hero_swap,418.63,Team 2,Blurr1Q5,Sojourn,Symmetra,4.91
+[00:15:41] ,point_progress,445.51,3,All Teams,0,33.58
+[00:15:42] ,point_progress,447.08,3,All Teams,0,66.98
+[00:15:44] ,objective_captured,448.40,3,Team 2,0,0,0.01,0
+[00:15:49] ,kill,453.79,Team 1,AMIBO,Lúcio,Team 2,bobzzzzzz6,Lúcio,Secondary Fire,72.93,0,True
+[00:15:49] ,defensive_assist,454.10,Team 1,INSTINCT,Kiriko,0
+[00:15:58] ,kill,462.82,Team 1,FatherKazoo,Roadhog,Team 2,persephone,Kiriko,Primary Fire,31.25,0,0
+[00:15:58] ,defensive_assist,463.03,Team 1,INSTINCT,Kiriko,0
+[00:15:58] ,offensive_assist,463.07,Team 1,AMIBO,Lúcio,0
+[00:16:01] ,kill,465.46,Team 1,Retro,Sojourn,Team 2,Duelan,Echo,Ability 2,4.15,0,0
+[00:16:01] ,defensive_assist,465.86,Team 1,INSTINCT,Kiriko,0
+[00:16:01] ,offensive_assist,465.91,Team 1,AMIBO,Lúcio,0
+[00:16:02] ,kill,466.77,Team 1,ǨǠŢŦ,Cassidy,Team 2,bj0rkland,Ramattra,Primary Fire,135.66,True,0
+[00:16:02] ,offensive_assist,466.79,Team 1,INSTINCT,Kiriko,0
+[00:16:02] ,defensive_assist,466.79,Team 1,INSTINCT,Kiriko,0
+[00:16:02] ,offensive_assist,466.85,Team 1,AMIBO,Lúcio,0
+[00:16:04] ,point_progress,468.74,3,Team 1,0,33.78
+[00:16:06] ,point_progress,470.31,3,Team 1,0,67.28
+[00:16:07] ,objective_captured,471.62,3,Team 1,0,0.01,19.35,0
+[00:16:39] ,kill,504.01,Team 1,FatherKazoo,Roadhog,Team 2,bobzzzzzz6,Lúcio,Melee,36.98,0,0
+[00:16:40] ,defensive_assist,504.38,Team 1,INSTINCT,Kiriko,0
+[00:16:47] ,kill,512.11,Team 2,bj0rkland,Ramattra,Team 1,ǨǠŢŦ,Cassidy,Ability 1,44,0,0
+[00:16:48] ,defensive_assist,512.32,Team 2,persephone,Kiriko,0
+[00:16:52] ,ultimate_charged,516.25,Team 2,Duelan,Echo,0,3
+[00:16:52] ,ultimate_charged,516.81,Team 2,persephone,Kiriko,0,3
+[00:16:52] ,ultimate_charged,516.92,Team 1,FatherKazoo,Roadhog,0,3
+[00:16:53] ,echo_duplicate_start,517.61,Team 2,Duelan,Echo,Sojourn,3
+[00:16:54] ,ultimate_charged,518.20,Team 1,INSTINCT,Kiriko,0,4
+[00:16:59] ,ultimate_start,523.37,Team 2,persephone,Kiriko,0,3
+[00:16:59] ,ultimate_end,523.64,Team 2,persephone,Kiriko,0,3
+[00:16:59] ,ultimate_start,523.74,Team 2,persephone,Kiriko,0,3
+[00:17:00] ,ultimate_start,524.74,Team 1,FatherKazoo,Roadhog,0,3
+[00:17:04] ,ultimate_charged,528.97,Team 2,bj0rkland,Ramattra,0,4
+[00:17:08] ,ultimate_end,532.24,Team 1,FatherKazoo,Roadhog,0,3
+[00:17:09] ,kill,533.47,All Teams,0,0,Team 2,Duelan,Echo,0,125,0,True
+[00:17:09] ,echo_duplicate_end,533.47,Team 2,Duelan,Echo,3
+[00:17:10] ,ultimate_end,534.45,Team 2,persephone,Kiriko,0,3
+[00:17:11] ,ultimate_charged,535.52,Team 1,ǨǠŢŦ,Cassidy,0,3
+[00:17:12] ,kill,536.90,Team 1,FatherKazoo,Roadhog,Team 2,persephone,Kiriko,Melee,16.74,0,0
+[00:17:13] ,defensive_assist,537.34,Team 1,INSTINCT,Kiriko,0
+[00:17:15] ,ultimate_start,539.81,Team 2,bj0rkland,Ramattra,0,4
+[00:17:18] ,kill,542.64,Team 2,Blurr1Q5,Sojourn,Team 1,Retro,Sojourn,Secondary Fire,21.50,0,0
+[00:17:18] ,ultimate_charged,542.64,Team 2,Blurr1Q5,Sojourn,0,3
+[00:17:19] ,kill,543.45,Team 2,bj0rkland,Ramattra,Team 1,INSTINCT,Kiriko,Ultimate,3.12,0,0
+[00:17:20] ,ultimate_charged,544.25,Team 1,AMIBO,Lúcio,0,3
+[00:17:21] ,kill,545.37,Team 2,bj0rkland,Ramattra,Team 1,AMIBO,Lúcio,Ultimate,0.24,0,0
+[00:17:22] ,kill,546.89,Team 1,FatherKazoo,Roadhog,Team 2,bj0rkland,Ramattra,Primary Fire,0.71,0,0
+[00:17:22] ,ultimate_end,546.89,Team 2,bj0rkland,Ramattra,0,4
+[00:17:23] ,offensive_assist,547.20,Team 1,AMIBO,Lúcio,0
+[00:17:24] ,hero_swap,548.38,Team 2,Duelan,Cassidy,Echo,134.66
+[00:17:31] ,kill,555.25,Team 1,ǨǠŢŦ,Cassidy,Team 2,Blurr1Q5,Sojourn,Primary Fire,23.72,0,0
+[00:17:32] ,ultimate_charged,557.13,Team 2,bobzzzzzz6,Lúcio,0,3
+[00:17:33] ,kill,557.51,Team 2,bobzzzzzz6,Lúcio,Team 1,FatherKazoo,Roadhog,Secondary Fire,403.91,0,True
+[00:17:36] ,point_progress,560.29,3,Team 2,0,33.38
+[00:17:38] ,point_progress,562.19,3,Team 2,0,67.18
+[00:17:39] ,kill,563.38,Team 2,bobzzzzzz6,Lúcio,Team 1,ǨǠŢŦ,Cassidy,Primary Fire,2.75,0,0
+[00:17:39] ,defensive_assist,563.52,Team 2,persephone,Kiriko,0
+[00:17:43] ,ultimate_charged,567.55,Team 1,Retro,Sojourn,0,3
+[00:17:48] ,ultimate_start,572.94,Team 1,Retro,Sojourn,0,3
+[00:17:52] ,kill,576.59,Team 1,AMIBO,Lúcio,Team 2,bobzzzzzz6,Lúcio,Secondary Fire,206.81,0,True
+[00:17:52] ,defensive_assist,576.78,Team 1,AMIBO,Lúcio,0
+[00:17:52] ,defensive_assist,576.79,Team 1,INSTINCT,Kiriko,0
+[00:17:56] ,kill,580.15,Team 1,AMIBO,Lúcio,Team 2,Duelan,Cassidy,Primary Fire,1,0,0
+[00:17:56] ,defensive_assist,580.55,Team 1,INSTINCT,Kiriko,0
+[00:17:57] ,ultimate_end,581.67,Team 1,Retro,Sojourn,0,3
+[00:18:00] ,ultimate_start,584.89,Team 2,Blurr1Q5,Sojourn,0,3
+[00:18:02] ,ultimate_start,586.34,Team 1,AMIBO,Lúcio,0,3
+[00:18:02] ,kill,586.65,Team 1,FatherKazoo,Roadhog,Team 2,persephone,Kiriko,Primary Fire,22.68,True,0
+[00:18:02] ,defensive_assist,586.66,Team 1,INSTINCT,Kiriko,0
+[00:18:05] ,kill,589.54,Team 1,FatherKazoo,Roadhog,Team 2,Blurr1Q5,Sojourn,Primary Fire,9,0,0
+[00:18:05] ,ultimate_end,589.54,Team 2,Blurr1Q5,Sojourn,0,3
+[00:18:05] ,defensive_assist,589.94,Team 1,AMIBO,Lúcio,0
+[00:18:05] ,defensive_assist,589.96,Team 1,INSTINCT,Kiriko,0
+[00:18:08] ,hero_swap,592.53,Team 2,Duelan,Tracer,Cassidy,44.15
+[00:18:08] ,ultimate_start,592.61,Team 2,bobzzzzzz6,Lúcio,0,3
+[00:18:09] ,kill,593.39,Team 1,ǨǠŢŦ,Cassidy,Team 2,bj0rkland,Ramattra,Primary Fire,29.55,0,0
+[00:18:09] ,offensive_assist,593.68,Team 1,AMIBO,Lúcio,0
+[00:18:09] ,defensive_assist,593.68,Team 1,AMIBO,Lúcio,0
+[00:18:09] ,offensive_assist,593.70,Team 1,INSTINCT,Kiriko,0
+[00:18:09] ,defensive_assist,593.70,Team 1,INSTINCT,Kiriko,0
+[00:18:09] ,ultimate_end,594.05,Team 1,AMIBO,Lúcio,0,3
+[00:18:10] ,ultimate_start,594.66,Team 1,INSTINCT,Kiriko,0,4
+[00:18:10] ,ultimate_end,595.01,Team 1,INSTINCT,Kiriko,0,4
+[00:18:10] ,ultimate_start,595.10,Team 1,INSTINCT,Kiriko,0,4
+[00:18:13] ,ultimate_start,597.41,Team 1,ǨǠŢŦ,Cassidy,0,3
+[00:18:14] ,player_stat,598.41,3,Team 2,Blurr1Q5,Sombra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:18:14] ,player_stat,598.41,3,Team 2,Blurr1Q5,Tracer,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:18:14] ,player_stat,598.41,3,Team 2,Blurr1Q5,Sojourn,7,2,6,5464.58,0,5164.58,0,830.25,0,2591.85,0,0,0,2,2,0,0,0,1,0,0,47,0.14,0,0,0,1437,347,1078,0,0,0.24,371.93
+[00:18:14] ,player_stat,598.41,3,Team 2,Blurr1Q5,Genji,0,0,1,131,0,131,0,0,0,250,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,15,3,12,0,0,0.20,25.40
+[00:18:14] ,player_stat,598.41,3,Team 2,Blurr1Q5,Symmetra,2,1,4,4069.33,862.19,3207.15,0,646.09,0,2146.09,1896.28,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,43,19,20,0,0,0.49,201.08
+[00:18:14] ,round_end,598.41,3,0,3,0,0,100,19.35,0
+[00:18:14] ,match_end,598.41,3,3,0
+[00:18:14] ,player_stat,598.41,3,Team 1,Retro,Venture,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:18:14] ,player_stat,598.41,3,Team 1,Retro,Sojourn,19,6,2,9185.16,3023.27,6161.89,0,2057.41,0,2936.41,0,0,0,2,2,0,0,3,8,0,0,44,0.10,0,0,0,1963,462,1226,0,0,0.27,395.21
+[00:18:14] ,player_stat,598.41,3,Team 1,Retro,Symmetra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7.04
+[00:18:14] ,player_stat,598.41,3,Team 1,Retro,Reaper,14,4,2,6820.72,1803.71,4663.65,0,2343.52,744.81,3098.81,0,0,0,1,1,2,4,0,2,0,0,80,0.12,0,0,0,2500,650,1502,0,0,0.30,196.17
+[00:18:14] ,player_stat,598.41,3,Team 1,FatherKazoo,Roadhog,23,14,1,8543.29,1784.29,6759.00,3529.62,7952.69,3529.62,9850.74,0,0,2,2,2,0,0,1,15,0,1,99,0.19,0,0,0,3300,529,2564,0,0,0.17,402.25
+[00:18:14] ,player_stat,598.41,3,Team 1,FatherKazoo,Orisa,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:18:14] ,player_stat,598.41,3,Team 1,FatherKazoo,Doomfist,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:18:14] ,player_stat,598.41,3,Team 1,FatherKazoo,Ramattra,16,6,0,8157.00,2562.13,5067.87,0,3130.91,0,4790.95,3776.68,0,5,1,1,2,4,0,6,0,0,26,0.07,0,0,0,1676,348,980,0,0,0.26,196.17
+[00:18:14] ,player_stat,598.41,3,Team 1,FatherKazoo,Mauga,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:18:14] ,player_stat,598.41,3,Team 1,AMIBO,Lúcio,24,4,2,6847.13,2205,4410.13,5327.63,2486.43,1017.74,4398.99,0,12,23,3,3,0,0,0,10,3,0,21,0.13,0,0,0,1050,167,739,0,0,0.18,598.41
+[00:18:14] ,player_stat,598.41,3,Team 2,bj0rkland,Winston,4,3,5,2185.84,0,2100.64,0,2532.28,0,6193.74,4177.63,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,24,12,12,0,0,0.50,217.55
+[00:18:14] ,player_stat,598.41,3,Team 2,bj0rkland,Zarya,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:18:14] ,player_stat,598.41,3,Team 2,bj0rkland,Orisa,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:18:14] ,player_stat,598.41,3,Team 2,bj0rkland,Ramattra,4,3,3,3391.25,0,3291.25,0,2341.38,0,5143.15,3269.16,0,0,1,1,1,3,1,3,0,0,35,0.10,0,0,0,1331,337,986,0,0,0.25,184.70
+[00:18:14] ,player_stat,598.41,3,Team 2,bj0rkland,Reinhardt,2,1,4,4435.93,880,3455.93,0,2975.74,0,6155.54,7706.13,0,0,2,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,196.17
+[00:18:14] ,player_stat,598.41,3,Team 1,ǨǠŢŦ,Cassidy,32,14,5,14288.97,4781.80,8735.41,0,2302.07,0,4370.47,0,0,0,3,3,0,0,2,16,0,0,21,0.14,0,0,0,474,154,247,0,0,0.38,598.41
+[00:18:14] ,player_stat,598.41,3,Team 2,Duelan,Tracer,2,1,3,1213.04,0,1213.04,0,40.53,83.41,681.25,0,0,0,1,1,0,0,0,0,0,0,18,0.09,0,0,0,712,194,503,0,0,0.28,157.25
+[00:18:14] ,player_stat,598.41,3,Team 2,Duelan,Sojourn,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:18:14] ,player_stat,598.41,3,Team 2,Duelan,Sombra,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:18:14] ,player_stat,598.41,3,Team 2,Duelan,Venture,1,0,2,574.06,0,574.06,0,243.40,0,810.76,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,13,4,9,0,0,0.31,66.19
+[00:18:14] ,player_stat,598.41,3,Team 2,Duelan,Mei,0,0,4,7632.37,1012,2431.37,0,912.24,162.05,2112.24,936,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,268,71,108,0,0,0.40,196.17
+[00:18:14] ,player_stat,598.41,3,Team 2,Duelan,Echo,0,0,2,2044.02,0,2044.02,0,209.95,0,882.88,0,0,0,1,2,0,0,0,0,0,1,7,0.08,0,0,0,481,87,291,0,0,0.23,134.66
+[00:18:14] ,player_stat,598.41,3,Team 2,Duelan,Cassidy,1,0,1,437.50,0,437.50,0,166.70,0,469.34,0,0,0,0,0,0,0,0,0,0,0,1,0.17,0,0,0,21,6,15,0,0,0.29,44.15
+[00:18:14] ,player_stat,598.41,3,Team 1,INSTINCT,Kiriko,12,4,3,2362.94,495,1867.94,5739.14,525.75,0,2332.06,0,20,4,2,2,0,0,0,6,0,0,5,0.12,0,0,0,200,43,134,0,0,0.24,402.25
+[00:18:14] ,player_stat,598.41,3,Team 1,INSTINCT,Baptiste,5,1,0,2248.74,1330,841.24,5038.14,514.28,162.02,1152.99,0,15,3,2,2,0,0,0,3,0,0,1,0.03,0,0,0,195,40,103,0,0,0.28,196.17
+[00:18:14] ,player_stat,598.41,3,Team 1,INSTINCT,Ana,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:18:14] ,player_stat,598.41,3,Team 2,bobzzzzzz6,Lúcio,3,1,11,5366.15,378,4754.15,4997.15,1927.44,1541.57,6000.68,0,3,1,3,3,0,0,1,1,1,2,24,0.13,0,0,0,762,182,555,0,0,0.25,598.41
+[00:18:14] ,player_stat,598.41,3,Team 2,persephone,Lifeweaver,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:18:14] ,player_stat,598.41,3,Team 2,persephone,Kiriko,2,1,8,2396.50,0,2396.50,4379.60,687.21,0,3138.74,0,3,0,2,2,0,0,1,1,0,2,10,0.24,0,0,0,162,41,120,0,0,0.25,402.25
+[00:18:14] ,player_stat,598.41,3,Team 2,persephone,Baptiste,1,1,4,2374.72,644.49,1730.23,3132.60,713.52,378.62,2099.89,0,1,0,1,1,0,0,1,0,0,0,8,0.11,0,0,0,258,76,147,0,0,0.34,196.17
+[00:18:15] ,ultimate_end,598.41,Team 1,ǨǠŢŦ,Cassidy,0,3
+[00:18:16] ,ultimate_end,598.41,Team 2,bobzzzzzz6,Lúcio,0,3
+[00:18:17] ,ultimate_end,598.41,Team 1,INSTINCT,,0,4
