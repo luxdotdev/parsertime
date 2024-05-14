@@ -63,7 +63,7 @@ const team = [
   },
   {
     name: 'Robin "Zei" Sidhu',
-    role: "Strategic Consultant/Investor",
+    role: "Head of Strategy",
     imageUrl: "/marketing/robin.png",
     bio: "Zei is a coach for the top collegiate team St. Clair Saints. He recently led them to a 2nd place finish in the NACE Varsity Premiere 2023 fall semester. His favorite hobbies include crushing his players in TXCXX.",
   },
