@@ -1,3 +1,4 @@
+import { KillfeedExport } from "@/components/map/killfeed-export";
 import { KillfeedTable } from "@/components/map/killfeed-table";
 import {
   Card,
@@ -198,6 +199,9 @@ export async function Killfeed({ id }: { id: number }) {
               team2={team2Name ?? "Team 2"}
             />
           </CardContent>
+          <CardFooter className="float-right">
+            <KillfeedExport fights={fights} />
+          </CardFooter>
         </Card>
       </div>
     </>
