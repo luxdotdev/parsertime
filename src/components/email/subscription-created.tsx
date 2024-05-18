@@ -79,9 +79,9 @@ export const SubscriptionCreatedEmail = ({
             </Text>
             <Hr className="mx-0 my-[26px] w-full border border-solid border-[#eaeaea]" />
             <Text className="text-[12px] leading-[24px] text-[#666666]">
-              This invitation was intended for{" "}
+              This message was intended for{" "}
               <span className="text-black">{user.email}</span>. If you were not
-              expecting this invitation, you can ignore this email. If you are
+              expecting this message, you can ignore this email. If you are
               concerned about your account&apos;s safety, please get in touch
               with us at{" "}
               <Link
