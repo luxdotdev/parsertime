@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import { cache } from "react";
 import { $Enums, User } from "@prisma/client";
 
-async function getUserFn(email: string | null | undefined) {
+async function getUserFn(email: string | undefined) {
   if (!email) {
     return null;
   }
@@ -29,7 +29,7 @@ async function getUserFn(email: string | null | undefined) {
  */
 export const getUser = cache(getUserFn);
 
-async function getTeamsWithPermsFn(email: string | null | undefined) {
+async function getTeamsWithPermsFn(email: string | undefined) {
   const user = await getUser(email);
 
   const teams = await prisma.team.findMany({

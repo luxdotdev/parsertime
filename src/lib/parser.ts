@@ -268,7 +268,7 @@ export async function createNewScrimFromParsedData(
 export async function createNewMap(data: CreateNewMapArgs, session: Session) {
   const userId = await prisma.user.findFirst({
     where: {
-      email: session.user?.email,
+      email: session.user.email,
     },
   });
 
