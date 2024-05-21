@@ -40,8 +40,6 @@ export class Permission {
     const permissions = await this.permissions;
     const level = permissions[this.feature];
 
-    Logger.log("Permission level", level);
-
     if (level === "FREE") return true;
     else if (level === "BASIC") return this.checkBasic(user);
     else if (level === "PREMIUM") return this.checkPremium(user);
