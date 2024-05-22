@@ -1,6 +1,5 @@
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import Logger from "@/lib/logger";
 import { $Enums, User } from "@prisma/client";
 import { get } from "@vercel/edge-config";
 
@@ -33,14 +32,11 @@ export class Permission {
       return false;
     }
 
-    if (user.role === $Enums.UserRole.ADMIN) {
-      return true;
-    }
-
     const permissions = await this.permissions;
     const level = permissions[this.feature];
 
-    if (level === "FREE") return true;
+    if (user.role === $Enums.UserRole.ADMIN) return true;
+    else if (level === "FREE") return true;
     else if (level === "BASIC") return this.checkBasic(user);
     else if (level === "PREMIUM") return this.checkPremium(user);
 
