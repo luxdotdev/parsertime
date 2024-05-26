@@ -89,6 +89,7 @@ export class Permission {
  *
  * @param feature The feature to check
  * @returns True if the user has permission, false otherwise
+ * @example const hasPermission = await check("create-team"); // true
  */
 export async function check(feature: Feature) {
   const permission = new Permission(feature);
