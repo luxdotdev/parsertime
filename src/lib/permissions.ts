@@ -11,6 +11,17 @@ type FeatureLevel =
   | keyof typeof $Enums.BillingPlan
   | typeof $Enums.UserRole.ADMIN;
 
+/**
+ * Permission class to check if a user has permission to access a feature.
+ * The permission is based on the user's role and billing plan.
+ * The permission levels are as follows:
+ * - FREE: All users have access to this feature
+ * - BASIC: Only users on the basic billing plan or above have access to this feature
+ * - PREMIUM: Only users on the premium billing plan have access to this feature
+ * - ADMIN: Only users with the admin role have access to this feature
+ *
+ * The permission levels are defined in the `permissions` edge store on Vercel.
+ */
 export class Permission {
   private feature: Feature;
   private permissions = get("permissions") as Promise<
@@ -24,6 +35,10 @@ export class Permission {
     }
   }
 
+  /**
+   * Check if the user has permission to access the feature.
+   * @returns True if the user has permission, false otherwise
+   */
   public async check() {
     const { user, isAuthed } = await this.checkUser();
 
@@ -67,4 +82,15 @@ export class Permission {
     if (user.billingPlan === $Enums.BillingPlan.BASIC) return false;
     return true; // check if user is on premium
   }
+}
+
+/**
+ * Convenience function to check if a user has permission to access a feature.
+ *
+ * @param feature The feature to check
+ * @returns True if the user has permission, false otherwise
+ */
+export async function check(feature: Feature) {
+  const permission = new Permission(feature);
+  return await permission.check();
 }
