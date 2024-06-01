@@ -47,7 +47,7 @@ export function BugReportForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: user?.email ?? "unknown",
-      url: `${process.env.VERCEL_URL ?? ""}${pathname}`,
+      url: `${process.env.NEXT_PUBLIC_VERCEL_URL ?? ""}${pathname}`,
     },
   });
 
@@ -150,7 +150,7 @@ export function BugReportForm({
                 <FormControl>
                   <Input
                     placeholder="path/to/page"
-                    defaultValue={`${process.env.VERCEL_URL ?? ""}${pathname}`}
+                    defaultValue={`${process.env.NEXT_PUBLIC_VERCEL_URL ?? ""}${pathname}`}
                     disabled
                     {...field}
                   />
