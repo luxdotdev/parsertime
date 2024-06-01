@@ -6,8 +6,9 @@ import { cn } from "@/lib/utils";
 import { DialogProps } from "@radix-ui/react-alert-dialog";
 import { CommandMenuContext } from "@/components/command-menu-provider";
 import { use } from "react";
+import { User } from "@prisma/client";
 
-export function Search({ ...props }: DialogProps) {
+export function Search({ ...props }: DialogProps & { user: User | null }) {
   const { setOpen } = use(CommandMenuContext);
 
   return (
@@ -25,7 +26,7 @@ export function Search({ ...props }: DialogProps) {
           <span className="text-xs">⌘</span>K
         </kbd>
       </Button>
-      <CommandDialogMenu />
+      <CommandDialogMenu user={props.user} />
     </>
   );
 }
