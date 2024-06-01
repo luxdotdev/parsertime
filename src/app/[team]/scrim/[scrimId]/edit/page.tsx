@@ -10,7 +10,7 @@ import { DangerZone } from "@/components/scrim/danger-zone";
 import { getScrim } from "@/data/scrim-dto";
 import { MobileNav } from "@/components/mobile-nav";
 import { auth } from "@/lib/auth";
-import { getTeamsWithPerms } from "@/data/user-dto";
+import { getTeamsWithPerms, getUser } from "@/data/user-dto";
 
 type Props = {
   params: { team: string; scrimId: string };
@@ -20,6 +20,7 @@ type Props = {
 export default async function EditScrimPage({ params }: Props) {
   const scrim = await getScrim(parseInt(params.scrimId));
   const session = await auth();
+  const user = await getUser(session?.user?.email);
 
   if (!scrim) {
     return <div>Scrim not found</div>;
@@ -39,7 +40,7 @@ export default async function EditScrimPage({ params }: Props) {
         <div className="hidden h-16 items-center px-4 md:flex">
           <MainNav className="mx-6" />
           <div className="ml-auto flex items-center space-x-4">
-            <Search />
+            <Search user={user} />
             <ModeToggle />
             <UserNav />
           </div>

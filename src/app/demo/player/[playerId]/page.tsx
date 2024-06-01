@@ -12,6 +12,8 @@ import { SearchParams } from "@/types/next";
 import { PlayerCharts } from "@/components/charts/player/player-charts";
 import { PlayerAnalytics } from "@/components/player/analytics";
 import { getMostPlayedHeroes } from "@/data/player-dto";
+import { getUser } from "@/data/user-dto";
+import { auth } from "@/lib/auth";
 
 type Props = {
   params: { team: string; scrimId: string; mapId: string; playerId: string };
@@ -57,6 +59,9 @@ export default async function PlayerDashboardDemoPage({ params }: Props) {
     },
   });
 
+  const session = await auth();
+  const user = await getUser(session?.user?.email);
+
   return (
     <div className="flex-col md:flex">
       <div className="border-b">
@@ -64,7 +69,7 @@ export default async function PlayerDashboardDemoPage({ params }: Props) {
           <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
           <MainNav className="mx-6" />
           <div className="ml-auto flex items-center space-x-4">
-            <Search />
+            <Search user={user} />
             <ModeToggle />
           </div>
         </div>
