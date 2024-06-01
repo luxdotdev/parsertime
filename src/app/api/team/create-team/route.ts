@@ -2,13 +2,33 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
+import { Ratelimit } from "@upstash/ratelimit";
+import { kv } from "@vercel/kv";
+import { NextRequest } from "next/server";
 
 type CreateTeamRequestData = {
   name: string;
   users: { id: string }[];
 };
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const ratelimit = new Ratelimit({
+    redis: kv,
+    limiter: Ratelimit.slidingWindow(5, "1 m"),
+    analytics: true,
+  });
+
+  // Limit the requests to 5 per minute per user
+  const identifier = request.ip ?? "127.0.0.1";
+  const { success } = await ratelimit.limit(identifier);
+
+  if (!success) {
+    Logger.log("Rate limit exceeded for creating a team", identifier);
+    return new Response("Rate limit exceeded", {
+      status: 429,
+    });
+  }
+
   const session = await auth();
 
   const userId = await getUser(session?.user?.email);
