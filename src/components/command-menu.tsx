@@ -3,20 +3,23 @@
 import {
   ChevronRightIcon,
   DashboardIcon,
+  DiscordLogoIcon,
   EnterIcon,
+  EnvelopeOpenIcon,
+  ExclamationTriangleIcon,
   ExternalLinkIcon,
   HomeIcon,
   LaptopIcon,
   MoonIcon,
   PersonIcon,
   ReaderIcon,
-  SunIcon,
-  DiscordLogoIcon,
-  EnvelopeOpenIcon,
   Share2Icon,
+  SunIcon,
 } from "@radix-ui/react-icons";
 
 import { GetTeamsResponse } from "@/app/api/team/get-teams/route";
+import { BugReportForm } from "@/components/bug-reporting-form";
+import { CommandMenuContext } from "@/components/command-menu-provider";
 import {
   CommandDialog,
   CommandEmpty,
@@ -27,19 +30,21 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { toast } from "@/components/ui/use-toast";
 import { track } from "@vercel/analytics";
 import { useTheme } from "next-themes";
 import { usePathname, useRouter } from "next/navigation";
-import { CommandMenuContext } from "@/components/command-menu-provider";
 import { use, useCallback, useEffect, useState } from "react";
-import { toast } from "@/components/ui/use-toast";
+import { User } from "@prisma/client";
 
-export function CommandDialogMenu() {
+export function CommandDialogMenu({ user }: { user: User | null }) {
   const { open, setOpen } = use(CommandMenuContext);
   const [teams, setTeams] = useState<{ label: string; value: string }[]>([]);
   const router = useRouter();
   const { setTheme } = useTheme();
   const pathname = usePathname();
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
   function getTeams() {
     fetch("/api/team/get-teams")
@@ -171,6 +176,25 @@ export function CommandDialogMenu() {
           >
             <PersonIcon className="mr-2 h-4 w-4" />
             <span>Linked Accounts</span>
+          </CommandItem>
+        </CommandGroup>
+        <CommandSeparator />
+        <CommandGroup heading="Reporting">
+          <CommandItem onSelect={() => setReportDialogOpen(true)}>
+            <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
+              <DialogTrigger asChild>
+                <>
+                  <ExclamationTriangleIcon className="mr-2 h-4 w-4" />
+                  <span>Report a Bug</span>
+                </>
+              </DialogTrigger>
+              <DialogContent>
+                <BugReportForm
+                  user={user}
+                  setReportDialogOpen={setReportDialogOpen}
+                />
+              </DialogContent>
+            </Dialog>
           </CommandItem>
         </CommandGroup>
         <CommandSeparator />
