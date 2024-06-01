@@ -14,8 +14,6 @@ import { MapCharts } from "@/components/charts/map/map-charts";
 import { ComparePlayers } from "@/components/map/compare-players";
 import { MapEvents } from "@/components/map/map-events";
 import { getMostPlayedHeroes } from "@/data/player-dto";
-import { auth } from "@/lib/auth";
-import { getUser } from "@/data/user-dto";
 
 type Props = {
   params: { team: string; scrimId: string; mapId: string };
