@@ -36,6 +36,7 @@ const envVariables = z.object({
   NEXTAUTH_URL: z.string(),
   DEV_TOKEN: z.string(),
   DISCORD_WEBHOOK_URL: z.string(),
+  BUG_REPORT_WEBHOOK_URL: z.string(),
 });
 
 envVariables.parse(process.env);

@@ -17,6 +17,7 @@ import { MapEvents } from "@/components/map/map-events";
 import { auth } from "@/lib/auth";
 import { GuestNav } from "@/components/guest-nav";
 import { getMostPlayedHeroes } from "@/data/player-dto";
+import { getUser } from "@/data/user-dto";
 
 type Props = {
   params: { team: string; scrimId: string; mapId: string };
@@ -65,6 +66,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function MapDashboardPage({ params }: Props) {
   const id = parseInt(params.mapId);
   const session = await auth();
+  const user = await getUser(session?.user?.email);
 
   const mostPlayedHeroes = await getMostPlayedHeroes(id);
 
@@ -93,7 +95,7 @@ export default async function MapDashboardPage({ params }: Props) {
           <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
           <MainNav className="mx-6" />
           <div className="ml-auto flex items-center space-x-4">
-            <Search />
+            <Search user={user} />
             <ModeToggle />
             {session ? (
               <UserNav />

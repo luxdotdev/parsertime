@@ -7,6 +7,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Footer from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
+import { getUser } from "@/data/user-dto";
 
 export default async function TeamLayout({
   children,
@@ -19,6 +20,8 @@ export default async function TeamLayout({
     redirect("/sign-in");
   }
 
+  const user = await getUser(session?.user?.email);
+
   return (
     <>
       <div className="min-h-[90vh] flex-col md:flex">
@@ -27,7 +30,7 @@ export default async function TeamLayout({
             <TeamSwitcher session={session} />
             <MainNav className="mx-6" />
             <div className="ml-auto flex items-center space-x-4">
-              <Search />
+              <Search user={user} />
               <ModeToggle />
               <UserNav />
             </div>
