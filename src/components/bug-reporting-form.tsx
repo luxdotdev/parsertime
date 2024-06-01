@@ -1,16 +1,11 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { User } from "@prisma/client";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -23,8 +18,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { User } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const formSchema = z.object({
   title: z.string().min(1).max(100),
@@ -40,14 +39,13 @@ export function BugReportForm({
   user: User | null;
   setReportDialogOpen: (open: boolean) => void;
 }) {
-  const pathname = usePathname();
   const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: user?.email ?? "unknown",
-      url: `${process.env.NEXT_PUBLIC_VERCEL_URL ?? ""}${pathname}`,
+      url: `${window.location.href}`,
     },
   });
 
@@ -150,7 +148,7 @@ export function BugReportForm({
                 <FormControl>
                   <Input
                     placeholder="path/to/page"
-                    defaultValue={`${process.env.NEXT_PUBLIC_VERCEL_URL ?? ""}${pathname}`}
+                    defaultValue={`${window.location.href}`}
                     disabled
                     {...field}
                   />
