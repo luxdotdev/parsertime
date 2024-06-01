@@ -14,6 +14,8 @@ import { MapCharts } from "@/components/charts/map/map-charts";
 import { ComparePlayers } from "@/components/map/compare-players";
 import { MapEvents } from "@/components/map/map-events";
 import { getMostPlayedHeroes } from "@/data/player-dto";
+import { auth } from "@/lib/auth";
+import { getUser } from "@/data/user-dto";
 
 type Props = {
   params: { team: string; scrimId: string; mapId: string };
@@ -78,7 +80,7 @@ export default async function MapDashboardPage({ params }: Props) {
           <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
           <MainNav className="mx-6" />
           <div className="ml-auto flex items-center space-x-4">
-            <Search />
+            <Search user={null} />
             <ModeToggle />
           </div>
         </div>
