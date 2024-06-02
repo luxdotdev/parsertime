@@ -78,7 +78,7 @@ export default async function MapDashboardPage({ params }: Props) {
           <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
           <MainNav className="mx-6" />
           <div className="ml-auto flex items-center space-x-4">
-            <Search />
+            <Search user={null} />
             <ModeToggle />
           </div>
         </div>

@@ -1,18 +1,17 @@
 import { Metadata } from "next";
 
-import { Separator } from "@/components/ui/separator";
-import { SidebarNav } from "@/components/settings/sidebar-nav";
-import { TeamSwitcher } from "@/components/dashboard/team-switcher";
 import { MainNav } from "@/components/dashboard/main-nav";
 import { Search } from "@/components/dashboard/search";
-import { ModeToggle } from "@/components/theme-switcher";
-import { UserNav } from "@/components/user-nav";
+import { TeamSwitcher } from "@/components/dashboard/team-switcher";
 import Footer from "@/components/footer";
-import { auth } from "@/lib/auth";
-import prisma from "@/lib/prisma";
-import { $Enums } from "@prisma/client";
-import { getUser } from "@/data/user-dto";
 import { MobileNav } from "@/components/mobile-nav";
+import { SidebarNav } from "@/components/settings/sidebar-nav";
+import { ModeToggle } from "@/components/theme-switcher";
+import { Separator } from "@/components/ui/separator";
+import { UserNav } from "@/components/user-nav";
+import { getUser } from "@/data/user-dto";
+import { auth } from "@/lib/auth";
+import { $Enums } from "@prisma/client";
 
 export const metadata: Metadata = {
   title: "Settings | Parsertime",
@@ -73,7 +72,7 @@ export default async function SettingsLayout({
           <TeamSwitcher session={session} />
           <MainNav className="mx-6" />
           <div className="ml-auto flex items-center space-x-4">
-            <Search />
+            <Search user={user} />
             <ModeToggle />
             <UserNav />
           </div>

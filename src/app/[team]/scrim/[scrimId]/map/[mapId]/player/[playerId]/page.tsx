@@ -15,6 +15,7 @@ import { PlayerAnalytics } from "@/components/player/analytics";
 import { GuestNav } from "@/components/guest-nav";
 import { auth } from "@/lib/auth";
 import { getMostPlayedHeroes } from "@/data/player-dto";
+import { getUser } from "@/data/user-dto";
 
 type Props = {
   params: { team: string; scrimId: string; mapId: string; playerId: string };
@@ -61,6 +62,7 @@ export default async function PlayerDashboardPage({ params }: Props) {
   });
 
   const session = await auth();
+  const user = await getUser(session?.user?.email);
 
   const visibility = (await prisma.scrim.findFirst({
     where: {
@@ -78,7 +80,7 @@ export default async function PlayerDashboardPage({ params }: Props) {
           <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
           <MainNav className="mx-6" />
           <div className="ml-auto flex items-center space-x-4">
-            <Search />
+            <Search user={user} />
             <ModeToggle />
             {session ? (
               <UserNav />

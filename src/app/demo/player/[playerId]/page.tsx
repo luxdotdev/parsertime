@@ -1,17 +1,17 @@
-import { DefaultOverview } from "@/components/player/default-overview";
+import { PlayerCharts } from "@/components/charts/player/player-charts";
 import { MainNav } from "@/components/dashboard/main-nav";
-import PlayerSwitcher from "@/components/map/player-switcher";
 import { Search } from "@/components/dashboard/search";
+import PlayerSwitcher from "@/components/map/player-switcher";
+import { PlayerAnalytics } from "@/components/player/analytics";
+import { DefaultOverview } from "@/components/player/default-overview";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import prisma from "@/lib/prisma";
-import Link from "next/link";
-import { toTitleCase } from "@/lib/utils";
-import { Metadata } from "next";
-import { SearchParams } from "@/types/next";
-import { PlayerCharts } from "@/components/charts/player/player-charts";
-import { PlayerAnalytics } from "@/components/player/analytics";
 import { getMostPlayedHeroes } from "@/data/player-dto";
+import prisma from "@/lib/prisma";
+import { toTitleCase } from "@/lib/utils";
+import { SearchParams } from "@/types/next";
+import { Metadata } from "next";
+import Link from "next/link";
 
 type Props = {
   params: { team: string; scrimId: string; mapId: string; playerId: string };
@@ -64,7 +64,7 @@ export default async function PlayerDashboardDemoPage({ params }: Props) {
           <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
           <MainNav className="mx-6" />
           <div className="ml-auto flex items-center space-x-4">
-            <Search />
+            <Search user={null} />
             <ModeToggle />
           </div>
         </div>

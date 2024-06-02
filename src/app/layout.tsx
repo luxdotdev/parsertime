@@ -10,6 +10,8 @@ import { StaffToolbar } from "@/components/staff-toolbar";
 import { cn } from "@/lib/utils";
 import { CommandMenuProvider } from "@/components/command-menu-provider";
 import { CommandDialogMenu } from "@/components/command-menu";
+import { auth } from "@/lib/auth";
+import { getUser } from "@/data/user-dto";
 
 export const metadata: Metadata = {
   title: "Parsertime",
@@ -32,11 +34,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
+  let user = null;
+
+  if (session) {
+    user = await getUser(session.user.email);
+  }
+
   return (
     <html lang="en" className="h-full">
       <body className={cn(GeistSans.className, "h-full")}>
@@ -48,7 +57,7 @@ export default function RootLayout({
         >
           <CommandMenuProvider>
             {children}
-            <CommandDialogMenu />
+            <CommandDialogMenu user={user} />
           </CommandMenuProvider>
           <Toaster />
           <SpeedInsights />

@@ -6,6 +6,7 @@ import { MobileNav } from "@/components/mobile-nav";
 import { TeamSwitcherProvider } from "@/components/team-switcher-provider";
 import { ModeToggle } from "@/components/theme-switcher";
 import { UserNav } from "@/components/user-nav";
+import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 
 export default async function DashboardLayout({
@@ -14,6 +15,7 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
+  const user = await getUser(session?.user?.email);
 
   return (
     <TeamSwitcherProvider>
@@ -23,7 +25,7 @@ export default async function DashboardLayout({
             <TeamSwitcher session={session} />
             <MainNav className="mx-6" />
             <div className="ml-auto flex items-center space-x-4">
-              <Search />
+              <Search user={user} />
               <ModeToggle />
               <UserNav />
             </div>

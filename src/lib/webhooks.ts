@@ -53,6 +53,59 @@ export function newUserWebhookConstructor(user: User): DiscordWebhook {
   };
 }
 
+export function newBugReportWebhookConstructor(
+  title: string,
+  description: string,
+  email: string,
+  url: string,
+  ua: string,
+  browser: {
+    name?: string;
+    version?: string;
+  },
+  os: {
+    name?: string;
+    version?: string;
+  },
+  device: {
+    model?: string;
+    type?: string;
+    vendor?: string;
+  }
+): DiscordWebhook {
+  return {
+    username: "Parsertime",
+    avatar_url: "https://parsertime.app/icon.png",
+    embeds: [
+      {
+        title: `‼️ New Bug Report`,
+        description: `
+        # ${title}
+
+        ### **Description:** 
+        ${description}
+
+        **Details:**
+        > **User:** \`${email}\`
+        > **URL:** \`${url}\`
+
+        **User Agent:** 
+        > **UA**: \`${ua}\`
+        > **Browser:** \`${browser.name} ${browser.version}\`
+        > **OS:** \`${os.name} ${os.version}\`
+        > **Device:** \`${device.vendor ?? ""} ${device.model ?? ""} ${device.type ?? ""}\`
+        `,
+        timestamp: new Date(),
+        color: 0xff0000,
+        footer: {
+          text: "Parsertime",
+          icon_url: "https://parsertime.app/icon.png",
+        },
+      },
+    ],
+  };
+}
+
 /**
  * Send a message to a Discord webhook.
  *
