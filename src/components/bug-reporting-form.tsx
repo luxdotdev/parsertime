@@ -44,8 +44,8 @@ export function BugReportForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: user?.email ?? "unknown",
-      url: `${window.location.href}`,
+      email: user?.email ?? "unknown", // Default to "unknown" if no user is logged in
+      url: window.location.href,
     },
   });
 
@@ -148,7 +148,7 @@ export function BugReportForm({
                 <FormControl>
                   <Input
                     placeholder="path/to/page"
-                    defaultValue={`${window.location.href}`}
+                    defaultValue={window.location.href}
                     disabled
                     {...field}
                   />
