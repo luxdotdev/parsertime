@@ -13,6 +13,7 @@ type Fight = {
 export function KillfeedExport({ fights }: { fights: Fight[] }) {
   const flattenedData = fights.flatMap((fight) =>
     fight.kills.map((kill) => ({
+      fight_number: fights.indexOf(fight) + 1,
       fight_start: fight.start,
       fight_end: fight.end,
       event_type: kill.event_type,
