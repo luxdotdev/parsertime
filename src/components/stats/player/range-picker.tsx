@@ -13,6 +13,7 @@ import {
   SelectContent,
   SelectItem,
   SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -176,6 +177,7 @@ export function RangePicker({
             <SelectLabel>Select a hero</SelectLabel>
             <SelectItem value="all">All Heroes</SelectItem>
           </SelectGroup>
+          <SelectSeparator />
           <SelectGroup>
             <SelectLabel>Tank</SelectLabel>
             {roleHeroMapping["Tank"].map((hero) => (
@@ -184,6 +186,7 @@ export function RangePicker({
               </SelectItem>
             ))}
           </SelectGroup>
+          <SelectSeparator />
           <SelectGroup>
             <SelectLabel>Damage</SelectLabel>
             {roleHeroMapping["Damage"].map((hero) => (
@@ -192,6 +195,7 @@ export function RangePicker({
               </SelectItem>
             ))}
           </SelectGroup>
+          <SelectSeparator />
           <SelectGroup>
             <SelectLabel>Support</SelectLabel>
             {roleHeroMapping["Support"].map((hero) => (
