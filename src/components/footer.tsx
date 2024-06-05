@@ -23,6 +23,12 @@ export default function Footer() {
             Dashboard
           </Link>
           <Link
+            href="/stats"
+            className="text-sm text-gray-600 transition-colors duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
+          >
+            Stats
+          </Link>
+          <Link
             href="/team"
             className="text-sm text-gray-600 transition-colors duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
           >
