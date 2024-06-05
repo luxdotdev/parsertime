@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { HeroName, roleHeroMapping } from "@/types/heroes";
 import { PlayerStatRows } from "@/types/prisma";
 import { Scrim, User } from "@prisma/client";
 import { SelectGroup } from "@radix-ui/react-select";
@@ -51,6 +52,7 @@ export function RangePicker({
     from: addDays(new Date(), -14),
     to: new Date(),
   });
+  const [hero, setHero] = useState<HeroName | "all">("all");
 
   function onTimeframeChange(val: Timeframe) {
     setTimeframe(val);
@@ -164,12 +166,50 @@ export function RangePicker({
           </div>
         )}
       </div>
+
+      <Select onValueChange={(val: HeroName) => setHero(val)}>
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Hero" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>Select a hero</SelectLabel>
+            <SelectItem value="all">All Heroes</SelectItem>
+          </SelectGroup>
+          <SelectGroup>
+            <SelectLabel>Tank</SelectLabel>
+            {roleHeroMapping["Tank"].map((hero) => (
+              <SelectItem key={hero} value={hero}>
+                {hero}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+          <SelectGroup>
+            <SelectLabel>Damage</SelectLabel>
+            {roleHeroMapping["Damage"].map((hero) => (
+              <SelectItem key={hero} value={hero}>
+                {hero}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+          <SelectGroup>
+            <SelectLabel>Support</SelectLabel>
+            {roleHeroMapping["Support"].map((hero) => (
+              <SelectItem key={hero} value={hero}>
+                {hero}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+
       <Statistics
         timeframe={timeframe}
         date={date}
         user={user}
         scrims={data}
         stats={stats}
+        hero={hero}
       />
     </main>
   );
