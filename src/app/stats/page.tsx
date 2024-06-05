@@ -126,42 +126,26 @@ export default async function StatsPage() {
     take: 3,
   });
 
-  const kills = await prisma.kill.findMany({
-    where: {
-      victim_hero: "Lúcio",
-    },
-  });
+  type Ajax = { player_name: string; coincidence_count: number }[];
 
-  const ultimateEnds = await prisma.ultimateEnd.findMany({
-    where: {
-      player_hero: "Lúcio",
-    },
-  });
+  const ajaxes = await prisma.$queryRaw<Ajax>`
+    SELECT
+      k.victim_name AS player_name,
+      COUNT(*) AS coincidence_count
+    FROM
+      "Kill" k
+      INNER JOIN "UltimateEnd" ue ON k.victim_name = ue.player_name
+        AND k.match_time = ue.match_time
+    WHERE
+      k.victim_hero = 'Lúcio'
+      AND ue.player_hero = 'Lúcio'
+    GROUP BY
+      k.victim_name
+    ORDER BY
+      coincidence_count DESC
+    LIMIT 3;`;
 
-  const ajaxes = kills.filter((kill) =>
-    ultimateEnds.some(
-      (end) =>
-        end.match_time === kill.match_time &&
-        end.player_name === kill.victim_name
-    )
-  );
-
-  // get the top 3 most common ajaxers
-  const ajaxers = ajaxes.reduce(
-    (acc, kill) => {
-      if (!acc[kill.victim_name]) {
-        acc[kill.victim_name] = 1;
-      } else {
-        acc[kill.victim_name]++;
-      }
-      return acc;
-    },
-    {} as Record<string, number>
-  );
-
-  const topAjaxers = Object.entries(ajaxers)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3);
+  console.log(ajaxes);
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
@@ -742,8 +726,8 @@ export default async function StatsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {topAjaxers.map((row, idx) => (
-                  <TableRow key={row[0]}>
+                {ajaxes.map((row, idx) => (
+                  <TableRow key={row.player_name}>
                     <TableCell>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -772,8 +756,8 @@ export default async function StatsPage() {
                         <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
                       </svg>
                     </TableCell>
-                    <TableCell>{row[0]}</TableCell>
-                    <TableCell>{row[1]}</TableCell>
+                    <TableCell>{row.player_name}</TableCell>
+                    <TableCell>{row.coincidence_count.toString()}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
