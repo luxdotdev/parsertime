@@ -219,8 +219,8 @@ export function Statistics({
           <p className="text-sm text-muted-foreground">
             {timeframe !== "custom" && timeframe !== "all-time" ? (
               <>
-                Stats collected from {filteredStats.length} scrims in the last{" "}
-                {timeframe.replace("-", " ")}
+                Stats collected from {scrims[timeframe].length} scrims in the
+                last {timeframe.replace("-", " ")}
               </>
             ) : (
               <>
