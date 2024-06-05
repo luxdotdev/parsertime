@@ -1,3 +1,4 @@
+import { Searchbar } from "@/components/stats/searchbar";
 import {
   Card,
   CardContent,
@@ -131,6 +132,8 @@ export default async function StatsPage() {
         <h2 className="text-3xl font-bold tracking-tight">Stats</h2>
       </div>
 
+      <Searchbar />
+
       <div className="flex items-center justify-between space-y-2">
         <h3 className="text-2xl font-bold tracking-tight">Global Stats</h3>
       </div>
@@ -145,7 +148,7 @@ export default async function StatsPage() {
             </CardIcon>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{userNum}</div>
+            <div className="text-2xl font-bold">{format(userNum)}</div>
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
