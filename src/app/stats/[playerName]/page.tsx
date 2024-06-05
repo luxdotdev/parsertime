@@ -1,4 +1,6 @@
 import { RangePicker, Timeframe } from "@/components/stats/player/range-picker";
+import { Card } from "@/components/ui/card";
+import { Link } from "@/components/ui/link";
 import { getAllStatsForPlayer } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
@@ -89,7 +91,37 @@ export default async function PlayerStats({ params }: Props) {
 
   const allScrimIds = allScrims.map((scrim) => scrim.id);
 
-  const allPlayerStats = await getAllStatsForPlayer(allScrimIds, name);
+  let allPlayerStats;
+
+  try {
+    allPlayerStats = await getAllStatsForPlayer(allScrimIds, name);
+  } catch (e) {
+    return (
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <div className="flex items-center justify-between space-y-2">
+          <h2 className="text-3xl font-bold tracking-tight">
+            {name}&apos;{name.endsWith("s") ? "" : "s"} Stats
+          </h2>
+        </div>
+
+        <Card className="h-[70vh] border-none">
+          <div className="flex h-full items-center justify-center">
+            <div className="text-center text-xl font-bold text-red-500">
+              Failed to find stats for {name}. Did you spell the name correctly?
+              <div className="text-center">
+                <Link
+                  href="/stats"
+                  className="text-base font-normal text-muted-foreground"
+                >
+                  &larr; Go back to stats
+                </Link>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
