@@ -22,7 +22,7 @@ import { HeroName, roleHeroMapping } from "@/types/heroes";
 import { PlayerStatRows } from "@/types/prisma";
 import { Scrim, User } from "@prisma/client";
 import { SelectGroup } from "@radix-ui/react-select";
-import { addDays, addMonths, addWeeks, addYears, format } from "date-fns";
+import { addMonths, addWeeks, addYears, format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
@@ -50,7 +50,7 @@ export function RangePicker({
 }) {
   const [timeframe, setTimeframe] = useState<Timeframe>("one-week");
   const [date, setDate] = useState<DateRange | undefined>({
-    from: addDays(new Date(), -14),
+    from: addWeeks(new Date(), -1),
     to: new Date(),
   });
   const [hero, setHero] = useState<HeroName | "all">("all");
@@ -76,7 +76,7 @@ export function RangePicker({
   return (
     <main className="space-y-2">
       <div className="items-center gap-2 space-y-2 md:flex md:space-y-0">
-        <Select onValueChange={onTimeframeChange}>
+        <Select onValueChange={onTimeframeChange} defaultValue="one-week">
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Timeframe" />
           </SelectTrigger>
@@ -168,7 +168,10 @@ export function RangePicker({
         )}
       </div>
 
-      <Select onValueChange={(val: HeroName) => setHero(val)}>
+      <Select
+        onValueChange={(val: HeroName) => setHero(val)}
+        defaultValue="all"
+      >
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Hero" />
         </SelectTrigger>
