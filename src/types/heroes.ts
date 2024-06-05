@@ -290,6 +290,58 @@ export const heroRoleMapping: Record<HeroName, "Tank" | "Damage" | "Support"> =
     Zenyatta: "Support",
   };
 
+export const roleHeroMapping: Record<
+  "Tank" | "Damage" | "Support",
+  HeroName[]
+> = {
+  Tank: [
+    "D.Va",
+    "Doomfist",
+    "Junker Queen",
+    "Mauga",
+    "Orisa",
+    "Ramattra",
+    "Reinhardt",
+    "Roadhog",
+    "Sigma",
+    "Winston",
+    "Wrecking Ball",
+    "Zarya",
+  ],
+  Damage: [
+    "Ashe",
+    "Bastion",
+    "Cassidy",
+    "Echo",
+    "Genji",
+    "Hanzo",
+    "Junkrat",
+    "Mei",
+    "Pharah",
+    "Reaper",
+    "Sojourn",
+    "Soldier: 76",
+    "Sombra",
+    "Symmetra",
+    "Torbjörn",
+    "Tracer",
+    "Venture",
+    "Widowmaker",
+  ],
+  Support: [
+    "Ana",
+    "Baptiste",
+    "Brigitte",
+    "Illari",
+    "Kiriko",
+    "Lifeweaver",
+    "Lúcio",
+    "Mercy",
+    "Moira",
+    "Zenyatta",
+  ],
+};
+
 export const heroPriority = {
   Damage: 1,
   Tank: 2,
