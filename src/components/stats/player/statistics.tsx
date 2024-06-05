@@ -106,9 +106,13 @@ export function Statistics({
       setFilteredStats(stats.filter((stat) => stat.player_hero === hero));
     }
     if (hero === "all") {
-      setFilteredStats(stats);
+      setFilteredStats(
+        stats.filter((stat) =>
+          scrims[timeframe].some((scrim) => scrim.id === stat.scrimId)
+        )
+      );
     }
-  }, [hero, stats]);
+  }, [hero, stats, timeframe, scrims]);
 
   const top3MostPlayedHeroes = filteredStats
     .map((stat) => stat.player_hero)
