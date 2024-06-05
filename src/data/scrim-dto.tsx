@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import { cache } from "react";
 import { PlayerStatRows } from "@/types/prisma";
 import { removeDuplicateRows } from "@/lib/utils";
-import { Scrim } from "@prisma/client";
+import { Prisma, Scrim } from "@prisma/client";
 import { HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
 
 async function getScrimFn(id: number) {
@@ -121,3 +121,58 @@ async function getFinalRoundStatsForPlayerFn(id: number, playerName: string) {
  * @returns {PlayerStatRows} The statistics for the final round of the specified map for the specified player.
  */
 export const getPlayerFinalStats = cache(getFinalRoundStatsForPlayerFn);
+
+async function getAllStatsForPlayerFn(scrimIds: number[], name: string) {
+  const mapDataIds = await prisma.scrim.findMany({
+    where: {
+      id: {
+        in: scrimIds,
+      },
+    },
+    select: {
+      maps: true,
+    },
+  });
+
+  const mapDataIdSet = new Set<number>();
+  mapDataIds.forEach((scrim) => {
+    scrim.maps.forEach((map) => {
+      mapDataIdSet.add(map.id);
+    });
+  });
+
+  const mapDataIdArray = Array.from(mapDataIdSet);
+
+  return removeDuplicateRows(
+    await prisma.$queryRaw<PlayerStatRows>`
+      WITH maxTime AS (
+        SELECT
+            MAX("match_time") AS max_time,
+            "MapDataId"
+        FROM
+            "PlayerStat"
+        WHERE
+            "MapDataId" IN (${Prisma.join(mapDataIdArray)})
+        GROUP BY
+            "MapDataId"
+      )
+      SELECT
+          ps.*
+      FROM
+          "PlayerStat" ps
+          INNER JOIN maxTime m ON ps."match_time" = m.max_time AND ps."MapDataId" = m."MapDataId"
+      WHERE
+          ps."MapDataId" IN (${Prisma.join(mapDataIdArray)})
+          AND ps."player_name" ILIKE ${name}`
+  );
+}
+
+/**
+ * Returns all of the statistics for a specific player.
+ * This function is cached for performance.
+ *
+ * @param {number} scrimIds The IDs of the scrims the player participated in.
+ * @param {string} playerName The name of the player.
+ * @returns {PlayerStatRows} The statistics for the specified player.
+ */
+export const getAllStatsForPlayer = cache(getAllStatsForPlayerFn);
