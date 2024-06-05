@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn, toHero } from "@/lib/utils";
+import { HeroName } from "@/types/heroes";
 import { PlayerStatRows } from "@/types/prisma";
 import { Scrim, User } from "@prisma/client";
 import Image from "next/image";
@@ -29,12 +30,14 @@ export function Statistics({
   user,
   scrims,
   stats,
+  hero,
 }: {
   timeframe: Timeframe;
   date: DateRange | undefined;
   user: User;
   scrims: Record<Timeframe, Scrim[]>;
   stats: PlayerStatRows;
+  hero: HeroName | "all";
 }) {
   const [customScrims, setCustomScrims] = useState<Scrim[]>([]);
   const [filteredStats, setFilteredStats] = useState<PlayerStatRows>([]);
@@ -97,6 +100,15 @@ export function Statistics({
       })
     );
   }, [timeframe, scrims, stats, customScrims]);
+
+  useEffect(() => {
+    if (hero !== "all") {
+      setFilteredStats(stats.filter((stat) => stat.player_hero === hero));
+    }
+    if (hero === "all") {
+      setFilteredStats(stats);
+    }
+  }, [hero, stats]);
 
   const top3MostPlayedHeroes = filteredStats
     .map((stat) => stat.player_hero)
