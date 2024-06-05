@@ -18,6 +18,10 @@ export function round(value: number) {
   return Math.round((value + Number.EPSILON) * 100) / 100;
 }
 
+export function format(x: number) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 /**
  * Converts a hero name to the format used for the hero image file names.
  * Removes any accents, spaces, and converts to lowercase.
@@ -95,6 +99,31 @@ export function toTimestamp(value: number) {
     .padStart(2, "0");
   const secs = (value % 60).toFixed(0).padStart(2, "0");
   return `${mins}m ${secs}s`;
+}
+
+export function toTimestampWithHours(value: number) {
+  const hours = Math.floor(value / 3600)
+    .toFixed(0)
+    .padStart(2, "0");
+  const mins = Math.floor((value % 3600) / 60)
+    .toFixed(0)
+    .padStart(2, "0");
+  const secs = (value % 60).toFixed(0).padStart(2, "0");
+  return `${hours}h ${mins}m ${secs}s`;
+}
+
+export function toTimestampWithDays(value: number) {
+  const days = Math.floor(value / 86400)
+    .toFixed(0)
+    .padStart(2, "0");
+  const hours = Math.floor((value % 86400) / 3600)
+    .toFixed(0)
+    .padStart(2, "0");
+  const mins = Math.floor((value % 3600) / 60)
+    .toFixed(0)
+    .padStart(2, "0");
+  const secs = (value % 60).toFixed(0).padStart(2, "0");
+  return `${days}d ${hours}h ${mins}m ${secs}s`;
 }
 
 export function removeDuplicateRows<T extends { id: number }>(rows: T[]): T[] {
