@@ -107,7 +107,8 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
       ...item,
       pv: (item.pv / toMins(item.time)) * 10,
     }))
-    .sort((a, b) => new Date(a.name).getTime() - new Date(b.name).getTime());
+    .sort((a, b) => new Date(a.name).getTime() - new Date(b.name).getTime())
+    .filter((item) => !isNaN(item.pv));
 
   const avg =
     processedData.reduce((acc, curr) => acc + curr.pv, 0) /
@@ -156,7 +157,11 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
               className={cn(
                 better === "higher" && percentageChange.includes("+")
                   ? "text-green-500"
-                  : "text-red-500"
+                  : better === "higher" && percentageChange.includes("-")
+                    ? "text-red-500"
+                    : better === "lower" && percentageChange.includes("+")
+                      ? "text-red-500"
+                      : "text-green-500"
               )}
             >
               {percentageChange}
