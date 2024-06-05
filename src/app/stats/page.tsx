@@ -126,6 +126,43 @@ export default async function StatsPage() {
     take: 3,
   });
 
+  const kills = await prisma.kill.findMany({
+    where: {
+      victim_hero: "Lúcio",
+    },
+  });
+
+  const ultimateEnds = await prisma.ultimateEnd.findMany({
+    where: {
+      player_hero: "Lúcio",
+    },
+  });
+
+  const ajaxes = kills.filter((kill) =>
+    ultimateEnds.some(
+      (end) =>
+        end.match_time === kill.match_time &&
+        end.player_name === kill.victim_name
+    )
+  );
+
+  // get the top 3 most common ajaxers
+  const ajaxers = ajaxes.reduce(
+    (acc, kill) => {
+      if (!acc[kill.victim_name]) {
+        acc[kill.victim_name] = 1;
+      } else {
+        acc[kill.victim_name]++;
+      }
+      return acc;
+    },
+    {} as Record<string, number>
+  );
+
+  const topAjaxers = Object.entries(ajaxers)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -673,6 +710,70 @@ export default async function StatsPage() {
                     <TableCell>
                       {toTimestampWithHours(row._sum.hero_time_played!)}
                     </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+          <CardFooter>
+            <p className="text-xs text-muted-foreground">
+              Results accumulated from {mapNum} maps.
+            </p>
+          </CardFooter>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Top 3 Players with the Most Ajaxes
+            </CardTitle>
+            <CardIcon>
+              <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
+              <path d="M7 2v20" />
+              <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />
+            </CardIcon>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Rank</TableHead>
+                  <TableHead>Player</TableHead>
+                  <TableHead>Ajaxes</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {topAjaxers.map((row, idx) => (
+                  <TableRow key={row[0]}>
+                    <TableCell>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        className={cn(
+                          "h-4 w-4",
+                          idx === 0
+                            ? "text-amber-400"
+                            : idx === 1
+                              ? "text-gray-400"
+                              : idx === 2
+                                ? "text-amber-900"
+                                : "text-muted-foreground"
+                        )}
+                      >
+                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+                        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                        <path d="M4 22h16" />
+                        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+                        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+                        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+                      </svg>
+                    </TableCell>
+                    <TableCell>{row[0]}</TableCell>
+                    <TableCell>{row[1]}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
