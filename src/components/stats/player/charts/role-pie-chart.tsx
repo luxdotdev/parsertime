@@ -5,16 +5,12 @@ import { cn, toTimestampWithHours, toTitleCase } from "@/lib/utils";
 import { HeroName, heroRoleMapping } from "@/types/heroes";
 import { PlayerStatRows } from "@/types/prisma";
 import {
-  CartesianGrid,
   Cell,
-  Legend,
   Pie,
   PieChart,
   ResponsiveContainer,
   Tooltip,
   TooltipProps,
-  XAxis,
-  YAxis,
 } from "recharts";
 import {
   NameType,
