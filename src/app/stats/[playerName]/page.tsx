@@ -1,7 +1,7 @@
 import { RangePicker, Timeframe } from "@/components/stats/player/range-picker";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
-import { getAllStatsForPlayer } from "@/data/scrim-dto";
+import { getAllKillsForPlayer, getAllStatsForPlayer } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
@@ -92,9 +92,11 @@ export default async function PlayerStats({ params }: Props) {
   const allScrimIds = allScrims.map((scrim) => scrim.id);
 
   let allPlayerStats;
+  let allPlayerKills;
 
   try {
     allPlayerStats = await getAllStatsForPlayer(allScrimIds, name);
+    allPlayerKills = await getAllKillsForPlayer(allScrimIds, name);
   } catch (e) {
     return (
       <div className="flex-1 space-y-4 p-8 pt-6">
@@ -131,7 +133,13 @@ export default async function PlayerStats({ params }: Props) {
         </h2>
       </div>
 
-      <RangePicker user={user} data={data} name={name} stats={allPlayerStats} />
+      <RangePicker
+        user={user}
+        data={data}
+        name={name}
+        stats={allPlayerStats}
+        kills={allPlayerKills}
+      />
     </div>
   );
 }
