@@ -19,7 +19,7 @@ import {
 import { cn, toHero } from "@/lib/utils";
 import { HeroName } from "@/types/heroes";
 import { PlayerStatRows } from "@/types/prisma";
-import { Scrim, User } from "@prisma/client";
+import { Kill, Scrim, User } from "@prisma/client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/tooltip";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { RolePieChart } from "@/components/stats/player/charts/role-pie-chart";
+import { KillMethodChart } from "@/components/stats/player/charts/kill-methods";
 
 function ChartTooltip({ children }: { children: React.ReactNode }) {
   return (
@@ -53,6 +54,7 @@ export function Statistics({
   scrims,
   stats,
   hero,
+  kills,
 }: {
   timeframe: Timeframe;
   date: DateRange | undefined;
@@ -60,9 +62,11 @@ export function Statistics({
   scrims: Record<Timeframe, Scrim[]>;
   stats: PlayerStatRows;
   hero: HeroName | "all";
+  kills: Kill[];
 }) {
   const [customScrims, setCustomScrims] = useState<Scrim[]>([]);
   const [filteredStats, setFilteredStats] = useState<PlayerStatRows>([]);
+  const [filteredKills, setFilteredKills] = useState<Kill[]>([]);
 
   useEffect(() => {
     if (timeframe === "custom") {
@@ -126,6 +130,7 @@ export function Statistics({
   useEffect(() => {
     if (hero !== "all") {
       setFilteredStats(stats.filter((stat) => stat.player_hero === hero));
+      setFilteredKills(kills.filter((kill) => kill.attacker_hero === hero));
     }
     if (hero === "all") {
       setFilteredStats(
@@ -133,8 +138,57 @@ export function Statistics({
           scrims[timeframe].some((scrim) => scrim.id === stat.scrimId)
         )
       );
+      setFilteredKills(
+        kills.filter((kill) =>
+          scrims[timeframe].some((scrim) => scrim.id === kill.scrimId)
+        )
+      );
     }
-  }, [hero, stats, timeframe, scrims]);
+  }, [hero, stats, timeframe, scrims, kills]);
+
+  useEffect(() => {
+    setFilteredKills(
+      kills.filter((kill) => {
+        if (timeframe === "one-week") {
+          return scrims["one-week"].some((scrim) => scrim.id === kill.scrimId);
+        }
+
+        if (timeframe === "two-weeks") {
+          return scrims["two-weeks"].some((scrim) => scrim.id === kill.scrimId);
+        }
+
+        if (timeframe === "one-month") {
+          return scrims["one-month"].some((scrim) => scrim.id === kill.scrimId);
+        }
+
+        if (timeframe === "three-months") {
+          return scrims["three-months"].some(
+            (scrim) => scrim.id === kill.scrimId
+          );
+        }
+
+        if (timeframe === "six-months") {
+          return scrims["six-months"].some(
+            (scrim) => scrim.id === kill.scrimId
+          );
+        }
+
+        if (timeframe === "one-year") {
+          return scrims["one-year"].some((scrim) => scrim.id === kill.scrimId);
+        }
+
+        if (timeframe === "all-time") {
+          return scrims["all-time"].some((scrim) => scrim.id === kill.scrimId);
+        }
+
+        if (timeframe === "custom") {
+          return customScrims.some((scrim) => scrim.id === kill.scrimId);
+        }
+
+        return false;
+      })
+    );
+  }, [timeframe, kills, scrims, customScrims]);
 
   const top3FinalBlows = filteredStats
     .filter((stat) => stat.final_blows > 0)
@@ -445,6 +499,12 @@ export function Statistics({
           <CardTitle>Time Spent on Each Role</CardTitle>
         </CardHeader>
         <RolePieChart data={filteredStats} />
+      </Card>
+      <Card className="col-span-1">
+        <CardHeader>
+          <CardTitle>Final Blows By Method</CardTitle>
+        </CardHeader>
+        <KillMethodChart data={filteredKills} />
       </Card>
     </section>
   );
