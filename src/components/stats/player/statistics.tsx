@@ -31,6 +31,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { RolePieChart } from "@/components/stats/player/charts/role-pie-chart";
 
 function ChartTooltip({ children }: { children: React.ReactNode }) {
   return (
@@ -438,6 +439,12 @@ export function Statistics({
           scrimData={timeframe === "custom" ? customScrims : scrims[timeframe]}
           better="lower"
         />
+      </Card>
+      <Card className="col-span-1">
+        <CardHeader>
+          <CardTitle>Time Spent on Each Role</CardTitle>
+        </CardHeader>
+        <RolePieChart data={filteredStats} />
       </Card>
     </section>
   );
