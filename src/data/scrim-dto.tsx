@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import { cache } from "react";
 import { PlayerStatRows } from "@/types/prisma";
 import { removeDuplicateRows } from "@/lib/utils";
-import { Prisma, Scrim } from "@prisma/client";
+import { Kill, Prisma, Scrim } from "@prisma/client";
 import { HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
 
 async function getScrimFn(id: number) {
@@ -176,3 +176,47 @@ async function getAllStatsForPlayerFn(scrimIds: number[], name: string) {
  * @returns {PlayerStatRows} The statistics for the specified player.
  */
 export const getAllStatsForPlayer = cache(getAllStatsForPlayerFn);
+
+async function getAllKillsForPlayerFn(scrimIds: number[], name: string) {
+  const mapDataIds = await prisma.scrim.findMany({
+    where: {
+      id: {
+        in: scrimIds,
+      },
+    },
+    select: {
+      maps: true,
+    },
+  });
+
+  const mapDataIdSet = new Set<number>();
+  mapDataIds.forEach((scrim) => {
+    scrim.maps.forEach((map) => {
+      mapDataIdSet.add(map.id);
+    });
+  });
+
+  const mapDataIdArray = Array.from(mapDataIdSet);
+
+  return await prisma.kill.findMany({
+    where: {
+      MapDataId: {
+        in: mapDataIdArray,
+      },
+      attacker_name: {
+        equals: name,
+        mode: "insensitive",
+      },
+    },
+  });
+}
+
+/**
+ * Returns all of the kills for a specific player.
+ * This function is cached for performance.
+ *
+ * @param {number} scrimIds The IDs of the scrims the player participated in.
+ * @param {string} playerName The name of the player.
+ * @returns {Kill[]} The kills for the specified player.
+ */
+export const getAllKillsForPlayer = cache(getAllKillsForPlayerFn);
