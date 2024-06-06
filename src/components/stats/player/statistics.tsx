@@ -30,6 +30,20 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
+
+function ChartTooltip({ children }: { children: React.ReactNode }) {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <InfoCircledIcon className="h-4 w-4" />
+        </TooltipTrigger>
+        <TooltipContent className="max-w-[280px]">{children}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
 
 export function Statistics({
   timeframe,
@@ -389,7 +403,15 @@ export function Statistics({
       </Card>
       <Card className="col-span-1 lg:col-span-2">
         <CardHeader>
-          <CardTitle>Damage per 10</CardTitle>
+          <CardTitle className="flex items-center gap-1">
+            Average Hero Damage Dealt per 10 (per scrim){" "}
+            <ChartTooltip>
+              <p>
+                The average hero damage dealt per 10 minutes for each scrim.
+                Higher is better.
+              </p>
+            </ChartTooltip>
+          </CardTitle>
         </CardHeader>
         <StatPer10Chart
           stat="hero_damage_dealt"
@@ -400,7 +422,15 @@ export function Statistics({
       </Card>
       <Card className="col-span-1 lg:col-span-2">
         <CardHeader>
-          <CardTitle>Deaths per 10</CardTitle>
+          <CardTitle className="flex items-center gap-1">
+            Average Deaths per 10 (per scrim){" "}
+            <ChartTooltip>
+              <p>
+                The average number of deaths per 10 minutes for each scrim.
+                Lower is better.
+              </p>
+            </ChartTooltip>
+          </CardTitle>
         </CardHeader>
         <StatPer10Chart
           stat="deaths"
