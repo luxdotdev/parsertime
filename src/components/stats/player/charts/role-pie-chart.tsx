@@ -177,7 +177,6 @@ export function RolePieChart({ data }: Props) {
               .join(", ")}
           </span>
         </p>
-        <p></p>
       </CardFooter>
     </>
   );
