@@ -20,7 +20,7 @@ import {
 import { cn } from "@/lib/utils";
 import { HeroName, roleHeroMapping } from "@/types/heroes";
 import { PlayerStatRows } from "@/types/prisma";
-import { Scrim, User } from "@prisma/client";
+import { Kill, Scrim, User } from "@prisma/client";
 import { SelectGroup } from "@radix-ui/react-select";
 import { addMonths, addWeeks, addYears, format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -42,11 +42,13 @@ export function RangePicker({
   data,
   name,
   stats,
+  kills,
 }: {
   user: User;
   data: Record<Timeframe, Scrim[]>;
   name: string;
   stats: PlayerStatRows;
+  kills: Kill[];
 }) {
   const [timeframe, setTimeframe] = useState<Timeframe>("one-week");
   const [date, setDate] = useState<DateRange | undefined>({
@@ -217,6 +219,7 @@ export function RangePicker({
         scrims={data}
         stats={stats}
         hero={hero}
+        kills={kills}
       />
     </main>
   );
