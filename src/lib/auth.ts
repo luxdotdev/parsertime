@@ -21,6 +21,7 @@ import GoogleProvider from "next-auth/providers/google";
 import isEmail from "validator/lib/isEmail";
 
 const isProd = process.env.NODE_ENV === "production";
+const isPreview = process.env.VERCEL_ENV === "preview";
 
 export type Availability = "public" | "private";
 
@@ -86,11 +87,13 @@ export const config = {
       // get app availability from edge config
       const status = (await get("availability")) as Availability;
 
-      if (status === "public") return true;
+      if (status === "public" && !isPreview) return true;
 
       // get list of allowed user emails from edge config
       const allowedUsers = (await get("allowedUsers")) as string[];
 
+      // allow all lux.dev emails
+      if (user.email.includes("lux.dev")) return true;
       if (allowedUsers.includes(user.email)) return true;
 
       Logger.log("User not authorized for private access", { user });
