@@ -165,7 +165,7 @@ export function RolePieChart({ data }: Props) {
         </ResponsiveContainer>
       </CardContent>
       <CardFooter>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-muted-foreground">
           Total time played:{" "}
           <span className="text-foreground">
             {toTimestampWithHours(totalTimePlayed)}

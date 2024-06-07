@@ -173,7 +173,7 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
               <TrendingDownIcon size={16} />
             )}
           </div>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             Average:{" "}
             <span className="text-foreground">{format(round(avg))}</span> | Max:{" "}
             <span className="text-foreground">{format(round(max))}</span> | Min:{" "}

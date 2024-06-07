@@ -76,7 +76,7 @@ export function KillMethodChart({ data }: Props) {
         </ResponsiveContainer>
       </CardContent>
       <CardFooter>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-muted-foreground">
           Calculated from{" "}
           <span className="text-foreground">{format(data.length)}</span> kills
         </p>
