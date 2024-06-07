@@ -19,7 +19,7 @@ import {
 import { cn, toHero } from "@/lib/utils";
 import { HeroName } from "@/types/heroes";
 import { PlayerStatRows } from "@/types/prisma";
-import { Kill, Scrim, User } from "@prisma/client";
+import { Kill, PlayerStat, Scrim, User } from "@prisma/client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
@@ -36,6 +36,15 @@ import { KillMethodChart } from "@/components/stats/player/charts/kill-methods";
 import { Winrate } from "@/data/scrim-dto";
 import { MapWinsChart } from "@/components/stats/player/charts/map-wins-chart";
 import { WinsPerMapTypeChart } from "@/components/stats/player/charts/wins-per-map-type";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { NonMappableStat, Stat } from "@/lib/player-charts";
+import { Label } from "@/components/ui/label";
 
 function ChartTooltip({ children }: { children: React.ReactNode }) {
   return (
@@ -76,6 +85,8 @@ export function Statistics({
   const [filteredKills, setFilteredKills] = useState<Kill[]>([]);
   const [filteredWins, setFilteredWins] = useState<Winrate>([]);
   const [filteredDeaths, setFilteredDeaths] = useState<Kill[]>([]);
+  const [selectedStat, setSelectedStat] =
+    useState<keyof Omit<Stat, NonMappableStat>>("healing_dealt");
 
   useEffect(() => {
     if (timeframe === "custom") {
@@ -724,6 +735,44 @@ export function Statistics({
             )}
           </p>
         </CardFooter>
+      </Card>
+      <Card className="col-span-1 md:col-span-full xl:col-span-3">
+        <CardHeader>
+          <Select
+            value={selectedStat}
+            onValueChange={(val: keyof Omit<Stat, NonMappableStat>) =>
+              setSelectedStat(val)
+            }
+          >
+            <div className="flex items-center gap-2">
+              <Label htmlFor="stat">Stat</Label>
+              <SelectTrigger className="w-[180px]" id="stat">
+                <SelectValue placeholder="Select a stat" />
+              </SelectTrigger>
+            </div>
+            <SelectContent>
+              <SelectItem value="eliminations">Eliminations</SelectItem>
+              <SelectItem value="final_blows">Final Blows</SelectItem>
+              <SelectItem value="healing_dealt">Healing Dealt</SelectItem>
+              <SelectItem value="healing_received">Healing Received</SelectItem>
+              <SelectItem value="self_healing">Self Healing</SelectItem>
+              <SelectItem value="damage_taken">Damage Taken</SelectItem>
+              <SelectItem value="damage_blocked">Damage Blocked</SelectItem>
+              <SelectItem value="ultimates_earned">Ultimates Earned</SelectItem>
+              <SelectItem value="ultimates_used">Ultimates Used</SelectItem>
+              <SelectItem value="solo_kills">Solo Kills</SelectItem>
+              <SelectItem value="environmental_kills">
+                Environmental Kills
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </CardHeader>
+        <StatPer10Chart
+          stat={selectedStat}
+          data={filteredStats}
+          scrimData={timeframe === "custom" ? customScrims : scrims[timeframe]}
+          better="higher"
+        />
       </Card>
     </section>
   );
