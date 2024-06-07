@@ -103,7 +103,6 @@ export default async function PlayerStats({ params }: Props) {
     allPlayerStats = await getAllStatsForPlayer(allScrimIds, name);
     allPlayerKills = await getAllKillsForPlayer(allScrimIds, name);
     mapWinrates = await getAllMapWinratesForPlayer(allScrimIds, name);
-    console.log(mapWinrates);
   } catch (e) {
     return (
       <div className="flex-1 space-y-4 p-8 pt-6">
@@ -146,6 +145,7 @@ export default async function PlayerStats({ params }: Props) {
         name={name}
         stats={allPlayerStats}
         kills={allPlayerKills}
+        mapWinrates={mapWinrates}
       />
     </div>
   );
