@@ -2,6 +2,7 @@ import { RangePicker, Timeframe } from "@/components/stats/player/range-picker";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
 import {
+  getAllDeathsForPlayer,
   getAllKillsForPlayer,
   getAllMapWinratesForPlayer,
   getAllStatsForPlayer,
@@ -98,11 +99,13 @@ export default async function PlayerStats({ params }: Props) {
   let allPlayerStats;
   let allPlayerKills;
   let mapWinrates;
+  let allPlayerDeaths;
 
   try {
     allPlayerStats = await getAllStatsForPlayer(allScrimIds, name);
     allPlayerKills = await getAllKillsForPlayer(allScrimIds, name);
     mapWinrates = await getAllMapWinratesForPlayer(allScrimIds, name);
+    allPlayerDeaths = await getAllDeathsForPlayer(allScrimIds, name);
   } catch (e) {
     return (
       <div className="flex-1 space-y-4 p-8 pt-6">
@@ -146,6 +149,7 @@ export default async function PlayerStats({ params }: Props) {
         stats={allPlayerStats}
         kills={allPlayerKills}
         mapWinrates={mapWinrates}
+        deaths={allPlayerDeaths}
       />
     </div>
   );
