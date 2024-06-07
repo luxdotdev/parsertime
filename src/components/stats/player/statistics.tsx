@@ -34,6 +34,7 @@ import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { RolePieChart } from "@/components/stats/player/charts/role-pie-chart";
 import { KillMethodChart } from "@/components/stats/player/charts/kill-methods";
 import { Winrate } from "@/data/scrim-dto";
+import { MapWinsChart } from "@/components/stats/player/charts/map-wins-chart";
 
 function ChartTooltip({ children }: { children: React.ReactNode }) {
   return (
@@ -525,15 +526,11 @@ export function Statistics({
         </CardHeader>
         <KillMethodChart data={filteredKills} />
       </Card>
-      <Card className="col-span-3">
+      <Card className="col-span-full">
         <CardHeader>
           <CardTitle>Map Winrates</CardTitle>
         </CardHeader>
-        <CardContent>
-          {JSON.stringify(filteredWins)}
-          {date?.from?.toDateString()}
-          {date?.to?.toDateString()}
-        </CardContent>
+        <MapWinsChart data={filteredWins} />
       </Card>
     </section>
   );
