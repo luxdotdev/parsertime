@@ -3,8 +3,9 @@ import prisma from "@/lib/prisma";
 import { cache } from "react";
 import { PlayerStatRows } from "@/types/prisma";
 import { removeDuplicateRows } from "@/lib/utils";
-import { Kill, Prisma, Scrim } from "@prisma/client";
+import { Kill, MatchStart, Prisma, RoundEnd, Scrim } from "@prisma/client";
 import { HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
+import { calculateWinner } from "@/lib/winrate";
 
 async function getScrimFn(id: number) {
   return await prisma.scrim.findFirst({
@@ -220,3 +221,141 @@ async function getAllKillsForPlayerFn(scrimIds: number[], name: string) {
  * @returns {Kill[]} The kills for the specified player.
  */
 export const getAllKillsForPlayer = cache(getAllKillsForPlayerFn);
+
+async function getAllMapWinratesForPlayerFn(scrimIds: number[], name: string) {
+  const mapDataIds = await prisma.scrim.findMany({
+    where: {
+      id: {
+        in: scrimIds,
+      },
+    },
+    select: {
+      maps: true,
+      date: true,
+    },
+  });
+
+  const mapDataIdSet = new Set<number>();
+  mapDataIds.forEach((scrim) => {
+    scrim.maps.forEach((map) => {
+      mapDataIdSet.add(map.id);
+    });
+  });
+
+  const mapDataIdArray = Array.from(mapDataIdSet);
+
+  const matchStarts = await prisma.matchStart.findMany({
+    where: {
+      MapDataId: {
+        in: mapDataIdArray,
+      },
+    },
+  });
+
+  const allFinalRounds = await prisma.roundEnd.findMany({
+    where: {
+      MapDataId: {
+        in: mapDataIdArray,
+      },
+    },
+  });
+
+  // For each map, get the final round by grouping by map ID and getting the max match time
+  const finalRounds = allFinalRounds.reduce(
+    (acc, round) => {
+      if (
+        !acc[round.MapDataId!] ||
+        acc[round.MapDataId!].match_time < round.match_time
+      ) {
+        acc[round.MapDataId!] = round;
+      }
+      return acc;
+    },
+    {} as Record<number, RoundEnd>
+  );
+
+  const captures = await prisma.objectiveCaptured.findMany({
+    where: {
+      MapDataId: {
+        in: mapDataIdArray,
+      },
+    },
+  });
+
+  const team1Captures = captures.filter(
+    (capture) =>
+      capture.capturing_team ===
+      matchStarts.find((match) => match.MapDataId === capture.MapDataId)!
+        .team_1_name
+  );
+
+  const team2Captures = captures.filter(
+    (capture) =>
+      capture.capturing_team ===
+      matchStarts.find((match) => match.MapDataId === capture.MapDataId)!
+        .team_2_name
+  );
+
+  // const winrates = [] as { map: string; wins: number }[];
+
+  const winrates = mapDataIdArray.forEach(async (mapId) => {
+    const wins = [] as { map: string; wins: number }[];
+    const matchDetails =
+      matchStarts.find((match) => match.MapDataId === mapId) ||
+      ({} as MatchStart);
+
+    const winner = calculateWinner({
+      matchDetails,
+      finalRound: finalRounds[mapId],
+      team1Captures: team1Captures.filter(
+        (capture) => capture.MapDataId === mapId
+      ),
+      team2Captures: team2Captures.filter(
+        (capture) => capture.MapDataId === mapId
+      ),
+    });
+
+    const playerStat = await prisma.playerStat.findFirst({
+      where: {
+        player_name: {
+          equals: name,
+          mode: "insensitive",
+        },
+        MapDataId: mapId,
+      },
+    });
+
+    const playerTeam = playerStat?.player_team;
+
+    if (winner === playerTeam) {
+      wins.push({ map: matchDetails.map_name, wins: 1 });
+    } else if (winner !== "N/A") {
+      wins.push({ map: matchDetails.map_name, wins: 0 });
+    } else if (winner === "N/A") {
+      wins.push({ map: matchDetails.map_name, wins: 0 });
+    }
+
+    return wins;
+  });
+
+  // take all map names and add them to the winrates array
+  const winratesMap = {} as Record<string, number>;
+
+  winrates.forEach((map) => {
+    winratesMap[map.map] = map.wins;
+  });
+
+  console.log(winratesMap);
+
+  return winratesMap;
+}
+
+/**
+ * Returns the winrates for a specific player on each map.
+ * This function is cached for performance.
+ *
+ * @param {number} scrimIds The IDs of the scrims the player participated in.
+ * @param {string} playerName The name of the player.
+ * @returns {Record<string, number>} The winrates for the specified player on each map.
+ */
+export const getAllMapWinratesForPlayer = cache(getAllMapWinratesForPlayerFn);
