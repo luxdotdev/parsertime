@@ -229,6 +229,50 @@ async function getAllKillsForPlayerFn(scrimIds: number[], name: string) {
  */
 export const getAllKillsForPlayer = cache(getAllKillsForPlayerFn);
 
+async function getAllDeathsForPlayerFn(scrimIds: number[], name: string) {
+  const mapDataIds = await prisma.scrim.findMany({
+    where: {
+      id: {
+        in: scrimIds,
+      },
+    },
+    select: {
+      maps: true,
+    },
+  });
+
+  const mapDataIdSet = new Set<number>();
+  mapDataIds.forEach((scrim) => {
+    scrim.maps.forEach((map) => {
+      mapDataIdSet.add(map.id);
+    });
+  });
+
+  const mapDataIdArray = Array.from(mapDataIdSet);
+
+  return await prisma.kill.findMany({
+    where: {
+      MapDataId: {
+        in: mapDataIdArray,
+      },
+      victim_name: {
+        equals: name,
+        mode: "insensitive",
+      },
+    },
+  });
+}
+
+/**
+ * Returns all of the deaths for a specific player.
+ * This function is cached for performance.
+ *
+ * @param {number} scrimIds The IDs of the scrims the player participated in.
+ * @param {string} playerName The name of the player.
+ * @returns {Kill[]} The deaths for the specified player.
+ */
+export const getAllDeathsForPlayer = cache(getAllDeathsForPlayerFn);
+
 export type Winrate = { map: string; wins: number; date: Date }[];
 
 async function getAllMapWinratesForPlayerFn(scrimIds: number[], name: string) {
