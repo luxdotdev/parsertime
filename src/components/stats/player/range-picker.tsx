@@ -45,6 +45,7 @@ export function RangePicker({
   stats,
   kills,
   mapWinrates,
+  deaths,
 }: {
   user: User;
   data: Record<Timeframe, Scrim[]>;
@@ -52,6 +53,7 @@ export function RangePicker({
   stats: PlayerStatRows;
   kills: Kill[];
   mapWinrates: Winrate;
+  deaths: Kill[];
 }) {
   const [timeframe, setTimeframe] = useState<Timeframe>("one-week");
   const [date, setDate] = useState<DateRange | undefined>({
@@ -224,6 +226,7 @@ export function RangePicker({
         hero={hero}
         kills={kills}
         mapWinrates={mapWinrates}
+        deaths={deaths}
       />
     </main>
   );
