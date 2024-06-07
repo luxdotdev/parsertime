@@ -9,7 +9,13 @@ import {
   Radar,
   RadarChart,
   ResponsiveContainer,
+  Tooltip,
+  TooltipProps,
 } from "recharts";
+import {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 
 type Data = {
   method: string;
@@ -20,6 +26,28 @@ type Data = {
 type Props = {
   data: Kill[];
 };
+
+function CustomTooltip({
+  active,
+  payload,
+  label,
+}: TooltipProps<ValueType, NameType>) {
+  if (active && payload && payload.length) {
+    return (
+      <div className="z-50 overflow-hidden rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
+        <h3 className="text-base font-bold">{label}</h3>
+        <p className="text-sm">
+          <span className="text-red-500">
+            {format(payload[0].value as number)}
+          </span>{" "}
+          final blows
+        </p>
+      </div>
+    );
+  }
+
+  return null;
+}
 
 function formatMethod(method: string) {
   if (method === "0") return "Primary";
@@ -72,13 +100,15 @@ export function KillMethodChart({ data }: Props) {
               fill="#ef4444"
               fillOpacity={0.6}
             />
+            <Tooltip content={<CustomTooltip />} />
           </RadarChart>
         </ResponsiveContainer>
       </CardContent>
       <CardFooter>
         <p className="text-sm text-muted-foreground">
           Calculated from{" "}
-          <span className="text-foreground">{format(data.length)}</span> kills
+          <span className="text-foreground">{format(data.length)}</span> final
+          blows
         </p>
       </CardFooter>
     </>
