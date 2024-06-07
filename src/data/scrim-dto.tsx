@@ -3,7 +3,14 @@ import prisma from "@/lib/prisma";
 import { cache } from "react";
 import { PlayerStatRows } from "@/types/prisma";
 import { removeDuplicateRows } from "@/lib/utils";
-import { Kill, MatchStart, Prisma, RoundEnd, Scrim } from "@prisma/client";
+import {
+  Kill,
+  MatchStart,
+  ObjectiveCaptured,
+  Prisma,
+  RoundEnd,
+  Scrim,
+} from "@prisma/client";
 import { HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
 import { calculateWinner } from "@/lib/winrate";
 
@@ -222,45 +229,43 @@ async function getAllKillsForPlayerFn(scrimIds: number[], name: string) {
  */
 export const getAllKillsForPlayer = cache(getAllKillsForPlayerFn);
 
+export type Winrate = { map: string; wins: number; date: Date }[];
+
 async function getAllMapWinratesForPlayerFn(scrimIds: number[], name: string) {
   const mapDataIds = await prisma.scrim.findMany({
-    where: {
-      id: {
-        in: scrimIds,
-      },
-    },
-    select: {
-      maps: true,
-      date: true,
-    },
+    where: { id: { in: scrimIds } },
+    select: { maps: true, date: true, id: true },
   });
 
   const mapDataIdSet = new Set<number>();
+  const mapIdToDateMap = new Map<number, Date>();
   mapDataIds.forEach((scrim) => {
     scrim.maps.forEach((map) => {
       mapDataIdSet.add(map.id);
+      mapIdToDateMap.set(map.id, scrim.date);
     });
   });
-
   const mapDataIdArray = Array.from(mapDataIdSet);
 
-  const matchStarts = await prisma.matchStart.findMany({
-    where: {
-      MapDataId: {
-        in: mapDataIdArray,
-      },
-    },
-  });
+  const [matchStarts, allFinalRounds, captures, playerStats] =
+    await Promise.all([
+      prisma.matchStart.findMany({
+        where: { MapDataId: { in: mapDataIdArray } },
+      }),
+      prisma.roundEnd.findMany({
+        where: { MapDataId: { in: mapDataIdArray } },
+      }),
+      prisma.objectiveCaptured.findMany({
+        where: { MapDataId: { in: mapDataIdArray } },
+      }),
+      prisma.playerStat.findMany({
+        where: {
+          player_name: { equals: name, mode: "insensitive" },
+          MapDataId: { in: mapDataIdArray },
+        },
+      }),
+    ]);
 
-  const allFinalRounds = await prisma.roundEnd.findMany({
-    where: {
-      MapDataId: {
-        in: mapDataIdArray,
-      },
-    },
-  });
-
-  // For each map, get the final round by grouping by map ID and getting the max match time
   const finalRounds = allFinalRounds.reduce(
     (acc, round) => {
       if (
@@ -274,32 +279,30 @@ async function getAllMapWinratesForPlayerFn(scrimIds: number[], name: string) {
     {} as Record<number, RoundEnd>
   );
 
-  const captures = await prisma.objectiveCaptured.findMany({
-    where: {
-      MapDataId: {
-        in: mapDataIdArray,
-      },
-    },
+  const team1CapturesMap = new Map<number, ObjectiveCaptured[]>();
+  const team2CapturesMap = new Map<number, ObjectiveCaptured[]>();
+  captures.forEach((capture) => {
+    const match = matchStarts.find(
+      (match) => match.MapDataId === capture.MapDataId
+    );
+    if (match) {
+      if (capture.capturing_team === match.team_1_name) {
+        if (!team1CapturesMap.has(capture.MapDataId!)) {
+          team1CapturesMap.set(capture.MapDataId!, []);
+        }
+        team1CapturesMap.get(capture.MapDataId!)!.push(capture);
+      } else if (capture.capturing_team === match.team_2_name) {
+        if (!team2CapturesMap.has(capture.MapDataId!)) {
+          team2CapturesMap.set(capture.MapDataId!, []);
+        }
+        team2CapturesMap.get(capture.MapDataId!)!.push(capture);
+      }
+    }
   });
 
-  const team1Captures = captures.filter(
-    (capture) =>
-      capture.capturing_team ===
-      matchStarts.find((match) => match.MapDataId === capture.MapDataId)!
-        .team_1_name
-  );
+  const wins = [] as { map: string; wins: number; date: Date }[];
 
-  const team2Captures = captures.filter(
-    (capture) =>
-      capture.capturing_team ===
-      matchStarts.find((match) => match.MapDataId === capture.MapDataId)!
-        .team_2_name
-  );
-
-  // const winrates = [] as { map: string; wins: number }[];
-
-  const winrates = mapDataIdArray.forEach(async (mapId) => {
-    const wins = [] as { map: string; wins: number }[];
+  for (const mapId of mapDataIdArray) {
     const matchDetails =
       matchStarts.find((match) => match.MapDataId === mapId) ||
       ({} as MatchStart);
@@ -307,47 +310,21 @@ async function getAllMapWinratesForPlayerFn(scrimIds: number[], name: string) {
     const winner = calculateWinner({
       matchDetails,
       finalRound: finalRounds[mapId],
-      team1Captures: team1Captures.filter(
-        (capture) => capture.MapDataId === mapId
-      ),
-      team2Captures: team2Captures.filter(
-        (capture) => capture.MapDataId === mapId
-      ),
+      team1Captures: team1CapturesMap.get(mapId) || [],
+      team2Captures: team2CapturesMap.get(mapId) || [],
     });
 
-    const playerStat = await prisma.playerStat.findFirst({
-      where: {
-        player_name: {
-          equals: name,
-          mode: "insensitive",
-        },
-        MapDataId: mapId,
-      },
-    });
-
+    const playerStat = playerStats.find((stat) => stat.MapDataId === mapId);
     const playerTeam = playerStat?.player_team;
 
-    if (winner === playerTeam) {
-      wins.push({ map: matchDetails.map_name, wins: 1 });
-    } else if (winner !== "N/A") {
-      wins.push({ map: matchDetails.map_name, wins: 0 });
-    } else if (winner === "N/A") {
-      wins.push({ map: matchDetails.map_name, wins: 0 });
-    }
+    wins.push({
+      map: matchDetails.map_name,
+      wins: winner === playerTeam ? 1 : 0,
+      date: mapIdToDateMap.get(mapId) || new Date(),
+    });
+  }
 
-    return wins;
-  });
-
-  // take all map names and add them to the winrates array
-  const winratesMap = {} as Record<string, number>;
-
-  winrates.forEach((map) => {
-    winratesMap[map.map] = map.wins;
-  });
-
-  console.log(winratesMap);
-
-  return winratesMap;
+  return wins;
 }
 
 /**
