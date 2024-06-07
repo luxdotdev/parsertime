@@ -33,6 +33,7 @@ import {
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { RolePieChart } from "@/components/stats/player/charts/role-pie-chart";
 import { KillMethodChart } from "@/components/stats/player/charts/kill-methods";
+import { Winrate } from "@/data/scrim-dto";
 
 function ChartTooltip({ children }: { children: React.ReactNode }) {
   return (
@@ -55,6 +56,7 @@ export function Statistics({
   stats,
   hero,
   kills,
+  mapWinrates,
 }: {
   timeframe: Timeframe;
   date: DateRange | undefined;
@@ -63,10 +65,12 @@ export function Statistics({
   stats: PlayerStatRows;
   hero: HeroName | "all";
   kills: Kill[];
+  mapWinrates: Winrate;
 }) {
   const [customScrims, setCustomScrims] = useState<Scrim[]>([]);
   const [filteredStats, setFilteredStats] = useState<PlayerStatRows>([]);
   const [filteredKills, setFilteredKills] = useState<Kill[]>([]);
+  const [filteredWins, setFilteredWins] = useState<Winrate>([]);
 
   useEffect(() => {
     if (timeframe === "custom") {
@@ -189,6 +193,21 @@ export function Statistics({
       })
     );
   }, [timeframe, kills, scrims, customScrims]);
+
+  useEffect(() => {
+    if (timeframe === "all-time") {
+      setFilteredWins(mapWinrates);
+    } else {
+      setFilteredWins(
+        mapWinrates.filter((win) => {
+          return (
+            win.date >= (date?.from || new Date()) &&
+            win.date <= (date?.to || new Date())
+          );
+        })
+      );
+    }
+  }, [mapWinrates, date, timeframe]);
 
   const top3FinalBlows = filteredStats
     .filter((stat) => stat.final_blows > 0)
@@ -505,6 +524,16 @@ export function Statistics({
           <CardTitle>Final Blows By Method</CardTitle>
         </CardHeader>
         <KillMethodChart data={filteredKills} />
+      </Card>
+      <Card className="col-span-3">
+        <CardHeader>
+          <CardTitle>Map Winrates</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {JSON.stringify(filteredWins)}
+          {date?.from?.toDateString()}
+          {date?.to?.toDateString()}
+        </CardContent>
       </Card>
     </section>
   );
