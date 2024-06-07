@@ -109,6 +109,10 @@ export default async function PlayerDashboardPage({ params }: Props) {
             >
               &larr; Back to default overview
             </Link>
+            {" | "}
+            <Link href={`/stats/${params.playerId}`}>
+              View aggregated stats &rarr;
+            </Link>
           </h4>
         </div>
         <div className="flex items-center justify-between space-y-2">
