@@ -48,7 +48,7 @@ function CustomTooltip({
                   : "text-green-500"
             )}
           >
-            {(payload[0].value as number).toFixed(2)}
+            {(payload[0].value as number).toFixed(2)}%
           </span>
         </p>
       </div>
