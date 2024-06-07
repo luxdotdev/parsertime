@@ -35,6 +35,7 @@ import { RolePieChart } from "@/components/stats/player/charts/role-pie-chart";
 import { KillMethodChart } from "@/components/stats/player/charts/kill-methods";
 import { Winrate } from "@/data/scrim-dto";
 import { MapWinsChart } from "@/components/stats/player/charts/map-wins-chart";
+import { WinsPerMapTypeChart } from "@/components/stats/player/charts/wins-per-map-type";
 
 function ChartTooltip({ children }: { children: React.ReactNode }) {
   return (
@@ -526,11 +527,17 @@ export function Statistics({
         </CardHeader>
         <KillMethodChart data={filteredKills} />
       </Card>
-      <Card className="col-span-full">
+      <Card className="col-span-full xl:col-span-3">
         <CardHeader>
           <CardTitle>Map Winrates</CardTitle>
         </CardHeader>
         <MapWinsChart data={filteredWins} />
+      </Card>
+      <Card className="col-span-2 xl:col-span-1">
+        <CardHeader>
+          <CardTitle>Winrate By Map Type</CardTitle>
+        </CardHeader>
+        <WinsPerMapTypeChart data={filteredWins} />
       </Card>
     </section>
   );
