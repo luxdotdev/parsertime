@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Winrate } from "@/data/scrim-dto";
 import { cn } from "@/lib/utils";
 import { HeroName, roleHeroMapping } from "@/types/heroes";
 import { PlayerStatRows } from "@/types/prisma";
@@ -43,12 +44,14 @@ export function RangePicker({
   name,
   stats,
   kills,
+  mapWinrates,
 }: {
   user: User;
   data: Record<Timeframe, Scrim[]>;
   name: string;
   stats: PlayerStatRows;
   kills: Kill[];
+  mapWinrates: Winrate;
 }) {
   const [timeframe, setTimeframe] = useState<Timeframe>("one-week");
   const [date, setDate] = useState<DateRange | undefined>({
@@ -220,6 +223,7 @@ export function RangePicker({
         stats={stats}
         hero={hero}
         kills={kills}
+        mapWinrates={mapWinrates}
       />
     </main>
   );
