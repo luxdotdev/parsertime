@@ -338,7 +338,8 @@ export function Statistics({
             </TableHeader>
             <tbody>
               {top3MostPlayedHeroesArray.map(([hero, games], idx) => (
-                <TableRow key={hero}>
+                // eslint-disable-next-line react/no-array-index-key
+                <TableRow key={`${hero}-${games}-${idx}`}>
                   <TableCell>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -632,7 +633,8 @@ export function Statistics({
             </TableHeader>
             <tbody>
               {top3MostDiedToHeroesArray.map(([hero, deaths], idx) => (
-                <TableRow key={hero}>
+                // eslint-disable-next-line react/no-array-index-key
+                <TableRow key={`${hero}-${deaths}-${idx}`}>
                   <TableCell>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
