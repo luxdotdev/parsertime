@@ -3,6 +3,7 @@
 import { Statistics } from "@/components/stats/player/statistics";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Link } from "@/components/ui/link";
 import {
   Popover,
   PopoverContent,
@@ -21,7 +22,7 @@ import { Winrate } from "@/data/scrim-dto";
 import { cn } from "@/lib/utils";
 import { HeroName, roleHeroMapping } from "@/types/heroes";
 import { PlayerStatRows } from "@/types/prisma";
-import { Kill, Scrim, User } from "@prisma/client";
+import { Kill, Scrim } from "@prisma/client";
 import { SelectGroup } from "@radix-ui/react-select";
 import { addMonths, addWeeks, addYears, format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -39,17 +40,15 @@ export type Timeframe =
   | "custom";
 
 export function RangePicker({
-  user,
+  permissions,
   data,
-  name,
   stats,
   kills,
   mapWinrates,
   deaths,
 }: {
-  user: User;
+  permissions: { [key: string]: boolean };
   data: Record<Timeframe, Scrim[]>;
-  name: string;
   stats: PlayerStatRows;
   kills: Kill[];
   mapWinrates: Winrate;
@@ -90,46 +89,67 @@ export function RangePicker({
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Select a timeframe</SelectLabel>
-              <SelectItem value="one-week">Last Week</SelectItem>
-              <SelectItem value="two-weeks">Last 2 Weeks</SelectItem>
-              <SelectItem value="one-month">Last Month</SelectItem>
+              <SelectItem
+                value="one-week"
+                disabled={!permissions["stats-timeframe-1"]}
+              >
+                Last Week
+              </SelectItem>
+              <SelectItem
+                value="two-weeks"
+                disabled={!permissions["stats-timeframe-1"]}
+              >
+                Last 2 Weeks
+              </SelectItem>
+              <SelectItem
+                value="one-month"
+                disabled={!permissions["stats-timeframe-1"]}
+              >
+                Last Month
+              </SelectItem>
               <SelectItem
                 value="three-months"
-                disabled={user.billingPlan === "FREE"}
+                disabled={!permissions["stats-timeframe-2"]}
               >
                 Last 3 Months
               </SelectItem>
               <SelectItem
                 value="six-months"
-                disabled={user.billingPlan === "FREE"}
+                disabled={!permissions["stats-timeframe-2"]}
               >
                 Last 6 Months
               </SelectItem>
               <SelectItem
                 value="one-year"
-                disabled={
-                  user.billingPlan === "FREE" || user.billingPlan === "BASIC"
-                }
+                disabled={!permissions["stats-timeframe-3"]}
               >
                 Last Year
               </SelectItem>
               <SelectItem
                 value="all-time"
-                disabled={
-                  user.billingPlan === "FREE" || user.billingPlan === "BASIC"
-                }
+                disabled={!permissions["stats-timeframe-3"]}
               >
                 All Time
               </SelectItem>
               <SelectItem
                 value="custom"
-                disabled={
-                  user.billingPlan === "FREE" || user.billingPlan === "BASIC"
-                }
+                disabled={!permissions["stats-timeframe-3"]}
               >
                 Custom
               </SelectItem>
             </SelectGroup>
+            {!permissions["stats-timeframe-3"] && (
+              <>
+                <SelectSeparator />
+                <SelectGroup>
+                  <SelectLabel>
+                    <Link href="/pricing" external>
+                      Upgrade to view more timeframes
+                    </Link>
+                  </SelectLabel>
+                </SelectGroup>
+              </>
+            )}
           </SelectContent>
         </Select>
 
@@ -220,7 +240,6 @@ export function RangePicker({
       <Statistics
         timeframe={timeframe}
         date={date}
-        user={user}
         scrims={data}
         stats={stats}
         hero={hero}
