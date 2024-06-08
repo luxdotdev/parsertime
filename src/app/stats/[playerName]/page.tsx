@@ -9,6 +9,7 @@ import {
 } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
+import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { Scrim } from "@prisma/client";
 import { notFound } from "next/navigation";
@@ -22,6 +23,16 @@ export default async function PlayerStats({ params }: Props) {
 
   const session = await auth();
   const user = await getUser(session?.user.email);
+
+  const timeframe1 = await new Permission("stats-timeframe-1").check();
+  const timeframe2 = await new Permission("stats-timeframe-2").check();
+  const timeframe3 = await new Permission("stats-timeframe-3").check();
+
+  const permissions = {
+    "stats-timeframe-1": timeframe1,
+    "stats-timeframe-2": timeframe2,
+    "stats-timeframe-3": timeframe3,
+  };
 
   if (!user) {
     notFound();
@@ -143,9 +154,8 @@ export default async function PlayerStats({ params }: Props) {
       </div>
 
       <RangePicker
-        user={user}
+        permissions={permissions}
         data={data}
-        name={name}
         stats={allPlayerStats}
         kills={allPlayerKills}
         mapWinrates={mapWinrates}
