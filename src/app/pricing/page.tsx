@@ -39,7 +39,7 @@ const sections = [
     ],
   },
   {
-    name: "Statistics",
+    name: "Scrim Statistics",
     features: [
       {
         name: "Advanced Analytics",
@@ -47,14 +47,54 @@ const sections = [
         comingSoon: false,
       },
       {
-        name: "Player Analytics by Time",
+        name: "Custom Targets",
+        tiers: { Premium: true },
+        comingSoon: true,
+      },
+    ],
+  },
+  {
+    name: "Player Statistics",
+    features: [
+      {
+        name: "Last Week",
+        tiers: { Free: true, Basic: true, Premium: true },
+        comingSoon: false,
+      },
+      {
+        name: "Last 2 Weeks",
+        tiers: { Free: true, Basic: true, Premium: true },
+        comingSoon: false,
+      },
+      {
+        name: "Last Month",
+        tiers: { Free: true, Basic: true, Premium: true },
+        comingSoon: false,
+      },
+      {
+        name: "Last 3 Months",
         tiers: { Basic: true, Premium: true },
         comingSoon: false,
       },
       {
-        name: "Custom Targets",
+        name: "Last 6 Months",
+        tiers: { Basic: true, Premium: true },
+        comingSoon: false,
+      },
+      {
+        name: "Last Year",
         tiers: { Premium: true },
-        comingSoon: true,
+        comingSoon: false,
+      },
+      {
+        name: "All Time",
+        tiers: { Premium: true },
+        comingSoon: false,
+      },
+      {
+        name: "Custom Timeframe",
+        tiers: { Premium: true },
+        comingSoon: false,
       },
     ],
   },
