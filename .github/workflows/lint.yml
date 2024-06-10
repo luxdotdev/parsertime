@@ -1,0 +1,30 @@
+name: ESLint
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+      - run: pnpm install
+      - run: pnpm lint:json
+        continue-on-error: true
+      - uses: ldiego73/eslint-report-action@v1.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          report: reports/lint.json
