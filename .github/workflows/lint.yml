@@ -22,3 +22,9 @@ jobs:
           cache: "pnpm"
       - run: pnpm install
       - run: pnpm lint
+        continue-on-error: true
+      - uses: ldiego73/eslint-report-action@v1.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          report: reports/lint.json
+          
