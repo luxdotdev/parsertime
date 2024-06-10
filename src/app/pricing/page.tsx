@@ -39,7 +39,7 @@ const sections = [
     ],
   },
   {
-    name: "Statistics",
+    name: "Scrim Statistics",
     features: [
       {
         name: "Advanced Analytics",
@@ -47,14 +47,54 @@ const sections = [
         comingSoon: false,
       },
       {
-        name: "Player Analytics by Time",
+        name: "Custom Targets",
+        tiers: { Premium: true },
+        comingSoon: true,
+      },
+    ],
+  },
+  {
+    name: "Player Statistics",
+    features: [
+      {
+        name: "Last Week",
+        tiers: { Free: true, Basic: true, Premium: true },
+        comingSoon: false,
+      },
+      {
+        name: "Last 2 Weeks",
+        tiers: { Free: true, Basic: true, Premium: true },
+        comingSoon: false,
+      },
+      {
+        name: "Last Month",
+        tiers: { Free: true, Basic: true, Premium: true },
+        comingSoon: false,
+      },
+      {
+        name: "Last 3 Months",
         tiers: { Basic: true, Premium: true },
         comingSoon: false,
       },
       {
-        name: "Custom Targets",
+        name: "Last 6 Months",
+        tiers: { Basic: true, Premium: true },
+        comingSoon: false,
+      },
+      {
+        name: "Last Year",
         tiers: { Premium: true },
-        comingSoon: true,
+        comingSoon: false,
+      },
+      {
+        name: "All Time",
+        tiers: { Premium: true },
+        comingSoon: false,
+      },
+      {
+        name: "Custom Timeframe",
+        tiers: { Premium: true },
+        comingSoon: false,
       },
     ],
   },
@@ -82,6 +122,57 @@ const sections = [
         comingSoon: false,
       },
     ],
+  },
+];
+
+const faqs = [
+  {
+    question: "Do you offer discounts for collegiate teams?",
+    answer:
+      "Yes! Please reach out to our support team and we'll be happy to help.",
+  },
+  {
+    question: "Do you offer discounts for Calling All Heroes teams?",
+    answer:
+      "Yes! We want to support the CAH community as much as possible. Please reach out to our support team and we'll be happy to discuss a solution.",
+  },
+  {
+    question: "How can I manage my subscription?",
+    answer: (
+      <p>
+        You can manage your subscription{" "}
+        <Link
+          href="/settings"
+          className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
+          target="_blank"
+        >
+          here
+        </Link>
+        . If you have any issues, please reach out to our support team.
+      </p>
+    ),
+  },
+  {
+    question: "Can I cancel my subscription at any time?",
+    answer:
+      "Yes, you can cancel your subscription at any time. Your subscription will remain active until the end of the billing period.",
+  },
+  {
+    question: "Do you offer a free trial?",
+    answer: (
+      <p>
+        We do not currently offer a free trial through our website. If you would
+        like to try out our service, please reach out to our{" "}
+        <Link
+          href="/contact"
+          className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
+          target="_blank"
+        >
+          support team
+        </Link>
+        .
+      </p>
+    ),
   },
 ];
 
@@ -413,6 +504,42 @@ export default async function PricingPage() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="bg-white dark:bg-black">
+        <div className="mx-auto max-w-7xl px-6 py-24 sm:pt-32 lg:px-8 lg:py-40">
+          <div className="lg:grid lg:grid-cols-12 lg:gap-8">
+            <div className="lg:col-span-5">
+              <h2 className="text-2xl font-bold leading-10 tracking-tight text-gray-900 dark:text-white">
+                Frequently asked questions
+              </h2>
+              <p className="mt-4 text-base leading-7 text-gray-600 dark:text-gray-300">
+                Can&apos;t find the answer you&apos;re looking for? Reach out to
+                our{" "}
+                <Link
+                  href="/contact"
+                  className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
+                >
+                  support
+                </Link>{" "}
+                team.
+              </p>
+            </div>
+            <div className="mt-10 lg:col-span-7 lg:mt-0">
+              <dl className="space-y-10">
+                {faqs.map((faq) => (
+                  <div key={faq.question}>
+                    <dt className="text-base font-semibold leading-7 text-gray-900 dark:text-white">
+                      {faq.question}
+                    </dt>
+                    <dd className="mt-2 text-base leading-7 text-gray-600 dark:text-gray-300">
+                      {faq.answer}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
             </div>
           </div>
         </div>

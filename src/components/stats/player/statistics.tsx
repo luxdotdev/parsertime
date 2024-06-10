@@ -62,7 +62,6 @@ function ChartTooltip({ children }: { children: React.ReactNode }) {
 export function Statistics({
   timeframe,
   date,
-  user,
   scrims,
   stats,
   hero,
@@ -72,7 +71,6 @@ export function Statistics({
 }: {
   timeframe: Timeframe;
   date: DateRange | undefined;
-  user: User;
   scrims: Record<Timeframe, Scrim[]>;
   stats: PlayerStatRows;
   hero: HeroName | "all";

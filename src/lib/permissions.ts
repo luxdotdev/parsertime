@@ -3,7 +3,13 @@ import { auth } from "@/lib/auth";
 import { $Enums, User } from "@prisma/client";
 import { get } from "@vercel/edge-config";
 
-const FEATURES = ["create-team", "create-scrim"] as const;
+const FEATURES = [
+  "create-team",
+  "create-scrim",
+  "stats-timeframe-1",
+  "stats-timeframe-2",
+  "stats-timeframe-3",
+] as const;
 
 type Feature = (typeof FEATURES)[number];
 
