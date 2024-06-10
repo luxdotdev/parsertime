@@ -9,6 +9,7 @@
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next lint",
+    "lint:json": "next lint --format=json --output-file=reports/lint.json",
     "test": "vitest",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit"
