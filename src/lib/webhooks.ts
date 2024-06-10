@@ -53,6 +53,34 @@ export function newUserWebhookConstructor(user: User): DiscordWebhook {
   };
 }
 
+/**
+ * Construct a delete user webhook.
+ *
+ * @param {User} user - The user that was created.
+ * @returns {DiscordWebhook} The constructed webhook.
+ */
+export function deleteUserWebhookConstructor(user: User): DiscordWebhook {
+  return {
+    username: "Parsertime",
+    avatar_url: "https://parsertime.app/icon.png",
+    embeds: [
+      {
+        title: "User Deleted",
+        description: `User deleted: ${user.name} (${user.email})`,
+        timestamp: new Date(),
+        color: 0x0ea5e9,
+        thumbnail: {
+          url: user.image ?? `https://avatar.vercel.sh/${user.email}.png`,
+        },
+        footer: {
+          text: "Parsertime",
+          icon_url: "https://parsertime.app/icon.png",
+        },
+      },
+    ],
+  };
+}
+
 export function newBugReportWebhookConstructor(
   title: string,
   description: string,
