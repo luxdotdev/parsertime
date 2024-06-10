@@ -3,7 +3,7 @@ name: ESLint
 on: [push, pull_request]
 
 jobs:
-  typecheck-and-lint:
+  lint:
     runs-on: ubuntu-latest
 
     strategy:
@@ -22,4 +22,3 @@ jobs:
           cache: "pnpm"
       - run: pnpm install
       - run: pnpm lint
-      
