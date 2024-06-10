@@ -21,10 +21,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "pnpm"
       - run: pnpm install
-      - run: pnpm lint
+      - run: pnpm lint:json
         continue-on-error: true
       - uses: ldiego73/eslint-report-action@v1.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           report: reports/lint.json
-          
