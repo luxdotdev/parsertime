@@ -8,6 +8,7 @@ import Link from "next/link";
 import { getCustomerPortalUrl } from "@/lib/stripe";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
 import { getUser } from "@/data/user-dto";
+import { DangerZone } from "@/components/settings/danger-zone";
 
 export default async function SettingsProfilePage() {
   const session = await auth();
@@ -47,6 +48,8 @@ export default async function SettingsProfilePage() {
         )}
       </Link>
       <ProfileForm user={user} />
+      <div className="p-1" />
+      <DangerZone url={billingPortalUrl} />
     </div>
   );
 }
