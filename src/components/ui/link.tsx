@@ -8,11 +8,16 @@ type LinkProps = React.ComponentProps<typeof NextLink> & {
 
 export function Link(props: LinkProps) {
   return (
-    <NextLink {...props} target={props.external ? "_blank" : undefined}>
-      <span className={cn(props.className, props.external && "underline")}>
+    <NextLink {...props} target={props.external ? "_blank" : props.target}>
+      <span className={cn(props.external && "underline", props.className)}>
         {props.children}
-      </span>{" "}
-      {props.external && <ExternalLinkIcon className="inline h-4 w-4" />}
+      </span>
+      {props.external && (
+        <>
+          {" "}
+          <ExternalLinkIcon className="inline h-4 w-4" />
+        </>
+      )}
     </NextLink>
   );
 }
