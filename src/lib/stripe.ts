@@ -61,6 +61,7 @@ export async function createCheckout(
         userId: user.id,
       },
     },
+    allow_promotion_codes: true,
   });
 
   if (!checkoutSession.url) {
