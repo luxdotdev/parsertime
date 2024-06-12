@@ -12,6 +12,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
+import { Link } from "@/components/ui/link";
 
 const formSchema = z.object({
   username: z.string().min(3).max(20),
@@ -58,6 +59,13 @@ export function Searchbar() {
         </FormDescription>
         <FormMessage />
       </form>
+
+      <div className="p-1" />
+
+      <Link href="/stats/hero" className="text-sm text-foreground">
+        Click here to view hero stats &rarr;
+      </Link>
+
       <Separator />
     </Form>
   );

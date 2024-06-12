@@ -108,7 +108,8 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
       pv: (item.pv / toMins(item.time)) * 10,
     }))
     .sort((a, b) => new Date(a.name).getTime() - new Date(b.name).getTime())
-    .filter((item) => !isNaN(item.pv));
+    .filter((item) => !isNaN(item.pv))
+    .filter((item) => isFinite(item.pv));
 
   const avg =
     processedData.reduce((acc, curr) => acc + curr.pv, 0) /
