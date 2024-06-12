@@ -84,10 +84,10 @@ export function KillMethodChart({ data }: Props) {
             width={500}
             height={250}
             margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 5,
+              top: 10,
+              right: 40,
+              left: 30,
+              bottom: 10,
             }}
             data={processedData}
           >
