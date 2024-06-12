@@ -12,6 +12,7 @@
     "lint:json": "next lint --format=json --output-file=reports/lint.json",
     "test": "vitest",
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
