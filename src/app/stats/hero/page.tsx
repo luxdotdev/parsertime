@@ -17,8 +17,8 @@ export default function HeroSelect() {
         <h2 className="text-3xl font-bold tracking-tight">Hero Stats</h2>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
-        <Card className="col-span-2">
+      <div className="grid grid-cols-6 gap-4 md:grid-cols-3 xl:grid-cols-6">
+        <Card className="col-span-full xl:col-span-2">
           <CardHeader>
             <CardTitle>Tank Heroes</CardTitle>
           </CardHeader>
@@ -45,7 +45,7 @@ export default function HeroSelect() {
             </div>
           </CardContent>
         </Card>
-        <Card className="col-span-2">
+        <Card className="col-span-full xl:col-span-2">
           <CardHeader>
             <CardTitle>Damage Heroes</CardTitle>
           </CardHeader>
@@ -72,7 +72,7 @@ export default function HeroSelect() {
             </div>
           </CardContent>
         </Card>
-        <Card className="col-span-2">
+        <Card className="col-span-full xl:col-span-2">
           <CardHeader>
             <CardTitle>Support Heroes</CardTitle>
           </CardHeader>
