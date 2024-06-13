@@ -151,28 +151,33 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
         </ResponsiveContainer>
       </CardContent>
       <CardFooter>
-        <div className="space-y-1 text-base">
+        <div className="space-y-1">
           <div className="inline-flex items-center gap-1 text-foreground">
-            Trending by{" "}
-            <span
-              className={cn(
-                better === "higher" && percentageChange.includes("+")
-                  ? "text-green-500"
-                  : better === "higher" && percentageChange.includes("-")
-                    ? "text-red-500"
-                    : better === "lower" && percentageChange.includes("+")
+            <p>
+              Trending by{" "}
+              <span
+                className={cn(
+                  better === "higher" && percentageChange.includes("+")
+                    ? "text-green-500"
+                    : better === "higher" && percentageChange.includes("-")
                       ? "text-red-500"
-                      : "text-green-500"
-              )}
-            >
-              {percentageChange}
-            </span>{" "}
-            in the last {scrimData.length} scrims
-            {better === "higher" && percentageChange.includes("+") ? (
-              <TrendingUpIcon size={16} />
-            ) : (
-              <TrendingDownIcon size={16} />
-            )}
+                      : better === "lower" && percentageChange.includes("+")
+                        ? "text-red-500"
+                        : "text-green-500",
+                  "inline-flex items-center gap-1"
+                )}
+              >
+                {percentageChange}
+              </span>{" "}
+              in the last {scrimData.length} scrims{" "}
+              <span className="inline-flex">
+                {better === "higher" && percentageChange.includes("+") ? (
+                  <TrendingUpIcon size={16} className="translate-y-[3px]" />
+                ) : (
+                  <TrendingDownIcon size={16} className="translate-y-[3px]" />
+                )}
+              </span>
+            </p>
           </div>
           <p className="text-sm text-muted-foreground">
             Average:{" "}
