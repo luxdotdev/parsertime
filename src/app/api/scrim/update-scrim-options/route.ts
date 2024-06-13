@@ -9,6 +9,7 @@ type UpdateScrimBody = {
   name: string;
   teamId: string;
   scrimId: number;
+  date: string;
   guestMode: boolean;
 };
 
@@ -63,6 +64,7 @@ export async function POST(req: NextRequest) {
     data: {
       name: body.name,
       teamId: parseInt(body.teamId),
+      date: new Date(body.date),
       guestMode: body.guestMode,
     },
   });

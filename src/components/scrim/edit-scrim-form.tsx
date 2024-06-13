@@ -48,6 +48,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { CalendarIcon } from "@radix-ui/react-icons";
+import { Calendar } from "../ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
 const profileFormSchema = z.object({
   name: z
@@ -59,6 +68,7 @@ const profileFormSchema = z.object({
       message: "Name must not be longer than 30 characters.",
     }),
   teamId: z.string(),
+  date: z.date(),
   guestMode: z.boolean(),
 });
 
@@ -81,6 +91,7 @@ export function EditScrimForm({
     defaultValues: {
       name: scrim.name ?? "",
       teamId: (scrim.teamId ?? 0).toString(),
+      date: scrim.date,
       guestMode: scrim.guestMode,
     },
     mode: "onChange",
@@ -91,6 +102,7 @@ export function EditScrimForm({
     const reqBody = {
       name: data.name.trim(),
       teamId: data.teamId,
+      date: data.date.toISOString(),
       scrimId: scrim.id,
       guestMode: data.guestMode,
     };
@@ -205,6 +217,50 @@ export function EditScrimForm({
                 <FormDescription>
                   This is the team that will be associated with this scrim. You
                   can assign scrims to teams that you manage or own.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="date"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Scrim Date</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "max-w-lg pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value ? (
+                          format(new Date(field.value), "PPP")
+                        ) : (
+                          <span>Edit date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) =>
+                        date > new Date() || date < new Date("2016-01-01")
+                      }
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormDescription>
+                  The date when the scrim took place.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
