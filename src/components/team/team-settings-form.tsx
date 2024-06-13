@@ -60,7 +60,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
   async function onSubmit(data: ProfileFormValues) {
     const reqBody = {
       name: data.name,
-      teamId: team.id
+      teamId: team.id,
     };
 
     const res = await fetch("/api/team/update-name", {
