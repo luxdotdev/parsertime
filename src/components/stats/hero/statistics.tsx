@@ -446,14 +446,7 @@ export function Statistics({
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Link
-                                href={`/${
-                                  scrims[timeframe].find(
-                                    (scrim) => scrim.id === scrimId
-                                  )?.teamId
-                                }/scrim/${scrimId}/map/${mapId}`}
-                                target="_blank"
-                              >
+                              <Link href={`/stats/${player}`} target="_blank">
                                 {player}
                               </Link>
                             </TooltipTrigger>
