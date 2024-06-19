@@ -105,7 +105,15 @@ export default async function PlayerStats({ params }: Props) {
     custom: [],
   };
 
-  const allScrimIds = allScrims.map((scrim) => scrim.id);
+  const permitted = timeframe3
+    ? "all-time"
+    : timeframe2
+      ? "six-months"
+      : "one-month";
+
+  const permittedScrimIds = data[permitted].map((scrim) => scrim.id);
+
+  console.log(permitted, permittedScrimIds);
 
   let allPlayerStats;
   let allPlayerKills;
@@ -113,10 +121,10 @@ export default async function PlayerStats({ params }: Props) {
   let allPlayerDeaths;
 
   try {
-    allPlayerStats = await getAllStatsForPlayer(allScrimIds, name);
-    allPlayerKills = await getAllKillsForPlayer(allScrimIds, name);
-    mapWinrates = await getAllMapWinratesForPlayer(allScrimIds, name);
-    allPlayerDeaths = await getAllDeathsForPlayer(allScrimIds, name);
+    allPlayerStats = await getAllStatsForPlayer(permittedScrimIds, name);
+    allPlayerKills = await getAllKillsForPlayer(permittedScrimIds, name);
+    mapWinrates = await getAllMapWinratesForPlayer(permittedScrimIds, name);
+    allPlayerDeaths = await getAllDeathsForPlayer(permittedScrimIds, name);
   } catch (e) {
     return (
       <div className="flex-1 space-y-4 p-8 pt-6">
