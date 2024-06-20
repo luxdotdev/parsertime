@@ -1,3 +1,4 @@
+import { getUser } from "@/data/user-dto";
 import {
   newBugReportWebhookConstructor,
   sendDiscordWebhook,
@@ -14,11 +15,14 @@ export async function POST(req: NextRequest) {
     url: string;
   };
 
+  const user = await getUser(body.email);
+
   const wh = newBugReportWebhookConstructor(
     body.title,
     body.description,
     body.email,
     body.url,
+    user?.billingPlan ?? "N/A",
     ua.ua,
     ua.browser,
     ua.os,
