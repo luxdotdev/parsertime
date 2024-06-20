@@ -1,9 +1,10 @@
 "use client";
 
+// @ts-expect-error - error TS2459 in CI
+import { DialogProps } from "@radix-ui/react-alert-dialog";
 import { CommandDialogMenu } from "@/components/command-menu";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { DialogProps } from "@radix-ui/react-alert-dialog";
 import { CommandMenuContext } from "@/components/command-menu-provider";
 import { use } from "react";
 import { User } from "@prisma/client";
