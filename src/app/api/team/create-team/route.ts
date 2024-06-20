@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       if (numberOfTeams >= 2) {
         return new Response(
           "You have hit the limit of teams that your account can create.  Please upgrade your plan or contact support.",
-          { status: 401 }
+          { status: 403 }
         );
       }
       break;
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       if (numberOfTeams >= 5) {
         return new Response(
           "You have hit the limit of teams that your account can create.  Please upgrade your plan or contact support.",
-          { status: 401 }
+          { status: 403 }
         );
       }
       break;
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
       if (numberOfTeams >= 10) {
         return new Response(
           "You have hit the limit of teams that your account can create.  Please upgrade your plan or contact support.",
-          { status: 401 }
+          { status: 403 }
         );
       }
       break;
