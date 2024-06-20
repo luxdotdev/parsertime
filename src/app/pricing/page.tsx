@@ -6,6 +6,7 @@ import { toTitleCase } from "@/lib/utils";
 import { CheckIcon, MinusIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import React, { Fragment } from "react";
+import Image from "next/image";
 
 const sections = [
   {
@@ -28,21 +29,50 @@ const sections = [
       },
       {
         name: "Create Teams",
-        tiers: { Basic: true, Premium: true },
+        tiers: {
+          Free: "Up to 2 teams",
+          Basic: "Up to 5 teams",
+          Premium: "Up to 10 teams",
+        },
         comingSoon: false,
       },
       {
         name: "Team Members",
-        tiers: { Basic: "Up to 5 users", Premium: "Up to 15 users" },
+        tiers: { Basic: "Up to 10 users", Premium: "Up to 20 users" },
+        comingSoon: false,
+      },
+      {
+        name: "Early Access to New Features",
+        tiers: { Premium: true },
         comingSoon: false,
       },
     ],
   },
   {
-    name: "Scrim Statistics",
+    name: "Map Statistics",
     features: [
       {
         name: "Advanced Analytics",
+        tiers: { Free: true, Basic: true, Premium: true },
+        comingSoon: false,
+      },
+      {
+        name: "Map Killfeeds",
+        tiers: { Free: true, Basic: true, Premium: true },
+        comingSoon: false,
+      },
+      {
+        name: "Custom Charts",
+        tiers: { Free: true, Basic: true, Premium: true },
+        comingSoon: false,
+      },
+      {
+        name: "Map Events",
+        tiers: { Free: true, Basic: true, Premium: true },
+        comingSoon: false,
+      },
+      {
+        name: "Player Comparison",
         tiers: { Free: true, Basic: true, Premium: true },
         comingSoon: false,
       },
@@ -235,24 +265,7 @@ export default async function PricingPage() {
   ];
 
   return (
-    <>
-      <div className="bg-white px-6 py-32 dark:bg-black lg:px-8">
-        <div className="mx-auto max-w-3xl text-base leading-7 text-gray-700 dark:text-gray-200">
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-200 sm:text-4xl">
-            Why Pricing?
-          </h1>
-          <p className="mt-6 text-xl leading-8">
-            We want to provide a service to the Overwatch community that is
-            affordable and accessible to everyone. Our service does cost money
-            to run, so we need to charge for it for the sake of longevity of our
-            website. Our goal is to ensure that our pricing, when released, will
-            be fair and we are willing to work with you if you have any
-            concerns. Below is a preview of what our pricing will look like.
-            Please note that this is subject to change entirely and is far from
-            being considered final.
-          </p>
-        </div>
-      </div>
+    <main className="bg-white dark:bg-black">
       <div className="bg-white py-24 dark:bg-black sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
@@ -508,6 +521,108 @@ export default async function PricingPage() {
           </div>
         </div>
       </div>
+
+      <div className="mx-auto mt-8 max-w-7xl px-6 sm:mt-16 lg:px-8">
+        <div className="mx-auto mt-10 grid max-w-lg grid-cols-4 items-center gap-x-8 gap-y-10 sm:max-w-xl sm:grid-cols-6 sm:gap-x-10 lg:mx-0 lg:max-w-none lg:grid-cols-5">
+          <Image
+            className="col-span-2 max-h-12 w-full object-contain invert dark:invert-0 lg:col-span-1"
+            src="/teams/stclair.svg"
+            alt="St. Clair College"
+            width={158}
+            height={48}
+          />
+          <Image
+            className="col-span-2 max-h-12 w-full object-contain invert dark:invert-0 lg:col-span-1"
+            src="/teams/cornell.svg"
+            alt="Cornell University"
+            width={158}
+            height={48}
+          />
+          <Image
+            className="col-span-2 max-h-12 w-full object-contain invert dark:invert-0 lg:col-span-1"
+            src="/teams/fiu.svg"
+            alt="Florida International University"
+            width={158}
+            height={48}
+          />
+          <Image
+            className="col-span-2 max-h-12 w-full object-contain invert dark:invert-0 lg:col-span-1"
+            src="/teams/gsu.svg"
+            alt="Georgia State University"
+            width={158}
+            height={48}
+          />
+          <Image
+            className="col-span-2 max-h-12 w-full object-contain invert dark:invert-0 lg:col-span-1"
+            src="/teams/vlln.png"
+            alt="VLLN"
+            width={158}
+            height={48}
+          />
+        </div>
+        <div className="mt-16 flex justify-center">
+          <p className="relative rounded-full bg-gray-50 px-4 py-1.5 text-sm leading-6 text-gray-600 ring-1 ring-inset ring-gray-900/5 dark:bg-zinc-950 dark:text-gray-300 dark:ring-gray-50/5">
+            <span className="hidden md:inline">
+              Learn how teams use Parsertime to improve their coaching strategy.
+            </span>
+            <Link
+              href="https://lux.dev/blog"
+              className="font-semibold text-sky-600 dark:text-sky-300"
+            >
+              <span className="absolute inset-0" aria-hidden="true" /> See our
+              case study <span aria-hidden="true">&rarr;</span>
+            </Link>
+          </p>
+        </div>
+      </div>
+
+      <section className="relative isolate overflow-hidden bg-white px-6 py-24 dark:bg-black sm:py-32 lg:px-8">
+        <div className="mx-auto max-w-2xl lg:max-w-4xl">
+          <Image
+            className="mx-auto h-12 dark:invert"
+            src="/teams/o7.png"
+            alt=""
+            width={158}
+            height={48}
+          />
+          <figure className="mt-10">
+            <blockquote className="text-center text-xl font-semibold leading-8 text-gray-900 dark:text-white sm:text-2xl sm:leading-9">
+              <p>
+                “Parsertime is so impactful to the point where my players can be
+                coached on things they actively need help with, like living
+                more, or holding their ult longer and being patient.”
+              </p>
+            </blockquote>
+            <figcaption className="mt-10">
+              <Image
+                className="mx-auto h-10 w-10 rounded-full"
+                src="https://cdn.discordapp.com/avatars/328704972822806529/558726bf88ce33f94fea8794a0bf924d?size=1024"
+                alt=""
+                width={48}
+                height={48}
+              />
+              <div className="mt-4 flex items-center justify-center space-x-3 text-base">
+                <div className="font-semibold text-gray-900 dark:text-white">
+                  coy (@shy.coy)
+                </div>
+                <svg
+                  viewBox="0 0 2 2"
+                  width={3}
+                  height={3}
+                  aria-hidden="true"
+                  className="fill-gray-900 dark:fill-white"
+                >
+                  <circle cx={1} cy={1} r={1} />
+                </svg>
+                <div className="text-gray-600 dark:text-gray-300">
+                  Manager for o7 Esports
+                </div>
+              </div>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
       <div className="bg-white dark:bg-black">
         <div className="mx-auto max-w-7xl px-6 py-24 sm:pt-32 lg:px-8 lg:py-40">
           <div className="lg:grid lg:grid-cols-12 lg:gap-8">
@@ -544,6 +659,6 @@ export default async function PricingPage() {
           </div>
         </div>
       </div>
-    </>
+    </main>
   );
 }
