@@ -4,6 +4,10 @@ import Logger from "@/lib/logger";
 import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 
+const FREE_MEMBER_CAP = 5;
+const BASIC_MEMBER_CAP = 10;
+const PREMIUM_MEMBER_CAP = 20;
+
 export async function POST(req: NextRequest) {
   const session = await auth();
   const token = req.headers.get("Authorization");
@@ -29,6 +33,64 @@ export async function POST(req: NextRequest) {
     return new Response("No team id provided", {
       status: 400,
     });
+  }
+
+  const teamData = await prisma.team.findFirst({
+    where: {
+      id: teamId,
+    },
+    select: {
+      users: true,
+      ownerId: true,
+    },
+  });
+
+  const teamCreator = await prisma.user.findFirst({
+    where: {
+      id: teamData?.ownerId,
+    },
+  });
+
+  const numberOfMembers = teamData?.users.length ?? 0;
+
+  if (!teamCreator)
+    return new Response("Team creator not found", { status: 404 });
+
+  switch (teamCreator.billingPlan) {
+    case "FREE":
+      if (numberOfMembers >= FREE_MEMBER_CAP) {
+        return new Response(
+          "You have hit the limit of members that can be invited to this team.  Please upgrade your plan or contact support.",
+          {
+            status: 403,
+          }
+        );
+      }
+      break;
+    case "BASIC":
+      if (numberOfMembers >= BASIC_MEMBER_CAP) {
+        return new Response(
+          "You have hit the limit of members that can be invited to this team.  Please upgrade your plan or contact support.",
+          {
+            status: 403,
+          }
+        );
+      }
+      break;
+    case "PREMIUM":
+      if (numberOfMembers >= PREMIUM_MEMBER_CAP) {
+        return new Response(
+          "You have hit the limit of members that can be invited to this team.  Please upgrade your plan or contact support.",
+          {
+            status: 403,
+          }
+        );
+      }
+      break;
+    default:
+      if (teamCreator.role !== "ADMIN")
+        return new Response("Unauthorized", { status: 401 });
+      break;
   }
 
   const inviteToken = generateRandomToken();
