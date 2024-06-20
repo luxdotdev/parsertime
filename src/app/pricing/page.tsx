@@ -192,19 +192,19 @@ const faqs = [
       "Yes, you can cancel your subscription at any time. Your subscription will remain active until the end of the billing period.",
   },
   {
-    question: "Do you offer a free trial?",
+    question: "What if I need higher limits than the Premium plan offers?",
     answer: (
       <p>
-        We do not currently offer a free trial through our website. If you would
-        like to try out our service, please reach out to our{" "}
+        If you need something special or require higher limits than the Premium
+        plan offers, please reach out to our{" "}
         <Link
           href="/contact"
           className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
           target="_blank"
         >
           support team
-        </Link>
-        .
+        </Link>{" "}
+        and we&apos;ll be happy to discuss a custom solution.
       </p>
     ),
   },
