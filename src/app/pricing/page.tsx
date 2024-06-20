@@ -38,7 +38,11 @@ const sections = [
       },
       {
         name: "Team Members",
-        tiers: { Basic: "Up to 10 users", Premium: "Up to 20 users" },
+        tiers: {
+          Free: "Up to 5 users",
+          Basic: "Up to 10 users",
+          Premium: "Up to 20 users",
+        },
         comingSoon: false,
       },
       {
