@@ -33,6 +33,7 @@ export const mapNameToMapTypeMapping = {
   Paraiso: $Enums.MapType.Hybrid,
   Rialto: $Enums.MapType.Escort,
   "Route 66": $Enums.MapType.Escort,
+  Runasapi: $Enums.MapType.Push,
   Samoa: $Enums.MapType.Control,
   "Shambali Monastery": $Enums.MapType.Escort,
   Suravasa: $Enums.MapType.Flashpoint,
