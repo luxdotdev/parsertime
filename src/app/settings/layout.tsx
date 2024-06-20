@@ -12,6 +12,7 @@ import { UserNav } from "@/components/user-nav";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { $Enums } from "@prisma/client";
+import WorkshopCode from "@/components/scrim/workshop-code";
 
 export const metadata: Metadata = {
   title: "Settings | Parsertime",
@@ -72,6 +73,7 @@ export default async function SettingsLayout({
           <TeamSwitcher session={session} />
           <MainNav className="mx-6" />
           <div className="ml-auto flex items-center space-x-4">
+            <WorkshopCode />
             <Search user={user} />
             <ModeToggle />
             <UserNav />

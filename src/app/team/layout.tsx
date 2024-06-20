@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import Footer from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
 import { getUser } from "@/data/user-dto";
+import WorkshopCode from "@/components/scrim/workshop-code";
 
 export default async function TeamLayout({
   children,
@@ -30,6 +31,7 @@ export default async function TeamLayout({
             <TeamSwitcher session={session} />
             <MainNav className="mx-6" />
             <div className="ml-auto flex items-center space-x-4">
+              <WorkshopCode />
               <Search user={user} />
               <ModeToggle />
               <UserNav />

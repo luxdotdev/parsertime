@@ -11,6 +11,7 @@ import { getScrim } from "@/data/scrim-dto";
 import { MobileNav } from "@/components/mobile-nav";
 import { auth } from "@/lib/auth";
 import { getTeamsWithPerms, getUser } from "@/data/user-dto";
+import WorkshopCode from "@/components/scrim/workshop-code";
 
 type Props = {
   params: { team: string; scrimId: string };
@@ -40,6 +41,7 @@ export default async function EditScrimPage({ params }: Props) {
         <div className="hidden h-16 items-center px-4 md:flex">
           <MainNav className="mx-6" />
           <div className="ml-auto flex items-center space-x-4">
+            <WorkshopCode />
             <Search user={user} />
             <ModeToggle />
             <UserNav />
