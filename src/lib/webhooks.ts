@@ -1,4 +1,5 @@
 import Logger from "@/lib/logger";
+import { $Enums } from "@prisma/client";
 import { User } from "next-auth";
 
 /**
@@ -9,6 +10,7 @@ import { User } from "next-auth";
 type DiscordWebhook = {
   username?: string;
   avatar_url?: string;
+  content?: string;
   embeds: {
     title?: string;
     description?: string;
@@ -86,6 +88,7 @@ export function newBugReportWebhookConstructor(
   description: string,
   email: string,
   url: string,
+  subscription: string,
   ua: string,
   browser: {
     name?: string;
@@ -104,6 +107,10 @@ export function newBugReportWebhookConstructor(
   return {
     username: "Parsertime",
     avatar_url: "https://parsertime.app/icon.png",
+    content:
+      subscription === $Enums.BillingPlan.PREMIUM
+        ? `<@&${process.env.BUG_REPORT_NOTIFICATIONS_ROLE_ID}> Priority Bug Report`
+        : undefined,
     embeds: [
       {
         title: `‼️ New Bug Report`,
@@ -116,6 +123,7 @@ export function newBugReportWebhookConstructor(
         **Details:**
         > **User:** \`${email}\`
         > **URL:** \`${url}\`
+        > **Subscription:** \`${subscription}\`
 
         **User Agent:** 
         > **UA**: \`${ua}\`
