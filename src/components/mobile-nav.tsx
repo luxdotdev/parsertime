@@ -14,6 +14,7 @@ import { TeamSwitcher } from "@/components/dashboard/team-switcher";
 
 const mainNav = [
   { title: "Dashboard", href: "/dashboard" },
+  { title: "Stats", href: "/stats" },
   { title: "Teams", href: "/team" },
   { title: "Settings", href: "/settings" },
   { title: "Contact", href: "/contact" },

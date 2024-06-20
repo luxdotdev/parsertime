@@ -126,6 +126,7 @@ export function aggregatePlayerData(rows: PlayerStatRows): PlayerData[] {
     const playerData = playerMap.get(playerName);
     if (playerData) {
       playerData.mostPlayedHero = mostPlayedHero as HeroName;
+      playerData.role = determineRole(mostPlayedHero as HeroName);
       playerMap.set(playerName, playerData);
     }
   });

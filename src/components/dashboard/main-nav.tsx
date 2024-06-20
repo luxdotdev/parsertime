@@ -26,6 +26,15 @@ export function MainNav({
         Dashboard
       </Link>
       <Link
+        href="/stats"
+        className={cn(
+          "text-sm font-medium text-muted-foreground transition-colors hover:text-primary",
+          pathname === "/stats" ? "text-primary" : "text-muted-foreground"
+        )}
+      >
+        Stats
+      </Link>
+      <Link
         href="/team"
         className={cn(
           "text-sm font-medium transition-colors hover:text-primary",

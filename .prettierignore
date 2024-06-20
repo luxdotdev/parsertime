@@ -5,3 +5,4 @@ node_modules
 **/__tmp__/**
 lerna.json
 .github
+pnpm-lock.yaml

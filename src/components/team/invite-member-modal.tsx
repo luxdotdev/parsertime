@@ -60,7 +60,7 @@ export default function InviteMemberModal({
       toast({
         variant: "destructive",
         title: "Error",
-        description: `An error occurred: ${getToken.statusText} (${getToken.status})`,
+        description: `An error occurred: ${await getToken.text()} (${getToken.status})`,
       });
       setLoading(false);
       return;

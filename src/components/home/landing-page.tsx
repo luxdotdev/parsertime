@@ -6,6 +6,7 @@ import {
   CalendarDaysIcon,
   IdentificationIcon,
   WrenchScrewdriverIcon,
+  StarIcon,
 } from "@heroicons/react/20/solid";
 import {
   AcademicCapIcon,
@@ -457,8 +458,53 @@ export default async function LandingPage() {
           </dl>
         </div>
 
+        {/* Testimonials */}
+        <section className="bg-white px-6 pt-24 dark:bg-black sm:pt-32 lg:px-8">
+          <figure className="mx-auto max-w-2xl">
+            <p className="sr-only">5 out of 5 stars</p>
+            <div className="flex gap-x-1 text-sky-600 dark:text-sky-400">
+              <StarIcon className="h-5 w-5 flex-none" aria-hidden="true" />
+              <StarIcon className="h-5 w-5 flex-none" aria-hidden="true" />
+              <StarIcon className="h-5 w-5 flex-none" aria-hidden="true" />
+              <StarIcon className="h-5 w-5 flex-none" aria-hidden="true" />
+              <StarIcon className="h-5 w-5 flex-none" aria-hidden="true" />
+            </div>
+            <blockquote className="mt-10 text-xl font-semibold leading-8 tracking-tight text-gray-900 dark:text-white sm:text-2xl sm:leading-9">
+              <p>
+                “Parsertime is an incredible way to check out statistics in
+                Overwatch scrims. It got me to understand more about statistics
+                in general and really get interested in data science, which I
+                now do for four teams (using Parsertime). The information it
+                provides is so impactful that my players can be coached on
+                things they actively need help with, like surviving longer,
+                holding their ultimate abilities longer, and being more patient.
+                Maybe their healing numbers are lower than the other support, so
+                we can look at why. It&apos;s a fantastic tool that helps obtain
+                a wider range of data to lock in on a closer field of view.”
+              </p>
+            </blockquote>
+            <figcaption className="mt-10 flex items-center gap-x-6">
+              <Image
+                className="h-12 w-12 rounded-full bg-gray-50 dark:bg-zinc-900"
+                src="https://cdn.discordapp.com/avatars/328704972822806529/558726bf88ce33f94fea8794a0bf924d?size=1024"
+                alt=""
+                width={48}
+                height={48}
+              />
+              <div className="text-sm leading-6">
+                <div className="font-semibold text-gray-900 dark:text-white">
+                  coy (@shy.coy)
+                </div>
+                <div className="mt-0.5 text-gray-600 dark:text-gray-300">
+                  Manager for o7 Esports
+                </div>
+              </div>
+            </figcaption>
+          </figure>
+        </section>
+
         {/* CTA section */}
-        <div className="relative isolate mt-32 px-6 py-32 sm:mt-56 sm:py-40 lg:px-8">
+        <div className="relative isolate mt-24 px-6 py-32 sm:mt-56 sm:py-40 lg:px-8">
           <svg
             className="absolute inset-0 -z-10 h-full w-full stroke-gray-200 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)] dark:stroke-white/10"
             aria-hidden="true"

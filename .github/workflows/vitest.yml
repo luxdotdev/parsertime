@@ -3,11 +3,7 @@
 
 name: Vitest
 
-on:
-  push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
+on: [push, pull_request]
 
 env:
   TEST_DB_URL: ${{ secrets.TEST_DB_URL }}
