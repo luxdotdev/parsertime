@@ -204,7 +204,7 @@ const faqs = [
         >
           support team
         </Link>{" "}
-        and we'll be happy to discuss a custom solution.
+        and we&apos;ll be happy to discuss a custom solution.
       </p>
     ),
   },
