@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/tooltip";
 import { GuestNav } from "@/components/guest-nav";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import WorkshopCode from "@/components/scrim/workshop-code";
+import { WorkshopCode } from "@/components/workshop-code";
 
 type Props = {
   params: { team: string; scrimId: string };
