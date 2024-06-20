@@ -8,7 +8,7 @@ import { ModeToggle } from "@/components/theme-switcher";
 import { UserNav } from "@/components/user-nav";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import WorkshopCode from "@/components/scrim/workshop-code";
+import { WorkshopCode } from "@/components/workshop-code";
 
 export default async function DashboardLayout({
   children,

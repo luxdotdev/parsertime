@@ -12,7 +12,7 @@ import { UserNav } from "@/components/user-nav";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { $Enums } from "@prisma/client";
-import WorkshopCode from "@/components/scrim/workshop-code";
+import { WorkshopCode } from "@/components/workshop-code";
 
 export const metadata: Metadata = {
   title: "Settings | Parsertime",

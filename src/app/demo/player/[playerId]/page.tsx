@@ -12,7 +12,7 @@ import { toTitleCase } from "@/lib/utils";
 import { SearchParams } from "@/types/next";
 import { Metadata } from "next";
 import Link from "next/link";
-import WorkshopCode from "@/components/scrim/workshop-code";
+import { WorkshopCode } from "@/components/workshop-code";
 
 type Props = {
   params: { team: string; scrimId: string; mapId: string; playerId: string };

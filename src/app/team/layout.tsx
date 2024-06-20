@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 import Footer from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
 import { getUser } from "@/data/user-dto";
-import WorkshopCode from "@/components/scrim/workshop-code";
+import { WorkshopCode } from "@/components/workshop-code";
 
 export default async function TeamLayout({
   children,

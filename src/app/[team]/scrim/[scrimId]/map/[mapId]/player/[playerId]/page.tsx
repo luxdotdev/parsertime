@@ -16,7 +16,7 @@ import { GuestNav } from "@/components/guest-nav";
 import { auth } from "@/lib/auth";
 import { getMostPlayedHeroes } from "@/data/player-dto";
 import { getUser } from "@/data/user-dto";
-import WorkshopCode from "@/components/scrim/workshop-code";
+import { WorkshopCode } from "@/components/workshop-code";
 
 type Props = {
   params: { team: string; scrimId: string; mapId: string; playerId: string };
