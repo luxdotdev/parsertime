@@ -479,8 +479,8 @@ export default async function LandingPage() {
                 things they actively need help with, like surviving longer,
                 holding their ultimate abilities longer, and being more patient.
                 Maybe their healing numbers are lower than the other support, so
-                we can look at why. It's a fantastic tool that helps obtain a
-                wider range of data to lock in on a closer field of view.”
+                we can look at why. It&apos;s a fantastic tool that helps obtain
+                a wider range of data to lock in on a closer field of view.”
               </p>
             </blockquote>
             <figcaption className="mt-10 flex items-center gap-x-6">

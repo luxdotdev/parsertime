@@ -113,8 +113,6 @@ export default async function PlayerStats({ params }: Props) {
 
   const permittedScrimIds = data[permitted].map((scrim) => scrim.id);
 
-  console.log(permitted, permittedScrimIds);
-
   let allPlayerStats;
   let allPlayerKills;
   let mapWinrates;
