@@ -108,6 +108,7 @@ export function newBugReportWebhookConstructor(
     username: "Parsertime",
     avatar_url: "https://parsertime.app/icon.png",
     content:
+      subscription === $Enums.BillingPlan.BASIC ||
       subscription === $Enums.BillingPlan.PREMIUM
         ? `<@&${process.env.BUG_REPORT_NOTIFICATIONS_ROLE_ID}> Priority Bug Report`
         : undefined,
