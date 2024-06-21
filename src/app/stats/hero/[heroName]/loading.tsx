@@ -6,12 +6,12 @@ export default function StatsLoading() {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <Skeleton className="h-9 w-1/6" />
+        <Skeleton className="h-9 w-[220px]" />
       </div>
 
       <main className="space-y-2">
         <div className="items-center gap-2 space-y-2 md:flex md:space-y-0">
-          <Skeleton className="h-9 w-1/12" />
+          <Skeleton className="h-9 w-[180px]" />
         </div>
 
         <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

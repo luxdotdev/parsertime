@@ -451,7 +451,7 @@ export function Statistics({
                               </Link>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>Click to view map</p>
+                              <p>Click to view player stats</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>

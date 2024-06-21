@@ -12,11 +12,36 @@ import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { HeroName, heroRoleMapping } from "@/types/heroes";
 import { Scrim } from "@prisma/client";
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 type Props = {
   params: { heroName: string };
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const hero = decodeURIComponent(params.heroName);
+
+  return {
+    title: `Stats for ${hero} | Parsertime`,
+    description: `Stats for ${hero} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+    openGraph: {
+      title: `$Stats for ${hero} | Parsertime`,
+      description: `Stats for ${hero} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+      url: "https://parsertime.app",
+      type: "website",
+      siteName: "Parsertime",
+      images: [
+        {
+          url: `https://parsertime.app/api/og?title=Stats for ${hero} | Parsertime`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+      locale: "en_US",
+    },
+  };
+}
 
 export default async function HeroStats({ params }: Props) {
   const hero = decodeURIComponent(params.heroName);
