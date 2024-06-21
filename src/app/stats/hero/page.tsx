@@ -2,7 +2,30 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
 import { toHero } from "@/lib/utils";
 import { roleHeroMapping } from "@/types/heroes";
+import { Metadata } from "next";
 import Image from "next/image";
+
+export const metadata: Metadata = {
+  title: "Hero Stats | Parsertime",
+  description:
+    "Hero stats for Overwatch heroes on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+  openGraph: {
+    title: "Hero Stats | Parsertime",
+    description:
+      "Hero stats for Overwatch heroes on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+    url: "https://parsertime.app",
+    type: "website",
+    siteName: "Parsertime",
+    images: [
+      {
+        url: "https://parsertime.app/api/og?title=Hero Stats",
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: "en_US",
+  },
+};
 
 export default function HeroSelect() {
   const allHeroesByRole = Object.entries(roleHeroMapping);
