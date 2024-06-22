@@ -12,11 +12,42 @@ import { auth } from "@/lib/auth";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { Scrim } from "@prisma/client";
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 type Props = {
   params: { playerName: string };
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const playerName = decodeURIComponent(params.playerName);
+
+  return {
+    title: `${playerName}'${
+      playerName.endsWith("s") ? "" : "s"
+    } Stats | Parsertime`,
+    description: `Player stats for ${playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+    openGraph: {
+      title: `${playerName}'${
+        playerName.endsWith("s") ? "" : "s"
+      } Stats | Parsertime`,
+      description: `Player stats for ${playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+      url: "https://parsertime.app",
+      type: "website",
+      siteName: "Parsertime",
+      images: [
+        {
+          url: `https://parsertime.app/api/og?title=${playerName}'${
+            playerName.endsWith("s") ? "" : "s"
+          } Stats`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+      locale: "en_US",
+    },
+  };
+}
 
 export default async function PlayerStats({ params }: Props) {
   const name = decodeURIComponent(params.playerName);
@@ -112,8 +143,6 @@ export default async function PlayerStats({ params }: Props) {
       : "one-month";
 
   const permittedScrimIds = data[permitted].map((scrim) => scrim.id);
-
-  console.log(permitted, permittedScrimIds);
 
   let allPlayerStats;
   let allPlayerKills;

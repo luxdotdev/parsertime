@@ -1,6 +1,7 @@
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
+import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { Ratelimit } from "@upstash/ratelimit";
 import { kv } from "@vercel/kv";
@@ -32,6 +33,52 @@ export async function POST(request: NextRequest) {
   const session = await auth();
 
   const userId = await getUser(session?.user?.email);
+
+  if (!userId) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  const permission = await new Permission("create-team").check();
+  if (!permission) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  const numberOfTeams = await prisma.team.count({
+    where: {
+      ownerId: userId.id,
+    },
+  });
+
+  switch (userId.billingPlan) {
+    case "FREE":
+      if (numberOfTeams >= 2) {
+        return new Response(
+          "You have hit the limit of teams that your account can create.  Please upgrade your plan or contact support.",
+          { status: 403 }
+        );
+      }
+      break;
+    case "BASIC":
+      if (numberOfTeams >= 5) {
+        return new Response(
+          "You have hit the limit of teams that your account can create.  Please upgrade your plan or contact support.",
+          { status: 403 }
+        );
+      }
+      break;
+    case "PREMIUM":
+      if (numberOfTeams >= 10) {
+        return new Response(
+          "You have hit the limit of teams that your account can create.  Please upgrade your plan or contact support.",
+          { status: 403 }
+        );
+      }
+      break;
+    default:
+      if (userId.role !== "ADMIN")
+        return new Response("Unauthorized", { status: 401 });
+      break;
+  }
 
   const req = (await request.json()) as CreateTeamRequestData;
 
@@ -68,13 +115,13 @@ export async function POST(request: NextRequest) {
           }),
         ],
       },
-      ownerId: userId?.id ?? "",
+      ownerId: userId.id ?? "",
     },
   });
 
   await prisma.user.update({
     where: {
-      id: userId?.id ?? "",
+      id: userId.id ?? "",
     },
     data: {
       teams: {
