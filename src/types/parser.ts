@@ -2,7 +2,7 @@ import { $Enums } from "@prisma/client";
 import { HeroName } from "./heroes";
 
 type DefaultPlayerTeam = "Team 1" | "Team 2";
-type PlayerTeam = DefaultPlayerTeam | string; // not sure how it handles custom team names
+type PlayerTeam = DefaultPlayerTeam | (string & NonNullable<unknown>);
 
 type EventAbility =
   | "Primary Fire"
