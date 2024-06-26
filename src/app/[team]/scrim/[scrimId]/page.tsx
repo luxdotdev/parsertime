@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/tooltip";
 import { GuestNav } from "@/components/guest-nav";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { WorkshopCode } from "@/components/workshop-code";
 import { ClientDate } from "@/components/scrim/client-date";
 import { notFound } from "next/navigation";
 
@@ -115,6 +116,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
       <div className="border-b">
         <div className="hidden h-16 items-center px-4 md:flex">
           <div className="ml-auto flex items-center space-x-4">
+            <WorkshopCode />
             <Search user={user} />
             <ModeToggle />
             {session ? (

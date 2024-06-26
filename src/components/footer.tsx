@@ -56,7 +56,7 @@ export default function Footer() {
         </div>
 
         <p className="mt-6 text-sm text-gray-500 dark:text-gray-400 lg:mt-0">
-          © 2024 lux.dev.
+          &copy; 2024 lux.dev.
         </p>
       </div>
     </footer>
