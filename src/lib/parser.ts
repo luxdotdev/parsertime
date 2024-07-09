@@ -58,6 +58,9 @@ export async function parseDataFromTXT(file: File) {
     if (value === "") {
       return null; // Replace empty strings with null
     }
+    if (isTeamNameField(eventType, index)) {
+      return value;
+    }
     if (
       eventType === "kill" &&
       (index === killSkipIndexes.eventAbilityIndex ||
@@ -68,6 +71,31 @@ export async function parseDataFromTXT(file: File) {
     }
     const parsedValue = parseFloat(value);
     return isNaN(parsedValue) ? value : parsedValue;
+  };
+
+  const isTeamNameField = (eventType: string, index: number): boolean => {
+    const teamNameFields: Record<string, number[]> = {
+      defensive_assist: [2],
+      dva_remech: [2],
+      echo_duplicate_end: [2],
+      echo_duplicate_start: [2],
+      hero_spawn: [2],
+      hero_swap: [2],
+      kill: [2, 5],
+      match_start: [4, 5],
+      objective_captured: [3],
+      offensive_assist: [2],
+      payload_progress: [3],
+      player_stat: [3],
+      point_progress: [3],
+      remech_charged: [2],
+      round_end: [3],
+      round_start: [3],
+      ultimate_charged: [2],
+      ultimate_end: [2],
+      ultimate_start: [2],
+    };
+    return teamNameFields[eventType]?.includes(index) || false;
   };
 
   const categorizedData: Record<string, string[][]> = {};
@@ -372,7 +400,7 @@ export async function createDefensiveAssistsRows(
     data: data.defensive_assist.map((assist) => ({
       scrimId: scrim.id,
       match_time: assist[1],
-      player_team: assist[2],
+      player_team: String(assist[2]),
       player_name: assist[3],
       player_hero: assist[4],
       hero_duplicated: String(assist[5]),
@@ -407,7 +435,7 @@ export async function createDvaRemechRows(
     data: data.dva_remech.map((remech) => ({
       scrimId: scrim.id,
       match_time: remech[1],
-      player_team: remech[2],
+      player_team: String(remech[2]),
       player_name: remech[3],
       player_hero: remech[4],
       ultimate_id: remech[5],
@@ -447,7 +475,7 @@ export async function createEchoDuplicateEndRows(
     data: data.echo_duplicate_end.map((duplicateEnd) => ({
       scrimId: scrim.id,
       match_time: duplicateEnd[1],
-      player_team: duplicateEnd[2],
+      player_team: String(duplicateEnd[2]),
       player_name: duplicateEnd[3],
       player_hero: duplicateEnd[4],
       ultimate_id: duplicateEnd[5],
@@ -487,7 +515,7 @@ export async function createEchoDuplicateStartRows(
     data: data.echo_duplicate_start.map((duplicateStart) => ({
       scrimId: scrim.id,
       match_time: duplicateStart[1],
-      player_team: duplicateStart[2],
+      player_team: String(duplicateStart[2]),
       player_name: duplicateStart[3],
       player_hero: duplicateStart[4],
       hero_duplicated: duplicateStart[5],
@@ -525,7 +553,7 @@ export async function createHeroSpawnRows(
     data: data.hero_spawn.map((spawn) => ({
       scrimId: scrim.id,
       match_time: spawn[1],
-      player_team: spawn[2],
+      player_team: String(spawn[2]),
       player_name: spawn[3],
       player_hero: spawn[4],
       previous_hero: spawn[5],
@@ -561,7 +589,7 @@ export async function createHeroSwapRows(
     data: data.hero_swap.map((swap) => ({
       scrimId: scrim.id,
       match_time: swap[1],
-      player_team: swap[2],
+      player_team: String(swap[2]),
       player_name: swap[3],
       player_hero: swap[4],
       previous_hero: swap[5],
@@ -597,10 +625,10 @@ export async function createKillRows(
     data: data.kill.map((kill) => ({
       scrimId: scrim.id,
       match_time: kill[1],
-      attacker_team: kill[2],
+      attacker_team: String(kill[2]),
       attacker_name: kill[3],
       attacker_hero: kill[4],
-      victim_team: kill[5],
+      victim_team: String(kill[5]),
       victim_name: kill[6],
       victim_hero: kill[7],
       event_ability: kill[8],
@@ -674,8 +702,8 @@ export async function createMatchStartRows(
       match_time: start[1],
       map_name: start[2],
       map_type: start[3],
-      team_1_name: start[4],
-      team_2_name: start[5],
+      team_1_name: String(start[4]),
+      team_2_name: String(start[5]),
       MapDataId: mapId,
     })),
   });
@@ -750,7 +778,7 @@ export async function createObjectiveCapturedRows(
       scrimId: scrim.id,
       match_time: capture[1],
       round_number: capture[2],
-      capturing_team: capture[3],
+      capturing_team: String(capture[3]),
       objective_index: capture[4],
       control_team_1_progress: capture[5],
       control_team_2_progress: capture[6],
@@ -830,7 +858,7 @@ export async function createOffensiveAssistRows(
     data: data.offensive_assist.map((assist) => ({
       scrimId: scrim.id,
       match_time: assist[1],
-      player_team: assist[2],
+      player_team: String(assist[2]),
       player_name: assist[3],
       player_hero: assist[4],
       hero_duplicated: String(assist[5]),
@@ -871,7 +899,7 @@ export async function createPayloadProgressRows(
       scrimId: scrim.id,
       match_time: progress[1],
       round_number: progress[2],
-      capturing_team: progress[3],
+      capturing_team: String(progress[3]),
       objective_index: progress[4],
       payload_capture_progress: progress[5],
       MapDataId: mapId,
@@ -906,7 +934,7 @@ export async function createPlayerStatRows(
       scrimId: scrim.id,
       match_time: stat[1],
       round_number: stat[2],
-      player_team: stat[3],
+      player_team: String(stat[3]),
       player_name: stat[4],
       player_hero: stat[5],
       eliminations: stat[6],
@@ -974,7 +1002,7 @@ export async function createPointProgressRows(
       scrimId: scrim.id,
       match_time: progress[1],
       round_number: progress[2],
-      capturing_team: progress[3],
+      capturing_team: String(progress[3]),
       objective_index: progress[4],
       point_capture_progress: progress[5],
       MapDataId: mapId,
@@ -1013,7 +1041,7 @@ export async function createRemechChargedRows(
     data: data.remech_charged.map((charged) => ({
       scrimId: scrim.id,
       match_time: charged[1],
-      player_team: charged[2],
+      player_team: String(charged[2]),
       player_name: charged[3],
       player_hero: charged[4],
       hero_duplicated: String(charged[5]),
@@ -1167,7 +1195,7 @@ export async function createUltimateChargedRows(
     data: data.ultimate_charged.map((charged) => ({
       scrimId: scrim.id,
       match_time: charged[1],
-      player_team: charged[2],
+      player_team: String(charged[2]),
       player_name: charged[3],
       player_hero: charged[4],
       hero_duplicated: String(charged[5]),
@@ -1203,7 +1231,7 @@ export async function createUltimateEndRows(
     data: data.ultimate_end.map((end) => ({
       scrimId: scrim.id,
       match_time: end[1],
-      player_team: end[2],
+      player_team: String(end[2]),
       player_name: end[3],
       player_hero: end[4] ?? "",
       hero_duplicated: String(end[5]),
@@ -1244,7 +1272,7 @@ export async function createUltimateStartRows(
     data: data.ultimate_start.map((start) => ({
       scrimId: scrim.id,
       match_time: start[1],
-      player_team: start[2],
+      player_team: String(start[2]),
       player_name: start[3],
       player_hero: start[4],
       hero_duplicated: String(start[5]),
