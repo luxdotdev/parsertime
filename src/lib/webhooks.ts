@@ -1,6 +1,7 @@
 import Logger from "@/lib/logger";
-import { $Enums } from "@prisma/client";
+import { $Enums, Prisma } from "@prisma/client";
 import { User } from "next-auth";
+import { User as PrismaUser } from "@prisma/client";
 
 /**
  * The structure of a Discord webhook. This is a simplified version of the actual
@@ -125,6 +126,61 @@ export function newBugReportWebhookConstructor(
         > **User:** \`${email}\`
         > **URL:** \`${url}\`
         > **Subscription:** \`${subscription}\`
+
+        **User Agent:** 
+        > **UA**: \`${ua}\`
+        > **Browser:** \`${browser.name} ${browser.version}\`
+        > **OS:** \`${os.name} ${os.version}\`
+        > **Device:** \`${device.vendor ?? ""} ${device.model ?? ""} ${device.type ?? ""}\`
+        `,
+        timestamp: new Date(),
+        color: 0xff0000,
+        footer: {
+          text: "Parsertime",
+          icon_url: "https://parsertime.app/icon.png",
+        },
+      },
+    ],
+  };
+}
+
+/**
+ * Constructs a Discord webhook payload for reporting suspicious activity on Parsertime.
+ *
+ * @param user - The user object associated with the suspicious activity.
+ * @param activity - A description of the suspicious activity.
+ * @returns A Discord webhook payload object.
+ */
+export function newSuspiciousActivityWebhookConstructor(
+  user: PrismaUser,
+  activity: string,
+  ua: string,
+  browser: {
+    name?: string;
+    version?: string;
+  },
+  os: {
+    name?: string;
+    version?: string;
+  },
+  device: {
+    model?: string;
+    type?: string;
+    vendor?: string;
+  }
+): DiscordWebhook {
+  return {
+    username: "Parsertime",
+    avatar_url: "https://parsertime.app/icon.png",
+    content: `<@&${process.env.BUG_REPORT_NOTIFICATIONS_ROLE_ID}> Suspicious activity detected on Parsertime`,
+    embeds: [
+      {
+        title: `‼️ Suspicious activity detected on Parsertime`,
+        description: `
+        ### **Details:**
+        > **User:** \`${user.name} (${user.email})\`
+        > **User ID:** \`${user.id}\`
+        > **Activity:** \`${activity}\`
 
         **User Agent:** 
         > **UA**: \`${ua}\`
