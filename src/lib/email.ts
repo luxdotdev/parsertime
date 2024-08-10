@@ -1,4 +1,4 @@
-import { SES } from "@aws-sdk/client-ses";
+import { SendEmailRequest, SES } from "@aws-sdk/client-ses";
 
 type EmailArgs = {
   to: string;
@@ -15,7 +15,7 @@ const config = {
 
 export async function sendEmail(args: EmailArgs) {
   // Send email using AWS SES
-  const email = {
+  const email: SendEmailRequest = {
     Source: `lux.dev <${args.from}>`,
     Destination: {
       ToAddresses: [args.to],
