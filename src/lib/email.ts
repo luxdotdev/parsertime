@@ -5,6 +5,9 @@ type EmailArgs = {
   from: string;
   subject: string;
   html: string;
+  replyTo?: string[];
+  ccAddresses?: string[];
+  bccAddresses?: string[];
 };
 
 const config = {
@@ -17,8 +20,11 @@ export async function sendEmail(args: EmailArgs) {
   // Send email using AWS SES
   const email: SendEmailRequest = {
     Source: `lux.dev <${args.from}>`,
+    ReplyToAddresses: args.replyTo,
     Destination: {
       ToAddresses: [args.to],
+      CcAddresses: args.ccAddresses,
+      BccAddresses: args.bccAddresses,
     },
     Message: {
       Subject: {
