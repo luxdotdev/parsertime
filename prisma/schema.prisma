@@ -169,6 +169,20 @@ enum MapType {
   Flashpoint
   Hybrid
   Push
+  // Japanese translations
+  Clash_JP @map("クラッシュ")
+  Control_JP @map("コントロール")
+  Escort_JP @map("エスコート")
+  Flashpoint_JP @map("フラッシュポイント")
+  Hybrid_JP @map("ハイブリッド")
+  Push_JP @map("プッシュ")
+  // Korean translations
+  // Clash_KR @map("충돌")
+  // Control_KR @map("제어")
+  // Escort_KR @map("호위")
+  // Flashpoint_KR @map("인화점")
+  // Hybrid_KR @map("잡종")
+  // Push_KR @map("푸시")
 }
 
 model MapData {
