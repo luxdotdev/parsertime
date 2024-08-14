@@ -132,6 +132,7 @@ model Map {
   mapData   MapData[]
   Scrim     Scrim?    @relation(fields: [scrimId], references: [id])
   scrimId   Int?
+  replayCode String?
 
   @@index([scrimId])
 }
