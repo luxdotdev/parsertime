@@ -11,6 +11,7 @@ type UpdateScrimBody = {
   scrimId: number;
   date: string;
   guestMode: boolean;
+  maps: Array<{ id: number; replayCode: string }>;
 };
 
 export async function POST(req: NextRequest) {
@@ -68,6 +69,19 @@ export async function POST(req: NextRequest) {
       guestMode: body.guestMode,
     },
   });
+
+  if (body.maps && body.maps.length > 0) {
+    for (const mapUpdate of body.maps) {
+      await prisma.map.update({
+        where: {
+          id: mapUpdate.id,
+        },
+        data: {
+          replayCode: mapUpdate.replayCode,
+        },
+      });
+    }
+  }
 
   return new Response("OK", {
     status: 200,

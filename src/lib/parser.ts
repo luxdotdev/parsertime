@@ -196,6 +196,7 @@ export async function createNewScrimFromParsedData(
     data: {
       name: data.map.match_start[0][2] ?? "New Map",
       scrimId: scrim.id,
+      replayCode: data.replayCode ?? "",
       mapData: {
         connect: {
           id: mapData.id,
@@ -287,6 +288,7 @@ export async function createNewMap(data: CreateNewMapArgs, session: Session) {
     data: {
       name: toTitleCase(data.map.match_start[0][2]) ?? "New Map",
       scrimId: data.scrimId,
+      // replayCode: data.replayCode ?? "",
       mapData: {
         connect: {
           id: mapData.id,

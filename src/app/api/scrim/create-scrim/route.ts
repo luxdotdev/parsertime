@@ -8,6 +8,7 @@ export type CreateScrimRequestData = {
   team: string;
   date: string;
   map: ParserData;
+  replayCode: string;
 };
 
 export async function POST(request: Request) {

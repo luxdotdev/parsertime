@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -70,6 +70,17 @@ const profileFormSchema = z.object({
   teamId: z.string(),
   date: z.date(),
   guestMode: z.boolean(),
+  maps: z.array(
+    z.object({
+      id: z.number(),
+      replayCode: z
+        .string()
+        .max(6, {
+          message: "Replay code must not be longer than 6 characters.",
+        })
+        .optional(),
+    })
+  ),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
@@ -93,8 +104,17 @@ export function EditScrimForm({
       teamId: (scrim.teamId ?? 0).toString(),
       date: scrim.date,
       guestMode: scrim.guestMode,
+      maps: maps.map((map) => ({
+        id: map.id,
+        replayCode: map.replayCode ?? "",
+      })),
     },
     mode: "onChange",
+  });
+
+  const { fields } = useFieldArray({
+    control: form.control,
+    name: "maps",
   });
 
   async function onSubmit(data: ProfileFormValues) {
@@ -105,6 +125,7 @@ export function EditScrimForm({
       date: data.date.toISOString(),
       scrimId: scrim.id,
       guestMode: data.guestMode,
+      maps: data.maps,
     };
 
     const res = await fetch("/api/scrim/update-scrim-options", {
@@ -293,13 +314,32 @@ export function EditScrimForm({
           <FormItem>
             <FormLabel>Maps</FormLabel>
             <Accordion type="single" collapsible className="max-w-lg">
-              {maps.map((map) => (
+              {maps.map((map, index) => (
                 <AccordionItem key={map.id} value={map.id.toString()}>
                   <AccordionTrigger>{map.name}</AccordionTrigger>
                   <AccordionContent>
+                    <FormField
+                      control={form.control}
+                      name={`maps.${index}.replayCode`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Replay Code for {map.name}</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Replay Code"
+                              className="w-28"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="destructive">Delete</Button>
+                        <Button className="mt-3" variant="destructive">
+                          Delete Map
+                        </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>

@@ -180,6 +180,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
                     <CardHeader className="">
                       <h3 className="z-10 text-3xl font-semibold tracking-tight text-white">
                         {map.name}
+                        <div className="text-lg">{map.replayCode ?? ""}</div>
                       </h3>
                     </CardHeader>
                     <CardContent>

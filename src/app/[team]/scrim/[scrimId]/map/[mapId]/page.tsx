@@ -79,6 +79,15 @@ export default async function MapDashboardPage({ params }: Props) {
     },
   });
 
+  const map = await prisma.map.findFirst({
+    where: {
+      id,
+    },
+    select: {
+      replayCode: true,
+    },
+  });
+
   const visibility = (await prisma.scrim.findFirst({
     where: {
       id: parseInt(params.scrimId),
@@ -127,6 +136,7 @@ export default async function MapDashboardPage({ params }: Props) {
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">
             {toTitleCase(mapName?.map_name ?? "Dashboard")}
+            <div className="text-lg">{map?.replayCode ?? ""}</div>
           </h2>
         </div>
         <Tabs defaultValue="overview" className="space-y-4">

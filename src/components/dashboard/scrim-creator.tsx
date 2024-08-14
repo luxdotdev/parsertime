@@ -48,9 +48,16 @@ const ACCEPTED_FILE_TYPES = [
 const MAX_FILE_SIZE = 1000000; // 1MB in bytes
 
 const FormSchema = z.object({
-  name: z.string({
-    required_error: "A scrim name is required.",
-  }),
+  name: z
+    .string({
+      required_error: "A scrim name is required.",
+    })
+    .min(2, {
+      message: "Name must be at least 2 characters.",
+    })
+    .max(30, {
+      message: "Name must not be longer than 30 characters.",
+    }),
   team: z.string({
     required_error: "A team name is required.",
   }),
@@ -58,6 +65,12 @@ const FormSchema = z.object({
     required_error: "A scrim date is required.",
   }),
   map: z.any(),
+  replayCode: z
+    .string()
+    .max(6, {
+      message: "Replay code must not be longer than 6 characters.",
+    })
+    .optional(),
 });
 
 export function ScrimCreationForm({
@@ -177,6 +190,23 @@ export function ScrimCreationForm({
               <FormDescription>
                 This is the name of the scrim. It will be displayed on the
                 dashboard.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="replayCode"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Scrim Replay Code</FormLabel>
+              <FormControl>
+                <Input placeholder="Replay Code" className="w-28" {...field} />
+              </FormControl>
+              <FormDescription>
+                This is the replay code of the first map. You can edit the
+                replay codes after the scrim is created.
               </FormDescription>
               <FormMessage />
             </FormItem>
