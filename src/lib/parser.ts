@@ -137,20 +137,20 @@ export async function parseDataFromTXT(file: File) {
 
   const isHeroNameField = (eventType: string, index: number): boolean => {
     const heroNameFields: Record<string, number[]> = {
-      // player_hero, hero_duplicated, attacker_hero, and victim_hero
-      defensive_assist: [4, 5],
+      // player_hero, attacker_hero, and victim_hero
+      defensive_assist: [4],
       dva_remech: [4],
       echo_duplicate_end: [4],
-      echo_duplicate_start: [4, 5],
+      echo_duplicate_start: [4],
       hero_spawn: [4],
       hero_swap: [4, 5],
       kill: [4, 7],
-      offensive_assist: [4, 5],
+      offensive_assist: [4],
       player_stat: [5],
-      remech_charged: [4, 5],
-      ultimate_charged: [4, 5],
-      ultimate_end: [4, 5],
-      ultimate_start: [4, 5],
+      remech_charged: [4],
+      ultimate_charged: [4],
+      ultimate_end: [4],
+      ultimate_start: [4],
     };
     return heroNameFields[eventType]?.includes(index) || false;
   };
