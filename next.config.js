@@ -47,7 +47,12 @@ const nextConfig = {
   },
 };
 
+const createNextIntlPlugin = require("next-intl/plugin");
+const withNextIntl =
+  createNextIntlPlugin(/* Specify custom path here for i18n.ts if want to move it */);
+
 const withVercelToolbar = require("@vercel/toolbar/plugins/next")();
 const { withAxiom } = require("next-axiom");
 
 module.exports = withAxiom(withVercelToolbar(nextConfig));
+module.exports = withNextIntl(nextConfig);

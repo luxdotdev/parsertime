@@ -12,6 +12,8 @@ import { CommandMenuProvider } from "@/components/command-menu-provider";
 import { CommandDialogMenu } from "@/components/command-menu";
 import { auth } from "@/lib/auth";
 import { getUser } from "@/data/user-dto";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Parsertime",
@@ -42,30 +44,35 @@ export default async function RootLayout({
   const session = await auth();
   let user = null;
 
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   if (session) {
     user = await getUser(session.user.email);
   }
 
   return (
-    <html lang="en" className="h-full">
+    <html lang={locale} className="h-full">
       <body className={cn(GeistSans.className, "h-full")}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <CommandMenuProvider>
-            {children}
-            <CommandDialogMenu user={user} />
-          </CommandMenuProvider>
-          <Toaster />
-          <SpeedInsights />
-          <Analytics />
-          <Suspense>
-            <StaffToolbar />
-          </Suspense>
-        </ThemeProvider>
+        <NextIntlClientProvider messages={messages}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <CommandMenuProvider>
+              {children}
+              <CommandDialogMenu user={user} />
+            </CommandMenuProvider>
+            <Toaster />
+            <SpeedInsights />
+            <Analytics />
+            <Suspense>
+              <StaffToolbar />
+            </Suspense>
+          </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );
