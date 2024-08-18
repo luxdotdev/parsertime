@@ -1,0 +1,909 @@
+{
+  "landingPage": {
+    "hero": {
+      "latestUpdates": "Latest updates",
+      "title": "Revolutionize your scrim experience",
+      "description": "Using our platform, you can visualize your scrim data, track individual player performance, and more. Invite your players to your team and allow them to see their stats.",
+      "getStarted": "Get Started",
+      "liveDemo": "Live demo",
+      "accountDescription": "Already have an account?",
+      "signIn": "Sign In"
+    },
+    "logoCloud": {
+      "title": "Used by a variety of teams for stat tracking"
+    },
+    "feature1": {
+      "subTitle": "Improve faster",
+      "title": "Everything you need to improve your team performance",
+      "description": "Streamline your improvement process with our platform. Gain insight into your players' and teams' strengths and weaknesses. See their biggest areas of improvement and adjust your coaching accordingly.",
+      "learnMore": "Learn more"
+    },
+    "primaryFeatures": {
+      "builtByCoaches": {
+        "name": "Built by coaches, for coaches",
+        "description": "Designed with collegiate and professional coaches in mind. Our platform is built to help you understand trends and patterns in your team's performance.",
+        "href": "#"
+      },
+      "shareWithTeam": {
+        "name": "Share with your team",
+        "description": "Invite your players to your team and allow them to see their stats. Share your team's stats with your players and coaches. Keep everyone in the loop.",
+        "href": "#"
+      },
+      "advancedStatistics": {
+        "name": "Advanced statistics",
+        "description": "Gain insight into your players' performance over time. Track their stats and see how they improve. See trends and patterns week over week.",
+        "href": "#"
+      }
+    },
+    "feature2": {
+      "subTitle": "Everything you need",
+      "title": "Scrim stats at your fingertips",
+      "description": "See your stats after your scrims instead of only relying on replay codes. Our platform allows you to keep your data no matter what happens to your replays."
+    },
+    "secondaryFeatures": {
+      "dataCharts": {
+        "name": "Player and team data charts.",
+        "description": "Visualize your team's stats. See what can be improved and where your team is excelling. Understand your team's strengths and weaknesses."
+      },
+      "filterStats": {
+        "name": "Filter stats by time.",
+        "description": "See your team's stats over time. Filter by week, month, or year to see how your team is improving."
+      },
+      "userProfiles": {
+        "name": "User profiles.",
+        "description": "See individual player stats and trends over time. Understand how your players are improving and where they need help."
+      },
+      "advancedSecurity": {
+        "name": "Advanced security.",
+        "description": "User accounts do not store passwords. Only users you invite to your team can see your team's scrims."
+      },
+      "fastReliable": {
+        "name": "Fast and reliable.",
+        "description": "We're built on top of the latest cloud infrastructure. Speed is never an issue. We're always up and running."
+      },
+      "fullyCustomizable": {
+        "name": "Fully customizable.",
+        "description": "Need custom functionality or want to track specific metrics? Let us know and we'll make it happen."
+      }
+    },
+    "stats": {
+      "subTitle": "Our track record",
+      "title": "Trusted by the best",
+      "description": "We're proud to work with top teams and coaches to create better experiences for everyone. Our platform is built to suit the needs of collegiate and professional teams."
+    },
+    "testimonial": {
+      "quote": "“Parsertime is an incredible way to check out statistics in Overwatch scrims. It got me to understand more about statistics in general and really get interested in data science, which I now do for four teams (using Parsertime). The information it provides is so impactful that my players can be coached on things they actively need help with, like surviving longer, holding their ultimate abilities longer, and being more patient. Maybe their healing numbers are lower than the other support, so we can look at why. It's a fantastic tool that helps obtain a wider range of data to lock in on a closer field of view.”",
+      "author": "coy (@shy.coy)",
+      "role": "Manager for o7 Esports"
+    },
+    "cta": {
+      "subTitle": "Ready to get started?",
+      "title": "Start using our app today.",
+      "description": "Sign up and start using our platform today. We're excited to change the way you think about coaching.",
+      "getStarted": "Get started",
+      "learnMore": "Learn more"
+    },
+    "footer": {
+      "copyright": "2024 lux.dev. All rights reserved."
+    }
+  },
+  "signInPage": {
+    "signUp": "Sign Up",
+    "signIn": "Sign In",
+    "login": "Login",
+    "createAccount": "Create an account",
+    "enterEmailCreateAccount": "Enter your email below to create your account",
+    "enterEmailSignIn": "Enter your email below to sign in",
+    "signInEmail": "Sign In with Email",
+    "orContinueWith": "Or continue with",
+    "madeBy": "Made with ❤️ by lux.dev"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "overview": "Your Scrims",
+    "admin": "Admin View",
+    "search": "Search...",
+    "themeSwitcher": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "userNav": {
+      "dashboard": "Dashboard",
+      "teams": "Teams",
+      "settings": "Settings",
+      "contact": "Contact",
+      "docs": "Docs",
+      "admin": "Admin",
+      "signOut": "Sign Out"
+    },
+    "commandMenu": {
+      "searchPlaceholder": "Type a command or search...",
+      "searchResult": "No results found.",
+      "suggestions": {
+        "title": "Suggestions",
+        "dashboard": "Dashboard",
+        "docs": "Docs",
+        "signIn": "Sign In",
+        "home": "Home"
+      },
+      "link": {
+        "title": "Link Copied",
+        "description1": "The link to this",
+        "description2": "has been copied.",
+        "share": "Share Link to"
+      },
+      "teams": {
+        "title": "Teams",
+        "viewTeams": "View Teams",
+        "viewScrims": "View Scrims:"
+      },
+      "settings": {
+        "title": "Settings",
+        "profile": "Profile",
+        "linkedAccounts": "Linked Accounts"
+      },
+      "report": {
+        "title": "Reporting",
+        "description": "Report a Bug"
+      },
+      "feedback": {
+        "title": "Feedback",
+        "description": "Contact Us",
+        "discord": "Community Discord"
+      },
+      "theme": {
+        "title": "Theme",
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System"
+      }
+    },
+    "filter": {
+      "title": "Filter",
+      "select": "Select a filter",
+      "oldToNew": "Oldest to Newest",
+      "newToOld": "Newest to Oldest"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "morePages": "More pages"
+    },
+    "mainNav": {
+      "dashboard": "Dashboard",
+      "stats": "Stats",
+      "teams": "Teams",
+      "settings": "Settings",
+      "contact": "Contact",
+      "docs": "Docs"
+    },
+    "teamSwitcher": {
+      "searchTeamPlaceholder": "Search team...",
+      "noTeamFound": "No team found.",
+      "individual": "Individual",
+      "teams": "Teams",
+      "createTeam": "Create Team"
+    },
+    "createTeam": {
+      "title": "Create team",
+      "description": "Add a new team to categorize your scrims and invite your players to view and manage your scrims.",
+      "teamName": "Team name",
+      "required": "Team name is required.",
+      "minCharacters": "Name must be at least 2 characters.",
+      "maxCharacters": "Name must not be longer than 30 characters.",
+      "cancel": "Cancel",
+      "createTeam": "Create team",
+      "creatingTeam": "Creating team...",
+      "newTeamCreated": {
+        "title": "Team created!",
+        "description": "Your team has been created successfully."
+      },
+      "error": {
+        "title": "Error",
+        "description": "An error occurred:"
+      }
+    },
+    "emptyScrimList": {
+      "title": "No Scrims",
+      "description": "Click the button to create a scrim.",
+      "question": "Unsure how to get the data for a scrim?",
+      "documentation": "Check out our documentation here."
+    },
+    "addScrim": {
+      "title": "Add a scrim...",
+      "description": "Click the button to create a scrim.",
+      "createScrim": "Create Scrim"
+    },
+    "scrimCard": {
+      "editScrim": "Edit scrim",
+      "scrimDate": "Scrim Date:",
+      "team": "Team:",
+      "creator": "Creator:",
+      "date": ""
+    },
+    "scrimCreationForm": {
+      "fileSize": {
+        "title": "File is too big",
+        "description": "Max file size is 1MB."
+      },
+      "fileType": {
+        "title": "Invalid file type",
+        "description": ".xlsx and .txt files are accepted."
+      },
+      "creatingScrim": {
+        "title": "Creating scrim",
+        "description": "Please wait..."
+      },
+      "createdScrim": {
+        "title": "Scrim created",
+        "description": "Your scrim has been created successfully."
+      },
+      "createdScrimError": {
+        "title": "Error",
+        "description1": "An error occurred:",
+        "description2": ". Please read the docs",
+        "description3": "here",
+        "description4": "to see if the error can be resolved."
+      },
+      "scrimName": "Scrim Name",
+      "scrimPlaceholder": "New Scrim",
+      "scrimDescription": "This is the name of the scrim. It will be displayed on the dashboard.",
+      "scrimRequiredError": "A scrim name is required.",
+      "scrimMinMessage": "Name must be at least 2 characters.",
+      "scrimMaxMessage": "Name must not be longer than 30 characters.",
+      "replayCodeName": "Scrim Replay Code",
+      "replayCodePlaceholder": "Replay Code",
+      "replayCodeDescription": "This is the replay code of the first map. You can edit the replay codes after the scrim is created.",
+      "replayCodeMessage": "Name must not be longer than 6 characters.",
+      "teamName": "Assign a Team",
+      "teamPlaceholder": "Select a team",
+      "teamIndividual": "Individual",
+      "teamDescription": "You can manage teams from your",
+      "teamDashboardLink": "dashboard",
+      "teamRequiredError": "A team name is required.",
+      "dateName": "Scrim Date",
+      "datePlaceholder": "Pick a date",
+      "date": "",
+      "dateDescription": "The scrim date is the date when the scrim took place.",
+      "dateRequiredError": "A scrim date is required.",
+      "mapName": "First Map",
+      "mapDescription": "Upload the first map of the scrim. Only .xlsx and .txt files are accepted, and max file size is 1MB. You can add more maps after the scrim is created.",
+      "submit": "Submit",
+      "submitting": "Submitting..."
+    }
+  },
+  "scrimPage": {
+    "back": "Back to dashboard",
+    "edit": "Edit scrim",
+    "maps": "Maps",
+    "noMaps": {
+      "title": "No maps have been added to this scrim yet!",
+      "description": "Add maps to this scrim to start analyzing your games. If no maps are added, the scrim will automatically be deleted within 24 hours. Need help?",
+      "link": "Check out the documentation"
+    },
+    "addMap": {
+      "title": "Add a map...",
+      "description": "Drag and drop or select a file to upload.",
+      "addFile": "Add a file",
+      "fileMessage": {
+        "required": "File is required.",
+        "maxSize": "Max file size is 1MB.",
+        "accepted": ".xlsx files are accepted."
+      },
+      "handleFile": {
+        "creatingTitle": "Creating map...",
+        "creatingDescription": "We are processing your data. Please wait.",
+        "createTitle": "Map created",
+        "createDescription": "Your map has been created successfully.",
+        "errorTitle": "Error",
+        "errorDescription1": "An error occurred:",
+        "errorDescription2": ". Please read the docs",
+        "errorLink": "here",
+        "errorDescription3": "to see if the error can be resolved."
+      }
+    },
+    "editScrim": {
+      "back": "Back to scrim",
+      "title": "Edit Scrim Details",
+      "displayName": {
+        "title": "Display Name",
+        "placeholder": "FIU Panthers vs UF Gators",
+        "description": "This is your scrim's name. This will show on your dashboard.",
+        "minMessage": "Name must be at least 2 characters.",
+        "maxMessage": "Name must not be longer than 30 characters."
+      },
+      "team": {
+        "title": "Team",
+        "placeholder": "Select a team",
+        "description": "This is the team that will be associated with this scrim. You can assign scrims to teams that you manage or own.",
+        "select": {
+          "teams": "Teams",
+          "individual": "Individual"
+        }
+      },
+      "date": {
+        "title": "Scrim Date",
+        "edit": "Edit date",
+        "date": "",
+        "description": "The date when the scrim took place."
+      },
+      "guestMode": {
+        "title": "Enable Guest Mode",
+        "description": "If enabled, the scrim will be accessible to any logged in user. If disabled, only your team members will be able to access the scrim."
+      },
+      "maps": {
+        "title": "Maps",
+        "replayCode": "Replay Code",
+        "delete": "Delete Map",
+        "deleteDialog": {
+          "title": "Are you absolutely sure?",
+          "description1": "This will permanently delete the map",
+          "description2": ". This action cannot be undone.",
+          "cancel": "Cancel",
+          "delete": "Delete",
+          "deleting": "Deleting..."
+        }
+      },
+      "update": "Update scrim",
+      "updating": "Updating...",
+      "onSubmit": {
+        "title": "Scrim updated",
+        "description": "Your scrim has been successfully updated.",
+        "errorTitle": "An error occurred",
+        "errorDescription": "An error occurred:"
+      },
+      "deleteMap": {
+        "title": "Map deleted",
+        "description": "The map has been deleted.",
+        "errorTitle": "An error occurred",
+        "errorDescription": "An error occurred:"
+      },
+      "dangerZone": "Danger Zone",
+      "deleteScrim": {
+        "title": "Delete Scrim",
+        "description": "Once you delete a scrim, there is no going back. Please be certain.",
+        "button": "Delete Scrim",
+        "delete1": "Are you sure you want to delete the scrim",
+        "delete2": "? This action cannot be undone.",
+        "delete3": "Type",
+        "delete4": "to confirm.",
+        "delete": "Delete Scrim",
+        "deleting": "Deleting...",
+        "cancel": "Cancel",
+        "handleDelete": {
+          "title": "Scrim deleted",
+          "description": "The Scrim has been deleted.",
+          "errorTitle": "Error",
+          "errorDescription": "An error occurred:"
+        }
+      }
+    }
+  },
+  "statsPage": {},
+  "teamPage": {
+    "manageTeams": "Manage Your Teams",
+    "viewTeams": "View Your Teams",
+    "teams": "Teams",
+    "admin": "Admin View",
+    "members": "Members",
+    "settings": "Settings",
+    "manager": "(Manager)",
+    "owner": "(Owner)",
+    "you": "(You)",
+    "addMember": "Add a member...",
+    "inviteMember": {
+      "title": "Invite Member",
+      "description": "Invite a new member to allow them to see your team's scrims. The user must be signed up to receive the invite.",
+      "email": "Email",
+      "cancel": "Cancel",
+      "send": "Send Invite",
+      "sending": "Sending invite...",
+      "onSubmit": {
+        "title": "Invite sent!",
+        "description": "Your invitation has been sent successfully.",
+        "errorTitle": "Error",
+        "errorDescription1": "An error occurred:",
+        "errorDescription2": ". Have you ensured the user is signed up?"
+      }
+    },
+    "teamInviteLink": {
+      "title": "Team Invite Link",
+      "subtitle": "Your permanent team invite link (hover to reveal):",
+      "description": "Please note that inviting a user via the \"Invite User\" button is much more secure. We suggest avoiding sharing this link whenever possible."
+    },
+    "clipboard": {
+      "title": "Copied to clipboard",
+      "description": "The team invite link has been copied to your clipboard.",
+      "tooltip": "Click to copy"
+    },
+    "name": {
+      "title": "Display Name",
+      "description": "This is your team's public display name.",
+      "minMessage": "Name must be at least 2 characters.",
+      "maxMessage": "Name must not be longer than 30 characters."
+    },
+    "avatar": {
+      "title": "Avatar",
+      "description": "This is your team's public avatar. Click on the avatar to upload a custom one from your files.",
+      "editTitle": "Edit Avatar",
+      "editDescription": "Make changes to your profile here. Click save when you're done.",
+      "save": "Save Changes",
+      "updating": "Updating...",
+      "handleCrop": {
+        "title": "Avatar updated successfully",
+        "description": "Your team's avatar has been updated successfully.",
+        "errorTitle": "An error occurred",
+        "errorDescription1": "An error occurred:",
+        "errorDescription2": "An error occurred while updating your avatar. Please try again later or contact support."
+      }
+    },
+    "update": {
+      "title": "Update team profile",
+      "onSubmitTitle": "Team profile updated",
+      "onSubmitDescription": "Your team profile has been successfully updated.",
+      "errorTitle": "An error occurred",
+      "errorDescription": "An error occurred:"
+    },
+    "dangerZone": {
+      "title": "Danger Zone",
+      "description": "These are irreversible actions. Please be certain before proceeding."
+    },
+    "transferOwner": {
+      "title": "Transfer Ownership",
+      "description": "Once you transfer ownership, you will no longer be the owner of this team.",
+      "button": "Transfer Ownership",
+      "email": "Enter the email address of the user you want to transfer ownership to.",
+      "transferring": "Transferring",
+      "cancel": "Cancel",
+      "handleTransfer": {
+        "title": "Ownership transferred",
+        "description": "Ownership of the team has successfully been transferred.",
+        "errorTitle": "Error",
+        "errorDescription": "An error occurred:"
+      }
+    },
+    "deleteTeam": {
+      "title": "Delete Team",
+      "description": "Once you delete a team, there is no going back. Please be certain.",
+      "button": "Delete Team",
+      "delete1": "Are you sure you want to delete the team",
+      "delete2": "? This action cannot be undone.",
+      "delete3": "Type",
+      "delete4": "to confirm.",
+      "deleting": "Deleting...",
+      "cancel": "Cancel",
+      "handleDelete": {
+        "title": "Team deleted",
+        "description": "The team has been deleted.",
+        "errorTitle": "Error",
+        "errorDescription": "An error occurred:"
+      }
+    }
+  },
+  "settingsPage": {
+    "title": "Settings",
+    "description": "Manage your account settings and preferences.",
+    "sideNav": {
+      "profile": "Profile",
+      "linkedAccounts": "Linked Accounts",
+      "admin": "Admin"
+    },
+    "profile": {
+      "title": "Profile",
+      "description": "This is how others will see you on the site.",
+      "planDescription1": "Your current plan is the",
+      "planDescription2": "plan.",
+      "planUpgrade": "Upgrade your plan",
+      "manageSubscription": "Manage your subscription"
+    },
+    "profileForm": {
+      "onSubmit": {
+        "title": "Profile updated",
+        "description": "Your profile has been successfully updated.",
+        "errorTitle": "An error occurred",
+        "errorDescription": "An error occurred:"
+      },
+      "minMessage": "Name must be at least 2 characters.",
+      "maxMessage": "Name must not be longer than 30 characters.",
+      "username": {
+        "title": "Username",
+        "description": "This is your public display name. It can be your real name or a pseudonym."
+      },
+      "avatar": {
+        "title": "Avatar",
+        "description": "This is your public account avatar. Click on the avatar to upload a custom one from your files.",
+        "update": "Update profile",
+        "editAvatar": {
+          "title": "Edit Avatar",
+          "description": "Make changes to your profile here. Click save when you're done.",
+          "save": "Save Changes",
+          "updating": "Updating...",
+          "handleCrop": {
+            "title": "Avatar updated successfully",
+            "description": "Your avatar has been updated successfully.",
+            "errorTitle": "An error occurred",
+            "errorDescription1": "An error occurred:",
+            "errorDescription2": "An error occurred while sending your message. Please try again later or contact support."
+          }
+        }
+      }
+    },
+    "linkedAccounts": {
+      "title": "Linked Accounts",
+      "description": "Manage linked account settings and preferences.",
+      "discord": {
+        "linked": "Your Discord account is successfully linked.",
+        "signIn": "Sign In with Discord"
+      }
+    },
+    "admin": {
+      "title": "Admin Settings",
+      "description": "Manage admin settings and preferences.",
+      "email": {
+        "title": "Email",
+        "description": "This is the email of the user you want to impersonate.",
+        "message": "Please enter a valid email address."
+      },
+      "prod": {
+        "title": "Use Production Environment URL",
+        "description": "If enabled, the impersonation URL will be generated for the production environment. If disabled, the impersonation URL will be generated for the development environment."
+      },
+      "impersonate": "Impersonate User",
+      "onSubmit": {
+        "title": "User Impersonated",
+        "description": "The impersonation URL has been copied to your clipboard.",
+        "errorTitle": "Error",
+        "errorDescription": "An error occurred while impersonating the user."
+      }
+    },
+    "dangerZone": {
+      "title": "Danger Zone",
+      "description1": "Account deletion is permanent and cannot be reversed. Are you looking to manage your subscription instead? If so, please click",
+      "description2": "here."
+    },
+    "deleteAccount": {
+      "title": "Delete Account",
+      "description1": "Are you sure you want to delete your account? This action cannot be undone. Are you looking to manage your subscription instead? If so, please click",
+      "description2": "here.",
+      "cancel": "Cancel",
+      "handleDelete": {
+        "title": "Account Deleted",
+        "description": "Your account has been successfully deleted.",
+        "errorTitle": "Error",
+        "errorDescription": "An error occurred:"
+      },
+      "secondDialog": {
+        "title": "Yes, delete my account",
+        "description1": "Are you absolutely sure you want to delete your account? This action cannot be undone.",
+        "description2": "Type",
+        "description3": "yes, delete my account",
+        "description4": "to confirm.",
+        "delete": "Delete Account",
+        "deleting": "Deleting...",
+        "cancel": "Cancel"
+      }
+    }
+  },
+  "contactPage": {
+    "header": {
+      "home": "Home",
+      "about": "About",
+      "pricing": "Pricing",
+      "demo": "Demo",
+      "docs": "Docs",
+      "company": "Company",
+      "logIn": "Log in"
+    },
+    "contactForm": {
+      "title": "Get in touch",
+      "description": "Having issues with the app? Want to request a feature? We'd love to hear from you! Send us a message and we'll get back to you as soon as we can.",
+      "discord": "Community Discord",
+      "name": "Name",
+      "email": "Email",
+      "message": "Message",
+      "send": "Send message",
+      "sending": "Sending...",
+      "nameRequiredError": "A name is required.",
+      "emailRequiredError": "An email is required.",
+      "emailMessage": "Please enter a valid email address.",
+      "messageRequiredError": "A message is required.",
+      "messageMessage": "Please enter a message.",
+      "handleSubmit": {
+        "title": "Message sent",
+        "description": "Your message has been sent successfully.",
+        "errorTitle1": "Error",
+        "errorDescription1": "An error occurred:",
+        "errorTitle2": "An error occurred",
+        "errorDescription2": "An error occurred while sending your message. Please try again later."
+      }
+    }
+  },
+  "aboutPage": {
+    "stats": {
+      "startDev": {
+        "label": "Started development",
+        "value": "Nov 2023"
+      },
+      "used": {
+        "label": "Used internally",
+        "value": "Jan 2024"
+      },
+      "scrimsUploaded": {
+        "label": "Scrims uploaded during beta",
+        "value": "50+"
+      },
+      "statsTracked": {
+        "label": "Player stats tracked during beta",
+        "value": "22,000+"
+      }
+    },
+    "values": {
+      "convenience": {
+        "name": "Convenience.",
+        "description": "Make it easy to track stats and see trends over time. Easily diagnose issues with your players."
+      },
+      "access": {
+        "name": "Accessibility.",
+        "description": "We want to make it easy for any team to use Parsertime. We're always looking for ways to make the platform more accessible."
+      },
+      "community": {
+        "name": "Community first.",
+        "description": "Built by Overwatch players, for Overwatch players. We're dedicated to serving the community."
+      },
+      "openSource": {
+        "name": "Open source.",
+        "description": "We believe that the best tools are built in the open. Contributions are welcome!"
+      },
+      "improvement": {
+        "name": "Continuous improvement.",
+        "description": "We're always adding new features and improving the platform. We want to make the best app possible."
+      },
+      "reliable": {
+        "name": "Reliable and performant.",
+        "description": "Our platform is built to be fast and reliable. We want to make sure that it's always there for you."
+      }
+    },
+    "team": {
+      "lucas": {
+        "name": "Lucas Doell",
+        "role": "Lead Developer",
+        "bio": "Software engineer, Top 500 Overwatch player, former student at Cornell University, and head coach of FIU Panthers. He is passionate about building great software and helping teams succeed."
+      },
+      "robin": {
+        "name": "Robin \"Zei\" Sidhu",
+        "role": "Head of Strategy",
+        "bio": "Zei is a coach for the top collegiate team St. Clair Saints. He recently led them to a 2nd place finish in the NACE Varsity Premiere 2023 fall semester. His favorite hobbies include crushing his players in TXCXX."
+      },
+      "giovanni": {
+        "name": "Giovanni Panzetta",
+        "role": "Developer",
+        "bio": "Giovanni is a software engineer specializing in full-stack development. He's passionate about building great software and building good user experiences."
+      },
+      "xavier": {
+        "name": "Xavier Park",
+        "role": "Developer",
+        "bio": "Xavier is a statistics major at Cornell University. He is excited about the potential of data analytics in esports and is working to build excellent statistics for Overwatch teams."
+      }
+    },
+
+    "headerSection": {
+      "title": "We love Overwatch",
+      "description": "That's why we're building a better way to track your performance. See your team's stats, track your performance over time, and see how you evolve as a player and as a team."
+    },
+    "contentSection": {
+      "description1": "Parsertime was originally created as an internal tool for FIU Panthers, a collegiate team. We wanted to be able to see our stats after scrims and see trends over time. We've since expanded to become a platform that any team can use. We're excited to see how teams use Parsertime to improve their performance.",
+      "description2": "We're a small team of passionate Overwatch players and coaches who are dedicated to building a platform that works for your team. We're always looking for feedback and feature requests. If you have any ideas, we'd love to hear them!",
+      "description3": "We know that teams are always looking for ways to improve. Our goal is to make it easy for you to see your stats and see trends week over week. Parsertime is currently used internally at FIU and new features are being added every week. We want to provide the best experience possible for Overwatch players and teams.",
+      "description4": "Parsertime is fully open source. We believe that the best tools are built in the open. If you'd like to contribute to Parsertime, we'd love to have you! We're always looking for contributors to help us build the best platform for Overwatch teams. You can find our GitHub repo",
+      "description5": "here",
+      "description6": "."
+    },
+    "featureSection": {
+      "title": "Our features",
+      "description": "See how our platform can make a difference for your team."
+    },
+    "teamSection": {
+      "title": "Meet our team",
+      "description": "We're a small team of passionate Overwatch players and coaches who are dedicated to building a platform that works for your team."
+    },
+    "ctaSection": {
+      "title": "Boost your productivity.",
+      "subTitle": "Start using our app today.",
+      "description": "Give your team the tools they need to succeed. Sign up for Parsertime today.",
+      "signUp": "Sign Up",
+      "demo": "Try our demo"
+    },
+    "footerNav": {
+      "title": "footer",
+      "description": "Building a better way to track your Overwatch performance.",
+      "solutions": {
+        "title": "Platform",
+        "dashboard": "Dashboard",
+        "signUp": "Sign Up",
+        "demo": "Demo"
+      },
+      "support": {
+        "title": "Support",
+        "pricing": "Pricing",
+        "doc": "Documentation",
+        "discord": "Discord",
+        "contact": "Contact"
+      },
+      "company": {
+        "title": "Company",
+        "about": "About",
+        "blog": "Blog",
+        "gitHub": "GitHub"
+      },
+      "legal": {
+        "title": "Legal",
+        "policy": "Privacy Policy"
+      },
+      "copyright": "2024 lux.dev. All rights reserved."
+    }
+  },
+  "pricingPage": {
+    "pricing": {
+      "title": "Pricing",
+      "header": "Plans for teams of all sizes",
+      "description": "As your team grows, Parsertime grows with you. We have the tools and features to meet your needs.",
+      "$": "$",
+      "month": "/month",
+      "currentPlan": "Your Current Plan",
+      "getStarted": "Get Started",
+      "buyPlan": "Buy Plan",
+      "priceComparison": "Pricing plan comparison",
+      "price": "Price"
+    },
+    "comingSoon": "Coming soon",
+    "tiers": {
+      "free": "Free",
+      "freeMonthly": "$0",
+      "freeDescription": "For people who want to try out Parsertime.",
+      "basic": "Basic",
+      "basicMonthly": "$10",
+      "basicDescription": "For teams that are ready to grow with Parsertime.",
+      "premium": "Premium",
+      "premiumMonthly": "$15",
+      "premiumDescription": "For larger teams that want to take their productivity to the next level."
+    },
+    "features": {
+      "title": "Features",
+      "scrims": "Individual Scrims",
+      "joinTeams": "Join Teams via Invite",
+      "data": "Data Analytics",
+      "createTeams": {
+        "title": "Create Teams",
+        "free": "Up to 2 teams",
+        "basic": "Up to 5 teams",
+        "premium": "Up to 10 teams"
+      },
+      "teamMembers": {
+        "title": "Team Members",
+        "free": "Up to 5 users",
+        "basic": "Up to 10 users",
+        "premium": "Up to 20 users"
+      },
+      "earlyAccess": "Early Access to New Features"
+    },
+    "mapStatistics": {
+      "title": "Map Statistics",
+      "analytics": "Advanced Analytics",
+      "mapKillFeeds": "Map Killfeeds",
+      "customCharts": "Custom Charts",
+      "mapEvents": "Map Events",
+      "playerComparison": "Player Comparison",
+      "customTargets": "Custom Targets"
+    },
+    "playerStatistics": {
+      "title": "Player Statistics",
+      "lastWeek": "Last Week",
+      "last2Weeks": "Last 2 Weeks",
+      "lastMonth": "Last Month",
+      "last3Months": "Last 3 Months",
+      "last6Months": "Last 6 Months",
+      "lastYear": "Last Year",
+      "allTime": "All Time",
+      "custom": "Custom Timeframe"
+    },
+    "support": {
+      "title": "Support",
+      "discord": "Community Discord",
+      "priority": "Priority Support",
+      "devCheck": "Monthly Developer Check-ins",
+      "custom": "Custom Feature Requests"
+    },
+    "caseStudy": {
+      "title": "Learn how teams use Parsertime to improve their coaching strategy.",
+      "description": "See our case study"
+    },
+    "testimonial": {
+      "quote": "“Parsertime is so impactful to the point where my players can be coached on things they actively need help with, like living more, or holding their ult longer and being patient.”",
+      "author": "coy (@shy.coy)",
+      "role": "Manager for o7 Esports"
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "description1": "Can't find the answer you're looking for? Reach out to our",
+      "description2": "support",
+      "description3": "team.",
+      "question1": "Do you offer discounts for collegiate teams?",
+      "answer1": "Yes! Please reach out to our support team and we'll be happy to help.",
+      "question2": "Do you offer discounts for Calling All Heroes teams?",
+      "answer2": "Yes! We want to support the CAH community as much as possible. Please reach out to our support team and we'll be happy to discuss a solution.",
+      "question3": "How can I manage my subscription?",
+      "answer3": "You can manage your subscription",
+      "answer3Link": "here",
+      "answer3Continue": ". If you have any issues, please reach out to our support team.",
+      "question4": "Can I cancel my subscription at any time?",
+      "answer4": "Yes, you can cancel your subscription at any time. Your subscription will remain active until the end of the billing period.",
+      "question5": "What if I need higher limits than the Premium plan offers?",
+      "answer5": "If you need something special or require higher limits than the Premium plan offers, please reach out to our",
+      "answer5Link": "support team",
+      "answer5Continue": "and we'll be happy to discuss a custom solution."
+    }
+  },
+  "privacyPage": {
+    "privacyPolicy": {
+      "title": "Privacy Policy",
+      "description": "At Parsertime, we are committed to maintaining the trust and confidence of our visitors to our web site. In particular, we want you to know that Parsertime is not in the business of selling, renting, or trading email lists with other companies and businesses for marketing purposes. In this Privacy Policy, we've provided detailed information on when and why we collect your personal information, how we use it, and how we keep it secure."
+    },
+    "collectInformation": {
+      "title": "Information We Collect",
+      "description": "As part of the registration process for our web app, we collect personal information. We use that information for a couple of reasons: to tell you about stuff you've asked us to tell you about; to contact you if we need to obtain or provide additional information; to check our records are right and to check every now and then that you're happy and satisfied. Here are the types of information we collect:",
+      "email": {
+        "title": "Email Addresses:",
+        "description": "Your email address is required during the registration process to help with account creation, authentication, and necessary communication related to the functionality of the app. We do not use your email address for marketing purposes."
+      },
+      "picture": {
+        "title": "Profile Pictures and Team Images:",
+        "description": "You can upload a profile picture and team images. These images are used to personalize your account and team profiles within our application."
+      },
+      "data": {
+        "title": "Game Logs and Performance Data:",
+        "description": "Overwatch 2 to visualize stats and show data on user and team performance. This data is strictly used to provide services offered by Parsertime and does not include any personally sensitive information."
+      }
+    },
+    "useInformation": {
+      "title": "How We Use Your Information",
+      "description": "We use your information to:",
+      "list1": "Operate and maintain our services;",
+      "list2": "Improve your experience on our site through personalization;",
+      "list3": "Communicate important notices, such as changes to our terms, conditions, and policies;",
+      "list4": "Address technical issues and protect our site from fraud and abuse."
+    },
+    "storageSecurity": {
+      "title": "Storage and Security",
+      "description": "We take precautions to protect your information. When you submit sensitive information via the website, your information is protected both online and offline. Only employees who need the information to perform a specific job (for example, billing or customer service) are granted access to personally identifiable information."
+    },
+    "thirdPartyLinks": {
+      "title": "Third-Party Links",
+      "description": "Our website may include links to third-party websites. We do not have control over, and are not responsible for, the content or privacy practices of these sites. We encourage our users to be aware when they leave our site and to read the privacy statements of any other site that collects personally identifiable information."
+    },
+    "changePrivacyPolicy": {
+      "title": "Changes to Our Privacy Policy",
+      "description": "We may update this policy from time to time in order to reflect, for example, changes to our practices or for other operational, legal, or regulatory reasons."
+    },
+    "contactUs": {
+      "title": "Contact Us",
+      "description1": "For more information about our privacy practices, if you have questions, or if you would like to make a complaint, please contact us by email at",
+      "description2": "privacy@lux.dev",
+      "description3": "."
+    }
+  },
+  "billingPlan": {
+    "free": "'FREE'",
+    "basic": "'BASIC'",
+    "premium": "'PREMIUM'"
+  },
+  "footer": {
+    "dashboard": "Dashboard",
+    "stats": "Stats",
+    "teams": "Teams",
+    "settings": "Settings",
+    "contact": "Contact",
+    "docs": "Docs",
+    "copyright": "2024 lux.dev."
+  }
+}
