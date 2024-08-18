@@ -194,7 +194,7 @@ export async function createNewScrimFromParsedData(
 
   const map = await prisma.map.create({
     data: {
-      name: data.map.match_start[0][2] ?? "New Map",
+      name: toTitleCase(data.map.match_start[0][2]) ?? "New Map",
       scrimId: scrim.id,
       mapData: {
         connect: {
