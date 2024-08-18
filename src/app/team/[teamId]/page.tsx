@@ -9,6 +9,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { $Enums, User } from "@prisma/client";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
 type Props = {
@@ -45,12 +46,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           height: 630,
         },
       ],
-      locale: "en_US",
+      // locale: "en_US",
     },
   };
 }
 
 export default async function Team({ params }: { params: { teamId: string } }) {
+  const t = await getTranslations("teamPage");
   const session = await auth();
 
   const teamId = parseInt(params.teamId);
@@ -97,13 +99,20 @@ export default async function Team({ params }: { params: { teamId: string } }) {
       <Tabs defaultValue="members" className="space-y-4">
         {hasPerms && (
           <TabsList>
-            <TabsTrigger value="members">Members</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
+            <TabsTrigger value="members">
+              {/* Members */}
+              {t("members")}
+            </TabsTrigger>
+            <TabsTrigger value="settings">
+              {/* Settings */}
+              {t("settings")}
+            </TabsTrigger>
           </TabsList>
         )}
         <TabsContent value="members" className="space-y-4">
           <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-            Members
+            {/* Members */}
+            {t("members")}
           </h3>
 
           {teamMembers?.users.length > 0 && (
@@ -128,9 +137,13 @@ export default async function Team({ params }: { params: { teamId: string } }) {
                     <CardHeader className="flex">
                       <div>
                         <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-                          {user.name} {userIsManager(user) && "(Manager)"}{" "}
-                          {user.id === teamData?.ownerId && "(Owner)"}{" "}
-                          {user.name === session?.user?.name && "(You)"}
+                          {user.name}{" "}
+                          {userIsManager(user) &&
+                            /* "(Manager)" */ t("manager")}{" "}
+                          {user.id === teamData?.ownerId &&
+                            /* "(Owner)" */ t("owner")}{" "}
+                          {user.name === session?.user?.name &&
+                            /* "(You)" */ t("you")}
                         </h4>
                       </div>
                     </CardHeader>

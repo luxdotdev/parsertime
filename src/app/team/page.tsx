@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -25,11 +26,12 @@ export const metadata: Metadata = {
         height: 630,
       },
     ],
-    locale: "en_US",
+    // locale: "en_US",
   },
 };
 
 export default async function TeamPage() {
+  const t = await getTranslations("teamPage");
   const session = await auth();
 
   const userData = await getUser(session?.user?.email);
@@ -55,14 +57,22 @@ export default async function TeamPage() {
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">
-            {hasPerms ? "Manage Your Teams" : "View Your Teams"}
+            {hasPerms
+              ? /* "Manage Your Teams" */ t("manageTeams")
+              : /* "View Your Teams" */ t("viewTeams")}
           </h2>
         </div>
         <Tabs defaultValue="teams" className="space-y-4">
           {hasPerms && (
             <TabsList>
-              <TabsTrigger value="teams">Teams</TabsTrigger>
-              <TabsTrigger value="admin">Admin View</TabsTrigger>
+              <TabsTrigger value="teams">
+                {/* Teams */}
+                {t("teams")}
+              </TabsTrigger>
+              <TabsTrigger value="admin">
+                {/* Admin View */}
+                {t("admin")}
+              </TabsTrigger>
             </TabsList>
           )}
 

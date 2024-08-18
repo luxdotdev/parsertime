@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { signIn, signOut } from "@/lib/auth";
+import { useTranslations } from "next-intl";
 import { redirect } from "next/navigation";
 
 export function SignInButton({
@@ -23,6 +24,7 @@ export function SignInButton({
 export function SignOutButton(
   props: React.ComponentPropsWithRef<typeof Button>
 ) {
+  const t = useTranslations("dashboard");
   return (
     <form
       action={async () => {
@@ -32,7 +34,8 @@ export function SignOutButton(
       className="w-full"
     >
       <button className="w-full p-0" {...props}>
-        Sign Out
+        {/* Sign Out */}
+        {t("userNav.signOut")}
       </button>
     </form>
   );

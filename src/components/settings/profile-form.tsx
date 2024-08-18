@@ -22,25 +22,31 @@ import { User } from "@prisma/client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useRef, useState } from "react";
-
-const profileFormSchema = z.object({
-  name: z
-    .string()
-    .min(2, {
-      message: "Name must be at least 2 characters.",
-    })
-    .max(30, {
-      message: "Name must not be longer than 30 characters.",
-    }),
-});
-
-type ProfileFormValues = z.infer<typeof profileFormSchema>;
+import { useTranslations } from "next-intl";
 
 export function ProfileForm({ user }: { user: User }) {
+  const t = useTranslations("settingsPage");
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  const profileFormSchema = z.object({
+    name: z
+      .string()
+      .min(2, {
+        message: /* "Name must be at least 2 characters." */ t(
+          "profileForm.minMessage"
+        ),
+      })
+      .max(30, {
+        message: /* "Name must not be longer than 30 characters." */ t(
+          "profileForm.maxMessage"
+        ),
+      }),
+  });
+
+  type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -61,15 +67,17 @@ export function ProfileForm({ user }: { user: User }) {
 
     if (res.ok) {
       toast({
-        title: "Profile updated",
-        description: "Your profile has been successfully updated.",
+        title: /* "Profile updated" */ t("profileForm.onSubmit.title"),
+        description: /* "Your profile has been successfully updated." */ t(
+          "profileForm.onSubmit.description"
+        ),
         duration: 5000,
       });
       router.refresh();
     } else {
       toast({
-        title: "An error occurred",
-        description: `An error occurred: ${await res.text()} (${res.status})`,
+        title: /* "An error occurred" */ t("profileForm.onSubmit.errorTitle"),
+        description: /* `An error occurred: */ `${t("profileForm.onSubmit.errorDescription")} ${await res.text()} (${res.status})`,
         variant: "destructive",
         duration: 5000,
       });
@@ -97,7 +105,10 @@ export function ProfileForm({ user }: { user: User }) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
+                <FormLabel>
+                  {/* Username */}
+                  {t("profileForm.username.title")}
+                </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="lux"
@@ -106,15 +117,19 @@ export function ProfileForm({ user }: { user: User }) {
                   />
                 </FormControl>
                 <FormDescription>
-                  This is your public display name. It can be your real name or
-                  a pseudonym.
+                  {/* This is your public display name. It can be your real name or
+                  a pseudonym. */}
+                  {t("profileForm.username.description")}
                 </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
           <FormItem>
-            <FormLabel>Avatar</FormLabel>
+            <FormLabel>
+              {/* Avatar */}
+              {t("profileForm.avatar.title")}
+            </FormLabel>
             <FormControl aria-readonly>
               <>
                 <input
@@ -142,12 +157,16 @@ export function ProfileForm({ user }: { user: User }) {
               </>
             </FormControl>
             <FormDescription>
-              This is your public account avatar. Click on the avatar to upload
-              a custom one from your files.
+              {/* This is your public account avatar. Click on the avatar to upload
+              a custom one from your files. */}
+              {t("profileForm.avatar.description")}
             </FormDescription>
             <FormMessage />
           </FormItem>
-          <Button type="submit">Update profile</Button>
+          <Button type="submit">
+            {/* Update profile */}
+            {t("profileForm.avatar.update")}
+          </Button>
         </form>
       </Form>
     </ClientOnly>

@@ -17,8 +17,10 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { $Enums } from "@prisma/client";
 import { getUser } from "@/data/user-dto";
+import { getTranslations } from "next-intl/server";
 
 export async function UserNav() {
+  const t = await getTranslations("dashboard");
   const session = await auth();
   if (!session?.user) {
     redirect("/sign-in");
@@ -57,20 +59,33 @@ export async function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <Link href="/dashboard">
-            <DropdownMenuItem>Dashboard</DropdownMenuItem>
+            <DropdownMenuItem>
+              {/* Dashboard */}
+              {t("userNav.dashboard")}
+            </DropdownMenuItem>
           </Link>
           <Link href="/team">
-            <DropdownMenuItem>Teams</DropdownMenuItem>
+            <DropdownMenuItem>
+              {/* Teams */}
+              {t("userNav.teams")}
+            </DropdownMenuItem>
           </Link>
           <Link href="/settings">
-            <DropdownMenuItem>Settings</DropdownMenuItem>
+            <DropdownMenuItem>
+              {/* Settings */}
+              {t("userNav.settings")}
+            </DropdownMenuItem>
           </Link>
           <Link href="/contact">
-            <DropdownMenuItem>Contact</DropdownMenuItem>
+            <DropdownMenuItem>
+              {/* Contact */}
+              {t("userNav.contact")}
+            </DropdownMenuItem>
           </Link>
           <Link href="https://docs.parsertime.app" target="_blank">
             <DropdownMenuItem>
-              Docs
+              {/* Docs */}
+              {t("userNav.docs")}
               <DropdownMenuShortcut>
                 <ExternalLinkIcon />
               </DropdownMenuShortcut>
@@ -81,7 +96,10 @@ export async function UserNav() {
           <>
             <DropdownMenuSeparator />
             <Link href="/settings/admin">
-              <DropdownMenuItem>Admin</DropdownMenuItem>
+              <DropdownMenuItem>
+                {/* Admin */}
+                {t("userNav.admin")}
+              </DropdownMenuItem>
             </Link>
           </>
         )}

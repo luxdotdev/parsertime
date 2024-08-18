@@ -30,6 +30,7 @@ import { cn } from "@/lib/utils";
 import { Session } from "next-auth";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { TeamSwitcherContext } from "@/components/team-switcher-provider";
+import { useTranslations } from "next-intl";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
@@ -49,6 +50,7 @@ export function TeamSwitcher({
   const pathname = usePathname();
   const searchParams = useSearchParams()!;
   const { setTeamId } = React.use(TeamSwitcherContext);
+  const t = useTranslations("dashboard");
 
   function getTeams() {
     fetch("/api/team/get-teams")
@@ -76,7 +78,7 @@ export function TeamSwitcher({
 
   const groups = [
     {
-      label: "Individual",
+      label: /* "Individual" */ t("teamSwitcher.individual"),
       teams: [
         {
           label: session?.user?.name ?? "Individual",
@@ -86,7 +88,7 @@ export function TeamSwitcher({
       ],
     },
     {
-      label: "Teams",
+      label: /* "Teams" */ t("teamSwitcher.teams"),
       teams,
     },
   ];
@@ -123,8 +125,15 @@ export function TeamSwitcher({
         <PopoverContent className="w-[200px] p-0">
           <Command>
             <CommandList>
-              <CommandInput placeholder="Search team..." />
-              <CommandEmpty>No team found.</CommandEmpty>
+              <CommandInput
+                placeholder=/* "Search team..." */ {t(
+                  "teamSwitcher.searchTeamPlaceholder"
+                )}
+              />
+              <CommandEmpty>
+                {/* No team found. */}
+                {t("teamSwitcher.noTeamFound")}
+              </CommandEmpty>
               {groups.map((group) => (
                 <CommandGroup key={group.label} heading={group.label}>
                   {group.teams.map((team) => (
@@ -177,7 +186,8 @@ export function TeamSwitcher({
                     }}
                   >
                     <PlusCircledIcon className="mr-2 h-5 w-5" />
-                    Create Team
+                    {/* Create Team */}
+                    {t("teamSwitcher.createTeam")}
                   </CommandItem>
                 </DialogTrigger>
               </CommandGroup>

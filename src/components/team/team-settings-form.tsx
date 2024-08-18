@@ -29,25 +29,31 @@ import { ClipboardCopyIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useRef, useState } from "react";
-
-const profileFormSchema = z.object({
-  name: z
-    .string()
-    .min(2, {
-      message: "Name must be at least 2 characters.",
-    })
-    .max(30, {
-      message: "Name must not be longer than 30 characters.",
-    }),
-});
-
-type ProfileFormValues = z.infer<typeof profileFormSchema>;
+import { useTranslations } from "next-intl";
 
 export function TeamSettingsForm({ team }: { team: Team }) {
+  const t = useTranslations("teamPage");
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  const profileFormSchema = z.object({
+    name: z
+      .string()
+      .min(2, {
+        message:
+          /* "Name must be at least 2 characters." */ t("name.minMessage"),
+      })
+      .max(30, {
+        message:
+          /* "Name must not be longer than 30 characters." */ t(
+            "name.maxMessage"
+          ),
+      }),
+  });
+
+  type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -73,15 +79,17 @@ export function TeamSettingsForm({ team }: { team: Team }) {
 
     if (res.ok) {
       toast({
-        title: "Team profile updated",
-        description: "Your team profile has been successfully updated.",
+        title: /* "Team profile updated" */ t("update.onSubmitTitle"),
+        description: /* "Your team profile has been successfully updated." */ t(
+          "update.onSubmitDescription"
+        ),
         duration: 5000,
       });
       router.refresh();
     } else {
       toast({
-        title: "An error occurred",
-        description: `An error occurred: ${await res.text()} (${res.status})`,
+        title: /* "An error occurred" */ t("update.errorTitle"),
+        description: /* `An error occurred: */ `${t("update.errorDescription")} ${await res.text()} (${res.status})`,
         variant: "destructive",
         duration: 5000,
       });
@@ -105,10 +113,16 @@ export function TeamSettingsForm({ team }: { team: Team }) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormItem>
-            <FormLabel>Team Invite Link</FormLabel>
+            <FormLabel>
+              {/* Team Invite Link */}
+              {t("teamInviteLink.title")}
+            </FormLabel>
             <FormControl>
               <div className="items-center">
-                <p>Your permanent team invite link (hover to reveal):</p>
+                <p>
+                  {/* Your permanent team invite link (hover to reveal): */}
+                  {t("teamInviteLink.subtitle")}
+                </p>
                 <code className="rounded bg-zinc-800 p-1 text-zinc-800 transition-colors hover:text-white">
                   https://parsertime.app/team/join/
                   {btoa(team.createdAt.toISOString())}
@@ -125,23 +139,30 @@ export function TeamSettingsForm({ team }: { team: Team }) {
                             )}`
                           );
                           toast({
-                            title: "Copied to clipboard",
+                            title:
+                              /* "Copied to clipboard" */ t("clipboard.title"),
                             description:
-                              "The team invite link has been copied to your clipboard.",
+                              /* "The team invite link has been copied to your clipboard." */ t(
+                                "clipboard.description"
+                              ),
                             duration: 5000,
                           });
                         }}
                       />
                     </TooltipTrigger>
-                    <TooltipContent>Click to copy</TooltipContent>
+                    <TooltipContent>
+                      {/* Click to copy */}
+                      {t("clipboard.tooltip")}
+                    </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
             </FormControl>
             <FormDescription>
-              Please note that inviting a user via the &quot;Invite User&quot;
+              {/* Please note that inviting a user via the &quot;Invite User&quot;
               button is much more secure. We suggest avoiding sharing this link
-              whenever possible.
+              whenever possible. */}
+              {t("teamInviteLink.description")}
             </FormDescription>
           </FormItem>
           <FormField
@@ -149,7 +170,10 @@ export function TeamSettingsForm({ team }: { team: Team }) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Display Name</FormLabel>
+                <FormLabel>
+                  {/* Display Name */}
+                  {t("name.title")}
+                </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Esports at Cornell"
@@ -159,14 +183,18 @@ export function TeamSettingsForm({ team }: { team: Team }) {
                   />
                 </FormControl>
                 <FormDescription>
-                  This is your team&apos;s public display name.
+                  {/* This is your team&apos;s public display name. */}
+                  {t("name.description")}
                 </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
           <FormItem>
-            <FormLabel>Avatar</FormLabel>
+            <FormLabel>
+              {/* Avatar */}
+              {t("avatar.title")}
+            </FormLabel>
             <FormControl aria-readonly>
               <>
                 <input
@@ -196,12 +224,16 @@ export function TeamSettingsForm({ team }: { team: Team }) {
               </>
             </FormControl>
             <FormDescription>
-              This is your team&apos;s public avatar. Click on the avatar to
-              upload a custom one from your files.
+              {/* This is your team&apos;s public avatar. Click on the avatar to
+              upload a custom one from your files. */}
+              {t("avatar.title")}
             </FormDescription>
             <FormMessage />
           </FormItem>
-          <Button type="submit">Update team profile</Button>
+          <Button type="submit">
+            {/* Update team profile */}
+            {t("update.title")}
+          </Button>
         </form>
       </Form>
     </ClientOnly>

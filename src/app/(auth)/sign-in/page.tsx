@@ -7,6 +7,7 @@ import { UserAuthForm } from "@/components/auth/user-auth-form";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: `Sign In | Parsertime`,
@@ -24,11 +25,13 @@ export const metadata: Metadata = {
         height: 630,
       },
     ],
-    locale: "en_US",
+    // locale: "en_US",
   },
 };
 
 export default async function AuthenticationPage() {
+  const t = await getTranslations("signInPage");
+
   const session = await auth();
 
   if (session) {
@@ -56,7 +59,8 @@ export default async function AuthenticationPage() {
           "absolute right-4 top-4 md:right-8 md:top-8"
         )}
       >
-        Sign Up
+        {/* Sign Up */}
+        {t("signUp")}
       </Link>
       <div className="relative hidden h-full flex-col bg-muted p-10 text-black dark:border-r dark:text-white lg:flex">
         <div className="bg-topography dark:bg-dark-topography absolute inset-0" />
@@ -73,15 +77,22 @@ export default async function AuthenticationPage() {
           </div>
         </Link>
         <div className="relative z-20 mt-auto">
-          <p className="space-y-2 text-lg">Made with ❤️ by lux.dev</p>
+          <p className="space-y-2 text-lg">
+            {/* Made with ❤️ by lux.dev */}
+            {t("madeBy")}
+          </p>
         </div>
       </div>
       <div className="pt-20 lg:p-8 lg:pt-8">
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col space-y-2 text-center">
-            <h1 className="text-2xl font-semibold tracking-tight">Sign In</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">
+              {/* Sign In */}
+              {t("signIn")}
+            </h1>
             <p className="text-sm text-muted-foreground">
-              Enter your email below to sign in
+              {/* Enter your email below to sign in */}
+              {t("enterEmailSignIn")}
             </p>
           </div>
           <UserAuthForm />

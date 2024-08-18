@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -36,6 +37,7 @@ export default function InviteMemberModal({
   showInviteMemberModal: boolean;
   setShowInviteMemberModal: (show: boolean) => void;
 }) {
+  const t = useTranslations("teamPage");
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const params = useParams<{ teamId: string }>();
@@ -59,8 +61,8 @@ export default function InviteMemberModal({
     if (!getToken.ok) {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: `An error occurred: ${await getToken.text()} (${getToken.status})`,
+        title: /* "Error" */ t("inviteMember.onSubmit.errorTitle"),
+        description: /* `An error occurred: */ `${t("inviteMember.onSubmit.errorDescription1")} ${await getToken.text()} (${getToken.status})`,
       });
       setLoading(false);
       return;
@@ -78,15 +80,17 @@ export default function InviteMemberModal({
     if (res.ok) {
       setShowInviteMemberModal(false);
       toast({
-        title: "Invite sent!",
-        description: "Your invitation has been sent successfully.",
+        title: /* "Invite sent!" */ t("inviteMember.onSubmit.title"),
+        description: /* "Your invitation has been sent successfully." */ t(
+          "inviteMember.onSubmit.description"
+        ),
       });
       setLoading(false);
     } else {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: `An error occurred: ${await res.text()} (${res.status})${res.status === 404 ? ". Have you ensured the user is signed up?" : ""}`,
+        title: /* "Error" */ t("inviteMember.onSubmit.errorTitle"),
+        description: /* `An error occurred: */ `${t("inviteMember.onSubmit.errorDescription1")} ${await res.text()} (${res.status})${res.status === 404 ? /* ". Have you ensured the user is signed up?" */ t("inviteMember.onSubmit.errorDescription2") : ""}`,
       });
       setLoading(false);
     }
@@ -99,10 +103,14 @@ export default function InviteMemberModal({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Invite Member</DialogTitle>
+          <DialogTitle>
+            {/* Invite Member */}
+            {t("inviteMember.title")}
+          </DialogTitle>
           <DialogDescription>
-            Invite a new member to allow them to see your team&apos;s scrims.
-            The user must be signed up to receive the invite.
+            {/* Invite a new member to allow them to see your team&apos;s scrims.
+            The user must be signed up to receive the invite. */}
+            {t("inviteMember.description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -114,11 +122,14 @@ export default function InviteMemberModal({
               render={({ field }) => (
                 <div className="space-y-4 py-2 pb-4">
                   <div className="space-y-2">
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>
+                      {/* Email */}
+                      {t("inviteMember.email")}
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="lucas@lux.dev" {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage /> {/* idk */}
                   </div>
                 </div>
               )}
@@ -129,16 +140,18 @@ export default function InviteMemberModal({
                 onClick={() => setShowInviteMemberModal(false)}
                 disabled={loading}
               >
-                Cancel
+                {/* Cancel */}
+                {t("inviteMember.cancel")}
               </Button>
               <Button type="submit" disabled={loading}>
                 {loading ? (
                   <>
                     <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                    Sending invite...
+                    {/* Sending invite... */}
+                    {t("inviteMember.sending")}
                   </>
                 ) : (
-                  "Send Invite"
+                  /* "Send Invite" */ t("inviteMember.send")
                 )}
               </Button>
             </DialogFooter>

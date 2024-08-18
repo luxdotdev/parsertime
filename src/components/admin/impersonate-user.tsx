@@ -18,17 +18,20 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
-
-const adminFormSchema = z.object({
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  isProd: z.boolean().default(true),
-});
-
-type AdminFormValues = z.infer<typeof adminFormSchema>;
+import { useTranslations } from "next-intl";
 
 export function ImpersonateUserForm() {
+  const t = useTranslations("settingsPage.admin");
+
+  const adminFormSchema = z.object({
+    email: z.string().email({
+      message: t("email.message"),
+    }),
+    isProd: z.boolean().default(true),
+  });
+
+  type AdminFormValues = z.infer<typeof adminFormSchema>;
+
   const form = useForm<AdminFormValues>({
     resolver: zodResolver(adminFormSchema),
     defaultValues: {
@@ -47,7 +50,7 @@ export function ImpersonateUserForm() {
       });
 
       if (!res.ok) {
-        throw new Error("An error occurred while impersonating the user.");
+        throw new Error(t("onSubmit.errorDescription"));
       }
 
       const { url } = (await res.json()) as { url: string };
@@ -55,14 +58,14 @@ export function ImpersonateUserForm() {
       await navigator.clipboard.writeText(url);
 
       toast({
-        title: "User Impersonated",
-        description: `The impersonation URL has been copied to your clipboard.`,
+        title: t("onSubmit.title"),
+        description: t("onSubmit.description"),
         duration: 5000,
       });
     } catch (e) {
       toast({
-        title: "Error",
-        description: "An error occurred while impersonating the user.",
+        title: t("onSubmit.errorTitle"),
+        description: t("onSubmit.errorDescription"),
         variant: "destructive",
       });
     }
@@ -77,7 +80,7 @@ export function ImpersonateUserForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{t("email.title")}</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="lucas@lux.dev"
@@ -85,9 +88,7 @@ export function ImpersonateUserForm() {
                     {...field}
                   />
                 </FormControl>
-                <FormDescription>
-                  This is the email of the user you want to impersonate.
-                </FormDescription>
+                <FormDescription>{t("email.description")}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -104,17 +105,13 @@ export function ImpersonateUserForm() {
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
-                  <FormLabel>Use Production Environment URL</FormLabel>
-                  <FormDescription>
-                    If enabled, the impersonation URL will be generated for the
-                    production environment. If disabled, the impersonation URL
-                    will be generated for the development environment.
-                  </FormDescription>
+                  <FormLabel>{t("prod.title")}</FormLabel>
+                  <FormDescription>{t("prod.description")}</FormDescription>
                 </div>
               </FormItem>
             )}
           />
-          <Button type="submit">Impersonate User</Button>
+          <Button type="submit">{t("impersonate")}</Button>
         </form>
       </Form>
     </ClientOnly>

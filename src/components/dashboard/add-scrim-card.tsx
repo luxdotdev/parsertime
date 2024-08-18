@@ -14,6 +14,7 @@ import { parseDataFromXLSX } from "@/lib/parser";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Form, useForm } from "react-hook-form";
@@ -40,6 +41,7 @@ const formSchema = z.object({
 });
 
 export function AddScrimCard() {
+  const t = useTranslations("dashboard");
   const [dragActive, setDragActive] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
@@ -135,11 +137,15 @@ export function AddScrimCard() {
                   <CardHeader className="text-center text-xl">
                     <span className="inline-flex items-center justify-center space-x-2">
                       <PlusCircledIcon className="h-6 w-6" />{" "}
-                      <span>Add a scrim...</span>
+                      <span>
+                        {/* Add a scrim... */}
+                        {t("addScrim.title")}
+                      </span>
                     </span>
                   </CardHeader>
                   <CardDescription className="pb-4">
-                    Click the button to create a scrim.
+                    {/* Click the button to create a scrim. */}
+                    {t("addScrim.description")}
                   </CardDescription>
                   <CardContent className="flex items-center justify-center">
                     {/* <Input

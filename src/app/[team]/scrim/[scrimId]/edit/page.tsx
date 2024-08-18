@@ -11,6 +11,7 @@ import { getScrim } from "@/data/scrim-dto";
 import { MobileNav } from "@/components/mobile-nav";
 import { auth } from "@/lib/auth";
 import { getTeamsWithPerms, getUser } from "@/data/user-dto";
+import { getTranslations } from "next-intl/server";
 
 type Props = {
   params: { team: string; scrimId: string };
@@ -18,6 +19,7 @@ type Props = {
 };
 
 export default async function EditScrimPage({ params }: Props) {
+  const t = await getTranslations("scrimPage");
   const scrim = await getScrim(parseInt(params.scrimId));
   const session = await auth();
   const user = await getUser(session?.user?.email);
@@ -56,12 +58,12 @@ export default async function EditScrimPage({ params }: Props) {
       <main className="container py-2">
         <h4 className="pb-2 text-gray-600 dark:text-gray-400">
           <Link href={`/${params.team}/scrim/${params.scrimId}`}>
-            &larr; Back to scrim
+            &larr; {t("editScrim.back")}
           </Link>
         </h4>
 
         <h3 className="scroll-m-20 pb-2 text-2xl font-semibold tracking-tight">
-          Edit Scrim Details
+          {t("editScrim.title")}
         </h3>
 
         <EditScrimForm scrim={scrim} teams={teamsWithPerms} maps={maps} />

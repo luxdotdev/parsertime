@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           height: 630,
         },
       ],
-      locale: "en_US",
+      // locale: "en_US",
     },
   };
 }

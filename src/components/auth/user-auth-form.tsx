@@ -13,12 +13,14 @@ import { ClientOnly } from "@/lib/client-only";
 import { EnvelopeOpenIcon } from "@radix-ui/react-icons";
 import { track } from "@vercel/analytics";
 import { z } from "zod";
+import { useTranslations } from "next-intl";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [email, setEmail] = React.useState("");
+  const t = useTranslations("signInPage");
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
@@ -69,7 +71,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
               )}
               <EnvelopeOpenIcon className="mr-2 h-4 w-4" />
-              Sign In with Email
+              {/* Sign In with Email */}
+              {t("signInEmail")}
             </Button>
           </div>
         </form>
@@ -80,7 +83,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         </div>
         <div className="relative flex justify-center text-xs uppercase">
           <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
+            {/* Or continue with */}
+            {t("orContinueWith")}
           </span>
         </div>
       </div>

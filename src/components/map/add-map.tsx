@@ -15,6 +15,7 @@ import { parseData } from "@/lib/parser";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ExternalLinkIcon, PlusCircledIcon } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -30,21 +31,24 @@ const ACCEPTED_FILE_TYPES = [XLSX, TXT];
 
 const MAX_FILE_SIZE = 1000000; // 1MB in bytes
 
-const formSchema = z.object({
-  file: z
-    .any()
-    .refine((file) => file !== null && file !== undefined, "File is required.")
-    .refine(
-      (file) => file && file.size <= MAX_FILE_SIZE,
-      "Max file size is 1MB."
-    )
-    .refine(
-      (file) => file && ACCEPTED_FILE_TYPES.includes(file.type),
-      ".xlsx files are accepted."
-    ),
-});
-
 export function AddMapCard() {
+  const t = useTranslations("scrimPage");
+  const formSchema = z.object({
+    file: z
+      .any()
+      .refine(
+        (file) => file !== null && file !== undefined,
+        t("addMap.fileMessage.required")
+      )
+      .refine(
+        (file) => file && file.size <= MAX_FILE_SIZE,
+        t("addMap.fileMessage.maxSize")
+      )
+      .refine(
+        (file) => file && ACCEPTED_FILE_TYPES.includes(file.type),
+        t("addMap.fileMessage.accepted")
+      ),
+  });
   const [dragActive, setDragActive] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
@@ -55,8 +59,8 @@ export function AddMapCard() {
     const scrimId = pathname.split("/")[3];
 
     toast({
-      title: "Creating map...",
-      description: "We are processing your data. Please wait.",
+      title: t("addMap.handleFile.creatingTitle"),
+      description: t("addMap.handleFile.creatingDescription"),
       duration: 5000,
     });
 
@@ -69,27 +73,27 @@ export function AddMapCard() {
 
     if (res.ok) {
       toast({
-        title: "Map created",
-        description: "Your map has been created successfully.",
+        title: t("addMap.handleFile.createTitle"),
+        description: t("addMap.handleFile.createDescription"),
         duration: 5000,
       });
       router.refresh();
     } else {
       toast({
-        title: "Error",
+        title: t("addMap.handleFile.errorTitle"),
         description: (
           <p>
-            An error occurred: {await res.text()} ({res.status}). Please read
-            the docs{" "}
+            {t("addMap.handleFile.errorDescription1")} {await res.text()} (
+            {res.status}){t("addMap.handleFile.errorDescription2")}{" "}
             <Link
               href="https://docs.parsertime.app/#common-errors"
               target="_blank"
               className="underline"
             >
-              here
+              {t("addMap.handleFile.errorLink")}
             </Link>{" "}
-            <ExternalLinkIcon className="inline h-4 w-4" /> to see if the error
-            can be resolved.
+            <ExternalLinkIcon className="inline h-4 w-4" />{" "}
+            {t("addMap.handleFile.errorDescription3")}
           </p>
         ),
         duration: 5000,
@@ -156,15 +160,15 @@ export function AddMapCard() {
                   <CardHeader className="text-center text-xl">
                     <span className="inline-flex items-center justify-center space-x-2">
                       <PlusCircledIcon className="h-6 w-6" />{" "}
-                      <span>Add a map...</span>
+                      <span>{t("addMap.title")}</span>
                     </span>
                   </CardHeader>
                   <CardDescription className="pb-4">
-                    Drag and drop or select a file to upload.
+                    {t("addMap.description")}
                   </CardDescription>
                   <CardContent className="flex items-center justify-center">
                     <Label htmlFor="file" className="hidden">
-                      Add a file
+                      {t("addMap.addFile")}
                     </Label>
                     <Input
                       id="file"

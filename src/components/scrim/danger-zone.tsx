@@ -15,8 +15,10 @@ import { Scrim } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 export function DangerZone({ scrim }: { scrim: Scrim }) {
+  const t = useTranslations("scrimPage");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteInput, setDeleteInput] = useState("");
   const [deleteEnabled, setDeleteEnabled] = useState(false);
@@ -35,15 +37,15 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
 
     if (res.ok) {
       toast({
-        title: "Scrim deleted",
-        description: "The scrim has been deleted.",
+        title: t("editScrim.deleteScrim.handleDelete.title"),
+        description: t("editScrim.deleteScrim.handleDelete.description"),
         duration: 5000,
       });
       router.push("/dashboard");
     } else {
       toast({
-        title: "Error",
-        description: `An error occurred: ${await res.text()} (${res.status})`,
+        title: t("editScrim.deleteScrim.handleDelete.errorTitle"),
+        description: `${t("editScrim.deleteScrim.handleDelete.errorDescription")} ${await res.text()} (${res.status})`,
         duration: 5000,
         variant: "destructive",
       });
@@ -57,28 +59,35 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
       <Card className="max-w-lg border-red-500 dark:border-red-700">
         <CardHeader>
           <CardTitle className="text-red-500 dark:text-red-700">
-            Danger Zone
+            {t("editScrim.dangerZone")}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <h3 className="text-lg font-semibold">Delete Scrim</h3>
-          <p className="pb-4">
-            Once you delete a scrim, there is no going back. Please be certain.
-          </p>
+          <h3 className="text-lg font-semibold">
+            {t("editScrim.deleteScrim.title")}
+          </h3>
+          <p className="pb-4">{t("editScrim.deleteScrim.description")}</p>
           <AlertDialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
             <AlertDialogTrigger>
-              <Button variant="destructive">Delete Scrim</Button>
+              <Button variant="destructive">
+                {t("editScrim.deleteScrim.button")}
+              </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <h2 className="text-lg font-semibold">Delete Scrim</h2>
+                <h2 className="text-lg font-semibold">
+                  {t("editScrim.deleteScrim.title")}
+                </h2>
               </AlertDialogHeader>
               <p>
-                Are you sure you want to delete the scrim{" "}
-                <strong>{scrim.name}</strong>? This action cannot be undone.
+                {t("editScrim.deleteScrim.delete1")}{" "}
+                <strong>{scrim.name}</strong>
+                {t("editScrim.deleteScrim.delete2")}
               </p>
               <p>
-                Type <strong>{scrim.name}</strong> to confirm.
+                {t("editScrim.deleteScrim.delete3")}{" "}
+                <strong>{scrim.name}</strong>{" "}
+                {t("editScrim.deleteScrim.delete4")}
               </p>
               <Input
                 type="text"
@@ -94,17 +103,17 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
                   {deleteLoading ? (
                     <>
                       <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                      Deleting...
+                      {t("editScrim.deleteScrim.deleting")}
                     </>
                   ) : (
-                    "Delete Scrim"
+                    t("editScrim.deleteScrim.delete")
                   )}
                 </Button>
                 <Button
                   variant="secondary"
                   onClick={() => setDeleteModalOpen(false)}
                 >
-                  Cancel
+                  {t("editScrim.deleteScrim.cancel")}
                 </Button>
               </div>
             </AlertDialogContent>

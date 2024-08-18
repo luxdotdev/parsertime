@@ -7,8 +7,10 @@ import { cn } from "@/lib/utils";
 import { CommandMenuContext } from "@/components/command-menu-provider";
 import { use } from "react";
 import { User } from "@prisma/client";
+import { useTranslations } from "next-intl";
 
 export function Search({ ...props }: DialogProps & { user: User | null }) {
+  const t = useTranslations("dashboard");
   const { setOpen } = use(CommandMenuContext);
 
   return (
@@ -21,7 +23,10 @@ export function Search({ ...props }: DialogProps & { user: User | null }) {
         onClick={() => setOpen(true)}
         {...props}
       >
-        <span className="inline-flex">Search...</span>
+        <span className="inline-flex">
+          {/* Search... */}
+          {t("search")}
+        </span>
         <kbd className="pointer-events-none absolute right-[0.3rem] top-[0.45rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
           <span className="text-xs">⌘</span>K
         </kbd>

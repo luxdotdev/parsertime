@@ -4,12 +4,14 @@ import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export function MainNav({
   className,
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
   const pathname = usePathname();
+  const t = useTranslations("dashboard");
 
   return (
     <nav
@@ -23,7 +25,8 @@ export function MainNav({
           pathname === "/dashboard" ? "text-primary" : "text-muted-foreground"
         )}
       >
-        Dashboard
+        {/* Dashboard */}
+        {t("mainNav.dashboard")}
       </Link>
       <Link
         href="/stats"
@@ -32,7 +35,8 @@ export function MainNav({
           pathname === "/stats" ? "text-primary" : "text-muted-foreground"
         )}
       >
-        Stats
+        {/* Stats */}
+        {t("mainNav.stats")}
       </Link>
       <Link
         href="/team"
@@ -43,26 +47,30 @@ export function MainNav({
             : "text-muted-foreground"
         )}
       >
-        Teams
+        {/* Teams */}
+        {t("mainNav.teams")}
       </Link>
       <Link
         href="/settings"
         className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
       >
-        Settings
+        {/* Settings */}
+        {t("mainNav.settings")}
       </Link>
       <Link
         href="/contact"
         className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
       >
-        Contact
+        {/* Contact */}
+        {t("mainNav.contact")}
       </Link>
       <Link
         href="https://docs.parsertime.app"
         target="_blank"
         className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
       >
-        Docs
+        {/* Docs */}
+        {t("mainNav.docs")}
       </Link>
     </nav>
   );

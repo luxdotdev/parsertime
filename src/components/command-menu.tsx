@@ -37,8 +37,10 @@ import { useTheme } from "next-themes";
 import { usePathname, useRouter } from "next/navigation";
 import { use, useCallback, useEffect, useState } from "react";
 import { User } from "@prisma/client";
+import { useTranslations } from "next-intl";
 
 export function CommandDialogMenu({ user }: { user: User | null }) {
+  const t = useTranslations("dashboard");
   const { open, setOpen } = use(CommandMenuContext);
   const [teams, setTeams] = useState<{ label: string; value: string }[]>([]);
   const router = useRouter();
@@ -72,15 +74,27 @@ export function CommandDialogMenu({ user }: { user: User | null }) {
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder="Type a command or search..." />
+      <CommandInput
+        placeholder=/* "Type a command or search..." */ {t(
+          "commandMenu.searchPlaceholder"
+        )}
+      />
       <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
-        <CommandGroup heading="Suggestions">
+        <CommandEmpty>
+          {/* No results found. */}
+          {t("commandMenu.searchResult")}
+        </CommandEmpty>
+        <CommandGroup
+          heading=/* "Suggestions" */ {t("commandMenu.suggestions.title")}
+        >
           <CommandItem
             onSelect={() => runCommand(() => router.push("/dashboard"))}
           >
             <DashboardIcon className="mr-2 h-4 w-4" />
-            <span>Dashboard</span>
+            <span>
+              {/* Dashboard */}
+              {t("commandMenu.suggestions.dashboard")}
+            </span>
           </CommandItem>
           <CommandItem
             onSelect={() =>
@@ -90,7 +104,10 @@ export function CommandDialogMenu({ user }: { user: User | null }) {
             }
           >
             <ReaderIcon className="mr-2 h-4 w-4" />
-            <span>Docs</span>
+            <span>
+              {/* Docs */}
+              {t("commandMenu.suggestions.docs")}
+            </span>
             <CommandShortcut>
               <ExternalLinkIcon />
             </CommandShortcut>
@@ -102,11 +119,17 @@ export function CommandDialogMenu({ user }: { user: User | null }) {
             }}
           >
             <EnterIcon className="mr-2 h-4 w-4" />
-            <span>Sign In</span>
+            <span>
+              {/* Sign In */}
+              {t("commandMenu.suggestions.signIn")}
+            </span>
           </CommandItem>
           <CommandItem onSelect={() => runCommand(() => router.push("/"))}>
             <HomeIcon className="mr-2 h-4 w-4" />
-            <span>Home</span>
+            <span>
+              {/* Home */}
+              {t("commandMenu.suggestions.home")}
+            </span>
           </CommandItem>
         </CommandGroup>
         {pathname.includes("/scrim/") && (
@@ -122,8 +145,8 @@ export function CommandDialogMenu({ user }: { user: User | null }) {
                     }
                     navigator.clipboard.writeText(link);
                     toast({
-                      title: "Link Copied",
-                      description: `The link to this ${pathname.includes("/map") ? "map" : "scrim"} has been copied.`,
+                      title: /* "Link Copied" */ t("commandMenu.link.title"),
+                      description: /* `The link to this */ `${t("commandMenu.link.description1")} ${pathname.includes("/map") ? "map" : "scrim"} ${t("commandMenu.link.description2")}` /*has been copied.*/,
                       duration: 5000,
                     });
                   })
@@ -131,7 +154,9 @@ export function CommandDialogMenu({ user }: { user: User | null }) {
               >
                 <Share2Icon className="mr-2 h-4 w-4" />
                 <span>
-                  Share Link to {pathname.includes("/map") ? "Map" : "Scrim"}
+                  {/* Share Link to */}
+                  {t("commandMenu.link.share")}{" "}
+                  {pathname.includes("/map") ? "Map" : "Scrim"}
                 </span>
               </CommandItem>
             </CommandGroup>
@@ -140,12 +165,15 @@ export function CommandDialogMenu({ user }: { user: User | null }) {
         {teams.length > 0 && (
           <>
             <CommandSeparator />
-            <CommandGroup heading="Teams">
+            <CommandGroup heading=/* "Teams" */ {t("commandMenu.teams.title")}>
               <CommandItem
                 onSelect={() => runCommand(() => router.push("/team"))}
               >
                 <PersonIcon className="mr-2 h-4 w-4" />
-                <span>View Teams</span>
+                <span>
+                  {/* View Teams */}
+                  {t("commandMenu.teams.viewTeams")}
+                </span>
               </CommandItem>
               {teams.map((team) => (
                 <CommandItem
@@ -157,35 +185,49 @@ export function CommandDialogMenu({ user }: { user: User | null }) {
                   }
                 >
                   <ChevronRightIcon className="mr-2 h-4 w-4" />
-                  <span>View Scrims: {team.label}</span>
+                  <span>
+                    {/* View Scrims: */}
+                    {t("commandMenu.teams.viewScrims")} {team.label}
+                  </span>
                 </CommandItem>
               ))}
             </CommandGroup>
           </>
         )}
         <CommandSeparator />
-        <CommandGroup heading="Settings">
+        <CommandGroup
+          heading=/* "Settings" */ {t("commandMenu.settings.title")}
+        >
           <CommandItem
             onSelect={() => runCommand(() => router.push("/settings"))}
           >
             <PersonIcon className="mr-2 h-4 w-4" />
-            <span>Profile</span>
+            <span>
+              {/* Profile */}
+              {t("commandMenu.settings.profile")}
+            </span>
           </CommandItem>
           <CommandItem
             onSelect={() => runCommand(() => router.push("/settings/accounts"))}
           >
             <PersonIcon className="mr-2 h-4 w-4" />
-            <span>Linked Accounts</span>
+            <span>
+              {/* Linked Accounts */}
+              {t("commandMenu.settings.linkedAccounts")}
+            </span>
           </CommandItem>
         </CommandGroup>
         <CommandSeparator />
-        <CommandGroup heading="Reporting">
+        <CommandGroup heading=/* "Reporting" */ {t("commandMenu.report.title")}>
           <CommandItem onSelect={() => setReportDialogOpen(true)}>
             <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
               <DialogTrigger asChild>
                 <>
                   <ExclamationTriangleIcon className="mr-2 h-4 w-4" />
-                  <span>Report a Bug</span>
+                  <span>
+                    {/* Report a Bug */}
+                    {t("commandMenu.report.description")}
+                  </span>
                 </>
               </DialogTrigger>
               <DialogContent>
@@ -198,12 +240,17 @@ export function CommandDialogMenu({ user }: { user: User | null }) {
           </CommandItem>
         </CommandGroup>
         <CommandSeparator />
-        <CommandGroup heading="Feedback">
+        <CommandGroup
+          heading=/* "Feedback" */ {t("commandMenu.feedback.title")}
+        >
           <CommandItem
             onSelect={() => runCommand(() => router.push("/contact"))}
           >
             <EnvelopeOpenIcon className="mr-2 h-4 w-4" />
-            <span>Contact Us</span>
+            <span>
+              {/* Contact Us */}
+              {t("commandMenu.feedback.description")}
+            </span>
           </CommandItem>
           <CommandItem
             onSelect={() =>
@@ -213,25 +260,31 @@ export function CommandDialogMenu({ user }: { user: User | null }) {
             }
           >
             <DiscordLogoIcon className="mr-2 h-4 w-4" />
-            <span>Community Discord</span>
+            <span>
+              {/* Community Discord */}
+              {t("commandMenu.feedback.discord")}
+            </span>
             <CommandShortcut>
               <ExternalLinkIcon />
             </CommandShortcut>
           </CommandItem>
         </CommandGroup>
         <CommandSeparator />
-        <CommandGroup heading="Theme">
+        <CommandGroup heading=/* "Theme" */ {t("commandMenu.theme.title")}>
           <CommandItem onSelect={() => runCommand(() => setTheme("light"))}>
             <SunIcon className="mr-2 h-4 w-4" />
-            Light
+            {/* Light */}
+            {t("commandMenu.theme.light")}
           </CommandItem>
           <CommandItem onSelect={() => runCommand(() => setTheme("dark"))}>
             <MoonIcon className="mr-2 h-4 w-4" />
-            Dark
+            {/* Dark */}
+            {t("commandMenu.theme.dark")}
           </CommandItem>
           <CommandItem onSelect={() => runCommand(() => setTheme("system"))}>
             <LaptopIcon className="mr-2 h-4 w-4" />
-            System
+            {/* System */}
+            {t("commandMenu.theme.system")}
           </CommandItem>
         </CommandGroup>
       </CommandList>

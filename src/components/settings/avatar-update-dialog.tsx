@@ -15,6 +15,7 @@ import Logger from "@/lib/logger";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 
 async function getCroppedImg(
   file: File,
@@ -72,6 +73,7 @@ export function AvatarUpdateDialog({
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const t = useTranslations("settingsPage.profileForm.avatar");
 
   const onCropComplete = useCallback(
     (croppedArea: Area, croppedAreaPixels: Area) => {
@@ -107,8 +109,12 @@ export function AvatarUpdateDialog({
       if (res.ok) {
         setLoading(false);
         toast({
-          title: "Avatar updated successfully",
-          description: "Your avatar has been updated successfully.",
+          title: /* "Avatar updated successfully" */ t(
+            "editAvatar.handleCrop.title"
+          ),
+          description: /* "Your avatar has been updated successfully." */ t(
+            "editAvatar.handleCrop.description"
+          ),
           duration: 5000,
         });
         setIsOpen(false);
@@ -116,17 +122,23 @@ export function AvatarUpdateDialog({
       } else {
         setLoading(false);
         toast({
-          title: "An error occurred",
-          description: `An error occurred: ${await res.text()} (${res.status})`,
+          title: /* "An error occurred" */ t(
+            "editAvatar.handleCrop.errorTitle"
+          ),
+          description: /* `An error occurred: */ `${t(
+            "editAvatar.handleCrop.errorDescription1"
+          )} ${await res.text()} (${res.status})`,
           duration: 5000,
         });
       }
     } catch (e) {
       setLoading(false);
       toast({
-        title: "An error occurred",
+        title: /* "An error occurred" */ t("editAvatar.handleCrop.errorTitle"),
         description:
-          "An error occurred while updating your avatar. Please try again later or contact support.",
+          /* "An error occurred while updating your avatar. Please try again later or contact support." */ t(
+            "editAvatar.handleCrop.errorDescription2"
+          ),
         duration: 5000,
       });
       Logger.log(e);
@@ -139,9 +151,13 @@ export function AvatarUpdateDialog({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit Avatar</DialogTitle>
+          <DialogTitle>
+            {/* Edit Avatar */}
+            {t("editAvatar.title")}
+          </DialogTitle>
           <DialogDescription>
-            Make changes to your profile here. Click save when you&apos;re done.
+            {/* Make changes to your profile here. Click save when you&apos;re done. */}
+            {t("editAvatar.description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -161,10 +177,12 @@ export function AvatarUpdateDialog({
           <Button onClick={handleCropImage} disabled={loading}>
             {loading ? (
               <>
-                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" /> Updating...
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
+                {/* Updating... */}
+                {t("editAvatar.updating")}
               </>
             ) : (
-              "Save Changes"
+              /* "Save Changes" */ t("editAvatar.save")
             )}
           </Button>
         </DialogFooter>

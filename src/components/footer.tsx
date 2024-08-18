@@ -1,7 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 export default function Footer() {
+  const t = useTranslations("footer");
   return (
     <footer className="relative z-20 border-t border-zinc-200 dark:border-zinc-800">
       <div className="container mx-auto flex flex-col items-center justify-between px-6 py-8 lg:flex-row">
@@ -20,43 +22,50 @@ export default function Footer() {
             href="/dashboard"
             className="text-sm text-gray-600 transition-colors duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
           >
-            Dashboard
+            {/* Dashboard */}
+            {t("dashboard")}
           </Link>
           <Link
             href="/stats"
             className="text-sm text-gray-600 transition-colors duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
           >
-            Stats
+            {/* Stats */}
+            {t("stats")}
           </Link>
           <Link
             href="/team"
             className="text-sm text-gray-600 transition-colors duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
           >
-            Teams
+            {/* Teams */}
+            {t("teams")}
           </Link>
           <Link
             href="/settings"
             className="text-sm text-gray-600 transition-colors duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
           >
-            Settings
+            {/* Settings */}
+            {t("settings")}
           </Link>
           <Link
             href="/contact"
             className="text-sm text-gray-600 transition-colors duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
           >
-            Contact
+            {/* Contact */}
+            {t("contact")}
           </Link>
           <Link
             href="https://docs.parsertime.app"
             target="_blank"
             className="text-sm text-gray-600 transition-colors duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
           >
-            Docs
+            {/* Docs */}
+            {t("docs")}
           </Link>
         </div>
 
         <p className="mt-6 text-sm text-gray-500 dark:text-gray-400 lg:mt-0">
-          © 2024 lux.dev.
+          &copy; {/* 2024 lux.dev. */}
+          {t("copyright")}
         </p>
       </div>
     </footer>

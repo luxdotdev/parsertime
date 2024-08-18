@@ -9,8 +9,11 @@ import { getCustomerPortalUrl } from "@/lib/stripe";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
 import { getUser } from "@/data/user-dto";
 import { DangerZone } from "@/components/settings/danger-zone";
+import { getTranslations } from "next-intl/server";
 
+// billing translation ?
 export default async function SettingsProfilePage() {
+  const t = await getTranslations("settingsPage");
   const session = await auth();
   if (!session || !session.user) {
     redirect("/sign-in");
@@ -27,22 +30,25 @@ export default async function SettingsProfilePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium">Profile</h3>
+        <h3 className="text-lg font-medium">{t("profile.title")}</h3>
         <p className="text-sm text-muted-foreground">
-          This is how others will see you on the site.
+          {t("profile.description")}
         </p>
       </div>
       <Separator />
-      <p>Your current plan is the {toTitleCase(user.billingPlan)} plan.</p>
+      <p>
+        {t("profile.planDescription1")} {toTitleCase(user.billingPlan)}{" "}
+        {t("profile.planDescription2")}
+      </p>
       <Link
         href={user.billingPlan === "FREE" ? "/pricing" : billingPortalUrl}
         className="text-sky-500 underline"
       >
         {user.billingPlan === "FREE" ? (
-          "Upgrade your plan"
+          t("profile.planUpgrade")
         ) : (
           <span className="inline-flex items-center">
-            Manage your subscription{" "}
+            {t("profile.manageSubscription")}{" "}
             <ExternalLinkIcon className="ml-1 h-4 w-4" />
           </span>
         )}

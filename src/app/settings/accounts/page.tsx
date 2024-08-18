@@ -5,8 +5,10 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { DiscordLoginButton } from "@/components/settings/discord-login-button";
+import { getTranslations } from "next-intl/server";
 
 export default async function LinkedAccountSettingsPage() {
+  const t = await getTranslations("settingsPage");
   const session = await auth();
   if (!session || !session.user) {
     redirect("/sign-in");
@@ -31,14 +33,21 @@ export default async function LinkedAccountSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium">Linked Accounts</h3>
+        <h3 className="text-lg font-medium">
+          {/* Linked Accounts */}
+          {t("linkedAccounts.title")}
+        </h3>
         <p className="text-sm text-muted-foreground">
-          Manage linked account settings and preferences.
+          {/* Manage linked account settings and preferences. */}
+          {t("linkedAccounts.description")}
         </p>
       </div>
       <Separator />
       {discordAccount ? (
-        <p>Your Discord account is successfully linked.</p>
+        <p>
+          {/* Your Discord account is successfully linked. */}
+          {t("linkedAccounts.discord.linked")}
+        </p>
       ) : (
         <DiscordLoginButton />
       )}

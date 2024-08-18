@@ -7,6 +7,7 @@ import prisma from "@/lib/prisma";
 import { SearchParams } from "@/types/next";
 import { $Enums } from "@prisma/client";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 type Props = {
   searchParams: SearchParams;
@@ -28,11 +29,12 @@ export const metadata: Metadata = {
         height: 630,
       },
     ],
-    locale: "en_US",
+    // locale: "en_US",
   },
 };
 
 export default async function DashboardPage({ searchParams }: Props) {
+  const t = await getTranslations("dashboard");
   const session = await auth();
 
   const userData = await getUser(session?.user?.email);
@@ -42,13 +44,13 @@ export default async function DashboardPage({ searchParams }: Props) {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+        <h2 className="text-3xl font-bold tracking-tight">{t("title")}</h2>
       </div>
       <Tabs defaultValue="overview" className="space-y-4">
         {isAdmin && (
           <TabsList>
-            <TabsTrigger value="overview">Your Scrims</TabsTrigger>
-            <TabsTrigger value="admin">Admin View</TabsTrigger>
+            <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
+            <TabsTrigger value="admin">{t("admin")}</TabsTrigger>
           </TabsList>
         )}
         <TabsContent value="overview" className="space-y-4">

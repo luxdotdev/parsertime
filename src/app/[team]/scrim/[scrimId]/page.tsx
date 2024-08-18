@@ -29,6 +29,7 @@ import { GuestNav } from "@/components/guest-nav";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ClientDate } from "@/components/scrim/client-date";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 type Props = {
   params: { team: string; scrimId: string };
@@ -65,12 +66,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           height: 630,
         },
       ],
-      locale: "en_US",
+      // locale: "en_US",
     },
   };
 }
 
 export default async function ScrimDashboardPage({ params }: Props) {
+  const t = await getTranslations("scrimPage");
   const id = parseInt(params.scrimId);
   const session = await auth();
 
@@ -138,7 +140,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
       </div>
       <div className="flex-1 space-y-4 p-8 pt-6">
         <h4 className="text-gray-600 dark:text-gray-400">
-          <Link href="/dashboard">&larr; Back to dashboard</Link>
+          <Link href="/dashboard">&larr; {t("back")}</Link>
         </h4>
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">
@@ -155,7 +157,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
                       <TooltipTrigger asChild>
                         <Pencil2Icon className="h-6 w-6" />
                       </TooltipTrigger>
-                      <TooltipContent>Edit scrim</TooltipContent>
+                      <TooltipContent>{t("edit")}</TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </Link>
@@ -167,7 +169,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
           <ClientDate date={scrim.date} />
         </h4>
         <p className="scroll-m-20 pb-2 text-2xl font-semibold tracking-tight">
-          Maps
+          {t("maps")}
         </p>
         {maps.length > 0 ? (
           <div className="-m-2 flex flex-wrap">
@@ -200,15 +202,11 @@ export default async function ScrimDashboardPage({ params }: Props) {
           <>
             <Alert variant="destructive" className="max-w-xl">
               <ExclamationTriangleIcon className="h-4 w-4" />
-              <AlertTitle>
-                No maps have been added to this scrim yet!
-              </AlertTitle>
+              <AlertTitle>{t("noMaps.title")}</AlertTitle>
               <AlertDescription>
-                Add maps to this scrim to start analyzing your games. If no maps
-                are added, the scrim will automatically be deleted within 24
-                hours. Need help?{" "}
+                {t("noMaps.description")}{" "}
                 <Link href="https://docs.parsertime.app" target="_blank">
-                  <span className="underline">Check out the documentation</span>{" "}
+                  <span className="underline">{t("noMaps.link")}</span>{" "}
                   <ExternalLinkIcon className="inline h-4 w-4" />
                 </Link>
                 .

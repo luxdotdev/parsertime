@@ -14,10 +14,12 @@ import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
 import { User } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export function DangerZone({ url }: { url: string }) {
+  const t = useTranslations("settingsPage");
   const [firstDialogOpen, setFirstDialogOpen] = useState(false);
 
   return (
@@ -25,18 +27,19 @@ export function DangerZone({ url }: { url: string }) {
       <Card className="max-w-lg border-red-500 dark:border-red-700">
         <CardHeader>
           <CardTitle className="text-red-500 dark:text-red-700">
-            Danger Zone
+            {t("dangerZone.title")}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <h3 className="text-lg font-semibold">Delete Account</h3>
+          <h3 className="text-lg font-semibold">{t("deleteAccount.title")}</h3>
           <p className="pb-4">
-            Account deletion is permanent and cannot be reversed. Are you
-            looking to manage your subscription instead? If so, please click{" "}
+            {/* Account deletion is permanent and cannot be reversed. Are you
+            looking to manage your subscription instead? If so, please click */}
+            {t("dangerZone.description1")}{" "}
             <Link href={url} className="text-sky-500" external>
-              here
+              {/* here. */}
+              {t("dangerZone.description2")}
             </Link>
-            .
           </p>
           <FirstDialog
             url={url}
@@ -58,28 +61,30 @@ function FirstDialog({
   firstDialogOpen: boolean;
   setFirstDialogOpen: (open: boolean) => void;
 }) {
+  const t = useTranslations("settingsPage");
   return (
     <AlertDialog open={firstDialogOpen} onOpenChange={setFirstDialogOpen}>
       <AlertDialogTrigger>
-        <Button variant="destructive">Delete Account</Button>
+        <Button variant="destructive">{t("deleteAccount.title")}</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <h2 className="text-lg font-semibold">Delete Account</h2>
+          <h2 className="text-lg font-semibold">{t("deleteAccount.title")}</h2>
         </AlertDialogHeader>
         <p>
-          Are you sure you want to delete your account? This action cannot be
+          {/* Are you sure you want to delete your account? This action cannot be
           undone. Are you looking to manage your subscription instead? If so,
-          please click{" "}
+          please click */}
+          {t("deleteAccount.description1")}{" "}
           <Link href={url} className="text-sky-500" external>
-            here
+            {/* here. */}
+            {t("deleteAccount.description2")}
           </Link>
-          .
         </p>
         <div className="mt-4 flex justify-end space-x-4">
           <SecondDialog setFirstDialogOpen={setFirstDialogOpen} />
           <Button variant="secondary" onClick={() => setFirstDialogOpen(false)}>
-            Cancel
+            {t("deleteAccount.cancel")}
           </Button>
         </div>
       </AlertDialogContent>
@@ -92,6 +97,7 @@ function SecondDialog({
 }: {
   setFirstDialogOpen: (open: boolean) => void;
 }) {
+  const t = useTranslations("settingsPage");
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteInput, setDeleteInput] = useState("");
   const [deleteEnabled, setDeleteEnabled] = useState(false);
@@ -111,8 +117,8 @@ function SecondDialog({
 
     if (res.ok) {
       toast({
-        title: "Account Deleted",
-        description: "Your account has been successfully deleted.",
+        title: t("deleteAccount.handleDelete.title"),
+        description: t("deleteAccount.handleDelete.description"),
         duration: 5000,
       });
       setDeleteLoading(false);
@@ -120,8 +126,8 @@ function SecondDialog({
       router.push("/");
     } else {
       toast({
-        title: "Error",
-        description: `An error occurred: ${await res.text()} (${res.status})`,
+        title: t("deleteAccount.handleDelete.errorTitle"),
+        description: `${t("deleteAccount.handleDelete.errorDescription")} ${await res.text()} (${res.status})`,
         duration: 5000,
         variant: "destructive",
       });
@@ -132,18 +138,25 @@ function SecondDialog({
   return (
     <AlertDialog open={modalOpen} onOpenChange={setModalOpen}>
       <AlertDialogTrigger>
-        <Button variant="destructive">Yes, delete my account</Button>
+        <Button variant="destructive">
+          {t("deleteAccount.secondDialog.title")}
+        </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <h2 className="text-lg font-semibold">Delete Account</h2>
+          <h2 className="text-lg font-semibold">{t("deleteAccount.title")}</h2>
         </AlertDialogHeader>
+        <p>{t("deleteAccount.secondDialog.description1")}</p>
         <p>
-          Are you absolutely sure you want to delete your account? This action
-          cannot be undone.
-        </p>
-        <p>
-          Type <strong>yes, delete my account</strong> to confirm.
+          {/* Type */}
+          {t("deleteAccount.secondDialog.description2")}{" "}
+          <strong>
+            {/* yes, delete my account */}
+            {t("deleteAccount.secondDialog.description3")}
+          </strong>{" "}
+          {/* to confirm. */}
+          {t("deleteAccount.secondDialog.description4")}
+          {/*need to fix, locale input */}
         </p>
         <Input
           type="text"
@@ -159,10 +172,11 @@ function SecondDialog({
             {deleteLoading ? (
               <>
                 <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                Deleting...
+
+                {t("deleteAccount.secondDialog.deleting")}
               </>
             ) : (
-              "Delete Account"
+              t("deleteAccount.secondDialog.delete")
             )}
           </Button>
           <Button
@@ -172,7 +186,7 @@ function SecondDialog({
               setFirstDialogOpen(false);
             }}
           >
-            Cancel
+            {t("deleteAccount.secondDialog.cancel")}
           </Button>
         </div>
       </AlertDialogContent>

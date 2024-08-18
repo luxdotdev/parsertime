@@ -5,18 +5,23 @@ import { Dialog } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
-
-const navigation = [
-  { name: "Home", href: "/" },
-  { name: "About", href: "/about" },
-  { name: "Pricing", href: "/pricing" },
-  { name: "Demo", href: "/demo" },
-  { name: "Docs", href: "https://docs.parsertime.app" },
-  { name: "Company", href: "https://lux.dev" },
-];
+import { useTranslations } from "next-intl";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const t = useTranslations("contactPage");
+
+  const navigation = [
+    { name: /* "Home" */ t("header.home"), href: "/" },
+    { name: /* "About" */ t("header.about"), href: "/about" },
+    { name: /* "Pricing" */ t("header.pricing"), href: "/pricing" },
+    { name: /* "Demo" */ t("header.demo"), href: "/demo" },
+    {
+      name: /* "Docs" */ t("header.docs"),
+      href: "https://docs.parsertime.app",
+    },
+    { name: /* "Company" */ t("header.company"), href: "https://lux.dev" },
+  ];
 
   return (
     <header className="absolute inset-x-0 top-0 z-50">
@@ -62,7 +67,8 @@ export default function Header() {
             href="/sign-in"
             className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
           >
-            Log in <span aria-hidden="true">&rarr;</span>
+            {/* Log in */}
+            {t("header.logIn")} <span aria-hidden="true">&rarr;</span>
           </Link>
         </div>
       </nav>

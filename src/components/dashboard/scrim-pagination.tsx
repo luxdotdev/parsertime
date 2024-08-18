@@ -27,12 +27,14 @@ import {
 import { Scrim } from "@prisma/client";
 import { use, useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 
 type Props = {
   scrims: Array<Scrim & { team: string; creator: string; hasPerms: boolean }>;
 };
 
 export function ScrimPagination({ scrims }: Props) {
+  const t = useTranslations("dashboard");
   const [currPage, setCurrPage] = useState(1);
   const [filter, setFilter] = useState("");
   const [search, setSearch] = useState("");
@@ -97,20 +99,29 @@ export function ScrimPagination({ scrims }: Props) {
       <span className="inline-flex gap-2 p-4">
         <Select onValueChange={(v) => setFilter(v)}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter" />
+            <SelectValue placeholder=/* "Filter" */ {t("filter.title")} />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Select a filter</SelectLabel>
-              <SelectItem value="date-asc">Oldest to Newest</SelectItem>
-              <SelectItem value="date-desc">Newest to Oldest</SelectItem>
+              <SelectLabel>
+                {/* Select a filter */}
+                {t("filter.select")}
+              </SelectLabel>
+              <SelectItem value="date-asc">
+                {/* Oldest to Newest */}
+                {t("filter.oldToNew")}
+              </SelectItem>
+              <SelectItem value="date-desc">
+                {/* Newest to Oldest */}
+                {t("filter.newToOld")}
+              </SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
 
         <Input
           type="search"
-          placeholder="Search..."
+          placeholder=/* "Search..." */ {t("search")}
           className="md:w-[100px] lg:w-[260px]"
           onChange={(e) => {
             setSearch(e.target.value);

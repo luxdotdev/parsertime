@@ -12,6 +12,7 @@ import { UserNav } from "@/components/user-nav";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { $Enums } from "@prisma/client";
+import { getTranslations } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Settings | Parsertime",
@@ -29,28 +30,9 @@ export const metadata: Metadata = {
         height: 630,
       },
     ],
-    locale: "en_US",
+    // locale: "en_US",
   },
 };
-
-const sidebarNavItems = [
-  {
-    title: "Profile",
-    href: "/settings",
-  },
-  {
-    title: "Linked Accounts",
-    href: "/settings/accounts",
-  },
-];
-
-const adminNavItems = [
-  ...sidebarNavItems,
-  {
-    title: "Admin",
-    href: "/settings/admin",
-  },
-];
 
 interface SettingsLayoutProps {
   children: React.ReactNode;
@@ -59,6 +41,25 @@ interface SettingsLayoutProps {
 export default async function SettingsLayout({
   children,
 }: SettingsLayoutProps) {
+  const t = await getTranslations("settingsPage");
+  const sidebarNavItems = [
+    {
+      title: t("sideNav.profile"),
+      href: "/settings",
+    },
+    {
+      title: t("sideNav.linkedAccounts"),
+      href: "/settings/accounts",
+    },
+  ];
+  const adminNavItems = [
+    ...sidebarNavItems,
+    {
+      title: t("sideNav.admin"),
+      href: "/settings/admin",
+    },
+  ];
+
   const session = await auth();
 
   const user = await getUser(session?.user?.email);
@@ -87,10 +88,8 @@ export default async function SettingsLayout({
       </div>
       <div className="min-h-[90vh] space-y-6 p-10 pb-16 md:block">
         <div className="space-y-0.5">
-          <h2 className="text-2xl font-bold tracking-tight">Settings</h2>
-          <p className="text-muted-foreground">
-            Manage your account settings and preferences.
-          </p>
+          <h2 className="text-2xl font-bold tracking-tight">{t("title")}</h2>
+          <p className="text-muted-foreground">{t("description")}</p>
         </div>
         <Separator className="my-6" />
         <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">

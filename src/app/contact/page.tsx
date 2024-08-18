@@ -18,35 +18,47 @@ import Logger from "@/lib/logger";
 import { EnvelopeIcon, UserGroupIcon } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EnvelopeOpenIcon, ExternalLinkIcon } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const formSchema = z.object({
-  name: z
-    .string({
-      required_error: "A name is required.",
-    })
-    .min(1),
-  email: z
-    .string({
-      required_error: "An email is required.",
-    })
-    .email({
-      message: "Please enter a valid email address.",
-    }),
-  message: z
-    .string({
-      required_error: "A message is required.",
-    })
-    .min(1, {
-      message: "Please enter a message.",
-    }),
-});
-
 export default function ContactPage() {
   const [loading, setLoading] = useState(false);
+  const t = useTranslations("contactPage");
+
+  const formSchema = z.object({
+    name: z
+      .string({
+        required_error: /* "A name is required." */ t(
+          "contactForm.nameRequiredError"
+        ),
+      })
+      .min(1),
+    email: z
+      .string({
+        required_error: /* "An email is required." */ t(
+          "contactForm.emailRequiredError"
+        ),
+      })
+      .email({
+        message: /* "Please enter a valid email address." */ t(
+          "contactForm.emailMessage"
+        ),
+      }),
+    message: z
+      .string({
+        required_error: /* "A message is required." */ t(
+          "contactForm.messageRequiredError"
+        ),
+      })
+      .min(1, {
+        message: /* "Please enter a message." */ t(
+          "contactForm.messageMessage"
+        ),
+      }),
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -63,16 +75,18 @@ export default function ContactPage() {
 
       if (res.ok) {
         toast({
-          title: "Message sent",
-          description: "Your message has been sent successfully.",
+          title: /* "Message sent" */ t("contactForm.handleSubmit.title"),
+          description: /* "Your message has been sent successfully." */ t(
+            "contactForm.handleSubmit.description"
+          ),
           duration: 5000,
         });
         form.reset();
       } else {
         Logger.error("Error sending email", res.statusText);
         toast({
-          title: "Error",
-          description: `An error occurred: ${await res.text()} (${res.status})`,
+          title: /* "Error" */ t("contactForm.handleSubmit.errorTitle1"),
+          description: /* `An error occurred: */ `${t("contactForm.handleSubmit.errorDescription1")} ${await res.text()} (${res.status})`,
           duration: 5000,
           variant: "destructive",
         });
@@ -80,9 +94,13 @@ export default function ContactPage() {
     } catch (error) {
       Logger.error("Error sending email", error);
       toast({
-        title: "An error occurred",
+        title: /* "An error occurred" */ t(
+          "contactForm.handleSubmit.errorTitle2"
+        ),
         description:
-          "An error occurred while sending your message. Please try again later.",
+          /* "An error occurred while sending your message. Please try again later." */ t(
+            "contactForm.handleSubmit.errorDescription2"
+          ),
         duration: 5000,
       });
     }
@@ -166,12 +184,14 @@ export default function ContactPage() {
               </div>
             </div>
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-              Get in touch
+              {/* Get in touch */}
+              {t("contactForm.title")}
             </h2>
             <p className="mt-6 text-lg leading-8 text-gray-700 dark:text-gray-300">
-              Having issues with the app? Want to request a feature? We&apos;d
+              {/* Having issues with the app? Want to request a feature? We&apos;d
               love to hear from you! Send us a message and we&apos;ll get back
-              to you as soon as we can.
+              to you as soon as we can. */}
+              {t("contactForm.description")}
             </p>
             <dl className="mt-10 space-y-4 text-base leading-7 text-gray-700 dark:text-gray-300">
               <div className="flex gap-x-4">
@@ -188,7 +208,8 @@ export default function ContactPage() {
                     href="https://discord.gg/svz3qhVDXM"
                   >
                     <span className="inline-flex items-center gap-1">
-                      Community Discord <ExternalLinkIcon />
+                      {/* Community Discord */}
+                      {t("contactForm.discord")} <ExternalLinkIcon />
                     </span>
                   </Link>
                 </dd>
@@ -228,7 +249,8 @@ export default function ContactPage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="block text-sm font-semibold leading-6 text-gray-900 dark:text-white">
-                            Name
+                            {/* Name */}
+                            {t("contactForm.name")}
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -253,7 +275,8 @@ export default function ContactPage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="block text-sm font-semibold leading-6 text-gray-900 dark:text-white">
-                            Email
+                            {/* Email */}
+                            {t("contactForm.email")}
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -278,7 +301,8 @@ export default function ContactPage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="block text-sm font-semibold leading-6 text-gray-900 dark:text-white">
-                            Message
+                            {/* Message */}
+                            {t("contactForm.message")}
                           </FormLabel>
                           <FormControl>
                             <Textarea
@@ -305,12 +329,14 @@ export default function ContactPage() {
                     {loading ? (
                       <>
                         <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                        Sending...
+                        {/* Sending... */}
+                        {t("contactForm.sending")}
                       </>
                     ) : (
                       <>
                         <EnvelopeOpenIcon className="mr-2 h-4 w-4" />
-                        Send message
+                        {/* Send message */}
+                        {t("contactForm.send")}
                       </>
                     )}
                   </Button>
