@@ -116,6 +116,37 @@ export const config = {
   },
   events: {
     async signIn({ user, isNewUser }) {
+      const ratelimit = new Ratelimit({
+        redis: kv,
+        limiter: Ratelimit.slidingWindow(5, "1 m"),
+        analytics: true,
+      });
+
+      const identifier = user.email ?? "unknown";
+      const { success } = await ratelimit.limit(identifier);
+
+      if (!success) {
+        Logger.log("Rate limit exceeded for sign in attempt", identifier);
+
+        const userObj = {
+          name: user.name ?? "Unknown",
+          email: user.email ?? "unknown",
+          id: user.id ?? "unknown",
+        } as User;
+
+        const wh = newSuspiciousActivityWebhookConstructor(
+          userObj,
+          "Sign in (rate limit exceeded)",
+          "",
+          { name: "", version: "" },
+          { name: "", version: "" },
+          {}
+        );
+        await sendDiscordWebhook(process.env.DISCORD_WEBHOOK_URL, wh);
+
+        throw new Error("Rate limit exceeded");
+      }
+
       if (isNewUser) {
         // Log new user signups
         Logger.log("New user signed up", { user });
@@ -130,37 +161,6 @@ export const config = {
         const emailHtml = render(
           UserOnboardingEmail({ name: user.name ?? "user", email: user.email! })
         );
-
-        const ratelimit = new Ratelimit({
-          redis: kv,
-          limiter: Ratelimit.slidingWindow(5, "1 m"),
-          analytics: true,
-        });
-
-        const identifier = user.email ?? "unknown";
-        const { success } = await ratelimit.limit(identifier);
-
-        if (!success) {
-          Logger.log("Rate limit exceeded for sign in attempt", identifier);
-
-          const userObj = {
-            name: user.name ?? "Unknown",
-            email: user.email ?? "unknown",
-            id: user.id ?? "unknown",
-          } as User;
-
-          const wh = newSuspiciousActivityWebhookConstructor(
-            userObj,
-            "Sign in (rate limit exceeded)",
-            "",
-            { name: "", version: "" },
-            { name: "", version: "" },
-            {}
-          );
-          await sendDiscordWebhook(process.env.DISCORD_WEBHOOK_URL, wh);
-
-          throw new Error("Rate limit exceeded");
-        }
 
         try {
           await sendEmail({
