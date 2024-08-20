@@ -37,5 +37,6 @@ export const mapNameToMapTypeMapping = {
   Samoa: $Enums.MapType.Control,
   "Shambali Monastery": $Enums.MapType.Escort,
   Suravasa: $Enums.MapType.Flashpoint,
+  "Throne of Anubis": $Enums.MapType.Clash,
   "Watchpoint: Gibraltar": $Enums.MapType.Hybrid,
 } as const;
