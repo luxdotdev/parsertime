@@ -27,6 +27,8 @@ import {
 } from "@/components/ui/tooltip";
 import { GuestNav } from "@/components/guest-nav";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ClientDate } from "@/components/scrim/client-date";
+import { notFound } from "next/navigation";
 
 type Props = {
   params: { team: string; scrimId: string };
@@ -73,6 +75,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
   const session = await auth();
 
   const scrim = await getScrim(id);
+  if (!scrim) notFound();
 
   const maps = (
     await prisma.map.findMany({
@@ -161,7 +164,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
           </h2>
         </div>
         <h4 className="scroll-m-20 pb-4 text-xl font-semibold tracking-tight">
-          {scrim?.date.toDateString() ?? "No Date"}
+          <ClientDate date={scrim.date} />
         </h4>
         <p className="scroll-m-20 pb-2 text-2xl font-semibold tracking-tight">
           Maps
