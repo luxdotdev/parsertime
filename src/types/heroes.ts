@@ -72,6 +72,11 @@ export type Junkrat = {
   image: "junkrat.png";
 };
 
+export type Juno = {
+  name: "Juno";
+  image: "juno.png";
+};
+
 export type Kiriko = {
   name: "Kiriko";
   image: "kiriko.png";
@@ -239,6 +244,7 @@ export type Support =
   | Baptiste
   | Brigitte
   | Illari
+  | Juno
   | Kiriko
   | Lifeweaver
   | Lucio
@@ -262,6 +268,7 @@ export const heroRoleMapping: Record<HeroName, "Tank" | "Damage" | "Support"> =
     Illari: "Support",
     "Junker Queen": "Tank",
     Junkrat: "Damage",
+    Juno: "Support",
     Kiriko: "Support",
     Lifeweaver: "Support",
     Lúcio: "Support",
@@ -333,6 +340,7 @@ export const roleHeroMapping: Record<
     "Baptiste",
     "Brigitte",
     "Illari",
+    "Juno",
     "Kiriko",
     "Lifeweaver",
     "Lúcio",
