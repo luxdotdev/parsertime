@@ -1,4 +1,7 @@
+import Logger from "@/lib/logger";
 import { SendEmailRequest, SES } from "@aws-sdk/client-ses";
+import { Ratelimit } from "@upstash/ratelimit";
+import { kv } from "@vercel/kv";
 
 type EmailArgs = {
   to: string;
@@ -17,6 +20,20 @@ const config = {
 };
 
 export async function sendEmail(args: EmailArgs) {
+  const ratelimit = new Ratelimit({
+    redis: kv,
+    limiter: Ratelimit.slidingWindow(5, "1 m"),
+    analytics: true,
+  });
+
+  const identifier = args.to;
+  const { success } = await ratelimit.limit(identifier);
+
+  if (!success) {
+    Logger.log("Rate limit exceeded for email", identifier);
+    throw new Error("Rate limit exceeded");
+  }
+
   // Send email using AWS SES
   const email: SendEmailRequest = {
     Source: `lux.dev <${args.from}>`,
