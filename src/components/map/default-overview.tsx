@@ -106,7 +106,8 @@ export async function DefaultOverview({ id }: { id: number }) {
   });
 
   const numberOfRounds =
-    mapType === $Enums.MapType.Flashpoint ? 5 : finalRound?.round_number ?? 1;
+    // prettier-ignore
+    mapType === $Enums.MapType.Flashpoint ? 5 : (finalRound?.round_number ?? 1);
 
   const fights = await groupKillsIntoFights(id);
 
