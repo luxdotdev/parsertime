@@ -56,7 +56,7 @@ const nextConfig = {
           },
           {
             key: "Content-Security-Policy",
-            vale: "frame-ancestors 'none'",
+            value: "frame-ancestors 'none'",
           },
         ],
       },
