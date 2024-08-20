@@ -45,6 +45,23 @@ const nextConfig = {
       },
     ],
   },
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "X-Frame-Options",
+            value: "SAMEORIGIN",
+          },
+          {
+            key: "Content-Security-Policy",
+            vale: "frame-ancestors 'none'",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 const withVercelToolbar = require("@vercel/toolbar/plugins/next")();
