@@ -6,7 +6,7 @@ const cspHeader = `
       process.env.NODE_ENV === "production" ? "" : `'unsafe-eval' localhost:*`
     };
     style-src 'self' https://vercel.live https://vercel.com 'unsafe-inline';
-    connect-src 'self' https://vercel.live/ https://vercel.com *.vercel-storage.com *.pusher.com *.pusherapp.com ${
+    connect-src 'self' https://vercel.live/ https://vercel.com *.vercel-storage.com *.pusher.com *.pusherapp.com wss://*.pusher.com/ ${
       process.env.NODE_ENV === "production"
         ? ""
         : `localhost:* ws://localhost:*`
