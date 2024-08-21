@@ -1,4 +1,26 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+
+const cspHeader = `
+    default-src 'self';
+    script-src 'self' https://vercel.live https://vercel.com *.vercel-scripts.com 'unsafe-inline' ${
+      process.env.NODE_ENV === "production" ? "" : `'unsafe-eval' localhost:*`
+    };
+    style-src 'self' https://vercel.live https://vercel.com 'unsafe-inline';
+    connect-src 'self' https://vercel.live/ https://vercel.com *.vercel-storage.com *.pusher.com *.pusherapp.com ${
+      process.env.NODE_ENV === "production"
+        ? ""
+        : `localhost:* ws://localhost:*`
+    };
+    img-src 'self' https://vercel.live/ https://vercel.com *.pusher.com/ https://lh3.googleusercontent.com/ https://cdn.discordapp.com/ https://avatars.githubusercontent.com/ *.vercel-storage.com blob: data:;
+    frame-src 'self' https://vercel.live https://vercel.com;
+    font-src 'self';
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'none';
+    upgrade-insecure-requests;
+`;
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
@@ -56,7 +78,7 @@ const nextConfig = {
           },
           {
             key: "Content-Security-Policy",
-            value: "frame-ancestors 'none'",
+            value: cspHeader.replace(/\n/g, ""),
           },
           {
             key: "X-Content-Type-Options",
