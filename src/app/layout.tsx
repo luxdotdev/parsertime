@@ -1,17 +1,17 @@
-import type { Metadata } from "next";
-import { GeistSans } from "geist/font/sans";
-import "./globals.css";
+import { CommandDialogMenu } from "@/components/command-menu";
+import { CommandMenuProvider } from "@/components/command-menu-provider";
+import { StaffToolbar } from "@/components/staff-toolbar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from "@vercel/analytics/react";
-import { Suspense } from "react";
-import { StaffToolbar } from "@/components/staff-toolbar";
-import { cn } from "@/lib/utils";
-import { CommandMenuProvider } from "@/components/command-menu-provider";
-import { CommandDialogMenu } from "@/components/command-menu";
-import { auth } from "@/lib/auth";
 import { getUser } from "@/data/user-dto";
+import { auth } from "@/lib/auth";
+import { cn } from "@/lib/utils";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { GeistSans } from "geist/font/sans";
+import type { Metadata } from "next";
+import { Suspense } from "react";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Parsertime",
