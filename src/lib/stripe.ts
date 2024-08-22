@@ -40,7 +40,7 @@ export async function createCheckout(
     throw new Error("Unauthorized");
   }
 
-  const billingPlans = (await get("billingPlans")) as BillingPlans;
+  const billingPlans = (await get<BillingPlans>("billingPlans")) ?? [];
   const billingPlan = billingPlans.find(
     (plan) => plan.name === planName.toUpperCase()
   );
