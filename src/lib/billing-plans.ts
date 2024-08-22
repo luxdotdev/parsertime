@@ -26,7 +26,7 @@ export async function handleSubscriptionEvent(
     subscription.items.data[0].plan.product as string
   );
 
-  const billingPlans = (await get("billingPlans")) as BillingPlans;
+  const billingPlans = (await get<BillingPlans>("billingPlans")) ?? [];
   const billingPlan = billingPlans.find((plan) => plan.id === product.id);
 
   if (!billingPlan) {

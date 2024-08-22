@@ -91,17 +91,17 @@ export const config = {
       if (!user.email) return false;
 
       // deny all blocked users
-      const blockedUsers = (await get("blockedUsers")) as string[];
+      const blockedUsers = (await get<string[]>("blockedUsers")) ?? [];
       Logger.log("User blocked", { user });
       if (blockedUsers.includes(user.email)) return false;
 
       // get app availability from edge config
-      const status = (await get("availability")) as Availability;
+      const status = (await get<Availability>("availability")) ?? "private";
 
       if (status === "public" && !isPreview) return true;
 
       // get list of allowed user emails from edge config
-      const allowedUsers = (await get("allowedUsers")) as string[];
+      const allowedUsers = (await get<string[]>("allowedUsers")) ?? [];
 
       // allow all lux.dev emails
       if (user.email.includes("lux.dev")) return true;

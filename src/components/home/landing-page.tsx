@@ -1,23 +1,23 @@
+import { Button } from "@/components/ui/button";
 import {
+  CalendarDaysIcon,
+  ChartBarIcon,
   ChevronRightIcon,
   CloudIcon,
   FingerPrintIcon,
-  ChartBarIcon,
-  CalendarDaysIcon,
   IdentificationIcon,
-  WrenchScrewdriverIcon,
   StarIcon,
+  WrenchScrewdriverIcon,
 } from "@heroicons/react/20/solid";
 import {
   AcademicCapIcon,
   ArrowUpOnSquareIcon,
   PresentationChartBarIcon,
 } from "@heroicons/react/24/outline";
-import { SVGProps } from "react";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { get } from "@vercel/edge-config";
+import Image from "next/image";
+import Link from "next/link";
+import { SVGProps } from "react";
 
 const primaryFeatures = [
   {
@@ -121,14 +121,15 @@ const footerNavigation = {
 };
 
 export default async function LandingPage() {
-  const stats = (await get("landingPageStats")) as [
-    { id: string; name: string; value: string },
-  ];
+  const stats =
+    await get<[{ id: string; name: string; value: string }]>(
+      "landingPageStats"
+    );
 
-  const latestUpdates = (await get("latestUpdates")) as {
+  const latestUpdates = await get<{
     title: string;
     url: string;
-  };
+  }>("latestUpdates");
   return (
     <div className="bg-white dark:bg-black">
       <main>
@@ -212,7 +213,7 @@ export default async function LandingPage() {
               />
               <div className="mt-24 sm:mt-32 lg:mt-16">
                 <Link
-                  href={latestUpdates.url}
+                  href={latestUpdates!.url}
                   target="_blank"
                   className="inline-flex space-x-6"
                 >
@@ -220,7 +221,7 @@ export default async function LandingPage() {
                     Latest updates
                   </span>
                   <span className="inline-flex items-center space-x-2 text-sm font-medium leading-6 text-gray-600 dark:text-gray-300">
-                    <span>{latestUpdates.title}</span>
+                    <span>{latestUpdates!.title}</span>
                     <ChevronRightIcon
                       className="h-5 w-5 text-gray-400 dark:text-gray-500"
                       aria-hidden="true"
@@ -444,7 +445,7 @@ export default async function LandingPage() {
             </p>
           </div>
           <dl className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-10 text-gray-900 dark:text-white sm:mt-20 sm:grid-cols-2 sm:gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-4">
-            {stats.map((stat) => (
+            {stats!.map((stat) => (
               <div
                 key={stat.id}
                 className="flex flex-col gap-y-3 border-l border-gray-900/10 pl-6 dark:border-white/10"
