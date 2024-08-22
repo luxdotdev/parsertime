@@ -93,6 +93,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@tanstack/eslint-plugin-query": "^5.52.0",
     "@total-typescript/ts-reset": "^0.5.1",
     "@types/node": "^20.12.7",
     "@types/react": "^18.2.78",
