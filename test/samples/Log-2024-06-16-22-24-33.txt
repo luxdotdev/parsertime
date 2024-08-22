@@ -1,0 +1,532 @@
+[00:00:00] ,match_start,0,King's Row,Hybrid,4head Dog,Cerberus
+[00:00:00] ,round_start,0,1,Cerberus,0,0,0
+[00:00:08] ,hero_spawn,0,Cerberus,Shippey,Widowmaker,0,0
+[00:00:09] ,hero_spawn,0,Cerberus,MidnightMere,Lifeweaver,0,0
+[00:00:11] ,hero_spawn,0,4head Dog,OceanMan,Winston,0,0
+[00:00:14] ,hero_spawn,0,4head Dog,Eather,Brigitte,0,0
+[00:00:18] ,hero_spawn,0,4head Dog,Thistle,Ana,0,0
+[00:00:20] ,hero_spawn,0,4head Dog,FinntheHuman,Pharah,0,0
+[00:00:21] ,hero_spawn,0,Cerberus,CynoX6,Junkrat,0,0
+[00:00:22] ,hero_spawn,0,4head Dog,ZippyBlume,Sojourn,0,0
+[00:00:24] ,hero_spawn,0,Cerberus,Sainttx,Baptiste,0,0
+[00:00:50] ,hero_swap,0,Cerberus,MidnightMere,Lúcio,Lifeweaver,0
+[00:00:57] ,hero_spawn,0,Cerberus,Alezzan,Reinhardt,0,0
+[00:01:07] ,hero_swap,0,Cerberus,MidnightMere,Kiriko,Lúcio,0
+[00:01:16] ,hero_swap,0,Cerberus,MidnightMere,Lúcio,Kiriko,0
+[00:01:49] ,hero_swap,0,Cerberus,CynoX6,Mei,Junkrat,0
+[00:02:12] ,setup_complete,0,1,239.99
+[00:02:19] ,hero_swap,7.23,Cerberus,Shippey,Cassidy,Widowmaker,7.23
+[00:02:57] ,point_progress,44.58,1,Cerberus,0,33.34
+[00:03:02] ,point_progress,50.13,1,Cerberus,0,66.62
+[00:03:13] ,kill,60.54,Cerberus,Sainttx,Baptiste,4head Dog,OceanMan,Winston,Primary Fire,14.84,True,0
+[00:03:13] ,offensive_assist,60.72,Cerberus,MidnightMere,Lúcio,0
+[00:03:13] ,defensive_assist,60.72,Cerberus,MidnightMere,Lúcio,0
+[00:03:13] ,defensive_assist,60.77,Cerberus,Sainttx,Baptiste,0
+[00:03:14] ,kill,61.65,4head Dog,FinntheHuman,Pharah,Cerberus,MidnightMere,Lúcio,Primary Fire,52.39,0,0
+[00:03:14] ,point_progress,62.11,1,Cerberus,0,99.91
+[00:03:14] ,objective_updated,62.13,1,0,1
+[00:03:14] ,objective_captured,62.13,1,Cerberus,1,0,0,327.86
+[00:03:16] ,kill,63.66,Cerberus,Shippey,Cassidy,4head Dog,Eather,Brigitte,Primary Fire,7.03,0,0
+[00:03:16] ,offensive_assist,64.03,Cerberus,MidnightMere,Lúcio,0
+[00:03:16] ,defensive_assist,64.03,Cerberus,MidnightMere,Lúcio,0
+[00:03:20] ,kill,68.08,4head Dog,ZippyBlume,Sojourn,Cerberus,Alezzan,Reinhardt,Primary Fire,7.33,0,0
+[00:03:20] ,offensive_assist,68.16,4head Dog,Thistle,Ana,0
+[00:03:22] ,kill,69.95,Cerberus,CynoX6,Mei,4head Dog,ZippyBlume,Sojourn,Melee,30.58,0,0
+[00:03:22] ,ultimate_charged,70.09,4head Dog,FinntheHuman,Pharah,0,1
+[00:03:23] ,kill,70.69,Cerberus,Shippey,Cassidy,4head Dog,FinntheHuman,Pharah,Primary Fire,28.30,True,0
+[00:03:23] ,defensive_assist,71.10,Cerberus,Sainttx,Baptiste,0
+[00:03:24] ,kill,71.58,4head Dog,Thistle,Ana,Cerberus,Shippey,Cassidy,Primary Fire,26.04,0,0
+[00:03:26] ,hero_swap,73.66,4head Dog,Eather,Lúcio,Brigitte,73.66
+[00:03:31] ,ultimate_charged,78.48,Cerberus,Sainttx,Baptiste,0,1
+[00:03:33] ,kill,80.76,Cerberus,Sainttx,Baptiste,4head Dog,Thistle,Ana,Primary Fire,44.72,True,0
+[00:03:36] ,payload_progress,83.98,1,Cerberus,1,10.02
+[00:03:48] ,payload_progress,95.45,1,Cerberus,1,20.01
+[00:04:00] ,payload_progress,108.06,1,Cerberus,1,30.01
+[00:04:03] ,ultimate_charged,111.00,4head Dog,Thistle,Ana,0,1
+[00:04:11] ,payload_progress,119.18,1,Cerberus,1,40.02
+[00:04:11] ,ultimate_charged,119.23,Cerberus,Shippey,Cassidy,0,1
+[00:04:14] ,ultimate_start,121.64,4head Dog,Thistle,Ana,0,1
+[00:04:15] ,ultimate_start,122.94,Cerberus,Sainttx,Baptiste,0,1
+[00:04:18] ,kill,125.85,4head Dog,OceanMan,Winston,Cerberus,Alezzan,Reinhardt,Primary Fire,1.02,0,0
+[00:04:18] ,offensive_assist,125.96,4head Dog,Thistle,Ana,0
+[00:04:18] ,offensive_assist,125.98,4head Dog,Eather,Lúcio,0
+[00:04:20] ,ultimate_charged,128.38,Cerberus,CynoX6,Mei,0,1
+[00:04:21] ,kill,128.78,Cerberus,Shippey,Cassidy,4head Dog,Eather,Lúcio,Primary Fire,103.07,0,0
+[00:04:21] ,offensive_assist,128.81,Cerberus,MidnightMere,Lúcio,0
+[00:04:21] ,offensive_assist,128.86,Cerberus,Sainttx,Baptiste,0
+[00:04:21] ,defensive_assist,128.86,Cerberus,Sainttx,Baptiste,0
+[00:04:22] ,ultimate_end,129.77,4head Dog,Thistle,Ana,0,1
+[00:04:26] ,ultimate_end,133.45,Cerberus,Sainttx,Baptiste,0,1
+[00:04:27] ,kill,135.00,Cerberus,Shippey,Cassidy,4head Dog,FinntheHuman,Pharah,Primary Fire,40,0,0
+[00:04:36] ,ultimate_charged,144.29,4head Dog,ZippyBlume,Sojourn,0,1
+[00:04:39] ,kill,146.53,Cerberus,CynoX6,Mei,4head Dog,ZippyBlume,Sojourn,Primary Fire,1.75,0,0
+[00:04:39] ,defensive_assist,146.72,Cerberus,Sainttx,Baptiste,0
+[00:04:41] ,kill,148.98,Cerberus,Shippey,Cassidy,4head Dog,Thistle,Ana,Primary Fire,91.80,True,0
+[00:04:41] ,defensive_assist,149.03,Cerberus,MidnightMere,Lúcio,0
+[00:04:42] ,ultimate_charged,150.32,Cerberus,MidnightMere,Lúcio,0,1
+[00:04:46] ,payload_progress,153.97,1,Cerberus,1,50.02
+[00:04:57] ,ultimate_charged,165.11,4head Dog,OceanMan,Winston,0,1
+[00:04:58] ,payload_progress,165.82,1,Cerberus,1,60.01
+[00:04:58] ,ultimate_start,166.12,4head Dog,OceanMan,Winston,0,1
+[00:05:02] ,ultimate_start,169.87,4head Dog,ZippyBlume,Sojourn,0,1
+[00:05:02] ,ultimate_start,169.93,Cerberus,Shippey,Cassidy,0,1
+[00:05:03] ,ultimate_start,171.40,Cerberus,MidnightMere,Lúcio,0,1
+[00:05:07] ,ultimate_charged,174.43,Cerberus,Alezzan,Reinhardt,0,1
+[00:05:08] ,ultimate_end,175.97,Cerberus,Shippey,Cassidy,0,1
+[00:05:08] ,ultimate_end,176.13,4head Dog,OceanMan,Winston,0,1
+[00:05:09] ,kill,176.43,Cerberus,Alezzan,Reinhardt,4head Dog,OceanMan,Winston,Primary Fire,84.52,0,0
+[00:05:09] ,offensive_assist,176.73,Cerberus,MidnightMere,Lúcio,0
+[00:05:09] ,defensive_assist,176.73,Cerberus,MidnightMere,Lúcio,0
+[00:05:09] ,defensive_assist,176.78,Cerberus,Sainttx,Baptiste,0
+[00:05:09] ,offensive_assist,176.86,Cerberus,CynoX6,Mei,0
+[00:05:10] ,ultimate_start,178.25,4head Dog,FinntheHuman,Pharah,0,1
+[00:05:11] ,kill,178.54,4head Dog,Eather,Lúcio,Cerberus,Shippey,Cassidy,Primary Fire,6.31,0,0
+[00:05:11] ,ultimate_end,178.61,4head Dog,ZippyBlume,Sojourn,0,1
+[00:05:11] ,offensive_assist,178.72,4head Dog,Thistle,Ana,0
+[00:05:11] ,kill,179.09,Cerberus,CynoX6,Mei,4head Dog,FinntheHuman,Pharah,Secondary Fire,51.29,True,0
+[00:05:11] ,ultimate_end,179.09,4head Dog,FinntheHuman,Pharah,0,1
+[00:05:11] ,defensive_assist,179.10,Cerberus,MidnightMere,Lúcio,0
+[00:05:11] ,ultimate_end,179.25,Cerberus,MidnightMere,Lúcio,0,1
+[00:05:14] ,kill,181.46,Cerberus,CynoX6,Mei,4head Dog,Eather,Lúcio,Primary Fire,4.06,0,0
+[00:05:14] ,defensive_assist,181.47,Cerberus,Sainttx,Baptiste,0
+[00:05:14] ,offensive_assist,181.90,Cerberus,MidnightMere,Lúcio,0
+[00:05:15] ,objective_updated,183.04,1,1,2
+[00:05:15] ,objective_captured,183.04,1,Cerberus,2,0,0,296.97
+[00:05:19] ,kill,187.15,Cerberus,CynoX6,Mei,4head Dog,ZippyBlume,Sojourn,Secondary Fire,39.12,0,0
+[00:05:20] ,offensive_assist,187.55,Cerberus,MidnightMere,Lúcio,0
+[00:05:20] ,defensive_assist,187.60,Cerberus,Sainttx,Baptiste,0
+[00:05:23] ,kill,190.56,Cerberus,Sainttx,Baptiste,4head Dog,Thistle,Ana,Primary Fire,25,0,0
+[00:05:23] ,offensive_assist,190.85,Cerberus,MidnightMere,Lúcio,0
+[00:05:23] ,offensive_assist,190.92,Cerberus,CynoX6,Mei,0
+[00:05:25] ,hero_swap,193.22,4head Dog,OceanMan,Mauga,Winston,193.22
+[00:05:35] ,payload_progress,202.82,1,Cerberus,2,70.02
+[00:05:45] ,payload_progress,213.12,1,Cerberus,2,80.02
+[00:05:47] ,ultimate_charged,215.34,Cerberus,Sainttx,Baptiste,0,2
+[00:05:55] ,payload_progress,223.42,1,Cerberus,2,90.03
+[00:06:00] ,ultimate_start,227.62,Cerberus,Alezzan,Reinhardt,0,1
+[00:06:00] ,ultimate_start,228.07,Cerberus,Sainttx,Baptiste,0,2
+[00:06:01] ,kill,228.93,Cerberus,Shippey,Cassidy,4head Dog,Eather,Lúcio,Primary Fire,55.92,True,0
+[00:06:01] ,offensive_assist,229.39,Cerberus,MidnightMere,Lúcio,0
+[00:06:01] ,defensive_assist,229.39,Cerberus,MidnightMere,Lúcio,0
+[00:06:02] ,kill,229.47,4head Dog,ZippyBlume,Sojourn,Cerberus,MidnightMere,Lúcio,Ability 2,8.33,0,0
+[00:06:02] ,offensive_assist,229.94,4head Dog,Eather,Lúcio,0
+[00:06:02] ,defensive_assist,229.94,4head Dog,Eather,Lúcio,0
+[00:06:03] ,ultimate_end,230.61,Cerberus,Alezzan,Reinhardt,0,1
+[00:06:08] ,kill,235.72,4head Dog,FinntheHuman,Pharah,Cerberus,Sainttx,Baptiste,Primary Fire,52.73,0,0
+[00:06:08] ,ultimate_charged,235.91,4head Dog,Thistle,Ana,0,2
+[00:06:08] ,ultimate_start,236.18,Cerberus,CynoX6,Mei,0,1
+[00:06:09] ,ultimate_start,236.63,4head Dog,Thistle,Ana,0,2
+[00:06:11] ,ultimate_end,238.58,Cerberus,Sainttx,Baptiste,0,2
+[00:06:14] ,ultimate_end,241.85,Cerberus,CynoX6,Mei,0,1
+[00:06:15] ,kill,242.89,4head Dog,ZippyBlume,Sojourn,Cerberus,Alezzan,Reinhardt,Secondary Fire,49.45,0,0
+[00:06:15] ,offensive_assist,243.11,4head Dog,Eather,Lúcio,0
+[00:06:15] ,offensive_assist,243.14,4head Dog,OceanMan,Mauga,0
+[00:06:15] ,defensive_assist,243.14,4head Dog,OceanMan,Mauga,0
+[00:06:15] ,kill,243.16,4head Dog,FinntheHuman,Pharah,Cerberus,Shippey,Cassidy,Primary Fire,53.13,0,0
+[00:06:15] ,offensive_assist,243.19,4head Dog,Thistle,Ana,0
+[00:06:15] ,defensive_assist,243.19,4head Dog,Thistle,Ana,0
+[00:06:16] ,kill,243.66,4head Dog,OceanMan,Mauga,Cerberus,CynoX6,Mei,0,1.01,0,0
+[00:06:16] ,offensive_assist,244.12,4head Dog,Thistle,Ana,0
+[00:06:16] ,defensive_assist,244.12,4head Dog,Thistle,Ana,0
+[00:06:17] ,ultimate_end,244.76,4head Dog,Thistle,Ana,0,2
+[00:06:45] ,ultimate_charged,273.46,4head Dog,FinntheHuman,Pharah,0,2
+[00:06:48] ,ultimate_charged,275.75,4head Dog,Eather,Lúcio,0,1
+[00:06:56] ,ultimate_charged,284.39,Cerberus,Shippey,Cassidy,0,2
+[00:06:58] ,ultimate_start,285.65,Cerberus,Shippey,Cassidy,0,2
+[00:06:59] ,ultimate_start,287.38,4head Dog,FinntheHuman,Pharah,0,2
+[00:07:00] ,kill,287.92,4head Dog,FinntheHuman,Pharah,Cerberus,Alezzan,Reinhardt,Ultimate,8.49,0,0
+[00:07:00] ,offensive_assist,288.27,4head Dog,OceanMan,Mauga,0
+[00:07:00] ,defensive_assist,288.32,4head Dog,Thistle,Ana,0
+[00:07:02] ,ultimate_end,289.87,4head Dog,FinntheHuman,Pharah,0,2
+[00:07:03] ,ultimate_end,290.64,Cerberus,Shippey,Cassidy,0,2
+[00:07:03] ,ultimate_start,291.20,4head Dog,Eather,Lúcio,0,1
+[00:07:07] ,kill,294.56,4head Dog,ZippyBlume,Sojourn,Cerberus,CynoX6,Mei,Secondary Fire,2.33,0,0
+[00:07:07] ,offensive_assist,294.86,4head Dog,OceanMan,Mauga,0
+[00:07:07] ,defensive_assist,294.86,4head Dog,OceanMan,Mauga,0
+[00:07:07] ,defensive_assist,294.88,4head Dog,Eather,Lúcio,0
+[00:07:07] ,defensive_assist,294.90,4head Dog,Thistle,Ana,0
+[00:07:08] ,kill,295.81,4head Dog,FinntheHuman,Pharah,Cerberus,Shippey,Cassidy,Primary Fire,96.78,0,0
+[00:07:08] ,defensive_assist,295.82,4head Dog,Eather,Lúcio,0
+[00:07:10] ,ultimate_charged,298.00,4head Dog,ZippyBlume,Sojourn,0,2
+[00:07:10] ,kill,298.34,4head Dog,FinntheHuman,Pharah,Cerberus,MidnightMere,Lúcio,Primary Fire,12.81,0,0
+[00:07:11] ,offensive_assist,298.64,4head Dog,Eather,Lúcio,0
+[00:07:11] ,defensive_assist,298.64,4head Dog,Eather,Lúcio,0
+[00:07:11] ,defensive_assist,298.66,4head Dog,Thistle,Ana,0
+[00:07:11] ,ultimate_end,298.94,4head Dog,Eather,Lúcio,0,1
+[00:07:16] ,hero_swap,304.02,Cerberus,Alezzan,D.Va,Reinhardt,304.02
+[00:07:26] ,hero_swap,314.40,Cerberus,CynoX6,Sojourn,Mei,314.40
+[00:07:36] ,kill,324.35,4head Dog,FinntheHuman,Pharah,Cerberus,MidnightMere,Lúcio,Primary Fire,79.20,0,0
+[00:07:37] ,ultimate_charged,325.08,Cerberus,Sainttx,Baptiste,0,3
+[00:07:55] ,hero_swap,343.51,Cerberus,Alezzan,Sigma,D.Va,39.49
+[00:08:11] ,ultimate_charged,359.03,4head Dog,Thistle,Ana,0,3
+[00:08:11] ,ultimate_start,359.45,Cerberus,Sainttx,Baptiste,0,3
+[00:08:12] ,ultimate_start,359.70,4head Dog,Thistle,Ana,0,3
+[00:08:14] ,ultimate_start,362.17,4head Dog,ZippyBlume,Sojourn,0,2
+[00:08:15] ,ultimate_charged,362.65,4head Dog,OceanMan,Mauga,0,2
+[00:08:16] ,kill,364.14,4head Dog,ZippyBlume,Sojourn,Cerberus,Shippey,Cassidy,Ultimate,159.89,True,0
+[00:08:16] ,offensive_assist,364.50,4head Dog,Eather,Lúcio,0
+[00:08:16] ,defensive_assist,364.50,4head Dog,Eather,Lúcio,0
+[00:08:16] ,offensive_assist,364.54,4head Dog,Thistle,Ana,0
+[00:08:16] ,defensive_assist,364.54,4head Dog,Thistle,Ana,0
+[00:08:19] ,kill,366.86,4head Dog,Thistle,Ana,Cerberus,Alezzan,Sigma,Primary Fire,21.29,0,0
+[00:08:19] ,defensive_assist,366.90,4head Dog,Thistle,Ana,0
+[00:08:19] ,kill,366.98,4head Dog,OceanMan,Mauga,Cerberus,Sainttx,Baptiste,0,2.33,0,0
+[00:08:19] ,offensive_assist,367.30,4head Dog,OceanMan,Mauga,0
+[00:08:19] ,defensive_assist,367.30,4head Dog,OceanMan,Mauga,0
+[00:08:19] ,offensive_assist,367.34,4head Dog,Eather,Lúcio,0
+[00:08:19] ,offensive_assist,367.34,4head Dog,Eather,Lúcio,0
+[00:08:19] ,defensive_assist,367.34,4head Dog,Eather,Lúcio,0
+[00:08:19] ,defensive_assist,367.34,4head Dog,Eather,Lúcio,0
+[00:08:19] ,offensive_assist,367.37,4head Dog,Thistle,Ana,0
+[00:08:19] ,defensive_assist,367.37,4head Dog,Thistle,Ana,0
+[00:08:20] ,ultimate_end,367.83,4head Dog,Thistle,Ana,0,3
+[00:08:22] ,ultimate_end,369.96,Cerberus,Sainttx,Baptiste,0,3
+[00:08:23] ,kill,370.85,4head Dog,Thistle,Ana,Cerberus,MidnightMere,Lúcio,Primary Fire,23.89,0,0
+[00:08:23] ,ultimate_end,370.90,4head Dog,ZippyBlume,Sojourn,0,2
+[00:08:23] ,offensive_assist,371.08,4head Dog,Eather,Lúcio,0
+[00:08:26] ,hero_swap,374.13,Cerberus,Shippey,Echo,Cassidy,366.90
+[00:08:41] ,ultimate_charged,389.30,4head Dog,FinntheHuman,Pharah,0,3
+[00:08:42] ,ultimate_charged,390.21,Cerberus,MidnightMere,Lúcio,0,2
+[00:08:54] ,kill,402.32,Cerberus,Shippey,Echo,4head Dog,FinntheHuman,Pharah,Ability 2,1.88,0,0
+[00:08:59] ,ultimate_start,407.06,4head Dog,OceanMan,Mauga,0,2
+[00:08:59] ,ultimate_end,407.22,4head Dog,OceanMan,Mauga,0,2
+[00:09:03] ,kill,410.80,Cerberus,CynoX6,Sojourn,4head Dog,Thistle,Ana,Ability 2,8.12,0,0
+[00:09:03] ,offensive_assist,410.96,Cerberus,MidnightMere,Lúcio,0
+[00:09:03] ,defensive_assist,411.08,Cerberus,Sainttx,Baptiste,0
+[00:09:11] ,kill,419.15,Cerberus,Sainttx,Baptiste,4head Dog,Eather,Lúcio,Primary Fire,15.53,0,0
+[00:09:11] ,defensive_assist,419.54,Cerberus,Sainttx,Baptiste,0
+[00:09:13] ,hero_swap,420.82,4head Dog,Thistle,Kiriko,Ana,420.82
+[00:09:14] ,ultimate_start,421.92,4head Dog,FinntheHuman,Pharah,0,3
+[00:09:15] ,ultimate_start,422.86,Cerberus,MidnightMere,Lúcio,0,2
+[00:09:16] ,ultimate_charged,423.92,Cerberus,CynoX6,Sojourn,0,2
+[00:09:16] ,ultimate_end,424.42,4head Dog,FinntheHuman,Pharah,0,3
+[00:09:16] ,ultimate_start,424.45,Cerberus,CynoX6,Sojourn,0,2
+[00:09:18] ,kill,426.02,Cerberus,CynoX6,Sojourn,4head Dog,FinntheHuman,Pharah,Ultimate,51,0,0
+[00:09:18] ,offensive_assist,426.48,Cerberus,MidnightMere,Lúcio,0
+[00:09:18] ,defensive_assist,426.48,Cerberus,MidnightMere,Lúcio,0
+[00:09:20] ,kill,428.53,Cerberus,CynoX6,Sojourn,4head Dog,Thistle,Kiriko,Ultimate,88.60,0,0
+[00:09:21] ,offensive_assist,428.85,Cerberus,MidnightMere,Lúcio,0
+[00:09:21] ,defensive_assist,428.85,Cerberus,MidnightMere,Lúcio,0
+[00:09:21] ,kill,429.39,Cerberus,Alezzan,Sigma,4head Dog,OceanMan,Mauga,Melee,6.72,0,0
+[00:09:22] ,offensive_assist,429.78,Cerberus,MidnightMere,Lúcio,0
+[00:09:22] ,defensive_assist,429.78,Cerberus,MidnightMere,Lúcio,0
+[00:09:23] ,kill,430.82,Cerberus,Alezzan,Sigma,4head Dog,ZippyBlume,Sojourn,Melee,12.59,0,0
+[00:09:23] ,ultimate_end,430.87,Cerberus,MidnightMere,Lúcio,0,2
+[00:09:23] ,defensive_assist,431.19,Cerberus,MidnightMere,Lúcio,0
+[00:09:23] ,defensive_assist,431.28,Cerberus,Sainttx,Baptiste,0
+[00:09:25] ,ultimate_end,433.19,Cerberus,CynoX6,Sojourn,0,2
+[00:09:26] ,player_stat,434.15,1,Cerberus,Alezzan,Reinhardt,5,1,4,3185.64,715,2470.64,0,3797.84,0,6841.71,7925.50,0,0,1,1,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,304.02
+[00:09:26] ,player_stat,434.15,1,Cerberus,Alezzan,D.Va,0,0,0,24.15,0,24.15,0,510.11,0,536.75,1327,0,0,0,0,0,0,0,0,0,0,2,0.06,0,0,0,1210,34,1176,0,0,0.03,39.49
+[00:09:26] ,player_stat,434.15,1,Cerberus,Alezzan,Sigma,4,2,1,1687.16,0,1687.16,0,1329.56,0,2534.16,2448.03,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,48,21,27,0,0,0.44,90.64
+[00:09:26] ,player_stat,434.15,1,4head Dog,FinntheHuman,Pharah,16,7,5,11245.63,2663.42,8422.21,0,1947.86,0,3741.34,0,0,0,3,3,1,3,1,5,0,0,0,0,0,0,0,196,75,102,0,0,0.42,434.15
+[00:09:26] ,player_stat,434.15,1,4head Dog,ZippyBlume,Sojourn,12,5,4,10534.29,4061.88,6165.93,0,1156.42,0,2738.14,0,0,0,2,2,0,0,0,3,0,0,45,0.10,0,0,0,2095,431,1255,0,0,0.26,434.15
+[00:09:26] ,player_stat,434.15,1,4head Dog,Eather,Brigitte,0,0,1,1435,1435,0,648.88,0,0,378.35,466.37,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,73.66
+[00:09:26] ,player_stat,434.15,1,4head Dog,Eather,Lúcio,6,1,4,2037.87,770.56,1177.31,2670.63,934.24,526.13,2235.56,0,7,8,1,1,0,0,0,4,0,0,4,0.06,0,0,0,341,62,233,0,0,0.21,360.49
+[00:09:26] ,player_stat,434.15,1,Cerberus,Sainttx,Baptiste,13,4,2,5226.51,1007.50,4219.01,8634.68,999.59,477.42,2217.63,0,10,1,3,3,0,0,1,6,0,0,22,0.12,0,0,0,433,183,205,0,0,0.47,434.15
+[00:09:26] ,player_stat,434.15,1,Cerberus,Shippey,Widowmaker,0,0,0,139.87,139.87,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,7.23
+[00:09:26] ,player_stat,434.15,1,Cerberus,Shippey,Cassidy,7,6,5,7397.99,1503,5894.99,0,1535.41,0,3019.38,0,0,0,2,2,0,0,1,2,0,0,9,0.11,0,0,0,253,84,146,0,0,0.37,366.90
+[00:09:26] ,player_stat,434.15,1,Cerberus,Shippey,Echo,5,1,0,1265.58,0,1265.58,0,298.64,0,629.57,0,0,0,0,0,0,0,0,0,0,0,9,0.14,0,0,0,246,65,181,0,0,0.26,60.02
+[00:09:26] ,player_stat,434.15,1,4head Dog,OceanMan,Winston,2,1,2,2502.09,752.67,1749.42,0,2353.32,0,4570.41,3560,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,10,3,4,0,0,0.43,193.22
+[00:09:26] ,player_stat,434.15,1,4head Dog,OceanMan,Mauga,7,2,1,5975.48,2133.85,3739.15,636.48,5835.60,606.83,7554.58,0,3,4,1,1,0,0,0,4,0,0,45,0.07,0,0,0,2386,626,1097,0,0,0.36,240.93
+[00:09:26] ,player_stat,434.15,1,Cerberus,CynoX6,Junkrat,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:09:26] ,player_stat,434.15,1,Cerberus,CynoX6,Mei,9,5,2,12561.38,430,3464.18,0,2273.46,382.56,3137.88,2082.80,0,2,1,1,0,0,1,4,0,0,0,0,0,0,0,282,140,122,0,0,0.53,314.40
+[00:09:26] ,player_stat,434.15,1,Cerberus,CynoX6,Sojourn,4,3,0,1818.61,0,1818.61,0,802.18,0,937.54,0,0,0,1,1,0,0,0,0,0,0,12,0.10,0,0,0,641,126,515,0,0,0.20,119.75
+[00:09:26] ,player_stat,434.15,1,Cerberus,MidnightMere,Lifeweaver,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:09:26] ,player_stat,434.15,1,Cerberus,MidnightMere,Lúcio,11,0,5,2375.06,231,2144.06,2749.86,1567.68,577.65,3394.96,0,10,12,2,2,0,0,0,5,0,0,6,0.06,0,0,0,422,94,320,0,0,0.23,434.15
+[00:09:26] ,player_stat,434.15,1,Cerberus,MidnightMere,Kiriko,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:09:26] ,round_end,434.15,1,Cerberus,0,3,3,0,0,46.06
+[00:09:26] ,objective_updated,434.15,1,2,3
+[00:09:26] ,objective_captured,434.15,1,Cerberus,3,0,0,46.06
+[00:09:26] ,player_stat,434.15,1,4head Dog,Thistle,Ana,7,3,4,2646.12,638.96,1937.16,7477.99,131.16,90,1537.28,0,8,7,3,3,0,0,0,3,0,0,0,0,0.85,0,0,196,23,48,117,99,0.32,420.82
+[00:09:26] ,player_stat,434.15,1,4head Dog,Thistle,Kiriko,0,0,1,0,0,0,149.40,0,0,250,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,13.33
+[00:09:28] ,hero_swap,434.15,4head Dog,FinntheHuman,Tracer,Pharah,0
+[00:09:38] ,objective_updated,434.15,2,3,0
+[00:09:38] ,round_start,434.15,2,4head Dog,0,3,0
+[00:09:39] ,hero_spawn,434.15,4head Dog,Eather,Lúcio,,0
+[00:09:40] ,hero_spawn,434.15,Cerberus,MidnightMere,Lúcio,,0
+[00:09:44] ,hero_spawn,434.15,Cerberus,Shippey,Echo,,0
+[00:09:45] ,hero_spawn,434.15,Cerberus,Sainttx,Baptiste,,0
+[00:09:45] ,hero_spawn,434.15,Cerberus,CynoX6,Mei,,0
+[00:10:05] ,hero_spawn,434.15,Cerberus,Alezzan,Ramattra,,0
+[00:10:10] ,hero_spawn,434.15,4head Dog,ZippyBlume,Torbjörn,,0
+[00:10:19] ,hero_swap,434.15,Cerberus,Shippey,Cassidy,Echo,0
+[00:10:20] ,hero_spawn,434.15,4head Dog,Thistle,Ana,,0
+[00:10:21] ,hero_spawn,434.15,4head Dog,FinntheHuman,Tracer,,0
+[00:10:24] ,hero_swap,434.15,4head Dog,ZippyBlume,Cassidy,Torbjörn,0
+[00:10:26] ,hero_spawn,434.15,4head Dog,OceanMan,Mauga,,0
+[00:10:26] ,hero_swap,434.15,Cerberus,CynoX6,Tracer,Mei,0
+[00:10:58] ,setup_complete,434.15,2,239.99
+[00:11:22] ,kill,458.19,Cerberus,CynoX6,Tracer,4head Dog,Thistle,Ana,Primary Fire,4.25,True,0
+[00:11:34] ,kill,470.51,Cerberus,CynoX6,Tracer,4head Dog,ZippyBlume,Cassidy,Primary Fire,11.64,True,0
+[00:11:34] ,offensive_assist,470.69,Cerberus,MidnightMere,Lúcio,0
+[00:11:34] ,defensive_assist,470.69,Cerberus,MidnightMere,Lúcio,0
+[00:11:34] ,defensive_assist,470.77,Cerberus,Sainttx,Baptiste,0
+[00:11:37] ,kill,473.60,Cerberus,Shippey,Cassidy,4head Dog,OceanMan,Mauga,Primary Fire,1.22,0,0
+[00:12:30] ,ultimate_charged,525.82,Cerberus,CynoX6,Tracer,0,3
+[00:12:38] ,kill,534.02,4head Dog,ZippyBlume,Cassidy,Cerberus,CynoX6,Tracer,Ability 2,47.58,0,0
+[00:12:38] ,defensive_assist,534.17,4head Dog,OceanMan,Mauga,0
+[00:12:38] ,defensive_assist,534.21,4head Dog,Thistle,Ana,0
+[00:12:49] ,ultimate_charged,545.26,Cerberus,Sainttx,Baptiste,0,4
+[00:12:50] ,kill,546.22,4head Dog,ZippyBlume,Cassidy,Cerberus,Sainttx,Baptiste,Primary Fire,46.67,0,0
+[00:12:50] ,offensive_assist,546.42,4head Dog,Eather,Lúcio,0
+[00:12:51] ,ultimate_charged,547.63,Cerberus,Shippey,Cassidy,0,3
+[00:12:51] ,kill,547.74,Cerberus,Shippey,Cassidy,4head Dog,OceanMan,Mauga,Secondary Fire,35.23,0,0
+[00:12:51] ,offensive_assist,547.76,Cerberus,MidnightMere,Lúcio,0
+[00:12:51] ,defensive_assist,547.76,Cerberus,MidnightMere,Lúcio,0
+[00:12:52] ,defensive_assist,547.82,Cerberus,Sainttx,Baptiste,0
+[00:12:52] ,ultimate_charged,548.37,4head Dog,Thistle,Ana,0,4
+[00:12:54] ,kill,550.67,4head Dog,FinntheHuman,Tracer,Cerberus,MidnightMere,Lúcio,Primary Fire,4.90,0,0
+[00:12:57] ,ultimate_start,553.37,4head Dog,Thistle,Ana,0,4
+[00:12:59] ,ultimate_charged,555.13,4head Dog,FinntheHuman,Tracer,0,4
+[00:13:00] ,kill,556.06,4head Dog,ZippyBlume,Cassidy,Cerberus,Alezzan,Ramattra,Secondary Fire,59.58,0,0
+[00:13:00] ,ultimate_charged,556.06,4head Dog,ZippyBlume,Cassidy,0,3
+[00:13:00] ,offensive_assist,556.28,4head Dog,Eather,Lúcio,0
+[00:13:00] ,offensive_assist,556.30,4head Dog,Thistle,Ana,0
+[00:13:00] ,ultimate_start,556.71,4head Dog,ZippyBlume,Cassidy,0,3
+[00:13:02] ,ultimate_start,558.11,Cerberus,CynoX6,Tracer,0,3
+[00:13:02] ,kill,558.27,4head Dog,FinntheHuman,Tracer,Cerberus,Shippey,Cassidy,Primary Fire,3.03,0,0
+[00:13:02] ,ultimate_end,558.30,Cerberus,CynoX6,Tracer,0,3
+[00:13:02] ,offensive_assist,558.63,4head Dog,Eather,Lúcio,0
+[00:13:02] ,defensive_assist,558.63,4head Dog,Eather,Lúcio,0
+[00:13:05] ,ultimate_end,561.50,4head Dog,Thistle,Ana,0,4
+[00:13:05] ,kill,561.51,4head Dog,ZippyBlume,Cassidy,Cerberus,CynoX6,Tracer,Ultimate,73,0,0
+[00:13:06] ,ultimate_end,561.85,4head Dog,ZippyBlume,Cassidy,0,3
+[00:13:06] ,offensive_assist,561.93,4head Dog,Thistle,Ana,0
+[00:13:08] ,point_progress,563.96,2,4head Dog,0,33.39
+[00:13:13] ,point_progress,569.28,2,4head Dog,0,66.69
+[00:13:18] ,point_progress,574.61,2,4head Dog,0,99.99
+[00:13:18] ,objective_updated,574.62,2,0,1
+[00:13:18] ,objective_captured,574.62,2,4head Dog,1,0,0,249.46
+[00:13:30] ,ultimate_charged,586.09,4head Dog,Eather,Lúcio,0,2
+[00:13:38] ,payload_progress,593.85,2,4head Dog,1,10.02
+[00:13:39] ,ultimate_charged,595.24,Cerberus,Alezzan,Ramattra,0,2
+[00:13:45] ,ultimate_start,600.91,4head Dog,FinntheHuman,Tracer,0,4
+[00:13:45] ,ultimate_end,601.09,4head Dog,FinntheHuman,Tracer,0,4
+[00:13:46] ,ultimate_start,601.79,Cerberus,Shippey,Cassidy,0,3
+[00:13:46] ,ultimate_start,602.56,4head Dog,Eather,Lúcio,0,2
+[00:13:47] ,ultimate_start,603.20,Cerberus,Sainttx,Baptiste,0,4
+[00:13:48] ,ultimate_end,604.45,Cerberus,Shippey,Cassidy,0,3
+[00:13:52] ,kill,608.62,Cerberus,Alezzan,Ramattra,4head Dog,OceanMan,Mauga,Ability 1,87.21,0,0
+[00:13:53] ,offensive_assist,608.80,Cerberus,MidnightMere,Lúcio,0
+[00:13:53] ,offensive_assist,608.81,Cerberus,Sainttx,Baptiste,0
+[00:13:53] ,defensive_assist,608.81,Cerberus,Sainttx,Baptiste,0
+[00:13:54] ,kill,610.12,4head Dog,FinntheHuman,Tracer,Cerberus,Sainttx,Baptiste,Primary Fire,6.28,True,0
+[00:13:54] ,ultimate_end,610.27,4head Dog,Eather,Lúcio,0,2
+[00:13:54] ,offensive_assist,610.28,4head Dog,Eather,Lúcio,0
+[00:13:54] ,defensive_assist,610.28,4head Dog,Eather,Lúcio,0
+[00:13:54] ,offensive_assist,610.30,4head Dog,OceanMan,Mauga,0
+[00:13:54] ,defensive_assist,610.30,4head Dog,OceanMan,Mauga,0
+[00:13:54] ,defensive_assist,610.32,4head Dog,Thistle,Ana,0
+[00:13:57] ,ultimate_charged,613.50,Cerberus,MidnightMere,Lúcio,0,3
+[00:13:57] ,ultimate_end,613.71,Cerberus,Sainttx,Baptiste,0,4
+[00:14:01] ,kill,617.34,Cerberus,CynoX6,Tracer,4head Dog,FinntheHuman,Tracer,Primary Fire,3.32,0,0
+[00:14:01] ,offensive_assist,617.38,Cerberus,Alezzan,Ramattra,0
+[00:14:01] ,offensive_assist,617.72,Cerberus,MidnightMere,Lúcio,0
+[00:14:02] ,kill,618.02,Cerberus,Shippey,Cassidy,4head Dog,Thistle,Ana,Primary Fire,53.83,0,0
+[00:14:02] ,ultimate_charged,618.07,4head Dog,OceanMan,Mauga,0,3
+[00:14:06] ,kill,622.05,Cerberus,MidnightMere,Lúcio,4head Dog,ZippyBlume,Cassidy,Primary Fire,2.11,0,0
+[00:14:07] ,kill,623.25,Cerberus,Shippey,Cassidy,4head Dog,Eather,Lúcio,Secondary Fire,36.28,0,0
+[00:14:07] ,offensive_assist,623.35,Cerberus,MidnightMere,Lúcio,0
+[00:14:07] ,defensive_assist,623.35,Cerberus,MidnightMere,Lúcio,0
+[00:14:35] ,ultimate_start,651.67,4head Dog,OceanMan,Mauga,0,3
+[00:14:37] ,ultimate_start,652.92,Cerberus,MidnightMere,Lúcio,0,3
+[00:14:44] ,ultimate_end,660.11,4head Dog,OceanMan,Mauga,0,3
+[00:14:45] ,ultimate_end,660.74,Cerberus,MidnightMere,Lúcio,0,3
+[00:14:47] ,ultimate_charged,662.99,Cerberus,CynoX6,Tracer,0,4
+[00:14:52] ,ultimate_start,668.52,Cerberus,CynoX6,Tracer,0,4
+[00:14:53] ,ultimate_end,668.72,Cerberus,CynoX6,Tracer,0,4
+[00:14:54] ,kill,669.87,Cerberus,CynoX6,Tracer,4head Dog,Thistle,Ana,Ultimate,110.85,0,0
+[00:14:54] ,defensive_assist,669.90,Cerberus,Sainttx,Baptiste,0
+[00:14:54] ,offensive_assist,669.98,Cerberus,Alezzan,Ramattra,0
+[00:14:57] ,ultimate_charged,672.79,4head Dog,ZippyBlume,Cassidy,0,4
+[00:14:58] ,kill,674.11,4head Dog,FinntheHuman,Tracer,Cerberus,CynoX6,Tracer,Primary Fire,4.06,0,0
+[00:15:00] ,ultimate_start,675.70,4head Dog,ZippyBlume,Cassidy,0,4
+[00:15:00] ,payload_progress,676.09,2,4head Dog,1,20.03
+[00:15:01] ,ultimate_charged,677.35,Cerberus,Shippey,Cassidy,0,4
+[00:15:04] ,kill,680.57,4head Dog,ZippyBlume,Cassidy,Cerberus,Alezzan,Ramattra,Ultimate,497,0,0
+[00:15:04] ,offensive_assist,680.69,4head Dog,Eather,Lúcio,0
+[00:15:04] ,defensive_assist,680.69,4head Dog,Eather,Lúcio,0
+[00:15:05] ,offensive_assist,680.73,4head Dog,OceanMan,Mauga,0
+[00:15:05] ,ultimate_end,680.92,4head Dog,ZippyBlume,Cassidy,0,4
+[00:15:05] ,ultimate_start,681.25,Cerberus,Shippey,Cassidy,0,4
+[00:15:05] ,ultimate_end,681.54,Cerberus,Shippey,Cassidy,0,4
+[00:15:06] ,kill,681.86,4head Dog,Eather,Lúcio,Cerberus,Shippey,Cassidy,Primary Fire,3.64,0,0
+[00:15:06] ,defensive_assist,682.12,4head Dog,Eather,Lúcio,0
+[00:15:06] ,offensive_assist,682.15,4head Dog,OceanMan,Mauga,0
+[00:15:07] ,kill,683.33,4head Dog,ZippyBlume,Cassidy,Cerberus,MidnightMere,Lúcio,Primary Fire,41.08,0,0
+[00:15:07] ,offensive_assist,683.52,4head Dog,Eather,Lúcio,0
+[00:15:07] ,defensive_assist,683.52,4head Dog,Eather,Lúcio,0
+[00:15:07] ,offensive_assist,683.56,4head Dog,OceanMan,Mauga,0
+[00:15:12] ,kill,687.87,4head Dog,OceanMan,Mauga,Cerberus,Sainttx,Baptiste,0,2.72,0,0
+[00:15:12] ,payload_progress,688.34,2,4head Dog,1,30.01
+[00:15:21] ,ultimate_charged,696.86,4head Dog,Thistle,Ana,0,5
+[00:15:23] ,payload_progress,699.20,2,4head Dog,1,40.02
+[00:15:34] ,ultimate_charged,710.07,4head Dog,FinntheHuman,Tracer,0,5
+[00:15:35] ,payload_progress,710.82,2,4head Dog,1,50.02
+[00:15:43] ,kill,718.85,Cerberus,CynoX6,Tracer,4head Dog,FinntheHuman,Tracer,Primary Fire,1.84,0,0
+[00:15:43] ,ultimate_start,719.11,4head Dog,Thistle,Ana,0,5
+[00:15:43] ,defensive_assist,719.20,Cerberus,Sainttx,Baptiste,0
+[00:15:46] ,ultimate_charged,722.19,Cerberus,Sainttx,Baptiste,0,5
+[00:15:47] ,ultimate_start,722.94,Cerberus,Sainttx,Baptiste,0,5
+[00:15:50] ,ultimate_start,726.37,Cerberus,Alezzan,Ramattra,0,2
+[00:15:51] ,ultimate_end,727.23,4head Dog,Thistle,Ana,0,5
+[00:15:54] ,ultimate_end,730.33,Cerberus,Alezzan,Ramattra,0,2
+[00:15:57] ,ultimate_end,733.45,Cerberus,Sainttx,Baptiste,0,5
+[00:16:10] ,ultimate_charged,746.03,4head Dog,Eather,Lúcio,0,3
+[00:16:14] ,ultimate_start,750.46,4head Dog,Eather,Lúcio,0,3
+[00:16:19] ,kill,754.73,4head Dog,ZippyBlume,Cassidy,Cerberus,Alezzan,Ramattra,Secondary Fire,7.71,0,0
+[00:16:19] ,offensive_assist,754.96,4head Dog,OceanMan,Mauga,0
+[00:16:19] ,defensive_assist,754.96,4head Dog,OceanMan,Mauga,0
+[00:16:19] ,offensive_assist,754.97,4head Dog,Eather,Lúcio,0
+[00:16:19] ,defensive_assist,754.97,4head Dog,Eather,Lúcio,0
+[00:16:19] ,offensive_assist,754.99,4head Dog,Thistle,Ana,0
+[00:16:19] ,defensive_assist,754.99,4head Dog,Thistle,Ana,0
+[00:16:20] ,ultimate_charged,756.62,4head Dog,OceanMan,Mauga,0,4
+[00:16:21] ,kill,756.86,4head Dog,FinntheHuman,Tracer,Cerberus,Shippey,Cassidy,Primary Fire,2.83,0,0
+[00:16:21] ,kill,756.91,4head Dog,ZippyBlume,Cassidy,Cerberus,MidnightMere,Lúcio,Primary Fire,53.46,0,0
+[00:16:21] ,offensive_assist,757.29,4head Dog,OceanMan,Mauga,0
+[00:16:21] ,offensive_assist,757.29,4head Dog,OceanMan,Mauga,0
+[00:16:21] ,defensive_assist,757.29,4head Dog,OceanMan,Mauga,0
+[00:16:21] ,defensive_assist,757.29,4head Dog,OceanMan,Mauga,0
+[00:16:21] ,defensive_assist,757.31,4head Dog,Eather,Lúcio,0
+[00:16:21] ,defensive_assist,757.31,4head Dog,Eather,Lúcio,0
+[00:16:21] ,defensive_assist,757.32,4head Dog,Thistle,Ana,0
+[00:16:22] ,ultimate_end,758.16,4head Dog,Eather,Lúcio,0,3
+[00:16:25] ,ultimate_charged,761.16,4head Dog,ZippyBlume,Cassidy,0,5
+[00:16:25] ,kill,761.29,4head Dog,OceanMan,Mauga,Cerberus,Sainttx,Baptiste,0,0.69,0,0
+[00:16:25] ,defensive_assist,761.56,4head Dog,Thistle,Ana,0
+[00:16:27] ,kill,762.78,4head Dog,ZippyBlume,Cassidy,Cerberus,CynoX6,Tracer,Primary Fire,40,0,0
+[00:16:27] ,offensive_assist,762.95,4head Dog,Eather,Lúcio,0
+[00:16:31] ,payload_progress,766.98,2,4head Dog,1,60.02
+[00:16:31] ,hero_swap,767.25,Cerberus,Shippey,Sojourn,Cassidy,333.10
+[00:16:33] ,objective_updated,769.05,2,1,2
+[00:16:33] ,objective_captured,769.05,2,4head Dog,2,0,0,144.94
+[00:16:35] ,ultimate_charged,770.66,Cerberus,CynoX6,Tracer,0,5
+[00:16:47] ,payload_progress,783.49,2,4head Dog,2,70.03
+[00:17:01] ,ultimate_start,797.00,4head Dog,OceanMan,Mauga,0,4
+[00:17:03] ,payload_progress,799.05,2,4head Dog,2,80.01
+[00:17:04] ,ultimate_charged,800.04,Cerberus,MidnightMere,Lúcio,0,4
+[00:17:04] ,ultimate_start,800.45,Cerberus,MidnightMere,Lúcio,0,4
+[00:17:05] ,ultimate_start,801.14,4head Dog,ZippyBlume,Cassidy,0,5
+[00:17:08] ,ultimate_end,804.05,4head Dog,OceanMan,Mauga,0,4
+[00:17:09] ,kill,804.90,4head Dog,ZippyBlume,Cassidy,Cerberus,Shippey,Sojourn,Ultimate,424,0,0
+[00:17:09] ,ultimate_start,804.98,4head Dog,FinntheHuman,Tracer,0,5
+[00:17:09] ,ultimate_end,805.17,4head Dog,FinntheHuman,Tracer,0,5
+[00:17:09] ,offensive_assist,805.20,4head Dog,OceanMan,Mauga,0
+[00:17:09] ,defensive_assist,805.20,4head Dog,OceanMan,Mauga,0
+[00:17:09] ,defensive_assist,805.23,4head Dog,Eather,Lúcio,0
+[00:17:09] ,defensive_assist,805.27,4head Dog,Thistle,Ana,0
+[00:17:09] ,ultimate_start,805.43,Cerberus,CynoX6,Tracer,0,5
+[00:17:09] ,ultimate_end,805.44,4head Dog,ZippyBlume,Cassidy,0,5
+[00:17:09] ,ultimate_end,805.62,Cerberus,CynoX6,Tracer,0,5
+[00:17:10] ,kill,806.35,4head Dog,OceanMan,Mauga,Cerberus,MidnightMere,Lúcio,0,0.18,0,0
+[00:17:12] ,ultimate_end,808.13,Cerberus,MidnightMere,Lúcio,0,4
+[00:17:12] ,kill,808.16,Cerberus,Sainttx,Baptiste,4head Dog,ZippyBlume,Cassidy,Primary Fire,21.84,0,0
+[00:17:12] ,offensive_assist,808.51,Cerberus,MidnightMere,Lúcio,0
+[00:17:12] ,defensive_assist,808.51,Cerberus,MidnightMere,Lúcio,0
+[00:17:17] ,kill,812.72,Cerberus,Sainttx,Baptiste,4head Dog,Thistle,Ana,Primary Fire,15.59,0,0
+[00:17:17] ,offensive_assist,812.80,Cerberus,Alezzan,Ramattra,0
+[00:17:17] ,defensive_assist,813.18,Cerberus,Sainttx,Baptiste,0
+[00:17:18] ,kill,813.80,4head Dog,OceanMan,Mauga,Cerberus,Alezzan,Ramattra,0,2.32,0,0
+[00:17:18] ,defensive_assist,814.16,4head Dog,OceanMan,Mauga,0
+[00:17:18] ,offensive_assist,814.17,4head Dog,Eather,Lúcio,0
+[00:17:18] ,defensive_assist,814.17,4head Dog,Eather,Lúcio,0
+[00:17:18] ,offensive_assist,814.20,4head Dog,Thistle,Ana,0
+[00:17:18] ,defensive_assist,814.20,4head Dog,Thistle,Ana,0
+[00:17:20] ,kill,815.71,Cerberus,CynoX6,Tracer,4head Dog,FinntheHuman,Tracer,Primary Fire,0.80,0,0
+[00:17:25] ,kill,820.81,Cerberus,CynoX6,Tracer,4head Dog,Eather,Lúcio,Primary Fire,1.68,True,0
+[00:17:25] ,payload_progress,821.10,2,4head Dog,2,90.02
+[00:17:33] ,kill,829.40,4head Dog,ZippyBlume,Cassidy,Cerberus,MidnightMere,Lúcio,Primary Fire,48.78,0,0
+[00:17:34] ,offensive_assist,829.62,4head Dog,OceanMan,Mauga,0
+[00:17:34] ,defensive_assist,829.70,4head Dog,Thistle,Ana,0
+[00:17:43] ,ultimate_charged,839.60,Cerberus,Sainttx,Baptiste,0,6
+[00:17:45] ,ultimate_start,841.26,Cerberus,Sainttx,Baptiste,0,6
+[00:17:47] ,kill,842.77,Cerberus,Shippey,Sojourn,4head Dog,OceanMan,Mauga,Primary Fire,5.47,0,0
+[00:17:47] ,defensive_assist,842.80,Cerberus,Sainttx,Baptiste,0
+[00:17:47] ,offensive_assist,842.83,Cerberus,Alezzan,Ramattra,0
+[00:17:49] ,ultimate_charged,844.92,4head Dog,Thistle,Ana,0,6
+[00:17:51] ,kill,847.16,Cerberus,CynoX6,Tracer,4head Dog,Thistle,Ana,Primary Fire,2.08,0,0
+[00:17:51] ,defensive_assist,847.50,Cerberus,Sainttx,Baptiste,0
+[00:17:56] ,ultimate_end,851.77,Cerberus,Sainttx,Baptiste,0,6
+[00:17:58] ,kill,854.07,Cerberus,CynoX6,Tracer,4head Dog,ZippyBlume,Cassidy,Primary Fire,1,0,0
+[00:17:58] ,hero_swap,854.34,4head Dog,FinntheHuman,Pharah,Tracer,420.19
+[00:17:58] ,offensive_assist,854.52,Cerberus,MidnightMere,Lúcio,0
+[00:17:58] ,defensive_assist,854.53,Cerberus,Sainttx,Baptiste,0
+[00:18:13] ,ultimate_charged,868.86,Cerberus,CynoX6,Tracer,0,6
+[00:18:13] ,kill,868.91,Cerberus,CynoX6,Tracer,4head Dog,FinntheHuman,Pharah,Primary Fire,0.33,0,0
+[00:18:22] ,ultimate_start,877.85,Cerberus,CynoX6,Tracer,0,6
+[00:18:22] ,ultimate_end,878.04,Cerberus,CynoX6,Tracer,0,6
+[00:18:38] ,ultimate_charged,894.14,Cerberus,Shippey,Sojourn,0,5
+[00:18:41] ,ultimate_start,897.25,4head Dog,Thistle,Ana,0,6
+[00:18:43] ,ultimate_start,898.99,Cerberus,Shippey,Sojourn,0,5
+[00:18:47] ,kill,903.32,Cerberus,CynoX6,Tracer,4head Dog,Thistle,Ana,Primary Fire,1.83,True,0
+[00:18:49] ,ultimate_charged,905.07,Cerberus,Alezzan,Ramattra,0,3
+[00:18:49] ,ultimate_end,905.37,4head Dog,Thistle,Ana,0,6
+[00:18:50] ,kill,906.46,Cerberus,Sainttx,Baptiste,4head Dog,FinntheHuman,Pharah,Primary Fire,18.39,0,0
+[00:18:51] ,defensive_assist,906.67,Cerberus,Sainttx,Baptiste,0
+[00:18:52] ,ultimate_end,907.72,Cerberus,Shippey,Sojourn,0,5
+[00:18:52] ,ultimate_charged,907.80,4head Dog,Eather,Lúcio,0,4
+[00:18:52] ,ultimate_charged,908.46,4head Dog,ZippyBlume,Cassidy,0,6
+[00:18:52] ,ultimate_start,908.49,4head Dog,Eather,Lúcio,0,4
+[00:18:54] ,ultimate_start,909.83,4head Dog,ZippyBlume,Cassidy,0,6
+[00:18:55] ,kill,911.11,4head Dog,ZippyBlume,Cassidy,Cerberus,MidnightMere,Lúcio,Ultimate,23.42,0,0
+[00:18:55] ,offensive_assist,911.42,4head Dog,Eather,Lúcio,0
+[00:18:55] ,defensive_assist,911.42,4head Dog,Eather,Lúcio,0
+[00:18:55] ,ultimate_end,911.46,4head Dog,ZippyBlume,Cassidy,0,6
+[00:18:57] ,hero_swap,913.32,4head Dog,Thistle,Kiriko,Ana,479.17
+[00:19:00] ,ultimate_start,915.78,Cerberus,Alezzan,Ramattra,0,3
+[00:19:00] ,ultimate_end,916.21,4head Dog,Eather,Lúcio,0,4
+[00:19:00] ,hero_swap,916.45,4head Dog,FinntheHuman,Sombra,Pharah,62.11
+[00:19:04] ,kill,919.75,Cerberus,CynoX6,Tracer,4head Dog,ZippyBlume,Cassidy,Melee,23.19,0,0
+[00:19:04] ,defensive_assist,919.81,Cerberus,Sainttx,Baptiste,0
+[00:19:06] ,kill,922.23,4head Dog,Eather,Lúcio,Cerberus,CynoX6,Tracer,Secondary Fire,23,0,0
+[00:19:07] ,defensive_assist,922.66,4head Dog,OceanMan,Mauga,0
+[00:19:08] ,kill,924.10,Cerberus,Sainttx,Baptiste,4head Dog,OceanMan,Mauga,Primary Fire,23.84,0,0
+[00:19:08] ,offensive_assist,924.48,Cerberus,MidnightMere,Lúcio,0
+[00:19:08] ,defensive_assist,924.50,Cerberus,Sainttx,Baptiste,0
+[00:19:09] ,ultimate_charged,925.02,Cerberus,CynoX6,Tracer,0,7
+[00:19:11] ,kill,927.50,Cerberus,Sainttx,Baptiste,4head Dog,Eather,Lúcio,Primary Fire,17.94,0,0
+[00:19:12] ,offensive_assist,927.76,Cerberus,MidnightMere,Lúcio,0
+[00:19:12] ,defensive_assist,927.79,Cerberus,Sainttx,Baptiste,0
+[00:19:13] ,ultimate_end,929.23,Cerberus,Alezzan,Ramattra,0,3
+[00:19:16] ,ultimate_charged,931.74,Cerberus,Sainttx,Baptiste,0,7
+[00:19:17] ,ultimate_start,932.73,Cerberus,Sainttx,Baptiste,0,7
+[00:19:18] ,kill,934.46,Cerberus,Shippey,Sojourn,4head Dog,Thistle,Kiriko,Primary Fire,9.72,True,0
+[00:19:19] ,offensive_assist,934.81,Cerberus,MidnightMere,Lúcio,0
+[00:19:19] ,offensive_assist,934.84,Cerberus,Sainttx,Baptiste,0
+[00:19:19] ,defensive_assist,934.84,Cerberus,Sainttx,Baptiste,0
+[00:19:19] ,kill,935.40,Cerberus,Shippey,Sojourn,4head Dog,FinntheHuman,Sombra,Primary Fire,3.15,0,0
+[00:19:20] ,offensive_assist,935.75,Cerberus,Alezzan,Ramattra,0
+[00:19:20] ,offensive_assist,935.77,Cerberus,Sainttx,Baptiste,0
+[00:19:20] ,defensive_assist,935.77,Cerberus,Sainttx,Baptiste,0
+[00:19:23] ,round_end,938.92,2,4head Dog,2,3,2,0,0,0
+[00:19:23] ,match_end,938.92,2,2,3
+[00:19:23] ,player_stat,938.92,2,Cerberus,Alezzan,Reinhardt,5,1,4,3185.64,715,2470.64,0,3797.84,0,6841.71,7925.50,0,0,1,1,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,304.02
+[00:19:23] ,player_stat,938.92,2,Cerberus,Alezzan,D.Va,0,0,0,24.15,0,24.15,0,510.11,0,536.75,1327,0,0,0,0,0,0,0,0,0,0,2,0.06,0,0,0,1210,34,1176,0,0,0.03,39.49
+[00:19:23] ,player_stat,938.92,2,Cerberus,Alezzan,Sigma,4,2,1,1687.16,0,1687.16,0,1329.56,0,2534.16,2448.03,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,48,21,27,0,0,0.44,90.64
+[00:19:23] ,player_stat,938.92,2,Cerberus,Alezzan,Ramattra,17,1,4,6477.19,310,6167.19,0,7008.58,0,12784.19,4985.29,0,5,2,2,0,0,0,7,0,0,88,0.13,0,0,0,3625,659,2951,0,0,0.18,504.77
+[00:19:23] ,player_stat,938.92,2,4head Dog,FinntheHuman,Pharah,16,7,7,11933.30,2783.42,8890.40,0,2230.63,0,4524.11,0,0,0,3,3,1,3,1,5,0,0,0,0,0,0,0,213,81,112,0,0,0.42,496.26
+[00:19:23] ,player_stat,938.92,2,4head Dog,FinntheHuman,Tracer,16,5,3,3226.32,83.82,2933.50,0,385.44,621.17,1855.91,0,0,0,2,2,0,0,1,5,0,0,49,0.07,0,0,0,2578,675,1885,0,0,0.26,420.19
+[00:19:23] ,player_stat,938.92,2,4head Dog,FinntheHuman,Sombra,0,0,1,718.06,32,561.06,0,124.75,0,374.75,0,0,0,0,0,0,0,0,0,0,0,1,0.02,0,0,0,119,60,55,0,0,0.52,22.47
+[00:19:23] ,player_stat,938.92,2,4head Dog,ZippyBlume,Sojourn,12,5,4,10534.29,4061.88,6165.93,0,1156.42,0,2738.14,0,0,0,2,2,0,0,0,3,0,0,45,0.10,0,0,0,2095,431,1255,0,0,0.26,434.15
+[00:19:23] ,player_stat,938.92,2,4head Dog,ZippyBlume,Torbjörn,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:19:23] ,player_stat,938.92,2,4head Dog,ZippyBlume,Cassidy,18,12,5,11310.53,1370,9800.37,0,3703.65,0,5600.84,0,0,0,4,4,1,3,0,9,0,0,12,0.08,0,0,0,336,148,166,0,0,0.47,504.77
+[00:19:23] ,player_stat,938.92,2,4head Dog,Eather,Brigitte,0,0,1,1435,1435,0,648.88,0,0,378.35,466.37,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,73.66
+[00:19:23] ,player_stat,938.92,2,4head Dog,Eather,Lúcio,15,3,7,5222.69,1188.56,3926.12,7996.09,3308.58,1724.15,5886.23,0,18,18,4,4,0,0,0,11,0,0,13,0.06,0,0,0,871,204,600,0,0,0.25,865.26
+[00:19:23] ,player_stat,938.92,2,Cerberus,Sainttx,Baptiste,24,9,6,9428.87,1457.50,7971.37,17820.36,1863.09,879.52,4867.53,0,25,4,7,7,0,0,1,11,0,0,39,0.11,0,0,0,909,359,487,0,0,0.42,938.92
+[00:19:23] ,player_stat,938.92,2,Cerberus,Shippey,Widowmaker,0,0,0,139.87,139.87,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,7.23
+[00:19:23] ,player_stat,938.92,2,Cerberus,Shippey,Cassidy,14,10,8,14878.50,1883,12995.50,0,3643.77,0,6147.63,0,0,0,4,4,0,0,2,3,0,0,16,0.08,0,0,0,525,205,292,0,0,0.41,700.01
+[00:19:23] ,player_stat,938.92,2,Cerberus,Shippey,Echo,5,1,0,1265.58,0,1265.58,0,298.64,0,629.57,0,0,0,0,0,0,0,0,0,0,0,9,0.14,0,0,0,246,65,181,0,0,0.26,60.02
+[00:19:23] ,player_stat,938.92,2,Cerberus,Shippey,Sojourn,9,3,1,3305.01,270,3035.01,0,671.80,0,1230.64,0,0,0,1,1,0,0,0,5,0,0,24,0.11,0,0,0,831,211,590,0,0,0.26,171.67
+[00:19:23] ,player_stat,938.92,2,4head Dog,OceanMan,Winston,2,1,2,2502.09,752.67,1749.42,0,2353.32,0,4570.41,3560,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,10,3,4,0,0,0.43,193.22
+[00:19:23] ,player_stat,938.92,2,4head Dog,OceanMan,Mauga,22,6,6,17003.05,4272.60,12210.97,2900.03,14288.28,2348.72,22595.56,2045.28,11,13,3,3,2,3,0,11,0,0,171,0.07,0,0,0,6761,2547,3040,0,0,0.46,745.70
+[00:19:23] ,player_stat,938.92,2,Cerberus,CynoX6,Junkrat,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:19:23] ,player_stat,938.92,2,Cerberus,CynoX6,Mei,9,5,2,12561.38,430,3464.18,0,2273.46,382.56,3137.88,2082.80,0,2,1,1,0,0,1,4,0,0,0,0,0,0,0,282,140,122,0,0,0.53,314.40
+[00:19:23] ,player_stat,938.92,2,Cerberus,CynoX6,Sojourn,4,3,0,1818.61,0,1818.61,0,802.18,0,937.54,0,0,0,1,1,0,0,0,0,0,0,12,0.10,0,0,0,641,126,515,0,0,0.20,119.75
+[00:19:23] ,player_stat,938.92,2,Cerberus,CynoX6,Tracer,16,12,5,7063.19,185.28,6877.91,0,1397.62,640.01,3192.36,0,0,0,5,4,0,0,3,1,0,0,142,0.11,0,0,0,3662,1268,2356,0,0,0.35,504.77
+[00:19:23] ,player_stat,938.92,2,4head Dog,Thistle,Ana,10,3,10,4864.94,1371.68,3387.42,14522.52,1049.55,120.59,4440.99,0,16,11,6,6,0,0,0,6,0,0,0,0,0.80,0,0,438,44,127,141,113,0.26,899.98
+[00:19:23] ,player_stat,938.92,2,4head Dog,Thistle,Kiriko,0,0,2,236.25,90,146.25,395.80,77.92,0,584.16,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,4,2,0,0,0.67,38.94
+[00:19:23] ,player_stat,938.92,2,Cerberus,MidnightMere,Lifeweaver,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:19:23] ,player_stat,938.92,2,Cerberus,MidnightMere,Lúcio,22,1,11,6435.87,681,5754.87,6099.54,2986.84,1086.31,6989.90,0,14,22,4,4,0,0,0,11,0,0,23,0.09,0,0,0,1060,252,775,0,0,0.25,938.92
+[00:19:23] ,player_stat,938.92,2,Cerberus,MidnightMere,Kiriko,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:19:26] ,ultimate_end,938.92,Cerberus,Sainttx,,0,7

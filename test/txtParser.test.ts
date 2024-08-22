@@ -1,10 +1,10 @@
-import { test, expect } from "vitest";
-import * as fs from "fs";
-import * as XLSX from "xlsx";
 import { parseDataFromTXT } from "@/lib/parser";
 import { ParserData } from "@/types/parser";
 import { $Enums } from "@prisma/client";
 import { fail } from "assert";
+import * as fs from "fs";
+import { expect, test } from "vitest";
+import * as XLSX from "xlsx";
 
 test("should be equivalent to control data", async () => {
   const file = fs.readFileSync(
@@ -130,6 +130,30 @@ test("should correctly handle deaths linked to All Teams", async () => {
   }
 
   expect(workbook1).toBeDefined();
+});
+
+/**
+ * This test checks for type errors from parsing team names that begin with a number.
+ */
+test("should pass without errors", async () => {
+  const file = fs.readFileSync(
+    "./test/samples/Log-2024-06-16-22-24-33.txt",
+    "utf8"
+  );
+
+  // @ts-expect-error - cannot pass File type in node
+  const workbook1 = await parseDataFromTXT(file);
+  const workbook2 = await local_parseDataFromXLSX(
+    "./test/samples/Log-2024-06-16-22-24-33_parsed.xlsx"
+  );
+
+  // @kennethmiranda - Please review this test and make sure it is passing.
+  // The `round_start` and `round_end` events are currently failing this test case.
+  // Once the parser is fixed, this test will pass.
+  expect(workbook2.round_start).toEqual(workbook1.round_start);
+  expect(workbook2.round_end).toEqual(workbook1.round_end);
+
+  // expect(workbook2).toEqual(workbook1);
 });
 
 async function local_parseDataFromXLSX(fileName: string) {
