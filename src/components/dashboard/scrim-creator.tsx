@@ -39,10 +39,11 @@ import { useToast } from "@/components/ui/use-toast";
 import { parseData } from "@/lib/parser";
 import { cn } from "@/lib/utils";
 import { ParserData } from "@/types/parser";
+import { useQuery } from "@tanstack/react-query";
+import { track } from "@vercel/analytics";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { track } from "@vercel/analytics";
+import { useState } from "react";
 
 const ACCEPTED_FILE_TYPES = [
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -69,27 +70,28 @@ export function ScrimCreationForm({
 }: {
   setOpen: (open: boolean) => void;
 }) {
-  const [teams, setTeams] = useState<{ label: string; value: string }[]>([]);
   const [mapData, setMapData] = useState<ParserData>();
   const { toast } = useToast();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  function getTeams() {
-    fetch("/api/team/get-teams-with-perms")
-      .then((res) => res.json() as Promise<GetTeamsResponse>)
-      .then((data) => {
-        const newTeams = data.teams.map((team) => ({
-          label: team.name,
-          value: team.id.toString(),
-        }));
-        setTeams(newTeams);
-      });
+  async function getTeams() {
+    const response = await fetch("/api/team/get-teams-with-perms");
+    if (!response.ok) {
+      throw new Error("Failed to fetch teams with permissions");
+    }
+    const data = (await response.json()) as GetTeamsResponse;
+    return data.teams.map((team) => ({
+      label: team.name,
+      value: team.id.toString(),
+    }));
   }
 
-  useEffect(() => {
-    getTeams();
-  }, []);
+  const { data: teams, isLoading } = useQuery({
+    queryKey: ["teams"],
+    queryFn: getTeams,
+    staleTime: Infinity,
+  });
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
@@ -204,11 +206,15 @@ export function ScrimCreationForm({
                 </FormControl>
                 <SelectContent>
                   <SelectItem value="0">Individual</SelectItem>
-                  {teams.map((team) => (
-                    <SelectItem key={team.value} value={team.value}>
-                      {team.label}
-                    </SelectItem>
-                  ))}
+                  {teams ? (
+                    teams.map((team) => (
+                      <SelectItem key={team.value} value={team.value}>
+                        {team.label}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="1">Loading...</SelectItem>
+                  )}
                 </SelectContent>
               </Select>
               <FormDescription>

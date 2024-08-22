@@ -32,35 +32,38 @@ import {
 } from "@/components/ui/command";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/use-toast";
+import { User } from "@prisma/client";
+import { useQuery } from "@tanstack/react-query";
 import { track } from "@vercel/analytics";
 import { useTheme } from "next-themes";
 import { usePathname, useRouter } from "next/navigation";
-import { use, useCallback, useEffect, useState } from "react";
-import { User } from "@prisma/client";
+import { use, useCallback, useState } from "react";
 
 export function CommandDialogMenu({ user }: { user: User | null }) {
   const { open, setOpen } = use(CommandMenuContext);
-  const [teams, setTeams] = useState<{ label: string; value: string }[]>([]);
+  // const [teams, setTeams] = useState<{ label: string; value: string }[]>([]);
   const router = useRouter();
   const { setTheme } = useTheme();
   const pathname = usePathname();
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
-  function getTeams() {
-    fetch("/api/team/get-teams")
-      .then((res) => res.json() as Promise<GetTeamsResponse>)
-      .then((data) => {
-        const newTeams = data.teams.map((team) => ({
-          label: team.name,
-          value: team.id.toString(),
-        }));
-        setTeams(newTeams);
-      });
+  async function getTeams() {
+    const response = await fetch("/api/team/get-teams");
+    if (!response.ok) {
+      throw new Error("Failed to fetch teams");
+    }
+    const data = (await response.json()) as GetTeamsResponse;
+    return data.teams.map((team) => ({
+      label: team.name,
+      value: team.id.toString(),
+    }));
   }
 
-  useEffect(() => {
-    getTeams();
-  }, []);
+  const { data: teams } = useQuery({
+    queryKey: ["teams"],
+    queryFn: getTeams,
+    staleTime: Infinity,
+  });
 
   const runCommand = useCallback(
     (command: () => unknown) => {
@@ -137,7 +140,7 @@ export function CommandDialogMenu({ user }: { user: User | null }) {
             </CommandGroup>
           </>
         )}
-        {teams.length > 0 && (
+        {teams && teams.length > 0 && (
           <>
             <CommandSeparator />
             <CommandGroup heading="Teams">
