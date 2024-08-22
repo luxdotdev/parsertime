@@ -6,12 +6,12 @@ const cspHeader = `
       process.env.NODE_ENV === "production" ? "" : `'unsafe-eval' localhost:*`
     };
     style-src 'self' https://vercel.live https://vercel.com 'unsafe-inline';
-    connect-src 'self' https://vercel.live/ https://vercel.com *.vercel-storage.com *.pusher.com *.pusherapp.com wss://*.pusher.com/ ${
+    connect-src 'self' https://vercel.live https://vercel.com *.vercel-storage.com *.pusher.com *.pusherapp.com wss://*.pusher.com ${
       process.env.NODE_ENV === "production"
         ? ""
         : `localhost:* ws://localhost:*`
     };
-    img-src 'self' https://vercel.live/ https://vercel.com *.pusher.com/ https://lh3.googleusercontent.com/ https://cdn.discordapp.com/ https://avatars.githubusercontent.com/ *.vercel-storage.com blob: data:;
+    img-src 'self' https://vercel.live https://vercel.com *.pusher.com/ https://lh3.googleusercontent.com https://cdn.discordapp.com https://avatars.githubusercontent.com *.vercel-storage.com blob: data:;
     frame-src 'self' https://vercel.live https://vercel.com;
     font-src 'self' https://vercel.live https://assets.vercel.com;
     object-src 'none';
