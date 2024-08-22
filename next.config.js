@@ -13,7 +13,7 @@ const cspHeader = `
     };
     img-src 'self' https://vercel.live/ https://vercel.com *.pusher.com/ https://lh3.googleusercontent.com/ https://cdn.discordapp.com/ https://avatars.githubusercontent.com/ *.vercel-storage.com blob: data:;
     frame-src 'self' https://vercel.live https://vercel.com;
-    font-src 'self';
+    font-src 'self' https://vercel.live https://assets.vercel.com;
     object-src 'none';
     base-uri 'self';
     form-action 'self';
