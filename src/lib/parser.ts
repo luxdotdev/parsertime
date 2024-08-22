@@ -1081,17 +1081,6 @@ export async function createRoundEndRows(
     Logger.log("No round ends found for map: ", mapId, "scrim: ", scrim.id);
     return [];
   }
-  /* Logger.log(
-    "round_end",
-    JSON.stringify(
-      data.round_end.map((end) => ({
-        ...end,
-        capturing_team: String(end[3]),
-      })),
-      null,
-      2
-    )
-  ); */
 
   await prisma.roundEnd.createMany({
     data: data.round_end.map((end) => ({
@@ -1131,17 +1120,6 @@ export async function createRoundStartRows(
     Logger.log("No round starts found for map: ", mapId, "scrim: ", scrim.id);
     return [];
   }
-  /* Logger.log(
-    "round_start",
-    JSON.stringify(
-      data.round_start.map((end) => ({
-        ...end,
-        capturing_team: String(end[3]),
-      })),
-      null,
-      2
-    )
-  ); */
 
   await prisma.roundStart.createMany({
     data: data.round_start.map((start) => ({
