@@ -1,7 +1,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon, ExternalLinkIcon } from "@radix-ui/react-icons";
+import {
+  CalendarIcon,
+  ExternalLinkIcon,
+  ReloadIcon,
+} from "@radix-ui/react-icons";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -69,6 +73,7 @@ export function ScrimCreationForm({
   const [mapData, setMapData] = useState<ParserData>();
   const { toast } = useToast();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   function getTeams() {
     fetch("/api/team/get-teams-with-perms")
@@ -116,6 +121,7 @@ export function ScrimCreationForm({
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
+    setLoading(true);
     toast({
       title: "Creating scrim",
       description: "Please wait...",
@@ -138,6 +144,7 @@ export function ScrimCreationForm({
       });
       router.refresh();
       setOpen(false);
+      setLoading(false);
     } else {
       toast({
         title: "Error",
@@ -159,6 +166,7 @@ export function ScrimCreationForm({
         duration: 5000,
         variant: "destructive",
       });
+      setLoading(false);
     }
   }
 
@@ -281,8 +289,15 @@ export function ScrimCreationForm({
         <Button
           type="submit"
           onClick={() => track("Create Scrim", { location: "Dashboard" })}
+          disabled={loading}
         >
-          Submit
+          {loading ? (
+            <>
+              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" /> Submitting...
+            </>
+          ) : (
+            "Submit"
+          )}
         </Button>
       </form>
     </Form>

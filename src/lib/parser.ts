@@ -119,8 +119,7 @@ export async function parseDataFromTXT(file: File) {
       const convertedLine = line.map((value, index) =>
         convertToNumberOrReplaceEmpty(value, eventType, index)
       );
-      // @ts-expect-error - type is agnostic
-      categorizedData[eventType].push(convertedLine);
+      categorizedData[eventType].push(convertedLine as never);
     }
   });
 
@@ -159,10 +158,10 @@ export async function parseDataFromTXT(file: File) {
     const ws = workbook.Sheets[sheet];
     const json = XLSX.utils.sheet_to_json(ws, { header: 1 }).slice(1);
 
-    // @ts-expect-error - Dynamic assignment of varying types based on sheet names.
+    // Dynamic assignment of varying types based on sheet names.
     // TypeScript cannot infer the correct type for `json` as it depends on the runtime sheet name.
     // We ensure at runtime that `json` conforms to the expected structure of `ParserData`.
-    result[sheet] = json;
+    result[sheet] = json as never;
   }
 
   return result;

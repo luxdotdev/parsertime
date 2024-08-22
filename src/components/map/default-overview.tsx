@@ -7,7 +7,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import CardIcon from "@/components/ui/card-icon";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getFinalRoundStats } from "@/data/scrim-dto";
+import { getAjaxes } from "@/lib/analytics";
 import prisma from "@/lib/prisma";
 import {
   cn,
@@ -15,14 +17,11 @@ import {
   range,
   removeDuplicateRows,
   round,
-  toMins,
   toTimestamp,
 } from "@/lib/utils";
-import { $Enums } from "@prisma/client";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
-import { getAjaxes } from "@/lib/analytics";
 import { calculateWinner } from "@/lib/winrate";
+import { HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
+import { $Enums } from "@prisma/client";
 
 export async function DefaultOverview({ id }: { id: number }) {
   const finalRound = await prisma.roundEnd.findFirst({
@@ -107,7 +106,8 @@ export async function DefaultOverview({ id }: { id: number }) {
   });
 
   const numberOfRounds =
-    mapType === $Enums.MapType.Flashpoint ? 5 : finalRound?.round_number ?? 1;
+    // prettier-ignore
+    mapType === $Enums.MapType.Flashpoint ? 5 : (finalRound?.round_number ?? 1);
 
   const fights = await groupKillsIntoFights(id);
 
