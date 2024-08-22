@@ -7,6 +7,7 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { QueryProvider } from "@/lib/query";
 import { cn } from "@/lib/utils";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GeistSans } from "geist/font/sans";
@@ -68,6 +69,7 @@ export default async function RootLayout({
               <StaffToolbar />
             </Suspense>
           </ThemeProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
         </QueryProvider>
       </body>
     </html>
