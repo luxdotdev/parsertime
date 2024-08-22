@@ -75,7 +75,7 @@ export async function parseDataFromTXT(file: File) {
 
   const isTeamNameField = (eventType: string, index: number): boolean => {
     const teamNameFields: Record<string, number[]> = {
-      // player_team, attacker_team, victim_team
+      // player_team, attacker_team, victim_team, capturing_team
       defensive_assist: [2],
       dva_remech: [2],
       echo_duplicate_end: [2],
@@ -93,6 +93,8 @@ export async function parseDataFromTXT(file: File) {
       ultimate_charged: [2],
       ultimate_end: [2],
       ultimate_start: [2],
+      round_end: [3],
+      round_start: [3],
     };
     return teamNameFields[eventType]?.includes(index) || false;
   };
