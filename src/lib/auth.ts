@@ -7,12 +7,18 @@ import { createShortLink } from "@/lib/link-service";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
-import { newUserWebhookConstructor, sendDiscordWebhook } from "@/lib/webhooks";
+import {
+  newSuspiciousActivityWebhookConstructor,
+  newUserWebhookConstructor,
+  sendDiscordWebhook,
+} from "@/lib/webhooks";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { $Enums } from "@prisma/client";
+import { $Enums, User } from "@prisma/client";
 import { render } from "@react-email/render";
+import { Ratelimit } from "@upstash/ratelimit";
 import { track } from "@vercel/analytics/server";
 import { get } from "@vercel/edge-config";
+import { kv } from "@vercel/kv";
 import { createHash, randomBytes } from "crypto";
 import NextAuth, { NextAuthConfig } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
@@ -84,6 +90,11 @@ export const config = {
 
       if (!user.email) return false;
 
+      // deny all blocked users
+      const blockedUsers = (await get("blockedUsers")) as string[];
+      Logger.log("User blocked", { user });
+      if (blockedUsers.includes(user.email)) return false;
+
       // get app availability from edge config
       const status = (await get("availability")) as Availability;
 
@@ -105,6 +116,37 @@ export const config = {
   },
   events: {
     async signIn({ user, isNewUser }) {
+      const ratelimit = new Ratelimit({
+        redis: kv,
+        limiter: Ratelimit.slidingWindow(5, "1 m"),
+        analytics: true,
+      });
+
+      const identifier = user.email ?? "unknown";
+      const { success } = await ratelimit.limit(identifier);
+
+      if (!success) {
+        Logger.log("Rate limit exceeded for sign in attempt", identifier);
+
+        const userObj = {
+          name: user.name ?? "Unknown",
+          email: user.email ?? "unknown",
+          id: user.id ?? "unknown",
+        } as User;
+
+        const wh = newSuspiciousActivityWebhookConstructor(
+          userObj,
+          "Sign in (rate limit exceeded)",
+          "",
+          { name: "", version: "" },
+          { name: "", version: "" },
+          {}
+        );
+        await sendDiscordWebhook(process.env.DISCORD_WEBHOOK_URL, wh);
+
+        throw new Error("Rate limit exceeded");
+      }
+
       if (isNewUser) {
         // Log new user signups
         Logger.log("New user signed up", { user });

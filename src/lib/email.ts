@@ -1,10 +1,16 @@
-import { SES } from "@aws-sdk/client-ses";
+import Logger from "@/lib/logger";
+import { SendEmailRequest, SES } from "@aws-sdk/client-ses";
+import { Ratelimit } from "@upstash/ratelimit";
+import { kv } from "@vercel/kv";
 
 type EmailArgs = {
   to: string;
   from: string;
   subject: string;
   html: string;
+  replyTo?: string[];
+  ccAddresses?: string[];
+  bccAddresses?: string[];
 };
 
 const config = {
@@ -14,11 +20,28 @@ const config = {
 };
 
 export async function sendEmail(args: EmailArgs) {
+  const ratelimit = new Ratelimit({
+    redis: kv,
+    limiter: Ratelimit.slidingWindow(5, "1 m"),
+    analytics: true,
+  });
+
+  const identifier = args.to;
+  const { success } = await ratelimit.limit(identifier);
+
+  if (!success) {
+    Logger.log("Rate limit exceeded for email", identifier);
+    throw new Error("Rate limit exceeded");
+  }
+
   // Send email using AWS SES
-  const email = {
+  const email: SendEmailRequest = {
     Source: `lux.dev <${args.from}>`,
+    ReplyToAddresses: args.replyTo,
     Destination: {
       ToAddresses: [args.to],
+      CcAddresses: args.ccAddresses,
+      BccAddresses: args.bccAddresses,
     },
     Message: {
       Subject: {

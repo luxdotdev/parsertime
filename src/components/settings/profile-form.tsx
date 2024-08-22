@@ -31,6 +31,10 @@ const profileFormSchema = z.object({
     })
     .max(30, {
       message: "Name must not be longer than 30 characters.",
+    })
+    .trim()
+    .regex(/^(?!.*?:).*$/, {
+      message: "Name must not contain special characters.",
     }),
 });
 

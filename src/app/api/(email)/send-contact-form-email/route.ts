@@ -13,7 +13,7 @@ type ContactFormEmailBody = {
 };
 
 export async function POST(req: NextRequest) {
-  // Create a new ratelimiter, that allows 5 requests per 1 minute
+  // Create a new ratelimiter, that allows 3 requests per 1 minute
   const ratelimit = new Ratelimit({
     redis: kv,
     limiter: Ratelimit.slidingWindow(3, "1 m"),
