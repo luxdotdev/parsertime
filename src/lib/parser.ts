@@ -5,7 +5,7 @@ import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { toTitleCase } from "@/lib/utils";
 import { ParserData } from "@/types/parser";
-import { $Enums } from "@prisma/client";
+import { $Enums, MapType } from "@prisma/client";
 import { Session } from "next-auth";
 import * as XLSX from "xlsx";
 
@@ -58,8 +58,17 @@ export async function parseDataFromTXT(file: File) {
     if (value === "") {
       return null; // Replace empty strings with null
     }
+    if (
+      (eventType === "round_end" || eventType === "round_start") &&
+      index === 3
+    ) {
+      if (MapType.Control && value === "0") {
+        return 0; // return as number (0) for Control maps
+      }
+      return value; // return as string for other maps
+    }
     if (isTeamNameField(eventType, index)) {
-      return String(value);
+      return value;
     }
     if (
       eventType === "kill" &&
@@ -1073,6 +1082,17 @@ export async function createRoundEndRows(
     Logger.log("No round ends found for map: ", mapId, "scrim: ", scrim.id);
     return [];
   }
+  /* Logger.log(
+    "round_end",
+    JSON.stringify(
+      data.round_end.map((end) => ({
+        ...end,
+        capturing_team: String(end[3]),
+      })),
+      null,
+      2
+    )
+  ); */
 
   await prisma.roundEnd.createMany({
     data: data.round_end.map((end) => ({
@@ -1112,6 +1132,17 @@ export async function createRoundStartRows(
     Logger.log("No round starts found for map: ", mapId, "scrim: ", scrim.id);
     return [];
   }
+  /* Logger.log(
+    "round_start",
+    JSON.stringify(
+      data.round_start.map((end) => ({
+        ...end,
+        capturing_team: String(end[3]),
+      })),
+      null,
+      2
+    )
+  ); */
 
   await prisma.roundStart.createMany({
     data: data.round_start.map((start) => ({
