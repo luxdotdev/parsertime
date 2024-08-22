@@ -9,6 +9,7 @@ import * as React from "react";
 
 import { GetTeamsResponse } from "@/app/api/team/get-teams/route";
 import { CreateTeamDialog } from "@/components/dashboard/create-team-dialog";
+import { TeamSwitcherContext } from "@/components/team-switcher-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,9 +28,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Session } from "next-auth";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { TeamSwitcherContext } from "@/components/team-switcher-provider";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
@@ -37,42 +37,40 @@ type PopoverTriggerProps = React.ComponentPropsWithoutRef<
 
 interface TeamSwitcherProps extends PopoverTriggerProps {}
 
-type Team = { label: string; value: string; image: string | null };
-
 export function TeamSwitcher({
   className,
   session,
 }: TeamSwitcherProps & { session: Session | null }) {
-  const [teams, setTeams] = React.useState<Team[]>([]);
   const [newTeamCreated, setNewTeamCreated] = React.useState(false);
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams()!;
   const { setTeamId } = React.use(TeamSwitcherContext);
 
-  function getTeams() {
-    fetch("/api/team/get-teams")
-      .then((res) => res.json() as Promise<GetTeamsResponse>)
-      .then((data) => {
-        const newTeams = data.teams.map((team) => ({
-          label: team.name,
-          value: team.id.toString(),
-          image: team.image,
-        }));
-        setTeams(newTeams);
-      });
+  async function getTeams() {
+    const response = await fetch("/api/team/get-teams");
+    if (!response.ok) {
+      throw new Error("Failed to fetch teams");
+    }
+    const data = (await response.json()) as GetTeamsResponse;
+    return data.teams.map((team) => ({
+      label: team.name,
+      value: team.id.toString(),
+      image: team.image,
+    }));
   }
 
-  React.useEffect(() => {
-    getTeams();
-  }, []);
+  const { data: teams } = useQuery({
+    queryKey: ["teams"],
+    queryFn: getTeams,
+    staleTime: Infinity,
+  });
+
+  const queryClient = useQueryClient();
 
   React.useEffect(() => {
     if (newTeamCreated) {
-      getTeams();
+      queryClient.invalidateQueries({ queryKey: ["teams"] });
       setNewTeamCreated(false);
     }
-  }, [newTeamCreated]);
+  }, [newTeamCreated, queryClient, setNewTeamCreated]);
 
   const groups = [
     {
@@ -93,7 +91,7 @@ export function TeamSwitcher({
 
   const [open, setOpen] = React.useState(false);
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false);
-  const [selectedTeam, setSelectedTeam] = React.useState(groups[0].teams[0]);
+  const [selectedTeam, setSelectedTeam] = React.useState(groups[0].teams![0]);
 
   return (
     <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
@@ -127,7 +125,7 @@ export function TeamSwitcher({
               <CommandEmpty>No team found.</CommandEmpty>
               {groups.map((group) => (
                 <CommandGroup key={group.label} heading={group.label}>
-                  {group.teams.map((team) => (
+                  {group.teams!.map((team) => (
                     <CommandItem
                       key={team.value}
                       onSelect={() => {
