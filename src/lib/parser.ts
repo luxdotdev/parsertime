@@ -59,7 +59,7 @@ export async function parseDataFromTXT(file: File) {
       return null; // Replace empty strings with null
     }
     if (isTeamNameField(eventType, index)) {
-      return value;
+      return String(value);
     }
     if (
       eventType === "kill" &&
