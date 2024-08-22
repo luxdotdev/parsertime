@@ -57,8 +57,8 @@ export function TeamSwitcher({
     }));
   }
 
-  const { data: teams } = useQuery({
-    queryKey: ["teams"],
+  const { data: teams, isLoading } = useQuery({
+    queryKey: ["teamSwitcherTeams"],
     queryFn: getTeams,
     staleTime: Infinity,
   });
@@ -67,7 +67,7 @@ export function TeamSwitcher({
 
   React.useEffect(() => {
     if (newTeamCreated) {
-      queryClient.invalidateQueries({ queryKey: ["teams"] });
+      queryClient.invalidateQueries({ queryKey: ["teamSwitcherTeams"] });
       setNewTeamCreated(false);
     }
   }, [newTeamCreated, queryClient, setNewTeamCreated]);
@@ -125,42 +125,46 @@ export function TeamSwitcher({
               <CommandEmpty>No team found.</CommandEmpty>
               {groups.map((group) => (
                 <CommandGroup key={group.label} heading={group.label}>
-                  {group.teams!.map((team) => (
-                    <CommandItem
-                      key={team.value}
-                      onSelect={() => {
-                        setSelectedTeam(team);
-                        setTeamId(
-                          team.value === "individual"
-                            ? undefined
-                            : parseInt(team.value)
-                        );
-                        setOpen(false);
-                      }}
-                      className="text-sm"
-                    >
-                      <Avatar className="mr-2 h-5 w-5">
-                        <AvatarImage
-                          src={
-                            team.image ??
-                            `https://avatar.vercel.sh/${team.label}.png`
-                          }
-                          alt={team.label}
-                          className="grayscale"
+                  {isLoading ? (
+                    <CommandItem>Loading...</CommandItem>
+                  ) : (
+                    group.teams!.map((team) => (
+                      <CommandItem
+                        key={team.value}
+                        onSelect={() => {
+                          setSelectedTeam(team);
+                          setTeamId(
+                            team.value === "individual"
+                              ? undefined
+                              : parseInt(team.value)
+                          );
+                          setOpen(false);
+                        }}
+                        className="text-sm"
+                      >
+                        <Avatar className="mr-2 h-5 w-5">
+                          <AvatarImage
+                            src={
+                              team.image ??
+                              `https://avatar.vercel.sh/${team.label}.png`
+                            }
+                            alt={team.label}
+                            className="grayscale"
+                          />
+                          <AvatarFallback>PT</AvatarFallback>
+                        </Avatar>
+                        {team.label}
+                        <CheckIcon
+                          className={cn(
+                            "ml-auto h-4 w-4",
+                            selectedTeam.value === team.value
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
                         />
-                        <AvatarFallback>PT</AvatarFallback>
-                      </Avatar>
-                      {team.label}
-                      <CheckIcon
-                        className={cn(
-                          "ml-auto h-4 w-4",
-                          selectedTeam.value === team.value
-                            ? "opacity-100"
-                            : "opacity-0"
-                        )}
-                      />
-                    </CommandItem>
-                  ))}
+                      </CommandItem>
+                    ))
+                  )}
                 </CommandGroup>
               ))}
             </CommandList>
