@@ -1,7 +1,12 @@
 import { AddMapCard } from "@/components/map/add-map";
 import { Search } from "@/components/dashboard/search";
 import { ModeToggle } from "@/components/theme-switcher";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { UserNav } from "@/components/user-nav";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
@@ -190,6 +195,11 @@ export default async function ScrimDashboardPage({ params }: Props) {
                         className="rounded-md object-cover brightness-[0.65]"
                       />
                     </CardContent>
+                    <CardFooter className="float-right flex items-center justify-between pt-10">
+                      <div className="z-10 font-semibold tracking-tight text-white">
+                        {map.replayCode ?? ""}
+                      </div>
+                    </CardFooter>
                   </Link>
                 </Card>
               </div>

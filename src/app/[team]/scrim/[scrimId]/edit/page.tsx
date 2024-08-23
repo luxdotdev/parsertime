@@ -28,11 +28,13 @@ export default async function EditScrimPage({ params }: Props) {
 
   const teamsWithPerms = await getTeamsWithPerms(session?.user?.email);
 
-  const maps = await prisma.map.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
+  const maps = (
+    await prisma.map.findMany({
+      where: {
+        scrimId: scrim.id,
+      },
+    })
+  ).sort((a, b) => a.id - b.id);
 
   return (
     <div className="min-h-[90vh] flex-col md:flex">
