@@ -319,7 +319,7 @@ export function EditScrimForm({
                         control={form.control}
                         name={`maps.${index}.replayCode`}
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem className="pl-1">
                             <FormLabel>Replay Code for {map.name}</FormLabel>
                             <FormControl>
                               <Input
