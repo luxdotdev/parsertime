@@ -1,4 +1,3 @@
-import { CreateNewMapArgs } from "@/app/api/scrim/add-map/route";
 import { CreateScrimRequestData } from "@/app/api/scrim/create-scrim/route";
 import { headers } from "@/lib/headers";
 import Logger from "@/lib/logger";
@@ -302,6 +301,11 @@ export async function createNewScrimFromParsedData(
     throw new Error("Invalid Log Format");
   }
 }
+
+type CreateNewMapArgs = {
+  scrimId: number;
+  map: ParserData;
+};
 
 export async function createNewMap(data: CreateNewMapArgs, session: Session) {
   const userId = await prisma.user.findFirst({
