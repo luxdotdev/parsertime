@@ -8,14 +8,14 @@ import { z } from "zod";
 
 const UpdateScrimSchema = z.object({
   name: z.string().min(1).max(30),
-  teamId: z.string(),
+  teamId: z.string().min(1),
   scrimId: z.number(),
-  date: z.string(),
+  date: z.string().datetime(),
   guestMode: z.boolean(),
   maps: z.array(
     z.object({
       id: z.number(),
-      replayCode: z.string().optional(),
+      replayCode: z.string().max(6).optional(),
     })
   ),
 });

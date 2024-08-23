@@ -5,8 +5,8 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 
 const AvatarUpdateSchema = z.object({
-  userId: z.string(),
-  image: z.string(),
+  userId: z.string().min(1),
+  image: z.string().url(),
 });
 
 export async function POST(req: NextRequest) {

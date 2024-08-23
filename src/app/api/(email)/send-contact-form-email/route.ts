@@ -8,9 +8,9 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 
 const ContactFormEmailSchema = z.object({
-  name: z.string(),
+  name: z.string().min(1),
   email: z.string().email(),
-  message: z.string(),
+  message: z.string().min(1),
 });
 
 export async function POST(req: NextRequest) {

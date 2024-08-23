@@ -6,8 +6,8 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 
 const TeamAvatarUpdateSchema = z.object({
-  teamId: z.string(),
-  image: z.string(),
+  teamId: z.string().min(1),
+  image: z.string().url(),
 });
 
 export async function POST(req: NextRequest) {

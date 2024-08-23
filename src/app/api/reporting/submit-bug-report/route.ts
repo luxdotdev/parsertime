@@ -7,10 +7,10 @@ import { NextRequest, userAgent } from "next/server";
 import { z } from "zod";
 
 const BugReportSchema = z.object({
-  title: z.string(),
-  description: z.string(),
+  title: z.string().min(1),
+  description: z.string().min(1),
   email: z.string().email(),
-  url: z.string(),
+  url: z.string().min(1),
 });
 
 export async function POST(req: NextRequest) {
