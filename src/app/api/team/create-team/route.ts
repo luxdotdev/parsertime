@@ -10,11 +10,13 @@ import { z } from "zod";
 
 const TeamCreationRequestSchema = z.object({
   name: z.string().min(2).max(30),
-  users: z.array(
-    z.object({
-      id: z.string(),
-    })
-  ),
+  users: z
+    .array(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .optional(),
 });
 
 export async function POST(request: NextRequest) {
