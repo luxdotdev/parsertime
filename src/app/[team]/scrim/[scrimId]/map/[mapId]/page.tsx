@@ -79,15 +79,6 @@ export default async function MapDashboardPage({ params }: Props) {
     },
   });
 
-  const map = await prisma.map.findFirst({
-    where: {
-      id,
-    },
-    select: {
-      replayCode: true,
-    },
-  });
-
   const visibility = (await prisma.scrim.findFirst({
     where: {
       id: parseInt(params.scrimId),
