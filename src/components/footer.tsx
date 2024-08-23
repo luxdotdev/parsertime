@@ -1,9 +1,16 @@
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { get } from "@vercel/edge-config";
 import Image from "next/image";
 import Link from "next/link";
 
 export default async function Footer() {
   const version = await get<string>("version");
+  const changelog = await get<string>("changelog");
 
   return (
     <footer className="relative z-20 border-t border-zinc-200 dark:border-zinc-800">
@@ -18,9 +25,20 @@ export default async function Footer() {
               className="h-7 w-auto dark:invert"
             />
           </Link>
-          <p className="text-xs text-gray-600 dark:text-gray-300">
-            {version ?? ""}
-          </p>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={changelog ?? "https://lux.dev/blog"}
+                  target="_blank"
+                  className="text-xs text-gray-600 dark:text-gray-300"
+                >
+                  {version ?? ""}
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>Click to view changelog</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         <div className="mt-6 flex flex-wrap items-center justify-center gap-4 lg:mt-0 lg:gap-6">
