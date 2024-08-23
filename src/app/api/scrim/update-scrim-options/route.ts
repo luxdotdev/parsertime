@@ -11,7 +11,7 @@ type UpdateScrimBody = {
   scrimId: number;
   date: string;
   guestMode: boolean;
-  maps: [{ id: number; replayCode: string }];
+  maps: { id: number; replayCode: string }[];
 };
 
 export async function POST(req: NextRequest) {
