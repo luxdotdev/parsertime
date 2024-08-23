@@ -4,7 +4,16 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 
 const TeamNameUpdateSchema = z.object({
-  name: z.string().min(2).max(30),
+  name: z
+    .string()
+    .min(2, {
+      message: "Team name must be at least 2 characters.",
+    })
+    .max(30, {
+      message: "Team name must not be longer than 30 characters.",
+    })
+    .trim()
+    .regex(/^(?!.*?:).*$/),
   teamId: z.number(),
 });
 
