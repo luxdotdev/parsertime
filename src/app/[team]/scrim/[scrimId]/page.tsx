@@ -185,11 +185,6 @@ export default async function ScrimDashboardPage({ params }: Props) {
                     <CardHeader className="">
                       <h3 className="z-10 text-3xl font-semibold tracking-tight text-white">
                         {map.name}
-                        <CardFooter className="float-right flex items-center justify-between pt-10">
-                          <div className="z-10 font-semibold tracking-tight text-white">
-                            {map.replayCode ?? ""}
-                          </div>
-                        </CardFooter>
                       </h3>
                     </CardHeader>
                     <CardContent>
@@ -200,6 +195,11 @@ export default async function ScrimDashboardPage({ params }: Props) {
                         className="rounded-md object-cover brightness-[0.65]"
                       />
                     </CardContent>
+                    <CardFooter className="float-right flex items-center justify-between pt-10">
+                      <div className="z-10 font-semibold tracking-tight text-white">
+                        {map.replayCode ?? ""}
+                      </div>
+                    </CardFooter>
                   </Link>
                 </Card>
               </div>
