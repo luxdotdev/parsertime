@@ -1,18 +1,24 @@
+import { getScrim } from "@/data/scrim-dto";
+import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
-import { getUser } from "@/data/user-dto";
-import { getScrim } from "@/data/scrim-dto";
+import { NextRequest } from "next/server";
+import { z } from "zod";
 
-type UpdateScrimBody = {
-  name: string;
-  teamId: string;
-  scrimId: number;
-  date: string;
-  guestMode: boolean;
-  maps: { id: number; replayCode: string }[];
-};
+const UpdateScrimSchema = z.object({
+  name: z.string().min(1).max(30),
+  teamId: z.string(),
+  scrimId: z.number(),
+  date: z.string(),
+  guestMode: z.boolean(),
+  maps: z.array(
+    z.object({
+      id: z.number(),
+      replayCode: z.string().optional(),
+    })
+  ),
+});
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -22,7 +28,12 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const body = (await req.json()) as UpdateScrimBody;
+  const body = UpdateScrimSchema.safeParse(await req.json());
+  if (!body.success) {
+    return new Response("Invalid request", {
+      status: 400,
+    });
+  }
 
   const user = await getUser(session.user.email);
 
@@ -38,7 +49,7 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  const scrim = await getScrim(body.scrimId);
+  const scrim = await getScrim(body.data.scrimId);
 
   if (!scrim) {
     return new Response("Scrim not found", {
@@ -60,18 +71,18 @@ export async function POST(req: NextRequest) {
 
   await prisma.scrim.update({
     where: {
-      id: body.scrimId,
+      id: body.data.scrimId,
     },
     data: {
-      name: body.name,
-      teamId: parseInt(body.teamId),
-      date: new Date(body.date),
-      guestMode: body.guestMode,
+      name: body.data.name,
+      teamId: parseInt(body.data.teamId),
+      date: new Date(body.data.date),
+      guestMode: body.data.guestMode,
     },
   });
 
-  if (body.maps && body.maps.length > 0) {
-    for (const mapUpdate of body.maps) {
+  if (body.data.maps && body.data.maps.length > 0) {
+    for (const mapUpdate of body.data.maps) {
       await prisma.map.update({
         where: {
           id: mapUpdate.id,

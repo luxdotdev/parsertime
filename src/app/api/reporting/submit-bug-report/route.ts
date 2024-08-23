@@ -4,24 +4,30 @@ import {
   sendDiscordWebhook,
 } from "@/lib/webhooks";
 import { NextRequest, userAgent } from "next/server";
+import { z } from "zod";
+
+const BugReportSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  email: z.string().email(),
+  url: z.string(),
+});
 
 export async function POST(req: NextRequest) {
   const ua = userAgent(req);
 
-  const body = (await req.json()) as {
-    title: string;
-    description: string;
-    email: string;
-    url: string;
-  };
+  const body = BugReportSchema.safeParse(await req.json());
+  if (!body.success) {
+    return new Response("Invalid request", { status: 400 });
+  }
 
-  const user = await getUser(body.email);
+  const user = await getUser(body.data.email);
 
   const wh = newBugReportWebhookConstructor(
-    body.title,
-    body.description,
-    body.email,
-    body.url,
+    body.data.title,
+    body.data.description,
+    body.data.email,
+    body.data.url,
     user?.billingPlan ?? "N/A",
     ua.ua,
     ua.browser,

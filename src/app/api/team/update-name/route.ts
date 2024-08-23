@@ -1,11 +1,12 @@
 import { auth } from "@/lib/auth";
-import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
+import { NextRequest } from "next/server";
+import { z } from "zod";
 
-type UpdateTeamNameBody = {
-  name: string;
-  teamId: number;
-};
+const TeamNameUpdateSchema = z.object({
+  name: z.string().min(2).max(30),
+  teamId: z.number(),
+});
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -15,14 +16,19 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const body = (await req.json()) as UpdateTeamNameBody;
+  const body = TeamNameUpdateSchema.safeParse(await req.json());
+  if (!body.success) {
+    return new Response("Invalid request", {
+      status: 400,
+    });
+  }
 
   await prisma.team.update({
     where: {
-      id: body.teamId,
+      id: body.data.teamId,
     },
     data: {
-      name: body.name,
+      name: body.data.name,
     },
   });
 

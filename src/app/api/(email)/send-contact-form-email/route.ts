@@ -5,12 +5,13 @@ import { render } from "@react-email/render";
 import { Ratelimit } from "@upstash/ratelimit";
 import { kv } from "@vercel/kv";
 import { NextRequest } from "next/server";
+import { z } from "zod";
 
-type ContactFormEmailBody = {
-  name: string;
-  email: string;
-  message: string;
-};
+const ContactFormEmailSchema = z.object({
+  name: z.string(),
+  email: z.string().email(),
+  message: z.string(),
+});
 
 export async function POST(req: NextRequest) {
   // Create a new ratelimiter, that allows 3 requests per 1 minute
@@ -31,13 +32,18 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const body = (await req.json()) as ContactFormEmailBody;
+  const body = ContactFormEmailSchema.safeParse(await req.json());
+  if (!body.success) {
+    return new Response("Invalid request", {
+      status: 400,
+    });
+  }
 
   const emailHtml = render(
     ContactFormEmail({
-      name: body.name,
-      email: body.email,
-      message: body.message,
+      name: body.data.name,
+      email: body.data.email,
+      message: body.data.message,
     })
   );
 
@@ -45,7 +51,7 @@ export async function POST(req: NextRequest) {
     await sendEmail({
       to: "help@parsertime.app",
       from: "noreply@lux.dev",
-      subject: `New message from ${body.name} | Parsertime`,
+      subject: `New message from ${body.data.name} | Parsertime`,
       html: emailHtml,
     });
   } catch (error) {

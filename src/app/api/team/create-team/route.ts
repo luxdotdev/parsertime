@@ -6,11 +6,16 @@ import prisma from "@/lib/prisma";
 import { Ratelimit } from "@upstash/ratelimit";
 import { kv } from "@vercel/kv";
 import { NextRequest } from "next/server";
+import { z } from "zod";
 
-type CreateTeamRequestData = {
-  name: string;
-  users: { id: string }[];
-};
+const TeamCreationRequestSchema = z.object({
+  name: z.string().min(2).max(30),
+  users: z.array(
+    z.object({
+      id: z.string(),
+    })
+  ),
+});
 
 export async function POST(request: NextRequest) {
   const ratelimit = new Ratelimit({
@@ -80,7 +85,12 @@ export async function POST(request: NextRequest) {
       break;
   }
 
-  const req = (await request.json()) as CreateTeamRequestData;
+  const req = TeamCreationRequestSchema.safeParse(await request.json());
+  if (!req.success) {
+    return new Response("Invalid request", {
+      status: 400,
+    });
+  }
 
   if (!session) {
     Logger.warn("Unauthorized request to create team API");
@@ -93,7 +103,7 @@ export async function POST(request: NextRequest) {
   const usersById = await prisma.user.findMany({
     where: {
       id: {
-        in: req.users?.map((user: { id: string }) => user.id) ?? [],
+        in: req.data.users?.map((user: { id: string }) => user.id) ?? [],
       },
       AND: {
         id: userId?.id,
@@ -104,7 +114,7 @@ export async function POST(request: NextRequest) {
 
   const team = await prisma.team.create({
     data: {
-      name: req.name,
+      name: req.data.name,
       updatedAt: new Date(),
       users: {
         connect: [
