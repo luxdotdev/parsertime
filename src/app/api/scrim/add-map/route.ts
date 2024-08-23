@@ -5,11 +5,6 @@ import { ParserData } from "@/types/parser";
 import { track } from "@vercel/analytics/server";
 import { NextRequest } from "next/server";
 
-export type CreateNewMapArgs = {
-  scrimId: number;
-  map: ParserData;
-};
-
 export async function POST(req: NextRequest) {
   const session = await auth();
 
