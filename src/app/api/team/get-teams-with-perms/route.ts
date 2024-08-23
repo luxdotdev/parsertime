@@ -2,11 +2,7 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { $Enums, Team } from "@prisma/client";
-
-export type GetTeamsResponse = {
-  teams: Team[];
-};
+import { $Enums } from "@prisma/client";
 
 export async function GET() {
   const session = await auth();
