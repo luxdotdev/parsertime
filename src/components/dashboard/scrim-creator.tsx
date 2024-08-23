@@ -197,23 +197,6 @@ export function ScrimCreationForm({
         />
         <FormField
           control={form.control}
-          name="replayCode"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Scrim Replay Code</FormLabel>
-              <FormControl>
-                <Input placeholder="Replay Code" className="w-28" {...field} />
-              </FormControl>
-              <FormDescription>
-                This is the replay code of the first map. You can edit the
-                replay codes after the scrim is created.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
           name="team"
           render={({ field }) => (
             <FormItem className="flex flex-col">

@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -57,6 +57,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { Separator } from "@/components/ui/separator";
 
 const profileFormSchema = z.object({
   name: z
@@ -110,11 +111,6 @@ export function EditScrimForm({
       })),
     },
     mode: "onChange",
-  });
-
-  const { fields } = useFieldArray({
-    control: form.control,
-    name: "maps",
   });
 
   async function onSubmit(data: ProfileFormValues) {
@@ -318,57 +314,60 @@ export function EditScrimForm({
                 <AccordionItem key={map.id} value={map.id.toString()}>
                   <AccordionTrigger>{map.name}</AccordionTrigger>
                   <AccordionContent>
-                    <FormField
-                      control={form.control}
-                      name={`maps.${index}.replayCode`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Replay Code for {map.name}</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Replay Code"
-                              className="w-28"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button className="mt-3" variant="destructive">
-                          Delete Map
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            Are you absolutely sure?
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This will permanently delete the map{" "}
-                            <strong>{map.name}</strong>. This action cannot be
-                            undone.
-                          </AlertDialogDescription>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => deleteMap(map.id)}
-                            >
-                              {loading ? (
-                                <>
-                                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
-                                  Deleting...
-                                </>
-                              ) : (
-                                "Delete"
-                              )}
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogHeader>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <div className="flex items-center justify-between">
+                      <FormField
+                        control={form.control}
+                        name={`maps.${index}.replayCode`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Replay Code for {map.name}</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Replay Code"
+                                className="w-28"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Separator orientation="vertical" />
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button className="mt-3" variant="destructive">
+                            Delete Map
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you absolutely sure?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This will permanently delete the map{" "}
+                              <strong>{map.name}</strong>. This action cannot be
+                              undone.
+                            </AlertDialogDescription>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => deleteMap(map.id)}
+                              >
+                                {loading ? (
+                                  <>
+                                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
+                                    Deleting...
+                                  </>
+                                ) : (
+                                  "Delete"
+                                )}
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogHeader>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
               ))}
