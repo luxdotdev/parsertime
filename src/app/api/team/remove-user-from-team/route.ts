@@ -3,11 +3,12 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { User } from "@prisma/client";
 import { NextRequest } from "next/server";
+import { z } from "zod";
 
-type RemoveUserFromTeamBody = {
-  userId: string;
-  teamId: string;
-};
+const RemoveUserFromTeamSchema = z.object({
+  userId: z.string().min(1),
+  teamId: z.string().min(1),
+});
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -17,11 +18,16 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const body = (await req.json()) as RemoveUserFromTeamBody;
+  const body = RemoveUserFromTeamSchema.safeParse(await req.json());
+  if (!body.success) {
+    return new Response("Invalid request", {
+      status: 400,
+    });
+  }
 
   const team = await prisma.team.findFirst({
     where: {
-      id: parseInt(body.teamId),
+      id: parseInt(body.data.teamId),
     },
   });
 
@@ -33,7 +39,7 @@ export async function POST(req: NextRequest) {
 
   const user = await prisma.user.findFirst({
     where: {
-      id: body.userId,
+      id: body.data.userId,
     },
   });
 
@@ -53,7 +59,7 @@ export async function POST(req: NextRequest) {
 
   const managers = await prisma.team.findFirst({
     where: {
-      id: parseInt(body.teamId),
+      id: parseInt(body.data.teamId),
     },
     select: {
       managers: {
@@ -101,7 +107,7 @@ export async function POST(req: NextRequest) {
       await prisma.teamManager.deleteMany({
         where: {
           userId: user.id,
-          teamId: parseInt(body.teamId),
+          teamId: parseInt(body.data.teamId),
         },
       });
     }
@@ -109,12 +115,12 @@ export async function POST(req: NextRequest) {
 
   await prisma.team.update({
     where: {
-      id: parseInt(body.teamId),
+      id: parseInt(body.data.teamId),
     },
     data: {
       users: {
         disconnect: {
-          id: body.userId,
+          id: body.data.userId,
         },
       },
     },
