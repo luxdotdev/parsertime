@@ -30,11 +30,13 @@ function ChartTooltip() {
           <InfoCircledIcon className="h-4 w-4" />
         </TooltipTrigger>
         <TooltipContent className="max-w-[280px]">
-          {t("tooltip1")}{" "}
-          <Link href="https://docs.parsertime.app/maps/charts" external>
-            {t("tooltip2")}
-          </Link>{" "}
-          {t("tooltip3")}
+          {t.rich("tooltip", {
+            Link: (children) => (
+              <Link href="https://docs.parsertime.app/maps/charts" external>
+                {children}
+              </Link>
+            ),
+          })}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

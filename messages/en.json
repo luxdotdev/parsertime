@@ -126,9 +126,8 @@
       },
       "link": {
         "title": "Link Copied",
-        "description1": "The link to this",
-        "description2": "has been copied.",
-        "share": "Share Link to"
+        "description": "The link to this {pathname} has been copied.",
+        "share": "Share Link to {pathname}"
       },
       "teams": {
         "title": "Teams",
@@ -246,14 +245,10 @@
       },
       "createdScrim": {
         "title": "Scrim created",
-        "description": "Your scrim has been created successfully."
-      },
-      "createdScrimError": {
-        "title": "Error",
-        "description1": "An error occurred:",
-        "description2": ". Please read the docs",
-        "description3": "here",
-        "description4": "to see if the error can be resolved."
+        "description": "Your scrim has been created successfully.",
+        "errorTitle": "Error",
+        "errorDescription": "An error occurred: {res}.",
+        "errorDocs": "Please read the docs <Link>here</Link> <ExternalLinkIcon /> to see if the error can be resolved."
       },
       "scrimName": "Scrim Name",
       "scrimPlaceholder": "New Scrim",
@@ -306,10 +301,8 @@
         "createTitle": "Map created",
         "createDescription": "Your map has been created successfully.",
         "errorTitle": "Error",
-        "errorDescription1": "An error occurred:",
-        "errorDescription2": ". Please read the docs",
-        "errorLink": "here",
-        "errorDescription3": "to see if the error can be resolved."
+        "errorDescription": "An error occurred: {res}.",
+        "errorDocs": "Please read the docs <Link>here</Link> <ExternalLinkIcon /> to see if the error can be resolved."
       }
     },
     "editScrim": {
@@ -628,9 +621,7 @@
       "exportCSV": "Export as CSV"
     },
     "charts": {
-      "tooltip1": "Looking for more information on charts?",
-      "tooltip2": "Check out the documentation",
-      "tooltip3": "to learn more.",
+      "tooltip": "Looking for more information on charts? <Link>Check out the documentation</Link> to learn more.",
       "team1": "Team 1",
       "team2": "Team 2",
       "time": "Time:",
@@ -652,10 +643,8 @@
       }
     },
     "events": {
-      "roundStart1": "Round",
-      "roundStart2": "started",
-      "roundEnd1": "Round",
-      "roundEnd2": "ended",
+      "roundStart": "Round {event} started",
+      "roundEnd": "Round {event} ended",
       "matchEnd": "Match ended",
       "matchStart": "Match started",
       "mapEvents": {
@@ -667,21 +656,18 @@
         "payloadProgress": "Payload progress:",
         "meters": "meters",
         "swap": "swapped to",
-        "ultKills1": "killed",
-        "ultKills2": "player",
-        "ultKills3": "s",
-        "ultKills4": "with/during their ultimate.",
-        "multikill1": "During fight",
-        "multikill2": "got a multikill, killing",
-        "multikill3": "players.",
-        "ajaxFight": "Ajaxed during fight",
+        "ultKills": "killed {players} player{plural} with/during their ultimate.",
+        "plural": "s",
+        "multikill1": "During fight {event},",
+        "multikill2": "got a multikill, killing {event} players.",
+        "ajaxFight": "Ajaxed during fight {fight}.",
         "lucio": "Lúcio",
         "ajax": "ajax"
       },
       "ultsUsed": {
         "title": "Ultimates Used",
         "description": "A list of all ultimates used during the match and the times when they occurred.",
-        "ultStart": "used their ultimate during fight"
+        "ultStart": "used their ultimate during fight {fight}."
       }
     },
     "compare": {

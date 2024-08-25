@@ -32,21 +32,21 @@ const ACCEPTED_FILE_TYPES = [XLSX, TXT];
 const MAX_FILE_SIZE = 1000000; // 1MB in bytes
 
 export function AddMapCard() {
-  const t = useTranslations("scrimPage");
+  const t = useTranslations("scrimPage.addMap");
   const formSchema = z.object({
     file: z
       .any()
       .refine(
         (file) => file !== null && file !== undefined,
-        t("addMap.fileMessage.required")
+        t("fileMessage.required")
       )
       .refine(
         (file) => file && file.size <= MAX_FILE_SIZE,
-        t("addMap.fileMessage.maxSize")
+        t("fileMessage.maxSize")
       )
       .refine(
         (file) => file && ACCEPTED_FILE_TYPES.includes(file.type),
-        t("addMap.fileMessage.accepted")
+        t("fileMessage.accepted")
       ),
   });
   const [dragActive, setDragActive] = useState(false);
@@ -59,8 +59,8 @@ export function AddMapCard() {
     const scrimId = pathname.split("/")[3];
 
     toast({
-      title: t("addMap.handleFile.creatingTitle"),
-      description: t("addMap.handleFile.creatingDescription"),
+      title: t("handleFile.creatingTitle"),
+      description: t("handleFile.creatingDescription"),
       duration: 5000,
     });
 
@@ -73,27 +73,34 @@ export function AddMapCard() {
 
     if (res.ok) {
       toast({
-        title: t("addMap.handleFile.createTitle"),
-        description: t("addMap.handleFile.createDescription"),
+        title: t("handleFile.createTitle"),
+        description: t("handleFile.createDescription"),
         duration: 5000,
       });
       router.refresh();
     } else {
       toast({
-        title: t("addMap.handleFile.errorTitle"),
+        title: t("handleFile.errorTitle"),
         description: (
           <p>
-            {t("addMap.handleFile.errorDescription1")} {await res.text()} (
-            {res.status}){t("addMap.handleFile.errorDescription2")}{" "}
-            <Link
-              href="https://docs.parsertime.app/#common-errors"
-              target="_blank"
-              className="underline"
-            >
-              {t("addMap.handleFile.errorLink")}
-            </Link>{" "}
-            <ExternalLinkIcon className="inline h-4 w-4" />{" "}
-            {t("addMap.handleFile.errorDescription3")}
+            {t("handleFile.errorDescription", {
+              res: `${await res.text()} (
+            ${res.status})`,
+            })}{" "}
+            {t.rich("handleFile.errorDocs", {
+              Link: (children) => (
+                <Link
+                  href="https://docs.parsertime.app/#common-errors"
+                  target="_blank"
+                  className="underline"
+                >
+                  {children}
+                </Link>
+              ),
+              ExternalLinkIcon: () => (
+                <ExternalLinkIcon className="inline h-4 w-4" />
+              ),
+            })}
           </p>
         ),
         duration: 5000,
@@ -160,15 +167,15 @@ export function AddMapCard() {
                   <CardHeader className="text-center text-xl">
                     <span className="inline-flex items-center justify-center space-x-2">
                       <PlusCircledIcon className="h-6 w-6" />{" "}
-                      <span>{t("addMap.title")}</span>
+                      <span>{t("title")}</span>
                     </span>
                   </CardHeader>
                   <CardDescription className="pb-4">
-                    {t("addMap.description")}
+                    {t("description")}
                   </CardDescription>
                   <CardContent className="flex items-center justify-center">
                     <Label htmlFor="file" className="hidden">
-                      {t("addMap.addFile")}
+                      {t("addFile")}
                     </Label>
                     <Input
                       id="file"

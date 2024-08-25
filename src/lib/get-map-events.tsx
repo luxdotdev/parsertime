@@ -371,10 +371,10 @@ export async function getMapEvents(id: number) {
                 {event.player_name}
               </span>
             </span>{" "}
-            {t("mapEvents.ultKills1")} {event.kills.length}{" "}
-            {t("mapEvents.ultKills2")}
-            {event.kills.length > 1 ? t("mapEvents.ultKills3") : ""}{" "}
-            {t("mapEvents.ultKills4")}
+            {t("mapEvents.ultKills", {
+              players: event.kills.length,
+              plural: event.kills.length > 1 ? t("mapEvents.plural") : "",
+            })}
           </div>
         );
       case "round_start":
@@ -383,7 +383,7 @@ export async function getMapEvents(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>{" "}
-            {t("roundStart1")} {event.round_number} {t("roundStart2")}
+            {t("roundStart", { event: event.round_number })}
           </p>
         );
       case "round_end":
@@ -393,7 +393,7 @@ export async function getMapEvents(id: number) {
               <span className={GeistMono.className}>
                 {toTimestamp(event.match_time)} -{" "}
               </span>{" "}
-              {t("roundEnd1")} {event.round_number} {t("roundEnd2")}
+              {t("roundEnd", { event: event.round_number })}
             </p>
             <div className="py-3" />
           </div>
@@ -423,7 +423,9 @@ export async function getMapEvents(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
-            {t("mapEvents.multikill1")} {event.fightIndex + 1},{" "}
+            {/* can translate all this but don't know if I should */}
+            {t("mapEvents.multikill1", { event: event.fightIndex + 1 })}{" "}
+            {event.fightIndex + 1}{" "}
             <span className="inline-flex items-center gap-1">
               <Image
                 src={`/heroes/${toHero(event.player_hero)}.png`}
@@ -447,8 +449,7 @@ export async function getMapEvents(id: number) {
                 {event.player_name}
               </span>
             </span>{" "}
-            {t("mapEvents.multikill2")} {event.killTimes.length}{" "}
-            {t("mapEvents.multikill3")}
+            {t("mapEvents.multikill2", { event: event.killTimes.length })}
           </div>
         );
       case "ajax":
@@ -480,11 +481,12 @@ export async function getMapEvents(id: number) {
                 {event.player_name}
               </span>
             </span>{" "}
-            {t("mapEvents.ajaxFight")}{" "}
-            {fights.findIndex((fight) => {
-              return fight.end >= event.match_time;
-            }) + 1}
-            .
+            {t("mapEvents.ajaxFight", {
+              fight:
+                fights.findIndex((fight) => {
+                  return fight.end >= event.match_time;
+                }) + 1,
+            })}
           </div>
         );
     }
@@ -564,7 +566,7 @@ export async function getUltimatesUsedList(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
-            {t("roundStart1")} {event.round_number} {t("roundStart2")}
+            {t("roundStart", { event: event.round_number })}
           </p>
         );
       case "round_end":
@@ -574,7 +576,7 @@ export async function getUltimatesUsedList(id: number) {
               <span className={GeistMono.className}>
                 {toTimestamp(event.match_time)} -{" "}
               </span>{" "}
-              {t("roundEnd1")} {event.round_number} {t("roundEnd2")}
+              {t("roundEnd", { event: event.round_number })}
             </p>
             <div className="py-3" />
           </div>
@@ -627,11 +629,12 @@ export async function getUltimatesUsedList(id: number) {
                 {event.player_name}
               </span>
             </span>{" "}
-            {t("ultsUsed.ultStart")}{" "}
-            {fights.findIndex((fight) => {
-              return fight.end >= event.match_time;
-            }) + 1}
-            .
+            {t("ultsUsed.ultStart", {
+              fight:
+                fights.findIndex((fight) => {
+                  return fight.end >= event.match_time;
+                }) + 1,
+            })}
           </div>
         );
     }

@@ -62,17 +62,17 @@ export function ScrimCreationForm({
   const { toast } = useToast();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const t = useTranslations("dashboard");
+  const t = useTranslations("dashboard.scrimCreationForm");
 
   const FormSchema = z.object({
     name: z.string({
-      required_error: t("scrimCreationForm.scrimRequiredError"),
+      required_error: t("scrimRequiredError"),
     }),
     team: z.string({
-      required_error: t("scrimCreationForm.teamRequiredError"),
+      required_error: t("teamRequiredError"),
     }),
     date: z.date({
-      required_error: t("scrimCreationForm.dateRequiredError"),
+      required_error: t("dateRequiredError"),
     }),
     map: z.any(),
   });
@@ -99,16 +99,16 @@ export function ScrimCreationForm({
     if (file) {
       if (file.size > MAX_FILE_SIZE) {
         toast({
-          title: t("scrimCreationForm.fileSize.title"),
-          description: t("scrimCreationForm.fileSize.description"),
+          title: t("fileSize.title"),
+          description: t("fileSize.description"),
         });
         return;
       }
 
       if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
         toast({
-          title: t("scrimCreationForm.fileType.title"),
-          description: t("scrimCreationForm.fileType.description"),
+          title: t("fileType.title"),
+          description: t("fileType.description"),
         });
         return;
       }
@@ -125,8 +125,8 @@ export function ScrimCreationForm({
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setLoading(true);
     toast({
-      title: t("scrimCreationForm.creatingScrim.title"),
-      description: t("scrimCreationForm.creatingScrim.description"),
+      title: t("creatingScrim.title"),
+      description: t("creatingScrim.description"),
       duration: 5000,
     });
 
@@ -140,8 +140,8 @@ export function ScrimCreationForm({
 
     if (res.ok) {
       toast({
-        title: t("scrimCreationForm.createdScrim.title"),
-        description: t("scrimCreationForm.createdScrim.description"),
+        title: t("createdScrim.title"),
+        description: t("createdScrim.description"),
         duration: 5000,
       });
       router.refresh();
@@ -149,24 +149,27 @@ export function ScrimCreationForm({
       setLoading(false);
     } else {
       toast({
-        title: t("scrimCreationForm.createdScrimError.title"),
+        title: t("createdScrim.errorTitle"),
         description: (
           <p>
-            {t("scrimCreationForm.createdScrimError.description1")}{" "}
-            {await res.text()} ({res.status}){/* . Please read the docs */}
-            {t("scrimCreationForm.createdScrimError.description2")}{" "}
-            <Link
-              href="https://docs.parsertime.app/#common-errors"
-              target="_blank"
-              className="underline"
-            >
-              {/* here */}
-              {t("scrimCreationForm.createdScrimError.description3")}
-            </Link>{" "}
-            <ExternalLinkIcon className="inline h-4 w-4" />{" "}
-            {/* to see if the error
-            can be resolved. */}
-            {t("scrimCreationForm.createdScrimError.description4")}
+            {t("createdScrim.errorDescription", {
+              res: `${await res.text()} (
+            ${res.status})`,
+            })}{" "}
+            {t.rich("createdScrim.errorDocs", {
+              Link: (children) => (
+                <Link
+                  href="https://docs.parsertime.app/#common-errors"
+                  target="_blank"
+                  className="underline"
+                >
+                  {children}
+                </Link>
+              ),
+              ExternalLinkIcon: () => (
+                <ExternalLinkIcon className="inline h-4 w-4" />
+              ),
+            })}
           </p>
         ),
         duration: 5000,
@@ -184,16 +187,11 @@ export function ScrimCreationForm({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("scrimCreationForm.scrimName")}</FormLabel>
+              <FormLabel>{t("scrimName")}</FormLabel>
               <FormControl>
-                <Input
-                  placeholder={t("scrimCreationForm.scrimPlaceholder")}
-                  {...field}
-                />
+                <Input placeholder={t("scrimPlaceholder")} {...field} />
               </FormControl>
-              <FormDescription>
-                {t("scrimCreationForm.scrimDescription")}
-              </FormDescription>
+              <FormDescription>{t("scrimDescription")}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -203,19 +201,15 @@ export function ScrimCreationForm({
           name="team"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>{t("scrimCreationForm.teamName")}</FormLabel>
+              <FormLabel>{t("teamName")}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger className="w-[240px] pl-3 text-left font-normal">
-                    <SelectValue
-                      placeholder={t("scrimCreationForm.teamPlaceholder")}
-                    />
+                    <SelectValue placeholder={t("teamPlaceholder")} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="0">
-                    {t("scrimCreationForm.teamIndividual")}
-                  </SelectItem>
+                  <SelectItem value="0">{t("teamIndividual")}</SelectItem>
                   {teams.map((team) => (
                     <SelectItem key={team.value} value={team.value}>
                       {team.label}
@@ -224,11 +218,8 @@ export function ScrimCreationForm({
                 </SelectContent>
               </Select>
               <FormDescription>
-                {t("scrimCreationForm.teamDescription")}{" "}
-                <Link href="/dashboard">
-                  {t("scrimCreationForm.teamDashboardLink")}
-                </Link>
-                .
+                {t("teamDescription")}{" "}
+                <Link href="/dashboard">{t("teamDashboardLink")}</Link>.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -239,7 +230,7 @@ export function ScrimCreationForm({
           name="date"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>{t("scrimCreationForm.dateName")}</FormLabel>
+              <FormLabel>{t("dateName")}</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -253,7 +244,7 @@ export function ScrimCreationForm({
                       {field.value ? (
                         format(field.value, "PPP")
                       ) : (
-                        <span>{t("scrimCreationForm.datePlaceholder")}</span>
+                        <span>{t("datePlaceholder")}</span>
                       )}
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
@@ -270,9 +261,7 @@ export function ScrimCreationForm({
                   />
                 </PopoverContent>
               </Popover>
-              <FormDescription>
-                {t("scrimCreationForm.dateDescription")}
-              </FormDescription>
+              <FormDescription>{t("dateDescription")}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -282,7 +271,7 @@ export function ScrimCreationForm({
           name="map"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>{t("scrimCreationForm.mapName")}</FormLabel>
+              <FormLabel>{t("mapName")}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -292,9 +281,7 @@ export function ScrimCreationForm({
                   accept=".xlsx, .txt"
                 />
               </FormControl>
-              <FormDescription>
-                {t("scrimCreationForm.mapDescription")}
-              </FormDescription>
+              <FormDescription>{t("mapDescription")}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -307,10 +294,10 @@ export function ScrimCreationForm({
           {loading ? (
             <>
               <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
-              {t("scrimCreationForm.submitting")}
+              {t("submitting")}
             </>
           ) : (
-            t("scrimCreationForm.submit")
+            t("submit")
           )}
         </Button>
       </form>
