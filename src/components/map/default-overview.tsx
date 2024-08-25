@@ -25,7 +25,7 @@ import { $Enums } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 
 export async function DefaultOverview({ id }: { id: number }) {
-  const t = await getTranslations("mapPage");
+  const t = await getTranslations("mapPage.overview");
   const finalRound = await prisma.roundEnd.findFirst({
     where: {
       MapDataId: id,
@@ -157,7 +157,7 @@ export async function DefaultOverview({ id }: { id: number }) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              {t("overview.matchTime")}
+              {t("matchTime")}
             </CardTitle>
             <CardIcon>
               <circle cx="12" cy="12" r="10" />
@@ -171,16 +171,13 @@ export async function DefaultOverview({ id }: { id: number }) {
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              {((finalRound?.match_time ?? 0) / 60).toFixed(2)}{" "}
-              {t("overview.minutes")}
+              {((finalRound?.match_time ?? 0) / 60).toFixed(2)} {t("minutes")}
             </p>
           </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {t("overview.score")}
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">{t("score")}</CardTitle>
             <CardIcon>
               <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
               <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
@@ -197,7 +194,7 @@ export async function DefaultOverview({ id }: { id: number }) {
             <p className="text-xs text-muted-foreground">
               {mapType !== $Enums.MapType.Push ? (
                 <>
-                  {t("overview.winner")}{" "}
+                  {t("winner")}{" "}
                   <span
                     className={
                       winner === matchDetails?.team_1_name
@@ -209,7 +206,7 @@ export async function DefaultOverview({ id }: { id: number }) {
                   </span>
                 </>
               ) : (
-                t("overview.pushLimitations")
+                t("pushLimitations")
               )}
             </p>
           </CardFooter>
@@ -217,7 +214,7 @@ export async function DefaultOverview({ id }: { id: number }) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              {t("overview.heroDamageDealt")}
+              {t("heroDamageDealt")}
             </CardTitle>
             <CardIcon>
               <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
@@ -235,14 +232,14 @@ export async function DefaultOverview({ id }: { id: number }) {
                   <span className="text-blue-500">
                     {matchDetails?.team_1_name}
                   </span>{" "}
-                  {t("overview.dealtMore")}
+                  {t("dealtMore")}
                 </>
               ) : (
                 <>
                   <span className="text-red-500">
                     {matchDetails?.team_2_name}
                   </span>{" "}
-                  {t("overview.dealtMore")}
+                  {t("dealtMore")}
                 </>
               )}
             </p>
@@ -251,7 +248,7 @@ export async function DefaultOverview({ id }: { id: number }) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              {t("overview.teamHealingDealt")}
+              {t("teamHealingDealt")}
             </CardTitle>
             <CardIcon>
               <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
@@ -270,14 +267,14 @@ export async function DefaultOverview({ id }: { id: number }) {
                   <span className="text-blue-500">
                     {matchDetails?.team_1_name}
                   </span>{" "}
-                  {t("overview.healedMore")}
+                  {t("healedMore")}
                 </>
               ) : (
                 <>
                   <span className="text-red-500">
                     {matchDetails?.team_2_name}
                   </span>{" "}
-                  {t("overview.healedMore")}
+                  {t("healedMore")}
                 </>
               )}
             </p>
@@ -287,7 +284,7 @@ export async function DefaultOverview({ id }: { id: number }) {
       <div className="flex gap-4 md:grid md:grid-cols-2 lg:grid-cols-7">
         <Card className="max-w-full md:col-span-full">
           <CardHeader>
-            <CardTitle>{t("overview.overview")}</CardTitle>
+            <CardTitle>{t("title")}</CardTitle>
           </CardHeader>
           <CardContent className="flex md:hidden">
             <OverviewTable playerStats={finalRoundStats} />
@@ -301,12 +298,10 @@ export async function DefaultOverview({ id }: { id: number }) {
                 className="max-w-fit space-y-4 overflow-x-auto"
               >
                 <TabsList>
-                  <TabsTrigger value="final">
-                    {t("overview.overview")}
-                  </TabsTrigger>
+                  <TabsTrigger value="final">{t("title")}</TabsTrigger>
                   {range(numberOfRounds).map((round) => (
                     <TabsTrigger key={round} value={round.toString()}>
-                      {t("overview.round")} {round + 1}
+                      {t("round")} {round + 1}
                     </TabsTrigger>
                   ))}
                 </TabsList>
@@ -354,114 +349,119 @@ export async function DefaultOverview({ id }: { id: number }) {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="col-span-full">
           <CardHeader>
-            <CardTitle>{t("overview.analysis.title")}</CardTitle>
+            <CardTitle>{t("analysis.title")}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-outside list-disc pl-4">
               <li>
-                <span className="text-blue-500">
-                  {matchDetails?.team_1_name}
-                </span>{" "}
-                {t("overview.analysis.description1")} {team1FirstDeaths}{" "}
-                {t("overview.analysis.description2")}{" "}
-                <span
-                  className={cn(
-                    team1FirstDeaths / fights.length > 0.5
-                      ? "text-red-500"
-                      : "text-green-500",
-                    team1FirstDeaths / fights.length === 0.5 &&
-                      "text-purple-500"
-                  )}
-                >
-                  {((team1FirstDeaths / fights.length) * 100).toFixed(2)}
-                </span>
-                {t("overview.analysis.description3")}{" "}
-                <span className="text-red-500">
-                  {matchDetails?.team_2_name}
-                </span>{" "}
-                {t("overview.analysis.description1")}{" "}
-                {fights.length - team1FirstDeaths}{" "}
-                {t("overview.analysis.description2")}{" "}
-                <span
-                  className={cn(
-                    team1FirstDeaths / fights.length > 0.5
-                      ? "text-green-500"
-                      : "text-red-500",
-                    team1FirstDeaths / fights.length === 0.5 &&
-                      "text-purple-500"
-                  )}
-                >
-                  {(
+                {t.rich("analysis.deathDescriptionTeam1", {
+                  span1: (children) => (
+                    <span className="text-blue-500">{children}</span>
+                  ),
+                  span2: (children) => (
+                    <span
+                      className={cn(
+                        team1FirstDeaths / fights.length > 0.5
+                          ? "text-red-500"
+                          : "text-green-500",
+                        team1FirstDeaths / fights.length === 0.5 &&
+                          "text-purple-500"
+                      )}
+                    >
+                      {children}
+                    </span>
+                  ),
+                  team1Name: matchDetails?.team_1_name,
+                  team1FirstDeaths,
+                  percentage: (
+                    (team1FirstDeaths / fights.length) *
+                    100
+                  ).toFixed(2),
+                })}{" "}
+                {t.rich("analysis.deathDescriptionTeam2", {
+                  span1: (children) => (
+                    <span className="text-red-500">{children}</span>
+                  ),
+                  span2: (children) => (
+                    <span
+                      className={cn(
+                        team1FirstDeaths / fights.length > 0.5
+                          ? "text-green-500"
+                          : "text-red-500",
+                        team1FirstDeaths / fights.length === 0.5 &&
+                          "text-purple-500"
+                      )}
+                    >
+                      {children}
+                    </span>
+                  ),
+                  team2Name: matchDetails?.team_2_name,
+                  team2FirstDeaths: fights.length - team1FirstDeaths,
+                  percentage: (
                     ((fights.length - team1FirstDeaths) / fights.length) *
                     100
-                  ).toFixed(2)}
-                </span>
-                {t("overview.analysis.description3")}
+                  ).toFixed(2),
+                })}
               </li>
               <li>
                 {team1UltimateKills > team2UltimateKills && (
                   <>
-                    <span className="text-blue-500">
-                      {matchDetails?.team_1_name}
-                    </span>{" "}
-                    {t("overview.analysis.description4")}{" "}
-                    <span className="text-blue-500">{team1UltimateKills}</span>{" "}
-                    {t("overview.analysis.description5")}
+                    {t.rich("analysis.ultKillsDescriptionTeam1", {
+                      span: (children) => (
+                        <span className="text-blue-500">{children}</span>
+                      ),
+                      team1Name: matchDetails?.team_1_name,
+                      team1UltimateKills,
+                    })}
                   </>
                 )}
 
                 {team1UltimateKills < team2UltimateKills && (
                   <>
-                    <span className="text-red-500">
-                      {matchDetails?.team_2_name}
-                    </span>{" "}
-                    {t("overview.analysis.description4")}{" "}
-                    <span className="text-red-500">{team2UltimateKills}</span>{" "}
-                    {t("overview.analysis.description5")}
+                    {t.rich("analysis.ultKillsDescriptionTeam2", {
+                      span: (children) => (
+                        <span className="text-red-500">{children}</span>
+                      ),
+                      team2Name: matchDetails?.team_2_name,
+                      team2UltimateKills,
+                    })}
                   </>
                 )}
 
                 {team1UltimateKills === team2UltimateKills && (
                   <>
-                    {t("overview.analysis.description6")}{" "}
-                    <span className="text-purple-500">
-                      {team1UltimateKills}
-                    </span>{" "}
-                    {t("overview.analysis.description7")}
+                    {t.rich("analysis.ultKillsDescriptionBoth", {
+                      span: (children) => (
+                        <span className="text-purple-500">{children}</span>
+                      ),
+                      team1UltimateKills,
+                    })}
                   </>
                 )}
               </li>
               <li>
-                {t("overview.analysis.description8")}{" "}
-                <span
-                  className={cn(
-                    finalRoundStats.find(
-                      (player) =>
-                        player.player_name === playerWithMostFirstDeaths
-                    )?.player_team === matchDetails?.team_1_name
-                      ? "text-blue-500"
-                      : "text-red-500"
-                  )}
-                >
-                  {playerWithMostFirstDeaths === "null"
-                    ? "N/A"
-                    : playerWithMostFirstDeaths}
-                </span>
-                {t("overview.analysis.description9")}{" "}
-                <span
-                  className={cn(
-                    finalRoundStats.find(
-                      (player) =>
-                        player.player_name === playerWithMostFirstDeaths
-                    )?.player_team === matchDetails?.team_1_name
-                      ? "text-blue-500"
-                      : "text-red-500"
-                  )}
-                >
-                  {firstDeaths[playerWithMostFirstDeaths]}
-                </span>{" "}
-                {t("overview.analysis.description10")} {fights.length}{" "}
-                {t("overview.analysis.description11")}
+                {t.rich("analysis.playerDeathDescription", {
+                  span: (children) => (
+                    <span
+                      className={cn(
+                        finalRoundStats.find(
+                          (player) =>
+                            player.player_name === playerWithMostFirstDeaths
+                        )?.player_team === matchDetails?.team_1_name
+                          ? "text-blue-500"
+                          : "text-red-500"
+                      )}
+                    >
+                      {children}
+                    </span>
+                  ),
+                  playerWithMostFirstDeaths:
+                    playerWithMostFirstDeaths === "null"
+                      ? "N/A"
+                      : playerWithMostFirstDeaths,
+                  firstDeaths: firstDeaths[playerWithMostFirstDeaths],
+                  fights: fights.length,
+                })}
               </li>
               {lucioPlayers.length > 0 && (
                 <>
@@ -471,27 +471,22 @@ export async function DefaultOverview({ id }: { id: number }) {
                     if (ajaxes === 0) return null;
                     return (
                       <li key={player.player_name}>
-                        <span
-                          className={cn(
-                            player.player_team === matchDetails?.team_1_name
-                              ? "text-blue-500"
-                              : "text-red-500"
-                          )}
-                        >
-                          {player.player_name}
-                        </span>{" "}
-                        {t("overview.analysis.ajax1")}{" "}
-                        <span
-                          className={cn(
-                            player.player_team === matchDetails?.team_1_name
-                              ? "text-blue-500"
-                              : "text-red-500"
-                          )}
-                        >
-                          {ajaxes}
-                        </span>{" "}
-                        {t("overview.analysis.ajax2")}
-                        {ajaxes === 1 ? "" : t("overview.analysis.ajax3")}.
+                        {t.rich("analysis.ajax", {
+                          span: (children) => (
+                            <span
+                              className={cn(
+                                player.player_team === matchDetails?.team_1_name
+                                  ? "text-blue-500"
+                                  : "text-red-500"
+                              )}
+                            >
+                              {children}
+                            </span>
+                          ),
+                          player: player.player_name,
+                          ajaxes,
+                          plural: ajaxes === 1 ? "" : t("analysis.plural"),
+                        })}
                       </li>
                     );
                   })}

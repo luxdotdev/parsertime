@@ -154,10 +154,11 @@ export async function DefaultOverview({
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              {t("firstPickDescription1")} {fights.length}{" "}
-              {t("firstPickDescription2")} {playerNameDecoded}{" "}
-              {t("firstPickDescription3")} {playerFirstKills.length}{" "}
-              {t("firstPickDescription4")}
+              {t("firstPickDescription", {
+                fights: fights.length,
+                playerNameDecoded,
+                playerFirstKills: playerFirstKills.length,
+              })}
             </p>
           </CardFooter>
         </Card>
@@ -177,10 +178,11 @@ export async function DefaultOverview({
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              {t("firstDeathDescription1")} {fights.length}{" "}
-              {t("firstDeathDescription2")} {playerNameDecoded}{" "}
-              {t("firstDeathDescription3")} {playerFirstDeaths.length}{" "}
-              {t("firstDeathDescription4")}
+              {t("firstDeathDescription", {
+                fights: fights.length,
+                playerNameDecoded,
+                playerFirstDeaths: playerFirstDeaths.length,
+              })}
             </p>
           </CardFooter>
         </Card>
