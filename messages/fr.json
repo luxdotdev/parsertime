@@ -189,6 +189,7 @@
       "title": "Créer une équipe",
       "description": "Ajoutez une nouvelle équipe pour catégoriser vos scrims et inviter vos joueurs à voir et gérer vos scrims.",
       "teamName": "Nom de l'équipe",
+      "placeholder": "Esports à Cornell",
       "required": "Le nom de l'équipe est requis.",
       "minCharacters": "Le nom doit comporter au moins 2 caractères.",
       "maxCharacters": "Le nom ne doit pas dépasser 30 caractères.",
@@ -201,7 +202,7 @@
       },
       "error": {
         "title": "Erreur",
-        "description": "Une erreur est survenue :"
+        "description": "Une erreur est survenue : {res}"
       }
     },
     "emptyScrimList": {
@@ -213,7 +214,18 @@
     "addScrim": {
       "title": "Ajouter un scrim...",
       "description": "Cliquez sur le bouton pour créer un scrim.",
-      "createScrim": "Créer un Scrim"
+      "createScrim": "Créer un Scrim",
+      "handleFile": {
+        "fileReq": "Le fichier est requis.",
+        "fileMax": "La taille maximale du fichier est de 1 Mo.",
+        "fileAccept": "Les fichiers .xlsx sont acceptés.",
+        "creatingTitle": "Création du scrim...",
+        "creatingDescription": "Nous traitons vos données. Veuillez patienter.",
+        "createdTitle": "Scrim créé",
+        "createdDescription": "Votre scrim a été créé avec succès.",
+        "errorTitle": "Erreur",
+        "errorDescription": "Une erreur est survenue : {res}"
+      }
     },
     "scrimCard": {
       "editScrim": "Modifier le scrim",
@@ -334,12 +346,11 @@
       },
       "maps": {
         "title": "Cartes",
-        "replayCode": "Code de rediffusion",
-        "delete": "Supprimer la carte",
+        "replayCode": "Code de Replay",
+        "delete": "Supprimer la Carte",
         "deleteDialog": {
           "title": "Êtes-vous absolument sûr ?",
-          "description1": "Cela supprimera définitivement la carte",
-          "description2": ". Cette action ne peut pas être annulée.",
+          "description": "Cela supprimera définitivement la carte <strong>{map}</strong>. Cette action est irréversible.",
           "cancel": "Annuler",
           "delete": "Supprimer",
           "deleting": "Suppression en cours..."
@@ -350,32 +361,29 @@
       "onSubmit": {
         "title": "Scrim mis à jour",
         "description": "Votre scrim a été mis à jour avec succès.",
-        "errorTitle": "Une erreur s'est produite",
-        "errorDescription": "Une erreur s'est produite :"
+        "errorTitle": "Une erreur est survenue",
+        "errorDescription": "Une erreur est survenue : {res}"
       },
       "deleteMap": {
         "title": "Carte supprimée",
         "description": "La carte a été supprimée.",
-        "errorTitle": "Une erreur s'est produite",
-        "errorDescription": "Une erreur s'est produite :"
+        "errorTitle": "Une erreur est survenue",
+        "errorDescription": "Une erreur est survenue : {res}"
       },
-      "dangerZone": "Zone de danger",
+      "dangerZone": "Zone de Danger",
       "deleteScrim": {
-        "title": "Supprimer le scrim",
+        "title": "Supprimer le Scrim",
         "description": "Une fois que vous supprimez un scrim, il n'y a pas de retour en arrière. Veuillez en être certain.",
-        "button": "Supprimer le scrim",
-        "delete1": "Êtes-vous sûr de vouloir supprimer le scrim",
-        "delete2": " ? Cette action ne peut pas être annulée.",
-        "delete3": "Tapez",
-        "delete4": "pour confirmer.",
-        "delete": "Supprimer le scrim",
+        "button": "Supprimer le Scrim",
+        "deleteAlert": "<p>Êtes-vous sûr de vouloir supprimer le scrim <strong>{scrim}</strong> ? Cette action est irréversible.</p> <p>Tapez <strong>{scrim}</strong> pour confirmer.</p>",
+        "delete": "Supprimer le Scrim",
         "deleting": "Suppression en cours...",
         "cancel": "Annuler",
         "handleDelete": {
           "title": "Scrim supprimé",
           "description": "Le scrim a été supprimé.",
           "errorTitle": "Erreur",
-          "errorDescription": "Une erreur s'est produite :"
+          "errorDescription": "Une erreur est survenue : {res}"
         }
       }
     }
@@ -1065,19 +1073,79 @@
     "owner": "(Propriétaire)",
     "you": "(Vous)",
     "addMember": "Ajouter un membre...",
+    "join": {
+      "enterToken": "Entrez votre jeton d'invitation",
+      "joinTeam": "Rejoindre l'équipe",
+      "invalidToken": {
+        "title": "Jeton invalide",
+        "description": "Le jeton que vous avez fourni est invalide."
+      },
+      "handleSubmit": {
+        "title": "Équipe rejointe",
+        "description": "Vous avez rejoint l'équipe avec succès.",
+        "errorTitle": "Erreur",
+        "errorDescription": "Une erreur est survenue : {res}"
+      }
+    },
+    "userButtons": {
+      "promote": {
+        "button": "Promouvoir au rôle de Manager",
+        "title": "Êtes-vous absolument sûr ?",
+        "description": "Cela changera le rôle de l'utilisateur de membre à manager. Cet utilisateur pourra gérer l'équipe et ses ressources.",
+        "cancel": "Annuler",
+        "promoting": "Promotion en cours...",
+        "promote": "Promouvoir au rôle de Manager",
+        "handlePromote": {
+          "title": "Utilisateur promu au rôle de manager",
+          "description": "{user} a été promu au rôle de manager.",
+          "errorTitle": "Une erreur est survenue",
+          "errorDescription": "Une erreur est survenue : {res}"
+        }
+      },
+      "demote": {
+        "button": "Rétrograder au rôle de Membre",
+        "title": "Êtes-vous absolument sûr ?",
+        "description": "Cela changera le rôle de l'utilisateur de manager à membre.",
+        "cancel": "Annuler",
+        "demoting": "Rétrogradation en cours...",
+        "demote": "Rétrograder au rôle de Membre",
+        "handleDemote": {
+          "title": "Utilisateur rétrogradé au rôle de membre",
+          "description": "{user} a été rétrogradé au rôle de membre.",
+          "errorTitle": "Une erreur est survenue",
+          "errorDescription": "Une erreur est survenue : {res}"
+        }
+      },
+      "remove": {
+        "button": "Retirer de l'équipe",
+        "title": "Êtes-vous absolument sûr ?",
+        "description": "Cela retirera l'utilisateur de l'équipe et il perdra l'accès à toutes les ressources de l'équipe.",
+        "cancel": "Annuler",
+        "removing": "Retrait en cours...",
+        "remove": "Retirer de l'équipe",
+        "handleRemove": {
+          "title": "Utilisateur retiré de l'équipe",
+          "description": "{user} a été retiré de l'équipe.",
+          "errorTitle": "Une erreur est survenue",
+          "errorDescription": "Une erreur est survenue : {res}"
+        }
+      }
+    },
     "inviteMember": {
       "title": "Inviter un membre",
       "description": "Invitez un nouveau membre pour lui permettre de voir les scrims de votre équipe. L'utilisateur doit être inscrit pour recevoir l'invitation.",
       "email": "Email",
       "cancel": "Annuler",
       "send": "Envoyer l'invitation",
-      "sending": "Envoi de l'invitation...",
+      "sending": "Envoi de l'invitation en cours...",
+      "emailMessage": "Email invalide",
+      "reqMessage": "L'email est requis",
       "onSubmit": {
         "title": "Invitation envoyée !",
         "description": "Votre invitation a été envoyée avec succès.",
         "errorTitle": "Erreur",
-        "errorDescription1": "Une erreur s'est produite :",
-        "errorDescription2": ". Avez-vous vérifié que l'utilisateur est inscrit ?"
+        "errorDescription": "Une erreur est survenue : {res}",
+        "errorStatus": ". Avez-vous vérifié que l'utilisateur est bien inscrit ?"
       }
     },
     "teamInviteLink": {
@@ -1100,23 +1168,25 @@
       "title": "Avatar",
       "description": "Ceci est l'avatar public de votre équipe. Cliquez sur l'avatar pour en télécharger un personnalisé depuis vos fichiers.",
       "editTitle": "Modifier l'avatar",
-      "editDescription": "Apportez des modifications à votre profil ici. Cliquez sur Enregistrer lorsque vous avez terminé.",
+      "editDescription": "Apportez des modifications à votre profil ici. Cliquez sur enregistrer lorsque vous avez terminé.",
       "save": "Enregistrer les modifications",
       "updating": "Mise à jour en cours...",
       "handleCrop": {
         "title": "Avatar mis à jour avec succès",
         "description": "L'avatar de votre équipe a été mis à jour avec succès.",
-        "errorTitle": "Une erreur s'est produite",
-        "errorDescription1": "Une erreur s'est produite :",
-        "errorDescription2": "Une erreur s'est produite lors de la mise à jour de votre avatar. Veuillez réessayer plus tard ou contacter le support."
+        "errorTitle": "Une erreur est survenue",
+        "errorDescription1": "Une erreur est survenue : {res}",
+        "errorDescription2": "Une erreur est survenue lors de la mise à jour de votre avatar. Veuillez réessayer plus tard ou contacter le support."
       }
     },
     "update": {
       "title": "Mettre à jour le profil de l'équipe",
-      "onSubmitTitle": "Profil de l'équipe mis à jour",
-      "onSubmitDescription": "Le profil de votre équipe a été mis à jour avec succès.",
-      "errorTitle": "Une erreur s'est produite",
-      "errorDescription": "Une erreur s'est produite :"
+      "onSubmit": {
+        "title": "Profil de l'équipe mis à jour",
+        "description": "Le profil de votre équipe a été mis à jour avec succès.",
+        "errorTitle": "Une erreur est survenue",
+        "errorDescription": "Une erreur est survenue : {res}"
+      }
     },
     "dangerZone": {
       "title": "Zone de danger",
@@ -1124,33 +1194,30 @@
     },
     "transferOwner": {
       "title": "Transférer la propriété",
-      "description": "Une fois la propriété transférée, vous ne serez plus le propriétaire de cette équipe.",
+      "description": "Une fois que vous aurez transféré la propriété, vous ne serez plus le propriétaire de cette équipe.",
       "button": "Transférer la propriété",
-      "email": "Entrez l'adresse email de l'utilisateur à qui vous souhaitez transférer la propriété.",
-      "transferring": "Transfert en cours",
+      "email": "Entrez l'adresse e-mail de l'utilisateur à qui vous souhaitez transférer la propriété.",
+      "transferring": "Transfert en cours...",
       "cancel": "Annuler",
       "handleTransfer": {
         "title": "Propriété transférée",
         "description": "La propriété de l'équipe a été transférée avec succès.",
         "errorTitle": "Erreur",
-        "errorDescription": "Une erreur s'est produite :"
+        "errorDescription": "Une erreur est survenue : {res}"
       }
     },
     "deleteTeam": {
       "title": "Supprimer l'équipe",
-      "description": "Une fois que vous supprimez une équipe, il n'y a pas de retour en arrière. Veuillez être certain.",
+      "description": "Une fois que vous aurez supprimé une équipe, il n'y aura pas de retour en arrière. Veuillez en être certain.",
       "button": "Supprimer l'équipe",
-      "delete1": "Êtes-vous sûr de vouloir supprimer l'équipe",
-      "delete2": " ? Cette action est irréversible.",
-      "delete3": "Tapez",
-      "delete4": "pour confirmer.",
+      "deleteAlert": "<p>Êtes-vous sûr de vouloir supprimer l'équipe <strong>{team}</strong>? Cette action est irréversible.</p> <p>Tapez <strong>{team}</strong> pour confirmer.</p>",
       "deleting": "Suppression en cours...",
       "cancel": "Annuler",
       "handleDelete": {
         "title": "Équipe supprimée",
         "description": "L'équipe a été supprimée.",
         "errorTitle": "Erreur",
-        "errorDescription": "Une erreur s'est produite :"
+        "errorDescription": "Une erreur est survenue : {res}"
       }
     }
   },
@@ -1162,23 +1229,46 @@
       "linkedAccounts": "Comptes liés",
       "admin": "Admin"
     },
-    "profile": {
-      "title": "Profil",
-      "description": "C'est ainsi que les autres vous verront sur le site.",
-      "planDescription1": "Votre abonnement actuel est le plan",
-      "planDescription2": ".",
-      "planUpgrade": "Améliorer votre plan",
-      "manageSubscription": "Gérer votre abonnement"
-    },
-    "profileForm": {
+    "discordForm": {
+      "minMessage": "Le nom doit comporter au moins 2 caractères.",
+      "maxMessage": "Le nom ne doit pas dépasser 30 caractères.",
       "onSubmit": {
         "title": "Profil mis à jour",
         "description": "Votre profil a été mis à jour avec succès.",
-        "errorTitle": "Une erreur s'est produite",
-        "errorDescription": "Une erreur s'est produite :"
+        "errorTitle": "Une erreur est survenue",
+        "errorDescription": "Une erreur est survenue : {res}"
       },
+      "username": {
+        "title": "Nom d'utilisateur",
+        "description": "Ceci est votre nom d'affichage public. Il peut s'agir de votre vrai nom ou d'un pseudonyme."
+      },
+      "avatar": {
+        "title": "Avatar",
+        "description": "Ceci est l'avatar public de votre compte. Cliquez sur l'avatar pour en télécharger un personnalisé depuis vos fichiers."
+      },
+      "update": "Mettre à jour le profil"
+    },
+    "profile": {
+      "title": "Profil",
+      "description": "C'est ainsi que les autres vous verront sur le site.",
+      "planDescription": "Votre plan actuel est le plan {billingPlan}.",
+      "billingPlan": {
+        "FREE": "Gratuit",
+        "BASIC": "Basique",
+        "PREMIUM": "Premium"
+      },
+      "planUpgrade": "Améliorez votre plan",
+      "manageSubscription": "Gérer votre abonnement"
+    },
+    "profileForm": {
       "minMessage": "Le nom doit comporter au moins 2 caractères.",
       "maxMessage": "Le nom ne doit pas dépasser 30 caractères.",
+      "onSubmit": {
+        "title": "Profil mis à jour",
+        "description": "Votre profil a été mis à jour avec succès.",
+        "errorTitle": "Une erreur est survenue",
+        "errorDescription": "Une erreur est survenue : {res}"
+      },
       "username": {
         "title": "Nom d'utilisateur",
         "description": "C'est votre nom d'affichage public. Il peut s'agir de votre vrai nom ou d'un pseudonyme."
@@ -1196,7 +1286,7 @@
             "title": "Avatar mis à jour avec succès",
             "description": "Votre avatar a été mis à jour avec succès.",
             "errorTitle": "Une erreur s'est produite",
-            "errorDescription1": "Une erreur s'est produite :",
+            "errorDescription1": "Une erreur s'est produite : {res}",
             "errorDescription2": "Une erreur s'est produite lors de l'envoi de votre message. Veuillez réessayer plus tard ou contacter le support."
           }
         }
@@ -1231,29 +1321,25 @@
       }
     },
     "dangerZone": {
-      "title": "Zone de danger",
-      "description1": "La suppression du compte est permanente et irréversible. Souhaitez-vous plutôt gérer votre abonnement ? Si c'est le cas, cliquez",
-      "description2": "ici."
+      "title": "Zone dangereuse",
+      "description": "La suppression du compte est permanente et ne peut pas être annulée. Souhaitez-vous plutôt gérer votre abonnement ? Si c'est le cas, veuillez cliquer <Link>ici</Link>."
     },
     "deleteAccount": {
       "title": "Supprimer le compte",
-      "description1": "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible. Souhaitez-vous plutôt gérer votre abonnement ? Si c'est le cas, cliquez",
-      "description2": "ici.",
+      "description": "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible. Souhaitez-vous plutôt gérer votre abonnement ? Si c'est le cas, veuillez cliquer <Link>ici</Link>.",
       "cancel": "Annuler",
+      "deleteInput": "oui, supprimer mon compte",
       "handleDelete": {
         "title": "Compte supprimé",
         "description": "Votre compte a été supprimé avec succès.",
         "errorTitle": "Erreur",
-        "errorDescription": "Une erreur s'est produite :"
+        "errorDescription": "Une erreur est survenue : {res}"
       },
       "secondDialog": {
         "title": "Oui, supprimer mon compte",
-        "description1": "Êtes-vous absolument sûr de vouloir supprimer votre compte ? Cette action est irréversible.",
-        "description2": "Tapez",
-        "description3": "oui, supprimer mon compte",
-        "description4": "pour confirmer.",
+        "description": "<p>Êtes-vous absolument sûr de vouloir supprimer votre compte ? Cette action est irréversible.</p> <p>Tapez <strong>{deleteInput}</strong> pour confirmer.</p>",
         "delete": "Supprimer le compte",
-        "deleting": "Suppression...",
+        "deleting": "Suppression en cours...",
         "cancel": "Annuler"
       }
     }
@@ -1286,7 +1372,7 @@
         "title": "Message envoyé",
         "description": "Votre message a été envoyé avec succès.",
         "errorTitle1": "Erreur",
-        "errorDescription1": "Une erreur s'est produite :",
+        "errorDescription1": "Une erreur s'est produite : {res}",
         "errorTitle2": "Une erreur s'est produite",
         "errorDescription2": "Une erreur s'est produite lors de l'envoi de votre message. Veuillez réessayer plus tard."
       }
@@ -1367,9 +1453,7 @@
       "description1": "Parsertime a été créé à l'origine comme un outil interne pour les FIU Panthers, une équipe universitaire. Nous voulions pouvoir voir nos statistiques après les scrims et observer les tendances au fil du temps. Depuis, nous avons évolué pour devenir une plateforme que toute équipe peut utiliser. Nous sommes impatients de voir comment les équipes utilisent Parsertime pour améliorer leur performance.",
       "description2": "Nous sommes une petite équipe de joueurs et d'entraîneurs d'Overwatch passionnés, dédiée à la création d'une plateforme qui fonctionne pour votre équipe. Nous sommes toujours à la recherche de retours et de demandes de fonctionnalités. Si vous avez des idées, nous serions ravis de les entendre !",
       "description3": "Nous savons que les équipes cherchent toujours à s'améliorer. Notre objectif est de vous permettre de voir vos statistiques et d'observer les tendances semaine après semaine. Parsertime est actuellement utilisé en interne chez FIU et de nouvelles fonctionnalités sont ajoutées chaque semaine. Nous voulons offrir la meilleure expérience possible aux joueurs et aux équipes d'Overwatch.",
-      "description4": "Parsertime est entièrement open source. Nous croyons que les meilleurs outils sont développés ouvertement. Si vous souhaitez contribuer à Parsertime, nous serions ravis de vous avoir à bord ! Nous sommes toujours à la recherche de contributeurs pour nous aider à construire la meilleure plateforme pour les équipes d'Overwatch. Vous pouvez trouver notre dépôt GitHub",
-      "description5": "ici",
-      "description6": "."
+      "description4": "Parsertime est entièrement open source. Nous croyons que les meilleurs outils se construisent en toute transparence. Si vous souhaitez contribuer à Parsertime, nous serions ravis de vous accueillir ! Nous cherchons toujours des contributeurs pour nous aider à créer la meilleure plateforme pour les équipes d'Overwatch. Vous pouvez trouver notre dépôt GitHub <Link>ici</Link>."
     },
     "featureSection": {
       "title": "Nos fonctionnalités",
@@ -1497,23 +1581,17 @@
     },
     "faq": {
       "title": "Questions fréquemment posées",
-      "description1": "Vous ne trouvez pas la réponse que vous cherchez ? Contactez notre",
-      "description2": "équipe de support",
-      "description3": ".",
-      "question1": "Proposez-vous des réductions pour les équipes universitaires ?",
-      "answer1": "Oui ! Veuillez contacter notre équipe de support, nous serons ravis de vous aider.",
-      "question2": "Proposez-vous des réductions pour les équipes Calling All Heroes ?",
-      "answer2": "Oui ! Nous voulons soutenir la communauté CAH autant que possible. Veuillez contacter notre équipe de support, et nous serons heureux de discuter d'une solution.",
+      "description": "Vous ne trouvez pas la réponse que vous cherchez ? Contactez notre équipe de <Link>support</Link>.",
+      "question1": "Offrez-vous des réductions pour les équipes universitaires ?",
+      "answer1": "Oui ! Veuillez contacter notre équipe de support et nous serons ravis de vous aider.",
+      "question2": "Offrez-vous des réductions pour les équipes Calling All Heroes ?",
+      "answer2": "Oui ! Nous souhaitons soutenir la communauté CAH autant que possible. Veuillez contacter notre équipe de support et nous serons heureux de discuter d'une solution.",
       "question3": "Comment puis-je gérer mon abonnement ?",
-      "answer3": "Vous pouvez gérer votre abonnement",
-      "answer3Link": "ici",
-      "answer3Continue": ". Si vous avez des problèmes, veuillez contacter notre équipe de support.",
+      "answer3": "Vous pouvez gérer votre abonnement <Link>ici</Link>. Si vous avez des problèmes, veuillez contacter notre équipe de support.",
       "question4": "Puis-je annuler mon abonnement à tout moment ?",
       "answer4": "Oui, vous pouvez annuler votre abonnement à tout moment. Votre abonnement restera actif jusqu'à la fin de la période de facturation.",
       "question5": "Que faire si j'ai besoin de limites plus élevées que celles offertes par le plan Premium ?",
-      "answer5": "Si vous avez besoin de quelque chose de spécial ou de limites plus élevées que celles offertes par le plan Premium, veuillez contacter notre",
-      "answer5Link": "équipe de support",
-      "answer5Continue": "et nous serons heureux de discuter d'une solution personnalisée."
+      "answer5": "Si vous avez besoin de quelque chose de spécial ou de limites plus élevées que celles offertes par le plan Premium, veuillez contacter notre <Link>équipe de support</Link> et nous serons heureux de discuter d'une solution personnalisée."
     }
   },
   "privacyPage": {
@@ -1559,9 +1637,7 @@
     },
     "contactUs": {
       "title": "Contactez-nous",
-      "description1": "Pour plus d'informations sur nos pratiques en matière de confidentialité, si vous avez des questions, ou si vous souhaitez déposer une plainte, veuillez nous contacter par e-mail à",
-      "description2": "privacy@lux.dev",
-      "description3": "."
+      "description": "Pour plus d'informations sur nos pratiques de confidentialité, si vous avez des questions ou si vous souhaitez déposer une plainte, veuillez nous contacter par email à <Link>privacy@lux.dev</Link>."
     }
   },
   "billingPlan": {

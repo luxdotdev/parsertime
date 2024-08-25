@@ -68,7 +68,7 @@ export function AvatarUpdateDialog({
   setIsOpen: (isOpen: boolean) => void;
   selectedFile: File | null;
 }) {
-  const t = useTranslations("teamPage");
+  const t = useTranslations("teamPage.avatar");
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
@@ -113,13 +113,8 @@ export function AvatarUpdateDialog({
       if (res.ok) {
         setLoading(false);
         toast({
-          title: /* "Avatar updated successfully" */ t(
-            "avatar.handleCrop.title"
-          ),
-          description:
-            /* "Your team's avatar has been updated successfully." */ t(
-              "avatar.handleCrop.description"
-            ),
+          title: t("handleCrop.title"),
+          description: t("handleCrop.description"),
           duration: 5000,
         });
         setIsOpen(false);
@@ -127,21 +122,18 @@ export function AvatarUpdateDialog({
       } else {
         setLoading(false);
         toast({
-          title: /* "An error occurred" */ t("avatar.handleCrop.errorTitle"),
-          description: /* `An error occurred: */ `${t(
-            "avatar.handleCrop.errorDescription1"
-          )}, ${await res.text()} (${res.status})`,
+          title: t("handleCrop.errorTitle"),
+          description: t("handleCrop.errorDescription1", {
+            res: `${await res.text()} (${res.status})`,
+          }),
           duration: 5000,
         });
       }
     } catch (e) {
       setLoading(false);
       toast({
-        title: /* "An error occurred" */ t("avatar.handleCrop.errorTitle"),
-        description:
-          /* "An error occurred while updating your avatar. Please try again later or contact support." */ t(
-            "avatar.handleCrop.errorDescription2"
-          ),
+        title: t("handleCrop.errorTitle"),
+        description: t("handleCrop.errorDescription2"),
         duration: 5000,
       });
       Logger.log(e);
@@ -154,14 +146,8 @@ export function AvatarUpdateDialog({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>
-            {/* Edit Avatar */}
-            {t("avatar.editTitle")}
-          </DialogTitle>
-          <DialogDescription>
-            {/* Make changes to your profile here. Click save when you&apos;re done. */}
-            {t("avatar.editDescription")}
-          </DialogDescription>
+          <DialogTitle>{t("editTitle")}</DialogTitle>
+          <DialogDescription>{t("editDescription")}</DialogDescription>
         </DialogHeader>
 
         <div className="relative h-96 w-full">
@@ -181,11 +167,10 @@ export function AvatarUpdateDialog({
             {loading ? (
               <>
                 <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
-                {/* Updating... */}
-                {t("avatar.updating")}
+                {t("updating")}
               </>
             ) : (
-              /* "Save Changes" */ t("avatar.save")
+              t("save")
             )}
           </Button>
         </DialogFooter>

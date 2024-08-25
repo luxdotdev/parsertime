@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 
 export function DangerZone({ scrim }: { scrim: Scrim }) {
-  const t = useTranslations("scrimPage");
+  const t = useTranslations("scrimPage.editScrim");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteInput, setDeleteInput] = useState("");
   const [deleteEnabled, setDeleteEnabled] = useState(false);
@@ -37,15 +37,17 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
 
     if (res.ok) {
       toast({
-        title: t("editScrim.deleteScrim.handleDelete.title"),
-        description: t("editScrim.deleteScrim.handleDelete.description"),
+        title: t("deleteScrim.handleDelete.title"),
+        description: t("deleteScrim.handleDelete.description"),
         duration: 5000,
       });
       router.push("/dashboard");
     } else {
       toast({
-        title: t("editScrim.deleteScrim.handleDelete.errorTitle"),
-        description: `${t("editScrim.deleteScrim.handleDelete.errorDescription")} ${await res.text()} (${res.status})`,
+        title: t("deleteScrim.handleDelete.errorTitle"),
+        description: t("deleteScrim.handleDelete.errorDescription", {
+          res: `${await res.text()} (${res.status})`,
+        }),
         duration: 5000,
         variant: "destructive",
       });
@@ -59,36 +61,27 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
       <Card className="max-w-lg border-red-500 dark:border-red-700">
         <CardHeader>
           <CardTitle className="text-red-500 dark:text-red-700">
-            {t("editScrim.dangerZone")}
+            {t("dangerZone")}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <h3 className="text-lg font-semibold">
-            {t("editScrim.deleteScrim.title")}
-          </h3>
-          <p className="pb-4">{t("editScrim.deleteScrim.description")}</p>
+          <h3 className="text-lg font-semibold">{t("deleteScrim.title")}</h3>
+          <p className="pb-4">{t("deleteScrim.description")}</p>
           <AlertDialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
             <AlertDialogTrigger>
-              <Button variant="destructive">
-                {t("editScrim.deleteScrim.button")}
-              </Button>
+              <Button variant="destructive">{t("deleteScrim.button")}</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <h2 className="text-lg font-semibold">
-                  {t("editScrim.deleteScrim.title")}
+                  {t("deleteScrim.title")}
                 </h2>
               </AlertDialogHeader>
-              <p>
-                {t("editScrim.deleteScrim.delete1")}{" "}
-                <strong>{scrim.name}</strong>
-                {t("editScrim.deleteScrim.delete2")}
-              </p>
-              <p>
-                {t("editScrim.deleteScrim.delete3")}{" "}
-                <strong>{scrim.name}</strong>{" "}
-                {t("editScrim.deleteScrim.delete4")}
-              </p>
+              {t.rich("deleteScrim.deleteAlert", {
+                p: (children) => <p>{children}</p>,
+                strong: (children) => <strong>{children}</strong>,
+                scrim: scrim.name,
+              })}
               <Input
                 type="text"
                 className="mt-4 w-full rounded border border-solid p-2"
@@ -103,17 +96,17 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
                   {deleteLoading ? (
                     <>
                       <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                      {t("editScrim.deleteScrim.deleting")}
+                      {t("deleteScrim.deleting")}
                     </>
                   ) : (
-                    t("editScrim.deleteScrim.delete")
+                    t("deleteScrim.delete")
                   )}
                 </Button>
                 <Button
                   variant="secondary"
                   onClick={() => setDeleteModalOpen(false)}
                 >
-                  {t("editScrim.deleteScrim.cancel")}
+                  {t("deleteScrim.cancel")}
                 </Button>
               </div>
             </AlertDialogContent>

@@ -63,14 +63,8 @@ export default async function TeamPage() {
         <Tabs defaultValue="teams" className="space-y-4">
           {hasPerms && (
             <TabsList>
-              <TabsTrigger value="teams">
-                {/* Teams */}
-                {t("teams")}
-              </TabsTrigger>
-              <TabsTrigger value="admin">
-                {/* Admin View */}
-                {t("admin")}
-              </TabsTrigger>
+              <TabsTrigger value="teams">{t("teams")}</TabsTrigger>
+              <TabsTrigger value="admin">{t("admin")}</TabsTrigger>
             </TabsList>
           )}
 

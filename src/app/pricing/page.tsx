@@ -227,15 +227,17 @@ export default async function PricingPage() {
       question: t("faq.question3"),
       answer: (
         <p>
-          {t("faq.answer3")}{" "}
-          <Link
-            href="/settings"
-            className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
-            target="_blank"
-          >
-            {t("faq.answer3Link")}
-          </Link>{" "}
-          {t("faq.answer3Continue")}
+          {t.rich("faq.answer3", {
+            Link: (children) => (
+              <Link
+                href="/settings"
+                className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
+                target="_blank"
+              >
+                {children}
+              </Link>
+            ),
+          })}
         </p>
       ),
     },
@@ -247,15 +249,17 @@ export default async function PricingPage() {
       question: t("faq.question5"),
       answer: (
         <p>
-          {t("faq.answer5")}{" "}
-          <Link
-            href="/contact"
-            className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
-            target="_blank"
-          >
-            {t("faq.answer5Link")}
-          </Link>{" "}
-          {t("faq.answer5Continue")}
+          {t.rich("faq.answer5", {
+            Link: (children) => (
+              <Link
+                href="/contact"
+                className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
+                target="_blank"
+              >
+                {children}
+              </Link>
+            ),
+          })}
         </p>
       ),
     },
@@ -681,14 +685,16 @@ export default async function PricingPage() {
                 {t("faq.title")}
               </h2>
               <p className="mt-4 text-base leading-7 text-gray-600 dark:text-gray-300">
-                {t("faq.description1")}{" "}
-                <Link
-                  href="/contact"
-                  className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
-                >
-                  {t("faq.description2")}
-                </Link>{" "}
-                {t("faq.description3")}
+                {t.rich("faq.description", {
+                  Link: (children) => (
+                    <Link
+                      href="/contact"
+                      className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
+                    >
+                      {children}
+                    </Link>
+                  ),
+                })}
               </p>
             </div>
             <div className="mt-10 lg:col-span-7 lg:mt-0">

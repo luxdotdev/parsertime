@@ -11,7 +11,6 @@ import { getUser } from "@/data/user-dto";
 import { DangerZone } from "@/components/settings/danger-zone";
 import { getTranslations } from "next-intl/server";
 
-// billing translation ?
 export default async function SettingsProfilePage() {
   const t = await getTranslations("settingsPage");
   const session = await auth();
@@ -37,8 +36,9 @@ export default async function SettingsProfilePage() {
       </div>
       <Separator />
       <p>
-        {t("profile.planDescription1")} {toTitleCase(user.billingPlan)}{" "}
-        {t("profile.planDescription2")}
+        {t("profile.planDescription", {
+          billingPlan: t(`profile.billingPlan.${user.billingPlan}`),
+        })}
       </p>
       <Link
         href={user.billingPlan === "FREE" ? "/pricing" : billingPortalUrl}

@@ -87,11 +87,13 @@ export default function PrivacyPage() {
           {t("contactUs.title")}
         </h2>
         <p className="mt-6">
-          {t("contactUs.description1")}{" "}
-          <Link href="mailto:privacy@lux.dev" className="text-blue-500">
-            {t("contactUs.description2")}
-          </Link>
-          {t("contactUs.description3")}
+          {t.rich("contactUs.description", {
+            Link: (children) => (
+              <Link href="mailto:privacy@lux.dev" className="text-blue-500">
+                {children}
+              </Link>
+            ),
+          })}
         </p>
       </div>
     </div>

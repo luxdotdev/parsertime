@@ -25,38 +25,28 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 export default function ContactPage() {
+  const t = useTranslations("contactPage.contactForm");
   const [loading, setLoading] = useState(false);
-  const t = useTranslations("contactPage");
 
   const formSchema = z.object({
     name: z
       .string({
-        required_error: /* "A name is required." */ t(
-          "contactForm.nameRequiredError"
-        ),
+        required_error: t("nameRequiredError"),
       })
       .min(1),
     email: z
       .string({
-        required_error: /* "An email is required." */ t(
-          "contactForm.emailRequiredError"
-        ),
+        required_error: t("emailRequiredError"),
       })
       .email({
-        message: /* "Please enter a valid email address." */ t(
-          "contactForm.emailMessage"
-        ),
+        message: t("emailMessage"),
       }),
     message: z
       .string({
-        required_error: /* "A message is required." */ t(
-          "contactForm.messageRequiredError"
-        ),
+        required_error: t("messageRequiredError"),
       })
       .min(1, {
-        message: /* "Please enter a message." */ t(
-          "contactForm.messageMessage"
-        ),
+        message: t("messageMessage"),
       }),
   });
 
@@ -75,18 +65,18 @@ export default function ContactPage() {
 
       if (res.ok) {
         toast({
-          title: /* "Message sent" */ t("contactForm.handleSubmit.title"),
-          description: /* "Your message has been sent successfully." */ t(
-            "contactForm.handleSubmit.description"
-          ),
+          title: t("handleSubmit.title"),
+          description: t("handleSubmit.description"),
           duration: 5000,
         });
         form.reset();
       } else {
         Logger.error("Error sending email", res.statusText);
         toast({
-          title: /* "Error" */ t("contactForm.handleSubmit.errorTitle1"),
-          description: /* `An error occurred: */ `${t("contactForm.handleSubmit.errorDescription1")} ${await res.text()} (${res.status})`,
+          title: t("handleSubmit.errorTitle1"),
+          description: t("handleSubmit.errorDescription1", {
+            res: `${await res.text()} (${res.status})`,
+          }),
           duration: 5000,
           variant: "destructive",
         });
@@ -94,13 +84,8 @@ export default function ContactPage() {
     } catch (error) {
       Logger.error("Error sending email", error);
       toast({
-        title: /* "An error occurred" */ t(
-          "contactForm.handleSubmit.errorTitle2"
-        ),
-        description:
-          /* "An error occurred while sending your message. Please try again later." */ t(
-            "contactForm.handleSubmit.errorDescription2"
-          ),
+        title: t("handleSubmit.errorTitle2"),
+        description: t("handleSubmit.errorDescription2"),
         duration: 5000,
       });
     }
@@ -184,14 +169,10 @@ export default function ContactPage() {
               </div>
             </div>
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-              {/* Get in touch */}
-              {t("contactForm.title")}
+              {t("title")}
             </h2>
             <p className="mt-6 text-lg leading-8 text-gray-700 dark:text-gray-300">
-              {/* Having issues with the app? Want to request a feature? We&apos;d
-              love to hear from you! Send us a message and we&apos;ll get back
-              to you as soon as we can. */}
-              {t("contactForm.description")}
+              {t("description")}
             </p>
             <dl className="mt-10 space-y-4 text-base leading-7 text-gray-700 dark:text-gray-300">
               <div className="flex gap-x-4">
@@ -208,8 +189,7 @@ export default function ContactPage() {
                     href="https://discord.gg/svz3qhVDXM"
                   >
                     <span className="inline-flex items-center gap-1">
-                      {/* Community Discord */}
-                      {t("contactForm.discord")} <ExternalLinkIcon />
+                      {t("discord")} <ExternalLinkIcon />
                     </span>
                   </Link>
                 </dd>
@@ -249,8 +229,7 @@ export default function ContactPage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="block text-sm font-semibold leading-6 text-gray-900 dark:text-white">
-                            {/* Name */}
-                            {t("contactForm.name")}
+                            {t("name")}
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -275,8 +254,7 @@ export default function ContactPage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="block text-sm font-semibold leading-6 text-gray-900 dark:text-white">
-                            {/* Email */}
-                            {t("contactForm.email")}
+                            {t("email")}
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -301,8 +279,7 @@ export default function ContactPage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="block text-sm font-semibold leading-6 text-gray-900 dark:text-white">
-                            {/* Message */}
-                            {t("contactForm.message")}
+                            {t("message")}
                           </FormLabel>
                           <FormControl>
                             <Textarea
@@ -329,14 +306,14 @@ export default function ContactPage() {
                     {loading ? (
                       <>
                         <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                        {/* Sending... */}
-                        {t("contactForm.sending")}
+
+                        {t("sending")}
                       </>
                     ) : (
                       <>
                         <EnvelopeOpenIcon className="mr-2 h-4 w-4" />
-                        {/* Send message */}
-                        {t("contactForm.send")}
+
+                        {t("send")}
                       </>
                     )}
                   </Button>

@@ -53,7 +53,9 @@ export function DangerZone({ team }: { team: Team }) {
     } else {
       toast({
         title: t("transferOwner.handleTransfer.errorTitle"),
-        description: `${t("transferOwner.handleTransfer.errorDescription")} ${await res.text()} (${res.status})`,
+        description: t("transferOwner.handleTransfer.errorDescription", {
+          res: `${await res.text()} (${res.status})`,
+        }),
         duration: 5000,
         variant: "destructive",
       });
@@ -82,7 +84,9 @@ export function DangerZone({ team }: { team: Team }) {
     } else {
       toast({
         title: t("deleteTeam.handleDelete.errorTitle"),
-        description: `${t("deleteTeam.handleDelete.errorDescription")} ${await res.text()} (${res.status})`,
+        description: t("deleteTeam.handleDelete.errorDescription", {
+          res: `${await res.text()} (${res.status})`,
+        }),
         duration: 5000,
         variant: "destructive",
       });
@@ -169,19 +173,11 @@ export function DangerZone({ team }: { team: Team }) {
                     {t("deleteTeam.title")}
                   </h2>
                 </AlertDialogHeader>
-                <p>
-                  {/* Are you sure you want to delete the team */}
-                  {t("deleteTeam.delete1")} <strong>{team.name}</strong>
-                  {/* ? This
-                  action cannot be undone. */}
-                  {t("deleteTeam.delete2")}
-                </p>
-                <p>
-                  {/* Type */}
-                  {t("deleteTeam.delete3")} <strong>{team.name}</strong>{" "}
-                  {/* to confirm. */}
-                  {t("deleteTeam.delete4")}
-                </p>
+                {t.rich("deleteTeam.deleteAlert", {
+                  p: (children) => <p>{children}</p>,
+                  strong: (children) => <strong>{children}</strong>,
+                  team: team.name,
+                })}
                 <Input
                   type="text"
                   className="mt-4 w-full rounded border border-solid p-2"

@@ -68,15 +68,15 @@ export function EditScrimForm({
   teams: Team[];
   maps: Map[];
 }) {
-  const t = useTranslations("scrimPage");
+  const t = useTranslations("scrimPage.editScrim");
   const profileFormSchema = z.object({
     name: z
       .string()
       .min(2, {
-        message: t("editScrim.displayName.minMessage"),
+        message: t("displayName.minMessage"),
       })
       .max(30, {
-        message: t("editScrim.displayName.maxMessage"),
+        message: t("displayName.maxMessage"),
       }),
     teamId: z.string(),
     date: z.date(),
@@ -119,15 +119,17 @@ export function EditScrimForm({
 
     if (res.ok) {
       toast({
-        title: t("editScrim.onSubmit.title"),
-        description: t("editScrim.onSubmit.description"),
+        title: t("onSubmit.title"),
+        description: t("onSubmit.description"),
         duration: 5000,
       });
       router.refresh();
     } else {
       toast({
-        title: t("editScrim.onSubmit.errorTitle"),
-        description: `${t("editScrim.onSubmit.errorDescription")} ${await res.text()} (${res.status})`,
+        title: t("onSubmit.errorTitle"),
+        description: t("onSubmit.errorDescription", {
+          res: `${await res.text()} (${res.status})`,
+        }),
         variant: "destructive",
         duration: 5000,
       });
@@ -143,15 +145,17 @@ export function EditScrimForm({
 
     if (res.ok) {
       toast({
-        title: t("editScrim.deleteMap.title"),
-        description: t("editScrim.deleteMap.description"),
+        title: t("deleteMap.title"),
+        description: t("deleteMap.description"),
         duration: 5000,
       });
       router.refresh();
     } else {
       toast({
-        title: t("editScrim.deleteMap.errorTitle"),
-        description: `${t("editScrim.deleteMap.errorDescription")} ${await res.text()} (${res.status})`,
+        title: t("deleteMap.errorTitle"),
+        description: t("deleteMap.errorDescription", {
+          res: `${await res.text()} (${res.status})`,
+        }),
         variant: "destructive",
         duration: 5000,
       });
@@ -168,17 +172,17 @@ export function EditScrimForm({
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("editScrim.displayName.title")}</FormLabel>
+                <FormLabel>{t("displayName.title")}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={t("editScrim.displayName.placeholder")}
+                    placeholder={t("displayName.placeholder")}
                     defaultValue={scrim.name ?? ""}
                     className="max-w-lg"
                     {...field}
                   />
                 </FormControl>
                 <FormDescription>
-                  {t("editScrim.displayName.description")}
+                  {t("displayName.description")}
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -190,24 +194,20 @@ export function EditScrimForm({
             name="teamId"
             render={({ field }) => (
               <FormItem className="max-w-lg">
-                <FormLabel>{t("editScrim.team.title")}</FormLabel>
+                <FormLabel>{t("team.title")}</FormLabel>
                 <FormControl>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value.toString()}
                   >
                     <SelectTrigger>
-                      <SelectValue
-                        placeholder={t("editScrim.team.placeholder")}
-                      />
+                      <SelectValue placeholder={t("team.placeholder")} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectLabel>
-                          {t("editScrim.team.select.teams")}
-                        </SelectLabel>
+                        <SelectLabel>{t("team.select.teams")}</SelectLabel>
                         <SelectItem value="0">
-                          {t("editScrim.team.select.individual")}
+                          {t("team.select.individual")}
                         </SelectItem>
                         {teams.map((team) => (
                           <SelectItem
@@ -221,9 +221,7 @@ export function EditScrimForm({
                     </SelectContent>
                   </Select>
                 </FormControl>
-                <FormDescription>
-                  {t("editScrim.team.description")}
-                </FormDescription>
+                <FormDescription>{t("team.description")}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -234,7 +232,7 @@ export function EditScrimForm({
             name="date"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>{t("editScrim.date.title")}</FormLabel>
+                <FormLabel>{t("date.title")}</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -248,7 +246,7 @@ export function EditScrimForm({
                         {field.value ? (
                           format(new Date(field.value), "PPP")
                         ) : (
-                          <span>{t("editScrim.date.edit")}</span>
+                          <span>{t("date.edit")}</span>
                         )}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
@@ -265,9 +263,7 @@ export function EditScrimForm({
                     />
                   </PopoverContent>
                 </Popover>
-                <FormDescription>
-                  {t("editScrim.date.description")}
-                </FormDescription>
+                <FormDescription>{t("date.description")}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -285,9 +281,9 @@ export function EditScrimForm({
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
-                  <FormLabel>{t("editScrim.guestMode.title")}</FormLabel>
+                  <FormLabel>{t("guestMode.title")}</FormLabel>
                   <FormDescription className="max-w-[450px]">
-                    {t("editScrim.guestMode.description")}
+                    {t("guestMode.description")}
                   </FormDescription>
                 </div>
               </FormItem>
@@ -295,7 +291,7 @@ export function EditScrimForm({
           />
 
           <FormItem>
-            <FormLabel>{t("editScrim.maps.title")}</FormLabel>
+            <FormLabel>{t("maps.title")}</FormLabel>
             <Accordion type="single" collapsible className="max-w-lg">
               {maps.map((map) => (
                 <AccordionItem key={map.id} value={map.id.toString()}>
@@ -304,22 +300,23 @@ export function EditScrimForm({
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button variant="destructive">
-                          {t("editScrim.maps.delete")}
+                          {t("maps.delete")}
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle>
-                            {t("editScrim.maps.deleteDialog.title")}
+                            {t("maps.deleteDialog.title")}
                           </AlertDialogTitle>
                           <AlertDialogDescription>
-                            {t("editScrim.maps.deleteDialog.description1")}{" "}
-                            <strong>{map.name}</strong>
-                            {t("editScrim.maps.deleteDialog.description2")}
+                            {t.rich("maps.deleteDialog.description", {
+                              strong: (children) => <strong>{children}</strong>,
+                              map: map.name,
+                            })}
                           </AlertDialogDescription>
                           <AlertDialogFooter>
                             <AlertDialogCancel>
-                              {t("editScrim.maps.deleteDialog.cancel")}
+                              {t("maps.deleteDialog.cancel")}
                             </AlertDialogCancel>
                             <AlertDialogAction
                               onClick={() => deleteMap(map.id)}
@@ -327,10 +324,10 @@ export function EditScrimForm({
                               {loading ? (
                                 <>
                                   <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
-                                  {t("editScrim.maps.deleteDialog.deleting")}
+                                  {t("maps.deleteDialog.deleting")}
                                 </>
                               ) : (
-                                t("editScrim.maps.deleteDialog.delete")
+                                t("maps.deleteDialog.delete")
                               )}
                             </AlertDialogAction>
                           </AlertDialogFooter>
@@ -347,10 +344,10 @@ export function EditScrimForm({
             {loading ? (
               <>
                 <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
-                {t("editScrim.update")}
+                {t("update")}
               </>
             ) : (
-              t("editScrim.updating")
+              t("updating")
             )}
           </Button>
         </form>

@@ -25,7 +25,7 @@ import { ChangeEvent, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
 export function ProfileForm({ user }: { user: User }) {
-  const t = useTranslations("settingsPage");
+  const t = useTranslations("settingsPage.profileForm");
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -35,10 +35,10 @@ export function ProfileForm({ user }: { user: User }) {
     name: z
       .string()
       .min(2, {
-        message: t("profileForm.minMessage"),
+        message: t("minMessage"),
       })
       .max(30, {
-        message: t("profileForm.maxMessage"),
+        message: t("maxMessage"),
       }),
   });
 
@@ -63,15 +63,17 @@ export function ProfileForm({ user }: { user: User }) {
 
     if (res.ok) {
       toast({
-        title: t("profileForm.onSubmit.title"),
-        description: t("profileForm.onSubmit.description"),
+        title: t("onSubmit.title"),
+        description: t("onSubmit.description"),
         duration: 5000,
       });
       router.refresh();
     } else {
       toast({
-        title: t("profileForm.onSubmit.errorTitle"),
-        description: `${t("profileForm.onSubmit.errorDescription")} ${await res.text()} (${res.status})`,
+        title: t("onSubmit.errorTitle"),
+        description: t("onSubmit.errorDescription", {
+          res: `${await res.text()} (${res.status})`,
+        }),
         variant: "destructive",
         duration: 5000,
       });
@@ -99,7 +101,7 @@ export function ProfileForm({ user }: { user: User }) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("profileForm.username.title")}</FormLabel>
+                <FormLabel>{t("username.title")}</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="lux"
@@ -107,15 +109,13 @@ export function ProfileForm({ user }: { user: User }) {
                     {...field}
                   />
                 </FormControl>
-                <FormDescription>
-                  {t("profileForm.username.description")}
-                </FormDescription>
+                <FormDescription>{t("username.description")}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
           <FormItem>
-            <FormLabel>{t("profileForm.avatar.title")}</FormLabel>
+            <FormLabel>{t("avatar.title")}</FormLabel>
             <FormControl aria-readonly>
               <>
                 <input
@@ -142,12 +142,10 @@ export function ProfileForm({ user }: { user: User }) {
                 />
               </>
             </FormControl>
-            <FormDescription>
-              {t("profileForm.avatar.description")}
-            </FormDescription>
+            <FormDescription>{t("avatar.description")}</FormDescription>
             <FormMessage />
           </FormItem>
-          <Button type="submit">{t("profileForm.avatar.update")}</Button>
+          <Button type="submit">{t("avatar.update")}</Button>
         </form>
       </Form>
     </ClientOnly>

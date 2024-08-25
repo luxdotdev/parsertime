@@ -26,30 +26,32 @@ const ACCEPTED_FILE_TYPES = [
 
 const MAX_FILE_SIZE = 1000000; // 1MB in bytes
 
-const formSchema = z.object({
-  file: z
-    .any()
-    .refine((file) => file !== null && file !== undefined, "File is required.")
-    .refine(
-      (file) => file && file.size <= MAX_FILE_SIZE,
-      "Max file size is 1MB."
-    )
-    .refine(
-      (file) => file && ACCEPTED_FILE_TYPES.includes(file.type),
-      ".xlsx files are accepted."
-    ),
-});
-
 export function AddScrimCard() {
-  const t = useTranslations("dashboard");
+  const t = useTranslations("dashboard.addScrim");
+  const formSchema = z.object({
+    file: z
+      .any()
+      .refine(
+        (file) => file !== null && file !== undefined,
+        t("handleFile.fileReq")
+      )
+      .refine(
+        (file) => file && file.size <= MAX_FILE_SIZE,
+        t("handleFile.fileMax")
+      )
+      .refine(
+        (file) => file && ACCEPTED_FILE_TYPES.includes(file.type),
+        t("handleFile.fileAccept")
+      ),
+  });
   const [dragActive, setDragActive] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
 
   async function handleFile(file: File) {
     toast({
-      title: "Creating scrim...",
-      description: "We are processing your data. Please wait.",
+      title: t("handleFile.creatingTitle"),
+      description: t("handleFile.creatingDescription"),
       duration: 5000,
     });
 
@@ -62,15 +64,17 @@ export function AddScrimCard() {
 
     if (res.ok) {
       toast({
-        title: "Scrim created",
-        description: "Your scrim has been created successfully.",
+        title: t("handleFile.createdTitle"),
+        description: t("handleFile.createdDescription"),
         duration: 5000,
       });
       router.refresh();
     } else {
       toast({
-        title: "Error",
-        description: `An error occurred: ${await res.text()} (${res.status})`,
+        title: t("handleFile.errorTitle"),
+        description: t("handleFile.errorDescription", {
+          res: `${await res.text()} (${res.status})`,
+        }),
         duration: 5000,
         variant: "destructive",
       });
@@ -137,15 +141,11 @@ export function AddScrimCard() {
                   <CardHeader className="text-center text-xl">
                     <span className="inline-flex items-center justify-center space-x-2">
                       <PlusCircledIcon className="h-6 w-6" />{" "}
-                      <span>
-                        {/* Add a scrim... */}
-                        {t("addScrim.title")}
-                      </span>
+                      <span>{t("title")}</span>
                     </span>
                   </CardHeader>
                   <CardDescription className="pb-4">
-                    {/* Click the button to create a scrim. */}
-                    {t("addScrim.description")}
+                    {t("description")}
                   </CardDescription>
                   <CardContent className="flex items-center justify-center">
                     {/* <Input

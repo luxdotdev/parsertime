@@ -186,6 +186,7 @@
       "title": "Create team",
       "description": "Add a new team to categorize your scrims and invite your players to view and manage your scrims.",
       "teamName": "Team name",
+      "placeholder": "Esports at Cornell",
       "required": "Team name is required.",
       "minCharacters": "Name must be at least 2 characters.",
       "maxCharacters": "Name must not be longer than 30 characters.",
@@ -198,7 +199,7 @@
       },
       "error": {
         "title": "Error",
-        "description": "An error occurred:"
+        "description": "An error occurred: {res}"
       }
     },
     "emptyScrimList": {
@@ -210,7 +211,18 @@
     "addScrim": {
       "title": "Add a scrim...",
       "description": "Click the button to create a scrim.",
-      "createScrim": "Create Scrim"
+      "createScrim": "Create Scrim",
+      "handleFile": {
+        "fileReq": "File is required.",
+        "fileMax": "Max file size is 1MB.",
+        "fileAccept": ".xlsx files are accepted.",
+        "creatingTitle": "Creating scrim...",
+        "creatingDescription": "We are processing your data. Please wait.",
+        "createdTitle": "Scrim created",
+        "createdDescription": "Your scrim has been created successfully.",
+        "errorTitle": "Error",
+        "errorDescription": "An error occurred: {res}"
+      }
     },
     "scrimCard": {
       "editScrim": "Edit scrim",
@@ -335,8 +347,7 @@
         "delete": "Delete Map",
         "deleteDialog": {
           "title": "Are you absolutely sure?",
-          "description1": "This will permanently delete the map",
-          "description2": ". This action cannot be undone.",
+          "description": "This will permanently delete the map <strong>{map}</strong>. This action cannot be undone.",
           "cancel": "Cancel",
           "delete": "Delete",
           "deleting": "Deleting..."
@@ -348,23 +359,20 @@
         "title": "Scrim updated",
         "description": "Your scrim has been successfully updated.",
         "errorTitle": "An error occurred",
-        "errorDescription": "An error occurred:"
+        "errorDescription": "An error occurred: {res}"
       },
       "deleteMap": {
         "title": "Map deleted",
         "description": "The map has been deleted.",
         "errorTitle": "An error occurred",
-        "errorDescription": "An error occurred:"
+        "errorDescription": "An error occurred: {res}"
       },
       "dangerZone": "Danger Zone",
       "deleteScrim": {
         "title": "Delete Scrim",
         "description": "Once you delete a scrim, there is no going back. Please be certain.",
         "button": "Delete Scrim",
-        "delete1": "Are you sure you want to delete the scrim",
-        "delete2": "? This action cannot be undone.",
-        "delete3": "Type",
-        "delete4": "to confirm.",
+        "deleteAlert": "<p>Are you sure you want to delete the scrim <strong>{scrim}</strong>? This action cannot be undone.</p> <p>Type <strong>{scrim}</strong> to confirm.</p>",
         "delete": "Delete Scrim",
         "deleting": "Deleting...",
         "cancel": "Cancel",
@@ -372,7 +380,7 @@
           "title": "Scrim deleted",
           "description": "The Scrim has been deleted.",
           "errorTitle": "Error",
-          "errorDescription": "An error occurred:"
+          "errorDescription": "An error occurred: {res}"
         }
       }
     }
@@ -1050,13 +1058,6 @@
       }
     }
   },
-  "notFound": {
-    "404": "404",
-    "header": "Page not found",
-    "description": "Sorry, we couldn't find the page you're looking for.",
-    "backHome": "Back to home",
-    "contact": "Contact support"
-  },
   "teamPage": {
     "manageTeams": "Manage Your Teams",
     "viewTeams": "View Your Teams",
@@ -1068,6 +1069,64 @@
     "owner": "(Owner)",
     "you": "(You)",
     "addMember": "Add a member...",
+    "join": {
+      "enterToken": "Enter Your Invite Token",
+      "joinTeam": "Join Team",
+      "invalidToken": {
+        "title": "Invalid token",
+        "description": "The token you provided is invalid."
+      },
+      "handleSubmit": {
+        "title": "Joined team",
+        "description": "You have successfully joined the team.",
+        "errorTitle": "Error",
+        "errorDescription": "An error occurred: {res}"
+      }
+    },
+    "userButtons": {
+      "promote": {
+        "button": "Promote to Manager",
+        "title": "Are you absolutely sure?",
+        "description": "This will change the user's role from member to manager. This user will be able to manage the team and its resources.",
+        "cancel": "Cancel",
+        "promoting": "Promoting...",
+        "promote": "Promote to Manager",
+        "handlePromote": {
+          "title": "User promoted to manager",
+          "description": "{user} has been promoted to manager.",
+          "errorTitle": "An error occurred",
+          "errorDescription": "An error occurred: {res}"
+        }
+      },
+      "demote": {
+        "button": "Demote to Member",
+        "title": "Are you absolutely sure?",
+        "description": "This will change the user's role from manager to member.",
+        "cancel": "Cancel",
+        "demoting": "Demoting...",
+        "demote": "Demote to Member",
+        "handleDemote": {
+          "title": "User demoted to member",
+          "description": "{user} has been demoted to member.",
+          "errorTitle": "An error occurred",
+          "errorDescription": "An error occurred: {res}"
+        }
+      },
+      "remove": {
+        "button": "Remove from Team",
+        "title": "Are you absolutely sure?",
+        "description": "This will remove the user from the team and they will lose access to all team resources.",
+        "cancel": "Cancel",
+        "removing": "Removing...",
+        "remove": "Remove from Team",
+        "handleRemove": {
+          "title": "User removed from team",
+          "description": "{user} has been removed from the team.",
+          "errorTitle": "An error occurred",
+          "errorDescription": "An error occurred: {res}"
+        }
+      }
+    },
     "inviteMember": {
       "title": "Invite Member",
       "description": "Invite a new member to allow them to see your team's scrims. The user must be signed up to receive the invite.",
@@ -1075,12 +1134,14 @@
       "cancel": "Cancel",
       "send": "Send Invite",
       "sending": "Sending invite...",
+      "emailMessage": "Invalid Email",
+      "reqMessage": "Email is required",
       "onSubmit": {
         "title": "Invite sent!",
         "description": "Your invitation has been sent successfully.",
         "errorTitle": "Error",
-        "errorDescription1": "An error occurred:",
-        "errorDescription2": ". Have you ensured the user is signed up?"
+        "errorDescription": "An error occurred: {res}",
+        "errorStatus": ". Have you ensured the user is signed up?"
       }
     },
     "teamInviteLink": {
@@ -1110,16 +1171,18 @@
         "title": "Avatar updated successfully",
         "description": "Your team's avatar has been updated successfully.",
         "errorTitle": "An error occurred",
-        "errorDescription1": "An error occurred:",
+        "errorDescription1": "An error occurred: {res}",
         "errorDescription2": "An error occurred while updating your avatar. Please try again later or contact support."
       }
     },
     "update": {
       "title": "Update team profile",
-      "onSubmitTitle": "Team profile updated",
-      "onSubmitDescription": "Your team profile has been successfully updated.",
-      "errorTitle": "An error occurred",
-      "errorDescription": "An error occurred:"
+      "onSubmit": {
+        "title": "Team profile updated",
+        "description": "Your team profile has been successfully updated.",
+        "errorTitle": "An error occurred",
+        "errorDescription": "An error occurred: {res}"
+      }
     },
     "dangerZone": {
       "title": "Danger Zone",
@@ -1136,24 +1199,21 @@
         "title": "Ownership transferred",
         "description": "Ownership of the team has successfully been transferred.",
         "errorTitle": "Error",
-        "errorDescription": "An error occurred:"
+        "errorDescription": "An error occurred: {res}"
       }
     },
     "deleteTeam": {
       "title": "Delete Team",
       "description": "Once you delete a team, there is no going back. Please be certain.",
       "button": "Delete Team",
-      "delete1": "Are you sure you want to delete the team",
-      "delete2": "? This action cannot be undone.",
-      "delete3": "Type",
-      "delete4": "to confirm.",
+      "deleteAlert": "<p> Are you sure you want to delete the team <strong>{team}<strong>? This action cannot be undone.</p> <p>Type <strong>{team}</strong> to confirm.</p>",
       "deleting": "Deleting...",
       "cancel": "Cancel",
       "handleDelete": {
         "title": "Team deleted",
         "description": "The team has been deleted.",
         "errorTitle": "Error",
-        "errorDescription": "An error occurred:"
+        "errorDescription": "An error occurred: {res}"
       }
     }
   },
@@ -1165,23 +1225,46 @@
       "linkedAccounts": "Linked Accounts",
       "admin": "Admin"
     },
-    "profile": {
-      "title": "Profile",
-      "description": "This is how others will see you on the site.",
-      "planDescription1": "Your current plan is the",
-      "planDescription2": "plan.",
-      "planUpgrade": "Upgrade your plan",
-      "manageSubscription": "Manage your subscription"
-    },
-    "profileForm": {
+    "discordForm": {
+      "minMessage": "Name must be at least 2 characters.",
+      "maxMessage": "Name must not be longer than 30 characters.",
       "onSubmit": {
         "title": "Profile updated",
         "description": "Your profile has been successfully updated.",
         "errorTitle": "An error occurred",
-        "errorDescription": "An error occurred:"
+        "errorDescription": "An error occurred: {res}"
       },
+      "username": {
+        "title": "Username",
+        "description": "This is your public display name. It can be your real name or a pseudonym."
+      },
+      "avatar": {
+        "title": "Avatar",
+        "description": "This is your public account avatar. Click on the avatar to upload a custom one from your files."
+      },
+      "update": "Update profile"
+    },
+    "profile": {
+      "title": "Profile",
+      "description": "This is how others will see you on the site.",
+      "planDescription": "Your current plan is the {billingPlan} plan.",
+      "billingPlan": {
+        "FREE": "Free",
+        "BASIC": "Basic",
+        "PREMIUM": "Premium"
+      },
+      "planUpgrade": "Upgrade your plan",
+      "manageSubscription": "Manage your subscription"
+    },
+    "profileForm": {
       "minMessage": "Name must be at least 2 characters.",
       "maxMessage": "Name must not be longer than 30 characters.",
+      "onSubmit": {
+        "title": "Profile updated",
+        "description": "Your profile has been successfully updated.",
+        "errorTitle": "An error occurred",
+        "errorDescription": "An error occurred: {res}"
+      },
       "username": {
         "title": "Username",
         "description": "This is your public display name. It can be your real name or a pseudonym."
@@ -1199,7 +1282,7 @@
             "title": "Avatar updated successfully",
             "description": "Your avatar has been updated successfully.",
             "errorTitle": "An error occurred",
-            "errorDescription1": "An error occurred:",
+            "errorDescription1": "An error occurred: {res}",
             "errorDescription2": "An error occurred while sending your message. Please try again later or contact support."
           }
         }
@@ -1235,26 +1318,22 @@
     },
     "dangerZone": {
       "title": "Danger Zone",
-      "description1": "Account deletion is permanent and cannot be reversed. Are you looking to manage your subscription instead? If so, please click",
-      "description2": "here."
+      "description": "Account deletion is permanent and cannot be reversed. Are you looking to manage your subscription instead? If so, please click <Link>here</Link>."
     },
     "deleteAccount": {
       "title": "Delete Account",
-      "description1": "Are you sure you want to delete your account? This action cannot be undone. Are you looking to manage your subscription instead? If so, please click",
-      "description2": "here.",
+      "description": "Are you sure you want to delete your account? This action cannot be undone. Are you looking to manage your subscription instead? If so, please click <Link>here</Link>.",
       "cancel": "Cancel",
+      "deleteInput": "yes, delete my account",
       "handleDelete": {
         "title": "Account Deleted",
         "description": "Your account has been successfully deleted.",
         "errorTitle": "Error",
-        "errorDescription": "An error occurred:"
+        "errorDescription": "An error occurred: {res}"
       },
       "secondDialog": {
         "title": "Yes, delete my account",
-        "description1": "Are you absolutely sure you want to delete your account? This action cannot be undone.",
-        "description2": "Type",
-        "description3": "yes, delete my account",
-        "description4": "to confirm.",
+        "description": "<p>Are you absolutely sure you want to delete your account? This action cannot be undone.</p> <p>Type <strong>{deleteInput}</strong> to confirm.</p>",
         "delete": "Delete Account",
         "deleting": "Deleting...",
         "cancel": "Cancel"
@@ -1289,7 +1368,7 @@
         "title": "Message sent",
         "description": "Your message has been sent successfully.",
         "errorTitle1": "Error",
-        "errorDescription1": "An error occurred:",
+        "errorDescription1": "An error occurred: {res}",
         "errorTitle2": "An error occurred",
         "errorDescription2": "An error occurred while sending your message. Please try again later."
       }
@@ -1362,7 +1441,6 @@
         "bio": "Xavier is a statistics major at Cornell University. He is excited about the potential of data analytics in esports and is working to build excellent statistics for Overwatch teams."
       }
     },
-
     "headerSection": {
       "title": "We love Overwatch",
       "description": "That's why we're building a better way to track your performance. See your team's stats, track your performance over time, and see how you evolve as a player and as a team."
@@ -1371,9 +1449,7 @@
       "description1": "Parsertime was originally created as an internal tool for FIU Panthers, a collegiate team. We wanted to be able to see our stats after scrims and see trends over time. We've since expanded to become a platform that any team can use. We're excited to see how teams use Parsertime to improve their performance.",
       "description2": "We're a small team of passionate Overwatch players and coaches who are dedicated to building a platform that works for your team. We're always looking for feedback and feature requests. If you have any ideas, we'd love to hear them!",
       "description3": "We know that teams are always looking for ways to improve. Our goal is to make it easy for you to see your stats and see trends week over week. Parsertime is currently used internally at FIU and new features are being added every week. We want to provide the best experience possible for Overwatch players and teams.",
-      "description4": "Parsertime is fully open source. We believe that the best tools are built in the open. If you'd like to contribute to Parsertime, we'd love to have you! We're always looking for contributors to help us build the best platform for Overwatch teams. You can find our GitHub repo",
-      "description5": "here",
-      "description6": "."
+      "description4": "Parsertime is fully open source. We believe that the best tools are built in the open. If you'd like to contribute to Parsertime, we'd love to have you! We're always looking for contributors to help us build the best platform for Overwatch teams. You can find our GitHub repo <Link>here</Link>."
     },
     "featureSection": {
       "title": "Our features",
@@ -1501,23 +1577,17 @@
     },
     "faq": {
       "title": "Frequently asked questions",
-      "description1": "Can't find the answer you're looking for? Reach out to our",
-      "description2": "support",
-      "description3": "team.",
+      "description": "Can't find the answer you're looking for? Reach out to our <Link>support</Link> team.",
       "question1": "Do you offer discounts for collegiate teams?",
       "answer1": "Yes! Please reach out to our support team and we'll be happy to help.",
       "question2": "Do you offer discounts for Calling All Heroes teams?",
       "answer2": "Yes! We want to support the CAH community as much as possible. Please reach out to our support team and we'll be happy to discuss a solution.",
       "question3": "How can I manage my subscription?",
-      "answer3": "You can manage your subscription",
-      "answer3Link": "here",
-      "answer3Continue": ". If you have any issues, please reach out to our support team.",
+      "answer3": "You can manage your subscription <Link>here</Link>. If you have any issues, please reach out to our support team.",
       "question4": "Can I cancel my subscription at any time?",
       "answer4": "Yes, you can cancel your subscription at any time. Your subscription will remain active until the end of the billing period.",
       "question5": "What if I need higher limits than the Premium plan offers?",
-      "answer5": "If you need something special or require higher limits than the Premium plan offers, please reach out to our",
-      "answer5Link": "support team",
-      "answer5Continue": "and we'll be happy to discuss a custom solution."
+      "answer5": "If you need something special or require higher limits than the Premium plan offers, please reach out to our <Link>support team</Link> and we'll be happy to discuss a custom solution."
     }
   },
   "privacyPage": {
@@ -1563,15 +1633,20 @@
     },
     "contactUs": {
       "title": "Contact Us",
-      "description1": "For more information about our privacy practices, if you have questions, or if you would like to make a complaint, please contact us by email at",
-      "description2": "privacy@lux.dev",
-      "description3": "."
+      "description": "For more information about our privacy practices, if you have questions, or if you would like to make a complaint, please contact us by email at <Link>privacy@lux.dev</Link>."
     }
   },
   "billingPlan": {
     "free": "'FREE'",
     "basic": "'BASIC'",
     "premium": "'PREMIUM'"
+  },
+  "notFound": {
+    "404": "404",
+    "header": "Page not found",
+    "description": "Sorry, we couldn't find the page you're looking for.",
+    "backHome": "Back to home",
+    "contact": "Contact support"
   },
   "footer": {
     "dashboard": "Dashboard",

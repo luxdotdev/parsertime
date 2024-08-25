@@ -182,15 +182,17 @@ export default function AboutPage() {
               <div>
                 <p>{t("contentSection.description3")}</p>
                 <p className="mt-8">
-                  {t("contentSection.description4")}{" "}
-                  <Link
-                    href="https://github.com/luxdotdev/parsertime"
-                    target="_blank"
-                    className="text-sky-600 dark:text-sky-400"
-                  >
-                    {t("contentSection.description5")}
-                  </Link>
-                  {t("contentSection.description6")}
+                  {t.rich("contentSection.description4", {
+                    Link: (children) => (
+                      <Link
+                        href="https://github.com/luxdotdev/parsertime"
+                        target="_blank"
+                        className="text-sky-600 dark:text-sky-400"
+                      >
+                        {children}
+                      </Link>
+                    ),
+                  })}
                 </p>
               </div>
             </div>

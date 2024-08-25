@@ -33,13 +33,13 @@ export function DangerZone({ url }: { url: string }) {
         <CardContent>
           <h3 className="text-lg font-semibold">{t("deleteAccount.title")}</h3>
           <p className="pb-4">
-            {/* Account deletion is permanent and cannot be reversed. Are you
-            looking to manage your subscription instead? If so, please click */}
-            {t("dangerZone.description1")}{" "}
-            <Link href={url} className="text-sky-500" external>
-              {/* here. */}
-              {t("dangerZone.description2")}
-            </Link>
+            {t.rich("dangerZone.description", {
+              Link: (children) => (
+                <Link href={url} className="text-sky-500" external>
+                  {children}
+                </Link>
+              ),
+            })}
           </p>
           <FirstDialog
             url={url}
@@ -72,14 +72,13 @@ function FirstDialog({
           <h2 className="text-lg font-semibold">{t("deleteAccount.title")}</h2>
         </AlertDialogHeader>
         <p>
-          {/* Are you sure you want to delete your account? This action cannot be
-          undone. Are you looking to manage your subscription instead? If so,
-          please click */}
-          {t("deleteAccount.description1")}{" "}
-          <Link href={url} className="text-sky-500" external>
-            {/* here. */}
-            {t("deleteAccount.description2")}
-          </Link>
+          {t.rich("deleteAccount.description", {
+            Link: (children) => (
+              <Link href={url} className="text-sky-500" external>
+                {children}
+              </Link>
+            ),
+          })}
         </p>
         <div className="mt-4 flex justify-end space-x-4">
           <SecondDialog setFirstDialogOpen={setFirstDialogOpen} />
@@ -97,7 +96,7 @@ function SecondDialog({
 }: {
   setFirstDialogOpen: (open: boolean) => void;
 }) {
-  const t = useTranslations("settingsPage");
+  const t = useTranslations("settingsPage.deleteAccount");
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteInput, setDeleteInput] = useState("");
   const [deleteEnabled, setDeleteEnabled] = useState(false);
@@ -105,8 +104,8 @@ function SecondDialog({
   const router = useRouter();
 
   useEffect(() => {
-    setDeleteEnabled(deleteInput === "yes, delete my account");
-  }, [deleteInput]);
+    setDeleteEnabled(deleteInput === t("deleteInput"));
+  }, [deleteInput, t]);
 
   async function handleDelete() {
     setDeleteLoading(true);
@@ -117,8 +116,8 @@ function SecondDialog({
 
     if (res.ok) {
       toast({
-        title: t("deleteAccount.handleDelete.title"),
-        description: t("deleteAccount.handleDelete.description"),
+        title: t("handleDelete.title"),
+        description: t("handleDelete.description"),
         duration: 5000,
       });
       setDeleteLoading(false);
@@ -126,8 +125,10 @@ function SecondDialog({
       router.push("/");
     } else {
       toast({
-        title: t("deleteAccount.handleDelete.errorTitle"),
-        description: `${t("deleteAccount.handleDelete.errorDescription")} ${await res.text()} (${res.status})`,
+        title: t("handleDelete.errorTitle"),
+        description: t("handleDelete.errorDescription", {
+          res: `${await res.text()} (${res.status})`,
+        }),
         duration: 5000,
         variant: "destructive",
       });
@@ -138,26 +139,17 @@ function SecondDialog({
   return (
     <AlertDialog open={modalOpen} onOpenChange={setModalOpen}>
       <AlertDialogTrigger>
-        <Button variant="destructive">
-          {t("deleteAccount.secondDialog.title")}
-        </Button>
+        <Button variant="destructive">{t("secondDialog.title")}</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <h2 className="text-lg font-semibold">{t("deleteAccount.title")}</h2>
+          <h2 className="text-lg font-semibold">{t("title")}</h2>
         </AlertDialogHeader>
-        <p>{t("deleteAccount.secondDialog.description1")}</p>
-        <p>
-          {/* Type */}
-          {t("deleteAccount.secondDialog.description2")}{" "}
-          <strong>
-            {/* yes, delete my account */}
-            {t("deleteAccount.secondDialog.description3")}
-          </strong>{" "}
-          {/* to confirm. */}
-          {t("deleteAccount.secondDialog.description4")}
-          {/*need to fix, locale input */}
-        </p>
+        {t.rich("secondDialog.description", {
+          p: (children) => <p>{children}</p>,
+          strong: (children) => <strong>{children}</strong>,
+          deleteInput: t("deleteInput"),
+        })}
         <Input
           type="text"
           className="mt-4 w-full rounded border border-solid p-2"
@@ -173,10 +165,10 @@ function SecondDialog({
               <>
                 <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
 
-                {t("deleteAccount.secondDialog.deleting")}
+                {t("secondDialog.deleting")}
               </>
             ) : (
-              t("deleteAccount.secondDialog.delete")
+              t("secondDialog.delete")
             )}
           </Button>
           <Button
@@ -186,7 +178,7 @@ function SecondDialog({
               setFirstDialogOpen(false);
             }}
           >
-            {t("deleteAccount.secondDialog.cancel")}
+            {t("secondDialog.cancel")}
           </Button>
         </div>
       </AlertDialogContent>

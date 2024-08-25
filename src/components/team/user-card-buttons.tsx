@@ -17,6 +17,7 @@ import { User } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 type Props = {
   user: User;
@@ -28,6 +29,7 @@ type Props = {
 };
 
 export function UserCardButtons({ user, managers }: Props) {
+  const t = useTranslations("teamPage.userButtons");
   const pathname = usePathname();
   const teamId = pathname.split("/")[2];
 
@@ -57,16 +59,20 @@ export function UserCardButtons({ user, managers }: Props) {
     if (res.ok) {
       setPromotionLoading(false);
       toast({
-        title: "User promoted to manager",
-        description: `${user.name} has been promoted to manager.`,
+        title: t("promote.handlePromote.title"),
+        description: t("promote.handlePromote.description", {
+          user: `${user.name}`,
+        }),
         duration: 5000,
       });
       router.refresh();
     } else {
       setPromotionLoading(false);
       toast({
-        title: "An error occurred",
-        description: `An error occurred: ${await res.text()} (${res.status})`,
+        title: t("promote.handlePromote.errorTitle"),
+        description: t("promote.handlePromote.errorDescription", {
+          res: `${await res.text()} (${res.status})`,
+        }),
         duration: 5000,
       });
     }
@@ -86,16 +92,20 @@ export function UserCardButtons({ user, managers }: Props) {
     if (res.ok) {
       setDemotionLoading(false);
       toast({
-        title: "User demoted to member",
-        description: `${user.name} has been demoted to member.`,
+        title: t("demote.handleDemote.title"),
+        description: t("demote.handleDemote.description", {
+          user: `${user.name}`,
+        }),
         duration: 5000,
       });
       router.refresh();
     } else {
       setDemotionLoading(false);
       toast({
-        title: "An error occurred",
-        description: `An error occurred: ${await res.text()} (${res.status})`,
+        title: t("demote.handleDemote.errorTitle"),
+        description: t("demote.handleDemote.errorDescription", {
+          res: `${await res.text()} (${res.status})`,
+        }),
         duration: 5000,
       });
     }
@@ -115,16 +125,20 @@ export function UserCardButtons({ user, managers }: Props) {
     if (res.ok) {
       setRemovalLoading(false);
       toast({
-        title: "User removed from team",
-        description: `${user.name} has been removed from the team.`,
+        title: t("remove.handleRemove.title"),
+        description: t("remove.handleRemove.description", {
+          user: `${user.name}`,
+        }),
         duration: 5000,
       });
       router.refresh();
     } else {
       setRemovalLoading(false);
       toast({
-        title: "An error occurred",
-        description: `An error occurred: ${await res.text()} (${res.status})`,
+        title: t("remove.handleRemove.errorTitle"),
+        description: t("remove.handleRemove.errorDescription", {
+          res: `${await res.text()} (${res.status})`,
+        }),
         duration: 5000,
       });
     }
@@ -140,22 +154,20 @@ export function UserCardButtons({ user, managers }: Props) {
               onOpenChange={setPromotionDialogOpen}
             >
               <AlertDialogTrigger>
-                <Button>Promote to Manager</Button>
+                <Button>{t("promote.button")}</Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogTitle>{t("promote.title")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This will change the user&apos;s role from member to
-                    manager. This user will be able to manage the team and its
-                    resources.
+                    {t("promote.description")}
                   </AlertDialogDescription>
                   <AlertDialogFooter>
                     <Button
                       variant="secondary"
                       onClick={() => setPromotionDialogOpen(false)}
                     >
-                      Cancel
+                      {t("promote.cancel")}
                     </Button>
                     <Button
                       variant="destructive"
@@ -165,10 +177,10 @@ export function UserCardButtons({ user, managers }: Props) {
                       {promotionLoading ? (
                         <>
                           <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
-                          Promoting...
+                          {t("promote.promoting")}
                         </>
                       ) : (
-                        "Promote to Manager"
+                        t("promote.promote")
                       )}
                     </Button>
                   </AlertDialogFooter>
@@ -185,21 +197,20 @@ export function UserCardButtons({ user, managers }: Props) {
               onOpenChange={setDemotionDialogOpen}
             >
               <AlertDialogTrigger>
-                <Button>Demote to Member</Button>
+                <Button>{t("demote.button")}</Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogTitle>{t("demote.title")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This will change the user&apos;s role from manager to
-                    member.
+                    {t("demote.description")}
                   </AlertDialogDescription>
                   <AlertDialogFooter>
                     <Button
                       variant="secondary"
                       onClick={() => setDemotionDialogOpen(false)}
                     >
-                      Cancel
+                      {t("demote.cancel")}
                     </Button>
                     <Button
                       variant="destructive"
@@ -209,10 +220,10 @@ export function UserCardButtons({ user, managers }: Props) {
                       {demotionLoading ? (
                         <>
                           <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
-                          Demoting...
+                          {t("demote.demoting")}
                         </>
                       ) : (
-                        "Demote to Member"
+                        t("demote.demote")
                       )}
                     </Button>
                   </AlertDialogFooter>
@@ -228,21 +239,20 @@ export function UserCardButtons({ user, managers }: Props) {
             onOpenChange={setRemovalDialogOpen}
           >
             <AlertDialogTrigger>
-              <Button variant="destructive">Remove from Team</Button>
+              <Button variant="destructive">{t("remove.button")}</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogTitle>{t("remove.title")}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This will remove the user from the team and they will lose
-                  access to all team resources.
+                  {t("remove.description")}
                 </AlertDialogDescription>
                 <AlertDialogFooter>
                   <Button
                     variant="secondary"
                     onClick={() => setRemovalDialogOpen(false)}
                   >
-                    Cancel
+                    {t("remove.cancel")}
                   </Button>
                   <Button
                     variant="destructive"
@@ -252,10 +262,10 @@ export function UserCardButtons({ user, managers }: Props) {
                     {removalLoading ? (
                       <>
                         <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
-                        Removing...
+                        {t("remove.removing")}
                       </>
                     ) : (
-                      "Remove from Team"
+                      t("remove.remove")
                     )}
                   </Button>
                 </AlertDialogFooter>

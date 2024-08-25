@@ -42,14 +42,10 @@ export function TeamSettingsForm({ team }: { team: Team }) {
     name: z
       .string()
       .min(2, {
-        message:
-          /* "Name must be at least 2 characters." */ t("name.minMessage"),
+        message: t("name.minMessage"),
       })
       .max(30, {
-        message:
-          /* "Name must not be longer than 30 characters." */ t(
-            "name.maxMessage"
-          ),
+        message: t("name.maxMessage"),
       }),
   });
 
@@ -79,17 +75,17 @@ export function TeamSettingsForm({ team }: { team: Team }) {
 
     if (res.ok) {
       toast({
-        title: /* "Team profile updated" */ t("update.onSubmitTitle"),
-        description: /* "Your team profile has been successfully updated." */ t(
-          "update.onSubmitDescription"
-        ),
+        title: t("update.onSubmit.title"),
+        description: t("update.onSubmit.description"),
         duration: 5000,
       });
       router.refresh();
     } else {
       toast({
-        title: /* "An error occurred" */ t("update.errorTitle"),
-        description: /* `An error occurred: */ `${t("update.errorDescription")} ${await res.text()} (${res.status})`,
+        title: t("update.onSubmit.errorTitle"),
+        description: t("update.onSubmit.errorDescription", {
+          res: `${await res.text()} (${res.status})`,
+        }),
         variant: "destructive",
         duration: 5000,
       });
@@ -113,16 +109,10 @@ export function TeamSettingsForm({ team }: { team: Team }) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormItem>
-            <FormLabel>
-              {/* Team Invite Link */}
-              {t("teamInviteLink.title")}
-            </FormLabel>
+            <FormLabel>{t("teamInviteLink.title")}</FormLabel>
             <FormControl>
               <div className="items-center">
-                <p>
-                  {/* Your permanent team invite link (hover to reveal): */}
-                  {t("teamInviteLink.subtitle")}
-                </p>
+                <p>{t("teamInviteLink.subtitle")}</p>
                 <code className="rounded bg-zinc-800 p-1 text-zinc-800 transition-colors hover:text-white">
                   https://parsertime.app/team/join/
                   {btoa(team.createdAt.toISOString())}
@@ -139,41 +129,26 @@ export function TeamSettingsForm({ team }: { team: Team }) {
                             )}`
                           );
                           toast({
-                            title:
-                              /* "Copied to clipboard" */ t("clipboard.title"),
-                            description:
-                              /* "The team invite link has been copied to your clipboard." */ t(
-                                "clipboard.description"
-                              ),
+                            title: t("clipboard.title"),
+                            description: t("clipboard.description"),
                             duration: 5000,
                           });
                         }}
                       />
                     </TooltipTrigger>
-                    <TooltipContent>
-                      {/* Click to copy */}
-                      {t("clipboard.tooltip")}
-                    </TooltipContent>
+                    <TooltipContent>{t("clipboard.tooltip")}</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
             </FormControl>
-            <FormDescription>
-              {/* Please note that inviting a user via the &quot;Invite User&quot;
-              button is much more secure. We suggest avoiding sharing this link
-              whenever possible. */}
-              {t("teamInviteLink.description")}
-            </FormDescription>
+            <FormDescription>{t("teamInviteLink.description")}</FormDescription>
           </FormItem>
           <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
-                  {/* Display Name */}
-                  {t("name.title")}
-                </FormLabel>
+                <FormLabel>{t("name.title")}</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Esports at Cornell"
@@ -182,19 +157,13 @@ export function TeamSettingsForm({ team }: { team: Team }) {
                     {...field}
                   />
                 </FormControl>
-                <FormDescription>
-                  {/* This is your team&apos;s public display name. */}
-                  {t("name.description")}
-                </FormDescription>
+                <FormDescription>{t("name.description")}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
           <FormItem>
-            <FormLabel>
-              {/* Avatar */}
-              {t("avatar.title")}
-            </FormLabel>
+            <FormLabel>{t("avatar.title")}</FormLabel>
             <FormControl aria-readonly>
               <>
                 <input
@@ -223,17 +192,10 @@ export function TeamSettingsForm({ team }: { team: Team }) {
                 />
               </>
             </FormControl>
-            <FormDescription>
-              {/* This is your team&apos;s public avatar. Click on the avatar to
-              upload a custom one from your files. */}
-              {t("avatar.title")}
-            </FormDescription>
+            <FormDescription>{t("avatar.description")}</FormDescription>
             <FormMessage />
           </FormItem>
-          <Button type="submit">
-            {/* Update team profile */}
-            {t("update.title")}
-          </Button>
+          <Button type="submit">{t("update.title")}</Button>
         </form>
       </Form>
     </ClientOnly>

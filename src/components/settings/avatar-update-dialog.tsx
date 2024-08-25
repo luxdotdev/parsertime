@@ -109,12 +109,8 @@ export function AvatarUpdateDialog({
       if (res.ok) {
         setLoading(false);
         toast({
-          title: /* "Avatar updated successfully" */ t(
-            "editAvatar.handleCrop.title"
-          ),
-          description: /* "Your avatar has been updated successfully." */ t(
-            "editAvatar.handleCrop.description"
-          ),
+          title: t("editAvatar.handleCrop.title"),
+          description: t("editAvatar.handleCrop.description"),
           duration: 5000,
         });
         setIsOpen(false);
@@ -122,23 +118,18 @@ export function AvatarUpdateDialog({
       } else {
         setLoading(false);
         toast({
-          title: /* "An error occurred" */ t(
-            "editAvatar.handleCrop.errorTitle"
-          ),
-          description: /* `An error occurred: */ `${t(
-            "editAvatar.handleCrop.errorDescription1"
-          )} ${await res.text()} (${res.status})`,
+          title: t("editAvatar.handleCrop.errorTitle"),
+          description: t("editAvatar.handleCrop.errorDescription1", {
+            res: `${await res.text()} (${res.status})`,
+          }),
           duration: 5000,
         });
       }
     } catch (e) {
       setLoading(false);
       toast({
-        title: /* "An error occurred" */ t("editAvatar.handleCrop.errorTitle"),
-        description:
-          /* "An error occurred while updating your avatar. Please try again later or contact support." */ t(
-            "editAvatar.handleCrop.errorDescription2"
-          ),
+        title: t("editAvatar.handleCrop.errorTitle"),
+        description: t("editAvatar.handleCrop.errorDescription2"),
         duration: 5000,
       });
       Logger.log(e);
@@ -151,14 +142,8 @@ export function AvatarUpdateDialog({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>
-            {/* Edit Avatar */}
-            {t("editAvatar.title")}
-          </DialogTitle>
-          <DialogDescription>
-            {/* Make changes to your profile here. Click save when you&apos;re done. */}
-            {t("editAvatar.description")}
-          </DialogDescription>
+          <DialogTitle>{t("editAvatar.title")}</DialogTitle>
+          <DialogDescription>{t("editAvatar.description")}</DialogDescription>
         </DialogHeader>
 
         <div className="relative h-96 w-full">
@@ -178,11 +163,10 @@ export function AvatarUpdateDialog({
             {loading ? (
               <>
                 <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
-                {/* Updating... */}
                 {t("editAvatar.updating")}
               </>
             ) : (
-              /* "Save Changes" */ t("editAvatar.save")
+              t("editAvatar.save")
             )}
           </Button>
         </DialogFooter>

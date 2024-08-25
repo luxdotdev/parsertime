@@ -22,21 +22,21 @@ import { User } from "@prisma/client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useRef, useState } from "react";
-
-const discordSettingsFormSchema = z.object({
-  name: z
-    .string()
-    .min(2, {
-      message: "Name must be at least 2 characters.",
-    })
-    .max(30, {
-      message: "Name must not be longer than 30 characters.",
-    }),
-});
-
-type DiscordSettingsFormValues = z.infer<typeof discordSettingsFormSchema>;
+import { useTranslations } from "next-intl";
 
 export function DiscordSettingsForm({ user }: { user: User }) {
+  const t = useTranslations("settingsPage.discordForm");
+  const discordSettingsFormSchema = z.object({
+    name: z
+      .string()
+      .min(2, {
+        message: t("minMessage"),
+      })
+      .max(30, {
+        message: t("maxMessage"),
+      }),
+  });
+  type DiscordSettingsFormValues = z.infer<typeof discordSettingsFormSchema>;
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -61,15 +61,17 @@ export function DiscordSettingsForm({ user }: { user: User }) {
 
     if (res.ok) {
       toast({
-        title: "Profile updated",
-        description: "Your profile has been successfully updated.",
+        title: t("onSubmit.title"),
+        description: t("onSubmit.description"),
         duration: 5000,
       });
       router.refresh();
     } else {
       toast({
-        title: "An error occurred",
-        description: `An error occurred: ${await res.text()} (${res.status})`,
+        title: t("onSubmit.errorTitle"),
+        description: t("onSubmit.errorDescription", {
+          res: `${await res.text()} (${res.status})`,
+        }),
         variant: "destructive",
         duration: 5000,
       });
@@ -97,7 +99,7 @@ export function DiscordSettingsForm({ user }: { user: User }) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
+                <FormLabel>{t("username.title")}</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="lux"
@@ -105,16 +107,13 @@ export function DiscordSettingsForm({ user }: { user: User }) {
                     {...field}
                   />
                 </FormControl>
-                <FormDescription>
-                  This is your public display name. It can be your real name or
-                  a pseudonym.
-                </FormDescription>
+                <FormDescription>{t("username.description")}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
           <FormItem>
-            <FormLabel>Avatar</FormLabel>
+            <FormLabel>{t("avatar.title")}</FormLabel>
             <FormControl aria-readonly>
               <>
                 <input
@@ -141,13 +140,10 @@ export function DiscordSettingsForm({ user }: { user: User }) {
                 />
               </>
             </FormControl>
-            <FormDescription>
-              This is your public account avatar. Click on the avatar to upload
-              a custom one from your files.
-            </FormDescription>
+            <FormDescription>{t("avatar.description")}</FormDescription>
             <FormMessage />
           </FormItem>
-          <Button type="submit">Update profile</Button>
+          <Button type="submit">{t("update")}</Button>
         </form>
       </Form>
     </ClientOnly>
