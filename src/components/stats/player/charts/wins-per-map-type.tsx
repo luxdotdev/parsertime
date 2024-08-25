@@ -26,6 +26,7 @@ type MapTypeData = {
 };
 
 function processMapWinrates(mapWinrates: Winrate) {
+  const t = useTranslations("statsPage.playerStats.winrateMapType");
   const mapTypeData: Record<string, MapTypeData> = {};
 
   mapWinrates.forEach((winrate) => {
@@ -53,7 +54,7 @@ function processMapWinrates(mapWinrates: Winrate) {
   });
 
   const data = Object.values(mapTypeData).map((item) => ({
-    mapType: item.mapType,
+    mapType: t(`mapTypes.${item.mapType}`),
     winrate: (item.wins / item.total) * 100,
   }));
 

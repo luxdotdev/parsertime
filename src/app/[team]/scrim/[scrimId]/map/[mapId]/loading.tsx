@@ -122,7 +122,7 @@ export default function MapDashboardLoading() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
           <Card className="col-span-full">
             <CardHeader>
-              <CardTitle>{t("overview")}</CardTitle>
+              <CardTitle>{t("title")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">

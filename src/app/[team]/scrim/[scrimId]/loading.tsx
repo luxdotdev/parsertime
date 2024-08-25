@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslations } from "next-intl";
 
 export default function ScrimLoading() {
-  const t = useTranslations("scrimPage");
+  const t = useTranslations("scrimPage.maps");
   return (
     <div className="min-h-[90vh] flex-col md:flex">
       <div className="border-b">
@@ -23,7 +23,7 @@ export default function ScrimLoading() {
         </div>
         <Skeleton className="h-4 w-36" />
         <p className="scroll-m-20 pb-2 text-2xl font-semibold tracking-tight">
-          {t("maps")}
+          {t("title")}
         </p>
         <div className="-m-2 flex flex-wrap">
           {/* Simulate loading for maps */}

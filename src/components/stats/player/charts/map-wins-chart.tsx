@@ -35,6 +35,7 @@ const mapVariantMapping: Record<string, string> = {
 };
 
 function processMapWinrates(mapWinrates: Winrate): Data {
+  const t = useTranslations("statsPage.playerStats.mapWinrates");
   const mapData: Record<string, { wins: number; losses: number }> = {};
 
   mapWinrates.forEach((winrate) => {
@@ -61,7 +62,7 @@ function processMapWinrates(mapWinrates: Winrate): Data {
   });
 
   const data: Data = Object.keys(mapData).map((mapName) => ({
-    name: toTitleCase(mapName),
+    name: t(`mapNames.${toTitleCase(mapName)}`),
     wins: mapData[mapName].wins,
     losses: mapData[mapName].losses,
   }));

@@ -128,7 +128,7 @@ export default async function MapDashboardPage({ params }: Props) {
         </div>
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">
-            {toTitleCase(mapName?.map_name ?? t("dashboard"))}
+            {t(`maps.${toTitleCase(mapName?.map_name ?? t("dashboard"))}`)}
           </h2>
         </div>
         <Tabs defaultValue="overview" className="space-y-4">

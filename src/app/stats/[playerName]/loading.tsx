@@ -104,7 +104,7 @@ export default function StatsLoading() {
             <CardHeader>
               <CardTitle>
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="stat">{t("stat.title")}</Label>
+                  <Label htmlFor="stat">{t("stats.title")}</Label>
                   <Skeleton className="h-6 w-[180px]" />
                 </div>
               </CardTitle>

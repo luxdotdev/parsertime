@@ -145,7 +145,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">
             <span className="flex items-center space-x-2">
-              {scrim?.name ?? "New Scrim"}{" "}
+              {scrim?.name ?? t("newScrim")}{" "}
               {hasPerms && (
                 <Link
                   className="pl-2"
@@ -169,7 +169,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
           <ClientDate date={scrim.date} />
         </h4>
         <p className="scroll-m-20 pb-2 text-2xl font-semibold tracking-tight">
-          {t("maps")}
+          {t("maps.title")}
         </p>
         {maps.length > 0 ? (
           <div className="-m-2 flex flex-wrap">
@@ -181,7 +181,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
                   >
                     <CardHeader className="">
                       <h3 className="z-10 text-3xl font-semibold tracking-tight text-white">
-                        {map.name}
+                        {t(`maps.${map.name}`)}
                       </h3>
                     </CardHeader>
                     <CardContent>
