@@ -63,7 +63,7 @@ export default function HeroSelect() {
                     className="h-12 w-12 rounded border md:h-16 md:w-16"
                   />
                   <span className="text-sm font-semibold tracking-tight">
-                    {hero}
+                    {t(`tank.${hero}`)}
                   </span>
                 </Link>
               ))}
@@ -90,7 +90,7 @@ export default function HeroSelect() {
                     className="h-12 w-12 rounded border md:h-16 md:w-16"
                   />
                   <span className="text-sm font-semibold tracking-tight">
-                    {hero}
+                    {t(`damage.${hero}`)}
                   </span>
                 </Link>
               ))}
@@ -117,7 +117,7 @@ export default function HeroSelect() {
                     className="h-12 w-12 rounded border md:h-16 md:w-16"
                   />
                   <span className="text-sm font-semibold tracking-tight">
-                    {hero}
+                    {t(`support.${hero}`)}
                   </span>
                 </Link>
               ))}

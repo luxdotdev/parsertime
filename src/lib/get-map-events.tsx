@@ -339,7 +339,7 @@ export async function getMapEvents(id: number) {
                   : "border-red-500"
               )}
             />{" "}
-            {event.player_hero}.
+            {t(`mapEvents.hero.${event.player_hero}`)}.
           </div>
         );
       case "ultimate_kills":
@@ -425,7 +425,6 @@ export async function getMapEvents(id: number) {
             </span>
             {/* can translate all this but don't know if I should */}
             {t("mapEvents.multikill1", { event: event.fightIndex + 1 })}{" "}
-            {event.fightIndex + 1}{" "}
             <span className="inline-flex items-center gap-1">
               <Image
                 src={`/heroes/${toHero(event.player_hero)}.png`}

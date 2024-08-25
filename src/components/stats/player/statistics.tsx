@@ -420,7 +420,7 @@ export function Statistics({
                           )}
                         />{" "}
                       </div>
-                      {hero}
+                      {t(`hero.${hero}`)}
                     </span>
                   </TableCell>
                   <TableCell>{games}</TableCell>
@@ -541,7 +541,7 @@ export function Statistics({
                               }/scrim/${scrimId}/map/${mapId}`}
                               target="_blank"
                             >
-                              {hero}
+                              {t(`hero.${hero}`)}
                             </Link>
                           </TooltipTrigger>
                           <TooltipContent>
@@ -717,7 +717,7 @@ export function Statistics({
                           )}
                         />{" "}
                       </div>
-                      {hero}
+                      {t(`hero.${hero}`)}
                     </span>
                   </TableCell>
                   <TableCell>{deaths}</TableCell>
@@ -828,7 +828,7 @@ export function Statistics({
                           )}
                         />{" "}
                       </div>
-                      {hero}
+                      {t(`hero.${hero}`)}
                     </span>
                   </TableCell>
                   <TableCell>{elims}</TableCell>

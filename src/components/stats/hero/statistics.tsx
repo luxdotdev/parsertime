@@ -328,7 +328,7 @@ export function Statistics({
             />
           </div>
           <div className="col-span-1 space-y-2">
-            <h4 className="pb-4 text-lg font-bold">{hero}</h4>
+            <h4 className="pb-4 text-lg font-bold">{t(`hero.${hero}`)}</h4>
             <h5 className="text-md font-semibold tracking-tight">
               {t("heroStats.totalGames")}
             </h5>
@@ -617,7 +617,7 @@ export function Statistics({
                           )}
                         />{" "}
                       </div>
-                      {hero}
+                      {t(`hero.${hero}`)}
                     </span>
                   </TableCell>
                   <TableCell>{deaths}</TableCell>
@@ -728,7 +728,7 @@ export function Statistics({
                           )}
                         />{" "}
                       </div>
-                      {hero}
+                      {t(`hero.${hero}`)}
                     </span>
                   </TableCell>
                   <TableCell>{elims}</TableCell>

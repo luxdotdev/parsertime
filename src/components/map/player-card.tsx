@@ -38,7 +38,7 @@ export default async function PlayerCard({ playerName, id }: Props) {
                 {heroesPlayed.map((hero) => {
                   return (
                     <TabsTrigger key={hero} value={hero}>
-                      {hero}
+                      {t(`specificHero.hero.${hero}`)}
                     </TabsTrigger>
                   );
                 })}

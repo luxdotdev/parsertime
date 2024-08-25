@@ -211,28 +211,28 @@ export function RangePicker({
           </SelectGroup>
           <SelectSeparator />
           <SelectGroup>
-            <SelectLabel>{t("tank")}</SelectLabel>
+            <SelectLabel>{t("tank.title")}</SelectLabel>
             {roleHeroMapping["Tank"].map((hero) => (
               <SelectItem key={hero} value={hero}>
-                {hero}
+                {t(`tank.${hero}`)}
               </SelectItem>
             ))}
           </SelectGroup>
           <SelectSeparator />
           <SelectGroup>
-            <SelectLabel>{t("damage")}</SelectLabel>
+            <SelectLabel>{t("damage.title")}</SelectLabel>
             {roleHeroMapping["Damage"].map((hero) => (
               <SelectItem key={hero} value={hero}>
-                {hero}
+                {t(`damage.${hero}`)}
               </SelectItem>
             ))}
           </SelectGroup>
           <SelectSeparator />
           <SelectGroup>
-            <SelectLabel>{t("support")}</SelectLabel>
+            <SelectLabel>{t("support.title")}</SelectLabel>
             {roleHeroMapping["Support"].map((hero) => (
               <SelectItem key={hero} value={hero}>
-                {hero}
+                {t(`support.${hero}`)}
               </SelectItem>
             ))}
           </SelectGroup>

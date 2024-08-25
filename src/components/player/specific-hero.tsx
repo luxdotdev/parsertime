@@ -28,7 +28,7 @@ export default function SpecificHero({
   return (
     <main>
       <h1 className="scroll-m-20 pb-2 pl-2 text-3xl font-semibold tracking-tight first:mt-0">
-        {hero}
+        {t(`hero.${hero}`)}
       </h1>
       <div className="flex flex-1">
         <div className={cn("p-2", showTable && "w-full lg:w-1/2")}>
