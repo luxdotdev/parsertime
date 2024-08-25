@@ -9,8 +9,10 @@ import {
 } from "@/components/ui/card";
 import prisma from "@/lib/prisma";
 import { groupKillsIntoFights, toTimestamp } from "@/lib/utils";
+import { getTranslations } from "next-intl/server";
 
 export async function Killfeed({ id }: { id: number }) {
+  const t = await getTranslations("mapPage.killfeed");
   const finalRound = await prisma.roundEnd.findFirst({
     where: {
       MapDataId: id,
@@ -62,7 +64,7 @@ export async function Killfeed({ id }: { id: number }) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Match Time
+              {t("matchTime")}
             </CardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -85,13 +87,13 @@ export async function Killfeed({ id }: { id: number }) {
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              {((finalRound?.match_time ?? 0) / 60).toFixed(2)} minutes
+              {((finalRound?.match_time ?? 0) / 60).toFixed(2)} {t("minutes")}
             </p>
           </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Kills</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("kills")}</CardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -123,7 +125,7 @@ export async function Killfeed({ id }: { id: number }) {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Deaths</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("deaths")}</CardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -155,7 +157,9 @@ export async function Killfeed({ id }: { id: number }) {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Fight Wins</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("fightWins")}
+            </CardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -190,7 +194,7 @@ export async function Killfeed({ id }: { id: number }) {
       <div className="hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-7">
         <Card className="col-span-full">
           <CardHeader>
-            <CardTitle>Killfeed</CardTitle>
+            <CardTitle>{t("killfeed")}</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
             <KillfeedTable

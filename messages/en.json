@@ -13,7 +13,7 @@
       "title": "Used by a variety of teams for stat tracking"
     },
     "feature1": {
-      "subTitle": "Improve faster",
+      "subtitle": "Improve faster",
       "title": "Everything you need to improve your team performance",
       "description": "Streamline your improvement process with our platform. Gain insight into your players' and teams' strengths and weaknesses. See their biggest areas of improvement and adjust your coaching accordingly.",
       "learnMore": "Learn more"
@@ -21,22 +21,19 @@
     "primaryFeatures": {
       "builtByCoaches": {
         "name": "Built by coaches, for coaches",
-        "description": "Designed with collegiate and professional coaches in mind. Our platform is built to help you understand trends and patterns in your team's performance.",
-        "href": "#"
+        "description": "Designed with collegiate and professional coaches in mind. Our platform is built to help you understand trends and patterns in your team's performance."
       },
       "shareWithTeam": {
         "name": "Share with your team",
-        "description": "Invite your players to your team and allow them to see their stats. Share your team's stats with your players and coaches. Keep everyone in the loop.",
-        "href": "#"
+        "description": "Invite your players to your team and allow them to see their stats. Share your team's stats with your players and coaches. Keep everyone in the loop."
       },
       "advancedStatistics": {
         "name": "Advanced statistics",
-        "description": "Gain insight into your players' performance over time. Track their stats and see how they improve. See trends and patterns week over week.",
-        "href": "#"
+        "description": "Gain insight into your players' performance over time. Track their stats and see how they improve. See trends and patterns week over week."
       }
     },
     "feature2": {
-      "subTitle": "Everything you need",
+      "subtitle": "Everything you need",
       "title": "Scrim stats at your fingertips",
       "description": "See your stats after your scrims instead of only relying on replay codes. Our platform allows you to keep your data no matter what happens to your replays."
     },
@@ -67,7 +64,7 @@
       }
     },
     "stats": {
-      "subTitle": "Our track record",
+      "subtitle": "Our track record",
       "title": "Trusted by the best",
       "description": "We're proud to work with top teams and coaches to create better experiences for everyone. Our platform is built to suit the needs of collegiate and professional teams."
     },
@@ -77,7 +74,7 @@
       "role": "Manager for o7 Esports"
     },
     "cta": {
-      "subTitle": "Ready to get started?",
+      "subtitle": "Ready to get started?",
       "title": "Start using our app today.",
       "description": "Sign up and start using our platform today. We're excited to change the way you think about coaching.",
       "getStarted": "Get started",
@@ -380,7 +377,686 @@
       }
     }
   },
-  "statsPage": {},
+  "mapPage": {
+    "back": "Back to scrim overview",
+    "dashboard": "Dashboard",
+    "playerSwitcher": {
+      "search": "Search player...",
+      "noPlayerFound": "No player found.",
+      "default": "Default"
+    },
+    "player": {
+      "dashboard": {
+        "back": "Back to dashboard",
+        "viewStats": "View aggregated stats",
+        "dashboard": "Dashboard",
+        "overview": "Overview",
+        "analytics": "Analytics",
+        "charts": "Charts"
+      },
+      "overview": {
+        "matchTime": "Total Match Time",
+        "minutes": "minutes",
+        "fletaTitle": "Fleta Deadlift Percentage",
+        "%": "%",
+        "fletaDescription": "A Fleta Deadlift is when a player earns 50% of their team's final blows.",
+        "firstPickTitle": "First Pick Percentage",
+        "firstPickDescription1": "Out of",
+        "firstPickDescription2": "fights,",
+        "firstPickDescription3": "got the first pick",
+        "firstPickDescription4": "times.",
+        "firstDeathTitle": "First Death Percentage",
+        "firstDeathDescription1": "Out of",
+        "firstDeathDescription2": "fights,",
+        "firstDeathDescription3": "died first",
+        "firstDeathDescription4": "times.",
+        "playerStats": "Player Statistics",
+        "allHeroes": "All Heroes"
+      },
+      "statTable": {
+        "stat": "Stat",
+        "total": "Total",
+        "avg10Min": "Avg/10 min",
+        "timePlayed": "Hero Time Played",
+        "mins": "{mins} mins",
+        "eliminations": "Eliminations",
+        "finalBlows": "Final Blows",
+        "deaths": "Deaths",
+        "allDmgDealt": "All Damage Dealt",
+        "barrierDmgDealt": "Barrier Damage Dealt",
+        "heroDmgDealt": "Hero Damage Dealt",
+        "healingDealt": "Healing Dealt",
+        "healingReceived": "Healing Receieved",
+        "selfHealing": "Self Healing",
+        "dmgTaken": "Damage Taken",
+        "dmgBlocked": "Damage Blocked",
+        "defenseAssist": "Defensive Assists",
+        "offenseAssist": "Offensive Assists",
+        "ultsEarned": "Ultimates Earned",
+        "ultsUsed": "Ultimates Used",
+        "multikillBest": "Multikill Best",
+        "multikills": "Multikills",
+        "soloKills": "Solo Kills",
+        "objKills": "Objective Kills",
+        "envKills": "Environnemental Kills",
+        "envDeaths": "Environmental Deaths",
+        "critHits": "Critical Hits",
+        "critHitAcc": "Critical Hit Accuracy",
+        "scopedAcc": "Scoped Accuracy",
+        "scopedCritHitAcc": "Scoped Critical Hit Accuracy",
+        "scopedCritHitKills": "Scoped Critical Hit Kills",
+        "weaponAcc": "Weapon Accuracy",
+        "noResult": "No results."
+      },
+      "analytics": {
+        "avgUltChargeTime": {
+          "title": "Average Ultimate Charge Time",
+          "footer": "The average time it takes to build an ultimate. A lower time is better, while a longer time might indicate that you are not doing enough damage or healing."
+        },
+        "avgTimeUseUlt": {
+          "title": "Average Time to Use Ultimate",
+          "footer": "The average time it takes to use an ultimate after it's charged. A longer time might indicate that you are not using your ultimate effectively or are holding onto it for too long."
+        },
+        "avgDroughtTime": {
+          "title": "Average Drought Time",
+          "footer": "The drought time is the average time between your most recent kill and your next kill. A high drought time can indicate that you are not participating in fights as often as you should be."
+        },
+        "xFactor": {
+          "title": "X Factor",
+          "footer": "The X Factor is a measure of a player's individual impact on a fight. If your X Factor is high, you are likely to be the deciding factor in a fight. Please note that this is calculated differently for each role."
+        },
+        "versus": {
+          "title": "Versus Other Players",
+          "description": "{playerName}'s score and winrates against players on the enemy team.",
+          "score": "Score:",
+          "winrate": "Winrate:",
+          "%": "%"
+        },
+        "playerKillfeed": {
+          "title": "Player Killfeed",
+          "description": "A list of all the final blows and deaths for {playerName} in this match. Fights where {playerName} did not get a final blow are not shown.",
+          "team1": "Team 1",
+          "team2": "Team 2"
+        },
+        "dmgTakenHealingReceived": {
+          "title": "Damage Taken vs Healing Received",
+          "footer": "This chart shows the cumulative damage taken and healing received by round. The x-axis represents the round number, and the y-axis represents the cumulative damage taken or healing received.",
+          "round": "Round {round}",
+          "dmgTaken": "Damage Taken",
+          "healingReceived": "Healing Receieved"
+        },
+        "dmgDoneDmgTaken": {
+          "title": "Hero Damage Dealt vs Damage Taken",
+          "footer": "This chart shows the hero damage dealt and damage taken by round. The x-axis represents the round number, and the y-axis represents the damage dealt or damage taken.",
+          "round": "Round {round}",
+          "dmgDone": "Damage Done",
+          "dmgTaken": "Damage Taken"
+        }
+      },
+      "charts": {
+        "team1": "Team 1",
+        "team2": "Team 2",
+        "round": "Round {index}",
+        "dmgByRound": {
+          "title": "Hero Damage By Round",
+          "footer": "This chart shows the hero damage done by round for {playerName}. The x-axis represents the round, and the y-axis represents the damage done. Note that the damage is NOT cumulative, so the damage done in round 2 does not include the damage done in round 1."
+        },
+        "dmgBlockByRound": {
+          "title": "Damage Mitigated By Round",
+          "footer": "This chart shows the damage mitigated by round for {playerName}. The x-axis represents the round, and the y-axis represents the healing done. Note that the healing is NOT cumulative, so the healing done in round 2 does not include the healing done in round 1."
+        },
+        "finalBlowsByRound": {
+          "title": "Final Blows By Round",
+          "footer": "This chart shows the final blows by round for {playerName}. The x-axis represents the round, and the y-axis represents the healing done. Note that the healing is NOT cumulative, so the healing done in round 2 does not include the healing done in round 1."
+        },
+        "healingByRound": {
+          "title": "Healing By Round",
+          "footer": "This chart shows the healing done by round for {playerName}. The x-axis represents the round, and the y-axis represents the healing done. Note that the healing is NOT cumulative, so the healing done in round 2 does not include the healing done in round 1."
+        },
+        "dmgTakenByRound": {
+          "title": "Damage Taken By Round",
+          "footer": "This chart shows the damage taken by round for {playerName}. The x-axis represents the round, and the y-axis represents the healing done. Note that the healing is NOT cumulative, so the healing done in round 2 does not include the healing done in round 1."
+        },
+        "healingReceivedByRound": {
+          "title": "Healing Received By Round",
+          "footer": "This chart shows the healing received by round for {playerName}. The x-axis represents the round, and the y-axis represents the healing done. Note that the healing is NOT cumulative, so the healing done in round 2 does not include the healing done in round 1."
+        }
+      }
+    },
+    "tabs": {
+      "overview": "Overview",
+      "killfeed": "Killfeed",
+      "kills": "Kills",
+      "charts": "Charts",
+      "events": "Events",
+      "compare": "Compare"
+    },
+    "overview": {
+      "matchTime": "Total Match Time",
+      "minutes": "minutes",
+      "score": "Score",
+      "winner": "Winner:",
+      "pushLimitations": "Not supported for Push due to limitations with the scrim code. :(",
+      "heroDamageDealt": "Hero Damage Dealt",
+      "dealtMore": "dealt more hero damage this map.",
+      "teamHealingDealt": "Team Healing Dealt",
+      "healedMore": "healed more this map.",
+      "overview": "Overview",
+      "round": "Round",
+      "analysis": {
+        "title": "Analysis",
+        "description1": "had a first death in",
+        "description2": "fights, which is a percentage of",
+        "description3": "%.",
+        "description4": "got the most value out of their ultimates, with",
+        "description5": "ultimate kills.",
+        "description6": "Both teams got the same amount of value out of their ultimates, with",
+        "description7": "ultimate kills each.",
+        "description8": "The player with the most first deaths was",
+        "description9": ", with",
+        "description10": "first deaths out of",
+        "description11": "fights.",
+        "ajax1": "played Lúcio this map and Ajaxed",
+        "ajax2": "time",
+        "ajax3": "s"
+      }
+    },
+    "overviewTable": {
+      "noResult": "No results.",
+      "header": {
+        "playerName": "Player Name",
+        "role": "Role",
+        "playerTeam": "Player Team",
+        "timePlayed": "Time Played",
+        "eliminations": "Eliminations",
+        "kills": "Final Blows",
+        "assists": "Assists",
+        "deaths": "Deaths",
+        "kd": "K/D",
+        "kad": "KA/D",
+        "heroDmgDealt": "Hero Damage Dealt",
+        "dmgReceived": "Damage Receieved",
+        "healingReceived": "Healing Receieved",
+        "healingDealt": "Healing Dealt",
+        "dmgToHealsRatio": "Damage Dealt:Healing Receieved",
+        "ultsCharged": "Ultimates Charged",
+        "ultsUsed": "Ultimates Used"
+      },
+      "tooltips": {
+        "playerName": "The player's name. Click on their name to view their statistics.",
+        "role": "The role the player played.",
+        "playerTeam": "The team the player played for.",
+        "timePlayed": "The time the player played.",
+        "eliminations": "The number of eliminations the player had.",
+        "kills": "The number of final blows the player had.",
+        "assists": "The number of assists the player had.",
+        "deaths": "The number of deaths the player had.",
+        "kd": "The player's kill/death ratio.",
+        "kad": "The player's kill/assist/death ratio.",
+        "heroDmgDealt": "The amount of hero damage the player dealt.",
+        "dmgReceived": "The amount of damage the player received.",
+        "healingReceived": "The amount of healing the player received.",
+        "healingDealt": "The amount of healing the player dealt.",
+        "dmgToHealsRatio": "The player's damage dealt to healing received ratio.",
+        "ultsCharged": "The number of ultimates the player charged.",
+        "ultsUsed": "The number of ultimates the player used."
+      }
+    },
+    "killfeed": {
+      "matchTime": "Total Match Time",
+      "minutes": "minutes",
+      "kills": "Kills",
+      "deaths": "Deaths",
+      "fightWins": "Fight Wins",
+      "killfeed": "Killfeed"
+    },
+    "killfeedTable": {
+      "limitTest": "Limit Testing",
+      "environment": "Environmental",
+      "fight": "Fight",
+      "time": "Time",
+      "kill": "Kill",
+      "method": "Method",
+      "start": "Start",
+      "end": "End",
+      "fightWinner": "Fight Winner",
+      "abilities": {
+        "Primary Fire": "Primary Fire",
+        "Secondary Fire": "Secondary Fire",
+        "Ability 1": "Ability 1",
+        "Ability 2": "Ability 2",
+        "Ultimate": "Ultimate",
+        "Melee": "Melee",
+        "0": "0"
+      },
+      "exportCSV": "Export as CSV"
+    },
+    "charts": {
+      "tooltip1": "Looking for more information on charts?",
+      "tooltip2": "Check out the documentation",
+      "tooltip3": "to learn more.",
+      "team1": "Team 1",
+      "team2": "Team 2",
+      "time": "Time:",
+      "tank": "Tank",
+      "damage": "Damage",
+      "support": "Support",
+      "round": "Round",
+      "killsByFight": {
+        "title": "Kills By Fight",
+        "description": "Kills are grouped by 15 second intervals. This chart shows the cumulative kills for each team at each interval. The x-axis represents the time in seconds, and the y-axis represents the cumulative kills. Team 1 is represented with positive numbers, while Team 2 is represented with negative numbers. The chart resets to 0 after each fight."
+      },
+      "finalBlowsByRole": {
+        "title": "Final Blows By Role",
+        "description": "This chart shows the number of final blows by role for each team. The roles are split into Tank, Damage, and Support. The x-axis represents the role, and the y-axis represents the number of final blows."
+      },
+      "dmgByRound": {
+        "title": "Cumulative Hero Damage By Round",
+        "description": "This chart shows the hero damage done by round for each team. The x-axis represents the round, and the y-axis represents the damage done. Note that the damage is cumulative, so the damage done in round 2 includes the damage done in round 1."
+      }
+    },
+    "events": {
+      "roundStart1": "Round",
+      "roundStart2": "started",
+      "roundEnd1": "Round",
+      "roundEnd2": "ended",
+      "matchEnd": "Match ended",
+      "matchStart": "Match started",
+      "mapEvents": {
+        "title": "Events",
+        "description": "Events that occurred during the match. This includes objective captures, rounds starting and ending, multikills, and more.",
+        "captureString1": "took control of the point.",
+        "captureString2": "captured the objective.",
+        "objectiveUpdate": "Point captured",
+        "payloadProgress": "Payload progress:",
+        "meters": "meters",
+        "swap": "swapped to",
+        "ultKills1": "killed",
+        "ultKills2": "player",
+        "ultKills3": "s",
+        "ultKills4": "with/during their ultimate.",
+        "multikill1": "During fight",
+        "multikill2": "got a multikill, killing",
+        "multikill3": "players.",
+        "ajaxFight": "Ajaxed during fight",
+        "lucio": "Lúcio",
+        "ajax": "ajax"
+      },
+      "ultsUsed": {
+        "title": "Ultimates Used",
+        "description": "A list of all ultimates used during the match and the times when they occurred.",
+        "ultStart": "used their ultimate during fight"
+      }
+    },
+    "compare": {
+      "team1": "Team 1",
+      "team2": "Team 2",
+      "playerCard": {
+        "title": "Player Statistics",
+        "allHeroes": {
+          "title": "All Heroes",
+          "timePlayed": "Time Played",
+          "minutes": "minutes",
+          "matchTime": "100% of match time",
+          "eliminations": "Eliminations",
+          "elims": "Elims",
+          "elimsPer10Min": "eliminations per 10 minutes",
+          "deaths": "Deaths",
+          "deathsPer10Min": "deaths per 10 minutes",
+          "ultsUsed": "Ultimates Used",
+          "ultsPer10Min": "ultimates used per 10 minutes",
+          "heroDmgDealt": "Hero Damage Dealt",
+          "heroDmgPer10Min": "hero damage dealt per 10 minutes",
+          "dmgBlocked": "Damage Blocked",
+          "dmgBlockedPer10Min": "damage blocked per 10 minutes",
+          "dmgTaken": "Damage Taken",
+          "dmgTakenPer10Min": "damage taken per 10 minutes",
+          "finalBlows": "Final Blows",
+          "finalBlowsPer10Min": "final blows per 10 minutes",
+          "soloKills": "Solo Kills",
+          "soloKillsPer10Min": "solo kills per 10 minutes",
+          "healingDealt": "Healing Dealt",
+          "healingDealtPer10Min": "healing dealt per 10 minutes",
+          "healingReceived": "Healing Receieved",
+          "healingReceivedPer10Min": "healing received per 10 minutes"
+        },
+        "specificHero": {
+          "timePlayed": "Time Played",
+          "minutes": "minutes",
+          "matchTime": "% of match time",
+          "eliminations": "Eliminations",
+          "elims": "Elims",
+          "elimsPer10Min": "eliminations per 10 minutes",
+          "deaths": "Deaths",
+          "deathsPer10Min": "deaths per 10 minutes",
+          "ultsUsed": "Ultimates Used",
+          "ultsPer10Min": "ultimates used per 10 minutes",
+          "heroDmgDealt": "Hero Damage Dealt",
+          "heroDmgPer10Min": "hero damage dealt per 10 minutes",
+          "dmgBlocked": "Damage Blocked",
+          "dmgBlockedPer10Min": "damage blocked per 10 minutes",
+          "dmgTaken": "Damage Taken",
+          "dmgTakenPer10Min": "damage taken per 10 minutes",
+          "finalBlows": "Final Blows",
+          "finalBlowsPer10Min": "final blows per 10 minutes",
+          "soloKills": "Solo Kills",
+          "soloKillsPer10Min": "solo kills per 10 minutes",
+          "healingDealt": "Healing Dealt",
+          "healingDealtPer10Min": "healing dealt per 10 minutes",
+          "healingReceived": "Healing Receieved",
+          "healingReceivedPer10Min": "healing received per 10 minutes"
+        }
+      }
+    }
+  },
+  "statsPage": {
+    "title": "Stats",
+    "searchbar": {
+      "placeholder": "Enter a player name...",
+      "description": "Search for a player to view their stats. You can search by username or their battle tag. Example: <span>Spingar</span> or <span>Spingar#1000</span>.",
+      "link": "Click here to view hero stats"
+    },
+    "globalStats": "Global Stats",
+    "users": {
+      "title": "Users",
+      "footer": "Total number of users on the platform"
+    },
+    "scrims": {
+      "title": "Scrims",
+      "footer": "Total number of scrims uploaded"
+    },
+    "kills": {
+      "title": "Title",
+      "footer": "Total number of kills recorded"
+    },
+    "playerStat": {
+      "title": "Player Stats",
+      "footer": "Total number of player stats recorded"
+    },
+    "leaderboard": "Leaderboard",
+    "top3MostPlayed": {
+      "title": "Top 3 Most Played Heroes",
+      "rank": "Rank",
+      "hero": "Hero",
+      "timePlayed": "Time Played",
+      "footer": "Results accumulated from all {mapNum} maps."
+    },
+    "top3Kills": {
+      "title": "Top 3 Players by Kills",
+      "rank": "Rank",
+      "player": "Player",
+      "kills": "Kills",
+      "footer": "Results accumulated from all {mapNum} maps."
+    },
+    "top3Dmg": {
+      "title": "Top 3 Players by Hero Damage",
+      "rank": "Rank",
+      "player": "Player",
+      "heroDmgDealt": "Hero Damage Dealt",
+      "footer": "Results accumulated from {mapNum} maps."
+    },
+    "top3Healing": {
+      "title": "Top 3 Players by Healing",
+      "rank": "Rank",
+      "player": "Player",
+      "healingDealt": "Healing Dealt",
+      "footer": "Results accumulated from {mapNum} maps."
+    },
+    "top3DmgBlocked": {
+      "title": "Top 3 Players by Damage Blocked",
+      "rank": "Rank",
+      "player": "Player",
+      "dmgBlocked": "Damage Blocked",
+      "footer": "Results accumulated from {mapNum} maps."
+    },
+    "top3Deaths": {
+      "title": "Top 3 Players by Deaths",
+      "rank": "Rank",
+      "player": "Player",
+      "deaths": "Deaths",
+      "footer": "Results accumulated from {mapNum} maps."
+    },
+    "top3TimePlayed": {
+      "title": "Top 3 Players by Time Played",
+      "rank": "Rank",
+      "player": "Player",
+      "timePlayed": "Time Played",
+      "footer": "Results accumulated from {mapNum} maps."
+    },
+    "top3Ajax": {
+      "title": "Top 3 Players with the Most Ajaxes",
+      "rank": "Rank",
+      "player": "Player",
+      "ajaxes": "Ajaxes",
+      "footer": "Results accumulated from {mapNum} maps."
+    },
+    "playerStats": {
+      "title": "{possessiveName} Stats",
+      "statsFail": "Failed to find stats for {name}. Did you spell the name correctly?",
+      "back": "Go back to stats",
+      "rangePicker": {
+        "selectTime": "Select a timeframe",
+        "lastWeek": "Last Week",
+        "last2Weeks": "Last 2 Weeks",
+        "lastMonth": "Last Month",
+        "last3Months": "Last 3 Months",
+        "last6Months": "Last 6 Months",
+        "lastYear": "Last Year",
+        "allTime": "All Time",
+        "custom": "Custom",
+        "upgrade": "Upgrade to view more timeframes",
+        "selectHero": "Select a hero",
+        "allHeroes": "All Heroes",
+        "tank": "Tank",
+        "damage": "Damage",
+        "support": "Support"
+      },
+      "mostPlayed": {
+        "title": "Most Played Heroes",
+        "rank": "Rank",
+        "hero": "Hero",
+        "games": "Games",
+        "noData": "No data",
+        "footer1": "Stats collected from {scrims} scrims in the last {timeframe}",
+        "footer2": "Stats collected from {timeframe1} scrims {timeframe2}"
+      },
+      "bestPerformance": {
+        "title": "Best Performance",
+        "rank": "Rank",
+        "hero": "Hero",
+        "finalBlows": "Final Blows",
+        "clickMap": "Click to view map",
+        "noData": "No data",
+        "footer1": "Stats collected from {scrims} scrims in the last {timeframe}",
+        "footer2": "Stats collected from {timeframe1} scrims {timeframe2}"
+      },
+      "statPer10": {
+        "footer": "Trending by <span>{percentageChange}</span> in the last {scrimData} scrims",
+        "avg": "Average:",
+        "max": "| Max:",
+        "min": "| Min:"
+      },
+      "avgHeroDmgDealtPer10": {
+        "title": "Average Hero Damage Dealt per 10 (per scrim)",
+        "tooltip": "The average hero damage dealt per 10 minutes for each scrim. Higher is better."
+      },
+      "avgDeathPer10": {
+        "title": "Average Deaths per 10 (per scrim)",
+        "tooltip": "The average number of deaths per 10 minutes for each scrim. Lower is better."
+      },
+      "timeSpent": {
+        "title": "Time Spent on Each Role",
+        "tank": "Tank",
+        "damage": "Damage",
+        "support": "Support",
+        "footer": "Total time played: <span>{toTimestampWithHours}</span> | Time played per role:"
+      },
+      "finalBlowsByMethod": {
+        "title": "Final Blows By Method",
+        "finalBlows": "final blows",
+        "primary": "Primary",
+        "secondary": "Secondary",
+        "ability1": "Ability 1",
+        "ability2": "Ability 2",
+        "ultimate": "Ultimate",
+        "melee": "Melee",
+        "footer": "Calculated from <span>{format}</span> final blows"
+      },
+      "mapWinrates": {
+        "title": "Map Winrates",
+        "tooltip": {
+          "wins": "Wins:",
+          "losses": "Losses:",
+          "percentage": "Percentage:"
+        },
+        "wins": "Wins",
+        "losses": "Losses",
+        "footer": "Map winrates are calculated based on the number of wins and losses for each map. Please note that Push maps are not included in this chart as they do not have a way to track their win/loss condition."
+      },
+      "winrateMapType": {
+        "title": "Winrate By Map Type",
+        "footer": "Wins per map type. 0% means no wins, 100% means all wins. Hover over the chart to see the winrate."
+      },
+      "heroesDiedToMost": {
+        "title": "Heroes Died To Most",
+        "rank": "Rank",
+        "hero": "Hero",
+        "deaths": "Deaths",
+        "noData": "No data",
+        "footer1": "Stats collected from {scrims} scrims in the last {timeframe}",
+        "footer2": "Stats collected from {timeframe1} scrims {timeframe2}"
+      },
+      "heroesElimMost": {
+        "title": "Heroes Eliminated Most",
+        "rank": "Rank",
+        "hero": "Hero",
+        "eliminations": "Eliminations",
+        "noData": "No data",
+        "footer1": "Stats collected from {scrims} scrims in the last {timeframe}",
+        "footer2": "Stats collected from {timeframe1} scrims {timeframe2}"
+      },
+      "stats": {
+        "title": "Stat",
+        "select": "Select a stat",
+        "eliminations": "Eliminations",
+        "final_blows": "Final Blows",
+        "healing_dealt": "Healing Dealt",
+        "healing_received": "Healing Receieved",
+        "self_healing": "Self Healing",
+        "damage_taken": "Damage Taken",
+        "damage_blocked": "Damage Blocked",
+        "ultimates_earned": "Ultimates Earned",
+        "ultimates_used": "Ultimates Used",
+        "solo_kills": "Solo Kills",
+        "environmental_kills": "Environnemental Kills",
+        "deaths": "Deaths",
+        "hero_damage_dealt": "Hero Damage Dealt"
+      }
+    },
+    "heroStats": {
+      "title": "Hero Stats",
+      "description": "Select a hero to view their stats. Stats are aggregated from all scrims played.",
+      "tank": {
+        "title": "Tank Heroes"
+      },
+      "damage": {
+        "title": "Damage Heroes"
+      },
+      "support": {
+        "title": "Support Heroes"
+      },
+      "header": "Stats for {hero}",
+      "heroFail": "Failed to find stats for {hero}. Did you spell the name correctly?",
+      "back": "Go back to stats",
+      "rangePicker": {
+        "selectTime": "Select a timeframe",
+        "lastWeek": "Last Week",
+        "last2Weeks": "Last 2 Weeks",
+        "lastMonth": "Last Month",
+        "last3Months": "Last 3 Months",
+        "last6Months": "Last 6 Months",
+        "lastYear": "Last Year",
+        "allTime": "All Time",
+        "custom": "Custom",
+        "upgrade": "Upgrade to view more timeframes",
+        "selectHero": "Select a hero",
+        "date": "Pick a date"
+      },
+      "heroStats": {
+        "title": "Hero Stats",
+        "totalGames": "Total Games Played",
+        "games": "games",
+        "totalKills": "Total Kills",
+        "kills": "kills",
+        "totalDeaths": "Total Deaths",
+        "deaths": "deaths",
+        "footer1": "Stats collected from {scrims} scrims in the last {timeframe}",
+        "footer2": "Stats collected from {timeframe1} scrims {timeframe2}",
+        "footer3": ". Stats are collected from every player who played as {hero} at any point in a scrim."
+      },
+      "bestPerformance": {
+        "title": "Best Performance",
+        "rank": "Rank",
+        "player": "Player",
+        "finalBlows": "Final Blows",
+        "clickPlayer": "Click to view player stats",
+        "noData": "No data",
+        "footer1": "Stats collected from {scrims} scrims in the last {timeframe}",
+        "footer2": "Stats collected from {timeframe1} scrims {timeframe2}"
+      },
+      "finalBlowsByMethod": "Final Blows By Method",
+      "avgHeroDmgDealtPer10": {
+        "title": "Average Hero Damage Dealt per 10 (per scrim)",
+        "tooltip": "The average hero damage dealt per 10 minutes for each scrim. Higher is better."
+      },
+      "avgDeathPer10": {
+        "title": "Average Deaths per 10 (per scrim)",
+        "tooltip": "The average number of deaths per 10 minutes for each scrim. Lower is better."
+      },
+      "heroesDiedToMost": {
+        "title": "Heroes Died To Most",
+        "rank": "Rank",
+        "hero": "Hero",
+        "deaths": "Deaths",
+        "noData": "No data",
+        "footer1": "Stats collected from {scrims} scrims in the last {timeframe}",
+        "footer2": "Stats collected from {timeframe1} scrims {timeframe2}"
+      },
+      "heroesElimMost": {
+        "title": "Heroes Eliminated Most",
+        "rank": "Rank",
+        "hero": "Hero",
+        "eliminations": "Eliminations",
+        "noData": "No data",
+        "footer1": "Stats collected from {scrims} scrims in the last {timeframe}",
+        "footer2": "Stats collected from {timeframe1} scrims {timeframe2}"
+      },
+      "stats": {
+        "title": "Stat",
+        "select": "Select a stat",
+        "eliminations": "Eliminations",
+        "final_blows": "Final Blows",
+        "healing_dealt": "Healing Dealt",
+        "healing_received": "Healing Receieved",
+        "self_healing": "Self Healing",
+        "damage_taken": "Damage Taken",
+        "damage_blocked": "Damage Blocked",
+        "ultimates_earned": "Ultimates Earned",
+        "ultimates_used": "Ultimates Used",
+        "solo_kills": "Solo Kills",
+        "environmental_kills": "Environnemental Kills",
+        "deaths": "Deaths",
+        "hero_damage_dealt": "Hero Damage Dealt"
+      }
+    }
+  },
+  "notFound": {
+    "404": "404",
+    "header": "Page not found",
+    "description": "Sorry, we couldn't find the page you're looking for.",
+    "backHome": "Back to home",
+    "contact": "Contact support"
+  },
   "teamPage": {
     "manageTeams": "Manage Your Teams",
     "viewTeams": "View Your Teams",
@@ -709,7 +1385,7 @@
     },
     "ctaSection": {
       "title": "Boost your productivity.",
-      "subTitle": "Start using our app today.",
+      "subtitle": "Start using our app today.",
       "description": "Give your team the tools they need to succeed. Sign up for Parsertime today.",
       "signUp": "Sign Up",
       "demo": "Try our demo"
@@ -905,5 +1581,6 @@
     "contact": "Contact",
     "docs": "Docs",
     "copyright": "2024 lux.dev."
-  }
+  },
+  "demo": {}
 }

@@ -9,6 +9,7 @@ import {
 import { TODO } from "@/types/utils";
 import { $Enums, Kill, UltimateEnd } from "@prisma/client";
 import { GeistMono } from "geist/font/mono";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
 type MultikillEvent = {
@@ -78,6 +79,7 @@ const priority: Record<string, number> = {
 };
 
 export async function getMapEvents(id: number) {
+  const t = await getTranslations("mapPage.events");
   const matchStart = await prisma.matchStart.findFirst({
     where: {
       MapDataId: id,
@@ -90,9 +92,9 @@ export async function getMapEvents(id: number) {
     switch (matchStart.map_type) {
       case "Control":
       case "Flashpoint":
-        return "took control of the point.";
+        return t("mapEvents.captureString1");
       default:
-        return "captured the objective.";
+        return t("mapEvents.captureString2");
     }
   };
 
@@ -273,7 +275,7 @@ export async function getMapEvents(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
-            Point captured
+            {t("mapEvents.objectiveUpdate")}
           </p>
         );
       case "payload_progress":
@@ -282,7 +284,7 @@ export async function getMapEvents(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>{" "}
-            Payload progress:
+            {t("mapEvents.payloadProgress")}
             <span
               className={cn(
                 event.capturing_team === matchStart.team_1_name
@@ -292,7 +294,7 @@ export async function getMapEvents(id: number) {
             >
               {event.capturing_team}
             </span>{" "}
-            {event.payload_capture_progress} meters
+            {event.payload_capture_progress} {t("mapEvents.meters")}
           </p>
         );
       case "hero_swap":
@@ -324,7 +326,7 @@ export async function getMapEvents(id: number) {
                 {event.player_name}
               </span>
             </span>{" "}
-            swapped to{" "}
+            {t("mapEvents.swap")}{" "}
             <Image
               src={`/heroes/${toHero(event.player_hero)}.png`}
               alt={`${event.player_name}'s new hero`}
@@ -369,8 +371,10 @@ export async function getMapEvents(id: number) {
                 {event.player_name}
               </span>
             </span>{" "}
-            killed {event.kills.length} player
-            {event.kills.length > 1 ? "s" : ""} with/during their ultimate.
+            {t("mapEvents.ultKills1")} {event.kills.length}{" "}
+            {t("mapEvents.ultKills2")}
+            {event.kills.length > 1 ? t("mapEvents.ultKills3") : ""}{" "}
+            {t("mapEvents.ultKills4")}
           </div>
         );
       case "round_start":
@@ -379,7 +383,7 @@ export async function getMapEvents(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>{" "}
-            Round {event.round_number} started
+            {t("roundStart1")} {event.round_number} {t("roundStart2")}
           </p>
         );
       case "round_end":
@@ -389,7 +393,7 @@ export async function getMapEvents(id: number) {
               <span className={GeistMono.className}>
                 {toTimestamp(event.match_time)} -{" "}
               </span>{" "}
-              Round {event.round_number} ended
+              {t("roundEnd1")} {event.round_number} {t("roundEnd2")}
             </p>
             <div className="py-3" />
           </div>
@@ -400,7 +404,7 @@ export async function getMapEvents(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>{" "}
-            Match ended
+            {t("matchEnd")}
           </p>
         );
       case "match_start":
@@ -409,7 +413,7 @@ export async function getMapEvents(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>{" "}
-            Match started
+            {t("matchStart")}
             <div className="py-3" />
           </p>
         );
@@ -419,7 +423,7 @@ export async function getMapEvents(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
-            During fight {event.fightIndex + 1},{" "}
+            {t("mapEvents.multikill1")} {event.fightIndex + 1},{" "}
             <span className="inline-flex items-center gap-1">
               <Image
                 src={`/heroes/${toHero(event.player_hero)}.png`}
@@ -443,7 +447,8 @@ export async function getMapEvents(id: number) {
                 {event.player_name}
               </span>
             </span>{" "}
-            got a multikill, killing {event.killTimes.length} players.
+            {t("mapEvents.multikill2")} {event.killTimes.length}{" "}
+            {t("mapEvents.multikill3")}
           </div>
         );
       case "ajax":
@@ -475,7 +480,7 @@ export async function getMapEvents(id: number) {
                 {event.player_name}
               </span>
             </span>{" "}
-            Ajaxed during fight{" "}
+            {t("mapEvents.ajaxFight")}{" "}
             {fights.findIndex((fight) => {
               return fight.end >= event.match_time;
             }) + 1}
@@ -489,6 +494,7 @@ export async function getMapEvents(id: number) {
 }
 
 export async function getUltimatesUsedList(id: number) {
+  const t = await getTranslations("mapPage.events");
   const ultimateStarts = (
     await prisma.ultimateStart.findMany({
       where: {
@@ -558,7 +564,7 @@ export async function getUltimatesUsedList(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
-            Round {event.round_number} started
+            {t("roundStart1")} {event.round_number} {t("roundStart2")}
           </p>
         );
       case "round_end":
@@ -568,7 +574,7 @@ export async function getUltimatesUsedList(id: number) {
               <span className={GeistMono.className}>
                 {toTimestamp(event.match_time)} -{" "}
               </span>{" "}
-              Round {event.round_number} ended
+              {t("roundEnd1")} {event.round_number} {t("roundEnd2")}
             </p>
             <div className="py-3" />
           </div>
@@ -579,7 +585,7 @@ export async function getUltimatesUsedList(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>{" "}
-            Match ended
+            {t("matchEnd")}
           </p>
         );
       case "match_start":
@@ -588,7 +594,7 @@ export async function getUltimatesUsedList(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
-            Match started
+            {t("matchStart")}
             <div className="py-3" />
           </p>
         );
@@ -621,7 +627,7 @@ export async function getUltimatesUsedList(id: number) {
                 {event.player_name}
               </span>
             </span>{" "}
-            used their ultimate during fight{" "}
+            {t("ultsUsed.ultStart")}{" "}
             {fights.findIndex((fight) => {
               return fight.end >= event.match_time;
             }) + 1}

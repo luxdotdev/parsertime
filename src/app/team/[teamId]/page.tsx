@@ -99,19 +99,12 @@ export default async function Team({ params }: { params: { teamId: string } }) {
       <Tabs defaultValue="members" className="space-y-4">
         {hasPerms && (
           <TabsList>
-            <TabsTrigger value="members">
-              {/* Members */}
-              {t("members")}
-            </TabsTrigger>
-            <TabsTrigger value="settings">
-              {/* Settings */}
-              {t("settings")}
-            </TabsTrigger>
+            <TabsTrigger value="members">{t("members")}</TabsTrigger>
+            <TabsTrigger value="settings">{t("settings")}</TabsTrigger>
           </TabsList>
         )}
         <TabsContent value="members" className="space-y-4">
           <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-            {/* Members */}
             {t("members")}
           </h3>
 
@@ -137,13 +130,9 @@ export default async function Team({ params }: { params: { teamId: string } }) {
                     <CardHeader className="flex">
                       <div>
                         <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-                          {user.name}{" "}
-                          {userIsManager(user) &&
-                            /* "(Manager)" */ t("manager")}{" "}
-                          {user.id === teamData?.ownerId &&
-                            /* "(Owner)" */ t("owner")}{" "}
-                          {user.name === session?.user?.name &&
-                            /* "(You)" */ t("you")}
+                          {user.name} {userIsManager(user) && t("manager")}{" "}
+                          {user.id === teamData?.ownerId && t("owner")}{" "}
+                          {user.name === session?.user?.name && t("you")}
                         </h4>
                       </div>
                     </CardHeader>

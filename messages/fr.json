@@ -13,7 +13,7 @@
       "title": "Utilisé par une variété d'équipes pour le suivi des statistiques"
     },
     "feature1": {
-      "subTitle": "Améliorez plus rapidement",
+      "subtitle": "Améliorez plus rapidement",
       "title": "Tout ce dont vous avez besoin pour améliorer les performances de votre équipe",
       "description": "Rationalisez votre processus d'amélioration avec notre plateforme. Obtenez un aperçu des forces et des faiblesses de vos joueurs et de vos équipes. Identifiez leurs plus grandes marges de progression et ajustez votre coaching en conséquence.",
       "learnMore": "En savoir plus"
@@ -36,7 +36,7 @@
       }
     },
     "feature2": {
-      "subTitle": "Tout ce dont vous avez besoin",
+      "subtitle": "Tout ce dont vous avez besoin",
       "title": "Statistiques de scrim à portée de main",
       "description": "Consultez vos statistiques après vos scrims au lieu de vous fier uniquement aux codes de replay. Notre plateforme vous permet de conserver vos données quoi qu'il arrive à vos replays."
     },
@@ -67,7 +67,7 @@
       }
     },
     "stats": {
-      "subTitle": "Notre historique",
+      "subtitle": "Notre historique",
       "title": "Fiable par les meilleurs",
       "description": "Nous sommes fiers de travailler avec les meilleures équipes et entraîneurs pour créer de meilleures expériences pour tous. Notre plateforme est conçue pour répondre aux besoins des équipes universitaires et professionnelles."
     },
@@ -77,7 +77,7 @@
       "role": "Manager pour o7 Esports"
     },
     "cta": {
-      "subTitle": "Prêt à commencer?",
+      "subtitle": "Prêt à commencer?",
       "title": "Commencez à utiliser notre application dès aujourd'hui.",
       "description": "Inscrivez-vous et commencez à utiliser notre plateforme dès aujourd'hui. Nous sommes ravis de changer votre manière de penser le coaching.",
       "getStarted": "Commencer",
@@ -380,7 +380,680 @@
       }
     }
   },
-  "statsPage": {},
+  "mapPage": {
+    "back": "Retour à l'aperçu du scrim",
+    "dashboard": "Tableau de bord",
+    "playerSwitcher": {
+      "search": "Rechercher un joueur...",
+      "noPlayerFound": "Aucun joueur trouvé.",
+      "default": "Par défaut"
+    },
+    "player": {
+      "dashboard": {
+        "back": "Retour au tableau de bord",
+        "viewStats": "Voir les statistiques agrégées",
+        "dashboard": "Tableau de bord",
+        "overview": "Aperçu",
+        "analytics": "Analyses",
+        "charts": "Graphiques"
+      },
+      "overview": {
+        "matchTime": "Temps total du match",
+        "minutes": "minutes",
+        "fletaTitle": "Pourcentage de Fleta Deadlift",
+        "%": "%",
+        "fletaDescription": "Un Fleta Deadlift se produit lorsqu'un joueur réalise 50% des frags de son équipe.",
+        "firstPickTitle": "Pourcentage de premier frag",
+        "firstPickDescription1": "Sur",
+        "firstPickDescription2": "combats,",
+        "firstPickDescription3": "a obtenu le premier frag",
+        "firstPickDescription4": "fois.",
+        "firstDeathTitle": "Pourcentage de première mort",
+        "firstDeathDescription1": "Sur",
+        "firstDeathDescription2": "combats,",
+        "firstDeathDescription3": "est mort en premier",
+        "firstDeathDescription4": "fois.",
+        "playerStats": "Statistiques du joueur",
+        "allHeroes": "Tous les héros"
+      },
+      "statTable": {
+        "stat": "Stat",
+        "total": "Total",
+        "avg10Min": "Moy/10 min",
+        "timePlayed": "Temps Joué Héros",
+        "mins": "{mins} mins",
+        "eliminations": "Éliminations",
+        "finalBlows": "Coups de Grâce",
+        "deaths": "Morts",
+        "allDmgDealt": "Tous Dégâts Infligés",
+        "barrierDmgDealt": "Dégâts sur Barrière",
+        "heroDmgDealt": "Dégâts Infligés aux Héros",
+        "healingDealt": "Soins Effectués",
+        "healingReceived": "Soins Reçus",
+        "selfHealing": "Auto-Soins",
+        "dmgTaken": "Dégâts Subis",
+        "dmgBlocked": "Dégâts Bloqués",
+        "defenseAssist": "Assistances Défensives",
+        "offenseAssist": "Assistances Offensives",
+        "ultsEarned": "Ultimes Gagnés",
+        "ultsUsed": "Ultimes Utilisés",
+        "multikillBest": "Meilleur Multikill",
+        "multikills": "Multikills",
+        "soloKills": "Éliminations Solo",
+        "objKills": "Éliminations Objectif",
+        "envKills": "Éliminations Environnementales",
+        "envDeaths": "Morts Environnementales",
+        "critHits": "Coups Critiques",
+        "critHitAcc": "Précision Coups Critiques",
+        "scopedAcc": "Précision à la Lunette",
+        "scopedCritHitAcc": "Précision Coups Critiques à la Lunette",
+        "scopedCritHitKills": "Éliminations Coups Critiques à la Lunette",
+        "weaponAcc": "Précision de l'Arme",
+        "noResult": "Aucun résultat."
+      },
+      "analytics": {
+        "avgUltChargeTime": {
+          "title": "Temps Moyen de Charge Ultime",
+          "footer": "Le temps moyen nécessaire pour charger une ultime. Un temps plus court est préférable, tandis qu'un temps plus long peut indiquer que vous ne faites pas assez de dégâts ou de soins."
+        },
+        "avgTimeUseUlt": {
+          "title": "Temps Moyen d'Utilisation de l'Ultime",
+          "footer": "Le temps moyen pour utiliser une ultime après qu'elle soit chargée. Un temps plus long peut indiquer que vous n'utilisez pas votre ultime efficacement ou que vous la gardez trop longtemps."
+        },
+        "avgDroughtTime": {
+          "title": "Temps Moyen de Sécheresse",
+          "footer": "Le temps de sécheresse est le temps moyen entre votre plus récent kill et votre prochain kill. Un temps de sécheresse élevé peut indiquer que vous ne participez pas aux combats aussi souvent que vous le devriez."
+        },
+        "xFactor": {
+          "title": "Facteur X",
+          "footer": "Le Facteur X est une mesure de l'impact individuel d'un joueur dans un combat. Si votre Facteur X est élevé, vous êtes probablement le facteur décisif dans un combat. Veuillez noter que cela est calculé différemment pour chaque rôle."
+        },
+        "versus": {
+          "title": "Contre d'Autres Joueurs",
+          "description": "Le score et les taux de victoire de {playerName} contre les joueurs de l'équipe ennemie.",
+          "score": "Score :",
+          "winrate": "Taux de Victoire :",
+          "%": "%"
+        },
+        "playerKillfeed": {
+          "title": "Fil des Éliminations du Joueur",
+          "description": "Une liste de tous les coups de grâce et morts pour {playerName} dans ce match. Les combats où {playerName} n'a pas obtenu de coup de grâce ne sont pas affichés.",
+          "team1": "Équipe 1",
+          "team2": "Équipe 2"
+        },
+        "dmgTakenHealingReceived": {
+          "title": "Dégâts Subis vs Soins Reçus",
+          "footer": "Ce graphique montre les dégâts subis et les soins reçus cumulés par manche. L'axe des x représente le numéro de la manche, et l'axe des y représente les dégâts subis ou les soins reçus cumulés.",
+          "round": "Manche {round}",
+          "dmgTaken": "Dégâts Subis",
+          "healingReceived": "Soins Reçus"
+        },
+        "dmgDoneDmgTaken": {
+          "title": "Dégâts Infligés vs Dégâts Subis par le Héros",
+          "footer": "Ce graphique montre les dégâts infligés et subis par le héros par manche. L'axe des x représente le numéro de la manche, et l'axe des y représente les dégâts infligés ou subis.",
+          "round": "Manche {round}",
+          "dmgDone": "Dégâts Infligés",
+          "dmgTaken": "Dégâts Subis"
+        }
+      },
+      "charts": {
+        "team1": "Équipe 1",
+        "team2": "Équipe 2",
+        "round": "Manche {index}",
+        "dmgByRound": {
+          "title": "Dégâts Infligés Par Manche",
+          "footer": "Ce graphique montre les dégâts infligés par manche pour {playerName}. L'axe des x représente la manche, et l'axe des y représente les dégâts infligés. Notez que les dégâts NE sont PAS cumulatifs, donc les dégâts infligés lors de la manche 2 n'incluent pas les dégâts infligés lors de la manche 1."
+        },
+        "dmgBlockByRound": {
+          "title": "Dégâts Mitigés Par Manche",
+          "footer": "Ce graphique montre les dégâts mitigés par manche pour {playerName}. L'axe des x représente la manche, et l'axe des y représente les soins effectués. Notez que les soins NE sont PAS cumulatifs, donc les soins effectués lors de la manche 2 n'incluent pas les soins effectués lors de la manche 1."
+        },
+        "finalBlowsByRound": {
+          "title": "Coups de Grâce Par Manche",
+          "footer": "Ce graphique montre les coups de grâce par manche pour {playerName}. L'axe des x représente la manche, et l'axe des y représente les soins effectués. Notez que les soins NE sont PAS cumulatifs, donc les soins effectués lors de la manche 2 n'incluent pas les soins effectués lors de la manche 1."
+        },
+        "healingByRound": {
+          "title": "Soins Par Manche",
+          "footer": "Ce graphique montre les soins effectués par manche pour {playerName}. L'axe des x représente la manche, et l'axe des y représente les soins effectués. Notez que les soins NE sont PAS cumulatifs, donc les soins effectués lors de la manche 2 n'incluent pas les soins effectués lors de la manche 1."
+        },
+        "dmgTakenByRound": {
+          "title": "Dégâts Subis Par Manche",
+          "footer": "Ce graphique montre les dégâts subis par manche pour {playerName}. L'axe des x représente la manche, et l'axe des y représente les soins effectués. Notez que les soins NE sont PAS cumulatifs, donc les soins effectués lors de la manche 2 n'incluent pas les soins effectués lors de la manche 1."
+        },
+        "healingReceivedByRound": {
+          "title": "Soins Reçus Par Manche",
+          "footer": "Ce graphique montre les soins reçus par manche pour {playerName}. L'axe des x représente la manche, et l'axe des y représente les soins effectués. Notez que les soins NE sont PAS cumulatifs, donc les soins effectués lors de la manche 2 n'incluent pas les soins effectués lors de la manche 1."
+        }
+      }
+    },
+    "tabs": {
+      "overview": "Aperçu",
+      "killfeed": "Flux de frags",
+      "kills": "Frags",
+      "charts": "Graphiques",
+      "events": "Événements",
+      "compare": "Comparer"
+    },
+    "overview": {
+      "matchTime": "Temps total du match",
+      "minutes": "minutes",
+      "score": "Score",
+      "winner": "Gagnant :",
+      "pushLimitations": "Non supporté pour Push en raison de limitations avec le code du scrim. :(",
+      "heroDamageDealt": "Dégâts infligés par les héros",
+      "dealtMore": "a infligé plus de dégâts héroïques sur cette carte.",
+      "teamHealingDealt": "Soin d'équipe effectué",
+      "healedMore": "a soigné plus sur cette carte.",
+      "overview": "Aperçu",
+      "round": "Manche",
+      "analysis": {
+        "title": "Analyse",
+        "description1": "a eu une première mort dans",
+        "description2": "combats, ce qui représente un pourcentage de",
+        "description3": "%.",
+        "description4": "a tiré le meilleur parti de ses ultimes, avec",
+        "description5": "frags ultimes.",
+        "description6": "Les deux équipes ont tiré la même valeur de leurs ultimes, avec",
+        "description7": "frags ultimes chacun.",
+        "description8": "Le joueur avec le plus de premières morts était",
+        "description9": ", avec",
+        "description10": "premières morts sur",
+        "description11": "combats.",
+        "ajax1": "a joué Lúcio sur cette carte et a Ajaxé",
+        "ajax2": "fois",
+        "ajax3": ""
+      }
+    },
+    "overviewTable": {
+      "header": {
+        "playerName": "Nom du joueur",
+        "role": "Rôle",
+        "playerTeam": "Équipe du joueur",
+        "timePlayed": "Temps joué",
+        "eliminations": "Éliminations",
+        "kills": "Frags",
+        "assists": "Assistances",
+        "deaths": "Morts",
+        "kd": "É/M",
+        "kad": "ÉA/M",
+        "heroDmgDealt": "Dégâts infligés par le héros",
+        "dmgReceived": "Dégâts reçus",
+        "healingReceived": "Soins reçus",
+        "healingDealt": "Soins effectués",
+        "dmgToHealsRatio": "Ratio dégâts infligés/soins reçus",
+        "ultsCharged": "Ultimes chargés",
+        "ultsUsed": "Ultimes utilisés"
+      },
+      "tooltips": {
+        "playerName": "Le nom du joueur. Cliquez sur son nom pour voir ses statistiques.",
+        "role": "Le rôle joué par le joueur.",
+        "playerTeam": "L'équipe pour laquelle le joueur a joué.",
+        "timePlayed": "Le temps que le joueur a joué.",
+        "eliminations": "Le nombre d'éliminations effectuées par le joueur.",
+        "kills": "Le nombre de frags effectués par le joueur.",
+        "assists": "Le nombre d'assistances effectuées par le joueur.",
+        "deaths": "Le nombre de morts du joueur.",
+        "kd": "Le ratio éliminations/morts du joueur.",
+        "kad": "Le ratio éliminations/assistances/morts du joueur.",
+        "heroDmgDealt": "La quantité de dégâts infligés par le joueur.",
+        "dmgReceived": "La quantité de dégâts reçus par le joueur.",
+        "healingReceived": "La quantité de soins reçus par le joueur.",
+        "healingDealt": "La quantité de soins effectués par le joueur.",
+        "dmgToHealsRatio": "Le ratio dégâts infligés/soins reçus du joueur.",
+        "ultsCharged": "Le nombre d'ultimes chargés par le joueur.",
+        "ultsUsed": "Le nombre d'ultimes utilisés par le joueur."
+      }
+    },
+    "killfeed": {
+      "matchTime": "Temps total du match",
+      "minutes": "minutes",
+      "kills": "Frags",
+      "deaths": "Morts",
+      "fightWins": "Victoires en combat",
+      "killfeed": "Flux de frags"
+    },
+    "killfeedTable": {
+      "limitTest": "Test de limites",
+      "environment": "Environnemental",
+      "fight": "Combat",
+      "time": "Temps",
+      "kill": "Frag",
+      "method": "Méthode",
+      "start": "Début",
+      "end": "Fin",
+      "fightWinner": "Vainqueur du combat",
+      "abilities": {
+        "Primary Fire": "Tir principal",
+        "Secondary Fire": "Tir secondaire",
+        "Ability 1": "Capacité 1",
+        "Ability 2": "Capacité 2",
+        "Ultimate": "Ultime",
+        "Melee": "Mêlée",
+        "0": "0"
+      },
+      "exportCSV": "Exporter en CSV"
+    },
+    "charts": {
+      "tooltip1": "Vous cherchez plus d'informations sur les graphiques ?",
+      "tooltip2": "Consultez la documentation",
+      "tooltip3": "pour en savoir plus.",
+      "team1": "Équipe 1",
+      "team2": "Équipe 2",
+      "time": "Temps :",
+      "tank": "Tank",
+      "damage": "Dégâts",
+      "support": "Soutien",
+      "round": "Manche",
+      "killsByFight": {
+        "title": "Frags par combat",
+        "description": "Les frags sont regroupés par intervalles de 15 secondes. Ce graphique montre les frags cumulés pour chaque équipe à chaque intervalle. L'axe des x représente le temps en secondes, et l'axe des y représente les frags cumulés. L'équipe 1 est représentée par des nombres positifs, tandis que l'équipe 2 est représentée par des nombres négatifs. Le graphique se réinitialise à 0 après chaque combat."
+      },
+      "finalBlowsByRole": {
+        "title": "Frags par rôle",
+        "description": "Ce graphique montre le nombre de frags par rôle pour chaque équipe. Les rôles sont répartis en Tank, Dégâts, et Soutien. L'axe des x représente le rôle, et l'axe des y représente le nombre de frags."
+      },
+      "dmgByRound": {
+        "title": "Dégâts cumulatifs par manche",
+        "description": "Ce graphique montre les dégâts infligés par manche pour chaque équipe. L'axe des x représente la manche, et l'axe des y représente les dégâts infligés. Notez que les dégâts sont cumulatifs, donc les dégâts infligés en manche 2 incluent ceux infligés en manche 1."
+      }
+    },
+    "events": {
+      "roundStart1": "Manche",
+      "roundStart2": "commencée",
+      "roundEnd1": "Manche",
+      "roundEnd2": "terminée",
+      "matchEnd": "Match terminé",
+      "matchStart": "Match commencé",
+      "mapEvents": {
+        "title": "Événements",
+        "description": "Événements survenus pendant le match. Cela inclut la capture d'objectifs, le début et la fin des manches, les multikills, et plus encore.",
+        "captureString1": "a pris le contrôle du point.",
+        "captureString2": "a capturé l'objectif.",
+        "objectiveUpdate": "Point capturé",
+        "payloadProgress": "Progrès de la charge :",
+        "meters": "mètres",
+        "swap": "a changé pour",
+        "ultKills1": "a tué",
+        "ultKills2": "joueur",
+        "ultKills3": "s",
+        "ultKills4": "avec/pendant son ultime.",
+        "multikill1": "Pendant le combat",
+        "multikill2": "a réalisé un multikill, tuant",
+        "multikill3": "joueurs.",
+        "ajaxFight": "Ajaxé pendant le combat",
+        "lucio": "Lúcio",
+        "ajax": "ajax"
+      },
+      "ultsUsed": {
+        "title": "Ultimes utilisés",
+        "description": "Une liste de tous les ultimes utilisés pendant le match et les moments où ils se sont produits.",
+        "ultStart": "a utilisé son ultime pendant le combat"
+      }
+    },
+    "compare": {
+      "team1": "Équipe 1",
+      "team2": "Équipe 2",
+      "playerCard": {
+        "title": "Statistiques du joueur",
+        "allHeroes": {
+          "title": "Tous les héros",
+          "timePlayed": "Temps joué",
+          "minutes": "minutes",
+          "matchTime": "100% du temps de match",
+          "eliminations": "Éliminations",
+          "elims": "Élims",
+          "elimsPer10Min": "éliminations par 10 minutes",
+          "deaths": "Morts",
+          "deathsPer10Min": "morts par 10 minutes",
+          "ultsUsed": "Ultimes utilisés",
+          "ultsPer10Min": "ultimes utilisés par 10 minutes",
+          "heroDmgDealt": "Dégâts infligés par le héros",
+          "heroDmgPer10Min": "dégâts infligés par le héros par 10 minutes",
+          "dmgBlocked": "Dégâts bloqués",
+          "dmgBlockedPer10Min": "dégâts bloqués par 10 minutes",
+          "dmgTaken": "Dégâts subis",
+          "dmgTakenPer10Min": "dégâts subis par 10 minutes",
+          "finalBlows": "Frags",
+          "finalBlowsPer10Min": "frags par 10 minutes",
+          "soloKills": "Frags en solo",
+          "soloKillsPer10Min": "frags en solo par 10 minutes",
+          "healingDealt": "Soins effectués",
+          "healingDealtPer10Min": "soins effectués par 10 minutes",
+          "healingReceived": "Soins reçus",
+          "healingReceivedPer10Min": "soins reçus par 10 minutes"
+        },
+        "specificHero": {
+          "timePlayed": "Temps joué",
+          "minutes": "minutes",
+          "matchTime": "% du temps de match",
+          "eliminations": "Éliminations",
+          "elims": "Élims",
+          "elimsPer10Min": "éliminations par 10 minutes",
+          "deaths": "Morts",
+          "deathsPer10Min": "morts par 10 minutes",
+          "ultsUsed": "Ultimes utilisés",
+          "ultsPer10Min": "ultimes utilisés par 10 minutes",
+          "heroDmgDealt": "Dégâts infligés par le héros",
+          "heroDmgPer10Min": "dégâts infligés par le héros par 10 minutes",
+          "dmgBlocked": "Dégâts bloqués",
+          "dmgBlockedPer10Min": "dégâts bloqués par 10 minutes",
+          "dmgTaken": "Dégâts subis",
+          "dmgTakenPer10Min": "dégâts subis par 10 minutes",
+          "finalBlows": "Frags",
+          "finalBlowsPer10Min": "frags par 10 minutes",
+          "soloKills": "Frags en solo",
+          "soloKillsPer10Min": "frags en solo par 10 minutes",
+          "healingDealt": "Soins effectués",
+          "healingDealtPer10Min": "soins effectués par 10 minutes",
+          "healingReceived": "Soins reçus",
+          "healingReceivedPer10Min": "soins reçus par 10 minutes"
+        }
+      }
+    }
+  },
+  "statsPage": {
+    "title": "Statistiques",
+    "searchbar": {
+      "placeholder": "Entrez un nom de joueur...",
+      "description": "Recherchez un joueur pour voir ses statistiques. Vous pouvez rechercher par nom d'utilisateur ou par son tag de bataille. Exemple : <span>Spingar</span> ou <span>Spingar#1000</span>.",
+      "link": "Cliquez ici pour voir les statistiques des héros"
+    },
+    "globalStats": "Statistiques Globales",
+    "users": {
+      "title": "Utilisateurs",
+      "footer": "Nombre total d'utilisateurs sur la plateforme"
+    },
+    "scrims": {
+      "title": "Scrims",
+      "footer": "Nombre total de scrims téléchargées"
+    },
+    "kills": {
+      "title": "Titre",
+      "footer": "Nombre total de kills enregistrés"
+    },
+    "playerStat": {
+      "title": "Statistiques des Joueurs",
+      "footer": "Nombre total de statistiques de joueurs enregistrées"
+    },
+    "leaderboard": "Classement",
+    "top3MostPlayed": {
+      "title": "Top 3 des Héros les Plus Joués",
+      "rank": "Rang",
+      "hero": "Héros",
+      "timePlayed": "Temps Joué",
+      "footer": "Résultats accumulés sur {mapNum} cartes."
+    },
+    "top3Kills": {
+      "title": "Top 3 des Joueurs par Kills",
+      "rank": "Rang",
+      "player": "Joueur",
+      "kills": "Kills",
+      "footer": "Résultats accumulés sur {mapNum} cartes."
+    },
+    "top3Dmg": {
+      "title": "Top 3 des Joueurs par Dégâts Infligés",
+      "rank": "Rang",
+      "player": "Joueur",
+      "heroDmgDealt": "Dégâts Infligés aux Héros",
+      "footer": "Résultats accumulés sur {mapNum} cartes."
+    },
+    "top3Healing": {
+      "title": "Top 3 des Joueurs par Soins Prodigués",
+      "rank": "Rang",
+      "player": "Joueur",
+      "healingDealt": "Soins Prodigués",
+      "footer": "Résultats accumulés sur {mapNum} cartes."
+    },
+    "top3DmgBlocked": {
+      "title": "Top 3 des Joueurs par Dégâts Bloqués",
+      "rank": "Rang",
+      "player": "Joueur",
+      "dmgBlocked": "Dégâts Bloqués",
+      "footer": "Résultats accumulés sur {mapNum} cartes."
+    },
+    "top3Deaths": {
+      "title": "Top 3 des Joueurs par Morts",
+      "rank": "Rang",
+      "player": "Joueur",
+      "deaths": "Morts",
+      "footer": "Résultats accumulés sur {mapNum} cartes."
+    },
+    "top3TimePlayed": {
+      "title": "Top 3 des Joueurs par Temps Joué",
+      "rank": "Rang",
+      "player": "Joueur",
+      "timePlayed": "Temps Joué",
+      "footer": "Résultats accumulés sur {mapNum} cartes."
+    },
+    "top3Ajax": {
+      "title": "Top 3 des Joueurs avec le Plus d'Ajaxes",
+      "rank": "Rang",
+      "player": "Joueur",
+      "ajaxes": "Ajaxes",
+      "footer": "Résultats accumulés sur {mapNum} cartes."
+    },
+    "playerStats": {
+      "title": "Statistiques de {name}",
+      "statsFail": "Impossible de trouver les statistiques pour {name}. Avez-vous correctement orthographié le nom ?",
+      "back": "Retourner aux statistiques",
+      "rangePicker": {
+        "selectTime": "Sélectionnez une période",
+        "lastWeek": "La Semaine Dernière",
+        "last2Weeks": "Les 2 Dernières Semaines",
+        "lastMonth": "Le Mois Dernier",
+        "last3Months": "Les 3 Derniers Mois",
+        "last6Months": "Les 6 Derniers Mois",
+        "lastYear": "L'Année Dernière",
+        "allTime": "Depuis Toujours",
+        "custom": "Personnalisé",
+        "upgrade": "Mettez à niveau pour voir plus de périodes",
+        "selectHero": "Sélectionnez un héros",
+        "allHeroes": "Tous les Héros",
+        "tank": "Tank",
+        "damage": "Dégâts",
+        "support": "Support"
+      },
+      "mostPlayed": {
+        "title": "Héros les Plus Joués",
+        "rank": "Rang",
+        "hero": "Héros",
+        "games": "Parties",
+        "noData": "Pas de données",
+        "footer1": "Statistiques collectées à partir de {scrims} scrims au cours des {timeframe} derniers",
+        "footer2": "Statistiques collectées à partir de scrims {timeframe1} {timeframe2}"
+      },
+      "bestPerformance": {
+        "title": "Meilleure Performance",
+        "rank": "Rang",
+        "hero": "Héros",
+        "finalBlows": "Coups Fatals",
+        "clickMap": "Cliquez pour voir la carte",
+        "noData": "Pas de données",
+        "footer1": "Statistiques collectées à partir de {scrims} scrims au cours des {timeframe} derniers",
+        "footer2": "Statistiques collectées à partir de scrims {timeframe1} {timeframe2}"
+      },
+      "statPer10": {
+        "footer": "Tendance de <span>{percentageChange}</span> au cours des {scrimData} dernières parties",
+        "avg": "Moyenne :",
+        "max": "| Max :",
+        "min": "| Min :"
+      },
+      "avgHeroDmgDealtPer10": {
+        "title": "Moyenne de Dégâts Infligés par Héros par 10 Minutes (par scrim)",
+        "tooltip": "La moyenne des dégâts infligés par un héros par 10 minutes pour chaque scrim. Plus c'est élevé, mieux c'est.",
+        "heroDmgDealt": "dégâts_infligés_par_héros"
+      },
+      "avgDeathPer10": {
+        "title": "Moyenne de Morts par 10 Minutes (par scrim)",
+        "tooltip": "Le nombre moyen de morts par 10 minutes pour chaque scrim. Moins c'est élevé, mieux c'est.",
+        "deaths": "morts"
+      },
+      "timeSpent": {
+        "title": "Temps Passé sur Chaque Rôle",
+        "tank": "Tank",
+        "damage": "Dégâts",
+        "support": "Soutien",
+        "footer": "Temps total joué : <span>{toTimestampWithHours}</span> | Temps joué par rôle :"
+      },
+      "finalBlowsByMethod": {
+        "title": "Coups Fatals par Méthode",
+        "finalBlows": "coups fatals",
+        "primary": "Principal",
+        "secondary": "Secondaire",
+        "ability1": "Capacité 1",
+        "ability2": "Capacité 2",
+        "ultimate": "Ultime",
+        "melee": "Mêlée",
+        "footer": "Calculé à partir de <span>{format}</span> coups fatals"
+      },
+      "mapWinrates": {
+        "title": "Taux de Victoire par Carte",
+        "tooltip": {
+          "wins": "Victoires :",
+          "losses": "Défaites :",
+          "percentage": "Pourcentage :"
+        },
+        "wins": "Victoires",
+        "losses": "Défaites",
+        "footer": "Les taux de victoire par carte sont calculés en fonction du nombre de victoires et de défaites pour chaque carte. Veuillez noter que les cartes de type Push ne sont pas incluses dans ce graphique car elles n'ont pas de moyen de suivre leur condition de victoire/défaite."
+      },
+      "winrateMapType": {
+        "title": "Taux de Victoire par Type de Carte",
+        "footer": "Victoires par type de carte. 0% signifie aucune victoire, 100% signifie toutes les victoires. Survolez le graphique pour voir le taux de victoire."
+      },
+      "heroesDiedToMost": {
+        "title": "Héros les Plus Mortels",
+        "rank": "Rang",
+        "hero": "Héros",
+        "deaths": "Morts",
+        "noData": "Pas de données",
+        "footer1": "Statistiques collectées à partir de {scrims} scrims au cours des {timeframe} derniers",
+        "footer2": "Statistiques collectées à partir de scrims {timeframe1} {timeframe2}"
+      },
+      "heroesElimMost": {
+        "title": "Héros les Plus Éliminés",
+        "rank": "Rang",
+        "hero": "Héros",
+        "eliminations": "Éliminations",
+        "noData": "Pas de données",
+        "footer1": "Statistiques collectées à partir de {scrims} scrims au cours des {timeframe} derniers",
+        "footer2": "Statistiques collectées à partir de scrims {timeframe1} {timeframe2}"
+      },
+      "stats": {
+        "title": "Statistique",
+        "select": "Sélectionnez une statistique",
+        "eliminations": "Éliminations",
+        "final_blows": "Coups fatals",
+        "healing_dealt": "Soins prodigués",
+        "healing_received": "Soins reçus",
+        "self_healing": "Auto-soins",
+        "damage_taken": "Dégâts subis",
+        "damage_blocked": "Dégâts bloqués",
+        "ultimates_earned": "Ultimes gagnés",
+        "ultimates_used": "Ultimes utilisés",
+        "solo_kills": "Frags en solo",
+        "environmental_kills": "Frags environnementaux",
+        "deaths": "Morts",
+        "hero_damage_dealt": "Dégâts infligés aux héros"
+      }
+    },
+    "heroStats": {
+      "title": "Statistiques des Héros",
+      "description": "Sélectionnez un héros pour voir ses statistiques. Les statistiques sont agrégées à partir de toutes les parties jouées.",
+      "tank": {
+        "title": "Héros Tanks"
+      },
+      "damage": {
+        "title": "Héros Dégâts"
+      },
+      "support": {
+        "title": "Héros Supports"
+      },
+      "header": "Statistiques pour {hero}",
+      "heroFail": "Impossible de trouver les statistiques pour {hero}. Avez-vous bien orthographié le nom ?",
+      "back": "Revenir aux statistiques",
+      "rangePicker": {
+        "selectTime": "Sélectionnez une période",
+        "lastWeek": "La semaine dernière",
+        "last2Weeks": "Les 2 dernières semaines",
+        "lastMonth": "Le mois dernier",
+        "last3Months": "Les 3 derniers mois",
+        "last6Months": "Les 6 derniers mois",
+        "lastYear": "L'année dernière",
+        "allTime": "Depuis toujours",
+        "custom": "Personnalisé",
+        "upgrade": "Mettez à jour pour voir plus de périodes",
+        "selectHero": "Sélectionnez un héros",
+        "date": "Choisir une date"
+      },
+      "heroStats": {
+        "title": "Statistiques des Héros",
+        "totalGames": "Total des parties jouées",
+        "games": "parties",
+        "totalKills": "Total des éliminations",
+        "kills": "éliminations",
+        "totalDeaths": "Total des morts",
+        "deaths": "morts",
+        "footer1": "Statistiques collectées à partir de {scrims} parties au cours des {timeframe} derniers",
+        "footer2": "Statistiques collectées à partir de {timeframe1} parties {timeframe2}",
+        "footer3": ". Les statistiques sont collectées à partir de tous les joueurs qui ont joué en tant que {hero} à un moment donné dans une partie."
+      },
+      "bestPerformance": {
+        "title": "Meilleure performance",
+        "rank": "Rang",
+        "player": "Joueur",
+        "finalBlows": "Coups fatals",
+        "clickPlayer": "Cliquez pour voir les statistiques du joueur",
+        "noData": "Pas de données",
+        "footer1": "Statistiques collectées à partir de {scrims} parties au cours des {timeframe} derniers",
+        "footer2": "Statistiques collectées à partir de {timeframe1} parties {timeframe2}"
+      },
+      "finalBlowsByMethod": "Coups fatals par méthode",
+      "avgHeroDmgDealtPer10": {
+        "title": "Dégâts moyens infligés aux héros par 10 (par partie)",
+        "tooltip": "Les dégâts moyens infligés aux héros par 10 minutes pour chaque partie. Plus c'est élevé, mieux c'est."
+      },
+      "avgDeathPer10": {
+        "title": "Moyenne de morts par 10 (par partie)",
+        "tooltip": "Le nombre moyen de morts par 10 minutes pour chaque partie. Plus c'est bas, mieux c'est."
+      },
+      "heroesDiedToMost": {
+        "title": "Héros les plus meurtriers",
+        "rank": "Rang",
+        "hero": "Héros",
+        "deaths": "Morts",
+        "noData": "Pas de données",
+        "footer1": "Statistiques collectées à partir de {scrims} parties au cours des {timeframe} derniers",
+        "footer2": "Statistiques collectées à partir de {timeframe1} parties {timeframe2}"
+      },
+      "heroesElimMost": {
+        "title": "Héros les plus éliminés",
+        "rank": "Rang",
+        "hero": "Héros",
+        "eliminations": "Éliminations",
+        "noData": "Pas de données",
+        "footer1": "Statistiques collectées à partir de {scrims} parties au cours des {timeframe} derniers",
+        "footer2": "Statistiques collectées à partir de {timeframe1} parties {timeframe2}"
+      },
+      "stats": {
+        "title": "Statistique",
+        "select": "Sélectionnez une statistique",
+        "eliminations": "Éliminations",
+        "final_blows": "Coups fatals",
+        "healing_dealt": "Soins prodigués",
+        "healing_received": "Soins reçus",
+        "self_healing": "Auto-soins",
+        "damage_taken": "Dégâts subis",
+        "damage_blocked": "Dégâts bloqués",
+        "ultimates_earned": "Ultimes gagnés",
+        "ultimates_used": "Ultimes utilisés",
+        "solo_kills": "Frags en solo",
+        "environmental_kills": "Frags environnementaux",
+        "deaths": "Morts",
+        "hero_damage_dealt": "Dégâts infligés aux héros"
+      }
+    }
+  },
   "teamPage": {
     "manageTeams": "Gérer vos équipes",
     "viewTeams": "Voir vos équipes",
@@ -708,7 +1381,7 @@
     },
     "ctaSection": {
       "title": "Boostez votre productivité.",
-      "subTitle": "Commencez à utiliser notre application dès aujourd'hui.",
+      "subtitle": "Commencez à utiliser notre application dès aujourd'hui.",
       "description": "Donnez à votre équipe les outils dont elle a besoin pour réussir. Inscrivez-vous à Parsertime dès aujourd'hui.",
       "signUp": "S'inscrire",
       "demo": "Essayez notre démo"
@@ -895,6 +1568,13 @@
     "free": "'FREE'",
     "basic": "'BASIC'",
     "premium": "'PREMIUM'"
+  },
+  "notFound": {
+    "404": "404",
+    "header": "Page non trouvée",
+    "description": "Désolé, nous n'avons pas pu trouver la page que vous cherchez.",
+    "backHome": "Retour à l'accueil",
+    "contact": "Contacter le support"
   },
   "footer": {
     "dashboard": "Tableau de bord",

@@ -3,6 +3,7 @@
 import { CardContent, CardFooter } from "@/components/ui/card";
 import { Winrate } from "@/data/scrim-dto";
 import { MapName, mapNameToMapTypeMapping } from "@/types/map";
+import { useTranslations } from "next-intl";
 import {
   PolarAngleAxis,
   PolarGrid,
@@ -85,6 +86,7 @@ type Props = {
 };
 
 export function WinsPerMapTypeChart({ data }: Props) {
+  const t = useTranslations("statsPage.playerStats.winrateMapType");
   const processedData = processMapWinrates(data);
 
   return (
@@ -117,10 +119,7 @@ export function WinsPerMapTypeChart({ data }: Props) {
         </ResponsiveContainer>
       </CardContent>
       <CardFooter>
-        <p className="text-sm text-muted-foreground">
-          Wins per map type. 0% means no wins, 100% means all wins. Hover over
-          the chart to see the winrate.
-        </p>
+        <p className="text-sm text-muted-foreground">{t("footer")}</p>
       </CardFooter>
     </>
   );

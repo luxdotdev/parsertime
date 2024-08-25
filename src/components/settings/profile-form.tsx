@@ -35,14 +35,10 @@ export function ProfileForm({ user }: { user: User }) {
     name: z
       .string()
       .min(2, {
-        message: /* "Name must be at least 2 characters." */ t(
-          "profileForm.minMessage"
-        ),
+        message: t("profileForm.minMessage"),
       })
       .max(30, {
-        message: /* "Name must not be longer than 30 characters." */ t(
-          "profileForm.maxMessage"
-        ),
+        message: t("profileForm.maxMessage"),
       }),
   });
 
@@ -67,17 +63,15 @@ export function ProfileForm({ user }: { user: User }) {
 
     if (res.ok) {
       toast({
-        title: /* "Profile updated" */ t("profileForm.onSubmit.title"),
-        description: /* "Your profile has been successfully updated." */ t(
-          "profileForm.onSubmit.description"
-        ),
+        title: t("profileForm.onSubmit.title"),
+        description: t("profileForm.onSubmit.description"),
         duration: 5000,
       });
       router.refresh();
     } else {
       toast({
-        title: /* "An error occurred" */ t("profileForm.onSubmit.errorTitle"),
-        description: /* `An error occurred: */ `${t("profileForm.onSubmit.errorDescription")} ${await res.text()} (${res.status})`,
+        title: t("profileForm.onSubmit.errorTitle"),
+        description: `${t("profileForm.onSubmit.errorDescription")} ${await res.text()} (${res.status})`,
         variant: "destructive",
         duration: 5000,
       });
@@ -105,10 +99,7 @@ export function ProfileForm({ user }: { user: User }) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
-                  {/* Username */}
-                  {t("profileForm.username.title")}
-                </FormLabel>
+                <FormLabel>{t("profileForm.username.title")}</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="lux"
@@ -117,8 +108,6 @@ export function ProfileForm({ user }: { user: User }) {
                   />
                 </FormControl>
                 <FormDescription>
-                  {/* This is your public display name. It can be your real name or
-                  a pseudonym. */}
                   {t("profileForm.username.description")}
                 </FormDescription>
                 <FormMessage />
@@ -126,10 +115,7 @@ export function ProfileForm({ user }: { user: User }) {
             )}
           />
           <FormItem>
-            <FormLabel>
-              {/* Avatar */}
-              {t("profileForm.avatar.title")}
-            </FormLabel>
+            <FormLabel>{t("profileForm.avatar.title")}</FormLabel>
             <FormControl aria-readonly>
               <>
                 <input
@@ -157,16 +143,11 @@ export function ProfileForm({ user }: { user: User }) {
               </>
             </FormControl>
             <FormDescription>
-              {/* This is your public account avatar. Click on the avatar to upload
-              a custom one from your files. */}
               {t("profileForm.avatar.description")}
             </FormDescription>
             <FormMessage />
           </FormItem>
-          <Button type="submit">
-            {/* Update profile */}
-            {t("profileForm.avatar.update")}
-          </Button>
+          <Button type="submit">{t("profileForm.avatar.update")}</Button>
         </form>
       </Form>
     </ClientOnly>

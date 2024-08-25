@@ -22,35 +22,30 @@ export default function Footer() {
             href="/dashboard"
             className="text-sm text-gray-600 transition-colors duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
           >
-            {/* Dashboard */}
             {t("dashboard")}
           </Link>
           <Link
             href="/stats"
             className="text-sm text-gray-600 transition-colors duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
           >
-            {/* Stats */}
             {t("stats")}
           </Link>
           <Link
             href="/team"
             className="text-sm text-gray-600 transition-colors duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
           >
-            {/* Teams */}
             {t("teams")}
           </Link>
           <Link
             href="/settings"
             className="text-sm text-gray-600 transition-colors duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
           >
-            {/* Settings */}
             {t("settings")}
           </Link>
           <Link
             href="/contact"
             className="text-sm text-gray-600 transition-colors duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
           >
-            {/* Contact */}
             {t("contact")}
           </Link>
           <Link
@@ -58,13 +53,12 @@ export default function Footer() {
             target="_blank"
             className="text-sm text-gray-600 transition-colors duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
           >
-            {/* Docs */}
             {t("docs")}
           </Link>
         </div>
 
         <p className="mt-6 text-sm text-gray-500 dark:text-gray-400 lg:mt-0">
-          &copy; {/* 2024 lux.dev. */}
+          &copy;
           {t("copyright")}
         </p>
       </div>

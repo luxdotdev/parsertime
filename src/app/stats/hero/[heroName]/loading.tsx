@@ -1,8 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslations } from "next-intl";
 
 export default function StatsLoading() {
+  const t = useTranslations("statsPage.heroStats");
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -17,7 +19,7 @@ export default function StatsLoading() {
         <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card className="col-span-1 md:col-span-2">
             <CardHeader>
-              <CardTitle>Hero Stats</CardTitle>
+              <CardTitle>{t("heroStats.title")}</CardTitle>
             </CardHeader>
             <CardContent>
               <Skeleton className="h-72" />
@@ -25,7 +27,7 @@ export default function StatsLoading() {
           </Card>
           <Card className="col-span-1 md:col-span-2 xl:col-span-1">
             <CardHeader>
-              <CardTitle>Best Performance</CardTitle>
+              <CardTitle>{t("bestPerformance.title")}</CardTitle>
             </CardHeader>
             <CardContent>
               <Skeleton className="h-72" />
@@ -33,7 +35,7 @@ export default function StatsLoading() {
           </Card>
           <Card className="col-span-1 md:col-span-2 xl:col-span-1">
             <CardHeader>
-              <CardTitle>Final Blows By Method</CardTitle>
+              <CardTitle>{t("finalBlowsByMethod")}</CardTitle>
             </CardHeader>
             <CardContent>
               <Skeleton className="h-72" />
@@ -42,7 +44,7 @@ export default function StatsLoading() {
           <Card className="col-span-1 md:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-1">
-                Average Hero Damage Dealt per 10 (per scrim)
+                {t("avgHeroDmgDealtPer10.title")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -52,7 +54,7 @@ export default function StatsLoading() {
           <Card className="col-span-1 md:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-1">
-                Average Deaths per 10 (per scrim)
+                {t("avgDeathPer10.title")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -61,7 +63,7 @@ export default function StatsLoading() {
           </Card>
           <Card className="col-span-1 md:col-span-2 xl:col-span-1">
             <CardHeader>
-              <CardTitle>Heroes Died To Most</CardTitle>
+              <CardTitle>{t("heroesDiedToMost.title")}</CardTitle>
             </CardHeader>
             <CardContent>
               <Skeleton className="h-72" />
@@ -69,7 +71,7 @@ export default function StatsLoading() {
           </Card>
           <Card className="col-span-1 md:col-span-2 xl:col-span-1">
             <CardHeader>
-              <CardTitle>Heroes Eliminated Most</CardTitle>
+              <CardTitle>{t("heroesElimMost.title")}</CardTitle>
             </CardHeader>
             <CardContent>
               <Skeleton className="h-72" />
@@ -79,7 +81,7 @@ export default function StatsLoading() {
             <CardHeader>
               <CardTitle>
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="stat">Stat</Label>
+                  <Label htmlFor="stat">{t("stats.title")}</Label>
                   <Skeleton className="h-6 w-[180px]" />
                 </div>
               </CardTitle>

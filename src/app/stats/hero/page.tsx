@@ -3,6 +3,7 @@ import { Link } from "@/components/ui/link";
 import { toHero } from "@/lib/utils";
 import { roleHeroMapping } from "@/types/heroes";
 import { Metadata } from "next";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 
 export const metadata: Metadata = {
@@ -28,6 +29,7 @@ export const metadata: Metadata = {
 };
 
 export default function HeroSelect() {
+  const t = useTranslations("statsPage.heroStats");
   const allHeroesByRole = Object.entries(roleHeroMapping);
 
   const tankHeroes = allHeroesByRole[0][1];
@@ -37,13 +39,13 @@ export default function HeroSelect() {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Hero Stats</h2>
+        <h2 className="text-3xl font-bold tracking-tight">{t("title")}</h2>
       </div>
 
       <div className="grid grid-cols-6 gap-4 md:grid-cols-3 xl:grid-cols-6">
         <Card className="col-span-full xl:col-span-2">
           <CardHeader>
-            <CardTitle>Tank Heroes</CardTitle>
+            <CardTitle>{t("tank.title")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-4 gap-4 md:grid-cols-6">
@@ -70,7 +72,7 @@ export default function HeroSelect() {
         </Card>
         <Card className="col-span-full xl:col-span-2">
           <CardHeader>
-            <CardTitle>Damage Heroes</CardTitle>
+            <CardTitle>{t("damage.title")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-4 gap-4 md:grid-cols-6">
@@ -97,7 +99,7 @@ export default function HeroSelect() {
         </Card>
         <Card className="col-span-full xl:col-span-2">
           <CardHeader>
-            <CardTitle>Support Heroes</CardTitle>
+            <CardTitle>{t("support.title")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-4 gap-4 md:grid-cols-6">
@@ -124,8 +126,7 @@ export default function HeroSelect() {
         </Card>
 
         <p className="col-span-6 text-center text-muted-foreground">
-          Select a hero to view their stats. Stats are aggregated from all
-          scrims played.
+          {t("description")}
         </p>
       </div>
     </div>

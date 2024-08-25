@@ -18,6 +18,7 @@ import { auth } from "@/lib/auth";
 import { GuestNav } from "@/components/guest-nav";
 import { getMostPlayedHeroes } from "@/data/player-dto";
 import { getUser } from "@/data/user-dto";
+import { getTranslations } from "next-intl/server";
 
 type Props = {
   params: { team: string; scrimId: string; mapId: string };
@@ -64,6 +65,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function MapDashboardPage({ params }: Props) {
+  const t = await getTranslations("mapPage");
   const id = parseInt(params.mapId);
   const session = await auth();
   const user = await getUser(session?.user?.email);
@@ -120,29 +122,29 @@ export default async function MapDashboardPage({ params }: Props) {
         <div>
           <h4 className="text-gray-600 dark:text-gray-400">
             <Link href={`/${params.team}/scrim/${params.scrimId}`}>
-              &larr; Back to scrim overview
+              &larr; {t("back")}
             </Link>
           </h4>
         </div>
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">
-            {toTitleCase(mapName?.map_name ?? "Dashboard")}
+            {toTitleCase(mapName?.map_name ?? t("dashboard"))}
           </h2>
         </div>
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="overview">{t("tabs.overview")}</TabsTrigger>
             <TabsTrigger value="killfeed" className="hidden md:flex">
-              Killfeed
+              {t("tabs.killfeed")}
             </TabsTrigger>
             <TabsTrigger value="killfeed" className="flex md:hidden">
-              Kills
+              {t("tabs.kills")}
             </TabsTrigger>
-            <TabsTrigger value="charts">Charts</TabsTrigger>
+            <TabsTrigger value="charts">{t("tabs.charts")}</TabsTrigger>
             <TabsTrigger value="events" className="hidden md:flex">
-              Events
+              {t("tabs.events")}
             </TabsTrigger>
-            <TabsTrigger value="compare">Compare</TabsTrigger>
+            <TabsTrigger value="compare">{t("tabs.compare")}</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
             <DefaultOverview id={id} />

@@ -3,12 +3,14 @@ import SpecificHero from "@/components/player/specific-hero";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlayerStatRows } from "@/types/prisma";
+import { useTranslations } from "next-intl";
 
 export default function Statistics({
   playerStats,
 }: {
   playerStats: PlayerStatRows;
 }) {
+  const t = useTranslations("mapPage.player.overview");
   const heroesPlayed = playerStats
     .sort(
       // sort by time played
@@ -20,13 +22,13 @@ export default function Statistics({
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
       <Card className="col-span-full">
         <CardHeader>
-          <CardTitle>Player Statistics</CardTitle>
+          <CardTitle>{t("playerStats")}</CardTitle>
         </CardHeader>
         <CardContent className="pl-4">
           {heroesPlayed.length > 1 && (
             <Tabs defaultValue="all-heroes" className="space-y-4">
               <TabsList>
-                <TabsTrigger value="all-heroes">All Heroes</TabsTrigger>
+                <TabsTrigger value="all-heroes">{t("allHeroes")}</TabsTrigger>
                 {heroesPlayed.map((hero) => {
                   return (
                     <TabsTrigger key={hero} value={hero}>

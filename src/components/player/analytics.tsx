@@ -26,6 +26,7 @@ import prisma from "@/lib/prisma";
 import { KillfeedTable } from "@/components/map/killfeed-table";
 import { DmgTakenVsHealingReceivedChart } from "@/components/charts/player/dmg-taken-vs-healing-chart";
 import { DmgDoneVsDmgTakenChart } from "@/components/charts/player/dmg-done-vs-dmg-taken-chart";
+import { getTranslations } from "next-intl/server";
 
 export async function PlayerAnalytics({
   id,
@@ -34,6 +35,7 @@ export async function PlayerAnalytics({
   id: number;
   playerName: string;
 }) {
+  const t = await getTranslations("mapPage.player.analytics");
   const averageTimeToUltimate = await getAverageUltChargeTime(id, playerName);
   const averageTimeToUseUlt = await getAverageTimeToUseUlt(id, playerName);
   const killsPerUltimate = await getKillsPerUltimate(id, playerName);
@@ -133,7 +135,7 @@ export async function PlayerAnalytics({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Average Ultimate Charge Time
+              {t("avgUltChargeTime.title")}
             </CardTitle>
             <CardIcon>
               <line x1="10" x2="14" y1="2" y2="2" />
@@ -148,16 +150,14 @@ export async function PlayerAnalytics({
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              The average time it takes to build an ultimate. A lower time is
-              better, while a longer time might indicate that you are not doing
-              enough damage or healing.
+              {t("avgUltChargeTime.footer")}
             </p>
           </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Average Time to Use Ultimate
+              {t("avgTimeUseUlt.title")}
             </CardTitle>
             <CardIcon>
               <path d="M5 22h14" />
@@ -173,16 +173,14 @@ export async function PlayerAnalytics({
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              The average time it takes to use an ultimate after it&apos;s
-              charged. A longer time might indicate that you are not using your
-              ultimate effectively or are holding onto it for too long.
+              {t("avgTimeUseUlt.footer")}
             </p>
           </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Average Drought Time
+              {t("avgDroughtTime.title")}
             </CardTitle>
             <CardIcon>
               <path d="M10 2h4" />
@@ -197,15 +195,15 @@ export async function PlayerAnalytics({
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              The drought time is the average time between your most recent kill
-              and your next kill. A high drought time can indicate that you are
-              not participating in fights as often as you should be.
+              {t("avgDroughtTime.footer")}
             </p>
           </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">X Factor</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("xFactor.title")}
+            </CardTitle>
             <CardIcon>
               <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
               <path d="M5 3v4" />
@@ -219,21 +217,17 @@ export async function PlayerAnalytics({
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              The X Factor is a measure of a player&apos;s individual impact on
-              a fight. If your X Factor is high, you are likely to be the
-              deciding factor in a fight. Please note that this is calculated
-              differently for each role.
+              {t("xFactor.footer")}
             </p>
           </CardFooter>
         </Card>
         <Card className="col-span-full max-h-[80vh] overflow-y-auto 2xl:col-span-1">
           <CardHeader>
             <CardTitle className="text-sm font-medium">
-              Versus Other Players
+              {t("versus.title")}
             </CardTitle>
             <p className="text-xs text-muted-foreground">
-              {playerName}&apos;s score and winrates against players on the
-              enemy team.
+              {t("versus.description", { playerName })}
             </p>
           </CardHeader>
           <CardContent>
@@ -276,7 +270,7 @@ export async function PlayerAnalytics({
                   </div>
                 </div>
                 <div className="align-middle text-lg">
-                  Score:{" "}
+                  {t("versus.score")}{" "}
                   <span
                     className={cn(
                       duel.player_team === match?.team_1_name
@@ -297,7 +291,7 @@ export async function PlayerAnalytics({
                     {duel.enemy_kills}
                   </span>
                 </div>
-                Winrate:{" "}
+                {t("versus.winrate")}{" "}
                 <span
                   className={cn(
                     duel.enemy_deaths > duel.enemy_kills
@@ -316,7 +310,7 @@ export async function PlayerAnalytics({
                       (duel.enemy_kills + duel.enemy_deaths)) *
                     100
                   ).toFixed(2)}
-                  %
+                  {t("versus.%")}
                 </span>
               </div>
             ))}
@@ -325,26 +319,24 @@ export async function PlayerAnalytics({
         <Card className="col-span-full max-h-[80vh] overflow-y-auto 2xl:col-span-3">
           <CardHeader>
             <CardTitle className="text-sm font-medium">
-              Player Killfeed
+              {t("playerKillfeed.title")}
             </CardTitle>
             <p className="text-xs text-muted-foreground">
-              A list of all the final blows and deaths for {playerName} in this
-              match. Fights where {playerName} did not get a final blow are not
-              shown.
+              {t("playerKillfeed.description", { playerName })}
             </p>
           </CardHeader>
           <CardContent>
             <KillfeedTable
               fights={fights}
-              team1={match?.team_1_name ?? "Team 1"}
-              team2={match?.team_2_name ?? "Team 2"}
+              team1={match?.team_1_name ?? t("playerKillfeed.team1")}
+              team2={match?.team_2_name ?? t("playerKillfeed.team2")}
             />
           </CardContent>
         </Card>
         <Card className="col-span-full xl:col-span-2">
           <CardHeader>
             <CardTitle className="text-sm font-medium">
-              Damage Taken vs Healing Received
+              {t("dmgTakenHealingReceived.title")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -355,16 +347,14 @@ export async function PlayerAnalytics({
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              This chart shows the cumulative damage taken and healing received
-              by round. The x-axis represents the round number, and the y-axis
-              represents the cumulative damage taken or healing received.
+              {t("dmgTakenHealingReceived.footer")}
             </p>
           </CardFooter>
         </Card>
         <Card className="col-span-full xl:col-span-2">
           <CardHeader>
             <CardTitle className="text-sm font-medium">
-              Hero Damage Dealt vs Damage Taken
+              {t("dmgDoneDmgTaken.title")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -375,9 +365,7 @@ export async function PlayerAnalytics({
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              This chart shows the hero damage dealt and damage taken by round.
-              The x-axis represents the round number, and the y-axis represents
-              the damage dealt or damage taken.
+              {t("dmgDoneDmgTaken.footer")}
             </p>
           </CardFooter>
         </Card>

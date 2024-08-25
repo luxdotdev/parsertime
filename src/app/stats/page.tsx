@@ -23,8 +23,10 @@ import {
   toTimestampWithDays,
   toTimestampWithHours,
 } from "@/lib/utils";
+import { getTranslations } from "next-intl/server";
 
 export default async function StatsPage() {
+  const t = await getTranslations("statsPage");
   const userNum = await prisma.user.count();
   const scrimNum = await prisma.scrim.count();
   const killNum = await prisma.kill.count();
@@ -148,19 +150,23 @@ export default async function StatsPage() {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Stats</h2>
+        <h2 className="text-3xl font-bold tracking-tight">{t("title")}</h2>
       </div>
 
       <Searchbar />
 
       <div className="flex items-center justify-between space-y-2">
-        <h3 className="text-2xl font-bold tracking-tight">Global Stats</h3>
+        <h3 className="text-2xl font-bold tracking-tight">
+          {t("globalStats")}
+        </h3>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Users</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("users.title")}
+            </CardTitle>
             <CardIcon>
               <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
               <circle cx="12" cy="7" r="4" />
@@ -170,14 +176,14 @@ export default async function StatsPage() {
             <div className="text-2xl font-bold">{format(userNum)}</div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
-              Total number of users on the platform
-            </p>
+            <p className="text-xs text-muted-foreground">{t("users.footer")}</p>
           </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Scrims</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("scrims.title")}
+            </CardTitle>
             <CardIcon>
               <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5" />
               <line x1="13" x2="19" y1="19" y2="13" />
@@ -194,13 +200,15 @@ export default async function StatsPage() {
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              Total number of scrims uploaded
+              {t("scrims.footer")}
             </p>
           </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Kills</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("kills.title")}
+            </CardTitle>
             <CardIcon>
               <circle cx="12" cy="12" r="10" />
               <line x1="22" x2="18" y1="12" y2="12" />
@@ -213,14 +221,14 @@ export default async function StatsPage() {
             <div className="text-2xl font-bold">{format(killNum)}</div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
-              Total number of kills recorded
-            </p>
+            <p className="text-xs text-muted-foreground">{t("kills.footer")}</p>
           </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Player Stats</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("playerStat.title")}
+            </CardTitle>
             <CardIcon>
               <path d="M3 3v18h18" />
               <path d="m19 9-5 5-4-4-3 3" />
@@ -231,20 +239,22 @@ export default async function StatsPage() {
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              Total number of player stats recorded
+              {t("playerStat.footer")}
             </p>
           </CardFooter>
         </Card>
       </div>
 
       <div className="flex items-center justify-between space-y-2">
-        <h3 className="text-2xl font-bold tracking-tight">Leaderboard</h3>
+        <h3 className="text-2xl font-bold tracking-tight">
+          {t("leaderboard")}
+        </h3>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Top 3 Most Played Heroes
+              {t("top3MostPlayed.title")}
             </CardTitle>
             <CardIcon>
               <line x1="10" x2="14" y1="2" y2="2" />
@@ -256,9 +266,9 @@ export default async function StatsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Rank</TableHead>
-                  <TableHead>Hero</TableHead>
-                  <TableHead>Time Played</TableHead>
+                  <TableHead>{t("top3MostPlayed.rank")}</TableHead>
+                  <TableHead>{t("top3MostPlayed.hero")}</TableHead>
+                  <TableHead>{t("top3MostPlayed.timePlayed")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -303,14 +313,14 @@ export default async function StatsPage() {
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              Results accumulated from all {mapNum} maps.
+              {t("top3MostPlayed.footer", { mapNum })}
             </p>
           </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Top 3 Players by Kills
+              {t("top3Kills.title")}
             </CardTitle>
             <CardIcon>
               <circle cx="12" cy="12" r="10" />
@@ -324,9 +334,9 @@ export default async function StatsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Rank</TableHead>
-                  <TableHead>Player</TableHead>
-                  <TableHead>Kills</TableHead>
+                  <TableHead>{t("top3Kills.rank")}</TableHead>
+                  <TableHead>{t("top3Kills.player")}</TableHead>
+                  <TableHead>{t("top3Kills.kills")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -369,14 +379,14 @@ export default async function StatsPage() {
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              Results accumulated from all {mapNum} maps.
+              {t("top3Kills.footer", { mapNum })}
             </p>
           </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Top 3 Players by Hero Damage
+              {t("top3Dmg.title")}
             </CardTitle>
             <CardIcon>
               <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
@@ -386,9 +396,9 @@ export default async function StatsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Rank</TableHead>
-                  <TableHead>Player</TableHead>
-                  <TableHead>Hero Damage Dealt</TableHead>
+                  <TableHead>{t("top3Dmg.rank")}</TableHead>
+                  <TableHead>{t("top3Dmg.player")}</TableHead>
+                  <TableHead>{t("top3Dmg.heroDmgDealt")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -433,14 +443,14 @@ export default async function StatsPage() {
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              Results accumulated from {mapNum} maps.
+              {t("top3Dmg.footer", { mapNum })}
             </p>
           </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Top 3 Players by Healing
+              {t("top3Healing.title")}
             </CardTitle>
             <CardIcon>
               <path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2z" />
@@ -450,9 +460,9 @@ export default async function StatsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Rank</TableHead>
-                  <TableHead>Player</TableHead>
-                  <TableHead>Healing Dealt</TableHead>
+                  <TableHead>{t("top3Healing.rank")}</TableHead>
+                  <TableHead>{t("top3Healing.player")}</TableHead>
+                  <TableHead>{t("top3Healing.healingDealt")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -498,14 +508,14 @@ export default async function StatsPage() {
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              Results accumulated from {mapNum} maps.
+              {t("top3Healing.footer", { mapNum })}
             </p>
           </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Top 3 Players by Damage Blocked
+              {t("top3DmgBlocked.title")}
             </CardTitle>
             <CardIcon>
               <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
@@ -515,9 +525,9 @@ export default async function StatsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Rank</TableHead>
-                  <TableHead>Player</TableHead>
-                  <TableHead>Damage Blocked</TableHead>
+                  <TableHead>{t("top3DmgBlocked.rank")}</TableHead>
+                  <TableHead>{t("top3DmgBlocked.player")}</TableHead>
+                  <TableHead>{t("top3DmgBlocked.dmgBlocked")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -563,14 +573,14 @@ export default async function StatsPage() {
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              Results accumulated from {mapNum} maps.
+              {t("top3DmgBlocked.footer", { mapNum })}
             </p>
           </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Top 3 Players by Deaths
+              {t("top3Deaths.title")}
             </CardTitle>
             <CardIcon>
               <circle cx="9" cy="12" r="1" />
@@ -584,9 +594,9 @@ export default async function StatsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Rank</TableHead>
-                  <TableHead>Player</TableHead>
-                  <TableHead>Deaths</TableHead>
+                  <TableHead>{t("top3Deaths.rank")}</TableHead>
+                  <TableHead>{t("top3Deaths.player")}</TableHead>
+                  <TableHead>{t("top3Deaths.deaths")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -632,14 +642,14 @@ export default async function StatsPage() {
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              Results accumulated from {mapNum} maps.
+              {t("top3Deaths.footer", { mapNum })}
             </p>
           </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Top 3 Players by Time Played
+              {t("top3TimePlayed.title")}
             </CardTitle>
             <CardIcon>
               <path d="M5 22h14" />
@@ -652,9 +662,9 @@ export default async function StatsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Rank</TableHead>
-                  <TableHead>Player</TableHead>
-                  <TableHead>Time Played</TableHead>
+                  <TableHead>{t("top3TimePlayed.rank")}</TableHead>
+                  <TableHead>{t("top3TimePlayed.player")}</TableHead>
+                  <TableHead>{t("top3TimePlayed.timePlayed")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -699,14 +709,14 @@ export default async function StatsPage() {
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              Results accumulated from {mapNum} maps.
+              {t("top3TimePlayed.footer", { mapNum })}
             </p>
           </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Top 3 Players with the Most Ajaxes
+              {t("top3Ajax.title")}
             </CardTitle>
             <CardIcon>
               <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
@@ -718,9 +728,9 @@ export default async function StatsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Rank</TableHead>
-                  <TableHead>Player</TableHead>
-                  <TableHead>Ajaxes</TableHead>
+                  <TableHead>{t("top3Ajax.rank")}</TableHead>
+                  <TableHead>{t("top3Ajax.player")}</TableHead>
+                  <TableHead>{t("top3Ajax.ajaxes")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -763,7 +773,7 @@ export default async function StatsPage() {
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              Results accumulated from {mapNum} maps.
+              {t("top3Ajax.footer", { mapNum })}
             </p>
           </CardFooter>
         </Card>
