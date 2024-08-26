@@ -4,29 +4,31 @@ import { toHero } from "@/lib/utils";
 import { roleHeroMapping } from "@/types/heroes";
 import { Metadata } from "next";
 import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
-export const metadata: Metadata = {
-  title: "Hero Stats | Parsertime",
-  description:
-    "Hero stats for Overwatch heroes on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
-  openGraph: {
-    title: "Hero Stats | Parsertime",
-    description:
-      "Hero stats for Overwatch heroes on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
-    url: "https://parsertime.app",
-    type: "website",
-    siteName: "Parsertime",
-    images: [
-      {
-        url: "https://parsertime.app/api/og?title=Hero Stats",
-        width: 1200,
-        height: 630,
-      },
-    ],
-    // locale: "en_US",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("statsPage.metadataHeroStats");
+
+  return {
+    title: t("title"),
+    description: t("description"),
+    openGraph: {
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+      url: "https://parsertime.app",
+      type: "website",
+      siteName: "Parsertime",
+      images: [
+        {
+          url: "https://parsertime.app/api/og?title=Hero Stats",
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
+  };
+}
 
 export default function HeroSelect() {
   const t = useTranslations("statsPage.heroStats");

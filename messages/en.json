@@ -84,7 +84,25 @@
       "copyright": "2024 lux.dev. All rights reserved."
     }
   },
+  "metadata": {
+    "title": "Parsertime",
+    "description": "Parsertime is a tool for analyzing Overwatch scrims.",
+    "ogTitle": "Parsertime",
+    "ogDescription": "Parsertime is a tool for analyzing Overwatch scrims."
+  },
   "signInPage": {
+    "metadataSignIn": {
+      "title": "Sign In | Parsertime",
+      "description": "Sign in to your account. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "Sign In | Parsertime",
+      "ogDescription": "Sign in to your account. Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "metadataSignUp": {
+      "title": "Sign Up | Parsertime",
+      "description": "Sign up for an account. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "Sign Up | Parsertime",
+      "ogDescription": "Sign up for an account. Parsertime is a tool for analyzing Overwatch scrims."
+    },
     "signUp": "Sign Up",
     "signIn": "Sign In",
     "login": "Login",
@@ -96,6 +114,12 @@
     "madeBy": "Made with ❤️ by lux.dev"
   },
   "dashboard": {
+    "metadataDashboard": {
+      "title": "Dashboard | Parsertime",
+      "description": "Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "Dashboard | Parsertime",
+      "ogDescription": "Parsertime is a tool for analyzing Overwatch scrims."
+    },
     "title": "Dashboard",
     "overview": "Your Scrims",
     "admin": "Admin View",
@@ -285,6 +309,12 @@
     "weekday": "{weekday, date, ::E}"
   },
   "scrimPage": {
+    "metadataScrimName": {
+      "title": "{scrimName} Overview | Parsertime",
+      "description": "Overview for {scrimName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{scrimName} Overview | Parsertime",
+      "ogDescription": "Overview for {scrimName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
+    },
     "back": "Back to dashboard",
     "newScrim": "New Scrim",
     "edit": "Edit scrim",
@@ -463,6 +493,18 @@
     }
   },
   "mapPage": {
+    "metadataMapName": {
+      "title": "{mapName} Overview | Parsertime",
+      "description": "Map overview for {mapName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{mapName} Overview | Parsertime",
+      "ogDescription": "Map overview for {mapName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "metadataPlayerName": {
+      "title": "{playerName} Overview | Parsertime",
+      "description": "Player overview for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{playerName} Overview | Parsertime",
+      "ogDescription": "Player overview for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
+    },
     "back": "Back to scrim overview",
     "dashboard": "Dashboard",
     "maps": {
@@ -944,6 +986,30 @@
     }
   },
   "statsPage": {
+    "metadataSettingsLayout": {
+      "title": "Stats | Parsertime",
+      "description": "View your stats and performance metrics on Parsertime.",
+      "ogTitle": "Stats | Parsertime",
+      "ogDescription": "View your stats and performance metrics on Parsertime."
+    },
+    "metadataPlayerName": {
+      "title": "{playername} Stats | Parsertime",
+      "description": "Player stats for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{playername} Stats | Parsertime",
+      "ogDescription": "Player stats for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "metadataHeroStats": {
+      "title": "Hero Stats | Parsertime",
+      "description": "Hero stats for Overwatch heroes on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "Hero Stats | Parsertime",
+      "ogDescription": "Hero stats for Overwatch heroes on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "metadataStatsHero": {
+      "title": "Stats for {hero} | Parsertime",
+      "description": "Stats for {hero} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "Stats for {hero} | Parsertime",
+      "ogDescription": "Stats for {hero} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
+    },
     "title": "Stats",
     "searchbar": {
       "placeholder": "Enter a player name...",
@@ -1503,6 +1569,18 @@
     }
   },
   "teamPage": {
+    "metadataTeams": {
+      "title": "Teams | Parsertime",
+      "description": "Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "Teams | Parsertime",
+      "ogDescription": "Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "metadataTeamName": {
+      "title": "{teamName} Overview | Parsertime",
+      "description": "Overview for {teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{teamName} Overview | Parsertime",
+      "ogDescription": "Overview for {teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
+    },
     "manageTeams": "Manage Your Teams",
     "viewTeams": "View Your Teams",
     "teams": "Teams",
@@ -1662,6 +1740,17 @@
     }
   },
   "settingsPage": {
+    "metadataLayout": {
+      "title": "%s Overview | Parsertime",
+      "default": "Player Overview | Parsertime",
+      "description": "Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "metadataSettingsLayout": {
+      "title": "Settings | Parsertime",
+      "description": "Manage your account settings and preferences.",
+      "ogTitle": "Settings | Parsertime",
+      "ogDescription": "Manage your account settings and preferences."
+    },
     "title": "Settings",
     "description": "Manage your account settings and preferences.",
     "sideNav": {
@@ -2104,5 +2193,97 @@
     "docs": "Docs",
     "copyright": "2024 lux.dev."
   },
-  "demo": {}
+  "demoPage": {
+    "metadataLayout": {
+      "title": "%s Overview | Parsertime",
+      "default": "Player Overview | Parsertime",
+      "description": "Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "metadataPlayerName": {
+      "title": "{playerName} Overview | Parsertime",
+      "description": "Player overview for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{playerName} Overview | Parsertime",
+      "ogDescription": "Player overview for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "metadataMapName": {
+      "title": "{mapName} Demo | Parsertime",
+      "description": "Demo overview for {mapName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{mapName} Demo | Parsertime",
+      "ogDescription": "Demo overview for {mapName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "loading": {
+      "totalMatch": "Total Match Time",
+      "score": "Score",
+      "heroDmgDealt": "Hero Damage Dealt",
+      "teamHealingDealt": "Team Healing Dealt",
+      "overview": "Overview",
+      "analysis": "Analysis"
+    },
+    "banner": {
+      "demo": "You are viewing a demo of Parsertime. Click here to sign up",
+      "dismiss": "Dismiss"
+    },
+    "playerPage": {
+      "back": "Back to default overview",
+      "dashboard": "Dashboard",
+      "overview": "Overview",
+      "analytics": "Analytics",
+      "charts": "Charts",
+      "loading": {
+        "totalMatch": "Total Match Time",
+        "fletaDeadlift": "Fleta Deadlift Percentage",
+        "firstPick": "First Pick Percentage",
+        "firstDeath": "First Death Percentage",
+        "playerStat": "Player Statistics"
+      }
+    },
+    "mapPage": {
+      "back": "Back to scrim overview",
+      "dashboard": "Dashboard",
+      "maps": {
+        "Antarctic Peninsula": "Antarctic Peninsula",
+        "Blizzard World": "Blizzard World",
+        "Blizzard World (Winter)": "Blizzard World (Winter)",
+        "Busan": "Busan",
+        "Circuit royal": "Circuit Royal",
+        "Circuit Royal": "Circuit Royal",
+        "Colosseo": "Colosseo",
+        "Dorado": "Dorado",
+        "Eichenwalde": "Eichenwalde",
+        "Eichenwalde (Halloween)": "Eichenwalde (Halloween)",
+        "Esperança": "Esperança",
+        "Hanaoka": "Hanaoka",
+        "Havana": "Havana",
+        "Hollywood": "Hollywood",
+        "Hollywood (Halloween)": "Hollywood (Halloween)",
+        "Ilios": "Ilios",
+        "Junkertown": "Junkertown",
+        "King's Row": "King's Row",
+        "King's Row (Winter)": "King's Row (Winter)",
+        "Lijiang Tower": "Lijiang Tower",
+        "Lijiang Tower (Lunar New Year)": "Lijiang Tower (Lunar New Year)",
+        "Midtown": "Midtown",
+        "Nepal": "Nepal",
+        "New Junk City": "New Junk City",
+        "New Queen Street": "New Queen Street",
+        "Numbani": "Numbani",
+        "Oasis": "Oasis",
+        "Paraiso": "Paraiso",
+        "Rialto": "Rialto",
+        "Route 66": "Route 66",
+        "Runasapi": "Runasapi",
+        "Samoa": "Samoa",
+        "Shambali Monastery": "Shambali Monastery",
+        "Suravasa": "Suravasa",
+        "Throne Of Anubis": "Throne of Anubis",
+        "Watchpoint: Gibraltar": "Watchpoint: Gibraltar"
+      },
+      "overview": "Overview",
+      "killfeed": "Killfeed",
+      "kills": "Kills",
+      "charts": "Charts",
+      "events": "Events",
+      "compare": "Compare"
+    }
+  }
 }

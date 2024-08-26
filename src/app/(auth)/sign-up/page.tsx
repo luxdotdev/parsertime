@@ -6,26 +6,30 @@ import { buttonVariants } from "@/components/ui/button";
 import { UserAuthForm } from "@/components/auth/user-auth-form";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: `Sign Up | Parsertime`,
-  description: `Sign up for an account. Parsertime is a tool for analyzing Overwatch scrims.`,
-  openGraph: {
-    title: `Sign Up | Parsertime`,
-    description: `Sign up for an account. Parsertime is a tool for analyzing Overwatch scrims.`,
-    url: "https://parsertime.app",
-    type: "website",
-    siteName: "Parsertime",
-    images: [
-      {
-        url: `https://parsertime.app/opengraph-image.png`,
-        width: 1200,
-        height: 630,
-      },
-    ],
-    // locale: "en_US",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("signInPage.metadataSignUp");
+
+  return {
+    title: t("title"),
+    description: t("description"),
+    openGraph: {
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+      url: "https://parsertime.app",
+      type: "website",
+      siteName: "Parsertime",
+      images: [
+        {
+          url: `https://parsertime.app/opengraph-image.png`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
+  };
+}
 
 export default function AuthenticationPage() {
   const t = useTranslations("signInPage");

@@ -7,8 +7,10 @@ import {
 } from "@/components/ui/card";
 import CardIcon from "@/components/ui/card-icon";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslations } from "next-intl";
 
 export default function MapDashboardLoading() {
+  const t = useTranslations("demoPage.loading");
   return (
     <div className="flex-col md:flex">
       <div className="border-b">
@@ -40,7 +42,7 @@ export default function MapDashboardLoading() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Total Match Time
+                {t("totalMatch")}
               </CardTitle>
               <CardIcon>
                 <circle cx="12" cy="12" r="10" />
@@ -58,7 +60,9 @@ export default function MapDashboardLoading() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Score</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {t("score")}
+              </CardTitle>
               <CardIcon>
                 <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
                 <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
@@ -80,7 +84,7 @@ export default function MapDashboardLoading() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Hero Damage Dealt
+                {t("heroDmgDealt")}
               </CardTitle>
               <CardIcon>
                 <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
@@ -98,7 +102,7 @@ export default function MapDashboardLoading() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Team Healing Dealt
+                {t("teamHealingDealt")}
               </CardTitle>
               <CardIcon>
                 <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
@@ -118,7 +122,7 @@ export default function MapDashboardLoading() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
           <Card className="col-span-full">
             <CardHeader>
-              <CardTitle>Overview</CardTitle>
+              <CardTitle>{t("overview")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -134,7 +138,7 @@ export default function MapDashboardLoading() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card className="col-span-full">
             <CardHeader>
-              <CardTitle>Analysis</CardTitle>
+              <CardTitle>{t("analysis")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <ul className="list-outside list-disc pl-4">

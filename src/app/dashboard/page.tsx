@@ -13,25 +13,29 @@ type Props = {
   searchParams: SearchParams;
 };
 
-export const metadata: Metadata = {
-  title: "Dashboard | Parsertime",
-  description: "Parsertime is a tool for analyzing Overwatch scrims.",
-  openGraph: {
-    title: `Dashboard | Parsertime`,
-    description: `Parsertime is a tool for analyzing Overwatch scrims.`,
-    url: "https://parsertime.app",
-    type: "website",
-    siteName: "Parsertime",
-    images: [
-      {
-        url: `https://parsertime.app/api/og?title=Dashboard`,
-        width: 1200,
-        height: 630,
-      },
-    ],
-    // locale: "en_US",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("dashboard.metadataDashboard");
+
+  return {
+    title: t("title"),
+    description: t("description"),
+    openGraph: {
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+      url: "https://parsertime.app",
+      type: "website",
+      siteName: "Parsertime",
+      images: [
+        {
+          url: `https://parsertime.app/api/og?title=Dashboard`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+      // locale: "en_US",
+    },
+  };
+}
 
 export default async function DashboardPage({ searchParams }: Props) {
   const t = await getTranslations("dashboard");

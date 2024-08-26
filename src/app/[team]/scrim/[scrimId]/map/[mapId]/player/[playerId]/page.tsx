@@ -24,14 +24,15 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const t = await getTranslations("mapPage.metadataPlayerName");
   const playerName = decodeURIComponent(params.playerId);
 
   return {
-    title: `${playerName} Overview | Parsertime`,
-    description: `Player overview for ${playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+    title: t("title"),
+    description: t("description"),
     openGraph: {
-      title: `${playerName} Overview | Parsertime`,
-      description: `Player overview for ${playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+      title: t("ogTitle"),
+      description: t("ogDescription"),
       url: "https://parsertime.app",
       type: "website",
       siteName: "Parsertime",

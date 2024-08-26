@@ -7,8 +7,10 @@ import {
 } from "@/components/ui/card";
 import CardIcon from "@/components/ui/card-icon";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslations } from "next-intl";
 
 export default function PlayerDashboardLoading() {
+  const t = useTranslations("demoPage.playerPage.loading");
   return (
     <div className="flex-col md:flex">
       <div className="border-b">
@@ -46,7 +48,7 @@ export default function PlayerDashboardLoading() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Total Match Time
+                {t("totalMatch")}
               </CardTitle>
               <CardIcon>
                 <circle cx="12" cy="12" r="10" />
@@ -65,7 +67,7 @@ export default function PlayerDashboardLoading() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="align-baseline text-sm font-medium">
-                Fleta Deadlift Percentage
+                {t("fletaDeadlift")}
               </CardTitle>
               <CardIcon>
                 <path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15" />
@@ -88,7 +90,7 @@ export default function PlayerDashboardLoading() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                First Pick Percentage
+                {t("firstPick")}
               </CardTitle>
               <CardIcon>
                 <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5" />
@@ -109,7 +111,7 @@ export default function PlayerDashboardLoading() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                First Death Percentage
+                {t("firstDeath")}
               </CardTitle>
               <CardIcon>
                 <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
@@ -128,7 +130,7 @@ export default function PlayerDashboardLoading() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
           <Card className="col-span-full">
             <CardHeader>
-              <CardTitle>Player Statistics</CardTitle>
+              <CardTitle>{t("playerStat")}</CardTitle>
             </CardHeader>
             <CardContent className="pl-4">
               <main>

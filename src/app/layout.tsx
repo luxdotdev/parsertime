@@ -13,28 +13,31 @@ import { CommandDialogMenu } from "@/components/command-menu";
 import { auth } from "@/lib/auth";
 import { getUser } from "@/data/user-dto";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Parsertime",
-  description: "Parsertime is a tool for analyzing Overwatch scrims.",
-  metadataBase: new URL("https://parsertime.app"),
-  openGraph: {
-    title: `Parsertime`,
-    description: `Parsertime is a tool for analyzing Overwatch scrims.`,
-    url: "https://parsertime.app",
-    type: "website",
-    siteName: "Parsertime",
-    images: [
-      {
-        url: `https://parsertime.app/opengraph-image.png`,
-        width: 1200,
-        height: 630,
-      },
-    ],
-    locale: "en_US",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("metadata");
+
+  return {
+    title: t("title"),
+    description: t("description"),
+    metadataBase: new URL("https://parsertime.app"),
+    openGraph: {
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+      url: "https://parsertime.app",
+      type: "website",
+      siteName: "Parsertime",
+      images: [
+        {
+          url: `https://parsertime.app/opengraph-image.png`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
+  };
+}
 
 export default async function RootLayout({
   children,

@@ -26,6 +26,7 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const t = await getTranslations("mapPage.metadataMapName");
   const mapId = decodeURIComponent(params.mapId);
 
   const mapName = await prisma.matchStart.findFirst({
@@ -38,15 +39,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 
   return {
-    title: `${toTitleCase(mapName?.map_name || "Map")} Overview | Parsertime`,
-    description: `Map overview for ${toTitleCase(
-      mapName?.map_name || "Map"
-    )} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+    title: t("title", { mapName: toTitleCase(mapName?.map_name || "Map") }),
+    description: t("description", {
+      mapName: toTitleCase(mapName?.map_name || "Map"),
+    }),
     openGraph: {
-      title: `${toTitleCase(mapName?.map_name || "Map")} Overview | Parsertime`,
-      description: `Map overview for ${toTitleCase(
-        mapName?.map_name || "Map"
-      )} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+      title: t("ogTitle", { mapName: toTitleCase(mapName?.map_name || "Map") }),
+      description: t("ogDescription", {
+        mapName: toTitleCase(mapName?.map_name || "Map"),
+      }),
       url: "https://parsertime.app",
       type: "website",
       siteName: "Parsertime",

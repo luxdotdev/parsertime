@@ -14,6 +14,7 @@ import { MapCharts } from "@/components/charts/map/map-charts";
 import { ComparePlayers } from "@/components/map/compare-players";
 import { MapEvents } from "@/components/map/map-events";
 import { getMostPlayedHeroes } from "@/data/player-dto";
+import { getTranslations } from "next-intl/server";
 
 type Props = {
   params: { team: string; scrimId: string; mapId: string };
@@ -21,6 +22,7 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const t = await getTranslations("demoPage.metadataMapName");
   const mapName = await prisma.matchStart.findFirst({
     where: {
       MapDataId: 268,
@@ -31,15 +33,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 
   return {
-    title: `${toTitleCase(mapName?.map_name || "Map")} Demo | Parsertime`,
-    description: `Demo for ${toTitleCase(
-      mapName?.map_name || "Map"
-    )} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+    title: t("title", {
+      mapName: `${toTitleCase(mapName?.map_name || "Map")}`,
+    }),
+    description: t("description", {
+      mapName: `${toTitleCase(mapName?.map_name || "Map")}`,
+    }),
     openGraph: {
-      title: `${toTitleCase(mapName?.map_name || "Map")} Demo | Parsertime`,
-      description: `Demo overview for ${toTitleCase(
-        mapName?.map_name || "Map"
-      )} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+      title: t("ogTitle", {
+        mapName: `${toTitleCase(mapName?.map_name || "Map")}`,
+      }),
+      description: t("ogDescription", {
+        mapName: `${toTitleCase(mapName?.map_name || "Map")}`,
+      }),
       url: "https://parsertime.app",
       type: "website",
       siteName: "Parsertime",
@@ -58,6 +64,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function MapDashboardPage({ params }: Props) {
+  const t = await getTranslations("demoPage.mapPage");
   const id = 268;
 
   const mostPlayedHeroes = await getMostPlayedHeroes(id);
@@ -92,28 +99,28 @@ export default async function MapDashboardPage({ params }: Props) {
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div>
           <h4 className="text-gray-600 dark:text-gray-400">
-            <Link href="/">&larr; Back to scrim overview</Link>
+            <Link href="/">&larr; {t("back")}</Link>
           </h4>
         </div>
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">
-            {toTitleCase(mapName?.map_name ?? "Dashboard")}
+            {t(`maps.${toTitleCase(mapName?.map_name ?? t("dashboard"))}`)}
           </h2>
         </div>
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
             <TabsTrigger value="killfeed" className="hidden md:flex">
-              Killfeed
+              {t("killfeed")}
             </TabsTrigger>
             <TabsTrigger value="killfeed" className="flex md:hidden">
-              Kills
+              {t("kills")}
             </TabsTrigger>
-            <TabsTrigger value="charts">Charts</TabsTrigger>
+            <TabsTrigger value="charts">{t("charts")}</TabsTrigger>
             <TabsTrigger value="events" className="hidden md:flex">
-              Events
+              {t("events")}
             </TabsTrigger>
-            <TabsTrigger value="compare">Compare</TabsTrigger>
+            <TabsTrigger value="compare">{t("compare")}</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
             <DefaultOverview id={id} />

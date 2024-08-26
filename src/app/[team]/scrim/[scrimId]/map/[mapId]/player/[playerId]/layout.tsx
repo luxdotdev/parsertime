@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: {
-    template: "%s Overview | Parsertime",
-    default: "Player Overview | Parsertime",
-  },
-  description: "Parsertime is a tool for analyzing Overwatch scrims.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("settingsPage.metadataLayout");
+
+  return {
+    title: {
+      template: t("title"),
+      default: t("default"),
+    },
+    description: t("description"),
+  };
+}
 
 export default function PlayerDashboardLayout({
   children,

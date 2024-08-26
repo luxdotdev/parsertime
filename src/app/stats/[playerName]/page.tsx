@@ -21,18 +21,19 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const t = await getTranslations("statsPage.metadataPlayerName");
   const playerName = decodeURIComponent(params.playerName);
 
   return {
-    title: `${playerName}'${
-      playerName.endsWith("s") ? "" : "s"
-    } Stats | Parsertime`,
-    description: `Player stats for ${playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+    title: t("title", {
+      playerName: `${playerName}'${playerName.endsWith("s") ? "" : "s"}`,
+    }),
+    description: t("description", { playerName }),
     openGraph: {
-      title: `${playerName}'${
-        playerName.endsWith("s") ? "" : "s"
-      } Stats | Parsertime`,
-      description: `Player stats for ${playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+      title: t("ogTitle", {
+        playerName: `${playerName}'${playerName.endsWith("s") ? "" : "s"}`,
+      }),
+      description: t("ogDescription", { playerName }),
       url: "https://parsertime.app",
       type: "website",
       siteName: "Parsertime",

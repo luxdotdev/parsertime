@@ -17,6 +17,7 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const t = await getTranslations("teamPage.metadataTeamName");
   const teamId = decodeURIComponent(params.teamId);
 
   const team = await prisma.team.findFirst({
@@ -31,11 +32,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const teamName = team?.name ?? "Team";
 
   return {
-    title: `${teamName} Overview | Parsertime`,
-    description: `Overview for ${teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+    title: t("title", { teamName }),
+    description: t("description", { teamName }),
     openGraph: {
-      title: `${teamName} Overview | Parsertime`,
-      description: `Overview for ${teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+      title: t("ogTitle", { teamName }),
+      description: t("ogDescription", { teamName }),
       url: "https://parsertime.app",
       type: "website",
       siteName: "Parsertime",

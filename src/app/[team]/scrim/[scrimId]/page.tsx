@@ -37,6 +37,7 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const t = await getTranslations("scrimPage.metaDataScrimName");
   const scrimId = decodeURIComponent(params.scrimId);
 
   const scrim = await prisma.scrim.findFirst({
@@ -51,11 +52,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const scrimName = scrim?.name ?? "Scrim";
 
   return {
-    title: `${scrimName} Overview | Parsertime`,
-    description: `Overview for ${scrimName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+    title: t("title", { scrimName }),
+    description: t("description", { scrimName }),
     openGraph: {
-      title: `${scrimName} Overview | Parsertime`,
-      description: `Overview for ${scrimName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+      title: t("ogTitle", { scrimName }),
+      description: t("ogDescription", { scrimName }),
       url: "https://parsertime.app",
       type: "website",
       siteName: "Parsertime",

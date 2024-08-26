@@ -9,26 +9,31 @@ import { UserNav } from "@/components/user-nav";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Stats | Parsertime",
-  description: "View your stats and performance metrics on Parsertime.",
-  openGraph: {
-    title: "Stats | Parsertime",
-    description: "View your stats and performance metrics on Parsertime.",
-    url: "https://parsertime.app",
-    type: "website",
-    siteName: "Parsertime",
-    images: [
-      {
-        url: `https://parsertime.app/api/og?title=Statistics`,
-        width: 1200,
-        height: 630,
-      },
-    ],
-    // locale: "en_US",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("statsPage.metadataSettingsLayout");
+
+  return {
+    title: t("title"),
+    description: t("description"),
+    openGraph: {
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+      url: "https://parsertime.app",
+      type: "website",
+      siteName: "Parsertime",
+      images: [
+        {
+          url: `https://parsertime.app/api/og?title=Statistics`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+      // locale: "en_US",
+    },
+  };
+}
 
 export default async function StatsLayout({
   children,

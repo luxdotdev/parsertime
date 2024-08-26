@@ -1,10 +1,12 @@
 "use client";
 
 import { XMarkIcon } from "@heroicons/react/20/solid";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useState } from "react";
 
 export default function DemoBanner() {
+  const t = useTranslations("demoPage.banner");
   const [isDismissed, setIsDismissed] = useState(false);
 
   return (
@@ -22,7 +24,7 @@ export default function DemoBanner() {
                 >
                   <circle cx={1} cy={1} r={1} />
                 </svg>
-                You are viewing a demo of Parsertime. Click here to sign up
+                {t("demo")}
                 &nbsp;
                 <span aria-hidden="true">&rarr;</span>
               </Link>
@@ -34,7 +36,7 @@ export default function DemoBanner() {
                 setIsDismissed(true);
               }}
             >
-              <span className="sr-only">Dismiss</span>
+              <span className="sr-only">{t("dismiss")}</span>
               <XMarkIcon
                 className="h-5 w-5 text-white dark:text-gray-900"
                 aria-hidden="true"

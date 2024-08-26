@@ -14,25 +14,29 @@ import { auth } from "@/lib/auth";
 import { $Enums } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Settings | Parsertime",
-  description: "Manage your account settings and preferences.",
-  openGraph: {
-    title: "Settings | Parsertime",
-    description: "Manage your account settings and preferences.",
-    url: "https://parsertime.app",
-    type: "website",
-    siteName: "Parsertime",
-    images: [
-      {
-        url: `https://parsertime.app/api/og?title=Settings`,
-        width: 1200,
-        height: 630,
-      },
-    ],
-    // locale: "en_US",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("settingsPage.metadataSettingsLayout");
+
+  return {
+    title: t("title"),
+    description: t("description"),
+    openGraph: {
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+      url: "https://parsertime.app",
+      type: "website",
+      siteName: "Parsertime",
+      images: [
+        {
+          url: `https://parsertime.app/api/og?title=Settings`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+      // locale: "en_US",
+    },
+  };
+}
 
 interface SettingsLayoutProps {
   children: React.ReactNode;
