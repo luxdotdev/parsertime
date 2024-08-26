@@ -34,42 +34,6 @@ const mapVariantMapping: Record<string, string> = {
   "Hollywood (Halloween)": "Hollywood",
 };
 
-function processMapWinrates(mapWinrates: Winrate): Data {
-  const t = useTranslations("statsPage.playerStats.mapWinrates");
-  const mapData: Record<string, { wins: number; losses: number }> = {};
-
-  mapWinrates.forEach((winrate) => {
-    // Normalize the map name
-    const mapName = mapVariantMapping[winrate.map] || winrate.map;
-
-    if (!mapName) {
-      return;
-    }
-
-    if (mapNameToMapTypeMapping[mapName as MapName] === $Enums.MapType.Push) {
-      return;
-    }
-
-    if (!mapData[mapName]) {
-      mapData[mapName] = { wins: 0, losses: 0 };
-    }
-
-    if (winrate.wins === 1) {
-      mapData[mapName].wins += 1;
-    } else {
-      mapData[mapName].losses += 1;
-    }
-  });
-
-  const data: Data = Object.keys(mapData).map((mapName) => ({
-    name: t(`mapNames.${toTitleCase(mapName)}`),
-    wins: mapData[mapName].wins,
-    losses: mapData[mapName].losses,
-  }));
-
-  return data;
-}
-
 function CustomTooltip({
   active,
   payload,
@@ -119,6 +83,40 @@ type Props = {
 
 export function MapWinsChart({ data }: Props) {
   const t = useTranslations("statsPage.playerStats.mapWinrates");
+  function processMapWinrates(mapWinrates: Winrate): Data {
+    const mapData: Record<string, { wins: number; losses: number }> = {};
+
+    mapWinrates.forEach((winrate) => {
+      // Normalize the map name
+      const mapName = mapVariantMapping[winrate.map] || winrate.map;
+
+      if (!mapName) {
+        return;
+      }
+
+      if (mapNameToMapTypeMapping[mapName as MapName] === $Enums.MapType.Push) {
+        return;
+      }
+
+      if (!mapData[mapName]) {
+        mapData[mapName] = { wins: 0, losses: 0 };
+      }
+
+      if (winrate.wins === 1) {
+        mapData[mapName].wins += 1;
+      } else {
+        mapData[mapName].losses += 1;
+      }
+    });
+
+    const data: Data = Object.keys(mapData).map((mapName) => ({
+      name: t(`mapNames.${toTitleCase(mapName)}`),
+      wins: mapData[mapName].wins,
+      losses: mapData[mapName].losses,
+    }));
+
+    return data;
+  }
   const processedData = processMapWinrates(data);
 
   return (

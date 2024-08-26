@@ -25,42 +25,6 @@ type MapTypeData = {
   total: number;
 };
 
-function processMapWinrates(mapWinrates: Winrate) {
-  const t = useTranslations("statsPage.playerStats.winrateMapType");
-  const mapTypeData: Record<string, MapTypeData> = {};
-
-  mapWinrates.forEach((winrate) => {
-    // Normalize the map name
-    const mapName = winrate.map;
-
-    // Filter out undefined map names
-    if (!mapName) {
-      return;
-    }
-
-    const mapType = mapNameToMapTypeMapping[mapName as MapName];
-    if (!mapType || mapType === "Push") {
-      return;
-    }
-
-    if (!mapTypeData[mapType]) {
-      mapTypeData[mapType] = { mapType, wins: 0, total: 0 };
-    }
-
-    mapTypeData[mapType].total += 1;
-    if (winrate.wins === 1) {
-      mapTypeData[mapType].wins += 1;
-    }
-  });
-
-  const data = Object.values(mapTypeData).map((item) => ({
-    mapType: t(`mapTypes.${item.mapType}`),
-    winrate: (item.wins / item.total) * 100,
-  }));
-
-  return data;
-}
-
 function CustomTooltip({
   active,
   payload,
@@ -88,6 +52,40 @@ type Props = {
 
 export function WinsPerMapTypeChart({ data }: Props) {
   const t = useTranslations("statsPage.playerStats.winrateMapType");
+  function processMapWinrates(mapWinrates: Winrate) {
+    const mapTypeData: Record<string, MapTypeData> = {};
+
+    mapWinrates.forEach((winrate) => {
+      // Normalize the map name
+      const mapName = winrate.map;
+
+      // Filter out undefined map names
+      if (!mapName) {
+        return;
+      }
+
+      const mapType = mapNameToMapTypeMapping[mapName as MapName];
+      if (!mapType || mapType === "Push") {
+        return;
+      }
+
+      if (!mapTypeData[mapType]) {
+        mapTypeData[mapType] = { mapType, wins: 0, total: 0 };
+      }
+
+      mapTypeData[mapType].total += 1;
+      if (winrate.wins === 1) {
+        mapTypeData[mapType].wins += 1;
+      }
+    });
+
+    const data = Object.values(mapTypeData).map((item) => ({
+      mapType: t(`mapTypes.${item.mapType}`),
+      winrate: (item.wins / item.total) * 100,
+    }));
+
+    return data;
+  }
   const processedData = processMapWinrates(data);
 
   return (
