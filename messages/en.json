@@ -225,10 +225,13 @@
     },
     "scrimCard": {
       "editScrim": "Edit scrim",
-      "scrimDate": "Scrim Date:",
-      "team": "Team:",
-      "creator": "Creator:",
-      "date": ""
+      "scrimDate": "Scrim Date: {date}",
+      "team": "Team: {team}",
+      "noTeam": "Uncategorized",
+      "creator": "Creator: {creator}",
+      "clientDate": {
+        "formatDate": "{date, date, ::EEE MMM dd yyyy}"
+      }
     },
     "scrimCreationForm": {
       "fileSize": {
@@ -276,6 +279,10 @@
       "submit": "Submit",
       "submitting": "Submitting..."
     }
+  },
+  "calendar": {
+    "monthYear": "{date, date, ::MMMM yyyy}",
+    "weekday": "{weekday, date, ::E}"
   },
   "scrimPage": {
     "back": "Back to dashboard",
@@ -365,7 +372,9 @@
       "date": {
         "title": "Scrim Date",
         "edit": "Edit date",
-        "date": "",
+        "clientDate": {
+          "formatDate": "{date, date, ::MMMM d yyyy}"
+        },
         "description": "The date when the scrim took place."
       },
       "guestMode": {
@@ -491,6 +500,7 @@
       "Samoa": "Samoa",
       "Shambali Monastery": "Shambali Monastery",
       "Suravasa": "Suravasa",
+      "Throne Of Anubis": "Throne of Anubis",
       "Watchpoint: Gibraltar": "Watchpoint: Gibraltar"
     },
     "playerSwitcher": {
@@ -1018,6 +1028,20 @@
       "title": "{possessiveName} Stats",
       "statsFail": "Failed to find stats for {name}. Did you spell the name correctly?",
       "back": "Go back to stats",
+      "timeframe": {
+        "one-week": "one week",
+        "two-weeks": "two weeks",
+        "one-month": "one month",
+        "three-months": "three months",
+        "six-months": "six months",
+        "one-year": "one year",
+        "all-time": "all time",
+        "all-time-data": "in all time data",
+        "custom": "between {from} - {to}"
+      },
+      "clientDate": {
+        "formatDate": "{date, date, ::EEE MMM dd yyyy}"
+      },
       "rangePicker": {
         "selectTime": "Select a timeframe",
         "lastWeek": "Last Week",
@@ -1031,6 +1055,9 @@
         "upgrade": "Upgrade to view more timeframes",
         "selectHero": "Select a hero",
         "allHeroes": "All Heroes",
+        "pickDate": "Pick a date",
+        "calendarDate": "{from} - {to}",
+        "formatDate": "{date, date, ::MMM dd yyyy}",
         "tank": {
           "title": "Tank",
           "D": {
@@ -1171,6 +1198,7 @@
           "Samoa": "Samoa",
           "Shambali Monastery": "Shambali Monastery",
           "Suravasa": "Suravasa",
+          "Throne Of Anubis": "Throne of Anubis",
           "Watchpoint: Gibraltar": "Watchpoint: Gibraltar"
         },
         "title": "Map Winrates",
@@ -1279,6 +1307,17 @@
     "heroStats": {
       "title": "Hero Stats",
       "description": "Select a hero to view their stats. Stats are aggregated from all scrims played.",
+      "timeframe": {
+        "one-week": "one week",
+        "two-weeks": "two weeks",
+        "one-month": "one month",
+        "three-months": "three months",
+        "six-months": "six months",
+        "one-year": "one year",
+        "all-time": "all time",
+        "all-time-data": "in all time data",
+        "custom": "between {from} - {to}"
+      },
       "tank": {
         "title": "Tank Heroes",
         "D": {
@@ -1391,7 +1430,9 @@
         "custom": "Custom",
         "upgrade": "Upgrade to view more timeframes",
         "selectHero": "Select a hero",
-        "date": "Pick a date"
+        "pickDate": "Pick a date",
+        "calendarDate": "{from} - {to}",
+        "formatDate": "{date, date, ::MMM dd yyyy}"
       },
       "heroStats": {
         "title": "Hero Stats",
@@ -2038,6 +2079,9 @@
       "title": "Contact Us",
       "description": "For more information about our privacy practices, if you have questions, or if you would like to make a complaint, please contact us by email at <Link>privacy@lux.dev</Link>."
     }
+  },
+  "clientDate": {
+    "formatDate": "{date, date, ::EEE MMM dd yyyy}"
   },
   "billingPlan": {
     "free": "'FREE'",

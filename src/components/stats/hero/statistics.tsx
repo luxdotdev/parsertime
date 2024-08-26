@@ -366,7 +366,7 @@ export function Statistics({
               <>
                 {t.rich("heroStats.footer1", {
                   scrims: scrims[timeframe].length,
-                  timeframe: timeframe.replace("-", " "),
+                  timeframe: t(`timeframe.${timeframe}`),
                 })}
               </>
             ) : (
@@ -378,10 +378,13 @@ export function Statistics({
                       : timeframe === "all-time" && scrims["all-time"].length,
                   timeframe2:
                     timeframe === "all-time"
-                      ? "in all time data"
+                      ? t("timeframe.all-time-data")
                       : date?.from && date?.to
-                        ? `between ${date.from.toLocaleDateString()} - ${date.to.toLocaleDateString()}`
-                        : "all time",
+                        ? t("timeframe.custom", {
+                            from: date.from.toLocaleDateString(),
+                            to: date.to.toLocaleDateString(),
+                          })
+                        : t("timeframe.all-time"),
                 })}
               </>
             )}
@@ -492,7 +495,7 @@ export function Statistics({
               <>
                 {t.rich("bestPerformance.footer1", {
                   scrims: scrims[timeframe].length,
-                  timeframe: timeframe.replace("-", " "),
+                  timeframe: t(`timeframe.${timeframe}`),
                 })}
               </>
             ) : (
@@ -504,10 +507,13 @@ export function Statistics({
                       : timeframe === "all-time" && scrims["all-time"].length,
                   timeframe2:
                     timeframe === "all-time"
-                      ? "in all time data"
+                      ? t("timeframe.all-time-data")
                       : date?.from && date?.to
-                        ? `between ${date.from.toLocaleDateString()} - ${date.to.toLocaleDateString()}`
-                        : "all time",
+                        ? t("timeframe.custom", {
+                            from: date.from.toLocaleDateString(),
+                            to: date.to.toLocaleDateString(),
+                          })
+                        : t("timeframe.all-time"),
                 })}
               </>
             )}
@@ -641,7 +647,7 @@ export function Statistics({
               <>
                 {t.rich("heroesDiedToMost.footer1", {
                   scrims: scrims[timeframe].length,
-                  timeframe: timeframe.replace("-", " "),
+                  timeframe: t(`timeframe.${timeframe}`),
                 })}
               </>
             ) : (
@@ -653,10 +659,13 @@ export function Statistics({
                       : timeframe === "all-time" && scrims["all-time"].length,
                   timeframe2:
                     timeframe === "all-time"
-                      ? "in all time data"
+                      ? t("timeframe.all-time-data")
                       : date?.from && date?.to
-                        ? `between ${date.from.toLocaleDateString()} - ${date.to.toLocaleDateString()}`
-                        : "all time",
+                        ? t("timeframe.custom", {
+                            from: date.from.toLocaleDateString(),
+                            to: date.to.toLocaleDateString(),
+                          })
+                        : t("timeframe.all-time"),
                 })}
               </>
             )}
@@ -752,7 +761,7 @@ export function Statistics({
               <>
                 {t.rich("heroesElimMost.footer1", {
                   scrims: scrims[timeframe].length,
-                  timeframe: timeframe.replace("-", " "),
+                  timeframe: t(`timeframe.${timeframe}`),
                 })}
               </>
             ) : (
@@ -764,10 +773,13 @@ export function Statistics({
                       : timeframe === "all-time" && scrims["all-time"].length,
                   timeframe2:
                     timeframe === "all-time"
-                      ? "in all time data"
+                      ? t("timeframe.all-time-data")
                       : date?.from && date?.to
-                        ? `between ${date.from.toLocaleDateString()} - ${date.to.toLocaleDateString()}`
-                        : "all time",
+                        ? t("timeframe.custom", {
+                            from: date.from.toLocaleDateString(),
+                            to: date.to.toLocaleDateString(),
+                          })
+                        : t("timeframe.all-time"),
                 })}
               </>
             )}

@@ -99,29 +99,20 @@ export function ScrimPagination({ scrims }: Props) {
       <span className="inline-flex gap-2 p-4">
         <Select onValueChange={(v) => setFilter(v)}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder=/* "Filter" */ {t("filter.title")} />
+            <SelectValue placeholder={t("filter.title")} />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>
-                {/* Select a filter */}
-                {t("filter.select")}
-              </SelectLabel>
-              <SelectItem value="date-asc">
-                {/* Oldest to Newest */}
-                {t("filter.oldToNew")}
-              </SelectItem>
-              <SelectItem value="date-desc">
-                {/* Newest to Oldest */}
-                {t("filter.newToOld")}
-              </SelectItem>
+              <SelectLabel>{t("filter.select")}</SelectLabel>
+              <SelectItem value="date-asc">{t("filter.oldToNew")}</SelectItem>
+              <SelectItem value="date-desc">{t("filter.newToOld")}</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
 
         <Input
           type="search"
-          placeholder=/* "Search..." */ {t("search")}
+          placeholder={t("search")}
           className="md:w-[100px] lg:w-[260px]"
           onChange={(e) => {
             setSearch(e.target.value);

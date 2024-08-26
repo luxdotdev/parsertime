@@ -225,10 +225,13 @@
     },
     "scrimCard": {
       "editScrim": "Modifier le scrim",
-      "scrimDate": "Date du Scrim :",
-      "team": "Équipe :",
-      "creator": "Créateur :",
-      "date": ""
+      "scrimDate": "Date du Scrim : {date}",
+      "team": "Équipe : {team}",
+      "noTeam": "Non classé",
+      "creator": "Créateur : {creator}",
+      "clientDate": {
+        "formatDate": "{date, date, ::EEE dd MMM yyyy}"
+      }
     },
     "scrimCreationForm": {
       "fileSize": {
@@ -277,6 +280,10 @@
       "submitting": "Soumission..."
     }
   },
+  "calendar": {
+    "monthYear": "{date, date, ::MMMM yyyy}",
+    "weekday": "{weekday, date, ::E}"
+  },
   "scrimPage": {
     "back": "Retour au tableau de bord",
     "newScrim": "Nouveau Scrim",
@@ -317,6 +324,7 @@
       "Samoa": "Samoa",
       "Shambali Monastery": "Monastère Shambali",
       "Suravasa": "Suravasa",
+      "Throne Of Anubis": "Throne of Anubis",
       "Watchpoint: Gibraltar": "Watchpoint: Gibraltar"
     },
     "noMaps": {
@@ -365,7 +373,9 @@
       "date": {
         "title": "Date du Scrim",
         "edit": "Modifier la date",
-        "date": "",
+        "clientDate": {
+          "formatDate": "{date, date, ::d MMMM yyyy}"
+        },
         "description": "La date à laquelle le scrim a eu lieu."
       },
       "guestMode": {
@@ -1015,9 +1025,23 @@
       "footer": "Résultats accumulés de {mapNum} cartes."
     },
     "playerStats": {
-      "title": "Statistiques de {possessiveName}",
+      "title": "Statistiques de {name}",
       "statsFail": "Impossible de trouver les statistiques pour {name}. Avez-vous correctement orthographié le nom ?",
       "back": "Retourner aux statistiques",
+      "timeframe": {
+        "one-week": "une semaine",
+        "two-weeks": "deux semaines",
+        "one-month": "un mois",
+        "three-months": "trois mois",
+        "six-months": "six mois",
+        "one-year": "un an",
+        "all-time": "depuis toujours",
+        "all-time-data": "dans les données depuis toujours",
+        "custom": "entre {from} - {to}"
+      },
+      "clientDate": {
+        "formatDate": "{date, date, ::EEE dd MMM yyyy}"
+      },
       "rangePicker": {
         "selectTime": "Sélectionnez une période",
         "lastWeek": "Semaine Dernière",
@@ -1031,6 +1055,9 @@
         "upgrade": "Mettez à niveau pour voir plus de périodes",
         "selectHero": "Sélectionnez un héros",
         "allHeroes": "Tous les Héros",
+        "pickDate": "Choisissez une date",
+        "calendarDate": "{from} - {to}",
+        "formatDate": "{date, date, ::dd MMM yyyy}",
         "tank": {
           "title": "Tank",
           "D": {
@@ -1171,6 +1198,7 @@
           "Samoa": "Samoa",
           "Shambali Monastery": "Monastère Shambali",
           "Suravasa": "Suravasa",
+          "Throne Of Anubis": "Throne of Anubis",
           "Watchpoint: Gibraltar": "Watchpoint: Gibraltar"
         },
         "title": "Taux de Victoire par Carte",
@@ -1279,6 +1307,17 @@
     "heroStats": {
       "title": "Statistiques des Héros",
       "description": "Sélectionnez un héros pour voir ses statistiques. Les statistiques sont agrégées à partir de tous les scrims joués.",
+      "timeframe": {
+        "one-week": "une semaine",
+        "two-weeks": "deux semaines",
+        "one-month": "un mois",
+        "three-months": "trois mois",
+        "six-months": "six mois",
+        "one-year": "un an",
+        "all-time": "depuis toujours",
+        "all-time-data": "dans les données depuis toujours",
+        "custom": "entre {from} - {to}"
+      },
       "tank": {
         "title": "Héros Tanks",
         "D": {
@@ -1391,7 +1430,9 @@
         "custom": "Personnalisé",
         "upgrade": "Mettez à niveau pour voir plus de périodes",
         "selectHero": "Sélectionnez un héros",
-        "date": "Choisir une date"
+        "pickDate": "Choisir une date",
+        "calendarDate": "{from} - {to}",
+        "formatDate": "{date, date, ::dd MMM yyyy}"
       },
       "heroStats": {
         "title": "Statistiques des Héros",
@@ -2038,6 +2079,9 @@
       "title": "Contactez-nous",
       "description": "Pour plus d'informations sur nos pratiques en matière de confidentialité, si vous avez des questions ou si vous souhaitez déposer une plainte, veuillez nous contacter par email à <Link>privacy@lux.dev</Link>."
     }
+  },
+  "clientDate": {
+    "formatDate": "{date, date, ::EEE dd MMM yyyy}"
   },
   "billingPlan": {
     "free": "'GRATUIT'",

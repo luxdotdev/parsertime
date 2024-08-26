@@ -4,8 +4,9 @@ import * as React from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { DayPicker } from "react-day-picker";
 
-import { cn } from "@/lib/utils";
+import { cn, toTitleCase } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
@@ -15,6 +16,7 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }: CalendarProps) {
+  const t = useTranslations("calendar");
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
@@ -61,6 +63,10 @@ function Calendar({
       components={{
         IconLeft: ({ ...props }) => <ChevronLeftIcon className="h-4 w-4" />,
         IconRight: ({ ...props }) => <ChevronRightIcon className="h-4 w-4" />,
+      }}
+      formatters={{
+        formatCaption: (date) => toTitleCase(t("monthYear", { date })),
+        formatWeekdayName: (weekday) => toTitleCase(t("weekday", { weekday })),
       }}
       {...props}
     />

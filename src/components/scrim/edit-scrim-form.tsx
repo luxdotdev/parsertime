@@ -244,7 +244,9 @@ export function EditScrimForm({
                         )}
                       >
                         {field.value ? (
-                          format(new Date(field.value), "PPP")
+                          t("date.clientDate.formatDate", {
+                            date: new Date(field.value),
+                          })
                         ) : (
                           <span>{t("date.edit")}</span>
                         )}

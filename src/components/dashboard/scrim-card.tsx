@@ -7,6 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { toTitleCase } from "@/lib/utils";
 import { Scrim } from "@prisma/client";
 import { Pencil2Icon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
@@ -17,7 +18,7 @@ type Props = {
 };
 
 export function ScrimCard({ scrim }: Props) {
-  const t = useTranslations("dashboard");
+  const t = useTranslations("dashboard.scrimCard");
   return (
     <Link href={`/${scrim.teamId}/scrim/${scrim.id}`}>
       <Card className="max-w-md sm:h-48 md:h-64 xl:h-48">
@@ -35,25 +36,29 @@ export function ScrimCard({ scrim }: Props) {
                       <Pencil2Icon className="h-4 w-4" />
                     </Link>
                   </TooltipTrigger>
-                  <TooltipContent>
-                    {/* Edit scrim */}
-                    {t("scrimCard.editScrim")}
-                  </TooltipContent>
+                  <TooltipContent>{t("editScrim")}</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             )}
           </div>
         </CardHeader>
         <CardContent>
-          {/* Scrim Date: */}
-          {t("scrimCard.scrimDate")} {scrim.date.toDateString()}{" "}
-          {/* internationalize timezones/dates */}
+          {t("scrimDate", {
+            date: toTitleCase(
+              t("clientDate.formatDate", { date: scrim.date }).replace(
+                /[,.]/g,
+                ""
+              )
+            ),
+          })}
           <br />
-          {/* Team: */}
-          {t("scrimCard.team")} {scrim.team}
+          {t("team", {
+            team: scrim.team === "Uncategorized" ? t("noTeam") : scrim.team,
+          })}
           <br />
-          {/* Creator: */}
-          {t("scrimCard.creator")} {scrim.creator}
+          {t("creator", {
+            creator: scrim.creator,
+          })}
         </CardContent>
       </Card>
     </Link>

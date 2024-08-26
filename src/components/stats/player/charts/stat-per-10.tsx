@@ -79,13 +79,21 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
   const t = useTranslations("statsPage.playerStats");
   // We want to merge the stat values when the date is the same
   // Then we want to get the value per 10 minutes
-  const chartData = data.map((playerStat) => ({
-    name: scrimData
-      .find((scrim) => scrim.id === playerStat.scrimId)
-      ?.date.toDateString(),
-    pv: playerStat[stat],
-    time: playerStat.hero_time_played,
-  })) as Data;
+  const chartData = data.map((playerStat) => {
+    const scrimDate = scrimData.find(
+      (scrim) => scrim.id === playerStat.scrimId
+    )?.date;
+    const date = scrimDate;
+    return {
+      name: toTitleCase(
+        t("clientDate.formatDate", {
+          date,
+        })
+      ).replace(/[,.]/g, ""),
+      pv: playerStat[stat],
+      time: playerStat.hero_time_played,
+    };
+  }) as Data;
 
   // Add the stat and time played when the date is the same
   const processedData = chartData

@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
+import { cn, toTitleCase } from "@/lib/utils";
 import { HeroName, roleHeroMapping } from "@/types/heroes";
 import { PlayerStatRows } from "@/types/prisma";
 import { Kill, Scrim } from "@prisma/client";
@@ -169,14 +169,18 @@ export function RangePicker({
                   {date?.from ? (
                     date.to ? (
                       <>
-                        {format(date.from, "LLL dd, y")} -{" "}
-                        {format(date.to, "LLL dd, y")}
+                        {toTitleCase(
+                          t("calendarDate", {
+                            from: t("formatDate", { date: date.from }),
+                            to: t("formatDate", { date: date.to }),
+                          })
+                        )}
                       </>
                     ) : (
-                      format(date.from, "LLL dd, y")
+                      toTitleCase(t("formatDate", { date: date.from }))
                     )
                   ) : (
-                    <span>{t("date")}</span>
+                    <span>{t("pickDate")}</span>
                   )}
                 </Button>
               </PopoverTrigger>
