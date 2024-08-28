@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,
   TooltipContent,
@@ -25,7 +26,7 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
 import { Team } from "@prisma/client";
-import { ClipboardCopyIcon } from "@radix-ui/react-icons";
+import { ClipboardCopyIcon, ReloadIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useRef, useState } from "react";
@@ -39,6 +40,7 @@ const profileFormSchema = z.object({
     .max(30, {
       message: "Name must not be longer than 30 characters.",
     }),
+  readonly: z.boolean().optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
@@ -47,12 +49,14 @@ export function TeamSettingsForm({ team }: { team: Team }) {
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
       name: team.name ?? "",
+      readonly: team.readonly,
     },
     mode: "onChange",
   });
@@ -60,9 +64,11 @@ export function TeamSettingsForm({ team }: { team: Team }) {
   async function onSubmit(data: ProfileFormValues) {
     const reqBody = {
       name: data.name,
+      readonly: data.readonly,
       teamId: team.id,
     };
 
+    setLoading(true);
     const res = await fetch("/api/team/update-name", {
       method: "POST",
       headers: {
@@ -86,6 +92,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
         duration: 5000,
       });
     }
+    setLoading(false);
   }
 
   const handleAvatarClick = () => {
@@ -201,7 +208,37 @@ export function TeamSettingsForm({ team }: { team: Team }) {
             </FormDescription>
             <FormMessage />
           </FormItem>
-          <Button type="submit">Update team profile</Button>
+          <FormField
+            control={form.control}
+            name="readonly"
+            render={({ field }) => (
+              <FormItem className="flex max-w-lg flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Read-Only</FormLabel>
+                  <FormDescription>
+                    If enabled, the team will be read-only. This means that
+                    players and managers cannot add scrims to the team.
+                  </FormDescription>
+                  <FormMessage />
+                </div>
+              </FormItem>
+            )}
+          />
+          <Button type="submit" disabled={loading}>
+            {loading ? (
+              <>
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" /> Updating...
+              </>
+            ) : (
+              "Update team profile"
+            )}
+          </Button>
         </form>
       </Form>
     </ClientOnly>
