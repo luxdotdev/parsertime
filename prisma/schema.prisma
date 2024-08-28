@@ -82,6 +82,7 @@ model Team {
   scrims    Scrim[]
   ownerId   String
   managers  TeamManager[]
+  readonly  Boolean       @default(false)
 }
 
 model TeamManager {
@@ -125,13 +126,13 @@ model Scrim {
 }
 
 model Map {
-  id        Int       @id @default(autoincrement())
-  name      String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  mapData   MapData[]
-  Scrim     Scrim?    @relation(fields: [scrimId], references: [id])
-  scrimId   Int?
+  id         Int       @id @default(autoincrement())
+  name       String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  mapData    MapData[]
+  Scrim      Scrim?    @relation(fields: [scrimId], references: [id])
+  scrimId    Int?
   replayCode String?
 
   @@index([scrimId])
