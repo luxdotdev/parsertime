@@ -15,6 +15,7 @@ const TeamNameUpdateSchema = z.object({
     .trim()
     .regex(/^(?!.*?:).*$/),
   teamId: z.number(),
+  readonly: z.boolean(),
 });
 
 export async function POST(req: NextRequest) {
@@ -38,6 +39,7 @@ export async function POST(req: NextRequest) {
     },
     data: {
       name: body.data.name,
+      readonly: body.data.readonly,
     },
   });
 
