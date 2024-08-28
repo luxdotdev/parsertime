@@ -46,16 +46,19 @@ export async function GET() {
   });
 
   const teamResponse = {
-    teams: teams.map((team) => {
-      return {
-        id: team.id,
-        name: team.name,
-        createdAt: team.createdAt,
-        updatedAt: team.updatedAt,
-        ownerId: team.ownerId,
-        image: team.image,
-      };
-    }),
+    teams: teams
+      .filter((team) => !team.readonly)
+      .map((team) => {
+        return {
+          id: team.id,
+          name: team.name,
+          createdAt: team.createdAt,
+          updatedAt: team.updatedAt,
+          ownerId: team.ownerId,
+          image: team.image,
+          readonly: team.readonly,
+        };
+      }),
   };
 
   return new Response(JSON.stringify(teamResponse), {
