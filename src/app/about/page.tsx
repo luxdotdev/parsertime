@@ -57,7 +57,7 @@ const values = [
 const team = [
   {
     name: "Lucas Doell",
-    role: "Founder, Lead Developer",
+    role: "Founder, Head of Engineering",
     imageUrl: "/marketing/lucas.jpg",
     location: "Ithaca, NY",
   },
