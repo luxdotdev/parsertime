@@ -57,27 +57,51 @@ const values = [
 const team = [
   {
     name: "Lucas Doell",
-    role: "Lead Developer",
+    role: "Founder, Lead Developer",
     imageUrl: "/marketing/lucas.jpg",
-    bio: "Software engineer, Top 500 Overwatch player, former student at Cornell University, and head coach of FIU Panthers. He is passionate about building great software and helping teams succeed.",
+    location: "Ithaca, NY",
   },
   {
     name: 'Robin "Zei" Sidhu',
     role: "Head of Strategy",
     imageUrl: "/marketing/robin.png",
-    bio: "Zei is a coach for the top collegiate team St. Clair Saints. He recently led them to a 2nd place finish in the NACE Varsity Premiere 2023 fall semester. His favorite hobbies include crushing his players in TXCXX.",
-  },
-  {
-    name: "Giovanni Panzetta",
-    role: "Developer",
-    imageUrl: "/marketing/gio.jpg",
-    bio: "Giovanni is a software engineer specializing in full-stack development. He's passionate about building great software and building good user experiences.",
+    location: "Vancouver, BC",
   },
   {
     name: "Xavier Park",
-    role: "Developer",
+    role: "Head of Research",
     imageUrl: "/marketing/xavier.jpg",
-    bio: "Xavier is a statistics major at Cornell University. He is excited about the potential of data analytics in esports and is working to build excellent statistics for Overwatch teams.",
+    location: "Ithaca, NY",
+  },
+  {
+    name: "Adrian Soto",
+    role: "Head of Support",
+    imageUrl: "/marketing/adrian.jpg",
+    location: "Miami, FL",
+  },
+  {
+    name: "Diego Sanchez del Rio",
+    role: "Software Engineering Intern",
+    imageUrl: "/marketing/diego.jpg",
+    location: "Miami, FL",
+  },
+  {
+    name: "Yailan Bordas",
+    role: "Software Engineering Intern",
+    imageUrl: "/marketing/yai.jpg",
+    location: "Miami, FL",
+  },
+  {
+    name: "Kenny Miranda",
+    role: "Software Engineering Intern",
+    imageUrl: "/marketing/kenny.jpg",
+    location: "Miami, FL",
+  },
+  {
+    name: "Daniel Iturralde",
+    role: "Technical Support Specialist",
+    imageUrl: "/marketing/daniel.png",
+    location: "Miami, FL",
   },
 ];
 
@@ -265,7 +289,7 @@ export default function AboutPage() {
         </div>
 
         {/* Team section */}
-        <div className="bg-white py-24 dark:bg-black sm:py-32">
+        {/* <div className="bg-white py-24 dark:bg-black sm:py-32">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto max-w-2xl sm:text-center">
               <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
@@ -304,6 +328,58 @@ export default function AboutPage() {
                 </li>
               ))}
             </ul>
+          </div>
+        </div> */}
+
+        <div className="bg-white py-24 dark:bg-black sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl lg:mx-0">
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+                Our team
+              </h2>
+              <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
+                We&apos;re a small team of passionate Overwatch players and
+                coaches who are dedicated to building a platform that works for
+                your team.
+              </p>
+            </div>
+            <ul className="mx-auto mt-20 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-3 xl:grid-cols-4">
+              {team.map((person) => (
+                <li key={person.name}>
+                  <Image
+                    alt=""
+                    src={person.imageUrl}
+                    className="aspect-[14/13] w-full rounded-2xl object-cover"
+                    width={324}
+                    height={300}
+                  />
+                  <h3 className="mt-6 text-lg font-semibold leading-8 tracking-tight text-black dark:text-white">
+                    {person.name}
+                  </h3>
+                  <p className="text-base leading-7 text-gray-600 dark:text-gray-300">
+                    {person.role}
+                  </p>
+                  <p className="text-sm leading-6 text-gray-400 dark:text-gray-500">
+                    {person.location}
+                  </p>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-24 text-center text-sm text-gray-600 dark:text-gray-400">
+              Not pictured:{" "}
+              <strong className="font-semibold text-gray-950 dark:text-gray-100">
+                Devraj Ambala
+              </strong>
+              , Software Engineering Intern;{" "}
+              <strong className="font-semibold text-gray-950 dark:text-gray-100">
+                Karson Miller
+              </strong>
+              , Software Engineering Intern; and{" "}
+              <strong className="font-semibold text-gray-950 dark:text-gray-100">
+                Rose Thatch
+              </strong>
+              , Software Engineering Intern.
+            </p>
           </div>
         </div>
 
