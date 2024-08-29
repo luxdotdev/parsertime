@@ -2,11 +2,7 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { $Enums, Team } from "@prisma/client";
-
-export type GetTeamsResponse = {
-  teams: Team[];
-};
+import { $Enums } from "@prisma/client";
 
 export async function GET() {
   const session = await auth();
@@ -50,16 +46,19 @@ export async function GET() {
   });
 
   const teamResponse = {
-    teams: teams.map((team) => {
-      return {
-        id: team.id,
-        name: team.name,
-        createdAt: team.createdAt,
-        updatedAt: team.updatedAt,
-        ownerId: team.ownerId,
-        image: team.image,
-      };
-    }),
+    teams: teams
+      .filter((team) => !team.readonly)
+      .map((team) => {
+        return {
+          id: team.id,
+          name: team.name,
+          createdAt: team.createdAt,
+          updatedAt: team.updatedAt,
+          ownerId: team.ownerId,
+          image: team.image,
+          readonly: team.readonly,
+        };
+      }),
   };
 
   return new Response(JSON.stringify(teamResponse), {

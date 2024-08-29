@@ -30,9 +30,8 @@ type FeatureLevel =
  */
 export class Permission {
   private feature: Feature;
-  private permissions = get("permissions") as Promise<
-    Record<Feature, FeatureLevel>
-  >;
+  private permissions =
+    get<Promise<Record<Feature, FeatureLevel>>>("permissions");
 
   constructor(feature: Feature) {
     this.feature = feature;
@@ -54,7 +53,7 @@ export class Permission {
     }
 
     const permissions = await this.permissions;
-    const level = permissions[this.feature];
+    const level = permissions![this.feature];
 
     if (user.role === $Enums.UserRole.ADMIN) return true;
     else if (level === "FREE") return true;

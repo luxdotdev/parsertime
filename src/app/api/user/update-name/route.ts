@@ -3,10 +3,6 @@ import prisma from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
-type UpdateNameBody = {
-  name: string;
-};
-
 const updateNameSchema = z.object({
   name: z
     .string()
@@ -28,11 +24,8 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const body = (await req.json()) as UpdateNameBody;
-
-  const result = updateNameSchema.safeParse(body);
-
-  if (!result.success) {
+  const body = updateNameSchema.safeParse(await req.json());
+  if (!body.success) {
     return new Response("Invalid name supplied", {
       status: 400,
     });
@@ -43,7 +36,7 @@ export async function POST(req: NextRequest) {
       email: session.user.email,
     },
     data: {
-      name: body.name,
+      name: body.data.name,
     },
   });
 

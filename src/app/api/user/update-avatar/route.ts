@@ -1,12 +1,13 @@
 import { auth } from "@/lib/auth";
-import { NextRequest } from "next/server";
-import prisma from "@/lib/prisma";
 import Logger from "@/lib/logger";
+import prisma from "@/lib/prisma";
+import { NextRequest } from "next/server";
+import { z } from "zod";
 
-type AvatarUpdateBody = {
-  userId: string;
-  image: string;
-};
+const AvatarUpdateSchema = z.object({
+  userId: z.string().min(1),
+  image: z.string().url(),
+});
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -16,11 +17,16 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const body = (await req.json()) as AvatarUpdateBody;
+  const body = AvatarUpdateSchema.safeParse(await req.json());
+  if (!body.success) {
+    return new Response("Invalid request", {
+      status: 400,
+    });
+  }
 
   const user = await prisma.user.findUnique({
     where: {
-      id: body.userId,
+      id: body.data.userId,
     },
   });
 
@@ -39,11 +45,11 @@ export async function POST(req: NextRequest) {
   await prisma.user.update({
     where: { id: user.id },
     data: {
-      image: body.image,
+      image: body.data.image,
     },
   });
 
-  Logger.log("new avatar uploaded for user: ", user.email, body.image);
+  Logger.log("new avatar uploaded for user: ", user.email, body.data.image);
 
   return new Response("OK", {
     status: 200,

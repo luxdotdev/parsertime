@@ -1,11 +1,22 @@
 import { auth } from "@/lib/auth";
-import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
+import { NextRequest } from "next/server";
+import { z } from "zod";
 
-type UpdateTeamNameBody = {
-  name: string;
-  teamId: number;
-};
+const TeamNameUpdateSchema = z.object({
+  name: z
+    .string()
+    .min(2, {
+      message: "Team name must be at least 2 characters.",
+    })
+    .max(30, {
+      message: "Team name must not be longer than 30 characters.",
+    })
+    .trim()
+    .regex(/^(?!.*?:).*$/),
+  teamId: z.number(),
+  readonly: z.boolean(),
+});
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -15,14 +26,20 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const body = (await req.json()) as UpdateTeamNameBody;
+  const body = TeamNameUpdateSchema.safeParse(await req.json());
+  if (!body.success) {
+    return new Response("Invalid request", {
+      status: 400,
+    });
+  }
 
   await prisma.team.update({
     where: {
-      id: body.teamId,
+      id: body.data.teamId,
     },
     data: {
-      name: body.name,
+      name: body.data.name,
+      readonly: body.data.readonly,
     },
   });
 

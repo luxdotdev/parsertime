@@ -7,14 +7,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Team, User } from "@prisma/client";
-import { useCallback, useState } from "react";
-import Cropper, { Area } from "react-easy-crop";
-import { upload } from "@vercel/blob/client";
-import Logger from "@/lib/logger";
 import { toast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
+import Logger from "@/lib/logger";
+import { Team } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { upload } from "@vercel/blob/client";
+import { useRouter } from "next/navigation";
+import { startTransition, useCallback, useState } from "react";
+import Cropper, { Area } from "react-easy-crop";
 
 async function getCroppedImg(
   file: File,
@@ -80,62 +80,62 @@ export function AvatarUpdateDialog({
     []
   );
 
-  const handleCropImage = async () => {
+  function handleCropImage() {
     if (!selectedFile || !croppedAreaPixels) return;
 
     setLoading(true);
 
-    try {
-      const croppedImage = await getCroppedImg(
-        selectedFile,
-        croppedAreaPixels,
-        0 // rotation if necessary
-      );
-      const { url } = await upload(
-        `team-avatars/${team.id}.png`,
-        croppedImage,
-        {
-          access: "public",
-          handleUploadUrl: `/api/team/avatar-upload?teamId=${team.id}`,
-        }
-      );
+    startTransition(async () => {
+      try {
+        const croppedImage = await getCroppedImg(
+          selectedFile,
+          croppedAreaPixels
+        );
+        const { url } = await upload(
+          `team-avatars/${team.id}.png`,
+          croppedImage,
+          {
+            access: "public",
+            handleUploadUrl: `/api/team/avatar-upload?teamId=${team.id}`,
+          }
+        );
 
-      const res = await fetch("/api/team/update-avatar", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ teamId: team.id, image: url }),
-      });
-
-      if (res.ok) {
-        setLoading(false);
-        toast({
-          title: "Avatar updated successfully",
-          description: "Your team's avatar has been updated successfully.",
-          duration: 5000,
+        const res = await fetch("/api/team/update-avatar", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ teamId: team.id, image: url }),
         });
-        setIsOpen(false);
-        router.refresh();
-      } else {
-        setLoading(false);
+
+        if (res.ok) {
+          toast({
+            title: "Avatar updated successfully",
+            description: "Your team's avatar has been updated successfully.",
+            duration: 5000,
+          });
+          setIsOpen(false);
+          router.refresh();
+        } else {
+          toast({
+            title: "An error occurred",
+            description: `An error occurred: ${await res.text()} (${res.status})`,
+            duration: 5000,
+          });
+        }
+      } catch (e) {
         toast({
           title: "An error occurred",
-          description: `An error occurred: ${await res.text()} (${res.status})`,
+          description:
+            "An error occurred while updating your avatar. Please try again later or contact support.",
           duration: 5000,
         });
+        Logger.log(e);
+      } finally {
+        setLoading(false);
       }
-    } catch (e) {
-      setLoading(false);
-      toast({
-        title: "An error occurred",
-        description:
-          "An error occurred while updating your avatar. Please try again later or contact support.",
-        duration: 5000,
-      });
-      Logger.log(e);
-    }
-  };
+    });
+  }
 
   if (!selectedFile) return null;
 

@@ -38,13 +38,15 @@ export function ScrimCard({ scrim }: Props) {
               </TooltipProvider>
             )}
           </div>
+          <p className="text-sm font-normal text-muted-foreground">
+            {scrim.date.toDateString()} | {scrim.creator}
+          </p>
         </CardHeader>
         <CardContent>
-          Scrim Date: {scrim.date.toDateString()}
-          <br />
-          Team: {scrim.team}
-          <br />
-          Creator: {scrim.creator}
+          <p className="text-md pt-10 font-normal text-foreground">
+            <span className="text-muted-foreground">Team: </span>
+            {scrim.team}
+          </p>
         </CardContent>
       </Card>
     </Link>

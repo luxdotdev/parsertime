@@ -1,9 +1,9 @@
 import { AdminScrimView } from "@/components/dashboard/admin-scrim-view";
 import { ScrimList } from "@/components/dashboard/scrim-list";
+import { UpdateModalWrapper } from "@/components/dashboard/update-modal-wrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import prisma from "@/lib/prisma";
 import { SearchParams } from "@/types/next";
 import { $Enums } from "@prisma/client";
 import { Metadata } from "next";
@@ -58,6 +58,7 @@ export default async function DashboardPage({ searchParams }: Props) {
           <AdminScrimView />
         </TabsContent>
       </Tabs>
+      <UpdateModalWrapper />
     </div>
   );
 }

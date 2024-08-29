@@ -1,13 +1,14 @@
-import { auth } from "@/lib/auth";
-import { NextRequest } from "next/server";
-import prisma from "@/lib/prisma";
-import Logger from "@/lib/logger";
 import { getUser } from "@/data/user-dto";
+import { auth } from "@/lib/auth";
+import Logger from "@/lib/logger";
+import prisma from "@/lib/prisma";
+import { NextRequest } from "next/server";
+import { z } from "zod";
 
-type TeamAvatarUpdateBody = {
-  teamId: string;
-  image: string;
-};
+const TeamAvatarUpdateSchema = z.object({
+  teamId: z.string().min(1),
+  image: z.string().url(),
+});
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -18,22 +19,27 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const body = (await req.json()) as TeamAvatarUpdateBody;
+  const body = TeamAvatarUpdateSchema.safeParse(await req.json());
+  if (!body.success) {
+    return new Response("Invalid request", {
+      status: 400,
+    });
+  }
 
   const team = await prisma.team.findUnique({
     where: {
-      id: parseInt(body.teamId),
+      id: parseInt(body.data.teamId),
     },
   });
 
   const teamManagers = await prisma.teamManager.findMany({
     where: {
-      teamId: parseInt(body.teamId),
+      teamId: parseInt(body.data.teamId),
     },
   });
 
   if (!team) {
-    Logger.log("Team not found", body.teamId);
+    Logger.log("Team not found", body.data.teamId);
     return new Response("Not found", {
       status: 404,
     });
@@ -61,11 +67,11 @@ export async function POST(req: NextRequest) {
   await prisma.team.update({
     where: { id: team.id },
     data: {
-      image: body.image,
+      image: body.data.image,
     },
   });
 
-  Logger.log("new avatar uploaded for team: ", team.name, body.image);
+  Logger.log("new avatar uploaded for team: ", team.name, body.data.image);
 
   return new Response("OK", {
     status: 200,

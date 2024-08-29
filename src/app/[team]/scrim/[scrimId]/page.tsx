@@ -1,33 +1,39 @@
-import { AddMapCard } from "@/components/map/add-map";
 import { Search } from "@/components/dashboard/search";
-import { ModeToggle } from "@/components/theme-switcher";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { UserNav } from "@/components/user-nav";
-import { auth } from "@/lib/auth";
-import prisma from "@/lib/prisma";
-import { toKebabCase } from "@/lib/utils";
-import { SearchParams } from "@/types/next";
-import { $Enums } from "@prisma/client";
-import Image from "next/image";
-import Link from "next/link";
-import { Metadata } from "next";
-import {
-  ExclamationTriangleIcon,
-  ExternalLinkIcon,
-  Pencil2Icon,
-} from "@radix-ui/react-icons";
-import { getUser } from "@/data/user-dto";
-import { getScrim } from "@/data/scrim-dto";
+import { GuestNav } from "@/components/guest-nav";
+import { AddMapCard } from "@/components/map/add-map";
 import { MobileNav } from "@/components/mobile-nav";
+import { ClientDate } from "@/components/scrim/client-date";
+import { ReplayCode } from "@/components/scrim/replay-code";
+import { ModeToggle } from "@/components/theme-switcher";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { GuestNav } from "@/components/guest-nav";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { ClientDate } from "@/components/scrim/client-date";
+import { UserNav } from "@/components/user-nav";
+import { getScrim } from "@/data/scrim-dto";
+import { getUser } from "@/data/user-dto";
+import { auth } from "@/lib/auth";
+import prisma from "@/lib/prisma";
+import { toKebabCase } from "@/lib/utils";
+import { SearchParams } from "@/types/next";
+import { $Enums } from "@prisma/client";
+import {
+  ExclamationTriangleIcon,
+  ExternalLinkIcon,
+  Pencil2Icon,
+} from "@radix-ui/react-icons";
+import { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 type Props = {
@@ -187,10 +193,15 @@ export default async function ScrimDashboardPage({ params }: Props) {
                         src={`/maps/${toKebabCase(map.name)}.webp`}
                         alt={`The loading screen art for ${map.name}.`}
                         fill
-                        className="rounded-md object-cover brightness-[0.65]"
+                        className="select-none rounded-md object-cover brightness-[0.65]"
                       />
                     </CardContent>
                   </Link>
+                  <CardFooter className="float-right flex items-center justify-between pt-10">
+                    <div className="z-10 font-semibold tracking-tight text-white">
+                      <ReplayCode replayCode={map.replayCode ?? ""} />
+                    </div>
+                  </CardFooter>
                 </Card>
               </div>
             ))}
