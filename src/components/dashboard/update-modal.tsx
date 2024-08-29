@@ -18,17 +18,23 @@ export function UpdateModal({ data }: { data: UpdateModalData }) {
 
   useEffect(() => {
     const hasSeenUpdate = localStorage.getItem("hasSeenUpdate");
+
     if (!hasSeenUpdate) {
       setOpen(true);
+      return;
     }
 
-    if (hasSeenUpdate && hasSeenUpdate !== data.date) {
+    const updateDate = new Date(data.date).getTime();
+    const seenUpdateDate = new Date(hasSeenUpdate).getTime();
+    const now = Date.now();
+
+    if (updateDate > seenUpdateDate && updateDate < now) {
       setOpen(true);
     }
   }, [data]);
 
   function handleClose() {
-    localStorage.setItem("hasSeenUpdate", new Date().toDateString());
+    localStorage.setItem("hasSeenUpdate", new Date().toISOString());
     setOpen(false);
   }
 
@@ -38,7 +44,7 @@ export function UpdateModal({ data }: { data: UpdateModalData }) {
         <AlertDialogHeader>
           <AlertDialogTitle>Latest Updates: {data.title}</AlertDialogTitle>
           <AlertDialogDescription className="pb-2 text-muted-foreground">
-            {data.date}
+            {new Date(data.date).toDateString()}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogDescription>
