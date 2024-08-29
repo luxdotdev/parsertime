@@ -80,27 +80,27 @@ const team = [
     location: "Miami, FL",
   },
   {
+    name: "Daniel Iturralde",
+    role: "Technical Support Specialist",
+    imageUrl: "/marketing/daniel.png",
+    location: "Miami, FL",
+  },
+  {
     name: "Diego Sanchez del Rio",
-    role: "Software Engineering Intern",
+    role: "Engineering Intern, Summer 2024",
     imageUrl: "/marketing/diego.jpg",
     location: "Miami, FL",
   },
   {
     name: "Yailan Bordas",
-    role: "Software Engineering Intern",
+    role: "Engineering Intern, Summer 2024",
     imageUrl: "/marketing/yai.jpg",
     location: "Miami, FL",
   },
   {
     name: "Kenny Miranda",
-    role: "Software Engineering Intern",
+    role: "Engineering Intern, Summer 2024",
     imageUrl: "/marketing/kenny.jpg",
-    location: "Miami, FL",
-  },
-  {
-    name: "Daniel Iturralde",
-    role: "Technical Support Specialist",
-    imageUrl: "/marketing/daniel.png",
     location: "Miami, FL",
   },
 ];
@@ -289,48 +289,6 @@ export default function AboutPage() {
         </div>
 
         {/* Team section */}
-        {/* <div className="bg-white py-24 dark:bg-black sm:py-32">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="mx-auto max-w-2xl sm:text-center">
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-                Meet our team
-              </h2>
-              <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-                We&apos;re a small team of passionate Overwatch players and
-                coaches who are dedicated to building a platform that works for
-                your team.
-              </p>
-            </div>
-            <ul className="mx-auto mt-20 grid max-w-2xl grid-cols-1 gap-x-6 gap-y-20 sm:grid-cols-2 lg:max-w-4xl lg:gap-x-8 xl:max-w-none">
-              {team.map((person) => (
-                <li
-                  key={person.name}
-                  className="flex flex-col gap-6 xl:flex-row"
-                >
-                  <Image
-                    className="aspect-[4/5] w-52 flex-none rounded-2xl object-cover"
-                    src={person.imageUrl}
-                    alt=""
-                    width={400}
-                    height={500}
-                  />
-                  <div className="flex-auto">
-                    <h3 className="text-lg font-semibold leading-8 tracking-tight text-gray-900 dark:text-white">
-                      {person.name}
-                    </h3>
-                    <p className="text-base leading-7 text-gray-600 dark:text-gray-300">
-                      {person.role}
-                    </p>
-                    <p className="mt-6 text-base leading-7 text-gray-600 dark:text-gray-300">
-                      {person.bio}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div> */}
-
         <div className="bg-white py-24 dark:bg-black sm:py-32">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto max-w-2xl lg:mx-0">
@@ -370,15 +328,15 @@ export default function AboutPage() {
               <strong className="font-semibold text-gray-950 dark:text-gray-100">
                 Devraj Ambala
               </strong>
-              , Software Engineering Intern;{" "}
+              , Engineering Intern, Summer 2024;{" "}
               <strong className="font-semibold text-gray-950 dark:text-gray-100">
                 Karson Miller
               </strong>
-              , Software Engineering Intern; and{" "}
+              , Engineering Intern, Summer 2024; and{" "}
               <strong className="font-semibold text-gray-950 dark:text-gray-100">
                 Rose Thatch
               </strong>
-              , Software Engineering Intern.
+              , Engineering Intern, Summer 2024.
             </p>
           </div>
         </div>
