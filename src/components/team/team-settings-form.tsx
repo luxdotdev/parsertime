@@ -212,7 +212,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
             control={form.control}
             name="readonly"
             render={({ field }) => (
-              <FormItem className="flex max-w-lg flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+              <FormItem className="flex max-w-lg flex-row items-start space-x-3 space-y-0 rounded-md p-4 shadow">
                 <FormControl>
                   <Switch
                     checked={field.value}
