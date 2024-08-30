@@ -1,8 +1,8 @@
-import "server-only";
 import prisma from "@/lib/prisma";
-import { cache } from "react";
-import { PlayerStatRows } from "@/types/prisma";
 import { removeDuplicateRows } from "@/lib/utils";
+import { calculateWinner } from "@/lib/winrate";
+import { HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
+import { PlayerStatRows } from "@/types/prisma";
 import {
   Kill,
   MatchStart,
@@ -11,8 +11,8 @@ import {
   RoundEnd,
   Scrim,
 } from "@prisma/client";
-import { HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
-import { calculateWinner } from "@/lib/winrate";
+import { cache } from "react";
+import "server-only";
 
 async function getScrimFn(id: number) {
   return await prisma.scrim.findFirst({
@@ -347,6 +347,9 @@ async function getAllMapWinratesForPlayerFn(scrimIds: number[], name: string) {
   const wins = [] as { map: string; wins: number; date: Date }[];
 
   for (const mapId of mapDataIdArray) {
+    const playerStat = playerStats.find((stat) => stat.MapDataId === mapId);
+    if (!playerStat) continue;
+
     const matchDetails =
       matchStarts.find((match) => match.MapDataId === mapId) ||
       ({} as MatchStart);
@@ -358,7 +361,6 @@ async function getAllMapWinratesForPlayerFn(scrimIds: number[], name: string) {
       team2Captures: team2CapturesMap.get(mapId) || [],
     });
 
-    const playerStat = playerStats.find((stat) => stat.MapDataId === mapId);
     const playerTeam = playerStat?.player_team;
 
     wins.push({
