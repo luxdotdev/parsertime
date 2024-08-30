@@ -1,3 +1,5 @@
+import "server-only";
+
 import prisma from "@/lib/prisma";
 import { removeDuplicateRows } from "@/lib/utils";
 import { calculateWinner } from "@/lib/winrate";
@@ -12,7 +14,6 @@ import {
   Scrim,
 } from "@prisma/client";
 import { cache } from "react";
-import "server-only";
 
 async function getScrimFn(id: number) {
   return await prisma.scrim.findFirst({
