@@ -92,7 +92,7 @@ export async function getAverageTimeToUseUlt(id: number, playerName: string) {
     where: { MapDataId: id },
   });
 
-  type Ultimate = { charged: number; started: number; avg: number };
+  type Ultimate = { charged: number; started: number; holdTime: number };
   const ultimates = {} as Record<number, Ultimate[]>;
 
   const { ultimatesCharged: mutatedCharged, ultimateStarts: mutatedStarts } =
@@ -116,14 +116,14 @@ export async function getAverageTimeToUseUlt(id: number, playerName: string) {
       ultimates[charged.round_number].push({
         charged: charged.match_time,
         started: start.match_time,
-        avg: start.match_time - charged.match_time,
+        holdTime: start.match_time - charged.match_time,
       });
     }
   });
 
   const allMatchTimes = Object.values(ultimates)
     .flat()
-    .map((ult) => ult.avg);
+    .map((ult) => ult.holdTime);
 
   const totalMatchTime = allMatchTimes.reduce((acc, time) => acc + time, 0);
 
