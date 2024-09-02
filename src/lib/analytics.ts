@@ -5,19 +5,14 @@ import { HeroName, heroRoleMapping } from "@/types/heroes";
 import { RoundEnd, UltimateCharged, UltimateStart } from "@prisma/client";
 
 export async function getAverageUltChargeTime(id: number, playerName: string) {
-  const ultimatesCharged = await prisma.ultimateCharged.findMany({
-    where: {
-      MapDataId: id,
-      player_name: playerName,
-    },
-  });
-
-  const ultimateEnds = await prisma.ultimateEnd.findMany({
-    where: {
-      MapDataId: id,
-      player_name: playerName,
-    },
-  });
+  const [ultimatesCharged, ultimateEnds] = await Promise.all([
+    prisma.ultimateCharged.findMany({
+      where: { MapDataId: id, player_name: playerName },
+    }),
+    prisma.ultimateEnd.findMany({
+      where: { MapDataId: id, player_name: playerName },
+    }),
+  ]);
 
   // Calculate average time to ultimate
   // Take the first ultimate charged and the next ultimate end
@@ -134,20 +129,18 @@ export async function getAverageTimeToUseUlt(id: number, playerName: string) {
 }
 
 export async function getKillsPerUltimate(id: number, playerName: string) {
-  const ultimatesCharged = await prisma.ultimateCharged.findMany({
-    where: {
-      MapDataId: id,
-      player_name: playerName,
-    },
-  });
-
-  const ultKills = await prisma.kill.findMany({
-    where: {
-      MapDataId: id,
-      attacker_name: playerName,
-      event_ability: "Ultimate",
-    },
-  });
+  const [ultimatesCharged, ultKills] = await Promise.all([
+    prisma.ultimateCharged.findMany({
+      where: { MapDataId: id, player_name: playerName },
+    }),
+    prisma.kill.findMany({
+      where: {
+        MapDataId: id,
+        attacker_name: playerName,
+        event_ability: "Ultimate",
+      },
+    }),
+  ]);
 
   const killsPerUltimate = ultKills.length / ultimatesCharged.length;
 
@@ -166,19 +159,14 @@ export async function getDuelWinrates(id: number, playerName: string) {
     enemy_deaths: number;
   };
 
-  const playerKills = await prisma.kill.findMany({
-    where: {
-      MapDataId: id,
-      attacker_name: playerName,
-    },
-  });
-
-  const playerDeaths = await prisma.kill.findMany({
-    where: {
-      MapDataId: id,
-      victim_name: playerName,
-    },
-  });
+  const [playerKills, playerDeaths] = await Promise.all([
+    prisma.kill.findMany({
+      where: { MapDataId: id, attacker_name: playerName },
+    }),
+    prisma.kill.findMany({
+      where: { MapDataId: id, victim_name: playerName },
+    }),
+  ]);
 
   // Combine and aggregate kills and deaths
   const duelsAggregation: { [key: string]: AggregatedDuel } = {};
@@ -433,20 +421,14 @@ export async function calculateDroughtTime(id: number, playerName: string) {
 }
 
 export async function getAjaxes(id: number, playerName: string) {
-  const kills = await prisma.kill.findMany({
-    where: {
-      MapDataId: id,
-      victim_name: playerName,
-      victim_hero: "Lúcio",
-    },
-  });
-
-  const ultimateEnds = await prisma.ultimateEnd.findMany({
-    where: {
-      MapDataId: id,
-      player_name: playerName,
-    },
-  });
+  const [kills, ultimateEnds] = await Promise.all([
+    prisma.kill.findMany({
+      where: { MapDataId: id, victim_name: playerName, victim_hero: "Lúcio" },
+    }),
+    prisma.ultimateEnd.findMany({
+      where: { MapDataId: id, player_name: playerName },
+    }),
+  ]);
 
   // if there is a kill and an ultimate end at the same match_time, it's an ajax
   const ajaxes = kills.filter((kill) =>
