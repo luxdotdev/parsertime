@@ -80,17 +80,17 @@ function assignRoundNumbersToUltimates(
 }
 
 export async function getAverageTimeToUseUlt(id: number, playerName: string) {
-  const ultimatesCharged = await prisma.ultimateCharged.findMany({
-    where: { MapDataId: id, player_name: playerName },
-  });
-
-  const ultimateStarts = await prisma.ultimateStart.findMany({
-    where: { MapDataId: id, player_name: playerName },
-  });
-
-  const roundEnds = await prisma.roundEnd.findMany({
-    where: { MapDataId: id },
-  });
+  const [ultimatesCharged, ultimateStarts, roundEnds] = await Promise.all([
+    prisma.ultimateCharged.findMany({
+      where: { MapDataId: id, player_name: playerName },
+    }),
+    prisma.ultimateStart.findMany({
+      where: { MapDataId: id, player_name: playerName },
+    }),
+    prisma.roundEnd.findMany({
+      where: { MapDataId: id },
+    }),
+  ]);
 
   type Ultimate = { charged: number; started: number; holdTime: number };
   const ultimates = {} as Record<number, Ultimate[]>;
