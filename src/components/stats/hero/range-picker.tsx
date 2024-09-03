@@ -19,9 +19,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { HeroName, roleHeroMapping } from "@/types/heroes";
-import { PlayerStatRows } from "@/types/prisma";
-import { Kill, Scrim } from "@prisma/client";
+import { HeroName } from "@/types/heroes";
+import { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { SelectGroup } from "@radix-ui/react-select";
 import { addMonths, addWeeks, addYears, format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -48,7 +47,7 @@ export function RangePicker({
 }: {
   permissions: { [key: string]: boolean };
   data: Record<Timeframe, Scrim[]>;
-  stats: PlayerStatRows;
+  stats: PlayerStat[];
   kills: Kill[];
   deaths: Kill[];
   hero: HeroName;

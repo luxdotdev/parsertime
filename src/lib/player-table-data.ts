@@ -1,6 +1,6 @@
 import { round } from "@/lib/utils";
 import { HeroName, heroRoleMapping } from "@/types/heroes";
-import { PlayerStatRows } from "@/types/prisma";
+import { PlayerStat } from "@prisma/client";
 
 export type PlayerData = {
   id: number;
@@ -28,7 +28,7 @@ export function determineRole(heroName: HeroName) {
   return heroRoleMapping[heroName] || "Flex";
 }
 
-export function aggregatePlayerData(rows: PlayerStatRows): PlayerData[] {
+export function aggregatePlayerData(rows: PlayerStat[]): PlayerData[] {
   const playerMap = new Map<string, PlayerData>();
   const playerMaxMatchTime = new Map<string, number>();
   const teamElimsMap = new Map<string, number>();

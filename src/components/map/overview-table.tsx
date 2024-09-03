@@ -16,21 +16,6 @@ import {
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
-import { PlayerData, aggregatePlayerData } from "@/lib/player-table-data";
-import { PlayerStatRows } from "@/types/prisma";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { cn, toTimestamp } from "@/lib/utils";
-import { GeistMono } from "geist/font/mono";
-import {
-  ChevronDownIcon,
-  ChevronUpDownIcon,
-  ChevronUpIcon,
-} from "@heroicons/react/20/solid";
 import {
   Table,
   TableBody,
@@ -39,6 +24,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { PlayerData, aggregatePlayerData } from "@/lib/player-table-data";
+import { cn, toTimestamp } from "@/lib/utils";
+import {
+  ChevronDownIcon,
+  ChevronUpDownIcon,
+  ChevronUpIcon,
+} from "@heroicons/react/20/solid";
+import { PlayerStat } from "@prisma/client";
+import { GeistMono } from "geist/font/mono";
 
 export const columns: ColumnDef<PlayerData>[] = [
   {
@@ -327,11 +327,7 @@ const tooltips = {
   ultsUsed: "The number of ultimates the player used.",
 };
 
-export function OverviewTable({
-  playerStats,
-}: {
-  playerStats: PlayerStatRows;
-}) {
+export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []

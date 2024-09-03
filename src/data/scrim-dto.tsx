@@ -4,11 +4,11 @@ import prisma from "@/lib/prisma";
 import { removeDuplicateRows } from "@/lib/utils";
 import { calculateWinner } from "@/lib/winrate";
 import { HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
-import { PlayerStatRows } from "@/types/prisma";
 import {
   Kill,
   MatchStart,
   ObjectiveCaptured,
+  PlayerStat,
   Prisma,
   RoundEnd,
   Scrim,
@@ -63,7 +63,7 @@ export const getUserViewableScrims = cache(getUserViewableScrimsFn);
  */
 async function getFinalRoundStatsFn(id: number) {
   return removeDuplicateRows(
-    await prisma.$queryRaw<PlayerStatRows>`
+    await prisma.$queryRaw<PlayerStat[]>`
         WITH maxTime AS (
           SELECT
               MAX("match_time") AS max_time
@@ -94,14 +94,14 @@ async function getFinalRoundStatsFn(id: number) {
  * This function is cached for performance.
  *
  * @param {number} id The ID of the map.
- * @returns {PlayerStatRows} The statistics for the final round of the specified map.
- * @see {@link PlayerStatRows}
+ * @returns {PlayerStat[]} The statistics for the final round of the specified map.
+ * @see {@link PlayerStat}
  */
 export const getFinalRoundStats = cache(getFinalRoundStatsFn);
 
 async function getFinalRoundStatsForPlayerFn(id: number, playerName: string) {
   return removeDuplicateRows(
-    await prisma.$queryRaw<PlayerStatRows>`
+    await prisma.$queryRaw<PlayerStat[]>`
       WITH maxTime AS (
         SELECT
             MAX("match_time") AS max_time
@@ -153,7 +153,7 @@ async function getAllStatsForPlayerFn(scrimIds: number[], name: string) {
   const mapDataIdArray = Array.from(mapDataIdSet);
 
   return removeDuplicateRows(
-    await prisma.$queryRaw<PlayerStatRows>`
+    await prisma.$queryRaw<PlayerStat[]>`
       WITH maxTime AS (
         SELECT
             MAX("match_time") AS max_time,

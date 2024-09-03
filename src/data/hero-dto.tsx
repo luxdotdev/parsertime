@@ -1,8 +1,8 @@
 import "server-only";
+
 import prisma from "@/lib/prisma";
 import { removeDuplicateRows } from "@/lib/utils";
-import { PlayerStatRows } from "@/types/prisma";
-import { Kill, Prisma } from "@prisma/client";
+import { Kill, PlayerStat, Prisma } from "@prisma/client";
 import { cache } from "react";
 
 async function getAllStatsForHeroFn(scrimIds: number[], hero: string) {
@@ -27,7 +27,7 @@ async function getAllStatsForHeroFn(scrimIds: number[], hero: string) {
   const mapDataIdArray = Array.from(mapDataIdSet);
 
   return removeDuplicateRows(
-    await prisma.$queryRaw<PlayerStatRows>`
+    await prisma.$queryRaw<PlayerStat[]>`
       WITH maxTime AS (
         SELECT
             MAX("match_time") AS max_time,

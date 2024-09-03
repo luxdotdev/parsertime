@@ -1,12 +1,12 @@
 import prisma from "@/lib/prisma";
-import { PlayerStatRows } from "@/types/prisma";
+import { PlayerStat } from "@prisma/client";
 import { expect, test } from "vitest";
 
 test("should be equivalent queries", async () => {
   await prisma.$connect();
 
   console.time("originalQuery");
-  const originalQuery = await prisma.$queryRaw<PlayerStatRows>`
+  const originalQuery = await prisma.$queryRaw<PlayerStat[]>`
     SELECT
         ps.*
     FROM
@@ -26,7 +26,7 @@ test("should be equivalent queries", async () => {
   console.timeEnd("originalQuery");
 
   console.time("newQuery");
-  const newQuery = await prisma.$queryRaw<PlayerStatRows>`
+  const newQuery = await prisma.$queryRaw<PlayerStat[]>`
       WITH maxTime AS (
           SELECT
               MAX("match_time") AS max_time
