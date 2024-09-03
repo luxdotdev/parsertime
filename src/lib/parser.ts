@@ -257,29 +257,31 @@ export async function createNewScrimFromParsedData(
   const firstMap = data.map;
 
   try {
-    await createDefensiveAssistsRows(firstMap, scrim, map.id);
-    await createDvaRemechRows(firstMap, scrim, map.id);
-    await createEchoDuplicateEndRows(firstMap, scrim, map.id);
-    await createEchoDuplicateStartRows(firstMap, scrim, map.id);
-    await createHeroSpawnRows(firstMap, scrim, map.id);
-    await createHeroSwapRows(firstMap, scrim, map.id);
-    await createKillRows(firstMap, scrim, map.id);
-    await createMatchEndRows(firstMap, scrim, map.id);
-    await createMatchStartRows(firstMap, scrim, map.id);
-    await createMercyRezRows(firstMap, scrim, map.id);
-    await createObjectiveCapturedRows(firstMap, scrim, map.id);
-    await createObjectiveUpdatedRows(firstMap, scrim, map.id);
-    await createOffensiveAssistRows(firstMap, scrim, map.id);
-    await createPayloadProgressRows(firstMap, scrim, map.id);
-    await createPlayerStatRows(firstMap, scrim, map.id);
-    await createPointProgressRows(firstMap, scrim, map.id);
-    await createRemechChargedRows(firstMap, scrim, map.id);
-    await createRoundEndRows(firstMap, scrim, map.id);
-    await createRoundStartRows(firstMap, scrim, map.id);
-    await createSetupCompleteRows(firstMap, scrim, map.id);
-    await createUltimateChargedRows(firstMap, scrim, map.id);
-    await createUltimateEndRows(firstMap, scrim, map.id);
-    await createUltimateStartRows(firstMap, scrim, map.id);
+    await Promise.all([
+      createDefensiveAssistsRows(firstMap, scrim, map.id),
+      createDvaRemechRows(firstMap, scrim, map.id),
+      createEchoDuplicateEndRows(firstMap, scrim, map.id),
+      createEchoDuplicateStartRows(firstMap, scrim, map.id),
+      createHeroSpawnRows(firstMap, scrim, map.id),
+      createHeroSwapRows(firstMap, scrim, map.id),
+      createKillRows(firstMap, scrim, map.id),
+      createMatchEndRows(firstMap, scrim, map.id),
+      createMatchStartRows(firstMap, scrim, map.id),
+      createMercyRezRows(firstMap, scrim, map.id),
+      createObjectiveCapturedRows(firstMap, scrim, map.id),
+      createObjectiveUpdatedRows(firstMap, scrim, map.id),
+      createOffensiveAssistRows(firstMap, scrim, map.id),
+      createPayloadProgressRows(firstMap, scrim, map.id),
+      createPlayerStatRows(firstMap, scrim, map.id),
+      createPointProgressRows(firstMap, scrim, map.id),
+      createRemechChargedRows(firstMap, scrim, map.id),
+      createRoundEndRows(firstMap, scrim, map.id),
+      createRoundStartRows(firstMap, scrim, map.id),
+      createSetupCompleteRows(firstMap, scrim, map.id),
+      createUltimateChargedRows(firstMap, scrim, map.id),
+      createUltimateEndRows(firstMap, scrim, map.id),
+      createUltimateStartRows(firstMap, scrim, map.id),
+    ]);
   } catch (error) {
     Logger.error("Error creating map data: ", error, session);
 
@@ -353,29 +355,31 @@ export async function createNewMap(data: CreateNewMapArgs, session: Session) {
   });
 
   try {
-    await createDefensiveAssistsRows(data.map, { id: data.scrimId }, map.id);
-    await createDvaRemechRows(data.map, { id: data.scrimId }, map.id);
-    await createEchoDuplicateEndRows(data.map, { id: data.scrimId }, map.id);
-    await createEchoDuplicateStartRows(data.map, { id: data.scrimId }, map.id);
-    await createHeroSpawnRows(data.map, { id: data.scrimId }, map.id);
-    await createHeroSwapRows(data.map, { id: data.scrimId }, map.id);
-    await createKillRows(data.map, { id: data.scrimId }, map.id);
-    await createMatchEndRows(data.map, { id: data.scrimId }, map.id);
-    await createMatchStartRows(data.map, { id: data.scrimId }, map.id);
-    await createMercyRezRows(data.map, { id: data.scrimId }, map.id);
-    await createObjectiveCapturedRows(data.map, { id: data.scrimId }, map.id);
-    await createObjectiveUpdatedRows(data.map, { id: data.scrimId }, map.id);
-    await createOffensiveAssistRows(data.map, { id: data.scrimId }, map.id);
-    await createPayloadProgressRows(data.map, { id: data.scrimId }, map.id);
-    await createPlayerStatRows(data.map, { id: data.scrimId }, map.id);
-    await createPointProgressRows(data.map, { id: data.scrimId }, map.id);
-    await createRemechChargedRows(data.map, { id: data.scrimId }, map.id);
-    await createRoundEndRows(data.map, { id: data.scrimId }, map.id);
-    await createRoundStartRows(data.map, { id: data.scrimId }, map.id);
-    await createSetupCompleteRows(data.map, { id: data.scrimId }, map.id);
-    await createUltimateChargedRows(data.map, { id: data.scrimId }, map.id);
-    await createUltimateEndRows(data.map, { id: data.scrimId }, map.id);
-    await createUltimateStartRows(data.map, { id: data.scrimId }, map.id);
+    await Promise.all([
+      createDefensiveAssistsRows(data.map, { id: data.scrimId }, map.id),
+      createDvaRemechRows(data.map, { id: data.scrimId }, map.id),
+      createEchoDuplicateEndRows(data.map, { id: data.scrimId }, map.id),
+      createEchoDuplicateStartRows(data.map, { id: data.scrimId }, map.id),
+      createHeroSpawnRows(data.map, { id: data.scrimId }, map.id),
+      createHeroSwapRows(data.map, { id: data.scrimId }, map.id),
+      createKillRows(data.map, { id: data.scrimId }, map.id),
+      createMatchEndRows(data.map, { id: data.scrimId }, map.id),
+      createMatchStartRows(data.map, { id: data.scrimId }, map.id),
+      createMercyRezRows(data.map, { id: data.scrimId }, map.id),
+      createObjectiveCapturedRows(data.map, { id: data.scrimId }, map.id),
+      createObjectiveUpdatedRows(data.map, { id: data.scrimId }, map.id),
+      createOffensiveAssistRows(data.map, { id: data.scrimId }, map.id),
+      createPayloadProgressRows(data.map, { id: data.scrimId }, map.id),
+      createPlayerStatRows(data.map, { id: data.scrimId }, map.id),
+      createPointProgressRows(data.map, { id: data.scrimId }, map.id),
+      createRemechChargedRows(data.map, { id: data.scrimId }, map.id),
+      createRoundEndRows(data.map, { id: data.scrimId }, map.id),
+      createRoundStartRows(data.map, { id: data.scrimId }, map.id),
+      createSetupCompleteRows(data.map, { id: data.scrimId }, map.id),
+      createUltimateChargedRows(data.map, { id: data.scrimId }, map.id),
+      createUltimateEndRows(data.map, { id: data.scrimId }, map.id),
+      createUltimateStartRows(data.map, { id: data.scrimId }, map.id),
+    ]);
   } catch (error) {
     Logger.error("Error creating map data: ", error, session);
 
