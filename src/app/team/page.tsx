@@ -35,13 +35,7 @@ export default async function TeamPage() {
   const userData = await getUser(session?.user?.email);
 
   const userTeams = await prisma.team.findMany({
-    where: {
-      users: {
-        some: {
-          id: userData?.id,
-        },
-      },
-    },
+    where: { users: { some: { id: userData?.id } } },
   });
 
   const allTeams = await prisma.team.findMany();
