@@ -25,19 +25,14 @@ export async function DefaultOverview({
 }) {
   const playerNameDecoded = decodeURIComponent(playerName);
 
-  const finalRound = await prisma.roundEnd.findFirst({
-    where: {
-      MapDataId: id,
-    },
-    orderBy: {
-      round_number: "desc",
-    },
-  });
-
-  const playerStatsByFinalRound = await getPlayerFinalStats(
-    id,
-    playerNameDecoded
-  );
+  const [finalRound, playerStatsByFinalRound, fights] = await Promise.all([
+    prisma.roundEnd.findFirst({
+      where: { MapDataId: id },
+      orderBy: { round_number: "desc" },
+    }),
+    getPlayerFinalStats(id, playerNameDecoded),
+    groupKillsIntoFights(id),
+  ]);
 
   const team = playerStatsByFinalRound[0]?.player_team;
 
@@ -69,7 +64,6 @@ export async function DefaultOverview({
   const playerFletaDeadliftPercentage =
     (playerFinalBlows / (teamTotalFinalBlows - playerFinalBlows)) * 100;
 
-  const fights = await groupKillsIntoFights(id);
   const firstKills = fights.map((fight) => fight.kills[0]);
   const playerFirstKills = firstKills.filter(
     (kill) => kill.attacker_name === playerNameDecoded
