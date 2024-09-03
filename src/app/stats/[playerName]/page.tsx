@@ -11,13 +11,11 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
-import { Scrim } from "@prisma/client";
+import { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-type Props = {
-  params: { playerName: string };
-};
+type Props = { params: { playerName: string } };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const playerName = decodeURIComponent(params.playerName);
@@ -55,9 +53,11 @@ export default async function PlayerStats({ params }: Props) {
   const session = await auth();
   const user = await getUser(session?.user.email);
 
-  const timeframe1 = await new Permission("stats-timeframe-1").check();
-  const timeframe2 = await new Permission("stats-timeframe-2").check();
-  const timeframe3 = await new Permission("stats-timeframe-3").check();
+  const [timeframe1, timeframe2, timeframe3] = await Promise.all([
+    new Permission("stats-timeframe-1").check(),
+    new Permission("stats-timeframe-2").check(),
+    new Permission("stats-timeframe-3").check(),
+  ]);
 
   const permissions = {
     "stats-timeframe-1": timeframe1,
@@ -65,32 +65,19 @@ export default async function PlayerStats({ params }: Props) {
     "stats-timeframe-3": timeframe3,
   };
 
-  if (!user) {
-    notFound();
-  }
+  if (!user) notFound();
 
   // get all time scrims
   const playerScrims = await prisma.playerStat.findMany({
-    where: {
-      player_name: {
-        equals: name,
-        mode: "insensitive",
-      },
-    },
-    select: {
-      scrimId: true,
-    },
+    where: { player_name: { equals: name, mode: "insensitive" } },
+    select: { scrimId: true },
     distinct: ["scrimId"],
   });
 
   const scrimIds = playerScrims.map((scrim) => scrim.scrimId);
 
   const allScrims = await prisma.scrim.findMany({
-    where: {
-      id: {
-        in: scrimIds,
-      },
-    },
+    where: { id: { in: scrimIds } },
   });
 
   // last week
@@ -144,16 +131,19 @@ export default async function PlayerStats({ params }: Props) {
 
   const permittedScrimIds = data[permitted].map((scrim) => scrim.id);
 
-  let allPlayerStats;
-  let allPlayerKills;
-  let mapWinrates;
-  let allPlayerDeaths;
+  let allPlayerStats: PlayerStat[];
+  let allPlayerKills: Kill[];
+  let mapWinrates: { map: string; wins: number; date: Date }[];
+  let allPlayerDeaths: Kill[];
 
   try {
-    allPlayerStats = await getAllStatsForPlayer(permittedScrimIds, name);
-    allPlayerKills = await getAllKillsForPlayer(permittedScrimIds, name);
-    mapWinrates = await getAllMapWinratesForPlayer(permittedScrimIds, name);
-    allPlayerDeaths = await getAllDeathsForPlayer(permittedScrimIds, name);
+    [allPlayerStats, allPlayerKills, mapWinrates, allPlayerDeaths] =
+      await Promise.all([
+        getAllStatsForPlayer(permittedScrimIds, name),
+        getAllKillsForPlayer(permittedScrimIds, name),
+        getAllMapWinratesForPlayer(permittedScrimIds, name),
+        getAllDeathsForPlayer(permittedScrimIds, name),
+      ]);
   } catch (e) {
     return (
       <div className="flex-1 space-y-4 p-8 pt-6">
