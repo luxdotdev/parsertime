@@ -16,29 +16,14 @@ import {
 import { cache } from "react";
 
 async function getScrimFn(id: number) {
-  return await prisma.scrim.findFirst({
-    where: { id },
-  });
+  return await prisma.scrim.findFirst({ where: { id } });
 }
 
 export const getScrim = cache(getScrimFn);
 
 async function getUserViewableScrimsFn(id: string) {
   return await prisma.scrim.findMany({
-    where: {
-      OR: [
-        {
-          creatorId: id,
-        },
-        {
-          Team: {
-            users: {
-              some: { id },
-            },
-          },
-        },
-      ],
-    },
+    where: { OR: [{ creatorId: id }, { Team: { users: { some: { id } } } }] },
   });
 }
 
@@ -133,14 +118,8 @@ export const getPlayerFinalStats = cache(getFinalRoundStatsForPlayerFn);
 
 async function getAllStatsForPlayerFn(scrimIds: number[], name: string) {
   const mapDataIds = await prisma.scrim.findMany({
-    where: {
-      id: {
-        in: scrimIds,
-      },
-    },
-    select: {
-      maps: true,
-    },
+    where: { id: { in: scrimIds } },
+    select: { maps: true },
   });
 
   const mapDataIdSet = new Set<number>();
@@ -188,14 +167,8 @@ export const getAllStatsForPlayer = cache(getAllStatsForPlayerFn);
 
 async function getAllKillsForPlayerFn(scrimIds: number[], name: string) {
   const mapDataIds = await prisma.scrim.findMany({
-    where: {
-      id: {
-        in: scrimIds,
-      },
-    },
-    select: {
-      maps: true,
-    },
+    where: { id: { in: scrimIds } },
+    select: { maps: true },
   });
 
   const mapDataIdSet = new Set<number>();
@@ -209,13 +182,8 @@ async function getAllKillsForPlayerFn(scrimIds: number[], name: string) {
 
   return await prisma.kill.findMany({
     where: {
-      MapDataId: {
-        in: mapDataIdArray,
-      },
-      attacker_name: {
-        equals: name,
-        mode: "insensitive",
-      },
+      MapDataId: { in: mapDataIdArray },
+      attacker_name: { equals: name, mode: "insensitive" },
     },
   });
 }
@@ -232,14 +200,8 @@ export const getAllKillsForPlayer = cache(getAllKillsForPlayerFn);
 
 async function getAllDeathsForPlayerFn(scrimIds: number[], name: string) {
   const mapDataIds = await prisma.scrim.findMany({
-    where: {
-      id: {
-        in: scrimIds,
-      },
-    },
-    select: {
-      maps: true,
-    },
+    where: { id: { in: scrimIds } },
+    select: { maps: true },
   });
 
   const mapDataIdSet = new Set<number>();
@@ -253,13 +215,8 @@ async function getAllDeathsForPlayerFn(scrimIds: number[], name: string) {
 
   return await prisma.kill.findMany({
     where: {
-      MapDataId: {
-        in: mapDataIdArray,
-      },
-      victim_name: {
-        equals: name,
-        mode: "insensitive",
-      },
+      MapDataId: { in: mapDataIdArray },
+      victim_name: { equals: name, mode: "insensitive" },
     },
   });
 }

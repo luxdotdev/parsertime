@@ -7,14 +7,8 @@ import { cache } from "react";
 
 async function getAllStatsForHeroFn(scrimIds: number[], hero: string) {
   const mapDataIds = await prisma.scrim.findMany({
-    where: {
-      id: {
-        in: scrimIds,
-      },
-    },
-    select: {
-      maps: true,
-    },
+    where: { id: { in: scrimIds } },
+    select: { maps: true },
   });
 
   const mapDataIdSet = new Set<number>();
@@ -62,14 +56,8 @@ export const getAllStatsForHero = cache(getAllStatsForHeroFn);
 
 async function getAllKillsForHeroFn(scrimIds: number[], hero: string) {
   const mapDataIds = await prisma.scrim.findMany({
-    where: {
-      id: {
-        in: scrimIds,
-      },
-    },
-    select: {
-      maps: true,
-    },
+    where: { id: { in: scrimIds } },
+    select: { maps: true },
   });
 
   const mapDataIdSet = new Set<number>();
@@ -83,13 +71,8 @@ async function getAllKillsForHeroFn(scrimIds: number[], hero: string) {
 
   return await prisma.kill.findMany({
     where: {
-      MapDataId: {
-        in: mapDataIdArray,
-      },
-      attacker_hero: {
-        equals: hero,
-        mode: "insensitive",
-      },
+      MapDataId: { in: mapDataIdArray },
+      attacker_hero: { equals: hero, mode: "insensitive" },
     },
   });
 }
@@ -106,14 +89,8 @@ export const getAllKillsForHero = cache(getAllKillsForHeroFn);
 
 async function getAllDeathsForHeroFn(scrimIds: number[], hero: string) {
   const mapDataIds = await prisma.scrim.findMany({
-    where: {
-      id: {
-        in: scrimIds,
-      },
-    },
-    select: {
-      maps: true,
-    },
+    where: { id: { in: scrimIds } },
+    select: { maps: true },
   });
 
   const mapDataIdSet = new Set<number>();
@@ -127,13 +104,8 @@ async function getAllDeathsForHeroFn(scrimIds: number[], hero: string) {
 
   return await prisma.kill.findMany({
     where: {
-      MapDataId: {
-        in: mapDataIdArray,
-      },
-      victim_hero: {
-        equals: hero,
-        mode: "insensitive",
-      },
+      MapDataId: { in: mapDataIdArray },
+      victim_hero: { equals: hero, mode: "insensitive" },
     },
   });
 }

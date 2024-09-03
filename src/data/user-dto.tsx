@@ -5,17 +5,10 @@ import { $Enums, User } from "@prisma/client";
 import { cache } from "react";
 
 async function getUserFn(email: string | undefined) {
-  if (!email) {
-    return null;
-  }
+  if (!email) return null;
 
-  const user = await prisma.user.findFirst({
-    where: { email },
-  });
-
-  if (!user) {
-    return null;
-  }
+  const user = await prisma.user.findFirst({ where: { email } });
+  if (!user) return null;
 
   return user;
 }
@@ -45,9 +38,7 @@ async function getTeamsWithPermsFn(email: string | undefined) {
             },
           },
         },
-        {
-          managers: { some: { userId: user?.id } },
-        },
+        { managers: { some: { userId: user?.id } } },
       ],
     },
   });
