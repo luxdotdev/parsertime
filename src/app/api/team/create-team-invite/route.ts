@@ -1,8 +1,8 @@
 import { auth } from "@/lib/auth";
 import { generateRandomToken } from "@/lib/invite-token";
 import Logger from "@/lib/logger";
-import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
+import { NextRequest } from "next/server";
 
 const FREE_MEMBER_CAP = 5;
 const BASIC_MEMBER_CAP = 10;
@@ -17,9 +17,7 @@ export async function POST(req: NextRequest) {
   if (!session) {
     if (token !== process.env.DEV_TOKEN) {
       Logger.warn("Unauthorized request to create team invite");
-      return new Response("Unauthorized", {
-        status: 401,
-      });
+      return new Response("Unauthorized", { status: 401 });
     }
     Logger.log("Authorized request to create team invite using dev token");
   }
@@ -30,31 +28,23 @@ export async function POST(req: NextRequest) {
 
   if (!teamId) {
     Logger.error("No team id provided to create team invite");
-    return new Response("No team id provided", {
-      status: 400,
-    });
+    return new Response("No team id provided", { status: 400 });
   }
 
   const teamData = await prisma.team.findFirst({
-    where: {
-      id: teamId,
-    },
-    select: {
-      users: true,
-      ownerId: true,
-    },
+    where: { id: teamId },
+    select: { users: true, ownerId: true },
   });
+  if (!teamData) return new Response("Team not found", { status: 404 });
 
   const teamCreator = await prisma.user.findFirst({
-    where: {
-      id: teamData?.ownerId,
-    },
+    where: { id: teamData.ownerId },
   });
-
-  const numberOfMembers = teamData?.users.length ?? 0;
 
   if (!teamCreator)
     return new Response("Team creator not found", { status: 404 });
+
+  const numberOfMembers = teamData.users.length ?? 0;
 
   switch (teamCreator.billingPlan) {
     case "FREE":
@@ -107,8 +97,6 @@ export async function POST(req: NextRequest) {
 
   return new Response(JSON.stringify({ token: inviteToken }), {
     status: 200,
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
   });
 }

@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
-const updateNameSchema = z.object({
+const UpdateNameSchema = z.object({
   name: z
     .string()
     .min(2, {
@@ -19,28 +19,18 @@ const updateNameSchema = z.object({
 export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session || !session.user || !session.user.email) {
-    return new Response("Unauthorized", {
-      status: 401,
-    });
+    return new Response("Unauthorized", { status: 401 });
   }
 
-  const body = updateNameSchema.safeParse(await req.json());
+  const body = UpdateNameSchema.safeParse(await req.json());
   if (!body.success) {
-    return new Response("Invalid name supplied", {
-      status: 400,
-    });
+    return new Response("Invalid name supplied", { status: 400 });
   }
 
   await prisma.user.update({
-    where: {
-      email: session.user.email,
-    },
-    data: {
-      name: body.data.name,
-    },
+    where: { email: session.user.email },
+    data: { name: body.data.name },
   });
 
-  return new Response("OK", {
-    status: 200,
-  });
+  return new Response("OK", { status: 200 });
 }

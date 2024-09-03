@@ -17,9 +17,7 @@ export async function POST(req: NextRequest) {
   const ua = userAgent(req);
 
   const body = BugReportSchema.safeParse(await req.json());
-  if (!body.success) {
-    return new Response("Invalid request", { status: 400 });
-  }
+  if (!body.success) return new Response("Invalid request", { status: 400 });
 
   const user = await getUser(body.data.email);
 

@@ -13,61 +13,26 @@ const RemoveUserFromTeamSchema = z.object({
 export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session || !session.user || !session.user.email) {
-    return new Response("Unauthorized", {
-      status: 401,
-    });
+    return new Response("Unauthorized", { status: 401 });
   }
 
   const body = RemoveUserFromTeamSchema.safeParse(await req.json());
-  if (!body.success) {
-    return new Response("Invalid request", {
-      status: 400,
-    });
-  }
+  if (!body.success) return new Response("Invalid request", { status: 400 });
 
   const team = await prisma.team.findFirst({
-    where: {
-      id: parseInt(body.data.teamId),
-    },
+    where: { id: parseInt(body.data.teamId) },
   });
+  if (!team) return new Response("Team not found", { status: 404 });
 
-  if (!team) {
-    return new Response("Team not found", {
-      status: 404,
-    });
-  }
-
-  const user = await prisma.user.findFirst({
-    where: {
-      id: body.data.userId,
-    },
-  });
-
-  if (!user) {
-    return new Response("User not found", {
-      status: 404,
-    });
-  }
+  const user = await prisma.user.findFirst({ where: { id: body.data.userId } });
+  if (!user) return new Response("User not found", { status: 404 });
 
   const authedUser = await getUser(session.user.email);
-
-  if (!authedUser) {
-    return new Response("Unauthorized", {
-      status: 401,
-    });
-  }
+  if (!authedUser) return new Response("Unauthorized", { status: 401 });
 
   const managers = await prisma.team.findFirst({
-    where: {
-      id: parseInt(body.data.teamId),
-    },
-    select: {
-      managers: {
-        select: {
-          userId: true,
-        },
-      },
-    },
+    where: { id: parseInt(body.data.teamId) },
+    select: { managers: { select: { userId: true } } },
   });
 
   const authedUserIsManager = managers?.managers.some(
@@ -79,27 +44,19 @@ export async function POST(req: NextRequest) {
   }
 
   if (team.ownerId !== authedUser.id && !authedUserIsManager) {
-    return new Response("Unauthorized", {
-      status: 401,
-    });
+    return new Response("Unauthorized", { status: 401 });
   }
 
   if (team.ownerId === user.id) {
-    return new Response("Cannot remove owner from team", {
-      status: 400,
-    });
+    return new Response("Cannot remove owner from team", { status: 400 });
   }
 
   if (authedUserIsManager && user.id === authedUser.id) {
-    return new Response("Cannot remove yourself from team", {
-      status: 400,
-    });
+    return new Response("Cannot remove yourself from team", { status: 400 });
   }
 
   if (authedUserIsManager && userIsManager(user)) {
-    return new Response("Cannot remove another manager", {
-      status: 400,
-    });
+    return new Response("Cannot remove another manager", { status: 400 });
   }
 
   if (team.ownerId === authedUser.id) {
@@ -114,19 +71,9 @@ export async function POST(req: NextRequest) {
   }
 
   await prisma.team.update({
-    where: {
-      id: parseInt(body.data.teamId),
-    },
-    data: {
-      users: {
-        disconnect: {
-          id: body.data.userId,
-        },
-      },
-    },
+    where: { id: parseInt(body.data.teamId) },
+    data: { users: { disconnect: { id: body.data.userId } } },
   });
 
-  return new Response("OK", {
-    status: 200,
-  });
+  return new Response("OK", { status: 200 });
 }
