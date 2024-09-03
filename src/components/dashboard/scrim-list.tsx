@@ -25,17 +25,18 @@ export async function ScrimList({ searchParams }: Props) {
   const userViewableScrims = await getUserViewableScrims(userData.id);
 
   for (const scrim of userViewableScrims) {
-    const teamName = await prisma.team.findFirst({
-      where: {
-        id: scrim.teamId ?? 0,
-      },
-    });
-
-    const creatorName = await prisma.user.findMany({
-      where: {
-        id: scrim.creatorId,
-      },
-    });
+    const [teamName, creatorName] = await Promise.all([
+      prisma.team.findFirst({
+        where: {
+          id: scrim.teamId ?? 0,
+        },
+      }),
+      prisma.user.findMany({
+        where: {
+          id: scrim.creatorId,
+        },
+      }),
+    ]);
 
     const hasPerms =
       userData.role === $Enums.UserRole.ADMIN ||
