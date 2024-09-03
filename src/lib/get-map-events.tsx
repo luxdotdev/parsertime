@@ -78,11 +78,49 @@ const priority: Record<string, number> = {
 };
 
 export async function getMapEvents(id: number) {
-  const matchStart = await prisma.matchStart.findFirst({
-    where: {
-      MapDataId: id,
-    },
-  });
+  const [
+    matchStart,
+    matchEnd,
+    roundStarts,
+    roundEndRows,
+    objectiveCapturedRows,
+    kills,
+    ultimateStarts,
+    ultimateEnds,
+    heroSwaps,
+    lucioKills,
+  ] = await Promise.all([
+    prisma.matchStart.findFirst({
+      where: { MapDataId: id },
+    }),
+    prisma.matchEnd.findFirst({
+      where: { MapDataId: id },
+    }),
+    prisma.roundStart.findMany({
+      where: { MapDataId: id },
+    }),
+    prisma.roundEnd.findMany({
+      where: { MapDataId: id },
+    }),
+    prisma.objectiveCaptured.findMany({
+      where: { MapDataId: id },
+    }),
+    prisma.kill.findMany({
+      where: { MapDataId: id },
+    }),
+    prisma.ultimateStart.findMany({
+      where: { MapDataId: id },
+    }),
+    prisma.ultimateEnd.findMany({
+      where: { MapDataId: id },
+    }),
+    prisma.heroSwap.findMany({
+      where: { MapDataId: id, match_time: { not: 0 } },
+    }),
+    prisma.kill.findMany({
+      where: { MapDataId: id, victim_hero: "Lúcio" },
+    }),
+  ]);
 
   if (!matchStart) return [];
 
@@ -96,33 +134,9 @@ export async function getMapEvents(id: number) {
     }
   };
 
-  const matchEnd = await prisma.matchEnd.findFirst({
-    where: {
-      MapDataId: id,
-    },
-  });
+  const roundEnds = removeDuplicateRows(roundEndRows);
 
-  const roundStarts = await prisma.roundStart.findMany({
-    where: {
-      MapDataId: id,
-    },
-  });
-
-  const roundEnds = removeDuplicateRows(
-    await prisma.roundEnd.findMany({
-      where: {
-        MapDataId: id,
-      },
-    })
-  );
-
-  const objectiveCaptureds = (
-    await prisma.objectiveCaptured.findMany({
-      where: {
-        MapDataId: id,
-      },
-    })
-  ).filter((event) => {
+  const objectiveCaptureds = objectiveCapturedRows.filter((event) => {
     return event.capturing_team !== "All Teams";
   });
 
@@ -134,33 +148,6 @@ export async function getMapEvents(id: number) {
           },
         })
       : [];
-
-  const kills = await prisma.kill.findMany({
-    where: {
-      MapDataId: id,
-    },
-  });
-
-  const ultimateStarts = await prisma.ultimateStart.findMany({
-    where: {
-      MapDataId: id,
-    },
-  });
-
-  const ultimateEnds = await prisma.ultimateEnd.findMany({
-    where: {
-      MapDataId: id,
-    },
-  });
-
-  const heroSwaps = await prisma.heroSwap.findMany({
-    where: {
-      MapDataId: id,
-      match_time: {
-        not: 0,
-      },
-    },
-  });
 
   const fights = await groupKillsIntoFights(id);
 
@@ -195,13 +182,6 @@ export async function getMapEvents(id: number) {
   });
 
   const multikillList = findMultikills(fights);
-
-  const lucioKills = await prisma.kill.findMany({
-    where: {
-      MapDataId: id,
-      victim_hero: "Lúcio",
-    },
-  });
 
   const ajaxes = [] as UltimateEnd[];
 
@@ -489,13 +469,26 @@ export async function getMapEvents(id: number) {
 }
 
 export async function getUltimatesUsedList(id: number) {
-  const ultimateStarts = (
-    await prisma.ultimateStart.findMany({
-      where: {
-        MapDataId: id,
-      },
-    })
-  )
+  const [ultimateStartRows, matchStart, matchEnd, roundStarts, roundEndRows] =
+    await Promise.all([
+      prisma.ultimateStart.findMany({
+        where: { MapDataId: id },
+      }),
+      prisma.matchStart.findFirst({
+        where: { MapDataId: id },
+      }),
+      prisma.matchEnd.findFirst({
+        where: { MapDataId: id },
+      }),
+      prisma.roundStart.findMany({
+        where: { MapDataId: id },
+      }),
+      prisma.roundEnd.findMany({
+        where: { MapDataId: id },
+      }),
+    ]);
+
+  const ultimateStarts = ultimateStartRows
     // filter out ultimate starts that happen within 1 second for the same player
     .filter((start, index, array) => {
       const nextStart = array[index + 1];
@@ -505,33 +498,9 @@ export async function getUltimatesUsedList(id: number) {
       return true;
     });
 
-  const matchStart = await prisma.matchStart.findFirst({
-    where: {
-      MapDataId: id,
-    },
-  });
-
   if (!matchStart) return [];
 
-  const matchEnd = await prisma.matchEnd.findFirst({
-    where: {
-      MapDataId: id,
-    },
-  });
-
-  const roundStarts = await prisma.roundStart.findMany({
-    where: {
-      MapDataId: id,
-    },
-  });
-
-  const roundEnds = removeDuplicateRows(
-    await prisma.roundEnd.findMany({
-      where: {
-        MapDataId: id,
-      },
-    })
-  );
+  const roundEnds = removeDuplicateRows(roundEndRows);
 
   const fights = await groupKillsIntoFights(id);
 

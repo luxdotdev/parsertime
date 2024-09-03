@@ -8,8 +8,10 @@ import {
 import { getMapEvents, getUltimatesUsedList } from "@/lib/get-map-events";
 
 export async function MapEvents({ id }: { id: number }) {
-  const events = await getMapEvents(id);
-  const ultimates = await getUltimatesUsedList(id);
+  const [events, ultimates] = await Promise.all([
+    getMapEvents(id),
+    getUltimatesUsedList(id),
+  ]);
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
