@@ -49,11 +49,11 @@ export async function parseDataFromTXT(file: File) {
   };
 
   // Function to check and convert a value to a number if applicable or replace empty strings with null
-  const convertToNumberOrReplaceEmpty = (
+  function convertToNumberOrReplaceEmpty(
     value: string,
     eventType: string,
     index: number
-  ) => {
+  ) {
     if (value === "") {
       return null; // Replace empty strings with null
     }
@@ -79,9 +79,9 @@ export async function parseDataFromTXT(file: File) {
     }
     const parsedValue = parseFloat(value);
     return isNaN(parsedValue) ? value : parsedValue;
-  };
+  }
 
-  const isTeamNameField = (eventType: string, index: number): boolean => {
+  function isTeamNameField(eventType: string, index: number): boolean {
     const teamNameFields: Record<string, number[]> = {
       // player_team, attacker_team, victim_team, capturing_team
       defensive_assist: [2],
@@ -105,7 +105,7 @@ export async function parseDataFromTXT(file: File) {
       round_start: [3],
     };
     return teamNameFields[eventType]?.includes(index) || false;
-  };
+  }
 
   const categorizedData: Record<string, string[][]> = {};
   lines.forEach((line) => {
