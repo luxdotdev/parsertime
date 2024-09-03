@@ -11,20 +11,14 @@ import { $Enums, User } from "@prisma/client";
 import { Metadata } from "next";
 import Image from "next/image";
 
-type Props = {
-  params: { teamId: string };
-};
+type Props = { params: { teamId: string } };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const teamId = decodeURIComponent(params.teamId);
 
   const team = await prisma.team.findFirst({
-    where: {
-      id: parseInt(teamId),
-    },
-    select: {
-      name: true,
-    },
+    where: { id: parseInt(teamId) },
+    select: { name: true },
   });
 
   const teamName = team?.name ?? "Team";
@@ -55,24 +49,13 @@ export default async function Team({ params }: { params: { teamId: string } }) {
 
   const teamId = parseInt(params.teamId);
 
-  const teamData = await prisma.team.findFirst({
-    where: {
-      id: teamId,
-    },
-  });
+  const [teamData, teamMembersData, teamManagers] = await Promise.all([
+    prisma.team.findFirst({ where: { id: teamId } }),
+    prisma.team.findFirst({ where: { id: teamId }, select: { users: true } }),
+    prisma.teamManager.findMany({ where: { teamId } }),
+  ]);
 
-  const teamMembers = (await prisma.team.findFirst({
-    where: {
-      id: teamId,
-    },
-    select: {
-      users: true,
-    },
-  })) ?? { users: [] };
-
-  const teamManagers = await prisma.teamManager.findMany({
-    where: { teamId },
-  });
+  const teamMembers = teamMembersData ?? { users: [] };
 
   const user = await getUser(session?.user?.email);
 
