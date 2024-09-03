@@ -25,37 +25,13 @@ import {
 } from "@/lib/utils";
 
 export default async function StatsPage() {
-  const userNum = await prisma.user.count();
-  const scrimNum = await prisma.scrim.count();
-  const killNum = await prisma.kill.count();
-  const statNum = await prisma.playerStat.count();
-  const mapNum = await prisma.mapData.count();
-
-  const topAttackerStats = await prisma.kill.groupBy({
-    by: ["attacker_name"],
-    _count: {
-      attacker_name: true,
-    },
-    orderBy: {
-      _count: {
-        attacker_name: "desc",
-      },
-    },
-    take: 3,
-  });
-
-  const highestPlayerDeaths = await prisma.kill.groupBy({
-    by: ["victim_name"],
-    _count: {
-      victim_name: true,
-    },
-    orderBy: {
-      _count: {
-        victim_name: "desc",
-      },
-    },
-    take: 3,
-  });
+  const [userNum, scrimNum, killNum, statNum, mapNum] = await Promise.all([
+    prisma.user.count(),
+    prisma.scrim.count(),
+    prisma.kill.count(),
+    prisma.playerStat.count(),
+    prisma.mapData.count(),
+  ]);
 
   type MostPlayedHeroes = {
     player_hero: string;
@@ -74,57 +50,51 @@ export default async function StatsPage() {
       total_time_played DESC
     LIMIT 3;`;
 
-  const topDamageStats = await prisma.playerStat.groupBy({
-    by: ["player_name"],
-    _sum: {
-      hero_damage_dealt: true,
-    },
-    orderBy: {
-      _sum: {
-        hero_damage_dealt: "desc",
-      },
-    },
-    take: 3,
-  });
-
-  const topHealerStats = await prisma.playerStat.groupBy({
-    by: ["player_name"],
-    _sum: {
-      healing_dealt: true,
-    },
-    orderBy: {
-      _sum: {
-        healing_dealt: "desc",
-      },
-    },
-    take: 3,
-  });
-
-  const damageBlockedStats = await prisma.playerStat.groupBy({
-    by: ["player_name"],
-    _sum: {
-      damage_blocked: true,
-    },
-    orderBy: {
-      _sum: {
-        damage_blocked: "desc",
-      },
-    },
-    take: 3,
-  });
-
-  const heroTimePlayedStats = await prisma.playerStat.groupBy({
-    by: ["player_name"],
-    _sum: {
-      hero_time_played: true,
-    },
-    orderBy: {
-      _sum: {
-        hero_time_played: "desc",
-      },
-    },
-    take: 3,
-  });
+  const [
+    topAttackerStats,
+    highestPlayerDeaths,
+    topDamageStats,
+    topHealerStats,
+    damageBlockedStats,
+    heroTimePlayedStats,
+  ] = await Promise.all([
+    prisma.kill.groupBy({
+      by: ["attacker_name"],
+      _count: { attacker_name: true },
+      orderBy: { _count: { attacker_name: "desc" } },
+      take: 3,
+    }),
+    prisma.kill.groupBy({
+      by: ["victim_name"],
+      _count: { victim_name: true },
+      orderBy: { _count: { victim_name: "desc" } },
+      take: 3,
+    }),
+    prisma.playerStat.groupBy({
+      by: ["player_name"],
+      _sum: { hero_damage_dealt: true },
+      orderBy: { _sum: { hero_damage_dealt: "desc" } },
+      take: 3,
+    }),
+    prisma.playerStat.groupBy({
+      by: ["player_name"],
+      _sum: { healing_dealt: true },
+      orderBy: { _sum: { healing_dealt: "desc" } },
+      take: 3,
+    }),
+    prisma.playerStat.groupBy({
+      by: ["player_name"],
+      _sum: { damage_blocked: true },
+      orderBy: { _sum: { damage_blocked: "desc" } },
+      take: 3,
+    }),
+    prisma.playerStat.groupBy({
+      by: ["player_name"],
+      _sum: { hero_time_played: true },
+      orderBy: { _sum: { hero_time_played: "desc" } },
+      take: 3,
+    }),
+  ]);
 
   type Ajax = { player_name: string; coincidence_count: number }[];
 

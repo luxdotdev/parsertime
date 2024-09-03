@@ -23,9 +23,8 @@ export async function getAverageUltChargeTime(id: number, playerName: string) {
   // for each ultimate end, calculate the time between the next ultimate charged and the current ultimate end
   for (let i = 0; i < ultimateEnds.length; i++) {
     const nextUltimateCharged = ultimatesCharged[i + 1];
-    if (!nextUltimateCharged) {
-      break;
-    }
+    if (!nextUltimateCharged) break;
+
     const currentUltimateEnd = ultimateEnds[i];
     const timeToNextUltimate =
       nextUltimateCharged.match_time - currentUltimateEnd.match_time;
@@ -33,9 +32,7 @@ export async function getAverageUltChargeTime(id: number, playerName: string) {
     // if time to next ultimate is negative, it means the next ultimate was charged before the current ultimate was used
     // so we should skip this ultimate end
     // this can happen if the round ends before the ultimate is used
-    if (timeToNextUltimate < 0) {
-      continue;
-    }
+    if (timeToNextUltimate < 0) continue;
 
     ultimateTimes.push(timeToNextUltimate);
   }
@@ -219,9 +216,8 @@ async function calculateAverageDuelWinrate(id: number, playerName: string) {
   const winrates = duels.map((duel) => {
     const totalKills = duel.enemy_kills + duel.enemy_deaths;
     const winrate = (duel.enemy_kills / totalKills) * 100;
-    return {
-      winrate,
-    };
+
+    return { winrate };
   });
 
   // sum all winrates and divide by the number of duels
@@ -306,12 +302,8 @@ export async function calculateXFactor(mapId: number, playerName: string) {
   );
 
   const finalRound = await prisma.roundEnd.findFirst({
-    where: {
-      MapDataId: mapId,
-    },
-    orderBy: {
-      round_number: "desc",
-    },
+    where: { MapDataId: mapId },
+    orderBy: { round_number: "desc" },
   });
 
   const playerStatsByFinalRound = await getPlayerFinalStats(mapId, playerName);

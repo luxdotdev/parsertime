@@ -1,4 +1,3 @@
-import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
@@ -12,9 +11,7 @@ export default async function TokenPage({
   const session = await auth();
   const token = params.token;
 
-  if (!session) {
-    redirect("/login");
-  }
+  if (!session) redirect("/login");
 
   try {
     const teamCreatedAt = new Date(atob(token));
@@ -29,24 +26,14 @@ export default async function TokenPage({
     }
 
     await prisma.team.update({
-      where: {
-        id: team.id,
-      },
-      data: {
-        users: {
-          connect: {
-            email: session?.user?.email ?? "",
-          },
-        },
-      },
+      where: { id: team.id },
+      data: { users: { connect: { email: session?.user?.email ?? "" } } },
     });
 
     Logger.log(`User now belongs to team: ${JSON.stringify(team)}`);
   } catch (e) {
     const teamInviteToken = await prisma.teamInviteToken.findUnique({
-      where: {
-        token,
-      },
+      where: { token },
     });
 
     if (!teamInviteToken) {
@@ -55,47 +42,18 @@ export default async function TokenPage({
     }
 
     await prisma.team.update({
-      where: {
-        id: teamInviteToken.teamId,
-      },
-      data: {
-        users: {
-          connect: {
-            email: session?.user?.email ?? "",
-          },
-        },
-      },
+      where: { id: teamInviteToken.teamId },
+      data: { users: { connect: { email: session?.user?.email ?? "" } } },
     });
 
-    await prisma.teamInviteToken.delete({
-      where: {
-        token,
-      },
-    });
+    await prisma.teamInviteToken.delete({ where: { token } });
 
     Logger.log(
       `User ${session?.user?.email} joined team ${teamInviteToken.teamId}`
     );
 
     const teams = await prisma.team.findMany({
-      where: {
-        users: {
-          some: {
-            email: session?.user?.email,
-          },
-        },
-      },
-    });
-
-    const user = await getUser(session?.user?.email);
-
-    prisma.user.update({
-      where: {
-        id: user?.id,
-      },
-      data: {
-        teamId: teamInviteToken.teamId,
-      },
+      where: { users: { some: { email: session?.user?.email } } },
     });
 
     Logger.log(`User now belongs to team: ${JSON.stringify(teams)}`);

@@ -8,33 +8,21 @@ const VALID_IMAGE_URL_HOSTS = {
 
 export async function DELETE() {
   const usersWithImages = await prisma.user.findMany({
-    where: {
-      image: {
-        not: null,
-      },
-    },
-    select: {
-      image: true,
-    },
+    where: { image: { not: null } },
+    select: { image: true },
   });
 
-  const userImages = usersWithImages.map((user) => user.image) as string[];
+  const userImages = usersWithImages.map((user) => user.image).filter(Boolean);
   const userBlobs = userImages.filter((url) =>
     url.includes(VALID_IMAGE_URL_HOSTS.vercel_blob)
   );
 
   const teamsWithImages = await prisma.team.findMany({
-    where: {
-      image: {
-        not: null,
-      },
-    },
-    select: {
-      image: true,
-    },
+    where: { image: { not: null } },
+    select: { image: true },
   });
 
-  const teamImages = teamsWithImages.map((team) => team.image) as string[];
+  const teamImages = teamsWithImages.map((team) => team.image).filter(Boolean);
   const teamBlobs = teamImages.filter((url) =>
     url.includes(VALID_IMAGE_URL_HOSTS.vercel_blob)
   );
@@ -55,9 +43,7 @@ export async function DELETE() {
 
   Logger.log(`Deleted ${filteredBlobs.length} unused blobs`);
 
-  return new Response(`OK`, {
-    status: 200,
-  });
+  return new Response("OK", { status: 200 });
 }
 
 // This is necessary for using Vercel Cron Jobs

@@ -9,10 +9,7 @@ export async function GET() {
 
   if (!session) {
     Logger.warn("Unauthorized request to get teams API");
-
-    return new Response("Unauthorized", {
-      status: 401,
-    });
+    return new Response("Unauthorized", { status: 401 });
   }
 
   const userId = await getUser(session?.user?.email);
@@ -21,26 +18,16 @@ export async function GET() {
   const teams = await prisma.team.findMany({
     where: {
       OR: [
-        {
-          ownerId: userId?.id,
-        },
+        { ownerId: userId?.id },
         {
           users: {
             some: {
               id: userId?.id,
-              role: {
-                in: [$Enums.UserRole.MANAGER, $Enums.UserRole.ADMIN],
-              },
+              role: { in: [$Enums.UserRole.MANAGER, $Enums.UserRole.ADMIN] },
             },
           },
         },
-        {
-          managers: {
-            some: {
-              userId: userId?.id,
-            },
-          },
-        },
+        { managers: { some: { userId: userId?.id } } },
       ],
     },
   });
@@ -62,9 +49,7 @@ export async function GET() {
   };
 
   return new Response(JSON.stringify(teamResponse), {
-    headers: {
-      "content-type": "application/json",
-    },
     status: 200,
+    headers: { "Content-Type": "application/json" },
   });
 }

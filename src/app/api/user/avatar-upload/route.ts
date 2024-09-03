@@ -1,12 +1,12 @@
+import { getUser } from "@/data/user-dto";
+import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
-import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
-import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { Ratelimit } from "@upstash/ratelimit";
-import { kv } from "@vercel/kv";
-import { auth } from "@/lib/auth";
 import { track } from "@vercel/analytics/server";
-import { getUser } from "@/data/user-dto";
+import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
+import { kv } from "@vercel/kv";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const session = await auth();
@@ -57,19 +57,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         // Generate a client token for the browser to upload the file
         // ⚠️ Authenticate and authorize users before generating the token.
         // Otherwise, you're allowing anonymous uploads.
-        const user = await prisma.user.findUnique({
-          where: { id: userId },
-        });
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (!user) throw new Error("User not found");
 
-        if (!user) {
-          throw new Error("User not found");
-        }
-
-        return {
-          tokenPayload: JSON.stringify({
-            userId: user.id,
-          }),
-        };
+        return { tokenPayload: JSON.stringify({ userId: user.id }) };
       },
       onUploadCompleted: async ({ blob, tokenPayload }) => {
         // Get notified of client upload completion
@@ -81,23 +72,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
         try {
           // Run any logic after the file upload completed
-          const { userId } = JSON.parse(tokenPayload as string) as {
-            userId: string;
-          };
+          const { userId } = JSON.parse(tokenPayload!) as { userId: string };
 
-          const user = await prisma.user.findUnique({
-            where: { id: userId },
-          });
-
-          if (!user) {
-            throw new Error("User not found");
-          }
+          const user = await prisma.user.findUnique({ where: { id: userId } });
+          if (!user) throw new Error("User not found");
 
           await prisma.user.update({
             where: { id: user?.id },
-            data: {
-              image: blob.url,
-            },
+            data: { image: blob.url },
           });
         } catch (error) {
           throw new Error("Could not update user");
@@ -107,8 +89,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json(jsonResponse);
   } catch (error) {
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     return NextResponse.json(
-      { error: (error as Error).message },
+      { error: "An unknown error occurred" },
       { status: 400 } // The webhook will retry 5 times waiting for a 200
     );
   }

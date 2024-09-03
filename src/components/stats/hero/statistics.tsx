@@ -1,5 +1,6 @@
 "use client";
 
+import { KillMethodChart } from "@/components/stats/player/charts/kill-methods";
 import { StatPer10Chart } from "@/components/stats/player/charts/stat-per-10";
 import { Timeframe } from "@/components/stats/player/range-picker";
 import {
@@ -9,33 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Table,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { cn, format, toHero } from "@/lib/utils";
-import { HeroName } from "@/types/heroes";
-import { PlayerStatRows } from "@/types/prisma";
-import { Kill, PlayerStat, Scrim, User } from "@prisma/client";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import { DateRange } from "react-day-picker";
-import Link from "next/link";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { InfoCircledIcon } from "@radix-ui/react-icons";
-import { RolePieChart } from "@/components/stats/player/charts/role-pie-chart";
-import { KillMethodChart } from "@/components/stats/player/charts/kill-methods";
-import { Winrate } from "@/data/scrim-dto";
-import { MapWinsChart } from "@/components/stats/player/charts/map-wins-chart";
-import { WinsPerMapTypeChart } from "@/components/stats/player/charts/wins-per-map-type";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -43,8 +18,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Table,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { NonMappableStat, Stat } from "@/lib/player-charts";
-import { Label } from "@/components/ui/label";
+import { cn, format, toHero } from "@/lib/utils";
+import { HeroName } from "@/types/heroes";
+import { Kill, PlayerStat, Scrim } from "@prisma/client";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { DateRange } from "react-day-picker";
 
 function ChartTooltip({ children }: { children: React.ReactNode }) {
   return (
@@ -71,13 +66,13 @@ export function Statistics({
   timeframe: Timeframe;
   date: DateRange | undefined;
   scrims: Record<Timeframe, Scrim[]>;
-  stats: PlayerStatRows;
+  stats: PlayerStat[];
   kills: Kill[];
   deaths: Kill[];
   hero: HeroName;
 }) {
   const [customScrims, setCustomScrims] = useState<Scrim[]>([]);
-  const [filteredStats, setFilteredStats] = useState<PlayerStatRows>([]);
+  const [filteredStats, setFilteredStats] = useState<PlayerStat[]>([]);
   const [filteredKills, setFilteredKills] = useState<Kill[]>([]);
   const [filteredDeaths, setFilteredDeaths] = useState<Kill[]>([]);
   const [selectedStat, setSelectedStat] =

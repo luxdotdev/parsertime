@@ -11,25 +11,17 @@ import prisma from "@/lib/prisma";
 import { groupKillsIntoFights, toTimestamp } from "@/lib/utils";
 
 export async function Killfeed({ id }: { id: number }) {
-  const finalRound = await prisma.roundEnd.findFirst({
-    where: {
-      MapDataId: id,
-    },
-    orderBy: {
-      round_number: "desc",
-    },
-  });
-
-  const playerTeams = await prisma.matchStart.findFirst({
-    where: {
-      MapDataId: id,
-    },
-  });
+  const [finalRound, playerTeams, fights] = await Promise.all([
+    prisma.roundEnd.findFirst({
+      where: { MapDataId: id },
+      orderBy: { round_number: "desc" },
+    }),
+    prisma.matchStart.findFirst({ where: { MapDataId: id } }),
+    groupKillsIntoFights(id),
+  ]);
 
   const team1Name = playerTeams?.team_1_name;
   const team2Name = playerTeams?.team_2_name;
-
-  const fights = await groupKillsIntoFights(id);
 
   let team1Kills = 0;
   let team2Kills = 0;

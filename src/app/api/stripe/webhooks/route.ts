@@ -1,10 +1,10 @@
 /* eslint-disable no-case-declarations */
-import Stripe from "stripe";
-import { stripe } from "@/lib/stripe";
+import { handleSubscriptionEvent } from "@/lib/billing-plans";
 import Logger from "@/lib/logger";
+import { stripe } from "@/lib/stripe";
 import { TODO } from "@/types/utils";
 import { track } from "@vercel/analytics/server";
-import { handleSubscriptionEvent } from "@/lib/billing-plans";
+import Stripe from "stripe";
 
 const relevantEvents = new Set([
   "customer.created",

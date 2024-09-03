@@ -1,8 +1,7 @@
-import { PlayerStatRows } from "@/types/prisma";
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
 import prisma from "@/lib/prisma";
 import { $Enums, Kill } from "@prisma/client";
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -18,6 +17,12 @@ export function round(value: number) {
   return Math.round((value + Number.EPSILON) * 100) / 100;
 }
 
+/**
+ * Formats a number by adding commas to the thousands place.
+ *
+ * @param {number} x - The number to format.
+ * @returns {string} The formatted number as a string.
+ */
 export function format(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -101,6 +106,12 @@ export function toTimestamp(value: number) {
   return `${mins}m ${secs}s`;
 }
 
+/**
+ * Converts a number of seconds to a string representation in the format "hours:minutes:seconds".
+ *
+ * @param value - The number of seconds to convert.
+ * @returns A string representation of the time in the format "hours:minutes:seconds".
+ */
 export function toTimestampWithHours(value: number) {
   const hours = Math.floor(value / 3600)
     .toFixed(0)
@@ -112,6 +123,12 @@ export function toTimestampWithHours(value: number) {
   return `${hours}h ${mins}m ${secs}s`;
 }
 
+/**
+ * Converts a number of seconds to a string representation in the format "days:hours:minutes:seconds".
+ *
+ * @param value - The number of seconds to convert.
+ * @returns A string representation of the time in the format "days:hours:minutes:seconds".
+ */
 export function toTimestampWithDays(value: number) {
   const days = Math.floor(value / 86400)
     .toFixed(0)
@@ -126,6 +143,12 @@ export function toTimestampWithDays(value: number) {
   return `${days}d ${hours}h ${mins}m ${secs}s`;
 }
 
+/**
+ * Removes duplicate rows from an array of objects based on their non-id properties.
+ *
+ * @param rows - An array of objects with an `id` property.
+ * @returns A new array with duplicate rows removed, keeping the first occurrence of each unique set of non-id properties.
+ */
 export function removeDuplicateRows<T extends { id: number }>(rows: T[]): T[] {
   const uniqueSet = new Set<string>();
   return rows.filter((row) => {
@@ -142,6 +165,12 @@ export function removeDuplicateRows<T extends { id: number }>(rows: T[]): T[] {
   });
 }
 
+/**
+ * Generates an array of sequential numbers from 0 to `max - 1`.
+ *
+ * @param max - The maximum value (exclusive) of the range.
+ * @returns An array of numbers from 0 to `max - 1`.
+ */
 export function range(max: number) {
   return Array.from({ length: max }, (_, i) => i);
 }
@@ -153,17 +182,10 @@ export async function groupKillsIntoFights(mapId: number) {
     end: number;
   };
 
-  const killsByMapId = await prisma.kill.findMany({
-    where: {
-      MapDataId: mapId,
-    },
-  });
-
-  const rezzesByMapId = await prisma.mercyRez.findMany({
-    where: {
-      MapDataId: mapId,
-    },
-  });
+  const [killsByMapId, rezzesByMapId] = await Promise.all([
+    prisma.kill.findMany({ where: { MapDataId: mapId } }),
+    prisma.mercyRez.findMany({ where: { MapDataId: mapId } }),
+  ]);
 
   if (killsByMapId.length === 0 && rezzesByMapId.length === 0) return [];
 
@@ -223,17 +245,10 @@ export async function groupPlayerKillsIntoFights(
     end: number;
   };
 
-  const killsByMapId = await prisma.kill.findMany({
-    where: {
-      MapDataId: mapId,
-    },
-  });
-
-  const rezzesByMapId = await prisma.mercyRez.findMany({
-    where: {
-      MapDataId: mapId,
-    },
-  });
+  const [killsByMapId, rezzesByMapId] = await Promise.all([
+    prisma.kill.findMany({ where: { MapDataId: mapId } }),
+    prisma.mercyRez.findMany({ where: { MapDataId: mapId } }),
+  ]);
 
   if (killsByMapId.length === 0) return [];
 

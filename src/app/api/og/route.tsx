@@ -71,8 +71,6 @@ export async function GET(request: Request) {
     if (e instanceof Error) {
       Logger.log(`${e.message}`);
     }
-    return new Response(`Failed to generate the image`, {
-      status: 500,
-    });
+    return new Response(`Failed to generate the image`, { status: 500 });
   }
 }

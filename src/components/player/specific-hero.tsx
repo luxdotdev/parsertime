@@ -9,14 +9,14 @@ import {
 import CardIcon from "@/components/ui/card-icon";
 import { cn, round, toHero, toMins } from "@/lib/utils";
 import { HeroName, heroRoleMapping } from "@/types/heroes";
-import { PlayerStatRows } from "@/types/prisma";
+import { PlayerStat } from "@prisma/client";
 import Image from "next/image";
 
 export default function SpecificHero({
   playerStats,
   showTable = true,
 }: {
-  playerStats: PlayerStatRows;
+  playerStats: PlayerStat[];
   showTable?: boolean;
 }) {
   const hero = playerStats[0].player_hero as HeroName;

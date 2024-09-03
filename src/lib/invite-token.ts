@@ -1,6 +1,6 @@
 export function generateRandomToken(): string {
   // Helper function to generate a random string of a given length
-  const generateRandomString = (length: number): string => {
+  function generateRandomString(length: number): string {
     const characters = "abcdefghijklmnopqrstuvwxyz";
     let result = "";
     for (let i = 0; i < length; i++) {
@@ -9,7 +9,7 @@ export function generateRandomToken(): string {
       );
     }
     return result;
-  };
+  }
 
   // Generating four segments of random strings
   const segments = [5, 4, 5, 5]; // Lengths of each segment

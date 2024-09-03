@@ -1,20 +1,14 @@
 import "server-only";
+
 import prisma from "@/lib/prisma";
-import { cache } from "react";
 import { $Enums, User } from "@prisma/client";
+import { cache } from "react";
 
 async function getUserFn(email: string | undefined) {
-  if (!email) {
-    return null;
-  }
+  if (!email) return null;
 
-  const user = await prisma.user.findFirst({
-    where: { email },
-  });
-
-  if (!user) {
-    return null;
-  }
+  const user = await prisma.user.findFirst({ where: { email } });
+  if (!user) return null;
 
   return user;
 }
@@ -35,26 +29,16 @@ async function getTeamsWithPermsFn(email: string | undefined) {
   const teams = await prisma.team.findMany({
     where: {
       OR: [
-        {
-          ownerId: user?.id,
-        },
+        { ownerId: user?.id },
         {
           users: {
             some: {
               id: user?.id,
-              role: {
-                in: [$Enums.UserRole.MANAGER, $Enums.UserRole.ADMIN],
-              },
+              role: { in: [$Enums.UserRole.MANAGER, $Enums.UserRole.ADMIN] },
             },
           },
         },
-        {
-          managers: {
-            some: {
-              userId: user?.id,
-            },
-          },
-        },
+        { managers: { some: { userId: user?.id } } },
       ],
     },
   });

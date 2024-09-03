@@ -21,8 +21,7 @@ import {
 import { Winrate } from "@/data/scrim-dto";
 import { cn } from "@/lib/utils";
 import { HeroName, roleHeroMapping } from "@/types/heroes";
-import { PlayerStatRows } from "@/types/prisma";
-import { Kill, Scrim } from "@prisma/client";
+import { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { SelectGroup } from "@radix-ui/react-select";
 import { addMonths, addWeeks, addYears, format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -49,7 +48,7 @@ export function RangePicker({
 }: {
   permissions: { [key: string]: boolean };
   data: Record<Timeframe, Scrim[]>;
-  stats: PlayerStatRows;
+  stats: PlayerStat[];
   kills: Kill[];
   mapWinrates: Winrate;
   deaths: Kill[];

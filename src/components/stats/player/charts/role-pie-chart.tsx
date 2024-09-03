@@ -3,7 +3,7 @@
 import { CardContent, CardFooter } from "@/components/ui/card";
 import { cn, toTimestampWithHours, toTitleCase } from "@/lib/utils";
 import { HeroName, heroRoleMapping } from "@/types/heroes";
-import { PlayerStatRows } from "@/types/prisma";
+import { PlayerStat } from "@prisma/client";
 import {
   Cell,
   Pie,
@@ -58,9 +58,7 @@ function CustomTooltip({
   return null;
 }
 
-type Props = {
-  data: PlayerStatRows;
-};
+type Props = { data: PlayerStat[] };
 
 export function RolePieChart({ data }: Props) {
   const processedData: Data = data.map((row) => ({

@@ -24,44 +24,34 @@ import { HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
 import { $Enums } from "@prisma/client";
 
 export async function DefaultOverview({ id }: { id: number }) {
-  const finalRound = await prisma.roundEnd.findFirst({
-    where: {
-      MapDataId: id,
-    },
-    orderBy: {
-      round_number: "desc",
-    },
-  });
+  const [finalRound, matchDetails, finalRoundStats, playerStats, fights] =
+    await Promise.all([
+      await prisma.roundEnd.findFirst({
+        where: { MapDataId: id },
+        orderBy: { round_number: "desc" },
+      }),
+      await prisma.matchStart.findFirst({ where: { MapDataId: id } }),
+      getFinalRoundStats(id),
+      prisma.playerStat.findMany({ where: { MapDataId: id } }),
+      groupKillsIntoFights(id),
+    ]);
 
-  const matchDetails = await prisma.matchStart.findFirst({
-    where: {
-      MapDataId: id,
-    },
-  });
-
-  const team1Captures = await prisma.objectiveCaptured.findMany({
-    where: {
-      MapDataId: id,
-      capturing_team: matchDetails?.team_1_name ?? "Team 1",
-    },
-  });
-
-  const team2Captures = await prisma.objectiveCaptured.findMany({
-    where: {
-      MapDataId: id,
-      capturing_team: matchDetails?.team_2_name ?? "Team 2",
-    },
-  });
+  const [team1Captures, team2Captures] = await Promise.all([
+    prisma.objectiveCaptured.findMany({
+      where: {
+        MapDataId: id,
+        capturing_team: matchDetails?.team_1_name ?? "Team 1",
+      },
+    }),
+    prisma.objectiveCaptured.findMany({
+      where: {
+        MapDataId: id,
+        capturing_team: matchDetails?.team_2_name ?? "Team 2",
+      },
+    }),
+  ]);
 
   const mapType = matchDetails ? matchDetails.map_type : $Enums.MapType.Control;
-
-  const finalRoundStats = await getFinalRoundStats(id);
-
-  const playerStats = await prisma.playerStat.findMany({
-    where: {
-      MapDataId: id,
-    },
-  });
 
   const team1Damage = finalRoundStats
     .filter((player) => player.player_team === matchDetails?.team_1_name)
@@ -108,8 +98,6 @@ export async function DefaultOverview({ id }: { id: number }) {
   const numberOfRounds =
     // prettier-ignore
     mapType === $Enums.MapType.Flashpoint ? 5 : (finalRound?.round_number ?? 1);
-
-  const fights = await groupKillsIntoFights(id);
 
   const team1FirstDeaths = fights.filter(
     (fight) => fight.kills[0].victim_team === matchDetails?.team_1_name

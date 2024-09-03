@@ -1,5 +1,4 @@
 import { removeDuplicateRows, toHero, toTitleCase } from "@/lib/utils";
-import { PlayerStatRows } from "@/types/prisma";
 import { PlayerStat } from "@prisma/client";
 import { expect, test } from "vitest";
 
@@ -72,7 +71,7 @@ test("should remove duplicates from an array of PlayerStatRows", () => {
     MapDataId: 0,
   };
 
-  const arr: PlayerStatRows = [
+  const arr: PlayerStat[] = [
     {
       id: 1, // unique
       ...sampleData,
