@@ -37,7 +37,6 @@ const envVariables = z.object({
   DEV_TOKEN: z.string(),
   DISCORD_WEBHOOK_URL: z.string(),
   BUG_REPORT_WEBHOOK_URL: z.string(),
-  OPTIMIZE_API_KEY: z.string(),
 });
 
 envVariables.parse(process.env);
