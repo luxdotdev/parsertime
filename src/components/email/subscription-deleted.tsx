@@ -1,9 +1,7 @@
 import { User } from "@prisma/client";
 import {
   Body,
-  Button,
   Container,
-  Column,
   Head,
   Heading,
   Hr,
@@ -11,12 +9,10 @@ import {
   Img,
   Link,
   Preview,
-  Row,
   Section,
   Text,
 } from "@react-email/components";
 import { Tailwind } from "@react-email/tailwind";
-import * as React from "react";
 
 interface SubscriptionEmailProps {
   user: User;
@@ -45,7 +41,7 @@ export const SubscriptionDeletedEmail = ({ user }: SubscriptionEmailProps) => {
               Your subscription has been cancelled.
             </Heading>
             <Text className="text-[14px] leading-[24px] text-black">
-              Hello {user.email!},
+              Hello {user.email},
             </Text>
             <Text className="text-[14px] leading-[24px] text-black">
               We&apos;re sorry to see you go! Your subscription to Parsertime
