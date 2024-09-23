@@ -12,10 +12,9 @@ import { Input } from "@/components/ui/input";
 import { Link } from "@/components/ui/link";
 import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
-import { User } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { startTransition, useEffect, useState } from "react";
 
 export function DangerZone({ url }: { url: string }) {
   const [firstDialogOpen, setFirstDialogOpen] = useState(false);
@@ -154,7 +153,7 @@ function SecondDialog({
           <Button
             variant="destructive"
             disabled={!deleteEnabled || deleteLoading}
-            onClick={handleDelete}
+            onClick={() => startTransition(async () => await handleDelete())}
           >
             {deleteLoading ? (
               <>
