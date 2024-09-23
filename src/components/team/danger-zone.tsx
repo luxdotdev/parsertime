@@ -1,5 +1,11 @@
 "use client";
 
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,19 +14,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
 import { Team } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { startTransition, useEffect, useState } from "react";
 
 export function DangerZone({ team }: { team: Team }) {
   const [transferModalOpen, setTransferModalOpen] = useState(false);
@@ -128,7 +128,9 @@ export function DangerZone({ team }: { team: Team }) {
                   <Button
                     variant="destructive"
                     disabled={transferLoading || !transferInput}
-                    onClick={handleTransfer}
+                    onClick={() =>
+                      startTransition(async () => await handleTransfer())
+                    }
                   >
                     {transferLoading ? (
                       <>
@@ -182,7 +184,9 @@ export function DangerZone({ team }: { team: Team }) {
                   <Button
                     variant="destructive"
                     disabled={!deleteEnabled || deleteLoading}
-                    onClick={handleDelete}
+                    onClick={() =>
+                      startTransition(async () => await handleDelete())
+                    }
                   >
                     {deleteLoading ? (
                       <>
