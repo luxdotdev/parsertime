@@ -4,7 +4,7 @@ import { JoinTokenInput } from "@/components/team/join-token-input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { startTransition, useState } from "react";
 
 function toInviteToken(tokenArr: string[]) {
   // Join all parts into a single string
@@ -22,7 +22,7 @@ function toInviteToken(tokenArr: string[]) {
 }
 
 export default function TeamJoinPage() {
-  const [token, setToken] = useState(Array(19).fill("")); // Initialize state with 19 empty strings
+  const [token, setToken] = useState<string[]>(Array(19).fill("")); // Initialize state with 19 empty strings
   const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -71,7 +71,14 @@ export default function TeamJoinPage() {
         <h1 className="mb-4 text-center text-3xl font-bold">
           Enter Your Invite Token
         </h1>
-        <form className="flex flex-col space-y-4" onSubmit={handleSubmit}>
+        <form
+          className="flex flex-col space-y-4"
+          onSubmit={(e) => {
+            startTransition(async () => {
+              await handleSubmit(e);
+            });
+          }}
+        >
           <div className="flex justify-center">
             <JoinTokenInput token={token} setToken={setToken} />
           </div>
