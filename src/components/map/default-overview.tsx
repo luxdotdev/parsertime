@@ -295,7 +295,7 @@ export async function DefaultOverview({ id }: { id: number }) {
                 <TabsContent value="final" className="space-y-4">
                   <OverviewTable playerStats={finalRoundStats} />
                 </TabsContent>
-                {range(numberOfRounds).map(async (round) => (
+                {range(numberOfRounds).map((round) => (
                   <TabsContent
                     key={round}
                     value={round.toString()}
