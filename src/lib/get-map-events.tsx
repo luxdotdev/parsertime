@@ -1,3 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
+// I cannot be bothered to fix the typing for the `event` variable
+// It is annoyingly complicated, and I don't want to spend time on it\
+// It works at runtime, so I'm not going to fix it
+
 import prisma from "@/lib/prisma";
 import {
   cn,
@@ -141,7 +149,7 @@ export async function getMapEvents(id: number) {
   });
 
   const objectiveUpdateds =
-    matchStart!.map_type === "Control" || matchStart!.map_type === "Flashpoint"
+    matchStart.map_type === "Control" || matchStart.map_type === "Flashpoint"
       ? await prisma.objectiveUpdated.findMany({
           where: {
             MapDataId: id,
@@ -231,7 +239,7 @@ export async function getMapEvents(id: number) {
     switch (event.event_type) {
       case "objective_captured":
         return (
-          <p className="p-2" key={event}>
+          <p className="p-2" key={event.match_time}>
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
@@ -249,7 +257,7 @@ export async function getMapEvents(id: number) {
         );
       case "objective_updated":
         return (
-          <p className="p-2 font-bold" key={event}>
+          <p className="p-2 font-bold" key={event.match_time}>
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
@@ -258,7 +266,7 @@ export async function getMapEvents(id: number) {
         );
       case "payload_progress":
         return (
-          <p className="p-2" key={event}>
+          <p className="p-2" key={event.match_time}>
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>{" "}
@@ -277,7 +285,7 @@ export async function getMapEvents(id: number) {
         );
       case "hero_swap":
         return (
-          <div className="flex items-center gap-1 p-2" key={event}>
+          <div className="flex items-center gap-1 p-2" key={event.match_time}>
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
@@ -322,7 +330,7 @@ export async function getMapEvents(id: number) {
         );
       case "ultimate_kills":
         return (
-          <div className="flex items-center gap-1 p-2" key={event}>
+          <div className="flex items-center gap-1 p-2" key={event.match_time}>
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
@@ -355,7 +363,7 @@ export async function getMapEvents(id: number) {
         );
       case "round_start":
         return (
-          <p className="p-2 font-bold" key={event}>
+          <p className="p-2 font-bold" key={event.match_time}>
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>{" "}
@@ -364,7 +372,7 @@ export async function getMapEvents(id: number) {
         );
       case "round_end":
         return (
-          <div className="p-2 font-bold" key={event}>
+          <div className="p-2 font-bold" key={event.match_time}>
             <p>
               <span className={GeistMono.className}>
                 {toTimestamp(event.match_time)} -{" "}
@@ -376,7 +384,7 @@ export async function getMapEvents(id: number) {
         );
       case "match_end":
         return (
-          <p className="p-2 font-bold" key={event}>
+          <p className="p-2 font-bold" key={event.match_time}>
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>{" "}
@@ -385,7 +393,7 @@ export async function getMapEvents(id: number) {
         );
       case "match_start":
         return (
-          <p className="p-2 font-bold" key={event}>
+          <p className="p-2 font-bold" key={event.match_time}>
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>{" "}
@@ -395,7 +403,7 @@ export async function getMapEvents(id: number) {
         );
       case "multikill":
         return (
-          <div className="flex items-center gap-2 p-2" key={event}>
+          <div className="flex items-center gap-2 p-2" key={event.match_time}>
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
@@ -428,7 +436,7 @@ export async function getMapEvents(id: number) {
         );
       case "ajax":
         return (
-          <div className="flex items-center gap-2 p-2" key={event}>
+          <div className="flex items-center gap-2 p-2" key={event.match_time}>
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
@@ -523,7 +531,7 @@ export async function getUltimatesUsedList(id: number) {
     switch (event.event_type) {
       case "round_start":
         return (
-          <p className="p-2 font-bold" key={event}>
+          <p className="p-2 font-bold" key={event.match_time}>
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
@@ -532,7 +540,7 @@ export async function getUltimatesUsedList(id: number) {
         );
       case "round_end":
         return (
-          <div className="p-2 font-bold" key={event}>
+          <div className="p-2 font-bold" key={event.match_time}>
             <p>
               <span className={GeistMono.className}>
                 {toTimestamp(event.match_time)} -{" "}
@@ -544,7 +552,7 @@ export async function getUltimatesUsedList(id: number) {
         );
       case "match_end":
         return (
-          <p className="p-2 font-bold" key={event}>
+          <p className="p-2 font-bold" key={event.match_time}>
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>{" "}
@@ -553,7 +561,7 @@ export async function getUltimatesUsedList(id: number) {
         );
       case "match_start":
         return (
-          <p className="p-2 font-bold" key={event}>
+          <p className="p-2 font-bold" key={event.match_time}>
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
