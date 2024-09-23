@@ -17,7 +17,7 @@ import { notFound } from "next/navigation";
 
 type Props = { params: { playerName: string } };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export function generateMetadata({ params }: Props): Metadata {
   const playerName = decodeURIComponent(params.playerName);
 
   return {

@@ -19,7 +19,7 @@ type Props = {
   params: { heroName: string };
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export function generateMetadata({ params }: Props): Metadata {
   const hero = decodeURIComponent(params.heroName);
 
   return {

@@ -4,33 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { toast } from "@/components/ui/use-toast";
-import { ClientOnly } from "@/lib/client-only";
-import { Scrim, Team, Map } from "@prisma/client";
-import { ReloadIcon } from "@radix-ui/react-icons";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -48,16 +21,42 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { CalendarIcon } from "@radix-ui/react-icons";
-import { Calendar } from "../ui/calendar";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "@/components/ui/use-toast";
+import { ClientOnly } from "@/lib/client-only";
+import { cn } from "@/lib/utils";
+import { Map, Scrim, Team } from "@prisma/client";
+import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
+import { format } from "date-fns";
+import { useRouter } from "next/navigation";
+import { startTransition, useState } from "react";
+import { Calendar } from "../ui/calendar";
 
 const profileFormSchema = z.object({
   name: z
@@ -177,7 +176,7 @@ export function EditScrimForm({
   return (
     <ClientOnly>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={void form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
             control={form.control}
             name="name"
@@ -352,7 +351,11 @@ export function EditScrimForm({
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={() => deleteMap(map.id)}
+                                onClick={() =>
+                                  startTransition(
+                                    async () => await deleteMap(map.id)
+                                  )
+                                }
                               >
                                 {loading ? (
                                   <>

@@ -36,7 +36,7 @@ export async function parseDataFromTXT(file: File) {
       ? await file?.text()
       : (file as unknown as string); // cast to string because we're in test mode
 
-  const lines = fileContent!.split("\n").map((line) => line.split(","));
+  const lines = fileContent.split("\n").map((line) => line.split(","));
 
   // remove first element of each array
   lines.forEach((line) => line.shift());
@@ -171,7 +171,7 @@ export async function parseDataFromXLSX(file: File) {
 
   const data = await new Promise((resolve, reject) => {
     reader.onload = (e: ProgressEvent<FileReader>) => resolve(e.target?.result);
-    reader.onerror = (error) => reject(error);
+    reader.onerror = () => reject(new Error("Failed to read the file."));
     reader.readAsBinaryString(file);
   });
 

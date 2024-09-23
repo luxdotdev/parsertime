@@ -110,7 +110,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
   return (
     <ClientOnly>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={void form.handleSubmit(onSubmit)} className="space-y-8">
           <FormItem>
             <FormLabel>Team Invite Link</FormLabel>
             <FormControl>
@@ -126,7 +126,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
                       <ClipboardCopyIcon
                         className="ml-2 inline-block h-5 w-5 cursor-pointer"
                         onClick={() => {
-                          navigator.clipboard.writeText(
+                          void navigator.clipboard.writeText(
                             `https://parsertime.app/team/join/${btoa(
                               team.createdAt.toISOString()
                             )}`

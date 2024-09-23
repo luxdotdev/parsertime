@@ -67,7 +67,7 @@ export function TeamSwitcher({
 
   React.useEffect(() => {
     if (newTeamCreated) {
-      queryClient.invalidateQueries({ queryKey: ["teamSwitcherTeams"] });
+      void queryClient.invalidateQueries({ queryKey: ["teamSwitcherTeams"] });
       setNewTeamCreated(false);
     }
   }, [newTeamCreated, queryClient, setNewTeamCreated]);

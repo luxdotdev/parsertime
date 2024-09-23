@@ -13,7 +13,7 @@ import { PersonIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-export async function GuestNav({ guestMode }: { guestMode: boolean }) {
+export function GuestNav({ guestMode }: { guestMode: boolean }) {
   if (!guestMode) {
     redirect("/sign-in");
   }

@@ -32,7 +32,7 @@ const MAX_FILE_SIZE = 1000000; // 1MB in bytes
 
 const formSchema = z.object({
   file: z
-    .any()
+    .instanceof(File)
     .refine((file) => file !== null && file !== undefined, "File is required.")
     .refine(
       (file) => file && file.size <= MAX_FILE_SIZE,
@@ -41,7 +41,8 @@ const formSchema = z.object({
     .refine(
       (file) => file && ACCEPTED_FILE_TYPES.includes(file.type),
       ".xlsx files are accepted."
-    ),
+    )
+    .nullable(),
 });
 
 export function AddMapCard() {
@@ -115,7 +116,7 @@ export function AddMapCard() {
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       // at least one file has been selected so do something
-      handleFile(e.dataTransfer.files[0]);
+      void handleFile(e.dataTransfer.files[0]);
     }
   }
 
@@ -123,7 +124,7 @@ export function AddMapCard() {
     e.preventDefault();
     if (e.target.files && e.target.files[0]) {
       // at least one file has been selected so do something
-      handleFile(e.target.files[0]);
+      void handleFile(e.target.files[0]);
     }
   }
 

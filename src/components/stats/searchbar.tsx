@@ -1,18 +1,18 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import {
   Form,
   FormDescription,
   FormField,
   FormMessage,
 } from "@/components/ui/form";
-import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
 import { Link } from "@/components/ui/link";
+import { Separator } from "@/components/ui/separator";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const formSchema = z.object({
   username: z.string().min(3).max(20),
@@ -39,7 +39,7 @@ export function Searchbar() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={void form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="username"

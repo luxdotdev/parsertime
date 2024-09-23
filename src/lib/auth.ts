@@ -110,7 +110,7 @@ export const config = {
       Logger.log("User not authorized for private access", { user });
       return false;
     },
-    async redirect({ baseUrl }) {
+    redirect({ baseUrl }) {
       return `${baseUrl}/dashboard`;
     },
   },
@@ -332,10 +332,10 @@ export async function getImpersonateUrl(email: string, isProd = true) {
   Logger.log(
     "Impersonation URL generated for user: ",
     { email },
-    `${callbackUrl}/api/auth/callback/email?${params}`
+    `${callbackUrl}/api/auth/callback/email?${params.toString()}`
   );
 
-  return `${callbackUrl}/api/auth/callback/email?${params}`;
+  return `${callbackUrl}/api/auth/callback/email?${params.toString()}`;
 }
 
 /**

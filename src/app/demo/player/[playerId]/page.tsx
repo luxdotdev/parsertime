@@ -18,7 +18,7 @@ type Props = {
   searchParams: SearchParams;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export function generateMetadata({ params }: Props): Metadata {
   const playerName = decodeURIComponent(params.playerId);
 
   return {

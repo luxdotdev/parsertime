@@ -593,7 +593,7 @@ export default async function StatsPage() {
                     <TableCell>{row.victim_name}</TableCell>
                     <TableCell>
                       {" "}
-                      {format(round(row._count.victim_name!))}
+                      {format(round(row._count.victim_name))}
                     </TableCell>
                   </TableRow>
                 ))}

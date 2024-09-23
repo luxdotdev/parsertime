@@ -1,20 +1,20 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogHeader,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
 import { Scrim } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { startTransition, useEffect, useState } from "react";
 
 export function DangerZone({ scrim }: { scrim: Scrim }) {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -89,7 +89,9 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
                 <Button
                   variant="destructive"
                   disabled={!deleteEnabled || deleteLoading}
-                  onClick={handleDelete}
+                  onClick={() =>
+                    startTransition(async () => await handleDelete())
+                  }
                 >
                   {deleteLoading ? (
                     <>
