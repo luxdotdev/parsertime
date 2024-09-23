@@ -1,10 +1,5 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,10 +10,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { parseDataFromXLSX } from "@/lib/parser";
-import { useContext } from "react";
 import { ParserDataContext } from "@/lib/parser-context";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useContext } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 export function FileUploader() {
   return (
@@ -37,16 +37,17 @@ const MAX_FILE_SIZE = 1000000; // 1MB in bytes
 
 const formSchema = z.object({
   file: z
-    .any()
+    .instanceof(File)
     .refine((file) => file !== null && file !== undefined, "File is required.")
     .refine(
-      (file) => file && file.size <= MAX_FILE_SIZE,
+      (file: File) => file && file.size <= MAX_FILE_SIZE,
       "Max file size is 1MB."
     )
     .refine(
-      (file) => file && ACCEPTED_FILE_TYPES.includes(file.type),
+      (file: File) => file && ACCEPTED_FILE_TYPES.includes(file.type),
       ".xlsx files are accepted."
-    ),
+    )
+    .nullable(),
 });
 
 export function FileUploaderForm() {
@@ -60,9 +61,11 @@ export function FileUploaderForm() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: { file: File | null }) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
+    if (!values.file) return;
+
     const result = await parseDataFromXLSX(values.file);
     setData(result);
 
@@ -74,7 +77,7 @@ export function FileUploaderForm() {
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={void form.handleSubmit(onSubmit)}
         className="grid w-full max-w-sm items-center gap-1.5"
       >
         <FormField
@@ -87,7 +90,7 @@ export function FileUploaderForm() {
                 <Input
                   {...field}
                   id="file_uploader"
-                  value={field.value?.fileName}
+                  value={field.value?.name}
                   type="file"
                   accept=".xlsx, .xls"
                   onChange={(event) => {
