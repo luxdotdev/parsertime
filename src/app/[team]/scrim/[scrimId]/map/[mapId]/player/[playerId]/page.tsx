@@ -1,28 +1,28 @@
-import { DefaultOverview } from "@/components/player/default-overview";
+import { PlayerCharts } from "@/components/charts/player/player-charts";
 import { MainNav } from "@/components/dashboard/main-nav";
-import PlayerSwitcher from "@/components/map/player-switcher";
 import { Search } from "@/components/dashboard/search";
-import { UserNav } from "@/components/user-nav";
+import { GuestNav } from "@/components/guest-nav";
+import PlayerSwitcher from "@/components/map/player-switcher";
+import { PlayerAnalytics } from "@/components/player/analytics";
+import { DefaultOverview } from "@/components/player/default-overview";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import prisma from "@/lib/prisma";
-import Link from "next/link";
-import { toTitleCase } from "@/lib/utils";
-import { Metadata } from "next";
-import { SearchParams } from "@/types/next";
-import { PlayerCharts } from "@/components/charts/player/player-charts";
-import { PlayerAnalytics } from "@/components/player/analytics";
-import { GuestNav } from "@/components/guest-nav";
-import { auth } from "@/lib/auth";
+import { UserNav } from "@/components/user-nav";
 import { getMostPlayedHeroes } from "@/data/player-dto";
 import { getUser } from "@/data/user-dto";
+import { auth } from "@/lib/auth";
+import prisma from "@/lib/prisma";
+import { toTitleCase } from "@/lib/utils";
+import { SearchParams } from "@/types/next";
+import { Metadata } from "next";
+import Link from "next/link";
 
 type Props = {
   params: { team: string; scrimId: string; mapId: string; playerId: string };
   searchParams: SearchParams;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export function generateMetadata({ params }: Props): Metadata {
   const playerName = decodeURIComponent(params.playerId);
 
   return {
