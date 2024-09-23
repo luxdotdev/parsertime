@@ -43,7 +43,7 @@ import { useQuery } from "@tanstack/react-query";
 import { track } from "@vercel/analytics";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { startTransition, useState } from "react";
 
 const ACCEPTED_FILE_TYPES = [
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -187,7 +187,7 @@ export function ScrimCreationForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={void form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
           name="name"
@@ -290,7 +290,9 @@ export function ScrimCreationForm({
               <FormControl>
                 <Input
                   {...field}
-                  onChange={handleFile}
+                  onChange={(e) => {
+                    startTransition(async () => await handleFile(e));
+                  }}
                   type="file"
                   className="w-64"
                   accept=".xlsx, .txt"
