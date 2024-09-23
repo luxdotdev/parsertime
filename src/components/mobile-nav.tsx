@@ -1,16 +1,15 @@
 "use client";
 
-import Link, { LinkProps } from "next/link";
-import { useRouter } from "next/navigation";
-import * as React from "react";
-
+import { TeamSwitcher } from "@/components/dashboard/team-switcher";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 import { Session } from "next-auth";
-import { TeamSwitcher } from "@/components/dashboard/team-switcher";
+import Image from "next/image";
+import Link, { LinkProps } from "next/link";
+import { useRouter } from "next/navigation";
+import * as React from "react";
 
 const mainNav = [
   { title: "Dashboard", href: "/dashboard" },
@@ -102,6 +101,7 @@ export function MobileNav({ session }: { session: Session | null }) {
 }
 
 interface MobileLinkProps extends LinkProps {
+  href: string;
   onOpenChange?: (open: boolean) => void;
   children: React.ReactNode;
   className?: string;
