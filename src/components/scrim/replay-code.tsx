@@ -10,7 +10,7 @@ import {
 import { toast } from "@/components/ui/use-toast";
 
 function handleClick({ replayCode }: { replayCode: string }) {
-  navigator.clipboard.writeText(replayCode);
+  void navigator.clipboard.writeText(replayCode);
   toast({
     title: "Copied to clipboard!",
     description: "Replay code copied to clipboard.",

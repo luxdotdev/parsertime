@@ -123,7 +123,7 @@ export function CommandDialogMenu({ user }: { user: User | null }) {
                     if (link.includes("/edit")) {
                       link = link.split("/edit")[0];
                     }
-                    navigator.clipboard.writeText(link);
+                    void navigator.clipboard.writeText(link);
                     toast({
                       title: "Link Copied",
                       description: `The link to this ${pathname.includes("/map") ? "map" : "scrim"} has been copied.`,
