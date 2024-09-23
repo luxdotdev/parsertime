@@ -26,6 +26,7 @@
     "no-constant-binary-expression": "error",
     "object-shorthand": "warn",
     "prefer-template": "warn",
-    "no-else-return": "warn"
+    "no-else-return": "warn",
+    "@typescript-eslint/no-empty-object-type": "off"
   }
 }
