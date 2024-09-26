@@ -107,7 +107,7 @@ export default function InviteMemberModal({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={void form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
               name="email"

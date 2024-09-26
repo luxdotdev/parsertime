@@ -77,7 +77,7 @@ export function FileUploaderForm() {
   return (
     <Form {...form}>
       <form
-        onSubmit={void form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(onSubmit)}
         className="grid w-full max-w-sm items-center gap-1.5"
       >
         <FormField

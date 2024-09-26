@@ -110,7 +110,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
   return (
     <ClientOnly>
       <Form {...form}>
-        <form onSubmit={void form.handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormItem>
             <FormLabel>Team Invite Link</FormLabel>
             <FormControl>
