@@ -216,7 +216,7 @@ export default function ContactPage() {
         <ClientOnly>
           <Form {...form}>
             <form
-              onSubmit={() => form.handleSubmit(handleSubmit)}
+              onSubmit={form.handleSubmit(handleSubmit)}
               className="px-6 pb-24 pt-20 sm:pb-32 lg:px-8 lg:py-48"
             >
               <div className="mx-auto max-w-xl lg:mr-0 lg:max-w-lg">
