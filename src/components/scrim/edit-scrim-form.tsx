@@ -120,7 +120,13 @@ export function EditScrimForm({
       date: data.date.toISOString(),
       scrimId: scrim.id,
       guestMode: data.guestMode,
-      maps: data.maps,
+      maps: data.maps.map((map) => ({
+        id: map.id,
+        // Replay code is trimmed and converted to uppercase
+        replayCode: map.replayCode
+          ? map.replayCode.trim().toUpperCase()
+          : undefined,
+      })),
     };
 
     const res = await fetch("/api/scrim/update-scrim-options", {
