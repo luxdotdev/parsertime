@@ -716,8 +716,8 @@ export async function createMatchStartRows(
       match_time: start[1],
       map_name: start[2],
       map_type: start[3],
-      team_1_name: String(start[4]),
-      team_2_name: String(start[5]),
+      team_1_name: String(start[4]).trim(),
+      team_2_name: String(start[5]).trim(),
       MapDataId: mapId,
     })),
   });
