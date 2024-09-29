@@ -26,16 +26,17 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Tech Stack
 
-- **Frontend**: Next.js, Tailwind CSS
-- **Backend**: Prisma ORM
-- **Database**: Vercel Postgres (Neon)
+- **Frontend**: Next.js, Tailwind CSS, React Query, shadcn UI
+- **Backend**: Serverless Functions, Vercel Edge
+- **Tools**: Prisma ORM, Vitest, ESLint, Prettier
+- **Database**: Vercel Postgres (Neon), Upstash Redis, Vercel Blob, Vercel Edge Config
 - **Deployment**: Vercel
 
 ## Getting Started
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/lucasdoell/parsertime.git
+   git clone https://github.com/luxdotdev/parsertime.git
    ```
 2. Install NPM packages:
    ```sh
@@ -58,3 +59,11 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 - [Tailwind CSS](https://tailwindcss.com/)
 - [Prisma](https://www.prisma.io/)
 - [Vercel](https://vercel.com/)
+
+## Contributors
+
+<a href="https://github.com/luxdotdev/parsertime/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=luxdotdev/parsertime" />
+</a>
+
+Thanks to all the contributors who have helped make Parsertime better!
