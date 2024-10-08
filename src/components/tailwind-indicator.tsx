@@ -30,10 +30,13 @@ export function TailwindIndicator() {
   // Hide the Tailwind indicator in production
   if (hideTailwindIndicator) return null;
 
+  const isDev = process.env.NODE_ENV === "development";
+
   return (
     <div
       className={cn(
-        "fixed bottom-5 right-16 z-50 flex items-center space-x-2 rounded-full bg-black px-2.5 py-1 font-mono text-xs font-medium text-primary-foreground dark:bg-white",
+        "fixed bottom-5 right-5 z-50 flex items-center space-x-2 rounded-full bg-black px-2.5 py-1 font-mono text-xs font-medium text-primary-foreground dark:bg-white",
+        isDev && "right-20",
         GeistMono.className
       )}
     >
