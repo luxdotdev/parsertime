@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import { useRef } from "react";
+import { Fragment, useRef } from "react";
 
 export function JoinTokenInput({
   token,
@@ -57,13 +57,12 @@ export function JoinTokenInput({
   return (
     <div className="flex items-center gap-1">
       {token.map((char, index) => (
-        <>
+        <Fragment key={char}>
           {index === 5 || index === 9 || index === 14 ? (
             <span key={char}>-</span>
           ) : null}{" "}
           {/* Add dashes visually */}
           <Input
-            key={char}
             type="text"
             maxLength={1}
             value={char}
@@ -74,7 +73,7 @@ export function JoinTokenInput({
             }}
             className="w-10 text-center"
           />
-        </>
+        </Fragment>
       ))}
     </div>
   );
