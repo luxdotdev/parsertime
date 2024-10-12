@@ -80,7 +80,7 @@ export function ScrimPagination({ scrims }: Props) {
     startIndex + pageSize
   );
 
-  const pagination = usePagination({
+  const pagination = handlePagination({
     currentPage: currPage,
     totalCount: filteredAndSearchedScrims.length,
     siblingCount,
@@ -190,7 +190,7 @@ export function ScrimPagination({ scrims }: Props) {
   );
 }
 
-function usePagination({
+function handlePagination({
   currentPage,
   totalCount,
   siblingCount = 1,
