@@ -57,6 +57,7 @@ export const columns: ColumnDef<PlayerData>[] = [
     ),
     cell: ({ row }) => (
       <button
+        type="button"
         onClick={() =>
           (window.location.href = `${
             window.location.href
