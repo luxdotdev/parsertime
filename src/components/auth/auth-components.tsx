@@ -13,7 +13,7 @@ export function SignOutButton(
       }}
       className="w-full"
     >
-      <button className="w-full p-0" {...props}>
+      <button className="w-full p-0" type="submit" {...props}>
         Sign Out
       </button>
     </form>
