@@ -235,10 +235,16 @@ export function SelectedPlayerProvider({
     value: "default",
   });
 
+  const value = React.useMemo(
+    () => ({
+      selectedPlayer,
+      setSelectedPlayer,
+    }),
+    [selectedPlayer, setSelectedPlayer]
+  );
+
   return (
-    <SelectedPlayerContext.Provider
-      value={{ selectedPlayer, setSelectedPlayer }}
-    >
+    <SelectedPlayerContext.Provider value={value}>
       {children}
     </SelectedPlayerContext.Provider>
   );
