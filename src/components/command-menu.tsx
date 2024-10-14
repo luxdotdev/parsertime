@@ -10,6 +10,7 @@ import {
   ExternalLinkIcon,
   HomeIcon,
   LaptopIcon,
+  MagicWandIcon,
   MoonIcon,
   PersonIcon,
   ReaderIcon,
@@ -182,7 +183,26 @@ export function CommandDialogMenu({ user }: { user: User | null }) {
           </CommandItem>
         </CommandGroup>
         <CommandSeparator />
-        <CommandGroup heading="Reporting">
+        <CommandGroup heading="Debugging">
+          <CommandItem onSelect={() => runCommand(() => router.push("/debug"))}>
+            <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
+              <DialogTrigger asChild>
+                <>
+                  <MagicWandIcon className="mr-2 h-4 w-4" />
+                  <span>Debugging Assistant</span>
+                </>
+              </DialogTrigger>
+              <DialogContent>
+                <BugReportForm
+                  user={user}
+                  setReportDialogOpen={setReportDialogOpen}
+                />
+              </DialogContent>
+            </Dialog>
+          </CommandItem>
+        </CommandGroup>
+        <CommandSeparator />
+        <CommandGroup heading="Feedback">
           <CommandItem onSelect={() => setReportDialogOpen(true)}>
             <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
               <DialogTrigger asChild>
@@ -199,9 +219,6 @@ export function CommandDialogMenu({ user }: { user: User | null }) {
               </DialogContent>
             </Dialog>
           </CommandItem>
-        </CommandGroup>
-        <CommandSeparator />
-        <CommandGroup heading="Feedback">
           <CommandItem
             onSelect={() => runCommand(() => router.push("/contact"))}
           >
