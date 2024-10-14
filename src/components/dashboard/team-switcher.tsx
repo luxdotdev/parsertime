@@ -114,7 +114,7 @@ export function TeamSwitcher({
               />
               <AvatarFallback>PT</AvatarFallback>
             </Avatar>
-            {selectedTeam.label}
+            <p className="truncate">{selectedTeam.label}</p>
             <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
