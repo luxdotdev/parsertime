@@ -102,8 +102,8 @@ export function ScrimPagination({ scrims }: Props) {
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Select a filter</SelectLabel>
-              <SelectItem value="date-asc">Oldest to Newest</SelectItem>
               <SelectItem value="date-desc">Newest to Oldest</SelectItem>
+              <SelectItem value="date-asc">Oldest to Newest</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
