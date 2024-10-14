@@ -92,8 +92,10 @@ export const config = {
 
       // deny all blocked users
       const blockedUsers = (await get<string[]>("blockedUsers")) ?? [];
-      Logger.log("User blocked", { user });
-      if (blockedUsers.includes(user.email)) return false;
+      if (blockedUsers.includes(user.email)) {
+        Logger.log("User blocked", { user });
+        return false;
+      }
 
       // get app availability from edge config
       const status = (await get<Availability>("availability")) ?? "private";
