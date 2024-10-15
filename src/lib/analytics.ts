@@ -2,21 +2,17 @@ import { getPlayerFinalStats } from "@/data/scrim-dto";
 import prisma from "@/lib/prisma";
 import { groupKillsIntoFights, removeDuplicateRows, round } from "@/lib/utils";
 import { HeroName, heroRoleMapping } from "@/types/heroes";
+import { RoundEnd, UltimateCharged, UltimateStart } from "@prisma/client";
 
 export async function getAverageUltChargeTime(id: number, playerName: string) {
-  const ultimatesCharged = await prisma.ultimateCharged.findMany({
-    where: {
-      MapDataId: id,
-      player_name: playerName,
-    },
-  });
-
-  const ultimateEnds = await prisma.ultimateEnd.findMany({
-    where: {
-      MapDataId: id,
-      player_name: playerName,
-    },
-  });
+  const [ultimatesCharged, ultimateEnds] = await Promise.all([
+    prisma.ultimateCharged.findMany({
+      where: { MapDataId: id, player_name: playerName },
+    }),
+    prisma.ultimateEnd.findMany({
+      where: { MapDataId: id, player_name: playerName },
+    }),
+  ]);
 
   // Calculate average time to ultimate
   // Take the first ultimate charged and the next ultimate end
@@ -27,9 +23,8 @@ export async function getAverageUltChargeTime(id: number, playerName: string) {
   // for each ultimate end, calculate the time between the next ultimate charged and the current ultimate end
   for (let i = 0; i < ultimateEnds.length; i++) {
     const nextUltimateCharged = ultimatesCharged[i + 1];
-    if (!nextUltimateCharged) {
-      break;
-    }
+    if (!nextUltimateCharged) break;
+
     const currentUltimateEnd = ultimateEnds[i];
     const timeToNextUltimate =
       nextUltimateCharged.match_time - currentUltimateEnd.match_time;
@@ -37,9 +32,7 @@ export async function getAverageUltChargeTime(id: number, playerName: string) {
     // if time to next ultimate is negative, it means the next ultimate was charged before the current ultimate was used
     // so we should skip this ultimate end
     // this can happen if the round ends before the ultimate is used
-    if (timeToNextUltimate < 0) {
-      continue;
-    }
+    if (timeToNextUltimate < 0) continue;
 
     ultimateTimes.push(timeToNextUltimate);
   }
@@ -50,75 +43,101 @@ export async function getAverageUltChargeTime(id: number, playerName: string) {
   return averageTimeToUltimate;
 }
 
+function assignRoundNumbersToUltimates(
+  ultimatesCharged: (UltimateCharged & { round_number?: number })[],
+  ultimateStarts: (UltimateStart & { round_number?: number })[],
+  roundEnds: RoundEnd[]
+) {
+  roundEnds.sort((a, b) => a.match_time - b.match_time);
+
+  function findRoundNumber(matchTime: number) {
+    for (const roundEnd of roundEnds) {
+      if (matchTime <= roundEnd.match_time) {
+        return roundEnd.round_number;
+      }
+    }
+    // If the match time is beyond all round ends, it is in the last round
+    return roundEnds[roundEnds.length - 1].round_number;
+  }
+
+  ultimatesCharged.forEach((ultimate) => {
+    ultimate.round_number = findRoundNumber(ultimate.match_time);
+  });
+
+  ultimateStarts.forEach((ultimate) => {
+    ultimate.round_number = findRoundNumber(ultimate.match_time);
+  });
+
+  return { ultimatesCharged, ultimateStarts };
+}
+
 export async function getAverageTimeToUseUlt(id: number, playerName: string) {
-  const ultimatesCharged = await prisma.ultimateCharged.findMany({
-    where: {
-      MapDataId: id,
-      player_name: playerName,
-    },
-  });
+  const [ultimatesCharged, ultimateStarts, roundEnds] = await Promise.all([
+    prisma.ultimateCharged.findMany({
+      where: { MapDataId: id, player_name: playerName },
+    }),
+    prisma.ultimateStart.findMany({
+      where: { MapDataId: id, player_name: playerName },
+    }),
+    prisma.roundEnd.findMany({
+      where: { MapDataId: id },
+    }),
+  ]);
 
-  const ultimateStarts = await prisma.ultimateStart.findMany({
-    where: {
-      MapDataId: id,
-      player_name: playerName,
-    },
-  });
+  type Ultimate = { charged: number; started: number; holdTime: number };
+  const ultimates = {} as Record<number, Ultimate[]>;
 
-  const roundEnds = await prisma.roundEnd.findMany({
-    where: {
-      MapDataId: id,
-    },
-  });
+  const { ultimatesCharged: mutatedCharged, ultimateStarts: mutatedStarts } =
+    assignRoundNumbersToUltimates(ultimatesCharged, ultimateStarts, roundEnds);
 
-  let totalUseTime = 0;
-  let validUltimates = 0;
+  // Group ultimates by round number
+  mutatedCharged.forEach((charged) => {
+    if (!charged.round_number) return; // Skip if round_number is undefined
+    if (!ultimates[charged.round_number]) {
+      ultimates[charged.round_number] = [];
+    }
 
-  ultimatesCharged.forEach((charged) => {
-    // Find the next ultimate start for the same player after this charged event
-    const nextStart = ultimateStarts.find(
+    const start = mutatedStarts.find(
       (start) =>
+        start.match_time >= charged.match_time &&
         start.player_name === charged.player_name &&
-        start.match_time > charged.match_time &&
-        start.ultimate_id === charged.ultimate_id
+        start.round_number === charged.round_number
     );
 
-    // Find the next round end event after this charged event
-    const nextRoundEnd = roundEnds.find(
-      (end) => end.match_time > charged.match_time
-    );
-
-    // Ensure the ultimate was started before the round ended or if there's no round end (last ultimate of the dataset)
-    if (
-      nextStart &&
-      (!nextRoundEnd || nextStart.match_time < nextRoundEnd.match_time)
-    ) {
-      totalUseTime += nextStart.match_time - charged.match_time;
-      validUltimates++;
+    if (start) {
+      ultimates[charged.round_number].push({
+        charged: charged.match_time,
+        started: start.match_time,
+        holdTime: start.match_time - charged.match_time,
+      });
     }
   });
 
-  const averageTimeToUseUlt =
-    validUltimates > 0 ? totalUseTime / validUltimates : 0;
+  const allMatchTimes = Object.values(ultimates)
+    .flat()
+    .map((ult) => ult.holdTime);
 
-  return averageTimeToUseUlt;
+  const totalMatchTime = allMatchTimes.reduce((acc, time) => acc + time, 0);
+
+  const averageTime =
+    allMatchTimes.length > 0 ? totalMatchTime / allMatchTimes.length : 0;
+
+  return averageTime;
 }
 
 export async function getKillsPerUltimate(id: number, playerName: string) {
-  const ultimatesCharged = await prisma.ultimateCharged.findMany({
-    where: {
-      MapDataId: id,
-      player_name: playerName,
-    },
-  });
-
-  const ultKills = await prisma.kill.findMany({
-    where: {
-      MapDataId: id,
-      attacker_name: playerName,
-      event_ability: "Ultimate",
-    },
-  });
+  const [ultimatesCharged, ultKills] = await Promise.all([
+    prisma.ultimateCharged.findMany({
+      where: { MapDataId: id, player_name: playerName },
+    }),
+    prisma.kill.findMany({
+      where: {
+        MapDataId: id,
+        attacker_name: playerName,
+        event_ability: "Ultimate",
+      },
+    }),
+  ]);
 
   const killsPerUltimate = ultKills.length / ultimatesCharged.length;
 
@@ -137,19 +156,14 @@ export async function getDuelWinrates(id: number, playerName: string) {
     enemy_deaths: number;
   };
 
-  const playerKills = await prisma.kill.findMany({
-    where: {
-      MapDataId: id,
-      attacker_name: playerName,
-    },
-  });
-
-  const playerDeaths = await prisma.kill.findMany({
-    where: {
-      MapDataId: id,
-      victim_name: playerName,
-    },
-  });
+  const [playerKills, playerDeaths] = await Promise.all([
+    prisma.kill.findMany({
+      where: { MapDataId: id, attacker_name: playerName },
+    }),
+    prisma.kill.findMany({
+      where: { MapDataId: id, victim_name: playerName },
+    }),
+  ]);
 
   // Combine and aggregate kills and deaths
   const duelsAggregation: { [key: string]: AggregatedDuel } = {};
@@ -202,9 +216,8 @@ async function calculateAverageDuelWinrate(id: number, playerName: string) {
   const winrates = duels.map((duel) => {
     const totalKills = duel.enemy_kills + duel.enemy_deaths;
     const winrate = (duel.enemy_kills / totalKills) * 100;
-    return {
-      winrate,
-    };
+
+    return { winrate };
   });
 
   // sum all winrates and divide by the number of duels
@@ -289,12 +302,8 @@ export async function calculateXFactor(mapId: number, playerName: string) {
   );
 
   const finalRound = await prisma.roundEnd.findFirst({
-    where: {
-      MapDataId: mapId,
-    },
-    orderBy: {
-      round_number: "desc",
-    },
+    where: { MapDataId: mapId },
+    orderBy: { round_number: "desc" },
   });
 
   const playerStatsByFinalRound = await getPlayerFinalStats(mapId, playerName);
@@ -404,20 +413,14 @@ export async function calculateDroughtTime(id: number, playerName: string) {
 }
 
 export async function getAjaxes(id: number, playerName: string) {
-  const kills = await prisma.kill.findMany({
-    where: {
-      MapDataId: id,
-      victim_name: playerName,
-      victim_hero: "Lúcio",
-    },
-  });
-
-  const ultimateEnds = await prisma.ultimateEnd.findMany({
-    where: {
-      MapDataId: id,
-      player_name: playerName,
-    },
-  });
+  const [kills, ultimateEnds] = await Promise.all([
+    prisma.kill.findMany({
+      where: { MapDataId: id, victim_name: playerName, victim_hero: "Lúcio" },
+    }),
+    prisma.ultimateEnd.findMany({
+      where: { MapDataId: id, player_name: playerName },
+    }),
+  ]);
 
   // if there is a kill and an ultimate end at the same match_time, it's an ajax
   const ajaxes = kills.filter((kill) =>

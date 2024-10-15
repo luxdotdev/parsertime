@@ -27,16 +27,12 @@ export async function POST(req: NextRequest) {
 
   if (!success) {
     Logger.log("Rate limit exceeded for contact form email", identifier);
-    return new Response("Rate limit exceeded", {
-      status: 429,
-    });
+    return new Response("Rate limit exceeded", { status: 429 });
   }
 
   const body = ContactFormEmailSchema.safeParse(await req.json());
   if (!body.success) {
-    return new Response("Invalid request", {
-      status: 400,
-    });
+    return new Response("Invalid request", { status: 400 });
   }
 
   const emailHtml = render(
@@ -56,13 +52,8 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     Logger.error("Error sending email", error);
-
-    return new Response("Error sending email", {
-      status: 500,
-    });
+    return new Response("Error sending email", { status: 500 });
   }
 
-  return new Response("OK", {
-    status: 200,
-  });
+  return new Response("OK", { status: 200 });
 }

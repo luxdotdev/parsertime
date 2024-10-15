@@ -1,7 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { CardFooter } from "@/components/ui/card";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -11,12 +9,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { CardFooter } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
 import { User } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { startTransition, useState } from "react";
 
 type Props = {
   user: User;
@@ -159,7 +159,11 @@ export function UserCardButtons({ user, managers }: Props) {
                     </Button>
                     <Button
                       variant="destructive"
-                      onClick={handlePromoteToManager}
+                      onClick={() => {
+                        startTransition(async () => {
+                          await handlePromoteToManager();
+                        });
+                      }}
                       disabled={promotionLoading}
                     >
                       {promotionLoading ? (
@@ -203,7 +207,11 @@ export function UserCardButtons({ user, managers }: Props) {
                     </Button>
                     <Button
                       variant="destructive"
-                      onClick={handleDemoteToMember}
+                      onClick={() => {
+                        startTransition(async () => {
+                          await handleDemoteToMember();
+                        });
+                      }}
                       disabled={demotionLoading}
                     >
                       {demotionLoading ? (
@@ -246,7 +254,11 @@ export function UserCardButtons({ user, managers }: Props) {
                   </Button>
                   <Button
                     variant="destructive"
-                    onClick={handleRemoveFromTeam}
+                    onClick={() => {
+                      startTransition(async () => {
+                        await handleRemoveFromTeam();
+                      });
+                    }}
                     disabled={removalLoading}
                   >
                     {removalLoading ? (

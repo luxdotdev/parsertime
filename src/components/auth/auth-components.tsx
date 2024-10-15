@@ -1,24 +1,6 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { Button } from "@/components/ui/button";
-import { signIn, signOut } from "@/lib/auth";
-import { redirect } from "next/navigation";
-
-export function SignInButton({
-  provider,
-  ...props
-}: { provider?: string } & React.ComponentPropsWithRef<typeof Button>) {
-  return (
-    <form
-      action={async () => {
-        "use server";
-        const url = await signIn(provider, { redirect: false });
-        // TODO: fix in next-auth
-        redirect(url.replace("signin", "api/auth/signin"));
-      }}
-    >
-      <Button {...props}>Sign In</Button>
-    </form>
-  );
-}
+import { signOut } from "@/lib/auth";
 
 export function SignOutButton(
   props: React.ComponentPropsWithRef<typeof Button>
@@ -31,7 +13,7 @@ export function SignOutButton(
       }}
       className="w-full"
     >
-      <button className="w-full p-0" {...props}>
+      <button className="w-full p-0" type="submit" {...props}>
         Sign Out
       </button>
     </form>

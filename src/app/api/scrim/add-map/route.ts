@@ -14,10 +14,7 @@ export async function POST(req: NextRequest) {
 
   if (!session || !session.user || !session.user.email) {
     Logger.warn("Unauthorized request to add map");
-
-    return new Response("Unauthorized", {
-      status: 401,
-    });
+    return new Response("Unauthorized", { status: 401 });
   }
 
   try {
@@ -25,20 +22,12 @@ export async function POST(req: NextRequest) {
 
     await track("Create Map", { user: session.user.email });
 
-    return new Response("OK", {
-      status: 200,
-    });
+    return new Response("OK", { status: 200 });
   } catch (e: unknown) {
     Logger.error("Error adding map", e);
 
-    if (e instanceof Error) {
-      return new Response(e.message, {
-        status: 500,
-      });
-    }
+    if (e instanceof Error) return new Response(e.message, { status: 500 });
 
-    return new Response("Internal Server Error", {
-      status: 500,
-    });
+    return new Response("Internal Server Error", { status: 500 });
   }
 }

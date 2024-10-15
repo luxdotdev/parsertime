@@ -2,12 +2,12 @@ import AllHeroes from "@/components/player/all-heroes";
 import SpecificHero from "@/components/player/specific-hero";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlayerStatRows } from "@/types/prisma";
+import { PlayerStat } from "@prisma/client";
 
 export default function Statistics({
   playerStats,
 }: {
-  playerStats: PlayerStatRows;
+  playerStats: PlayerStat[];
 }) {
   const heroesPlayed = playerStats
     .sort(

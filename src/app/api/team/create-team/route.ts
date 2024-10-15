@@ -10,13 +10,7 @@ import { z } from "zod";
 
 const TeamCreationRequestSchema = z.object({
   name: z.string().min(2).max(30),
-  users: z
-    .array(
-      z.object({
-        id: z.string(),
-      })
-    )
-    .optional(),
+  users: z.array(z.object({ id: z.string() })).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -32,28 +26,19 @@ export async function POST(request: NextRequest) {
 
   if (!success) {
     Logger.log("Rate limit exceeded for creating a team", identifier);
-    return new Response("Rate limit exceeded", {
-      status: 429,
-    });
+    return new Response("Rate limit exceeded", { status: 429 });
   }
 
   const session = await auth();
 
   const userId = await getUser(session?.user?.email);
-
-  if (!userId) {
-    return new Response("Unauthorized", { status: 401 });
-  }
+  if (!userId) return new Response("Unauthorized", { status: 401 });
 
   const permission = await new Permission("create-team").check();
-  if (!permission) {
-    return new Response("Unauthorized", { status: 401 });
-  }
+  if (!permission) return new Response("Unauthorized", { status: 401 });
 
   const numberOfTeams = await prisma.team.count({
-    where: {
-      ownerId: userId.id,
-    },
+    where: { ownerId: userId.id },
   });
 
   switch (userId.billingPlan) {
@@ -88,29 +73,17 @@ export async function POST(request: NextRequest) {
   }
 
   const req = TeamCreationRequestSchema.safeParse(await request.json());
-  if (!req.success) {
-    return new Response("Invalid request", {
-      status: 400,
-    });
-  }
+  if (!req.success) return new Response("Invalid request", { status: 400 });
 
   if (!session) {
     Logger.warn("Unauthorized request to create team API");
-
-    return new Response("Unauthorized", {
-      status: 401,
-    });
+    return new Response("Unauthorized", { status: 401 });
   }
 
   const usersById = await prisma.user.findMany({
     where: {
-      id: {
-        in: req.data.users?.map((user: { id: string }) => user.id) ?? [],
-      },
-      AND: {
-        id: userId?.id,
-        role: "ADMIN",
-      },
+      id: { in: req.data.users?.map((user: { id: string }) => user.id) ?? [] },
+      AND: { id: userId?.id, role: "ADMIN" },
     },
   });
 
@@ -121,9 +94,7 @@ export async function POST(request: NextRequest) {
       users: {
         connect: [
           ...usersById.map((user) => {
-            return {
-              id: user.id,
-            };
+            return { id: user.id };
           }),
         ],
       },
@@ -132,21 +103,9 @@ export async function POST(request: NextRequest) {
   });
 
   await prisma.user.update({
-    where: {
-      id: userId.id ?? "",
-    },
-    data: {
-      teams: {
-        connect: [
-          {
-            id: team.id,
-          },
-        ],
-      },
-    },
+    where: { id: userId.id ?? "" },
+    data: { teams: { connect: [{ id: team.id }] } },
   });
 
-  return new Response("Success", {
-    status: 200,
-  });
+  return new Response("Success", { status: 200 });
 }

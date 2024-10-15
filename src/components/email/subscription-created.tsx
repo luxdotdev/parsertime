@@ -46,7 +46,7 @@ export const SubscriptionCreatedEmail = ({
               Thank you for subscribing!
             </Heading>
             <Text className="text-[14px] leading-[24px] text-black">
-              Hello {user.email!},
+              Hello {user.email},
             </Text>
             <Text className="text-[14px] leading-[24px] text-black">
               Thank you for subscribing to Parsertime! We&apos;re grateful for

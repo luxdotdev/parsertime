@@ -25,10 +25,7 @@ export async function POST(request: NextRequest) {
 
   if (!session) {
     Logger.warn("Unauthorized request to create scrim");
-
-    return new Response("Unauthorized", {
-      status: 401,
-    });
+    return new Response("Unauthorized", { status: 401 });
   }
 
   // Create a new ratelimiter, that allows 5 requests per 1 minute
@@ -65,26 +62,19 @@ export async function POST(request: NextRequest) {
     );
     await sendDiscordWebhook(process.env.DISCORD_WEBHOOK_URL, wh);
 
-    return new Response("Rate limit exceeded", {
-      status: 429,
-    });
+    return new Response("Rate limit exceeded", { status: 429 });
   }
 
   const data = (await request.json()) as CreateScrimRequestData;
 
   if (data.map === null) {
     Logger.warn("Invalid map data");
-
-    return new Response("Invalid map data", {
-      status: 400,
-    });
+    return new Response("Invalid map data", { status: 400 });
   }
 
   Logger.log("Creating new scrim for user: ", session.user?.email);
 
   await createNewScrimFromParsedData(data, session);
 
-  return new Response("OK", {
-    status: 200,
-  });
+  return new Response("OK", { status: 200 });
 }

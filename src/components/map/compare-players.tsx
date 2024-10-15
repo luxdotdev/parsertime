@@ -1,6 +1,6 @@
 import PlayerCard from "@/components/map/player-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import prisma from "@/lib/prisma";
 import { HeroName, heroRoleMapping } from "@/types/heroes";
 
@@ -40,16 +40,28 @@ export async function ComparePlayers({ id }: { id: number }) {
     },
   });
 
-  const team1Players = await prisma.playerStat.findMany({
-    where: {
-      MapDataId: id,
-      player_team: teamNames?.team_1_name,
-    },
-    select: {
-      player_name: true,
-      player_hero: true,
-    },
-  });
+  const [team1Players, team2Players] = await Promise.all([
+    prisma.playerStat.findMany({
+      where: {
+        MapDataId: id,
+        player_team: teamNames?.team_1_name,
+      },
+      select: {
+        player_name: true,
+        player_hero: true,
+      },
+    }),
+    prisma.playerStat.findMany({
+      where: {
+        MapDataId: id,
+        player_team: teamNames?.team_2_name,
+      },
+      select: {
+        player_name: true,
+        player_hero: true,
+      },
+    }),
+  ]);
 
   const team1PlayersSorted = team1Players.sort((a, b) => {
     return sortByRole(a, b);
@@ -58,17 +70,6 @@ export async function ComparePlayers({ id }: { id: number }) {
   const team1PlayersUnique = Array.from(
     new Set(team1PlayersSorted.map((player) => player.player_name))
   );
-
-  const team2Players = await prisma.playerStat.findMany({
-    where: {
-      MapDataId: id,
-      player_team: teamNames?.team_2_name,
-    },
-    select: {
-      player_name: true,
-      player_hero: true,
-    },
-  });
 
   const team2PlayersSorted = team2Players.sort((a, b) => {
     return sortByRole(a, b);

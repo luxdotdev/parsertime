@@ -1,18 +1,9 @@
 import { getUser } from "@/data/user-dto";
 import { BillingPlans } from "@/types/billing-plans";
 import { User } from "@prisma/client";
-import { Stripe as TStripe, loadStripe } from "@stripe/stripe-js";
 import { get } from "@vercel/edge-config";
 import { Session } from "next-auth";
 import Stripe from "stripe";
-
-let stripePromise: Promise<TStripe | null>;
-export const getStripe = () => {
-  if (!stripePromise) {
-    stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-  }
-  return stripePromise;
-};
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   // https://github.com/stripe/stripe-node#configuration

@@ -25,8 +25,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Scrim } from "@prisma/client";
-import { use, useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import { use, useState } from "react";
 
 type Props = {
   scrims: Array<Scrim & { team: string; creator: string; hasPerms: boolean }>;
@@ -80,7 +80,7 @@ export function ScrimPagination({ scrims }: Props) {
     startIndex + pageSize
   );
 
-  const pagination = usePagination({
+  const pagination = handlePagination({
     currentPage: currPage,
     totalCount: filteredAndSearchedScrims.length,
     siblingCount,
@@ -102,8 +102,8 @@ export function ScrimPagination({ scrims }: Props) {
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Select a filter</SelectLabel>
-              <SelectItem value="date-asc">Oldest to Newest</SelectItem>
               <SelectItem value="date-desc">Newest to Oldest</SelectItem>
+              <SelectItem value="date-asc">Oldest to Newest</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -155,7 +155,7 @@ export function ScrimPagination({ scrims }: Props) {
                   return (
                     <PaginationItem key={page}>
                       <PaginationLink
-                        onClick={() => setCurrPage(page as number)}
+                        onClick={() => setCurrPage(page)}
                         isActive={currPage === page}
                         href="#"
                       >
@@ -190,7 +190,7 @@ export function ScrimPagination({ scrims }: Props) {
   );
 }
 
-function usePagination({
+function handlePagination({
   currentPage,
   totalCount,
   siblingCount = 1,

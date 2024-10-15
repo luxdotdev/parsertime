@@ -16,46 +16,27 @@ export async function POST(req: NextRequest) {
   if (!session) {
     if (token !== process.env.DEV_TOKEN) {
       Logger.warn("Unauthorized request to remove scrim: ", id);
-      return new Response("Unauthorized", {
-        status: 401,
-      });
+      return new Response("Unauthorized", { status: 401 });
     }
     Logger.log("Authorized removal of scrim with dev token");
   }
 
   const user = await getUser(session?.user?.email ?? "lucas@lux.dev");
 
-  if (!user) {
-    return new Response("User not found", {
-      status: 404,
-    });
-  }
-
-  if (!id) {
-    return new Response("Missing ID", {
-      status: 400,
-    });
-  }
+  if (!user) return new Response("User not found", { status: 404 });
+  if (!id) return new Response("Missing ID", { status: 400 });
 
   const scrim = await getScrim(parseInt(id));
 
-  if (!scrim) {
-    return new Response("Scrim not found", {
-      status: 404,
-    });
-  }
+  if (!scrim) return new Response("Scrim not found", { status: 404 });
 
   let isManager = false;
 
   if (scrim.teamId !== 0) {
     // scrim is associated with a team
     const managers = await prisma.team.findFirst({
-      where: {
-        id: scrim.teamId ?? 0,
-      },
-      select: {
-        managers: true,
-      },
+      where: { id: scrim.teamId ?? 0 },
+      select: { managers: true },
     });
 
     // check if user is a manager
@@ -69,163 +50,38 @@ export async function POST(req: NextRequest) {
     user.id === scrim.creatorId || // Creators can delete their own scrims
     isManager; // Managers of the scrim's team can delete the scrim
 
-  if (!hasPerms) {
-    return new Response("Unauthorized", {
-      status: 401,
-    });
-  }
+  if (!hasPerms) return new Response("Unauthorized", { status: 401 });
 
-  const hasMatchEnd = await prisma.matchEnd.findFirst({
-    where: {
-      scrimId: parseInt(id),
-    },
-  });
+  const scrimId = parseInt(id);
 
-  const hasPayloadProgress = await prisma.payloadProgress.findFirst({
-    where: {
-      scrimId: parseInt(id),
-    },
-  });
+  await Promise.all([
+    prisma.scrim.delete({ where: { id: scrimId } }),
+    prisma.map.deleteMany({ where: { scrimId } }),
+    prisma.mapData.deleteMany({ where: { scrimId } }),
+    prisma.defensiveAssist.deleteMany({ where: { scrimId } }),
+    prisma.dvaRemech.deleteMany({ where: { scrimId } }),
+    prisma.echoDuplicateEnd.deleteMany({ where: { scrimId } }),
+    prisma.echoDuplicateStart.deleteMany({ where: { scrimId } }),
+    prisma.heroSpawn.deleteMany({ where: { scrimId } }),
+    prisma.heroSwap.deleteMany({ where: { scrimId } }),
+    prisma.kill.deleteMany({ where: { scrimId } }),
+    prisma.matchEnd.deleteMany({ where: { scrimId } }),
+    prisma.matchStart.deleteMany({ where: { scrimId } }),
+    prisma.mercyRez.deleteMany({ where: { scrimId } }),
+    prisma.objectiveCaptured.deleteMany({ where: { scrimId } }),
+    prisma.objectiveUpdated.deleteMany({ where: { scrimId } }),
+    prisma.offensiveAssist.deleteMany({ where: { scrimId } }),
+    prisma.payloadProgress.deleteMany({ where: { scrimId } }),
+    prisma.playerStat.deleteMany({ where: { scrimId } }),
+    prisma.pointProgress.deleteMany({ where: { scrimId } }),
+    prisma.remechCharged.deleteMany({ where: { scrimId } }),
+    prisma.roundEnd.deleteMany({ where: { scrimId } }),
+    prisma.roundStart.deleteMany({ where: { scrimId } }),
+    prisma.setupComplete.deleteMany({ where: { scrimId } }),
+    prisma.ultimateCharged.deleteMany({ where: { scrimId } }),
+    prisma.ultimateEnd.deleteMany({ where: { scrimId } }),
+    prisma.ultimateStart.deleteMany({ where: { scrimId } }),
+  ]);
 
-  const hasPointProgress = await prisma.pointProgress.findFirst({
-    where: {
-      scrimId: parseInt(id),
-    },
-  });
-
-  await prisma.scrim.delete({
-    where: {
-      id: parseInt(id),
-    },
-  });
-
-  await prisma.map.deleteMany({
-    where: {
-      scrimId: parseInt(id),
-    },
-  });
-
-  await prisma.mapData.deleteMany({
-    where: {
-      scrimId: parseInt(id),
-    },
-  });
-
-  await prisma.defensiveAssist.deleteMany({
-    where: {
-      scrimId: parseInt(id),
-    },
-  });
-
-  await prisma.heroSpawn.deleteMany({
-    where: {
-      scrimId: parseInt(id),
-    },
-  });
-
-  await prisma.heroSwap.deleteMany({
-    where: {
-      scrimId: parseInt(id),
-    },
-  });
-
-  await prisma.kill.deleteMany({
-    where: {
-      scrimId: parseInt(id),
-    },
-  });
-
-  if (hasMatchEnd) {
-    await prisma.matchEnd.deleteMany({
-      where: {
-        scrimId: parseInt(id),
-      },
-    });
-  }
-
-  await prisma.matchStart.deleteMany({
-    where: {
-      scrimId: parseInt(id),
-    },
-  });
-
-  await prisma.offensiveAssist.deleteMany({
-    where: {
-      scrimId: parseInt(id),
-    },
-  });
-
-  await prisma.objectiveCaptured.deleteMany({
-    where: {
-      scrimId: parseInt(id),
-    },
-  });
-
-  await prisma.objectiveUpdated.deleteMany({
-    where: {
-      scrimId: parseInt(id),
-    },
-  });
-
-  if (hasPayloadProgress) {
-    await prisma.payloadProgress.deleteMany({
-      where: {
-        scrimId: parseInt(id),
-      },
-    });
-  }
-
-  await prisma.playerStat.deleteMany({
-    where: {
-      scrimId: parseInt(id),
-    },
-  });
-
-  if (hasPointProgress) {
-    await prisma.pointProgress.deleteMany({
-      where: {
-        scrimId: parseInt(id),
-      },
-    });
-  }
-
-  await prisma.roundEnd.deleteMany({
-    where: {
-      scrimId: parseInt(id),
-    },
-  });
-
-  await prisma.roundStart.deleteMany({
-    where: {
-      scrimId: parseInt(id),
-    },
-  });
-
-  await prisma.setupComplete.deleteMany({
-    where: {
-      scrimId: parseInt(id),
-    },
-  });
-
-  await prisma.ultimateCharged.deleteMany({
-    where: {
-      scrimId: parseInt(id),
-    },
-  });
-
-  await prisma.ultimateEnd.deleteMany({
-    where: {
-      scrimId: parseInt(id),
-    },
-  });
-
-  await prisma.ultimateStart.deleteMany({
-    where: {
-      scrimId: parseInt(id),
-    },
-  });
-
-  return new Response("OK", {
-    status: 200,
-  });
+  return new Response("OK", { status: 200 });
 }

@@ -92,8 +92,10 @@ export const config = {
 
       // deny all blocked users
       const blockedUsers = (await get<string[]>("blockedUsers")) ?? [];
-      Logger.log("User blocked", { user });
-      if (blockedUsers.includes(user.email)) return false;
+      if (blockedUsers.includes(user.email)) {
+        Logger.log("User blocked", { user });
+        return false;
+      }
 
       // get app availability from edge config
       const status = (await get<Availability>("availability")) ?? "private";
@@ -110,7 +112,7 @@ export const config = {
       Logger.log("User not authorized for private access", { user });
       return false;
     },
-    async redirect({ baseUrl }) {
+    redirect({ baseUrl }) {
       return `${baseUrl}/dashboard`;
     },
   },
@@ -332,10 +334,10 @@ export async function getImpersonateUrl(email: string, isProd = true) {
   Logger.log(
     "Impersonation URL generated for user: ",
     { email },
-    `${callbackUrl}/api/auth/callback/email?${params}`
+    `${callbackUrl}/api/auth/callback/email?${params.toString()}`
   );
 
-  return `${callbackUrl}/api/auth/callback/email?${params}`;
+  return `${callbackUrl}/api/auth/callback/email?${params.toString()}`;
 }
 
 /**

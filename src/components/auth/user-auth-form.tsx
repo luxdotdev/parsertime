@@ -23,7 +23,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
     setIsLoading(true);
-    signIn("email", { email });
+    await signIn("email", { email });
   }
 
   return (
@@ -61,8 +61,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               type="button"
               disabled={isLoading}
               onClick={() => {
-                track("Sign In", { location: "Auth form", method: "Email" });
-                signIn("email", { email });
+                React.startTransition(async () => {
+                  track("Sign In", { location: "Auth form", method: "Email" });
+                  await signIn("email", { email });
+                });
               }}
             >
               {isLoading && (
@@ -89,8 +91,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         type="button"
         disabled={isLoading}
         onClick={() => {
-          track("Sign In", { location: "Auth form", method: "Github" });
-          signIn("github");
+          React.startTransition(async () => {
+            track("Sign In", { location: "Auth form", method: "GitHub" });
+            await signIn("github");
+          });
         }}
       >
         {isLoading ? (
@@ -105,8 +109,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         type="button"
         disabled={isLoading}
         onClick={() => {
-          track("Sign In", { location: "Auth form", method: "Google" });
-          signIn("google");
+          React.startTransition(async () => {
+            track("Sign In", { location: "Auth form", method: "Google" });
+            await signIn("google");
+          });
         }}
       >
         {isLoading ? (
@@ -121,8 +127,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         type="button"
         disabled={isLoading}
         onClick={() => {
-          track("Sign In", { location: "Auth form", method: "Discord" });
-          signIn("discord");
+          React.startTransition(async () => {
+            track("Sign In", { location: "Auth form", method: "Discord" });
+            await signIn("discord");
+          });
         }}
       >
         {isLoading ? (

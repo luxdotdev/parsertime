@@ -3,8 +3,7 @@
 import { CardContent, CardFooter } from "@/components/ui/card";
 import { NonMappableStat, Stat } from "@/lib/player-charts";
 import { cn, format, round, toMins, toTitleCase } from "@/lib/utils";
-import { PlayerStatRows } from "@/types/prisma";
-import { Scrim } from "@prisma/client";
+import { PlayerStat, Scrim } from "@prisma/client";
 import { TrendingDownIcon, TrendingUpIcon } from "lucide-react";
 import {
   CartesianGrid,
@@ -64,7 +63,7 @@ function calculatePercentageChange(data: Data): string {
 
 type Props<T> = {
   stat: T;
-  data: PlayerStatRows;
+  data: PlayerStat[];
   scrimData: Scrim[];
   better: "higher" | "lower";
 };

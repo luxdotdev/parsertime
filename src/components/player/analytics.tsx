@@ -1,3 +1,6 @@
+import { DmgDoneVsDmgTakenChart } from "@/components/charts/player/dmg-done-vs-dmg-taken-chart";
+import { DmgTakenVsHealingReceivedChart } from "@/components/charts/player/dmg-taken-vs-healing-chart";
+import { KillfeedTable } from "@/components/map/killfeed-table";
 import {
   Card,
   CardContent,
@@ -12,8 +15,8 @@ import {
   getAverageTimeToUseUlt,
   getAverageUltChargeTime,
   getDuelWinrates,
-  getKillsPerUltimate,
 } from "@/lib/analytics";
+import prisma from "@/lib/prisma";
 import {
   cn,
   groupPlayerKillsIntoFights,
@@ -22,10 +25,6 @@ import {
   toTimestamp,
 } from "@/lib/utils";
 import Image from "next/image";
-import prisma from "@/lib/prisma";
-import { KillfeedTable } from "@/components/map/killfeed-table";
-import { DmgTakenVsHealingReceivedChart } from "@/components/charts/player/dmg-taken-vs-healing-chart";
-import { DmgDoneVsDmgTakenChart } from "@/components/charts/player/dmg-done-vs-dmg-taken-chart";
 
 export async function PlayerAnalytics({
   id,
@@ -34,64 +33,42 @@ export async function PlayerAnalytics({
   id: number;
   playerName: string;
 }) {
-  const averageTimeToUltimate = await getAverageUltChargeTime(id, playerName);
-  const averageTimeToUseUlt = await getAverageTimeToUseUlt(id, playerName);
-  const killsPerUltimate = await getKillsPerUltimate(id, playerName);
-  const droughtTime = await calculateDroughtTime(id, playerName);
+  const [
+    averageTimeToUltimate,
+    averageTimeToUseUlt,
+    droughtTime,
+    duels,
+    match,
+    fights,
+    xFactor,
+    allDamageTakens,
+    allHealingReceiveds,
+    allHeroDamageDone,
+  ] = await Promise.all([
+    getAverageUltChargeTime(id, playerName),
+    getAverageTimeToUseUlt(id, playerName),
+    calculateDroughtTime(id, playerName),
+    getDuelWinrates(id, playerName),
+    prisma.matchStart.findFirst({ where: { MapDataId: id } }),
+    groupPlayerKillsIntoFights(id, playerName),
+    calculateXFactor(id, playerName),
+    prisma.playerStat.findMany({
+      where: { MapDataId: id, player_name: playerName },
+      select: { id: true, round_number: true, damage_taken: true },
+    }),
+    prisma.playerStat.findMany({
+      where: { MapDataId: id, player_name: playerName },
+      select: { id: true, round_number: true, healing_received: true },
+    }),
+    prisma.playerStat.findMany({
+      where: { MapDataId: id, player_name: playerName },
+      select: { id: true, round_number: true, hero_damage_dealt: true },
+    }),
+  ]);
 
-  const duels = await getDuelWinrates(id, playerName);
-
-  const match = await prisma.matchStart.findFirst({
-    where: {
-      MapDataId: id,
-    },
-  });
-
-  const fights = await groupPlayerKillsIntoFights(id, playerName);
-
-  const xFactor = await calculateXFactor(id, playerName);
-
-  const allDamageTakensByRound = removeDuplicateRows(
-    await prisma.playerStat.findMany({
-      where: {
-        MapDataId: id,
-        player_name: playerName,
-      },
-      select: {
-        id: true,
-        round_number: true,
-        damage_taken: true,
-      },
-    })
-  );
-
-  const allHealingReceivedsByRound = removeDuplicateRows(
-    await prisma.playerStat.findMany({
-      where: {
-        MapDataId: id,
-        player_name: playerName,
-      },
-      select: {
-        id: true,
-        round_number: true,
-        healing_received: true,
-      },
-    })
-  );
-
-  const allHeroDamageDoneByRound = removeDuplicateRows(
-    await prisma.playerStat.findMany({
-      where: {
-        MapDataId: id,
-        player_name: playerName,
-      },
-      select: {
-        id: true,
-        round_number: true,
-        hero_damage_dealt: true,
-      },
-    })
-  );
+  const allDamageTakensByRound = removeDuplicateRows(allDamageTakens);
+  const allHealingReceivedsByRound = removeDuplicateRows(allHealingReceiveds);
+  const allHeroDamageDoneByRound = removeDuplicateRows(allHeroDamageDone);
 
   // filter out different heroes and sum the damage taken and healing received by round
   const damageTakenByRound = allDamageTakensByRound.reduce(

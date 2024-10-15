@@ -1,10 +1,9 @@
 /* eslint-disable no-case-declarations */
-import Stripe from "stripe";
-import { stripe } from "@/lib/stripe";
-import Logger from "@/lib/logger";
-import { TODO } from "@/types/utils";
-import { track } from "@vercel/analytics/server";
 import { handleSubscriptionEvent } from "@/lib/billing-plans";
+import Logger from "@/lib/logger";
+import { stripe } from "@/lib/stripe";
+import { track } from "@vercel/analytics/server";
+import Stripe from "stripe";
 
 const relevantEvents = new Set([
   "customer.created",
@@ -29,16 +28,19 @@ export async function POST(req: Request) {
       return new Response("Webhook secret not found.", { status: 400 });
     event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
     Logger.log(`🔔  Webhook received: ${event.type}`);
-  } catch (err: TODO) {
-    Logger.log(`❌ Error message: ${err.message}`);
-    return new Response(`Webhook Error: ${err.message}`, { status: 400 });
+  } catch (err) {
+    if (err instanceof Error) {
+      Logger.log(`❌ Error message: ${err.message}`);
+      return new Response(`Webhook Error: ${err.message}`, { status: 400 });
+    }
+    return new Response(`Unknown error`, { status: 400 });
   }
 
   if (relevantEvents.has(event.type)) {
     try {
       switch (event.type) {
         case "customer.created":
-          const customer = event.data.object as Stripe.Customer;
+          const customer = event.data.object;
           Logger.log("New customer", customer);
           await track("New Customer", { customerId: customer.id });
           break;
@@ -52,7 +54,7 @@ export async function POST(req: Request) {
           await handleSubscriptionEvent(event, event.type);
           break;
         case "checkout.session.completed":
-          const checkoutSession = event.data.object as Stripe.Checkout.Session;
+          const checkoutSession = event.data.object;
           if (checkoutSession.mode === "subscription") {
             const subscriptionId = checkoutSession.subscription;
             Logger.log(

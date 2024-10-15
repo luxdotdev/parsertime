@@ -9,8 +9,10 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default async function Footer() {
-  const version = await get<string>("version");
-  const changelog = await get<string>("changelog");
+  const [version, changelog] = await Promise.all([
+    get<string>("version"),
+    get<string>("changelog"),
+  ]);
 
   return (
     <footer className="relative z-20 border-t border-zinc-200 dark:border-zinc-800">

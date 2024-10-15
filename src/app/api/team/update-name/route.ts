@@ -21,29 +21,19 @@ const TeamNameUpdateSchema = z.object({
 export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session || !session.user || !session.user.email) {
-    return new Response("Unauthorized", {
-      status: 401,
-    });
+    return new Response("Unauthorized", { status: 401 });
   }
 
   const body = TeamNameUpdateSchema.safeParse(await req.json());
-  if (!body.success) {
-    return new Response("Invalid request", {
-      status: 400,
-    });
-  }
+  if (!body.success) return new Response("Invalid request", { status: 400 });
 
   await prisma.team.update({
-    where: {
-      id: body.data.teamId,
-    },
+    where: { id: body.data.teamId },
     data: {
       name: body.data.name,
       readonly: body.data.readonly,
     },
   });
 
-  return new Response("OK", {
-    status: 200,
-  });
+  return new Response("OK", { status: 200 });
 }

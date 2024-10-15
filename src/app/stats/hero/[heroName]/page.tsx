@@ -11,7 +11,7 @@ import { auth } from "@/lib/auth";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { HeroName, heroRoleMapping } from "@/types/heroes";
-import { Scrim } from "@prisma/client";
+import { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -19,7 +19,7 @@ type Props = {
   params: { heroName: string };
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export function generateMetadata({ params }: Props): Metadata {
   const hero = decodeURIComponent(params.heroName);
 
   return {
@@ -47,16 +47,16 @@ export default async function HeroStats({ params }: Props) {
   const hero = decodeURIComponent(params.heroName);
 
   // check if hero is valid
-  if (heroRoleMapping[hero as HeroName] === undefined) {
-    notFound();
-  }
+  if (heroRoleMapping[hero as HeroName] === undefined) notFound();
 
   const session = await auth();
   const user = await getUser(session?.user.email);
 
-  const timeframe1 = await new Permission("stats-timeframe-1").check();
-  const timeframe2 = await new Permission("stats-timeframe-2").check();
-  const timeframe3 = await new Permission("stats-timeframe-3").check();
+  const [timeframe1, timeframe2, timeframe3] = await Promise.all([
+    new Permission("stats-timeframe-1").check(),
+    new Permission("stats-timeframe-2").check(),
+    new Permission("stats-timeframe-3").check(),
+  ]);
 
   const permissions = {
     "stats-timeframe-1": timeframe1,
@@ -64,32 +64,19 @@ export default async function HeroStats({ params }: Props) {
     "stats-timeframe-3": timeframe3,
   };
 
-  if (!user) {
-    notFound();
-  }
+  if (!user) notFound();
 
   // get all time scrims
   const heroScrims = await prisma.playerStat.findMany({
-    where: {
-      player_hero: {
-        equals: hero,
-        mode: "insensitive",
-      },
-    },
-    select: {
-      scrimId: true,
-    },
+    where: { player_hero: { equals: hero, mode: "insensitive" } },
+    select: { scrimId: true },
     distinct: ["scrimId"],
   });
 
   const scrimIds = heroScrims.map((scrim) => scrim.scrimId);
 
   const allScrims = await prisma.scrim.findMany({
-    where: {
-      id: {
-        in: scrimIds,
-      },
-    },
+    where: { id: { in: scrimIds } },
   });
 
   // last week
@@ -137,14 +124,16 @@ export default async function HeroStats({ params }: Props) {
 
   const allScrimIds = allScrims.map((scrim) => scrim.id);
 
-  let allHeroStats;
-  let allHeroKills;
-  let allHeroDeaths;
+  let allHeroStats: PlayerStat[];
+  let allHeroKills: Kill[];
+  let allHeroDeaths: Kill[];
 
   try {
-    allHeroStats = await getAllStatsForHero(allScrimIds, hero);
-    allHeroKills = await getAllKillsForHero(allScrimIds, hero);
-    allHeroDeaths = await getAllDeathsForHero(allScrimIds, hero);
+    [allHeroStats, allHeroKills, allHeroDeaths] = await Promise.all([
+      getAllStatsForHero(allScrimIds, hero),
+      getAllKillsForHero(allScrimIds, hero),
+      getAllDeathsForHero(allScrimIds, hero),
+    ]);
   } catch (e) {
     return (
       <div className="flex-1 space-y-4 p-8 pt-6">

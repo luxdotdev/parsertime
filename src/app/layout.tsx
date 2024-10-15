@@ -1,6 +1,7 @@
 import { CommandDialogMenu } from "@/components/command-menu";
 import { CommandMenuProvider } from "@/components/command-menu-provider";
 import { StaffToolbar } from "@/components/staff-toolbar";
+import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { getUser } from "@/data/user-dto";
@@ -68,6 +69,7 @@ export default async function RootLayout({
             <Suspense>
               <StaffToolbar />
             </Suspense>
+            <TailwindIndicator />
           </ThemeProvider>
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryProvider>

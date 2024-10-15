@@ -3,14 +3,8 @@ import prisma from "@/lib/prisma";
 
 export async function DELETE() {
   const scrimsWithoutMaps = await prisma.scrim.findMany({
-    where: {
-      maps: {
-        none: {},
-      },
-    },
-    select: {
-      id: true,
-    },
+    where: { maps: { none: {} } },
+    select: { id: true },
   });
 
   if (scrimsWithoutMaps.length === 0) {
@@ -25,16 +19,10 @@ export async function DELETE() {
 
   for (const scrim of scrimsWithoutMaps) {
     Logger.log(`Deleting scrim ${scrim.id}`);
-    await prisma.scrim.delete({
-      where: {
-        id: scrim.id,
-      },
-    });
+    await prisma.scrim.delete({ where: { id: scrim.id } });
   }
 
-  return new Response(`OK`, {
-    status: 200,
-  });
+  return new Response("OK", { status: 200 });
 }
 
 // This is necessary for using Vercel Cron Jobs

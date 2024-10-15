@@ -19,9 +19,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { HeroName, roleHeroMapping } from "@/types/heroes";
-import { PlayerStatRows } from "@/types/prisma";
-import { Kill, Scrim } from "@prisma/client";
+import { HeroName } from "@/types/heroes";
+import { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { SelectGroup } from "@radix-ui/react-select";
 import { addMonths, addWeeks, addYears, format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -48,32 +47,31 @@ export function RangePicker({
 }: {
   permissions: { [key: string]: boolean };
   data: Record<Timeframe, Scrim[]>;
-  stats: PlayerStatRows;
+  stats: PlayerStat[];
   kills: Kill[];
   deaths: Kill[];
   hero: HeroName;
 }) {
+  const TODAY = new Date();
+  const LAST_WEEK = addWeeks(TODAY, -1);
+
   const [timeframe, setTimeframe] = useState<Timeframe>("one-week");
   const [date, setDate] = useState<DateRange | undefined>({
-    from: addWeeks(new Date(), -1),
-    to: new Date(),
+    from: LAST_WEEK,
+    to: TODAY,
   });
 
   function onTimeframeChange(val: Timeframe) {
     setTimeframe(val);
 
-    if (val === "one-week")
-      setDate({ from: addWeeks(new Date(), -1), to: new Date() });
-    if (val === "two-weeks")
-      setDate({ from: addWeeks(new Date(), -2), to: new Date() });
-    if (val === "one-month")
-      setDate({ from: addMonths(new Date(), -1), to: new Date() });
+    if (val === "one-week") setDate({ from: addWeeks(TODAY, -1), to: TODAY });
+    if (val === "two-weeks") setDate({ from: addWeeks(TODAY, -2), to: TODAY });
+    if (val === "one-month") setDate({ from: addMonths(TODAY, -1), to: TODAY });
     if (val === "three-months")
-      setDate({ from: addMonths(new Date(), -3), to: new Date() });
+      setDate({ from: addMonths(TODAY, -3), to: TODAY });
     if (val === "six-months")
-      setDate({ from: addMonths(new Date(), -6), to: new Date() });
-    if (val === "one-year")
-      setDate({ from: addYears(new Date(), -1), to: new Date() });
+      setDate({ from: addMonths(TODAY, -6), to: TODAY });
+    if (val === "one-year") setDate({ from: addYears(TODAY, -1), to: TODAY });
     if (val === "all-time") setDate({ from: undefined, to: undefined });
   }
 
