@@ -25,9 +25,8 @@ export function TailwindIndicator() {
 
   const { width, height } = dimensions;
 
-  const hideTailwindIndicator = window.location.href.includes(
-    "https://parsertime.app"
-  );
+  const hideTailwindIndicator =
+    process.env.NEXT_PUBLIC_VERCEL_ENV === "production";
 
   // Hide the Tailwind indicator in production
   if (hideTailwindIndicator) return null;
