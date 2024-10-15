@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Link } from "@/components/ui/link";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/components/ui/use-toast";
 import { parseData } from "@/lib/parser";
@@ -187,6 +188,11 @@ export default function DebugPage() {
               index <code className="text-foreground">`0`</code> (which is also
               an array) and the error is at position{" "}
               <code className="text-foreground">`0`</code> in that array.
+            </p>
+            <p className="pt-6">
+              <Link href="https://parserti.me/schema" external>
+                View the schema documentation
+              </Link>
             </p>
           </div>
         </div>
