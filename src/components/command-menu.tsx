@@ -42,7 +42,6 @@ import { use, useCallback, useState } from "react";
 
 export function CommandDialogMenu({ user }: { user: User | null }) {
   const { open, setOpen } = use(CommandMenuContext);
-  // const [teams, setTeams] = useState<{ label: string; value: string }[]>([]);
   const router = useRouter();
   const { setTheme } = useTheme();
   const pathname = usePathname();
