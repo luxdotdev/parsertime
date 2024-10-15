@@ -51,498 +51,451 @@ const Float = z.number();
 const String = z.string();
 const StringOrNumber = z.string().or(z.number());
 
-const MatchStartSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.match_start),
-    // Match Time
-    Float,
-    // Map Name
-    String,
-    // Map Type
-    MapType,
-    // Team 1 Name
-    String,
-    // Team 2 Name
-    String,
-  ])
-);
+const MatchStartSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.match_start),
+  // Match Time
+  Float,
+  // Map Name
+  String,
+  // Map Type
+  MapType,
+  // Team 1 Name
+  String,
+  // Team 2 Name
+  String,
+]);
 
-const MatchEndSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.match_end),
-    // Match Time
-    Float,
-    // Round Number
-    Int,
-    // Team 1 Score
-    Int,
-    // Team 2 Score
-    Int,
-  ])
-);
+const MatchEndSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.match_end),
+  // Match Time
+  Float,
+  // Round Number
+  Int,
+  // Team 1 Score
+  Int,
+  // Team 2 Score
+  Int,
+]);
 
-const RoundStartSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.round_start),
-    // Match Time
-    Float,
-    // Round Number
-    Int,
-    // Capturing Team
-    String,
-    // Team 1 Score
-    Int,
-    // Team 2 Score
-    Int,
-    // Objective Index
-    Int,
-  ])
-);
+const RoundStartSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.round_start),
+  // Match Time
+  Float,
+  // Round Number
+  Int,
+  // Capturing Team
+  StringOrNumber,
+  // Team 1 Score
+  Int,
+  // Team 2 Score
+  Int,
+  // Objective Index
+  Int,
+]);
 
-const RoundEndSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.round_end),
-    // Match Time
-    Float,
-    // Round Number
-    Int,
-    // Capturing Team
-    String,
-    // Team 1 Score
-    Int,
-    // Team 2 Score
-    Int,
-    // Objective Index
-    Int,
-    // Control Team 1 Progress
-    Float,
-    // Control Team 2 Progress
-    Float,
-    // Match Time Remaining
-    Float,
-  ])
-);
+const RoundEndSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.round_end),
+  // Match Time
+  Float,
+  // Round Number
+  Int,
+  // Capturing Team
+  StringOrNumber,
+  // Team 1 Score
+  Int,
+  // Team 2 Score
+  Int,
+  // Objective Index
+  Int,
+  // Control Team 1 Progress
+  Float,
+  // Control Team 2 Progress
+  Float,
+  // Match Time Remaining
+  Float,
+]);
 
-const SetupCompleteSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.setup_complete),
-    // Match Time
-    Float,
-    // Round Number
-    Int,
-    // Match Time Remaining
-    Float,
-  ])
-);
+const SetupCompleteSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.setup_complete),
+  // Match Time
+  Float,
+  // Round Number
+  Int,
+  // Match Time Remaining
+  Float,
+]);
 
-const ObjectiveUpdatedSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.objective_updated),
-    // Match Time
-    Float,
-    // Round Number
-    Int,
-    // Previous Objective Index
-    Int,
-    // Current Objective Index
-    Int,
-  ])
-);
+const ObjectiveUpdatedSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.objective_updated),
+  // Match Time
+  Float,
+  // Round Number
+  Int,
+  // Previous Objective Index
+  Int,
+  // Current Objective Index
+  Int,
+]);
 
-const ObjectiveCapturedSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.objective_captured),
-    // Match Time
-    Float,
-    // Round Number
-    Int,
-    // Capturing Team
-    String,
-    // Objective Index
-    Int,
-    // Control Team 1 Progress
-    Float,
-    // Control Team 2 Progress
-    Float,
-    // Match Time Remaining
-    Float,
-  ])
-);
+const ObjectiveCapturedSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.objective_captured),
+  // Match Time
+  Float,
+  // Round Number
+  Int,
+  // Capturing Team
+  String,
+  // Objective Index
+  Int,
+  // Control Team 1 Progress
+  Float,
+  // Control Team 2 Progress
+  Float,
+  // Match Time Remaining
+  Float,
+]);
 
-const PointProgressSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.point_progress),
-    // Match Time
-    Float,
-    // Round Number
-    Int,
-    // Capturing Team
-    String,
-    // Objective Index
-    Int,
-    // Point Capture Progress
-    Float,
-  ])
-);
+const PointProgressSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.point_progress),
+  // Match Time
+  Float,
+  // Round Number
+  Int,
+  // Capturing Team
+  String,
+  // Objective Index
+  Int,
+  // Point Capture Progress
+  Float,
+]);
 
-const PayloadProgressSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.payload_progress),
-    // Match Time
-    Float,
-    // Round Number
-    Int,
-    // Capturing Team
-    String,
-    // Objective Index
-    Int,
-    // Payload Capture Progress
-    Float,
-  ])
-);
+const PayloadProgressSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.payload_progress),
+  // Match Time
+  Float,
+  // Round Number
+  Int,
+  // Capturing Team
+  String,
+  // Objective Index
+  Int,
+  // Payload Capture Progress
+  Float,
+]);
 
-const HeroSpawnSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.hero_spawn),
-    // Match Time
-    Float,
-    // Player Team
-    String,
-    // Player Name
-    String,
-    // Player Hero
-    String,
-    // Previous Hero
-    Int.nullable().optional(),
-    // Hero Time Played
-    Float,
-  ])
-);
+const HeroSpawnSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.hero_spawn),
+  // Match Time
+  Float,
+  // Player Team
+  String,
+  // Player Name
+  String,
+  // Player Hero
+  String,
+  // Previous Hero
+  Int.nullable().optional(),
+  // Hero Time Played
+  Float,
+]);
 
-const HeroSwapSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.hero_swap),
-    // Match Time
-    Float,
-    // Player Team
-    String,
-    // Player Name
-    String,
-    // Player Hero
-    String,
-    // Previous Hero
-    String,
-    // Hero Time Played
-    Float,
-  ])
-);
+const HeroSwapSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.hero_swap),
+  // Match Time
+  Float,
+  // Player Team
+  String,
+  // Player Name
+  String,
+  // Player Hero
+  String,
+  // Previous Hero
+  String,
+  // Hero Time Played
+  Float,
+]);
 
-const OffensiveAssistSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.offensive_assist),
-    // Match Time
-    Float,
-    // Player Team
-    String,
-    // Player Name
-    String,
-    // Player Hero
-    String,
-    // Hero Duplicated
-    StringOrNumber,
-  ])
-);
+const OffensiveAssistSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.offensive_assist),
+  // Match Time
+  Float,
+  // Player Team
+  String,
+  // Player Name
+  String,
+  // Player Hero
+  String,
+  // Hero Duplicated
+  StringOrNumber,
+]);
 
-const DefensiveAssistSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.defensive_assist),
-    // Match Time
-    Float,
-    // Player Team
-    String,
-    // Player Name
-    String,
-    // Player Hero
-    String,
-    // Hero Duplicated
-    StringOrNumber,
-  ])
-);
+const DefensiveAssistSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.defensive_assist),
+  // Match Time
+  Float,
+  // Player Team
+  String,
+  // Player Name
+  String,
+  // Player Hero
+  String,
+  // Hero Duplicated
+  StringOrNumber,
+]);
 
-const UltimateChargedSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.ultimate_charged),
-    // Match Time
-    Float,
-    // Player Team
-    String,
-    // Player Name
-    String,
-    // Player Hero
-    String,
-    // Hero Duplicated
-    StringOrNumber,
-    // Ultimate ID
-    Int,
-  ])
-);
+const UltimateChargedSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.ultimate_charged),
+  // Match Time
+  Float,
+  // Player Team
+  String,
+  // Player Name
+  String,
+  // Player Hero
+  String,
+  // Hero Duplicated
+  StringOrNumber,
+  // Ultimate ID
+  Int,
+]);
 
-const UltimateStartSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.ultimate_start),
-    // Match Time
-    Float,
-    // Player Team
-    String,
-    // Player Name
-    String,
-    // Player Hero
-    String,
-    // Hero Duplicated
-    StringOrNumber,
-    // Ultimate ID
-    Int,
-  ])
-);
+const UltimateStartSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.ultimate_start),
+  // Match Time
+  Float,
+  // Player Team
+  String,
+  // Player Name
+  String,
+  // Player Hero
+  String,
+  // Hero Duplicated
+  StringOrNumber,
+  // Ultimate ID
+  Int,
+]);
 
-const UltimateEndSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.ultimate_end),
-    // Match Time
-    Float,
-    // Player Team
-    String,
-    // Player Name
-    String,
-    // Player Hero
-    String,
-    // Hero Duplicated
-    StringOrNumber,
-    // Ultimate ID
-    Int,
-  ])
-);
+const UltimateEndSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.ultimate_end),
+  // Match Time
+  Float,
+  // Player Team
+  String,
+  // Player Name
+  String,
+  // Player Hero
+  String.optional(),
+  // Hero Duplicated
+  StringOrNumber,
+  // Ultimate ID
+  Int,
+]);
 
-const KillSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.kill),
-    // Match Time
-    Float,
-    // Attacker Team
-    String,
-    // Attacker Name
-    String,
-    // Attacker Hero
-    String,
-    // Victim Team
-    String,
-    // Victim Name
-    String,
-    // Victim Hero
-    String,
-    // Event Ability
-    String,
-    // Event Damage
-    Int,
-    // Is Critical Hit
-    String,
-    // Is Environmental
-    String,
-  ])
-);
+const KillSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.kill),
+  // Match Time
+  Float,
+  // Attacker Team
+  String,
+  // Attacker Name
+  String,
+  // Attacker Hero
+  String,
+  // Victim Team
+  String,
+  // Victim Name
+  String,
+  // Victim Hero
+  String,
+  // Event Ability
+  String,
+  // Event Damage
+  Float,
+  // Is Critical Hit
+  String,
+  // Is Environmental
+  String,
+]);
 
-const MercyRezSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.mercy_rez),
-    // Match Time
-    Float,
-    // Resurrecter Team
-    String,
-    // Resurrecter Player
-    String,
-    // Resurrecter Hero
-    String,
-    // Resurrectee Team
-    String,
-    // Resurrectee Player
-    String,
-    // Resurrectee Hero
-    String,
-  ])
-);
+const MercyRezSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.mercy_rez),
+  // Match Time
+  Float,
+  // Resurrecter Team
+  String,
+  // Resurrecter Player
+  String,
+  // Resurrecter Hero
+  String,
+  // Resurrectee Team
+  String,
+  // Resurrectee Player
+  String,
+  // Resurrectee Hero
+  String,
+]);
 
-const EchoDuplicateStartSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.echo_duplicate_start),
-    // Match Time
-    Float,
-    // Player Team
-    String,
-    // Player Name
-    String,
-    // Player Hero
-    String,
-    // Hero Duplicated
-    StringOrNumber,
-    // Ultimate ID
-    Int,
-  ])
-);
+const EchoDuplicateStartSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.echo_duplicate_start),
+  // Match Time
+  Float,
+  // Player Team
+  String,
+  // Player Name
+  String,
+  // Player Hero
+  String,
+  // Hero Duplicated
+  StringOrNumber,
+  // Ultimate ID
+  Int,
+]);
 
-const EchoDuplicateEndSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.echo_duplicate_end),
-    // Match Time
-    Float,
-    // Player Team
-    String,
-    // Player Name
-    String,
-    // Player Hero
-    String,
-    // Ultimate ID
-    Int,
-  ])
-);
+const EchoDuplicateEndSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.echo_duplicate_end),
+  // Match Time
+  Float,
+  // Player Team
+  String,
+  // Player Name
+  String,
+  // Player Hero
+  String,
+  // Ultimate ID
+  Int,
+]);
 
-const DvaRemechSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.dva_remech),
-    // Match Time
-    Float,
-    // Player Team
-    String,
-    // Player Name
-    String,
-    // Player Hero
-    String,
-    // Ultimate ID
-    Int,
-  ])
-);
+const DvaRemechSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.dva_remech),
+  // Match Time
+  Float,
+  // Player Team
+  String,
+  // Player Name
+  String,
+  // Player Hero
+  String,
+  // Ultimate ID
+  Int,
+]);
+const RemechChargedSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.remech_charged),
+  // Match Time
+  Float,
+  // Player Team
+  String,
+  // Player Name
+  String,
+  // Player Hero
+  String,
+  // Hero Duplicated
+  StringOrNumber,
+  // Ultimate ID
+  Int,
+]);
 
-const RemechChargedSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.remech_charged),
-    // Match Time
-    Float,
-    // Player Team
-    String,
-    // Player Name
-    String,
-    // Player Hero
-    String,
-    // Hero Duplicated
-    StringOrNumber,
-    // Ultimate ID
-    Int,
-  ])
-);
-
-const PlayerStatSchema = z.array(
-  z.union([
-    // Event Type
-    z.literal(EventType.Values.player_stat),
-    // Match Time
-    Float,
-    // Round Number
-    Int,
-    // Player Team
-    String,
-    // Player Name
-    String,
-    // Player Hero
-    String,
-    // Eliminations
-    Int,
-    // Final Blows
-    Int,
-    // Deaths
-    Int,
-    // All Damage Dealt
-    Float,
-    // Barrier Damage Dealt
-    Float,
-    // Hero Damage Dealt
-    Float,
-    // Healing Dealt
-    Float,
-    // Healing Received
-    Float,
-    // Self Healing
-    Float,
-    // Damage Taken
-    Float,
-    // Damage Blocked
-    Float,
-    // Defensive Assists
-    Int,
-    // Offensive Assists
-    Int,
-    // Ultimates Earned
-    Int,
-    // Ultimates Used
-    Int,
-    // Multikill Best
-    Int,
-    // Multikills
-    Int,
-    // Solo Kills
-    Int,
-    // Objective Kills
-    Int,
-    // Environmental Kills
-    Int,
-    // Environmental Deaths
-    Int,
-    // Critical Hits
-    Int,
-    // Critical Hit Accuracy
-    Float,
-    // Scoped Accuracy
-    Float,
-    // Scoped Critical Hit Accuracy
-    Float,
-    // Scoped Critical Hit Kills
-    Int,
-    // Shots Fired
-    Int,
-    // Shots Hit
-    Int,
-    // Shots Missed
-    Int,
-    // Scoped Shots Fired
-    Int,
-    // Scoped Shots Hit
-    Int,
-    // Weapon Accuracy
-    Float,
-    // Hero Time Played
-    Float,
-  ])
-);
+export const PlayerStatSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.Values.player_stat),
+  // Match Time
+  Float,
+  // Round Number
+  Int,
+  // Player Team
+  String,
+  // Player Name
+  String,
+  // Player Hero
+  String,
+  // Eliminations
+  Int,
+  // Final Blows
+  Int,
+  // Deaths
+  Int,
+  // All Damage Dealt
+  Float,
+  // Barrier Damage Dealt
+  Float,
+  // Hero Damage Dealt
+  Float,
+  // Healing Dealt
+  Float,
+  // Healing Received
+  Float,
+  // Self Healing
+  Float,
+  // Damage Taken
+  Float,
+  // Damage Blocked
+  Float,
+  // Defensive Assists
+  Int,
+  // Offensive Assists
+  Int,
+  // Ultimates Earned
+  Int,
+  // Ultimates Used
+  Int,
+  // Multikill Best
+  Int,
+  // Multikills
+  Int,
+  // Solo Kills
+  Int,
+  // Objective Kills
+  Int,
+  // Environmental Kills
+  Int,
+  // Environmental Deaths
+  Int,
+  // Critical Hits
+  Int,
+  // Critical Hit Accuracy
+  Float,
+  // Scoped Accuracy
+  Float,
+  // Scoped Critical Hit Accuracy
+  Float,
+  // Scoped Critical Hit Kills
+  Int,
+  // Shots Fired
+  Int,
+  // Shots Hit
+  Int,
+  // Shots Missed
+  Int,
+  // Scoped Shots Fired
+  Int,
+  // Scoped Shots Hit
+  Int,
+  // Weapon Accuracy
+  Float,
+  // Hero Time Played
+  Float,
+]);
 
 /**
  * A Zod schema that defines the structure of the parser data. This schema includes various event types and player statistics.
