@@ -16,10 +16,11 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 type Props = {
-  params: { heroName: string };
+  params: Promise<{ heroName: string }>;
 };
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const hero = decodeURIComponent(params.heroName);
 
   return {
@@ -43,7 +44,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default async function HeroStats({ params }: Props) {
+export default async function HeroStats(props: Props) {
+  const params = await props.params;
   const hero = decodeURIComponent(params.heroName);
 
   // check if hero is valid

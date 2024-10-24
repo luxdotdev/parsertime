@@ -11,7 +11,8 @@ type Error =
   | "AuthorizedCallbackError"
   | "Default";
 
-export default function AuthErrorPage({ searchParams }: Props) {
+export default async function AuthErrorPage(props: Props) {
+  const searchParams = await props.searchParams;
   const error = searchParams.error as Error;
 
   const errorMessages = {

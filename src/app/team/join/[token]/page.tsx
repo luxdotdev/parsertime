@@ -3,11 +3,12 @@ import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
-export default async function TokenPage({
-  params,
-}: {
-  params: { token: string };
-}) {
+export default async function TokenPage(
+  props: {
+    params: Promise<{ token: string }>;
+  }
+) {
+  const params = await props.params;
   const session = await auth();
   const token = params.token;
 

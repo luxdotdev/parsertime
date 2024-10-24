@@ -14,11 +14,12 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 type Props = {
-  params: { team: string; scrimId: string; mapId: string; playerId: string };
+  params: Promise<{ team: string; scrimId: string; mapId: string; playerId: string }>;
   searchParams: SearchParams;
 };
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const playerName = decodeURIComponent(params.playerId);
 
   return {
@@ -42,7 +43,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default async function PlayerDashboardDemoPage({ params }: Props) {
+export default async function PlayerDashboardDemoPage(props: Props) {
+  const params = await props.params;
   const id = 268;
   const playerName = decodeURIComponent(params.playerId);
 

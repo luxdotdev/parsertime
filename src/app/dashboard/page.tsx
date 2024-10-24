@@ -32,7 +32,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function DashboardPage({ searchParams }: Props) {
+export default async function DashboardPage(props: Props) {
+  const searchParams = await props.searchParams;
   const session = await auth();
 
   const userData = await getUser(session?.user?.email);
@@ -52,7 +53,7 @@ export default async function DashboardPage({ searchParams }: Props) {
           </TabsList>
         )}
         <TabsContent value="overview" className="space-y-4">
-          <ScrimList searchParams={searchParams} />
+          <ScrimList />
         </TabsContent>
         <TabsContent value="admin" className="space-y-4">
           <AdminScrimView />

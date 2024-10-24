@@ -16,11 +16,12 @@ import { MapEvents } from "@/components/map/map-events";
 import { getMostPlayedHeroes } from "@/data/player-dto";
 
 type Props = {
-  params: { team: string; scrimId: string; mapId: string };
+  params: Promise<{ team: string; scrimId: string; mapId: string }>;
   searchParams: SearchParams;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const mapName = await prisma.matchStart.findFirst({
     where: {
       MapDataId: 268,
@@ -57,7 +58,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function MapDashboardPage({ params }: Props) {
+export default async function MapDashboardPage(props: Props) {
+  const params = await props.params;
   const id = 268;
 
   const mostPlayedHeroes = await getMostPlayedHeroes(id);

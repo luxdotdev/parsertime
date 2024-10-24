@@ -15,9 +15,10 @@ import { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-type Props = { params: { playerName: string } };
+type Props = { params: Promise<{ playerName: string }> };
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const playerName = decodeURIComponent(params.playerName);
 
   return {
@@ -47,7 +48,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default async function PlayerStats({ params }: Props) {
+export default async function PlayerStats(props: Props) {
+  const params = await props.params;
   const name = decodeURIComponent(params.playerName);
 
   const session = await auth();

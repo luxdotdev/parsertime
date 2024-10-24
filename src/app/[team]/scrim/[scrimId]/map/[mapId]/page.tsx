@@ -20,11 +20,12 @@ import { getMostPlayedHeroes } from "@/data/player-dto";
 import { getUser } from "@/data/user-dto";
 
 type Props = {
-  params: { team: string; scrimId: string; mapId: string };
+  params: Promise<{ team: string; scrimId: string; mapId: string }>;
   searchParams: SearchParams;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const mapId = decodeURIComponent(params.mapId);
 
   const mapName = await prisma.matchStart.findFirst({
@@ -63,7 +64,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function MapDashboardPage({ params }: Props) {
+export default async function MapDashboardPage(props: Props) {
+  const params = await props.params;
   const id = parseInt(params.mapId);
   const session = await auth();
   const user = await getUser(session?.user?.email);

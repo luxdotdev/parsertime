@@ -3,13 +3,18 @@ import MobileBanner from "@/components/map/mobile-banner";
 import { SelectedPlayerProvider } from "@/components/map/player-switcher";
 import { isAuthedToViewMap } from "@/lib/auth";
 
-export default async function MapDashboardLayout({
-  children,
-  params,
-}: {
-  children: React.ReactNode;
-  params: { team: string; scrimId: string; mapId: string };
-}) {
+export default async function MapDashboardLayout(
+  props: {
+    children: React.ReactNode;
+    params: Promise<{ team: string; scrimId: string; mapId: string }>;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    children
+  } = props;
+
   const scrimId = parseInt(params.scrimId);
   const mapId = parseInt(params.mapId);
 

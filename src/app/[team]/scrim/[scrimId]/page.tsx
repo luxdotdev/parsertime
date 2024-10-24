@@ -37,11 +37,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 type Props = {
-  params: { team: string; scrimId: string };
+  params: Promise<{ team: string; scrimId: string }>;
   searchParams: SearchParams;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const scrimId = decodeURIComponent(params.scrimId);
 
   const scrim = await prisma.scrim.findFirst({
@@ -76,7 +77,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ScrimDashboardPage({ params }: Props) {
+export default async function ScrimDashboardPage(props: Props) {
+  const params = await props.params;
   const id = parseInt(params.scrimId);
   const session = await auth();
 

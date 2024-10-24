@@ -13,11 +13,12 @@ import { auth } from "@/lib/auth";
 import { getTeamsWithPerms, getUser } from "@/data/user-dto";
 
 type Props = {
-  params: { team: string; scrimId: string };
+  params: Promise<{ team: string; scrimId: string }>;
   searchParams: SearchParams;
 };
 
-export default async function EditScrimPage({ params }: Props) {
+export default async function EditScrimPage(props: Props) {
+  const params = await props.params;
   const scrim = await getScrim(parseInt(params.scrimId));
   const session = await auth();
   const user = await getUser(session?.user?.email);

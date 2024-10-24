@@ -11,9 +11,10 @@ import { $Enums, User } from "@prisma/client";
 import { Metadata } from "next";
 import Image from "next/image";
 
-type Props = { params: { teamId: string } };
+type Props = { params: Promise<{ teamId: string }> };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const teamId = decodeURIComponent(params.teamId);
 
   const team = await prisma.team.findFirst({
@@ -44,7 +45,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function Team({ params }: { params: { teamId: string } }) {
+export default async function Team(props: { params: Promise<{ teamId: string }> }) {
+  const params = await props.params;
   const session = await auth();
 
   const teamId = parseInt(params.teamId);
