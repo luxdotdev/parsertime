@@ -11,7 +11,7 @@ type Props = {
   searchParams: SearchParams;
 };
 
-export async function ScrimList({ searchParams }: Props) {
+export async function ScrimList() {
   const session = await auth();
 
   let scrims = [];
