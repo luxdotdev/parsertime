@@ -6,7 +6,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 
 const TeamAvatarUpdateSchema = z.object({
-  teamId: z.string().min(1),
+  teamId: z.number(),
   image: z.string().url(),
 });
 
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   if (!body.success) return new Response("Invalid request", { status: 400 });
 
   const team = await prisma.team.findUnique({
-    where: { id: parseInt(body.data.teamId) },
+    where: { id: body.data.teamId },
   });
   if (!team) {
     Logger.log("Team not found", body.data.teamId);
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   }
 
   const teamManagers = await prisma.teamManager.findMany({
-    where: { teamId: parseInt(body.data.teamId) },
+    where: { teamId: body.data.teamId },
   });
 
   const authedUser = await getUser(session.user.email);
