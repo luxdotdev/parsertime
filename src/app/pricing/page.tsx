@@ -4,9 +4,9 @@ import { auth } from "@/lib/auth";
 import { createCheckout, getCustomerPortalUrl } from "@/lib/stripe";
 import { toTitleCase } from "@/lib/utils";
 import { CheckIcon, MinusIcon } from "@heroicons/react/20/solid";
+import Image from "next/image";
 import Link from "next/link";
 import React, { Fragment } from "react";
-import Image from "next/image";
 
 const sections = [
   {
@@ -600,7 +600,7 @@ export default async function PricingPage() {
             <figcaption className="mt-10">
               <Image
                 className="mx-auto h-10 w-10 rounded-full"
-                src="https://cdn.discordapp.com/avatars/328704972822806529/558726bf88ce33f94fea8794a0bf924d?size=1024"
+                src="/marketing/coy.png"
                 alt=""
                 width={48}
                 height={48}

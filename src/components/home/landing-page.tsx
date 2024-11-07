@@ -487,7 +487,7 @@ export default async function LandingPage() {
             <figcaption className="mt-10 flex items-center gap-x-6">
               <Image
                 className="h-12 w-12 rounded-full bg-gray-50 dark:bg-zinc-900"
-                src="https://cdn.discordapp.com/avatars/328704972822806529/558726bf88ce33f94fea8794a0bf924d?size=1024"
+                src="/marketing/coy.png"
                 alt=""
                 width={48}
                 height={48}
