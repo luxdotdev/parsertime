@@ -57,6 +57,11 @@ export type Hanzo = {
   image: "hanzo.png";
 };
 
+export type Hazard = {
+  name: "Hazard";
+  image: "hazard.png";
+};
+
 export type Illari = {
   name: "Illari";
   image: "illari.png";
@@ -210,6 +215,7 @@ export type Zenyatta = {
 export type Tank =
   | Dva
   | Doomfist
+  | Hazard
   | JunkerQueen
   | Mauga
   | Orisa
@@ -265,6 +271,7 @@ export const heroRoleMapping: Record<HeroName, "Tank" | "Damage" | "Support"> =
     Echo: "Damage",
     Genji: "Damage",
     Hanzo: "Damage",
+    Hazard: "Tank",
     Illari: "Support",
     "Junker Queen": "Tank",
     Junkrat: "Damage",
@@ -304,6 +311,7 @@ export const roleHeroMapping: Record<
   Tank: [
     "D.Va",
     "Doomfist",
+    "Hazard",
     "Junker Queen",
     "Mauga",
     "Orisa",
