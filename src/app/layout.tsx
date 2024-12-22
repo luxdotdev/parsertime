@@ -13,6 +13,8 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import { Suspense } from "react";
 import "./globals.css";
 
@@ -42,6 +44,8 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
+  const messages = await getMessages();
   const session = await auth();
   let user = null;
 
@@ -50,7 +54,7 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en" className="h-full">
+    <html lang={locale} className="h-full">
       <body className={cn(GeistSans.className, "h-full")}>
         <QueryProvider>
           <ThemeProvider
@@ -59,10 +63,12 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <CommandMenuProvider>
-              {children}
-              <CommandDialogMenu user={user} />
-            </CommandMenuProvider>
+            <NextIntlClientProvider messages={messages}>
+              <CommandMenuProvider>
+                {children}
+                <CommandDialogMenu user={user} />
+              </CommandMenuProvider>
+            </NextIntlClientProvider>
             <Toaster />
             <SpeedInsights />
             <Analytics />
