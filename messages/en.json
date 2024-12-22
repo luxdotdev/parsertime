@@ -1,0 +1,2289 @@
+{
+  "landingPage": {
+    "hero": {
+      "latestUpdates": "Latest updates",
+      "title": "Revolutionize your scrim experience",
+      "description": "Using our platform, you can visualize your scrim data, track individual player performance, and more. Invite your players to your team and allow them to see their stats.",
+      "getStarted": "Get Started",
+      "liveDemo": "Live demo",
+      "accountDescription": "Already have an account?",
+      "signIn": "Sign In"
+    },
+    "logoCloud": {
+      "title": "Used by a variety of teams for stat tracking"
+    },
+    "feature1": {
+      "subtitle": "Improve faster",
+      "title": "Everything you need to improve your team performance",
+      "description": "Streamline your improvement process with our platform. Gain insight into your players' and teams' strengths and weaknesses. See their biggest areas of improvement and adjust your coaching accordingly.",
+      "learnMore": "Learn more"
+    },
+    "primaryFeatures": {
+      "builtByCoaches": {
+        "name": "Built by coaches, for coaches",
+        "description": "Designed with collegiate and professional coaches in mind. Our platform is built to help you understand trends and patterns in your team's performance."
+      },
+      "shareWithTeam": {
+        "name": "Share with your team",
+        "description": "Invite your players to your team and allow them to see their stats. Share your team's stats with your players and coaches. Keep everyone in the loop."
+      },
+      "advancedStatistics": {
+        "name": "Advanced statistics",
+        "description": "Gain insight into your players' performance over time. Track their stats and see how they improve. See trends and patterns week over week."
+      }
+    },
+    "feature2": {
+      "subtitle": "Everything you need",
+      "title": "Scrim stats at your fingertips",
+      "description": "See your stats after your scrims instead of only relying on replay codes. Our platform allows you to keep your data no matter what happens to your replays."
+    },
+    "secondaryFeatures": {
+      "dataCharts": {
+        "name": "Player and team data charts.",
+        "description": "Visualize your team's stats. See what can be improved and where your team is excelling. Understand your team's strengths and weaknesses."
+      },
+      "filterStats": {
+        "name": "Filter stats by time.",
+        "description": "See your team's stats over time. Filter by week, month, or year to see how your team is improving."
+      },
+      "userProfiles": {
+        "name": "User profiles.",
+        "description": "See individual player stats and trends over time. Understand how your players are improving and where they need help."
+      },
+      "advancedSecurity": {
+        "name": "Advanced security.",
+        "description": "User accounts do not store passwords. Only users you invite to your team can see your team's scrims."
+      },
+      "fastReliable": {
+        "name": "Fast and reliable.",
+        "description": "We're built on top of the latest cloud infrastructure. Speed is never an issue. We're always up and running."
+      },
+      "fullyCustomizable": {
+        "name": "Fully customizable.",
+        "description": "Need custom functionality or want to track specific metrics? Let us know and we'll make it happen."
+      }
+    },
+    "stats": {
+      "subtitle": "Our track record",
+      "title": "Trusted by the best",
+      "description": "We're proud to work with top teams and coaches to create better experiences for everyone. Our platform is built to suit the needs of collegiate and professional teams."
+    },
+    "testimonial": {
+      "quote": "“Parsertime is an incredible way to check out statistics in Overwatch scrims. It got me to understand more about statistics in general and really get interested in data science, which I now do for four teams (using Parsertime). The information it provides is so impactful that my players can be coached on things they actively need help with, like surviving longer, holding their ultimate abilities longer, and being more patient. Maybe their healing numbers are lower than the other support, so we can look at why. It's a fantastic tool that helps obtain a wider range of data to lock in on a closer field of view.”",
+      "author": "coy (@shy.coy)",
+      "role": "Manager for o7 Esports"
+    },
+    "cta": {
+      "subtitle": "Ready to get started?",
+      "title": "Start using our app today.",
+      "description": "Sign up and start using our platform today. We're excited to change the way you think about coaching.",
+      "getStarted": "Get started",
+      "learnMore": "Learn more"
+    },
+    "footer": {
+      "copyright": "2024 lux.dev. All rights reserved."
+    }
+  },
+  "metadata": {
+    "title": "Parsertime",
+    "description": "Parsertime is a tool for analyzing Overwatch scrims.",
+    "ogTitle": "Parsertime",
+    "ogDescription": "Parsertime is a tool for analyzing Overwatch scrims."
+  },
+  "signInPage": {
+    "metadataSignIn": {
+      "title": "Sign In | Parsertime",
+      "description": "Sign in to your account. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "Sign In | Parsertime",
+      "ogDescription": "Sign in to your account. Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "metadataSignUp": {
+      "title": "Sign Up | Parsertime",
+      "description": "Sign up for an account. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "Sign Up | Parsertime",
+      "ogDescription": "Sign up for an account. Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "signUp": "Sign Up",
+    "signIn": "Sign In",
+    "login": "Login",
+    "createAccount": "Create an account",
+    "enterEmailCreateAccount": "Enter your email below to create your account",
+    "enterEmailSignIn": "Enter your email below to sign in",
+    "signInEmail": "Sign In with Email",
+    "orContinueWith": "Or continue with",
+    "madeBy": "Made with ❤️ by lux.dev"
+  },
+  "dashboard": {
+    "metadataDashboard": {
+      "title": "Dashboard | Parsertime",
+      "description": "Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "Dashboard | Parsertime",
+      "ogDescription": "Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "title": "Dashboard",
+    "overview": "Your Scrims",
+    "admin": "Admin View",
+    "search": "Search...",
+    "themeSwitcher": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "userNav": {
+      "dashboard": "Dashboard",
+      "teams": "Teams",
+      "settings": "Settings",
+      "contact": "Contact",
+      "docs": "Docs",
+      "admin": "Admin",
+      "signOut": "Sign Out"
+    },
+    "commandMenu": {
+      "searchPlaceholder": "Type a command or search...",
+      "searchResult": "No results found.",
+      "suggestions": {
+        "title": "Suggestions",
+        "dashboard": "Dashboard",
+        "docs": "Docs",
+        "signIn": "Sign In",
+        "home": "Home"
+      },
+      "link": {
+        "title": "Link Copied",
+        "description": "The link to this {pathname} has been copied.",
+        "share": "Share Link to {pathname}"
+      },
+      "teams": {
+        "title": "Teams",
+        "viewTeams": "View Teams",
+        "viewScrims": "View Scrims:"
+      },
+      "settings": {
+        "title": "Settings",
+        "profile": "Profile",
+        "linkedAccounts": "Linked Accounts"
+      },
+      "report": {
+        "title": "Reporting",
+        "description": "Report a Bug"
+      },
+      "feedback": {
+        "title": "Feedback",
+        "description": "Contact Us",
+        "discord": "Community Discord"
+      },
+      "theme": {
+        "title": "Theme",
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System"
+      }
+    },
+    "filter": {
+      "title": "Filter",
+      "select": "Select a filter",
+      "oldToNew": "Oldest to Newest",
+      "newToOld": "Newest to Oldest"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "morePages": "More pages"
+    },
+    "mainNav": {
+      "dashboard": "Dashboard",
+      "stats": "Stats",
+      "teams": "Teams",
+      "settings": "Settings",
+      "contact": "Contact",
+      "docs": "Docs"
+    },
+    "teamSwitcher": {
+      "searchTeamPlaceholder": "Search team...",
+      "noTeamFound": "No team found.",
+      "individual": "Individual",
+      "teams": "Teams",
+      "createTeam": "Create Team"
+    },
+    "createTeam": {
+      "title": "Create team",
+      "description": "Add a new team to categorize your scrims and invite your players to view and manage your scrims.",
+      "teamName": "Team name",
+      "placeholder": "Esports at Cornell",
+      "required": "Team name is required.",
+      "minCharacters": "Name must be at least 2 characters.",
+      "maxCharacters": "Name must not be longer than 30 characters.",
+      "cancel": "Cancel",
+      "createTeam": "Create team",
+      "creatingTeam": "Creating team...",
+      "newTeamCreated": {
+        "title": "Team created!",
+        "description": "Your team has been created successfully."
+      },
+      "error": {
+        "title": "Error",
+        "description": "An error occurred: {res}"
+      }
+    },
+    "emptyScrimList": {
+      "title": "No Scrims",
+      "description": "Click the button to create a scrim.",
+      "question": "Unsure how to get the data for a scrim?",
+      "documentation": "Check out our documentation here."
+    },
+    "addScrim": {
+      "title": "Add a scrim...",
+      "description": "Click the button to create a scrim.",
+      "createScrim": "Create Scrim",
+      "handleFile": {
+        "fileReq": "File is required.",
+        "fileMax": "Max file size is 1MB.",
+        "fileAccept": ".xlsx files are accepted.",
+        "creatingTitle": "Creating scrim...",
+        "creatingDescription": "We are processing your data. Please wait.",
+        "createdTitle": "Scrim created",
+        "createdDescription": "Your scrim has been created successfully.",
+        "errorTitle": "Error",
+        "errorDescription": "An error occurred: {res}"
+      }
+    },
+    "scrimCard": {
+      "editScrim": "Edit scrim",
+      "scrimDate": "Scrim Date: {date}",
+      "team": "Team: {team}",
+      "noTeam": "Uncategorized",
+      "creator": "Creator: {creator}",
+      "clientDate": {
+        "formatDate": "{date, date, ::EEE MMM dd yyyy}"
+      }
+    },
+    "scrimCreationForm": {
+      "fileSize": {
+        "title": "File is too big",
+        "description": "Max file size is 1MB."
+      },
+      "fileType": {
+        "title": "Invalid file type",
+        "description": ".xlsx and .txt files are accepted."
+      },
+      "creatingScrim": {
+        "title": "Creating scrim",
+        "description": "Please wait..."
+      },
+      "createdScrim": {
+        "title": "Scrim created",
+        "description": "Your scrim has been created successfully.",
+        "errorTitle": "Error",
+        "errorDescription": "An error occurred: {res}.",
+        "errorDocs": "Please read the docs <Link>here</Link> <ExternalLinkIcon /> to see if the error can be resolved."
+      },
+      "scrimName": "Scrim Name",
+      "scrimPlaceholder": "New Scrim",
+      "scrimDescription": "This is the name of the scrim. It will be displayed on the dashboard.",
+      "scrimRequiredError": "A scrim name is required.",
+      "scrimMinMessage": "Name must be at least 2 characters.",
+      "scrimMaxMessage": "Name must not be longer than 30 characters.",
+      "replayCodeName": "Scrim Replay Code",
+      "replayCodePlaceholder": "Replay Code",
+      "replayCodeDescription": "This is the replay code of the first map. You can edit the replay codes after the scrim is created.",
+      "replayCodeMessage": "Name must not be longer than 6 characters.",
+      "teamName": "Assign a Team",
+      "teamPlaceholder": "Select a team",
+      "teamIndividual": "Individual",
+      "teamDescription": "You can manage teams from your",
+      "teamDashboardLink": "dashboard",
+      "teamRequiredError": "A team name is required.",
+      "dateName": "Scrim Date",
+      "datePlaceholder": "Pick a date",
+      "date": "",
+      "dateDescription": "The scrim date is the date when the scrim took place.",
+      "dateRequiredError": "A scrim date is required.",
+      "mapName": "First Map",
+      "mapDescription": "Upload the first map of the scrim. Only .xlsx and .txt files are accepted, and max file size is 1MB. You can add more maps after the scrim is created.",
+      "submit": "Submit",
+      "submitting": "Submitting..."
+    }
+  },
+  "calendar": {
+    "monthYear": "{date, date, ::MMMM yyyy}",
+    "weekday": "{weekday, date, ::E}"
+  },
+  "scrimPage": {
+    "metadataScrimName": {
+      "title": "{scrimName} Overview | Parsertime",
+      "description": "Overview for {scrimName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{scrimName} Overview | Parsertime",
+      "ogDescription": "Overview for {scrimName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "back": "Back to dashboard",
+    "newScrim": "New Scrim",
+    "edit": "Edit scrim",
+    "maps": {
+      "title": "Maps",
+      "Antarctic Peninsula": "Antarctic Peninsula",
+      "Blizzard World": "Blizzard World",
+      "Blizzard World (Winter)": "Blizzard World (Winter)",
+      "Busan": "Busan",
+      "Circuit royal": "Circuit Royal",
+      "Circuit Royal": "Circuit Royal",
+      "Colosseo": "Colosseo",
+      "Dorado": "Dorado",
+      "Eichenwalde": "Eichenwalde",
+      "Eichenwalde (Halloween)": "Eichenwalde (Halloween)",
+      "Esperança": "Esperança",
+      "Hanaoka": "Hanaoka",
+      "Havana": "Havana",
+      "Hollywood": "Hollywood",
+      "Hollywood (Halloween)": "Hollywood (Halloween)",
+      "Ilios": "Ilios",
+      "Junkertown": "Junkertown",
+      "King's Row": "King's Row",
+      "King's Row (Winter)": "King's Row (Winter)",
+      "Lijiang Tower": "Lijiang Tower",
+      "Lijiang Tower (Lunar New Year)": "Lijiang Tower (Lunar New Year)",
+      "Midtown": "Midtown",
+      "Nepal": "Nepal",
+      "New Junk City": "New Junk City",
+      "New Queen Street": "New Queen Street",
+      "Numbani": "Numbani",
+      "Oasis": "Oasis",
+      "Paraiso": "Paraiso",
+      "Rialto": "Rialto",
+      "Route 66": "Route 66",
+      "Runasapi": "Runasapi",
+      "Samoa": "Samoa",
+      "Shambali Monastery": "Shambali Monastery",
+      "Suravasa": "Suravasa",
+      "Watchpoint: Gibraltar": "Watchpoint: Gibraltar"
+    },
+    "noMaps": {
+      "title": "No maps have been added to this scrim yet!",
+      "description": "Add maps to this scrim to start analyzing your games. If no maps are added, the scrim will automatically be deleted within 24 hours. Need help?",
+      "link": "Check out the documentation"
+    },
+    "addMap": {
+      "title": "Add a map...",
+      "description": "Drag and drop or select a file to upload.",
+      "addFile": "Add a file",
+      "fileMessage": {
+        "required": "File is required.",
+        "maxSize": "Max file size is 1MB.",
+        "accepted": ".xlsx files are accepted."
+      },
+      "handleFile": {
+        "creatingTitle": "Creating map...",
+        "creatingDescription": "We are processing your data. Please wait.",
+        "createTitle": "Map created",
+        "createDescription": "Your map has been created successfully.",
+        "errorTitle": "Error",
+        "errorDescription": "An error occurred: {res}.",
+        "errorDocs": "Please read the docs <Link>here</Link> <ExternalLinkIcon /> to see if the error can be resolved."
+      }
+    },
+    "editScrim": {
+      "back": "Back to scrim",
+      "title": "Edit Scrim Details",
+      "displayName": {
+        "title": "Display Name",
+        "placeholder": "FIU Panthers vs UF Gators",
+        "description": "This is your scrim's name. This will show on your dashboard.",
+        "minMessage": "Name must be at least 2 characters.",
+        "maxMessage": "Name must not be longer than 30 characters."
+      },
+      "team": {
+        "title": "Team",
+        "placeholder": "Select a team",
+        "description": "This is the team that will be associated with this scrim. You can assign scrims to teams that you manage or own.",
+        "select": {
+          "teams": "Teams",
+          "individual": "Individual"
+        }
+      },
+      "date": {
+        "title": "Scrim Date",
+        "edit": "Edit date",
+        "clientDate": {
+          "formatDate": "{date, date, ::MMMM d yyyy}"
+        },
+        "description": "The date when the scrim took place."
+      },
+      "guestMode": {
+        "title": "Enable Guest Mode",
+        "description": "If enabled, the scrim will be accessible to any logged in user. If disabled, only your team members will be able to access the scrim."
+      },
+      "maps": {
+        "title": "Maps",
+        "mapNames": {
+          "Antarctic Peninsula": "Antarctic Peninsula",
+          "Blizzard World": "Blizzard World",
+          "Blizzard World (Winter)": "Blizzard World (Winter)",
+          "Busan": "Busan",
+          "Circuit royal": "Circuit Royal",
+          "Circuit Royal": "Circuit Royal",
+          "Colosseo": "Colosseo",
+          "Dorado": "Dorado",
+          "Eichenwalde": "Eichenwalde",
+          "Eichenwalde (Halloween)": "Eichenwalde (Halloween)",
+          "Esperança": "Esperança",
+          "Hanaoka": "Hanaoka",
+          "Havana": "Havana",
+          "Hollywood": "Hollywood",
+          "Hollywood (Halloween)": "Hollywood (Halloween)",
+          "Ilios": "Ilios",
+          "Junkertown": "Junkertown",
+          "King's Row": "King's Row",
+          "King's Row (Winter)": "King's Row (Winter)",
+          "Lijiang Tower": "Lijiang Tower",
+          "Lijiang Tower (Lunar New Year)": "Lijiang Tower (Lunar New Year)",
+          "Midtown": "Midtown",
+          "Nepal": "Nepal",
+          "New Junk City": "New Junk City",
+          "New Queen Street": "New Queen Street",
+          "Numbani": "Numbani",
+          "Oasis": "Oasis",
+          "Paraiso": "Paraiso",
+          "Rialto": "Rialto",
+          "Route 66": "Route 66",
+          "Runasapi": "Runasapi",
+          "Samoa": "Samoa",
+          "Shambali Monastery": "Shambali Monastery",
+          "Suravasa": "Suravasa",
+          "Watchpoint: Gibraltar": "Watchpoint: Gibraltar"
+        },
+        "replayCode": "Replay Code",
+        "delete": "Delete Map",
+        "deleteDialog": {
+          "title": "Are you absolutely sure?",
+          "description": "This will permanently delete the map <strong>{map}</strong>. This action cannot be undone.",
+          "cancel": "Cancel",
+          "delete": "Delete",
+          "deleting": "Deleting..."
+        }
+      },
+      "update": "Update scrim",
+      "updating": "Updating...",
+      "onSubmit": {
+        "title": "Scrim updated",
+        "description": "Your scrim has been successfully updated.",
+        "errorTitle": "An error occurred",
+        "errorDescription": "An error occurred: {res}"
+      },
+      "deleteMap": {
+        "title": "Map deleted",
+        "description": "The map has been deleted.",
+        "errorTitle": "An error occurred",
+        "errorDescription": "An error occurred: {res}"
+      },
+      "dangerZone": "Danger Zone",
+      "deleteScrim": {
+        "title": "Delete Scrim",
+        "description": "Once you delete a scrim, there is no going back. Please be certain.",
+        "button": "Delete Scrim",
+        "deleteAlert": "<p>Are you sure you want to delete the scrim <strong>{scrim}</strong>? This action cannot be undone.</p> <p>Type <strong>{scrim}</strong> to confirm.</p>",
+        "delete": "Delete Scrim",
+        "deleting": "Deleting...",
+        "cancel": "Cancel",
+        "handleDelete": {
+          "title": "Scrim deleted",
+          "description": "The Scrim has been deleted.",
+          "errorTitle": "Error",
+          "errorDescription": "An error occurred: {res}"
+        }
+      }
+    }
+  },
+  "mapPage": {
+    "metadataMapName": {
+      "title": "{mapName} Overview | Parsertime",
+      "description": "Map overview for {mapName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{mapName} Overview | Parsertime",
+      "ogDescription": "Map overview for {mapName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "metadataPlayerName": {
+      "title": "{playerName} Overview | Parsertime",
+      "description": "Player overview for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{playerName} Overview | Parsertime",
+      "ogDescription": "Player overview for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "back": "Back to scrim overview",
+    "dashboard": "Dashboard",
+    "maps": {
+      "Antarctic Peninsula": "Antarctic Peninsula",
+      "Blizzard World": "Blizzard World",
+      "Blizzard World (Winter)": "Blizzard World (Winter)",
+      "Busan": "Busan",
+      "Circuit royal": "Circuit Royal",
+      "Circuit Royal": "Circuit Royal",
+      "Colosseo": "Colosseo",
+      "Dorado": "Dorado",
+      "Eichenwalde": "Eichenwalde",
+      "Eichenwalde (Halloween)": "Eichenwalde (Halloween)",
+      "Esperança": "Esperança",
+      "Hanaoka": "Hanaoka",
+      "Havana": "Havana",
+      "Hollywood": "Hollywood",
+      "Hollywood (Halloween)": "Hollywood (Halloween)",
+      "Ilios": "Ilios",
+      "Junkertown": "Junkertown",
+      "King's Row": "King's Row",
+      "King's Row (Winter)": "King's Row (Winter)",
+      "Lijiang Tower": "Lijiang Tower",
+      "Lijiang Tower (Lunar New Year)": "Lijiang Tower (Lunar New Year)",
+      "Midtown": "Midtown",
+      "Nepal": "Nepal",
+      "New Junk City": "New Junk City",
+      "New Queen Street": "New Queen Street",
+      "Numbani": "Numbani",
+      "Oasis": "Oasis",
+      "Paraiso": "Paraiso",
+      "Rialto": "Rialto",
+      "Route 66": "Route 66",
+      "Runasapi": "Runasapi",
+      "Samoa": "Samoa",
+      "Shambali Monastery": "Shambali Monastery",
+      "Suravasa": "Suravasa",
+      "Throne Of Anubis": "Throne of Anubis",
+      "Watchpoint: Gibraltar": "Watchpoint: Gibraltar"
+    },
+    "playerSwitcher": {
+      "search": "Search player...",
+      "noPlayerFound": "No player found.",
+      "default": "Default"
+    },
+    "player": {
+      "dashboard": {
+        "back": "Back to dashboard",
+        "viewStats": "View aggregated stats",
+        "dashboard": "Dashboard",
+        "overview": "Overview",
+        "analytics": "Analytics",
+        "charts": "Charts"
+      },
+      "overview": {
+        "matchTime": "Total Match Time",
+        "minutes": "minutes",
+        "fletaTitle": "Fleta Deadlift Percentage",
+        "%": "%",
+        "fletaDescription": "A Fleta Deadlift is when a player earns 50% of their team's final blows.",
+        "firstPickTitle": "First Pick Percentage",
+        "firstPickDescription": "Out of {fights} fights, {playerNameDecoded} got the first pick {playerFirstKills} times.",
+        "firstDeathTitle": "First Death Percentage",
+        "firstDeathDescription": "Out of {fights} fights, {playerNameDecoded} died first {playerFirstDeaths} times.",
+        "playerStats": "Player Statistics",
+        "allHeroes": "All Heroes"
+      },
+      "statTable": {
+        "stat": "Stat",
+        "total": "Total",
+        "avg10Min": "Avg/10 min",
+        "timePlayed": "Hero Time Played",
+        "mins": "{mins} mins",
+        "eliminations": "Eliminations",
+        "finalBlows": "Final Blows",
+        "deaths": "Deaths",
+        "allDmgDealt": "All Damage Dealt",
+        "barrierDmgDealt": "Barrier Damage Dealt",
+        "heroDmgDealt": "Hero Damage Dealt",
+        "healingDealt": "Healing Dealt",
+        "healingReceived": "Healing Receieved",
+        "selfHealing": "Self Healing",
+        "dmgTaken": "Damage Taken",
+        "dmgBlocked": "Damage Blocked",
+        "defenseAssist": "Defensive Assists",
+        "offenseAssist": "Offensive Assists",
+        "ultsEarned": "Ultimates Earned",
+        "ultsUsed": "Ultimates Used",
+        "multikillBest": "Multikill Best",
+        "multikills": "Multikills",
+        "soloKills": "Solo Kills",
+        "objKills": "Objective Kills",
+        "envKills": "Environnemental Kills",
+        "envDeaths": "Environmental Deaths",
+        "critHits": "Critical Hits",
+        "critHitAcc": "Critical Hit Accuracy",
+        "scopedAcc": "Scoped Accuracy",
+        "scopedCritHitAcc": "Scoped Critical Hit Accuracy",
+        "scopedCritHitKills": "Scoped Critical Hit Kills",
+        "weaponAcc": "Weapon Accuracy",
+        "noResult": "No results."
+      },
+      "analytics": {
+        "avgUltChargeTime": {
+          "title": "Average Ultimate Charge Time",
+          "footer": "The average time it takes to build an ultimate. A lower time is better, while a longer time might indicate that you are not doing enough damage or healing."
+        },
+        "avgTimeUseUlt": {
+          "title": "Average Time to Use Ultimate",
+          "footer": "The average time it takes to use an ultimate after it's charged. A longer time might indicate that you are not using your ultimate effectively or are holding onto it for too long."
+        },
+        "avgDroughtTime": {
+          "title": "Average Drought Time",
+          "footer": "The drought time is the average time between your most recent kill and your next kill. A high drought time can indicate that you are not participating in fights as often as you should be."
+        },
+        "xFactor": {
+          "title": "X Factor",
+          "footer": "The X Factor is a measure of a player's individual impact on a fight. If your X Factor is high, you are likely to be the deciding factor in a fight. Please note that this is calculated differently for each role."
+        },
+        "versus": {
+          "title": "Versus Other Players",
+          "description": "{playerName}'s score and winrates against players on the enemy team.",
+          "score": "Score:",
+          "winrate": "Winrate:",
+          "%": "%"
+        },
+        "playerKillfeed": {
+          "title": "Player Killfeed",
+          "description": "A list of all the final blows and deaths for {playerName} in this match. Fights where {playerName} did not get a final blow are not shown.",
+          "team1": "Team 1",
+          "team2": "Team 2"
+        },
+        "dmgTakenHealingReceived": {
+          "title": "Damage Taken vs Healing Received",
+          "footer": "This chart shows the cumulative damage taken and healing received by round. The x-axis represents the round number, and the y-axis represents the cumulative damage taken or healing received.",
+          "round": "Round {round}",
+          "dmgTaken": "Damage Taken",
+          "healingReceived": "Healing Receieved"
+        },
+        "dmgDoneDmgTaken": {
+          "title": "Hero Damage Dealt vs Damage Taken",
+          "footer": "This chart shows the hero damage dealt and damage taken by round. The x-axis represents the round number, and the y-axis represents the damage dealt or damage taken.",
+          "round": "Round {round}",
+          "dmgDone": "Damage Done",
+          "dmgTaken": "Damage Taken"
+        }
+      },
+      "charts": {
+        "team1": "Team 1",
+        "team2": "Team 2",
+        "round": "Round {index}",
+        "dmgByRound": {
+          "title": "Hero Damage By Round",
+          "footer": "This chart shows the hero damage done by round for {playerName}. The x-axis represents the round, and the y-axis represents the damage done. Note that the damage is NOT cumulative, so the damage done in round 2 does not include the damage done in round 1."
+        },
+        "dmgBlockByRound": {
+          "title": "Damage Mitigated By Round",
+          "footer": "This chart shows the damage mitigated by round for {playerName}. The x-axis represents the round, and the y-axis represents the healing done. Note that the healing is NOT cumulative, so the healing done in round 2 does not include the healing done in round 1."
+        },
+        "finalBlowsByRound": {
+          "title": "Final Blows By Round",
+          "footer": "This chart shows the final blows by round for {playerName}. The x-axis represents the round, and the y-axis represents the healing done. Note that the healing is NOT cumulative, so the healing done in round 2 does not include the healing done in round 1."
+        },
+        "healingByRound": {
+          "title": "Healing By Round",
+          "footer": "This chart shows the healing done by round for {playerName}. The x-axis represents the round, and the y-axis represents the healing done. Note that the healing is NOT cumulative, so the healing done in round 2 does not include the healing done in round 1."
+        },
+        "dmgTakenByRound": {
+          "title": "Damage Taken By Round",
+          "footer": "This chart shows the damage taken by round for {playerName}. The x-axis represents the round, and the y-axis represents the healing done. Note that the healing is NOT cumulative, so the healing done in round 2 does not include the healing done in round 1."
+        },
+        "healingReceivedByRound": {
+          "title": "Healing Received By Round",
+          "footer": "This chart shows the healing received by round for {playerName}. The x-axis represents the round, and the y-axis represents the healing done. Note that the healing is NOT cumulative, so the healing done in round 2 does not include the healing done in round 1."
+        }
+      }
+    },
+    "tabs": {
+      "overview": "Overview",
+      "killfeed": "Killfeed",
+      "kills": "Kills",
+      "charts": "Charts",
+      "events": "Events",
+      "compare": "Compare"
+    },
+    "overview": {
+      "matchTime": "Total Match Time",
+      "minutes": "minutes",
+      "score": "Score",
+      "winner": "Winner:",
+      "pushLimitations": "Not supported for Push due to limitations with the scrim code. :(",
+      "heroDamageDealt": "Hero Damage Dealt",
+      "dealtMore": "dealt more hero damage this map.",
+      "teamHealingDealt": "Team Healing Dealt",
+      "healedMore": "healed more this map.",
+      "title": "Overview",
+      "round": "Round",
+      "analysis": {
+        "title": "Analysis",
+        "deathDescriptionTeam1": "<span1>{team1Name}</span1> had a first death in {team1FirstDeaths} fights, which is a percentage of <span2>{percentage}</span2>%.",
+        "deathDescriptionTeam2": "<span1>{team2Name}</span1> had a first death in {team2FirstDeaths} fights, which is a percentage of <span2>{percentage}</span2>%.",
+        "ultKillsDescriptionTeam1": "<span>{team1Name}</span> got the most value out of their ultimates, with <span>{team1UltimateKills}</span> ultimate kills.",
+        "ultKillsDescriptionTeam2": "<span>{team2Name}</span> got the most value out of their ultimates, with <span>{team2UltimateKills}</span> ultimate kills.",
+        "ultKillsDescriptionBoth": "Both teams got the same amount of value out of their ultimates, with <span>{team1UltimateKills}</span> ultimate kills each.",
+        "playerDeathDescription": "The player with the most first deaths was <span>{playerWithMostFirstDeaths}</span>, with <span>{firstDeaths}</span first deaths out of {fights} fights.",
+        "ajax": "<span>{player}</span> played Lúcio this map and Ajaxed <span>{ajaxes}</span> time{plural}.",
+        "plural": "s"
+      }
+    },
+    "overviewTable": {
+      "noResult": "No results.",
+      "header": {
+        "playerName": "Player Name",
+        "role": "Role",
+        "playerTeam": "Player Team",
+        "timePlayed": "Time Played",
+        "eliminations": "Eliminations",
+        "kills": "Final Blows",
+        "assists": "Assists",
+        "deaths": "Deaths",
+        "kd": "K/D",
+        "kad": "KA/D",
+        "heroDmgDealt": "Hero Damage Dealt",
+        "dmgReceived": "Damage Receieved",
+        "healingReceived": "Healing Receieved",
+        "healingDealt": "Healing Dealt",
+        "dmgToHealsRatio": "Damage Dealt:Healing Receieved",
+        "ultsCharged": "Ultimates Charged",
+        "ultsUsed": "Ultimates Used"
+      },
+      "tooltips": {
+        "playerName": "The player's name. Click on their name to view their statistics.",
+        "role": "The role the player played.",
+        "playerTeam": "The team the player played for.",
+        "timePlayed": "The time the player played.",
+        "eliminations": "The number of eliminations the player had.",
+        "kills": "The number of final blows the player had.",
+        "assists": "The number of assists the player had.",
+        "deaths": "The number of deaths the player had.",
+        "kd": "The player's kill/death ratio.",
+        "kad": "The player's kill/assist/death ratio.",
+        "heroDmgDealt": "The amount of hero damage the player dealt.",
+        "dmgReceived": "The amount of damage the player received.",
+        "healingReceived": "The amount of healing the player received.",
+        "healingDealt": "The amount of healing the player dealt.",
+        "dmgToHealsRatio": "The player's damage dealt to healing received ratio.",
+        "ultsCharged": "The number of ultimates the player charged.",
+        "ultsUsed": "The number of ultimates the player used."
+      }
+    },
+    "killfeed": {
+      "matchTime": "Total Match Time",
+      "minutes": "minutes",
+      "kills": "Kills",
+      "deaths": "Deaths",
+      "fightWins": "Fight Wins",
+      "killfeed": "Killfeed"
+    },
+    "killfeedTable": {
+      "limitTest": "Limit Testing",
+      "environment": "Environmental",
+      "fight": "Fight",
+      "time": "Time",
+      "kill": "Kill",
+      "method": "Method",
+      "start": "Start",
+      "end": "End",
+      "fightWinner": "Fight Winner",
+      "abilities": {
+        "Primary Fire": "Primary Fire",
+        "Secondary Fire": "Secondary Fire",
+        "Ability 1": "Ability 1",
+        "Ability 2": "Ability 2",
+        "Ultimate": "Ultimate",
+        "Melee": "Melee",
+        "0": "0"
+      },
+      "exportCSV": "Export as CSV"
+    },
+    "charts": {
+      "tooltip": "Looking for more information on charts? <Link>Check out the documentation</Link> to learn more.",
+      "team1": "Team 1",
+      "team2": "Team 2",
+      "time": "Time:",
+      "tank": "Tank",
+      "damage": "Damage",
+      "support": "Support",
+      "round": "Round",
+      "killsByFight": {
+        "title": "Kills By Fight",
+        "description": "Kills are grouped by 15 second intervals. This chart shows the cumulative kills for each team at each interval. The x-axis represents the time in seconds, and the y-axis represents the cumulative kills. Team 1 is represented with positive numbers, while Team 2 is represented with negative numbers. The chart resets to 0 after each fight."
+      },
+      "finalBlowsByRole": {
+        "title": "Final Blows By Role",
+        "description": "This chart shows the number of final blows by role for each team. The roles are split into Tank, Damage, and Support. The x-axis represents the role, and the y-axis represents the number of final blows."
+      },
+      "dmgByRound": {
+        "title": "Cumulative Hero Damage By Round",
+        "description": "This chart shows the hero damage done by round for each team. The x-axis represents the round, and the y-axis represents the damage done. Note that the damage is cumulative, so the damage done in round 2 includes the damage done in round 1."
+      }
+    },
+    "events": {
+      "roundStart": "Round {event} started",
+      "roundEnd": "Round {event} ended",
+      "matchEnd": "Match ended",
+      "matchStart": "Match started",
+      "mapEvents": {
+        "title": "Events",
+        "description": "Events that occurred during the match. This includes objective captures, rounds starting and ending, multikills, and more.",
+        "captureString1": "took control of the point.",
+        "captureString2": "captured the objective.",
+        "objectiveUpdate": "Point captured",
+        "payloadProgress": "Payload progress:",
+        "meters": "meters",
+        "swap": "swapped to",
+        "hero": {
+          "D": {
+            "Va": "D.Va"
+          },
+          "Doomfist": "Doomfist",
+          "Junker Queen": "Junker Queen",
+          "Mauga": "Mauga",
+          "Orisa": "Orisa",
+          "Ramattra": "Ramattra",
+          "Reinhardt": "Reinhardt",
+          "Roadhog": "Roadhog",
+          "Sigma": "Sigma",
+          "Winston": "Winston",
+          "Wrecking Ball": "Wrecking Ball",
+          "Zarya": "Zarya",
+          "Ashe": "Ashe",
+          "Bastion": "Bastion",
+          "Cassidy": "Cassidy",
+          "Echo": "Echo",
+          "Genji": "Genji",
+          "Hanzo": "Hanzo",
+          "Junkrat": "Junkrat",
+          "Mei": "Mei",
+          "Pharah": "Pharah",
+          "Reaper": "Reaper",
+          "Sojourn": "Sojourn",
+          "Soldier: 76": "Soldier: 76",
+          "Sombra": "Sombra",
+          "Symmetra": "Symmetra",
+          "Torbjörn": "Torbjörn",
+          "Tracer": "Tracer",
+          "Venture": "Venture",
+          "Widowmaker": "Widowmaker",
+          "Ana": "Ana",
+          "Baptiste": "Baptiste",
+          "Brigitte": "Brigitte",
+          "Illari": "Illari",
+          "Juno": "Juno",
+          "Kiriko": "Kiriko",
+          "Lifeweaver": "Lifeweaver",
+          "Lúcio": "Lúcio",
+          "Mercy": "Mercy",
+          "Moira": "Moira",
+          "Zenyatta": "Zenyatta"
+        },
+        "ultKills": "killed {players} player{plural} with/during their ultimate.",
+        "plural": "s",
+        "multikill1": "During fight {event},",
+        "multikill2": "got a multikill, killing {event} players.",
+        "ajaxFight": "Ajaxed during fight {fight}.",
+        "lucio": "Lúcio",
+        "ajax": "ajax"
+      },
+      "ultsUsed": {
+        "title": "Ultimates Used",
+        "description": "A list of all ultimates used during the match and the times when they occurred.",
+        "ultStart": "used their ultimate during fight {fight}."
+      }
+    },
+    "compare": {
+      "team1": "Team 1",
+      "team2": "Team 2",
+      "playerCard": {
+        "title": "Player Statistics",
+        "allHeroes": {
+          "title": "All Heroes",
+          "timePlayed": "Time Played",
+          "minutes": "minutes",
+          "matchTime": "100% of match time",
+          "eliminations": "Eliminations",
+          "elims": "Elims",
+          "elimsPer10Min": "eliminations per 10 minutes",
+          "deaths": "Deaths",
+          "deathsPer10Min": "deaths per 10 minutes",
+          "ultsUsed": "Ultimates Used",
+          "ultsPer10Min": "ultimates used per 10 minutes",
+          "heroDmgDealt": "Hero Damage Dealt",
+          "heroDmgPer10Min": "hero damage dealt per 10 minutes",
+          "dmgBlocked": "Damage Blocked",
+          "dmgBlockedPer10Min": "damage blocked per 10 minutes",
+          "dmgTaken": "Damage Taken",
+          "dmgTakenPer10Min": "damage taken per 10 minutes",
+          "finalBlows": "Final Blows",
+          "finalBlowsPer10Min": "final blows per 10 minutes",
+          "soloKills": "Solo Kills",
+          "soloKillsPer10Min": "solo kills per 10 minutes",
+          "healingDealt": "Healing Dealt",
+          "healingDealtPer10Min": "healing dealt per 10 minutes",
+          "healingReceived": "Healing Receieved",
+          "healingReceivedPer10Min": "healing received per 10 minutes"
+        },
+        "specificHero": {
+          "timePlayed": "Time Played",
+          "minutes": "minutes",
+          "matchTime": "% of match time",
+          "eliminations": "Eliminations",
+          "elims": "Elims",
+          "elimsPer10Min": "eliminations per 10 minutes",
+          "deaths": "Deaths",
+          "deathsPer10Min": "deaths per 10 minutes",
+          "ultsUsed": "Ultimates Used",
+          "ultsPer10Min": "ultimates used per 10 minutes",
+          "heroDmgDealt": "Hero Damage Dealt",
+          "heroDmgPer10Min": "hero damage dealt per 10 minutes",
+          "dmgBlocked": "Damage Blocked",
+          "dmgBlockedPer10Min": "damage blocked per 10 minutes",
+          "dmgTaken": "Damage Taken",
+          "dmgTakenPer10Min": "damage taken per 10 minutes",
+          "finalBlows": "Final Blows",
+          "finalBlowsPer10Min": "final blows per 10 minutes",
+          "soloKills": "Solo Kills",
+          "soloKillsPer10Min": "solo kills per 10 minutes",
+          "healingDealt": "Healing Dealt",
+          "healingDealtPer10Min": "healing dealt per 10 minutes",
+          "healingReceived": "Healing Receieved",
+          "healingReceivedPer10Min": "healing received per 10 minutes",
+          "hero": {
+            "D": {
+              "Va": "D.Va"
+            },
+            "Doomfist": "Doomfist",
+            "Junker Queen": "Junker Queen",
+            "Mauga": "Mauga",
+            "Orisa": "Orisa",
+            "Ramattra": "Ramattra",
+            "Reinhardt": "Reinhardt",
+            "Roadhog": "Roadhog",
+            "Sigma": "Sigma",
+            "Winston": "Winston",
+            "Wrecking Ball": "Wrecking Ball",
+            "Zarya": "Zarya",
+            "Ashe": "Ashe",
+            "Bastion": "Bastion",
+            "Cassidy": "Cassidy",
+            "Echo": "Echo",
+            "Genji": "Genji",
+            "Hanzo": "Hanzo",
+            "Junkrat": "Junkrat",
+            "Mei": "Mei",
+            "Pharah": "Pharah",
+            "Reaper": "Reaper",
+            "Sojourn": "Sojourn",
+            "Soldier: 76": "Soldier: 76",
+            "Sombra": "Sombra",
+            "Symmetra": "Symmetra",
+            "Torbjörn": "Torbjörn",
+            "Tracer": "Tracer",
+            "Venture": "Venture",
+            "Widowmaker": "Widowmaker",
+            "Ana": "Ana",
+            "Baptiste": "Baptiste",
+            "Brigitte": "Brigitte",
+            "Illari": "Illari",
+            "Juno": "Juno",
+            "Kiriko": "Kiriko",
+            "Lifeweaver": "Lifeweaver",
+            "Lúcio": "Lúcio",
+            "Mercy": "Mercy",
+            "Moira": "Moira",
+            "Zenyatta": "Zenyatta"
+          }
+        }
+      }
+    }
+  },
+  "statsPage": {
+    "metadataSettingsLayout": {
+      "title": "Stats | Parsertime",
+      "description": "View your stats and performance metrics on Parsertime.",
+      "ogTitle": "Stats | Parsertime",
+      "ogDescription": "View your stats and performance metrics on Parsertime."
+    },
+    "metadataPlayerName": {
+      "title": "{playername} Stats | Parsertime",
+      "description": "Player stats for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{playername} Stats | Parsertime",
+      "ogDescription": "Player stats for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "metadataHeroStats": {
+      "title": "Hero Stats | Parsertime",
+      "description": "Hero stats for Overwatch heroes on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "Hero Stats | Parsertime",
+      "ogDescription": "Hero stats for Overwatch heroes on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "metadataStatsHero": {
+      "title": "Stats for {hero} | Parsertime",
+      "description": "Stats for {hero} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "Stats for {hero} | Parsertime",
+      "ogDescription": "Stats for {hero} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "title": "Stats",
+    "searchbar": {
+      "placeholder": "Enter a player name...",
+      "description": "Search for a player to view their stats. You can search by username or their battle tag. Example: <span>Spingar</span> or <span>Spingar#1000</span>.",
+      "link": "Click here to view hero stats"
+    },
+    "globalStats": "Global Stats",
+    "users": {
+      "title": "Users",
+      "footer": "Total number of users on the platform"
+    },
+    "scrims": {
+      "title": "Scrims",
+      "footer": "Total number of scrims uploaded"
+    },
+    "kills": {
+      "title": "Title",
+      "footer": "Total number of kills recorded"
+    },
+    "playerStat": {
+      "title": "Player Stats",
+      "footer": "Total number of player stats recorded"
+    },
+    "leaderboard": "Leaderboard",
+    "top3MostPlayed": {
+      "title": "Top 3 Most Played Heroes",
+      "rank": "Rank",
+      "hero": "Hero",
+      "timePlayed": "Time Played",
+      "footer": "Results accumulated from all {mapNum} maps."
+    },
+    "top3Kills": {
+      "title": "Top 3 Players by Kills",
+      "rank": "Rank",
+      "player": "Player",
+      "kills": "Kills",
+      "footer": "Results accumulated from all {mapNum} maps."
+    },
+    "top3Dmg": {
+      "title": "Top 3 Players by Hero Damage",
+      "rank": "Rank",
+      "player": "Player",
+      "heroDmgDealt": "Hero Damage Dealt",
+      "footer": "Results accumulated from {mapNum} maps."
+    },
+    "top3Healing": {
+      "title": "Top 3 Players by Healing",
+      "rank": "Rank",
+      "player": "Player",
+      "healingDealt": "Healing Dealt",
+      "footer": "Results accumulated from {mapNum} maps."
+    },
+    "top3DmgBlocked": {
+      "title": "Top 3 Players by Damage Blocked",
+      "rank": "Rank",
+      "player": "Player",
+      "dmgBlocked": "Damage Blocked",
+      "footer": "Results accumulated from {mapNum} maps."
+    },
+    "top3Deaths": {
+      "title": "Top 3 Players by Deaths",
+      "rank": "Rank",
+      "player": "Player",
+      "deaths": "Deaths",
+      "footer": "Results accumulated from {mapNum} maps."
+    },
+    "top3TimePlayed": {
+      "title": "Top 3 Players by Time Played",
+      "rank": "Rank",
+      "player": "Player",
+      "timePlayed": "Time Played",
+      "footer": "Results accumulated from {mapNum} maps."
+    },
+    "top3Ajax": {
+      "title": "Top 3 Players with the Most Ajaxes",
+      "rank": "Rank",
+      "player": "Player",
+      "ajaxes": "Ajaxes",
+      "footer": "Results accumulated from {mapNum} maps."
+    },
+    "playerStats": {
+      "title": "{possessiveName} Stats",
+      "statsFail": "Failed to find stats for {name}. Did you spell the name correctly?",
+      "back": "Go back to stats",
+      "timeframe": {
+        "one-week": "one week",
+        "two-weeks": "two weeks",
+        "one-month": "one month",
+        "three-months": "three months",
+        "six-months": "six months",
+        "one-year": "one year",
+        "all-time": "all time",
+        "all-time-data": "in all time data",
+        "custom": "between {from} - {to}"
+      },
+      "clientDate": {
+        "formatDate": "{date, date, ::EEE MMM dd yyyy}"
+      },
+      "rangePicker": {
+        "selectTime": "Select a timeframe",
+        "lastWeek": "Last Week",
+        "last2Weeks": "Last 2 Weeks",
+        "lastMonth": "Last Month",
+        "last3Months": "Last 3 Months",
+        "last6Months": "Last 6 Months",
+        "lastYear": "Last Year",
+        "allTime": "All Time",
+        "custom": "Custom",
+        "upgrade": "Upgrade to view more timeframes",
+        "selectHero": "Select a hero",
+        "allHeroes": "All Heroes",
+        "pickDate": "Pick a date",
+        "calendarDate": "{from} - {to}",
+        "formatDate": "{date, date, ::MMM dd yyyy}",
+        "tank": {
+          "title": "Tank",
+          "D": {
+            "Va": "D.Va"
+          },
+          "Doomfist": "Doomfist",
+          "Junker Queen": "Junker Queen",
+          "Mauga": "Mauga",
+          "Orisa": "Orisa",
+          "Ramattra": "Ramattra",
+          "Reinhardt": "Reinhardt",
+          "Roadhog": "Roadhog",
+          "Sigma": "Sigma",
+          "Winston": "Winston",
+          "Wrecking Ball": "Wrecking Ball",
+          "Zarya": "Zarya"
+        },
+        "damage": {
+          "title": "Damage",
+          "Ashe": "Ashe",
+          "Bastion": "Bastion",
+          "Cassidy": "Cassidy",
+          "Echo": "Echo",
+          "Genji": "Genji",
+          "Hanzo": "Hanzo",
+          "Junkrat": "Junkrat",
+          "Mei": "Mei",
+          "Pharah": "Pharah",
+          "Reaper": "Reaper",
+          "Sojourn": "Sojourn",
+          "Soldier: 76": "Soldier: 76",
+          "Sombra": "Sombra",
+          "Symmetra": "Symmetra",
+          "Torbjörn": "Torbjörn",
+          "Tracer": "Tracer",
+          "Venture": "Venture",
+          "Widowmaker": "Widowmaker"
+        },
+        "support": {
+          "title": "Support",
+          "Ana": "Ana",
+          "Baptiste": "Baptiste",
+          "Brigitte": "Brigitte",
+          "Illari": "Illari",
+          "Juno": "Juno",
+          "Kiriko": "Kiriko",
+          "Lifeweaver": "Lifeweaver",
+          "Lúcio": "Lúcio",
+          "Mercy": "Mercy",
+          "Moira": "Moira",
+          "Zenyatta": "Zenyatta"
+        }
+      },
+      "mostPlayed": {
+        "title": "Most Played Heroes",
+        "rank": "Rank",
+        "hero": "Hero",
+        "games": "Games",
+        "noData": "No data",
+        "footer1": "Stats collected from {scrims} scrims in the last {timeframe}",
+        "footer2": "Stats collected from {timeframe1} scrims {timeframe2}"
+      },
+      "bestPerformance": {
+        "title": "Best Performance",
+        "rank": "Rank",
+        "hero": "Hero",
+        "finalBlows": "Final Blows",
+        "clickMap": "Click to view map",
+        "noData": "No data",
+        "footer1": "Stats collected from {scrims} scrims in the last {timeframe}",
+        "footer2": "Stats collected from {timeframe1} scrims {timeframe2}"
+      },
+      "statPer10": {
+        "footer": "Trending by <span>{percentageChange}</span> in the last {scrimData} scrims",
+        "avg": "Average:",
+        "max": "| Max:",
+        "min": "| Min:"
+      },
+      "avgHeroDmgDealtPer10": {
+        "title": "Average Hero Damage Dealt per 10 (per scrim)",
+        "tooltip": "The average hero damage dealt per 10 minutes for each scrim. Higher is better."
+      },
+      "avgDeathPer10": {
+        "title": "Average Deaths per 10 (per scrim)",
+        "tooltip": "The average number of deaths per 10 minutes for each scrim. Lower is better."
+      },
+      "timeSpent": {
+        "title": "Time Spent on Each Role",
+        "tank": "Tank",
+        "damage": "Damage",
+        "support": "Support",
+        "footer": "Total time played: <span>{toTimestampWithHours}</span> | Time played per role:"
+      },
+      "finalBlowsByMethod": {
+        "title": "Final Blows By Method",
+        "finalBlows": "final blows",
+        "primary": "Primary",
+        "secondary": "Secondary",
+        "ability1": "Ability 1",
+        "ability2": "Ability 2",
+        "ultimate": "Ultimate",
+        "melee": "Melee",
+        "footer": "Calculated from <span>{format}</span> final blows"
+      },
+      "mapWinrates": {
+        "mapNames": {
+          "Antarctic Peninsula": "Antarctic Peninsula",
+          "Blizzard World": "Blizzard World",
+          "Blizzard World (Winter)": "Blizzard World (Winter)",
+          "Busan": "Busan",
+          "Circuit royal": "Circuit Royal",
+          "Circuit Royal": "Circuit Royal",
+          "Colosseo": "Colosseo",
+          "Dorado": "Dorado",
+          "Eichenwalde": "Eichenwalde",
+          "Eichenwalde (Halloween)": "Eichenwalde (Halloween)",
+          "Esperança": "Esperança",
+          "Hanaoka": "Hanaoka",
+          "Havana": "Havana",
+          "Hollywood": "Hollywood",
+          "Hollywood (Halloween)": "Hollywood (Halloween)",
+          "Ilios": "Ilios",
+          "Junkertown": "Junkertown",
+          "King's Row": "King's Row",
+          "King's Row (Winter)": "King's Row (Winter)",
+          "Lijiang Tower": "Lijiang Tower",
+          "Lijiang Tower (Lunar New Year)": "Lijiang Tower (Lunar New Year)",
+          "Midtown": "Midtown",
+          "Nepal": "Nepal",
+          "New Junk City": "New Junk City",
+          "New Queen Street": "New Queen Street",
+          "Numbani": "Numbani",
+          "Oasis": "Oasis",
+          "Paraiso": "Paraiso",
+          "Rialto": "Rialto",
+          "Route 66": "Route 66",
+          "Runasapi": "Runasapi",
+          "Samoa": "Samoa",
+          "Shambali Monastery": "Shambali Monastery",
+          "Suravasa": "Suravasa",
+          "Throne Of Anubis": "Throne of Anubis",
+          "Watchpoint: Gibraltar": "Watchpoint: Gibraltar"
+        },
+        "title": "Map Winrates",
+        "tooltip": {
+          "wins": "Wins:",
+          "losses": "Losses:",
+          "percentage": "Percentage:"
+        },
+        "wins": "Wins",
+        "losses": "Losses",
+        "footer": "Map winrates are calculated based on the number of wins and losses for each map. Please note that Push maps are not included in this chart as they do not have a way to track their win/loss condition."
+      },
+      "winrateMapType": {
+        "mapTypes": {
+          "Clash": "Clash",
+          "Control": "Control",
+          "Escort": "Escort",
+          "Flashpoint": "Flashpoint",
+          "Hybrid": "Hybrid",
+          "Push": "Push"
+        },
+        "title": "Winrate By Map Type",
+        "footer": "Wins per map type. 0% means no wins, 100% means all wins. Hover over the chart to see the winrate."
+      },
+      "heroesDiedToMost": {
+        "title": "Heroes Died To Most",
+        "rank": "Rank",
+        "hero": "Hero",
+        "deaths": "Deaths",
+        "noData": "No data",
+        "footer1": "Stats collected from {scrims} scrims in the last {timeframe}",
+        "footer2": "Stats collected from {timeframe1} scrims {timeframe2}"
+      },
+      "heroesElimMost": {
+        "title": "Heroes Eliminated Most",
+        "rank": "Rank",
+        "hero": "Hero",
+        "eliminations": "Eliminations",
+        "noData": "No data",
+        "footer1": "Stats collected from {scrims} scrims in the last {timeframe}",
+        "footer2": "Stats collected from {timeframe1} scrims {timeframe2}"
+      },
+      "hero": {
+        "D": {
+          "Va": "D.Va"
+        },
+        "Doomfist": "Doomfist",
+        "Junker Queen": "Junker Queen",
+        "Mauga": "Mauga",
+        "Orisa": "Orisa",
+        "Ramattra": "Ramattra",
+        "Reinhardt": "Reinhardt",
+        "Roadhog": "Roadhog",
+        "Sigma": "Sigma",
+        "Winston": "Winston",
+        "Wrecking Ball": "Wrecking Ball",
+        "Zarya": "Zarya",
+        "Ashe": "Ashe",
+        "Bastion": "Bastion",
+        "Cassidy": "Cassidy",
+        "Echo": "Echo",
+        "Genji": "Genji",
+        "Hanzo": "Hanzo",
+        "Junkrat": "Junkrat",
+        "Mei": "Mei",
+        "Pharah": "Pharah",
+        "Reaper": "Reaper",
+        "Sojourn": "Sojourn",
+        "Soldier: 76": "Soldier: 76",
+        "Sombra": "Sombra",
+        "Symmetra": "Symmetra",
+        "Torbjörn": "Torbjörn",
+        "Tracer": "Tracer",
+        "Venture": "Venture",
+        "Widowmaker": "Widowmaker",
+        "Ana": "Ana",
+        "Baptiste": "Baptiste",
+        "Brigitte": "Brigitte",
+        "Illari": "Illari",
+        "Juno": "Juno",
+        "Kiriko": "Kiriko",
+        "Lifeweaver": "Lifeweaver",
+        "Lúcio": "Lúcio",
+        "Mercy": "Mercy",
+        "Moira": "Moira",
+        "Zenyatta": "Zenyatta"
+      },
+      "stats": {
+        "title": "Stat",
+        "select": "Select a stat",
+        "eliminations": "Eliminations",
+        "final_blows": "Final Blows",
+        "healing_dealt": "Healing Dealt",
+        "healing_received": "Healing Receieved",
+        "self_healing": "Self Healing",
+        "damage_taken": "Damage Taken",
+        "damage_blocked": "Damage Blocked",
+        "ultimates_earned": "Ultimates Earned",
+        "ultimates_used": "Ultimates Used",
+        "solo_kills": "Solo Kills",
+        "environmental_kills": "Environnemental Kills",
+        "deaths": "Deaths",
+        "hero_damage_dealt": "Hero Damage Dealt"
+      }
+    },
+    "heroStats": {
+      "title": "Hero Stats",
+      "description": "Select a hero to view their stats. Stats are aggregated from all scrims played.",
+      "timeframe": {
+        "one-week": "one week",
+        "two-weeks": "two weeks",
+        "one-month": "one month",
+        "three-months": "three months",
+        "six-months": "six months",
+        "one-year": "one year",
+        "all-time": "all time",
+        "all-time-data": "in all time data",
+        "custom": "between {from} - {to}"
+      },
+      "tank": {
+        "title": "Tank Heroes",
+        "D": {
+          "Va": "D.Va"
+        },
+        "Doomfist": "Doomfist",
+        "Junker Queen": "Junker Queen",
+        "Mauga": "Mauga",
+        "Orisa": "Orisa",
+        "Ramattra": "Ramattra",
+        "Reinhardt": "Reinhardt",
+        "Roadhog": "Roadhog",
+        "Sigma": "Sigma",
+        "Winston": "Winston",
+        "Wrecking Ball": "Wrecking Ball",
+        "Zarya": "Zarya"
+      },
+      "damage": {
+        "title": "Damage Heroes",
+        "Ashe": "Ashe",
+        "Bastion": "Bastion",
+        "Cassidy": "Cassidy",
+        "Echo": "Echo",
+        "Genji": "Genji",
+        "Hanzo": "Hanzo",
+        "Junkrat": "Junkrat",
+        "Mei": "Mei",
+        "Pharah": "Pharah",
+        "Reaper": "Reaper",
+        "Sojourn": "Sojourn",
+        "Soldier: 76": "Soldier: 76",
+        "Sombra": "Sombra",
+        "Symmetra": "Symmetra",
+        "Torbjörn": "Torbjörn",
+        "Tracer": "Tracer",
+        "Venture": "Venture",
+        "Widowmaker": "Widowmaker"
+      },
+      "support": {
+        "title": "Support Heroes",
+        "Ana": "Ana",
+        "Baptiste": "Baptiste",
+        "Brigitte": "Brigitte",
+        "Illari": "Illari",
+        "Juno": "Juno",
+        "Kiriko": "Kiriko",
+        "Lifeweaver": "Lifeweaver",
+        "Lúcio": "Lúcio",
+        "Mercy": "Mercy",
+        "Moira": "Moira",
+        "Zenyatta": "Zenyatta"
+      },
+      "header": "Stats for {hero}",
+      "hero": {
+        "D": {
+          "Va": "D.Va"
+        },
+        "Doomfist": "Doomfist",
+        "Junker Queen": "Junker Queen",
+        "Mauga": "Mauga",
+        "Orisa": "Orisa",
+        "Ramattra": "Ramattra",
+        "Reinhardt": "Reinhardt",
+        "Roadhog": "Roadhog",
+        "Sigma": "Sigma",
+        "Winston": "Winston",
+        "Wrecking Ball": "Wrecking Ball",
+        "Zarya": "Zarya",
+        "Ashe": "Ashe",
+        "Bastion": "Bastion",
+        "Cassidy": "Cassidy",
+        "Echo": "Echo",
+        "Genji": "Genji",
+        "Hanzo": "Hanzo",
+        "Junkrat": "Junkrat",
+        "Mei": "Mei",
+        "Pharah": "Pharah",
+        "Reaper": "Reaper",
+        "Sojourn": "Sojourn",
+        "Soldier: 76": "Soldier: 76",
+        "Sombra": "Sombra",
+        "Symmetra": "Symmetra",
+        "Torbjörn": "Torbjörn",
+        "Tracer": "Tracer",
+        "Venture": "Venture",
+        "Widowmaker": "Widowmaker",
+        "Ana": "Ana",
+        "Baptiste": "Baptiste",
+        "Brigitte": "Brigitte",
+        "Illari": "Illari",
+        "Juno": "Juno",
+        "Kiriko": "Kiriko",
+        "Lifeweaver": "Lifeweaver",
+        "Lúcio": "Lúcio",
+        "Mercy": "Mercy",
+        "Moira": "Moira",
+        "Zenyatta": "Zenyatta"
+      },
+      "heroFail": "Failed to find stats for {hero}. Did you spell the name correctly?",
+      "back": "Go back to stats",
+      "rangePicker": {
+        "selectTime": "Select a timeframe",
+        "lastWeek": "Last Week",
+        "last2Weeks": "Last 2 Weeks",
+        "lastMonth": "Last Month",
+        "last3Months": "Last 3 Months",
+        "last6Months": "Last 6 Months",
+        "lastYear": "Last Year",
+        "allTime": "All Time",
+        "custom": "Custom",
+        "upgrade": "Upgrade to view more timeframes",
+        "selectHero": "Select a hero",
+        "pickDate": "Pick a date",
+        "calendarDate": "{from} - {to}",
+        "formatDate": "{date, date, ::MMM dd yyyy}"
+      },
+      "heroStats": {
+        "title": "Hero Stats",
+        "totalGames": "Total Games Played",
+        "games": "games",
+        "totalKills": "Total Kills",
+        "kills": "kills",
+        "totalDeaths": "Total Deaths",
+        "deaths": "deaths",
+        "footer1": "Stats collected from {scrims} scrims in the last {timeframe}",
+        "footer2": "Stats collected from {timeframe1} scrims {timeframe2}",
+        "footer3": ". Stats are collected from every player who played as {hero} at any point in a scrim."
+      },
+      "bestPerformance": {
+        "title": "Best Performance",
+        "rank": "Rank",
+        "player": "Player",
+        "finalBlows": "Final Blows",
+        "clickPlayer": "Click to view player stats",
+        "noData": "No data",
+        "footer1": "Stats collected from {scrims} scrims in the last {timeframe}",
+        "footer2": "Stats collected from {timeframe1} scrims {timeframe2}"
+      },
+      "finalBlowsByMethod": "Final Blows By Method",
+      "avgHeroDmgDealtPer10": {
+        "title": "Average Hero Damage Dealt per 10 (per scrim)",
+        "tooltip": "The average hero damage dealt per 10 minutes for each scrim. Higher is better."
+      },
+      "avgDeathPer10": {
+        "title": "Average Deaths per 10 (per scrim)",
+        "tooltip": "The average number of deaths per 10 minutes for each scrim. Lower is better."
+      },
+      "heroesDiedToMost": {
+        "title": "Heroes Died To Most",
+        "rank": "Rank",
+        "hero": "Hero",
+        "deaths": "Deaths",
+        "noData": "No data",
+        "footer1": "Stats collected from {scrims} scrims in the last {timeframe}",
+        "footer2": "Stats collected from {timeframe1} scrims {timeframe2}"
+      },
+      "heroesElimMost": {
+        "title": "Heroes Eliminated Most",
+        "rank": "Rank",
+        "hero": "Hero",
+        "eliminations": "Eliminations",
+        "noData": "No data",
+        "footer1": "Stats collected from {scrims} scrims in the last {timeframe}",
+        "footer2": "Stats collected from {timeframe1} scrims {timeframe2}"
+      },
+      "stats": {
+        "title": "Stat",
+        "select": "Select a stat",
+        "eliminations": "Eliminations",
+        "final_blows": "Final Blows",
+        "healing_dealt": "Healing Dealt",
+        "healing_received": "Healing Receieved",
+        "self_healing": "Self Healing",
+        "damage_taken": "Damage Taken",
+        "damage_blocked": "Damage Blocked",
+        "ultimates_earned": "Ultimates Earned",
+        "ultimates_used": "Ultimates Used",
+        "solo_kills": "Solo Kills",
+        "environmental_kills": "Environnemental Kills",
+        "deaths": "Deaths",
+        "hero_damage_dealt": "Hero Damage Dealt"
+      }
+    }
+  },
+  "teamPage": {
+    "metadataTeams": {
+      "title": "Teams | Parsertime",
+      "description": "Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "Teams | Parsertime",
+      "ogDescription": "Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "metadataTeamName": {
+      "title": "{teamName} Overview | Parsertime",
+      "description": "Overview for {teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{teamName} Overview | Parsertime",
+      "ogDescription": "Overview for {teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "manageTeams": "Manage Your Teams",
+    "viewTeams": "View Your Teams",
+    "teams": "Teams",
+    "admin": "Admin View",
+    "members": "Members",
+    "settings": "Settings",
+    "manager": "(Manager)",
+    "owner": "(Owner)",
+    "you": "(You)",
+    "addMember": "Add a member...",
+    "join": {
+      "enterToken": "Enter Your Invite Token",
+      "joinTeam": "Join Team",
+      "invalidToken": {
+        "title": "Invalid token",
+        "description": "The token you provided is invalid."
+      },
+      "handleSubmit": {
+        "title": "Joined team",
+        "description": "You have successfully joined the team.",
+        "errorTitle": "Error",
+        "errorDescription": "An error occurred: {res}"
+      }
+    },
+    "userButtons": {
+      "promote": {
+        "button": "Promote to Manager",
+        "title": "Are you absolutely sure?",
+        "description": "This will change the user's role from member to manager. This user will be able to manage the team and its resources.",
+        "cancel": "Cancel",
+        "promoting": "Promoting...",
+        "promote": "Promote to Manager",
+        "handlePromote": {
+          "title": "User promoted to manager",
+          "description": "{user} has been promoted to manager.",
+          "errorTitle": "An error occurred",
+          "errorDescription": "An error occurred: {res}"
+        }
+      },
+      "demote": {
+        "button": "Demote to Member",
+        "title": "Are you absolutely sure?",
+        "description": "This will change the user's role from manager to member.",
+        "cancel": "Cancel",
+        "demoting": "Demoting...",
+        "demote": "Demote to Member",
+        "handleDemote": {
+          "title": "User demoted to member",
+          "description": "{user} has been demoted to member.",
+          "errorTitle": "An error occurred",
+          "errorDescription": "An error occurred: {res}"
+        }
+      },
+      "remove": {
+        "button": "Remove from Team",
+        "title": "Are you absolutely sure?",
+        "description": "This will remove the user from the team and they will lose access to all team resources.",
+        "cancel": "Cancel",
+        "removing": "Removing...",
+        "remove": "Remove from Team",
+        "handleRemove": {
+          "title": "User removed from team",
+          "description": "{user} has been removed from the team.",
+          "errorTitle": "An error occurred",
+          "errorDescription": "An error occurred: {res}"
+        }
+      }
+    },
+    "inviteMember": {
+      "title": "Invite Member",
+      "description": "Invite a new member to allow them to see your team's scrims. The user must be signed up to receive the invite.",
+      "email": "Email",
+      "cancel": "Cancel",
+      "send": "Send Invite",
+      "sending": "Sending invite...",
+      "emailMessage": "Invalid Email",
+      "reqMessage": "Email is required",
+      "onSubmit": {
+        "title": "Invite sent!",
+        "description": "Your invitation has been sent successfully.",
+        "errorTitle": "Error",
+        "errorDescription": "An error occurred: {res}",
+        "errorStatus": ". Have you ensured the user is signed up?"
+      }
+    },
+    "teamInviteLink": {
+      "title": "Team Invite Link",
+      "subtitle": "Your permanent team invite link (hover to reveal):",
+      "description": "Please note that inviting a user via the \"Invite User\" button is much more secure. We suggest avoiding sharing this link whenever possible."
+    },
+    "clipboard": {
+      "title": "Copied to clipboard",
+      "description": "The team invite link has been copied to your clipboard.",
+      "tooltip": "Click to copy"
+    },
+    "name": {
+      "title": "Display Name",
+      "description": "This is your team's public display name.",
+      "minMessage": "Name must be at least 2 characters.",
+      "maxMessage": "Name must not be longer than 30 characters."
+    },
+    "avatar": {
+      "title": "Avatar",
+      "description": "This is your team's public avatar. Click on the avatar to upload a custom one from your files.",
+      "editTitle": "Edit Avatar",
+      "editDescription": "Make changes to your profile here. Click save when you're done.",
+      "save": "Save Changes",
+      "updating": "Updating...",
+      "handleCrop": {
+        "title": "Avatar updated successfully",
+        "description": "Your team's avatar has been updated successfully.",
+        "errorTitle": "An error occurred",
+        "errorDescription1": "An error occurred: {res}",
+        "errorDescription2": "An error occurred while updating your avatar. Please try again later or contact support."
+      }
+    },
+    "update": {
+      "title": "Update team profile",
+      "onSubmit": {
+        "title": "Team profile updated",
+        "description": "Your team profile has been successfully updated.",
+        "errorTitle": "An error occurred",
+        "errorDescription": "An error occurred: {res}"
+      }
+    },
+    "dangerZone": {
+      "title": "Danger Zone",
+      "description": "These are irreversible actions. Please be certain before proceeding."
+    },
+    "transferOwner": {
+      "title": "Transfer Ownership",
+      "description": "Once you transfer ownership, you will no longer be the owner of this team.",
+      "button": "Transfer Ownership",
+      "email": "Enter the email address of the user you want to transfer ownership to.",
+      "transferring": "Transferring",
+      "cancel": "Cancel",
+      "handleTransfer": {
+        "title": "Ownership transferred",
+        "description": "Ownership of the team has successfully been transferred.",
+        "errorTitle": "Error",
+        "errorDescription": "An error occurred: {res}"
+      }
+    },
+    "deleteTeam": {
+      "title": "Delete Team",
+      "description": "Once you delete a team, there is no going back. Please be certain.",
+      "button": "Delete Team",
+      "deleteAlert": "<p> Are you sure you want to delete the team <strong>{team}<strong>? This action cannot be undone.</p> <p>Type <strong>{team}</strong> to confirm.</p>",
+      "deleting": "Deleting...",
+      "cancel": "Cancel",
+      "handleDelete": {
+        "title": "Team deleted",
+        "description": "The team has been deleted.",
+        "errorTitle": "Error",
+        "errorDescription": "An error occurred: {res}"
+      }
+    }
+  },
+  "settingsPage": {
+    "metadataLayout": {
+      "title": "%s Overview | Parsertime",
+      "default": "Player Overview | Parsertime",
+      "description": "Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "metadataSettingsLayout": {
+      "title": "Settings | Parsertime",
+      "description": "Manage your account settings and preferences.",
+      "ogTitle": "Settings | Parsertime",
+      "ogDescription": "Manage your account settings and preferences."
+    },
+    "title": "Settings",
+    "description": "Manage your account settings and preferences.",
+    "sideNav": {
+      "profile": "Profile",
+      "linkedAccounts": "Linked Accounts",
+      "admin": "Admin"
+    },
+    "discordForm": {
+      "minMessage": "Name must be at least 2 characters.",
+      "maxMessage": "Name must not be longer than 30 characters.",
+      "onSubmit": {
+        "title": "Profile updated",
+        "description": "Your profile has been successfully updated.",
+        "errorTitle": "An error occurred",
+        "errorDescription": "An error occurred: {res}"
+      },
+      "username": {
+        "title": "Username",
+        "description": "This is your public display name. It can be your real name or a pseudonym."
+      },
+      "avatar": {
+        "title": "Avatar",
+        "description": "This is your public account avatar. Click on the avatar to upload a custom one from your files."
+      },
+      "update": "Update profile"
+    },
+    "profile": {
+      "title": "Profile",
+      "description": "This is how others will see you on the site.",
+      "planDescription": "Your current plan is the {billingPlan} plan.",
+      "billingPlan": {
+        "FREE": "Free",
+        "BASIC": "Basic",
+        "PREMIUM": "Premium"
+      },
+      "planUpgrade": "Upgrade your plan",
+      "manageSubscription": "Manage your subscription"
+    },
+    "profileForm": {
+      "minMessage": "Name must be at least 2 characters.",
+      "maxMessage": "Name must not be longer than 30 characters.",
+      "onSubmit": {
+        "title": "Profile updated",
+        "description": "Your profile has been successfully updated.",
+        "errorTitle": "An error occurred",
+        "errorDescription": "An error occurred: {res}"
+      },
+      "username": {
+        "title": "Username",
+        "description": "This is your public display name. It can be your real name or a pseudonym."
+      },
+      "avatar": {
+        "title": "Avatar",
+        "description": "This is your public account avatar. Click on the avatar to upload a custom one from your files.",
+        "update": "Update profile",
+        "editAvatar": {
+          "title": "Edit Avatar",
+          "description": "Make changes to your profile here. Click save when you're done.",
+          "save": "Save Changes",
+          "updating": "Updating...",
+          "handleCrop": {
+            "title": "Avatar updated successfully",
+            "description": "Your avatar has been updated successfully.",
+            "errorTitle": "An error occurred",
+            "errorDescription1": "An error occurred: {res}",
+            "errorDescription2": "An error occurred while sending your message. Please try again later or contact support."
+          }
+        }
+      }
+    },
+    "linkedAccounts": {
+      "title": "Linked Accounts",
+      "description": "Manage linked account settings and preferences.",
+      "discord": {
+        "linked": "Your Discord account is successfully linked.",
+        "signIn": "Sign In with Discord"
+      }
+    },
+    "admin": {
+      "title": "Admin Settings",
+      "description": "Manage admin settings and preferences.",
+      "email": {
+        "title": "Email",
+        "description": "This is the email of the user you want to impersonate.",
+        "message": "Please enter a valid email address."
+      },
+      "prod": {
+        "title": "Use Production Environment URL",
+        "description": "If enabled, the impersonation URL will be generated for the production environment. If disabled, the impersonation URL will be generated for the development environment."
+      },
+      "impersonate": "Impersonate User",
+      "onSubmit": {
+        "title": "User Impersonated",
+        "description": "The impersonation URL has been copied to your clipboard.",
+        "errorTitle": "Error",
+        "errorDescription": "An error occurred while impersonating the user."
+      }
+    },
+    "dangerZone": {
+      "title": "Danger Zone",
+      "description": "Account deletion is permanent and cannot be reversed. Are you looking to manage your subscription instead? If so, please click <Link>here</Link>."
+    },
+    "deleteAccount": {
+      "title": "Delete Account",
+      "description": "Are you sure you want to delete your account? This action cannot be undone. Are you looking to manage your subscription instead? If so, please click <Link>here</Link>.",
+      "cancel": "Cancel",
+      "deleteInput": "yes, delete my account",
+      "handleDelete": {
+        "title": "Account Deleted",
+        "description": "Your account has been successfully deleted.",
+        "errorTitle": "Error",
+        "errorDescription": "An error occurred: {res}"
+      },
+      "secondDialog": {
+        "title": "Yes, delete my account",
+        "description": "<p>Are you absolutely sure you want to delete your account? This action cannot be undone.</p> <p>Type <strong>{deleteInput}</strong> to confirm.</p>",
+        "delete": "Delete Account",
+        "deleting": "Deleting...",
+        "cancel": "Cancel"
+      }
+    }
+  },
+  "contactPage": {
+    "header": {
+      "home": "Home",
+      "about": "About",
+      "pricing": "Pricing",
+      "demo": "Demo",
+      "docs": "Docs",
+      "company": "Company",
+      "logIn": "Log in"
+    },
+    "contactForm": {
+      "title": "Get in touch",
+      "description": "Having issues with the app? Want to request a feature? We'd love to hear from you! Send us a message and we'll get back to you as soon as we can.",
+      "discord": "Community Discord",
+      "name": "Name",
+      "email": "Email",
+      "message": "Message",
+      "send": "Send message",
+      "sending": "Sending...",
+      "nameRequiredError": "A name is required.",
+      "emailRequiredError": "An email is required.",
+      "emailMessage": "Please enter a valid email address.",
+      "messageRequiredError": "A message is required.",
+      "messageMessage": "Please enter a message.",
+      "handleSubmit": {
+        "title": "Message sent",
+        "description": "Your message has been sent successfully.",
+        "errorTitle1": "Error",
+        "errorDescription1": "An error occurred: {res}",
+        "errorTitle2": "An error occurred",
+        "errorDescription2": "An error occurred while sending your message. Please try again later."
+      }
+    }
+  },
+  "aboutPage": {
+    "stats": {
+      "startDev": {
+        "label": "Started development",
+        "value": "Nov 2023"
+      },
+      "used": {
+        "label": "Used internally",
+        "value": "Jan 2024"
+      },
+      "scrimsUploaded": {
+        "label": "Scrims uploaded during beta",
+        "value": "50+"
+      },
+      "statsTracked": {
+        "label": "Player stats tracked during beta",
+        "value": "22,000+"
+      }
+    },
+    "values": {
+      "convenience": {
+        "name": "Convenience.",
+        "description": "Make it easy to track stats and see trends over time. Easily diagnose issues with your players."
+      },
+      "access": {
+        "name": "Accessibility.",
+        "description": "We want to make it easy for any team to use Parsertime. We're always looking for ways to make the platform more accessible."
+      },
+      "community": {
+        "name": "Community first.",
+        "description": "Built by Overwatch players, for Overwatch players. We're dedicated to serving the community."
+      },
+      "openSource": {
+        "name": "Open source.",
+        "description": "We believe that the best tools are built in the open. Contributions are welcome!"
+      },
+      "improvement": {
+        "name": "Continuous improvement.",
+        "description": "We're always adding new features and improving the platform. We want to make the best app possible."
+      },
+      "reliable": {
+        "name": "Reliable and performant.",
+        "description": "Our platform is built to be fast and reliable. We want to make sure that it's always there for you."
+      }
+    },
+    "team": {
+      "lucas": {
+        "name": "Lucas Doell",
+        "role": "Lead Developer",
+        "bio": "Software engineer, Top 500 Overwatch player, former student at Cornell University, and head coach of FIU Panthers. He is passionate about building great software and helping teams succeed."
+      },
+      "robin": {
+        "name": "Robin \"Zei\" Sidhu",
+        "role": "Head of Strategy",
+        "bio": "Zei is a coach for the top collegiate team St. Clair Saints. He recently led them to a 2nd place finish in the NACE Varsity Premiere 2023 fall semester. His favorite hobbies include crushing his players in TXCXX."
+      },
+      "giovanni": {
+        "name": "Giovanni Panzetta",
+        "role": "Developer",
+        "bio": "Giovanni is a software engineer specializing in full-stack development. He's passionate about building great software and building good user experiences."
+      },
+      "xavier": {
+        "name": "Xavier Park",
+        "role": "Developer",
+        "bio": "Xavier is a statistics major at Cornell University. He is excited about the potential of data analytics in esports and is working to build excellent statistics for Overwatch teams."
+      }
+    },
+    "headerSection": {
+      "title": "We love Overwatch",
+      "description": "That's why we're building a better way to track your performance. See your team's stats, track your performance over time, and see how you evolve as a player and as a team."
+    },
+    "contentSection": {
+      "description1": "Parsertime was originally created as an internal tool for FIU Panthers, a collegiate team. We wanted to be able to see our stats after scrims and see trends over time. We've since expanded to become a platform that any team can use. We're excited to see how teams use Parsertime to improve their performance.",
+      "description2": "We're a small team of passionate Overwatch players and coaches who are dedicated to building a platform that works for your team. We're always looking for feedback and feature requests. If you have any ideas, we'd love to hear them!",
+      "description3": "We know that teams are always looking for ways to improve. Our goal is to make it easy for you to see your stats and see trends week over week. Parsertime is currently used internally at FIU and new features are being added every week. We want to provide the best experience possible for Overwatch players and teams.",
+      "description4": "Parsertime is fully open source. We believe that the best tools are built in the open. If you'd like to contribute to Parsertime, we'd love to have you! We're always looking for contributors to help us build the best platform for Overwatch teams. You can find our GitHub repo <Link>here</Link>."
+    },
+    "featureSection": {
+      "title": "Our features",
+      "description": "See how our platform can make a difference for your team."
+    },
+    "teamSection": {
+      "title": "Meet our team",
+      "description": "We're a small team of passionate Overwatch players and coaches who are dedicated to building a platform that works for your team."
+    },
+    "ctaSection": {
+      "title": "Boost your productivity.",
+      "subtitle": "Start using our app today.",
+      "description": "Give your team the tools they need to succeed. Sign up for Parsertime today.",
+      "signUp": "Sign Up",
+      "demo": "Try our demo"
+    },
+    "footerNav": {
+      "title": "footer",
+      "description": "Building a better way to track your Overwatch performance.",
+      "solutions": {
+        "title": "Platform",
+        "dashboard": "Dashboard",
+        "signUp": "Sign Up",
+        "demo": "Demo"
+      },
+      "support": {
+        "title": "Support",
+        "pricing": "Pricing",
+        "doc": "Documentation",
+        "discord": "Discord",
+        "contact": "Contact"
+      },
+      "company": {
+        "title": "Company",
+        "about": "About",
+        "blog": "Blog",
+        "gitHub": "GitHub"
+      },
+      "legal": {
+        "title": "Legal",
+        "policy": "Privacy Policy"
+      },
+      "copyright": "2024 lux.dev. All rights reserved."
+    }
+  },
+  "pricingPage": {
+    "pricing": {
+      "title": "Pricing",
+      "header": "Plans for teams of all sizes",
+      "description": "As your team grows, Parsertime grows with you. We have the tools and features to meet your needs.",
+      "$": "$",
+      "month": "/month",
+      "currentPlan": "Your Current Plan",
+      "getStarted": "Get Started",
+      "buyPlan": "Buy Plan",
+      "priceComparison": "Pricing plan comparison",
+      "price": "Price"
+    },
+    "comingSoon": "Coming soon",
+    "tiers": {
+      "free": "Free",
+      "freeMonthly": "$0",
+      "freeDescription": "For people who want to try out Parsertime.",
+      "basic": "Basic",
+      "basicMonthly": "$10",
+      "basicDescription": "For teams that are ready to grow with Parsertime.",
+      "premium": "Premium",
+      "premiumMonthly": "$15",
+      "premiumDescription": "For larger teams that want to take their productivity to the next level."
+    },
+    "features": {
+      "title": "Features",
+      "scrims": "Individual Scrims",
+      "joinTeams": "Join Teams via Invite",
+      "data": "Data Analytics",
+      "createTeams": {
+        "title": "Create Teams",
+        "free": "Up to 2 teams",
+        "basic": "Up to 5 teams",
+        "premium": "Up to 10 teams"
+      },
+      "teamMembers": {
+        "title": "Team Members",
+        "free": "Up to 5 users",
+        "basic": "Up to 10 users",
+        "premium": "Up to 20 users"
+      },
+      "earlyAccess": "Early Access to New Features"
+    },
+    "mapStatistics": {
+      "title": "Map Statistics",
+      "analytics": "Advanced Analytics",
+      "mapKillFeeds": "Map Killfeeds",
+      "customCharts": "Custom Charts",
+      "mapEvents": "Map Events",
+      "playerComparison": "Player Comparison",
+      "customTargets": "Custom Targets"
+    },
+    "playerStatistics": {
+      "title": "Player Statistics",
+      "lastWeek": "Last Week",
+      "last2Weeks": "Last 2 Weeks",
+      "lastMonth": "Last Month",
+      "last3Months": "Last 3 Months",
+      "last6Months": "Last 6 Months",
+      "lastYear": "Last Year",
+      "allTime": "All Time",
+      "custom": "Custom Timeframe"
+    },
+    "support": {
+      "title": "Support",
+      "discord": "Community Discord",
+      "priority": "Priority Support",
+      "devCheck": "Monthly Developer Check-ins",
+      "custom": "Custom Feature Requests"
+    },
+    "caseStudy": {
+      "title": "Learn how teams use Parsertime to improve their coaching strategy.",
+      "description": "See our case study"
+    },
+    "testimonial": {
+      "quote": "“Parsertime is so impactful to the point where my players can be coached on things they actively need help with, like living more, or holding their ult longer and being patient.”",
+      "author": "coy (@shy.coy)",
+      "role": "Manager for o7 Esports"
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "description": "Can't find the answer you're looking for? Reach out to our <Link>support</Link> team.",
+      "question1": "Do you offer discounts for collegiate teams?",
+      "answer1": "Yes! Please reach out to our support team and we'll be happy to help.",
+      "question2": "Do you offer discounts for Calling All Heroes teams?",
+      "answer2": "Yes! We want to support the CAH community as much as possible. Please reach out to our support team and we'll be happy to discuss a solution.",
+      "question3": "How can I manage my subscription?",
+      "answer3": "You can manage your subscription <Link>here</Link>. If you have any issues, please reach out to our support team.",
+      "question4": "Can I cancel my subscription at any time?",
+      "answer4": "Yes, you can cancel your subscription at any time. Your subscription will remain active until the end of the billing period.",
+      "question5": "What if I need higher limits than the Premium plan offers?",
+      "answer5": "If you need something special or require higher limits than the Premium plan offers, please reach out to our <Link>support team</Link> and we'll be happy to discuss a custom solution."
+    }
+  },
+  "privacyPage": {
+    "privacyPolicy": {
+      "title": "Privacy Policy",
+      "description": "At Parsertime, we are committed to maintaining the trust and confidence of our visitors to our web site. In particular, we want you to know that Parsertime is not in the business of selling, renting, or trading email lists with other companies and businesses for marketing purposes. In this Privacy Policy, we've provided detailed information on when and why we collect your personal information, how we use it, and how we keep it secure."
+    },
+    "collectInformation": {
+      "title": "Information We Collect",
+      "description": "As part of the registration process for our web app, we collect personal information. We use that information for a couple of reasons: to tell you about stuff you've asked us to tell you about; to contact you if we need to obtain or provide additional information; to check our records are right and to check every now and then that you're happy and satisfied. Here are the types of information we collect:",
+      "email": {
+        "title": "Email Addresses:",
+        "description": "Your email address is required during the registration process to help with account creation, authentication, and necessary communication related to the functionality of the app. We do not use your email address for marketing purposes."
+      },
+      "picture": {
+        "title": "Profile Pictures and Team Images:",
+        "description": "You can upload a profile picture and team images. These images are used to personalize your account and team profiles within our application."
+      },
+      "data": {
+        "title": "Game Logs and Performance Data:",
+        "description": "Overwatch 2 to visualize stats and show data on user and team performance. This data is strictly used to provide services offered by Parsertime and does not include any personally sensitive information."
+      }
+    },
+    "useInformation": {
+      "title": "How We Use Your Information",
+      "description": "We use your information to:",
+      "list1": "Operate and maintain our services;",
+      "list2": "Improve your experience on our site through personalization;",
+      "list3": "Communicate important notices, such as changes to our terms, conditions, and policies;",
+      "list4": "Address technical issues and protect our site from fraud and abuse."
+    },
+    "storageSecurity": {
+      "title": "Storage and Security",
+      "description": "We take precautions to protect your information. When you submit sensitive information via the website, your information is protected both online and offline. Only employees who need the information to perform a specific job (for example, billing or customer service) are granted access to personally identifiable information."
+    },
+    "thirdPartyLinks": {
+      "title": "Third-Party Links",
+      "description": "Our website may include links to third-party websites. We do not have control over, and are not responsible for, the content or privacy practices of these sites. We encourage our users to be aware when they leave our site and to read the privacy statements of any other site that collects personally identifiable information."
+    },
+    "changePrivacyPolicy": {
+      "title": "Changes to Our Privacy Policy",
+      "description": "We may update this policy from time to time in order to reflect, for example, changes to our practices or for other operational, legal, or regulatory reasons."
+    },
+    "contactUs": {
+      "title": "Contact Us",
+      "description": "For more information about our privacy practices, if you have questions, or if you would like to make a complaint, please contact us by email at <Link>privacy@lux.dev</Link>."
+    }
+  },
+  "clientDate": {
+    "formatDate": "{date, date, ::EEE MMM dd yyyy}"
+  },
+  "billingPlan": {
+    "free": "'FREE'",
+    "basic": "'BASIC'",
+    "premium": "'PREMIUM'"
+  },
+  "notFound": {
+    "404": "404",
+    "header": "Page not found",
+    "description": "Sorry, we couldn't find the page you're looking for.",
+    "backHome": "Back to home",
+    "contact": "Contact support"
+  },
+  "footer": {
+    "dashboard": "Dashboard",
+    "stats": "Stats",
+    "teams": "Teams",
+    "settings": "Settings",
+    "contact": "Contact",
+    "docs": "Docs",
+    "copyright": "2024 lux.dev."
+  },
+  "demoPage": {
+    "metadataLayout": {
+      "title": "%s Overview | Parsertime",
+      "default": "Player Overview | Parsertime",
+      "description": "Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "metadataPlayerName": {
+      "title": "{playerName} Overview | Parsertime",
+      "description": "Player overview for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{playerName} Overview | Parsertime",
+      "ogDescription": "Player overview for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "metadataMapName": {
+      "title": "{mapName} Demo | Parsertime",
+      "description": "Demo overview for {mapName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{mapName} Demo | Parsertime",
+      "ogDescription": "Demo overview for {mapName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
+    },
+    "loading": {
+      "totalMatch": "Total Match Time",
+      "score": "Score",
+      "heroDmgDealt": "Hero Damage Dealt",
+      "teamHealingDealt": "Team Healing Dealt",
+      "overview": "Overview",
+      "analysis": "Analysis"
+    },
+    "banner": {
+      "demo": "You are viewing a demo of Parsertime. Click here to sign up",
+      "dismiss": "Dismiss"
+    },
+    "playerPage": {
+      "back": "Back to default overview",
+      "dashboard": "Dashboard",
+      "overview": "Overview",
+      "analytics": "Analytics",
+      "charts": "Charts",
+      "loading": {
+        "totalMatch": "Total Match Time",
+        "fletaDeadlift": "Fleta Deadlift Percentage",
+        "firstPick": "First Pick Percentage",
+        "firstDeath": "First Death Percentage",
+        "playerStat": "Player Statistics"
+      }
+    },
+    "mapPage": {
+      "back": "Back to scrim overview",
+      "dashboard": "Dashboard",
+      "maps": {
+        "Antarctic Peninsula": "Antarctic Peninsula",
+        "Blizzard World": "Blizzard World",
+        "Blizzard World (Winter)": "Blizzard World (Winter)",
+        "Busan": "Busan",
+        "Circuit royal": "Circuit Royal",
+        "Circuit Royal": "Circuit Royal",
+        "Colosseo": "Colosseo",
+        "Dorado": "Dorado",
+        "Eichenwalde": "Eichenwalde",
+        "Eichenwalde (Halloween)": "Eichenwalde (Halloween)",
+        "Esperança": "Esperança",
+        "Hanaoka": "Hanaoka",
+        "Havana": "Havana",
+        "Hollywood": "Hollywood",
+        "Hollywood (Halloween)": "Hollywood (Halloween)",
+        "Ilios": "Ilios",
+        "Junkertown": "Junkertown",
+        "King's Row": "King's Row",
+        "King's Row (Winter)": "King's Row (Winter)",
+        "Lijiang Tower": "Lijiang Tower",
+        "Lijiang Tower (Lunar New Year)": "Lijiang Tower (Lunar New Year)",
+        "Midtown": "Midtown",
+        "Nepal": "Nepal",
+        "New Junk City": "New Junk City",
+        "New Queen Street": "New Queen Street",
+        "Numbani": "Numbani",
+        "Oasis": "Oasis",
+        "Paraiso": "Paraiso",
+        "Rialto": "Rialto",
+        "Route 66": "Route 66",
+        "Runasapi": "Runasapi",
+        "Samoa": "Samoa",
+        "Shambali Monastery": "Shambali Monastery",
+        "Suravasa": "Suravasa",
+        "Throne Of Anubis": "Throne of Anubis",
+        "Watchpoint: Gibraltar": "Watchpoint: Gibraltar"
+      },
+      "overview": "Overview",
+      "killfeed": "Killfeed",
+      "kills": "Kills",
+      "charts": "Charts",
+      "events": "Events",
+      "compare": "Compare"
+    }
+  }
+}
