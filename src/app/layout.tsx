@@ -14,30 +14,35 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: "Parsertime",
-  description: "Parsertime is a tool for analyzing Overwatch scrims.",
-  metadataBase: new URL("https://parsertime.app"),
-  openGraph: {
-    title: `Parsertime`,
-    description: `Parsertime is a tool for analyzing Overwatch scrims.`,
-    url: "https://parsertime.app",
-    type: "website",
-    siteName: "Parsertime",
-    images: [
-      {
-        url: `https://parsertime.app/opengraph-image.png`,
-        width: 1200,
-        height: 630,
-      },
-    ],
-    locale: "en_US",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const t = await getTranslations({ locale, namespace: "metadata" });
+
+  return {
+    title: t("title"),
+    description: t("description"),
+    metadataBase: new URL("https://parsertime.app"),
+    openGraph: {
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+      url: "https://parsertime.app",
+      type: "website",
+      siteName: "Parsertime",
+      images: [
+        {
+          url: `https://parsertime.app/opengraph-image.png`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+      locale,
+    },
+  };
+}
 
 export default async function RootLayout({
   children,
