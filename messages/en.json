@@ -30,7 +30,8 @@
       "advancedStatistics": {
         "name": "Advanced statistics",
         "description": "Gain insight into your players' performance over time. Track their stats and see how they improve. See trends and patterns week over week."
-      }
+      },
+      "href": "Learn more"
     },
     "feature2": {
       "subtitle": "Everything you need",
@@ -69,6 +70,7 @@
       "description": "We're proud to work with top teams and coaches to create better experiences for everyone. Our platform is built to suit the needs of collegiate and professional teams."
     },
     "testimonial": {
+      "starRating": "5 out of 5 stars",
       "quote": "“Parsertime is an incredible way to check out statistics in Overwatch scrims. It got me to understand more about statistics in general and really get interested in data science, which I now do for four teams (using Parsertime). The information it provides is so impactful that my players can be coached on things they actively need help with, like surviving longer, holding their ultimate abilities longer, and being more patient. Maybe their healing numbers are lower than the other support, so we can look at why. It's a fantastic tool that helps obtain a wider range of data to lock in on a closer field of view.”",
       "author": "coy (@shy.coy)",
       "role": "Manager for o7 Esports"
@@ -81,6 +83,7 @@
       "learnMore": "Learn more"
     },
     "footer": {
+      "screenReader": "Footer",
       "copyright": "2024 lux.dev. All rights reserved."
     }
   },
