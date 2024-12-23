@@ -330,7 +330,6 @@
       "teamLoading": "Loading...",
       "dateName": "Scrim Date",
       "datePlaceholder": "Pick a date",
-      "date": "",
       "dateDescription": "The scrim date is the date when the scrim took place.",
       "dateRequiredError": "A scrim date is required.",
       "mapName": "First Map",
