@@ -2,6 +2,7 @@ import { MainNav } from "@/components/dashboard/main-nav";
 import { Search } from "@/components/dashboard/search";
 import { TeamSwitcher } from "@/components/dashboard/team-switcher";
 import Footer from "@/components/footer";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 import { MobileNav } from "@/components/mobile-nav";
 import { TeamSwitcherProvider } from "@/components/team-switcher-provider";
 import { ModeToggle } from "@/components/theme-switcher";
@@ -27,6 +28,7 @@ export default async function DashboardLayout({
             <div className="ml-auto flex items-center space-x-4">
               <Search user={user} />
               <ModeToggle />
+              <LocaleSwitcher />
               <UserNav />
             </div>
           </div>
