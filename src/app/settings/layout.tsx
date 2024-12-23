@@ -1,14 +1,8 @@
 import { Metadata } from "next";
 
-import { MainNav } from "@/components/dashboard/main-nav";
-import { Search } from "@/components/dashboard/search";
-import { TeamSwitcher } from "@/components/dashboard/team-switcher";
-import Footer from "@/components/footer";
-import { MobileNav } from "@/components/mobile-nav";
+import DashboardLayout from "@/components/dashboard-layout";
 import { SidebarNav } from "@/components/settings/sidebar-nav";
-import { ModeToggle } from "@/components/theme-switcher";
 import { Separator } from "@/components/ui/separator";
-import { UserNav } from "@/components/user-nav";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { $Enums } from "@prisma/client";
@@ -66,25 +60,7 @@ export default async function SettingsLayout({
   const isAdmin = user?.role === $Enums.UserRole.ADMIN;
 
   return (
-    <>
-      <div className="border-b">
-        <div className="hidden h-16 items-center px-4 md:flex">
-          <TeamSwitcher session={session} />
-          <MainNav className="mx-6" />
-          <div className="ml-auto flex items-center space-x-4">
-            <Search user={user} />
-            <ModeToggle />
-            <UserNav />
-          </div>
-        </div>
-        <div className="flex h-16 items-center px-4 md:hidden">
-          <MobileNav session={session} />
-          <div className="ml-auto flex items-center space-x-4">
-            <ModeToggle />
-            <UserNav />
-          </div>
-        </div>
-      </div>
+    <DashboardLayout>
       <div className="min-h-[90vh] space-y-6 p-10 pb-16 md:block">
         <div className="space-y-0.5">
           <h2 className="text-2xl font-bold tracking-tight">Settings</h2>
@@ -100,7 +76,6 @@ export default async function SettingsLayout({
           <div className="flex-1 lg:max-w-2xl">{children}</div>
         </div>
       </div>
-      <Footer />
-    </>
+    </DashboardLayout>
   );
 }

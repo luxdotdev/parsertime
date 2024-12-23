@@ -1,23 +1,24 @@
-import { DefaultOverview } from "@/components/map/default-overview";
+import { MapCharts } from "@/components/charts/map/map-charts";
 import { MainNav } from "@/components/dashboard/main-nav";
-import PlayerSwitcher from "@/components/map/player-switcher";
 import { Search } from "@/components/dashboard/search";
-import { UserNav } from "@/components/user-nav";
+import { GuestNav } from "@/components/guest-nav";
+import { LocaleSwitcher } from "@/components/locale-switcher";
+import { ComparePlayers } from "@/components/map/compare-players";
+import { DefaultOverview } from "@/components/map/default-overview";
+import { Killfeed } from "@/components/map/killfeed";
+import { MapEvents } from "@/components/map/map-events";
+import PlayerSwitcher from "@/components/map/player-switcher";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import prisma from "@/lib/prisma";
-import Link from "next/link";
-import { toTitleCase } from "@/lib/utils";
-import { Killfeed } from "@/components/map/killfeed";
-import { Metadata } from "next";
-import { SearchParams } from "@/types/next";
-import { MapCharts } from "@/components/charts/map/map-charts";
-import { ComparePlayers } from "@/components/map/compare-players";
-import { MapEvents } from "@/components/map/map-events";
-import { auth } from "@/lib/auth";
-import { GuestNav } from "@/components/guest-nav";
+import { UserNav } from "@/components/user-nav";
 import { getMostPlayedHeroes } from "@/data/player-dto";
 import { getUser } from "@/data/user-dto";
+import { auth } from "@/lib/auth";
+import prisma from "@/lib/prisma";
+import { toTitleCase } from "@/lib/utils";
+import { SearchParams } from "@/types/next";
+import { Metadata } from "next";
+import Link from "next/link";
 
 type Props = {
   params: { team: string; scrimId: string; mapId: string };
@@ -97,6 +98,7 @@ export default async function MapDashboardPage({ params }: Props) {
           <div className="ml-auto flex items-center space-x-4">
             <Search user={user} />
             <ModeToggle />
+            <LocaleSwitcher />
             {session ? (
               <UserNav />
             ) : (
@@ -108,6 +110,7 @@ export default async function MapDashboardPage({ params }: Props) {
           <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
           <div className="ml-auto flex items-center space-x-4">
             <ModeToggle />
+            <LocaleSwitcher />
             {session ? (
               <UserNav />
             ) : (

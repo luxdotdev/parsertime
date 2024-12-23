@@ -1,6 +1,7 @@
 import { PlayerCharts } from "@/components/charts/player/player-charts";
 import { MainNav } from "@/components/dashboard/main-nav";
 import { Search } from "@/components/dashboard/search";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 import PlayerSwitcher from "@/components/map/player-switcher";
 import { PlayerAnalytics } from "@/components/player/analytics";
 import { DefaultOverview } from "@/components/player/default-overview";
@@ -66,12 +67,14 @@ export default async function PlayerDashboardDemoPage({ params }: Props) {
           <div className="ml-auto flex items-center space-x-4">
             <Search user={null} />
             <ModeToggle />
+            <LocaleSwitcher />
           </div>
         </div>
         <div className="flex h-16 items-center px-4 md:hidden">
           <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
           <div className="ml-auto flex items-center space-x-4">
             <ModeToggle />
+            <LocaleSwitcher />
           </div>
         </div>
       </div>

@@ -1,19 +1,20 @@
-import { DefaultOverview } from "@/components/map/default-overview";
+import { MapCharts } from "@/components/charts/map/map-charts";
 import { MainNav } from "@/components/dashboard/main-nav";
-import PlayerSwitcher from "@/components/map/player-switcher";
 import { Search } from "@/components/dashboard/search";
+import { LocaleSwitcher } from "@/components/locale-switcher";
+import { ComparePlayers } from "@/components/map/compare-players";
+import { DefaultOverview } from "@/components/map/default-overview";
+import { Killfeed } from "@/components/map/killfeed";
+import { MapEvents } from "@/components/map/map-events";
+import PlayerSwitcher from "@/components/map/player-switcher";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import prisma from "@/lib/prisma";
-import Link from "next/link";
-import { toTitleCase } from "@/lib/utils";
-import { Killfeed } from "@/components/map/killfeed";
-import { Metadata } from "next";
-import { SearchParams } from "@/types/next";
-import { MapCharts } from "@/components/charts/map/map-charts";
-import { ComparePlayers } from "@/components/map/compare-players";
-import { MapEvents } from "@/components/map/map-events";
 import { getMostPlayedHeroes } from "@/data/player-dto";
+import prisma from "@/lib/prisma";
+import { toTitleCase } from "@/lib/utils";
+import { SearchParams } from "@/types/next";
+import { Metadata } from "next";
+import Link from "next/link";
 
 type Props = {
   params: { team: string; scrimId: string; mapId: string };
@@ -80,12 +81,14 @@ export default async function MapDashboardPage({ params }: Props) {
           <div className="ml-auto flex items-center space-x-4">
             <Search user={null} />
             <ModeToggle />
+            <LocaleSwitcher />
           </div>
         </div>
         <div className="flex h-16 items-center px-4 md:hidden">
           <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
           <div className="ml-auto flex items-center space-x-4">
             <ModeToggle />
+            <LocaleSwitcher />
           </div>
         </div>
       </div>

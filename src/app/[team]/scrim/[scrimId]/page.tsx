@@ -1,5 +1,6 @@
 import { Search } from "@/components/dashboard/search";
 import { GuestNav } from "@/components/guest-nav";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 import { AddMapCard } from "@/components/map/add-map";
 import { MobileNav } from "@/components/mobile-nav";
 import { ClientDate } from "@/components/scrim/client-date";
@@ -123,6 +124,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
           <div className="ml-auto flex items-center space-x-4">
             <Search user={user} />
             <ModeToggle />
+            <LocaleSwitcher />
             {session ? (
               <UserNav />
             ) : (
@@ -135,6 +137,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
         <MobileNav session={session} />
         <div className="ml-auto flex items-center space-x-4">
           <ModeToggle />
+          <LocaleSwitcher />
           {session ? (
             <UserNav />
           ) : (
