@@ -7,13 +7,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { locales } from "@/i18n/config";
+import { Locale, locales } from "@/i18n/config";
 import { setUserLocale } from "@/lib/locale";
 import { useRouter } from "next/navigation";
-import { startTransition } from "react";
 
 export function LocaleSwitcher() {
   const router = useRouter();
+
+  async function updateUserLocale(localeCode: Locale) {
+    await setUserLocale(localeCode);
+    router.refresh();
+  }
 
   return (
     <DropdownMenu>
@@ -45,12 +49,7 @@ export function LocaleSwitcher() {
         {locales.map((locale) => (
           <DropdownMenuItem
             key={locale.code}
-            onClick={() =>
-              startTransition(async () => {
-                await setUserLocale(locale.code);
-                router.refresh();
-              })
-            }
+            onClick={() => updateUserLocale(locale.code)}
           >
             {locale.name}
           </DropdownMenuItem>
