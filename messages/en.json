@@ -182,6 +182,10 @@
         "contact": "Contact Us",
         "discord": "Community Discord"
       },
+      "locale": {
+        "title": "Locales",
+        "change": "Change Locale to {locale}"
+      },
       "theme": {
         "title": "Theme",
         "light": "Light",
