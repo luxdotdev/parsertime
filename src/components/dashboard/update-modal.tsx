@@ -11,10 +11,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 export function UpdateModal({ data }: { data: UpdateModalData }) {
   const [open, setOpen] = useState(false);
+  const t = useTranslations("updateModal");
 
   useEffect(() => {
     const hasSeenUpdate = localStorage.getItem("hasSeenUpdate");
@@ -54,7 +56,7 @@ export function UpdateModal({ data }: { data: UpdateModalData }) {
         <AlertDialogFooter>
           <AlertDialogAction asChild>
             <Button type="button" onClick={handleClose}>
-              Dismiss
+              {t("dismiss")}
             </Button>
           </AlertDialogAction>
         </AlertDialogFooter>
