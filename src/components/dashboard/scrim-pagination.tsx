@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { Scrim } from "@prisma/client";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 import { use, useState } from "react";
 
 type Props = {
@@ -36,6 +37,7 @@ export function ScrimPagination({ scrims }: Props) {
   const [currPage, setCurrPage] = useState(1);
   const [filter, setFilter] = useState("");
   const [search, setSearch] = useState("");
+  const t = useTranslations("dashboard");
 
   const { teamId } = use(TeamSwitcherContext);
 
@@ -97,20 +99,20 @@ export function ScrimPagination({ scrims }: Props) {
       <span className="inline-flex gap-2 p-4">
         <Select onValueChange={(v) => setFilter(v)}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter" />
+            <SelectValue placeholder={t("filter.title")} />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Select a filter</SelectLabel>
-              <SelectItem value="date-desc">Newest to Oldest</SelectItem>
-              <SelectItem value="date-asc">Oldest to Newest</SelectItem>
+              <SelectLabel>{t("filter.select")}</SelectLabel>
+              <SelectItem value="date-desc">{t("filter.newToOld")}</SelectItem>
+              <SelectItem value="date-asc">{t("filter.oldToNew")}</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
 
         <Input
           type="search"
-          placeholder="Search..."
+          placeholder={t("filter.search")}
           className="md:w-[100px] lg:w-[260px]"
           onChange={(e) => {
             setSearch(e.target.value);
@@ -135,6 +137,7 @@ export function ScrimPagination({ scrims }: Props) {
                       className="hidden md:flex"
                       onClick={() => setCurrPage(currPage - 1)}
                       href="#"
+                      text={t("pagination.previous")}
                     />
                     <PaginationItem className="md:hidden">
                       <PaginationLink
@@ -149,8 +152,13 @@ export function ScrimPagination({ scrims }: Props) {
                 {pagination.pages.map((page, index) => {
                   if (page === "...") {
                     // Rendering ellipsis for skipped pages
-                    // eslint-disable-next-line react/no-array-index-key
-                    return <PaginationEllipsis key={`ellipsis-${index}`} />;
+                    return (
+                      <PaginationEllipsis
+                        // eslint-disable-next-line react/no-array-index-key
+                        key={`ellipsis-${index}`}
+                        text={t("pagination.morePages")}
+                      />
+                    );
                   }
                   return (
                     <PaginationItem key={page}>
@@ -170,6 +178,7 @@ export function ScrimPagination({ scrims }: Props) {
                       className="hidden md:flex"
                       onClick={() => setCurrPage(currPage + 1)}
                       href="#"
+                      text={t("pagination.next")}
                     />
                     <PaginationItem className="md:hidden">
                       <PaginationLink
