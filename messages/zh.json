@@ -86,5 +86,11 @@
       "screenReader": "页脚",
       "copyright": "2024 lux.dev. 保留所有权利。"
     }
+  },
+  "metadata": {
+    "title": "Parsertime",
+    "description": "Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
+    "ogTitle": "Parsertime",
+    "ogDescription": "Parsertime 是一款用于分析《守望先锋》对抗赛的工具。"
   }
 }
