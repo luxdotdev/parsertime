@@ -92,5 +92,28 @@
     "description": "Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
     "ogTitle": "Parsertime",
     "ogDescription": "Parsertime 是一款用于分析《守望先锋》对抗赛的工具。"
+  },
+  "signInPage": {
+    "metadataSignIn": {
+      "title": "登录 | Parsertime",
+      "description": "登录到您的帐户。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
+      "ogTitle": "登录 | Parsertime",
+      "ogDescription": "登录到您的帐户。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。"
+    },
+    "metadataSignUp": {
+      "title": "注册 | Parsertime",
+      "description": "注册账户。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
+      "ogTitle": "注册 | Parsertime",
+      "ogDescription": "注册账户。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。"
+    },
+    "signUp": "注册",
+    "signIn": "登录",
+    "login": "登录",
+    "createAccount": "创建账户",
+    "enterEmailCreateAccount": "请在下方输入您的电子邮件以创建账户",
+    "enterEmailSignIn": "请在下方输入您的电子邮件以登录",
+    "signInEmail": "使用电子邮件登录",
+    "orContinueWith": "或者继续",
+    "madeBy": "使用 ❤️ 制作，作者 lux.dev"
   }
 }
