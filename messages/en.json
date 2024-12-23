@@ -117,7 +117,7 @@
     "madeBy": "Made with ❤️ by lux.dev"
   },
   "dashboard": {
-    "metadataDashboard": {
+    "metadata": {
       "title": "Dashboard | Parsertime",
       "description": "Parsertime is a tool for analyzing Overwatch scrims.",
       "ogTitle": "Dashboard | Parsertime",
@@ -128,6 +128,7 @@
     "admin": "Admin View",
     "search": "Search...",
     "themeSwitcher": {
+      "toggle": "Toggle theme",
       "light": "Light",
       "dark": "Dark",
       "system": "System"
@@ -151,28 +152,34 @@
         "signIn": "Sign In",
         "home": "Home"
       },
+      "scrim": {
+        "title": "Scrim"
+      },
       "link": {
         "title": "Link Copied",
         "description": "The link to this {pathname} has been copied.",
-        "share": "Share Link to {pathname}"
+        "share": "Share Link to {pathname}",
+        "map": "Map",
+        "scrim": "Scrim"
       },
       "teams": {
         "title": "Teams",
         "viewTeams": "View Teams",
-        "viewScrims": "View Scrims:"
+        "viewScrims": "View Scrims: {team}"
       },
       "settings": {
         "title": "Settings",
         "profile": "Profile",
         "linkedAccounts": "Linked Accounts"
       },
-      "report": {
-        "title": "Reporting",
-        "description": "Report a Bug"
+      "debugging": {
+        "title": "Debugging",
+        "assistant": "Debugging Assistant"
       },
       "feedback": {
         "title": "Feedback",
-        "description": "Contact Us",
+        "bugReport": "Report a Bug",
+        "contact": "Contact Us",
         "discord": "Community Discord"
       },
       "theme": {
@@ -182,11 +189,39 @@
         "system": "System"
       }
     },
+    "bugReportForm": {
+      "unknown": "unknown",
+      "successToast": {
+        "title": "Bug report submitted",
+        "description": "Thank you for your help!"
+      },
+      "errorToast": {
+        "title": "Error",
+        "description": "An error occurred while submitting your bug report."
+      },
+      "title": "Report a Bug",
+      "description": "If you've found a bug, please report it to us. We appreciate your help in making Parsertime better.",
+      "formTitle": "Title",
+      "titlePlaceholder": "Cannot remove scrim...",
+      "titleDescription": "The title of the bug report. Be concise and descriptive.",
+      "descriptionTitle": "Description",
+      "descriptionPlaceholder": "Type your message here.",
+      "descriptionDescription": "Describe the bug you found. Include as much detail as possible.",
+      "emailTitle": "Email",
+      "emailPlaceholder": "user@example.com",
+      "emailDescription": "The email address for the currently logged in user.",
+      "urlTitle": "URL",
+      "urlPlaceholder": "path/to/page",
+      "urlDescription": "The URL of the page where the bug was found.",
+      "submitting": "Submitting...",
+      "submit": "Submit Bug Report"
+    },
     "filter": {
       "title": "Filter",
       "select": "Select a filter",
       "oldToNew": "Oldest to Newest",
-      "newToOld": "Newest to Oldest"
+      "newToOld": "Newest to Oldest",
+      "search": "Search..."
     },
     "pagination": {
       "previous": "Previous",
@@ -241,7 +276,7 @@
       "handleFile": {
         "fileReq": "File is required.",
         "fileMax": "Max file size is 1MB.",
-        "fileAccept": ".xlsx files are accepted.",
+        "fileAccept": ".xlsx and .txt files are accepted.",
         "creatingTitle": "Creating scrim...",
         "creatingDescription": "We are processing your data. Please wait.",
         "createdTitle": "Scrim created",
@@ -252,13 +287,11 @@
     },
     "scrimCard": {
       "editScrim": "Edit scrim",
-      "scrimDate": "Scrim Date: {date}",
-      "team": "Team: {team}",
+      "scrimDate": "Scrim Date: ",
+      "team": "Team: ",
       "noTeam": "Uncategorized",
-      "creator": "Creator: {creator}",
-      "clientDate": {
-        "formatDate": "{date, date, ::EEE MMM dd yyyy}"
-      }
+      "creator": "Creator: ",
+      "noCreator": "Unknown"
     },
     "scrimCreationForm": {
       "fileSize": {
@@ -277,8 +310,7 @@
         "title": "Scrim created",
         "description": "Your scrim has been created successfully.",
         "errorTitle": "Error",
-        "errorDescription": "An error occurred: {res}.",
-        "errorDocs": "Please read the docs <Link>here</Link> <ExternalLinkIcon /> to see if the error can be resolved."
+        "errorDescription": "An error occurred: {res}. Please read the docs <here>here</here> to see if the error can be resolved."
       },
       "scrimName": "Scrim Name",
       "scrimPlaceholder": "New Scrim",
@@ -293,9 +325,9 @@
       "teamName": "Assign a Team",
       "teamPlaceholder": "Select a team",
       "teamIndividual": "Individual",
-      "teamDescription": "You can manage teams from your",
-      "teamDashboardLink": "dashboard",
+      "teamDescription": "You can manage teams from your <link>dashboard</link>.",
       "teamRequiredError": "A team name is required.",
+      "teamLoading": "Loading...",
       "dateName": "Scrim Date",
       "datePlaceholder": "Pick a date",
       "date": "",
@@ -306,6 +338,9 @@
       "submit": "Submit",
       "submitting": "Submitting..."
     }
+  },
+  "updateModal": {
+    "dismiss": "Dismiss"
   },
   "calendar": {
     "monthYear": "{date, date, ::MMMM yyyy}",
