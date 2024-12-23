@@ -17,13 +17,10 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
-const formSchema = z.object({
-  name: z.string().min(1, "Team name is required"),
-});
 
 export function CreateTeamDialog({
   setShowNewTeamDialog,
@@ -34,6 +31,15 @@ export function CreateTeamDialog({
 }) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const t = useTranslations("dashboard.createTeam");
+
+  const formSchema = z.object({
+    name: z
+      .string()
+      .min(1, t("required"))
+      .min(2, t("minCharacters"))
+      .max(30, t("maxCharacters")),
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,15 +59,17 @@ export function CreateTeamDialog({
       setShowNewTeamDialog(false);
       setNewTeamCreated(true);
       toast({
-        title: "Team created!",
-        description: "Your team has been created successfully.",
+        title: t("newTeamCreated.title"),
+        description: t("newTeamCreated.description"),
       });
       setLoading(false);
     } else {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: `An error occurred: ${await res.text()} (${res.status})`,
+        title: t("error.title"),
+        description: t("error.description", {
+          res: `${await res.text()} (${res.status})`,
+        }),
       });
       setLoading(false);
     }
@@ -70,11 +78,8 @@ export function CreateTeamDialog({
   return (
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>Create team</DialogTitle>
-        <DialogDescription>
-          Add a new team to categorize your scrims and invite your players to
-          view and manage your scrims.
-        </DialogDescription>
+        <DialogTitle>{t("title")}</DialogTitle>
+        <DialogDescription>{t("description")}</DialogDescription>
       </DialogHeader>
 
       <Form {...form}>
@@ -85,9 +90,9 @@ export function CreateTeamDialog({
             render={({ field }) => (
               <div className="space-y-4 py-2 pb-4">
                 <div className="space-y-2">
-                  <FormLabel>Team name</FormLabel>
+                  <FormLabel>{t("teamName")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Esports at Cornell" {...field} />
+                    <Input placeholder={t("placeholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </div>
@@ -100,16 +105,16 @@ export function CreateTeamDialog({
               onClick={() => setShowNewTeamDialog(false)}
               disabled={loading}
             >
-              Cancel
+              {t("cancel")}
             </Button>
             <Button type="submit" disabled={loading}>
               {loading ? (
                 <>
-                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" /> Creating
-                  team...
+                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
+                  {t("creatingTeam")}
                 </>
               ) : (
-                "Create team"
+                <>{t("createTeam")}</>
               )}
             </Button>
           </DialogFooter>
