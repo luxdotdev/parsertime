@@ -15,72 +15,10 @@ import {
   PresentationChartBarIcon,
 } from "@heroicons/react/24/outline";
 import { get } from "@vercel/edge-config";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 import { SVGProps } from "react";
-
-const primaryFeatures = [
-  {
-    name: "Built by coaches, for coaches",
-    description:
-      "Designed with collegiate and professional coaches in mind. Our platform is built to help you understand trends and patterns in your team's performance.",
-    href: "#",
-    icon: AcademicCapIcon,
-  },
-  {
-    name: "Share with your team",
-    description:
-      "Invite your players to your team and allow them to see their stats. Share your team's stats with your players and coaches. Keep everyone in the loop.",
-    href: "#",
-    icon: ArrowUpOnSquareIcon,
-  },
-  {
-    name: "Advanced statistics",
-    description:
-      "Gain insight into your players' performance over time. Track their stats and see how they improve. See trends and patterns week over week.",
-    href: "#",
-    icon: PresentationChartBarIcon,
-  },
-];
-
-const secondaryFeatures = [
-  {
-    name: "Player and team data charts.",
-    description:
-      "Visualize your team's stats. See what can be improved and where your team is excelling. Understand your team's strengths and weaknesses.",
-    icon: ChartBarIcon,
-  },
-  {
-    name: "Filter stats by time.",
-    description:
-      "See your team's stats over time. Filter by week, month, or year to see how your team is improving.",
-    icon: CalendarDaysIcon,
-  },
-  {
-    name: "User profiles.",
-    description:
-      "See individual player stats and trends over time. Understand how your players are improving and where they need help.",
-    icon: IdentificationIcon,
-  },
-  {
-    name: "Advanced security.",
-    description:
-      "User accounts do not store passwords. Only users you invite to your team can see your team's scrims.",
-    icon: FingerPrintIcon,
-  },
-  {
-    name: "Fast and reliable.",
-    description:
-      "We're built on top of the latest cloud infrastructure. Speed is never an issue. We're always up and running.",
-    icon: CloudIcon,
-  },
-  {
-    name: "Fully customizable.",
-    description:
-      "Need custom functionality or want to track specific metrics? Let us know and we'll make it happen.",
-    icon: WrenchScrewdriverIcon,
-  },
-];
 
 type IconProps = Omit<SVGProps<SVGSVGElement>, "fill" | "viewbox">;
 
@@ -130,6 +68,63 @@ export default async function LandingPage() {
     title: string;
     url: string;
   }>("latestUpdates");
+
+  const t = await getTranslations("landingPage");
+
+  const primaryFeatures = [
+    {
+      name: t("primaryFeatures.builtByCoaches.name"),
+      description: t("primaryFeatures.builtByCoaches.description"),
+      href: "/about",
+      icon: AcademicCapIcon,
+    },
+    {
+      name: t("primaryFeatures.shareWithTeam.name"),
+      description: t("primaryFeatures.shareWithTeam.description"),
+      href: "/about",
+      icon: ArrowUpOnSquareIcon,
+    },
+    {
+      name: t("primaryFeatures.advancedStatistics.name"),
+      description: t("primaryFeatures.advancedStatistics.description"),
+      href: "/about",
+      icon: PresentationChartBarIcon,
+    },
+  ];
+
+  const secondaryFeatures = [
+    {
+      name: t("secondaryFeatures.dataCharts.name"),
+      description: t("secondaryFeatures.dataCharts.description"),
+      icon: ChartBarIcon,
+    },
+    {
+      name: t("secondaryFeatures.filterStats.name"),
+      description: t("secondaryFeatures.filterStats.description"),
+      icon: CalendarDaysIcon,
+    },
+    {
+      name: t("secondaryFeatures.userProfiles.name"),
+      description: t("secondaryFeatures.userProfiles.description"),
+      icon: IdentificationIcon,
+    },
+    {
+      name: t("secondaryFeatures.advancedSecurity.name"),
+      description: t("secondaryFeatures.advancedSecurity.description"),
+      icon: FingerPrintIcon,
+    },
+    {
+      name: t("secondaryFeatures.fastReliable.name"),
+      description: t("secondaryFeatures.fastReliable.description"),
+      icon: CloudIcon,
+    },
+    {
+      name: t("secondaryFeatures.fullyCustomizable.name"),
+      description: t("secondaryFeatures.fullyCustomizable.description"),
+      icon: WrenchScrewdriverIcon,
+    },
+  ];
+
   return (
     <div className="bg-white dark:bg-black">
       <main>
@@ -218,7 +213,7 @@ export default async function LandingPage() {
                   className="inline-flex space-x-6"
                 >
                   <span className="rounded-full bg-sky-600/10 px-3 py-1 text-sm font-semibold leading-6 text-sky-600 ring-1 ring-inset ring-sky-600/20 dark:bg-sky-500/10 dark:text-sky-400 dark:ring-sky-500/20">
-                    Latest updates
+                    {t("hero.latestUpdates")}
                   </span>
                   <span className="inline-flex items-center space-x-2 text-sm font-medium leading-6 text-gray-600 dark:text-gray-300">
                     <span>{latestUpdates!.title}</span>
@@ -230,32 +225,30 @@ export default async function LandingPage() {
                 </Link>
               </div>
               <h1 className="mt-10 text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
-                Revolutionize your scrim experience
+                {t("hero.title")}
               </h1>
               <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-                Using our platform, you can visualize your scrim data, track
-                individual player performance, and more. Invite your players to
-                your team and allow them to see their stats.
+                {t("hero.description")}
               </p>
               <div className="mt-10 flex items-center gap-x-6">
                 <Button asChild>
-                  <Link href="/sign-up">Get started</Link>
+                  <Link href="/sign-up">{t("hero.getStarted")}</Link>
                 </Button>
                 <Link
                   href="/demo"
                   className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
                 >
-                  Live demo <span aria-hidden="true">→</span>
+                  {t("hero.liveDemo")} <span aria-hidden="true">→</span>
                 </Link>
               </div>
               <div className="mt-4 flex items-center gap-x-2 text-muted-foreground">
                 <p className="text-xs">
-                  Already have an account?{" "}
+                  {t("hero.accountDescription")}{" "}
                   <Link
                     href="/sign-in"
                     className="font-semibold leading-6 text-gray-900 dark:text-white"
                   >
-                    Sign In <span aria-hidden="true">→</span>
+                    {t("hero.signIn")} <span aria-hidden="true">→</span>
                   </Link>
                 </p>
               </div>
@@ -286,7 +279,7 @@ export default async function LandingPage() {
         {/* Logo cloud */}
         <div className="mx-auto mt-8 max-w-7xl px-6 sm:mt-16 lg:px-8">
           <h2 className="text-center text-lg font-semibold leading-8 text-gray-900 dark:text-white">
-            Used by a variety of teams for stat tracking
+            {t("logoCloud.title")}
           </h2>
           <div className="mx-auto mt-10 grid max-w-lg grid-cols-4 items-center gap-x-8 gap-y-10 sm:max-w-xl sm:grid-cols-6 sm:gap-x-10 lg:mx-0 lg:max-w-none lg:grid-cols-5">
             <Image
@@ -331,16 +324,13 @@ export default async function LandingPage() {
         <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-56 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-base font-semibold leading-7 text-sky-600 dark:text-sky-400">
-              Improve faster
+              {t("feature1.subtitle")}
             </h2>
             <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-              Everything you need to improve your team performance
+              {t("feature1.title")}
             </p>
             <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-              Streamline your improvement process with our platform. Gain
-              insight into your players&apos; and teams&apos; strengths and
-              weaknesses. See their biggest areas of improvement and adjust your
-              coaching accordingly.
+              {t("feature1.description")}
             </p>
           </div>
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
@@ -363,7 +353,8 @@ export default async function LandingPage() {
                         href={feature.href}
                         className="text-sm font-semibold leading-6 text-sky-600 dark:text-sky-400"
                       >
-                        Learn more <span aria-hidden="true">→</span>
+                        {t("primaryFeatures.href")}{" "}
+                        <span aria-hidden="true">→</span>
                       </Link>
                     </p>
                   </dd>
@@ -378,15 +369,13 @@ export default async function LandingPage() {
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto max-w-2xl sm:text-center">
               <h2 className="text-base font-semibold leading-7 text-sky-600 dark:text-sky-400">
-                Everything you need
+                {t("feature2.subtitle")}
               </h2>
               <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-                Scrim stats at your fingertips
+                {t("feature2.title")}
               </p>
               <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-                See your stats after your scrims instead of only relying on
-                replay codes. Our platform allows you to keep your data no
-                matter what happens to your replays.
+                {t("feature2.description")}
               </p>
             </div>
           </div>
@@ -433,15 +422,13 @@ export default async function LandingPage() {
         <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-56 lg:px-8">
           <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl">
             <h2 className="text-base font-semibold leading-8 text-sky-600 dark:text-sky-400">
-              Our track record
+              {t("stats.subtitle")}
             </h2>
             <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-              Trusted by the best
+              {t("stats.title")}
             </p>
             <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-              We&apos;re proud to work with top teams and coaches to create
-              better experiences for everyone. Our platform is built to suit the
-              needs of collegiate and professional teams.
+              {t("stats.description")}
             </p>
           </div>
           <dl className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-10 text-gray-900 dark:text-white sm:mt-20 sm:grid-cols-2 sm:gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-4">
@@ -462,7 +449,7 @@ export default async function LandingPage() {
         {/* Testimonials */}
         <section className="bg-white px-6 pt-24 dark:bg-black sm:pt-32 lg:px-8">
           <figure className="mx-auto max-w-2xl">
-            <p className="sr-only">5 out of 5 stars</p>
+            <p className="sr-only">{t("testimonial.starRating")}</p>
             <div className="flex gap-x-1 text-sky-600 dark:text-sky-400">
               <StarIcon className="h-5 w-5 flex-none" aria-hidden="true" />
               <StarIcon className="h-5 w-5 flex-none" aria-hidden="true" />
@@ -471,18 +458,7 @@ export default async function LandingPage() {
               <StarIcon className="h-5 w-5 flex-none" aria-hidden="true" />
             </div>
             <blockquote className="mt-10 text-xl font-semibold leading-8 tracking-tight text-gray-900 dark:text-white sm:text-2xl sm:leading-9">
-              <p>
-                “Parsertime is an incredible way to check out statistics in
-                Overwatch scrims. It got me to understand more about statistics
-                in general and really get interested in data science, which I
-                now do for four teams (using Parsertime). The information it
-                provides is so impactful that my players can be coached on
-                things they actively need help with, like surviving longer,
-                holding their ultimate abilities longer, and being more patient.
-                Maybe their healing numbers are lower than the other support, so
-                we can look at why. It&apos;s a fantastic tool that helps obtain
-                a wider range of data to lock in on a closer field of view.”
-              </p>
+              <p>{t("testimonial.quote")}</p>
             </blockquote>
             <figcaption className="mt-10 flex items-center gap-x-6">
               <Image
@@ -494,10 +470,10 @@ export default async function LandingPage() {
               />
               <div className="text-sm leading-6">
                 <div className="font-semibold text-gray-900 dark:text-white">
-                  coy (@shy.coy)
+                  {t("testimonial.author")}
                 </div>
                 <div className="mt-0.5 text-gray-600 dark:text-gray-300">
-                  Manager for o7 Esports
+                  {t("testimonial.role")}
                 </div>
               </div>
             </figcaption>
@@ -575,23 +551,22 @@ export default async function LandingPage() {
           </div>
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-              Ready to get started?
+              {t("cta.subtitle")}
               <br />
-              Start using our app today.
+              {t("cta.title")}
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-600 dark:text-gray-300">
-              Sign up and start using our platform today. We&apos;re excited to
-              change the way you think about coaching.
+              {t("cta.description")}
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Button asChild>
-                <Link href="/sign-up">Get started</Link>
+                <Link href="/sign-up">{t("cta.getStarted")}</Link>
               </Button>
               <Link
                 href="/about"
                 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
               >
-                Learn more <span aria-hidden="true">→</span>
+                {t("cta.learnMore")} <span aria-hidden="true">→</span>
               </Link>
             </div>
           </div>
@@ -601,7 +576,7 @@ export default async function LandingPage() {
       {/* Footer */}
       <footer aria-labelledby="footer-heading" className="relative">
         <h2 id="footer-heading" className="sr-only">
-          Footer
+          {t("footer.screenReader")}
         </h2>
         <div className="mx-auto max-w-7xl px-6 pb-8 pt-4 lg:px-8">
           <div className="border-t border-gray-900/10 pt-8 dark:border-white/10 md:flex md:items-center md:justify-between">
@@ -619,7 +594,7 @@ export default async function LandingPage() {
               ))}
             </div>
             <p className="mt-8 text-xs leading-5 text-gray-400 md:order-1 md:mt-0">
-              &copy; 2024 lux.dev. All rights reserved.
+              {t("footer.copyright")}
             </p>
           </div>
         </div>
