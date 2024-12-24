@@ -50,40 +50,14 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
-import { cn } from "@/lib/utils";
+import { cn, toKebabCase } from "@/lib/utils";
 import { Map, Scrim, Team } from "@prisma/client";
 import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
 import { Calendar } from "../ui/calendar";
-
-const profileFormSchema = z.object({
-  name: z
-    .string()
-    .min(2, {
-      message: "Name must be at least 2 characters.",
-    })
-    .max(30, {
-      message: "Name must not be longer than 30 characters.",
-    }),
-  teamId: z.string(),
-  date: z.date(),
-  guestMode: z.boolean(),
-  maps: z.array(
-    z.object({
-      id: z.number(),
-      replayCode: z
-        .string()
-        .max(6, {
-          message: "Replay code must not be longer than 6 characters.",
-        })
-        .optional(),
-    })
-  ),
-});
-
-type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 export function EditScrimForm({
   scrim,
@@ -96,6 +70,37 @@ export function EditScrimForm({
 }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const t = useTranslations("scrimPage.editScrim");
+
+  const profileFormSchema = z.object({
+    name: z
+      .string()
+      .min(2, {
+        message: t("displayName.minMessage"),
+      })
+      .max(30, {
+        message: t("displayName.maxMessage"),
+      }),
+    teamId: z.string(),
+    date: z.date(),
+    guestMode: z.boolean(),
+    maps: z.array(
+      z.object({
+        id: z.number(),
+        replayCode: z
+          .string()
+          .min(6, {
+            message: t("replayCode"),
+          })
+          .max(6, {
+            message: t("replayCode"),
+          })
+          .optional(),
+      })
+    ),
+  });
+
+  type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -139,15 +144,17 @@ export function EditScrimForm({
 
     if (res.ok) {
       toast({
-        title: "Scrim updated",
-        description: "Your scrim has been successfully updated.",
+        title: t("onSubmit.title"),
+        description: t("onSubmit.description"),
         duration: 5000,
       });
       router.refresh();
     } else {
       toast({
-        title: "An error occurred",
-        description: `An error occurred: ${await res.text()} (${res.status})`,
+        title: t("onSubmit.errorTitle"),
+        description: t("onSubmit.errorDescription", {
+          res: `${await res.text()} (${res.status})`,
+        }),
         variant: "destructive",
         duration: 5000,
       });
@@ -163,15 +170,17 @@ export function EditScrimForm({
 
     if (res.ok) {
       toast({
-        title: "Map deleted",
-        description: "The map has been deleted.",
+        title: t("deleteMap.title"),
+        description: t("deleteMap.description"),
         duration: 5000,
       });
       router.refresh();
     } else {
       toast({
-        title: "An error occurred",
-        description: `An error occurred: ${await res.text()} (${res.status})`,
+        title: t("deleteMap.errorTitle"),
+        description: t("deleteMap.errorDescription", {
+          res: `${await res.text()} (${res.status})`,
+        }),
         variant: "destructive",
         duration: 5000,
       });
@@ -188,18 +197,17 @@ export function EditScrimForm({
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Display Name</FormLabel>
+                <FormLabel>{t("displayName.title")}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="FIU Panthers vs UF Gators"
+                    placeholder={t("displayName.placeholder")}
                     defaultValue={scrim.name ?? ""}
                     className="max-w-lg"
                     {...field}
                   />
                 </FormControl>
                 <FormDescription>
-                  This is your scrim&apos;s name. This will show on your
-                  dashboard.
+                  {t("displayName.description")}
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -211,19 +219,21 @@ export function EditScrimForm({
             name="teamId"
             render={({ field }) => (
               <FormItem className="max-w-lg">
-                <FormLabel>Team</FormLabel>
+                <FormLabel>{t("team.title")}</FormLabel>
                 <FormControl>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value.toString()}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a team" />
+                      <SelectValue placeholder={t("team.placeholder")} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectLabel>Teams</SelectLabel>
-                        <SelectItem value="0">Individual</SelectItem>
+                        <SelectLabel>{t("team.select.teams")}</SelectLabel>
+                        <SelectItem value="0">
+                          {t("team.select.individual")}
+                        </SelectItem>
                         {teams.map((team) => (
                           <SelectItem
                             key={team.name}
@@ -236,10 +246,7 @@ export function EditScrimForm({
                     </SelectContent>
                   </Select>
                 </FormControl>
-                <FormDescription>
-                  This is the team that will be associated with this scrim. You
-                  can assign scrims to teams that you manage or own.
-                </FormDescription>
+                <FormDescription>{t("team.description")}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -250,7 +257,7 @@ export function EditScrimForm({
             name="date"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Scrim Date</FormLabel>
+                <FormLabel>{t("date.title")}</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -264,7 +271,7 @@ export function EditScrimForm({
                         {field.value ? (
                           format(new Date(field.value), "PPP")
                         ) : (
-                          <span>Edit date</span>
+                          <span>{t("date.edit")}</span>
                         )}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
@@ -281,9 +288,7 @@ export function EditScrimForm({
                     />
                   </PopoverContent>
                 </Popover>
-                <FormDescription>
-                  The date when the scrim took place.
-                </FormDescription>
+                <FormDescription>{t("date.description")}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -301,11 +306,9 @@ export function EditScrimForm({
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
-                  <FormLabel>Enable Guest Mode</FormLabel>
+                  <FormLabel>{t("guestMode.title")}</FormLabel>
                   <FormDescription className="max-w-[450px]">
-                    If enabled, the scrim will be accessible to any logged in
-                    user. If disabled, only your team members will be able to
-                    access the scrim.
+                    {t("guestMode.description")}
                   </FormDescription>
                 </div>
               </FormItem>
@@ -313,11 +316,13 @@ export function EditScrimForm({
           />
 
           <FormItem>
-            <FormLabel>Maps</FormLabel>
+            <FormLabel>{t("maps.title")}</FormLabel>
             <Accordion type="single" collapsible className="max-w-lg">
               {maps.map((map, index) => (
                 <AccordionItem key={map.id} value={map.id.toString()}>
-                  <AccordionTrigger>{map.name}</AccordionTrigger>
+                  <AccordionTrigger>
+                    {t(`maps.mapNames.${toKebabCase(map.name)}`)}
+                  </AccordionTrigger>
                   <AccordionContent>
                     <div className="flex items-center justify-between">
                       <FormField
@@ -325,10 +330,16 @@ export function EditScrimForm({
                         name={`maps.${index}.replayCode`}
                         render={({ field }) => (
                           <FormItem className="pl-1">
-                            <FormLabel>Replay Code for {map.name}</FormLabel>
+                            <FormLabel>
+                              {t("maps.replayCodeLabel", {
+                                map: t(
+                                  `maps.mapNames.${toKebabCase(map.name)}`
+                                ),
+                              })}
+                            </FormLabel>
                             <FormControl>
                               <Input
-                                placeholder="Replay Code"
+                                placeholder={t("maps.replayCode")}
                                 className="w-28"
                                 {...field}
                               />
@@ -341,21 +352,26 @@ export function EditScrimForm({
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button className="mt-3" variant="destructive">
-                            Delete Map
+                            {t("maps.delete")}
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
                             <AlertDialogTitle>
-                              Are you absolutely sure?
+                              {t("maps.deleteDialog.title")}
                             </AlertDialogTitle>
                             <AlertDialogDescription>
-                              This will permanently delete the map{" "}
-                              <strong>{map.name}</strong>. This action cannot be
-                              undone.
+                              {t.rich("maps.deleteDialog.description", {
+                                strong: (chunks) => <strong>{chunks}</strong>,
+                                map: t(
+                                  `maps.mapNames.${toKebabCase(map.name)}`
+                                ),
+                              })}
                             </AlertDialogDescription>
                             <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogCancel>
+                                {t("maps.deleteDialog.cancel")}
+                              </AlertDialogCancel>
                               <AlertDialogAction
                                 onClick={() =>
                                   startTransition(
@@ -366,10 +382,10 @@ export function EditScrimForm({
                                 {loading ? (
                                   <>
                                     <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
-                                    Deleting...
+                                    {t("maps.deleteDialog.deleting")}
                                   </>
                                 ) : (
-                                  "Delete"
+                                  t("maps.deleteDialog.delete")
                                 )}
                               </AlertDialogAction>
                             </AlertDialogFooter>
@@ -386,10 +402,11 @@ export function EditScrimForm({
           <Button type="submit" disabled={loading}>
             {loading ? (
               <>
-                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" /> Updating...
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
+                {t("updating")}
               </>
             ) : (
-              "Update scrim"
+              t("update")
             )}
           </Button>
         </form>
