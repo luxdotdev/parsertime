@@ -1,4 +1,3 @@
-import { Search } from "@/components/dashboard/search";
 import { GuestNav } from "@/components/guest-nav";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { AddMapCard } from "@/components/map/add-map";
@@ -13,6 +12,7 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
+import { Link } from "@/components/ui/link";
 import {
   Tooltip,
   TooltipContent,
@@ -27,22 +27,22 @@ import prisma from "@/lib/prisma";
 import { toKebabCase } from "@/lib/utils";
 import { SearchParams } from "@/types/next";
 import { $Enums } from "@prisma/client";
-import {
-  ExclamationTriangleIcon,
-  ExternalLinkIcon,
-  Pencil2Icon,
-} from "@radix-ui/react-icons";
+import { ExclamationTriangleIcon, Pencil2Icon } from "@radix-ui/react-icons";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 type Props = {
-  params: { team: string; scrimId: string };
+  params: { team: string; scrimId: string; locale: string };
   searchParams: SearchParams;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const t = await getTranslations({
+    locale: params.locale,
+    namespace: "scrimPage.metadata",
+  });
   const scrimId = decodeURIComponent(params.scrimId);
 
   const scrim = await prisma.scrim.findFirst({
@@ -54,25 +54,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
   });
 
-  const scrimName = scrim?.name ?? "Scrim";
+  const scrimName = scrim?.name ?? t("scrim");
 
   return {
-    title: `${scrimName} Overview | Parsertime`,
-    description: `Overview for ${scrimName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+    title: t("title", { scrimName }),
+    description: t("description", { scrimName }),
     openGraph: {
-      title: `${scrimName} Overview | Parsertime`,
-      description: `Overview for ${scrimName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+      title: t("ogTitle", { scrimName }),
+      description: t("ogDescription", { scrimName }),
       url: "https://parsertime.app",
       type: "website",
       siteName: "Parsertime",
       images: [
         {
-          url: `https://parsertime.app/api/og?title=${scrimName} Overview`,
+          url: `https://parsertime.app/api/og?title=${t("ogImage", { scrimName })}`,
           width: 1200,
           height: 630,
         },
       ],
-      locale: "en_US",
+      locale: params.locale,
     },
   };
 }
@@ -80,6 +80,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ScrimDashboardPage({ params }: Props) {
   const id = parseInt(params.scrimId);
   const session = await auth();
+  const t = await getTranslations("scrimPage");
 
   const scrim = await getScrim(id);
   if (!scrim) notFound();
@@ -119,20 +120,6 @@ export default async function ScrimDashboardPage({ params }: Props) {
 
   return (
     <div className="min-h-[90vh] flex-col md:flex">
-      <div className="border-b">
-        <div className="hidden h-16 items-center px-4 md:flex">
-          <div className="ml-auto flex items-center space-x-4">
-            <Search user={user} />
-            <ModeToggle />
-            <LocaleSwitcher />
-            {session ? (
-              <UserNav />
-            ) : (
-              <GuestNav guestMode={visibility.guestMode} />
-            )}
-          </div>
-        </div>
-      </div>
       <div className="flex h-16 items-center px-4 md:hidden">
         <MobileNav session={session} />
         <div className="ml-auto flex items-center space-x-4">
@@ -147,24 +134,24 @@ export default async function ScrimDashboardPage({ params }: Props) {
       </div>
       <div className="flex-1 space-y-4 p-8 pt-6">
         <h4 className="text-gray-600 dark:text-gray-400">
-          <Link href="/dashboard">&larr; Back to dashboard</Link>
+          <Link href="/dashboard">&larr; {t("back")}</Link>
         </h4>
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">
             <span className="flex items-center space-x-2">
-              {scrim?.name ?? "New Scrim"}{" "}
+              {scrim?.name ?? t("newScrim")}{" "}
               {hasPerms && (
                 <Link
                   className="pl-2"
                   href={`/${params.team}/scrim/${params.scrimId}/edit`}
-                  aria-label="Edit scrim"
+                  aria-label={t("edit")}
                 >
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Pencil2Icon className="h-6 w-6" />
                       </TooltipTrigger>
-                      <TooltipContent>Edit scrim</TooltipContent>
+                      <TooltipContent>{t("edit")}</TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </Link>
@@ -176,7 +163,7 @@ export default async function ScrimDashboardPage({ params }: Props) {
           <ClientDate date={scrim.date} />
         </h4>
         <p className="scroll-m-20 pb-2 text-2xl font-semibold tracking-tight">
-          Maps
+          {t("maps.title")}
         </p>
         {maps.length > 0 ? (
           <div className="-m-2 flex flex-wrap">
@@ -188,13 +175,15 @@ export default async function ScrimDashboardPage({ params }: Props) {
                   >
                     <CardHeader className="">
                       <h3 className="z-10 text-3xl font-semibold tracking-tight text-white">
-                        {map.name}
+                        {t(`maps.${toKebabCase(map.name)}`)}
                       </h3>
                     </CardHeader>
                     <CardContent>
                       <Image
                         src={`/maps/${toKebabCase(map.name)}.webp`}
-                        alt={`The loading screen art for ${map.name}.`}
+                        alt={t("maps.altText", {
+                          map: t(`maps.${toKebabCase(map.name)}`),
+                        })}
                         fill
                         className="select-none rounded-md object-cover brightness-[0.65]"
                       />
@@ -214,16 +203,15 @@ export default async function ScrimDashboardPage({ params }: Props) {
           <>
             <Alert variant="destructive" className="max-w-xl">
               <ExclamationTriangleIcon className="h-4 w-4" />
-              <AlertTitle>
-                No maps have been added to this scrim yet!
-              </AlertTitle>
+              <AlertTitle>{t("noMaps.title")}</AlertTitle>
               <AlertDescription>
-                Add maps to this scrim to start analyzing your games. If no maps
-                are added, the scrim will automatically be deleted within 24
-                hours. Need help?{" "}
-                <Link href="https://docs.parsertime.app" target="_blank">
-                  <span className="underline">Check out the documentation</span>{" "}
-                  <ExternalLinkIcon className="inline h-4 w-4" />
+                {t("noMaps.description")}
+                <Link
+                  href="https://docs.parsertime.app"
+                  target="_blank"
+                  external
+                >
+                  {t("noMaps.link")}
                 </Link>
                 .
               </AlertDescription>
