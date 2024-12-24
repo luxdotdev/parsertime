@@ -1,5 +1,5 @@
 import NoAuthCard from "@/components/auth/no-auth";
-import Footer from "@/components/footer";
+import DashboardLayout from "@/components/dashboard-layout";
 import { SelectedPlayerProvider } from "@/components/map/player-switcher";
 import { isAuthedToViewScrim } from "@/lib/auth";
 
@@ -19,8 +19,7 @@ export default async function ScrimDashboardLayout({
 
   return (
     <SelectedPlayerProvider>
-      {children}
-      <Footer />
+      <DashboardLayout>{children}</DashboardLayout>
     </SelectedPlayerProvider>
   );
 }
