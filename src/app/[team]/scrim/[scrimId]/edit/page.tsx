@@ -5,6 +5,7 @@ import { getTeamsWithPerms } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { SearchParams } from "@/types/next";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
 type Props = {
@@ -15,6 +16,7 @@ type Props = {
 export default async function EditScrimPage({ params }: Props) {
   const scrim = await getScrim(parseInt(params.scrimId));
   const session = await auth();
+  const t = await getTranslations("scrimPage.editScrim");
 
   if (!scrim) {
     return <div>Scrim not found</div>;
@@ -34,12 +36,12 @@ export default async function EditScrimPage({ params }: Props) {
     <main className="container py-2">
       <h4 className="pb-2 text-gray-600 dark:text-gray-400">
         <Link href={`/${params.team}/scrim/${params.scrimId}`}>
-          &larr; Back to scrim
+          &larr; {t("back")}
         </Link>
       </h4>
 
       <h3 className="scroll-m-20 pb-2 text-2xl font-semibold tracking-tight">
-        Edit Scrim Details
+        {t("title")}
       </h3>
 
       <EditScrimForm scrim={scrim} teams={teamsWithPerms} maps={maps} />
