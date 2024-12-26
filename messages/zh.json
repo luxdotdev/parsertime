@@ -344,5 +344,199 @@
   },
   "updateModal": {
     "dismiss": "解散"
+  },
+  "scrimPage": {
+    "metadata": {
+      "scrim": "争分夺秒",
+      "title": "{scrimName} 概述 | Parsertime",
+      "description": "Parsertime 上 {scrimName} 的概述。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
+      "ogTitle": "{scrimName} 概述 | Parsertime",
+      "ogDescription": "Parsertime 上 {scrimName} 的概述。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
+      "ogImage": "{scrimName} 概述"
+    },
+    "back": "返回仪表板",
+    "newScrim": "新争夺赛",
+    "edit": "编辑比赛",
+    "maps": {
+      "title": "地图",
+      "altText": "{map}的加载画面艺术。",
+      "antarctic-peninsula": "Antarctic Peninsula",
+      "blizzard-world": "Blizzard World",
+      "blizzard-world-winter": "Blizzard World (Winter)",
+      "busan": "Busan",
+      "circuit-royal": "Circuit Royal",
+      "colosseo": "Colosseo",
+      "eorado": "Dorado",
+      "eichenwalde": "Eichenwalde",
+      "eichenwalde-halloween": "Eichenwalde (Halloween)",
+      "esperanca": "Esperança",
+      "hanaoka": "Hanaoka",
+      "havana": "Havana",
+      "hollywood": "Hollywood",
+      "hollywood-halloween": "Hollywood (Halloween)",
+      "ilios": "Ilios",
+      "junkertown": "Junkertown",
+      "kings-row": "King's Row",
+      "kings-row-winter": "King's Row (Winter)",
+      "lijiang-tower": "Lijiang Tower",
+      "lijiang-tower-lunar-new-year": "Lijiang Tower (Lunar New Year)",
+      "midtown": "Midtown",
+      "nepal": "Nepal",
+      "new-junk-city": "New Junk City",
+      "new-queen-street": "New Queen Street",
+      "numbani": "Numbani",
+      "oasis": "Oasis",
+      "paraiso": "Paraiso",
+      "rialto": "Rialto",
+      "route-66": "Route 66",
+      "runasapi": "Runasapi",
+      "samoa": "Samoa",
+      "shambali-monastery": "Shambali Monastery",
+      "suravasa": "Suravasa",
+      "watchpoint-gibraltar": "Watchpoint: Gibraltar"
+    },
+    "noMaps": {
+      "title": "本次比赛尚未添加地图！",
+      "description": "添加地图到本次争霸赛，开始分析您的比赛。如果没有添加地图，争夺赛将在 24 小时内自动删除。需要帮助？",
+      "link": "查看文档"
+    },
+    "addMap": {
+      "title": "添加地图...",
+      "description": "拖放或选择要上传的文件。",
+      "addFile": "添加文件",
+      "fileMessage": {
+        "required": "需要文件。",
+        "maxSize": "最大文件大小为 1MB。",
+        "accepted": "接受 .xlsx 和 .txt 文件。"
+      },
+      "handleFile": {
+        "creatingTitle": "创建地图...",
+        "creatingDescription": "我们正在处理您的数据。请稍候。",
+        "createTitle": "创建地图",
+        "createDescription": "您的地图已成功创建。",
+        "errorTitle": "错误",
+        "errorDescription": "发生错误： {res}。请阅读 <here>此处</here> 的文档，查看是否可以解决该错误。"
+      }
+    },
+    "editScrim": {
+      "back": "回到争夺赛",
+      "title": "编辑比赛细节",
+      "replayCode": "重播代码长度必须为 6 个字符。",
+      "displayName": {
+        "title": "显示名称",
+        "placeholder": "FIU 黑豹合唱团 vs UF 鳄鱼合唱团",
+        "description": "这是您的比赛名称。这将显示在您的仪表板上。",
+        "minMessage": "姓名必须至少包含 2 个字符。",
+        "maxMessage": "姓名长度不得超过 30 个字符。"
+      },
+      "team": {
+        "title": "团队",
+        "placeholder": "选择一个团队",
+        "description": "这是将与本次比赛相关联的球队。您可以为自己管理或拥有的球队分配比赛。",
+        "select": {
+          "teams": "团队",
+          "individual": "个人"
+        }
+      },
+      "date": {
+        "title": "比赛日期",
+        "edit": "编辑日期",
+        "clientDate": {
+          "formatDate": "{date, date, ::MMMM d yyyy}"
+        },
+        "description": "举行比赛的日期。"
+      },
+      "guestMode": {
+        "title": "启用访客模式",
+        "description": "如果启用，则任何登录的用户都可以访问争球。如果禁用，则只有您的团队成员才能访问争球赛。"
+      },
+      "maps": {
+        "title": "地图",
+        "mapNames": {
+          "antarctic-peninsula": "Antarctic Peninsula",
+          "blizzard-world": "Blizzard World",
+          "blizzard-world-winter": "Blizzard World (Winter)",
+          "busan": "Busan",
+          "circuit-royal": "Circuit Royal",
+          "colosseo": "Colosseo",
+          "eorado": "Dorado",
+          "eichenwalde": "Eichenwalde",
+          "eichenwalde-halloween": "Eichenwalde (Halloween)",
+          "esperanca": "Esperança",
+          "hanaoka": "Hanaoka",
+          "havana": "Havana",
+          "hollywood": "Hollywood",
+          "hollywood-halloween": "Hollywood (Halloween)",
+          "ilios": "Ilios",
+          "junkertown": "Junkertown",
+          "kings-row": "King's Row",
+          "kings-row-winter": "King's Row (Winter)",
+          "lijiang-tower": "Lijiang Tower",
+          "lijiang-tower-lunar-new-year": "Lijiang Tower (Lunar New Year)",
+          "midtown": "Midtown",
+          "nepal": "Nepal",
+          "new-junk-city": "New Junk City",
+          "new-queen-street": "New Queen Street",
+          "numbani": "Numbani",
+          "oasis": "Oasis",
+          "paraiso": "Paraiso",
+          "rialto": "Rialto",
+          "route-66": "Route 66",
+          "runasapi": "Runasapi",
+          "samoa": "Samoa",
+          "shambali-monastery": "Shambali Monastery",
+          "suravasa": "Suravasa",
+          "watchpoint-gibraltar": "Watchpoint: Gibraltar"
+        },
+        "replayCodeLabel": "{map} 的重放代码",
+        "replayCode": "重播代码",
+        "delete": "删除地图",
+        "deleteDialog": {
+          "title": "你确定吗？",
+          "description": "这将永久删除地图 <strong>{map}</strong>。此操作无法撤销。",
+          "cancel": "取消",
+          "delete": "删除",
+          "deleting": "删除..."
+        }
+      },
+      "update": "更新校车",
+      "updating": "更新...",
+      "onSubmit": {
+        "title": "争分夺秒更新",
+        "description": "您的比赛已成功更新。",
+        "errorTitle": "发生错误",
+        "errorDescription": "发生错误： {res}"
+      },
+      "deleteMap": {
+        "title": "地图已删除",
+        "description": "地图已删除。",
+        "errorTitle": "发生错误",
+        "errorDescription": "发生错误： {res}"
+      },
+      "dangerZone": "危险地带",
+      "deleteScrim": {
+        "title": "删除争分夺秒",
+        "description": "一旦删除争分夺秒，就无法挽回。请务必",
+        "button": "删除争分夺秒",
+        "deleteAlert": "您确定要删除 <strong>{scrim}</strong> 边框吗？此操作无法撤销。",
+        "deleteConfirmation": "键入 <strong>{scrim}</strong> 确认。",
+        "delete": "删除争分夺秒",
+        "deleting": "删除...",
+        "cancel": "取消",
+        "handleDelete": {
+          "title": "删去争球",
+          "description": "已删除划线。",
+          "errorTitle": "错误",
+          "errorDescription": "发生错误： {res}"
+        }
+      }
+    },
+    "replayCode": {
+      "title": "重播代码（点击复制）",
+      "onClick": {
+        "title": "复制到剪贴板！",
+        "description": "重放代码已复制到您的剪贴板。"
+      }
+    }
   }
 }
