@@ -1,6 +1,7 @@
 "use client";
 
 import { Kill } from "@prisma/client";
+import { useTranslations } from "next-intl";
 import {
   CartesianGrid,
   Legend,
@@ -31,10 +32,14 @@ function CustomTooltip({
 }: TooltipProps<ValueType, NameType> & {
   teamNames: readonly [string, string];
 }) {
+  const t = useTranslations("mapPage.charts");
+
   if (active && payload && payload.length) {
     return (
       <div className="z-50 overflow-hidden rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
-        <h3 className="text-base">Time: {(label as number).toFixed(2)}</h3>
+        <h3 className="text-base">
+          {t("time", { time: (label as number).toFixed(2) })}
+        </h3>
         <p className="text-sm">
           <strong className="text-blue-500">{teamNames[0]}</strong>:{" "}
           {payload[0].value}
