@@ -579,7 +579,7 @@
     },
     "player": {
       "dashboard": {
-        "back": "Back to dashboard",
+        "back": "Back to default overview",
         "viewStats": "View aggregated stats",
         "dashboard": "Dashboard",
         "overview": "Overview",
