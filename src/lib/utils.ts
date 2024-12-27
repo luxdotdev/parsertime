@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import { $Enums, Kill } from "@prisma/client";
 import { type ClassValue, clsx } from "clsx";
 import { useTranslations } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import { getMessages, getTranslations } from "next-intl/server";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -330,7 +330,7 @@ export async function translateMapName(name: string) {
 
 /**
  * Translates the given map name using the "maps" translation namespace.
- * This is the async client-side version of `translateMapName`.
+ * This is the synchronous client-side version of `useMapName`.
  *
  * @param name - The map name to translate.
  * @returns The translated map name.
@@ -338,4 +338,20 @@ export async function translateMapName(name: string) {
 export function useMapName(name: string) {
   const t = useTranslations("maps");
   return t(toKebabCase(name));
+}
+
+/**
+ * Retrieves a map of translated map names.
+ *
+ * This function fetches the translations for the "maps" namespace and combines them with the map names from the `getMessages()` function to create a Map of translated map names.
+ *
+ * @returns A Map of translated map names, where the keys are the map names and the values are the translated names.
+ */
+export async function getMapNames() {
+  const t = await getTranslations("maps");
+  const mapNames = await getMessages();
+
+  return new Map(
+    Object.entries(mapNames).map(([key, value]) => [key, t(value)])
+  );
 }
