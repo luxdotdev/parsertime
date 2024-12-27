@@ -678,11 +678,11 @@
       "winner": "Winner:",
       "pushLimitations": "Not supported for Push due to limitations with the scrim code. :(",
       "heroDamageDealt": "Hero Damage Dealt",
-      "dealtMore": "dealt more hero damage this map.",
+      "dealtMore": "<color>{teamName}</color> dealt more hero damage this map.",
       "teamHealingDealt": "Team Healing Dealt",
-      "healedMore": "healed more this map.",
+      "healedMore": "<color>{teamName}</color> healed more this map.",
       "title": "Overview",
-      "round": "Round",
+      "round": "Round {number}",
       "analysis": {
         "title": "Analysis",
         "deathDescriptionTeam1": "<span1>{team1Name}</span1> had a first death in {team1FirstDeaths} fights, which is a percentage of <span2>{percentage}</span2>%.",
@@ -690,9 +690,8 @@
         "ultKillsDescriptionTeam1": "<span>{team1Name}</span> got the most value out of their ultimates, with <span>{team1UltimateKills}</span> ultimate kills.",
         "ultKillsDescriptionTeam2": "<span>{team2Name}</span> got the most value out of their ultimates, with <span>{team2UltimateKills}</span> ultimate kills.",
         "ultKillsDescriptionBoth": "Both teams got the same amount of value out of their ultimates, with <span>{team1UltimateKills}</span> ultimate kills each.",
-        "playerDeathDescription": "The player with the most first deaths was <span>{playerWithMostFirstDeaths}</span>, with <span>{firstDeaths}</span first deaths out of {fights} fights.",
-        "ajax": "<span>{player}</span> played Lúcio this map and Ajaxed <span>{ajaxes}</span> time{plural}.",
-        "plural": "s"
+        "playerDeathDescription": "The player with the most first deaths was <span>{playerWithMostFirstDeaths}</span>, with <span>{firstDeaths}</span> first deaths out of {fights} fights.",
+        "ajax": "<span>{player}</span> played Lúcio this map and Ajaxed <span>{ajaxes}</span> {ajaxes, plural, one {time} other {times}}."
       }
     },
     "overviewTable": {
