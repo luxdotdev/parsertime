@@ -719,7 +719,7 @@
     },
     "overview": {
       "matchTime": "Total Match Time",
-      "minutes": "minutes",
+      "minutes": "{time} minutes",
       "score": "Score",
       "winner": "Winner:",
       "pushLimitations": "Not supported for Push due to limitations with the scrim code. :(",
