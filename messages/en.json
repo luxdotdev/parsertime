@@ -764,14 +764,14 @@
       "exportCSV": "Export as CSV"
     },
     "charts": {
-      "tooltip": "Looking for more information on charts? <Link>Check out the documentation</Link> to learn more.",
+      "tooltip": "Looking for more information on charts? <link>Check out the documentation</link> to learn more.",
       "team1": "Team 1",
       "team2": "Team 2",
-      "time": "Time:",
+      "time": "Time: {time}",
       "tank": "Tank",
       "damage": "Damage",
       "support": "Support",
-      "round": "Round",
+      "round": "Round {round}",
       "killsByFight": {
         "title": "Kills By Fight",
         "description": "Kills are grouped by 15 second intervals. This chart shows the cumulative kills for each team at each interval. The x-axis represents the time in seconds, and the y-axis represents the cumulative kills. Team 1 is represented with positive numbers, while Team 2 is represented with negative numbers. The chart resets to 0 after each fight."
