@@ -1,6 +1,6 @@
 import DashboardLayout from "@/components/dashboard-layout";
 
-export default async function TeamLayout({
+export default function TeamLayout({
   children,
 }: {
   children: React.ReactNode;

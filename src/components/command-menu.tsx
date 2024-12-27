@@ -256,8 +256,8 @@ export function CommandDialogMenu({ user }: { user: User | null }) {
             <CommandItem
               key={locale.code}
               onSelect={() =>
-                runCommand(() => {
-                  setUserLocale(locale.code);
+                runCommand(async () => {
+                  await setUserLocale(locale.code);
                   router.refresh();
                 })
               }

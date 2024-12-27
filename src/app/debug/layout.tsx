@@ -1,6 +1,6 @@
 import DashboardLayout from "@/components/dashboard-layout";
 
-export default async function DebugLayout({
+export default function DebugLayout({
   children,
 }: {
   children: React.ReactNode;

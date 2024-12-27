@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function StatsLayout({
+export default function StatsLayout({
   children,
 }: {
   children: React.ReactNode;
