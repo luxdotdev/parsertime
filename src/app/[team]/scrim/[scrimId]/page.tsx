@@ -25,7 +25,7 @@ import { getScrim } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { toKebabCase } from "@/lib/utils";
+import { getMapNames, toKebabCase } from "@/lib/utils";
 import { SearchParams } from "@/types/next";
 import { $Enums } from "@prisma/client";
 import { ExclamationTriangleIcon, Pencil2Icon } from "@radix-ui/react-icons";
@@ -119,6 +119,8 @@ export default async function ScrimDashboardPage({ params }: Props) {
     },
   })) ?? { guestMode: false };
 
+  const mapNames = await getMapNames();
+
   return (
     <DashboardLayout>
       <div className="min-h-[90vh] flex-col md:flex">
@@ -177,14 +179,14 @@ export default async function ScrimDashboardPage({ params }: Props) {
                     >
                       <CardHeader className="">
                         <h3 className="z-10 text-3xl font-semibold tracking-tight text-white">
-                          {t(`maps.${toKebabCase(map.name)}`)}
+                          {mapNames.get(map.name) ?? map.name}
                         </h3>
                       </CardHeader>
                       <CardContent>
                         <Image
                           src={`/maps/${toKebabCase(map.name)}.webp`}
                           alt={t("maps.altText", {
-                            map: t(`maps.${toKebabCase(map.name)}`),
+                            map: mapNames.get(map.name) ?? map.name,
                           })}
                           fill
                           className="select-none rounded-md object-cover brightness-[0.65]"
