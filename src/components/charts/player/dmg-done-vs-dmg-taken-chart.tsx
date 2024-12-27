@@ -1,5 +1,7 @@
 "use client";
 
+import { round as roundNum } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import {
   Area,
   AreaChart,
@@ -17,7 +19,6 @@ import {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
-import { round as roundNum } from "@/lib/utils";
 
 type Data = {
   name: string;
@@ -30,16 +31,18 @@ function CustomTooltip({
   payload,
   label,
 }: TooltipProps<ValueType, NameType>) {
+  const t = useTranslations("mapPage.player.analytics.dmgDoneDmgTaken");
+
   if (active && payload && payload.length) {
     return (
       <div className="z-50 overflow-hidden rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
         <h3 className="text-base">{label}</h3>
         <p className="text-sm">
-          <strong className="text-sky-500">Damage Done</strong>:{" "}
+          <strong className="text-sky-500">{t("dmgDone")}</strong>:{" "}
           {(payload[0].value as number).toFixed(2)}
         </p>
         <p className="text-sm">
-          <strong className="text-rose-500">Damage Taken</strong>:{" "}
+          <strong className="text-rose-500">{t("dmgTaken")}</strong>:{" "}
           {(payload[1].value as number).toFixed(2)}
         </p>
       </div>
@@ -58,10 +61,12 @@ export function DmgDoneVsDmgTakenChart({
   damageDoneByRound,
   damageTakenByRound,
 }: Props) {
+  const t = useTranslations("mapPage.player.analytics.dmgDoneDmgTaken");
+
   // damage taken looks like this: { '1': 2533.1400000000003, '2': 5258.17, '3': 8683.69 }
   const data: Data = Object.keys(damageDoneByRound).map((round) => {
     return {
-      name: `Round ${round}`,
+      name: t("round", { round }),
       dmgDone: roundNum(damageDoneByRound[parseInt(round)]),
       dmgTaken: roundNum(damageTakenByRound[parseInt(round)]),
     };
@@ -102,14 +107,14 @@ export function DmgDoneVsDmgTakenChart({
               dataKey="dmgDone"
               stroke="#0ea5e9"
               fill="url(#colorDmgDone)"
-              name="Damage Done"
+              name={t("dmgDone")}
             />
             <Area
               type="monotone"
               dataKey="dmgTaken"
               stroke="#ef4444"
               fill="url(#colorDmgTaken)"
-              name="Damage Taken"
+              name={t("dmgTaken")}
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -132,8 +137,8 @@ export function DmgDoneVsDmgTakenChart({
             <YAxis />
             <Legend />
             <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="dmgDone" fill="#0ea5e9" name="Damage Done" />
-            <Bar dataKey="dmgTaken" fill="#ef4444" name="Damage Taken" />
+            <Bar dataKey="dmgDone" fill="#0ea5e9" name={t("dmgDone")} />
+            <Bar dataKey="dmgTaken" fill="#ef4444" name={t("dmgTaken")} />
           </BarChart>
         </ResponsiveContainer>
       )}
