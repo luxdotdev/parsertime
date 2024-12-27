@@ -92,7 +92,7 @@ const nextConfig = {
 
 const withVercelToolbar = require("@vercel/toolbar/plugins/next")();
 const { withAxiom } = require("next-axiom");
-const createNextIntlPlugin = require('next-intl/plugin');
+const createNextIntlPlugin = require("next-intl/plugin");
 const withNextIntl = createNextIntlPlugin();
 
 module.exports = withNextIntl(withAxiom(withVercelToolbar(nextConfig)));
