@@ -1,6 +1,8 @@
 import prisma from "@/lib/prisma";
 import { $Enums, Kill } from "@prisma/client";
 import { type ClassValue, clsx } from "clsx";
+import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -312,4 +314,28 @@ export async function groupPlayerKillsIntoFights(
   });
 
   return fights;
+}
+
+/**
+ * Translates the given map name using the "maps" translation namespace.
+ * This is the async server-side version of `useMapName`.
+ *
+ * @param name - The map name to translate.
+ * @returns The translated map name.
+ */
+export async function translateMapName(name: string) {
+  const t = await getTranslations("maps");
+  return t(name);
+}
+
+/**
+ * Translates the given map name using the "maps" translation namespace.
+ * This is the async client-side version of `translateMapName`.
+ *
+ * @param name - The map name to translate.
+ * @returns The translated map name.
+ */
+export function useMapName(name: string) {
+  const t = useTranslations("maps");
+  return t(name);
 }
