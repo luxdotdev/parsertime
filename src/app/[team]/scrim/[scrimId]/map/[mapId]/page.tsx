@@ -15,18 +15,23 @@ import { getMostPlayedHeroes } from "@/data/player-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { toTitleCase } from "@/lib/utils";
+import { translateMapName } from "@/lib/utils";
 import { SearchParams } from "@/types/next";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
 type Props = {
-  params: { team: string; scrimId: string; mapId: string };
+  params: { team: string; scrimId: string; mapId: string; locale: string };
   searchParams: SearchParams;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const mapId = decodeURIComponent(params.mapId);
+  const t = await getTranslations({
+    locale: params.locale,
+    namespace: "mapPage.mapMetadata",
+  });
 
   const mapName = await prisma.matchStart.findFirst({
     where: {
@@ -37,29 +42,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
   });
 
+  const translatedMapName = await translateMapName(mapName?.map_name || "Map");
+
   return {
-    title: `${toTitleCase(mapName?.map_name || "Map")} Overview | Parsertime`,
-    description: `Map overview for ${toTitleCase(
-      mapName?.map_name || "Map"
-    )} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+    title: t("title", { mapName: translatedMapName }),
+    description: t("description", { mapName: translatedMapName }),
     openGraph: {
-      title: `${toTitleCase(mapName?.map_name || "Map")} Overview | Parsertime`,
-      description: `Map overview for ${toTitleCase(
-        mapName?.map_name || "Map"
-      )} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+      title: t("ogTitle", { mapName: translatedMapName }),
+      description: t("ogDescription", { mapName: translatedMapName }),
       url: "https://parsertime.app",
       type: "website",
       siteName: "Parsertime",
       images: [
         {
-          url: `https://parsertime.app/api/og?title=${toTitleCase(
-            mapName?.map_name || "Map"
-          )} Overview`,
+          url: `https://parsertime.app/api/og?title=${t("ogImage", { mapName: translatedMapName })}`,
           width: 1200,
           height: 630,
         },
       ],
-      locale: "en_US",
+      locale: params.locale,
     },
   };
 }
@@ -68,6 +69,7 @@ export default async function MapDashboardPage({ params }: Props) {
   const id = parseInt(params.mapId);
   const session = await auth();
   const user = await getUser(session?.user?.email);
+  const t = await getTranslations("mapPage");
 
   const mostPlayedHeroes = await getMostPlayedHeroes(id);
 
@@ -88,6 +90,8 @@ export default async function MapDashboardPage({ params }: Props) {
       guestMode: true,
     },
   })) ?? { guestMode: false };
+
+  const translatedMapName = await translateMapName(mapName?.map_name || "Map");
 
   return (
     <div className="flex-col md:flex">
@@ -123,29 +127,29 @@ export default async function MapDashboardPage({ params }: Props) {
         <div>
           <h4 className="text-gray-600 dark:text-gray-400">
             <Link href={`/${params.team}/scrim/${params.scrimId}`}>
-              &larr; Back to scrim overview
+              &larr; {t("back")}
             </Link>
           </h4>
         </div>
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">
-            {toTitleCase(mapName?.map_name ?? "Dashboard")}
+            {translatedMapName}
           </h2>
         </div>
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="overview">{t("tabs.overview")}</TabsTrigger>
             <TabsTrigger value="killfeed" className="hidden md:flex">
-              Killfeed
+              {t("tabs.killfeed")}
             </TabsTrigger>
             <TabsTrigger value="killfeed" className="flex md:hidden">
-              Kills
+              {t("tabs.killfeed")}
             </TabsTrigger>
-            <TabsTrigger value="charts">Charts</TabsTrigger>
+            <TabsTrigger value="charts">{t("tabs.charts")}</TabsTrigger>
             <TabsTrigger value="events" className="hidden md:flex">
-              Events
+              {t("tabs.events")}
             </TabsTrigger>
-            <TabsTrigger value="compare">Compare</TabsTrigger>
+            <TabsTrigger value="compare">{t("tabs.compare")}</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
             <DefaultOverview id={id} />
