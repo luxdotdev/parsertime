@@ -746,7 +746,7 @@
     "killfeedTable": {
       "limitTest": "Limit Testing",
       "environment": "Environmental",
-      "fight": "Fight",
+      "fight": "Fight {num}",
       "time": "Time",
       "kill": "Kill",
       "method": "Method",
@@ -754,13 +754,12 @@
       "end": "End",
       "fightWinner": "Fight Winner",
       "abilities": {
-        "Primary Fire": "Primary Fire",
-        "Secondary Fire": "Secondary Fire",
-        "Ability 1": "Ability 1",
-        "Ability 2": "Ability 2",
-        "Ultimate": "Ultimate",
-        "Melee": "Melee",
-        "0": "0"
+        "primary-fire": "Primary Fire",
+        "secondary-fire": "Secondary Fire",
+        "ability-1": "Ability 1",
+        "ability-2": "Ability 2",
+        "ultimate": "Ultimate",
+        "melee": "Melee"
       },
       "exportCSV": "Export as CSV"
     },
