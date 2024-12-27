@@ -572,6 +572,7 @@
     "back": "Back to scrim overview",
     "dashboard": "Dashboard",
     "playerSwitcher": {
+      "select": "Select a player",
       "search": "Search player...",
       "noPlayerFound": "No player found.",
       "default": "Default"
