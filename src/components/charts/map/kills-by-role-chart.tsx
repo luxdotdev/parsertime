@@ -2,6 +2,7 @@
 
 import { HeroName, heroRoleMapping } from "@/types/heroes";
 import { Kill } from "@prisma/client";
+import { useTranslations } from "next-intl";
 import {
   Bar,
   BarChart,
@@ -18,23 +19,13 @@ import {
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
 
-type Data = [
-  {
-    name: "Tank";
-    team1Kills: number;
-    team2Kills: number;
-  },
-  {
-    name: "Damage";
-    team1Kills: number;
-    team2Kills: number;
-  },
-  {
-    name: "Support";
-    team1Kills: number;
-    team2Kills: number;
-  },
-];
+type RoleKillsData = {
+  name: string;
+  team1Kills: number;
+  team2Kills: number;
+};
+
+type Data = [RoleKillsData, RoleKillsData, RoleKillsData];
 
 function CustomTooltip({
   active,
@@ -70,9 +61,10 @@ type Props = {
 };
 
 export function KillsByRoleChart({ team1Kills, team2Kills, teamNames }: Props) {
+  const t = useTranslations("mapPage.charts");
   const data: Data = [
     {
-      name: "Tank",
+      name: t("tank"),
       team1Kills: team1Kills.filter(
         (kill) => heroRoleMapping[kill.attacker_hero as HeroName] === "Tank"
       ).length,
@@ -81,7 +73,7 @@ export function KillsByRoleChart({ team1Kills, team2Kills, teamNames }: Props) {
       ).length,
     },
     {
-      name: "Damage",
+      name: t("damage"),
       team1Kills: team1Kills.filter(
         (kill) => heroRoleMapping[kill.attacker_hero as HeroName] === "Damage"
       ).length,
@@ -90,7 +82,7 @@ export function KillsByRoleChart({ team1Kills, team2Kills, teamNames }: Props) {
       ).length,
     },
     {
-      name: "Support",
+      name: t("support"),
       team1Kills: team1Kills.filter(
         (kill) => heroRoleMapping[kill.attacker_hero as HeroName] === "Support"
       ).length,
