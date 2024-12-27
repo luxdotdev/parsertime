@@ -657,8 +657,7 @@
           "title": "Versus Other Players",
           "description": "{playerName}'s score and winrates against players on the enemy team.",
           "score": "Score:",
-          "winrate": "Winrate:",
-          "%": "%"
+          "winrate": "Winrate: <color>{winrate}</color>%"
         },
         "playerKillfeed": {
           "title": "Player Killfeed",
