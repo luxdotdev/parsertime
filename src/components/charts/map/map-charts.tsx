@@ -18,8 +18,10 @@ import {
 import prisma from "@/lib/prisma";
 import { Kill } from "@prisma/client";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { getTranslations } from "next-intl/server";
 
-function ChartTooltip() {
+async function ChartTooltip() {
+  const t = await getTranslations("mapPage.charts");
   return (
     <TooltipProvider>
       <Tooltip>
@@ -27,11 +29,13 @@ function ChartTooltip() {
           <InfoCircledIcon className="h-4 w-4" />
         </TooltipTrigger>
         <TooltipContent className="max-w-[280px]">
-          Looking for more information on charts?{" "}
-          <Link href="https://docs.parsertime.app/maps/charts" external>
-            Check out the documentation
-          </Link>{" "}
-          to learn more.
+          {t.rich("tooltip", {
+            link: (chunks) => (
+              <Link href="https://docs.parsertime.app/maps/charts" external>
+                {chunks}
+              </Link>
+            ),
+          })}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
@@ -77,6 +81,7 @@ async function groupKillsByInterval(id: number, maxInterval: number) {
 }
 
 export async function MapCharts({ id }: { id: number }) {
+  const t = await getTranslations("mapPage.charts");
   const teams = await prisma.matchStart.findFirst({
     where: {
       MapDataId: id,
@@ -87,8 +92,8 @@ export async function MapCharts({ id }: { id: number }) {
     },
   });
 
-  const team1Name = teams?.team_1_name ?? "Team 1";
-  const team2Name = teams?.team_2_name ?? "Team 2";
+  const team1Name = teams?.team_1_name ?? t("team1");
+  const team2Name = teams?.team_2_name ?? t("team2");
   const teamNames = [team1Name, team2Name] as const;
 
   const fights = await groupKillsByInterval(id, 15);
@@ -135,7 +140,7 @@ export async function MapCharts({ id }: { id: number }) {
         <CardHeader>
           <CardTitle>
             <span className="inline-flex gap-1">
-              Kills By Fight <ChartTooltip />
+              {t("killsByFight.title")} <ChartTooltip />
             </span>
           </CardTitle>
         </CardHeader>
@@ -144,12 +149,7 @@ export async function MapCharts({ id }: { id: number }) {
         </CardContent>
         <CardFooter>
           <p className="text-sm text-gray-500">
-            Kills are grouped by 15 second intervals. This chart shows the
-            cumulative kills for each team at each interval. The x-axis
-            represents the time in seconds, and the y-axis represents the
-            cumulative kills. Team 1 is represented with positive numbers, while
-            Team 2 is represented with negative numbers. The chart resets to 0
-            after each fight.
+            {t("killsByFight.description")}
           </p>
         </CardFooter>
       </Card>
@@ -157,7 +157,7 @@ export async function MapCharts({ id }: { id: number }) {
         <CardHeader>
           <CardTitle>
             <span className="inline-flex gap-1">
-              Final Blows By Role <ChartTooltip />
+              {t("finalBlowsByRole.title")} <ChartTooltip />
             </span>
           </CardTitle>
         </CardHeader>
@@ -170,10 +170,7 @@ export async function MapCharts({ id }: { id: number }) {
         </CardContent>
         <CardFooter>
           <p className="text-sm text-gray-500">
-            This chart shows the number of final blows by role for each team.
-            The roles are split into Tank, Damage, and Support. The x-axis
-            represents the role, and the y-axis represents the number of final
-            blows.
+            {t("finalBlowsByRole.description")}
           </p>
         </CardFooter>
       </Card>
@@ -181,7 +178,7 @@ export async function MapCharts({ id }: { id: number }) {
         <CardHeader>
           <CardTitle>
             <span className="inline-flex gap-1">
-              Cumulative Hero Damage By Round <ChartTooltip />
+              {t("dmgByRound.title")} <ChartTooltip />
             </span>
           </CardTitle>
         </CardHeader>
@@ -197,12 +194,7 @@ export async function MapCharts({ id }: { id: number }) {
           />
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-gray-500">
-            This chart shows the hero damage done by round for each team. The
-            x-axis represents the round, and the y-axis represents the damage
-            done. Note that the damage is cumulative, so the damage done in
-            round 2 includes the damage done in round 1.
-          </p>
+          <p className="text-sm text-gray-500">{t("dmgByRound.description")}</p>
         </CardFooter>
       </Card>
     </div>
