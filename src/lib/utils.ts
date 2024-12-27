@@ -325,7 +325,7 @@ export async function groupPlayerKillsIntoFights(
  */
 export async function translateMapName(name: string) {
   const t = await getTranslations("maps");
-  return t(name);
+  return t(toKebabCase(name));
 }
 
 /**
@@ -337,5 +337,5 @@ export async function translateMapName(name: string) {
  */
 export function useMapName(name: string) {
   const t = useTranslations("maps");
-  return t(name);
+  return t(toKebabCase(name));
 }
