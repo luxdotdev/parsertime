@@ -161,7 +161,9 @@ export async function DefaultOverview({ id }: { id: number }) {
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              {((finalRound?.match_time ?? 0) / 60).toFixed(2)} minutes
+              {t("minutes", {
+                time: ((finalRound?.match_time ?? 0) / 60).toFixed(2),
+              })}
             </p>
           </CardFooter>
         </Card>
