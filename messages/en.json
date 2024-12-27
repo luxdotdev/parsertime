@@ -741,7 +741,7 @@
       "kills": "Kills",
       "deaths": "Deaths",
       "fightWins": "Fight Wins",
-      "killfeed": "Killfeed"
+      "title": "Killfeed"
     },
     "killfeedTable": {
       "limitTest": "Limit Testing",
