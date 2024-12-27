@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import { $Enums, Kill } from "@prisma/client";
 import { type ClassValue, clsx } from "clsx";
-import { useTranslations } from "next-intl";
+import { useMessages, useTranslations } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { twMerge } from "tailwind-merge";
 
@@ -341,17 +341,23 @@ export function useMapName(name: string) {
 }
 
 /**
- * Retrieves a map of translated map names.
+ * Retrieves a map of all available map names, with the map name as the key and the translated map name as the value.
+ * This is an asynchronous function that fetches the map names from the "maps" translation namespace.
  *
- * This function fetches the translations for the "maps" namespace and combines them with the map names from the `getMessages()` function to create a Map of translated map names.
- *
- * @returns A Map of translated map names, where the keys are the map names and the values are the translated names.
+ * @returns A Map of map names and their translated values.
  */
 export async function getMapNames() {
-  const t = await getTranslations("maps");
-  const mapNames = await getMessages();
+  const mapNames = (await getMessages())["maps"] as Record<string, string>;
+  return new Map<string, string>(Object.entries(mapNames));
+}
 
-  return new Map(
-    Object.entries(mapNames).map(([key, value]) => [key, t(value)])
-  );
+/**
+ * Retrieves a map of all available map names, with the map name as the key and the translated map name as the value.
+ * This is a synchronous function that retrieves the map names from the "maps" translation namespace.
+ *
+ * @returns A Map of map names and their translated values.
+ */
+export function useMapNames() {
+  const mapNames = useMessages()["maps"] as Record<string, string>;
+  return new Map(Object.entries(mapNames));
 }
