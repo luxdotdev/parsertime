@@ -10,15 +10,18 @@ import CardIcon from "@/components/ui/card-icon";
 import { cn, round, toHero, toMins } from "@/lib/utils";
 import { HeroName, heroRoleMapping } from "@/types/heroes";
 import { PlayerStat } from "@prisma/client";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
-export default function SpecificHero({
+export default async function SpecificHero({
   playerStats,
   showTable = true,
 }: {
   playerStats: PlayerStat[];
   showTable?: boolean;
 }) {
+  const t = await getTranslations("mapPage.compare.playerCard.specificHero");
+
   const hero = playerStats[0].player_hero as HeroName;
   const playerStat = playerStats[0];
   const role = heroRoleMapping[hero];
@@ -43,7 +46,7 @@ export default function SpecificHero({
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Time Played
+                  {t("timePlayed")}
                 </CardTitle>
                 <CardIcon>
                   <circle cx="12" cy="12" r="10" />
@@ -52,22 +55,26 @@ export default function SpecificHero({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {round(playerStat.hero_time_played / 60).toFixed(2)} minutes
+                  {t("minutes", {
+                    time: round(playerStat.hero_time_played / 60).toFixed(2),
+                  })}
                 </div>
               </CardContent>
               <CardFooter>
                 <div className="text-sm text-muted-foreground">
-                  {round(
-                    (playerStat.hero_time_played / playerStat.match_time) * 100
-                  ).toFixed(2)}
-                  % of match time
+                  {t("matchTime", {
+                    percent: round(
+                      (playerStat.hero_time_played / playerStat.match_time) *
+                        100
+                    ).toFixed(2),
+                  })}
                 </div>
               </CardFooter>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Eliminations
+                  {t("eliminations")}
                 </CardTitle>
                 <CardIcon>
                   <circle cx="12" cy="12" r="10" />
@@ -79,18 +86,21 @@ export default function SpecificHero({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {playerStat.eliminations}{" "}
-                  {showTable ? "Eliminations" : "Elims"}
+                  {t("elims", {
+                    elims: playerStat.eliminations,
+                    showTable: showTable ? "ination" : "",
+                  })}
                 </div>
               </CardContent>
               <CardFooter>
                 <div className="text-sm text-muted-foreground">
-                  {round(
-                    (playerStat.eliminations /
-                      toMins(playerStat.hero_time_played)) *
-                      10
-                  )}{" "}
-                  eliminations per 10 minutes
+                  {t("elimsPer10Min", {
+                    elims: round(
+                      (playerStat.eliminations /
+                        toMins(playerStat.hero_time_played)) *
+                        10
+                    ),
+                  })}
                 </div>
               </CardFooter>
             </Card>
@@ -107,23 +117,25 @@ export default function SpecificHero({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {playerStat.deaths} Deaths
+                  {t("deathNum", { num: playerStat.deaths })}
                 </div>
               </CardContent>
               <CardFooter>
                 <div className="text-sm text-muted-foreground">
-                  {round(
-                    (playerStat.deaths / toMins(playerStat.hero_time_played)) *
-                      10
-                  )}{" "}
-                  deaths per 10 minutes
+                  {t("deathsPer10Min", {
+                    deaths: round(
+                      (playerStat.deaths /
+                        toMins(playerStat.hero_time_played)) *
+                        10
+                    ),
+                  })}
                 </div>
               </CardFooter>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Ultimates Used
+                  {t("ultsUsed")}
                 </CardTitle>
                 <CardIcon>
                   <circle cx="12" cy="12" r="10" />
@@ -132,24 +144,25 @@ export default function SpecificHero({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {playerStat.ultimates_used} Ultimates Used
+                  {t("ultsUsedNum", { num: playerStat.ultimates_used })}
                 </div>
               </CardContent>
               <CardFooter>
                 <div className="text-sm text-muted-foreground">
-                  {round(
-                    (playerStat.ultimates_used /
-                      toMins(playerStat.hero_time_played)) *
-                      10
-                  )}{" "}
-                  ultimates used per 10 minutes
+                  {t("ultsPer10Min", {
+                    num: round(
+                      (playerStat.ultimates_used /
+                        toMins(playerStat.hero_time_played)) *
+                        10
+                    ),
+                  })}
                 </div>
               </CardFooter>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Hero Damage Dealt
+                  {t("heroDmgDealt")}
                 </CardTitle>
                 <CardIcon>
                   <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
@@ -157,17 +170,20 @@ export default function SpecificHero({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {playerStat.hero_damage_dealt.toFixed(2)} Hero Damage Dealt
+                  {t("heroDmgDealtNum", {
+                    num: playerStat.hero_damage_dealt.toFixed(2),
+                  })}
                 </div>
               </CardContent>
               <CardFooter>
                 <div className="text-sm text-muted-foreground">
-                  {round(
-                    (playerStat.hero_damage_dealt /
-                      toMins(playerStat.hero_time_played)) *
-                      10
-                  )}{" "}
-                  hero damage dealt per 10 minutes
+                  {t("heroDmgPer10Min", {
+                    num: round(
+                      (playerStat.hero_damage_dealt /
+                        toMins(playerStat.hero_time_played)) *
+                        10
+                    ),
+                  })}
                 </div>
               </CardFooter>
             </Card>
@@ -176,7 +192,7 @@ export default function SpecificHero({
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
-                      Damage Blocked
+                      {t("dmgBlocked")}
                     </CardTitle>
                     <CardIcon>
                       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
@@ -184,24 +200,27 @@ export default function SpecificHero({
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {playerStat.damage_blocked.toFixed(2)} Damage Blocked
+                      {t("dmgBlockedNum", {
+                        num: playerStat.damage_blocked.toFixed(2),
+                      })}
                     </div>
                   </CardContent>
                   <CardFooter>
                     <div className="text-sm text-muted-foreground">
-                      {round(
-                        (playerStat.damage_blocked /
-                          toMins(playerStat.hero_time_played)) *
-                          10
-                      )}{" "}
-                      damage blocked per 10 minutes
+                      {t("dmgBlockedPer10Min", {
+                        num: round(
+                          (playerStat.damage_blocked /
+                            toMins(playerStat.hero_time_played)) *
+                            10
+                        ),
+                      })}
                     </div>
                   </CardFooter>
                 </Card>
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
-                      Damage Taken
+                      {t("dmgTaken")}
                     </CardTitle>
                     <CardIcon>
                       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
@@ -211,17 +230,20 @@ export default function SpecificHero({
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {playerStat.damage_taken.toFixed(2)} Damage Taken
+                      {t("dmgTakenNum", {
+                        num: playerStat.damage_taken.toFixed(2),
+                      })}
                     </div>
                   </CardContent>
                   <CardFooter>
                     <div className="text-sm text-muted-foreground">
-                      {round(
-                        (playerStat.damage_taken /
-                          toMins(playerStat.hero_time_played)) *
-                          10
-                      )}{" "}
-                      damage taken per 10 minutes
+                      {t("dmgTakenPer10Min", {
+                        num: round(
+                          (playerStat.damage_taken /
+                            toMins(playerStat.hero_time_played)) *
+                            10
+                        ),
+                      })}
                     </div>
                   </CardFooter>
                 </Card>
@@ -232,7 +254,7 @@ export default function SpecificHero({
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
-                      Final Blows
+                      {t("finalBlows")}
                     </CardTitle>
                     <CardIcon>
                       <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14" />
@@ -240,24 +262,27 @@ export default function SpecificHero({
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {playerStat.final_blows} Final Blows
+                      {t("finalBlowsNum", {
+                        num: playerStat.final_blows,
+                      })}
                     </div>
                   </CardContent>
                   <CardFooter>
                     <div className="text-sm text-muted-foreground">
-                      {round(
-                        (playerStat.final_blows /
-                          toMins(playerStat.hero_time_played)) *
-                          10
-                      )}{" "}
-                      final blows per 10 minutes
+                      {t("finalBlowsPer10Min", {
+                        num: round(
+                          (playerStat.final_blows /
+                            toMins(playerStat.hero_time_played)) *
+                            10
+                        ),
+                      })}
                     </div>
                   </CardFooter>
                 </Card>
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
-                      Solo Kills
+                      {t("soloKills")}
                     </CardTitle>
                     <CardIcon>
                       <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5" />
@@ -272,17 +297,18 @@ export default function SpecificHero({
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {playerStat.solo_kills} Solo Kills
+                      {t("soloKillsNum", { num: playerStat.solo_kills })}
                     </div>
                   </CardContent>
                   <CardFooter>
                     <div className="text-sm text-muted-foreground">
-                      {round(
-                        (playerStat.solo_kills /
-                          toMins(playerStat.hero_time_played)) *
-                          10
-                      )}{" "}
-                      solo kills per 10 minutes
+                      {t("soloKillsPer10Min", {
+                        num: round(
+                          (playerStat.solo_kills /
+                            toMins(playerStat.hero_time_played)) *
+                            10
+                        ),
+                      })}
                     </div>
                   </CardFooter>
                 </Card>
@@ -293,7 +319,7 @@ export default function SpecificHero({
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
-                      Healing Dealt
+                      {t("healingDealt")}
                     </CardTitle>
                     <CardIcon>
                       <path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2z" />
@@ -301,24 +327,27 @@ export default function SpecificHero({
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {playerStat.healing_dealt.toFixed(2)} Healing Dealt
+                      {t("healingDealtNum", {
+                        num: playerStat.healing_dealt.toFixed(2),
+                      })}
                     </div>
                   </CardContent>
                   <CardFooter>
                     <div className="text-sm text-muted-foreground">
-                      {round(
-                        (playerStat.healing_dealt /
-                          toMins(playerStat.hero_time_played)) *
-                          10
-                      )}{" "}
-                      healing dealt per 10 minutes
+                      {t("healingDealtPer10Min", {
+                        num: round(
+                          (playerStat.healing_dealt /
+                            toMins(playerStat.hero_time_played)) *
+                            10
+                        ),
+                      })}
                     </div>
                   </CardFooter>
                 </Card>
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
-                      Healing Received
+                      {t("healingReceived")}
                     </CardTitle>
                     <CardIcon>
                       <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
@@ -326,17 +355,20 @@ export default function SpecificHero({
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {playerStat.healing_received.toFixed(2)} Healing Received
+                      {t("healingReceivedNum", {
+                        num: playerStat.healing_received.toFixed(2),
+                      })}
                     </div>
                   </CardContent>
                   <CardFooter>
                     <div className="text-sm text-muted-foreground">
-                      {round(
-                        (playerStat.healing_received /
-                          toMins(playerStat.hero_time_played)) *
-                          10
-                      )}{" "}
-                      healing received per 10 minutes
+                      {t("healingReceivedPer10Min", {
+                        num: round(
+                          (playerStat.healing_received /
+                            toMins(playerStat.hero_time_played)) *
+                            10
+                        ),
+                      })}
                     </div>
                   </CardFooter>
                 </Card>
