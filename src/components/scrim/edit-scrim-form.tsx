@@ -50,7 +50,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
-import { cn, toKebabCase } from "@/lib/utils";
+import { cn, toKebabCase, useMapNames } from "@/lib/utils";
 import { Map, Scrim, Team } from "@prisma/client";
 import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
@@ -71,6 +71,7 @@ export function EditScrimForm({
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const t = useTranslations("scrimPage.editScrim");
+  const mapNames = useMapNames();
 
   const profileFormSchema = z.object({
     name: z
@@ -321,7 +322,7 @@ export function EditScrimForm({
               {maps.map((map, index) => (
                 <AccordionItem key={map.id} value={map.id.toString()}>
                   <AccordionTrigger>
-                    {t(`maps.mapNames.${toKebabCase(map.name)}`)}
+                    {mapNames.get(toKebabCase(map.name))}
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="flex items-center justify-between">
@@ -332,9 +333,7 @@ export function EditScrimForm({
                           <FormItem className="pl-1">
                             <FormLabel>
                               {t("maps.replayCodeLabel", {
-                                map: t(
-                                  `maps.mapNames.${toKebabCase(map.name)}`
-                                ),
+                                map: mapNames.get(toKebabCase(map.name)),
                               })}
                             </FormLabel>
                             <FormControl>
@@ -363,9 +362,7 @@ export function EditScrimForm({
                             <AlertDialogDescription>
                               {t.rich("maps.deleteDialog.description", {
                                 strong: (chunks) => <strong>{chunks}</strong>,
-                                map: t(
-                                  `maps.mapNames.${toKebabCase(map.name)}`
-                                ),
+                                map: mapNames.get(toKebabCase(map.name)),
                               })}
                             </AlertDialogDescription>
                             <AlertDialogFooter>
