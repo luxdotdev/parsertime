@@ -330,7 +330,7 @@ export async function translateMapName(name: string) {
 
 /**
  * Translates the given map name using the "maps" translation namespace.
- * This is the synchronous client-side version of `useMapName`.
+ * This is the synchronous client-side version of `translateMapName`.
  *
  * @param name - The map name to translate.
  * @returns The translated map name.
@@ -360,4 +360,28 @@ export async function getMapNames() {
 export function useMapNames() {
   const mapNames = useMessages()["maps"] as Record<string, string>;
   return new Map(Object.entries(mapNames));
+}
+
+/**
+ * Translates the given map name using the "heroes" translation namespace.
+ * This is the async server-side version of `useHeroName`.
+ *
+ * @param name - The map name to translate.
+ * @returns The translated map name.
+ */
+export async function translateHeroName(name: string) {
+  const t = await getTranslations("heroes");
+  return t(toHero(name));
+}
+
+/**
+ * Translates the given hero name using the "heroes" translation namespace.
+ * This is the synchronous client-side version of `translateHeroName`.
+ *
+ * @param name - The map name to translate.
+ * @returns The translated map name.
+ */
+export function useHeroName(name: string) {
+  const t = useTranslations("heroes");
+  return t(toHero(name));
 }
