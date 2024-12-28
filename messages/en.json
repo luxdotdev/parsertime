@@ -1041,7 +1041,7 @@
       "footer": "Results accumulated from {mapNum} maps."
     },
     "playerStats": {
-      "title": "{possessiveName} Stats",
+      "title": "{possessiveName}{suffix} Stats",
       "statsFail": "Failed to find stats for {name}. Did you spell the name correctly?",
       "back": "Go back to stats",
       "timeframe": {
