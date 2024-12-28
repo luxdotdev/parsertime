@@ -845,7 +845,6 @@
         "objectiveUpdate": "Point captured",
         "swap": "<img1></img1> <color>{player}</color> swapped to <img2></img2> {hero}.",
         "ultKills": "<img></img> <color>{player}</color> killed {players, plural, =1 {one player} other {# players}} with/during their ultimate.",
-        "plural": "s",
         "multikill": "During fight {event}, <span><img></img><color>{player}</color></span> got a multikill, killing {kills} players.",
         "ajax": "<span><img></img><color>{player}</color></span> Ajaxed during fight {fight}."
       },
