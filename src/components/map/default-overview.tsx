@@ -286,7 +286,7 @@ export async function DefaultOverview({ id }: { id: number }) {
                 className="max-w-fit space-y-4 overflow-x-auto"
               >
                 <TabsList>
-                  <TabsTrigger value="final">Overview</TabsTrigger>
+                  <TabsTrigger value="final">{t("title")}</TabsTrigger>
                   {range(numberOfRounds).map((round) => (
                     <TabsTrigger key={round} value={round.toString()}>
                       {t("round", { number: round + 1 })}
