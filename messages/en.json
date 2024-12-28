@@ -942,10 +942,11 @@
       "ogImage": "Statistics"
     },
     "playerMetadata": {
-      "title": "{playername} Stats | Parsertime",
+      "title": "{playerName}{suffix} Stats | Parsertime",
       "description": "Player stats for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
-      "ogTitle": "{playername} Stats | Parsertime",
-      "ogDescription": "Player stats for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
+      "ogTitle": "{playerName}{suffix} Stats | Parsertime",
+      "ogDescription": "Player stats for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogImage": "{playerName}{suffix} Stats"
     },
     "heroStatsMetadata": {
       "title": "Hero Stats | Parsertime",
