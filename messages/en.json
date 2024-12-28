@@ -1041,7 +1041,7 @@
       "footer": "Results accumulated from {mapNum} maps."
     },
     "playerStats": {
-      "title": "{possessiveName}{suffix} Stats",
+      "title": "{name}{suffix} Stats",
       "statsFail": "Failed to find stats for {name}. Did you spell the name correctly?",
       "back": "Go back to stats",
       "timeframe": {
@@ -1074,58 +1074,9 @@
         "pickDate": "Pick a date",
         "calendarDate": "{from} - {to}",
         "formatDate": "{date, date, ::MMM dd yyyy}",
-        "tank": {
-          "title": "Tank",
-          "D": {
-            "Va": "D.Va"
-          },
-          "Doomfist": "Doomfist",
-          "Junker Queen": "Junker Queen",
-          "Mauga": "Mauga",
-          "Orisa": "Orisa",
-          "Ramattra": "Ramattra",
-          "Reinhardt": "Reinhardt",
-          "Roadhog": "Roadhog",
-          "Sigma": "Sigma",
-          "Winston": "Winston",
-          "Wrecking Ball": "Wrecking Ball",
-          "Zarya": "Zarya"
-        },
-        "damage": {
-          "title": "Damage",
-          "Ashe": "Ashe",
-          "Bastion": "Bastion",
-          "Cassidy": "Cassidy",
-          "Echo": "Echo",
-          "Genji": "Genji",
-          "Hanzo": "Hanzo",
-          "Junkrat": "Junkrat",
-          "Mei": "Mei",
-          "Pharah": "Pharah",
-          "Reaper": "Reaper",
-          "Sojourn": "Sojourn",
-          "Soldier: 76": "Soldier: 76",
-          "Sombra": "Sombra",
-          "Symmetra": "Symmetra",
-          "Torbjörn": "Torbjörn",
-          "Tracer": "Tracer",
-          "Venture": "Venture",
-          "Widowmaker": "Widowmaker"
-        },
-        "support": {
-          "title": "Support",
-          "Ana": "Ana",
-          "Baptiste": "Baptiste",
-          "Brigitte": "Brigitte",
-          "Illari": "Illari",
-          "Juno": "Juno",
-          "Kiriko": "Kiriko",
-          "Lifeweaver": "Lifeweaver",
-          "Lúcio": "Lúcio",
-          "Mercy": "Mercy",
-          "Moira": "Moira",
-          "Zenyatta": "Zenyatta"
-        }
+        "tank": "Tank",
+        "damage": "Damage",
+        "support": "Support"
       },
       "mostPlayed": {
         "title": "Most Played Heroes",
