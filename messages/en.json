@@ -934,25 +934,26 @@
     }
   },
   "statsPage": {
-    "metadataSettingsLayout": {
+    "layoutMetadata": {
       "title": "Stats | Parsertime",
       "description": "View your stats and performance metrics on Parsertime.",
       "ogTitle": "Stats | Parsertime",
-      "ogDescription": "View your stats and performance metrics on Parsertime."
+      "ogDescription": "View your stats and performance metrics on Parsertime.",
+      "ogImage": "Statistics"
     },
-    "metadataPlayerName": {
+    "playerMetadata": {
       "title": "{playername} Stats | Parsertime",
       "description": "Player stats for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
       "ogTitle": "{playername} Stats | Parsertime",
       "ogDescription": "Player stats for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
     },
-    "metadataHeroStats": {
+    "heroStatsMetadata": {
       "title": "Hero Stats | Parsertime",
       "description": "Hero stats for Overwatch heroes on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
       "ogTitle": "Hero Stats | Parsertime",
       "ogDescription": "Hero stats for Overwatch heroes on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
     },
-    "metadataStatsHero": {
+    "heroMetadata": {
       "title": "Stats for {hero} | Parsertime",
       "description": "Stats for {hero} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
       "ogTitle": "Stats for {hero} | Parsertime",
