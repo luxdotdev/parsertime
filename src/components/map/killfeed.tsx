@@ -80,7 +80,9 @@ export async function Killfeed({ id }: { id: number }) {
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              {((finalRound?.match_time ?? 0) / 60).toFixed(2)} minutes
+              {t("minutes", {
+                count: ((finalRound?.match_time ?? 0) / 60).toFixed(2),
+              })}
             </p>
           </CardFooter>
         </Card>
