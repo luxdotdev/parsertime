@@ -784,7 +784,7 @@
     },
     "killfeed": {
       "matchTime": "Total Match Time",
-      "minutes": "minutes",
+      "minutes": "{count} minutes",
       "kills": "Kills",
       "deaths": "Deaths",
       "fightWins": "Fight Wins",
