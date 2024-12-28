@@ -385,3 +385,25 @@ export function useHeroName(name: string) {
   const t = useTranslations("heroes");
   return t(toHero(name));
 }
+
+/**
+ * Retrieves a map of all available hero names, with the hero name as the key and the translated hero name as the value.
+ * This is an asynchronous function that fetches the hero names from the "heroes" translation namespace.
+ *
+ * @returns A Map of hero names and their translated values.
+ */
+export async function getHeroNames() {
+  const heroNames = (await getMessages())["heroes"] as Record<string, string>;
+  return new Map<string, string>(Object.entries(heroNames));
+}
+
+/**
+ * Retrieves a map of all available hero names, with the hero name as the key and the translated hero name as the value.
+ * This is a synchronous function that retrieves the hero names from the "heroes" translation namespace.
+ *
+ * @returns A Map of hero names and their translated values.
+ */
+export function useHeroNames() {
+  const heroNames = useMessages()["heroes"] as Record<string, string>;
+  return new Map(Object.entries(heroNames));
+}
