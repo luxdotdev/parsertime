@@ -40,6 +40,7 @@ import { cn, toHero } from "@/lib/utils";
 import { HeroName } from "@/types/heroes";
 import { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -77,6 +78,7 @@ export function Statistics({
   mapWinrates: Winrate;
   deaths: Kill[];
 }) {
+  const t = useTranslations("statsPage.playerStats");
   const [customScrims, setCustomScrims] = useState<Scrim[]>([]);
   const [filteredStats, setFilteredStats] = useState<PlayerStat[]>([]);
   const [filteredKills, setFilteredKills] = useState<Kill[]>([]);
@@ -354,15 +356,15 @@ export function Statistics({
     <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card className="col-span-1 md:col-span-2 xl:col-span-1">
         <CardHeader>
-          <CardTitle>Most Played Heroes</CardTitle>
+          <CardTitle>{t("mostPlayed.title")}</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Rank</TableHead>
-                <TableHead>Hero</TableHead>
-                <TableHead>Games</TableHead>
+                <TableHead>{t("mostPlayed.rank")}</TableHead>
+                <TableHead>{t("mostPlayed.hero")}</TableHead>
+                <TableHead>{t("mostPlayed.games")}</TableHead>
               </TableRow>
             </TableHeader>
             <tbody>
@@ -428,8 +430,8 @@ export function Statistics({
                   // eslint-disable-next-line react/no-array-index-key
                   <TableRow key={idx}>
                     <TableCell>-</TableCell>
-                    <TableCell>No data</TableCell>
-                    <TableCell>No data</TableCell>
+                    <TableCell>{t("mostPlayed.noData")}</TableCell>
+                    <TableCell>{t("mostPlayed.noData")}</TableCell>
                   </TableRow>
                 ))}
             </tbody>
@@ -437,39 +439,37 @@ export function Statistics({
         </CardContent>
         <CardFooter>
           <p className="text-sm text-muted-foreground">
-            {timeframe !== "custom" && timeframe !== "all-time" ? (
-              <>
-                Stats collected from {scrims[timeframe].length} scrims in the
-                last {timeframe.replace("-", " ")}
-              </>
-            ) : (
-              <>
-                Stats collected from{" "}
-                {timeframe === "custom"
-                  ? customScrims.length
-                  : timeframe === "all-time" && scrims["all-time"].length}{" "}
-                scrims{" "}
-                {timeframe === "all-time"
-                  ? "in all time data"
-                  : date?.from && date?.to
-                    ? `between ${date.from.toLocaleDateString()} - ${date.to.toLocaleDateString()}`
-                    : "all time"}
-              </>
-            )}
+            {timeframe !== "custom" && timeframe !== "all-time"
+              ? t("mostPlayed.footer1", {
+                  scrims: scrims[timeframe].length,
+                  timeframe: t(`timeframe.${timeframe}`),
+                })
+              : t("mostPlayed.footer2", {
+                  timeframe1:
+                    timeframe === "custom"
+                      ? customScrims.length
+                      : timeframe === "all-time" && scrims["all-time"].length,
+                  timeframe2:
+                    timeframe === "all-time"
+                      ? t("timeframe.all-time-data")
+                      : date?.from && date?.to
+                        ? `${date.from.toLocaleDateString()} - ${date.to.toLocaleDateString()}`
+                        : t("timeframe.all-time"),
+                })}
           </p>
         </CardFooter>
       </Card>
       <Card className="col-span-1 md:col-span-2 xl:col-span-1">
         <CardHeader>
-          <CardTitle>Best Performance</CardTitle>
+          <CardTitle>{t("bestPerformance.title")}</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Rank</TableHead>
-                <TableHead>Hero</TableHead>
-                <TableHead>Final Blows</TableHead>
+                <TableHead>{t("bestPerformance.rank")}</TableHead>
+                <TableHead>{t("bestPerformance.hero")}</TableHead>
+                <TableHead>{t("bestPerformance.finalBlows")}</TableHead>
               </TableRow>
             </TableHeader>
             <tbody>
@@ -538,7 +538,7 @@ export function Statistics({
                             </Link>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>Click to view map</p>
+                            <p>{t("bestPerformance.clickMap")}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -553,8 +553,8 @@ export function Statistics({
                     // eslint-disable-next-line react/no-array-index-key
                     <TableRow key={idx}>
                       <TableCell>-</TableCell>
-                      <TableCell>No data</TableCell>
-                      <TableCell>No data</TableCell>
+                      <TableCell>{t("bestPerformance.noData")}</TableCell>
+                      <TableCell>{t("bestPerformance.noData")}</TableCell>
                     </TableRow>
                   )
                 )}
@@ -563,37 +563,32 @@ export function Statistics({
         </CardContent>
         <CardFooter>
           <p className="text-sm text-muted-foreground">
-            {timeframe !== "custom" && timeframe !== "all-time" ? (
-              <>
-                Stats collected from {scrims[timeframe].length} scrims in the
-                last {timeframe.replace("-", " ")}
-              </>
-            ) : (
-              <>
-                Stats collected from{" "}
-                {timeframe === "custom"
-                  ? customScrims.length
-                  : timeframe === "all-time" && scrims["all-time"].length}{" "}
-                scrims{" "}
-                {timeframe === "all-time"
-                  ? "in all time data"
-                  : date?.from && date?.to
-                    ? `between ${date.from.toLocaleDateString()} - ${date.to.toLocaleDateString()}`
-                    : "all time"}
-              </>
-            )}
+            {timeframe !== "custom" && timeframe !== "all-time"
+              ? t("bestPerformance.footer1", {
+                  scrims: scrims[timeframe].length,
+                  timeframe: t(`timeframe.${timeframe}`),
+                })
+              : t("bestPerformance.footer2", {
+                  timeframe1:
+                    timeframe === "custom"
+                      ? customScrims.length
+                      : timeframe === "all-time" && scrims["all-time"].length,
+                  timeframe2:
+                    timeframe === "all-time"
+                      ? t("timeframe.all-time-data")
+                      : date?.from && date?.to
+                        ? `${date.from.toLocaleDateString()} - ${date.to.toLocaleDateString()}`
+                        : t("timeframe.all-time"),
+                })}
           </p>
         </CardFooter>
       </Card>
       <Card className="col-span-1 md:col-span-2">
         <CardHeader>
           <CardTitle className="flex items-center gap-1">
-            Average Hero Damage Dealt per 10 (per scrim){" "}
+            {t("avgHeroDmgDealtPer10.title")}{" "}
             <ChartTooltip>
-              <p>
-                The average hero damage dealt per 10 minutes for each scrim.
-                Higher is better.
-              </p>
+              <p>{t("avgHeroDmgDealtPer10.tooltip")}</p>
             </ChartTooltip>
           </CardTitle>
         </CardHeader>
@@ -607,12 +602,9 @@ export function Statistics({
       <Card className="col-span-1 md:col-span-2">
         <CardHeader>
           <CardTitle className="flex items-center gap-1">
-            Average Deaths per 10 (per scrim){" "}
+            {t("avgDeathPer10.title")}{" "}
             <ChartTooltip>
-              <p>
-                The average number of deaths per 10 minutes for each scrim.
-                Lower is better.
-              </p>
+              <p>{t("avgDeathPer10.tooltip")}</p>
             </ChartTooltip>
           </CardTitle>
         </CardHeader>
@@ -625,39 +617,39 @@ export function Statistics({
       </Card>
       <Card className="col-span-1 md:col-span-2 xl:col-span-1">
         <CardHeader>
-          <CardTitle>Time Spent on Each Role</CardTitle>
+          <CardTitle>{t("timeSpent.title")}</CardTitle>
         </CardHeader>
         <RolePieChart data={filteredStats} />
       </Card>
       <Card className="col-span-1 md:col-span-2 xl:col-span-1">
         <CardHeader>
-          <CardTitle>Final Blows By Method</CardTitle>
+          <CardTitle>{t("finalBlowsByMethod.title")}</CardTitle>
         </CardHeader>
         <KillMethodChart data={filteredKills} />
       </Card>
       <Card className="col-span-full xl:col-span-3">
         <CardHeader>
-          <CardTitle>Map Winrates</CardTitle>
+          <CardTitle>{t("mapWinrates.title")}</CardTitle>
         </CardHeader>
         <MapWinsChart data={filteredWins} />
       </Card>
       <Card className="col-span-1 md:col-span-2 xl:col-span-1">
         <CardHeader>
-          <CardTitle>Winrate By Map Type</CardTitle>
+          <CardTitle>{t("winrateMapType.title")}</CardTitle>
         </CardHeader>
         <WinsPerMapTypeChart data={filteredWins} />
       </Card>
       <Card className="col-span-1 md:col-span-2 xl:col-span-1">
         <CardHeader>
-          <CardTitle>Heroes Died To Most</CardTitle>
+          <CardTitle>{t("heroesDiedToMost.title")}</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Rank</TableHead>
-                <TableHead>Hero</TableHead>
-                <TableHead>Deaths</TableHead>
+                <TableHead>{t("heroesDiedToMost.rank")}</TableHead>
+                <TableHead>{t("heroesDiedToMost.hero")}</TableHead>
+                <TableHead>{t("heroesDiedToMost.deaths")}</TableHead>
               </TableRow>
             </TableHeader>
             <tbody>
@@ -723,8 +715,8 @@ export function Statistics({
                   // eslint-disable-next-line react/no-array-index-key
                   <TableRow key={idx}>
                     <TableCell>-</TableCell>
-                    <TableCell>No data</TableCell>
-                    <TableCell>No data</TableCell>
+                    <TableCell>{t("heroesDiedToMost.noData")}</TableCell>
+                    <TableCell>{t("heroesDiedToMost.noData")}</TableCell>
                   </TableRow>
                 ))}
             </tbody>
@@ -732,39 +724,37 @@ export function Statistics({
         </CardContent>
         <CardFooter>
           <p className="text-sm text-muted-foreground">
-            {timeframe !== "custom" && timeframe !== "all-time" ? (
-              <>
-                Stats collected from {scrims[timeframe].length} scrims in the
-                last {timeframe.replace("-", " ")}
-              </>
-            ) : (
-              <>
-                Stats collected from{" "}
-                {timeframe === "custom"
-                  ? customScrims.length
-                  : timeframe === "all-time" && scrims["all-time"].length}{" "}
-                scrims{" "}
-                {timeframe === "all-time"
-                  ? "in all time data"
-                  : date?.from && date?.to
-                    ? `between ${date.from.toLocaleDateString()} - ${date.to.toLocaleDateString()}`
-                    : "all time"}
-              </>
-            )}
+            {timeframe !== "custom" && timeframe !== "all-time"
+              ? t("heroesDiedToMost.footer1", {
+                  scrims: scrims[timeframe].length,
+                  timeframe: t(`timeframe.${timeframe}`),
+                })
+              : t("heroesDiedToMost.footer2", {
+                  timeframe1:
+                    timeframe === "custom"
+                      ? customScrims.length
+                      : timeframe === "all-time" && scrims["all-time"].length,
+                  timeframe2:
+                    timeframe === "all-time"
+                      ? t("timeframe.all-time-data")
+                      : date?.from && date?.to
+                        ? `${date.from.toLocaleDateString()} - ${date.to.toLocaleDateString()}`
+                        : t("timeframe.all-time"),
+                })}
           </p>
         </CardFooter>
       </Card>
       <Card className="col-span-1 md:col-span-2 xl:col-span-1">
         <CardHeader>
-          <CardTitle>Heroes Eliminated Most</CardTitle>
+          <CardTitle>{t("heroesElimMost.title")}</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Rank</TableHead>
-                <TableHead>Hero</TableHead>
-                <TableHead>Eliminations</TableHead>
+                <TableHead>{t("heroesElimMost.rank")}</TableHead>
+                <TableHead>{t("heroesElimMost.hero")}</TableHead>
+                <TableHead>{t("heroesElimMost.eliminations")}</TableHead>
               </TableRow>
             </TableHeader>
             <tbody>
@@ -830,8 +820,8 @@ export function Statistics({
                   // eslint-disable-next-line react/no-array-index-key
                   <TableRow key={idx}>
                     <TableCell>-</TableCell>
-                    <TableCell>No data</TableCell>
-                    <TableCell>No data</TableCell>
+                    <TableCell>{t("heroesElimMost.noData")}</TableCell>
+                    <TableCell>{t("heroesElimMost.noData")}</TableCell>
                   </TableRow>
                 ))}
             </tbody>
@@ -839,25 +829,23 @@ export function Statistics({
         </CardContent>
         <CardFooter>
           <p className="text-sm text-muted-foreground">
-            {timeframe !== "custom" && timeframe !== "all-time" ? (
-              <>
-                Stats collected from {scrims[timeframe].length} scrims in the
-                last {timeframe.replace("-", " ")}
-              </>
-            ) : (
-              <>
-                Stats collected from{" "}
-                {timeframe === "custom"
-                  ? customScrims.length
-                  : timeframe === "all-time" && scrims["all-time"].length}{" "}
-                scrims{" "}
-                {timeframe === "all-time"
-                  ? "in all time data"
-                  : date?.from && date?.to
-                    ? `between ${date.from.toLocaleDateString()} - ${date.to.toLocaleDateString()}`
-                    : "all time"}
-              </>
-            )}
+            {timeframe !== "custom" && timeframe !== "all-time"
+              ? t("heroesElimMost.footer1", {
+                  scrims: scrims[timeframe].length,
+                  timeframe: t(`timeframe.${timeframe}`),
+                })
+              : t("heroesElimMost.footer2", {
+                  timeframe1:
+                    timeframe === "custom"
+                      ? customScrims.length
+                      : timeframe === "all-time" && scrims["all-time"].length,
+                  timeframe2:
+                    timeframe === "all-time"
+                      ? t("timeframe.all-time-data")
+                      : date?.from && date?.to
+                        ? `${date.from.toLocaleDateString()} - ${date.to.toLocaleDateString()}`
+                        : t("timeframe.all-time"),
+                })}
           </p>
         </CardFooter>
       </Card>
@@ -870,24 +858,44 @@ export function Statistics({
             }
           >
             <div className="flex items-center gap-2">
-              <Label htmlFor="stat">Stat</Label>
+              <Label htmlFor="stat">{t("stats.title")}</Label>
               <SelectTrigger className="w-[180px]" id="stat">
-                <SelectValue placeholder="Select a stat" />
+                <SelectValue placeholder={t("stats.select")} />
               </SelectTrigger>
             </div>
             <SelectContent>
-              <SelectItem value="eliminations">Eliminations</SelectItem>
-              <SelectItem value="final_blows">Final Blows</SelectItem>
-              <SelectItem value="healing_dealt">Healing Dealt</SelectItem>
-              <SelectItem value="healing_received">Healing Received</SelectItem>
-              <SelectItem value="self_healing">Self Healing</SelectItem>
-              <SelectItem value="damage_taken">Damage Taken</SelectItem>
-              <SelectItem value="damage_blocked">Damage Blocked</SelectItem>
-              <SelectItem value="ultimates_earned">Ultimates Earned</SelectItem>
-              <SelectItem value="ultimates_used">Ultimates Used</SelectItem>
-              <SelectItem value="solo_kills">Solo Kills</SelectItem>
+              <SelectItem value="eliminations">
+                {t("stats.eliminations")}
+              </SelectItem>
+              <SelectItem value="final_blows">
+                {t("stats.final_blows")}
+              </SelectItem>
+              <SelectItem value="healing_dealt">
+                {t("stats.healing_dealt")}
+              </SelectItem>
+              <SelectItem value="healing_received">
+                {t("stats.healing_received")}
+              </SelectItem>
+              <SelectItem value="self_healing">
+                {t("stats.self_healing")}
+              </SelectItem>
+              <SelectItem value="damage_taken">
+                {t("stats.damage_taken")}
+              </SelectItem>
+              <SelectItem value="damage_blocked">
+                {t("stats.damage_blocked")}
+              </SelectItem>
+              <SelectItem value="ultimates_earned">
+                {t("stats.ultimates_earned")}
+              </SelectItem>
+              <SelectItem value="ultimates_used">
+                {t("stats.ultimates_used")}
+              </SelectItem>
+              <SelectItem value="solo_kills">
+                {t("stats.solo_kills")}
+              </SelectItem>
               <SelectItem value="environmental_kills">
-                Environmental Kills
+                {t("stats.environmental_kills")}
               </SelectItem>
             </SelectContent>
           </Select>
