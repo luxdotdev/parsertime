@@ -3,6 +3,7 @@
 import { CardContent, CardFooter } from "@/components/ui/card";
 import { Winrate } from "@/data/scrim-dto";
 import { MapName, mapNameToMapTypeMapping } from "@/types/map";
+import { useTranslations } from "next-intl";
 import {
   PolarAngleAxis,
   PolarGrid,
@@ -24,7 +25,10 @@ type MapTypeData = {
   total: number;
 };
 
-function processMapWinrates(mapWinrates: Winrate) {
+function processMapWinrates(
+  mapWinrates: Winrate,
+  t: ReturnType<typeof useTranslations>
+) {
   const mapTypeData: Record<string, MapTypeData> = {};
 
   mapWinrates.forEach((winrate) => {
@@ -52,7 +56,7 @@ function processMapWinrates(mapWinrates: Winrate) {
   });
 
   const data = Object.values(mapTypeData).map((item) => ({
-    mapType: item.mapType,
+    mapType: t(`mapTypes.${item.mapType}`),
     winrate: (item.wins / item.total) * 100,
   }));
 
@@ -85,7 +89,8 @@ type Props = {
 };
 
 export function WinsPerMapTypeChart({ data }: Props) {
-  const processedData = processMapWinrates(data);
+  const t = useTranslations("statsPage.playerStats.winrateMapType");
+  const processedData = processMapWinrates(data, t);
 
   return (
     <>
@@ -106,7 +111,7 @@ export function WinsPerMapTypeChart({ data }: Props) {
             <PolarAngleAxis dataKey="mapType" />
             <PolarRadiusAxis angle={45} domain={[0, 100]} opacity={0.6} />
             <Radar
-              name="Winrate"
+              name={t("chartName")}
               dataKey="winrate"
               stroke="#3b82f6"
               fill="#3b82f6"
@@ -117,10 +122,7 @@ export function WinsPerMapTypeChart({ data }: Props) {
         </ResponsiveContainer>
       </CardContent>
       <CardFooter>
-        <p className="text-sm text-muted-foreground">
-          Wins per map type. 0% means no wins, 100% means all wins. Hover over
-          the chart to see the winrate.
-        </p>
+        <p className="text-sm text-muted-foreground">{t("footer")}</p>
       </CardFooter>
     </>
   );

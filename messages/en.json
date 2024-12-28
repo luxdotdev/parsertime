@@ -1149,6 +1149,7 @@
           "Hybrid": "Hybrid",
           "Push": "Push"
         },
+        "chartName": "Winrate",
         "title": "Winrate By Map Type",
         "footer": "Wins per map type. 0% means no wins, 100% means all wins. Hover over the chart to see the winrate."
       },
