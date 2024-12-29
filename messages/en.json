@@ -1532,25 +1532,6 @@
       "linkedAccounts": "Linked Accounts",
       "admin": "Admin"
     },
-    "discordForm": {
-      "minMessage": "Name must be at least 2 characters.",
-      "maxMessage": "Name must not be longer than 30 characters.",
-      "onSubmit": {
-        "title": "Profile updated",
-        "description": "Your profile has been successfully updated.",
-        "errorTitle": "An error occurred",
-        "errorDescription": "An error occurred: {res}"
-      },
-      "username": {
-        "title": "Username",
-        "description": "This is your public display name. It can be your real name or a pseudonym."
-      },
-      "avatar": {
-        "title": "Avatar",
-        "description": "This is your public account avatar. Click on the avatar to upload a custom one from your files."
-      },
-      "update": "Update profile"
-    },
     "profile": {
       "title": "Profile",
       "description": "This is how others will see you on the site.",
