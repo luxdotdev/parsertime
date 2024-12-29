@@ -1513,11 +1513,6 @@
     }
   },
   "settingsPage": {
-    "metadataLayout": {
-      "title": "%s Overview | Parsertime",
-      "default": "Player Overview | Parsertime",
-      "description": "Parsertime is a tool for analyzing Overwatch scrims."
-    },
     "metadataSettingsLayout": {
       "title": "Settings | Parsertime",
       "description": "Manage your account settings and preferences.",
