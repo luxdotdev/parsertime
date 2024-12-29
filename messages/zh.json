@@ -758,6 +758,11 @@
         "ultsCharged": "终极技能充能",
         "ultsUsed": "使用的终极技能"
       },
+      "roles": {
+        "Tank": "坦克",
+        "Damage": "输出",
+        "Support": "支援"
+      },
       "tooltips": {
         "playerName": "玩家的名字。点击名字查看其统计数据。",
         "role": "玩家的角色。",

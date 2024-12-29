@@ -762,6 +762,11 @@
         "ultsCharged": "Ultimates Charged",
         "ultsUsed": "Ultimates Used"
       },
+      "roles": {
+        "Tank": "Tank",
+        "Damage": "Damage",
+        "Support": "Support"
+      },
       "tooltips": {
         "playerName": "The player's name. Click on their name to view their statistics.",
         "role": "The role the player played.",

@@ -96,7 +96,9 @@ export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
         </OverviewTableHeader>
       ),
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("role")}</div>
+        <div className="capitalize">
+          {t(`roles.${row.getValue<string>("role")}`)}
+        </div>
       ),
       enableSorting: true,
       enableColumnFilter: false,
