@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Winrate } from "@/data/scrim-dto";
 import { NonMappableStat, Stat } from "@/lib/player-charts";
-import { cn, toHero } from "@/lib/utils";
+import { cn, toHero, useHeroNames } from "@/lib/utils";
 import { HeroName } from "@/types/heroes";
 import { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
@@ -79,6 +79,8 @@ export function Statistics({
   deaths: Kill[];
 }) {
   const t = useTranslations("statsPage.playerStats");
+  const heroNames = useHeroNames();
+
   const [customScrims, setCustomScrims] = useState<Scrim[]>([]);
   const [filteredStats, setFilteredStats] = useState<PlayerStat[]>([]);
   const [filteredKills, setFilteredKills] = useState<Kill[]>([]);
@@ -419,7 +421,7 @@ export function Statistics({
                           )}
                         />{" "}
                       </div>
-                      {hero}
+                      {heroNames.get(toHero(hero)) || hero}
                     </span>
                   </TableCell>
                   <TableCell>{games}</TableCell>
@@ -534,7 +536,7 @@ export function Statistics({
                               }/scrim/${scrimId}/map/${mapId}`}
                               target="_blank"
                             >
-                              {hero}
+                              {heroNames.get(toHero(hero as string)) || hero}
                             </Link>
                           </TooltipTrigger>
                           <TooltipContent>
@@ -704,7 +706,7 @@ export function Statistics({
                           )}
                         />{" "}
                       </div>
-                      {hero}
+                      {heroNames.get(toHero(hero)) || hero}
                     </span>
                   </TableCell>
                   <TableCell>{deaths}</TableCell>
@@ -809,7 +811,7 @@ export function Statistics({
                           )}
                         />{" "}
                       </div>
-                      {hero}
+                      {heroNames.get(toHero(hero)) || hero}
                     </span>
                   </TableCell>
                   <TableCell>{elims}</TableCell>
