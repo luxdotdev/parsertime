@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { SearchParams } from "@/types/next";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
-
 type Props = { searchParams: SearchParams };
-
 type Error =
   | "Configuration"
   | "AccessDenied"
@@ -11,40 +10,41 @@ type Error =
   | "AuthorizedCallbackError"
   | "Default";
 
-export default function AuthErrorPage({ searchParams }: Props) {
+export default async function AuthErrorPage({ searchParams }: Props) {
+  const t = await getTranslations("authError");
+
   const error = searchParams.error as Error;
 
   const errorMessages = {
-    Configuration:
-      "There was an error with the server configuration. Please contact support.",
-    AccessDenied:
-      "Access was denied. The app may be in private beta. Please contact support if you believe this to be in error.",
-    AuthorizedCallbackError:
-      "Access was denied. The app may be in private beta. Please contact support if you believe this to be in error.",
-    Verification:
-      "The token has expired or has already been used. Please try again.",
-    Default: "There was an unknown error signing in. Please contact support.",
+    Configuration: t("errors.configuration"),
+    AccessDenied: t("errors.accessDenied"),
+    AuthorizedCallbackError: t("errors.authorizedCallbackError"),
+    Verification: t("errors.verification"),
+    Default: t("errors.default"),
   };
 
   return (
     <div className="flex h-[90vh] flex-col items-center justify-center space-y-6 p-6 text-center">
-      <h1 className="text-3xl font-bold">There was an error signing in</h1>
+      <h1 className="text-3xl font-bold">{t("title")}</h1>
       <p className="max-w-[600px] text-gray-500 dark:text-gray-400">
-        <span className="font-bold">Error:</span>{" "}
+        <span className="font-bold">{t("error")}</span>{" "}
         {errorMessages[error] ?? errorMessages.Default}
       </p>
       <p className="max-w-[600px] text-gray-500 dark:text-gray-400">
-        Please try again. If the problem persists, please contact support at{" "}
-        <Link href="mailto:help@parsertime.app" className="underline">
-          help@parsertime.app.
-        </Link>
+        {t.rich("description", {
+          link: (chunks) => (
+            <Link href="mailto:help@parsertime.app" className="underline">
+              {chunks}
+            </Link>
+          ),
+        })}
       </p>
       <div className="flex space-x-4">
         <Button className="mx-auto" variant="outline" asChild>
-          <Link href="/">Back to Home</Link>
+          <Link href="/">{t("back")}</Link>
         </Button>
         <Button className="mx-auto" asChild>
-          <Link href="/sign-in">Sign In</Link>
+          <Link href="/sign-in">{t("signIn")}</Link>
         </Button>
       </div>
     </div>
