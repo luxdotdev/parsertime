@@ -185,6 +185,7 @@
       "accessDenied": "Access was denied. The app may be in private beta. Please contact support if you believe this to be in error.",
       "authorizedCallbackError": "Access was denied. The app may be in private beta. Please contact support if you believe this to be in error.",
       "verification": "The token has expired or has already been used. Please try again.",
+      "adapterError": "There was an error with the database adapter. Please try clearing your cookies and try again. If the problem persists, please contact support.",
       "default": "There was an unknown error signing in. Please contact support."
     }
   },
