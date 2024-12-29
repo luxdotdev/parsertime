@@ -1513,11 +1513,12 @@
     }
   },
   "settingsPage": {
-    "metadataSettingsLayout": {
+    "metadata": {
       "title": "Settings | Parsertime",
       "description": "Manage your account settings and preferences.",
       "ogTitle": "Settings | Parsertime",
-      "ogDescription": "Manage your account settings and preferences."
+      "ogDescription": "Manage your account settings and preferences.",
+      "ogImage": "Settings"
     },
     "title": "Settings",
     "description": "Manage your account settings and preferences.",
