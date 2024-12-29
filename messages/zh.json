@@ -928,5 +928,368 @@
         }
       }
     }
+  },
+  "statsPage": {
+    "layoutMetadata": {
+      "title": "统计数据 | Parsertime",
+      "description": "在 Parsertime 上查看您的统计数据和表现指标。",
+      "ogTitle": "统计数据 | Parsertime",
+      "ogDescription": "在 Parsertime 上查看您的统计数据和表现指标。",
+      "ogImage": "统计数据"
+    },
+    "playerMetadata": {
+      "title": "{playerName}的统计数据 | Parsertime",
+      "description": "Parsertime 上 {playerName} 的玩家统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "{playerName}的统计数据 | Parsertime",
+      "ogDescription": "Parsertime 上 {playerName} 的玩家统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogImage": "{playerName}的统计数据"
+    },
+    "heroStatsMetadata": {
+      "title": "英雄统计数据 | Parsertime",
+      "description": "在 Parsertime 上查看《守望先锋》英雄的统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "英雄统计数据 | Parsertime",
+      "ogDescription": "在 Parsertime 上查看《守望先锋》英雄的统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogImage": "英雄统计数据"
+    },
+    "heroMetadata": {
+      "title": "{hero}的统计数据 | Parsertime",
+      "description": "Parsertime 上 {hero} 的统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "{hero}的统计数据 | Parsertime",
+      "ogDescription": "Parsertime 上 {hero} 的统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogImage": "{hero}的统计数据"
+    },
+    "title": "统计数据",
+    "searchbar": {
+      "placeholder": "输入球员姓名...",
+      "description": "搜索玩家以查看他们的统计数据。您可以通过用户名或战网标签进行搜索。例如：<span>Spingar</span> 或 <span>Spingar#1000</span>。",
+      "link": "单击此处查看英雄统计数据"
+    },
+    "globalStats": "全球统计",
+    "users": {
+      "title": "用户",
+      "footer": "平台用户总数"
+    },
+    "scrims": {
+      "title": "训练赛",
+      "footer": "上传的训练赛总数"
+    },
+    "kills": {
+      "title": "击毙",
+      "footer": "记录的击毙总数"
+    },
+    "playerStat": {
+      "title": "球员数据",
+      "footer": "记录的球员数据总数"
+    },
+    "leaderboard": "排行榜",
+    "top3MostPlayed": {
+      "title": "最常使用的前三名英雄",
+      "rank": "排名",
+      "hero": "英雄",
+      "timePlayed": "游戏时间",
+      "footer": "结果累积自所有 {mapNum} 张地图。"
+    },
+    "top3Kills": {
+      "title": "击杀数前三名玩家",
+      "rank": "排名",
+      "player": "玩家",
+      "kills": "击杀",
+      "footer": "结果累积自所有 {mapNum} 张地图。"
+    },
+    "top3Dmg": {
+      "title": "英雄伤害前三名玩家",
+      "rank": "排名",
+      "player": "玩家",
+      "heroDmgDealt": "造成的英雄伤害",
+      "footer": "结果累积自 {mapNum} 张地图。"
+    },
+    "top3Healing": {
+      "title": "治疗量前三名玩家",
+      "rank": "排名",
+      "player": "玩家",
+      "healingDealt": "提供的治疗量",
+      "footer": "结果累积自 {mapNum} 张地图。"
+    },
+    "top3DmgBlocked": {
+      "title": "阻挡伤害前三名玩家",
+      "rank": "排名",
+      "player": "玩家",
+      "dmgBlocked": "阻挡的伤害",
+      "footer": "结果累积自 {mapNum} 张地图。"
+    },
+    "top3Deaths": {
+      "title": "死亡数前三名玩家",
+      "rank": "排名",
+      "player": "玩家",
+      "deaths": "死亡",
+      "footer": "结果累积自 {mapNum} 张地图。"
+    },
+    "top3TimePlayed": {
+      "title": "游戏时间前三名玩家",
+      "rank": "排名",
+      "player": "玩家",
+      "timePlayed": "游戏时间",
+      "footer": "结果累积自 {mapNum} 张地图。"
+    },
+    "top3Ajax": {
+      "title": "亚克斯现象次数最多的前三名玩家",
+      "rank": "排名",
+      "player": "玩家",
+      "ajaxes": "亚克斯次数",
+      "footer": "结果累积自 {mapNum} 张地图。"
+    },
+    "playerStats": {
+      "title": "{name}的统计数据",
+      "statsFail": "未能找到 {name} 的统计数据。您是否正确拼写了名字？",
+      "back": "返回统计数据",
+      "timeframe": {
+        "one-week": "一周",
+        "two-weeks": "两周",
+        "one-month": "一个月",
+        "three-months": "三个月",
+        "six-months": "六个月",
+        "one-year": "一年",
+        "all-time": "所有时间",
+        "all-time-data": "在所有时间数据中",
+        "custom": "{from} - {to} 之间"
+      },
+      "clientDate": {
+        "formatDate": "{date, date, ::EEE MMM dd yyyy}"
+      },
+      "rangePicker": {
+        "selectTime": "选择时间范围",
+        "lastWeek": "上周",
+        "last2Weeks": "过去两周",
+        "lastMonth": "上个月",
+        "last3Months": "过去三个月",
+        "last6Months": "过去六个月",
+        "lastYear": "去年",
+        "allTime": "所有时间",
+        "custom": "自定义",
+        "upgrade": "升级以查看更多时间范围",
+        "selectHero": "选择英雄",
+        "allHeroes": "所有英雄",
+        "pickDate": "选择日期",
+        "calendarDate": "{from} - {to}",
+        "formatDate": "{date, date, ::MMM dd yyyy}",
+        "tank": "坦克",
+        "damage": "输出",
+        "support": "支援"
+      },
+      "mostPlayed": {
+        "title": "最常使用的英雄",
+        "rank": "排名",
+        "hero": "英雄",
+        "games": "场次",
+        "noData": "无数据",
+        "footer1": "统计数据来自过去 {timeframe} 的 {scrims} 场训练赛",
+        "footer2": "统计数据来自 {timeframe1} 的 {timeframe2} 场训练赛"
+      },
+      "bestPerformance": {
+        "title": "最佳表现",
+        "rank": "排名",
+        "hero": "英雄",
+        "finalBlows": "最后击杀",
+        "clickMap": "点击查看地图",
+        "noData": "无数据",
+        "footer1": "统计数据来自过去 {timeframe} 的 {scrims} 场训练赛",
+        "footer2": "统计数据来自 {timeframe1} 的 {timeframe2} 场训练赛"
+      },
+      "statPer10": {
+        "footer": "在最近 {scrimData} 场训练赛中，趋势为 <span>{percentageChange}</span>",
+        "avg": "平均值：",
+        "max": "| 最大值：",
+        "min": "| 最小值："
+      },
+      "avgHeroDmgDealtPer10": {
+        "title": "每 10 分钟的平均英雄伤害（每场训练赛）",
+        "tooltip": "每场训练赛中每 10 分钟造成的平均英雄伤害。越高越好。"
+      },
+      "avgDeathPer10": {
+        "title": "每 10 分钟的平均死亡数（每场训练赛）",
+        "tooltip": "每场训练赛中每 10 分钟的平均死亡数。越低越好。"
+      },
+      "timeSpent": {
+        "title": "每个角色的游戏时间",
+        "tank": "坦克",
+        "damage": "输出",
+        "support": "支援",
+        "footer": "总游戏时间：<span>{toTimestampWithHours}</span> | 每个角色的游戏时间：<span>{timePerRole}</span>"
+      },
+      "finalBlowsByMethod": {
+        "title": "按方式分类的最后击杀",
+        "finalBlows": "最后击杀",
+        "primary": "主武器",
+        "secondary": "副武器",
+        "ability1": "技能 1",
+        "ability2": "技能 2",
+        "ultimate": "终极技能",
+        "melee": "近战",
+        "footer": "计算自 <span>{format}</span> 次最后击杀"
+      },
+      "mapWinrates": {
+        "title": "地图胜率",
+        "tooltip": {
+          "wins": "胜场：",
+          "losses": "败场：",
+          "percentage": "百分比："
+        },
+        "wins": "胜场",
+        "losses": "败场",
+        "footer": "地图胜率基于每张地图的胜场和败场计算。请注意，推车地图未包含在此图表中，因为它们没有可跟踪的胜/负条件。"
+      },
+      "winrateMapType": {
+        "mapTypes": {
+          "Clash": "冲突",
+          "Control": "控制",
+          "Escort": "护送",
+          "Flashpoint": "闪点",
+          "Hybrid": "混合",
+          "Push": "推车"
+        },
+        "chartName": "胜率",
+        "title": "按地图类型分类的胜率",
+        "footer": "每种地图类型的胜率。0% 表示没有胜场，100% 表示全胜。将鼠标悬停在图表上查看胜率。"
+      },
+      "heroesDiedToMost": {
+        "title": "最常死于的英雄",
+        "rank": "排名",
+        "hero": "英雄",
+        "deaths": "死亡数",
+        "noData": "无数据",
+        "footer1": "统计数据来自过去 {timeframe} 的 {scrims} 场训练赛",
+        "footer2": "统计数据来自 {timeframe1} 的 {timeframe2} 场训练赛"
+      },
+      "heroesElimMost": {
+        "title": "击杀次数最多的英雄",
+        "rank": "排名",
+        "hero": "英雄",
+        "eliminations": "消灭",
+        "noData": "无数据",
+        "footer1": "统计数据来自过去 {timeframe} 的 {scrims} 场训练赛",
+        "footer2": "统计数据来自 {timeframe1} 的 {timeframe2} 场训练赛"
+      },
+      "stats": {
+        "title": "统计",
+        "select": "选择统计",
+        "eliminations": "消灭",
+        "final_blows": "最后击杀",
+        "healing_dealt": "提供的治疗量",
+        "healing_received": "受到的治疗量",
+        "self_healing": "自我治疗",
+        "damage_taken": "承受的伤害",
+        "damage_blocked": "阻挡的伤害",
+        "ultimates_earned": "获得的终极技能",
+        "ultimates_used": "使用的终极技能",
+        "solo_kills": "单独击杀",
+        "environmental_kills": "环境击杀",
+        "deaths": "死亡",
+        "hero_damage_dealt": "英雄伤害"
+      }
+    },
+    "heroStats": {
+      "title": "英雄统计数据",
+      "description": "选择一个英雄查看他们的统计数据。统计数据来自所有训练赛的累积。",
+      "timeframe": {
+        "one-week": "一周",
+        "two-weeks": "两周",
+        "one-month": "一个月",
+        "three-months": "三个月",
+        "six-months": "六个月",
+        "one-year": "一年",
+        "all-time": "所有时间",
+        "all-time-data": "在所有时间数据中",
+        "custom": "{from} - {to} 之间"
+      },
+      "tank": "坦克英雄",
+      "damage": "输出英雄",
+      "support": "支援英雄",
+      "altText": "{hero} 的头像。",
+      "header": "{hero} 的统计数据",
+      "heroFail": "未能找到 {hero} 的统计数据。您是否正确拼写了名字？",
+      "back": "返回统计数据",
+      "rangePicker": {
+        "selectTime": "选择时间范围",
+        "lastWeek": "上周",
+        "last2Weeks": "过去两周",
+        "lastMonth": "上个月",
+        "last3Months": "过去三个月",
+        "last6Months": "过去六个月",
+        "lastYear": "去年",
+        "allTime": "所有时间",
+        "custom": "自定义",
+        "upgrade": "升级以查看更多时间范围",
+        "selectHero": "选择一个英雄",
+        "pickDate": "选择日期",
+        "calendarDate": "{from} - {to}",
+        "formatDate": "{date, date, ::MMM dd yyyy}"
+      },
+      "statistics": {
+        "title": "英雄统计数据",
+        "totalGames": "总比赛数",
+        "games": "{num, plural, =1 {# <span>场比赛</span>} other {# <span>场比赛</span>}}",
+        "totalKills": "总击杀数",
+        "kills": "{num, plural, =1 {# <span>次击杀</span>} other {# <span>次击杀</span>}}",
+        "totalDeaths": "总死亡数",
+        "deaths": "{num, plural, =1 {# <span>次死亡</span>} other {# <span>次死亡</span>}}",
+        "footer1": "统计数据来自过去 {timeframe} 的 {scrims, plural, =1 {# 场训练赛} other {# 场训练赛}}",
+        "footer2": "统计数据来自 {timeframe1} 的 {timeframe2}",
+        "footer3": "统计数据收集自每一位在训练赛中任何时刻使用 {hero} 的玩家。"
+      },
+      "bestPerformance": {
+        "title": "最佳表现",
+        "rank": "排名",
+        "player": "玩家",
+        "finalBlows": "最后击杀",
+        "clickPlayer": "点击查看玩家统计数据",
+        "noData": "无数据",
+        "footer1": "统计数据来自过去 {timeframe} 的 {scrims} 场训练赛",
+        "footer2": "统计数据来自 {timeframe1} 的 {timeframe2}"
+      },
+      "finalBlowsByMethod": "按方式分类的最后击杀",
+      "avgHeroDmgDealtPer10": {
+        "title": "每 10 分钟的平均英雄伤害（每场训练赛）",
+        "tooltip": "每场训练赛中每 10 分钟造成的平均英雄伤害。越高越好。"
+      },
+      "avgDeathPer10": {
+        "title": "每 10 分钟的平均死亡数（每场训练赛）",
+        "tooltip": "每场训练赛中每 10 分钟的平均死亡数。越低越好。"
+      },
+      "heroesDiedToMost": {
+        "title": "最常死于的英雄",
+        "rank": "排名",
+        "hero": "英雄",
+        "deaths": "死亡数",
+        "noData": "无数据",
+        "footer1": "统计数据来自过去 {timeframe} 的 {scrims} 场训练赛",
+        "footer2": "统计数据来自 {timeframe1} 的 {timeframe2}"
+      },
+      "heroesElimMost": {
+        "title": "击杀次数最多的英雄",
+        "rank": "排名",
+        "hero": "英雄",
+        "eliminations": "消灭",
+        "noData": "无数据",
+        "footer1": "统计数据来自过去 {timeframe} 的 {scrims} 场训练赛",
+        "footer2": "统计数据来自 {timeframe1} 的 {timeframe2}"
+      },
+      "stats": {
+        "title": "统计",
+        "select": "选择统计",
+        "eliminations": "消灭",
+        "final_blows": "最后击杀",
+        "healing_dealt": "提供的治疗量",
+        "healing_received": "受到的治疗量",
+        "self_healing": "自我治疗",
+        "damage_taken": "承受的伤害",
+        "damage_blocked": "阻挡的伤害",
+        "ultimates_earned": "获得的终极技能",
+        "ultimates_used": "使用的终极技能",
+        "solo_kills": "单独击杀",
+        "environmental_kills": "环境击杀",
+        "deaths": "死亡",
+        "hero_damage_dealt": "英雄伤害"
+      }
+    }
   }
 }
