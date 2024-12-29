@@ -1297,5 +1297,195 @@
         "hero_damage_dealt": "英雄伤害"
       }
     }
+  },
+  "teamPage": {
+    "metadata": {
+      "title": "团队 | Parsertime",
+      "description": "Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "团队 | Parsertime",
+      "ogDescription": "Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogImage": "团队"
+    },
+    "teamMetadata": {
+      "title": "{teamName} 概述 | Parsertime",
+      "description": "Parsertime 上 {teamName} 的概述。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "{teamName} 概述 | Parsertime",
+      "ogDescription": "Parsertime 上 {teamName} 的概述。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogImage": "{teamName} 概述",
+      "defaultTeam": "团队"
+    },
+    "manageTeams": "管理您的团队",
+    "viewTeams": "查看您的团队",
+    "teams": "团队",
+    "admin": "管理员视图",
+    "altText": {
+      "custom": "{team} 的头像",
+      "default": "默认团队头像",
+      "userProfile": "{user} 的头像",
+      "noAvatar": "默认用户头像"
+    },
+    "defaultName": "团队名称",
+    "members": "成员",
+    "settings": "设置",
+    "manager": "（管理员）",
+    "owner": "（所有者）",
+    "you": "（您）",
+    "addMember": "添加成员...",
+    "join": {
+      "enterToken": "输入您的邀请令牌",
+      "joinTeam": "加入团队",
+      "invalidToken": {
+        "title": "令牌无效",
+        "description": "您提供的令牌无效。"
+      },
+      "handleSubmit": {
+        "title": "已加入团队",
+        "description": "您已成功加入团队。",
+        "errorTitle": "错误",
+        "errorDescription": "发生错误：{res}"
+      }
+    },
+    "userButtons": {
+      "promote": {
+        "button": "提升为管理员",
+        "title": "您确定吗？",
+        "description": "这将把用户的角色从成员更改为管理员。该用户将能够管理团队及其资源。",
+        "cancel": "取消",
+        "promoting": "正在提升...",
+        "promote": "提升为管理员",
+        "handlePromote": {
+          "title": "用户已提升为管理员",
+          "description": "{user} 已被提升为管理员。",
+          "errorTitle": "发生错误",
+          "errorDescription": "发生错误：{res}"
+        }
+      },
+      "demote": {
+        "button": "降级为成员",
+        "title": "您确定吗？",
+        "description": "这将把用户的角色从管理员更改为成员。",
+        "cancel": "取消",
+        "demoting": "正在降级...",
+        "demote": "降级为成员",
+        "handleDemote": {
+          "title": "用户已降级为成员",
+          "description": "{user} 已被降级为成员。",
+          "errorTitle": "发生错误",
+          "errorDescription": "发生错误：{res}"
+        }
+      },
+      "remove": {
+        "button": "从团队中移除",
+        "title": "您确定吗？",
+        "description": "这将把用户从团队中移除，他们将失去对所有团队资源的访问权限。",
+        "cancel": "取消",
+        "removing": "正在移除...",
+        "remove": "从团队中移除",
+        "handleRemove": {
+          "title": "用户已从团队中移除",
+          "description": "{user} 已被从团队中移除。",
+          "errorTitle": "发生错误",
+          "errorDescription": "发生错误：{res}"
+        }
+      }
+    },
+    "inviteMember": {
+      "title": "邀请成员",
+      "description": "邀请新成员以允许他们查看您团队的训练赛。用户必须注册后才能接收邀请。",
+      "email": "电子邮件",
+      "cancel": "取消",
+      "send": "发送邀请",
+      "sending": "正在发送邀请...",
+      "emailMessage": "无效的电子邮件",
+      "reqMessage": "电子邮件是必需的",
+      "onSubmit": {
+        "title": "邀请已发送！",
+        "description": "您的邀请已成功发送。",
+        "errorTitle": "错误",
+        "errorDescription": "发生错误：{res}",
+        "errorStatus": "。您是否确认用户已注册？"
+      }
+    },
+    "teamInviteLink": {
+      "title": "团队邀请链接",
+      "subtitle": "您的永久团队邀请链接（悬停以显示）：",
+      "description": "请注意，通过“邀请用户”按钮邀请用户更加安全。我们建议尽量避免共享此链接。"
+    },
+    "clipboard": {
+      "title": "已复制到剪贴板",
+      "description": "团队邀请链接已复制到您的剪贴板。",
+      "tooltip": "点击复制"
+    },
+    "name": {
+      "title": "显示名称",
+      "placeholder": "康奈尔大学电子竞技",
+      "description": "这是您团队的公开显示名称。",
+      "minMessage": "名称必须至少包含 2 个字符。",
+      "maxMessage": "名称长度不得超过 30 个字符。"
+    },
+    "avatar": {
+      "title": "头像",
+      "label": "文件上传",
+      "altText": "用户头像",
+      "description": "这是您团队的公开头像。点击头像以从您的文件中上传自定义头像。",
+      "editTitle": "编辑头像",
+      "editDescription": "在此处对您的头像进行更改。完成后点击保存。",
+      "save": "保存更改",
+      "updating": "正在更新...",
+      "handleCrop": {
+        "title": "头像更新成功",
+        "description": "您团队的头像已成功更新。",
+        "errorTitle": "发生错误",
+        "errorDescription1": "发生错误：{res}",
+        "errorDescription2": "更新头像时发生错误。请稍后重试或联系支持。"
+      }
+    },
+    "readonly": {
+      "title": "只读",
+      "description": "如果启用，团队将变为只读。这意味着玩家和管理员无法向团队添加训练赛。"
+    },
+    "update": {
+      "title": "更新团队资料",
+      "onSubmit": {
+        "title": "团队资料已更新",
+        "description": "您的团队资料已成功更新。",
+        "errorTitle": "发生错误",
+        "errorDescription": "发生错误：{res}"
+      },
+      "updating": "正在更新..."
+    },
+    "dangerZone": {
+      "title": "危险区域",
+      "description": "这些操作是不可逆的。请在继续之前确保您的决定。"
+    },
+    "transferOwner": {
+      "title": "转移所有权",
+      "description": "一旦您转移了所有权，您将不再是该团队的所有者。",
+      "button": "转移所有权",
+      "email": "输入您希望转移所有权的用户的电子邮件地址。",
+      "transferring": "正在转移...",
+      "cancel": "取消",
+      "handleTransfer": {
+        "title": "所有权已转移",
+        "description": "团队所有权已成功转移。",
+        "errorTitle": "发生错误",
+        "errorDescription": "发生错误：{res}"
+      }
+    },
+    "deleteTeam": {
+      "title": "删除团队",
+      "description": "一旦删除团队，将无法恢复。请确保您的决定。",
+      "button": "删除团队",
+      "deleteAlert": "您确定要删除团队 <strong>{team}</strong> 吗？此操作无法撤销。",
+      "deleteConfirmation": "输入 <strong>{team}</strong> 以确认。",
+      "deleting": "正在删除...",
+      "cancel": "取消",
+      "handleDelete": {
+        "title": "团队已删除",
+        "description": "团队已被删除。",
+        "errorTitle": "发生错误",
+        "errorDescription": "发生错误：{res}"
+      }
+    }
   }
 }
