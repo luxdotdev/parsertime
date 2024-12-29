@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import CardIcon from "@/components/ui/card-icon";
-import { cn, round, toHero, toMins } from "@/lib/utils";
+import { cn, getHeroNames, round, toHero, toMins } from "@/lib/utils";
 import { HeroName, heroRoleMapping } from "@/types/heroes";
 import { PlayerStat } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
@@ -21,6 +21,7 @@ export default async function SpecificHero({
   showTable?: boolean;
 }) {
   const t = await getTranslations("mapPage.compare.playerCard.specificHero");
+  const heroNames = await getHeroNames();
 
   const hero = playerStats[0].player_hero as HeroName;
   const playerStat = playerStats[0];
@@ -29,7 +30,7 @@ export default async function SpecificHero({
   return (
     <main>
       <h1 className="scroll-m-20 pb-2 pl-2 text-3xl font-semibold tracking-tight first:mt-0">
-        {hero}
+        {heroNames.get(toHero(hero)) || hero}
       </h1>
       <div className="flex flex-1">
         <div className={cn("p-2", showTable && "w-full lg:w-1/2")}>
@@ -37,7 +38,9 @@ export default async function SpecificHero({
             <Card>
               <Image
                 src={`/heroes/${toHero(hero)}.png`}
-                alt={`An image of ${hero}'s Overwatch hero portrait.`}
+                alt={t("altText", {
+                  hero: heroNames.get(toHero(hero)) || hero,
+                })}
                 width={256}
                 height={256}
                 className="rounded-2xl p-2"
@@ -106,7 +109,9 @@ export default async function SpecificHero({
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Deaths</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  {t("deaths")}
+                </CardTitle>
                 <CardIcon>
                   <circle cx="9" cy="12" r="1" />
                   <circle cx="15" cy="12" r="1" />
