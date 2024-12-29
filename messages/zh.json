@@ -552,177 +552,177 @@
   },
   "mapPage": {
     "mapMetadata": {
-      "title": "{mapName} 概述 | Parsertime",
-      "description": "Parsertime 上 {mapName} 的地图概览。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
-      "ogTitle": "{mapName} 概述 | Parsertime",
-      "ogDescription": "Parsertime 上 {mapName} 的地图概览。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
-      "ogImage": "{mapName} 概述"
+      "title": "{mapName} 概览 | Parsertime",
+      "description": "查看 Parsertime 上 {mapName} 的地图概览。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
+      "ogTitle": "{mapName} 概览 | Parsertime",
+      "ogDescription": "查看 Parsertime 上 {mapName} 的地图概览。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
+      "ogImage": "{mapName} 概览"
     },
     "playerMetadata": {
-      "title": "{playerName} 概述 | Parsertime",
-      "description": "Parsertime 上 {playerName} 的玩家概况。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
-      "ogTitle": "{playerName} 概述 | Parsertime",
-      "ogDescription": "Parsertime 上 {playerName} 的玩家概况。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
-      "ogImage": "{playerName} 概述"
+      "title": "{playerName} 数据概览 | Parsertime",
+      "description": "查看 Parsertime 上 {playerName} 的数据概况。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
+      "ogTitle": "{playerName} 数据概览 | Parsertime",
+      "ogDescription": "查看 Parsertime 上 {playerName} 的数据概况。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
+      "ogImage": "{playerName} 数据概览"
     },
-    "back": "回到争球概述",
+    "back": "返回比赛概览",
     "dashboard": "仪表板",
     "playerSwitcher": {
-      "select": "选择播放器",
-      "search": "搜索播放器...",
+      "select": "选择玩家",
+      "search": "搜索玩家...",
       "noPlayerFound": "未找到玩家。",
       "default": "默认值"
     },
     "player": {
       "dashboard": {
-        "back": "返回默认概述",
+        "back": "返回默认概览",
         "viewStats": "查看综合统计数据",
         "dashboard": "仪表板",
-        "overview": "概述",
+        "overview": "概览",
         "analytics": "分析",
         "charts": "图表"
       },
       "overview": {
         "matchTime": "总比赛时间",
-        "minutes": "{time}分钟",
-        "fletaTitle": "Fleta 扛队百分比",
+        "minutes": "{time} 分钟",
+        "fletaTitle": "Fleta 扛队率",
         "fletaPercent": "{percent}%",
-        "fletaDescription": "Fleta 扛队是指一名玩家获得了其队伍 50% 的最后击杀。",
-        "firstPickTitle": "首選百分比",
+        "fletaDescription": "Fleta 扛队是指一名玩家贡献了其队伍 50% 的最后击杀。",
+        "firstPickTitle": "首杀率",
         "firstPickPercent": "{percent}%",
-        "firstPickDescription": "在 {fights} 场战斗中，{player} 获得了首杀 {picks, plural, =1 {# 次} other {# 次}}。",
-        "firstDeathTitle": "首次死亡百分比",
+        "firstPickDescription": "在 {fights} 场战斗中，{player} 首次击杀 {picks, plural, =1 {# 次} other {# 次}}。",
+        "firstDeathTitle": "首死率",
         "firstDeathPercent": "{percent}%",
-        "firstDeathDescription": "在 {fights} 场战斗中，{player} 首先阵亡 {deaths, plural, =1 {# 次} other {# 次}}。",
-        "playerStats": "球员统计",
+        "firstDeathDescription": "在 {fights} 场战斗中，{player} 首次阵亡 {deaths, plural, =1 {# 次} other {# 次}}。",
+        "playerStats": "玩家统计",
         "allHeroes": "所有英雄"
       },
       "statTable": {
         "stat": "统计",
         "total": "总计",
         "avg10Min": "平均/10 分钟",
-        "timePlayed": "已播英雄时间",
+        "timePlayed": "游戏时间",
         "mins": "{mins} 分钟",
-        "eliminations": "消除",
-        "finalBlows": "最后一击",
-        "deaths": "死亡人数",
-        "allDmgDealt": "造成的所有损失",
-        "barrierDmgDealt": "造成的障碍物损坏",
-        "heroDmgDealt": "英雄造成的伤害",
-        "healingDealt": "治疗",
-        "healingReceived": "接受治疗",
-        "selfHealing": "自我修复",
-        "dmgTaken": "造成的损失",
-        "dmgBlocked": "损坏受阻",
+        "eliminations": "消灭",
+        "finalBlows": "最后击杀",
+        "deaths": "死亡",
+        "allDmgDealt": "总伤害",
+        "barrierDmgDealt": "屏障伤害",
+        "heroDmgDealt": "英雄伤害",
+        "healingDealt": "治疗量",
+        "healingReceived": "收到治疗",
+        "selfHealing": "自我治疗",
+        "dmgTaken": "承受伤害",
+        "dmgBlocked": "阻挡伤害",
         "defenseAssist": "防守助攻",
         "offenseAssist": "进攻助攻",
-        "ultsEarned": "获得终极奖励",
-        "ultsUsed": "使用过的终极战士",
-        "multikillBest": "多杀最佳",
-        "multikills": "多重技能",
-        "soloKills": "单人杀戮",
+        "ultsEarned": "终极技能充能",
+        "ultsUsed": "使用终极技能",
+        "multikillBest": "最佳多杀",
+        "multikills": "多杀",
+        "soloKills": "单独击杀",
         "objKills": "目标击杀",
-        "envKills": "环境杀戮",
+        "envKills": "环境击杀",
         "envDeaths": "环境死亡",
-        "critHits": "关键一击",
-        "critHitAcc": "临界命中精度",
-        "scopedAcc": "瞄准镜精度",
-        "scopedCritHitAcc": "瞄准镜临界命中精度",
-        "scopedCritHitKills": "瞄准镜重创杀伤",
-        "weaponAcc": "武器精度",
+        "critHits": "暴击",
+        "critHitAcc": "暴击准确率",
+        "scopedAcc": "瞄准精度",
+        "scopedCritHitAcc": "瞄准暴击准确率",
+        "scopedCritHitKills": "瞄准暴击击杀",
+        "weaponAcc": "武器命中率",
         "noResult": "无结果。"
       },
       "analytics": {
         "avgUltChargeTime": {
-          "title": "平均极限充电时间",
-          "footer": "构建一个终极技能所需的平均时间。时间越短越好，时间越长可能说明你的伤害或治疗效果不够。"
+          "title": "平均终极充能时间",
+          "footer": "完成一个终极技能充能所需的平均时间。时间越短越好，时间过长可能表明伤害或治疗量不足。"
         },
         "avgTimeUseUlt": {
-          "title": "使用终极版的平均时间",
-          "footer": "终极技能充能后的平均使用时间。时间过长可能表明您没有有效地使用终极技能，或者使用时间过长。"
+          "title": "平均终极技能使用时间",
+          "footer": "终极技能充能完成后的平均使用时间。时间过长可能表明技能未被有效利用。"
         },
         "avgDroughtTime": {
           "title": "平均干旱时间",
-          "footer": "干旱时间是您最近一次击杀与下一次击杀之间的平均时间。干旱时间越长，表明您参与战斗的频率越低。"
+          "footer": "干旱时间是上一次击杀与下一次击杀之间的平均时间。干旱时间越长，表明参与战斗的频率越低。"
         },
         "xFactor": {
           "title": "X 因素",
-          "footer": "X 因子是衡量玩家个人对战斗影响的标准。如果你的 X 因子很高，那么你很可能成为战斗中的决定性因素。请注意，每个角色的计算方法都不同。"
+          "footer": "X 因素是衡量玩家对战斗影响程度的指标。高 X 因素通常表示玩家在战斗中是关键因素。注意，每个角色的计算方式可能不同。"
         },
         "versus": {
           "title": "与其他玩家的比较",
           "description": "{playerName} 对敌方队伍玩家的得分和胜率。",
           "score": "得分:",
-          "winrate": "赢利率: <color>{winrate}</color>%"
+          "winrate": "胜率: <color>{winrate}</color>%"
         },
         "playerKillfeed": {
-          "title": "玩家杀戮反馈",
-          "description": "A list of all the final blows and deaths for {playerName} in this match. Fights where {playerName} did not get a final blow are not shown.",
-          "team1": "第 1 小组",
-          "team2": "第 2 小组"
+          "title": "玩家击杀记录",
+          "description": "列出 {playerName} 在比赛中的所有最后击杀和死亡记录。不显示 {playerName} 未参与击杀的战斗。",
+          "team1": "队伍 1",
+          "team2": "队伍 2"
         },
         "dmgTakenHealingReceived": {
-          "title": "受到的伤害与获得的治疗",
-          "footer": "该图表显示了各回合累计受到的伤害和获得的治疗。x 轴代表回合数，y 轴代表累计受到的伤害或获得的治疗。",
+          "title": "承受的伤害与获得的治疗",
+          "footer": "该图表显示了每回合累计的承受伤害与获得治疗量。x 轴表示回合数，y 轴表示累计值。",
           "round": "回合 {round}",
-          "dmgTaken": "造成的损失",
-          "healingReceived": "接受治疗"
+          "dmgTaken": "承受伤害",
+          "healingReceived": "获得治疗"
         },
         "dmgDoneDmgTaken": {
-          "title": "英雄造成的伤害 vs 受到的伤害",
-          "footer": "此图表显示了各回合英雄造成的伤害和承受的伤害。x 轴代表回合数，y 轴代表造成的伤害或受到的伤害。",
+          "title": "英雄造成的伤害 vs 承受的伤害",
+          "footer": "此图表显示了每回合英雄造成的伤害与承受的伤害。x 轴表示回合数，y 轴表示伤害值。",
           "round": "回合 {round}",
-          "dmgDone": "造成的损害",
-          "dmgTaken": "造成的损失"
+          "dmgDone": "造成伤害",
+          "dmgTaken": "承受伤害"
         }
       },
       "charts": {
-        "team1": "第 1 小组",
-        "team2": "第 2 小组",
+        "team1": "队伍 1",
+        "team2": "队伍 2",
         "round": "回合 {index}",
         "dmgByRound": {
-          "title": "按回合计算的英雄伤害",
-          "footer": "此图表显示了 {playerName} 各回合造成的英雄伤害。x 轴代表回合，y 轴代表造成的伤害。请注意，伤害并不是累计的，因此第二回合造成的伤害并不包括第一回合造成的伤害。"
+          "title": "按回合统计的英雄伤害",
+          "footer": "该图表显示了 {playerName} 每回合造成的英雄伤害。x 轴表示回合，y 轴表示伤害值。注意，伤害值非累计。"
         },
         "dmgBlockByRound": {
-          "title": "按回合减轻伤害",
-          "footer": "此图表显示了 {playerName} 每回合减轻的伤害。x 轴代表回合，y 轴代表治疗量。请注意，治疗效果不是累加的，因此第二回合的治疗效果不包括第一回合的治疗效果。"
+          "title": "按回合统计的阻挡伤害",
+          "footer": "该图表显示了 {playerName} 每回合阻挡的伤害值。x 轴表示回合，y 轴表示阻挡值。注意，数据非累计。"
         },
         "finalBlowsByRound": {
-          "title": "各回合的最后一击",
-          "footer": "此图表显示了 {playerName} 各回合的最终治疗效果。x 轴代表回合，y 轴代表治疗量。请注意，治疗效果不是累加的，因此第二回合的治疗效果不包括第一回合的治疗效果。"
+          "title": "按回合统计的最后击杀",
+          "footer": "该图表显示了 {playerName} 每回合的最后击杀次数。x 轴表示回合，y 轴表示击杀数。"
         },
         "healingByRound": {
-          "title": "轮回治疗",
-          "footer": "此图表显示了 {playerName} 各回合的治疗量。x 轴代表回合，y 轴代表治疗量。请注意，治疗效果不是累积的，因此第二回合的治疗效果不包括第一回合的治疗效果。"
+          "title": "按回合统计的治疗量",
+          "footer": "该图表显示了 {playerName} 每回合的治疗量。x 轴表示回合，y 轴表示治疗值。注意，数据非累计。"
         },
         "dmgTakenByRound": {
-          "title": "每回合受到的伤害",
-          "footer": "此图表显示了 {playerName} 各回合受到的伤害。x 轴代表回合，y 轴代表治疗量。请注意，治疗效果不是累加的，因此第二回合的治疗效果不包括第一回合的治疗效果。"
+          "title": "按回合统计的承受伤害",
+          "footer": "该图表显示了 {playerName} 每回合承受的伤害值。x 轴表示回合，y 轴表示伤害值。注意，数据非累计。"
         },
         "healingReceivedByRound": {
-          "title": "按回合接受治疗",
-          "footer": "此图表显示了 {playerName} 各回合获得的治疗量。x 轴代表回合，y 轴代表治疗量。请注意，治疗效果不是累积的，因此第二回合的治疗效果不包括第一回合的治疗效果。"
+          "title": "按回合统计的获得治疗量",
+          "footer": "该图表显示了 {playerName} 每回合获得的治疗量。x 轴表示回合，y 轴表示治疗值。注意，数据非累计。"
         }
       }
     },
     "tabs": {
       "overview": "概述",
-      "killfeed": "击杀信息",
-      "kills": "击毙",
+      "killfeed": "击杀记录",
+      "kills": "击杀",
       "charts": "图表",
-      "events": "活动",
-      "compare": "比较"
+      "events": "事件",
+      "compare": "对比"
     },
     "overview": {
       "matchTime": "总比赛时间",
       "minutes": "{time} 分钟",
-      "score": "得分",
-      "winner": "优胜者:",
-      "pushLimitations": "由于训练赛代码的限制，不支持推车模式。:(",
+      "score": "比分",
+      "winner": "获胜方:",
+      "pushLimitations": "由于训练赛代码的限制，暂不支持推车模式。:(",
       "heroDamageDealt": "英雄造成的伤害",
       "dealtMore": "<color>{teamName}</color> 在这张地图上造成了更多的英雄伤害。",
-      "teamHealingDealt": "团队治疗",
+      "teamHealingDealt": "团队治疗量",
       "healedMore": "<color>{teamName}</color> 在这张地图上提供了更多的治疗。",
       "title": "概述",
       "round": "回合 {number}",
@@ -730,9 +730,9 @@
         "title": "分析",
         "deathDescriptionTeam1": "<span1>{team1Name}</span1> 在 {team1FirstDeaths} 场战斗中率先阵亡，占比为 <span2>{percentage}</span2>%。",
         "deathDescriptionTeam2": "<span1>{team2Name}</span1> 在 {team2FirstDeaths} 场战斗中率先阵亡，占比为 <span2>{percentage}</span2>%。",
-        "ultKillsDescriptionTeam1": "<span>{team1Name}</span> 的终极技能发挥了最大价值，取得了 <span>{team1UltimateKills}</span> 次终极击杀。",
-        "ultKillsDescriptionTeam2": "<span>{team2Name}</span> 的终极技能发挥了最大价值，取得了 <span>{team2UltimateKills}</span> 次终极击杀。",
-        "ultKillsDescriptionBoth": "双方队伍的终极技能发挥了相同的价值，各自取得了 <span>{team1UltimateKills}</span> 次终极击杀。",
+        "ultKillsDescriptionTeam1": "<span>{team1Name}</span> 的终极技能发挥了最大作用，取得了 <span>{team1UltimateKills}</span> 次终极击杀。",
+        "ultKillsDescriptionTeam2": "<span>{team2Name}</span> 的终极技能发挥了最大作用，取得了 <span>{team2UltimateKills}</span> 次终极击杀。",
+        "ultKillsDescriptionBoth": "双方队伍的终极技能发挥了相同作用，各自取得了 <span>{team1UltimateKills}</span> 次终极击杀。",
         "playerDeathDescription": "首杀次数最多的玩家是 <span>{playerWithMostFirstDeaths}</span>，在 {fights} 场战斗中率先阵亡了 <span>{firstDeaths}</span> 次。",
         "ajax": "<span>{player}</span> 在这张地图上使用了卢西奥，并出现了 <span>{ajaxes}</span> 次亚克斯现象 {ajaxes, plural, one {次} other {次}}。"
       }
@@ -740,139 +740,139 @@
     "overviewTable": {
       "noResult": "无结果。",
       "header": {
-        "playerName": "球员姓名",
+        "playerName": "玩家姓名",
         "role": "角色",
-        "playerTeam": "球员团队",
-        "timePlayed": "播放时间",
-        "eliminations": "消除",
-        "kills": "最后一击",
-        "assists": "助攻",
-        "deaths": "死亡人数",
+        "playerTeam": "玩家队伍",
+        "timePlayed": "游戏时间",
+        "eliminations": "消灭次数",
+        "kills": "最后击杀",
+        "assists": "助攻次数",
+        "deaths": "死亡次数",
         "kd": "击杀/死亡比",
         "kad": "击杀+助攻/死亡比",
-        "heroDmgDealt": "英雄造成的伤害",
-        "dmgReceived": "收到的损坏",
-        "healingReceived": "接受治疗",
-        "healingDealt": "治疗",
-        "dmgToHealsRatio": "造成的损失:接受治疗",
-        "ultsCharged": "终极战士充电",
-        "ultsUsed": "使用过的终极战士"
+        "heroDmgDealt": "英雄伤害",
+        "dmgReceived": "受到的伤害",
+        "healingReceived": "接受的治疗",
+        "healingDealt": "提供的治疗",
+        "dmgToHealsRatio": "伤害:治疗比",
+        "ultsCharged": "终极技能充能",
+        "ultsUsed": "使用的终极技能"
       },
       "tooltips": {
         "playerName": "玩家的名字。点击名字查看其统计数据。",
-        "role": "玩家所扮演的角色。",
+        "role": "玩家的角色。",
         "playerTeam": "玩家所属的队伍。",
-        "timePlayed": "玩家的游戏时间。",
+        "timePlayed": "玩家的累计游戏时间。",
         "eliminations": "玩家的消灭次数。",
         "kills": "玩家的最后击杀次数。",
         "assists": "玩家的助攻次数。",
         "deaths": "玩家的死亡次数。",
         "kd": "玩家的击杀/死亡比。",
-        "kad": "玩家的击杀/助攻/死亡比。",
+        "kad": "玩家的击杀+助攻/死亡比。",
         "heroDmgDealt": "玩家造成的英雄伤害量。",
         "dmgReceived": "玩家承受的伤害量。",
-        "healingReceived": "玩家受到的治疗量。",
+        "healingReceived": "玩家接受的治疗量。",
         "healingDealt": "玩家提供的治疗量。",
-        "dmgToHealsRatio": "玩家的造成伤害与受到治疗的比例。",
-        "ultsCharged": "玩家充能的终极技能次数。",
+        "dmgToHealsRatio": "玩家的伤害与接受治疗的比例。",
+        "ultsCharged": "玩家累计充能的终极技能次数。",
         "ultsUsed": "玩家使用的终极技能次数。"
       }
     },
     "killfeed": {
       "matchTime": "总比赛时间",
       "minutes": "{count} 分钟",
-      "kills": "击毙",
+      "kills": "击杀",
       "deaths": "死亡人数",
-      "fightWins": "战斗获胜",
-      "title": "击杀信息"
+      "fightWins": "战斗胜利",
+      "title": "击杀记录"
     },
     "killfeedTable": {
       "limitTest": "极限测试",
-      "environment": "环境",
+      "environment": "环境击杀",
       "fight": "战斗 {num}",
       "time": "时间",
-      "kill": "杀戮",
-      "method": "方法",
+      "kill": "击杀",
+      "method": "方式",
       "start": "开始",
       "end": "结束",
-      "fightWinner": "格斗冠军",
+      "fightWinner": "战斗胜者",
       "abilities": {
-        "primary-fire": "初级消防",
-        "secondary-fire": "辅助消防",
-        "ability-1": "能力 1",
-        "ability-2": "能力 2",
-        "ultimate": "终极",
+        "primary-fire": "主武器",
+        "secondary-fire": "副武器",
+        "ability-1": "技能 1",
+        "ability-2": "技能 2",
+        "ultimate": "终极技能",
         "melee": "近战"
       },
       "exportCSV": "导出为 CSV"
     },
     "charts": {
       "tooltip": "想了解更多关于图表的信息吗？<link>查看文档</link> 了解更多内容。",
-      "team1": "第 1 小组",
-      "team2": "第 2 小组",
+      "team1": "队伍 1",
+      "team2": "队伍 2",
       "time": "时间: {time}",
-      "tank": "水箱",
-      "damage": "损坏",
-      "support": "支持",
+      "tank": "坦克",
+      "damage": "输出",
+      "support": "支援",
       "round": "回合 {round}",
       "killsByFight": {
-        "title": "格斗杀人",
-        "description": "击杀数按 15 秒间隔分组。该图表显示了每支队伍在每个时间间隔内的累计击杀数。x 轴代表以秒为单位的时间，y 轴代表累计击杀数。1 队用正数表示，2 队用负数表示。每次战斗结束后，图表都会重置为 0。"
+        "title": "按战斗的击杀数",
+        "description": "击杀数按 15 秒间隔分组。此图表显示了每支队伍在每个时间间隔内的累计击杀数。x 轴代表以秒为单位的时间，y 轴代表累计击杀数。队伍 1 用正数表示，队伍 2 用负数表示。每次战斗结束后，图表都会重置为 0。"
       },
       "finalBlowsByRole": {
-        "title": "按角色划分的最后一击",
-        "description": "本图表显示了每个团队按角色划分的最后一击次数。角色分为坦克、伤害和辅助。x 轴代表角色，y 轴代表最后一击的次数。"
+        "title": "按角色的最后击杀",
+        "description": "此图表显示了每个队伍按角色的最后击杀次数。角色分为坦克、输出和支援。x 轴代表角色，y 轴代表最后击杀的次数。"
       },
       "dmgByRound": {
-        "title": "各回合累计英雄伤害",
-        "description": "该图表显示了每个团队各回合造成的英雄伤害。x 轴代表回合，y 轴代表造成的伤害。请注意，伤害是累计的，因此第二回合造成的伤害包括第一回合造成的伤害。"
+        "title": "每回合累计英雄伤害",
+        "description": "此图表显示了每支队伍在各回合累计的英雄伤害。x 轴代表回合，y 轴代表造成的伤害。请注意，伤害是累计的，因此第二回合的伤害包括第一回合的伤害。"
       }
     },
     "events": {
-      "roundStart": "第 {event} 回合开始了",
-      "roundEnd": "第 {event} 回合结束了",
+      "roundStart": "第 {event} 回合开始",
+      "roundEnd": "第 {event} 回合结束",
       "matchEnd": "比赛结束",
       "matchStart": "比赛开始",
       "mapEvents": {
-        "title": "活动",
-        "description": "比赛期间发生的事件。这包括目标捕获、回合开始和结束、多重击杀等。",
+        "title": "赛事事件",
+        "description": "比赛期间发生的事件，包括目标点占领、回合开始和结束、多重击杀等。",
         "captureString1": "<color>{team}</color> 占领了目标点。",
         "captureString2": "<color>{team}</color> 占领了目标。",
-        "objectiveUpdate": "捕获的点",
+        "objectiveUpdate": "目标点更新",
         "swap": "<img1></img1> <color>{player}</color> 切换为 <img2></img2> {hero}。",
         "ultKills": "<img></img> <color>{player}</color> 使用终极技能击杀了 {players, plural, =1 {一名玩家} other {# 名玩家}}。",
         "multikill": "在第 {event} 场战斗中，<span><img></img><color>{player}</color></span> 完成了一次多杀，击杀了 {kills} 名玩家。",
-        "ajax": "<span><img></img><color>{player}</color></span> 在第 {fight} 场战斗中出现了亚克斯现象。"
+        "ajax": "<span><img></img><color>{player}</color></span> 在第 {fight} 场战斗中触发了亚克斯现象。"
       },
       "ultsUsed": {
-        "title": "使用过的终极战士",
-        "description": "比赛中使用的所有终极技能及其使用时间的列表。",
+        "title": "使用的终极技能",
+        "description": "列出了比赛中使用的所有终极技能及其使用时间。",
         "ultStart": "<span><img></img><color>{player}</color></span> 在第 {fight} 场战斗中使用了他们的终极技能。"
       }
     },
     "compare": {
-      "team1": "第 1 小组",
-      "team2": "第 2 小组",
+      "team1": "队伍 1",
+      "team2": "队伍 2",
       "playerCard": {
-        "title": "球员统计",
+        "title": "玩家统计",
         "allHeroes": {
           "title": "所有英雄",
           "timePlayed": "游戏时间",
           "minutes": "{time} 分钟",
-          "matchTime": "比赛时间的 100%",
-          "eliminations": "消灭",
-          "elims": "{elims, plural, =1 {# 次消灭} other {# 次消灭}}",
-          "elimsPer10Min": "每 10 分钟 {elims, plural, =1 {# 次消灭} other {# 次消灭}}",
+          "matchTime": "100% 的比赛时间",
+          "eliminations": "击杀",
+          "elims": "{elims, plural, =1 {# 次击杀} other {# 次击杀}}",
+          "elimsPer10Min": "每 10 分钟 {elims, plural, =1 {# 次击杀} other {# 次击杀}}",
           "deaths": "死亡",
           "deathNum": "{num, plural, =1 {# 次死亡} other {# 次死亡}}",
           "deathsPer10Min": "每 10 分钟 {deaths, plural, =1 {# 次死亡} other {# 次死亡}}",
           "ultsUsed": "使用终极技能",
           "ultsUsedNum": "{num, plural, =1 {# 次终极技能} other {# 次终极技能}}",
           "ultsPer10Min": "每 10 分钟使用 {num, plural, =1 {# 次终极技能} other {# 次终极技能}}",
-          "heroDmgDealt": "造成的英雄伤害",
+          "heroDmgDealt": "英雄造成的伤害",
           "heroDmgDealtNum": "造成了 {num} 点英雄伤害",
           "heroDmgPer10Min": "每 10 分钟造成 {num} 点英雄伤害",
-          "dmgBlocked": "阻挡的伤害",
+          "dmgBlocked": "阻挡伤害",
           "dmgBlockedNum": "阻挡了 {num} 点伤害",
           "dmgBlockedPer10Min": "每 10 分钟阻挡 {num} 点伤害",
           "dmgTaken": "承受的伤害",
@@ -884,30 +884,30 @@
           "soloKills": "单独击杀",
           "soloKillsNum": "{num, plural, =1 {# 次单独击杀} other {# 次单独击杀}}",
           "soloKillsPer10Min": "每 10 分钟 {num, plural, =1 {# 次单独击杀} other {# 次单独击杀}}",
-          "healingDealt": "提供的治疗量",
-          "healingDealtNum": "提供了 {num} 点治疗量",
-          "healingDealtPer10Min": "每 10 分钟提供 {num} 点治疗量",
-          "healingReceived": "受到的治疗量",
-          "healingReceivedNum": "受到了 {num} 点治疗量",
-          "healingReceivedPer10Min": "每 10 分钟受到 {num} 点治疗量"
+          "healingDealt": "提供的治疗",
+          "healingDealtNum": "提供了 {num} 点治疗",
+          "healingDealtPer10Min": "每 10 分钟提供 {num} 点治疗",
+          "healingReceived": "受到的治疗",
+          "healingReceivedNum": "受到了 {num} 点治疗",
+          "healingReceivedPer10Min": "每 10 分钟受到 {num} 点治疗"
         },
         "specificHero": {
           "timePlayed": "游戏时间",
           "minutes": "{time} 分钟",
           "matchTime": "占比赛时间的 {percent}%",
-          "eliminations": "消灭",
-          "elims": "{elims, plural, =1 {# 次消灭{showTable}} other {# 次消灭{showTable}}}",
-          "elimsPer10Min": "每 10 分钟 {elims, plural, =1 {# 次消灭} other {# 次消灭}}",
+          "eliminations": "击杀",
+          "elims": "{elims, plural, =1 {# 次击杀{showTable}} other {# 次击杀{showTable}}}",
+          "elimsPer10Min": "每 10 分钟 {elims, plural, =1 {# 次击杀} other {# 次击杀}}",
           "deaths": "死亡",
           "deathNum": "{num, plural, =1 {# 次死亡} other {# 次死亡}}",
           "deathsPer10Min": "每 10 分钟 {deaths, plural, =1 {# 次死亡} other {# 次死亡}}",
           "ultsUsed": "使用终极技能",
           "ultsUsedNum": "{num, plural, =1 {# 次终极技能} other {# 次终极技能}}",
           "ultsPer10Min": "每 10 分钟使用 {num, plural, =1 {# 次终极技能} other {# 次终极技能}}",
-          "heroDmgDealt": "造成的英雄伤害",
+          "heroDmgDealt": "英雄造成的伤害",
           "heroDmgDealtNum": "造成了 {num} 点英雄伤害",
           "heroDmgPer10Min": "每 10 分钟造成 {num} 点英雄伤害",
-          "dmgBlocked": "阻挡的伤害",
+          "dmgBlocked": "阻挡伤害",
           "dmgBlockedNum": "阻挡了 {num} 点伤害",
           "dmgBlockedPer10Min": "每 10 分钟阻挡 {num} 点伤害",
           "dmgTaken": "承受的伤害",
@@ -919,12 +919,12 @@
           "soloKills": "单独击杀",
           "soloKillsNum": "{num, plural, =1 {# 次单独击杀} other {# 次单独击杀}}",
           "soloKillsPer10Min": "每 10 分钟 {num, plural, =1 {# 次单独击杀} other {# 次单独击杀}}",
-          "healingDealt": "提供的治疗量",
-          "healingDealtNum": "提供了 {num} 点治疗量",
-          "healingDealtPer10Min": "每 10 分钟提供 {num} 点治疗量",
-          "healingReceived": "受到的治疗量",
-          "healingReceivedNum": "受到了 {num} 点治疗量",
-          "healingReceivedPer10Min": "每 10 分钟受到 {num} 点治疗量"
+          "healingDealt": "提供的治疗",
+          "healingDealtNum": "提供了 {num} 点治疗",
+          "healingDealtPer10Min": "每 10 分钟提供 {num} 点治疗",
+          "healingReceived": "受到的治疗",
+          "healingReceivedNum": "受到了 {num} 点治疗",
+          "healingReceivedPer10Min": "每 10 分钟受到 {num} 点治疗"
         }
       }
     }
