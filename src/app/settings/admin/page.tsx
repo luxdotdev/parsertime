@@ -4,9 +4,12 @@ import { Separator } from "@/components/ui/separator";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { $Enums } from "@prisma/client";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 export default async function AdminSettingsPage() {
+  const t = await getTranslations("settingsPage.admin");
+
   const session = await auth();
   if (!session || !session.user) {
     redirect("/sign-in");
@@ -25,10 +28,8 @@ export default async function AdminSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium">Admin Settings</h3>
-        <p className="text-sm text-muted-foreground">
-          Manage admin settings and preferences.
-        </p>
+        <h3 className="text-lg font-medium">{t("title")}</h3>
+        <p className="text-sm text-muted-foreground">{t("description")}</p>
       </div>
       <Separator />
       <ImpersonateUserForm />
