@@ -1343,6 +1343,11 @@
         "description": "您已成功加入团队。",
         "errorTitle": "错误",
         "errorDescription": "发生错误：{res}"
+      },
+      "success": {
+        "title": "成功！",
+        "description": "您已成功加入团队。",
+        "redirect": "正在将您重定向到仪表板。如果您没有被重定向，<link>请点击这里</link>。"
       }
     },
     "userButtons": {

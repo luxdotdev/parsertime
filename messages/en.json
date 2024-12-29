@@ -1347,6 +1347,11 @@
         "description": "You have successfully joined the team.",
         "errorTitle": "Error",
         "errorDescription": "An error occurred: {res}"
+      },
+      "success": {
+        "title": "Success!",
+        "description": "You have successfully joined the team.",
+        "redirect": "Redirecting you to your dashboard. If you are not redirected, <link>click here</link>."
       }
     },
     "userButtons": {
