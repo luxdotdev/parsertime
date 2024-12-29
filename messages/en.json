@@ -1303,22 +1303,32 @@
     }
   },
   "teamPage": {
-    "metadataTeams": {
+    "metadata": {
       "title": "Teams | Parsertime",
       "description": "Parsertime is a tool for analyzing Overwatch scrims.",
       "ogTitle": "Teams | Parsertime",
-      "ogDescription": "Parsertime is a tool for analyzing Overwatch scrims."
+      "ogDescription": "Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogImage": "Teams"
     },
-    "metadataTeamName": {
+    "teamMetadata": {
       "title": "{teamName} Overview | Parsertime",
       "description": "Overview for {teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
       "ogTitle": "{teamName} Overview | Parsertime",
-      "ogDescription": "Overview for {teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
+      "ogDescription": "Overview for {teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogImage": "{teamName} Overview",
+      "defaultTeam": "Team"
     },
     "manageTeams": "Manage Your Teams",
     "viewTeams": "View Your Teams",
     "teams": "Teams",
     "admin": "Admin View",
+    "altText": {
+      "custom": "Avatar for {team}",
+      "default": "Default team avatar",
+      "userProfile": "Profile picture of {user}",
+      "noAvatar": "Default user avatar"
+    },
+    "defaultName": "Team Name",
     "members": "Members",
     "settings": "Settings",
     "manager": "(Manager)",
@@ -1412,12 +1422,15 @@
     },
     "name": {
       "title": "Display Name",
+      "placeholder": "Esports at Cornell",
       "description": "This is your team's public display name.",
       "minMessage": "Name must be at least 2 characters.",
       "maxMessage": "Name must not be longer than 30 characters."
     },
     "avatar": {
       "title": "Avatar",
+      "label": "File upload",
+      "altText": "User avatar",
       "description": "This is your team's public avatar. Click on the avatar to upload a custom one from your files.",
       "editTitle": "Edit Avatar",
       "editDescription": "Make changes to your profile here. Click save when you're done.",
@@ -1431,6 +1444,10 @@
         "errorDescription2": "An error occurred while updating your avatar. Please try again later or contact support."
       }
     },
+    "readonly": {
+      "title": "Read-Only",
+      "description": "If enabled, the team will be read-only. This means that players and managers cannot add scrims to the team."
+    },
     "update": {
       "title": "Update team profile",
       "onSubmit": {
@@ -1438,7 +1455,8 @@
         "description": "Your team profile has been successfully updated.",
         "errorTitle": "An error occurred",
         "errorDescription": "An error occurred: {res}"
-      }
+      },
+      "updating": "Updating..."
     },
     "dangerZone": {
       "title": "Danger Zone",
@@ -1462,7 +1480,8 @@
       "title": "Delete Team",
       "description": "Once you delete a team, there is no going back. Please be certain.",
       "button": "Delete Team",
-      "deleteAlert": "<p> Are you sure you want to delete the team <strong>{team}<strong>? This action cannot be undone.</p> <p>Type <strong>{team}</strong> to confirm.</p>",
+      "deleteAlert": "Are you sure you want to delete the team <strong>{team}</strong>? This action cannot be undone.",
+      "deleteConfirmation": "Type <strong>{team}</strong> to confirm.",
       "deleting": "Deleting...",
       "cancel": "Cancel",
       "handleDelete": {
