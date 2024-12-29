@@ -1938,13 +1938,13 @@
     "contact": "Contact support"
   },
   "footer": {
+    "changelog": "Click to view changelog",
     "dashboard": "Dashboard",
     "stats": "Stats",
     "teams": "Teams",
     "settings": "Settings",
     "contact": "Contact",
-    "docs": "Docs",
-    "copyright": "2024 lux.dev."
+    "docs": "Docs"
   },
   "demoPage": {
     "metadataLayout": {
