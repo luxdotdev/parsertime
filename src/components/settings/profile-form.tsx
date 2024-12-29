@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
 import { User } from "@prisma/client";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useRef, useState } from "react";
@@ -41,6 +42,8 @@ const profileFormSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 export function ProfileForm({ user }: { user: User }) {
+  const t = useTranslations("settingsPage.profileForm");
+
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -65,15 +68,17 @@ export function ProfileForm({ user }: { user: User }) {
 
     if (res.ok) {
       toast({
-        title: "Profile updated",
-        description: "Your profile has been successfully updated.",
+        title: t("onSubmit.title"),
+        description: t("onSubmit.description"),
         duration: 5000,
       });
       router.refresh();
     } else {
       toast({
-        title: "An error occurred",
-        description: `An error occurred: ${await res.text()} (${res.status})`,
+        title: t("onSubmit.errorTitle"),
+        description: t("onSubmit.errorDescription", {
+          res: `${await res.text()} (${res.status})`,
+        }),
         variant: "destructive",
         duration: 5000,
       });
@@ -101,7 +106,7 @@ export function ProfileForm({ user }: { user: User }) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
+                <FormLabel>{t("username.title")}</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="lux"
@@ -109,16 +114,13 @@ export function ProfileForm({ user }: { user: User }) {
                     {...field}
                   />
                 </FormControl>
-                <FormDescription>
-                  This is your public display name. It can be your real name or
-                  a pseudonym.
-                </FormDescription>
+                <FormDescription>{t("username.description")}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
           <FormItem>
-            <FormLabel>Avatar</FormLabel>
+            <FormLabel>{t("avatar.title")}</FormLabel>
             <FormControl aria-readonly>
               <>
                 <input
@@ -127,13 +129,13 @@ export function ProfileForm({ user }: { user: User }) {
                   onChange={handleFileChange}
                   className="hidden"
                   accept="image/*"
-                  aria-label="File upload"
+                  aria-label={t("avatar.ariaLabel")}
                 />
                 <Image
                   src={user.image || "https://avatar.vercel.sh/parsertime.png"}
                   width={800}
                   height={800}
-                  alt="User avatar"
+                  alt={t("avatar.altText")}
                   className="h-16 w-16 cursor-pointer rounded-full"
                   onClick={handleAvatarClick}
                 />
@@ -145,13 +147,10 @@ export function ProfileForm({ user }: { user: User }) {
                 />
               </>
             </FormControl>
-            <FormDescription>
-              This is your public account avatar. Click on the avatar to upload
-              a custom one from your files.
-            </FormDescription>
+            <FormDescription>{t("avatar.description")}</FormDescription>
             <FormMessage />
           </FormItem>
-          <Button type="submit">Update profile</Button>
+          <Button type="submit">{t("update")}</Button>
         </form>
       </Form>
     </ClientOnly>
