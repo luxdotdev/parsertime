@@ -189,6 +189,11 @@
       "default": "There was an unknown error signing in. Please contact support."
     }
   },
+  "noAuth": {
+    "title": "Not Authorized",
+    "description": "You are not authorized to view this page. Please log in first or check your account.",
+    "signIn": "Sign In"
+  },
   "signInPage": {
     "metadataSignIn": {
       "title": "Sign In | Parsertime",
@@ -1573,8 +1578,9 @@
       },
       "avatar": {
         "title": "Avatar",
+        "altText": "User avatar",
+        "ariaLabel": "File upload",
         "description": "This is your public account avatar. Click on the avatar to upload a custom one from your files.",
-        "update": "Update profile",
         "editAvatar": {
           "title": "Edit Avatar",
           "description": "Make changes to your profile here. Click save when you're done.",
@@ -1588,7 +1594,8 @@
             "errorDescription2": "An error occurred while sending your message. Please try again later or contact support."
           }
         }
-      }
+      },
+      "update": "Update profile"
     },
     "linkedAccounts": {
       "title": "Linked Accounts",
@@ -1624,7 +1631,7 @@
     },
     "deleteAccount": {
       "title": "Delete Account",
-      "description": "Are you sure you want to delete your account? This action cannot be undone. Are you looking to manage your subscription instead? If so, please click <Link>here</Link>.",
+      "description": "Are you sure you want to delete your account? This action cannot be undone. Are you looking to manage your subscription instead? If so, please click <link>here</link>.",
       "cancel": "Cancel",
       "deleteInput": "yes, delete my account",
       "handleDelete": {
@@ -1635,7 +1642,8 @@
       },
       "secondDialog": {
         "title": "Yes, delete my account",
-        "description": "<p>Are you absolutely sure you want to delete your account? This action cannot be undone.</p> <p>Type <strong>{deleteInput}</strong> to confirm.</p>",
+        "description": "Are you absolutely sure you want to delete your account? This action cannot be undone.",
+        "confirm": "Type <strong>{deleteInput}</strong> to confirm.",
         "delete": "Delete Account",
         "deleting": "Deleting...",
         "cancel": "Cancel"
