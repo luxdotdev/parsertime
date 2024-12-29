@@ -179,14 +179,15 @@ export default async function ScrimDashboardPage({ params }: Props) {
                     >
                       <CardHeader className="">
                         <h3 className="z-10 text-3xl font-semibold tracking-tight text-white">
-                          {mapNames.get(map.name) ?? map.name}
+                          {mapNames.get(toKebabCase(map.name)) ?? map.name}
                         </h3>
                       </CardHeader>
                       <CardContent>
                         <Image
                           src={`/maps/${toKebabCase(map.name)}.webp`}
                           alt={t("maps.altText", {
-                            map: mapNames.get(map.name) ?? map.name,
+                            map:
+                              mapNames.get(toKebabCase(map.name)) ?? map.name,
                           })}
                           fill
                           className="select-none rounded-md object-cover brightness-[0.65]"
