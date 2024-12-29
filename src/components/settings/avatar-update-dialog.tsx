@@ -12,6 +12,7 @@ import Logger from "@/lib/logger";
 import { User } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { upload } from "@vercel/blob/client";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { startTransition, useCallback, useState } from "react";
 import Cropper, { Area } from "react-easy-crop";
@@ -67,6 +68,8 @@ export function AvatarUpdateDialog({
   setIsOpen: (isOpen: boolean) => void;
   selectedFile: File | null;
 }) {
+  const t = useTranslations("settingsPage.profileForm.avatar.editAvatar");
+
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
@@ -107,24 +110,25 @@ export function AvatarUpdateDialog({
 
         if (res.ok) {
           toast({
-            title: "Avatar updated successfully",
-            description: "Your avatar has been updated successfully.",
+            title: t("handleCrop.title"),
+            description: t("handleCrop.description"),
             duration: 5000,
           });
           setIsOpen(false);
           router.refresh();
         } else {
           toast({
-            title: "An error occurred",
-            description: `An error occurred: ${await res.text()} (${res.status})`,
+            title: t("handleCrop.errorTitle"),
+            description: t("handleCrop.errorDescription1", {
+              res: `${await res.text()} (${res.status})`,
+            }),
             duration: 5000,
           });
         }
       } catch (e) {
         toast({
-          title: "An error occurred",
-          description:
-            "An error occurred while updating your avatar. Please try again later or contact support.",
+          title: t("handleCrop.errorTitle"),
+          description: t("handleCrop.errorDescription2"),
           duration: 5000,
         });
         Logger.log(e);
@@ -140,10 +144,8 @@ export function AvatarUpdateDialog({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit Avatar</DialogTitle>
-          <DialogDescription>
-            Make changes to your profile here. Click save when you&apos;re done.
-          </DialogDescription>
+          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
 
         <div className="relative h-96 w-full">
@@ -162,10 +164,11 @@ export function AvatarUpdateDialog({
           <Button onClick={handleCropImage} disabled={loading}>
             {loading ? (
               <>
-                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" /> Updating...
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
+                {t("updating")}
               </>
             ) : (
-              "Save Changes"
+              t("save")
             )}
           </Button>
         </DialogFooter>
