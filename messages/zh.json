@@ -189,6 +189,11 @@
       "default": "登录时发生未知错误。请联系支持。"
     }
   },
+  "noAuth": {
+    "title": "未授权",
+    "description": "您无权查看此页面。请先登录或检查您的账户。",
+    "signIn": "登录"
+  },
   "signInPage": {
     "metadataSignIn": {
       "title": "登录 | Parsertime",
