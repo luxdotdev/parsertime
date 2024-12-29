@@ -2,6 +2,7 @@ import AllHeroes from "@/components/player/all-heroes";
 import SpecificHero from "@/components/player/specific-hero";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getHeroNames, toHero } from "@/lib/utils";
 import { PlayerStat } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 
@@ -11,6 +12,7 @@ export default async function Statistics({
   playerStats: PlayerStat[];
 }) {
   const t = await getTranslations("mapPage.player.overview");
+  const heroNames = await getHeroNames();
 
   const heroesPlayed = playerStats
     .sort(
@@ -33,7 +35,7 @@ export default async function Statistics({
                 {heroesPlayed.map((hero) => {
                   return (
                     <TabsTrigger key={hero} value={hero}>
-                      {hero}
+                      {heroNames.get(toHero(hero)) || hero}
                     </TabsTrigger>
                   );
                 })}
