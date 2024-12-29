@@ -897,6 +897,7 @@
           "healingReceivedPer10Min": "每 10 分钟受到 {num} 点治疗"
         },
         "specificHero": {
+          "altText": "{hero} 的《守望先锋》英雄头像图像。",
           "timePlayed": "游戏时间",
           "minutes": "{time} 分钟",
           "matchTime": "占比赛时间的 {percent}%",

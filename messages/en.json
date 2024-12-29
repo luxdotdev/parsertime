@@ -901,6 +901,7 @@
           "healingReceivedPer10Min": "{num} healing received per 10 minutes"
         },
         "specificHero": {
+          "altText": "An image of {hero}'s Overwatch hero portrait.",
           "timePlayed": "Time Played",
           "minutes": "{time} minutes",
           "matchTime": "{percent}% of match time",
