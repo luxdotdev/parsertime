@@ -959,7 +959,8 @@
       "title": "Stats for {hero} | Parsertime",
       "description": "Stats for {hero} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
       "ogTitle": "Stats for {hero} | Parsertime",
-      "ogDescription": "Stats for {hero} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
+      "ogDescription": "Stats for {hero} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogImage": "Stats for {hero}"
     },
     "title": "Stats",
     "searchbar": {
@@ -1185,7 +1186,7 @@
         "ultimates_earned": "Ultimates Earned",
         "ultimates_used": "Ultimates Used",
         "solo_kills": "Solo Kills",
-        "environmental_kills": "Environnemental Kills",
+        "environmental_kills": "Environmental Kills",
         "deaths": "Deaths",
         "hero_damage_dealt": "Hero Damage Dealt"
       }
@@ -1227,15 +1228,15 @@
         "calendarDate": "{from} - {to}",
         "formatDate": "{date, date, ::MMM dd yyyy}"
       },
-      "heroStats": {
+      "statistics": {
         "title": "Hero Stats",
         "totalGames": "Total Games Played",
-        "games": "games",
+        "games": "{num, plural, =1 {# <span>game</span> } other {# <span>games</span> }}",
         "totalKills": "Total Kills",
-        "kills": "kills",
+        "kills": "{num, plural, =1 {# <span>kill</span> } other {# <span>kills</span> }}",
         "totalDeaths": "Total Deaths",
-        "deaths": "deaths",
-        "footer1": "Stats collected from {scrims} scrims in the last {timeframe}",
+        "deaths": "{num, plural, =1 {# <span>death</span> } other {# <span>deaths</span> }}",
+        "footer1": "Stats collected from {scrims, plural, =1 {# scrim} other {# scrims}} in the last {timeframe}",
         "footer2": "Stats collected from {timeframe1} scrims {timeframe2}",
         "footer3": ". Stats are collected from every player who played as {hero} at any point in a scrim."
       },
@@ -1289,7 +1290,7 @@
         "ultimates_earned": "Ultimates Earned",
         "ultimates_used": "Ultimates Used",
         "solo_kills": "Solo Kills",
-        "environmental_kills": "Environnemental Kills",
+        "environmental_kills": "Environmental Kills",
         "deaths": "Deaths",
         "hero_damage_dealt": "Hero Damage Dealt"
       }
