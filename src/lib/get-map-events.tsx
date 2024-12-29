@@ -9,6 +9,7 @@
 import prisma from "@/lib/prisma";
 import {
   cn,
+  getHeroNames,
   groupKillsIntoFights,
   removeDuplicateRows,
   toHero,
@@ -132,6 +133,7 @@ export async function getMapEvents(id: number) {
   ]);
 
   const t = await getTranslations("mapPage.events");
+  const heroNames = await getHeroNames();
 
   if (!matchStart) return [];
 
@@ -331,7 +333,8 @@ export async function getMapEvents(id: number) {
                     )}
                   />
                 ),
-                hero: event.player_hero,
+                hero:
+                  heroNames.get(toHero(event.player_hero)) ?? event.player_hero,
                 player: event.player_name,
               })}
             </span>
