@@ -1631,7 +1631,7 @@
       }
     }
   },
-  "contactPage": {
+  "marketing": {
     "header": {
       "home": "Home",
       "about": "About",
@@ -1639,8 +1639,14 @@
       "demo": "Demo",
       "docs": "Docs",
       "company": "Company",
-      "logIn": "Log in"
-    },
+      "logIn": "Log in",
+      "accessibility": {
+        "open": "Open main menu",
+        "close": "Close menu"
+      }
+    }
+  },
+  "contactPage": {
     "contactForm": {
       "title": "Get in touch",
       "description": "Having issues with the app? Want to request a feature? We'd love to hear from you! Send us a message and we'll get back to you as soon as we can.",
