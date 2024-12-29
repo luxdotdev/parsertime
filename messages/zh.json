@@ -174,6 +174,20 @@
     "ogTitle": "Parsertime",
     "ogDescription": "Parsertime 是一款用于分析《守望先锋》训练赛的工具。"
   },
+  "authError": {
+    "title": "登录时发生错误",
+    "error": "错误：",
+    "description": "请重试。如果问题仍然存在，请联系支持：<link>help@parsertime.app</link>。",
+    "back": "返回主页",
+    "signIn": "登录",
+    "errors": {
+      "configuration": "服务器配置出现错误。请联系支持。",
+      "accessDenied": "访问被拒绝。该应用可能处于私人测试阶段。如果您认为这是错误，请联系支持。",
+      "authorizedCallbackError": "访问被拒绝。该应用可能处于私人测试阶段。如果您认为这是错误，请联系支持。",
+      "verification": "令牌已过期或已被使用。请重试。",
+      "default": "登录时发生未知错误。请联系支持。"
+    }
+  },
   "signInPage": {
     "metadataSignIn": {
       "title": "登录 | Parsertime",
