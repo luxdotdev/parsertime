@@ -6,30 +6,40 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 
-export const metadata: Metadata = {
-  title: "Teams | Parsertime",
-  description: "Parsertime is a tool for analyzing Overwatch scrims.",
-  openGraph: {
-    title: `Teams | Parsertime`,
-    description: `Parsertime is a tool for analyzing Overwatch scrims.`,
-    url: "https://parsertime.app",
-    type: "website",
-    siteName: "Parsertime",
-    images: [
-      {
-        url: `https://parsertime.app/api/og?title=Teams`,
-        width: 1200,
-        height: 630,
-      },
-    ],
-    locale: "en_US",
-  },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: { locale: string };
+}): Promise<Metadata> {
+  const t = await getTranslations("teamPage.metadata");
+  return {
+    title: t("title"),
+    description: t("description"),
+    openGraph: {
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+      url: "https://parsertime.app",
+      type: "website",
+      siteName: "Parsertime",
+      images: [
+        {
+          url: `https://parsertime.app/api/og?title=${t("ogImage")}`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+      locale: params.locale,
+    },
+  };
+}
 
 export default async function TeamPage() {
+  const t = await getTranslations("teamPage");
+
   const session = await auth();
 
   const userData = await getUser(session?.user?.email);
@@ -49,14 +59,14 @@ export default async function TeamPage() {
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">
-            {hasPerms ? "Manage Your Teams" : "View Your Teams"}
+            {hasPerms ? t("manageTeams") : t("viewTeams")}
           </h2>
         </div>
         <Tabs defaultValue="teams" className="space-y-4">
           {hasPerms && (
             <TabsList>
-              <TabsTrigger value="teams">Teams</TabsTrigger>
-              <TabsTrigger value="admin">Admin View</TabsTrigger>
+              <TabsTrigger value="teams">{t("teams")}</TabsTrigger>
+              <TabsTrigger value="admin">{t("admin")}</TabsTrigger>
             </TabsList>
           )}
 
@@ -76,8 +86,8 @@ export default async function TeamPage() {
                             }
                             alt={
                               team.name
-                                ? `Avatar for ${team.name}`
-                                : "Default team avatar"
+                                ? t("altText.custom", { team: team.name })
+                                : t("altText.default")
                             }
                             width={100}
                             height={100}
@@ -111,8 +121,8 @@ export default async function TeamPage() {
                           }
                           alt={
                             team.name
-                              ? `Avatar for ${team.name}`
-                              : "Default team avatar"
+                              ? t("altText.custom", { team: team.name })
+                              : t("altText.default")
                           }
                           width={100}
                           height={100}
