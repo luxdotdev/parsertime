@@ -20,6 +20,7 @@ export default async function AuthErrorPage({ searchParams }: Props) {
     AccessDenied: t("errors.accessDenied"),
     AuthorizedCallbackError: t("errors.authorizedCallbackError"),
     Verification: t("errors.verification"),
+    AdapterError: t("errors.adapterError"),
     Default: t("errors.default"),
   };
 
