@@ -170,87 +170,87 @@
   },
   "metadata": {
     "title": "Parsertime",
-    "description": "Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
+    "description": "Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
     "ogTitle": "Parsertime",
-    "ogDescription": "Parsertime 是一款用于分析《守望先锋》对抗赛的工具。"
+    "ogDescription": "Parsertime 是一款用于分析《守望先锋》训练赛的工具。"
   },
   "signInPage": {
     "metadataSignIn": {
       "title": "登录 | Parsertime",
-      "description": "登录到您的帐户。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
+      "description": "登录您的账户。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
       "ogTitle": "登录 | Parsertime",
-      "ogDescription": "登录到您的帐户。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。"
+      "ogDescription": "登录您的账户。Parsertime 是一款用于分析《守望先锋》训练赛的工具。"
     },
     "metadataSignUp": {
       "title": "注册 | Parsertime",
-      "description": "注册账户。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
+      "description": "注册账户。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
       "ogTitle": "注册 | Parsertime",
-      "ogDescription": "注册账户。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。"
+      "ogDescription": "注册账户。Parsertime 是一款用于分析《守望先锋》训练赛的工具。"
     },
     "signUp": "注册",
     "signIn": "登录",
     "login": "登录",
     "createAccount": "创建账户",
-    "enterEmailCreateAccount": "请在下方输入您的电子邮件以创建账户",
-    "enterEmailSignIn": "请在下方输入您的电子邮件以登录",
+    "enterEmailCreateAccount": "请输入您的电子邮件地址以创建账户",
+    "enterEmailSignIn": "请输入您的电子邮件地址以登录",
     "signInEmail": "使用电子邮件登录",
-    "orContinueWith": "或者继续",
+    "orContinueWith": "或者继续使用",
     "madeBy": "使用 ❤️ 制作，作者 lux.dev"
   },
   "dashboard": {
     "metadata": {
-      "title": "仪表板 | Parsertime",
-      "description": "Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
-      "ogTitle": "仪表板 | Parsertime",
-      "ogDescription": "Parsertime 是一款用于分析《守望先锋》对抗赛的工具。"
+      "title": "仪表盘 | Parsertime",
+      "description": "Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "仪表盘 | Parsertime",
+      "ogDescription": "Parsertime 是一款用于分析《守望先锋》训练赛的工具。"
     },
-    "title": "仪表板",
+    "title": "仪表盘",
     "overview": "您的比赛",
     "admin": "管理员视图",
     "search": "搜索...",
     "themeSwitcher": {
       "toggle": "切换主题",
-      "light": "灯光",
-      "dark": "黑暗",
-      "system": "系统"
+      "light": "浅色",
+      "dark": "深色",
+      "system": "系统默认"
     },
     "userNav": {
-      "dashboard": "仪表板",
+      "dashboard": "仪表盘",
       "teams": "团队",
       "settings": "设置",
-      "contact": "联系方式",
-      "docs": "文件",
+      "contact": "联系我们",
+      "docs": "文档",
       "admin": "管理员",
-      "signOut": "签出"
+      "signOut": "退出登录"
     },
     "commandMenu": {
-      "searchPlaceholder": "键入命令或搜索...",
+      "searchPlaceholder": "输入命令或搜索...",
       "searchResult": "未找到结果。",
       "suggestions": {
         "title": "建议",
-        "dashboard": "仪表板",
-        "docs": "文件",
+        "dashboard": "仪表盘",
+        "docs": "文档",
         "signIn": "登录",
         "home": "首页"
       },
       "scrim": {
-        "title": "争分夺秒"
+        "title": "训练赛"
       },
       "link": {
         "title": "链接已复制",
-        "description": "此 {pathname} 的链接已被复制。",
-        "share": "共享链接到 {pathname}",
+        "description": "此 {pathname} 的链接已复制。",
+        "share": "共享链接至 {pathname}",
         "map": "地图",
-        "scrim": "争分夺秒"
+        "scrim": "训练赛"
       },
       "teams": {
         "title": "团队",
         "viewTeams": "查看团队",
-        "viewScrims": "观看比赛：{team}"
+        "viewScrims": "查看 {team} 的比赛"
       },
       "settings": {
         "title": "设置",
-        "profile": "简介",
+        "profile": "个人资料",
         "linkedAccounts": "关联账户"
       },
       "debugging": {
@@ -258,54 +258,54 @@
         "assistant": "调试助手"
       },
       "feedback": {
-        "title": "反馈意见",
-        "bugReport": "报告错误",
+        "title": "反馈",
+        "bugReport": "报告问题",
         "contact": "联系我们",
         "discord": "社区讨论区"
       },
       "locale": {
         "title": "语言",
-        "change": "将本地语言更改为 {locale}"
+        "change": "将语言更改为 {locale}"
       },
       "theme": {
         "title": "主题",
-        "light": "灯光",
-        "dark": "黑暗",
-        "system": "系统"
+        "light": "浅色",
+        "dark": "深色",
+        "system": "系统默认"
       }
     },
     "bugReportForm": {
       "unknown": "未知",
       "successToast": {
-        "title": "已提交错误报告",
-        "description": "感谢您的帮助！"
+        "title": "问题已提交",
+        "description": "感谢您的反馈！"
       },
       "errorToast": {
         "title": "错误",
-        "description": "提交错误报告时发生错误。"
+        "description": "提交问题时发生错误。"
       },
-      "title": "报告错误",
-      "description": "如果您发现了错误，请向我们报告。我们感谢您的帮助，让 Parsertime 变得更好。",
+      "title": "报告问题",
+      "description": "如果您发现问题，请告诉我们。您的帮助将使 Parsertime 更加完善。",
       "formTitle": "标题",
-      "titlePlaceholder": "无法删除争球...",
-      "titleDescription": "错误报告的标题。要简明扼要。",
-      "descriptionTitle": "说明",
-      "descriptionPlaceholder": "在此输入您的信息。",
-      "descriptionDescription": "描述您发现的错误。尽可能详细。",
+      "titlePlaceholder": "无法删除训练赛...",
+      "titleDescription": "简要描述问题的标题。",
+      "descriptionTitle": "详细信息",
+      "descriptionPlaceholder": "请输入问题的详细信息。",
+      "descriptionDescription": "请尽可能详细地描述您遇到的问题。",
       "emailTitle": "电子邮件",
       "emailPlaceholder": "user@example.com",
       "emailDescription": "当前登录用户的电子邮件地址。",
-      "urlTitle": "网址",
+      "urlTitle": "页面链接",
       "urlPlaceholder": "页面/路径",
-      "urlDescription": "发现错误的页面的 URL。",
-      "submitting": "提交...",
-      "submit": "提交错误报告"
+      "urlDescription": "出现问题的页面 URL。",
+      "submitting": "正在提交...",
+      "submit": "提交问题"
     },
     "filter": {
-      "title": "过滤器",
-      "select": "选择过滤器",
-      "oldToNew": "最旧到最新",
-      "newToOld": "从最新到最旧",
+      "title": "筛选",
+      "select": "选择筛选条件",
+      "oldToNew": "从旧到新",
+      "newToOld": "从新到旧",
       "search": "搜索..."
     },
     "pagination": {
@@ -314,33 +314,33 @@
       "morePages": "更多页面"
     },
     "mainNav": {
-      "dashboard": "仪表板",
+      "dashboard": "仪表盘",
       "stats": "统计数据",
       "teams": "团队",
       "settings": "设置",
-      "contact": "联系方式",
-      "docs": "文件"
+      "contact": "联系我们",
+      "docs": "文档"
     },
     "teamSwitcher": {
-      "searchTeamPlaceholder": "搜索队...",
-      "noTeamFound": "未找到队伍。",
+      "searchTeamPlaceholder": "搜索团队...",
+      "noTeamFound": "未找到团队。",
       "individual": "个人",
       "teams": "团队",
       "createTeam": "创建团队"
     },
     "createTeam": {
       "title": "创建团队",
-      "description": "添加一个新团队，对你的比赛进行分类，并邀请你的球员查看和管理你的比赛。",
-      "teamName": "队名",
-      "placeholder": "康奈尔大学的电子竞技",
-      "required": "必须填写队名。",
-      "minCharacters": "姓名必须至少包含 2 个字符。",
-      "maxCharacters": "姓名长度不得超过 30 个字符。",
+      "description": "添加新团队以组织比赛，并邀请队员查看和管理比赛。",
+      "teamName": "团队名称",
+      "placeholder": "康奈尔大学电竞队",
+      "required": "团队名称不能为空。",
+      "minCharacters": "团队名称至少应包含 2 个字符。",
+      "maxCharacters": "团队名称长度不得超过 30 个字符。",
       "cancel": "取消",
       "createTeam": "创建团队",
-      "creatingTeam": "创建团队...",
+      "creatingTeam": "正在创建团队...",
       "newTeamCreated": {
-        "title": "创建团队！",
+        "title": "团队已创建！",
         "description": "您的团队已成功创建。"
       },
       "error": {
@@ -349,25 +349,25 @@
       }
     },
     "emptyScrimList": {
-      "title": "无预赛",
-      "description": "单击按钮，创建一场比赛。",
-      "question": "不知道如何获取比赛数据？",
+      "title": "暂无训练赛",
+      "description": "点击下方按钮创建一场比赛。",
+      "question": "不知道如何上传比赛数据？",
       "documentation": "点击此处查看我们的文档。"
     },
     "addScrim": {
-      "title": "加一场比赛...",
-      "description": "单击按钮，创建一场比赛。",
-      "createScrim": "创造争球机会",
+      "title": "添加一场比赛...",
+      "description": "点击按钮创建一场比赛。",
+      "createScrim": "创建训练赛",
       "handleFile": {
-        "fileReq": "需要文件。",
-        "fileMax": "最大文件大小为 1MB。",
-        "fileAccept": "接受 .xlsx 和 .txt 文件。",
-        "creatingTitle": "创造争夺...",
-        "creatingDescription": "我们正在处理您的数据。请稍候。",
-        "createdTitle": "创造了拼搏",
+        "fileReq": "必须上传文件。",
+        "fileMax": "文件大小不能超过 1MB。",
+        "fileAccept": "支持 .xlsx 和 .txt 文件。",
+        "creatingTitle": "正在创建比赛...",
+        "creatingDescription": "数据处理中，请稍候。",
+        "createdTitle": "比赛创建成功",
         "createdDescription": "您的比赛已成功创建。",
         "errorTitle": "错误",
-        "errorDescription": "发生错误： {res}"
+        "errorDescription": "发生错误：{res}"
       }
     },
     "scrimCard": {
@@ -375,56 +375,56 @@
       "scrimDate": "比赛日期: ",
       "team": "团队: ",
       "noTeam": "未分类",
-      "creator": "创作者: ",
+      "creator": "创建者: ",
       "noCreator": "未知"
     },
     "scrimCreationForm": {
       "fileSize": {
         "title": "文件太大",
-        "description": "最大文件大小为 1MB。"
+        "description": "文件大小不能超过 1MB。"
       },
       "fileType": {
         "title": "文件类型无效",
-        "description": "接受 .xlsx 和 .txt 文件。"
+        "description": "支持 .xlsx 和 .txt 文件。"
       },
       "creatingScrim": {
-        "title": "创造争球",
+        "title": "正在创建训练赛",
         "description": "请稍候..."
       },
       "createdScrim": {
-        "title": "创造了争球",
+        "title": "比赛创建成功",
         "description": "您的比赛已成功创建。",
         "errorTitle": "错误",
-        "errorDescription": "发生错误： {res}。请阅读文档 (here)，查看是否可以解决该错误。"
+        "errorDescription": "发生错误：{res}。请查看文档 (<here>) 以解决可能的问题。"
       },
       "scrimName": "比赛名称",
-      "scrimPlaceholder": "新争夺赛",
-      "scrimDescription": "这是争夺赛的名称。它将显示在仪表盘上。",
-      "scrimRequiredError": "需要一个比赛名称。",
-      "scrimMinMessage": "姓名必须至少包含 2 个字符。",
-      "scrimMaxMessage": "姓名长度不得超过 30 个字符。",
-      "replayCodeName": "争分夺秒回放代码",
-      "replayCodePlaceholder": "重播代码",
-      "replayCodeDescription": "这是第一张地图的重放代码。您可以在创建比赛后编辑重放代码。",
-      "replayCodeMessage": "姓名长度不得超过 6 个字符。",
-      "teamName": "指定团队",
+      "scrimPlaceholder": "新训练赛",
+      "scrimDescription": "这是比赛的名称，将显示在仪表盘上。",
+      "scrimRequiredError": "比赛名称不能为空。",
+      "scrimMinMessage": "名称至少需要 2 个字符。",
+      "scrimMaxMessage": "名称不能超过 30 个字符。",
+      "replayCodeName": "重播代码",
+      "replayCodePlaceholder": "输入重播代码",
+      "replayCodeDescription": "这是第一张地图的重播代码。比赛创建后可以编辑。",
+      "replayCodeMessage": "代码长度不能超过 6 个字符。",
+      "teamName": "所属团队",
       "teamPlaceholder": "选择一个团队",
       "teamIndividual": "个人",
-      "teamDescription": "您可以通过<link>控制面板</link>管理团队。",
-      "teamRequiredError": "必须填写队名。",
+      "teamDescription": "您可以在 <link>控制面板</link> 中管理团队。",
+      "teamRequiredError": "必须指定团队名称。",
       "teamLoading": "正在加载...",
       "dateName": "比赛日期",
       "datePlaceholder": "选择日期",
-      "dateDescription": "比赛日期是指进行比赛的日期。",
-      "dateRequiredError": "需要有比赛日期。",
+      "dateDescription": "比赛日期是比赛进行的具体日期。",
+      "dateRequiredError": "比赛日期不能为空。",
       "mapName": "第一张地图",
-      "mapDescription": "上传第一张争夺赛地图。只接受 .xlsx 和 .txt 文件，最大文件大小为 1MB。创建比赛后，您可以添加更多地图。",
+      "mapDescription": "请上传第一张比赛地图文件。支持 .xlsx 和 .txt 文件，文件大小不得超过 1MB。比赛创建后可以添加更多地图。",
       "submit": "提交",
-      "submitting": "提交..."
+      "submitting": "提交中..."
+    },
+    "updateModal": {
+      "dismiss": "关闭"
     }
-  },
-  "updateModal": {
-    "dismiss": "解散"
   },
   "scrimPage": {
     "metadata": {
