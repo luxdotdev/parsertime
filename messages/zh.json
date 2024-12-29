@@ -1512,5 +1512,119 @@
         "errorDescription": "发生错误：{res}"
       }
     }
+  },
+  "settingsPage": {
+    "metadata": {
+      "title": "设置 | Parsertime",
+      "description": "管理账户设置和偏好。",
+      "ogTitle": "设置 | Parsertime",
+      "ogDescription": "管理账户设置和偏好。",
+      "ogImage": "设置"
+    },
+    "title": "设置",
+    "description": "管理账户设置和偏好。",
+    "sideNav": {
+      "profile": "简介",
+      "linkedAccounts": "关联账户",
+      "admin": "管理员"
+    },
+    "profile": {
+      "title": "简介",
+      "description": "这就是别人在网站上看到你的方式。",
+      "planDescription": "您当前的计划是 {billingPlan} 计划。",
+      "billingPlan": {
+        "FREE": "免费",
+        "BASIC": "基本",
+        "PREMIUM": "高级"
+      },
+      "planUpgrade": "升级您的计划",
+      "manageSubscription": "管理您的订阅"
+    },
+    "profileForm": {
+      "minMessage": "姓名必须至少包含 2 个字符。",
+      "maxMessage": "姓名长度不得超过 30 个字符。",
+      "onSubmit": {
+        "title": "简介已更新",
+        "description": "您的个人资料已成功更新。",
+        "errorTitle": "发生错误",
+        "errorDescription": "发生错误：{res}"
+      },
+      "username": {
+        "title": "用户名",
+        "description": "这是您的公开显示名称。可以是真名，也可以是化名。"
+      },
+      "avatar": {
+        "title": "头像",
+        "altText": "用户头像",
+        "ariaLabel": "文件上传",
+        "description": "这是您的公共账户头像。点击头像可以从您的文件中上传自定义头像。",
+        "editAvatar": {
+          "title": "编辑头像",
+          "description": "在此更改您的个人资料。完成后点击保存。",
+          "save": "保存更改",
+          "updating": "更新中...",
+          "handleCrop": {
+            "title": "头像更新成功",
+            "description": "您的头像已成功更新。",
+            "errorTitle": "发生错误",
+            "errorDescription1": "发生错误：{res}",
+            "errorDescription2": "发送您的消息时发生错误。请稍后再试或联系支持。"
+          }
+        }
+      },
+      "update": "更新个人资料"
+    },
+    "linkedAccounts": {
+      "title": "关联账户",
+      "description": "管理链接账户的设置和偏好。",
+      "discord": {
+        "linked": "您的 Discord 账户已成功链接。",
+        "signIn": "使用 Discord 登录"
+      }
+    },
+    "admin": {
+      "title": "管理员设置",
+      "description": "管理管理员设置和偏好。",
+      "email": {
+        "title": "电子邮件",
+        "description": "这是您想要模拟的用户的电子邮件地址。",
+        "message": "请输入有效的电子邮件地址。"
+      },
+      "prod": {
+        "title": "使用生产环境 URL",
+        "description": "如果启用，模拟的 URL 将为生产环境生成。如果禁用，模拟的 URL 将为开发环境生成。"
+      },
+      "impersonate": "模拟用户",
+      "onSubmit": {
+        "title": "用户模拟成功",
+        "description": "模拟的 URL 已复制到您的剪贴板。",
+        "errorTitle": "错误",
+        "errorDescription": "模拟用户时发生错误。"
+      }
+    },
+    "dangerZone": {
+      "title": "危险区域",
+      "description": "帐户删除是永久性的，无法撤销。您是否希望管理您的订阅？如果是，请点击 <Link>此处</Link>。"
+    },
+    "deleteAccount": {
+      "title": "删除帐户",
+      "description": "您确定要删除您的帐户吗？此操作无法撤销。您是否希望管理您的订阅？如果是，请点击 <link>此处</link>。",
+      "cancel": "取消",
+      "deleteInput": "是的，删除我的帐户",
+      "handleDelete": {
+        "title": "帐户已删除",
+        "description": "您的帐户已成功删除。",
+        "errorTitle": "错误",
+        "errorDescription": "发生错误：{res}"
+      },
+      "secondDialog": {
+        "title": "是的，删除我的帐户",
+        "description": "您确定要删除您的帐户吗？此操作无法撤销。",
+        "confirm": "输入 <strong>{deleteInput}</strong> 以确认。",
+        "delete": "删除帐户",
+        "deleting": "正在删除...",
+        "cancel": "取消"
+      }
+    }
   }
 }
