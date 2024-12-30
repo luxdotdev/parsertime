@@ -194,6 +194,11 @@
     "description": "您无权查看此页面。请先登录或检查您的账户。",
     "signIn": "登录"
   },
+  "verifyRequest": {
+    "title": "检查您的电子邮件以获取登录链接",
+    "description": "我们已向您发送了一封带有登录链接的电子邮件。点击电子邮件中的链接以完成登录过程。",
+    "back": "返回首页"
+  },
   "signInPage": {
     "metadataSignIn": {
       "title": "登录 | Parsertime",
