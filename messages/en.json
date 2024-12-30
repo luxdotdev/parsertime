@@ -1917,15 +1917,15 @@
       "title": "Information We Collect",
       "description": "As part of the registration process for our web app, we collect personal information. We use that information for a couple of reasons: to tell you about stuff you've asked us to tell you about; to contact you if we need to obtain or provide additional information; to check our records are right and to check every now and then that you're happy and satisfied. Here are the types of information we collect:",
       "email": {
-        "title": "Email Addresses:",
+        "title": "Email Addresses",
         "description": "Your email address is required during the registration process to help with account creation, authentication, and necessary communication related to the functionality of the app. We do not use your email address for marketing purposes."
       },
       "picture": {
-        "title": "Profile Pictures and Team Images:",
+        "title": "Profile Pictures and Team Images",
         "description": "You can upload a profile picture and team images. These images are used to personalize your account and team profiles within our application."
       },
       "data": {
-        "title": "Game Logs and Performance Data:",
+        "title": "Game Logs and Performance Data",
         "description": "Overwatch 2 to visualize stats and show data on user and team performance. This data is strictly used to provide services offered by Parsertime and does not include any personally sensitive information."
       }
     },
@@ -1951,11 +1951,8 @@
     },
     "contactUs": {
       "title": "Contact Us",
-      "description": "For more information about our privacy practices, if you have questions, or if you would like to make a complaint, please contact us by email at <Link>privacy@lux.dev</Link>."
+      "description": "For more information about our privacy practices, if you have questions, or if you would like to make a complaint, please contact us by email at <link>privacy@lux.dev</link>."
     }
-  },
-  "clientDate": {
-    "formatDate": "{date, date, ::EEE MMM dd yyyy}"
   },
   "billingPlan": {
     "free": "'FREE'",
