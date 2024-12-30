@@ -74,40 +74,52 @@ export default async function PricingPage() {
       features: [
         {
           name: t("features.scrims"),
-          tiers: { Free: true, Basic: true, Premium: true },
+          tiers: {
+            "tier-free": true,
+            "tier-basic": true,
+            "tier-premium": true,
+          },
           comingSoon: false,
         },
         {
           name: t("features.joinTeams"),
-          tiers: { Free: true, Basic: true, Premium: true },
+          tiers: {
+            "tier-free": true,
+            "tier-basic": true,
+            "tier-premium": true,
+          },
           comingSoon: false,
         },
         {
           name: t("features.data"),
-          tiers: { Free: true, Basic: true, Premium: true },
+          tiers: {
+            "tier-free": true,
+            "tier-basic": true,
+            "tier-premium": true,
+          },
           comingSoon: false,
         },
         {
           name: t("features.createTeams.title"),
           tiers: {
-            Free: t("features.createTeams.free"),
-            Basic: t("features.createTeams.basic"),
-            Premium: t("features.createTeams.premium"),
+            "tier-free": t("features.createTeams.free"),
+            "tier-basic": t("features.createTeams.basic"),
+            "tier-premium": t("features.createTeams.premium"),
           },
           comingSoon: false,
         },
         {
           name: t("features.teamMembers.title"),
           tiers: {
-            Free: t("features.teamMembers.free"),
-            Basic: t("features.teamMembers.basic"),
-            Premium: t("features.teamMembers.premium"),
+            "tier-free": t("features.teamMembers.free"),
+            "tier-basic": t("features.teamMembers.basic"),
+            "tier-premium": t("features.teamMembers.premium"),
           },
           comingSoon: false,
         },
         {
           name: t("features.earlyAccess"),
-          tiers: { Premium: true },
+          tiers: { "tier-premium": true },
           comingSoon: false,
         },
       ],
@@ -117,32 +129,52 @@ export default async function PricingPage() {
       features: [
         {
           name: t("mapStatistics.analytics"),
-          tiers: { Free: true, Basic: true, Premium: true },
+          tiers: {
+            "tier-free": true,
+            "tier-basic": true,
+            "tier-premium": true,
+          },
           comingSoon: false,
         },
         {
           name: t("mapStatistics.killfeeds"),
-          tiers: { Free: true, Basic: true, Premium: true },
+          tiers: {
+            "tier-free": true,
+            "tier-basic": true,
+            "tier-premium": true,
+          },
           comingSoon: false,
         },
         {
           name: t("mapStatistics.customCharts"),
-          tiers: { Free: true, Basic: true, Premium: true },
+          tiers: {
+            "tier-free": true,
+            "tier-basic": true,
+            "tier-premium": true,
+          },
           comingSoon: false,
         },
         {
           name: t("mapStatistics.mapEvents"),
-          tiers: { Free: true, Basic: true, Premium: true },
+          tiers: {
+            "tier-free": true,
+            "tier-basic": true,
+            "tier-premium": true,
+          },
           comingSoon: false,
         },
         {
           name: t("mapStatistics.playerComparison"),
-          tiers: { Free: true, Basic: true, Premium: true },
+          tiers: {
+            "tier-free": true,
+            "tier-basic": true,
+            "tier-premium": true,
+          },
           comingSoon: false,
         },
         {
           name: t("mapStatistics.customTargets"),
-          tiers: { Premium: true },
+          tiers: { "tier-premium": true },
           comingSoon: true,
         },
       ],
@@ -152,42 +184,54 @@ export default async function PricingPage() {
       features: [
         {
           name: t("playerStatistics.lastWeek"),
-          tiers: { Free: true, Basic: true, Premium: true },
+          tiers: {
+            "tier-free": true,
+            "tier-basic": true,
+            "tier-premium": true,
+          },
           comingSoon: false,
         },
         {
           name: t("playerStatistics.last2Weeks"),
-          tiers: { Free: true, Basic: true, Premium: true },
+          tiers: {
+            "tier-free": true,
+            "tier-basic": true,
+            "tier-premium": true,
+          },
           comingSoon: false,
         },
         {
           name: t("playerStatistics.lastMonth"),
-          tiers: { Free: true, Basic: true, Premium: true },
+          tiers: {
+            "tier-free": true,
+            "tier-basic": true,
+            "tier-premium": true,
+          },
           comingSoon: false,
         },
         {
           name: t("playerStatistics.last3Months"),
-          tiers: { Basic: true, Premium: true },
+          tiers: { "tier-basic": true, "tier-premium": true },
           comingSoon: false,
         },
         {
           name: t("playerStatistics.last6Months"),
-          tiers: { Basic: true, Premium: true },
+          tiers: { "tier-basic": true, "tier-premium": true },
           comingSoon: false,
         },
         {
           name: t("playerStatistics.lastYear"),
-          tiers: { Premium: true },
+          tiers: { "tier-premium": true },
           comingSoon: false,
         },
         {
           name: t("playerStatistics.allTime"),
-          tiers: { Premium: true },
+          tiers: { "tier-premium": true },
           comingSoon: false,
         },
         {
           name: t("playerStatistics.custom"),
-          tiers: { Premium: true },
+          tiers: { "tier-premium": true },
           comingSoon: false,
         },
       ],
@@ -197,22 +241,26 @@ export default async function PricingPage() {
       features: [
         {
           name: t("support.discord"),
-          tiers: { Free: true, Basic: true, Premium: true },
+          tiers: {
+            "tier-free": true,
+            "tier-basic": true,
+            "tier-premium": true,
+          },
           comingSoon: false,
         },
         {
           name: t("support.priority"),
-          tiers: { Basic: true, Premium: true },
+          tiers: { "tier-basic": true, "tier-premium": true },
           comingSoon: false,
         },
         {
           name: t("support.devCheck"),
-          tiers: { Basic: true, Premium: true },
+          tiers: { "tier-basic": true, "tier-premium": true },
           comingSoon: false,
         },
         {
           name: t("support.custom"),
-          tiers: { Premium: true },
+          tiers: { "tier-premium": true },
           comingSoon: false,
         },
       ],
@@ -324,7 +372,7 @@ export default async function PricingPage() {
                       <ul className="space-y-4">
                         {section.features.map((feature) =>
                           feature.tiers[
-                            tier.name as keyof typeof feature.tiers
+                            tier.id as keyof typeof feature.tiers
                           ] ? (
                             <li key={feature.name} className="flex gap-x-3">
                               <CheckIcon
@@ -334,13 +382,13 @@ export default async function PricingPage() {
                               <span>
                                 {feature.name}{" "}
                                 {typeof feature.tiers[
-                                  tier.name as keyof typeof feature.tiers
+                                  tier.id as keyof typeof feature.tiers
                                 ] === "string" ? (
                                   <span className="text-sm leading-6 text-gray-500 dark:text-gray-400">
                                     (
                                     {
                                       feature.tiers[
-                                        tier.name as keyof typeof feature.tiers
+                                        tier.id as keyof typeof feature.tiers
                                       ]
                                     }
                                     )
@@ -479,19 +527,19 @@ export default async function PricingPage() {
                           {tiers.map((tier) => (
                             <td key={tier.id} className="px-6 py-4 xl:px-8">
                               {typeof feature.tiers[
-                                tier.name as keyof typeof feature.tiers
+                                tier.id as keyof typeof feature.tiers
                               ] === "string" ? (
                                 <div className="text-center text-sm leading-6 text-gray-500 dark:text-gray-300">
                                   {
                                     feature.tiers[
-                                      tier.name as keyof typeof feature.tiers
+                                      tier.id as keyof typeof feature.tiers
                                     ]
                                   }
                                 </div>
                               ) : (
                                 <>
                                   {feature.tiers[
-                                    tier.name as keyof typeof feature.tiers
+                                    tier.id as keyof typeof feature.tiers
                                   ] === true ? (
                                     <CheckIcon
                                       className="mx-auto h-5 w-5 text-sky-600 dark:text-sky-400"
@@ -506,7 +554,7 @@ export default async function PricingPage() {
 
                                   <span className="sr-only">
                                     {feature.tiers[
-                                      tier.name as keyof typeof feature.tiers
+                                      tier.id as keyof typeof feature.tiers
                                     ] === true
                                       ? t("pricing.included")
                                       : t("pricing.notIncluded")}{" "}
