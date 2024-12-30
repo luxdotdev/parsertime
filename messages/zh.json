@@ -1957,5 +1957,27 @@
     "description": "抱歉，我们无法找到您要找的页面。",
     "backHome": "返回主页",
     "contact": "联系支持"
+  },
+  "footer": {
+    "changelog": "点击查看更新日志",
+    "dashboard": "仪表板",
+    "stats": "统计数据",
+    "teams": "团队",
+    "settings": "设置",
+    "contact": "联系方式",
+    "docs": "文档"
+  },
+  "demoPage": {
+    "metadata": {
+      "title": "{mapName} 演示 | Parsertime",
+      "description": "Parsertime 上 {mapName} 的演示概览。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "{mapName} 演示 | Parsertime",
+      "ogDescription": "Parsertime 上 {mapName} 的演示概览。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogImage": "{mapName} 演示"
+    },
+    "banner": {
+      "demo": "您正在查看 Parsertime 的演示。点击此处注册",
+      "dismiss": "关闭"
+    }
   }
 }
