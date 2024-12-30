@@ -12,38 +12,52 @@ import prisma from "@/lib/prisma";
 import { toTitleCase } from "@/lib/utils";
 import { SearchParams } from "@/types/next";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
 type Props = {
-  params: { team: string; scrimId: string; mapId: string; playerId: string };
+  params: {
+    team: string;
+    scrimId: string;
+    mapId: string;
+    playerId: string;
+    locale: string;
+  };
   searchParams: SearchParams;
 };
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const t = await getTranslations({
+    locale: params.locale,
+    namespace: "mapPage.playerMetadata",
+  });
   const playerName = decodeURIComponent(params.playerId);
 
   return {
-    title: `${playerName} Overview | Parsertime`,
-    description: `Player overview for ${playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+    title: t("title", { playerName }),
+    description: t("description", { playerName }),
     openGraph: {
-      title: `${playerName} Overview | Parsertime`,
-      description: `Player overview for ${playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+      title: t("ogTitle", { playerName }),
+      description: t("ogDescription", { playerName }),
       url: "https://parsertime.app",
       type: "website",
       siteName: "Parsertime",
       images: [
         {
-          url: `https://parsertime.app/api/og?title=${playerName} Overview`,
+          url: `https://parsertime.app/api/og?title=${t("ogImage", {
+            playerName,
+          })}`,
           width: 1200,
           height: 630,
         },
       ],
-      locale: "en_US",
+      locale: params.locale,
     },
   };
 }
 
 export default async function PlayerDashboardDemoPage({ params }: Props) {
+  const t = await getTranslations("mapPage.player.dashboard");
   const id = 268;
   const playerName = decodeURIComponent(params.playerId);
 
@@ -81,19 +95,19 @@ export default async function PlayerDashboardDemoPage({ params }: Props) {
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div>
           <h4 className="text-gray-600 dark:text-gray-400">
-            <Link href="/demo">&larr; Back to default overview</Link>
+            <Link href="/demo">&larr; {t("back")}</Link>
           </h4>
         </div>
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">
-            {toTitleCase(mapName?.map_name ?? "Dashboard")}
+            {toTitleCase(mapName?.map_name ?? t("dashboard"))}
           </h2>
         </div>
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="charts">Charts</TabsTrigger>
+            <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
+            <TabsTrigger value="analytics">{t("analytics")}</TabsTrigger>
+            <TabsTrigger value="charts">{t("charts")}</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
             <DefaultOverview id={id} playerName={playerName} />
