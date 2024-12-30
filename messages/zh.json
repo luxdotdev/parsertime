@@ -1950,5 +1950,12 @@
       "title": "联系我们",
       "description": "如果您想了解更多关于我们的隐私实践的信息，有任何问题，或希望提出投诉，请通过电子邮件联系我们：<link>privacy@lux.dev</link>。"
     }
+  },
+  "notFound": {
+    "404": "404",
+    "header": "页面未找到",
+    "description": "抱歉，我们无法找到您要找的页面。",
+    "backHome": "返回主页",
+    "contact": "联系支持"
   }
 }
