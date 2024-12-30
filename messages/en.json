@@ -1971,96 +1971,16 @@
     "docs": "Docs"
   },
   "demoPage": {
-    "metadataLayout": {
-      "title": "%s Overview | Parsertime",
-      "default": "Player Overview | Parsertime",
-      "description": "Parsertime is a tool for analyzing Overwatch scrims."
-    },
-    "metadataPlayerName": {
-      "title": "{playerName} Overview | Parsertime",
-      "description": "Player overview for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
-      "ogTitle": "{playerName} Overview | Parsertime",
-      "ogDescription": "Player overview for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
-    },
-    "metadataMapName": {
+    "metadata": {
       "title": "{mapName} Demo | Parsertime",
       "description": "Demo overview for {mapName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
       "ogTitle": "{mapName} Demo | Parsertime",
-      "ogDescription": "Demo overview for {mapName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims."
-    },
-    "loading": {
-      "totalMatch": "Total Match Time",
-      "score": "Score",
-      "heroDmgDealt": "Hero Damage Dealt",
-      "teamHealingDealt": "Team Healing Dealt",
-      "overview": "Overview",
-      "analysis": "Analysis"
+      "ogDescription": "Demo overview for {mapName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogImage": "{mapName} Demo"
     },
     "banner": {
       "demo": "You are viewing a demo of Parsertime. Click here to sign up",
       "dismiss": "Dismiss"
-    },
-    "playerPage": {
-      "back": "Back to default overview",
-      "dashboard": "Dashboard",
-      "overview": "Overview",
-      "analytics": "Analytics",
-      "charts": "Charts",
-      "loading": {
-        "totalMatch": "Total Match Time",
-        "fletaDeadlift": "Fleta Deadlift Percentage",
-        "firstPick": "First Pick Percentage",
-        "firstDeath": "First Death Percentage",
-        "playerStat": "Player Statistics"
-      }
-    },
-    "mapPage": {
-      "back": "Back to scrim overview",
-      "dashboard": "Dashboard",
-      "maps": {
-        "Antarctic Peninsula": "Antarctic Peninsula",
-        "Blizzard World": "Blizzard World",
-        "Blizzard World (Winter)": "Blizzard World (Winter)",
-        "Busan": "Busan",
-        "Circuit royal": "Circuit Royal",
-        "Circuit Royal": "Circuit Royal",
-        "Colosseo": "Colosseo",
-        "Dorado": "Dorado",
-        "Eichenwalde": "Eichenwalde",
-        "Eichenwalde (Halloween)": "Eichenwalde (Halloween)",
-        "Esperança": "Esperança",
-        "Hanaoka": "Hanaoka",
-        "Havana": "Havana",
-        "Hollywood": "Hollywood",
-        "Hollywood (Halloween)": "Hollywood (Halloween)",
-        "Ilios": "Ilios",
-        "Junkertown": "Junkertown",
-        "King's Row": "King's Row",
-        "King's Row (Winter)": "King's Row (Winter)",
-        "Lijiang Tower": "Lijiang Tower",
-        "Lijiang Tower (Lunar New Year)": "Lijiang Tower (Lunar New Year)",
-        "Midtown": "Midtown",
-        "Nepal": "Nepal",
-        "New Junk City": "New Junk City",
-        "New Queen Street": "New Queen Street",
-        "Numbani": "Numbani",
-        "Oasis": "Oasis",
-        "Paraiso": "Paraiso",
-        "Rialto": "Rialto",
-        "Route 66": "Route 66",
-        "Runasapi": "Runasapi",
-        "Samoa": "Samoa",
-        "Shambali Monastery": "Shambali Monastery",
-        "Suravasa": "Suravasa",
-        "Throne Of Anubis": "Throne of Anubis",
-        "Watchpoint: Gibraltar": "Watchpoint: Gibraltar"
-      },
-      "overview": "Overview",
-      "killfeed": "Killfeed",
-      "kills": "Kills",
-      "charts": "Charts",
-      "events": "Events",
-      "compare": "Compare"
     }
   }
 }
