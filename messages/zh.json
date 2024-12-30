@@ -1806,5 +1806,103 @@
       },
       "copyright": "lux.dev。保留所有权利。"
     }
+  },
+  "pricingPage": {
+    "pricing": {
+      "title": "定价",
+      "header": "适合各种规模团队的计划",
+      "description": "随着您的团队壮大，Parsertime 也会随之成长。我们提供满足您需求的工具和功能。",
+      "$": "￥",
+      "month": "/月",
+      "currentPlan": "您当前的计划",
+      "getStarted": "开始",
+      "buyPlan": "购买计划",
+      "priceComparison": "定价计划对比",
+      "price": "价格",
+      "included": "包含在",
+      "notIncluded": "未包含在"
+    },
+    "comingSoon": "即将推出",
+    "tiers": {
+      "free": "免费",
+      "freeMonthly": "$0 USD",
+      "freeDescription": "适合想尝试 Parsertime 的用户。",
+      "basic": "基础",
+      "basicMonthly": "$10 USD",
+      "basicDescription": "适合准备与 Parsertime 一起成长的团队。",
+      "premium": "高级",
+      "premiumMonthly": "$15 USD",
+      "premiumDescription": "适合想将生产力提升到新水平的大型团队。"
+    },
+    "features": {
+      "title": "功能",
+      "scrims": "个人比赛",
+      "joinTeams": "通过邀请加入团队",
+      "data": "数据分析",
+      "createTeams": {
+        "title": "创建团队",
+        "free": "最多 2 个团队",
+        "basic": "最多 5 个团队",
+        "premium": "最多 10 个团队"
+      },
+      "teamMembers": {
+        "title": "团队成员",
+        "free": "最多 5 名用户",
+        "basic": "最多 10 名用户",
+        "premium": "最多 20 名用户"
+      },
+      "earlyAccess": "新功能的抢先体验"
+    },
+    "mapStatistics": {
+      "title": "地图统计",
+      "analytics": "高级分析",
+      "killfeeds": "地图击杀信息",
+      "customCharts": "自定义图表",
+      "mapEvents": "地图事件",
+      "playerComparison": "玩家比较",
+      "customTargets": "自定义目标"
+    },
+    "playerStatistics": {
+      "title": "玩家统计",
+      "lastWeek": "上周",
+      "last2Weeks": "过去两周",
+      "lastMonth": "上个月",
+      "last3Months": "过去三个月",
+      "last6Months": "过去六个月",
+      "lastYear": "去年",
+      "allTime": "所有时间",
+      "custom": "自定义时间范围"
+    },
+
+    "support": {
+      "title": "支持",
+      "discord": "社区 Discord",
+      "priority": "优先支持",
+      "devCheck": "每月开发者检查",
+      "custom": "自定义功能请求"
+    },
+    "caseStudy": {
+      "title": "了解团队如何使用 Parsertime 改进他们的教练策略。",
+      "description": "查看我们的案例研究"
+    },
+    "testimonial": {
+      "quote": "“Parsertime 的影响非常大，甚至可以帮助我的队员们在他们需要帮助的事情上进行指导，比如更长时间地存活、保持终极技能更长时间以及更有耐心。”",
+      "author": "coy (@shy.coy)",
+      "role": "o7 Esports 的经理"
+    },
+    "faq": {
+      "title": "常见问题解答",
+      "description": "找不到您需要的答案？请联系我们的 <link>支持</link> 团队。",
+      "question1": "你们为大学团队提供折扣吗？",
+      "answer1": "是的！请联系我们的支持团队，我们很乐意为您提供帮助。",
+      "question2": "你们为 Calling All Heroes 团队提供折扣吗？",
+      "answer2": "是的！我们希望尽可能多地支持 CAH 社区。请联系我们的支持团队，我们很乐意与您讨论解决方案。",
+      "question3": "我如何管理我的订阅？",
+      "answer3": "您可以在 <link>这里</link> 管理您的订阅。如果您有任何问题，请联系我们的支持团队。",
+      "question4": "我可以随时取消我的订阅吗？",
+      "answer4": "是的，您可以随时取消订阅。您的订阅将在账单周期结束前保持有效。",
+      "question5": "如果我需要比高级计划提供的更高的限制怎么办？",
+      "answer5": "如果您有特殊需求或需要比高级计划提供的更高的限制，请联系我们的 <link>支持团队</link>，我们很乐意与您讨论自定义解决方案。"
+    }
   }
 }
