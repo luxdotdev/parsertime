@@ -1695,7 +1695,7 @@
         "name": "Convenience.",
         "description": "Make it easy to track stats and see trends over time. Easily diagnose issues with your players."
       },
-      "access": {
+      "accessibility": {
         "name": "Accessibility.",
         "description": "We want to make it easy for any team to use Parsertime. We're always looking for ways to make the platform more accessible."
       },
@@ -1719,24 +1719,37 @@
     "team": {
       "lucas": {
         "name": "Lucas Doell",
-        "role": "Lead Developer",
-        "bio": "Software engineer, Top 500 Overwatch player, former student at Cornell University, and head coach of FIU Panthers. He is passionate about building great software and helping teams succeed."
+        "role": "Founder, Head of Engineering"
       },
       "robin": {
         "name": "Robin \"Zei\" Sidhu",
-        "role": "Head of Strategy",
-        "bio": "Zei is a coach for the top collegiate team St. Clair Saints. He recently led them to a 2nd place finish in the NACE Varsity Premiere 2023 fall semester. His favorite hobbies include crushing his players in TXCXX."
-      },
-      "giovanni": {
-        "name": "Giovanni Panzetta",
-        "role": "Developer",
-        "bio": "Giovanni is a software engineer specializing in full-stack development. He's passionate about building great software and building good user experiences."
+        "role": "Head of Strategy"
       },
       "xavier": {
         "name": "Xavier Park",
-        "role": "Developer",
-        "bio": "Xavier is a statistics major at Cornell University. He is excited about the potential of data analytics in esports and is working to build excellent statistics for Overwatch teams."
-      }
+        "role": "Head of Research"
+      },
+      "adrian": {
+        "name": "Adrian Soto",
+        "role": "Head of Support"
+      },
+      "daniel": {
+        "name": "Daniel Iturralde",
+        "role": "Technical Support Specialist"
+      },
+      "diego": {
+        "name": "Diego Sanchez del Rio",
+        "role": "Engineering Intern, Summer 2024"
+      },
+      "yai": {
+        "name": "Yailan Bordas",
+        "role": "Engineering Intern, Summer 2024"
+      },
+      "kenny": {
+        "name": "Kenny Miranda",
+        "role": "Engineering Intern, Summer 2024"
+      },
+      "notPictured": "Not pictured: <name>Devraj Ambala</name>, Engineering Intern, Summer 2024; <name>Karson Miller</name>, Engineering Intern, Summer 2024; and <name>Rose Thatch</name>, Engineering Intern, Summer 2024."
     },
     "headerSection": {
       "title": "We love Overwatch",
@@ -1746,7 +1759,7 @@
       "description1": "Parsertime was originally created as an internal tool for FIU Panthers, a collegiate team. We wanted to be able to see our stats after scrims and see trends over time. We've since expanded to become a platform that any team can use. We're excited to see how teams use Parsertime to improve their performance.",
       "description2": "We're a small team of passionate Overwatch players and coaches who are dedicated to building a platform that works for your team. We're always looking for feedback and feature requests. If you have any ideas, we'd love to hear them!",
       "description3": "We know that teams are always looking for ways to improve. Our goal is to make it easy for you to see your stats and see trends week over week. Parsertime is currently used internally at FIU and new features are being added every week. We want to provide the best experience possible for Overwatch players and teams.",
-      "description4": "Parsertime is fully open source. We believe that the best tools are built in the open. If you'd like to contribute to Parsertime, we'd love to have you! We're always looking for contributors to help us build the best platform for Overwatch teams. You can find our GitHub repo <Link>here</Link>."
+      "description4": "Parsertime is fully open source. We believe that the best tools are built in the open. If you'd like to contribute to Parsertime, we'd love to have you! We're always looking for contributors to help us build the best platform for Overwatch teams. You can find our GitHub repo <link>here</link>."
     },
     "featureSection": {
       "title": "Our features",
@@ -1761,10 +1774,11 @@
       "subtitle": "Start using our app today.",
       "description": "Give your team the tools they need to succeed. Sign up for Parsertime today.",
       "signUp": "Sign Up",
-      "demo": "Try our demo"
+      "demo": "Try our demo",
+      "altText": "App screenshot"
     },
     "footerNav": {
-      "title": "footer",
+      "title": "Footer",
       "description": "Building a better way to track your Overwatch performance.",
       "solutions": {
         "title": "Platform",
@@ -1783,13 +1797,18 @@
         "title": "Company",
         "about": "About",
         "blog": "Blog",
-        "gitHub": "GitHub"
+        "github": "GitHub"
       },
       "legal": {
         "title": "Legal",
         "policy": "Privacy Policy"
       },
-      "copyright": "2024 lux.dev. All rights reserved."
+      "socials": {
+        "twitter": "X",
+        "bluesky": "Bluesky",
+        "github": "GitHub"
+      },
+      "copyright": "lux.dev. All rights reserved."
     }
   },
   "pricingPage": {
