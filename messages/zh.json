@@ -441,10 +441,10 @@
       "mapDescription": "请上传第一张比赛地图文件。支持 .xlsx 和 .txt 文件，文件大小不得超过 1MB。比赛创建后可以添加更多地图。",
       "submit": "提交",
       "submitting": "提交中..."
-    },
-    "updateModal": {
-      "dismiss": "关闭"
     }
+  },
+  "updateModal": {
+    "dismiss": "关闭"
   },
   "scrimPage": {
     "metadata": {
