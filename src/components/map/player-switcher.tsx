@@ -53,13 +53,14 @@ export default function PlayerSwitcher({
 }: TeamSwitcherProps & {
   mostPlayedHeroes: MostPlayedHeroesType;
 }) {
+  const t = useTranslations("mapPage.playerSwitcher");
+
   const [open, setOpen] = React.useState(false);
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false);
-  const [selectedPlayer, setSelectedPlayer] = React.useState<Player>({
-    label: "Default",
+  const [selectedPlayer, setSelectedPlayer] = React.useState<Player>(() => ({
+    label: t("default"),
     value: "default",
-  });
-  const t = useTranslations("mapPage.playerSwitcher");
+  }));
 
   const router = useRouter();
   const pathname = usePathname();
@@ -185,7 +186,7 @@ export default function PlayerSwitcher({
                     onSelect={() => {
                       router.push(mapUrl);
                       setSelectedPlayer({
-                        label: "Default",
+                        label: t("default"),
                         value: "default",
                       });
                     }}
@@ -201,7 +202,7 @@ export default function PlayerSwitcher({
                     <CheckIcon
                       className={cn(
                         "ml-auto h-4 w-4",
-                        selectedPlayer.label === "Default"
+                        selectedPlayer.label === t("default")
                           ? "opacity-100"
                           : "opacity-0"
                       )}
