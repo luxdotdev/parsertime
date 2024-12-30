@@ -6,161 +6,170 @@ import {
   ServerStackIcon,
   UserGroupIcon,
 } from "@heroicons/react/20/solid";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 import { SVGProps } from "react";
 
-const stats = [
-  { label: "Started development", value: "Nov 2023" },
-  { label: "Used internally", value: "Jan 2024" },
-  { label: "Scrims uploaded during beta", value: "50+" },
-  { label: "Player stats tracked during beta", value: "22,000+" },
-];
-const values = [
-  {
-    name: "Convenience.",
-    description:
-      "Make it easy to track stats and see trends over time. Easily diagnose issues with your players.",
-    icon: PresentationChartLineIcon,
-  },
-  {
-    name: "Accessibility.",
-    description:
-      "We want to make it easy for any team to use Parsertime. We're always looking for ways to make the platform more accessible.",
-    icon: HandRaisedIcon,
-  },
-  {
-    name: "Community first.",
-    description:
-      "Built by Overwatch players, for Overwatch players. We're dedicated to serving the community.",
-    icon: UserGroupIcon,
-  },
-  {
-    name: "Open source.",
-    description:
-      "We believe that the best tools are built in the open. Contributions are welcome!",
-    icon: AcademicCapIcon,
-  },
-  {
-    name: "Continuous improvement.",
-    description:
-      "We're always adding new features and improving the platform. We want to make the best app possible.",
-    icon: RocketLaunchIcon,
-  },
-  {
-    name: "Reliable and performant.",
-    description:
-      "Our platform is built to be fast and reliable. We want to make sure that it's always there for you.",
-    icon: ServerStackIcon,
-  },
-];
-const team = [
-  {
-    name: "Lucas Doell",
-    role: "Founder, Head of Engineering",
-    imageUrl: "/marketing/lucas.jpg",
-    location: "Ithaca, NY",
-  },
-  {
-    name: 'Robin "Zei" Sidhu',
-    role: "Head of Strategy",
-    imageUrl: "/marketing/robin.png",
-    location: "Vancouver, BC",
-  },
-  {
-    name: "Xavier Park",
-    role: "Head of Research",
-    imageUrl: "/marketing/xavier.jpg",
-    location: "Ithaca, NY",
-  },
-  {
-    name: "Adrian Soto",
-    role: "Head of Support",
-    imageUrl: "/marketing/adrian.jpg",
-    location: "Miami, FL",
-  },
-  {
-    name: "Daniel Iturralde",
-    role: "Technical Support Specialist",
-    imageUrl: "/marketing/daniel.png",
-    location: "Miami, FL",
-  },
-  {
-    name: "Diego Sanchez del Rio",
-    role: "Engineering Intern, Summer 2024",
-    imageUrl: "/marketing/diego.jpg",
-    location: "Miami, FL",
-  },
-  {
-    name: "Yailan Bordas",
-    role: "Engineering Intern, Summer 2024",
-    imageUrl: "/marketing/yai.jpg",
-    location: "Miami, FL",
-  },
-  {
-    name: "Kenny Miranda",
-    role: "Engineering Intern, Summer 2024",
-    imageUrl: "/marketing/kenny.jpg",
-    location: "Miami, FL",
-  },
-];
+export default async function AboutPage() {
+  const t = await getTranslations("aboutPage");
 
-type IconProps = Omit<SVGProps<SVGSVGElement>, "fill" | "viewbox">;
-
-const footerNavigation = {
-  solutions: [
-    { name: "Dashboard", href: "/dashboard" },
-    { name: "Sign Up", href: "/sign-up" },
-    { name: "Demo", href: "/demo" },
-  ],
-  support: [
-    { name: "Pricing", href: "/pricing" },
-    { name: "Documentation", href: "https://docs.parsertime.app" },
-    { name: "Discord", href: "https://discord.gg/svz3qhVDXM" },
-    { name: "Contact", href: "/contact" },
-  ],
-  company: [
-    { name: "About", href: "https://lux.dev" },
-    { name: "Blog", href: "https://blog.lux.dev" },
-    { name: "GitHub", href: "https://github.com/luxdotdev" },
-  ],
-  legal: [{ name: "Privacy Policy", href: "/privacy" }],
-  social: [
+  const stats = [
+    { label: t("stats.startDev.label"), value: t("stats.startDev.value") },
+    { label: t("stats.used.label"), value: t("stats.used.value") },
     {
-      name: "X",
-      href: "https://twitter.com/luxdotdev",
-      icon: (props: IconProps) => (
-        <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
-          <path d="M13.6823 10.6218L20.2391 3H18.6854L12.9921 9.61788L8.44486 3H3.2002L10.0765 13.0074L3.2002 21H4.75404L10.7663 14.0113L15.5685 21H20.8131L13.6819 10.6218H13.6823ZM11.5541 13.0956L10.8574 12.0991L5.31391 4.16971H7.70053L12.1742 10.5689L12.8709 11.5655L18.6861 19.8835H16.2995L11.5541 13.096V13.0956Z" />
-        </svg>
-      ),
+      label: t("stats.scrimsUploaded.label"),
+      value: t("stats.scrimsUploaded.value"),
     },
     {
-      name: "Bluesky",
-      href: "https://bsky.app/profile/lux.dev",
-      icon: (props: IconProps) => (
-        <svg fill="currentColor" viewBox="-50 -50 430 390" {...props}>
-          <path d="M180 141.964C163.699 110.262 119.308 51.1817 78.0347 22.044C38.4971 -5.86834 23.414 -1.03207 13.526 3.43594C2.08093 8.60755 0 26.1785 0 36.5164C0 46.8542 5.66748 121.272 9.36416 133.694C21.5786 174.738 65.0603 188.607 105.104 184.156C107.151 183.852 109.227 183.572 111.329 183.312C109.267 183.642 107.19 183.924 105.104 184.156C46.4204 192.847 -5.69621 214.233 62.6582 290.33C137.848 368.18 165.705 273.637 180 225.702C194.295 273.637 210.76 364.771 295.995 290.33C360 225.702 313.58 192.85 254.896 184.158C252.81 183.926 250.733 183.645 248.671 183.315C250.773 183.574 252.849 183.855 254.896 184.158C294.94 188.61 338.421 174.74 350.636 133.697C354.333 121.275 360 46.8568 360 36.519C360 26.1811 357.919 8.61012 346.474 3.43851C336.586 -1.02949 321.503 -5.86576 281.965 22.0466C240.692 51.1843 196.301 110.262 180 141.964Z" />
-        </svg>
-      ),
+      label: t("stats.statsTracked.label"),
+      value: t("stats.statsTracked.value"),
+    },
+  ];
+  const values = [
+    {
+      name: t("values.convenience.name"),
+      description: t("values.convenience.description"),
+      icon: PresentationChartLineIcon,
     },
     {
-      name: "GitHub",
-      href: "https://github.com/luxdotdev",
-      icon: (props: IconProps) => (
-        <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
-          <path
-            fillRule="evenodd"
-            d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
-            clipRule="evenodd"
-          />
-        </svg>
-      ),
+      name: t("values.accessibility.name"),
+      description: t("values.accessibility.description"),
+      icon: HandRaisedIcon,
     },
-  ],
-};
+    {
+      name: t("values.community.name"),
+      description: t("values.community.description"),
+      icon: UserGroupIcon,
+    },
+    {
+      name: t("values.openSource.name"),
+      description: t("values.openSource.description"),
+      icon: AcademicCapIcon,
+    },
+    {
+      name: t("values.improvement.name"),
+      description: t("values.improvement.description"),
+      icon: RocketLaunchIcon,
+    },
+    {
+      name: t("values.reliable.name"),
+      description: t("values.reliable.description"),
+      icon: ServerStackIcon,
+    },
+  ];
+  const team = [
+    {
+      name: t("team.lucas.name"),
+      role: t("team.lucas.role"),
+      imageUrl: "/marketing/lucas.jpg",
+      location: "Ithaca, NY",
+    },
+    {
+      name: t("team.robin.name"),
+      role: t("team.robin.role"),
+      imageUrl: "/marketing/robin.png",
+      location: "Vancouver, BC",
+    },
+    {
+      name: t("team.xavier.name"),
+      role: t("team.xavier.role"),
+      imageUrl: "/marketing/xavier.jpg",
+      location: "Ithaca, NY",
+    },
+    {
+      name: t("team.adrian.name"),
+      role: t("team.adrian.role"),
+      imageUrl: "/marketing/adrian.jpg",
+      location: "Miami, FL",
+    },
+    {
+      name: t("team.daniel.name"),
+      role: t("team.daniel.role"),
+      imageUrl: "/marketing/daniel.png",
+      location: "Miami, FL",
+    },
+    {
+      name: t("team.diego.name"),
+      role: t("team.diego.role"),
+      imageUrl: "/marketing/diego.jpg",
+      location: "Miami, FL",
+    },
+    {
+      name: t("team.yai.name"),
+      role: t("team.yai.role"),
+      imageUrl: "/marketing/yai.jpg",
+      location: "Miami, FL",
+    },
+    {
+      name: t("team.kenny.name"),
+      role: t("team.kenny.role"),
+      imageUrl: "/marketing/kenny.jpg",
+      location: "Miami, FL",
+    },
+  ];
 
-export default function AboutPage() {
+  type IconProps = Omit<SVGProps<SVGSVGElement>, "fill" | "viewbox">;
+
+  const footerNavigation = {
+    solutions: [
+      { name: t("footerNav.solutions.dashboard"), href: "/dashboard" },
+      { name: t("footerNav.solutions.signUp"), href: "/sign-up" },
+      { name: t("footerNav.solutions.demo"), href: "/demo" },
+    ],
+    support: [
+      { name: t("footerNav.support.pricing"), href: "/pricing" },
+      { name: t("footerNav.support.doc"), href: "https://docs.parsertime.app" },
+      {
+        name: t("footerNav.support.discord"),
+        href: "https://discord.gg/svz3qhVDXM",
+      },
+      { name: t("footerNav.support.contact"), href: "/contact" },
+    ],
+    company: [
+      { name: t("footerNav.company.about"), href: "https://lux.dev" },
+      { name: t("footerNav.company.blog"), href: "https://blog.lux.dev" },
+      {
+        name: t("footerNav.company.github"),
+        href: "https://github.com/luxdotdev",
+      },
+    ],
+    legal: [{ name: t("footerNav.legal.policy"), href: "/privacy" }],
+    social: [
+      {
+        name: t("footerNav.socials.twitter"),
+        href: "https://twitter.com/luxdotdev",
+        icon: (props: IconProps) => (
+          <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
+            <path d="M13.6823 10.6218L20.2391 3H18.6854L12.9921 9.61788L8.44486 3H3.2002L10.0765 13.0074L3.2002 21H4.75404L10.7663 14.0113L15.5685 21H20.8131L13.6819 10.6218H13.6823ZM11.5541 13.0956L10.8574 12.0991L5.31391 4.16971H7.70053L12.1742 10.5689L12.8709 11.5655L18.6861 19.8835H16.2995L11.5541 13.096V13.0956Z" />
+          </svg>
+        ),
+      },
+      {
+        name: t("footerNav.socials.bluesky"),
+        href: "https://bsky.app/profile/lux.dev",
+        icon: (props: IconProps) => (
+          <svg fill="currentColor" viewBox="-50 -50 430 390" {...props}>
+            <path d="M180 141.964C163.699 110.262 119.308 51.1817 78.0347 22.044C38.4971 -5.86834 23.414 -1.03207 13.526 3.43594C2.08093 8.60755 0 26.1785 0 36.5164C0 46.8542 5.66748 121.272 9.36416 133.694C21.5786 174.738 65.0603 188.607 105.104 184.156C107.151 183.852 109.227 183.572 111.329 183.312C109.267 183.642 107.19 183.924 105.104 184.156C46.4204 192.847 -5.69621 214.233 62.6582 290.33C137.848 368.18 165.705 273.637 180 225.702C194.295 273.637 210.76 364.771 295.995 290.33C360 225.702 313.58 192.85 254.896 184.158C252.81 183.926 250.733 183.645 248.671 183.315C250.773 183.574 252.849 183.855 254.896 184.158C294.94 188.61 338.421 174.74 350.636 133.697C354.333 121.275 360 46.8568 360 36.519C360 26.1811 357.919 8.61012 346.474 3.43851C336.586 -1.02949 321.503 -5.86576 281.965 22.0466C240.692 51.1843 196.301 110.262 180 141.964Z" />
+          </svg>
+        ),
+      },
+      {
+        name: t("footerNav.socials.github"),
+        href: "https://github.com/luxdotdev",
+        icon: (props: IconProps) => (
+          <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
+            <path
+              fillRule="evenodd"
+              d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+              clipRule="evenodd"
+            />
+          </svg>
+        ),
+      },
+    ],
+  };
+
   return (
     <div className="bg-white dark:bg-black">
       <main className="relative isolate">
@@ -181,12 +190,10 @@ export default function AboutPage() {
         <div className="px-6 pt-14 lg:px-8">
           <div className="mx-auto max-w-2xl pt-24 text-center sm:pt-40">
             <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
-              We love Overwatch
+              {t("headerSection.title")}
             </h2>
             <p className="mt-6 text-lg leading-8 text-gray-700 dark:text-gray-300">
-              That&apos;s why we&apos;re building a better way to track your
-              performance. See your team&apos;s stats, track your performance
-              over time, and see how you evolve as a player and as a team.
+              {t("headerSection.description")}
             </p>
           </div>
         </div>
@@ -195,45 +202,23 @@ export default function AboutPage() {
           <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
             <div className="grid max-w-xl grid-cols-1 gap-8 text-base leading-7 text-gray-700 dark:text-gray-300 lg:max-w-none lg:grid-cols-2">
               <div>
-                <p>
-                  Parsertime was originally created as an internal tool for FIU
-                  Panthers, a collegiate team. We wanted to be able to see our
-                  stats after scrims and see trends over time. We&apos;ve since
-                  expanded to become a platform that any team can use.
-                  We&apos;re excited to see how teams use Parsertime to improve
-                  their performance.
-                </p>
-                <p className="mt-8">
-                  We&apos;re a small team of passionate Overwatch players and
-                  coaches who are dedicated to building a platform that works
-                  for your team. We&apos;re always looking for feedback and
-                  feature requests. If you have any ideas, we&apos;d love to
-                  hear them!
-                </p>
+                <p>{t("contentSection.description1")}</p>
+                <p className="mt-8">{t("contentSection.description2")}</p>
               </div>
               <div>
-                <p>
-                  We know that teams are always looking for ways to improve. Our
-                  goal is to make it easy for you to see your stats and see
-                  trends week over week. Parsertime is currently used internally
-                  at FIU and new features are being added every week. We want to
-                  provide the best experience possible for Overwatch players and
-                  teams.
-                </p>
+                <p>{t("contentSection.description3")}</p>
                 <p className="mt-8">
-                  Parsertime is fully open source. We believe that the best
-                  tools are built in the open. If you&apos;d like to contribute
-                  to Parsertime, we&apos;d love to have you! We&apos;re always
-                  looking for contributors to help us build the best platform
-                  for Overwatch teams. You can find our GitHub repo{" "}
-                  <Link
-                    href="https://github.com/luxdotdev/parsertime"
-                    target="_blank"
-                    className="text-sky-600 dark:text-sky-400"
-                  >
-                    here
-                  </Link>
-                  .
+                  {t.rich("contentSection.description4", {
+                    link: (chunks) => (
+                      <Link
+                        href="https://github.com/luxdotdev/parsertime"
+                        target="_blank"
+                        className="text-sky-600 dark:text-sky-400"
+                      >
+                        {chunks}
+                      </Link>
+                    ),
+                  })}
                 </p>
               </div>
             </div>
@@ -266,10 +251,10 @@ export default function AboutPage() {
         <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-40 lg:px-8">
           <div className="mx-auto max-w-2xl lg:mx-0">
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-              Our features
+              {t("featureSection.title")}
             </h2>
             <p className="mt-6 text-lg leading-8 text-gray-700 dark:text-gray-300">
-              See how our platform can make a difference for your team.
+              {t("featureSection.description")}
             </p>
           </div>
           <dl className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 text-base leading-7 text-gray-700 dark:text-gray-300 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:gap-x-16">
@@ -293,12 +278,10 @@ export default function AboutPage() {
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto max-w-2xl lg:mx-0">
               <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-                Our team
+                {t("teamSection.title")}
               </h2>
               <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-                We&apos;re a small team of passionate Overwatch players and
-                coaches who are dedicated to building a platform that works for
-                your team.
+                {t("teamSection.description")}
               </p>
             </div>
             <ul className="mx-auto mt-20 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-3 xl:grid-cols-4">
@@ -324,19 +307,13 @@ export default function AboutPage() {
               ))}
             </ul>
             <p className="mt-24 text-center text-sm text-gray-600 dark:text-gray-400">
-              Not pictured:{" "}
-              <strong className="font-semibold text-gray-950 dark:text-gray-100">
-                Devraj Ambala
-              </strong>
-              , Engineering Intern, Summer 2024;{" "}
-              <strong className="font-semibold text-gray-950 dark:text-gray-100">
-                Karson Miller
-              </strong>
-              , Engineering Intern, Summer 2024; and{" "}
-              <strong className="font-semibold text-gray-950 dark:text-gray-100">
-                Rose Thatch
-              </strong>
-              , Engineering Intern, Summer 2024.
+              {t.rich("team.notPictured", {
+                name: (chunks) => (
+                  <strong className="font-semibold text-gray-950 dark:text-gray-100">
+                    {chunks}
+                  </strong>
+                ),
+              })}
             </p>
           </div>
         </div>
@@ -366,26 +343,25 @@ export default function AboutPage() {
               </svg>
               <div className="mx-auto max-w-md text-center lg:mx-0 lg:flex-auto lg:py-32 lg:text-left">
                 <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                  Boost your productivity.
+                  {t("ctaSection.title")}
                   <br />
-                  Start using our app today.
+                  {t("ctaSection.subtitle")}
                 </h2>
                 <p className="mt-6 text-lg leading-8 text-gray-300">
-                  Give your team the tools they need to succeed. Sign up for
-                  Parsertime today.
+                  {t("ctaSection.description")}
                 </p>
                 <div className="mt-10 flex items-center justify-center gap-x-6 lg:justify-start">
                   <Link
                     href="/sign-up"
                     className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                   >
-                    Sign up
+                    {t("ctaSection.signUp")}
                   </Link>
                   <Link
                     href="/demo"
                     className="text-sm font-semibold leading-6 text-white"
                   >
-                    Try our demo <span aria-hidden="true">→</span>
+                    {t("ctaSection.demo")} <span aria-hidden="true">→</span>
                   </Link>
                 </div>
               </div>
@@ -393,14 +369,14 @@ export default function AboutPage() {
                 <Image
                   className="absolute left-0 top-0 hidden w-[57rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10 dark:flex"
                   src="/player_page.png"
-                  alt="App screenshot"
+                  alt={t("ctaSection.altText")}
                   width={1824}
                   height={1080}
                 />
                 <Image
                   className="absolute left-0 top-0 w-[57rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10 dark:hidden"
                   src="/player_page_light.png"
-                  alt="App screenshot"
+                  alt={t("ctaSection.altText")}
                   width={1824}
                   height={1080}
                 />
@@ -416,7 +392,7 @@ export default function AboutPage() {
         aria-labelledby="footer-heading"
       >
         <h2 id="footer-heading" className="sr-only">
-          Footer
+          {t("footerNav.title")}
         </h2>
         <div className="mx-auto max-w-7xl px-6 pb-8 lg:px-8">
           <div className="xl:grid xl:grid-cols-3 xl:gap-8">
@@ -429,7 +405,7 @@ export default function AboutPage() {
                 alt="Parsertime Logo"
               />
               <p className="text-sm leading-6 text-gray-700 dark:text-gray-300">
-                Building a better way to track your Overwatch performance.
+                {t("footerNav.description")}
               </p>
               <div className="flex space-x-6">
                 {footerNavigation.social.map((item) => (
@@ -451,7 +427,7 @@ export default function AboutPage() {
               <div className="md:grid md:grid-cols-2 md:gap-8">
                 <div>
                   <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">
-                    Platform
+                    {t("footerNav.solutions.title")}
                   </h3>
                   <ul className="mt-6 space-y-4">
                     {footerNavigation.solutions.map((item) => (
@@ -471,7 +447,7 @@ export default function AboutPage() {
                 </div>
                 <div className="mt-10 md:mt-0">
                   <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">
-                    Support
+                    {t("footerNav.support.title")}
                   </h3>
                   <ul className="mt-6 space-y-4">
                     {footerNavigation.support.map((item) => (
@@ -493,7 +469,7 @@ export default function AboutPage() {
               <div className="md:grid md:grid-cols-2 md:gap-8">
                 <div>
                   <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">
-                    Company
+                    {t("footerNav.company.title")}
                   </h3>
                   <ul className="mt-6 space-y-4">
                     {footerNavigation.company.map((item) => (
@@ -513,7 +489,7 @@ export default function AboutPage() {
                 </div>
                 <div className="mt-10 md:mt-0">
                   <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">
-                    Legal
+                    {t("footerNav.legal.title")}
                   </h3>
                   <ul className="mt-6 space-y-4">
                     {footerNavigation.legal.map((item) => (
@@ -536,7 +512,7 @@ export default function AboutPage() {
           </div>
           <div className="mt-16 border-t border-black/10 pt-8 dark:border-white/10 sm:mt-20 lg:mt-24">
             <p className="text-xs leading-5 text-gray-600 dark:text-gray-400">
-              &copy; 2024 lux.dev. All rights reserved.
+              &copy; {new Date().getFullYear()} {t("footerNav.copyright")}
             </p>
           </div>
         </div>
