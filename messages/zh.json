@@ -1666,5 +1666,145 @@
         "errorDescription2": "发送消息时发生错误。请稍后再试。"
       }
     }
+  },
+  "aboutPage": {
+    "stats": {
+      "startDev": {
+        "label": "开发开始",
+        "value": "2023年11月"
+      },
+      "used": {
+        "label": "内部使用",
+        "value": "2024年1月"
+      },
+      "scrimsUploaded": {
+        "label": "测试版期间上传的比赛",
+        "value": "50+"
+      },
+      "statsTracked": {
+        "label": "测试版期间跟踪的玩家统计数据",
+        "value": "22,000+"
+      }
+    },
+    "values": {
+      "convenience": {
+        "name": "便利性。",
+        "description": "让统计数据跟踪和趋势观察变得轻而易举。轻松诊断您的玩家问题。"
+      },
+      "accessibility": {
+        "name": "可访问性。",
+        "description": "我们希望任何团队都能轻松使用 Parsertime。我们始终在寻找方法让平台更加可访问。"
+      },
+      "community": {
+        "name": "社区优先。",
+        "description": "由《守望先锋》玩家打造，为《守望先锋》玩家服务。我们致力于为社区服务。"
+      },
+      "openSource": {
+        "name": "开源。",
+        "description": "我们相信最好的工具是在开放环境中构建的。欢迎贡献！"
+      },
+      "improvement": {
+        "name": "持续改进。",
+        "description": "我们始终在添加新功能并改进平台。我们的目标是打造最佳应用程序。"
+      },
+      "reliable": {
+        "name": "可靠且高性能。",
+        "description": "我们的平台旨在快速且可靠。我们希望确保它始终为您服务。"
+      }
+    },
+    "team": {
+      "lucas": {
+        "name": "Lucas Doell",
+        "role": "创始人，工程主管"
+      },
+      "robin": {
+        "name": "Robin \"Zei\" Sidhu",
+        "role": "战略主管"
+      },
+      "xavier": {
+        "name": "Xavier Park",
+        "role": "研究主管"
+      },
+      "adrian": {
+        "name": "Adrian Soto",
+        "role": "支持主管"
+      },
+      "daniel": {
+        "name": "Daniel Iturralde",
+        "role": "技术支持专员"
+      },
+      "diego": {
+        "name": "Diego Sanchez del Rio",
+        "role": "工程实习生，2024 夏季"
+      },
+      "yai": {
+        "name": "Yailan Bordas",
+        "role": "工程实习生，2024 夏季"
+      },
+      "kenny": {
+        "name": "Kenny Miranda",
+        "role": "工程实习生，2024 夏季"
+      },
+      "notPictured": "未显示：<name>Devraj Ambala</name>，工程实习生，2024 夏季；<name>Karson Miller</name>，工程实习生，2024 夏季；以及 <name>Rose Thatch</name>，工程实习生，2024 夏季。"
+    },
+    "headerSection": {
+      "title": "我们热爱《守望先锋》",
+      "description": "这就是为什么我们在打造一种更好的方式来跟踪您的表现。查看您的团队统计数据、跟踪您的长期表现，并观察您作为玩家和团队的成长。"
+    },
+    "contentSection": {
+      "description1": "Parsertime 最初是为 FIU Panthers（一支大学团队）开发的内部工具。我们希望能够在训练赛后查看统计数据，并观察长期趋势。后来，我们扩展成为一个任何团队都可以使用的平台。我们很高兴看到各团队使用 Parsertime 来提高他们的表现。",
+      "description2": "我们是一支由《守望先锋》玩家和教练组成的小团队，致力于打造一个真正适合您团队的平台。我们始终欢迎反馈和功能请求。如果您有任何想法，我们很愿意倾听！",
+      "description3": "我们知道团队总是在寻找改进的方式。我们的目标是让您能够轻松查看统计数据，并跟踪每周的趋势变化。Parsertime 目前在 FIU 内部使用，每周都会新增功能。我们希望为《守望先锋》玩家和团队提供最佳体验。",
+      "description4": "Parsertime 是完全开源的。我们相信最好的工具是在开放中构建的。如果您想为 Parsertime 做出贡献，我们非常欢迎！我们一直在寻找贡献者帮助我们为《守望先锋》团队打造最佳平台。您可以在 <link>这里</link> 找到我们的 GitHub 仓库。"
+    },
+    "featureSection": {
+      "title": "我们的功能",
+      "description": "看看我们的平台如何为您的团队带来不同。"
+    },
+    "teamSection": {
+      "title": "认识我们的团队",
+      "description": "我们是一支由热爱《守望先锋》的玩家和教练组成的小团队，致力于打造一个真正适合您团队的平台。"
+    },
+    "ctaSection": {
+      "title": "提升您的效率。",
+      "subtitle": "立即开始使用我们的应用程序。",
+      "description": "为您的团队提供成功所需的工具。立即注册 Parsertime。",
+      "signUp": "注册",
+      "demo": "试用我们的演示",
+      "altText": "应用截图"
+    },
+    "footerNav": {
+      "title": "页脚",
+      "description": "构建一种更好的方式来跟踪您的《守望先锋》表现。",
+      "solutions": {
+        "title": "平台",
+        "dashboard": "仪表板",
+        "signUp": "注册",
+        "demo": "演示"
+      },
+      "support": {
+        "title": "支持",
+        "pricing": "定价",
+        "doc": "文档",
+        "discord": "Discord",
+        "contact": "联系我们"
+      },
+      "company": {
+        "title": "公司",
+        "about": "关于我们",
+        "blog": "博客",
+        "github": "GitHub"
+      },
+      "legal": {
+        "title": "法律",
+        "policy": "隐私政策"
+      },
+      "socials": {
+        "twitter": "X",
+        "bluesky": "Bluesky",
+        "github": "GitHub"
+      },
+      "copyright": "lux.dev。保留所有权利。"
+    }
   }
 }
