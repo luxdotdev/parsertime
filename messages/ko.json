@@ -1,0 +1,1984 @@
+{
+  "maps": {
+    "antarctic-peninsula": "남극 반도",
+    "blizzard-world": "블리자드 월드",
+    "blizzard-world-winter": "블리자드 월드 (겨울)",
+    "busan": "부산",
+    "circuit-royal": "서킷 로얄",
+    "colosseo": "콜로세오",
+    "dorado": "도라도",
+    "eichenwalde": "아이헨발데",
+    "eichenwalde-halloween": "아이헨발데 (할로윈)",
+    "esperanca": "에스페랑사",
+    "hanaoka": "하나오카",
+    "havana": "하바나",
+    "hollywood": "할리우드",
+    "hollywood-halloween": "할리우드 (할로윈)",
+    "ilios": "일리오스",
+    "junkertown": "정커타운",
+    "kings-row": "킹스 로우",
+    "kings-row-winter": "킹스 로우 (겨울)",
+    "lijiang-tower": "리장 타워",
+    "lijiang-tower-lunar-new-year": "리장 타워 (설날)",
+    "midtown": "미드타운",
+    "nepal": "네팔",
+    "new-junk-city": "뉴 정크 시티",
+    "new-queen-street": "뉴 퀸 스트리트",
+    "numbani": "눔바니",
+    "oasis": "오아시스",
+    "paraiso": "파라이소",
+    "rialto": "리알토",
+    "route-66": "66번 국도",
+    "runasapi": "루나사피",
+    "samoa": "사모아",
+    "shambali-monastery": "샴발리 수도원",
+    "suravasa": "수라바사",
+    "throne-of-anubis": "아누비스의 왕좌",
+    "watchpoint-gibraltar": "감시 기지: 지브롤터"
+  },
+  "heroes": {
+    "ana": "아나",
+    "ashe": "애쉬",
+    "baptiste": "바티스트",
+    "bastion": "바스티온",
+    "brigitte": "브리기테",
+    "cassidy": "캐서디",
+    "doomfist": "둠피스트",
+    "dva": "디바",
+    "echo": "에코",
+    "genji": "겐지",
+    "hanzo": "한조",
+    "hazard": "해저드",
+    "illari": "일라리",
+    "junkerqueen": "정커 퀸",
+    "junkrat": "정크랫",
+    "juno": "주노",
+    "kiriko": "키리코",
+    "lifeweaver": "라이프위버",
+    "lucio": "루시우",
+    "mauga": "마우가",
+    "mei": "메이",
+    "mercy": "메르시",
+    "moira": "모이라",
+    "orisa": "오리사",
+    "pharah": "파라",
+    "ramattra": "라마트라",
+    "reaper": "리퍼",
+    "reinhardt": "라인하르트",
+    "roadhog": "로드호그",
+    "sigma": "시그마",
+    "sojourn": "소전",
+    "soldier76": "솔저: 76",
+    "sombra": "솜브라",
+    "symmetra": "시메트라",
+    "torbjorn": "토르비욘",
+    "tracer": "트레이서",
+    "venture": "벤처",
+    "widowmaker": "위도우메이커",
+    "winston": "윈스턴",
+    "wreckingball": "레킹볼",
+    "zarya": "자리야",
+    "zenyatta": "젠야타"
+  },
+  "landingPage": {
+    "hero": {
+      "latestUpdates": "최신 업데이트",
+      "title": "스크림 경험을 혁신하세요",
+      "description": "이 플랫폼을 통해 스크림 데이터를 시각화하고, 개별 플레이어 성과를 추적하는 등 다양한 기능을 이용할 수 있습니다. 팀에 플레이어를 초대해 자신의 통계를 확인할 수 있도록 해보세요.",
+      "getStarted": "시작하기",
+      "liveDemo": "라이브 데모",
+      "accountDescription": "이미 계정이 있으신가요?",
+      "signIn": "로그인"
+    },
+    "logoCloud": {
+      "title": "다양한 팀들이 통계 추적을 위해 사용하고 있습니다"
+    },
+    "feature1": {
+      "subtitle": "더 빠른 개선",
+      "title": "팀 퍼포먼스 향상을 위해 필요한 모든 것",
+      "description": "이 플랫폼을 통해 개선 과정을 간소화하세요. 플레이어 및 팀의 강점과 약점을 파악하고, 가장 중요한 개선점을 확인하여 코칭 전략을 효과적으로 조정할 수 있습니다.",
+      "learnMore": "자세히 알아보기"
+    },
+    "primaryFeatures": {
+      "builtByCoaches": {
+        "name": "코치가 만든, 코치를 위한 플랫폼",
+        "description": "대학교 및 프로 코치를 염두에 두고 설계했습니다. 팀의 성과 트렌드와 패턴을 파악할 수 있도록 이 플랫폼을 구축했습니다."
+      },
+      "shareWithTeam": {
+        "name": "팀과 공유하기",
+        "description": "플레이어를 팀에 초대해 자신의 통계를 확인할 수 있도록 해보세요. 플레이어와 코치들에게 팀 통계를 공유해 모두가 같은 정보를 확인할 수 있게 합니다."
+      },
+      "advancedStatistics": {
+        "name": "고급 통계",
+        "description": "플레이어의 성과를 장기적으로 분석하고 인사이트를 얻으세요. 통계를 추적하며 플레이어들이 어떻게 발전하는지 확인하고, 주 단위 트렌드와 패턴도 파악해 보세요."
+      },
+      "href": "자세히 알아보기"
+    },
+    "feature2": {
+      "subtitle": "필요한 모든 것",
+      "title": "스크림 통계를 한눈에",
+      "description": "리플레이 코드에만 의존하지 말고, 스크림 후 곧바로 통계를 확인하세요. 리플레이에 문제가 생겨도 데이터를 안전하게 보관할 수 있습니다."
+    },
+    "secondaryFeatures": {
+      "dataCharts": {
+        "name": "플레이어 및 팀 데이터 차트",
+        "description": "팀의 통계를 시각화하세요. 개선이 필요한 부분과 강점을 빠르게 파악하고, 팀의 전반적인 능력을 이해할 수 있습니다."
+      },
+      "filterStats": {
+        "name": "시간별 통계 필터",
+        "description": "시간 경과에 따른 팀 통계를 확인하세요. 주간, 월간, 연간 단위로 필터링하여 팀이 어떻게 발전하고 있는지 살펴보세요."
+      },
+      "userProfiles": {
+        "name": "사용자 프로필",
+        "description": "각 플레이어의 통계와 추세를 장기적으로 확인하세요. 개별 플레이어가 어떻게 성장하고 있으며, 어떤 부분에서 도움이 필요한지 파악할 수 있습니다."
+      },
+      "advancedSecurity": {
+        "name": "고급 보안",
+        "description": "사용자 계정에는 비밀번호를 저장하지 않습니다. 초대한 사용자만 팀의 스크림 정보를 확인할 수 있습니다."
+      },
+      "fastReliable": {
+        "name": "빠르고 안정적",
+        "description": "최신 클라우드 인프라를 기반으로 구축되어 속도 문제가 없으며, 언제나 안정적으로 작동합니다."
+      },
+      "fullyCustomizable": {
+        "name": "완전 맞춤형",
+        "description": "맞춤 기능이 필요하거나 특정 지표를 추적하고 싶으신가요? 알려주시면 구현해 드리겠습니다."
+      }
+    },
+    "stats": {
+      "subtitle": "우리가 걸어온 길",
+      "title": "최고의 신뢰를 받는 플랫폼",
+      "description": "저희는 대학 및 프로 코치들과 함께하며 모든 이들에게 더 나은 경험을 제공하게 된 것을 자랑스럽게 생각합니다. 이 플랫폼은 팀의 요구 사항을 충족시키도록 설계되었습니다."
+    },
+    "testimonial": {
+      "starRating": "별 5개 만점에 5개",
+      "quote": "“Parsertime은 오버워치 스크림 통계를 확인하기에 정말 놀라운 방법입니다. 이 도구를 통해 통계 전반에 대해 더 깊이 이해하게 되었고, 지금은 네 팀을 위해 데이터 사이언스를 하고 있습니다 (Parsertime도 사용 중입니다). 이 플랫폼에서 얻은 정보는 플레이어들이 더 오래 생존하기, 궁극기를 좀 더 오래 간직하기, 인내심을 갖기 등 실제로 도움이 필요한 부분을 중심으로 코칭할 수 있도록 해줍니다. 만약 어떤 플레이어의 치유량이 다른 서포트보다 낮다면, 그 이유를 찾아볼 수도 있죠. Parsertime은 더 광범위한 데이터를 기반으로 세밀한 분석이 가능하도록 해주는 환상적인 툴입니다.”",
+      "author": "coy (@shy.coy)",
+      "role": "o7 Esports 매니저"
+    },
+    "cta": {
+      "subtitle": "지금 바로 시작해 보세요",
+      "title": "오늘부터 앱을 사용해 보세요.",
+      "description": "가입 후 바로 플랫폼을 이용해 보세요. 코칭에 대한 시야가 확 달라질 것입니다.",
+      "getStarted": "시작하기",
+      "learnMore": "자세히 알아보기"
+    },
+    "footer": {
+      "screenReader": "푸터",
+      "copyright": "2024 lux.dev. 판권 소유."
+    }
+  },
+  "metadata": {
+    "title": "Parsertime",
+    "description": "Parsertime은 오버워치 스크림을 분석하기 위한 도구입니다.",
+    "ogTitle": "Parsertime",
+    "ogDescription": "Parsertime은 오버워치 스크림을 분석하기 위한 도구입니다."
+  },
+  "authError": {
+    "title": "로그인 중 오류가 발생했습니다",
+    "error": "오류:",
+    "description": "다시 시도해 주세요. 문제가 계속될 경우 <link>help@parsertime.app</link>로 문의해 주세요.",
+    "back": "홈으로 돌아가기",
+    "signIn": "로그인",
+    "errors": {
+      "configuration": "서버 구성에 문제가 발생했습니다. 지원 팀에 문의해 주세요.",
+      "accessDenied": "접근이 거부되었습니다. 앱이 비공개 베타 중일 수 있습니다. 오류라고 생각되면 지원 팀에 문의해 주세요.",
+      "authorizedCallbackError": "접근이 거부되었습니다. 앱이 비공개 베타 중일 수 있습니다. 오류라고 생각되면 지원 팀에 문의해 주세요.",
+      "verification": "토큰이 만료되었거나 이미 사용되었습니다. 다시 시도해 주세요.",
+      "adapterError": "데이터베이스 어댑터 오류가 발생했습니다. 쿠키를 삭제한 후 다시 시도해 보세요. 문제가 계속되면 지원 팀에 문의해 주세요.",
+      "default": "로그인 중 알 수 없는 오류가 발생했습니다. 지원 팀에 문의해 주세요."
+    }
+  },
+  "noAuth": {
+    "title": "권한 없음",
+    "description": "이 페이지를 볼 권한이 없습니다. 먼저 로그인하거나 계정을 확인해주세요.",
+    "signIn": "로그인"
+  },
+  "verifyRequest": {
+    "title": "로그인 링크를 이메일에서 확인하세요",
+    "description": "로그인 링크가 포함된 이메일을 보냈습니다. 이메일의 링크를 클릭하여 로그인 절차를 완료하세요.",
+    "back": "홈으로 돌아가기"
+  },
+  "signInPage": {
+    "metadataSignIn": {
+      "title": "로그인 | Parsertime",
+      "description": "계정에 로그인하세요. Parsertime은 오버워치 스크림 분석 도구입니다.",
+      "ogTitle": "로그인 | Parsertime",
+      "ogDescription": "계정에 로그인하세요. Parsertime은 오버워치 스크림 분석 도구입니다."
+    },
+    "metadataSignUp": {
+      "title": "가입하기 | Parsertime",
+      "description": "계정을 생성하세요. Parsertime은 오버워치 스크림 분석 도구입니다.",
+      "ogTitle": "가입하기 | Parsertime",
+      "ogDescription": "계정을 생성하세요. Parsertime은 오버워치 스크림 분석 도구입니다."
+    },
+    "signUp": "가입하기",
+    "signIn": "로그인",
+    "login": "로그인",
+    "createAccount": "계정 생성",
+    "enterEmailCreateAccount": "아래 이메일을 입력하여 계정을 생성하세요",
+    "enterEmailSignIn": "아래 이메일을 입력하여 로그인하세요",
+    "signInEmail": "이메일로 로그인",
+    "orContinueWith": "또는 계속하기",
+    "madeBy": "❤️로 만든 lux.dev"
+  },
+  "dashboard": {
+    "metadata": {
+      "title": "대시보드 | Parsertime",
+      "description": "Parsertime은 오버워치 스크림 분석 도구입니다.",
+      "ogTitle": "대시보드 | Parsertime",
+      "ogDescription": "Parsertime은 오버워치 스크림 분석 도구입니다."
+    },
+    "title": "대시보드",
+    "overview": "내 스크림",
+    "admin": "관리자 보기",
+    "search": "검색...",
+    "themeSwitcher": {
+      "toggle": "테마 전환",
+      "light": "라이트",
+      "dark": "다크",
+      "system": "시스템"
+    },
+    "userNav": {
+      "dashboard": "대시보드",
+      "teams": "팀",
+      "settings": "설정",
+      "contact": "문의하기",
+      "docs": "문서",
+      "admin": "관리자",
+      "signOut": "로그아웃"
+    },
+    "commandMenu": {
+      "searchPlaceholder": "명령어 입력 또는 검색...",
+      "searchResult": "결과가 없습니다.",
+      "suggestions": {
+        "title": "추천",
+        "dashboard": "대시보드",
+        "docs": "문서",
+        "signIn": "로그인",
+        "home": "홈"
+      },
+      "scrim": {
+        "title": "스크림"
+      },
+      "link": {
+        "title": "링크 복사됨",
+        "description": "이 {pathname}에 대한 링크가 복사되었습니다.",
+        "share": "{pathname}에 대한 링크 공유",
+        "map": "지도",
+        "scrim": "스크림"
+      },
+      "teams": {
+        "title": "팀",
+        "viewTeams": "팀 보기",
+        "viewScrims": "스크림 보기: {team}"
+      },
+      "settings": {
+        "title": "설정",
+        "profile": "프로필",
+        "linkedAccounts": "연결된 계정"
+      },
+      "debugging": {
+        "title": "디버깅",
+        "assistant": "디버깅 도우미"
+      },
+      "feedback": {
+        "title": "피드백",
+        "bugReport": "버그 신고",
+        "contact": "문의하기",
+        "discord": "커뮤니티 디스코드"
+      },
+      "locale": {
+        "title": "언어",
+        "change": "{locale}로 언어 변경"
+      },
+      "theme": {
+        "title": "테마",
+        "light": "라이트",
+        "dark": "다크",
+        "system": "시스템"
+      }
+    },
+    "bugReportForm": {
+      "unknown": "알 수 없음",
+      "successToast": {
+        "title": "버그 신고가 제출되었습니다",
+        "description": "도움 주셔서 감사합니다!"
+      },
+      "errorToast": {
+        "title": "오류",
+        "description": "버그 신고를 제출하는 동안 오류가 발생했습니다."
+      },
+      "title": "버그 신고",
+      "description": "버그를 발견하셨다면 저희에게 신고해주세요. Parsertime을 개선하는 데 도움을 주셔서 감사합니다.",
+      "formTitle": "제목",
+      "titlePlaceholder": "스크림을 제거할 수 없습니다...",
+      "titleDescription": "버그 신고 제목입니다. 간결하고 명확하게 작성해주세요.",
+      "descriptionTitle": "설명",
+      "descriptionPlaceholder": "여기에 메시지를 입력하세요.",
+      "descriptionDescription": "발견한 버그를 설명해주세요. 가능한 많은 세부 정보를 포함하세요.",
+      "emailTitle": "이메일",
+      "emailPlaceholder": "user@example.com",
+      "emailDescription": "현재 로그인된 사용자의 이메일 주소입니다.",
+      "urlTitle": "URL",
+      "urlPlaceholder": "path/to/page",
+      "urlDescription": "버그를 발견한 페이지의 URL입니다.",
+      "submitting": "제출 중...",
+      "submit": "버그 신고 제출"
+    },
+    "filter": {
+      "title": "필터",
+      "select": "필터 선택",
+      "oldToNew": "오래된 순",
+      "newToOld": "최신 순",
+      "search": "검색..."
+    },
+    "pagination": {
+      "previous": "이전",
+      "next": "다음",
+      "morePages": "더 많은 페이지"
+    },
+    "mainNav": {
+      "dashboard": "대시보드",
+      "stats": "통계",
+      "teams": "팀",
+      "settings": "설정",
+      "contact": "문의하기",
+      "docs": "문서"
+    },
+    "teamSwitcher": {
+      "searchTeamPlaceholder": "팀 검색...",
+      "noTeamFound": "팀을 찾을 수 없습니다.",
+      "individual": "개인",
+      "teams": "팀",
+      "createTeam": "팀 생성"
+    },
+    "createTeam": {
+      "title": "팀 생성",
+      "description": "새 팀을 추가하여 스크림을 분류하고 플레이어를 초대하여 스크림을 보고 관리하세요.",
+      "teamName": "팀 이름",
+      "placeholder": "코넬 e스포츠",
+      "required": "팀 이름은 필수입니다.",
+      "minCharacters": "이름은 최소 2자 이상이어야 합니다.",
+      "maxCharacters": "이름은 30자를 초과할 수 없습니다.",
+      "cancel": "취소",
+      "createTeam": "팀 생성",
+      "creatingTeam": "팀 생성 중...",
+      "newTeamCreated": {
+        "title": "팀이 생성되었습니다!",
+        "description": "팀이 성공적으로 생성되었습니다."
+      },
+      "error": {
+        "title": "오류",
+        "description": "오류가 발생했습니다: {res}"
+      }
+    },
+    "emptyScrimList": {
+      "title": "스크림 없음",
+      "description": "버튼을 클릭하여 스크림을 생성하세요.",
+      "question": "스크림 데이터를 어떻게 가져와야 할지 모르겠나요?",
+      "documentation": "여기에서 문서를 확인하세요."
+    },
+    "addScrim": {
+      "title": "스크림 추가...",
+      "description": "버튼을 클릭하여 스크림을 생성하세요.",
+      "createScrim": "스크림 생성",
+      "handleFile": {
+        "fileReq": "파일이 필요합니다.",
+        "fileMax": "최대 파일 크기는 1MB입니다.",
+        "fileAccept": ".xlsx 및 .txt 파일만 허용됩니다.",
+        "creatingTitle": "스크림 생성 중...",
+        "creatingDescription": "데이터를 처리 중입니다. 잠시만 기다려 주세요.",
+        "createdTitle": "스크림 생성 완료",
+        "createdDescription": "스크림이 성공적으로 생성되었습니다.",
+        "errorTitle": "오류",
+        "errorDescription": "오류가 발생했습니다: {res}"
+      }
+    },
+    "scrimCard": {
+      "editScrim": "스크림 편집",
+      "scrimDate": "스크림 날짜: ",
+      "team": "팀: ",
+      "noTeam": "분류되지 않음",
+      "creator": "생성자: ",
+      "noCreator": "알 수 없음"
+    },
+    "scrimCreationForm": {
+      "fileSize": {
+        "title": "파일이 너무 큽니다",
+        "description": "최대 파일 크기는 1MB입니다."
+      },
+      "fileType": {
+        "title": "잘못된 파일 형식",
+        "description": ".xlsx 및 .txt 파일만 허용됩니다."
+      },
+      "creatingScrim": {
+        "title": "스크림 생성 중",
+        "description": "잠시만 기다려 주세요..."
+      },
+      "createdScrim": {
+        "title": "스크림 생성 완료",
+        "description": "스크림이 성공적으로 생성되었습니다.",
+        "errorTitle": "오류",
+        "errorDescription": "오류가 발생했습니다: {res}. <here>여기</here>에서 문서를 읽고 오류를 해결할 수 있는지 확인하세요."
+      },
+      "scrimName": "스크림 이름",
+      "scrimPlaceholder": "새 스크림",
+      "scrimDescription": "스크림의 이름입니다. 대시보드에 표시됩니다.",
+      "scrimRequiredError": "스크림 이름이 필요합니다.",
+      "scrimMinMessage": "이름은 최소 2자 이상이어야 합니다.",
+      "scrimMaxMessage": "이름은 30자를 초과할 수 없습니다.",
+      "replayCodeName": "스크림 리플레이 코드",
+      "replayCodePlaceholder": "리플레이 코드",
+      "replayCodeDescription": "첫 번째 맵의 리플레이 코드입니다. 스크림 생성 후 리플레이 코드를 수정할 수 있습니다.",
+      "replayCodeMessage": "이름은 6자를 초과할 수 없습니다.",
+      "teamName": "팀 지정",
+      "teamPlaceholder": "팀 선택",
+      "teamIndividual": "개인",
+      "teamDescription": "팀은 <link>대시보드</link>에서 관리할 수 있습니다.",
+      "teamRequiredError": "팀 이름이 필요합니다.",
+      "teamLoading": "로딩 중...",
+      "dateName": "스크림 날짜",
+      "datePlaceholder": "날짜 선택",
+      "dateDescription": "스크림 날짜는 스크림이 진행된 날짜입니다.",
+      "dateRequiredError": "스크림 날짜가 필요합니다.",
+      "mapName": "첫 번째 맵",
+      "mapDescription": "스크림의 첫 번째 맵을 업로드하세요. .xlsx 및 .txt 파일만 허용되며, 최대 파일 크기는 1MB입니다. 스크림 생성 후 더 많은 맵을 추가할 수 있습니다.",
+      "submit": "제출",
+      "submitting": "제출 중..."
+    }
+  },
+  "updateModal": {
+    "dismiss": "Dismiss"
+  },
+  "scrimPage": {
+    "metadata": {
+      "scrim": "스크림",
+      "title": "{scrimName} 개요 | Parsertime",
+      "description": "Parsertime에서 {scrimName}의 개요입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "ogTitle": "{scrimName} 개요 | Parsertime",
+      "ogDescription": "Parsertime에서 {scrimName}의 개요입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "ogImage": "{scrimName} 개요"
+    },
+    "back": "대시보드로 돌아가기",
+    "newScrim": "새 스크림",
+    "edit": "스크림 편집",
+    "maps": {
+      "title": "맵",
+      "altText": "{map}의 로딩 화면 아트."
+    },
+    "noMaps": {
+      "title": "이 스크림에 추가된 맵이 없습니다!",
+      "description": "게임 분석을 시작하려면 이 스크림에 맵을 추가하세요. 맵이 추가되지 않으면 스크림은 24시간 이내에 자동으로 삭제됩니다. 도움이 필요하신가요?",
+      "link": "문서를 확인하세요"
+    },
+    "addMap": {
+      "title": "맵 추가...",
+      "description": "파일을 드래그 앤 드롭하거나 선택하여 업로드하세요.",
+      "addFile": "파일 추가",
+      "fileMessage": {
+        "required": "파일이 필요합니다.",
+        "maxSize": "최대 파일 크기는 1MB입니다.",
+        "accepted": ".xlsx 및 .txt 파일만 허용됩니다."
+      },
+      "handleFile": {
+        "creatingTitle": "맵 생성 중...",
+        "creatingDescription": "데이터를 처리 중입니다. 잠시만 기다려 주세요.",
+        "createTitle": "맵 생성 완료",
+        "createDescription": "맵이 성공적으로 생성되었습니다.",
+        "errorTitle": "오류",
+        "errorDescription": "오류가 발생했습니다: {res}. <here>여기</here>에서 문서를 읽고 오류를 해결할 수 있는지 확인하세요."
+      }
+    },
+    "editScrim": {
+      "back": "스크림으로 돌아가기",
+      "title": "스크림 세부정보 편집",
+      "replayCode": "리플레이 코드는 6자여야 합니다.",
+      "displayName": {
+        "title": "표시 이름",
+        "placeholder": "FIU 팬더스 vs UF 게이터스",
+        "description": "이것은 스크림의 이름입니다. 대시보드에 표시됩니다.",
+        "minMessage": "이름은 최소 2자 이상이어야 합니다.",
+        "maxMessage": "이름은 30자를 초과할 수 없습니다."
+      },
+      "team": {
+        "title": "팀",
+        "placeholder": "팀 선택",
+        "description": "스크림과 연결될 팀입니다. 관리하거나 소유한 팀에 스크림을 할당할 수 있습니다.",
+        "select": {
+          "teams": "팀",
+          "individual": "개인"
+        }
+      },
+      "date": {
+        "title": "스크림 날짜",
+        "edit": "날짜 편집",
+        "clientDate": {
+          "formatDate": "{date, date, ::MMMM d yyyy}"
+        },
+        "description": "스크림이 진행된 날짜입니다."
+      },
+      "guestMode": {
+        "title": "게스트 모드 활성화",
+        "description": "활성화하면 스크림에 로그인한 모든 사용자가 접근할 수 있습니다. 비활성화하면 팀 멤버만 스크림에 접근할 수 있습니다."
+      },
+      "maps": {
+        "title": "맵",
+        "replayCodeLabel": "{map}의 리플레이 코드",
+        "replayCode": "리플레이 코드",
+        "delete": "맵 삭제",
+        "deleteDialog": {
+          "title": "정말 확실합니까?",
+          "description": "이 작업은 맵 <strong>{map}</strong>을 영구적으로 삭제합니다. 이 작업은 되돌릴 수 없습니다.",
+          "cancel": "취소",
+          "delete": "삭제",
+          "deleting": "삭제 중..."
+        }
+      },
+      "update": "스크림 업데이트",
+      "updating": "업데이트 중...",
+      "onSubmit": {
+        "title": "스크림 업데이트 완료",
+        "description": "스크림이 성공적으로 업데이트되었습니다.",
+        "errorTitle": "오류가 발생했습니다",
+        "errorDescription": "오류가 발생했습니다: {res}"
+      },
+      "deleteMap": {
+        "title": "맵 삭제 완료",
+        "description": "맵이 삭제되었습니다.",
+        "errorTitle": "오류가 발생했습니다",
+        "errorDescription": "오류가 발생했습니다: {res}"
+      },
+      "dangerZone": "위험 구역",
+      "deleteScrim": {
+        "title": "스크림 삭제",
+        "description": "스크림을 삭제하면 되돌릴 수 없습니다. 신중히 결정하세요.",
+        "button": "스크림 삭제",
+        "deleteAlert": "스크림 <strong>{scrim}</strong>을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+        "deleteConfirmation": "<strong>{scrim}</strong>을 입력하여 확인하세요.",
+        "delete": "스크림 삭제",
+        "deleting": "삭제 중...",
+        "cancel": "취소",
+        "handleDelete": {
+          "title": "스크림 삭제 완료",
+          "description": "스크림이 삭제되었습니다.",
+          "errorTitle": "오류",
+          "errorDescription": "오류가 발생했습니다: {res}"
+        }
+      }
+    },
+    "replayCode": {
+      "title": "리플레이 코드 (클릭하여 복사)",
+      "onClick": {
+        "title": "클립보드에 복사되었습니다!",
+        "description": "리플레이 코드가 클립보드에 복사되었습니다."
+      }
+    }
+  },
+  "mapPage": {
+    "mapMetadata": {
+      "title": "{mapName} 개요 | Parsertime",
+      "description": "Parsertime에서 {mapName}의 맵 개요입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "ogTitle": "{mapName} 개요 | Parsertime",
+      "ogDescription": "Parsertime에서 {mapName}의 맵 개요입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "ogImage": "{mapName} 개요"
+    },
+    "playerMetadata": {
+      "title": "{playerName} 개요 | Parsertime",
+      "description": "Parsertime에서 {playerName}의 플레이어 개요입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "ogTitle": "{playerName} 개요 | Parsertime",
+      "ogDescription": "Parsertime에서 {playerName}의 플레이어 개요입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "ogImage": "{playerName} 개요"
+    },
+    "back": "스크림 개요로 돌아가기",
+    "dashboard": "대시보드",
+    "playerSwitcher": {
+      "select": "플레이어 선택",
+      "search": "플레이어 검색...",
+      "noPlayerFound": "플레이어를 찾을 수 없습니다.",
+      "default": "기본값"
+    },
+    "player": {
+      "dashboard": {
+        "back": "기본 개요로 돌아가기",
+        "viewStats": "통합 통계 보기",
+        "dashboard": "대시보드",
+        "overview": "개요",
+        "analytics": "분석",
+        "charts": "차트"
+      },
+      "overview": {
+        "matchTime": "총 경기 시간",
+        "minutes": "{time}분",
+        "fletaTitle": "플레타 데드리프트 비율",
+        "fletaPercent": "{percent}%",
+        "fletaDescription": "플레타 데드리프트는 플레이어가 팀의 최종 타격의 50%를 차지할 때 발생합니다.",
+        "firstPickTitle": "첫 킬 비율",
+        "firstPickPercent": "{percent}%",
+        "firstPickDescription": "{fights}번의 전투 중, {player}이(가) {picks, plural, =1 {#번} other {#번}} 첫 킬을 기록했습니다.",
+        "firstDeathTitle": "첫 사망 비율",
+        "firstDeathPercent": "{percent}%",
+        "firstDeathDescription": "{fights}번의 전투 중, {player}이(가) {deaths, plural, =1 {#번} other {#번}} 먼저 사망했습니다.",
+        "playerStats": "플레이어 통계",
+        "allHeroes": "모든 영웅"
+      },
+      "statTable": {
+        "stat": "통계",
+        "total": "총합",
+        "avg10Min": "10분당 평균",
+        "timePlayed": "영웅 플레이 시간",
+        "mins": "{mins}분",
+        "eliminations": "처치",
+        "finalBlows": "최종 타격",
+        "deaths": "죽음",
+        "allDmgDealt": "총 가한 피해",
+        "barrierDmgDealt": "가한 방벽 피해",
+        "heroDmgDealt": "가한 영웅 피해",
+        "healingDealt": "치유 제공",
+        "healingReceived": "치유 받은 양",
+        "selfHealing": "자체 치유",
+        "dmgTaken": "받은 피해",
+        "dmgBlocked": "막은 피해",
+        "defenseAssist": "방어 지원",
+        "offenseAssist": "공격 지원",
+        "ultsEarned": "획득한 궁극기",
+        "ultsUsed": "사용한 궁극기",
+        "multikillBest": "최고 멀티킬",
+        "multikills": "멀티킬",
+        "soloKills": "단독 처치",
+        "objKills": "목표 처치",
+        "envKills": "환경 처치",
+        "envDeaths": "환경 사망",
+        "critHits": "치명타",
+        "critHitAcc": "치명타 명중률",
+        "scopedAcc": "조준 명중률",
+        "scopedCritHitAcc": "조준 치명타 명중률",
+        "scopedCritHitKills": "조준 치명타 처치",
+        "weaponAcc": "무기 명중률",
+        "noResult": "결과 없음."
+      },
+      "analytics": {
+        "avgUltChargeTime": {
+          "title": "평균 궁극기 충전 시간",
+          "footer": "궁극기를 충전하는 데 걸리는 평균 시간입니다. 시간이 짧을수록 좋으며, 시간이 길 경우 충분한 피해나 치유를 하지 않고 있다는 것을 나타낼 수 있습니다."
+        },
+        "avgTimeUseUlt": {
+          "title": "평균 궁극기 사용 시간",
+          "footer": "궁극기를 충전한 후 사용하는 데 걸리는 평균 시간입니다. 시간이 길 경우 궁극기를 효과적으로 사용하지 않거나 너무 오래 보유하고 있다는 것을 나타낼 수 있습니다."
+        },
+        "avgDroughtTime": {
+          "title": "평균 킬 공백 시간",
+          "footer": "킬 공백 시간은 가장 최근 킬과 다음 킬 사이의 평균 시간입니다. 공백 시간이 길면 전투에 충분히 참여하지 않고 있다는 것을 나타낼 수 있습니다."
+        },
+        "xFactor": {
+          "title": "X 요소",
+          "footer": "X 요소는 전투에서 플레이어의 개인적인 영향을 측정하는 지표입니다. X 요소가 높으면 전투의 결정적인 역할을 하고 있을 가능성이 큽니다. 역할에 따라 계산 방식이 다르다는 점을 유의하세요."
+        },
+        "versus": {
+          "title": "다른 플레이어와의 비교",
+          "description": "{playerName}의 점수와 적 팀 플레이어에 대한 승률.",
+          "score": "점수:",
+          "winrate": "승률: <color>{winrate}</color>%"
+        },
+        "playerKillfeed": {
+          "title": "플레이어 킬 피드",
+          "description": "{playerName}이 이 경기에서 기록한 모든 최종 타격과 죽음의 목록입니다. {playerName}이 최종 타격을 기록하지 못한 전투는 표시되지 않습니다.",
+          "team1": "팀 1",
+          "team2": "팀 2"
+        },
+        "dmgTakenHealingReceived": {
+          "title": "받은 피해 vs 받은 치유",
+          "footer": "이 차트는 라운드별 누적 받은 피해와 받은 치유를 보여줍니다. x축은 라운드 번호를, y축은 누적 받은 피해 또는 치유를 나타냅니다.",
+          "round": "라운드 {round}",
+          "dmgTaken": "받은 피해",
+          "healingReceived": "받은 치유"
+        },
+        "dmgDoneDmgTaken": {
+          "title": "가한 영웅 피해 vs 받은 피해",
+          "footer": "이 차트는 라운드별 가한 영웅 피해와 받은 피해를 보여줍니다. x축은 라운드 번호를, y축은 가한 피해 또는 받은 피해를 나타냅니다.",
+          "round": "라운드 {round}",
+          "dmgDone": "가한 피해",
+          "dmgTaken": "받은 피해"
+        }
+      },
+      "charts": {
+        "team1": "팀 1",
+        "team2": "팀 2",
+        "round": "라운드 {index}",
+        "dmgByRound": {
+          "title": "라운드별 가한 영웅 피해",
+          "footer": "이 차트는 {playerName}의 라운드별 가한 영웅 피해를 보여줍니다. x축은 라운드를, y축은 가한 피해를 나타냅니다. 피해는 누적되지 않으므로, 2라운드의 피해는 1라운드의 피해를 포함하지 않습니다."
+        },
+        "dmgBlockByRound": {
+          "title": "라운드별 피해 경감",
+          "footer": "이 차트는 {playerName}의 라운드별 경감된 피해를 보여줍니다. x축은 라운드를, y축은 경감된 피해를 나타냅니다. 피해는 누적되지 않으므로, 2라운드의 경감 피해는 1라운드의 경감 피해를 포함하지 않습니다."
+        },
+        "finalBlowsByRound": {
+          "title": "라운드별 최종 타격",
+          "footer": "이 차트는 {playerName}의 라운드별 최종 타격을 보여줍니다. x축은 라운드를, y축은 최종 타격을 나타냅니다. 최종 타격은 누적되지 않으므로, 2라운드의 타격은 1라운드의 타격을 포함하지 않습니다."
+        },
+        "healingByRound": {
+          "title": "라운드별 치유 제공",
+          "footer": "이 차트는 {playerName}의 라운드별 치유 제공을 보여줍니다. x축은 라운드를, y축은 치유 제공을 나타냅니다. 치유는 누적되지 않으므로, 2라운드의 치유 제공은 1라운드의 치유 제공을 포함하지 않습니다."
+        },
+        "dmgTakenByRound": {
+          "title": "라운드별 받은 피해",
+          "footer": "이 차트는 {playerName}의 라운드별 받은 피해를 보여줍니다. x축은 라운드를, y축은 받은 피해를 나타냅니다. 받은 피해는 누적되지 않으므로, 2라운드의 받은 피해는 1라운드의 받은 피해를 포함하지 않습니다."
+        },
+        "healingReceivedByRound": {
+          "title": "라운드별 받은 치유",
+          "footer": "이 차트는 {playerName}의 라운드별 받은 치유를 보여줍니다. x축은 라운드를, y축은 받은 치유를 나타냅니다. 받은 치유는 누적되지 않으므로, 2라운드의 받은 치유는 1라운드의 받은 치유를 포함하지 않습니다."
+        }
+      }
+    },
+    "tabs": {
+      "overview": "개요",
+      "killfeed": "킬 피드",
+      "kills": "킬",
+      "charts": "차트",
+      "events": "이벤트",
+      "compare": "비교"
+    },
+    "overview": {
+      "matchTime": "총 경기 시간",
+      "minutes": "{time}분",
+      "score": "점수",
+      "winner": "승자:",
+      "pushLimitations": "스크림 코드의 제한으로 인해 Push 모드는 지원되지 않습니다. :(",
+      "heroDamageDealt": "가한 영웅 피해",
+      "dealtMore": "<color>{teamName}</color>이(가) 이 맵에서 더 많은 영웅 피해를 가했습니다.",
+      "teamHealingDealt": "팀 치유 제공",
+      "healedMore": "<color>{teamName}</color>이(가) 이 맵에서 더 많은 치유를 제공했습니다.",
+      "title": "개요",
+      "round": "라운드 {number}",
+      "analysis": {
+        "title": "분석",
+        "deathDescriptionTeam1": "<span1>{team1Name}</span1>은(는) {team1FirstDeaths}번의 전투에서 첫 사망을 기록했으며, 이는 <span2>{percentage}</span2>%의 비율입니다.",
+        "deathDescriptionTeam2": "<span1>{team2Name}</span1>은(는) {team2FirstDeaths}번의 전투에서 첫 사망을 기록했으며, 이는 <span2>{percentage}</span2>%의 비율입니다.",
+        "ultKillsDescriptionTeam1": "<span>{team1Name}</span>이(가) 궁극기를 가장 효과적으로 활용하여 <span>{team1UltimateKills}</span>번의 궁극기 처치를 기록했습니다.",
+        "ultKillsDescriptionTeam2": "<span>{team2Name}</span>이(가) 궁극기를 가장 효과적으로 활용하여 <span>{team2UltimateKills}</span>번의 궁극기 처치를 기록했습니다.",
+        "ultKillsDescriptionBoth": "두 팀 모두 궁극기를 동일하게 활용하여 각각 <span>{team1UltimateKills}</span>번의 궁극기 처치를 기록했습니다.",
+        "playerDeathDescription": "첫 사망을 가장 많이 기록한 플레이어는 <span>{playerWithMostFirstDeaths}</span>으로, {fights}번의 전투 중 <span>{firstDeaths}</span>번 첫 사망을 기록했습니다.",
+        "ajax": "<span>{player}</span>은(는) 이 맵에서 루시우를 플레이하며 <span>{ajaxes}</span> {ajaxes, plural, one {번} other {번}} Ajax를 기록했습니다."
+      }
+    },
+    "overviewTable": {
+      "noResult": "결과 없음.",
+      "header": {
+        "playerName": "플레이어 이름",
+        "role": "역할",
+        "playerTeam": "플레이어 팀",
+        "timePlayed": "플레이 시간",
+        "eliminations": "처치",
+        "kills": "최종 타격",
+        "assists": "지원",
+        "deaths": "죽음",
+        "kd": "킬/데스",
+        "kad": "킬/지원/데스",
+        "heroDmgDealt": "가한 영웅 피해",
+        "dmgReceived": "받은 피해",
+        "healingReceived": "받은 치유",
+        "healingDealt": "치유 제공",
+        "dmgToHealsRatio": "가한 피해:받은 치유 비율",
+        "ultsCharged": "궁극기 충전",
+        "ultsUsed": "궁극기 사용"
+      },
+      "roles": {
+        "Tank": "탱크",
+        "Damage": "딜러",
+        "Support": "지원"
+      },
+      "tooltips": {
+        "playerName": "플레이어 이름입니다. 통계를 보려면 이름을 클릭하세요.",
+        "role": "플레이어가 플레이한 역할입니다.",
+        "playerTeam": "플레이어가 소속된 팀입니다.",
+        "timePlayed": "플레이어의 플레이 시간입니다.",
+        "eliminations": "플레이어가 기록한 처치 수입니다.",
+        "kills": "플레이어가 기록한 최종 타격 수입니다.",
+        "assists": "플레이어가 기록한 지원 수입니다.",
+        "deaths": "플레이어의 죽음 수입니다.",
+        "kd": "플레이어의 킬/데스 비율입니다.",
+        "kad": "플레이어의 킬/지원/데스 비율입니다.",
+        "heroDmgDealt": "플레이어가 가한 영웅 피해량입니다.",
+        "dmgReceived": "플레이어가 받은 피해량입니다.",
+        "healingReceived": "플레이어가 받은 치유량입니다.",
+        "healingDealt": "플레이어가 제공한 치유량입니다.",
+        "dmgToHealsRatio": "플레이어의 가한 피해와 받은 치유 비율입니다.",
+        "ultsCharged": "플레이어가 충전한 궁극기 수입니다.",
+        "ultsUsed": "플레이어가 사용한 궁극기 수입니다."
+      }
+    },
+    "killfeed": {
+      "matchTime": "총 경기 시간",
+      "minutes": "{count}분",
+      "kills": "처치",
+      "deaths": "죽음",
+      "fightWins": "전투 승리",
+      "title": "킬 피드"
+    },
+    "killfeedTable": {
+      "limitTest": "제한 테스트",
+      "environment": "환경적",
+      "fight": "전투 {num}",
+      "time": "시간",
+      "kill": "처치",
+      "method": "방법",
+      "start": "시작",
+      "end": "종료",
+      "fightWinner": "전투 승리자",
+      "abilities": {
+        "primary-fire": "기본 발사",
+        "secondary-fire": "보조 발사",
+        "ability-1": "스킬 1",
+        "ability-2": "스킬 2",
+        "ultimate": "궁극기",
+        "melee": "근접 공격"
+      },
+      "exportCSV": "CSV로 내보내기"
+    },
+    "charts": {
+      "tooltip": "차트에 대한 추가 정보를 찾고 계신가요? <link>문서를 확인하세요</link>에서 더 알아보세요.",
+      "team1": "팀 1",
+      "team2": "팀 2",
+      "time": "시간: {time}",
+      "tank": "탱크",
+      "damage": "딜러",
+      "support": "지원",
+      "round": "라운드 {round}",
+      "killsByFight": {
+        "title": "전투별 처치",
+        "description": "처치는 15초 간격으로 그룹화됩니다. 이 차트는 각 간격에서 각 팀의 누적 처치를 보여줍니다. x축은 초 단위의 시간을 나타내고, y축은 누적 처치를 나타냅니다. 팀 1은 양수로, 팀 2는 음수로 표시됩니다. 차트는 각 전투 후 0으로 초기화됩니다."
+      },
+      "finalBlowsByRole": {
+        "title": "역할별 최종 타격",
+        "description": "이 차트는 각 팀의 역할별 최종 타격 수를 보여줍니다. 역할은 탱크, 딜러, 지원으로 나뉘어 표시됩니다. x축은 역할을 나타내고, y축은 최종 타격 수를 나타냅니다."
+      },
+      "dmgByRound": {
+        "title": "라운드별 누적 영웅 피해",
+        "description": "이 차트는 각 팀의 라운드별 가한 영웅 피해를 보여줍니다. x축은 라운드를 나타내고, y축은 가한 피해를 나타냅니다. 피해는 누적되므로, 2라운드의 피해는 1라운드의 피해를 포함합니다."
+      }
+    },
+    "events": {
+      "roundStart": "라운드 {event} 시작됨",
+      "roundEnd": "라운드 {event} 종료됨",
+      "matchEnd": "경기 종료됨",
+      "matchStart": "경기 시작됨",
+      "mapEvents": {
+        "title": "이벤트",
+        "description": "경기 중 발생한 이벤트입니다. 여기에는 목표 점령, 라운드 시작 및 종료, 멀티킬 등이 포함됩니다.",
+        "captureString1": "<color>{team}</color>이(가) 점령 지점을 차지했습니다.",
+        "captureString2": "<color>{team}</color>이(가) 목표를 점령했습니다.",
+        "objectiveUpdate": "점령 완료",
+        "swap": "<img1></img1> <color>{player}</color>이(가) <img2></img2> {hero}(으)로 변경했습니다.",
+        "ultKills": "<img></img> <color>{player}</color>이(가) 궁극기를 사용해 {players, plural, =1 {한 명의 플레이어} other {#명의 플레이어}}를 처치했습니다.",
+        "multikill": "전투 {event} 중에 <span><img></img><color>{player}</color></span>이(가) 멀티킬을 기록하며 {kills}명을 처치했습니다.",
+        "ajax": "<span><img></img><color>{player}</color></span>이(가) 전투 {fight} 중 Ajax를 기록했습니다."
+      },
+      "ultsUsed": {
+        "title": "사용된 궁극기",
+        "description": "경기 중 사용된 모든 궁극기와 발생 시간을 보여줍니다.",
+        "ultStart": "<span><img></img><color>{player}</color></span>이(가) 전투 {fight} 중에 궁극기를 사용했습니다."
+      }
+    },
+    "compare": {
+      "team1": "팀 1",
+      "team2": "팀 2",
+      "playerCard": {
+        "title": "플레이어 통계",
+        "allHeroes": {
+          "title": "모든 영웅",
+          "timePlayed": "플레이 시간",
+          "minutes": "{time}분",
+          "matchTime": "경기 시간의 100%",
+          "eliminations": "처치",
+          "elims": "{elims, plural, =1 {# 처치{showTable}} other {# 처치{showTable}s}}",
+          "elimsPer10Min": "{elims, plural, =1 {# 처치} other {# 처치}} / 10분",
+          "deaths": "죽음",
+          "deathNum": "{num, plural, =1 {# 죽음} other {# 죽음}}",
+          "deathsPer10Min": "{deaths, plural, =1 {# 죽음} other {# 죽음}} / 10분",
+          "ultsUsed": "사용한 궁극기",
+          "ultsUsedNum": "{num, plural, =1 {# 궁극기} other {# 궁극기들}} 사용됨",
+          "ultsPer10Min": "{num, plural, =1 {# 궁극기} other {# 궁극기들}} / 10분",
+          "heroDmgDealt": "가한 영웅 피해",
+          "heroDmgDealtNum": "{num} 가한 영웅 피해",
+          "heroDmgPer10Min": "10분당 {num} 가한 영웅 피해",
+          "dmgBlocked": "막은 피해",
+          "dmgBlockedNum": "{num} 막은 피해",
+          "dmgBlockedPer10Min": "10분당 {num} 막은 피해",
+          "dmgTaken": "받은 피해",
+          "dmgTakenNum": "{num} 받은 피해",
+          "dmgTakenPer10Min": "10분당 {num} 받은 피해",
+          "finalBlows": "최종 타격",
+          "finalBlowsNum": "{num, plural, =1 {# 최종 타격} other {# 최종 타격}}",
+          "finalBlowsPer10Min": "{num, plural, =1 {# 최종 타격} other {# 최종 타격}} / 10분",
+          "soloKills": "단독 처치",
+          "soloKillsNum": "{num, plural, =1 {# 단독 처치} other {# 단독 처치}}",
+          "soloKillsPer10Min": "{num, plural, =1 {# 단독 처치} other {# 단독 처치}} / 10분",
+          "healingDealt": "치유 제공",
+          "healingDealtNum": "{num} 치유 제공",
+          "healingDealtPer10Min": "10분당 {num} 치유 제공",
+          "healingReceived": "받은 치유",
+          "healingReceivedNum": "{num} 받은 치유",
+          "healingReceivedPer10Min": "10분당 {num} 받은 치유"
+        },
+        "specificHero": {
+          "altText": "{hero}의 오버워치 영웅 초상화 이미지입니다.",
+          "timePlayed": "플레이 시간",
+          "minutes": "{time}분",
+          "matchTime": "경기 시간의 {percent}%",
+          "eliminations": "처치",
+          "elims": "{elims, plural, =1 {# 처치{showTable}} other {# 처치{showTable}s}}",
+          "elimsPer10Min": "{elims, plural, =1 {# 처치} other {# 처치}} / 10분",
+          "deaths": "죽음",
+          "deathNum": "{num, plural, =1 {# 죽음} other {# 죽음}}",
+          "deathsPer10Min": "{deaths, plural, =1 {# 죽음} other {# 죽음}} / 10분",
+          "ultsUsed": "사용한 궁극기",
+          "ultsUsedNum": "{num, plural, =1 {# 궁극기} other {# 궁극기들}} 사용됨",
+          "ultsPer10Min": "{num, plural, =1 {# 궁극기} other {# 궁극기들}} / 10분",
+          "heroDmgDealt": "가한 영웅 피해",
+          "heroDmgDealtNum": "{num} 가한 영웅 피해",
+          "heroDmgPer10Min": "10분당 {num} 가한 영웅 피해",
+          "dmgBlocked": "막은 피해",
+          "dmgBlockedNum": "{num} 막은 피해",
+          "dmgBlockedPer10Min": "10분당 {num} 막은 피해",
+          "dmgTaken": "받은 피해",
+          "dmgTakenNum": "{num} 받은 피해",
+          "dmgTakenPer10Min": "10분당 {num} 받은 피해",
+          "finalBlows": "최종 타격",
+          "finalBlowsNum": "{num, plural, =1 {# 최종 타격} other {# 최종 타격}}",
+          "finalBlowsPer10Min": "{num, plural, =1 {# 최종 타격} other {# 최종 타격}} / 10분",
+          "soloKills": "단독 처치",
+          "soloKillsNum": "{num, plural, =1 {# 단독 처치} other {# 단독 처치}}",
+          "soloKillsPer10Min": "{num, plural, =1 {# 단독 처치} other {# 단독 처치}} / 10분",
+          "healingDealt": "치유 제공",
+          "healingDealtNum": "{num} 치유 제공",
+          "healingDealtPer10Min": "10분당 {num} 치유 제공",
+          "healingReceived": "받은 치유",
+          "healingReceivedNum": "{num} 받은 치유",
+          "healingReceivedPer10Min": "10분당 {num} 받은 치유"
+        }
+      }
+    }
+  },
+  "statsPage": {
+    "layoutMetadata": {
+      "title": "통계 | Parsertime",
+      "description": "Parsertime에서 통계 및 성과 지표를 확인하세요.",
+      "ogTitle": "통계 | Parsertime",
+      "ogDescription": "Parsertime에서 통계 및 성과 지표를 확인하세요.",
+      "ogImage": "통계"
+    },
+    "playerMetadata": {
+      "title": "{playerName}의 통계 | Parsertime",
+      "description": "Parsertime에서 {playerName}의 플레이어 통계입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "ogTitle": "{playerName}의 통계 | Parsertime",
+      "ogDescription": "Parsertime에서 {playerName}의 플레이어 통계입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "ogImage": "{playerName}의 통계"
+    },
+    "heroStatsMetadata": {
+      "title": "영웅 통계 | Parsertime",
+      "description": "Parsertime에서 오버워치 영웅의 통계를 확인하세요. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "ogTitle": "영웅 통계 | Parsertime",
+      "ogDescription": "Parsertime에서 오버워치 영웅의 통계를 확인하세요. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "ogImage": "영웅 통계"
+    },
+    "heroMetadata": {
+      "title": "{hero}의 통계 | Parsertime",
+      "description": "Parsertime에서 {hero}의 통계입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "ogTitle": "{hero}의 통계 | Parsertime",
+      "ogDescription": "Parsertime에서 {hero}의 통계입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "ogImage": "{hero}의 통계"
+    },
+    "title": "통계",
+    "searchbar": {
+      "placeholder": "플레이어 이름을 입력하세요...",
+      "description": "플레이어를 검색하여 통계를 확인하세요. 사용자 이름 또는 배틀태그로 검색할 수 있습니다. 예: <span>Spingar</span> 또는 <span>Spingar#1000</span>.",
+      "link": "영웅 통계를 보려면 여기를 클릭하세요"
+    },
+    "globalStats": "전역 통계",
+    "users": {
+      "title": "사용자",
+      "footer": "플랫폼에 등록된 총 사용자 수"
+    },
+    "scrims": {
+      "title": "스크림",
+      "footer": "업로드된 총 스크림 수"
+    },
+    "kills": {
+      "title": "처치",
+      "footer": "기록된 총 처치 수"
+    },
+    "playerStat": {
+      "title": "플레이어 통계",
+      "footer": "기록된 총 플레이어 통계 수"
+    },
+    "leaderboard": "리더보드",
+    "top3MostPlayed": {
+      "title": "가장 많이 플레이한 영웅 Top 3",
+      "rank": "순위",
+      "hero": "영웅",
+      "timePlayed": "플레이 시간",
+      "footer": "총 {mapNum}개의 맵에서 수집된 결과입니다."
+    },
+    "top3Kills": {
+      "title": "처치로 본 상위 3명의 플레이어",
+      "rank": "순위",
+      "player": "플레이어",
+      "kills": "처치",
+      "footer": "총 {mapNum}개의 맵에서 수집된 결과입니다."
+    },
+    "top3Dmg": {
+      "title": "영웅 피해로 본 상위 3명의 플레이어",
+      "rank": "순위",
+      "player": "플레이어",
+      "heroDmgDealt": "가한 영웅 피해",
+      "footer": "{mapNum}개의 맵에서 수집된 결과입니다."
+    },
+    "top3Healing": {
+      "title": "치유로 본 상위 3명의 플레이어",
+      "rank": "순위",
+      "player": "플레이어",
+      "healingDealt": "치유 제공",
+      "footer": "{mapNum}개의 맵에서 수집된 결과입니다."
+    },
+    "top3DmgBlocked": {
+      "title": "막은 피해로 본 상위 3명의 플레이어",
+      "rank": "순위",
+      "player": "플레이어",
+      "dmgBlocked": "막은 피해",
+      "footer": "{mapNum}개의 맵에서 수집된 결과입니다."
+    },
+    "top3Deaths": {
+      "title": "죽음으로 본 상위 3명의 플레이어",
+      "rank": "순위",
+      "player": "플레이어",
+      "deaths": "죽음",
+      "footer": "{mapNum}개의 맵에서 수집된 결과입니다."
+    },
+    "top3TimePlayed": {
+      "title": "플레이 시간으로 본 상위 3명의 플레이어",
+      "rank": "순위",
+      "player": "플레이어",
+      "timePlayed": "플레이 시간",
+      "footer": "{mapNum}개의 맵에서 수집된 결과입니다."
+    },
+    "top3Ajax": {
+      "title": "Ajax 수로 본 상위 3명의 플레이어",
+      "rank": "순위",
+      "player": "플레이어",
+      "ajaxes": "Ajax 수",
+      "footer": "{mapNum}개의 맵에서 수집된 결과입니다."
+    },
+    "playerStats": {
+      "title": "{name}의 통계",
+      "statsFail": "{name}의 통계를 찾지 못했습니다. 이름을 올바르게 입력했는지 확인해주세요.",
+      "back": "통계로 돌아가기",
+      "timeframe": {
+        "one-week": "1주",
+        "two-weeks": "2주",
+        "one-month": "1개월",
+        "three-months": "3개월",
+        "six-months": "6개월",
+        "one-year": "1년",
+        "all-time": "전체 기간",
+        "all-time-data": "전체 기간 데이터에서",
+        "custom": "{from} - {to} 사이"
+      },
+      "rangePicker": {
+        "selectTime": "기간 선택",
+        "lastWeek": "지난주",
+        "last2Weeks": "지난 2주",
+        "lastMonth": "지난달",
+        "last3Months": "지난 3개월",
+        "last6Months": "지난 6개월",
+        "lastYear": "지난 1년",
+        "allTime": "전체 기간",
+        "custom": "사용자 정의",
+        "upgrade": "더 많은 기간을 보려면 업그레이드하세요",
+        "selectHero": "영웅 선택",
+        "allHeroes": "모든 영웅",
+        "pickDate": "날짜 선택",
+        "calendarDate": "{from} - {to}",
+        "formatDate": "{date, date, ::MMM dd yyyy}",
+        "tank": "탱크",
+        "damage": "딜러",
+        "support": "지원"
+      },
+      "mostPlayed": {
+        "title": "가장 많이 플레이한 영웅",
+        "rank": "순위",
+        "hero": "영웅",
+        "games": "경기 수",
+        "noData": "데이터 없음",
+        "footer1": "지난 {timeframe} 동안 {scrims}개의 스크림에서 수집된 통계",
+        "footer2": "{timeframe1} 스크림 {timeframe2}에서 수집된 통계"
+      },
+      "bestPerformance": {
+        "title": "최고 성과",
+        "rank": "순위",
+        "hero": "영웅",
+        "finalBlows": "최종 타격",
+        "clickMap": "맵 보기 클릭",
+        "noData": "데이터 없음",
+        "footer1": "지난 {timeframe} 동안 {scrims}개의 스크림에서 수집된 통계",
+        "footer2": "{timeframe1} 스크림 {timeframe2}에서 수집된 통계"
+      },
+      "statPer10": {
+        "footer": "지난 {scrimData}개의 스크림 동안 <span>{percentageChange}</span> 변화 추세",
+        "avg": "평균:",
+        "max": "| 최대:",
+        "min": "| 최소:"
+      },
+      "avgHeroDmgDealtPer10": {
+        "title": "10분당 평균 가한 영웅 피해 (스크림별)",
+        "tooltip": "스크림마다 10분당 가한 영웅 피해의 평균입니다. 높을수록 좋습니다."
+      },
+      "avgDeathPer10": {
+        "title": "10분당 평균 죽음 수 (스크림별)",
+        "tooltip": "스크림마다 10분당 평균 죽음 수입니다. 낮을수록 좋습니다."
+      },
+      "timeSpent": {
+        "title": "각 역할별 플레이 시간",
+        "tank": "탱크",
+        "damage": "딜러",
+        "support": "지원",
+        "footer": "총 플레이 시간: <span>{toTimestampWithHours}</span> | 역할별 플레이 시간: <span>{timePerRole}</span>"
+      },
+      "finalBlowsByMethod": {
+        "title": "방법별 최종 타격",
+        "finalBlows": "최종 타격",
+        "primary": "기본 공격",
+        "secondary": "보조 공격",
+        "ability1": "스킬 1",
+        "ability2": "스킬 2",
+        "ultimate": "궁극기",
+        "melee": "근접 공격",
+        "footer": "<span>{format}</span> 최종 타격에서 계산됨"
+      },
+      "mapWinrates": {
+        "title": "맵 승률",
+        "tooltip": {
+          "wins": "승리:",
+          "losses": "패배:",
+          "percentage": "승률:"
+        },
+        "wins": "승리",
+        "losses": "패배",
+        "footer": "맵 승률은 각 맵에서의 승리와 패배 횟수를 기준으로 계산됩니다. Push 맵은 승/패 조건을 추적할 수 없으므로 이 차트에 포함되지 않습니다."
+      },
+      "winrateMapType": {
+        "mapTypes": {
+          "Clash": "클래시",
+          "Control": "컨트롤",
+          "Escort": "에스코트",
+          "Flashpoint": "플래시포인트",
+          "Hybrid": "하이브리드",
+          "Push": "푸시"
+        },
+        "chartName": "승률",
+        "title": "맵 유형별 승률",
+        "footer": "맵 유형별 승리 횟수입니다. 0%는 승리가 없음을, 100%는 전부 승리했음을 나타냅니다. 차트 위에 마우스를 올리면 승률을 확인할 수 있습니다."
+      },
+      "heroesDiedToMost": {
+        "title": "가장 많이 죽은 영웅",
+        "rank": "순위",
+        "hero": "영웅",
+        "deaths": "죽음",
+        "noData": "데이터 없음",
+        "footer1": "지난 {timeframe} 동안 {scrims}개의 스크림에서 수집된 통계",
+        "footer2": "{timeframe1} 스크림 {timeframe2}에서 수집된 통계"
+      },
+      "heroesElimMost": {
+        "title": "가장 많이 처치한 영웅",
+        "rank": "순위",
+        "hero": "영웅",
+        "eliminations": "처치",
+        "noData": "데이터 없음",
+        "footer1": "지난 {timeframe} 동안 {scrims}개의 스크림에서 수집된 통계",
+        "footer2": "{timeframe1} 스크림 {timeframe2}에서 수집된 통계"
+      },
+      "stats": {
+        "title": "통계",
+        "select": "통계를 선택하세요",
+        "eliminations": "처치",
+        "final_blows": "최종 타격",
+        "healing_dealt": "치유 제공",
+        "healing_received": "받은 치유",
+        "self_healing": "자체 치유",
+        "damage_taken": "받은 피해",
+        "damage_blocked": "막은 피해",
+        "ultimates_earned": "획득한 궁극기",
+        "ultimates_used": "사용한 궁극기",
+        "solo_kills": "단독 처치",
+        "environmental_kills": "환경 처치",
+        "deaths": "죽음",
+        "hero_damage_dealt": "가한 영웅 피해"
+      }
+    },
+    "heroStats": {
+      "title": "영웅 통계",
+      "description": "영웅을 선택하여 통계를 확인하세요. 통계는 플레이된 모든 스크림에서 집계됩니다.",
+      "timeframe": {
+        "one-week": "1주",
+        "two-weeks": "2주",
+        "one-month": "1개월",
+        "three-months": "3개월",
+        "six-months": "6개월",
+        "one-year": "1년",
+        "all-time": "전체 기간",
+        "all-time-data": "전체 기간 데이터에서",
+        "custom": "{from} - {to} 사이"
+      },
+      "tank": "탱크 영웅",
+      "damage": "딜러 영웅",
+      "support": "지원 영웅",
+      "altText": "{hero}의 초상화입니다.",
+      "header": "{hero}의 통계",
+      "heroFail": "{hero}의 통계를 찾지 못했습니다. 이름을 올바르게 입력했는지 확인해주세요.",
+      "back": "통계로 돌아가기",
+      "rangePicker": {
+        "selectTime": "기간 선택",
+        "lastWeek": "지난주",
+        "last2Weeks": "지난 2주",
+        "lastMonth": "지난달",
+        "last3Months": "지난 3개월",
+        "last6Months": "지난 6개월",
+        "lastYear": "지난 1년",
+        "allTime": "전체 기간",
+        "custom": "사용자 정의",
+        "upgrade": "더 많은 기간을 보려면 업그레이드하세요",
+        "selectHero": "영웅 선택",
+        "pickDate": "날짜 선택",
+        "calendarDate": "{from} - {to}",
+        "formatDate": "{date, date, ::MMM dd yyyy}"
+      },
+      "statistics": {
+        "title": "영웅 통계",
+        "totalGames": "총 플레이한 경기 수",
+        "games": "{num, plural, =1 {# <span>경기</span>} other {# <span>경기</span>}}",
+        "totalKills": "총 처치 수",
+        "kills": "{num, plural, =1 {# <span>처치</span>} other {# <span>처치</span>}}",
+        "totalDeaths": "총 죽음 수",
+        "deaths": "{num, plural, =1 {# <span>죽음</span>} other {# <span>죽음</span>}}",
+        "footer1": "지난 {timeframe} 동안 {scrims, plural, =1 {#개의 스크림} other {#개의 스크림}}에서 수집된 통계",
+        "footer2": "{timeframe1} 스크림 {timeframe2}에서 수집된 통계",
+        "footer3": ". 통계는 스크림 중 {hero}를 플레이한 모든 플레이어로부터 수집되었습니다."
+      },
+      "bestPerformance": {
+        "title": "최고 성과",
+        "rank": "순위",
+        "player": "플레이어",
+        "finalBlows": "최종 타격",
+        "clickPlayer": "플레이어 통계를 보려면 클릭하세요",
+        "noData": "데이터 없음",
+        "footer1": "지난 {timeframe} 동안 {scrims}개의 스크림에서 수집된 통계",
+        "footer2": "{timeframe1} 스크림 {timeframe2}에서 수집된 통계"
+      },
+      "finalBlowsByMethod": "방법별 최종 타격",
+      "avgHeroDmgDealtPer10": {
+        "title": "10분당 평균 가한 영웅 피해 (스크림별)",
+        "tooltip": "스크림마다 10분당 가한 영웅 피해의 평균입니다. 높을수록 좋습니다."
+      },
+      "avgDeathPer10": {
+        "title": "10분당 평균 죽음 수 (스크림별)",
+        "tooltip": "스크림마다 10분당 평균 죽음 수입니다. 낮을수록 좋습니다."
+      },
+      "heroesDiedToMost": {
+        "title": "가장 많이 죽은 영웅",
+        "rank": "순위",
+        "hero": "영웅",
+        "deaths": "죽음",
+        "noData": "데이터 없음",
+        "footer1": "지난 {timeframe} 동안 {scrims}개의 스크림에서 수집된 통계",
+        "footer2": "{timeframe1} 스크림 {timeframe2}에서 수집된 통계"
+      },
+      "heroesElimMost": {
+        "title": "가장 많이 처치한 영웅",
+        "rank": "순위",
+        "hero": "영웅",
+        "eliminations": "처치",
+        "noData": "데이터 없음",
+        "footer1": "지난 {timeframe} 동안 {scrims}개의 스크림에서 수집된 통계",
+        "footer2": "{timeframe1} 스크림 {timeframe2}에서 수집된 통계"
+      },
+      "stats": {
+        "title": "통계",
+        "select": "통계를 선택하세요",
+        "eliminations": "처치",
+        "final_blows": "최종 타격",
+        "healing_dealt": "치유 제공",
+        "healing_received": "받은 치유",
+        "self_healing": "자체 치유",
+        "damage_taken": "받은 피해",
+        "damage_blocked": "막은 피해",
+        "ultimates_earned": "획득한 궁극기",
+        "ultimates_used": "사용한 궁극기",
+        "solo_kills": "단독 처치",
+        "environmental_kills": "환경 처치",
+        "deaths": "죽음",
+        "hero_damage_dealt": "가한 영웅 피해"
+      }
+    }
+  },
+  "teamPage": {
+    "metadata": {
+      "title": "팀 | Parsertime",
+      "description": "Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "ogTitle": "팀 | Parsertime",
+      "ogDescription": "Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "ogImage": "팀"
+    },
+    "teamMetadata": {
+      "title": "{teamName} 개요 | Parsertime",
+      "description": "Parsertime에서 {teamName}의 개요입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "ogTitle": "{teamName} 개요 | Parsertime",
+      "ogDescription": "Parsertime에서 {teamName}의 개요입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "ogImage": "{teamName} 개요",
+      "defaultTeam": "팀"
+    },
+    "manageTeams": "팀 관리",
+    "viewTeams": "내 팀 보기",
+    "teams": "팀",
+    "admin": "관리자 보기",
+    "altText": {
+      "custom": "{team}의 아바타",
+      "default": "기본 팀 아바타",
+      "userProfile": "{user}의 프로필 사진",
+      "noAvatar": "기본 사용자 아바타"
+    },
+    "defaultName": "팀 이름",
+    "members": "멤버",
+    "settings": "설정",
+    "manager": "(매니저)",
+    "owner": "(소유자)",
+    "you": "(나)",
+    "addMember": "멤버 추가...",
+    "join": {
+      "enterToken": "초대 토큰 입력",
+      "joinTeam": "팀 가입",
+      "invalidToken": {
+        "title": "유효하지 않은 토큰",
+        "description": "입력한 토큰이 유효하지 않습니다."
+      },
+      "handleSubmit": {
+        "title": "팀 가입 완료",
+        "description": "성공적으로 팀에 가입했습니다.",
+        "errorTitle": "오류",
+        "errorDescription": "오류가 발생했습니다: {res}"
+      },
+      "success": {
+        "title": "성공!",
+        "description": "성공적으로 팀에 가입했습니다.",
+        "redirect": "대시보드로 리디렉션 중입니다. 리디렉션되지 않는 경우, <link>여기를 클릭</link>하세요."
+      }
+    },
+    "userButtons": {
+      "promote": {
+        "button": "매니저로 승격",
+        "title": "정말 확실합니까?",
+        "description": "이 작업은 사용자의 역할을 멤버에서 매니저로 변경합니다. 이 사용자는 팀과 그 리소스를 관리할 수 있습니다.",
+        "cancel": "취소",
+        "promoting": "승격 중...",
+        "promote": "매니저로 승격",
+        "handlePromote": {
+          "title": "사용자가 매니저로 승격되었습니다",
+          "description": "{user}님이 매니저로 승격되었습니다.",
+          "errorTitle": "오류가 발생했습니다",
+          "errorDescription": "오류가 발생했습니다: {res}"
+        }
+      },
+      "demote": {
+        "button": "멤버로 강등",
+        "title": "정말 확실합니까?",
+        "description": "이 작업은 사용자의 역할을 매니저에서 멤버로 변경합니다.",
+        "cancel": "취소",
+        "demoting": "강등 중...",
+        "demote": "멤버로 강등",
+        "handleDemote": {
+          "title": "사용자가 멤버로 강등되었습니다",
+          "description": "{user}님이 멤버로 강등되었습니다.",
+          "errorTitle": "오류가 발생했습니다",
+          "errorDescription": "오류가 발생했습니다: {res}"
+        }
+      },
+      "remove": {
+        "button": "팀에서 제거",
+        "title": "정말 확실합니까?",
+        "description": "이 작업은 사용자를 팀에서 제거하며, 사용자는 모든 팀 리소스에 대한 접근 권한을 잃게 됩니다.",
+        "cancel": "취소",
+        "removing": "제거 중...",
+        "remove": "팀에서 제거",
+        "handleRemove": {
+          "title": "사용자가 팀에서 제거되었습니다",
+          "description": "{user}님이 팀에서 제거되었습니다.",
+          "errorTitle": "오류가 발생했습니다",
+          "errorDescription": "오류가 발생했습니다: {res}"
+        }
+      }
+    },
+    "inviteMember": {
+      "title": "멤버 초대",
+      "description": "새 멤버를 초대하여 팀의 스크림을 볼 수 있도록 허용하세요. 초대를 받으려면 사용자가 가입되어 있어야 합니다.",
+      "email": "이메일",
+      "cancel": "취소",
+      "send": "초대 보내기",
+      "sending": "초대 보내는 중...",
+      "emailMessage": "유효하지 않은 이메일",
+      "reqMessage": "이메일은 필수입니다",
+      "onSubmit": {
+        "title": "초대 완료!",
+        "description": "초대가 성공적으로 전송되었습니다.",
+        "errorTitle": "오류",
+        "errorDescription": "오류가 발생했습니다: {res}",
+        "errorStatus": ". 사용자가 가입했는지 확인하셨나요?"
+      }
+    },
+    "teamInviteLink": {
+      "title": "팀 초대 링크",
+      "subtitle": "팀의 영구 초대 링크 (커서를 올려 확인):",
+      "description": "\"사용자 초대\" 버튼을 통해 초대하는 것이 훨씬 더 안전합니다. 가능한 경우 이 링크를 공유하지 않는 것을 권장합니다."
+    },
+    "clipboard": {
+      "title": "클립보드에 복사됨",
+      "description": "팀 초대 링크가 클립보드에 복사되었습니다.",
+      "tooltip": "클릭하여 복사"
+    },
+    "name": {
+      "title": "표시 이름",
+      "placeholder": "Cornell e스포츠",
+      "description": "팀의 공개 표시 이름입니다.",
+      "minMessage": "이름은 최소 2자 이상이어야 합니다.",
+      "maxMessage": "이름은 30자를 초과할 수 없습니다."
+    },
+    "avatar": {
+      "title": "아바타",
+      "label": "파일 업로드",
+      "altText": "사용자 아바타",
+      "description": "팀의 공개 아바타입니다. 아바타를 클릭하여 파일에서 커스텀 아바타를 업로드하세요.",
+      "editTitle": "아바타 편집",
+      "editDescription": "여기에서 프로필을 변경하세요. 완료되면 저장을 클릭하세요.",
+      "save": "변경 사항 저장",
+      "updating": "업데이트 중...",
+      "handleCrop": {
+        "title": "아바타가 성공적으로 업데이트되었습니다",
+        "description": "팀의 아바타가 성공적으로 업데이트되었습니다.",
+        "errorTitle": "오류가 발생했습니다",
+        "errorDescription1": "오류가 발생했습니다: {res}",
+        "errorDescription2": "아바타를 업데이트하는 동안 오류가 발생했습니다. 나중에 다시 시도하거나 지원팀에 문의하세요."
+      }
+    },
+    "readonly": {
+      "title": "읽기 전용",
+      "description": "활성화되면 팀이 읽기 전용이 됩니다. 즉, 플레이어와 매니저는 팀에 스크림을 추가할 수 없습니다."
+    },
+    "update": {
+      "title": "팀 프로필 업데이트",
+      "onSubmit": {
+        "title": "팀 프로필이 업데이트되었습니다",
+        "description": "팀 프로필이 성공적으로 업데이트되었습니다.",
+        "errorTitle": "오류가 발생했습니다",
+        "errorDescription": "오류가 발생했습니다: {res}"
+      },
+      "updating": "업데이트 중..."
+    },
+    "dangerZone": {
+      "title": "위험 구역",
+      "description": "이 작업은 되돌릴 수 없습니다. 진행 전에 신중히 확인하세요."
+    },
+    "transferOwner": {
+      "title": "소유권 이전",
+      "description": "소유권을 이전하면 더 이상 이 팀의 소유자가 아닙니다.",
+      "button": "소유권 이전",
+      "email": "소유권을 이전할 사용자의 이메일 주소를 입력하세요.",
+      "transferring": "이전 중...",
+      "cancel": "취소",
+      "handleTransfer": {
+        "title": "소유권이 이전되었습니다",
+        "description": "팀의 소유권이 성공적으로 이전되었습니다.",
+        "errorTitle": "오류",
+        "errorDescription": "오류가 발생했습니다: {res}"
+      }
+    },
+    "deleteTeam": {
+      "title": "팀 삭제",
+      "description": "팀을 삭제하면 되돌릴 수 없습니다. 신중히 결정하세요.",
+      "button": "팀 삭제",
+      "deleteAlert": "팀 <strong>{team}</strong>을(를) 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+      "deleteConfirmation": "<strong>{team}</strong>을(를) 입력하여 확인하세요.",
+      "deleting": "삭제 중...",
+      "cancel": "취소",
+      "handleDelete": {
+        "title": "팀이 삭제되었습니다",
+        "description": "팀이 성공적으로 삭제되었습니다.",
+        "errorTitle": "오류",
+        "errorDescription": "오류가 발생했습니다: {res}"
+      }
+    }
+  },
+  "settingsPage": {
+    "metadata": {
+      "title": "설정 | Parsertime",
+      "description": "계정 설정 및 환경설정을 관리하세요.",
+      "ogTitle": "설정 | Parsertime",
+      "ogDescription": "계정 설정 및 환경설정을 관리하세요.",
+      "ogImage": "설정"
+    },
+    "title": "설정",
+    "description": "계정 설정 및 환경설정을 관리하세요.",
+    "sideNav": {
+      "profile": "프로필",
+      "linkedAccounts": "연결된 계정",
+      "admin": "관리자"
+    },
+    "profile": {
+      "title": "프로필",
+      "description": "사이트에서 다른 사람들이 보는 당신의 모습입니다.",
+      "planDescription": "현재 사용 중인 요금제는 {billingPlan} 요금제입니다.",
+      "billingPlan": {
+        "FREE": "무료",
+        "BASIC": "기본",
+        "PREMIUM": "프리미엄"
+      },
+      "planUpgrade": "요금제 업그레이드",
+      "manageSubscription": "구독 관리"
+    },
+    "profileForm": {
+      "minMessage": "이름은 최소 2자 이상이어야 합니다.",
+      "maxMessage": "이름은 30자를 초과할 수 없습니다.",
+      "onSubmit": {
+        "title": "프로필 업데이트 완료",
+        "description": "프로필이 성공적으로 업데이트되었습니다.",
+        "errorTitle": "오류가 발생했습니다",
+        "errorDescription": "오류가 발생했습니다: {res}"
+      },
+      "username": {
+        "title": "사용자 이름",
+        "description": "공개 표시 이름입니다. 실제 이름이나 별명을 사용할 수 있습니다."
+      },
+      "avatar": {
+        "title": "아바타",
+        "altText": "사용자 아바타",
+        "ariaLabel": "파일 업로드",
+        "description": "공개 계정 아바타입니다. 아바타를 클릭하여 파일에서 커스텀 아바타를 업로드하세요.",
+        "editAvatar": {
+          "title": "아바타 편집",
+          "description": "여기에서 프로필을 변경하세요. 완료되면 저장을 클릭하세요.",
+          "save": "변경 사항 저장",
+          "updating": "업데이트 중...",
+          "handleCrop": {
+            "title": "아바타가 성공적으로 업데이트되었습니다",
+            "description": "아바타가 성공적으로 업데이트되었습니다.",
+            "errorTitle": "오류가 발생했습니다",
+            "errorDescription1": "오류가 발생했습니다: {res}",
+            "errorDescription2": "메시지를 보내는 중 오류가 발생했습니다. 나중에 다시 시도하거나 지원팀에 문의하세요."
+          }
+        }
+      },
+      "update": "프로필 업데이트"
+    },
+    "linkedAccounts": {
+      "title": "연결된 계정",
+      "description": "연결된 계정 설정 및 환경설정을 관리하세요.",
+      "discord": {
+        "linked": "디스코드 계정이 성공적으로 연결되었습니다.",
+        "signIn": "디스코드로 로그인"
+      }
+    },
+    "admin": {
+      "title": "관리자 설정",
+      "description": "관리자 설정 및 환경설정을 관리하세요.",
+      "email": {
+        "title": "이메일",
+        "description": "가장하려는 사용자의 이메일입니다.",
+        "message": "유효한 이메일 주소를 입력하세요."
+      },
+      "prod": {
+        "title": "프로덕션 환경 URL 사용",
+        "description": "활성화하면 가장 URL이 프로덕션 환경용으로 생성됩니다. 비활성화하면 개발 환경용으로 생성됩니다."
+      },
+      "impersonate": "사용자 가장하기",
+      "onSubmit": {
+        "title": "사용자 가장 완료",
+        "description": "가장 URL이 클립보드에 복사되었습니다.",
+        "errorTitle": "오류",
+        "errorDescription": "사용자를 가장하는 중 오류가 발생했습니다."
+      }
+    },
+    "dangerZone": {
+      "title": "위험 구역",
+      "description": "계정 삭제는 영구적이며 되돌릴 수 없습니다. 구독을 관리하려면 <Link>여기</Link>를 클릭하세요."
+    },
+    "deleteAccount": {
+      "title": "계정 삭제",
+      "description": "계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다. 구독을 관리하려면 <link>여기</link>를 클릭하세요.",
+      "cancel": "취소",
+      "deleteInput": "네, 제 계정을 삭제합니다",
+      "handleDelete": {
+        "title": "계정 삭제 완료",
+        "description": "계정이 성공적으로 삭제되었습니다.",
+        "errorTitle": "오류",
+        "errorDescription": "오류가 발생했습니다: {res}"
+      },
+      "secondDialog": {
+        "title": "네, 제 계정을 삭제합니다",
+        "description": "정말 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+        "confirm": "<strong>{deleteInput}</strong>을(를) 입력하여 확인하세요.",
+        "delete": "계정 삭제",
+        "deleting": "삭제 중...",
+        "cancel": "취소"
+      }
+    }
+  },
+  "marketing": {
+    "header": {
+      "home": "홈",
+      "about": "소개",
+      "pricing": "가격",
+      "demo": "데모",
+      "docs": "문서",
+      "company": "회사",
+      "logIn": "로그인",
+      "accessibility": {
+        "open": "메인 메뉴 열기",
+        "close": "메뉴 닫기"
+      }
+    }
+  },
+  "contactPage": {
+    "contactForm": {
+      "title": "문의하기",
+      "description": "앱 사용 중 문제가 있나요? 새로운 기능을 요청하고 싶으신가요? 여러분의 의견을 기다립니다! 메시지를 보내주시면 최대한 빨리 답변드리겠습니다.",
+      "discord": "커뮤니티 디스코드",
+      "name": "이름",
+      "email": "이메일",
+      "message": "메시지",
+      "send": "메시지 보내기",
+      "sending": "보내는 중...",
+      "nameRequiredError": "이름은 필수입니다.",
+      "emailRequiredError": "이메일은 필수입니다.",
+      "emailMessage": "유효한 이메일 주소를 입력하세요.",
+      "messageRequiredError": "메시지는 필수입니다.",
+      "messageMessage": "메시지를 입력하세요.",
+      "handleSubmit": {
+        "title": "메시지가 전송되었습니다",
+        "description": "메시지가 성공적으로 전송되었습니다.",
+        "errorTitle1": "오류",
+        "errorDescription1": "오류가 발생했습니다: {res}",
+        "errorTitle2": "오류가 발생했습니다",
+        "errorDescription2": "메시지를 보내는 중 오류가 발생했습니다. 나중에 다시 시도하세요."
+      }
+    }
+  },
+  "aboutPage": {
+    "stats": {
+      "startDev": {
+        "label": "개발 시작",
+        "value": "2023년 11월"
+      },
+      "used": {
+        "label": "내부적으로 사용 시작",
+        "value": "2024년 1월"
+      },
+      "scrimsUploaded": {
+        "label": "베타 기간 동안 업로드된 스크림",
+        "value": "50+"
+      },
+      "statsTracked": {
+        "label": "베타 기간 동안 추적된 플레이어 통계",
+        "value": "22,000+"
+      }
+    },
+    "values": {
+      "convenience": {
+        "name": "편리함.",
+        "description": "통계를 추적하고 시간 경과에 따른 트렌드를 쉽게 확인하세요. 플레이어의 문제를 손쉽게 진단할 수 있습니다."
+      },
+      "accessibility": {
+        "name": "접근성.",
+        "description": "모든 팀이 Parsertime을 쉽게 사용할 수 있도록 노력하고 있습니다. 플랫폼을 더 접근 가능하게 만드는 방법을 항상 모색합니다."
+      },
+      "community": {
+        "name": "커뮤니티 우선.",
+        "description": "오버워치 플레이어에 의해, 오버워치 플레이어를 위해 만들어졌습니다. 우리는 커뮤니티를 위해 헌신합니다."
+      },
+      "openSource": {
+        "name": "오픈 소스.",
+        "description": "최고의 도구는 공개적으로 만들어진다고 믿습니다. 기여를 환영합니다!"
+      },
+      "improvement": {
+        "name": "지속적인 개선.",
+        "description": "새로운 기능을 추가하고 플랫폼을 개선하는 데 항상 노력하고 있습니다. 최고의 앱을 만들고자 합니다."
+      },
+      "reliable": {
+        "name": "신뢰성과 성능.",
+        "description": "플랫폼은 빠르고 신뢰할 수 있도록 설계되었습니다. 항상 여러분 곁에 있기를 바랍니다."
+      }
+    },
+    "team": {
+      "lucas": {
+        "name": "루카스 도엘",
+        "role": "창립자, 엔지니어링 책임자"
+      },
+      "robin": {
+        "name": "로빈 \"Zei\" 시드후",
+        "role": "전략 책임자"
+      },
+      "xavier": {
+        "name": "자비에르 박",
+        "role": "연구 책임자"
+      },
+      "adrian": {
+        "name": "에이드리언 소토",
+        "role": "지원 책임자"
+      },
+      "daniel": {
+        "name": "다니엘 이투랄데",
+        "role": "기술 지원 전문가"
+      },
+      "diego": {
+        "name": "디에고 산체스 델 리오",
+        "role": "엔지니어링 인턴, 2024년 여름"
+      },
+      "yai": {
+        "name": "야일란 보르다스",
+        "role": "엔지니어링 인턴, 2024년 여름"
+      },
+      "kenny": {
+        "name": "케니 미란다",
+        "role": "엔지니어링 인턴, 2024년 여름"
+      },
+      "notPictured": "사진에 나오지 않음: <name>데브라지 암발라</name>, 엔지니어링 인턴, 2024년 여름; <name>카슨 밀러</name>, 엔지니어링 인턴, 2024년 여름; 및 <name>로즈 대치</name>, 엔지니어링 인턴, 2024년 여름."
+    },
+    "headerSection": {
+      "title": "우리는 오버워치를 사랑합니다",
+      "description": "그래서 우리는 성과를 추적하는 더 나은 방법을 만들고 있습니다. 팀의 통계를 확인하고, 시간 경과에 따른 성과를 추적하며, 플레이어와 팀으로서 어떻게 발전하는지 확인하세요."
+    },
+    "contentSection": {
+      "description1": "Parsertime은 원래 FIU Panthers라는 대학 팀을 위한 내부 도구로 만들어졌습니다. 스크림 후 통계를 확인하고 시간에 따른 트렌드를 보고 싶었습니다. 이후 Parsertime은 모든 팀이 사용할 수 있는 플랫폼으로 확장되었습니다. Parsertime이 팀의 성과를 개선하는 데 어떻게 사용되는지 기대됩니다.",
+      "description2": "우리는 열정적인 오버워치 플레이어와 코치로 구성된 작은 팀으로, 여러분의 팀에 적합한 플랫폼을 만들기 위해 헌신하고 있습니다. 항상 피드백과 기능 요청을 받고 있습니다. 아이디어가 있다면 언제든 들려주세요!",
+      "description3": "우리는 팀들이 항상 개선 방법을 찾고 있다는 것을 알고 있습니다. 우리의 목표는 통계를 쉽게 보고 매주 트렌드를 확인할 수 있도록 하는 것입니다. Parsertime은 현재 FIU에서 내부적으로 사용되고 있으며, 매주 새로운 기능이 추가되고 있습니다. 오버워치 플레이어와 팀에게 최고의 경험을 제공하고자 합니다.",
+      "description4": "Parsertime은 완전히 오픈 소스입니다. 최고의 도구는 공개적으로 만들어진다고 믿습니다. Parsertime에 기여하고 싶다면 언제든 환영합니다! 오버워치 팀을 위한 최고의 플랫폼을 구축하는 데 도움을 주실 분들을 항상 찾고 있습니다. GitHub 저장소를 <link>여기</link>에서 확인하세요."
+    },
+    "featureSection": {
+      "title": "우리의 기능",
+      "description": "우리의 플랫폼이 팀에 어떤 변화를 가져올 수 있는지 확인하세요."
+    },
+    "teamSection": {
+      "title": "우리 팀을 소개합니다",
+      "description": "우리는 열정적인 오버워치 플레이어와 코치로 구성된 작은 팀으로, 여러분의 팀에 적합한 플랫폼을 만들기 위해 헌신하고 있습니다."
+    },
+    "ctaSection": {
+      "title": "생산성을 높이세요.",
+      "subtitle": "지금 바로 우리의 앱을 사용해보세요.",
+      "description": "팀이 성공하는 데 필요한 도구를 제공하세요. 지금 Parsertime에 가입하세요.",
+      "signUp": "가입하기",
+      "demo": "데모 체험하기",
+      "altText": "앱 스크린샷"
+    },
+    "footerNav": {
+      "title": "푸터",
+      "description": "오버워치 성과를 추적하는 더 나은 방법을 만듭니다.",
+      "solutions": {
+        "title": "플랫폼",
+        "dashboard": "대시보드",
+        "signUp": "가입하기",
+        "demo": "데모"
+      },
+      "support": {
+        "title": "지원",
+        "pricing": "가격",
+        "doc": "문서",
+        "discord": "디스코드",
+        "contact": "문의"
+      },
+      "company": {
+        "title": "회사",
+        "about": "소개",
+        "blog": "블로그",
+        "github": "GitHub"
+      },
+      "legal": {
+        "title": "법적",
+        "policy": "개인정보처리방침"
+      },
+      "socials": {
+        "twitter": "X",
+        "bluesky": "Bluesky",
+        "github": "GitHub"
+      },
+      "copyright": "lux.dev. 판권 소유."
+    }
+  },
+  "pricingPage": {
+    "pricing": {
+      "title": "가격",
+      "header": "모든 규모의 팀을 위한 요금제",
+      "description": "팀이 성장함에 따라 Parsertime도 함께 성장합니다. 우리는 팀의 요구를 충족할 도구와 기능을 제공합니다.",
+      "$": "$",
+      "month": "/월",
+      "currentPlan": "현재 요금제",
+      "getStarted": "시작하기",
+      "buyPlan": "요금제 구매",
+      "priceComparison": "요금제 비교",
+      "price": "가격",
+      "included": "포함됨",
+      "notIncluded": "포함되지 않음"
+    },
+    "comingSoon": "곧 제공 예정",
+    "tiers": {
+      "free": "무료",
+      "freeMonthly": "$0",
+      "freeDescription": "Parsertime을 체험해보고 싶은 사람들을 위한 요금제.",
+      "basic": "기본",
+      "basicMonthly": "$10",
+      "basicDescription": "Parsertime과 함께 성장할 준비가 된 팀을 위한 요금제.",
+      "premium": "프리미엄",
+      "premiumMonthly": "$15",
+      "premiumDescription": "생산성을 한 단계 끌어올리고 싶은 대규모 팀을 위한 요금제."
+    },
+    "features": {
+      "title": "기능",
+      "scrims": "개별 스크림",
+      "joinTeams": "초대를 통한 팀 가입",
+      "data": "데이터 분석",
+      "createTeams": {
+        "title": "팀 생성",
+        "free": "최대 2개 팀",
+        "basic": "최대 5개 팀",
+        "premium": "최대 10개 팀"
+      },
+      "teamMembers": {
+        "title": "팀 멤버",
+        "free": "최대 5명",
+        "basic": "최대 10명",
+        "premium": "최대 20명"
+      },
+      "earlyAccess": "새로운 기능에 대한 사전 접근"
+    },
+    "mapStatistics": {
+      "title": "맵 통계",
+      "analytics": "고급 분석",
+      "killfeeds": "맵 킬피드",
+      "customCharts": "맞춤형 차트",
+      "mapEvents": "맵 이벤트",
+      "playerComparison": "플레이어 비교",
+      "customTargets": "맞춤형 목표"
+    },
+    "playerStatistics": {
+      "title": "플레이어 통계",
+      "lastWeek": "지난주",
+      "last2Weeks": "지난 2주",
+      "lastMonth": "지난달",
+      "last3Months": "지난 3개월",
+      "last6Months": "지난 6개월",
+      "lastYear": "지난 1년",
+      "allTime": "전체 기간",
+      "custom": "사용자 정의 기간"
+    },
+    "support": {
+      "title": "지원",
+      "discord": "커뮤니티 디스코드",
+      "priority": "우선 지원",
+      "devCheck": "월간 개발자 점검",
+      "custom": "맞춤형 기능 요청"
+    },
+    "caseStudy": {
+      "title": "팀이 Parsertime을 사용하여 코칭 전략을 개선하는 방법을 알아보세요.",
+      "description": "사례 연구 보기"
+    },
+    "testimonial": {
+      "quote": "“Parsertime은 내 선수들이 적극적으로 도움을 필요로 하는 부분, 예를 들어 더 오래 생존하거나 궁극기를 오래 유지하며 인내심을 가지는 것과 같은 부분에서 코칭을 받을 수 있도록 도와주는 매우 효과적인 도구입니다.”",
+      "author": "coy (@shy.coy)",
+      "role": "o7 Esports 매니저"
+    },
+    "faq": {
+      "title": "자주 묻는 질문",
+      "description": "찾고 있는 답변이 없나요? <link>지원팀</link>에 문의하세요.",
+      "question1": "대학 팀을 위한 할인 혜택이 있나요?",
+      "answer1": "네! 지원팀에 문의해 주시면 기꺼이 도와드리겠습니다.",
+      "question2": "Calling All Heroes 팀을 위한 할인 혜택이 있나요?",
+      "answer2": "네! CAH 커뮤니티를 최대한 지원하고 싶습니다. 지원팀에 문의해 주시면 해결 방안을 논의하겠습니다.",
+      "question3": "구독을 어떻게 관리할 수 있나요?",
+      "answer3": "구독은 <link>여기</link>에서 관리할 수 있습니다. 문제가 발생하면 지원팀에 문의해 주세요.",
+      "question4": "구독을 언제든 취소할 수 있나요?",
+      "answer4": "네, 구독은 언제든 취소할 수 있습니다. 구독은 청구 기간이 끝날 때까지 활성 상태로 유지됩니다.",
+      "question5": "프리미엄 요금제에서 제공하는 한도보다 더 높은 한도가 필요한 경우 어떻게 해야 하나요?",
+      "answer5": "특별한 요구 사항이나 프리미엄 요금제의 한도를 초과하는 것이 필요한 경우, <link>지원팀</link>에 문의해 주시면 맞춤형 해결 방안을 논의하겠습니다."
+    }
+  },
+  "privacyPage": {
+    "privacyPolicy": {
+      "title": "개인정보처리방침",
+      "description": "Parsertime은 웹사이트 방문자의 신뢰와 자신감을 유지하기 위해 최선을 다하고 있습니다. 특히, Parsertime은 이메일 목록을 마케팅 목적으로 다른 회사 및 비즈니스에 판매, 임대 또는 거래하지 않는다는 점을 알려드리고자 합니다. 이 개인정보처리방침에서는 언제, 왜 개인 정보를 수집하는지, 이를 어떻게 사용하는지, 그리고 이를 안전하게 보호하는 방법에 대해 자세히 설명합니다."
+    },
+    "collectInformation": {
+      "title": "수집하는 정보",
+      "description": "웹 애플리케이션 등록 과정의 일환으로 개인 정보를 수집합니다. 이러한 정보는 다음과 같은 이유로 사용됩니다: 요청한 내용을 전달하기 위해; 추가 정보를 제공하거나 얻기 위해 연락하기 위해; 기록이 올바른지 확인하기 위해; 그리고 가끔씩 만족 여부를 확인하기 위해. 다음은 수집하는 정보의 유형입니다:",
+      "email": {
+        "title": "이메일 주소",
+        "description": "이메일 주소는 계정 생성, 인증 및 앱 기능과 관련된 필수 커뮤니케이션을 돕기 위해 등록 과정에서 필요합니다. 이메일 주소는 마케팅 목적으로 사용되지 않습니다."
+      },
+      "picture": {
+        "title": "프로필 사진 및 팀 이미지",
+        "description": "프로필 사진 및 팀 이미지를 업로드할 수 있습니다. 이 이미지는 애플리케이션 내에서 계정 및 팀 프로필을 개인화하는 데 사용됩니다."
+      },
+      "data": {
+        "title": "게임 로그 및 성과 데이터",
+        "description": "Overwatch 2의 게임 로그를 시각화하고 사용자 및 팀 성과 데이터를 표시하기 위해 사용됩니다. 이 데이터는 Parsertime이 제공하는 서비스에만 사용되며 개인적으로 민감한 정보를 포함하지 않습니다."
+      }
+    },
+    "useInformation": {
+      "title": "정보 사용 방법",
+      "description": "귀하의 정보를 다음 목적으로 사용합니다:",
+      "list1": "서비스를 운영 및 유지하기 위해;",
+      "list2": "개인화를 통해 사이트에서의 경험을 개선하기 위해;",
+      "list3": "이용 약관, 조건, 정책의 변경 등 중요한 공지를 전달하기 위해;",
+      "list4": "기술적 문제를 해결하고 사이트를 사기 및 악용으로부터 보호하기 위해."
+    },
+    "storageSecurity": {
+      "title": "저장 및 보안",
+      "description": "귀하의 정보를 보호하기 위해 예방 조치를 취하고 있습니다. 웹사이트를 통해 민감한 정보를 제출할 경우, 귀하의 정보는 온라인과 오프라인 모두에서 보호됩니다. 특정 작업(예: 청구 또는 고객 서비스)을 수행하기 위해 정보가 필요한 직원만이 개인 식별 정보를 액세스할 수 있습니다."
+    },
+    "thirdPartyLinks": {
+      "title": "제3자 링크",
+      "description": "당사 웹사이트에는 제3자 웹사이트로의 링크가 포함될 수 있습니다. 당사는 이러한 사이트의 콘텐츠나 개인정보 보호 관행에 대해 통제할 수 없으며, 이에 대해 책임을 지지 않습니다. 당사 웹사이트를 떠날 때 이를 인지하고, 개인 식별 정보를 수집하는 다른 사이트의 개인정보 보호 성명을 읽을 것을 권장합니다."
+    },
+    "changePrivacyPolicy": {
+      "title": "개인정보처리방침 변경 사항",
+      "description": "운영, 법적 또는 규제상의 이유로 관행의 변경을 반영하기 위해 이 정책을 수시로 업데이트할 수 있습니다."
+    },
+    "contactUs": {
+      "title": "문의하기",
+      "description": "당사의 개인정보 보호 관행에 대한 추가 정보가 필요하거나, 질문이 있거나, 불만을 제기하고 싶으신 경우, <link>privacy@lux.dev</link>으로 이메일을 보내주십시오."
+    }
+  },
+  "notFound": {
+    "404": "404",
+    "header": "페이지를 찾을 수 없습니다",
+    "description": "죄송합니다. 찾고 계신 페이지를 찾을 수 없습니다.",
+    "backHome": "홈으로 돌아가기",
+    "contact": "지원팀에 문의하기"
+  },
+  "footer": {
+    "changelog": "변경 로그 보기",
+    "dashboard": "대시보드",
+    "stats": "통계",
+    "teams": "팀",
+    "settings": "설정",
+    "contact": "문의",
+    "docs": "문서"
+  },
+  "demoPage": {
+    "metadata": {
+      "title": "{mapName} 데모 | Parsertime",
+      "description": "Parsertime에서 {mapName}에 대한 데모 개요입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "ogTitle": "{mapName} 데모 | Parsertime",
+      "ogDescription": "Parsertime에서 {mapName}에 대한 데모 개요입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "ogImage": "{mapName} 데모"
+    },
+    "banner": {
+      "demo": "Parsertime의 데모를 보고 계십니다. 가입하려면 여기를 클릭하세요.",
+      "dismiss": "닫기"
+    }
+  }
+}
