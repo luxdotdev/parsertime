@@ -1822,7 +1822,9 @@
       "getStarted": "Get Started",
       "buyPlan": "Buy Plan",
       "priceComparison": "Pricing plan comparison",
-      "price": "Price"
+      "price": "Price",
+      "included": "Included in",
+      "notIncluded": "Not Included in"
     },
     "comingSoon": "Coming soon",
     "tiers": {
@@ -1858,7 +1860,7 @@
     "mapStatistics": {
       "title": "Map Statistics",
       "analytics": "Advanced Analytics",
-      "mapKillFeeds": "Map Killfeeds",
+      "killfeeds": "Map Killfeeds",
       "customCharts": "Custom Charts",
       "mapEvents": "Map Events",
       "playerComparison": "Player Comparison",
@@ -1893,17 +1895,17 @@
     },
     "faq": {
       "title": "Frequently asked questions",
-      "description": "Can't find the answer you're looking for? Reach out to our <Link>support</Link> team.",
+      "description": "Can't find the answer you're looking for? Reach out to our <link>support</link> team.",
       "question1": "Do you offer discounts for collegiate teams?",
       "answer1": "Yes! Please reach out to our support team and we'll be happy to help.",
       "question2": "Do you offer discounts for Calling All Heroes teams?",
       "answer2": "Yes! We want to support the CAH community as much as possible. Please reach out to our support team and we'll be happy to discuss a solution.",
       "question3": "How can I manage my subscription?",
-      "answer3": "You can manage your subscription <Link>here</Link>. If you have any issues, please reach out to our support team.",
+      "answer3": "You can manage your subscription <link>here</link>. If you have any issues, please reach out to our support team.",
       "question4": "Can I cancel my subscription at any time?",
       "answer4": "Yes, you can cancel your subscription at any time. Your subscription will remain active until the end of the billing period.",
       "question5": "What if I need higher limits than the Premium plan offers?",
-      "answer5": "If you need something special or require higher limits than the Premium plan offers, please reach out to our <Link>support team</Link> and we'll be happy to discuss a custom solution."
+      "answer5": "If you need something special or require higher limits than the Premium plan offers, please reach out to our <link>support team</link> and we'll be happy to discuss a custom solution."
     }
   },
   "privacyPage": {
