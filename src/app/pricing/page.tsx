@@ -4,211 +4,10 @@ import { auth } from "@/lib/auth";
 import { createCheckout, getCustomerPortalUrl } from "@/lib/stripe";
 import { toTitleCase } from "@/lib/utils";
 import { CheckIcon, MinusIcon } from "@heroicons/react/20/solid";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 import React, { Fragment } from "react";
-
-const sections = [
-  {
-    name: "Features",
-    features: [
-      {
-        name: "Individual Scrims",
-        tiers: { Free: true, Basic: true, Premium: true },
-        comingSoon: false,
-      },
-      {
-        name: "Join Teams via Invite",
-        tiers: { Free: true, Basic: true, Premium: true },
-        comingSoon: false,
-      },
-      {
-        name: "Data Analytics",
-        tiers: { Free: true, Basic: true, Premium: true },
-        comingSoon: false,
-      },
-      {
-        name: "Create Teams",
-        tiers: {
-          Free: "Up to 2 teams",
-          Basic: "Up to 5 teams",
-          Premium: "Up to 10 teams",
-        },
-        comingSoon: false,
-      },
-      {
-        name: "Team Members",
-        tiers: {
-          Free: "Up to 5 users",
-          Basic: "Up to 10 users",
-          Premium: "Up to 20 users",
-        },
-        comingSoon: false,
-      },
-      {
-        name: "Early Access to New Features",
-        tiers: { Premium: true },
-        comingSoon: false,
-      },
-    ],
-  },
-  {
-    name: "Map Statistics",
-    features: [
-      {
-        name: "Advanced Analytics",
-        tiers: { Free: true, Basic: true, Premium: true },
-        comingSoon: false,
-      },
-      {
-        name: "Map Killfeeds",
-        tiers: { Free: true, Basic: true, Premium: true },
-        comingSoon: false,
-      },
-      {
-        name: "Custom Charts",
-        tiers: { Free: true, Basic: true, Premium: true },
-        comingSoon: false,
-      },
-      {
-        name: "Map Events",
-        tiers: { Free: true, Basic: true, Premium: true },
-        comingSoon: false,
-      },
-      {
-        name: "Player Comparison",
-        tiers: { Free: true, Basic: true, Premium: true },
-        comingSoon: false,
-      },
-      {
-        name: "Custom Targets",
-        tiers: { Premium: true },
-        comingSoon: true,
-      },
-    ],
-  },
-  {
-    name: "Player Statistics",
-    features: [
-      {
-        name: "Last Week",
-        tiers: { Free: true, Basic: true, Premium: true },
-        comingSoon: false,
-      },
-      {
-        name: "Last 2 Weeks",
-        tiers: { Free: true, Basic: true, Premium: true },
-        comingSoon: false,
-      },
-      {
-        name: "Last Month",
-        tiers: { Free: true, Basic: true, Premium: true },
-        comingSoon: false,
-      },
-      {
-        name: "Last 3 Months",
-        tiers: { Basic: true, Premium: true },
-        comingSoon: false,
-      },
-      {
-        name: "Last 6 Months",
-        tiers: { Basic: true, Premium: true },
-        comingSoon: false,
-      },
-      {
-        name: "Last Year",
-        tiers: { Premium: true },
-        comingSoon: false,
-      },
-      {
-        name: "All Time",
-        tiers: { Premium: true },
-        comingSoon: false,
-      },
-      {
-        name: "Custom Timeframe",
-        tiers: { Premium: true },
-        comingSoon: false,
-      },
-    ],
-  },
-  {
-    name: "Support",
-    features: [
-      {
-        name: "Community Discord",
-        tiers: { Free: true, Basic: true, Premium: true },
-        comingSoon: false,
-      },
-      {
-        name: "Priority Support",
-        tiers: { Basic: true, Premium: true },
-        comingSoon: false,
-      },
-      {
-        name: "Monthly Developer Check-ins",
-        tiers: { Basic: true, Premium: true },
-        comingSoon: false,
-      },
-      {
-        name: "Custom Feature Requests",
-        tiers: { Premium: true },
-        comingSoon: false,
-      },
-    ],
-  },
-];
-
-const faqs = [
-  {
-    question: "Do you offer discounts for collegiate teams?",
-    answer:
-      "Yes! Please reach out to our support team and we'll be happy to help.",
-  },
-  {
-    question: "Do you offer discounts for Calling All Heroes teams?",
-    answer:
-      "Yes! We want to support the CAH community as much as possible. Please reach out to our support team and we'll be happy to discuss a solution.",
-  },
-  {
-    question: "How can I manage my subscription?",
-    answer: (
-      <p>
-        You can manage your subscription{" "}
-        <Link
-          href="/settings"
-          className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
-          target="_blank"
-        >
-          here
-        </Link>
-        . If you have any issues, please reach out to our support team.
-      </p>
-    ),
-  },
-  {
-    question: "Can I cancel my subscription at any time?",
-    answer:
-      "Yes, you can cancel your subscription at any time. Your subscription will remain active until the end of the billing period.",
-  },
-  {
-    question: "What if I need higher limits than the Premium plan offers?",
-    answer: (
-      <p>
-        If you need something special or require higher limits than the Premium
-        plan offers, please reach out to our{" "}
-        <Link
-          href="/contact"
-          className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
-          target="_blank"
-        >
-          support team
-        </Link>{" "}
-        and we&apos;ll be happy to discuss a custom solution.
-      </p>
-    ),
-  },
-];
 
 function classNames(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(" ");
@@ -223,6 +22,8 @@ function ComingSoonBadge({ children }: { children: React.ReactNode }) {
 }
 
 export default async function PricingPage() {
+  const t = await getTranslations("pricingPage");
+
   const session = await auth();
   const user = await getUser(session?.user?.email);
 
@@ -242,29 +43,222 @@ export default async function PricingPage() {
 
   const tiers = [
     {
-      name: "Free",
+      name: t("tiers.free"),
       id: "tier-free",
       href: "/dashboard",
-      priceMonthly: "$0",
-      description: "For people who want to try out Parsertime.",
+      priceMonthly: t("tiers.freeMonthly"),
+      description: t("tiers.freeDescription"),
       mostPopular: false,
     },
     {
-      name: "Basic",
+      name: t("tiers.basic"),
       id: "tier-basic",
       href: (await getLink("Basic")) ?? "/sign-in",
-      priceMonthly: "$10",
-      description: "For teams that are ready to grow with Parsertime.",
+      priceMonthly: t("tiers.basicMonthly"),
+      description: t("tiers.basicDescription"),
       mostPopular: true,
     },
     {
-      name: "Premium",
+      name: t("tiers.premium"),
       id: "tier-premium",
       href: (await getLink("Premium")) ?? "/sign-in",
-      priceMonthly: "$15",
-      description:
-        "For larger teams that want to take their productivity to the next level.",
+      priceMonthly: t("tiers.premiumMonthly"),
+      description: t("tiers.premiumDescription"),
       mostPopular: false,
+    },
+  ];
+
+  const sections = [
+    {
+      name: t("features.title"),
+      features: [
+        {
+          name: t("features.scrims"),
+          tiers: { Free: true, Basic: true, Premium: true },
+          comingSoon: false,
+        },
+        {
+          name: t("features.joinTeams"),
+          tiers: { Free: true, Basic: true, Premium: true },
+          comingSoon: false,
+        },
+        {
+          name: t("features.data"),
+          tiers: { Free: true, Basic: true, Premium: true },
+          comingSoon: false,
+        },
+        {
+          name: t("features.createTeams.title"),
+          tiers: {
+            Free: t("features.createTeams.free"),
+            Basic: t("features.createTeams.basic"),
+            Premium: t("features.createTeams.premium"),
+          },
+          comingSoon: false,
+        },
+        {
+          name: t("features.teamMembers.title"),
+          tiers: {
+            Free: t("features.teamMembers.free"),
+            Basic: t("features.teamMembers.basic"),
+            Premium: t("features.teamMembers.premium"),
+          },
+          comingSoon: false,
+        },
+        {
+          name: t("features.earlyAccess"),
+          tiers: { Premium: true },
+          comingSoon: false,
+        },
+      ],
+    },
+    {
+      name: t("mapStatistics.title"),
+      features: [
+        {
+          name: t("mapStatistics.analytics"),
+          tiers: { Free: true, Basic: true, Premium: true },
+          comingSoon: false,
+        },
+        {
+          name: t("mapStatistics.killfeeds"),
+          tiers: { Free: true, Basic: true, Premium: true },
+          comingSoon: false,
+        },
+        {
+          name: t("mapStatistics.customCharts"),
+          tiers: { Free: true, Basic: true, Premium: true },
+          comingSoon: false,
+        },
+        {
+          name: t("mapStatistics.mapEvents"),
+          tiers: { Free: true, Basic: true, Premium: true },
+          comingSoon: false,
+        },
+        {
+          name: t("mapStatistics.playerComparison"),
+          tiers: { Free: true, Basic: true, Premium: true },
+          comingSoon: false,
+        },
+        {
+          name: t("mapStatistics.customTargets"),
+          tiers: { Premium: true },
+          comingSoon: true,
+        },
+      ],
+    },
+    {
+      name: t("playerStatistics.title"),
+      features: [
+        {
+          name: t("playerStatistics.lastWeek"),
+          tiers: { Free: true, Basic: true, Premium: true },
+          comingSoon: false,
+        },
+        {
+          name: t("playerStatistics.last2Weeks"),
+          tiers: { Free: true, Basic: true, Premium: true },
+          comingSoon: false,
+        },
+        {
+          name: t("playerStatistics.lastMonth"),
+          tiers: { Free: true, Basic: true, Premium: true },
+          comingSoon: false,
+        },
+        {
+          name: t("playerStatistics.last3Months"),
+          tiers: { Basic: true, Premium: true },
+          comingSoon: false,
+        },
+        {
+          name: t("playerStatistics.last6Months"),
+          tiers: { Basic: true, Premium: true },
+          comingSoon: false,
+        },
+        {
+          name: t("playerStatistics.lastYear"),
+          tiers: { Premium: true },
+          comingSoon: false,
+        },
+        {
+          name: t("playerStatistics.allTime"),
+          tiers: { Premium: true },
+          comingSoon: false,
+        },
+        {
+          name: t("playerStatistics.custom"),
+          tiers: { Premium: true },
+          comingSoon: false,
+        },
+      ],
+    },
+    {
+      name: t("support.title"),
+      features: [
+        {
+          name: t("support.discord"),
+          tiers: { Free: true, Basic: true, Premium: true },
+          comingSoon: false,
+        },
+        {
+          name: t("support.priority"),
+          tiers: { Basic: true, Premium: true },
+          comingSoon: false,
+        },
+        {
+          name: t("support.devCheck"),
+          tiers: { Basic: true, Premium: true },
+          comingSoon: false,
+        },
+        {
+          name: t("support.custom"),
+          tiers: { Premium: true },
+          comingSoon: false,
+        },
+      ],
+    },
+  ];
+
+  const faqs = [
+    {
+      question: t("faq.question1"),
+      answer: t("faq.answer1"),
+    },
+    {
+      question: t("faq.question2"),
+      answer: t("faq.answer2"),
+    },
+    {
+      question: t("faq.question3"),
+      answer: t.rich("faq.answer3", {
+        link: (chunks) => (
+          <Link
+            href="/settings"
+            className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
+            target="_blank"
+          >
+            {chunks}
+          </Link>
+        ),
+      }),
+    },
+    {
+      question: t("faq.question4"),
+      answer: t("faq.answer4"),
+    },
+    {
+      question: t("faq.question5"),
+      answer: t.rich("faq.answer5", {
+        link: (chunks) => (
+          <Link
+            href="/contact"
+            className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
+            target="_blank"
+          >
+            {chunks}
+          </Link>
+        ),
+      }),
     },
   ];
 
@@ -274,15 +268,14 @@ export default async function PricingPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
             <h2 className="text-base font-semibold leading-7 text-sky-600 dark:text-sky-400">
-              Pricing
+              {t("pricing.title")}
             </h2>
             <p className="mt-2 text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
-              Plans for teams of&nbsp;all&nbsp;sizes
+              {t("pricing.header")}
             </p>
           </div>
           <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-gray-600 dark:text-gray-300">
-            As your team grows, Parsertime grows with you. We have the tools and
-            features to meet your needs.
+            {t("pricing.description")}
           </p>
 
           {/* xs to lg */}
@@ -308,7 +301,7 @@ export default async function PricingPage() {
                     {tier.priceMonthly}
                   </span>
                   <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">
-                    /month
+                    {t("pricing.month")}
                   </span>
                 </p>
                 <Link
@@ -321,7 +314,9 @@ export default async function PricingPage() {
                     "mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                   )}
                 >
-                  {tier.name === "Free" ? "Get Started" : "Buy plan"}
+                  {tier.name === "Free"
+                    ? t("pricing.getStarted")
+                    : t("pricing.buyPlan")}
                 </Link>
                 <ul className="mt-10 space-y-4 text-sm leading-6 text-gray-900 dark:text-white">
                   {sections.map((section) => (
@@ -382,7 +377,9 @@ export default async function PricingPage() {
                 </div>
               ) : null}
               <table className="w-full table-fixed border-separate border-spacing-x-8 text-left">
-                <caption className="sr-only">Pricing plan comparison</caption>
+                <caption className="sr-only">
+                  {t("pricing.priceComparison")}
+                </caption>
                 <colgroup>
                   <col className="w-1/4" />
                   <col className="w-1/4" />
@@ -408,7 +405,7 @@ export default async function PricingPage() {
                 <tbody>
                   <tr>
                     <th scope="row">
-                      <span className="sr-only">Price</span>
+                      <span className="sr-only">{t("pricing.price")}</span>
                     </th>
                     {tiers.map((tier) => (
                       <td key={tier.id} className="px-6 pt-2 xl:px-8">
@@ -417,7 +414,7 @@ export default async function PricingPage() {
                             {tier.priceMonthly}
                           </span>
                           <span className="text-sm font-semibold leading-6">
-                            /month
+                            {t("pricing.month")}
                           </span>
                         </div>
                         {tier.name === plan ? (
@@ -430,7 +427,7 @@ export default async function PricingPage() {
                               "mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:text-white dark:focus-visible:ring-0"
                             )}
                           >
-                            Your Current Plan
+                            {t("pricing.currentPlan")}
                           </Link>
                         ) : (
                           <Link
@@ -442,7 +439,9 @@ export default async function PricingPage() {
                               "mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:text-white dark:focus-visible:ring-0"
                             )}
                           >
-                            {tier.name === "Free" ? "Get Started" : "Buy plan"}
+                            {tier.name === "Free"
+                              ? t("pricing.getStarted")
+                              : t("pricing.buyPlan")}
                           </Link>
                         )}
                       </td>
@@ -471,7 +470,9 @@ export default async function PricingPage() {
                           >
                             {feature.name}{" "}
                             {feature.comingSoon && (
-                              <ComingSoonBadge>Coming soon</ComingSoonBadge>
+                              <ComingSoonBadge>
+                                {t("comingSoon")}
+                              </ComingSoonBadge>
                             )}
                             <div className="absolute inset-x-8 mt-4 h-px bg-gray-900/5 dark:bg-white/5" />
                           </th>
@@ -507,9 +508,9 @@ export default async function PricingPage() {
                                     {feature.tiers[
                                       tier.name as keyof typeof feature.tiers
                                     ] === true
-                                      ? "Included"
-                                      : "Not included"}{" "}
-                                    in {tier.name}
+                                      ? t("pricing.included")
+                                      : t("pricing.notIncluded")}{" "}
+                                    {tier.name}
                                   </span>
                                 </>
                               )}
@@ -566,15 +567,14 @@ export default async function PricingPage() {
         </div>
         <div className="mt-16 flex justify-center">
           <p className="relative rounded-full bg-gray-50 px-4 py-1.5 text-sm leading-6 text-gray-600 ring-1 ring-inset ring-gray-900/5 dark:bg-zinc-950 dark:text-gray-300 dark:ring-gray-50/5">
-            <span className="hidden md:inline">
-              Learn how teams use Parsertime to improve their coaching strategy.
-            </span>
+            <span className="hidden md:inline">{t("caseStudy.title")}</span>
             <Link
               href="https://lux.dev/blog"
               className="font-semibold text-sky-600 dark:text-sky-300"
             >
-              <span className="absolute inset-0" aria-hidden="true" /> See our
-              case study <span aria-hidden="true">&rarr;</span>
+              <span className="absolute inset-0" aria-hidden="true" />{" "}
+              {t("caseStudy.description")}{" "}
+              <span aria-hidden="true">&rarr;</span>
             </Link>
           </p>
         </div>
@@ -591,11 +591,7 @@ export default async function PricingPage() {
           />
           <figure className="mt-10">
             <blockquote className="text-center text-xl font-semibold leading-8 text-gray-900 dark:text-white sm:text-2xl sm:leading-9">
-              <p>
-                “Parsertime is so impactful to the point where my players can be
-                coached on things they actively need help with, like living
-                more, or holding their ult longer and being patient.”
-              </p>
+              <p>{t("testimonial.quote")}</p>
             </blockquote>
             <figcaption className="mt-10">
               <Image
@@ -607,7 +603,7 @@ export default async function PricingPage() {
               />
               <div className="mt-4 flex items-center justify-center space-x-3 text-base">
                 <div className="font-semibold text-gray-900 dark:text-white">
-                  coy (@shy.coy)
+                  {t("testimonial.author")}
                 </div>
                 <svg
                   viewBox="0 0 2 2"
@@ -619,7 +615,7 @@ export default async function PricingPage() {
                   <circle cx={1} cy={1} r={1} />
                 </svg>
                 <div className="text-gray-600 dark:text-gray-300">
-                  Manager for o7 Esports
+                  {t("testimonial.role")}
                 </div>
               </div>
             </figcaption>
@@ -632,18 +628,19 @@ export default async function PricingPage() {
           <div className="lg:grid lg:grid-cols-12 lg:gap-8">
             <div className="lg:col-span-5">
               <h2 className="text-2xl font-bold leading-10 tracking-tight text-gray-900 dark:text-white">
-                Frequently asked questions
+                {t("faq.title")}
               </h2>
               <p className="mt-4 text-base leading-7 text-gray-600 dark:text-gray-300">
-                Can&apos;t find the answer you&apos;re looking for? Reach out to
-                our{" "}
-                <Link
-                  href="/contact"
-                  className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
-                >
-                  support
-                </Link>{" "}
-                team.
+                {t.rich("faq.description", {
+                  link: (chunks) => (
+                    <Link
+                      href="/contact"
+                      className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
+                    >
+                      {chunks}
+                    </Link>
+                  ),
+                })}
               </p>
             </div>
             <div className="mt-10 lg:col-span-7 lg:mt-0">
