@@ -27,30 +27,33 @@ import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
 import { Team } from "@prisma/client";
 import { ClipboardCopyIcon, ReloadIcon } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useRef, useState } from "react";
 
-const profileFormSchema = z.object({
-  name: z
-    .string()
-    .min(2, {
-      message: "Name must be at least 2 characters.",
-    })
-    .max(30, {
-      message: "Name must not be longer than 30 characters.",
-    }),
-  readonly: z.boolean().optional(),
-});
-
-type ProfileFormValues = z.infer<typeof profileFormSchema>;
-
 export function TeamSettingsForm({ team }: { team: Team }) {
+  const t = useTranslations("teamPage");
+
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  const profileFormSchema = z.object({
+    name: z
+      .string()
+      .min(2, {
+        message: t("name.minMessage"),
+      })
+      .max(30, {
+        message: t("name.maxMessage"),
+      }),
+    readonly: z.boolean().optional(),
+  });
+
+  type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -79,15 +82,17 @@ export function TeamSettingsForm({ team }: { team: Team }) {
 
     if (res.ok) {
       toast({
-        title: "Team profile updated",
-        description: "Your team profile has been successfully updated.",
+        title: t("update.onSubmit.title"),
+        description: t("update.onSubmit.description"),
         duration: 5000,
       });
       router.refresh();
     } else {
       toast({
-        title: "An error occurred",
-        description: `An error occurred: ${await res.text()} (${res.status})`,
+        title: t("update.onSubmit.errorTitle"),
+        description: t("update.onSubmit.errorDescription", {
+          res: `${await res.text()} (${res.status})`,
+        }),
         variant: "destructive",
         duration: 5000,
       });
@@ -112,10 +117,10 @@ export function TeamSettingsForm({ team }: { team: Team }) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormItem>
-            <FormLabel>Team Invite Link</FormLabel>
+            <FormLabel>{t("teamInviteLink.title")}</FormLabel>
             <FormControl>
               <div className="items-center">
-                <p>Your permanent team invite link (hover to reveal):</p>
+                <p>{t("teamInviteLink.subtitle")}</p>
                 <code className="rounded bg-zinc-800 p-1 text-zinc-800 transition-colors hover:text-white">
                   https://parsertime.app/team/join/
                   {btoa(team.createdAt.toISOString())}
@@ -132,48 +137,41 @@ export function TeamSettingsForm({ team }: { team: Team }) {
                             )}`
                           );
                           toast({
-                            title: "Copied to clipboard",
-                            description:
-                              "The team invite link has been copied to your clipboard.",
+                            title: t("clipboard.title"),
+                            description: t("clipboard.description"),
                             duration: 5000,
                           });
                         }}
                       />
                     </TooltipTrigger>
-                    <TooltipContent>Click to copy</TooltipContent>
+                    <TooltipContent>{t("clipboard.tooltip")}</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
             </FormControl>
-            <FormDescription>
-              Please note that inviting a user via the &quot;Invite User&quot;
-              button is much more secure. We suggest avoiding sharing this link
-              whenever possible.
-            </FormDescription>
+            <FormDescription>{t("teamInviteLink.description")}</FormDescription>
           </FormItem>
           <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Display Name</FormLabel>
+                <FormLabel>{t("name.title")}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Esports at Cornell"
+                    placeholder={t("name.placeholder")}
                     defaultValue={team.name ?? ""}
                     className="max-w-lg"
                     {...field}
                   />
                 </FormControl>
-                <FormDescription>
-                  This is your team&apos;s public display name.
-                </FormDescription>
+                <FormDescription>{t("name.description")}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
           <FormItem>
-            <FormLabel>Avatar</FormLabel>
+            <FormLabel>{t("avatar.title")}</FormLabel>
             <FormControl aria-readonly>
               <>
                 <input
@@ -182,7 +180,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
                   onChange={handleFileChange}
                   className="hidden"
                   accept="image/*"
-                  aria-label="File upload"
+                  aria-label={t("avatar.label")}
                 />
                 <Image
                   src={
@@ -190,7 +188,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
                   }
                   width={800}
                   height={800}
-                  alt="User avatar"
+                  alt={t("avatar.altText")}
                   className="h-16 w-16 cursor-pointer rounded-full"
                   onClick={handleAvatarClick}
                 />
@@ -202,10 +200,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
                 />
               </>
             </FormControl>
-            <FormDescription>
-              This is your team&apos;s public avatar. Click on the avatar to
-              upload a custom one from your files.
-            </FormDescription>
+            <FormDescription>{t("avatar.description")}</FormDescription>
             <FormMessage />
           </FormItem>
           <FormField
@@ -220,11 +215,8 @@ export function TeamSettingsForm({ team }: { team: Team }) {
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
-                  <FormLabel>Read-Only</FormLabel>
-                  <FormDescription>
-                    If enabled, the team will be read-only. This means that
-                    players and managers cannot add scrims to the team.
-                  </FormDescription>
+                  <FormLabel>{t("readonly.title")}</FormLabel>
+                  <FormDescription>{t("readonly.description")}</FormDescription>
                   <FormMessage />
                 </div>
               </FormItem>
@@ -233,10 +225,11 @@ export function TeamSettingsForm({ team }: { team: Team }) {
           <Button type="submit" disabled={loading}>
             {loading ? (
               <>
-                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" /> Updating...
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
+                {t("update.updating")}
               </>
             ) : (
-              "Update team profile"
+              t("update.title")
             )}
           </Button>
         </form>

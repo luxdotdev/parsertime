@@ -13,10 +13,12 @@ import { Link } from "@/components/ui/link";
 import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { startTransition, useEffect, useState } from "react";
 
 export function DangerZone({ url }: { url: string }) {
+  const t = useTranslations("settingsPage");
   const [firstDialogOpen, setFirstDialogOpen] = useState(false);
 
   return (
@@ -24,18 +26,19 @@ export function DangerZone({ url }: { url: string }) {
       <Card className="max-w-lg border-red-500 dark:border-red-700">
         <CardHeader>
           <CardTitle className="text-red-500 dark:text-red-700">
-            Danger Zone
+            {t("dangerZone.title")}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <h3 className="text-lg font-semibold">Delete Account</h3>
+          <h3 className="text-lg font-semibold">{t("deleteAccount.title")}</h3>
           <p className="pb-4">
-            Account deletion is permanent and cannot be reversed. Are you
-            looking to manage your subscription instead? If so, please click{" "}
-            <Link href={url} className="text-sky-500" external>
-              here
-            </Link>
-            .
+            {t.rich("deleteAccount.description", {
+              link: (chunks) => (
+                <Link href={url} className="text-sky-500" external>
+                  {chunks}
+                </Link>
+              ),
+            })}
           </p>
           <FirstDialog
             url={url}
@@ -57,28 +60,30 @@ function FirstDialog({
   firstDialogOpen: boolean;
   setFirstDialogOpen: (open: boolean) => void;
 }) {
+  const t = useTranslations("settingsPage.deleteAccount");
+
   return (
     <AlertDialog open={firstDialogOpen} onOpenChange={setFirstDialogOpen}>
       <AlertDialogTrigger>
-        <Button variant="destructive">Delete Account</Button>
+        <Button variant="destructive">{t("title")}</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <h2 className="text-lg font-semibold">Delete Account</h2>
+          <h2 className="text-lg font-semibold">{t("title")}</h2>
         </AlertDialogHeader>
         <p>
-          Are you sure you want to delete your account? This action cannot be
-          undone. Are you looking to manage your subscription instead? If so,
-          please click{" "}
-          <Link href={url} className="text-sky-500" external>
-            here
-          </Link>
-          .
+          {t.rich("description", {
+            link: (chunks) => (
+              <Link href={url} className="text-sky-500" external>
+                {chunks}
+              </Link>
+            ),
+          })}
         </p>
         <div className="mt-4 flex justify-end space-x-4">
           <SecondDialog setFirstDialogOpen={setFirstDialogOpen} />
           <Button variant="secondary" onClick={() => setFirstDialogOpen(false)}>
-            Cancel
+            {t("cancel")}
           </Button>
         </div>
       </AlertDialogContent>
@@ -91,6 +96,8 @@ function SecondDialog({
 }: {
   setFirstDialogOpen: (open: boolean) => void;
 }) {
+  const t = useTranslations("settingsPage.deleteAccount");
+
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteInput, setDeleteInput] = useState("");
   const [deleteEnabled, setDeleteEnabled] = useState(false);
@@ -98,8 +105,8 @@ function SecondDialog({
   const router = useRouter();
 
   useEffect(() => {
-    setDeleteEnabled(deleteInput === "yes, delete my account");
-  }, [deleteInput]);
+    setDeleteEnabled(deleteInput === t("deleteInput"));
+  }, [deleteInput, t]);
 
   async function handleDelete() {
     setDeleteLoading(true);
@@ -110,8 +117,8 @@ function SecondDialog({
 
     if (res.ok) {
       toast({
-        title: "Account Deleted",
-        description: "Your account has been successfully deleted.",
+        title: t("handleDelete.title"),
+        description: t("handleDelete.description"),
         duration: 5000,
       });
       setDeleteLoading(false);
@@ -119,8 +126,10 @@ function SecondDialog({
       router.push("/");
     } else {
       toast({
-        title: "Error",
-        description: `An error occurred: ${await res.text()} (${res.status})`,
+        title: t("handleDelete.errorTitle"),
+        description: t("handleDelete.errorDescription", {
+          res: `${await res.text()} (${res.status})`,
+        }),
         duration: 5000,
         variant: "destructive",
       });
@@ -131,18 +140,17 @@ function SecondDialog({
   return (
     <AlertDialog open={modalOpen} onOpenChange={setModalOpen}>
       <AlertDialogTrigger>
-        <Button variant="destructive">Yes, delete my account</Button>
+        <Button variant="destructive">{t("secondDialog.title")}</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <h2 className="text-lg font-semibold">Delete Account</h2>
+          <h2 className="text-lg font-semibold">{t("secondDialog.delete")}</h2>
         </AlertDialogHeader>
+        <p>{t("description")}</p>
         <p>
-          Are you absolutely sure you want to delete your account? This action
-          cannot be undone.
-        </p>
-        <p>
-          Type <strong>yes, delete my account</strong> to confirm.
+          {t.rich("secondDialog.confirm", {
+            strong: (chunks) => <strong>{chunks}</strong>,
+          })}
         </p>
         <Input
           type="text"
@@ -158,10 +166,10 @@ function SecondDialog({
             {deleteLoading ? (
               <>
                 <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                Deleting...
+                {t("secondDialog.deleting")}
               </>
             ) : (
-              "Delete Account"
+              t("secondDialog.delete")
             )}
           </Button>
           <Button
@@ -171,7 +179,7 @@ function SecondDialog({
               setFirstDialogOpen(false);
             }}
           >
-            Cancel
+            {t("cancel")}
           </Button>
         </div>
       </AlertDialogContent>

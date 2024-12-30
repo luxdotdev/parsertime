@@ -4,6 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { TODO } from "@/types/utils";
 import { Kill } from "@prisma/client";
+import { useTranslations } from "next-intl";
 
 type Fight = {
   kills: Kill[];
@@ -12,6 +13,8 @@ type Fight = {
 };
 
 export function KillfeedExport({ fights }: { fights: Fight[] }) {
+  const t = useTranslations("mapPage.killfeedTable");
+
   const flattenedData = fights.flatMap((fight) =>
     fight.kills.map((kill) => ({
       fight_number: fights.indexOf(fight) + 1,
@@ -61,7 +64,7 @@ export function KillfeedExport({ fights }: { fights: Fight[] }) {
 
   return (
     <Button variant="outline" onClick={handleClick}>
-      Export as CSV
+      {t("exportCSV")}
     </Button>
   );
 }

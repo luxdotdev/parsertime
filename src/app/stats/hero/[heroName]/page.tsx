@@ -10,41 +10,48 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
+import { translateHeroName } from "@/lib/utils";
 import { HeroName, heroRoleMapping } from "@/types/heroes";
 import { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 type Props = {
-  params: { heroName: string };
+  params: { heroName: string; locale: string };
 };
 
-export function generateMetadata({ params }: Props): Metadata {
-  const hero = decodeURIComponent(params.heroName);
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const heroName = decodeURIComponent(params.heroName);
+  const hero = await translateHeroName(heroName);
+  const t = await getTranslations("statsPage.heroMetadata");
 
   return {
-    title: `Stats for ${hero} | Parsertime`,
-    description: `Stats for ${hero} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+    title: t("title", { hero }),
+    description: t("description", { hero }),
     openGraph: {
-      title: `$Stats for ${hero} | Parsertime`,
-      description: `Stats for ${hero} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+      title: t("ogTitle", { hero }),
+      description: t("ogDescription", { hero }),
       url: "https://parsertime.app",
       type: "website",
       siteName: "Parsertime",
       images: [
         {
-          url: `https://parsertime.app/api/og?title=Stats for ${hero} | Parsertime`,
+          url: `https://parsertime.app/api/og?title=${t("ogImage", { hero })}`,
           width: 1200,
           height: 630,
         },
       ],
-      locale: "en_US",
+      locale: params.locale,
     },
   };
 }
 
 export default async function HeroStats({ params }: Props) {
+  const t = await getTranslations("statsPage.heroStats");
+
   const hero = decodeURIComponent(params.heroName);
+  const translatedHeroName = await translateHeroName(hero);
 
   // check if hero is valid
   if (heroRoleMapping[hero as HeroName] === undefined) notFound();
@@ -139,20 +146,20 @@ export default async function HeroStats({ params }: Props) {
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">
-            Stats for {hero}
+            {t("header", { hero: translatedHeroName })}
           </h2>
         </div>
 
         <Card className="h-[70vh] border-none">
           <div className="flex h-full items-center justify-center">
             <div className="text-center text-xl font-bold text-red-500">
-              Failed to find stats for {hero}. Did you spell the name correctly?
+              {t("heroFail", { hero: translatedHeroName })}
               <div className="text-center">
                 <Link
                   href="/stats"
                   className="text-base font-normal text-muted-foreground"
                 >
-                  &larr; Go back to stats
+                  &larr; {t("back")}
                 </Link>
               </div>
             </div>
@@ -165,7 +172,9 @@ export default async function HeroStats({ params }: Props) {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Stats for {hero}</h2>
+        <h2 className="text-3xl font-bold tracking-tight">
+          {t("header", { hero: translatedHeroName })}
+        </h2>
       </div>
 
       <RangePicker

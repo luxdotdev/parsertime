@@ -5,10 +5,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { get } from "@vercel/edge-config";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 
 export default async function Footer() {
+  const t = await getTranslations("footer");
+
   const [version, changelog] = await Promise.all([
     get<string>("version"),
     get<string>("changelog"),
@@ -38,7 +41,7 @@ export default async function Footer() {
                   {version ?? ""}
                 </Link>
               </TooltipTrigger>
-              <TooltipContent>Click to view changelog</TooltipContent>
+              <TooltipContent>{t("changelog")}</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
@@ -48,43 +51,43 @@ export default async function Footer() {
             href="/dashboard"
             className="text-sm text-gray-600 transition-colors duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
           >
-            Dashboard
+            {t("dashboard")}
           </Link>
           <Link
             href="/stats"
             className="text-sm text-gray-600 transition-colors duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
           >
-            Stats
+            {t("stats")}
           </Link>
           <Link
             href="/team"
             className="text-sm text-gray-600 transition-colors duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
           >
-            Teams
+            {t("teams")}
           </Link>
           <Link
             href="/settings"
             className="text-sm text-gray-600 transition-colors duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
           >
-            Settings
+            {t("settings")}
           </Link>
           <Link
             href="/contact"
             className="text-sm text-gray-600 transition-colors duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
           >
-            Contact
+            {t("contact")}
           </Link>
           <Link
             href="https://docs.parsertime.app"
             target="_blank"
             className="text-sm text-gray-600 transition-colors duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
           >
-            Docs
+            {t("docs")}
           </Link>
         </div>
 
         <p className="mt-6 text-sm text-gray-500 dark:text-gray-400 lg:mt-0">
-          © 2024 lux.dev.
+          © {new Date().getFullYear()} lux.dev.
         </p>
       </div>
     </footer>

@@ -1,16 +1,13 @@
-import { SearchParams } from "@/types/next";
-import prisma from "@/lib/prisma";
-import { EditScrimForm } from "@/components/scrim/edit-scrim-form";
-import { Search } from "@/components/dashboard/search";
-import { ModeToggle } from "@/components/theme-switcher";
-import { UserNav } from "@/components/user-nav";
-import { MainNav } from "@/components/dashboard/main-nav";
-import Link from "next/link";
+import DashboardLayout from "@/components/dashboard-layout";
 import { DangerZone } from "@/components/scrim/danger-zone";
+import { EditScrimForm } from "@/components/scrim/edit-scrim-form";
 import { getScrim } from "@/data/scrim-dto";
-import { MobileNav } from "@/components/mobile-nav";
+import { getTeamsWithPerms } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import { getTeamsWithPerms, getUser } from "@/data/user-dto";
+import prisma from "@/lib/prisma";
+import { SearchParams } from "@/types/next";
+import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 
 type Props = {
   params: { team: string; scrimId: string };
@@ -20,7 +17,7 @@ type Props = {
 export default async function EditScrimPage({ params }: Props) {
   const scrim = await getScrim(parseInt(params.scrimId));
   const session = await auth();
-  const user = await getUser(session?.user?.email);
+  const t = await getTranslations("scrimPage.editScrim");
 
   if (!scrim) {
     return <div>Scrim not found</div>;
@@ -37,33 +34,16 @@ export default async function EditScrimPage({ params }: Props) {
   ).sort((a, b) => a.id - b.id);
 
   return (
-    <div className="min-h-[90vh] flex-col md:flex">
-      <div className="border-b">
-        <div className="hidden h-16 items-center px-4 md:flex">
-          <MainNav className="mx-6" />
-          <div className="ml-auto flex items-center space-x-4">
-            <Search user={user} />
-            <ModeToggle />
-            <UserNav />
-          </div>
-        </div>
-        <div className="flex h-16 items-center px-4 md:hidden">
-          <MobileNav session={session} />
-          <div className="ml-auto flex items-center space-x-4">
-            <ModeToggle />
-            <UserNav />
-          </div>
-        </div>
-      </div>
+    <DashboardLayout>
       <main className="container py-2">
         <h4 className="pb-2 text-gray-600 dark:text-gray-400">
           <Link href={`/${params.team}/scrim/${params.scrimId}`}>
-            &larr; Back to scrim
+            &larr; {t("back")}
           </Link>
         </h4>
 
         <h3 className="scroll-m-20 pb-2 text-2xl font-semibold tracking-tight">
-          Edit Scrim Details
+          {t("title")}
         </h3>
 
         <EditScrimForm scrim={scrim} teams={teamsWithPerms} maps={maps} />
@@ -72,6 +52,6 @@ export default async function EditScrimPage({ params }: Props) {
 
         <DangerZone scrim={scrim} />
       </main>
-    </div>
+    </DashboardLayout>
   );
 }

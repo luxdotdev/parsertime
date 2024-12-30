@@ -9,13 +9,14 @@ import {
 import { FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Link } from "@/components/ui/link";
 import { useToast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
 import { parseData } from "@/lib/parser";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ExternalLinkIcon, PlusCircledIcon } from "@radix-ui/react-icons";
-import Link from "next/link";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Form, useForm } from "react-hook-form";
@@ -30,34 +31,38 @@ const ACCEPTED_FILE_TYPES = [XLSX, TXT];
 
 const MAX_FILE_SIZE = 1000000; // 1MB in bytes
 
-const formSchema = z.object({
-  file: z
-    .instanceof(File)
-    .refine((file) => file !== null && file !== undefined, "File is required.")
-    .refine(
-      (file) => file && file.size <= MAX_FILE_SIZE,
-      "Max file size is 1MB."
-    )
-    .refine(
-      (file) => file && ACCEPTED_FILE_TYPES.includes(file.type),
-      ".xlsx files are accepted."
-    )
-    .nullable(),
-});
-
 export function AddMapCard() {
   const [dragActive, setDragActive] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
   const pathname = usePathname();
+  const t = useTranslations("scrimPage.addMap");
+
+  const formSchema = z.object({
+    file: z
+      .instanceof(File)
+      .refine(
+        (file) => file !== null && file !== undefined,
+        t("fileMessage.required")
+      )
+      .refine(
+        (file) => file && file.size <= MAX_FILE_SIZE,
+        t("fileMessage.maxSize")
+      )
+      .refine(
+        (file) => file && ACCEPTED_FILE_TYPES.includes(file.type),
+        t("fileMessage.accepted")
+      )
+      .nullable(),
+  });
 
   async function handleFile(file: File) {
     // pathname should look like this: /team/scrim/:id
     const scrimId = pathname.split("/")[3];
 
     toast({
-      title: "Creating map...",
-      description: "We are processing your data. Please wait.",
+      title: t("handleFile.creatingTitle"),
+      description: t("handleFile.creatingDescription"),
       duration: 5000,
     });
 
@@ -70,29 +75,27 @@ export function AddMapCard() {
 
     if (res.ok) {
       toast({
-        title: "Map created",
-        description: "Your map has been created successfully.",
+        title: t("handleFile.createTitle"),
+        description: t("handleFile.createDescription"),
         duration: 5000,
       });
       router.refresh();
     } else {
       toast({
-        title: "Error",
-        description: (
-          <p>
-            An error occurred: {await res.text()} ({res.status}). Please read
-            the docs{" "}
+        title: t("handleFile.errorTitle"),
+        description: t.rich("handleFile.errorDescription", {
+          res: `${await res.text()} (${res.status})`,
+          here: (chunks) => (
             <Link
               href="https://docs.parsertime.app/#common-errors"
               target="_blank"
               className="underline"
+              external
             >
-              here
-            </Link>{" "}
-            <ExternalLinkIcon className="inline h-4 w-4" /> to see if the error
-            can be resolved.
-          </p>
-        ),
+              {chunks}
+            </Link>
+          ),
+        }),
         duration: 5000,
         variant: "destructive",
       });
@@ -157,15 +160,15 @@ export function AddMapCard() {
                   <CardHeader className="text-center text-xl">
                     <span className="inline-flex items-center justify-center space-x-2">
                       <PlusCircledIcon className="h-6 w-6" />{" "}
-                      <span>Add a map...</span>
+                      <span>{t("title")}</span>
                     </span>
                   </CardHeader>
                   <CardDescription className="pb-4">
-                    Drag and drop or select a file to upload.
+                    {t("description")}
                   </CardDescription>
                   <CardContent className="flex items-center justify-center">
                     <Label htmlFor="file" className="hidden">
-                      Add a file
+                      {t("addFile")}
                     </Label>
                     <Input
                       id="file"

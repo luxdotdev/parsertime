@@ -15,6 +15,7 @@ import {
   round,
   toTimestamp,
 } from "@/lib/utils";
+import { getTranslations } from "next-intl/server";
 
 export async function DefaultOverview({
   id,
@@ -23,6 +24,7 @@ export async function DefaultOverview({
   id: number;
   playerName: string;
 }) {
+  const t = await getTranslations("mapPage.player.overview");
   const playerNameDecoded = decodeURIComponent(playerName);
 
   const [finalRound, playerStatsByFinalRound, fights] = await Promise.all([
@@ -82,7 +84,7 @@ export async function DefaultOverview({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Match Time
+              {t("matchTime")}
             </CardTitle>
             <CardIcon>
               <circle cx="12" cy="12" r="10" />
@@ -96,14 +98,16 @@ export async function DefaultOverview({
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              {((finalRound?.match_time ?? 0) / 60).toFixed(2)} minutes
+              {t("minutes", {
+                time: ((finalRound?.match_time ?? 0) / 60).toFixed(2),
+              })}
             </p>
           </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="align-baseline text-sm font-medium">
-              Fleta Deadlift Percentage
+              {t("fletaTitle")}
             </CardTitle>
             <CardIcon>
               <path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15" />
@@ -116,20 +120,21 @@ export async function DefaultOverview({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {round(playerFletaDeadliftPercentage).toFixed(2)}%
+              {t("fletaPercent", {
+                percent: round(playerFletaDeadliftPercentage).toFixed(2),
+              })}
             </div>
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              A Fleta Deadlift is when a player earns 50% of their team&apos;s
-              final blows.
+              {t("fletaDescription")}
             </p>
           </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              First Pick Percentage
+              {t("firstPickTitle")}
             </CardTitle>
             <CardIcon>
               <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5" />
@@ -140,20 +145,25 @@ export async function DefaultOverview({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {round(firstPickPercentage).toFixed(2)}%
+              {t("firstPickPercent", {
+                percent: round(firstPickPercentage).toFixed(2),
+              })}
             </div>
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              Out of {fights.length} fights, {playerNameDecoded} got the first
-              pick {playerFirstKills.length} times.
+              {t("firstPickDescription", {
+                fights: fights.length,
+                player: playerNameDecoded,
+                picks: playerFirstKills.length,
+              })}
             </p>
           </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              First Death Percentage
+              {t("firstDeathTitle")}
             </CardTitle>
             <CardIcon>
               <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
@@ -161,13 +171,18 @@ export async function DefaultOverview({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {round(firstDeathPercentage).toFixed(2)}%
+              {t("firstDeathPercent", {
+                percent: round(firstDeathPercentage).toFixed(2),
+              })}
             </div>
           </CardContent>
           <CardFooter>
             <p className="text-xs text-muted-foreground">
-              Out of {fights.length} fights, {playerNameDecoded} died first{" "}
-              {playerFirstDeaths.length} times.
+              {t("firstDeathDescription", {
+                fights: fights.length,
+                player: playerNameDecoded,
+                deaths: playerFirstDeaths.length,
+              })}
             </p>
           </CardFooter>
         </Card>

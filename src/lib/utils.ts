@@ -1,6 +1,8 @@
 import prisma from "@/lib/prisma";
 import { $Enums, Kill } from "@prisma/client";
 import { type ClassValue, clsx } from "clsx";
+import { useMessages, useTranslations } from "next-intl";
+import { getMessages, getTranslations } from "next-intl/server";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -312,4 +314,96 @@ export async function groupPlayerKillsIntoFights(
   });
 
   return fights;
+}
+
+/**
+ * Translates the given map name using the "maps" translation namespace.
+ * This is the async server-side version of `useMapName`.
+ *
+ * @param name - The map name to translate.
+ * @returns The translated map name.
+ */
+export async function translateMapName(name: string) {
+  const t = await getTranslations("maps");
+  return t(toKebabCase(name));
+}
+
+/**
+ * Translates the given map name using the "maps" translation namespace.
+ * This is the synchronous client-side version of `translateMapName`.
+ *
+ * @param name - The map name to translate.
+ * @returns The translated map name.
+ */
+export function useMapName(name: string) {
+  const t = useTranslations("maps");
+  return t(toKebabCase(name));
+}
+
+/**
+ * Retrieves a map of all available map names, with the map name as the key and the translated map name as the value.
+ * This is an asynchronous function that fetches the map names from the "maps" translation namespace.
+ *
+ * @returns A Map of map names and their translated values.
+ */
+export async function getMapNames() {
+  const mapNames = (await getMessages())["maps"] as Record<string, string>;
+  return new Map<string, string>(Object.entries(mapNames));
+}
+
+/**
+ * Retrieves a map of all available map names, with the map name as the key and the translated map name as the value.
+ * This is a synchronous function that retrieves the map names from the "maps" translation namespace.
+ *
+ * @returns A Map of map names and their translated values.
+ */
+export function useMapNames() {
+  const mapNames = useMessages()["maps"] as Record<string, string>;
+  return new Map(Object.entries(mapNames));
+}
+
+/**
+ * Translates the given map name using the "heroes" translation namespace.
+ * This is the async server-side version of `useHeroName`.
+ *
+ * @param name - The map name to translate.
+ * @returns The translated map name.
+ */
+export async function translateHeroName(name: string) {
+  const t = await getTranslations("heroes");
+  return t(toHero(name));
+}
+
+/**
+ * Translates the given hero name using the "heroes" translation namespace.
+ * This is the synchronous client-side version of `translateHeroName`.
+ *
+ * @param name - The map name to translate.
+ * @returns The translated map name.
+ */
+export function useHeroName(name: string) {
+  const t = useTranslations("heroes");
+  return t(toHero(name));
+}
+
+/**
+ * Retrieves a map of all available hero names, with the hero name as the key and the translated hero name as the value.
+ * This is an asynchronous function that fetches the hero names from the "heroes" translation namespace.
+ *
+ * @returns A Map of hero names and their translated values.
+ */
+export async function getHeroNames() {
+  const heroNames = (await getMessages())["heroes"] as Record<string, string>;
+  return new Map<string, string>(Object.entries(heroNames));
+}
+
+/**
+ * Retrieves a map of all available hero names, with the hero name as the key and the translated hero name as the value.
+ * This is a synchronous function that retrieves the hero names from the "heroes" translation namespace.
+ *
+ * @returns A Map of hero names and their translated values.
+ */
+export function useHeroNames() {
+  const heroNames = useMessages()["heroes"] as Record<string, string>;
+  return new Map(Object.entries(heroNames));
 }

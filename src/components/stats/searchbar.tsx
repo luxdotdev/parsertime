@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Link } from "@/components/ui/link";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -19,6 +20,7 @@ const formSchema = z.object({
 });
 
 export function Searchbar() {
+  const t = useTranslations("statsPage.searchbar");
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -46,16 +48,15 @@ export function Searchbar() {
           render={({ field }) => (
             <Input
               {...field}
-              placeholder="Enter a player name..."
+              placeholder={t("placeholder")}
               className="h-12 text-lg"
             />
           )}
         />
         <FormDescription>
-          Search for a player to view their stats. You can search by username or
-          their battle tag. Example:{" "}
-          <span className="font-semibold">Spingar</span> or{" "}
-          <span className="font-semibold">Spingar#1000</span>.
+          {t.rich("description", {
+            span: (chunks) => <span className="font-semibold">{chunks}</span>,
+          })}
         </FormDescription>
         <FormMessage />
       </form>
@@ -63,7 +64,7 @@ export function Searchbar() {
       <div className="p-1" />
 
       <Link href="/stats/hero" className="text-sm text-foreground">
-        Click here to view hero stats &rarr;
+        {t("link")} &rarr;
       </Link>
 
       <Separator />

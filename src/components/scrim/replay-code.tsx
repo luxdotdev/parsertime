@@ -8,17 +8,20 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "@/components/ui/use-toast";
-
-function handleClick({ replayCode }: { replayCode: string }) {
-  void navigator.clipboard.writeText(replayCode);
-  toast({
-    title: "Copied to clipboard!",
-    description: "Replay code copied to clipboard.",
-    duration: 5000,
-  });
-}
+import { useTranslations } from "next-intl";
 
 export function ReplayCode({ replayCode }: { replayCode: string }) {
+  const t = useTranslations("scrimPage.replayCode");
+
+  function handleClick({ replayCode }: { replayCode: string }) {
+    void navigator.clipboard.writeText(replayCode);
+    toast({
+      title: t("onClick.title"),
+      description: t("onClick.description"),
+      duration: 5000,
+    });
+  }
+
   return (
     <TooltipProvider>
       <Tooltip>
@@ -29,7 +32,7 @@ export function ReplayCode({ replayCode }: { replayCode: string }) {
             </p>
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Replay Code (click to copy)</TooltipContent>
+        <TooltipContent>{t("title")}</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );

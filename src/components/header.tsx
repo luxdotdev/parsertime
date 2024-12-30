@@ -1,22 +1,24 @@
 "use client";
 
-import { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
-
-const navigation = [
-  { name: "Home", href: "/" },
-  { name: "About", href: "/about" },
-  { name: "Pricing", href: "/pricing" },
-  { name: "Demo", href: "/demo" },
-  { name: "Docs", href: "https://docs.parsertime.app" },
-  { name: "Company", href: "https://lux.dev" },
-];
+import { useState } from "react";
 
 export default function Header() {
+  const t = useTranslations("marketing.header");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navigation = [
+    { name: t("home"), href: "/" },
+    { name: t("about"), href: "/about" },
+    { name: t("pricing"), href: "/pricing" },
+    { name: t("demo"), href: "/demo" },
+    { name: t("docs"), href: "https://docs.parsertime.app" },
+    { name: t("company"), href: "https://lux.dev" },
+  ];
 
   return (
     <header className="absolute inset-x-0 top-0 z-50">
@@ -42,7 +44,7 @@ export default function Header() {
             className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-600 dark:text-gray-400"
             onClick={() => setMobileMenuOpen(true)}
           >
-            <span className="sr-only">Open main menu</span>
+            <span className="sr-only">{t("accessibility.open")}</span>
             <Bars3Icon className="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
@@ -62,7 +64,7 @@ export default function Header() {
             href="/sign-in"
             className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
           >
-            Log in <span aria-hidden="true">&rarr;</span>
+            {t("logIn")} <span aria-hidden="true">&rarr;</span>
           </Link>
         </div>
       </nav>
@@ -90,7 +92,7 @@ export default function Header() {
               className="-m-2.5 rounded-md p-2.5 text-gray-600 dark:text-gray-400"
               onClick={() => setMobileMenuOpen(false)}
             >
-              <span className="sr-only">Close menu</span>
+              <span className="sr-only">{t("accessibility.close")}</span>
               <XMarkIcon className="h-6 w-6" aria-hidden="true" />
             </button>
           </div>
@@ -112,7 +114,7 @@ export default function Header() {
                   href="/sign-in"
                   className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-200 dark:text-white dark:hover:bg-black"
                 >
-                  Log in
+                  {t("logIn")}
                 </Link>
               </div>
             </div>

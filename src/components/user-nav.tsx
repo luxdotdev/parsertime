@@ -11,12 +11,13 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
+import { $Enums } from "@prisma/client";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { $Enums } from "@prisma/client";
-import { getUser } from "@/data/user-dto";
 
 export async function UserNav() {
   const session = await auth();
@@ -27,6 +28,8 @@ export async function UserNav() {
   const user = await getUser(session?.user?.email);
 
   const isAdmin = user?.role === $Enums.UserRole.ADMIN;
+
+  const t = await getTranslations("dashboard.userNav");
 
   return (
     <DropdownMenu>
@@ -57,20 +60,20 @@ export async function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <Link href="/dashboard">
-            <DropdownMenuItem>Dashboard</DropdownMenuItem>
+            <DropdownMenuItem>{t("dashboard")}</DropdownMenuItem>
           </Link>
           <Link href="/team">
-            <DropdownMenuItem>Teams</DropdownMenuItem>
+            <DropdownMenuItem>{t("teams")}</DropdownMenuItem>
           </Link>
           <Link href="/settings">
-            <DropdownMenuItem>Settings</DropdownMenuItem>
+            <DropdownMenuItem>{t("settings")}</DropdownMenuItem>
           </Link>
           <Link href="/contact">
-            <DropdownMenuItem>Contact</DropdownMenuItem>
+            <DropdownMenuItem>{t("contact")}</DropdownMenuItem>
           </Link>
           <Link href="https://docs.parsertime.app" target="_blank">
             <DropdownMenuItem>
-              Docs
+              {t("docs")}
               <DropdownMenuShortcut>
                 <ExternalLinkIcon />
               </DropdownMenuShortcut>
@@ -81,7 +84,7 @@ export async function UserNav() {
           <>
             <DropdownMenuSeparator />
             <Link href="/settings/admin">
-              <DropdownMenuItem>Admin</DropdownMenuItem>
+              <DropdownMenuItem>{t("admin")}</DropdownMenuItem>
             </Link>
           </>
         )}

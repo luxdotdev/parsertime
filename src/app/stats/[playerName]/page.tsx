@@ -13,41 +13,42 @@ import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-type Props = { params: { playerName: string } };
+type Props = { params: { playerName: string; locale: string } };
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const t = await getTranslations("statsPage.playerMetadata");
   const playerName = decodeURIComponent(params.playerName);
+  const suffix = playerName.endsWith("s") ? "'" : "'s";
 
   return {
-    title: `${playerName}'${
-      playerName.endsWith("s") ? "" : "s"
-    } Stats | Parsertime`,
-    description: `Player stats for ${playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+    title: t("title", { playerName, suffix }),
+    description: t("description", { playerName, suffix }),
     openGraph: {
-      title: `${playerName}'${
-        playerName.endsWith("s") ? "" : "s"
-      } Stats | Parsertime`,
-      description: `Player stats for ${playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+      title: t("ogTitle", { playerName, suffix }),
+      description: t("ogDescription", { playerName }),
       url: "https://parsertime.app",
       type: "website",
       siteName: "Parsertime",
       images: [
         {
-          url: `https://parsertime.app/api/og?title=${playerName}'${
-            playerName.endsWith("s") ? "" : "s"
-          } Stats`,
+          url: `https://parsertime.app/api/og?title=${t("ogImage", {
+            playerName,
+            suffix,
+          })}`,
           width: 1200,
           height: 630,
         },
       ],
-      locale: "en_US",
+      locale: params.locale,
     },
   };
 }
 
 export default async function PlayerStats({ params }: Props) {
+  const t = await getTranslations("statsPage.playerStats");
   const name = decodeURIComponent(params.playerName);
 
   const session = await auth();
@@ -149,20 +150,20 @@ export default async function PlayerStats({ params }: Props) {
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">
-            {name}&apos;{name.endsWith("s") ? "" : "s"} Stats
+            {t("title", { name, suffix: name.endsWith("s") ? "'" : "'s" })}
           </h2>
         </div>
 
         <Card className="h-[70vh] border-none">
           <div className="flex h-full items-center justify-center">
             <div className="text-center text-xl font-bold text-red-500">
-              Failed to find stats for {name}. Did you spell the name correctly?
+              {t("statsFail", { name })}
               <div className="text-center">
                 <Link
                   href="/stats"
                   className="text-base font-normal text-muted-foreground"
                 >
-                  &larr; Go back to stats
+                  &larr; {t("back")}
                 </Link>
               </div>
             </div>
@@ -176,7 +177,7 @@ export default async function PlayerStats({ params }: Props) {
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">
-          {name}&apos;{name.endsWith("s") ? "" : "s"} Stats
+          {t("title", { name, suffix: name.endsWith("s") ? "'" : "'s" })}
         </h2>
       </div>
 

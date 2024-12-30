@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Scrim } from "@prisma/client";
 import { Pencil2Icon } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 type Props = {
@@ -16,6 +17,8 @@ type Props = {
 };
 
 export function ScrimCard({ scrim }: Props) {
+  const t = useTranslations("dashboard.scrimCard");
+
   return (
     <Link href={`/${scrim.teamId}/scrim/${scrim.id}`}>
       <Card className="max-w-md sm:h-48 md:h-64 xl:h-48">
@@ -28,12 +31,12 @@ export function ScrimCard({ scrim }: Props) {
                   <TooltipTrigger asChild>
                     <Link
                       href={`/${scrim.teamId}/scrim/${scrim.id}/edit`}
-                      aria-label="Edit scrim"
+                      aria-label={t("editScrim")}
                     >
                       <Pencil2Icon className="h-4 w-4" />
                     </Link>
                   </TooltipTrigger>
-                  <TooltipContent>Edit scrim</TooltipContent>
+                  <TooltipContent>{t("editScrim")}</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             )}
@@ -44,7 +47,7 @@ export function ScrimCard({ scrim }: Props) {
         </CardHeader>
         <CardContent>
           <p className="text-md pt-10 font-normal text-foreground">
-            <span className="text-muted-foreground">Team: </span>
+            <span className="text-muted-foreground">{t("team")}</span>
             {scrim.team}
           </p>
         </CardContent>

@@ -1,12 +1,14 @@
-import { DiscordSettingsForm } from "@/components/settings/discord-form";
+import { DiscordLoginButton } from "@/components/settings/discord-login-button";
 import { Separator } from "@/components/ui/separator";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
-import { DiscordLoginButton } from "@/components/settings/discord-login-button";
+import { getTranslations } from "next-intl/server";
+import { redirect } from "next/navigation";
 
 export default async function LinkedAccountSettingsPage() {
+  const t = await getTranslations("settingsPage.linkedAccounts");
+
   const session = await auth();
   if (!session || !session.user) {
     redirect("/sign-in");
@@ -31,17 +33,11 @@ export default async function LinkedAccountSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium">Linked Accounts</h3>
-        <p className="text-sm text-muted-foreground">
-          Manage linked account settings and preferences.
-        </p>
+        <h3 className="text-lg font-medium">{t("title")}</h3>
+        <p className="text-sm text-muted-foreground">{t("description")}</p>
       </div>
       <Separator />
-      {discordAccount ? (
-        <p>Your Discord account is successfully linked.</p>
-      ) : (
-        <DiscordLoginButton />
-      )}
+      {discordAccount ? <p>{t("discord.linked")}</p> : <DiscordLoginButton />}
     </div>
   );
 }

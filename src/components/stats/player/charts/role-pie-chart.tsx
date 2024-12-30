@@ -1,9 +1,10 @@
 "use client";
 
 import { CardContent, CardFooter } from "@/components/ui/card";
-import { cn, toTimestampWithHours, toTitleCase } from "@/lib/utils";
+import { cn, toTimestampWithHours } from "@/lib/utils";
 import { HeroName, heroRoleMapping } from "@/types/heroes";
 import { PlayerStat } from "@prisma/client";
+import { useTranslations } from "next-intl";
 import {
   Cell,
   Pie,
@@ -29,6 +30,8 @@ function CustomTooltip({
   payload,
   label,
 }: TooltipProps<ValueType, NameType>) {
+  const t = useTranslations("statsPage.playerStats.timeSpent");
+
   if (active && payload && payload.length) {
     return (
       <div className="z-50 overflow-hidden rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
@@ -41,9 +44,9 @@ function CustomTooltip({
         <p className="text-sm">
           <span
             className={cn(
-              payload[0].name === "Tank"
+              payload[0].name === t("tank")
                 ? "text-blue-500"
-                : payload[0].name === "Damage"
+                : payload[0].name === t("damage")
                   ? "text-red-500"
                   : "text-green-500"
             )}
@@ -61,8 +64,10 @@ function CustomTooltip({
 type Props = { data: PlayerStat[] };
 
 export function RolePieChart({ data }: Props) {
+  const t = useTranslations("statsPage.playerStats.timeSpent");
+
   const processedData: Data = data.map((row) => ({
-    name: toTitleCase(heroRoleMapping[row.player_hero as HeroName]),
+    name: t(heroRoleMapping[row.player_hero as HeroName].toLowerCase()),
     pv: row.hero_time_played,
   }));
 
@@ -149,9 +154,9 @@ export function RolePieChart({ data }: Props) {
                   // eslint-disable-next-line react/no-array-index-key
                   key={`cell-${index}`}
                   fill={
-                    entry.name === "Tank"
+                    entry.name === t("tank")
                       ? COLORS[0]
-                      : entry.name === "Damage"
+                      : entry.name === t("damage")
                         ? COLORS[1]
                         : COLORS[2]
                   }
@@ -164,16 +169,13 @@ export function RolePieChart({ data }: Props) {
       </CardContent>
       <CardFooter>
         <p className="text-sm text-muted-foreground">
-          Total time played:{" "}
-          <span className="text-foreground">
-            {toTimestampWithHours(totalTimePlayed)}
-          </span>{" "}
-          | Time played per role:{" "}
-          <span className="text-foreground">
-            {pieData
+          {t.rich("footer", {
+            span: (chunks) => <span className="text-foreground">{chunks}</span>,
+            toTimestampWithHours: toTimestampWithHours(totalTimePlayed),
+            timePerRole: pieData
               .map((entry) => `${entry.name}: ${entry.pv.toFixed(2)}%`)
-              .join(", ")}
-          </span>
+              .join(", "),
+          })}
         </p>
       </CardFooter>
     </>

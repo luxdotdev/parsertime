@@ -5,14 +5,14 @@ import {
   TableBody,
   TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { cn, toHero, toTimestamp } from "@/lib/utils";
+import { cn, toHero, toKebabCase, toTimestamp } from "@/lib/utils";
 import { Kill } from "@prisma/client";
 import { GeistMono } from "geist/font/mono";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
@@ -33,9 +33,10 @@ export function KillfeedTable({
 }) {
   const pathname = usePathname();
   const teamId = pathname.split("/")[1];
+  const t = useTranslations("mapPage.killfeedTable");
 
   const environmentalString =
-    teamId === "1" ? "Limit Testing" : "Environmental";
+    teamId === "1" ? t("limitTest") : t("environment");
 
   return (
     <>
@@ -43,15 +44,15 @@ export function KillfeedTable({
         <div key={fight.start}>
           {fight.kills.length > 0 && (
             <Table key={fight.start}>
-              <TableCaption>Fight {i + 1}</TableCaption>
+              <TableCaption>{t("fight", { num: i + 1 })}</TableCaption>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-20">Time</TableHead>
-                  <TableHead className="w-80">Kill</TableHead>
-                  <TableHead className="w-20">Method</TableHead>
-                  <TableHead className="w-20">Start</TableHead>
-                  <TableHead className="w-20">End</TableHead>
-                  <TableHead className="w-20">Fight Winner</TableHead>
+                  <TableHead className="w-20">{t("time")}</TableHead>
+                  <TableHead className="w-80">{t("kill")}</TableHead>
+                  <TableHead className="w-20">{t("method")}</TableHead>
+                  <TableHead className="w-20">{t("start")}</TableHead>
+                  <TableHead className="w-20">{t("end")}</TableHead>
+                  <TableHead className="w-20">{t("fightWinner")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -115,11 +116,11 @@ export function KillfeedTable({
                         ? kill.is_environmental
                           ? environmentalString
                           : kill.event_ability === "0"
-                            ? "Primary Fire"
-                            : kill.event_ability
+                            ? t("abilities.primary-fire")
+                            : t(`abilities.${toKebabCase(kill.event_ability)}`)
                         : kill.event_ability === "0"
-                          ? "Primary Fire"
-                          : kill.event_ability}
+                          ? t("abilities.primary-fire")
+                          : t(`abilities.${toKebabCase(kill.event_ability)}`)}
                     </TableCell>
                     {j === 0 ? (
                       <>

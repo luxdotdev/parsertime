@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 
 export function MainNav({
@@ -10,6 +11,7 @@ export function MainNav({
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
   const pathname = usePathname();
+  const t = useTranslations("dashboard.mainNav");
 
   return (
     <nav
@@ -23,7 +25,7 @@ export function MainNav({
           pathname === "/dashboard" ? "text-primary" : "text-muted-foreground"
         )}
       >
-        Dashboard
+        {t("dashboard")}
       </Link>
       <Link
         href="/stats"
@@ -32,7 +34,7 @@ export function MainNav({
           pathname === "/stats" ? "text-primary" : "text-muted-foreground"
         )}
       >
-        Stats
+        {t("stats")}
       </Link>
       <Link
         href="/team"
@@ -43,26 +45,26 @@ export function MainNav({
             : "text-muted-foreground"
         )}
       >
-        Teams
+        {t("teams")}
       </Link>
       <Link
         href="/settings"
         className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
       >
-        Settings
+        {t("settings")}
       </Link>
       <Link
         href="/contact"
         className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
       >
-        Contact
+        {t("contact")}
       </Link>
       <Link
         href="https://docs.parsertime.app"
         target="_blank"
         className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
       >
-        Docs
+        {t("docs")}
       </Link>
     </nav>
   );

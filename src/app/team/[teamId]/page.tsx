@@ -9,11 +9,13 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { $Enums, User } from "@prisma/client";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
-type Props = { params: { teamId: string } };
+type Props = { params: { teamId: string; locale: string } };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const t = await getTranslations("teamPage.teamMetadata");
   const teamId = decodeURIComponent(params.teamId);
 
   const team = await prisma.team.findFirst({
@@ -21,30 +23,31 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     select: { name: true },
   });
 
-  const teamName = team?.name ?? "Team";
+  const teamName = team?.name ?? t("defaultTeam");
 
   return {
-    title: `${teamName} Overview | Parsertime`,
-    description: `Overview for ${teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+    title: t("title", { teamName }),
+    description: t("description", { teamName }),
     openGraph: {
-      title: `${teamName} Overview | Parsertime`,
-      description: `Overview for ${teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+      title: t("ogTitle", { teamName }),
+      description: t("ogDescription", { teamName }),
       url: "https://parsertime.app",
       type: "website",
       siteName: "Parsertime",
       images: [
         {
-          url: `https://parsertime.app/api/og?title=${teamName} Overview`,
+          url: `https://parsertime.app/api/og?title=${t("ogImage", { teamName })}`,
           width: 1200,
           height: 630,
         },
       ],
-      locale: "en_US",
+      locale: params.locale,
     },
   };
 }
 
 export default async function Team({ params }: { params: { teamId: string } }) {
+  const t = await getTranslations("teamPage");
   const session = await auth();
 
   const teamId = parseInt(params.teamId);
@@ -73,20 +76,20 @@ export default async function Team({ params }: { params: { teamId: string } }) {
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">
-          {teamData?.name ?? "Team Name"}
+          {teamData?.name ?? t("defaultName")}
         </h2>
       </div>
 
       <Tabs defaultValue="members" className="space-y-4">
         {hasPerms && (
           <TabsList>
-            <TabsTrigger value="members">Members</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
+            <TabsTrigger value="members">{t("members")}</TabsTrigger>
+            <TabsTrigger value="settings">{t("settings")}</TabsTrigger>
           </TabsList>
         )}
         <TabsContent value="members" className="space-y-4">
           <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-            Members
+            {t("members")}
           </h3>
 
           {teamMembers?.users.length > 0 && (
@@ -101,8 +104,8 @@ export default async function Team({ params }: { params: { teamId: string } }) {
                       }
                       alt={
                         user.name
-                          ? `Profile picture of ${user.name}`
-                          : "Default user avatar"
+                          ? t("altText.userProfile", { user: user.name })
+                          : t("altText.noAvatar")
                       }
                       width={100}
                       height={100}
@@ -111,9 +114,9 @@ export default async function Team({ params }: { params: { teamId: string } }) {
                     <CardHeader className="flex">
                       <div>
                         <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-                          {user.name} {userIsManager(user) && "(Manager)"}{" "}
-                          {user.id === teamData?.ownerId && "(Owner)"}{" "}
-                          {user.name === session?.user?.name && "(You)"}
+                          {user.name} {userIsManager(user) && t("manager")}{" "}
+                          {user.id === teamData?.ownerId && t("owner")}{" "}
+                          {user.name === session?.user?.name && t("you")}
                         </h4>
                       </div>
                     </CardHeader>

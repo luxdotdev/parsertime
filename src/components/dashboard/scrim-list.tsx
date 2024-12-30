@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { SearchParams } from "@/types/next";
 import { $Enums } from "@prisma/client";
+import { getTranslations } from "next-intl/server";
 
 type Props = {
   searchParams: SearchParams;
@@ -23,6 +24,8 @@ export async function ScrimList({ searchParams }: Props) {
   }
 
   const userViewableScrims = await getUserViewableScrims(userData.id);
+
+  const t = await getTranslations("dashboard.scrimCard");
 
   for (const scrim of userViewableScrims) {
     const [teamName, creatorName] = await Promise.all([
@@ -52,8 +55,8 @@ export async function ScrimList({ searchParams }: Props) {
       teamId: scrim.teamId,
       creatorId: scrim.creatorId,
       guestMode: scrim.guestMode,
-      team: teamName?.name ?? "Uncategorized",
-      creator: creatorName[0].name ?? "Unknown",
+      team: teamName?.name ?? t("noTeam"),
+      creator: creatorName[0].name ?? t("noCreator"),
       hasPerms,
     });
   }

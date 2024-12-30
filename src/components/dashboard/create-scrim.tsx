@@ -10,19 +10,21 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Dialog } from "@radix-ui/react-dialog";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 export function CreateScrimButton() {
   const [open, setOpen] = useState(false);
+  const t = useTranslations("dashboard.addScrim");
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Create Scrim</Button>
+        <Button>{t("createScrim")}</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create Scrim</DialogTitle>
+          <DialogTitle>{t("createScrim")}</DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">

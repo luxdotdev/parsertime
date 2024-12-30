@@ -2,9 +2,10 @@
 
 import { CardContent, CardFooter } from "@/components/ui/card";
 import { NonMappableStat, Stat } from "@/lib/player-charts";
-import { cn, format, round, toMins, toTitleCase } from "@/lib/utils";
+import { cn, format, round, toMins } from "@/lib/utils";
 import { PlayerStat, Scrim } from "@prisma/client";
 import { TrendingDownIcon, TrendingUpIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   CartesianGrid,
   Legend,
@@ -74,6 +75,8 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
   scrimData,
   better,
 }: Props<T>) {
+  const t = useTranslations("statsPage.playerStats");
+
   // We want to merge the stat values when the date is the same
   // Then we want to get the value per 10 minutes
   const chartData = data.map((playerStat) => ({
@@ -144,7 +147,7 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
               dataKey="pv"
               stroke="#3b82f6"
               activeDot={{ r: 8 }}
-              name={toTitleCase(stat.toString().replace(/_/g, " "))}
+              name={t(`stats.${stat}`)}
             />
           </LineChart>
         </ResponsiveContainer>
@@ -153,22 +156,26 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
         <div className="space-y-1">
           <div className="inline-flex items-center gap-1 text-foreground">
             <p>
-              Trending by{" "}
-              <span
-                className={cn(
-                  better === "higher" && percentageChange.includes("+")
-                    ? "text-green-500"
-                    : better === "higher" && percentageChange.includes("-")
-                      ? "text-red-500"
-                      : better === "lower" && percentageChange.includes("+")
-                        ? "text-red-500"
-                        : "text-green-500",
-                  "inline-flex items-center gap-1"
-                )}
-              >
-                {percentageChange}
-              </span>{" "}
-              in the last {scrimData.length} scrims{" "}
+              {t.rich("statPer10.footer", {
+                span: (chunks) => (
+                  <span
+                    className={cn(
+                      better === "higher" && percentageChange.includes("+")
+                        ? "text-green-500"
+                        : better === "higher" && percentageChange.includes("-")
+                          ? "text-red-500"
+                          : better === "lower" && percentageChange.includes("+")
+                            ? "text-red-500"
+                            : "text-green-500",
+                      "inline-flex items-center gap-1"
+                    )}
+                  >
+                    {chunks}
+                  </span>
+                ),
+                percentageChange,
+                scrimData: scrimData.length,
+              })}{" "}
               <span className="inline-flex">
                 {better === "higher" && percentageChange.includes("+") ? (
                   <TrendingUpIcon size={16} className="translate-y-[3px]" />
@@ -179,9 +186,11 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
             </p>
           </div>
           <p className="text-sm text-muted-foreground">
-            Average:{" "}
-            <span className="text-foreground">{format(round(avg))}</span> | Max:{" "}
-            <span className="text-foreground">{format(round(max))}</span> | Min:{" "}
+            {t("statPer10.avg")}{" "}
+            <span className="text-foreground">{format(round(avg))}</span>{" "}
+            {t("statPer10.max")}{" "}
+            <span className="text-foreground">{format(round(max))}</span>{" "}
+            {t("statPer10.min")}{" "}
             <span className="text-foreground">{format(round(min))}</span>
           </p>
         </div>
