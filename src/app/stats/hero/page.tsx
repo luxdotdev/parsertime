@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
-import { toHero } from "@/lib/utils";
+import { getHeroNames, toHero } from "@/lib/utils";
 import { roleHeroMapping } from "@/types/heroes";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -37,6 +37,8 @@ export default async function HeroSelect() {
   const t = await getTranslations("statsPage.heroStats");
   const allHeroesByRole = Object.entries(roleHeroMapping);
 
+  const heroNames = await getHeroNames();
+
   const tankHeroes = allHeroesByRole[0][1];
   const damageHeroes = allHeroesByRole[1][1];
   const supportHeroes = allHeroesByRole[2][1];
@@ -62,13 +64,15 @@ export default async function HeroSelect() {
                 >
                   <Image
                     src={`/heroes/${toHero(hero)}.png`}
-                    alt={t("altText", { hero })}
+                    alt={t("altText", {
+                      hero: heroNames.get(toHero(hero)) || hero,
+                    })}
                     width={128}
                     height={128}
                     className="h-12 w-12 rounded border md:h-16 md:w-16"
                   />
                   <span className="text-sm font-semibold tracking-tight">
-                    {hero}
+                    {heroNames.get(toHero(hero)) || hero}
                   </span>
                 </Link>
               ))}
@@ -89,13 +93,15 @@ export default async function HeroSelect() {
                 >
                   <Image
                     src={`/heroes/${toHero(hero)}.png`}
-                    alt={t("altText", { hero })}
+                    alt={t("altText", {
+                      hero: heroNames.get(toHero(hero)) || hero,
+                    })}
                     width={128}
                     height={128}
                     className="h-12 w-12 rounded border md:h-16 md:w-16"
                   />
                   <span className="text-sm font-semibold tracking-tight">
-                    {hero}
+                    {heroNames.get(toHero(hero)) || hero}
                   </span>
                 </Link>
               ))}
@@ -116,13 +122,15 @@ export default async function HeroSelect() {
                 >
                   <Image
                     src={`/heroes/${toHero(hero)}.png`}
-                    alt={t("altText", { hero })}
+                    alt={t("altText", {
+                      hero: heroNames.get(toHero(hero)) || hero,
+                    })}
                     width={128}
                     height={128}
                     className="h-12 w-12 rounded border md:h-16 md:w-16"
                   />
                   <span className="text-sm font-semibold tracking-tight">
-                    {hero}
+                    {heroNames.get(toHero(hero)) || hero}
                   </span>
                 </Link>
               ))}
