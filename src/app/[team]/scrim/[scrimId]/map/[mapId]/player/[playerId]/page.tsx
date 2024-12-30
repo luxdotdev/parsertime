@@ -2,6 +2,7 @@ import { PlayerCharts } from "@/components/charts/player/player-charts";
 import { MainNav } from "@/components/dashboard/main-nav";
 import { Search } from "@/components/dashboard/search";
 import { GuestNav } from "@/components/guest-nav";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 import PlayerSwitcher from "@/components/map/player-switcher";
 import { PlayerAnalytics } from "@/components/player/analytics";
 import { DefaultOverview } from "@/components/player/default-overview";
@@ -15,38 +16,52 @@ import prisma from "@/lib/prisma";
 import { toTitleCase } from "@/lib/utils";
 import { SearchParams } from "@/types/next";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
 type Props = {
-  params: { team: string; scrimId: string; mapId: string; playerId: string };
+  params: {
+    team: string;
+    scrimId: string;
+    mapId: string;
+    playerId: string;
+    locale: string;
+  };
   searchParams: SearchParams;
 };
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const t = await getTranslations({
+    locale: params.locale,
+    namespace: "mapPage.playerMetadata",
+  });
   const playerName = decodeURIComponent(params.playerId);
 
   return {
-    title: `${playerName} Overview | Parsertime`,
-    description: `Player overview for ${playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+    title: t("title", { playerName }),
+    description: t("description", { playerName }),
     openGraph: {
-      title: `${playerName} Overview | Parsertime`,
-      description: `Player overview for ${playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.`,
+      title: t("ogTitle", { playerName }),
+      description: t("ogDescription", { playerName }),
       url: "https://parsertime.app",
       type: "website",
       siteName: "Parsertime",
       images: [
         {
-          url: `https://parsertime.app/api/og?title=${playerName} Overview`,
+          url: `https://parsertime.app/api/og?title=${t("ogImage", {
+            playerName,
+          })}`,
           width: 1200,
           height: 630,
         },
       ],
-      locale: "en_US",
+      locale: params.locale,
     },
   };
 }
 
 export default async function PlayerDashboardPage({ params }: Props) {
+  const t = await getTranslations("mapPage.player.dashboard");
   const id = parseInt(params.mapId);
   const playerName = decodeURIComponent(params.playerId);
 
@@ -82,6 +97,7 @@ export default async function PlayerDashboardPage({ params }: Props) {
           <div className="ml-auto flex items-center space-x-4">
             <Search user={user} />
             <ModeToggle />
+            <LocaleSwitcher />
             {session ? (
               <UserNav />
             ) : (
@@ -93,6 +109,7 @@ export default async function PlayerDashboardPage({ params }: Props) {
           <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
           <div className="ml-auto flex items-center space-x-4">
             <ModeToggle />
+            <LocaleSwitcher />
             {session ? (
               <UserNav />
             ) : (
@@ -107,24 +124,24 @@ export default async function PlayerDashboardPage({ params }: Props) {
             <Link
               href={`/${params.team}/scrim/${params.scrimId}/map/${params.mapId}`}
             >
-              &larr; Back to default overview
+              &larr; {t("back")}
             </Link>
             {" | "}
             <Link href={`/stats/${params.playerId}`}>
-              View aggregated stats &rarr;
+              {t("viewStats")} &rarr;
             </Link>
           </h4>
         </div>
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">
-            {toTitleCase(mapName?.map_name ?? "Dashboard")}
+            {toTitleCase(mapName?.map_name ?? t("dashboard"))}
           </h2>
         </div>
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="charts">Charts</TabsTrigger>
+            <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
+            <TabsTrigger value="analytics">{t("analytics")}</TabsTrigger>
+            <TabsTrigger value="charts">{t("charts")}</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
             <DefaultOverview id={id} playerName={playerName} />

@@ -9,6 +9,7 @@
 import prisma from "@/lib/prisma";
 import {
   cn,
+  getHeroNames,
   groupKillsIntoFights,
   removeDuplicateRows,
   toHero,
@@ -17,6 +18,7 @@ import {
 import { TODO } from "@/types/utils";
 import { $Enums, Kill, UltimateEnd } from "@prisma/client";
 import { GeistMono } from "geist/font/mono";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
 type MultikillEvent = {
@@ -130,15 +132,44 @@ export async function getMapEvents(id: number) {
     }),
   ]);
 
+  const t = await getTranslations("mapPage.events");
+  const heroNames = await getHeroNames();
+
   if (!matchStart) return [];
 
-  const captureString = () => {
+  const captureString = (team: string) => {
     switch (matchStart.map_type) {
       case "Control":
       case "Flashpoint":
-        return "took control of the point.";
+        return t.rich("mapEvents.captureString1", {
+          color: (chunks) => (
+            <span
+              className={cn(
+                team === matchStart.team_1_name
+                  ? "text-blue-500"
+                  : "text-red-500"
+              )}
+            >
+              {chunks}
+            </span>
+          ),
+          team,
+        });
       default:
-        return "captured the objective.";
+        return t.rich("mapEvents.captureString2", {
+          color: (chunks) => (
+            <span
+              className={cn(
+                team === matchStart.team_1_name
+                  ? "text-blue-500"
+                  : "text-red-500"
+              )}
+            >
+              {chunks}
+            </span>
+          ),
+          team,
+        });
     }
   };
 
@@ -243,16 +274,7 @@ export async function getMapEvents(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
-            <span
-              className={cn(
-                event.capturing_team === matchStart.team_1_name
-                  ? "text-blue-500"
-                  : "text-red-500"
-              )}
-            >
-              {event.capturing_team}
-            </span>{" "}
-            {captureString()}
+            {captureString(event.capturing_team)}
           </p>
         );
       case "objective_updated":
@@ -261,26 +283,7 @@ export async function getMapEvents(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
-            Point captured
-          </p>
-        );
-      case "payload_progress":
-        return (
-          <p className="p-2" key={event.match_time}>
-            <span className={GeistMono.className}>
-              {toTimestamp(event.match_time)} -{" "}
-            </span>{" "}
-            Payload progress:
-            <span
-              className={cn(
-                event.capturing_team === matchStart.team_1_name
-                  ? "text-blue-500"
-                  : "text-red-500"
-              )}
-            >
-              {event.capturing_team}
-            </span>{" "}
-            {event.payload_capture_progress} meters
+            {t("mapEvents.objectiveUpdate")}
           </p>
         );
       case "hero_swap":
@@ -290,42 +293,51 @@ export async function getMapEvents(id: number) {
               {toTimestamp(event.match_time)} -{" "}
             </span>
             <span className="inline-flex items-center gap-1 pl-1">
-              <Image
-                src={`/heroes/${toHero(event.previous_hero)}.png`}
-                alt={`${event.player_name}'s hero`}
-                width={256}
-                height={256}
-                className={cn(
-                  "h-8 w-8 rounded border-2",
-                  event.player_team === matchStart.team_1_name
-                    ? "border-blue-500"
-                    : "border-red-500"
-                )}
-              />
-              <span
-                className={cn(
-                  event.player_team === matchStart.team_1_name
-                    ? "text-blue-500"
-                    : "text-red-500"
-                )}
-              >
-                {event.player_name}
-              </span>
-            </span>{" "}
-            swapped to{" "}
-            <Image
-              src={`/heroes/${toHero(event.player_hero)}.png`}
-              alt={`${event.player_name}'s new hero`}
-              width={256}
-              height={256}
-              className={cn(
-                "h-8 w-8 rounded border-2",
-                event.player_team === matchStart.team_1_name
-                  ? "border-blue-500"
-                  : "border-red-500"
-              )}
-            />{" "}
-            {event.player_hero}.
+              {t.rich("mapEvents.swap", {
+                img1: () => (
+                  <Image
+                    src={`/heroes/${toHero(event.previous_hero)}.png`}
+                    alt={`${event.player_name}'s hero`}
+                    width={256}
+                    height={256}
+                    className={cn(
+                      "h-8 w-8 rounded border-2",
+                      event.player_team === matchStart.team_1_name
+                        ? "border-blue-500"
+                        : "border-red-500"
+                    )}
+                  />
+                ),
+                color: (chunks) => (
+                  <span
+                    className={cn(
+                      event.player_team === matchStart.team_1_name
+                        ? "text-blue-500"
+                        : "text-red-500"
+                    )}
+                  >
+                    {chunks}
+                  </span>
+                ),
+                img2: () => (
+                  <Image
+                    src={`/heroes/${toHero(event.player_hero)}.png`}
+                    alt={`${event.player_name}'s new hero`}
+                    width={256}
+                    height={256}
+                    className={cn(
+                      "h-8 w-8 rounded border-2",
+                      event.player_team === matchStart.team_1_name
+                        ? "border-blue-500"
+                        : "border-red-500"
+                    )}
+                  />
+                ),
+                hero:
+                  heroNames.get(toHero(event.player_hero)) ?? event.player_hero,
+                player: event.player_name,
+              })}
+            </span>
           </div>
         );
       case "ultimate_kills":
@@ -334,31 +346,37 @@ export async function getMapEvents(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
-            <span className="inline-flex items-center gap-1 pl-1">
-              <Image
-                src={`/heroes/${toHero(event.player_hero)}.png`}
-                alt={`${event.player_name}'s hero`}
-                width={256}
-                height={256}
-                className={cn(
-                  "h-8 w-8 rounded border-2",
-                  event.player_team === matchStart.team_1_name
-                    ? "border-blue-500"
-                    : "border-red-500"
-                )}
-              />
-              <span
-                className={cn(
-                  event.player_team === matchStart.team_1_name
-                    ? "text-blue-500"
-                    : "text-red-500"
-                )}
-              >
-                {event.player_name}
-              </span>
-            </span>{" "}
-            killed {event.kills.length} player
-            {event.kills.length > 1 ? "s" : ""} with/during their ultimate.
+            <div className="inline-flex items-center gap-1 pl-1">
+              {t.rich("mapEvents.ultKills", {
+                img: () => (
+                  <Image
+                    src={`/heroes/${toHero(event.player_hero)}.png`}
+                    alt={`${event.player_name}'s hero`}
+                    width={256}
+                    height={256}
+                    className={cn(
+                      "h-8 w-8 rounded border-2",
+                      event.player_team === matchStart.team_1_name
+                        ? "border-blue-500"
+                        : "border-red-500"
+                    )}
+                  />
+                ),
+                color: (chunks) => (
+                  <span
+                    className={cn(
+                      event.player_team === matchStart.team_1_name
+                        ? "text-blue-500"
+                        : "text-red-500"
+                    )}
+                  >
+                    {chunks}
+                  </span>
+                ),
+                player: event.player_name,
+                players: event.kills.length,
+              })}
+            </div>
           </div>
         );
       case "round_start":
@@ -367,7 +385,7 @@ export async function getMapEvents(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>{" "}
-            Round {event.round_number} started
+            {t("roundStart", { event: event.round_number })}
           </p>
         );
       case "round_end":
@@ -377,7 +395,7 @@ export async function getMapEvents(id: number) {
               <span className={GeistMono.className}>
                 {toTimestamp(event.match_time)} -{" "}
               </span>{" "}
-              Round {event.round_number} ended
+              {t("roundEnd", { event: event.round_number })}
             </p>
             <div className="py-3" />
           </div>
@@ -388,7 +406,7 @@ export async function getMapEvents(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>{" "}
-            Match ended
+            {t("matchEnd")}
           </p>
         );
       case "match_start":
@@ -397,7 +415,7 @@ export async function getMapEvents(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>{" "}
-            Match started
+            {t("matchStart")}
             <div className="py-3" />
           </p>
         );
@@ -407,31 +425,39 @@ export async function getMapEvents(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
-            During fight {event.fightIndex + 1},{" "}
-            <span className="inline-flex items-center gap-1">
-              <Image
-                src={`/heroes/${toHero(event.player_hero)}.png`}
-                alt={`${event.player_name}'s hero`}
-                width={256}
-                height={256}
-                className={cn(
-                  "h-8 w-8 rounded border-2",
-                  event.player_team === matchStart.team_1_name
-                    ? "border-blue-500"
-                    : "border-red-500"
-                )}
-              />
-              <span
-                className={cn(
-                  event.player_team === matchStart.team_1_name
-                    ? "text-blue-500"
-                    : "text-red-500"
-                )}
-              >
-                {event.player_name}
-              </span>
-            </span>{" "}
-            got a multikill, killing {event.killTimes.length} players.
+            {t.rich("mapEvents.multikill", {
+              event: event.fightIndex + 1,
+              span: (chunks) => (
+                <span className="inline-flex items-center gap-1">{chunks}</span>
+              ),
+              img: () => (
+                <Image
+                  src={`/heroes/${toHero(event.player_hero)}.png`}
+                  alt={`${event.player_name}'s hero`}
+                  width={256}
+                  height={256}
+                  className={cn(
+                    "h-8 w-8 rounded border-2",
+                    event.player_team === matchStart.team_1_name
+                      ? "border-blue-500"
+                      : "border-red-500"
+                  )}
+                />
+              ),
+              color: (chunks) => (
+                <span
+                  className={cn(
+                    event.player_team === matchStart.team_1_name
+                      ? "text-blue-500"
+                      : "text-red-500"
+                  )}
+                >
+                  {chunks}
+                </span>
+              ),
+              player: event.player_name,
+              kills: event.killTimes.length,
+            })}
           </div>
         );
       case "ajax":
@@ -440,34 +466,41 @@ export async function getMapEvents(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
-            <span className="inline-flex items-center gap-1">
-              <Image
-                src={`/heroes/${toHero(event.player_hero)}.png`}
-                alt={`${event.player_name}'s hero`}
-                width={256}
-                height={256}
-                className={cn(
-                  "h-8 w-8 rounded border-2",
-                  event.player_team === matchStart.team_1_name
-                    ? "border-blue-500"
-                    : "border-red-500"
-                )}
-              />
-              <span
-                className={cn(
-                  event.player_team === matchStart.team_1_name
-                    ? "text-blue-500"
-                    : "text-red-500"
-                )}
-              >
-                {event.player_name}
-              </span>
-            </span>{" "}
-            Ajaxed during fight{" "}
-            {fights.findIndex((fight) => {
-              return fight.end >= event.match_time;
-            }) + 1}
-            .
+            {t.rich("mapEvents.ajax", {
+              span: (chunks) => (
+                <span className="inline-flex items-center gap-1">{chunks}</span>
+              ),
+              img: () => (
+                <Image
+                  src={`/heroes/${toHero(event.player_hero)}.png`}
+                  alt={`${event.player_name}'s hero`}
+                  width={256}
+                  height={256}
+                  className={cn(
+                    "h-8 w-8 rounded border-2",
+                    event.player_team === matchStart.team_1_name
+                      ? "border-blue-500"
+                      : "border-red-500"
+                  )}
+                />
+              ),
+              color: (chunks) => (
+                <span
+                  className={cn(
+                    event.player_team === matchStart.team_1_name
+                      ? "text-blue-500"
+                      : "text-red-500"
+                  )}
+                >
+                  {chunks}
+                </span>
+              ),
+              player: event.player_name,
+              fight:
+                fights.findIndex((fight) => {
+                  return fight.end >= event.match_time;
+                }) + 1,
+            })}
           </div>
         );
     }
@@ -477,6 +510,8 @@ export async function getMapEvents(id: number) {
 }
 
 export async function getUltimatesUsedList(id: number) {
+  const t = await getTranslations("mapPage.events");
+
   const [ultimateStartRows, matchStart, matchEnd, roundStarts, roundEndRows] =
     await Promise.all([
       prisma.ultimateStart.findMany({
@@ -535,7 +570,7 @@ export async function getUltimatesUsedList(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
-            Round {event.round_number} started
+            {t("roundStart", { event: event.round_number })}
           </p>
         );
       case "round_end":
@@ -545,7 +580,7 @@ export async function getUltimatesUsedList(id: number) {
               <span className={GeistMono.className}>
                 {toTimestamp(event.match_time)} -{" "}
               </span>{" "}
-              Round {event.round_number} ended
+              {t("roundEnd", { event: event.round_number })}
             </p>
             <div className="py-3" />
           </div>
@@ -556,7 +591,7 @@ export async function getUltimatesUsedList(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>{" "}
-            Match ended
+            {t("matchEnd")}
           </p>
         );
       case "match_start":
@@ -565,7 +600,7 @@ export async function getUltimatesUsedList(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>
-            Match started
+            {t("matchStart")}
             <div className="py-3" />
           </p>
         );
@@ -575,34 +610,41 @@ export async function getUltimatesUsedList(id: number) {
             <span className={GeistMono.className}>
               {toTimestamp(event.match_time)} -{" "}
             </span>{" "}
-            <span className="inline-flex items-center gap-1">
-              <Image
-                src={`/heroes/${toHero(event.player_hero)}.png`}
-                alt={`${event.player_name}'s hero`}
-                width={256}
-                height={256}
-                className={cn(
-                  "h-8 w-8 rounded border-2",
-                  event.player_team === matchStart.team_1_name
-                    ? "border-blue-500"
-                    : "border-red-500"
-                )}
-              />
-              <span
-                className={cn(
-                  event.player_team === matchStart.team_1_name
-                    ? "text-blue-500"
-                    : "text-red-500"
-                )}
-              >
-                {event.player_name}
-              </span>
-            </span>{" "}
-            used their ultimate during fight{" "}
-            {fights.findIndex((fight) => {
-              return fight.end >= event.match_time;
-            }) + 1}
-            .
+            {t.rich("ultsUsed.ultStart", {
+              span: (chunks) => (
+                <span className="inline-flex items-center gap-1">{chunks}</span>
+              ),
+              img: () => (
+                <Image
+                  src={`/heroes/${toHero(event.player_hero)}.png`}
+                  alt={`${event.player_name}'s hero`}
+                  width={256}
+                  height={256}
+                  className={cn(
+                    "h-8 w-8 rounded border-2",
+                    event.player_team === matchStart.team_1_name
+                      ? "border-blue-500"
+                      : "border-red-500"
+                  )}
+                />
+              ),
+              color: (chunks) => (
+                <span
+                  className={cn(
+                    event.player_team === matchStart.team_1_name
+                      ? "text-blue-500"
+                      : "text-red-500"
+                  )}
+                >
+                  {chunks}
+                </span>
+              ),
+              player: event.player_name,
+              fight:
+                fights.findIndex((fight) => {
+                  return fight.end >= event.match_time;
+                }) + 1,
+            })}
           </div>
         );
     }

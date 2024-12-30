@@ -20,6 +20,7 @@ import {
 import { cn, toHero } from "@/lib/utils";
 import { HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 
@@ -52,12 +53,14 @@ export default function PlayerSwitcher({
 }: TeamSwitcherProps & {
   mostPlayedHeroes: MostPlayedHeroesType;
 }) {
+  const t = useTranslations("mapPage.playerSwitcher");
+
   const [open, setOpen] = React.useState(false);
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false);
-  const [selectedPlayer, setSelectedPlayer] = React.useState<Player>({
-    label: "Default",
+  const [selectedPlayer, setSelectedPlayer] = React.useState<Player>(() => ({
+    label: t("default"),
     value: "default",
-  });
+  }));
 
   const router = useRouter();
   const pathname = usePathname();
@@ -124,7 +127,7 @@ export default function PlayerSwitcher({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            aria-label="Select a player"
+            aria-label={t("select")}
             className={cn("w-[200px] justify-between", className)}
           >
             <Avatar className="mr-2 h-5 w-5">
@@ -141,8 +144,8 @@ export default function PlayerSwitcher({
         <PopoverContent className="w-[200px] p-0">
           <Command>
             <CommandList>
-              <CommandInput placeholder="Search player..." />
-              <CommandEmpty>No player found.</CommandEmpty>
+              <CommandInput placeholder={t("search")} />
+              <CommandEmpty>{t("noPlayerFound")}</CommandEmpty>
               {teams.map((group) => (
                 <CommandGroup key={group.label} heading={group.label}>
                   {group.players.map((player) => (
@@ -183,20 +186,23 @@ export default function PlayerSwitcher({
                     onSelect={() => {
                       router.push(mapUrl);
                       setSelectedPlayer({
-                        label: "Default",
+                        label: t("default"),
                         value: "default",
                       });
                     }}
                   >
                     <Avatar className="mr-2 h-5 w-5">
-                      <AvatarImage src="/heroes/default.png" alt="Default" />
+                      <AvatarImage
+                        src="/heroes/default.png"
+                        alt={t("default")}
+                      />
                       <AvatarFallback>PT</AvatarFallback>
                     </Avatar>
-                    Default
+                    {t("default")}
                     <CheckIcon
                       className={cn(
                         "ml-auto h-4 w-4",
-                        selectedPlayer.label === "Default"
+                        selectedPlayer.label === t("default")
                           ? "opacity-100"
                           : "opacity-0"
                       )}

@@ -7,30 +7,42 @@ import { auth } from "@/lib/auth";
 import { SearchParams } from "@/types/next";
 import { $Enums } from "@prisma/client";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 type Props = {
   searchParams: SearchParams;
 };
 
-export const metadata: Metadata = {
-  title: "Dashboard | Parsertime",
-  description: "Parsertime is a tool for analyzing Overwatch scrims.",
-  openGraph: {
-    title: `Dashboard | Parsertime`,
-    description: `Parsertime is a tool for analyzing Overwatch scrims.`,
-    url: "https://parsertime.app",
-    type: "website",
-    siteName: "Parsertime",
-    images: [
-      {
-        url: `https://parsertime.app/api/og?title=Dashboard`,
-        width: 1200,
-        height: 630,
-      },
-    ],
-    locale: "en_US",
-  },
-};
+export async function generateMetadata({
+  params: { locale },
+}: {
+  params: { locale: string };
+}): Promise<Metadata> {
+  const t = await getTranslations({
+    locale,
+    namespace: "dashboard.metadata",
+  });
+
+  return {
+    title: t("title"),
+    description: t("description"),
+    openGraph: {
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+      url: "https://parsertime.app",
+      type: "website",
+      siteName: "Parsertime",
+      images: [
+        {
+          url: `https://parsertime.app/opengraph-image.png`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+      locale,
+    },
+  };
+}
 
 export default async function DashboardPage({ searchParams }: Props) {
   const session = await auth();
@@ -39,16 +51,18 @@ export default async function DashboardPage({ searchParams }: Props) {
 
   const isAdmin = userData?.role === $Enums.UserRole.ADMIN;
 
+  const t = await getTranslations("dashboard");
+
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+        <h2 className="text-3xl font-bold tracking-tight">{t("title")}</h2>
       </div>
       <Tabs defaultValue="overview" className="space-y-4">
         {isAdmin && (
           <TabsList>
-            <TabsTrigger value="overview">Your Scrims</TabsTrigger>
-            <TabsTrigger value="admin">Admin View</TabsTrigger>
+            <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
+            <TabsTrigger value="admin">{t("admin")}</TabsTrigger>
           </TabsList>
         )}
         <TabsContent value="overview" className="space-y-4">

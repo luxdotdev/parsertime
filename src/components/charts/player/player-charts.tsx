@@ -10,6 +10,7 @@ import { getPlayerFinalStats } from "@/data/scrim-dto";
 import { NonMappableStat, Stat, sumStatByRound } from "@/lib/player-charts";
 import prisma from "@/lib/prisma";
 import { HeroName, heroRoleMapping } from "@/types/heroes";
+import { getTranslations } from "next-intl/server";
 
 type Props = {
   id: number;
@@ -17,6 +18,8 @@ type Props = {
 };
 
 export async function PlayerCharts({ id, playerName }: Props) {
+  const t = await getTranslations("mapPage.player.charts");
+
   async function getStatByRound<T extends keyof Omit<Stat, NonMappableStat>>(
     stat: T
   ): Promise<Array<{ round_number: number } & Record<T, number>>> {
@@ -45,7 +48,7 @@ export async function PlayerCharts({ id, playerName }: Props) {
     },
   });
 
-  const team1Name = teams?.team_1_name ?? "Team 1";
+  const team1Name = teams?.team_1_name ?? t("team1");
 
   const playerTeamName = await prisma.playerStat.findFirst({
     where: {
@@ -74,7 +77,7 @@ export async function PlayerCharts({ id, playerName }: Props) {
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
       <Card className="col-span-3">
         <CardHeader>
-          <CardTitle>Hero Damage By Round</CardTitle>
+          <CardTitle>{t("dmgByRound.title")}</CardTitle>
         </CardHeader>
         <CardContent className="pl-2">
           <PlayerStatByRoundChart
@@ -86,17 +89,14 @@ export async function PlayerCharts({ id, playerName }: Props) {
         </CardContent>
         <CardFooter>
           <p className="text-sm text-gray-500">
-            This chart shows the hero damage done by round for {playerName}. The
-            x-axis represents the round, and the y-axis represents the damage
-            done. Note that the damage is NOT cumulative, so the damage done in
-            round 2 does not include the damage done in round 1.
+            {t("dmgByRound.footer", { playerName })}
           </p>
         </CardFooter>
       </Card>
       {playerRole === "Tank" && (
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle>Damage Mitigated By Round</CardTitle>
+            <CardTitle>{t("dmgBlockByRound.title")}</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
             <PlayerStatByRoundChart
@@ -108,11 +108,7 @@ export async function PlayerCharts({ id, playerName }: Props) {
           </CardContent>
           <CardFooter>
             <p className="text-sm text-gray-500">
-              This chart shows the damage mitigated by round for {playerName}.
-              The x-axis represents the round, and the y-axis represents the
-              healing done. Note that the healing is NOT cumulative, so the
-              healing done in round 2 does not include the healing done in round
-              1.
+              {t("dmgBlockByRound.footer", { playerName })}
             </p>
           </CardFooter>
         </Card>
@@ -120,7 +116,7 @@ export async function PlayerCharts({ id, playerName }: Props) {
       {playerRole === "Damage" && (
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle>Final Blows By Round</CardTitle>
+            <CardTitle>{t("finalBlowsByRound.title")}</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
             <PlayerStatByRoundChart
@@ -132,10 +128,7 @@ export async function PlayerCharts({ id, playerName }: Props) {
           </CardContent>
           <CardFooter>
             <p className="text-sm text-gray-500">
-              This chart shows the final blows by round for {playerName}. The
-              x-axis represents the round, and the y-axis represents the healing
-              done. Note that the healing is NOT cumulative, so the healing done
-              in round 2 does not include the healing done in round 1.
+              {t("finalBlowsByRound.footer", { playerName })}
             </p>
           </CardFooter>
         </Card>
@@ -143,7 +136,7 @@ export async function PlayerCharts({ id, playerName }: Props) {
       {playerRole === "Support" && (
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle>Healing By Round</CardTitle>
+            <CardTitle>{t("healingByRound.title")}</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
             <PlayerStatByRoundChart
@@ -155,17 +148,14 @@ export async function PlayerCharts({ id, playerName }: Props) {
           </CardContent>
           <CardFooter>
             <p className="text-sm text-gray-500">
-              This chart shows the healing done by round for {playerName}. The
-              x-axis represents the round, and the y-axis represents the healing
-              done. Note that the healing is NOT cumulative, so the healing done
-              in round 2 does not include the healing done in round 1.
+              {t("healingByRound.footer", { playerName })}
             </p>
           </CardFooter>
         </Card>
       )}
       <Card className="col-span-3">
         <CardHeader>
-          <CardTitle>Damage Taken By Round</CardTitle>
+          <CardTitle>{t("dmgTakenByRound.title")}</CardTitle>
         </CardHeader>
         <CardContent className="pl-2">
           <PlayerStatByRoundChart
@@ -177,16 +167,13 @@ export async function PlayerCharts({ id, playerName }: Props) {
         </CardContent>
         <CardFooter>
           <p className="text-sm text-gray-500">
-            This chart shows the damage taken by round for {playerName}. The
-            x-axis represents the round, and the y-axis represents the healing
-            done. Note that the healing is NOT cumulative, so the healing done
-            in round 2 does not include the healing done in round 1.
+            {t("dmgTakenByRound.footer", { playerName })}
           </p>
         </CardFooter>
       </Card>
       <Card className="col-span-3">
         <CardHeader>
-          <CardTitle>Healing Received By Round</CardTitle>
+          <CardTitle>{t("healingReceivedByRound.title")}</CardTitle>
         </CardHeader>
         <CardContent className="pl-2">
           <PlayerStatByRoundChart
@@ -198,10 +185,7 @@ export async function PlayerCharts({ id, playerName }: Props) {
         </CardContent>
         <CardFooter>
           <p className="text-sm text-gray-500">
-            This chart shows the healing received by round for {playerName}. The
-            x-axis represents the round, and the y-axis represents the healing
-            done. Note that the healing is NOT cumulative, so the healing done
-            in round 2 does not include the healing done in round 1.
+            {t("healingReceivedByRound.footer", { playerName })}
           </p>
         </CardFooter>
       </Card>

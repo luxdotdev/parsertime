@@ -1,5 +1,7 @@
 "use client";
 
+import { round as roundNum } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import {
   Area,
   AreaChart,
@@ -17,7 +19,6 @@ import {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
-import { round as roundNum } from "@/lib/utils";
 
 type Data = {
   name: string;
@@ -68,8 +69,10 @@ export function DamageByRoundChart({
   team2DamageByRound,
   teamNames,
 }: Props) {
+  const t = useTranslations("mapPage.charts");
+
   const data: Data = team1DamageByRound.map((round, index) => ({
-    name: `Round ${index + 1}`,
+    name: t("round", { round: index + 1 }),
     team1Damage: roundNum(round._sum.hero_damage_dealt ?? 0),
     team2Damage: roundNum(
       team2DamageByRound[index]._sum.hero_damage_dealt ?? 0

@@ -1,0 +1,1988 @@
+{
+  "maps": {
+    "antarctic-peninsula": "南极半岛",
+    "blizzard-world": "暴雪世界",
+    "blizzard-world-winter": "暴雪世界（冬季）",
+    "busan": "釜山",
+    "circuit-royal": "皇家赛道",
+    "colosseo": "斗兽场",
+    "dorado": "多拉多",
+    "eichenwalde": "艾兴瓦尔德",
+    "eichenwalde-halloween": "艾兴瓦尔德（万圣节）",
+    "esperanca": "埃斯佩兰萨",
+    "hanaoka": "花丘",
+    "havana": "哈瓦那",
+    "hollywood": "好莱坞",
+    "hollywood-halloween": "好莱坞（万圣节）",
+    "ilios": "伊利奥斯",
+    "junkertown": "渣客镇",
+    "kings-row": "国王大道",
+    "kings-row-winter": "国王大道（冬季）",
+    "lijiang-tower": "丽江塔",
+    "lijiang-tower-lunar-new-year": "丽江塔（春节）",
+    "midtown": "中城",
+    "nepal": "尼泊尔",
+    "new-junk-city": "新废土城",
+    "new-queen-street": "新皇后街",
+    "numbani": "努巴尼",
+    "oasis": "绿洲城",
+    "paraiso": "天堂",
+    "rialto": "里亚托",
+    "route-66": "66号公路",
+    "runasapi": "鲁纳萨皮",
+    "samoa": "萨摩亚",
+    "shambali-monastery": "香巴里寺院",
+    "suravasa": "苏拉瓦萨",
+    "throne-of-anubis": "阿努比斯王座",
+    "watchpoint-gibraltar": "观察站：直布罗陀"
+  },
+  "heroes": {
+    "ana": "安娜",
+    "ashe": "艾什",
+    "baptiste": "巴蒂斯特",
+    "bastion": "堡垒",
+    "brigitte": "布丽吉塔",
+    "cassidy": "卡西迪",
+    "doomfist": "末日铁拳",
+    "dva": "D.Va",
+    "echo": "回声",
+    "genji": "源氏",
+    "hanzo": "半藏",
+    "hazard": "哈扎德",
+    "illari": "伊拉莉",
+    "junkerqueen": "渣客女王",
+    "junkrat": "狂鼠",
+    "juno": "朱诺",
+    "kiriko": "雾子",
+    "lifeweaver": "生命之织",
+    "lucio": "卢西奥",
+    "mauga": "莫加",
+    "mei": "美",
+    "mercy": "天使",
+    "moira": "莫伊拉",
+    "orisa": "奥丽莎",
+    "pharah": "法老之鹰",
+    "ramattra": "拉玛塔",
+    "reaper": "死神",
+    "reinhardt": "莱因哈特",
+    "roadhog": "路霸",
+    "sigma": "西格玛",
+    "sojourn": "索杰恩",
+    "soldier76": "士兵：76",
+    "sombra": "黑影",
+    "symmetra": "秩序之光",
+    "torbjorn": "托比昂",
+    "tracer": "猎空",
+    "venture": "温彻",
+    "widowmaker": "黑百合",
+    "winston": "温斯顿",
+    "wreckingball": "破坏球",
+    "zarya": "查莉娅",
+    "zenyatta": "禅雅塔"
+  },
+  "landingPage": {
+    "hero": {
+      "latestUpdates": "最新更新",
+      "title": "革新您的训练赛体验",
+      "description": "使用我们的平台，直观查看您的比赛数据，跟踪球员的个人表现等。邀请球员加入您的团队，并让他们查看自己的统计数据。",
+      "getStarted": "立即开始",
+      "liveDemo": "现场演示",
+      "accountDescription": "已有账号？",
+      "signIn": "登录"
+    },
+    "logoCloud": {
+      "title": "适用于各类团队的统计跟踪"
+    },
+    "feature1": {
+      "subtitle": "提升效率",
+      "title": "提高团队表现所需的一切",
+      "description": "利用我们的平台优化改进流程。深入了解球员和团队的优劣势，聚焦需要改进的关键领域，调整您的教练策略。",
+      "learnMore": "了解更多"
+    },
+    "primaryFeatures": {
+      "builtByCoaches": {
+        "name": "为教练而打造",
+        "description": "专为大学和职业教练设计的平台，帮助您掌握团队表现的趋势和模式。"
+      },
+      "shareWithTeam": {
+        "name": "与团队共享",
+        "description": "邀请球员加入团队，查看自己的统计数据。与球员和教练共享团队统计，让每个人都掌握最新信息。"
+      },
+      "advancedStatistics": {
+        "name": "高级统计",
+        "description": "深入分析球员的长期表现。跟踪统计数据，了解进步情况，并查看每周趋势和模式。"
+      },
+      "href": "了解更多"
+    },
+    "feature2": {
+      "subtitle": "应有尽有",
+      "title": "比赛统计数据尽在掌握",
+      "description": "比赛结束后查看统计数据，而不是仅依赖回放代码。我们的平台保存您的数据，不受回放变化影响。"
+    },
+    "secondaryFeatures": {
+      "dataCharts": {
+        "name": "球员与团队数据图表。",
+        "description": "通过直观的图表了解团队统计数据。找到改进空间并评估团队表现的亮点。"
+      },
+      "filterStats": {
+        "name": "按时间筛选统计数据。",
+        "description": "查看团队在不同时间段的统计数据。按周、月或年筛选，追踪团队的进步。"
+      },
+      "userProfiles": {
+        "name": "用户档案。",
+        "description": "查看球员的个人数据和长期趋势。了解他们的进步及需要帮助的领域。"
+      },
+      "advancedSecurity": {
+        "name": "高级安全。",
+        "description": "用户账号不会存储密码。只有受邀用户可以访问您团队的比赛数据。"
+      },
+      "fastReliable": {
+        "name": "快速可靠。",
+        "description": "我们使用最新的云基础设施，提供稳定的速度与可靠性。"
+      },
+      "fullyCustomizable": {
+        "name": "完全可定制。",
+        "description": "需要自定义功能或特定指标的跟踪？告诉我们，我们会帮您实现。"
+      }
+    },
+    "stats": {
+      "subtitle": "我们的成就",
+      "title": "顶级团队的信赖之选",
+      "description": "我们荣幸与顶级团队和教练合作，提供卓越的体验。我们的平台满足大学和职业团队的需求。"
+    },
+    "testimonial": {
+      "starRating": "5 星好评",
+      "quote": "“Parsertime 是分析《守望先锋》比赛统计的绝佳工具。它让我深入了解数据并激发了我对数据科学的兴趣。如今，我使用 Parsertime 为四支队伍提供数据支持。它提供的见解影响深远，我可以帮助队员改进，例如延长存活时间、更有效地使用终极技能等。如果他们的治疗量低于平均值，我们还能一起找出原因。这是一个神奇的工具，帮助我们以广阔视角分析细节。”",
+      "author": "coy (@shy.coy)",
+      "role": "o7 电竞经理"
+    },
+    "cta": {
+      "subtitle": "准备好开始了吗？",
+      "title": "今天就开始使用我们的平台。",
+      "description": "立即注册，体验全新的教练方式。我们期待为您带来革命性改变。",
+      "getStarted": "立即开始",
+      "learnMore": "了解更多"
+    },
+    "footer": {
+      "screenReader": "页脚",
+      "copyright": "2024 lux.dev。保留所有权利。"
+    }
+  },
+  "metadata": {
+    "title": "Parsertime",
+    "description": "Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+    "ogTitle": "Parsertime",
+    "ogDescription": "Parsertime 是一款用于分析《守望先锋》训练赛的工具。"
+  },
+  "authError": {
+    "title": "登录时发生错误",
+    "error": "错误：",
+    "description": "请重试。如果问题仍然存在，请联系支持：<link>help@parsertime.app</link>。",
+    "back": "返回主页",
+    "signIn": "登录",
+    "errors": {
+      "configuration": "服务器配置出现错误。请联系支持。",
+      "accessDenied": "访问被拒绝。该应用可能处于私人测试阶段。如果您认为这是错误，请联系支持。",
+      "authorizedCallbackError": "访问被拒绝。该应用可能处于私人测试阶段。如果您认为这是错误，请联系支持。",
+      "verification": "令牌已过期或已被使用。请重试。",
+      "adapterError": "数据库适配器出现错误。请尝试清除您的 Cookie 后重试。如果问题仍然存在，请联系支持团队。",
+      "default": "登录时发生未知错误。请联系支持。"
+    }
+  },
+  "noAuth": {
+    "title": "未授权",
+    "description": "您无权查看此页面。请先登录或检查您的账户。",
+    "signIn": "登录"
+  },
+  "verifyRequest": {
+    "title": "检查您的电子邮件以获取登录链接",
+    "description": "我们已向您发送了一封带有登录链接的电子邮件。点击电子邮件中的链接以完成登录过程。",
+    "back": "返回首页"
+  },
+  "signInPage": {
+    "metadataSignIn": {
+      "title": "登录 | Parsertime",
+      "description": "登录您的账户。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "登录 | Parsertime",
+      "ogDescription": "登录您的账户。Parsertime 是一款用于分析《守望先锋》训练赛的工具。"
+    },
+    "metadataSignUp": {
+      "title": "注册 | Parsertime",
+      "description": "注册账户。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "注册 | Parsertime",
+      "ogDescription": "注册账户。Parsertime 是一款用于分析《守望先锋》训练赛的工具。"
+    },
+    "signUp": "注册",
+    "signIn": "登录",
+    "login": "登录",
+    "createAccount": "创建账户",
+    "enterEmailCreateAccount": "请输入您的电子邮件地址以创建账户",
+    "enterEmailSignIn": "请输入您的电子邮件地址以登录",
+    "signInEmail": "使用电子邮件登录",
+    "orContinueWith": "或者继续使用",
+    "madeBy": "使用 ❤️ 制作，作者 lux.dev"
+  },
+  "dashboard": {
+    "metadata": {
+      "title": "仪表盘 | Parsertime",
+      "description": "Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "仪表盘 | Parsertime",
+      "ogDescription": "Parsertime 是一款用于分析《守望先锋》训练赛的工具。"
+    },
+    "title": "仪表盘",
+    "overview": "您的比赛",
+    "admin": "管理员视图",
+    "search": "搜索...",
+    "themeSwitcher": {
+      "toggle": "切换主题",
+      "light": "浅色",
+      "dark": "深色",
+      "system": "系统默认"
+    },
+    "userNav": {
+      "dashboard": "仪表盘",
+      "teams": "团队",
+      "settings": "设置",
+      "contact": "联系我们",
+      "docs": "文档",
+      "admin": "管理员",
+      "signOut": "退出登录"
+    },
+    "commandMenu": {
+      "searchPlaceholder": "输入命令或搜索...",
+      "searchResult": "未找到结果。",
+      "suggestions": {
+        "title": "建议",
+        "dashboard": "仪表盘",
+        "docs": "文档",
+        "signIn": "登录",
+        "home": "首页"
+      },
+      "scrim": {
+        "title": "训练赛"
+      },
+      "link": {
+        "title": "链接已复制",
+        "description": "此 {pathname} 的链接已复制。",
+        "share": "共享链接至 {pathname}",
+        "map": "地图",
+        "scrim": "训练赛"
+      },
+      "teams": {
+        "title": "团队",
+        "viewTeams": "查看团队",
+        "viewScrims": "查看 {team} 的比赛"
+      },
+      "settings": {
+        "title": "设置",
+        "profile": "个人资料",
+        "linkedAccounts": "关联账户"
+      },
+      "debugging": {
+        "title": "调试",
+        "assistant": "调试助手"
+      },
+      "feedback": {
+        "title": "反馈",
+        "bugReport": "报告问题",
+        "contact": "联系我们",
+        "discord": "社区讨论区"
+      },
+      "locale": {
+        "title": "语言",
+        "change": "将语言更改为 {locale}"
+      },
+      "theme": {
+        "title": "主题",
+        "light": "浅色",
+        "dark": "深色",
+        "system": "系统默认"
+      }
+    },
+    "bugReportForm": {
+      "unknown": "未知",
+      "successToast": {
+        "title": "问题已提交",
+        "description": "感谢您的反馈！"
+      },
+      "errorToast": {
+        "title": "错误",
+        "description": "提交问题时发生错误。"
+      },
+      "title": "报告问题",
+      "description": "如果您发现问题，请告诉我们。您的帮助将使 Parsertime 更加完善。",
+      "formTitle": "标题",
+      "titlePlaceholder": "无法删除训练赛...",
+      "titleDescription": "简要描述问题的标题。",
+      "descriptionTitle": "详细信息",
+      "descriptionPlaceholder": "请输入问题的详细信息。",
+      "descriptionDescription": "请尽可能详细地描述您遇到的问题。",
+      "emailTitle": "电子邮件",
+      "emailPlaceholder": "user@example.com",
+      "emailDescription": "当前登录用户的电子邮件地址。",
+      "urlTitle": "页面链接",
+      "urlPlaceholder": "页面/路径",
+      "urlDescription": "出现问题的页面 URL。",
+      "submitting": "正在提交...",
+      "submit": "提交问题"
+    },
+    "filter": {
+      "title": "筛选",
+      "select": "选择筛选条件",
+      "oldToNew": "从旧到新",
+      "newToOld": "从新到旧",
+      "search": "搜索..."
+    },
+    "pagination": {
+      "previous": "上一页",
+      "next": "下一页",
+      "morePages": "更多页面"
+    },
+    "mainNav": {
+      "dashboard": "仪表盘",
+      "stats": "统计数据",
+      "teams": "团队",
+      "settings": "设置",
+      "contact": "联系我们",
+      "docs": "文档"
+    },
+    "teamSwitcher": {
+      "searchTeamPlaceholder": "搜索团队...",
+      "noTeamFound": "未找到团队。",
+      "individual": "个人",
+      "teams": "团队",
+      "createTeam": "创建团队"
+    },
+    "createTeam": {
+      "title": "创建团队",
+      "description": "添加新团队以组织比赛，并邀请队员查看和管理比赛。",
+      "teamName": "团队名称",
+      "placeholder": "康奈尔大学电竞队",
+      "required": "团队名称不能为空。",
+      "minCharacters": "团队名称至少应包含 2 个字符。",
+      "maxCharacters": "团队名称长度不得超过 30 个字符。",
+      "cancel": "取消",
+      "createTeam": "创建团队",
+      "creatingTeam": "正在创建团队...",
+      "newTeamCreated": {
+        "title": "团队已创建！",
+        "description": "您的团队已成功创建。"
+      },
+      "error": {
+        "title": "错误",
+        "description": "发生错误： {res}"
+      }
+    },
+    "emptyScrimList": {
+      "title": "暂无训练赛",
+      "description": "点击下方按钮创建一场比赛。",
+      "question": "不知道如何上传比赛数据？",
+      "documentation": "点击此处查看我们的文档。"
+    },
+    "addScrim": {
+      "title": "添加一场比赛...",
+      "description": "点击按钮创建一场比赛。",
+      "createScrim": "创建训练赛",
+      "handleFile": {
+        "fileReq": "必须上传文件。",
+        "fileMax": "文件大小不能超过 1MB。",
+        "fileAccept": "支持 .xlsx 和 .txt 文件。",
+        "creatingTitle": "正在创建比赛...",
+        "creatingDescription": "数据处理中，请稍候。",
+        "createdTitle": "比赛创建成功",
+        "createdDescription": "您的比赛已成功创建。",
+        "errorTitle": "错误",
+        "errorDescription": "发生错误：{res}"
+      }
+    },
+    "scrimCard": {
+      "editScrim": "编辑比赛",
+      "scrimDate": "比赛日期: ",
+      "team": "团队: ",
+      "noTeam": "未分类",
+      "creator": "创建者: ",
+      "noCreator": "未知"
+    },
+    "scrimCreationForm": {
+      "fileSize": {
+        "title": "文件太大",
+        "description": "文件大小不能超过 1MB。"
+      },
+      "fileType": {
+        "title": "文件类型无效",
+        "description": "支持 .xlsx 和 .txt 文件。"
+      },
+      "creatingScrim": {
+        "title": "正在创建训练赛",
+        "description": "请稍候..."
+      },
+      "createdScrim": {
+        "title": "比赛创建成功",
+        "description": "您的比赛已成功创建。",
+        "errorTitle": "错误",
+        "errorDescription": "发生错误：{res}。请查看文档 (<here>) 以解决可能的问题。"
+      },
+      "scrimName": "比赛名称",
+      "scrimPlaceholder": "新训练赛",
+      "scrimDescription": "这是比赛的名称，将显示在仪表盘上。",
+      "scrimRequiredError": "比赛名称不能为空。",
+      "scrimMinMessage": "名称至少需要 2 个字符。",
+      "scrimMaxMessage": "名称不能超过 30 个字符。",
+      "replayCodeName": "重播代码",
+      "replayCodePlaceholder": "输入重播代码",
+      "replayCodeDescription": "这是第一张地图的重播代码。比赛创建后可以编辑。",
+      "replayCodeMessage": "代码长度不能超过 6 个字符。",
+      "teamName": "所属团队",
+      "teamPlaceholder": "选择一个团队",
+      "teamIndividual": "个人",
+      "teamDescription": "您可以在 <link>控制面板</link> 中管理团队。",
+      "teamRequiredError": "必须指定团队名称。",
+      "teamLoading": "正在加载...",
+      "dateName": "比赛日期",
+      "datePlaceholder": "选择日期",
+      "dateDescription": "比赛日期是比赛进行的具体日期。",
+      "dateRequiredError": "比赛日期不能为空。",
+      "mapName": "第一张地图",
+      "mapDescription": "请上传第一张比赛地图文件。支持 .xlsx 和 .txt 文件，文件大小不得超过 1MB。比赛创建后可以添加更多地图。",
+      "submit": "提交",
+      "submitting": "提交中..."
+    }
+  },
+  "updateModal": {
+    "dismiss": "关闭"
+  },
+  "scrimPage": {
+    "metadata": {
+      "scrim": "训练赛",
+      "title": "{scrimName} 概述 | Parsertime",
+      "description": "在 Parsertime 上查看 {scrimName} 的概述。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "{scrimName} 概述 | Parsertime",
+      "ogDescription": "在 Parsertime 上查看 {scrimName} 的概述。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogImage": "{scrimName} 概述"
+    },
+    "back": "返回仪表板",
+    "newScrim": "新训练赛",
+    "edit": "编辑训练赛",
+    "maps": {
+      "title": "地图",
+      "altText": "{map} 的加载画面艺术"
+    },
+    "noMaps": {
+      "title": "本次训练赛尚未添加地图！",
+      "description": "为本次训练赛添加地图以开始分析比赛。如果未添加地图，训练赛将在 24 小时内自动删除。需要帮助？",
+      "link": "查看文档"
+    },
+    "addMap": {
+      "title": "添加地图...",
+      "description": "拖放或选择要上传的文件。",
+      "addFile": "添加文件",
+      "fileMessage": {
+        "required": "需要文件。",
+        "maxSize": "文件大小不得超过 1MB。",
+        "accepted": "支持 .xlsx 和 .txt 文件。"
+      },
+      "handleFile": {
+        "creatingTitle": "正在创建地图...",
+        "creatingDescription": "我们正在处理您的数据，请稍候。",
+        "createTitle": "地图已创建",
+        "createDescription": "地图已成功创建。",
+        "errorTitle": "错误",
+        "errorDescription": "发生错误： {res}。请查看 <here>文档</here> 以解决该问题。"
+      }
+    },
+    "editScrim": {
+      "back": "返回训练赛",
+      "title": "编辑训练赛详情",
+      "replayCode": "重播代码必须为 6 个字符。",
+      "displayName": {
+        "title": "显示名称",
+        "placeholder": "FIU 黑豹队 vs UF 鳄鱼队",
+        "description": "这是训练赛的名称，将显示在您的仪表板中。",
+        "minMessage": "名称至少应包含 2 个字符。",
+        "maxMessage": "名称长度不得超过 30 个字符。"
+      },
+      "team": {
+        "title": "队伍",
+        "placeholder": "选择一个队伍",
+        "description": "与此训练赛相关联的队伍。可以为您管理或拥有的队伍分配训练赛。",
+        "select": {
+          "teams": "队伍",
+          "individual": "个人"
+        }
+      },
+      "date": {
+        "title": "比赛日期",
+        "edit": "编辑日期",
+        "clientDate": {
+          "formatDate": "{date, date, ::MMMM d yyyy}"
+        },
+        "description": "举行比赛的日期。"
+      },
+      "guestMode": {
+        "title": "启用访客模式",
+        "description": "启用后，任何登录用户都可以访问此训练赛。禁用后，只有您的队伍成员可以访问此训练赛。"
+      },
+      "maps": {
+        "title": "地图",
+        "replayCodeLabel": "{map} 的重播代码",
+        "replayCode": "重播代码",
+        "delete": "删除地图",
+        "deleteDialog": {
+          "title": "您确定吗？",
+          "description": "这将永久删除地图 <strong>{map}</strong>，操作无法撤销。",
+          "cancel": "取消",
+          "delete": "删除",
+          "deleting": "正在删除..."
+        }
+      },
+      "update": "更新训练赛",
+      "updating": "正在更新...",
+      "onSubmit": {
+        "title": "训练赛已更新",
+        "description": "训练赛已成功更新。",
+        "errorTitle": "发生错误",
+        "errorDescription": "发生错误： {res}"
+      },
+      "deleteMap": {
+        "title": "地图已删除",
+        "description": "地图已成功删除。",
+        "errorTitle": "发生错误",
+        "errorDescription": "发生错误： {res}"
+      },
+      "dangerZone": "危险区域",
+      "deleteScrim": {
+        "title": "删除训练赛",
+        "description": "训练赛一旦删除将无法恢复。请务必确认。",
+        "button": "删除训练赛",
+        "deleteAlert": "您确定要删除 <strong>{scrim}</strong> 吗？此操作无法撤销。",
+        "deleteConfirmation": "请输入 <strong>{scrim}</strong> 以确认。",
+        "delete": "删除训练赛",
+        "deleting": "正在删除...",
+        "cancel": "取消",
+        "handleDelete": {
+          "title": "训练赛已删除",
+          "description": "训练赛已成功删除。",
+          "errorTitle": "错误",
+          "errorDescription": "发生错误： {res}"
+        }
+      }
+    },
+    "replayCode": {
+      "title": "重播代码（点击复制）",
+      "onClick": {
+        "title": "已复制到剪贴板！",
+        "description": "重播代码已复制到剪贴板。"
+      }
+    }
+  },
+  "mapPage": {
+    "mapMetadata": {
+      "title": "{mapName} 概览 | Parsertime",
+      "description": "查看 Parsertime 上 {mapName} 的地图概览。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
+      "ogTitle": "{mapName} 概览 | Parsertime",
+      "ogDescription": "查看 Parsertime 上 {mapName} 的地图概览。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
+      "ogImage": "{mapName} 概览"
+    },
+    "playerMetadata": {
+      "title": "{playerName} 数据概览 | Parsertime",
+      "description": "查看 Parsertime 上 {playerName} 的数据概况。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
+      "ogTitle": "{playerName} 数据概览 | Parsertime",
+      "ogDescription": "查看 Parsertime 上 {playerName} 的数据概况。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
+      "ogImage": "{playerName} 数据概览"
+    },
+    "back": "返回比赛概览",
+    "dashboard": "仪表板",
+    "playerSwitcher": {
+      "select": "选择玩家",
+      "search": "搜索玩家...",
+      "noPlayerFound": "未找到玩家。",
+      "default": "默认值"
+    },
+    "player": {
+      "dashboard": {
+        "back": "返回默认概览",
+        "viewStats": "查看综合统计数据",
+        "dashboard": "仪表板",
+        "overview": "概览",
+        "analytics": "分析",
+        "charts": "图表"
+      },
+      "overview": {
+        "matchTime": "总比赛时间",
+        "minutes": "{time} 分钟",
+        "fletaTitle": "Fleta 扛队率",
+        "fletaPercent": "{percent}%",
+        "fletaDescription": "Fleta 扛队是指一名玩家贡献了其队伍 50% 的最后击杀。",
+        "firstPickTitle": "首杀率",
+        "firstPickPercent": "{percent}%",
+        "firstPickDescription": "在 {fights} 场战斗中，{player} 首次击杀 {picks, plural, =1 {# 次} other {# 次}}。",
+        "firstDeathTitle": "首死率",
+        "firstDeathPercent": "{percent}%",
+        "firstDeathDescription": "在 {fights} 场战斗中，{player} 首次阵亡 {deaths, plural, =1 {# 次} other {# 次}}。",
+        "playerStats": "玩家统计",
+        "allHeroes": "所有英雄"
+      },
+      "statTable": {
+        "stat": "统计",
+        "total": "总计",
+        "avg10Min": "平均/10 分钟",
+        "timePlayed": "游戏时间",
+        "mins": "{mins} 分钟",
+        "eliminations": "消灭",
+        "finalBlows": "最后击杀",
+        "deaths": "死亡",
+        "allDmgDealt": "总伤害",
+        "barrierDmgDealt": "屏障伤害",
+        "heroDmgDealt": "英雄伤害",
+        "healingDealt": "治疗量",
+        "healingReceived": "收到治疗",
+        "selfHealing": "自我治疗",
+        "dmgTaken": "承受伤害",
+        "dmgBlocked": "阻挡伤害",
+        "defenseAssist": "防守助攻",
+        "offenseAssist": "进攻助攻",
+        "ultsEarned": "终极技能充能",
+        "ultsUsed": "使用终极技能",
+        "multikillBest": "最佳多杀",
+        "multikills": "多杀",
+        "soloKills": "单独击杀",
+        "objKills": "目标击杀",
+        "envKills": "环境击杀",
+        "envDeaths": "环境死亡",
+        "critHits": "暴击",
+        "critHitAcc": "暴击准确率",
+        "scopedAcc": "瞄准精度",
+        "scopedCritHitAcc": "瞄准暴击准确率",
+        "scopedCritHitKills": "瞄准暴击击杀",
+        "weaponAcc": "武器命中率",
+        "noResult": "无结果。"
+      },
+      "analytics": {
+        "avgUltChargeTime": {
+          "title": "平均终极充能时间",
+          "footer": "完成一个终极技能充能所需的平均时间。时间越短越好，时间过长可能表明伤害或治疗量不足。"
+        },
+        "avgTimeUseUlt": {
+          "title": "平均终极技能使用时间",
+          "footer": "终极技能充能完成后的平均使用时间。时间过长可能表明技能未被有效利用。"
+        },
+        "avgDroughtTime": {
+          "title": "平均干旱时间",
+          "footer": "干旱时间是上一次击杀与下一次击杀之间的平均时间。干旱时间越长，表明参与战斗的频率越低。"
+        },
+        "xFactor": {
+          "title": "X 因素",
+          "footer": "X 因素是衡量玩家对战斗影响程度的指标。高 X 因素通常表示玩家在战斗中是关键因素。注意，每个角色的计算方式可能不同。"
+        },
+        "versus": {
+          "title": "与其他玩家的比较",
+          "description": "{playerName} 对敌方队伍玩家的得分和胜率。",
+          "score": "得分:",
+          "winrate": "胜率: <color>{winrate}</color>%"
+        },
+        "playerKillfeed": {
+          "title": "玩家击杀记录",
+          "description": "列出 {playerName} 在比赛中的所有最后击杀和死亡记录。不显示 {playerName} 未参与击杀的战斗。",
+          "team1": "队伍 1",
+          "team2": "队伍 2"
+        },
+        "dmgTakenHealingReceived": {
+          "title": "承受的伤害与获得的治疗",
+          "footer": "该图表显示了每回合累计的承受伤害与获得治疗量。x 轴表示回合数，y 轴表示累计值。",
+          "round": "回合 {round}",
+          "dmgTaken": "承受伤害",
+          "healingReceived": "获得治疗"
+        },
+        "dmgDoneDmgTaken": {
+          "title": "英雄造成的伤害 vs 承受的伤害",
+          "footer": "此图表显示了每回合英雄造成的伤害与承受的伤害。x 轴表示回合数，y 轴表示伤害值。",
+          "round": "回合 {round}",
+          "dmgDone": "造成伤害",
+          "dmgTaken": "承受伤害"
+        }
+      },
+      "charts": {
+        "team1": "队伍 1",
+        "team2": "队伍 2",
+        "round": "回合 {index}",
+        "dmgByRound": {
+          "title": "按回合统计的英雄伤害",
+          "footer": "该图表显示了 {playerName} 每回合造成的英雄伤害。x 轴表示回合，y 轴表示伤害值。注意，伤害值非累计。"
+        },
+        "dmgBlockByRound": {
+          "title": "按回合统计的阻挡伤害",
+          "footer": "该图表显示了 {playerName} 每回合阻挡的伤害值。x 轴表示回合，y 轴表示阻挡值。注意，数据非累计。"
+        },
+        "finalBlowsByRound": {
+          "title": "按回合统计的最后击杀",
+          "footer": "该图表显示了 {playerName} 每回合的最后击杀次数。x 轴表示回合，y 轴表示击杀数。"
+        },
+        "healingByRound": {
+          "title": "按回合统计的治疗量",
+          "footer": "该图表显示了 {playerName} 每回合的治疗量。x 轴表示回合，y 轴表示治疗值。注意，数据非累计。"
+        },
+        "dmgTakenByRound": {
+          "title": "按回合统计的承受伤害",
+          "footer": "该图表显示了 {playerName} 每回合承受的伤害值。x 轴表示回合，y 轴表示伤害值。注意，数据非累计。"
+        },
+        "healingReceivedByRound": {
+          "title": "按回合统计的获得治疗量",
+          "footer": "该图表显示了 {playerName} 每回合获得的治疗量。x 轴表示回合，y 轴表示治疗值。注意，数据非累计。"
+        }
+      }
+    },
+    "tabs": {
+      "overview": "概述",
+      "killfeed": "击杀记录",
+      "kills": "击杀",
+      "charts": "图表",
+      "events": "事件",
+      "compare": "对比"
+    },
+    "overview": {
+      "matchTime": "总比赛时间",
+      "minutes": "{time} 分钟",
+      "score": "比分",
+      "winner": "获胜方:",
+      "pushLimitations": "由于训练赛代码的限制，暂不支持推车模式。:(",
+      "heroDamageDealt": "英雄造成的伤害",
+      "dealtMore": "<color>{teamName}</color> 在这张地图上造成了更多的英雄伤害。",
+      "teamHealingDealt": "团队治疗量",
+      "healedMore": "<color>{teamName}</color> 在这张地图上提供了更多的治疗。",
+      "title": "概述",
+      "round": "回合 {number}",
+      "analysis": {
+        "title": "分析",
+        "deathDescriptionTeam1": "<span1>{team1Name}</span1> 在 {team1FirstDeaths} 场战斗中率先阵亡，占比为 <span2>{percentage}</span2>%。",
+        "deathDescriptionTeam2": "<span1>{team2Name}</span1> 在 {team2FirstDeaths} 场战斗中率先阵亡，占比为 <span2>{percentage}</span2>%。",
+        "ultKillsDescriptionTeam1": "<span>{team1Name}</span> 的终极技能发挥了最大作用，取得了 <span>{team1UltimateKills}</span> 次终极击杀。",
+        "ultKillsDescriptionTeam2": "<span>{team2Name}</span> 的终极技能发挥了最大作用，取得了 <span>{team2UltimateKills}</span> 次终极击杀。",
+        "ultKillsDescriptionBoth": "双方队伍的终极技能发挥了相同作用，各自取得了 <span>{team1UltimateKills}</span> 次终极击杀。",
+        "playerDeathDescription": "首杀次数最多的玩家是 <span>{playerWithMostFirstDeaths}</span>，在 {fights} 场战斗中率先阵亡了 <span>{firstDeaths}</span> 次。",
+        "ajax": "<span>{player}</span> 在这张地图上使用了卢西奥，并出现了 <span>{ajaxes}</span> 次亚克斯现象 {ajaxes, plural, one {次} other {次}}。"
+      }
+    },
+    "overviewTable": {
+      "noResult": "无结果。",
+      "header": {
+        "playerName": "玩家姓名",
+        "role": "角色",
+        "playerTeam": "玩家队伍",
+        "timePlayed": "游戏时间",
+        "eliminations": "消灭次数",
+        "kills": "最后击杀",
+        "assists": "助攻次数",
+        "deaths": "死亡次数",
+        "kd": "击杀/死亡比",
+        "kad": "击杀+助攻/死亡比",
+        "heroDmgDealt": "英雄伤害",
+        "dmgReceived": "受到的伤害",
+        "healingReceived": "接受的治疗",
+        "healingDealt": "提供的治疗",
+        "dmgToHealsRatio": "伤害:治疗比",
+        "ultsCharged": "终极技能充能",
+        "ultsUsed": "使用的终极技能"
+      },
+      "roles": {
+        "Tank": "坦克",
+        "Damage": "输出",
+        "Support": "支援"
+      },
+      "tooltips": {
+        "playerName": "玩家的名字。点击名字查看其统计数据。",
+        "role": "玩家的角色。",
+        "playerTeam": "玩家所属的队伍。",
+        "timePlayed": "玩家的累计游戏时间。",
+        "eliminations": "玩家的消灭次数。",
+        "kills": "玩家的最后击杀次数。",
+        "assists": "玩家的助攻次数。",
+        "deaths": "玩家的死亡次数。",
+        "kd": "玩家的击杀/死亡比。",
+        "kad": "玩家的击杀+助攻/死亡比。",
+        "heroDmgDealt": "玩家造成的英雄伤害量。",
+        "dmgReceived": "玩家承受的伤害量。",
+        "healingReceived": "玩家接受的治疗量。",
+        "healingDealt": "玩家提供的治疗量。",
+        "dmgToHealsRatio": "玩家的伤害与接受治疗的比例。",
+        "ultsCharged": "玩家累计充能的终极技能次数。",
+        "ultsUsed": "玩家使用的终极技能次数。"
+      }
+    },
+    "killfeed": {
+      "matchTime": "总比赛时间",
+      "minutes": "{count} 分钟",
+      "kills": "击杀",
+      "deaths": "死亡人数",
+      "fightWins": "战斗胜利",
+      "title": "击杀记录"
+    },
+    "killfeedTable": {
+      "limitTest": "极限测试",
+      "environment": "环境击杀",
+      "fight": "战斗 {num}",
+      "time": "时间",
+      "kill": "击杀",
+      "method": "方式",
+      "start": "开始",
+      "end": "结束",
+      "fightWinner": "战斗胜者",
+      "abilities": {
+        "primary-fire": "主武器",
+        "secondary-fire": "副武器",
+        "ability-1": "技能 1",
+        "ability-2": "技能 2",
+        "ultimate": "终极技能",
+        "melee": "近战"
+      },
+      "exportCSV": "导出为 CSV"
+    },
+    "charts": {
+      "tooltip": "想了解更多关于图表的信息吗？<link>查看文档</link> 了解更多内容。",
+      "team1": "队伍 1",
+      "team2": "队伍 2",
+      "time": "时间: {time}",
+      "tank": "坦克",
+      "damage": "输出",
+      "support": "支援",
+      "round": "回合 {round}",
+      "killsByFight": {
+        "title": "按战斗的击杀数",
+        "description": "击杀数按 15 秒间隔分组。此图表显示了每支队伍在每个时间间隔内的累计击杀数。x 轴代表以秒为单位的时间，y 轴代表累计击杀数。队伍 1 用正数表示，队伍 2 用负数表示。每次战斗结束后，图表都会重置为 0。"
+      },
+      "finalBlowsByRole": {
+        "title": "按角色的最后击杀",
+        "description": "此图表显示了每个队伍按角色的最后击杀次数。角色分为坦克、输出和支援。x 轴代表角色，y 轴代表最后击杀的次数。"
+      },
+      "dmgByRound": {
+        "title": "每回合累计英雄伤害",
+        "description": "此图表显示了每支队伍在各回合累计的英雄伤害。x 轴代表回合，y 轴代表造成的伤害。请注意，伤害是累计的，因此第二回合的伤害包括第一回合的伤害。"
+      }
+    },
+    "events": {
+      "roundStart": "第 {event} 回合开始",
+      "roundEnd": "第 {event} 回合结束",
+      "matchEnd": "比赛结束",
+      "matchStart": "比赛开始",
+      "mapEvents": {
+        "title": "赛事事件",
+        "description": "比赛期间发生的事件，包括目标点占领、回合开始和结束、多重击杀等。",
+        "captureString1": "<color>{team}</color> 占领了目标点。",
+        "captureString2": "<color>{team}</color> 占领了目标。",
+        "objectiveUpdate": "目标点更新",
+        "swap": "<img1></img1> <color>{player}</color> 切换为 <img2></img2> {hero}。",
+        "ultKills": "<img></img> <color>{player}</color> 使用终极技能击杀了 {players, plural, =1 {一名玩家} other {# 名玩家}}。",
+        "multikill": "在第 {event} 场战斗中，<span><img></img><color>{player}</color></span> 完成了一次多杀，击杀了 {kills} 名玩家。",
+        "ajax": "<span><img></img><color>{player}</color></span> 在第 {fight} 场战斗中触发了亚克斯现象。"
+      },
+      "ultsUsed": {
+        "title": "使用的终极技能",
+        "description": "列出了比赛中使用的所有终极技能及其使用时间。",
+        "ultStart": "<span><img></img><color>{player}</color></span> 在第 {fight} 场战斗中使用了他们的终极技能。"
+      }
+    },
+    "compare": {
+      "team1": "队伍 1",
+      "team2": "队伍 2",
+      "playerCard": {
+        "title": "玩家统计",
+        "allHeroes": {
+          "title": "所有英雄",
+          "timePlayed": "游戏时间",
+          "minutes": "{time} 分钟",
+          "matchTime": "100% 的比赛时间",
+          "eliminations": "击杀",
+          "elims": "{elims, plural, =1 {# 次击杀} other {# 次击杀}}",
+          "elimsPer10Min": "每 10 分钟 {elims, plural, =1 {# 次击杀} other {# 次击杀}}",
+          "deaths": "死亡",
+          "deathNum": "{num, plural, =1 {# 次死亡} other {# 次死亡}}",
+          "deathsPer10Min": "每 10 分钟 {deaths, plural, =1 {# 次死亡} other {# 次死亡}}",
+          "ultsUsed": "使用终极技能",
+          "ultsUsedNum": "{num, plural, =1 {# 次终极技能} other {# 次终极技能}}",
+          "ultsPer10Min": "每 10 分钟使用 {num, plural, =1 {# 次终极技能} other {# 次终极技能}}",
+          "heroDmgDealt": "英雄造成的伤害",
+          "heroDmgDealtNum": "造成了 {num} 点英雄伤害",
+          "heroDmgPer10Min": "每 10 分钟造成 {num} 点英雄伤害",
+          "dmgBlocked": "阻挡伤害",
+          "dmgBlockedNum": "阻挡了 {num} 点伤害",
+          "dmgBlockedPer10Min": "每 10 分钟阻挡 {num} 点伤害",
+          "dmgTaken": "承受的伤害",
+          "dmgTakenNum": "承受了 {num} 点伤害",
+          "dmgTakenPer10Min": "每 10 分钟承受 {num} 点伤害",
+          "finalBlows": "最后击杀",
+          "finalBlowsNum": "{num, plural, =1 {# 次最后击杀} other {# 次最后击杀}}",
+          "finalBlowsPer10Min": "每 10 分钟 {num, plural, =1 {# 次最后击杀} other {# 次最后击杀}}",
+          "soloKills": "单独击杀",
+          "soloKillsNum": "{num, plural, =1 {# 次单独击杀} other {# 次单独击杀}}",
+          "soloKillsPer10Min": "每 10 分钟 {num, plural, =1 {# 次单独击杀} other {# 次单独击杀}}",
+          "healingDealt": "提供的治疗",
+          "healingDealtNum": "提供了 {num} 点治疗",
+          "healingDealtPer10Min": "每 10 分钟提供 {num} 点治疗",
+          "healingReceived": "受到的治疗",
+          "healingReceivedNum": "受到了 {num} 点治疗",
+          "healingReceivedPer10Min": "每 10 分钟受到 {num} 点治疗"
+        },
+        "specificHero": {
+          "altText": "{hero} 的《守望先锋》英雄头像图像。",
+          "timePlayed": "游戏时间",
+          "minutes": "{time} 分钟",
+          "matchTime": "占比赛时间的 {percent}%",
+          "eliminations": "击杀",
+          "elims": "{elims, plural, =1 {# 次击杀{showTable}} other {# 次击杀{showTable}}}",
+          "elimsPer10Min": "每 10 分钟 {elims, plural, =1 {# 次击杀} other {# 次击杀}}",
+          "deaths": "死亡",
+          "deathNum": "{num, plural, =1 {# 次死亡} other {# 次死亡}}",
+          "deathsPer10Min": "每 10 分钟 {deaths, plural, =1 {# 次死亡} other {# 次死亡}}",
+          "ultsUsed": "使用终极技能",
+          "ultsUsedNum": "{num, plural, =1 {# 次终极技能} other {# 次终极技能}}",
+          "ultsPer10Min": "每 10 分钟使用 {num, plural, =1 {# 次终极技能} other {# 次终极技能}}",
+          "heroDmgDealt": "英雄造成的伤害",
+          "heroDmgDealtNum": "造成了 {num} 点英雄伤害",
+          "heroDmgPer10Min": "每 10 分钟造成 {num} 点英雄伤害",
+          "dmgBlocked": "阻挡伤害",
+          "dmgBlockedNum": "阻挡了 {num} 点伤害",
+          "dmgBlockedPer10Min": "每 10 分钟阻挡 {num} 点伤害",
+          "dmgTaken": "承受的伤害",
+          "dmgTakenNum": "承受了 {num} 点伤害",
+          "dmgTakenPer10Min": "每 10 分钟承受 {num} 点伤害",
+          "finalBlows": "最后击杀",
+          "finalBlowsNum": "{num, plural, =1 {# 次最后击杀} other {# 次最后击杀}}",
+          "finalBlowsPer10Min": "每 10 分钟 {num, plural, =1 {# 次最后击杀} other {# 次最后击杀}}",
+          "soloKills": "单独击杀",
+          "soloKillsNum": "{num, plural, =1 {# 次单独击杀} other {# 次单独击杀}}",
+          "soloKillsPer10Min": "每 10 分钟 {num, plural, =1 {# 次单独击杀} other {# 次单独击杀}}",
+          "healingDealt": "提供的治疗",
+          "healingDealtNum": "提供了 {num} 点治疗",
+          "healingDealtPer10Min": "每 10 分钟提供 {num} 点治疗",
+          "healingReceived": "受到的治疗",
+          "healingReceivedNum": "受到了 {num} 点治疗",
+          "healingReceivedPer10Min": "每 10 分钟受到 {num} 点治疗"
+        }
+      }
+    }
+  },
+  "statsPage": {
+    "layoutMetadata": {
+      "title": "统计数据 | Parsertime",
+      "description": "在 Parsertime 上查看您的统计数据和表现指标。",
+      "ogTitle": "统计数据 | Parsertime",
+      "ogDescription": "在 Parsertime 上查看您的统计数据和表现指标。",
+      "ogImage": "统计数据"
+    },
+    "playerMetadata": {
+      "title": "{playerName}的统计数据 | Parsertime",
+      "description": "Parsertime 上 {playerName} 的玩家统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "{playerName}的统计数据 | Parsertime",
+      "ogDescription": "Parsertime 上 {playerName} 的玩家统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogImage": "{playerName}的统计数据"
+    },
+    "heroStatsMetadata": {
+      "title": "英雄统计数据 | Parsertime",
+      "description": "在 Parsertime 上查看《守望先锋》英雄的统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "英雄统计数据 | Parsertime",
+      "ogDescription": "在 Parsertime 上查看《守望先锋》英雄的统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogImage": "英雄统计数据"
+    },
+    "heroMetadata": {
+      "title": "{hero}的统计数据 | Parsertime",
+      "description": "Parsertime 上 {hero} 的统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "{hero}的统计数据 | Parsertime",
+      "ogDescription": "Parsertime 上 {hero} 的统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogImage": "{hero}的统计数据"
+    },
+    "title": "统计数据",
+    "searchbar": {
+      "placeholder": "输入球员姓名...",
+      "description": "搜索玩家以查看他们的统计数据。您可以通过用户名或战网标签进行搜索。例如：<span>Spingar</span> 或 <span>Spingar#1000</span>。",
+      "link": "单击此处查看英雄统计数据"
+    },
+    "globalStats": "全球统计",
+    "users": {
+      "title": "用户",
+      "footer": "平台用户总数"
+    },
+    "scrims": {
+      "title": "训练赛",
+      "footer": "上传的训练赛总数"
+    },
+    "kills": {
+      "title": "击毙",
+      "footer": "记录的击毙总数"
+    },
+    "playerStat": {
+      "title": "球员数据",
+      "footer": "记录的球员数据总数"
+    },
+    "leaderboard": "排行榜",
+    "top3MostPlayed": {
+      "title": "最常使用的前三名英雄",
+      "rank": "排名",
+      "hero": "英雄",
+      "timePlayed": "游戏时间",
+      "footer": "结果累积自所有 {mapNum} 张地图。"
+    },
+    "top3Kills": {
+      "title": "击杀数前三名玩家",
+      "rank": "排名",
+      "player": "玩家",
+      "kills": "击杀",
+      "footer": "结果累积自所有 {mapNum} 张地图。"
+    },
+    "top3Dmg": {
+      "title": "英雄伤害前三名玩家",
+      "rank": "排名",
+      "player": "玩家",
+      "heroDmgDealt": "造成的英雄伤害",
+      "footer": "结果累积自 {mapNum} 张地图。"
+    },
+    "top3Healing": {
+      "title": "治疗量前三名玩家",
+      "rank": "排名",
+      "player": "玩家",
+      "healingDealt": "提供的治疗量",
+      "footer": "结果累积自 {mapNum} 张地图。"
+    },
+    "top3DmgBlocked": {
+      "title": "阻挡伤害前三名玩家",
+      "rank": "排名",
+      "player": "玩家",
+      "dmgBlocked": "阻挡的伤害",
+      "footer": "结果累积自 {mapNum} 张地图。"
+    },
+    "top3Deaths": {
+      "title": "死亡数前三名玩家",
+      "rank": "排名",
+      "player": "玩家",
+      "deaths": "死亡",
+      "footer": "结果累积自 {mapNum} 张地图。"
+    },
+    "top3TimePlayed": {
+      "title": "游戏时间前三名玩家",
+      "rank": "排名",
+      "player": "玩家",
+      "timePlayed": "游戏时间",
+      "footer": "结果累积自 {mapNum} 张地图。"
+    },
+    "top3Ajax": {
+      "title": "亚克斯现象次数最多的前三名玩家",
+      "rank": "排名",
+      "player": "玩家",
+      "ajaxes": "亚克斯次数",
+      "footer": "结果累积自 {mapNum} 张地图。"
+    },
+    "playerStats": {
+      "title": "{name}的统计数据",
+      "statsFail": "未能找到 {name} 的统计数据。您是否正确拼写了名字？",
+      "back": "返回统计数据",
+      "timeframe": {
+        "one-week": "一周",
+        "two-weeks": "两周",
+        "one-month": "一个月",
+        "three-months": "三个月",
+        "six-months": "六个月",
+        "one-year": "一年",
+        "all-time": "所有时间",
+        "all-time-data": "在所有时间数据中",
+        "custom": "{from} - {to} 之间"
+      },
+      "clientDate": {
+        "formatDate": "{date, date, ::EEE MMM dd yyyy}"
+      },
+      "rangePicker": {
+        "selectTime": "选择时间范围",
+        "lastWeek": "上周",
+        "last2Weeks": "过去两周",
+        "lastMonth": "上个月",
+        "last3Months": "过去三个月",
+        "last6Months": "过去六个月",
+        "lastYear": "去年",
+        "allTime": "所有时间",
+        "custom": "自定义",
+        "upgrade": "升级以查看更多时间范围",
+        "selectHero": "选择英雄",
+        "allHeroes": "所有英雄",
+        "pickDate": "选择日期",
+        "calendarDate": "{from} - {to}",
+        "formatDate": "{date, date, ::MMM dd yyyy}",
+        "tank": "坦克",
+        "damage": "输出",
+        "support": "支援"
+      },
+      "mostPlayed": {
+        "title": "最常使用的英雄",
+        "rank": "排名",
+        "hero": "英雄",
+        "games": "场次",
+        "noData": "无数据",
+        "footer1": "统计数据来自过去 {timeframe} 的 {scrims} 场训练赛",
+        "footer2": "统计数据来自 {timeframe1} 的 {timeframe2} 场训练赛"
+      },
+      "bestPerformance": {
+        "title": "最佳表现",
+        "rank": "排名",
+        "hero": "英雄",
+        "finalBlows": "最后击杀",
+        "clickMap": "点击查看地图",
+        "noData": "无数据",
+        "footer1": "统计数据来自过去 {timeframe} 的 {scrims} 场训练赛",
+        "footer2": "统计数据来自 {timeframe1} 的 {timeframe2} 场训练赛"
+      },
+      "statPer10": {
+        "footer": "在最近 {scrimData} 场训练赛中，趋势为 <span>{percentageChange}</span>",
+        "avg": "平均值：",
+        "max": "| 最大值：",
+        "min": "| 最小值："
+      },
+      "avgHeroDmgDealtPer10": {
+        "title": "每 10 分钟的平均英雄伤害（每场训练赛）",
+        "tooltip": "每场训练赛中每 10 分钟造成的平均英雄伤害。越高越好。"
+      },
+      "avgDeathPer10": {
+        "title": "每 10 分钟的平均死亡数（每场训练赛）",
+        "tooltip": "每场训练赛中每 10 分钟的平均死亡数。越低越好。"
+      },
+      "timeSpent": {
+        "title": "每个角色的游戏时间",
+        "tank": "坦克",
+        "damage": "输出",
+        "support": "支援",
+        "footer": "总游戏时间：<span>{toTimestampWithHours}</span> | 每个角色的游戏时间：<span>{timePerRole}</span>"
+      },
+      "finalBlowsByMethod": {
+        "title": "按方式分类的最后击杀",
+        "finalBlows": "最后击杀",
+        "primary": "主武器",
+        "secondary": "副武器",
+        "ability1": "技能 1",
+        "ability2": "技能 2",
+        "ultimate": "终极技能",
+        "melee": "近战",
+        "footer": "计算自 <span>{format}</span> 次最后击杀"
+      },
+      "mapWinrates": {
+        "title": "地图胜率",
+        "tooltip": {
+          "wins": "胜场：",
+          "losses": "败场：",
+          "percentage": "百分比："
+        },
+        "wins": "胜场",
+        "losses": "败场",
+        "footer": "地图胜率基于每张地图的胜场和败场计算。请注意，推车地图未包含在此图表中，因为它们没有可跟踪的胜/负条件。"
+      },
+      "winrateMapType": {
+        "mapTypes": {
+          "Clash": "冲突",
+          "Control": "控制",
+          "Escort": "护送",
+          "Flashpoint": "闪点",
+          "Hybrid": "混合",
+          "Push": "推车"
+        },
+        "chartName": "胜率",
+        "title": "按地图类型分类的胜率",
+        "footer": "每种地图类型的胜率。0% 表示没有胜场，100% 表示全胜。将鼠标悬停在图表上查看胜率。"
+      },
+      "heroesDiedToMost": {
+        "title": "最常死于的英雄",
+        "rank": "排名",
+        "hero": "英雄",
+        "deaths": "死亡数",
+        "noData": "无数据",
+        "footer1": "统计数据来自过去 {timeframe} 的 {scrims} 场训练赛",
+        "footer2": "统计数据来自 {timeframe1} 的 {timeframe2} 场训练赛"
+      },
+      "heroesElimMost": {
+        "title": "击杀次数最多的英雄",
+        "rank": "排名",
+        "hero": "英雄",
+        "eliminations": "消灭",
+        "noData": "无数据",
+        "footer1": "统计数据来自过去 {timeframe} 的 {scrims} 场训练赛",
+        "footer2": "统计数据来自 {timeframe1} 的 {timeframe2} 场训练赛"
+      },
+      "stats": {
+        "title": "统计",
+        "select": "选择统计",
+        "eliminations": "消灭",
+        "final_blows": "最后击杀",
+        "healing_dealt": "提供的治疗量",
+        "healing_received": "受到的治疗量",
+        "self_healing": "自我治疗",
+        "damage_taken": "承受的伤害",
+        "damage_blocked": "阻挡的伤害",
+        "ultimates_earned": "获得的终极技能",
+        "ultimates_used": "使用的终极技能",
+        "solo_kills": "单独击杀",
+        "environmental_kills": "环境击杀",
+        "deaths": "死亡",
+        "hero_damage_dealt": "英雄伤害"
+      }
+    },
+    "heroStats": {
+      "title": "英雄统计数据",
+      "description": "选择一个英雄查看他们的统计数据。统计数据来自所有训练赛的累积。",
+      "timeframe": {
+        "one-week": "一周",
+        "two-weeks": "两周",
+        "one-month": "一个月",
+        "three-months": "三个月",
+        "six-months": "六个月",
+        "one-year": "一年",
+        "all-time": "所有时间",
+        "all-time-data": "在所有时间数据中",
+        "custom": "{from} - {to} 之间"
+      },
+      "tank": "坦克英雄",
+      "damage": "输出英雄",
+      "support": "支援英雄",
+      "altText": "{hero} 的头像。",
+      "header": "{hero} 的统计数据",
+      "heroFail": "未能找到 {hero} 的统计数据。您是否正确拼写了名字？",
+      "back": "返回统计数据",
+      "rangePicker": {
+        "selectTime": "选择时间范围",
+        "lastWeek": "上周",
+        "last2Weeks": "过去两周",
+        "lastMonth": "上个月",
+        "last3Months": "过去三个月",
+        "last6Months": "过去六个月",
+        "lastYear": "去年",
+        "allTime": "所有时间",
+        "custom": "自定义",
+        "upgrade": "升级以查看更多时间范围",
+        "selectHero": "选择一个英雄",
+        "pickDate": "选择日期",
+        "calendarDate": "{from} - {to}",
+        "formatDate": "{date, date, ::MMM dd yyyy}"
+      },
+      "statistics": {
+        "title": "英雄统计数据",
+        "totalGames": "总比赛数",
+        "games": "{num, plural, =1 {# <span>场比赛</span>} other {# <span>场比赛</span>}}",
+        "totalKills": "总击杀数",
+        "kills": "{num, plural, =1 {# <span>次击杀</span>} other {# <span>次击杀</span>}}",
+        "totalDeaths": "总死亡数",
+        "deaths": "{num, plural, =1 {# <span>次死亡</span>} other {# <span>次死亡</span>}}",
+        "footer1": "统计数据来自过去 {timeframe} 的 {scrims, plural, =1 {# 场训练赛} other {# 场训练赛}}",
+        "footer2": "统计数据来自 {timeframe1} 的 {timeframe2}",
+        "footer3": "统计数据收集自每一位在训练赛中任何时刻使用 {hero} 的玩家。"
+      },
+      "bestPerformance": {
+        "title": "最佳表现",
+        "rank": "排名",
+        "player": "玩家",
+        "finalBlows": "最后击杀",
+        "clickPlayer": "点击查看玩家统计数据",
+        "noData": "无数据",
+        "footer1": "统计数据来自过去 {timeframe} 的 {scrims} 场训练赛",
+        "footer2": "统计数据来自 {timeframe1} 的 {timeframe2}"
+      },
+      "finalBlowsByMethod": "按方式分类的最后击杀",
+      "avgHeroDmgDealtPer10": {
+        "title": "每 10 分钟的平均英雄伤害（每场训练赛）",
+        "tooltip": "每场训练赛中每 10 分钟造成的平均英雄伤害。越高越好。"
+      },
+      "avgDeathPer10": {
+        "title": "每 10 分钟的平均死亡数（每场训练赛）",
+        "tooltip": "每场训练赛中每 10 分钟的平均死亡数。越低越好。"
+      },
+      "heroesDiedToMost": {
+        "title": "最常死于的英雄",
+        "rank": "排名",
+        "hero": "英雄",
+        "deaths": "死亡数",
+        "noData": "无数据",
+        "footer1": "统计数据来自过去 {timeframe} 的 {scrims} 场训练赛",
+        "footer2": "统计数据来自 {timeframe1} 的 {timeframe2}"
+      },
+      "heroesElimMost": {
+        "title": "击杀次数最多的英雄",
+        "rank": "排名",
+        "hero": "英雄",
+        "eliminations": "消灭",
+        "noData": "无数据",
+        "footer1": "统计数据来自过去 {timeframe} 的 {scrims} 场训练赛",
+        "footer2": "统计数据来自 {timeframe1} 的 {timeframe2}"
+      },
+      "stats": {
+        "title": "统计",
+        "select": "选择统计",
+        "eliminations": "消灭",
+        "final_blows": "最后击杀",
+        "healing_dealt": "提供的治疗量",
+        "healing_received": "受到的治疗量",
+        "self_healing": "自我治疗",
+        "damage_taken": "承受的伤害",
+        "damage_blocked": "阻挡的伤害",
+        "ultimates_earned": "获得的终极技能",
+        "ultimates_used": "使用的终极技能",
+        "solo_kills": "单独击杀",
+        "environmental_kills": "环境击杀",
+        "deaths": "死亡",
+        "hero_damage_dealt": "英雄伤害"
+      }
+    }
+  },
+  "teamPage": {
+    "metadata": {
+      "title": "团队 | Parsertime",
+      "description": "Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "团队 | Parsertime",
+      "ogDescription": "Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogImage": "团队"
+    },
+    "teamMetadata": {
+      "title": "{teamName} 概述 | Parsertime",
+      "description": "Parsertime 上 {teamName} 的概述。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "{teamName} 概述 | Parsertime",
+      "ogDescription": "Parsertime 上 {teamName} 的概述。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogImage": "{teamName} 概述",
+      "defaultTeam": "团队"
+    },
+    "manageTeams": "管理您的团队",
+    "viewTeams": "查看您的团队",
+    "teams": "团队",
+    "admin": "管理员视图",
+    "altText": {
+      "custom": "{team} 的头像",
+      "default": "默认团队头像",
+      "userProfile": "{user} 的头像",
+      "noAvatar": "默认用户头像"
+    },
+    "defaultName": "团队名称",
+    "members": "成员",
+    "settings": "设置",
+    "manager": "（管理员）",
+    "owner": "（所有者）",
+    "you": "（您）",
+    "addMember": "添加成员...",
+    "join": {
+      "enterToken": "输入您的邀请令牌",
+      "joinTeam": "加入团队",
+      "invalidToken": {
+        "title": "令牌无效",
+        "description": "您提供的令牌无效。"
+      },
+      "handleSubmit": {
+        "title": "已加入团队",
+        "description": "您已成功加入团队。",
+        "errorTitle": "错误",
+        "errorDescription": "发生错误：{res}"
+      },
+      "success": {
+        "title": "成功！",
+        "description": "您已成功加入团队。",
+        "redirect": "正在将您重定向到仪表板。如果您没有被重定向，<link>请点击这里</link>。"
+      }
+    },
+    "userButtons": {
+      "promote": {
+        "button": "提升为管理员",
+        "title": "您确定吗？",
+        "description": "这将把用户的角色从成员更改为管理员。该用户将能够管理团队及其资源。",
+        "cancel": "取消",
+        "promoting": "正在提升...",
+        "promote": "提升为管理员",
+        "handlePromote": {
+          "title": "用户已提升为管理员",
+          "description": "{user} 已被提升为管理员。",
+          "errorTitle": "发生错误",
+          "errorDescription": "发生错误：{res}"
+        }
+      },
+      "demote": {
+        "button": "降级为成员",
+        "title": "您确定吗？",
+        "description": "这将把用户的角色从管理员更改为成员。",
+        "cancel": "取消",
+        "demoting": "正在降级...",
+        "demote": "降级为成员",
+        "handleDemote": {
+          "title": "用户已降级为成员",
+          "description": "{user} 已被降级为成员。",
+          "errorTitle": "发生错误",
+          "errorDescription": "发生错误：{res}"
+        }
+      },
+      "remove": {
+        "button": "从团队中移除",
+        "title": "您确定吗？",
+        "description": "这将把用户从团队中移除，他们将失去对所有团队资源的访问权限。",
+        "cancel": "取消",
+        "removing": "正在移除...",
+        "remove": "从团队中移除",
+        "handleRemove": {
+          "title": "用户已从团队中移除",
+          "description": "{user} 已被从团队中移除。",
+          "errorTitle": "发生错误",
+          "errorDescription": "发生错误：{res}"
+        }
+      }
+    },
+    "inviteMember": {
+      "title": "邀请成员",
+      "description": "邀请新成员以允许他们查看您团队的训练赛。用户必须注册后才能接收邀请。",
+      "email": "电子邮件",
+      "cancel": "取消",
+      "send": "发送邀请",
+      "sending": "正在发送邀请...",
+      "emailMessage": "无效的电子邮件",
+      "reqMessage": "电子邮件是必需的",
+      "onSubmit": {
+        "title": "邀请已发送！",
+        "description": "您的邀请已成功发送。",
+        "errorTitle": "错误",
+        "errorDescription": "发生错误：{res}",
+        "errorStatus": "。您是否确认用户已注册？"
+      }
+    },
+    "teamInviteLink": {
+      "title": "团队邀请链接",
+      "subtitle": "您的永久团队邀请链接（悬停以显示）：",
+      "description": "请注意，通过“邀请用户”按钮邀请用户更加安全。我们建议尽量避免共享此链接。"
+    },
+    "clipboard": {
+      "title": "已复制到剪贴板",
+      "description": "团队邀请链接已复制到您的剪贴板。",
+      "tooltip": "点击复制"
+    },
+    "name": {
+      "title": "显示名称",
+      "placeholder": "康奈尔大学电子竞技",
+      "description": "这是您团队的公开显示名称。",
+      "minMessage": "名称必须至少包含 2 个字符。",
+      "maxMessage": "名称长度不得超过 30 个字符。"
+    },
+    "avatar": {
+      "title": "头像",
+      "label": "文件上传",
+      "altText": "用户头像",
+      "description": "这是您团队的公开头像。点击头像以从您的文件中上传自定义头像。",
+      "editTitle": "编辑头像",
+      "editDescription": "在此处对您的头像进行更改。完成后点击保存。",
+      "save": "保存更改",
+      "updating": "正在更新...",
+      "handleCrop": {
+        "title": "头像更新成功",
+        "description": "您团队的头像已成功更新。",
+        "errorTitle": "发生错误",
+        "errorDescription1": "发生错误：{res}",
+        "errorDescription2": "更新头像时发生错误。请稍后重试或联系支持。"
+      }
+    },
+    "readonly": {
+      "title": "只读",
+      "description": "如果启用，团队将变为只读。这意味着玩家和管理员无法向团队添加训练赛。"
+    },
+    "update": {
+      "title": "更新团队资料",
+      "onSubmit": {
+        "title": "团队资料已更新",
+        "description": "您的团队资料已成功更新。",
+        "errorTitle": "发生错误",
+        "errorDescription": "发生错误：{res}"
+      },
+      "updating": "正在更新..."
+    },
+    "dangerZone": {
+      "title": "危险区域",
+      "description": "这些操作是不可逆的。请在继续之前确保您的决定。"
+    },
+    "transferOwner": {
+      "title": "转移所有权",
+      "description": "一旦您转移了所有权，您将不再是该团队的所有者。",
+      "button": "转移所有权",
+      "email": "输入您希望转移所有权的用户的电子邮件地址。",
+      "transferring": "正在转移...",
+      "cancel": "取消",
+      "handleTransfer": {
+        "title": "所有权已转移",
+        "description": "团队所有权已成功转移。",
+        "errorTitle": "发生错误",
+        "errorDescription": "发生错误：{res}"
+      }
+    },
+    "deleteTeam": {
+      "title": "删除团队",
+      "description": "一旦删除团队，将无法恢复。请确保您的决定。",
+      "button": "删除团队",
+      "deleteAlert": "您确定要删除团队 <strong>{team}</strong> 吗？此操作无法撤销。",
+      "deleteConfirmation": "输入 <strong>{team}</strong> 以确认。",
+      "deleting": "正在删除...",
+      "cancel": "取消",
+      "handleDelete": {
+        "title": "团队已删除",
+        "description": "团队已被删除。",
+        "errorTitle": "发生错误",
+        "errorDescription": "发生错误：{res}"
+      }
+    }
+  },
+  "settingsPage": {
+    "metadata": {
+      "title": "设置 | Parsertime",
+      "description": "管理账户设置和偏好。",
+      "ogTitle": "设置 | Parsertime",
+      "ogDescription": "管理账户设置和偏好。",
+      "ogImage": "设置"
+    },
+    "title": "设置",
+    "description": "管理账户设置和偏好。",
+    "sideNav": {
+      "profile": "简介",
+      "linkedAccounts": "关联账户",
+      "admin": "管理员"
+    },
+    "profile": {
+      "title": "简介",
+      "description": "这就是别人在网站上看到你的方式。",
+      "planDescription": "您当前的计划是 {billingPlan} 计划。",
+      "billingPlan": {
+        "FREE": "免费",
+        "BASIC": "基本",
+        "PREMIUM": "高级"
+      },
+      "planUpgrade": "升级您的计划",
+      "manageSubscription": "管理您的订阅"
+    },
+    "profileForm": {
+      "minMessage": "姓名必须至少包含 2 个字符。",
+      "maxMessage": "姓名长度不得超过 30 个字符。",
+      "onSubmit": {
+        "title": "简介已更新",
+        "description": "您的个人资料已成功更新。",
+        "errorTitle": "发生错误",
+        "errorDescription": "发生错误：{res}"
+      },
+      "username": {
+        "title": "用户名",
+        "description": "这是您的公开显示名称。可以是真名，也可以是化名。"
+      },
+      "avatar": {
+        "title": "头像",
+        "altText": "用户头像",
+        "ariaLabel": "文件上传",
+        "description": "这是您的公共账户头像。点击头像可以从您的文件中上传自定义头像。",
+        "editAvatar": {
+          "title": "编辑头像",
+          "description": "在此更改您的个人资料。完成后点击保存。",
+          "save": "保存更改",
+          "updating": "更新中...",
+          "handleCrop": {
+            "title": "头像更新成功",
+            "description": "您的头像已成功更新。",
+            "errorTitle": "发生错误",
+            "errorDescription1": "发生错误：{res}",
+            "errorDescription2": "发送您的消息时发生错误。请稍后再试或联系支持。"
+          }
+        }
+      },
+      "update": "更新个人资料"
+    },
+    "linkedAccounts": {
+      "title": "关联账户",
+      "description": "管理链接账户的设置和偏好。",
+      "discord": {
+        "linked": "您的 Discord 账户已成功链接。",
+        "signIn": "使用 Discord 登录"
+      }
+    },
+    "admin": {
+      "title": "管理员设置",
+      "description": "管理管理员设置和偏好。",
+      "email": {
+        "title": "电子邮件",
+        "description": "这是您想要模拟的用户的电子邮件地址。",
+        "message": "请输入有效的电子邮件地址。"
+      },
+      "prod": {
+        "title": "使用生产环境 URL",
+        "description": "如果启用，模拟的 URL 将为生产环境生成。如果禁用，模拟的 URL 将为开发环境生成。"
+      },
+      "impersonate": "模拟用户",
+      "onSubmit": {
+        "title": "用户模拟成功",
+        "description": "模拟的 URL 已复制到您的剪贴板。",
+        "errorTitle": "错误",
+        "errorDescription": "模拟用户时发生错误。"
+      }
+    },
+    "dangerZone": {
+      "title": "危险区域",
+      "description": "帐户删除是永久性的，无法撤销。您是否希望管理您的订阅？如果是，请点击 <Link>此处</Link>。"
+    },
+    "deleteAccount": {
+      "title": "删除帐户",
+      "description": "您确定要删除您的帐户吗？此操作无法撤销。您是否希望管理您的订阅？如果是，请点击 <link>此处</link>。",
+      "cancel": "取消",
+      "deleteInput": "是的，删除我的帐户",
+      "handleDelete": {
+        "title": "帐户已删除",
+        "description": "您的帐户已成功删除。",
+        "errorTitle": "错误",
+        "errorDescription": "发生错误：{res}"
+      },
+      "secondDialog": {
+        "title": "是的，删除我的帐户",
+        "description": "您确定要删除您的帐户吗？此操作无法撤销。",
+        "confirm": "输入 <strong>{deleteInput}</strong> 以确认。",
+        "delete": "删除帐户",
+        "deleting": "正在删除...",
+        "cancel": "取消"
+      }
+    }
+  },
+  "marketing": {
+    "header": {
+      "home": "主页",
+      "about": "关于",
+      "pricing": "定价",
+      "demo": "演示",
+      "docs": "文档",
+      "company": "公司",
+      "logIn": "登录",
+      "accessibility": {
+        "open": "打开主菜单",
+        "close": "关闭菜单"
+      }
+    }
+  },
+  "contactPage": {
+    "contactForm": {
+      "title": "联系我们",
+      "description": "在使用应用时遇到问题？想要提出功能请求？我们很乐意倾听！发送消息给我们，我们会尽快回复您。",
+      "discord": "社区 Discord",
+      "name": "姓名",
+      "email": "电子邮件",
+      "message": "消息",
+      "send": "发送消息",
+      "sending": "发送中...",
+      "nameRequiredError": "姓名是必填项。",
+      "emailRequiredError": "电子邮件是必填项。",
+      "emailMessage": "请输入有效的电子邮件地址。",
+      "messageRequiredError": "消息是必填项。",
+      "messageMessage": "请输入消息。",
+      "handleSubmit": {
+        "title": "消息已发送",
+        "description": "您的消息已成功发送。",
+        "errorTitle1": "错误",
+        "errorDescription1": "发生错误：{res}",
+        "errorTitle2": "发生错误",
+        "errorDescription2": "发送消息时发生错误。请稍后再试。"
+      }
+    }
+  },
+  "aboutPage": {
+    "stats": {
+      "startDev": {
+        "label": "开发开始",
+        "value": "2023年11月"
+      },
+      "used": {
+        "label": "内部使用",
+        "value": "2024年1月"
+      },
+      "scrimsUploaded": {
+        "label": "测试版期间上传的比赛",
+        "value": "50+"
+      },
+      "statsTracked": {
+        "label": "测试版期间跟踪的玩家统计数据",
+        "value": "22,000+"
+      }
+    },
+    "values": {
+      "convenience": {
+        "name": "便利性。",
+        "description": "让统计数据跟踪和趋势观察变得轻而易举。轻松诊断您的玩家问题。"
+      },
+      "accessibility": {
+        "name": "可访问性。",
+        "description": "我们希望任何团队都能轻松使用 Parsertime。我们始终在寻找方法让平台更加可访问。"
+      },
+      "community": {
+        "name": "社区优先。",
+        "description": "由《守望先锋》玩家打造，为《守望先锋》玩家服务。我们致力于为社区服务。"
+      },
+      "openSource": {
+        "name": "开源。",
+        "description": "我们相信最好的工具是在开放环境中构建的。欢迎贡献！"
+      },
+      "improvement": {
+        "name": "持续改进。",
+        "description": "我们始终在添加新功能并改进平台。我们的目标是打造最佳应用程序。"
+      },
+      "reliable": {
+        "name": "可靠且高性能。",
+        "description": "我们的平台旨在快速且可靠。我们希望确保它始终为您服务。"
+      }
+    },
+    "team": {
+      "lucas": {
+        "name": "Lucas Doell",
+        "role": "创始人，工程主管"
+      },
+      "robin": {
+        "name": "Robin \"Zei\" Sidhu",
+        "role": "战略主管"
+      },
+      "xavier": {
+        "name": "Xavier Park",
+        "role": "研究主管"
+      },
+      "adrian": {
+        "name": "Adrian Soto",
+        "role": "支持主管"
+      },
+      "daniel": {
+        "name": "Daniel Iturralde",
+        "role": "技术支持专员"
+      },
+      "diego": {
+        "name": "Diego Sanchez del Rio",
+        "role": "工程实习生，2024 夏季"
+      },
+      "yai": {
+        "name": "Yailan Bordas",
+        "role": "工程实习生，2024 夏季"
+      },
+      "kenny": {
+        "name": "Kenny Miranda",
+        "role": "工程实习生，2024 夏季"
+      },
+      "notPictured": "未显示：<name>Devraj Ambala</name>，工程实习生，2024 夏季；<name>Karson Miller</name>，工程实习生，2024 夏季；以及 <name>Rose Thatch</name>，工程实习生，2024 夏季。"
+    },
+    "headerSection": {
+      "title": "我们热爱《守望先锋》",
+      "description": "这就是为什么我们在打造一种更好的方式来跟踪您的表现。查看您的团队统计数据、跟踪您的长期表现，并观察您作为玩家和团队的成长。"
+    },
+    "contentSection": {
+      "description1": "Parsertime 最初是为 FIU Panthers（一支大学团队）开发的内部工具。我们希望能够在训练赛后查看统计数据，并观察长期趋势。后来，我们扩展成为一个任何团队都可以使用的平台。我们很高兴看到各团队使用 Parsertime 来提高他们的表现。",
+      "description2": "我们是一支由《守望先锋》玩家和教练组成的小团队，致力于打造一个真正适合您团队的平台。我们始终欢迎反馈和功能请求。如果您有任何想法，我们很愿意倾听！",
+      "description3": "我们知道团队总是在寻找改进的方式。我们的目标是让您能够轻松查看统计数据，并跟踪每周的趋势变化。Parsertime 目前在 FIU 内部使用，每周都会新增功能。我们希望为《守望先锋》玩家和团队提供最佳体验。",
+      "description4": "Parsertime 是完全开源的。我们相信最好的工具是在开放中构建的。如果您想为 Parsertime 做出贡献，我们非常欢迎！我们一直在寻找贡献者帮助我们为《守望先锋》团队打造最佳平台。您可以在 <link>这里</link> 找到我们的 GitHub 仓库。"
+    },
+    "featureSection": {
+      "title": "我们的功能",
+      "description": "看看我们的平台如何为您的团队带来不同。"
+    },
+    "teamSection": {
+      "title": "认识我们的团队",
+      "description": "我们是一支由热爱《守望先锋》的玩家和教练组成的小团队，致力于打造一个真正适合您团队的平台。"
+    },
+    "ctaSection": {
+      "title": "提升您的效率。",
+      "subtitle": "立即开始使用我们的应用程序。",
+      "description": "为您的团队提供成功所需的工具。立即注册 Parsertime。",
+      "signUp": "注册",
+      "demo": "试用我们的演示",
+      "altText": "应用截图"
+    },
+    "footerNav": {
+      "title": "页脚",
+      "description": "构建一种更好的方式来跟踪您的《守望先锋》表现。",
+      "solutions": {
+        "title": "平台",
+        "dashboard": "仪表板",
+        "signUp": "注册",
+        "demo": "演示"
+      },
+      "support": {
+        "title": "支持",
+        "pricing": "定价",
+        "doc": "文档",
+        "discord": "Discord",
+        "contact": "联系我们"
+      },
+      "company": {
+        "title": "公司",
+        "about": "关于我们",
+        "blog": "博客",
+        "github": "GitHub"
+      },
+      "legal": {
+        "title": "法律",
+        "policy": "隐私政策"
+      },
+      "socials": {
+        "twitter": "X",
+        "bluesky": "Bluesky",
+        "github": "GitHub"
+      },
+      "copyright": "lux.dev。保留所有权利。"
+    }
+  },
+  "pricingPage": {
+    "pricing": {
+      "title": "定价",
+      "header": "适合各种规模团队的计划",
+      "description": "随着您的团队壮大，Parsertime 也会随之成长。我们提供满足您需求的工具和功能。",
+      "$": "￥",
+      "month": "/月",
+      "currentPlan": "您当前的计划",
+      "getStarted": "开始",
+      "buyPlan": "购买计划",
+      "priceComparison": "定价计划对比",
+      "price": "价格",
+      "included": "包含在",
+      "notIncluded": "未包含在"
+    },
+    "comingSoon": "即将推出",
+    "tiers": {
+      "free": "免费",
+      "freeMonthly": "$0 USD",
+      "freeDescription": "适合想尝试 Parsertime 的用户。",
+      "basic": "基础",
+      "basicMonthly": "$10 USD",
+      "basicDescription": "适合准备与 Parsertime 一起成长的团队。",
+      "premium": "高级",
+      "premiumMonthly": "$15 USD",
+      "premiumDescription": "适合想将生产力提升到新水平的大型团队。"
+    },
+    "features": {
+      "title": "功能",
+      "scrims": "个人比赛",
+      "joinTeams": "通过邀请加入团队",
+      "data": "数据分析",
+      "createTeams": {
+        "title": "创建团队",
+        "free": "最多 2 个团队",
+        "basic": "最多 5 个团队",
+        "premium": "最多 10 个团队"
+      },
+      "teamMembers": {
+        "title": "团队成员",
+        "free": "最多 5 名用户",
+        "basic": "最多 10 名用户",
+        "premium": "最多 20 名用户"
+      },
+      "earlyAccess": "新功能的抢先体验"
+    },
+    "mapStatistics": {
+      "title": "地图统计",
+      "analytics": "高级分析",
+      "killfeeds": "地图击杀信息",
+      "customCharts": "自定义图表",
+      "mapEvents": "地图事件",
+      "playerComparison": "玩家比较",
+      "customTargets": "自定义目标"
+    },
+    "playerStatistics": {
+      "title": "玩家统计",
+      "lastWeek": "上周",
+      "last2Weeks": "过去两周",
+      "lastMonth": "上个月",
+      "last3Months": "过去三个月",
+      "last6Months": "过去六个月",
+      "lastYear": "去年",
+      "allTime": "所有时间",
+      "custom": "自定义时间范围"
+    },
+
+    "support": {
+      "title": "支持",
+      "discord": "社区 Discord",
+      "priority": "优先支持",
+      "devCheck": "每月开发者检查",
+      "custom": "自定义功能请求"
+    },
+    "caseStudy": {
+      "title": "了解团队如何使用 Parsertime 改进他们的教练策略。",
+      "description": "查看我们的案例研究"
+    },
+    "testimonial": {
+      "quote": "“Parsertime 的影响非常大，甚至可以帮助我的队员们在他们需要帮助的事情上进行指导，比如更长时间地存活、保持终极技能更长时间以及更有耐心。”",
+      "author": "coy (@shy.coy)",
+      "role": "o7 Esports 的经理"
+    },
+    "faq": {
+      "title": "常见问题解答",
+      "description": "找不到您需要的答案？请联系我们的 <link>支持</link> 团队。",
+      "question1": "你们为大学团队提供折扣吗？",
+      "answer1": "是的！请联系我们的支持团队，我们很乐意为您提供帮助。",
+      "question2": "你们为 Calling All Heroes 团队提供折扣吗？",
+      "answer2": "是的！我们希望尽可能多地支持 CAH 社区。请联系我们的支持团队，我们很乐意与您讨论解决方案。",
+      "question3": "我如何管理我的订阅？",
+      "answer3": "您可以在 <link>这里</link> 管理您的订阅。如果您有任何问题，请联系我们的支持团队。",
+      "question4": "我可以随时取消我的订阅吗？",
+      "answer4": "是的，您可以随时取消订阅。您的订阅将在账单周期结束前保持有效。",
+      "question5": "如果我需要比高级计划提供的更高的限制怎么办？",
+      "answer5": "如果您有特殊需求或需要比高级计划提供的更高的限制，请联系我们的 <link>支持团队</link>，我们很乐意与您讨论自定义解决方案。"
+    }
+  },
+  "privacyPage": {
+    "privacyPolicy": {
+      "title": "隐私政策",
+      "description": "在 Parsertime，我们致力于维护访问我们网站的用户的信任和信心。特别是，我们希望您知道 Parsertime 并不会出于营销目的向其他公司和企业出售、出租或交易电子邮件列表。在本隐私政策中，我们提供了有关我们何时以及为何收集您的个人信息、如何使用这些信息以及如何确保其安全的详细信息。"
+    },
+    "collectInformation": {
+      "title": "我们收集的信息",
+      "description": "作为我们网络应用程序注册流程的一部分，我们会收集个人信息。我们使用这些信息的原因包括：向您提供您要求的内容；在需要获取或提供额外信息时与您联系；检查我们的记录是否正确，并不时确认您是否满意。以下是我们收集的信息类型：",
+      "email": {
+        "title": "电子邮件地址",
+        "description": "在注册过程中需要您的电子邮件地址，以帮助创建账户、身份验证以及与应用程序功能相关的必要通信。我们不会将您的电子邮件地址用于营销目的。"
+      },
+      "picture": {
+        "title": "个人头像和团队图片",
+        "description": "您可以上传个人头像和团队图片。这些图片用于在我们的应用程序中个性化您的账户和团队资料。"
+      },
+      "data": {
+        "title": "游戏日志和性能数据",
+        "description": "来自《守望先锋 2》的数据用于可视化统计信息并显示用户和团队的性能数据。这些数据严格用于 Parsertime 提供的服务，不包含任何个人敏感信息。"
+      }
+    },
+    "useInformation": {
+      "title": "我们如何使用您的信息",
+      "description": "我们使用您的信息来：",
+      "list1": "运营和维护我们的服务；",
+      "list2": "通过个性化改进您在我们网站的体验；",
+      "list3": "传达重要通知，例如对我们的条款、条件和政策的更改；",
+      "list4": "解决技术问题并保护我们的网站免受欺诈和滥用。"
+    },
+    "storageSecurity": {
+      "title": "存储和安全",
+      "description": "我们采取措施保护您的信息。当您通过网站提交敏感信息时，您的信息在在线和离线环境中都受到保护。只有需要执行特定工作（例如账单或客户服务）的员工才被授予访问个人身份信息的权限。"
+    },
+    "thirdPartyLinks": {
+      "title": "第三方链接",
+      "description": "我们的网站可能包含指向第三方网站的链接。我们无法控制这些网站的内容或隐私实践，也不对其负责。我们鼓励用户在离开我们的网站时保持警惕，并阅读任何收集个人身份信息的其他网站的隐私声明。"
+    },
+    "changePrivacyPolicy": {
+      "title": "隐私政策的更改",
+      "description": "我们可能会不时更新本政策，以反映例如我们的实践变化或其他运营、法律或监管原因。"
+    },
+    "contactUs": {
+      "title": "联系我们",
+      "description": "如果您想了解更多关于我们的隐私实践的信息，有任何问题，或希望提出投诉，请通过电子邮件联系我们：<link>privacy@lux.dev</link>。"
+    }
+  },
+  "notFound": {
+    "404": "404",
+    "header": "页面未找到",
+    "description": "抱歉，我们无法找到您要找的页面。",
+    "backHome": "返回主页",
+    "contact": "联系支持"
+  },
+  "footer": {
+    "changelog": "点击查看更新日志",
+    "dashboard": "仪表板",
+    "stats": "统计数据",
+    "teams": "团队",
+    "settings": "设置",
+    "contact": "联系方式",
+    "docs": "文档"
+  },
+  "demoPage": {
+    "metadata": {
+      "title": "{mapName} 演示 | Parsertime",
+      "description": "Parsertime 上 {mapName} 的演示概览。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "{mapName} 演示 | Parsertime",
+      "ogDescription": "Parsertime 上 {mapName} 的演示概览。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogImage": "{mapName} 演示"
+    },
+    "banner": {
+      "demo": "您正在查看 Parsertime 的演示。点击此处注册",
+      "dismiss": "关闭"
+    }
+  }
+}

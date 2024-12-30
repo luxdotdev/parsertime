@@ -1,5 +1,8 @@
 "use client";
 
+import { NonMappableStat, Stat } from "@/lib/player-charts";
+import { cn, round as roundNum } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import {
   Area,
   AreaChart,
@@ -17,8 +20,6 @@ import {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
-import { cn, round as roundNum } from "@/lib/utils";
-import { NonMappableStat, Stat } from "@/lib/player-charts";
 
 type Data = {
   name: string;
@@ -68,8 +69,10 @@ type Props<T extends keyof Omit<Stat, NonMappableStat>> = {
 export function PlayerStatByRoundChart<
   T extends keyof Omit<Stat, NonMappableStat>,
 >({ stat, playerStatByRound, playerName, playerTeam }: Props<T>) {
+  const t = useTranslations("mapPage.player.charts");
+
   const data: Data = playerStatByRound.map((round, index) => ({
-    name: `Round ${index + 1}`,
+    name: t("round", { index: index + 1 }),
     playerStat: roundNum(round[stat as keyof typeof round]),
   }));
 

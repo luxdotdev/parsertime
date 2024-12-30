@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -36,6 +37,8 @@ export default function InviteMemberModal({
   showInviteMemberModal: boolean;
   setShowInviteMemberModal: (show: boolean) => void;
 }) {
+  const t = useTranslations("teamPage.inviteMember");
+
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const params = useParams<{ teamId: string }>();
@@ -59,8 +62,10 @@ export default function InviteMemberModal({
     if (!getToken.ok) {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: `An error occurred: ${await getToken.text()} (${getToken.status})`,
+        title: t("onSubmit.errorTitle"),
+        description: t("onSubmit.errorDescription", {
+          res: `${await getToken.text()} (${getToken.status})`,
+        }),
       });
       setLoading(false);
       return;
@@ -78,15 +83,17 @@ export default function InviteMemberModal({
     if (res.ok) {
       setShowInviteMemberModal(false);
       toast({
-        title: "Invite sent!",
-        description: "Your invitation has been sent successfully.",
+        title: t("onSubmit.title"),
+        description: t("onSubmit.description"),
       });
       setLoading(false);
     } else {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: `An error occurred: ${await res.text()} (${res.status})${res.status === 404 ? ". Have you ensured the user is signed up?" : ""}`,
+        title: t("onSubmit.errorTitle"),
+        description: `${t("onSubmit.errorDescription", {
+          res: `${await res.text()} (${res.status})`,
+        })}${t("onSubmit.errorStatus")}`,
       });
       setLoading(false);
     }
@@ -99,11 +106,8 @@ export default function InviteMemberModal({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Invite Member</DialogTitle>
-          <DialogDescription>
-            Invite a new member to allow them to see your team&apos;s scrims.
-            The user must be signed up to receive the invite.
-          </DialogDescription>
+          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -114,7 +118,7 @@ export default function InviteMemberModal({
               render={({ field }) => (
                 <div className="space-y-4 py-2 pb-4">
                   <div className="space-y-2">
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{t("email")}</FormLabel>
                     <FormControl>
                       <Input placeholder="lucas@lux.dev" {...field} />
                     </FormControl>
@@ -129,16 +133,16 @@ export default function InviteMemberModal({
                 onClick={() => setShowInviteMemberModal(false)}
                 disabled={loading}
               >
-                Cancel
+                {t("cancel")}
               </Button>
               <Button type="submit" disabled={loading}>
                 {loading ? (
                   <>
                     <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                    Sending invite...
+                    {t("sending")}
                   </>
                 ) : (
-                  "Send Invite"
+                  t("send")
                 )}
               </Button>
             </DialogFooter>

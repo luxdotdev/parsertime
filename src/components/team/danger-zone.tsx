@@ -19,10 +19,13 @@ import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
 import { Team } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { startTransition, useEffect, useState } from "react";
 
 export function DangerZone({ team }: { team: Team }) {
+  const t = useTranslations("teamPage");
+
   const [transferModalOpen, setTransferModalOpen] = useState(false);
   const [transferInput, setTransferInput] = useState("");
   const [transferLoading, setTransferLoading] = useState(false);
@@ -43,15 +46,17 @@ export function DangerZone({ team }: { team: Team }) {
 
     if (res.ok) {
       toast({
-        title: "Ownership transferred",
-        description: "Ownership of the team has successfully been transferred.",
+        title: t("transferOwner.handleTransfer.title"),
+        description: t("transferOwner.handleTransfer.description"),
         duration: 5000,
       });
       router.refresh();
     } else {
       toast({
-        title: "Error",
-        description: `An error occurred: ${await res.text()} (${res.status})`,
+        title: t("transferOwner.handleTransfer.errorTitle"),
+        description: t("transferOwner.handleTransfer.errorDescription", {
+          error: `${await res.text()} (${res.status})`,
+        }),
         duration: 5000,
         variant: "destructive",
       });
@@ -72,15 +77,17 @@ export function DangerZone({ team }: { team: Team }) {
 
     if (res.ok) {
       toast({
-        title: "Team deleted",
-        description: "The team has been deleted.",
+        title: t("deleteTeam.handleDelete.title"),
+        description: t("deleteTeam.handleDelete.description"),
         duration: 5000,
       });
       router.push("/team");
     } else {
       toast({
-        title: "Error",
-        description: `An error occurred: ${await res.text()} (${res.status})`,
+        title: t("deleteTeam.handleDelete.errorTitle"),
+        description: t("deleteTeam.handleDelete.errorDescription", {
+          error: `${await res.text()} (${res.status})`,
+        }),
         duration: 5000,
         variant: "destructive",
       });
@@ -94,31 +101,31 @@ export function DangerZone({ team }: { team: Team }) {
       <Card className="max-w-lg border-red-500 dark:border-red-700">
         <CardHeader>
           <CardTitle className="text-red-500 dark:text-red-700">
-            Danger Zone
+            {t("dangerZone.title")}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="pb-6">
-            <h3 className="text-lg font-semibold">Transfer Ownership</h3>
-            <p className="pb-4">
-              Once you transfer ownership, you will no longer be the owner of
-              this team.
-            </p>
+            <h3 className="text-lg font-semibold">
+              {t("transferOwner.title")}
+            </h3>
+            <p className="pb-4">{t("transferOwner.description")}</p>
             <AlertDialog
               open={transferModalOpen}
               onOpenChange={setTransferModalOpen}
             >
               <AlertDialogTrigger>
-                <Button variant="destructive">Transfer Ownership</Button>
+                <Button variant="destructive">
+                  {t("transferOwner.button")}
+                </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <h2 className="text-lg font-semibold">Transfer Ownership</h2>
+                  <h2 className="text-lg font-semibold">
+                    {t("transferOwner.title")}
+                  </h2>
                 </AlertDialogHeader>
-                <p>
-                  Enter the email address of the user you want to transfer
-                  ownership to.
-                </p>
+                <p>{t("transferOwner.email")}</p>
                 <Input
                   type="text"
                   className="mt-4 w-full rounded border border-solid p-2"
@@ -135,17 +142,17 @@ export function DangerZone({ team }: { team: Team }) {
                     {transferLoading ? (
                       <>
                         <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                        Transferring...
+                        {t("transferOwner.transferring")}
                       </>
                     ) : (
-                      "Transfer Ownership"
+                      t("transferOwner.button")
                     )}
                   </Button>
                   <Button
                     variant="secondary"
                     onClick={() => setTransferModalOpen(false)}
                   >
-                    Cancel
+                    {t("transferOwner.cancel")}
                   </Button>
                 </div>
               </AlertDialogContent>
@@ -153,27 +160,32 @@ export function DangerZone({ team }: { team: Team }) {
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold">Delete Team</h3>
-            <p className="pb-4">
-              Once you delete a team, there is no going back. Please be certain.
-            </p>
+            <h3 className="text-lg font-semibold">{t("deleteTeam.title")}</h3>
+            <p className="pb-4">{t("deleteTeam.description")}</p>
             <AlertDialog
               open={deleteModalOpen}
               onOpenChange={setDeleteModalOpen}
             >
               <AlertDialogTrigger>
-                <Button variant="destructive">Delete Team</Button>
+                <Button variant="destructive">{t("deleteTeam.button")}</Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <h2 className="text-lg font-semibold">Delete Team</h2>
+                  <h2 className="text-lg font-semibold">
+                    {t("deleteTeam.title")}
+                  </h2>
                 </AlertDialogHeader>
                 <p>
-                  Are you sure you want to delete the team{" "}
-                  <strong>{team.name}</strong>? This action cannot be undone.
+                  {t.rich("deleteTeam.deleteAlert", {
+                    strong: (chunk) => <strong>{chunk}</strong>,
+                    team: team.name,
+                  })}
                 </p>
                 <p>
-                  Type <strong>{team.name}</strong> to confirm.
+                  {t.rich("deleteTeam.deleteConfirmation", {
+                    strong: (chunk) => <strong>{chunk}</strong>,
+                    team: team.name,
+                  })}
                 </p>
                 <Input
                   type="text"
@@ -191,17 +203,17 @@ export function DangerZone({ team }: { team: Team }) {
                     {deleteLoading ? (
                       <>
                         <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                        Deleting...
+                        {t("deleteTeam.deleting")}
                       </>
                     ) : (
-                      "Delete Team"
+                      t("deleteTeam.button")
                     )}
                   </Button>
                   <Button
                     variant="secondary"
                     onClick={() => setDeleteModalOpen(false)}
                   >
-                    Cancel
+                    {t("deleteTeam.cancel")}
                   </Button>
                 </div>
               </AlertDialogContent>
@@ -209,9 +221,7 @@ export function DangerZone({ team }: { team: Team }) {
           </div>
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-gray-500">
-            These are irreversible actions. Please be certain before proceeding.
-          </p>
+          <p className="text-sm text-gray-500">{t("dangerZone.description")}</p>
         </CardFooter>
       </Card>
     </ClientOnly>

@@ -1,9 +1,11 @@
 import { EmptyScrimList } from "@/components/dashboard/empty-scrim-list";
 import { ScrimPagination } from "@/components/dashboard/scrim-pagination";
 import prisma from "@/lib/prisma";
+import { getTranslations } from "next-intl/server";
 
 export async function AdminScrimView() {
   const scrimData = await prisma.scrim.findMany();
+  const t = await getTranslations("dashboard.scrimCard");
 
   let scrims = [];
 
@@ -30,8 +32,8 @@ export async function AdminScrimView() {
       teamId: scrim.teamId,
       creatorId: scrim.creatorId,
       guestMode: scrim.guestMode,
-      team: teamName?.name ?? "Uncategorized",
-      creator: creatorName[0].name ?? "Unknown",
+      team: teamName?.name ?? t("noTeam"),
+      creator: creatorName[0].name ?? t("noCreator"),
       hasPerms: true,
     });
   }

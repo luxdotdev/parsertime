@@ -30,6 +30,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Session } from "next-auth";
+import { useTranslations } from "next-intl";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
@@ -43,6 +44,7 @@ export function TeamSwitcher({
 }: TeamSwitcherProps & { session: Session | null }) {
   const [newTeamCreated, setNewTeamCreated] = React.useState(false);
   const { setTeamId } = React.use(TeamSwitcherContext);
+  const t = useTranslations("dashboard.teamSwitcher");
 
   async function getTeams() {
     const response = await fetch("/api/team/get-teams");
@@ -74,7 +76,7 @@ export function TeamSwitcher({
 
   const groups = [
     {
-      label: "Individual",
+      label: t("individual"),
       teams: [
         {
           label: session?.user?.name ?? "Individual",
@@ -84,7 +86,7 @@ export function TeamSwitcher({
       ],
     },
     {
-      label: "Teams",
+      label: t("teams"),
       teams,
     },
   ];
@@ -121,8 +123,8 @@ export function TeamSwitcher({
         <PopoverContent className="w-[200px] p-0">
           <Command>
             <CommandList>
-              <CommandInput placeholder="Search team..." />
-              <CommandEmpty>No team found.</CommandEmpty>
+              <CommandInput placeholder={t("searchTeamPlaceholder")} />
+              <CommandEmpty>{t("noTeamFound")}</CommandEmpty>
               {groups.map((group) => (
                 <CommandGroup key={group.label} heading={group.label}>
                   {isLoading ? (
@@ -179,7 +181,7 @@ export function TeamSwitcher({
                     }}
                   >
                     <PlusCircledIcon className="mr-2 h-5 w-5" />
-                    Create Team
+                    {t("createTeam")}
                   </CommandItem>
                 </DialogTrigger>
               </CommandGroup>

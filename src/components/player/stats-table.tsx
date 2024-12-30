@@ -24,43 +24,13 @@ import {
 import { cn, round, toMins } from "@/lib/utils";
 import { PlayerStat } from "@prisma/client";
 import { GeistMono } from "geist/font/mono";
+import { useTranslations } from "next-intl";
 
 type ColumnData = {
   stat: string;
   value: number;
   per10: number | string;
 };
-
-export const columns: ColumnDef<ColumnData>[] = [
-  {
-    accessorKey: "stat",
-    header: "Stat",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("stat")}</div>,
-    enableSorting: false,
-    enableColumnFilter: false,
-  },
-  {
-    accessorKey: "value",
-    header: "Total",
-    cell: ({ row }) => (
-      <div className={GeistMono.className}>{row.getValue("value")}</div>
-    ),
-    enableSorting: true,
-    sortingFn: "basic",
-    filterFn: "includesString",
-  },
-  {
-    accessorKey: "per10",
-    header: "Avg/10 min",
-    cell: ({ row }) => (
-      <div className={cn(GeistMono.className, "capitalize")}>
-        {row.getValue("per10")}
-      </div>
-    ),
-    enableSorting: false,
-    enableColumnFilter: false,
-  },
-];
 
 export function StatsTable({ data: playerStat }: { data: PlayerStat }) {
   const [rowSelection, setRowSelection] = React.useState({});
@@ -70,43 +40,77 @@ export function StatsTable({ data: playerStat }: { data: PlayerStat }) {
     []
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const t = useTranslations("mapPage.player.statTable");
+
+  const columns: ColumnDef<ColumnData>[] = [
+    {
+      accessorKey: "stat",
+      header: t("stat"),
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("stat")}</div>
+      ),
+      enableSorting: false,
+      enableColumnFilter: false,
+    },
+    {
+      accessorKey: "value",
+      header: t("total"),
+      cell: ({ row }) => (
+        <div className={GeistMono.className}>{row.getValue("value")}</div>
+      ),
+      enableSorting: true,
+      sortingFn: "basic",
+      filterFn: "includesString",
+    },
+    {
+      accessorKey: "per10",
+      header: t("avg10Min"),
+      cell: ({ row }) => (
+        <div className={cn(GeistMono.className, "capitalize")}>
+          {row.getValue("per10")}
+        </div>
+      ),
+      enableSorting: false,
+      enableColumnFilter: false,
+    },
+  ];
 
   const tableData = [
     {
-      stat: "Hero Time Played",
-      value: `${toMins(playerStat.hero_time_played)} mins`,
+      stat: t("timePlayed"),
+      value: t("mins", { mins: toMins(playerStat.hero_time_played) }),
       per10: "--:--",
     },
     {
-      stat: "Eliminations",
+      stat: t("eliminations"),
       value: playerStat.eliminations,
       per10: round(
         (playerStat.eliminations / toMins(playerStat.hero_time_played)) * 10
       ),
     },
     {
-      stat: "Final Blows",
+      stat: t("finalBlows"),
       value: playerStat.final_blows,
       per10: round(
         (playerStat.final_blows / toMins(playerStat.hero_time_played)) * 10
       ),
     },
     {
-      stat: "Deaths",
+      stat: t("deaths"),
       value: playerStat.deaths,
       per10: round(
         (playerStat.deaths / toMins(playerStat.hero_time_played)) * 10
       ),
     },
     {
-      stat: "All Damage Dealt",
+      stat: t("allDmgDealt"),
       value: playerStat.all_damage_dealt.toFixed(2),
       per10: round(
         (playerStat.all_damage_dealt / toMins(playerStat.hero_time_played)) * 10
       ),
     },
     {
-      stat: "Barrier Damage Dealt",
+      stat: t("barrierDmgDealt"),
       value: playerStat.barrier_damage_dealt.toFixed(2),
       per10: round(
         (playerStat.barrier_damage_dealt /
@@ -115,7 +119,7 @@ export function StatsTable({ data: playerStat }: { data: PlayerStat }) {
       ),
     },
     {
-      stat: "Hero Damage Dealt",
+      stat: t("heroDmgDealt"),
       value: playerStat.hero_damage_dealt.toFixed(2),
       per10: round(
         (playerStat.hero_damage_dealt / toMins(playerStat.hero_time_played)) *
@@ -123,42 +127,42 @@ export function StatsTable({ data: playerStat }: { data: PlayerStat }) {
       ),
     },
     {
-      stat: "Healing Dealt",
+      stat: t("healingDealt"),
       value: playerStat.healing_dealt.toFixed(2),
       per10: round(
         (playerStat.healing_dealt / toMins(playerStat.hero_time_played)) * 10
       ),
     },
     {
-      stat: "Healing Received",
+      stat: t("healingReceived"),
       value: playerStat.healing_received.toFixed(2),
       per10: round(
         (playerStat.healing_received / toMins(playerStat.hero_time_played)) * 10
       ),
     },
     {
-      stat: "Self Healing",
+      stat: t("selfHealing"),
       value: playerStat.self_healing.toFixed(2),
       per10: round(
         (playerStat.self_healing / toMins(playerStat.hero_time_played)) * 10
       ),
     },
     {
-      stat: "Damage Taken",
+      stat: t("dmgTaken"),
       value: playerStat.damage_taken.toFixed(2),
       per10: round(
         (playerStat.damage_taken / toMins(playerStat.hero_time_played)) * 10
       ),
     },
     {
-      stat: "Damage Blocked",
+      stat: t("dmgBlocked"),
       value: playerStat.damage_blocked.toFixed(2),
       per10: round(
         (playerStat.damage_blocked / toMins(playerStat.hero_time_played)) * 10
       ),
     },
     {
-      stat: "Defensive Assists",
+      stat: t("defenseAssist"),
       value: playerStat.defensive_assists,
       per10: round(
         (playerStat.defensive_assists / toMins(playerStat.hero_time_played)) *
@@ -166,7 +170,7 @@ export function StatsTable({ data: playerStat }: { data: PlayerStat }) {
       ),
     },
     {
-      stat: "Offensive Assists",
+      stat: t("offenseAssist"),
       value: playerStat.offensive_assists,
       per10: round(
         (playerStat.offensive_assists / toMins(playerStat.hero_time_played)) *
@@ -174,47 +178,47 @@ export function StatsTable({ data: playerStat }: { data: PlayerStat }) {
       ),
     },
     {
-      stat: "Ultimates Earned",
+      stat: t("ultsEarned"),
       value: playerStat.ultimates_earned,
       per10: round(
         (playerStat.ultimates_earned / toMins(playerStat.hero_time_played)) * 10
       ),
     },
     {
-      stat: "Ultimates Used",
+      stat: t("ultsUsed"),
       value: playerStat.ultimates_used,
       per10: round(
         (playerStat.ultimates_used / toMins(playerStat.hero_time_played)) * 10
       ),
     },
     {
-      stat: "Multikill Best",
+      stat: t("multikillBest"),
       value: playerStat.multikill_best,
       per10: "--:--",
     },
     {
-      stat: "Multikills",
+      stat: t("multikills"),
       value: playerStat.multikills,
       per10: round(
         (playerStat.multikills / toMins(playerStat.hero_time_played)) * 10
       ),
     },
     {
-      stat: "Solo Kills",
+      stat: t("soloKills"),
       value: playerStat.solo_kills,
       per10: round(
         (playerStat.solo_kills / toMins(playerStat.hero_time_played)) * 10
       ),
     },
     {
-      stat: "Objective Kills",
+      stat: t("objKills"),
       value: playerStat.objective_kills,
       per10: round(
         (playerStat.objective_kills / toMins(playerStat.hero_time_played)) * 10
       ),
     },
     {
-      stat: "Environmental Kills",
+      stat: t("envKills"),
       value: playerStat.environmental_kills,
       per10: round(
         (playerStat.environmental_kills / toMins(playerStat.hero_time_played)) *
@@ -222,7 +226,7 @@ export function StatsTable({ data: playerStat }: { data: PlayerStat }) {
       ),
     },
     {
-      stat: "Environmental Deaths",
+      stat: t("envDeaths"),
       value: playerStat.environmental_deaths,
       per10: round(
         (playerStat.environmental_deaths /
@@ -231,34 +235,34 @@ export function StatsTable({ data: playerStat }: { data: PlayerStat }) {
       ),
     },
     {
-      stat: "Critical Hits",
+      stat: t("critHits"),
       value: playerStat.critical_hits,
       per10: round(
         (playerStat.critical_hits / toMins(playerStat.hero_time_played)) * 10
       ),
     },
     {
-      stat: "Critical Hit Accuracy",
+      stat: t("critHitAcc"),
       value: `${round(playerStat.critical_hit_accuracy * 100)}%`,
       per10: "--:--",
     },
     {
-      stat: "Scoped Accuracy",
+      stat: t("scopedAcc"),
       value: `${round(playerStat.scoped_accuracy * 100)}%`,
       per10: "--:--",
     },
     {
-      stat: "Scoped Critical Hit Accuracy",
+      stat: t("scopedCritHitAcc"),
       value: `${round(playerStat.scoped_critical_hit_accuracy * 100)}%`,
       per10: "--:--",
     },
     {
-      stat: "Scoped Critical Hit Kills",
+      stat: t("scopedCritHitKills"),
       value: playerStat.scoped_critical_hit_kills,
       per10: "--:--",
     },
     {
-      stat: "Weapon Accuracy",
+      stat: t("weaponAcc"),
       value: `${round(playerStat.weapon_accuracy * 100)}%`,
       per10: "--:--",
     },
@@ -329,7 +333,7 @@ export function StatsTable({ data: playerStat }: { data: PlayerStat }) {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {t("noResult")}
                 </TableCell>
               </TableRow>
             )}

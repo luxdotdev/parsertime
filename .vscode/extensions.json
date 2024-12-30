@@ -17,7 +17,8 @@
     "prisma.prisma",
     "bradlc.vscode-tailwindcss",
     "mattpocock.ts-error-translator",
-    "orta.vscode-twoslash-queries"
+    "orta.vscode-twoslash-queries",
+    "lokalise.i18n-ally"
   ],
   // List of extensions recommended by VS Code that should not be recommended for users of this workspace.
   "unwantedRecommendations": []

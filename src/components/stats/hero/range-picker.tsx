@@ -24,6 +24,7 @@ import { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { SelectGroup } from "@radix-ui/react-select";
 import { addMonths, addWeeks, addYears, format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
 
@@ -52,6 +53,8 @@ export function RangePicker({
   deaths: Kill[];
   hero: HeroName;
 }) {
+  const t = useTranslations("statsPage.heroStats.rangePicker");
+
   const TODAY = new Date();
   const LAST_WEEK = addWeeks(TODAY, -1);
 
@@ -80,58 +83,58 @@ export function RangePicker({
       <div className="items-center gap-2 space-y-2 md:flex md:space-y-0">
         <Select onValueChange={onTimeframeChange} defaultValue="one-week">
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Timeframe" />
+            <SelectValue placeholder={t("selectTime")} />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Select a timeframe</SelectLabel>
+              <SelectLabel>{t("selectTime")}</SelectLabel>
               <SelectItem
                 value="one-week"
                 disabled={!permissions["stats-timeframe-1"]}
               >
-                Last Week
+                {t("lastWeek")}
               </SelectItem>
               <SelectItem
                 value="two-weeks"
                 disabled={!permissions["stats-timeframe-1"]}
               >
-                Last 2 Weeks
+                {t("last2Weeks")}
               </SelectItem>
               <SelectItem
                 value="one-month"
                 disabled={!permissions["stats-timeframe-1"]}
               >
-                Last Month
+                {t("lastMonth")}
               </SelectItem>
               <SelectItem
                 value="three-months"
                 disabled={!permissions["stats-timeframe-2"]}
               >
-                Last 3 Months
+                {t("last3Months")}
               </SelectItem>
               <SelectItem
                 value="six-months"
                 disabled={!permissions["stats-timeframe-2"]}
               >
-                Last 6 Months
+                {t("last6Months")}
               </SelectItem>
               <SelectItem
                 value="one-year"
                 disabled={!permissions["stats-timeframe-3"]}
               >
-                Last Year
+                {t("lastYear")}
               </SelectItem>
               <SelectItem
                 value="all-time"
                 disabled={!permissions["stats-timeframe-3"]}
               >
-                All Time
+                {t("allTime")}
               </SelectItem>
               <SelectItem
                 value="custom"
                 disabled={!permissions["stats-timeframe-3"]}
               >
-                Custom
+                {t("custom")}
               </SelectItem>
             </SelectGroup>
             {!permissions["stats-timeframe-3"] && (
@@ -140,7 +143,7 @@ export function RangePicker({
                 <SelectGroup>
                   <SelectLabel>
                     <Link href="/pricing" external>
-                      Upgrade to view more timeframes
+                      {t("upgrade")}
                     </Link>
                   </SelectLabel>
                 </SelectGroup>
@@ -172,7 +175,7 @@ export function RangePicker({
                       format(date.from, "LLL dd, y")
                     )
                   ) : (
-                    <span>Pick a date</span>
+                    <span>{t("pickDate")}</span>
                   )}
                 </Button>
               </PopoverTrigger>

@@ -1,5 +1,4 @@
 import NoAuthCard from "@/components/auth/no-auth";
-import Footer from "@/components/footer";
 import { SelectedPlayerProvider } from "@/components/map/player-switcher";
 import { isAuthedToViewScrim } from "@/lib/auth";
 
@@ -17,10 +16,5 @@ export default async function ScrimDashboardLayout({
     return <NoAuthCard />;
   }
 
-  return (
-    <SelectedPlayerProvider>
-      {children}
-      <Footer />
-    </SelectedPlayerProvider>
-  );
+  return <SelectedPlayerProvider>{children}</SelectedPlayerProvider>;
 }

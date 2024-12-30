@@ -5,22 +5,22 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
-export default function NoAuthCard() {
+export default async function NoAuthCard() {
+  const t = await getTranslations("noAuth");
+
   return (
     <div className="flex h-screen flex-col items-center justify-center">
       <Card className="h-48 max-w-md">
-        <CardHeader>Not Authorized</CardHeader>
+        <CardHeader>{t("title")}</CardHeader>
         <CardContent>
-          <p>
-            You are not authorized to view this page. Please log in first or
-            check your account.
-          </p>
+          <p>{t("description")}</p>
         </CardContent>
         <CardFooter>
           <Link href="/sign-in" className="underline">
-            <Button>Sign in</Button>
+            <Button>{t("signIn")}</Button>
           </Link>
         </CardFooter>
       </Card>

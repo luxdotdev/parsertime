@@ -1,11 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  CalendarIcon,
-  ExternalLinkIcon,
-  ReloadIcon,
-} from "@radix-ui/react-icons";
+import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -23,6 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Link } from "@/components/ui/link";
 import {
   Popover,
   PopoverContent,
@@ -41,7 +38,7 @@ import { cn } from "@/lib/utils";
 import { ParserData } from "@/types/parser";
 import { useQuery } from "@tanstack/react-query";
 import { track } from "@vercel/analytics";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
 
@@ -52,32 +49,6 @@ const ACCEPTED_FILE_TYPES = [
 
 const MAX_FILE_SIZE = 1000000; // 1MB in bytes
 
-const FormSchema = z.object({
-  name: z
-    .string({
-      required_error: "A scrim name is required.",
-    })
-    .min(2, {
-      message: "Name must be at least 2 characters.",
-    })
-    .max(30, {
-      message: "Name must not be longer than 30 characters.",
-    }),
-  team: z.string({
-    required_error: "A team name is required.",
-  }),
-  date: z.date({
-    required_error: "A scrim date is required.",
-  }),
-  map: z.any(),
-  replayCode: z
-    .string()
-    .max(6, {
-      message: "Replay code must not be longer than 6 characters.",
-    })
-    .optional(),
-});
-
 export function ScrimCreationForm({
   setOpen,
 }: {
@@ -87,6 +58,33 @@ export function ScrimCreationForm({
   const { toast } = useToast();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const t = useTranslations("dashboard.scrimCreationForm");
+
+  const FormSchema = z.object({
+    name: z
+      .string({
+        required_error: t("scrimRequiredError"),
+      })
+      .min(2, {
+        message: t("scrimMinMessage"),
+      })
+      .max(30, {
+        message: t("scrimMaxMessage"),
+      }),
+    team: z.string({
+      required_error: t("teamRequiredError"),
+    }),
+    date: z.date({
+      required_error: t("dateRequiredError"),
+    }),
+    map: z.any(),
+    replayCode: z
+      .string()
+      .max(6, {
+        message: "Replay code must not be longer than 6 characters.",
+      })
+      .optional(),
+  });
 
   async function getTeams() {
     const response = await fetch("/api/team/get-teams-with-perms");
@@ -112,16 +110,16 @@ export function ScrimCreationForm({
     if (file) {
       if (file.size > MAX_FILE_SIZE) {
         toast({
-          title: "File is too big",
-          description: "Max file size is 1MB.",
+          title: t("fileSize.title"),
+          description: t("fileSize.description"),
         });
         return;
       }
 
       if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
         toast({
-          title: "Invalid file type",
-          description: ".xlsx and .txt files are accepted.",
+          title: t("fileType.title"),
+          description: t("fileType.description"),
         });
         return;
       }
@@ -138,8 +136,8 @@ export function ScrimCreationForm({
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setLoading(true);
     toast({
-      title: "Creating scrim",
-      description: "Please wait...",
+      title: t("creatingScrim.title"),
+      description: t("creatingScrim.description"),
       duration: 5000,
     });
 
@@ -153,8 +151,8 @@ export function ScrimCreationForm({
 
     if (res.ok) {
       toast({
-        title: "Scrim created",
-        description: "Your scrim has been created successfully.",
+        title: t("createdScrim.title"),
+        description: t("createdScrim.description"),
         duration: 5000,
       });
       router.refresh();
@@ -162,22 +160,20 @@ export function ScrimCreationForm({
       setLoading(false);
     } else {
       toast({
-        title: "Error",
-        description: (
-          <p>
-            An error occurred: {await res.text()} ({res.status}). Please read
-            the docs{" "}
+        title: t("createdScrim.errorTitle"),
+        description: t.rich("createdScrim.errorDescription", {
+          res: `${await res.text()} (${res.status})`,
+          here: (chunks) => (
             <Link
               href="https://docs.parsertime.app/#common-errors"
               target="_blank"
               className="underline"
+              external
             >
-              here
-            </Link>{" "}
-            <ExternalLinkIcon className="inline h-4 w-4" /> to see if the error
-            can be resolved.
-          </p>
-        ),
+              {chunks}
+            </Link>
+          ),
+        }),
         duration: 5000,
         variant: "destructive",
       });
@@ -193,14 +189,11 @@ export function ScrimCreationForm({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Scrim Name</FormLabel>
+              <FormLabel>{t("scrimName")}</FormLabel>
               <FormControl>
-                <Input placeholder="New Scrim" {...field} />
+                <Input placeholder={t("scrimPlaceholder")} {...field} />
               </FormControl>
-              <FormDescription>
-                This is the name of the scrim. It will be displayed on the
-                dashboard.
-              </FormDescription>
+              <FormDescription>{t("scrimDescription")}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -210,15 +203,15 @@ export function ScrimCreationForm({
           name="team"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Assign a Team</FormLabel>
+              <FormLabel>{t("teamName")}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger className="w-[240px] pl-3 text-left font-normal">
-                    <SelectValue placeholder="Select a team" />
+                    <SelectValue placeholder={t("teamPlaceholder")} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="0">Individual</SelectItem>
+                  <SelectItem value="0">{t("teamIndividual")}</SelectItem>
                   {teams ? (
                     teams.map((team) => (
                       <SelectItem key={team.value} value={team.value}>
@@ -226,13 +219,14 @@ export function ScrimCreationForm({
                       </SelectItem>
                     ))
                   ) : (
-                    <SelectItem value="1">Loading...</SelectItem>
+                    <SelectItem value="1">{t("teamLoading")}</SelectItem>
                   )}
                 </SelectContent>
               </Select>
               <FormDescription>
-                You can manage teams from your{" "}
-                <Link href="/dashboard">dashboard</Link>.
+                {t.rich("teamDescription", {
+                  link: (chunks) => <Link href="/dashboard">{chunks}</Link>,
+                })}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -243,7 +237,7 @@ export function ScrimCreationForm({
           name="date"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Scrim Date</FormLabel>
+              <FormLabel>{t("dateName")}</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -257,7 +251,7 @@ export function ScrimCreationForm({
                       {field.value ? (
                         format(field.value, "PPP")
                       ) : (
-                        <span>Pick a date</span>
+                        <span>{t("datePlaceholder")}</span>
                       )}
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
@@ -274,9 +268,7 @@ export function ScrimCreationForm({
                   />
                 </PopoverContent>
               </Popover>
-              <FormDescription>
-                The scrim date is the date when the scrim took place.
-              </FormDescription>
+              <FormDescription>{t("dateDescription")}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -286,7 +278,7 @@ export function ScrimCreationForm({
           name="map"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>First Map</FormLabel>
+              <FormLabel>{t("mapName")}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -298,11 +290,7 @@ export function ScrimCreationForm({
                   accept=".xlsx, .txt"
                 />
               </FormControl>
-              <FormDescription>
-                Upload the first map of the scrim. Only .xlsx and .txt files are
-                accepted, and max file size is 1MB. You can add more maps after
-                the scrim is created.
-              </FormDescription>
+              <FormDescription>{t("mapDescription")}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -314,10 +302,11 @@ export function ScrimCreationForm({
         >
           {loading ? (
             <>
-              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" /> Submitting...
+              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
+              {t("submitting")}
             </>
           ) : (
-            "Submit"
+            <>{t("submit")}</>
           )}
         </Button>
       </form>

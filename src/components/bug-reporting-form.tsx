@@ -21,6 +21,7 @@ import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -40,11 +41,12 @@ export function BugReportForm({
   setReportDialogOpen: (open: boolean) => void;
 }) {
   const [loading, setLoading] = useState(false);
+  const t = useTranslations("dashboard.bugReportForm");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: user?.email ?? "unknown", // Default to "unknown" if no user is logged in
+      email: user?.email ?? t("unknown"), // Default to "unknown" if no user is logged in
       url: window.location.href,
     },
   });
@@ -59,15 +61,15 @@ export function BugReportForm({
 
     if (res.ok) {
       toast({
-        title: "Bug report submitted",
-        description: "Thank you for your help!",
+        title: t("successToast.title"),
+        description: t("successToast.description"),
         duration: 5000,
       });
       setReportDialogOpen(false);
     } else {
       toast({
-        title: "Error",
-        description: "An error occurred while submitting your bug report.",
+        title: t("errorToast.title"),
+        description: t("errorToast.description"),
         duration: 5000,
         variant: "destructive",
       });
@@ -78,11 +80,8 @@ export function BugReportForm({
 
   return (
     <DialogHeader>
-      <DialogTitle>Report a Bug</DialogTitle>
-      <DialogDescription className="pb-2">
-        If you&apos;ve found a bug, please report it to us. We appreciate your
-        help in making Parsertime better.
-      </DialogDescription>
+      <DialogTitle>{t("title")}</DialogTitle>
+      <DialogDescription className="pb-2">{t("description")}</DialogDescription>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
@@ -90,13 +89,11 @@ export function BugReportForm({
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Title</FormLabel>
+                <FormLabel>{t("formTitle")}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Cannot remove scrim..." {...field} />
+                  <Input placeholder={t("titlePlaceholder")} {...field} />
                 </FormControl>
-                <FormDescription>
-                  The title of the bug report. Be concise and descriptive.
-                </FormDescription>
+                <FormDescription>{t("titleDescription")}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -106,14 +103,14 @@ export function BugReportForm({
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <FormLabel>{t("descriptionTitle")}</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Type your message here." {...field} />
+                  <Textarea
+                    placeholder={t("descriptionPlaceholder")}
+                    {...field}
+                  />
                 </FormControl>
-                <FormDescription>
-                  Describe the bug you found. Include as much detail as
-                  possible.
-                </FormDescription>
+                <FormDescription>{t("descriptionDescription")}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -123,18 +120,16 @@ export function BugReportForm({
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{t("emailTitle")}</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder="user@example.com"
+                    placeholder={t("emailPlaceholder")}
                     defaultValue={field.value}
                     disabled={!!user}
                   />
                 </FormControl>
-                <FormDescription>
-                  The email address for the currently logged in user.
-                </FormDescription>
+                <FormDescription>{t("emailDescription")}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -144,18 +139,16 @@ export function BugReportForm({
             name="url"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>URL</FormLabel>
+                <FormLabel>{t("urlTitle")}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="path/to/page"
+                    placeholder={t("urlPlaceholder")}
                     defaultValue={window.location.href}
                     disabled
                     {...field}
                   />
                 </FormControl>
-                <FormDescription>
-                  The URL of the page where the bug was found.
-                </FormDescription>
+                <FormDescription>{t("urlDescription")}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -164,10 +157,10 @@ export function BugReportForm({
             {loading ? (
               <>
                 <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
-                Submitting...
+                {t("submitting")}
               </>
             ) : (
-              "Submit Bug Report"
+              t("submit")
             )}
           </Button>
         </form>
