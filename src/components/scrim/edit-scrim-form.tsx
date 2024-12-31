@@ -90,9 +90,6 @@ export function EditScrimForm({
         id: z.number(),
         replayCode: z
           .string()
-          .min(6, {
-            message: t("replayCode"),
-          })
           .max(6, {
             message: t("replayCode"),
           })
