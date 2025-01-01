@@ -512,7 +512,7 @@ export default async function AboutPage() {
           </div>
           <div className="mt-16 border-t border-black/10 pt-8 dark:border-white/10 sm:mt-20 lg:mt-24">
             <p className="text-xs leading-5 text-gray-600 dark:text-gray-400">
-              &copy; {new Date().getFullYear()} {t("footerNav.copyright")}
+              &copy; 2024-{new Date().getFullYear()} {t("footerNav.copyright")}
             </p>
           </div>
         </div>
