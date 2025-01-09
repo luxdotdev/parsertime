@@ -594,7 +594,8 @@ export default async function LandingPage() {
               ))}
             </div>
             <p className="mt-8 text-xs leading-5 text-gray-400 md:order-1 md:mt-0">
-              &copy; 2024-{new Date().getFullYear()} {t("footer.copyright")}
+              &copy; 2024&ndash;{new Date().getFullYear()}{" "}
+              {t("footer.copyright")}
             </p>
           </div>
         </div>
