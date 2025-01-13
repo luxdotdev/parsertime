@@ -263,7 +263,7 @@ export async function DefaultOverview({ id }: { id: number }) {
                     color: (chunks) => (
                       <span className="text-red-500">{chunks}</span>
                     ),
-                    teamName: matchDetails?.team_1_name,
+                    teamName: matchDetails?.team_2_name,
                   })}
             </p>
           </CardFooter>
