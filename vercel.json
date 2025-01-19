@@ -12,5 +12,6 @@
       "path": "/api/delete-empty-scrims",
       "schedule": "0 0 * * *"
     }
-  ]
+  ],
+  "regions": ["pdx1", "iad1"]
 }
