@@ -64,7 +64,7 @@ export function CommandDialogMenu({ user }: { user: User | null }) {
   }
 
   const { data: teams } = useQuery({
-    queryKey: ["teams"],
+    queryKey: ["cmd-menu-teams"],
     queryFn: getTeams,
     staleTime: Infinity,
   });
