@@ -60,7 +60,7 @@ export function TeamSwitcher({
   }
 
   const { data: teams, isLoading } = useQuery({
-    queryKey: ["teamSwitcherTeams"],
+    queryKey: ["team-switcher-teams"],
     queryFn: getTeams,
     staleTime: Infinity,
   });
