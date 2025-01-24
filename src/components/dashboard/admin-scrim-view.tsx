@@ -29,7 +29,7 @@ export async function AdminScrimView() {
       createdAt: scrim.createdAt,
       updatedAt: scrim.updatedAt,
       date: scrim.date,
-      teamId: scrim.teamId,
+      teamId: scrim.teamId ?? 0,
       creatorId: scrim.creatorId,
       guestMode: scrim.guestMode,
       team: teamName?.name ?? t("noTeam"),
