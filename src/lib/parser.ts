@@ -209,13 +209,17 @@ export async function createNewScrimFromParsedData(
     throw new Error("User not found");
   }
 
+  // If the team is 0, it is an individual scrim
+  // After changing the database host to Railway, we need to use null instead of 0
+  const teamId = parseInt(data.team) === 0 ? null : parseInt(data.team);
+
   const scrim = await prisma.scrim.create({
     data: {
       name: data.name ?? "New Scrim",
       date: data.date ?? new Date(),
       createdAt: new Date(),
       creatorId: userId.id,
-      teamId: parseInt(data.team),
+      teamId,
     },
   });
 
