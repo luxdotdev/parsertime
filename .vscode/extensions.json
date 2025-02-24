@@ -5,7 +5,6 @@
   // List of extensions which should be recommended for users of this workspace.
   "recommendations": [
     "vitest.explorer",
-    "formulahendry.auto-rename-tag",
     "usernamehw.errorlens",
     "dbaeumer.vscode-eslint",
     "github.vscode-pull-request-github",
