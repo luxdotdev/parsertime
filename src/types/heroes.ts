@@ -47,6 +47,11 @@ export type Echo = {
   image: "echo.png";
 };
 
+export type Freja = {
+  name: "Freja";
+  image: "freja.png";
+};
+
 export type Genji = {
   name: "Genji";
   image: "genji.png";
@@ -231,6 +236,7 @@ export type DPS =
   | Bastion
   | Cassidy
   | Echo
+  | Freja
   | Genji
   | Hanzo
   | Junkrat
@@ -269,6 +275,7 @@ export const heroRoleMapping: Record<HeroName, "Tank" | "Damage" | "Support"> =
     Doomfist: "Tank",
     "D.Va": "Tank",
     Echo: "Damage",
+    Freja: "Damage",
     Genji: "Damage",
     Hanzo: "Damage",
     Hazard: "Tank",
