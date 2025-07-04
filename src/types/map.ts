@@ -3,6 +3,7 @@ import { $Enums } from "@prisma/client";
 export type MapName = keyof typeof mapNameToMapTypeMapping;
 
 export const mapNameToMapTypeMapping = {
+  Aatlis: $Enums.MapType.Flashpoint,
   "Antarctic Peninsula": $Enums.MapType.Control,
   "Blizzard World": $Enums.MapType.Hybrid,
   "Blizzard World (Winter)": $Enums.MapType.Hybrid,
