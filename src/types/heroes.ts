@@ -207,6 +207,11 @@ export type WreckingBall = {
   image: "wreckingball.png";
 };
 
+export type Wuyang = {
+  name: "Wuyang";
+  image: "wuyang.png";
+};
+
 export type Zarya = {
   name: "Zarya";
   image: "zarya.png";
@@ -262,6 +267,7 @@ export type Support =
   | Lucio
   | Mercy
   | Moira
+  | Wuyang
   | Zenyatta;
 
 export const heroRoleMapping: Record<HeroName, "Tank" | "Damage" | "Support"> =
@@ -307,6 +313,7 @@ export const heroRoleMapping: Record<HeroName, "Tank" | "Damage" | "Support"> =
     Widowmaker: "Damage",
     Winston: "Tank",
     "Wrecking Ball": "Tank",
+    Wuyang: "Support",
     Zarya: "Tank",
     Zenyatta: "Support",
   };
@@ -362,6 +369,7 @@ export const roleHeroMapping: Record<
     "Lúcio",
     "Mercy",
     "Moira",
+    "Wuyang",
     "Zenyatta",
   ],
 };
