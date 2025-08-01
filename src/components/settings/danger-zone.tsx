@@ -146,9 +146,10 @@ function SecondDialog({
         <AlertDialogHeader>
           <h2 className="text-lg font-semibold">{t("secondDialog.delete")}</h2>
         </AlertDialogHeader>
-        <p>{t("description")}</p>
+        <p>{t("secondDialog.description")}</p>
         <p>
           {t.rich("secondDialog.confirm", {
+            deleteInput: t("deleteInput"),
             strong: (chunks) => <strong>{chunks}</strong>,
           })}
         </p>
