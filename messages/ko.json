@@ -834,7 +834,8 @@
         "ability-1": "스킬 1",
         "ability-2": "스킬 2",
         "ultimate": "궁극기",
-        "melee": "근접 공격"
+        "melee": "근접 공격",
+        "resurrect": "부활"
       },
       "exportCSV": "CSV로 내보내기"
     },
