@@ -834,7 +834,8 @@
         "ability-1": "技能 1",
         "ability-2": "技能 2",
         "ultimate": "终极技能",
-        "melee": "近战"
+        "melee": "近战",
+        "resurrect": "复活"
       },
       "exportCSV": "导出为 CSV"
     },

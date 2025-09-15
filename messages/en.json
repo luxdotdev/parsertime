@@ -838,7 +838,8 @@
         "ability-1": "Ability 1",
         "ability-2": "Ability 2",
         "ultimate": "Ultimate",
-        "melee": "Melee"
+        "melee": "Melee",
+        "resurrect": "Resurrect"
       },
       "exportCSV": "Export as CSV"
     },
