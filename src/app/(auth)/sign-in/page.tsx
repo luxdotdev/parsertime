@@ -2,8 +2,8 @@ import { UserAuthForm } from "@/components/auth/user-auth-form";
 import { buttonVariants } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
-import { PagePropsWithLocale } from "@/types/next";
-import { Metadata } from "next";
+import type { PagePropsWithLocale } from "@/types/next";
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
@@ -62,7 +62,7 @@ export default async function AuthenticationPage() {
             height={50}
             className="dark:invert"
           />
-          Parsertime
+          {t("parsertime")}
         </div>
       </Link>
       <Link
@@ -85,7 +85,7 @@ export default async function AuthenticationPage() {
               height={50}
               className="dark:invert"
             />
-            Parsertime
+            {t("parsertime")}
           </div>
         </Link>
         <div className="relative z-20 mt-auto">
