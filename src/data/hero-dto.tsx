@@ -2,7 +2,7 @@ import "server-only";
 
 import prisma from "@/lib/prisma";
 import { removeDuplicateRows } from "@/lib/utils";
-import { Kill, PlayerStat, Prisma } from "@prisma/client";
+import { type PlayerStat, Prisma } from "@prisma/client";
 import { cache } from "react";
 
 async function getAllStatsForHeroFn(scrimIds: number[], hero: string) {
@@ -48,9 +48,9 @@ async function getAllStatsForHeroFn(scrimIds: number[], hero: string) {
  * Returns all of the statistics for a specific hero.
  * This function is cached for performance.
  *
- * @param {number} scrimIds The IDs of the scrims the hero participated in.
- * @param {string} hero The name of the hero.
- * @returns {PlayerStatRows} The statistics for the specified hero.
+ * @param scrimIds The IDs of the scrims the hero participated in.
+ * @param hero The name of the hero.
+ * @returns The statistics for the specified hero.
  */
 export const getAllStatsForHero = cache(getAllStatsForHeroFn);
 
@@ -81,9 +81,9 @@ async function getAllKillsForHeroFn(scrimIds: number[], hero: string) {
  * Returns all of the kills for a specific hero.
  * This function is cached for performance.
  *
- * @param {number} scrimIds The IDs of the scrims the hero participated in.
- * @param {string} playerName The name of the player.
- * @returns {Kill[]} The kills for the specified player.
+ * @param scrimIds The IDs of the scrims the hero participated in.
+ * @param playerName The name of the player.
+ * @returns The kills for the specified player.
  */
 export const getAllKillsForHero = cache(getAllKillsForHeroFn);
 
@@ -114,8 +114,8 @@ async function getAllDeathsForHeroFn(scrimIds: number[], hero: string) {
  * Returns all of the deaths for a specific hero.
  * This function is cached for performance.
  *
- * @param {number} scrimIds The IDs of the scrims the hero participated in.
- * @param {string} hero The name of the hero.
- * @returns {Kill[]} The deaths for the specified hero.
+ * @param scrimIds The IDs of the scrims the hero participated in.
+ * @param hero The name of the hero.
+ * @returns The deaths for the specified hero.
  */
 export const getAllDeathsForHero = cache(getAllDeathsForHeroFn);

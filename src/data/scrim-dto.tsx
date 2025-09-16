@@ -3,15 +3,13 @@ import "server-only";
 import prisma from "@/lib/prisma";
 import { removeDuplicateRows } from "@/lib/utils";
 import { calculateWinner } from "@/lib/winrate";
-import { HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
+import { type HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
 import {
-  Kill,
-  MatchStart,
-  ObjectiveCaptured,
-  PlayerStat,
+  type MatchStart,
+  type ObjectiveCaptured,
+  type PlayerStat,
   Prisma,
-  RoundEnd,
-  Scrim,
+  type RoundEnd,
 } from "@prisma/client";
 import { cache } from "react";
 
@@ -30,8 +28,8 @@ async function getUserViewableScrimsFn(id: string) {
 /**
  * Returns the scrims that a user is allowed to view.
  *
- * @param {string} id The ID of the user.
- * @returns {Scrim[]} The scrims that the user is allowed to view.
+ * @param id The ID of the user.
+ * @returns The scrims that the user is allowed to view.
  */
 export const getUserViewableScrims = cache(getUserViewableScrimsFn);
 
@@ -78,9 +76,8 @@ async function getFinalRoundStatsFn(id: number) {
  * Returns the statistics for the final round of a map.
  * This function is cached for performance.
  *
- * @param {number} id The ID of the map.
- * @returns {PlayerStat[]} The statistics for the final round of the specified map.
- * @see {@link PlayerStat}
+ * @param id The ID of the map.
+ * @returns The statistics for the final round of the specified map.
  */
 export const getFinalRoundStats = cache(getFinalRoundStatsFn);
 
@@ -110,9 +107,9 @@ async function getFinalRoundStatsForPlayerFn(id: number, playerName: string) {
  * Returns the statistics for the final round of a map for a specific player.
  * This function is cached for performance.
  *
- * @param {number} id The ID of the map.
- * @param {string} playerName The name of the player.
- * @returns {PlayerStatRows} The statistics for the final round of the specified map for the specified player.
+ * @param id The ID of the map.
+ * @param playerName The name of the player.
+ * @returns The statistics for the final round of the specified map for the specified player.
  */
 export const getPlayerFinalStats = cache(getFinalRoundStatsForPlayerFn);
 
@@ -159,9 +156,9 @@ async function getAllStatsForPlayerFn(scrimIds: number[], name: string) {
  * Returns all of the statistics for a specific player.
  * This function is cached for performance.
  *
- * @param {number} scrimIds The IDs of the scrims the player participated in.
- * @param {string} playerName The name of the player.
- * @returns {PlayerStatRows} The statistics for the specified player.
+ * @param scrimIds The IDs of the scrims the player participated in.
+ * @param playerName The name of the player.
+ * @returns The statistics for the specified player.
  */
 export const getAllStatsForPlayer = cache(getAllStatsForPlayerFn);
 
@@ -192,9 +189,9 @@ async function getAllKillsForPlayerFn(scrimIds: number[], name: string) {
  * Returns all of the kills for a specific player.
  * This function is cached for performance.
  *
- * @param {number} scrimIds The IDs of the scrims the player participated in.
- * @param {string} playerName The name of the player.
- * @returns {Kill[]} The kills for the specified player.
+ * @param scrimIds The IDs of the scrims the player participated in.
+ * @param playerName The name of the player.
+ * @returns The kills for the specified player.
  */
 export const getAllKillsForPlayer = cache(getAllKillsForPlayerFn);
 
@@ -225,9 +222,9 @@ async function getAllDeathsForPlayerFn(scrimIds: number[], name: string) {
  * Returns all of the deaths for a specific player.
  * This function is cached for performance.
  *
- * @param {number} scrimIds The IDs of the scrims the player participated in.
- * @param {string} playerName The name of the player.
- * @returns {Kill[]} The deaths for the specified player.
+ * @param scrimIds The IDs of the scrims the player participated in.
+ * @param playerName The name of the player.
+ * @returns The deaths for the specified player.
  */
 export const getAllDeathsForPlayer = cache(getAllDeathsForPlayerFn);
 
@@ -302,21 +299,22 @@ async function getAllMapWinratesForPlayerFn(scrimIds: number[], name: string) {
     }
   });
 
-  const wins = [] as { map: string; wins: number; date: Date }[];
+  const wins: { map: string; wins: number; date: Date }[] = [];
 
   for (const mapId of mapDataIdArray) {
     const playerStat = playerStats.find((stat) => stat.MapDataId === mapId);
     if (!playerStat) continue;
 
-    const matchDetails =
-      matchStarts.find((match) => match.MapDataId === mapId) ||
+    const matchDetails: MatchStart =
+      matchStarts.find((match) => match.MapDataId === mapId) ??
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       ({} as MatchStart);
 
     const winner = calculateWinner({
       matchDetails,
       finalRound: finalRounds[mapId],
-      team1Captures: team1CapturesMap.get(mapId) || [],
-      team2Captures: team2CapturesMap.get(mapId) || [],
+      team1Captures: team1CapturesMap.get(mapId) ?? [],
+      team2Captures: team2CapturesMap.get(mapId) ?? [],
     });
 
     const playerTeam = playerStat?.player_team;
@@ -324,7 +322,7 @@ async function getAllMapWinratesForPlayerFn(scrimIds: number[], name: string) {
     wins.push({
       map: matchDetails.map_name,
       wins: winner === playerTeam ? 1 : 0,
-      date: mapIdToDateMap.get(mapId) || new Date(),
+      date: mapIdToDateMap.get(mapId) ?? new Date(),
     });
   }
 
@@ -335,8 +333,8 @@ async function getAllMapWinratesForPlayerFn(scrimIds: number[], name: string) {
  * Returns the winrates for a specific player on each map.
  * This function is cached for performance.
  *
- * @param {number} scrimIds The IDs of the scrims the player participated in.
- * @param {string} playerName The name of the player.
- * @returns {Record<string, number>} The winrates for the specified player on each map.
+ * @param scrimIds The IDs of the scrims the player participated in.
+ * @param playerName The name of the player.
+ * @returns The winrates for the specified player on each map.
  */
 export const getAllMapWinratesForPlayer = cache(getAllMapWinratesForPlayerFn);
