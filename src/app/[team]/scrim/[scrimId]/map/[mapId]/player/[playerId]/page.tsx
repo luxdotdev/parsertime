@@ -14,8 +14,8 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { toTitleCase } from "@/lib/utils";
-import { PagePropsWithLocale } from "@/types/next";
-import { Metadata } from "next";
+import type { PagePropsWithLocale } from "@/types/next";
+import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
@@ -117,7 +117,9 @@ export default async function PlayerDashboardPage(
         <div>
           <h4 className="text-gray-600 dark:text-gray-400">
             <Link
-              href={`/${params.team}/scrim/${params.scrimId}/map/${params.mapId}`}
+              href={
+                `/${params.team}/scrim/${params.scrimId}/map/${params.mapId}` as Route
+              }
             >
               &larr; {t("back")}
             </Link>

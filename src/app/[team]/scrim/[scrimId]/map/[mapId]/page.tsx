@@ -16,8 +16,8 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { translateMapName } from "@/lib/utils";
-import { PagePropsWithLocale } from "@/types/next";
-import { Metadata } from "next";
+import type { PagePropsWithLocale } from "@/types/next";
+import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
@@ -40,7 +40,7 @@ export async function generateMetadata(
     },
   });
 
-  const translatedMapName = await translateMapName(mapName?.map_name || "Map");
+  const translatedMapName = await translateMapName(mapName?.map_name ?? "Map");
 
   return {
     title: t("title", { mapName: translatedMapName }),
@@ -92,7 +92,7 @@ export default async function MapDashboardPage(
     },
   })) ?? { guestMode: false };
 
-  const translatedMapName = await translateMapName(mapName?.map_name || "Map");
+  const translatedMapName = await translateMapName(mapName?.map_name ?? "Map");
 
   return (
     <div className="flex-col md:flex">
@@ -127,7 +127,7 @@ export default async function MapDashboardPage(
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div>
           <h4 className="text-gray-600 dark:text-gray-400">
-            <Link href={`/${params.team}/scrim/${params.scrimId}`}>
+            <Link href={`/${params.team}/scrim/${params.scrimId}` as Route}>
               &larr; {t("back")}
             </Link>
           </h4>
