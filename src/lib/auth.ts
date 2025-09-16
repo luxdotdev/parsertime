@@ -64,7 +64,7 @@ export const config = {
 
         const shortLink = await createShortLink(url);
 
-        const emailHtml = render(
+        const emailHtml = await render(
           MagicLinkEmail({ magicLink: shortLink, username: email })
         );
 
@@ -160,7 +160,7 @@ export const config = {
         // Track new user signups with Vercel Analytics
         await track("New User", { email: user.email ?? "unknown" });
 
-        const emailHtml = render(
+        const emailHtml = await render(
           UserOnboardingEmail({ name: user.name ?? "user", email: user.email! })
         );
 
