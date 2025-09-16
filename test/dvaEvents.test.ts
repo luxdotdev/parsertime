@@ -1,10 +1,14 @@
 import { createDvaRemechRows, createRemechChargedRows } from "@/lib/parser";
-import {
+import type {
   DvaRemechTableRow,
   ParserData,
   RemechChargedTableRow,
 } from "@/types/parser";
-import { DvaRemech, PrismaClient, RemechCharged } from "@prisma/client";
+import {
+  type DvaRemech,
+  PrismaClient,
+  type RemechCharged,
+} from "@prisma/client";
 import { expect, test } from "vitest";
 
 const prisma = new PrismaClient({
@@ -36,14 +40,14 @@ test("should return the generated D.Va remech row", async () => {
     MapDataId: 100,
   };
 
-  const dvaRemechRow = await createDvaRemechRows(data as any, { id: 1 }, 100);
+  const dvaRemechRow = await createDvaRemechRows(data as never, { id: 1 }, 100);
 
   // Destructure the id from the result and compare the rest of the properties
   const { id, ...restOfDvaRemechRow } = dvaRemechRow[0];
 
   await prisma.dvaRemech.deleteMany({
     where: {
-      id: id,
+      id,
     },
   });
 
@@ -53,7 +57,7 @@ test("should return the generated D.Va remech row", async () => {
 test("should return empty array", async () => {
   const data = {};
 
-  const dvaRemechRow = await createDvaRemechRows(data as any, { id: 1 }, 1);
+  const dvaRemechRow = await createDvaRemechRows(data as never, { id: 1 }, 1);
 
   expect(dvaRemechRow).toEqual([]);
 });
@@ -86,7 +90,7 @@ test("should return the generated remech charged row", async () => {
   };
 
   const remechChargedRow = await createRemechChargedRows(
-    data as any,
+    data as never,
     { id: 1 },
     100
   );
@@ -96,7 +100,7 @@ test("should return the generated remech charged row", async () => {
 
   await prisma.remechCharged.deleteMany({
     where: {
-      id: id,
+      id,
     },
   });
 
@@ -107,12 +111,10 @@ test("should return empty array", async () => {
   const data = {};
 
   const remechChargedRow = await createRemechChargedRows(
-    data as any,
+    data as never,
     { id: 1 },
     1
   );
 
   expect(remechChargedRow).toEqual([]);
 });
-
-prisma.$disconnect();

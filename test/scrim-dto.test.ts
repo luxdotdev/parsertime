@@ -1,5 +1,6 @@
+/* eslint-disable no-console */
 import prisma from "@/lib/prisma";
-import { PlayerStat } from "@prisma/client";
+import type { PlayerStat } from "@prisma/client";
 import { expect, test } from "vitest";
 
 test("should be equivalent queries", async () => {
