@@ -1,7 +1,7 @@
 import Logger from "@/lib/logger";
-import { $Enums, Prisma } from "@prisma/client";
-import { User } from "next-auth";
-import { User as PrismaUser } from "@prisma/client";
+import type { User as PrismaUser } from "@prisma/client";
+import { $Enums } from "@prisma/client";
+import type { User } from "next-auth";
 
 /**
  * The structure of a Discord webhook. This is a simplified version of the actual

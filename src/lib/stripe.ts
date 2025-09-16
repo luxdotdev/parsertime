@@ -1,8 +1,8 @@
 import { getUser } from "@/data/user-dto";
-import { BillingPlans } from "@/types/billing-plans";
-import { User } from "@prisma/client";
+import type { BillingPlans } from "@/types/billing-plans";
+import type { User } from "@prisma/client";
 import { get } from "@vercel/edge-config";
-import { Session } from "next-auth";
+import type { Session } from "next-auth";
 import Stripe from "stripe";
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {

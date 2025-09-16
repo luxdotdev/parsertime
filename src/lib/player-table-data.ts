@@ -1,6 +1,6 @@
 import { round } from "@/lib/utils";
-import { HeroName, heroRoleMapping } from "@/types/heroes";
-import { PlayerStat } from "@prisma/client";
+import { type HeroName, heroRoleMapping } from "@/types/heroes";
+import type { PlayerStat } from "@prisma/client";
 
 export type PlayerData = {
   id: number;
@@ -38,34 +38,32 @@ export function aggregatePlayerData(rows: PlayerStat[]): PlayerData[] {
     let player = playerMap.get(row.player_name);
 
     // Update team total eliminations
-    const currentTeamElims = teamElimsMap.get(row.player_team) || 0;
+    const currentTeamElims = teamElimsMap.get(row.player_team) ?? 0;
     teamElimsMap.set(row.player_team, currentTeamElims + row.eliminations);
 
-    if (!player) {
-      player = {
-        id: index, // You need to define how you want to handle the ID
-        playerName: row.player_name,
-        role: determineRole(row.player_hero as HeroName),
-        playerTeam: row.player_team,
-        eliminations: 0,
-        kills: 0,
-        assists: 0,
-        deaths: 0,
-        kd: 0,
-        kad: 0,
-        heroDmgDealt: 0,
-        dmgReceived: 0,
-        healingReceived: 0,
-        healingDealt: 0,
-        dmgToHealsRatio: 0,
-        ultsCharged: 0,
-        ultsUsed: 0,
-        timePlayed: 0,
-        mostPlayedHero: row.player_hero as HeroName,
-      };
-    }
+    player ??= {
+      id: index, // You need to define how you want to handle the ID
+      playerName: row.player_name,
+      role: determineRole(row.player_hero as HeroName),
+      playerTeam: row.player_team,
+      eliminations: 0,
+      kills: 0,
+      assists: 0,
+      deaths: 0,
+      kd: 0,
+      kad: 0,
+      heroDmgDealt: 0,
+      dmgReceived: 0,
+      healingReceived: 0,
+      healingDealt: 0,
+      dmgToHealsRatio: 0,
+      ultsCharged: 0,
+      ultsUsed: 0,
+      timePlayed: 0,
+      mostPlayedHero: row.player_hero as HeroName,
+    };
 
-    const currentMaxTime = playerMaxMatchTime.get(row.player_name) || 0;
+    const currentMaxTime = playerMaxMatchTime.get(row.player_name) ?? 0;
     if (row.match_time > currentMaxTime) {
       playerMaxMatchTime.set(row.player_name, row.match_time);
     }
@@ -78,7 +76,7 @@ export function aggregatePlayerData(rows: PlayerStat[]): PlayerData[] {
     }
     heroTimes.set(
       row.player_hero as HeroName,
-      (heroTimes.get(row.player_hero as HeroName) || 0) + row.hero_time_played
+      (heroTimes.get(row.player_hero as HeroName) ?? 0) + row.hero_time_played
     );
 
     // Update the stats
@@ -133,7 +131,7 @@ export function aggregatePlayerData(rows: PlayerStat[]): PlayerData[] {
 
   // Set time played for each player
   playerMaxMatchTime.forEach((maxTime, playerName) => {
-    const player = playerMap.get(playerName) || {
+    const player = playerMap.get(playerName) ?? {
       // ... Initialize other fields for the player
       timePlayed: 0,
       // ... Other fields

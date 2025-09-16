@@ -53,7 +53,7 @@ const StringOrNumber = z.string().or(z.number());
 
 const MatchStartSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.match_start),
+  z.literal(EventType.enum.match_start),
   // Match Time
   Float,
   // Map Name
@@ -68,7 +68,7 @@ const MatchStartSchema = z.tuple([
 
 const MatchEndSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.match_end),
+  z.literal(EventType.enum.match_end),
   // Match Time
   Float,
   // Round Number
@@ -81,7 +81,7 @@ const MatchEndSchema = z.tuple([
 
 const RoundStartSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.round_start),
+  z.literal(EventType.enum.round_start),
   // Match Time
   Float,
   // Round Number
@@ -98,7 +98,7 @@ const RoundStartSchema = z.tuple([
 
 const RoundEndSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.round_end),
+  z.literal(EventType.enum.round_end),
   // Match Time
   Float,
   // Round Number
@@ -121,7 +121,7 @@ const RoundEndSchema = z.tuple([
 
 const SetupCompleteSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.setup_complete),
+  z.literal(EventType.enum.setup_complete),
   // Match Time
   Float,
   // Round Number
@@ -132,7 +132,7 @@ const SetupCompleteSchema = z.tuple([
 
 const ObjectiveUpdatedSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.objective_updated),
+  z.literal(EventType.enum.objective_updated),
   // Match Time
   Float,
   // Round Number
@@ -145,7 +145,7 @@ const ObjectiveUpdatedSchema = z.tuple([
 
 const ObjectiveCapturedSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.objective_captured),
+  z.literal(EventType.enum.objective_captured),
   // Match Time
   Float,
   // Round Number
@@ -164,7 +164,7 @@ const ObjectiveCapturedSchema = z.tuple([
 
 const PointProgressSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.point_progress),
+  z.literal(EventType.enum.point_progress),
   // Match Time
   Float,
   // Round Number
@@ -179,7 +179,7 @@ const PointProgressSchema = z.tuple([
 
 const PayloadProgressSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.payload_progress),
+  z.literal(EventType.enum.payload_progress),
   // Match Time
   Float,
   // Round Number
@@ -194,7 +194,7 @@ const PayloadProgressSchema = z.tuple([
 
 const HeroSpawnSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.hero_spawn),
+  z.literal(EventType.enum.hero_spawn),
   // Match Time
   Float,
   // Player Team
@@ -211,7 +211,7 @@ const HeroSpawnSchema = z.tuple([
 
 const HeroSwapSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.hero_swap),
+  z.literal(EventType.enum.hero_swap),
   // Match Time
   Float,
   // Player Team
@@ -228,7 +228,7 @@ const HeroSwapSchema = z.tuple([
 
 const OffensiveAssistSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.offensive_assist),
+  z.literal(EventType.enum.offensive_assist),
   // Match Time
   Float,
   // Player Team
@@ -243,7 +243,7 @@ const OffensiveAssistSchema = z.tuple([
 
 const DefensiveAssistSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.defensive_assist),
+  z.literal(EventType.enum.defensive_assist),
   // Match Time
   Float,
   // Player Team
@@ -258,7 +258,7 @@ const DefensiveAssistSchema = z.tuple([
 
 const UltimateChargedSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.ultimate_charged),
+  z.literal(EventType.enum.ultimate_charged),
   // Match Time
   Float,
   // Player Team
@@ -275,7 +275,7 @@ const UltimateChargedSchema = z.tuple([
 
 const UltimateStartSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.ultimate_start),
+  z.literal(EventType.enum.ultimate_start),
   // Match Time
   Float,
   // Player Team
@@ -292,7 +292,7 @@ const UltimateStartSchema = z.tuple([
 
 const UltimateEndSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.ultimate_end),
+  z.literal(EventType.enum.ultimate_end),
   // Match Time
   Float,
   // Player Team
@@ -309,7 +309,7 @@ const UltimateEndSchema = z.tuple([
 
 const KillSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.kill),
+  z.literal(EventType.enum.kill),
   // Match Time
   Float,
   // Attacker Team
@@ -336,7 +336,7 @@ const KillSchema = z.tuple([
 
 const MercyRezSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.mercy_rez),
+  z.literal(EventType.enum.mercy_rez),
   // Match Time
   Float,
   // Resurrecter Team
@@ -355,7 +355,7 @@ const MercyRezSchema = z.tuple([
 
 const EchoDuplicateStartSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.echo_duplicate_start),
+  z.literal(EventType.enum.echo_duplicate_start),
   // Match Time
   Float,
   // Player Team
@@ -372,7 +372,7 @@ const EchoDuplicateStartSchema = z.tuple([
 
 const EchoDuplicateEndSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.echo_duplicate_end),
+  z.literal(EventType.enum.echo_duplicate_end),
   // Match Time
   Float,
   // Player Team
@@ -387,7 +387,7 @@ const EchoDuplicateEndSchema = z.tuple([
 
 const DvaRemechSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.dva_remech),
+  z.literal(EventType.enum.dva_remech),
   // Match Time
   Float,
   // Player Team
@@ -401,7 +401,7 @@ const DvaRemechSchema = z.tuple([
 ]);
 const RemechChargedSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.remech_charged),
+  z.literal(EventType.enum.remech_charged),
   // Match Time
   Float,
   // Player Team
@@ -418,7 +418,7 @@ const RemechChargedSchema = z.tuple([
 
 export const PlayerStatSchema = z.tuple([
   // Event Type
-  z.literal(EventType.Values.player_stat),
+  z.literal(EventType.enum.player_stat),
   // Match Time
   Float,
   // Round Number

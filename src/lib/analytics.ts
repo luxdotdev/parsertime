@@ -1,8 +1,8 @@
 import { getPlayerFinalStats } from "@/data/scrim-dto";
 import prisma from "@/lib/prisma";
 import { groupKillsIntoFights, removeDuplicateRows, round } from "@/lib/utils";
-import { HeroName, heroRoleMapping } from "@/types/heroes";
-import { RoundEnd, UltimateCharged, UltimateStart } from "@prisma/client";
+import { type HeroName, heroRoleMapping } from "@/types/heroes";
+import type { RoundEnd, UltimateCharged, UltimateStart } from "@prisma/client";
 
 export async function getAverageUltChargeTime(id: number, playerName: string) {
   const [ultimatesCharged, ultimateEnds] = await Promise.all([
@@ -85,7 +85,7 @@ export async function getAverageTimeToUseUlt(id: number, playerName: string) {
   ]);
 
   type Ultimate = { charged: number; started: number; holdTime: number };
-  const ultimates = {} as Record<number, Ultimate[]>;
+  const ultimates: Record<number, Ultimate[]> = {};
 
   const { ultimatesCharged: mutatedCharged, ultimateStarts: mutatedStarts } =
     assignRoundNumbersToUltimates(ultimatesCharged, ultimateStarts, roundEnds);

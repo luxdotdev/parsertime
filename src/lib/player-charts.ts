@@ -1,5 +1,5 @@
-import { Prettify } from "@/types/utils";
-import { PlayerStat } from "@prisma/client";
+import type { Prettify } from "@/types/utils";
+import type { PlayerStat } from "@prisma/client";
 
 // Base properties required for stat calculations.
 type RequiredStats = {
@@ -62,7 +62,7 @@ export type NonMappableStat =
 export function sumStatByRound<T extends keyof Stat>(
   stats: Stat[],
   key: T
-): Array<{ round_number: number } & Record<T, number>> {
+): ({ round_number: number } & Record<T, number>)[] {
   const sumByRound = new Map<number, number>();
   const uniqueEntries = new Set<string>();
 
@@ -72,12 +72,12 @@ export function sumStatByRound<T extends keyof Stat>(
     const setKey = `${round_number}-${player_hero}`;
     if (!uniqueEntries.has(setKey)) {
       uniqueEntries.add(setKey);
-      const currentSum = sumByRound.get(round_number) || 0;
+      const currentSum = sumByRound.get(round_number) ?? 0;
       sumByRound.set(round_number, currentSum + statValue);
     }
   });
 
-  const result: Array<{ round_number: number } & Record<T, number>> = [];
+  const result: ({ round_number: number } & Record<T, number>)[] = [];
   let previousRoundStat = 0;
   Array.from(sumByRound.keys())
     .sort((a, b) => a - b)

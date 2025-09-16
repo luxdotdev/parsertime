@@ -5,11 +5,11 @@ import { sendEmail } from "@/lib/email";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
-import { BillingPlans } from "@/types/billing-plans";
+import type { BillingPlans } from "@/types/billing-plans";
 import { $Enums } from "@prisma/client";
 import { render } from "@react-email/render";
 import { get } from "@vercel/edge-config";
-import Stripe from "stripe";
+import type Stripe from "stripe";
 
 type SubscriptionEvent =
   | "customer.subscription.created"

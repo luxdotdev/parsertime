@@ -1,8 +1,8 @@
 import {
   $Enums,
-  MatchStart,
-  ObjectiveCaptured,
-  RoundEnd,
+  type MatchStart,
+  type ObjectiveCaptured,
+  type RoundEnd,
 } from "@prisma/client";
 
 export function calculateWinner({

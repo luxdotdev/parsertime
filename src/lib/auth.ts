@@ -13,14 +13,14 @@ import {
   sendDiscordWebhook,
 } from "@/lib/webhooks";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { $Enums, User } from "@prisma/client";
+import { $Enums, type User } from "@prisma/client";
 import { render } from "@react-email/render";
 import { Ratelimit } from "@upstash/ratelimit";
 import { track } from "@vercel/analytics/server";
 import { get } from "@vercel/edge-config";
 import { kv } from "@vercel/kv";
 import { createHash, randomBytes } from "crypto";
-import NextAuth, { NextAuthConfig } from "next-auth";
+import NextAuth, { type NextAuthConfig } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
@@ -85,7 +85,7 @@ export const config = {
     },
   ],
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
+    async signIn({ user }) {
       if (!isProd) return true; // allow all sign ins in dev
 
       if (!user.email) return false;
@@ -130,6 +130,7 @@ export const config = {
       if (!success) {
         Logger.log("Rate limit exceeded for sign in attempt", identifier);
 
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const userObj = {
           name: user.name ?? "Unknown",
           email: user.email ?? "unknown",

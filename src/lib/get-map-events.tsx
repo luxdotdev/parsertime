@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 // I cannot be bothered to fix the typing for the `event` variable
-// It is annoyingly complicated, and I don't want to spend time on it\
+// It is annoyingly complicated, and I don't want to spend time on it
 // It works at runtime, so I'm not going to fix it
 
 import prisma from "@/lib/prisma";
@@ -15,8 +15,8 @@ import {
   toHero,
   toTimestamp,
 } from "@/lib/utils";
-import { TODO } from "@/types/utils";
-import { $Enums, Kill, UltimateEnd } from "@prisma/client";
+import type { TODO } from "@/types/utils";
+import type { $Enums, Kill, UltimateEnd } from "@prisma/client";
 import { GeistMono } from "geist/font/mono";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
@@ -137,15 +137,15 @@ export async function getMapEvents(id: number) {
 
   if (!matchStart) return [];
 
-  const captureString = (team: string) => {
-    switch (matchStart.map_type) {
+  function captureString(team: string) {
+    switch (matchStart!.map_type) {
       case "Control":
       case "Flashpoint":
         return t.rich("mapEvents.captureString1", {
           color: (chunks) => (
             <span
               className={cn(
-                team === matchStart.team_1_name
+                team === matchStart!.team_1_name
                   ? "text-blue-500"
                   : "text-red-500"
               )}
@@ -160,7 +160,7 @@ export async function getMapEvents(id: number) {
           color: (chunks) => (
             <span
               className={cn(
-                team === matchStart.team_1_name
+                team === matchStart!.team_1_name
                   ? "text-blue-500"
                   : "text-red-500"
               )}
@@ -171,7 +171,7 @@ export async function getMapEvents(id: number) {
           team,
         });
     }
-  };
+  }
 
   const roundEnds = removeDuplicateRows(roundEndRows);
 
@@ -222,7 +222,7 @@ export async function getMapEvents(id: number) {
 
   const multikillList = findMultikills(fights);
 
-  const ajaxes = [] as UltimateEnd[];
+  const ajaxes: UltimateEnd[] = [];
 
   lucioKills.forEach((kill) => {
     const ajax = ultimateEnds.find(
@@ -241,7 +241,7 @@ export async function getMapEvents(id: number) {
 
   const events = [
     matchStart,
-    matchEnd ? matchEnd : null,
+    matchEnd ?? null,
     ...roundStarts,
     ...roundEnds,
     ...objectiveCaptureds,
@@ -549,7 +549,7 @@ export async function getUltimatesUsedList(id: number) {
 
   const events = [
     matchStart,
-    matchEnd ? matchEnd : null,
+    matchEnd ?? null,
     ...roundStarts,
     ...roundEnds,
     ...ultimateStarts,

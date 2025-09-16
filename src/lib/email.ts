@@ -1,5 +1,5 @@
 import Logger from "@/lib/logger";
-import { SendEmailRequest, SES } from "@aws-sdk/client-ses";
+import { type SendEmailRequest, SES } from "@aws-sdk/client-ses";
 import { Ratelimit } from "@upstash/ratelimit";
 import { kv } from "@vercel/kv";
 

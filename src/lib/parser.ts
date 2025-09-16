@@ -1,11 +1,11 @@
-import { CreateScrimRequestData } from "@/app/api/scrim/create-scrim/route";
+import type { CreateScrimRequestData } from "@/app/api/scrim/create-scrim/route";
 import { headers } from "@/lib/headers";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { toTitleCase } from "@/lib/utils";
-import { ParserData } from "@/types/parser";
-import { $Enums, MapType } from "@prisma/client";
-import { Session } from "next-auth";
+import type { ParserData } from "@/types/parser";
+import { type $Enums, MapType } from "@prisma/client";
+import type { Session } from "next-auth";
 import * as XLSX from "xlsx";
 
 const XLSX_FILE =
@@ -150,6 +150,7 @@ export async function parseDataFromTXT(file: File) {
 
   const sheetName = workbook.SheetNames as $Enums.EventType[];
 
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const result = {} as ParserData;
 
   // for each sheet, convert to json and add it to the result object.
@@ -178,6 +179,7 @@ export async function parseDataFromXLSX(file: File) {
   const workbook = XLSX.read(data, { type: "binary" });
   const sheetName = workbook.SheetNames as $Enums.EventType[];
 
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const result = {} as ParserData;
 
   // for each sheet, convert to json and add it to the result object.
