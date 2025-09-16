@@ -138,7 +138,7 @@ export default async function HeroSelect() {
           </CardContent>
         </Card>
 
-        <p className="col-span-6 text-center text-muted-foreground">
+        <p className="text-muted-foreground col-span-6 text-center">
           {t("description")}
         </p>
       </div>

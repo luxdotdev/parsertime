@@ -8,7 +8,7 @@ export default function CardIcon({ children }: { children: React.ReactNode }) {
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth="2"
-      className="h-4 w-4 text-muted-foreground"
+      className="text-muted-foreground h-4 w-4"
     >
       {children}
     </svg>

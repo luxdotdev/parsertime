@@ -64,7 +64,7 @@ export default async function AllHeroes({
                 </div>
               </CardContent>
               <CardFooter>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-muted-foreground text-sm">
                   {t("matchTime")}
                 </div>
               </CardFooter>
@@ -96,7 +96,7 @@ export default async function AllHeroes({
                 </div>
               </CardContent>
               <CardFooter>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-muted-foreground text-sm">
                   {t("elimsPer10Min", {
                     elims: round(
                       (playerStats.reduce(
@@ -138,7 +138,7 @@ export default async function AllHeroes({
                 </div>
               </CardContent>
               <CardFooter>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-muted-foreground text-sm">
                   {t("deathsPer10Min", {
                     deaths: round(
                       (playerStats.reduce((acc, stat) => acc + stat.deaths, 0) /
@@ -177,7 +177,7 @@ export default async function AllHeroes({
                 </div>
               </CardContent>
               <CardFooter>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-muted-foreground text-sm">
                   {t("ultsPer10Min", {
                     num: round(
                       (playerStats.reduce(
@@ -218,7 +218,7 @@ export default async function AllHeroes({
                 </div>
               </CardContent>
               <CardFooter>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-muted-foreground text-sm">
                   {t("heroDmgPer10Min", {
                     num: round(
                       (playerStats.reduce(
@@ -261,7 +261,7 @@ export default async function AllHeroes({
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-muted-foreground text-sm">
                       {t("dmgBlockedPer10Min", {
                         num: round(
                           (playerStats.reduce(
@@ -304,7 +304,7 @@ export default async function AllHeroes({
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-muted-foreground text-sm">
                       {t("dmgTakenPer10Min", {
                         num: round(
                           (playerStats.reduce(
@@ -349,7 +349,7 @@ export default async function AllHeroes({
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-muted-foreground text-sm">
                       {t("finalBlowsPer10Min", {
                         num: round(
                           (playerStats.reduce(
@@ -397,7 +397,7 @@ export default async function AllHeroes({
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-muted-foreground text-sm">
                       {t("soloKillsPer10Min", {
                         num: round(
                           (playerStats.reduce(
@@ -442,7 +442,7 @@ export default async function AllHeroes({
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-muted-foreground text-sm">
                       {t("healingDealtPer10Min", {
                         num: round(
                           (playerStats.reduce(
@@ -483,7 +483,7 @@ export default async function AllHeroes({
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-muted-foreground text-sm">
                       {t("healingReceivedPer10Min", {
                         num: round(
                           (playerStats.reduce(

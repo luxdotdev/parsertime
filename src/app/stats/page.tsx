@@ -147,7 +147,7 @@ export default async function StatsPage() {
             <div className="text-2xl font-bold">{format(userNum)}</div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">{t("users.footer")}</p>
+            <p className="text-muted-foreground text-xs">{t("users.footer")}</p>
           </CardFooter>
         </Card>
         <Card>
@@ -170,7 +170,7 @@ export default async function StatsPage() {
             <div className="text-2xl font-bold">{format(scrimNum)}</div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("scrims.footer")}
             </p>
           </CardFooter>
@@ -192,7 +192,7 @@ export default async function StatsPage() {
             <div className="text-2xl font-bold">{format(killNum)}</div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">{t("kills.footer")}</p>
+            <p className="text-muted-foreground text-xs">{t("kills.footer")}</p>
           </CardFooter>
         </Card>
         <Card>
@@ -209,7 +209,7 @@ export default async function StatsPage() {
             <div className="text-2xl font-bold">{format(statNum)}</div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("playerStat.footer")}
             </p>
           </CardFooter>
@@ -283,7 +283,7 @@ export default async function StatsPage() {
             </Table>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("top3MostPlayed.footer", { mapNum })}
             </p>
           </CardFooter>
@@ -349,7 +349,7 @@ export default async function StatsPage() {
             </Table>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("top3Kills.footer", { mapNum })}
             </p>
           </CardFooter>
@@ -413,7 +413,7 @@ export default async function StatsPage() {
             </Table>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("top3Dmg.footer", { mapNum })}
             </p>
           </CardFooter>
@@ -478,7 +478,7 @@ export default async function StatsPage() {
             </Table>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("top3Healing.footer", { mapNum })}
             </p>
           </CardFooter>
@@ -543,7 +543,7 @@ export default async function StatsPage() {
             </Table>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("top3DmgBlocked.footer", { mapNum })}
             </p>
           </CardFooter>
@@ -612,7 +612,7 @@ export default async function StatsPage() {
             </Table>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("top3Deaths.footer", { mapNum })}
             </p>
           </CardFooter>
@@ -679,7 +679,7 @@ export default async function StatsPage() {
             </Table>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("top3TimePlayed.footer", { mapNum })}
             </p>
           </CardFooter>
@@ -743,7 +743,7 @@ export default async function StatsPage() {
             </Table>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("top3Ajax.footer", { mapNum })}
             </p>
           </CardFooter>

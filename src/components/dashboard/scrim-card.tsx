@@ -41,12 +41,12 @@ export function ScrimCard({ scrim }: Props) {
               </TooltipProvider>
             )}
           </div>
-          <p className="text-sm font-normal text-muted-foreground">
+          <p className="text-muted-foreground text-sm font-normal">
             {scrim.date.toDateString()} | {scrim.creator}
           </p>
         </CardHeader>
         <CardContent>
-          <p className="text-md pt-10 font-normal text-foreground">
+          <p className="text-md text-foreground pt-10 font-normal">
             <span className="text-muted-foreground">{t("team")}</span>
             {scrim.team}
           </p>

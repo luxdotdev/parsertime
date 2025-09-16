@@ -440,7 +440,7 @@ export function Statistics({
           </Table>
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {timeframe !== "custom" && timeframe !== "all-time"
               ? t("mostPlayed.footer1", {
                   scrims: scrims[timeframe].length,
@@ -566,7 +566,7 @@ export function Statistics({
           </Table>
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {timeframe !== "custom" && timeframe !== "all-time"
               ? t("bestPerformance.footer1", {
                   scrims: scrims[timeframe].length,
@@ -729,7 +729,7 @@ export function Statistics({
           </Table>
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {timeframe !== "custom" && timeframe !== "all-time"
               ? t("heroesDiedToMost.footer1", {
                   scrims: scrims[timeframe].length,
@@ -836,7 +836,7 @@ export function Statistics({
           </Table>
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {timeframe !== "custom" && timeframe !== "all-time"
               ? t("heroesElimMost.footer1", {
                   scrims: scrims[timeframe].length,

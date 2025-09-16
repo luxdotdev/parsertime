@@ -195,7 +195,7 @@ export default async function ScrimDashboardPage(
                               mapNames.get(toKebabCase(map.name)) ?? map.name,
                           })}
                           fill
-                          className="select-none rounded-md object-cover brightness-[0.65]"
+                          className="rounded-md object-cover brightness-[0.65] select-none"
                         />
                       </CardContent>
                     </Link>

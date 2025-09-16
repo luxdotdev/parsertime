@@ -190,7 +190,7 @@ export default async function AboutPage() {
         {/* Header section */}
         <div className="px-6 pt-14 lg:px-8">
           <div className="mx-auto max-w-2xl pt-24 text-center sm:pt-40">
-            <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
+            <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl dark:text-white">
               {t("headerSection.title")}
             </h2>
             <p className="mt-6 text-lg leading-8 text-gray-700 dark:text-gray-300">
@@ -201,7 +201,7 @@ export default async function AboutPage() {
         {/* Content section */}
         <div className="mx-auto mt-20 max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
-            <div className="grid max-w-xl grid-cols-1 gap-8 text-base leading-7 text-gray-700 dark:text-gray-300 lg:max-w-none lg:grid-cols-2">
+            <div className="grid max-w-xl grid-cols-1 gap-8 text-base leading-7 text-gray-700 lg:max-w-none lg:grid-cols-2 dark:text-gray-300">
               <div>
                 <p>{t("contentSection.description1")}</p>
                 <p className="mt-8">{t("contentSection.description2")}</p>
@@ -251,19 +251,19 @@ export default async function AboutPage() {
         {/* Values section */}
         <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-40 lg:px-8">
           <div className="mx-auto max-w-2xl lg:mx-0">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-white">
               {t("featureSection.title")}
             </h2>
             <p className="mt-6 text-lg leading-8 text-gray-700 dark:text-gray-300">
               {t("featureSection.description")}
             </p>
           </div>
-          <dl className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 text-base leading-7 text-gray-700 dark:text-gray-300 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:gap-x-16">
+          <dl className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 text-base leading-7 text-gray-700 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:gap-x-16 dark:text-gray-300">
             {values.map((value) => (
               <div key={value.name} className="relative pl-9">
                 <dt className="inline font-semibold text-gray-900 dark:text-white">
                   <value.icon
-                    className="absolute left-1 top-1 h-5 w-5 text-sky-500"
+                    className="absolute top-1 left-1 h-5 w-5 text-sky-500"
                     aria-hidden="true"
                   />
                   {value.name}
@@ -275,10 +275,10 @@ export default async function AboutPage() {
         </div>
 
         {/* Team section */}
-        <div className="bg-white py-24 dark:bg-black sm:py-32">
+        <div className="bg-white py-24 sm:py-32 dark:bg-black">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto max-w-2xl lg:mx-0">
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-white">
                 {t("teamSection.title")}
               </h2>
               <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
@@ -295,7 +295,7 @@ export default async function AboutPage() {
                     width={324}
                     height={300}
                   />
-                  <h3 className="mt-6 text-lg font-semibold leading-8 tracking-tight text-black dark:text-white">
+                  <h3 className="mt-6 text-lg leading-8 font-semibold tracking-tight text-black dark:text-white">
                     {person.name}
                   </h3>
                   <p className="text-base leading-7 text-gray-600 dark:text-gray-300">
@@ -325,7 +325,7 @@ export default async function AboutPage() {
             <div className="relative isolate overflow-hidden bg-gray-950 px-6 pt-16 shadow-2xl sm:rounded-3xl sm:px-16 md:pt-24 lg:flex lg:gap-x-20 lg:px-24 lg:pt-0">
               <svg
                 viewBox="0 0 1024 1024"
-                className="absolute left-1/2 top-1/2 -z-10 h-[64rem] w-[64rem] -translate-y-1/2 [mask-image:radial-gradient(closest-side,white,transparent)] sm:left-full sm:-ml-80 lg:left-1/2 lg:ml-0 lg:-translate-x-1/2 lg:translate-y-0"
+                className="absolute top-1/2 left-1/2 -z-10 h-[64rem] w-[64rem] -translate-y-1/2 [mask-image:radial-gradient(closest-side,white,transparent)] sm:left-full sm:-ml-80 lg:left-1/2 lg:ml-0 lg:-translate-x-1/2 lg:translate-y-0"
                 aria-hidden="true"
               >
                 <circle
@@ -360,7 +360,7 @@ export default async function AboutPage() {
                   </Link>
                   <Link
                     href="/demo"
-                    className="text-sm font-semibold leading-6 text-white"
+                    className="text-sm leading-6 font-semibold text-white"
                   >
                     {t("ctaSection.demo")} <span aria-hidden="true">→</span>
                   </Link>
@@ -368,14 +368,14 @@ export default async function AboutPage() {
               </div>
               <div className="relative mt-16 h-80 lg:mt-8">
                 <Image
-                  className="absolute left-0 top-0 hidden w-[57rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10 dark:flex"
+                  className="absolute top-0 left-0 hidden w-[57rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10 dark:flex"
                   src="/player_page.png"
                   alt={t("ctaSection.altText")}
                   width={1824}
                   height={1080}
                 />
                 <Image
-                  className="absolute left-0 top-0 w-[57rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10 dark:hidden"
+                  className="absolute top-0 left-0 w-[57rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10 dark:hidden"
                   src="/player_page_light.png"
                   alt={t("ctaSection.altText")}
                   width={1824}
@@ -427,7 +427,7 @@ export default async function AboutPage() {
             <div className="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
               <div className="md:grid md:grid-cols-2 md:gap-8">
                 <div>
-                  <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">
+                  <h3 className="text-sm leading-6 font-semibold text-gray-900 dark:text-white">
                     {t("footerNav.solutions.title")}
                   </h3>
                   <ul className="mt-6 space-y-4">
@@ -447,7 +447,7 @@ export default async function AboutPage() {
                   </ul>
                 </div>
                 <div className="mt-10 md:mt-0">
-                  <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">
+                  <h3 className="text-sm leading-6 font-semibold text-gray-900 dark:text-white">
                     {t("footerNav.support.title")}
                   </h3>
                   <ul className="mt-6 space-y-4">
@@ -469,7 +469,7 @@ export default async function AboutPage() {
               </div>
               <div className="md:grid md:grid-cols-2 md:gap-8">
                 <div>
-                  <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">
+                  <h3 className="text-sm leading-6 font-semibold text-gray-900 dark:text-white">
                     {t("footerNav.company.title")}
                   </h3>
                   <ul className="mt-6 space-y-4">
@@ -489,7 +489,7 @@ export default async function AboutPage() {
                   </ul>
                 </div>
                 <div className="mt-10 md:mt-0">
-                  <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">
+                  <h3 className="text-sm leading-6 font-semibold text-gray-900 dark:text-white">
                     {t("footerNav.legal.title")}
                   </h3>
                   <ul className="mt-6 space-y-4">
@@ -511,7 +511,7 @@ export default async function AboutPage() {
               </div>
             </div>
           </div>
-          <div className="mt-16 border-t border-black/10 pt-8 dark:border-white/10 sm:mt-20 lg:mt-24">
+          <div className="mt-16 border-t border-black/10 pt-8 sm:mt-20 lg:mt-24 dark:border-white/10">
             <p className="text-xs leading-5 text-gray-600 dark:text-gray-400">
               &copy; 2024&ndash;{new Date().getFullYear()}{" "}
               {t("footerNav.copyright")}

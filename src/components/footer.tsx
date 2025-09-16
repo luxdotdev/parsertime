@@ -87,7 +87,7 @@ export default async function Footer() {
           </Link>
         </div>
 
-        <p className="mt-6 text-sm text-gray-500 dark:text-gray-400 lg:mt-0">
+        <p className="mt-6 text-sm text-gray-500 lg:mt-0 dark:text-gray-400">
           &copy; 2024&ndash;{new Date().getFullYear()} lux.dev.
         </p>
       </div>

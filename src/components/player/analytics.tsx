@@ -127,7 +127,7 @@ export async function PlayerAnalytics({
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("avgUltChargeTime.footer")}
             </p>
           </CardFooter>
@@ -150,7 +150,7 @@ export async function PlayerAnalytics({
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("avgTimeUseUlt.footer")}
             </p>
           </CardFooter>
@@ -172,7 +172,7 @@ export async function PlayerAnalytics({
             <div className="text-2xl font-bold">{toTimestamp(droughtTime)}</div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("avgDroughtTime.footer")}
             </p>
           </CardFooter>
@@ -194,7 +194,7 @@ export async function PlayerAnalytics({
             <div className="text-2xl font-bold">{xFactor.toFixed(2)}</div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("xFactor.footer")}
             </p>
           </CardFooter>
@@ -204,7 +204,7 @@ export async function PlayerAnalytics({
             <CardTitle className="text-sm font-medium">
               {t("versus.title")}
             </CardTitle>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("versus.description", { playerName })}
             </p>
           </CardHeader>
@@ -302,7 +302,7 @@ export async function PlayerAnalytics({
             <CardTitle className="text-sm font-medium">
               {t("playerKillfeed.title")}
             </CardTitle>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("playerKillfeed.description", { playerName })}
             </p>
           </CardHeader>
@@ -327,7 +327,7 @@ export async function PlayerAnalytics({
             />
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("dmgTakenHealingReceived.footer")}
             </p>
           </CardFooter>
@@ -345,7 +345,7 @@ export async function PlayerAnalytics({
             />
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("dmgDoneDmgTaken.footer")}
             </p>
           </CardFooter>

@@ -35,7 +35,7 @@ function CustomTooltip({
 }: TooltipProps<ValueType, NameType>) {
   if (active && payload && payload.length) {
     return (
-      <div className="z-50 overflow-hidden rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
+      <div className="bg-primary text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 overflow-hidden rounded-md px-3 py-1.5 text-xs">
         <h3 className="text-base font-bold">{label}</h3>
         <p className="text-sm">
           <span className="text-blue-500">
@@ -154,7 +154,7 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
       </CardContent>
       <CardFooter>
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-1 text-foreground">
+          <div className="text-foreground inline-flex items-center gap-1">
             <p>
               {t.rich("statPer10.footer", {
                 span: (chunks) => (
@@ -185,7 +185,7 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
               </span>
             </p>
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {t("statPer10.avg")}{" "}
             <span className="text-foreground">{format(round(avg))}</span>{" "}
             {t("statPer10.max")}{" "}

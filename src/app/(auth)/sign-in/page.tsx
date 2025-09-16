@@ -52,9 +52,9 @@ export default async function AuthenticationPage() {
   const t = await getTranslations("signInPage");
 
   return (
-    <div className="container relative h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
+    <div className="relative container h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
       <Link href="/" className="md:hidden">
-        <div className="relative right-4 top-2 z-20 flex items-center text-lg font-medium md:right-8 md:top-8">
+        <div className="relative top-2 right-4 z-20 flex items-center text-lg font-medium md:top-8 md:right-8">
           <Image
             src="/parsertime.png"
             alt=""
@@ -69,12 +69,12 @@ export default async function AuthenticationPage() {
         href="/sign-up"
         className={cn(
           buttonVariants({ variant: "ghost" }),
-          "absolute right-4 top-4 md:right-8 md:top-8"
+          "absolute top-4 right-4 md:top-8 md:right-8"
         )}
       >
         {t("signUp")}
       </Link>
-      <div className="relative hidden h-full flex-col bg-muted p-10 text-black dark:border-r dark:text-white lg:flex">
+      <div className="bg-muted relative hidden h-full flex-col p-10 text-black lg:flex dark:border-r dark:text-white">
         <div className="bg-topography dark:bg-dark-topography absolute inset-0" />
         <Link href="/">
           <div className="relative z-20 flex items-center text-lg font-medium">
@@ -98,7 +98,7 @@ export default async function AuthenticationPage() {
             <h1 className="text-2xl font-semibold tracking-tight">
               {t("signIn")}
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               {t("enterEmailSignIn")}
             </p>
           </div>

@@ -30,7 +30,7 @@ export default async function SettingsProfilePage() {
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-medium">{t("title")}</h3>
-        <p className="text-sm text-muted-foreground">{t("description")}</p>
+        <p className="text-muted-foreground text-sm">{t("description")}</p>
       </div>
       <Separator />
       <p>

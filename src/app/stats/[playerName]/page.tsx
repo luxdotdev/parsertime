@@ -166,7 +166,7 @@ export default async function PlayerStats(
               <div className="text-center">
                 <Link
                   href="/stats"
-                  className="text-base font-normal text-muted-foreground"
+                  className="text-muted-foreground text-base font-normal"
                 >
                   &larr; {t("back")}
                 </Link>

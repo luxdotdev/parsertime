@@ -334,7 +334,7 @@ export function Statistics({
             <p className="text-2xl font-bold">
               {t.rich("statistics.games", {
                 span: (chunks) => (
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-muted-foreground text-sm">
                     {chunks}
                   </span>
                 ),
@@ -348,7 +348,7 @@ export function Statistics({
             <p className="text-2xl font-bold">
               {t.rich("statistics.kills", {
                 span: (chunks) => (
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-muted-foreground text-sm">
                     {chunks}
                   </span>
                 ),
@@ -362,7 +362,7 @@ export function Statistics({
             <p className="text-2xl font-bold">
               {t.rich("statistics.kills", {
                 span: (chunks) => (
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-muted-foreground text-sm">
                     {chunks}
                   </span>
                 ),
@@ -372,7 +372,7 @@ export function Statistics({
           </div>
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {timeframe !== "custom" && timeframe !== "all-time"
               ? t("statistics.footer1", {
                   scrims: scrims[timeframe].length,
@@ -499,7 +499,7 @@ export function Statistics({
           </Table>
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {timeframe !== "custom" && timeframe !== "all-time"
               ? t("bestPerformance.footer1", {
                   scrims: scrims[timeframe].length,
@@ -647,7 +647,7 @@ export function Statistics({
           </Table>
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {timeframe !== "custom" && timeframe !== "all-time"
               ? t("heroesDiedToMost.footer1", {
                   scrims: scrims[timeframe].length,
@@ -757,7 +757,7 @@ export function Statistics({
           </Table>
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {timeframe !== "custom" && timeframe !== "all-time"
               ? t("heroesElimMost.footer1", {
                   scrims: scrims[timeframe].length,

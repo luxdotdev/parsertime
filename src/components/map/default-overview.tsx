@@ -160,7 +160,7 @@ export async function DefaultOverview({ id }: { id: number }) {
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("minutes", {
                 time: ((finalRound?.match_time ?? 0) / 60).toFixed(2),
               })}
@@ -183,7 +183,7 @@ export async function DefaultOverview({ id }: { id: number }) {
             <div className="text-2xl font-bold">{calculateScore()}</div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {mapType !== $Enums.MapType.Push ? (
                 <>
                   {t("winner")}{" "}
@@ -218,7 +218,7 @@ export async function DefaultOverview({ id }: { id: number }) {
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {team1Damage > team2Damage
                 ? t.rich("dealtMore", {
                     color: (chunks) => (
@@ -251,7 +251,7 @@ export async function DefaultOverview({ id }: { id: number }) {
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {team1Healing > team2Healing
                 ? t.rich("healedMore", {
                     color: (chunks) => (

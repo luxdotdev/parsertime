@@ -45,7 +45,7 @@ export function UpdateModal({ data }: { data: UpdateModalData }) {
       <AlertDialogContent className="">
         <AlertDialogHeader>
           <AlertDialogTitle>Latest Updates: {data.title}</AlertDialogTitle>
-          <AlertDialogDescription className="pb-2 text-muted-foreground">
+          <AlertDialogDescription className="text-muted-foreground pb-2">
             {new Date(data.date).toDateString()}
           </AlertDialogDescription>
         </AlertDialogHeader>

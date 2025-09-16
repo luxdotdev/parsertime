@@ -73,7 +73,7 @@ export default async function SettingsLayout({
           <p className="text-muted-foreground">{t("description")}</p>
         </div>
         <Separator className="my-6" />
-        <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
+        <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
           <aside className="-mx-4 lg:w-1/5">
             <SidebarNav items={isAdmin ? adminNavItems : sidebarNavItems} />
           </aside>

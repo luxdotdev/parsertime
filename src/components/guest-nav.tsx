@@ -30,7 +30,7 @@ export function GuestNav({ guestMode }: { guestMode: boolean }) {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">Guest User</p>
+            <p className="text-sm leading-none font-medium">Guest User</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

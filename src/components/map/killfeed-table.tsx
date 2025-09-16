@@ -60,7 +60,7 @@ export function KillfeedTable({
                   <TableRow key={kill.id}>
                     <TableCell className={GeistMono.className}>
                       {kill.match_time.toFixed(2)}{" "}
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-muted-foreground text-sm">
                         ({toTimestamp(kill.match_time)})
                       </span>
                     </TableCell>

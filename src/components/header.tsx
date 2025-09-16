@@ -54,7 +54,7 @@ export default function Header() {
             <Link
               key={item.name}
               href={item.href}
-              className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
+              className="text-sm leading-6 font-semibold text-gray-900 dark:text-white"
             >
               {item.name}
             </Link>
@@ -63,7 +63,7 @@ export default function Header() {
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           <Link
             href="/sign-in"
-            className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
+            className="text-sm leading-6 font-semibold text-gray-900 dark:text-white"
           >
             {t("logIn")} <span aria-hidden="true">&rarr;</span>
           </Link>
@@ -76,7 +76,7 @@ export default function Header() {
         onClose={setMobileMenuOpen}
       >
         <div className="fixed inset-0 z-50" />
-        <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 dark:bg-black sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 dark:sm:ring-white/10">
+        <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 dark:bg-black dark:sm:ring-white/10">
           <div className="flex items-center justify-between">
             <Link href="/" className="-m-1.5 p-1.5">
               <span className="sr-only">Parsertime</span>
@@ -104,7 +104,7 @@ export default function Header() {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-200 dark:text-white dark:hover:bg-black"
+                    className="-mx-3 block rounded-lg px-3 py-2 text-base leading-7 font-semibold text-gray-900 hover:bg-gray-200 dark:text-white dark:hover:bg-black"
                   >
                     {item.name}
                   </Link>
@@ -113,7 +113,7 @@ export default function Header() {
               <div className="py-6">
                 <Link
                   href="/sign-in"
-                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-200 dark:text-white dark:hover:bg-black"
+                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base leading-7 font-semibold text-gray-900 hover:bg-gray-200 dark:text-white dark:hover:bg-black"
                 >
                   {t("logIn")}
                 </Link>

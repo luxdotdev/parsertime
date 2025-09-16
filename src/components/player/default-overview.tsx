@@ -97,7 +97,7 @@ export async function DefaultOverview({
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("minutes", {
                 time: ((finalRound?.match_time ?? 0) / 60).toFixed(2),
               })}
@@ -126,7 +126,7 @@ export async function DefaultOverview({
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("fletaDescription")}
             </p>
           </CardFooter>
@@ -151,7 +151,7 @@ export async function DefaultOverview({
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("firstPickDescription", {
                 fights: fights.length,
                 player: playerNameDecoded,
@@ -177,7 +177,7 @@ export async function DefaultOverview({
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("firstDeathDescription", {
                 fights: fights.length,
                 player: playerNameDecoded,

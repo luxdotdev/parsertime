@@ -21,7 +21,7 @@ export function MainNav({
       <Link
         href="/dashboard"
         className={cn(
-          "text-sm font-medium text-muted-foreground transition-colors hover:text-primary",
+          "text-muted-foreground hover:text-primary text-sm font-medium transition-colors",
           pathname === "/dashboard" ? "text-primary" : "text-muted-foreground"
         )}
       >
@@ -30,7 +30,7 @@ export function MainNav({
       <Link
         href="/stats"
         className={cn(
-          "text-sm font-medium text-muted-foreground transition-colors hover:text-primary",
+          "text-muted-foreground hover:text-primary text-sm font-medium transition-colors",
           pathname === "/stats" ? "text-primary" : "text-muted-foreground"
         )}
       >
@@ -39,7 +39,7 @@ export function MainNav({
       <Link
         href="/team"
         className={cn(
-          "text-sm font-medium transition-colors hover:text-primary",
+          "hover:text-primary text-sm font-medium transition-colors",
           pathname.split("/")[1] === "team"
             ? "text-primary"
             : "text-muted-foreground"
@@ -49,20 +49,20 @@ export function MainNav({
       </Link>
       <Link
         href="/settings"
-        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+        className="text-muted-foreground hover:text-primary text-sm font-medium transition-colors"
       >
         {t("settings")}
       </Link>
       <Link
         href="/contact"
-        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+        className="text-muted-foreground hover:text-primary text-sm font-medium transition-colors"
       >
         {t("contact")}
       </Link>
       <Link
         href="https://docs.parsertime.app"
         target="_blank"
-        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+        className="text-muted-foreground hover:text-primary text-sm font-medium transition-colors"
       >
         {t("docs")}
       </Link>

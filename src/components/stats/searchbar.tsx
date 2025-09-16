@@ -63,7 +63,7 @@ export function Searchbar() {
 
       <div className="p-1" />
 
-      <Link href="/stats/hero" className="text-sm text-foreground">
+      <Link href="/stats/hero" className="text-foreground text-sm">
         {t("link")} &rarr;
       </Link>
 

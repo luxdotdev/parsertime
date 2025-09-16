@@ -64,7 +64,7 @@ export default async function SpecificHero({
                 </div>
               </CardContent>
               <CardFooter>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-muted-foreground text-sm">
                   {t("matchTime", {
                     percent: round(
                       (playerStat.hero_time_played / playerStat.match_time) *
@@ -96,7 +96,7 @@ export default async function SpecificHero({
                 </div>
               </CardContent>
               <CardFooter>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-muted-foreground text-sm">
                   {t("elimsPer10Min", {
                     elims: round(
                       (playerStat.eliminations /
@@ -126,7 +126,7 @@ export default async function SpecificHero({
                 </div>
               </CardContent>
               <CardFooter>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-muted-foreground text-sm">
                   {t("deathsPer10Min", {
                     deaths: round(
                       (playerStat.deaths /
@@ -153,7 +153,7 @@ export default async function SpecificHero({
                 </div>
               </CardContent>
               <CardFooter>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-muted-foreground text-sm">
                   {t("ultsPer10Min", {
                     num: round(
                       (playerStat.ultimates_used /
@@ -181,7 +181,7 @@ export default async function SpecificHero({
                 </div>
               </CardContent>
               <CardFooter>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-muted-foreground text-sm">
                   {t("heroDmgPer10Min", {
                     num: round(
                       (playerStat.hero_damage_dealt /
@@ -211,7 +211,7 @@ export default async function SpecificHero({
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-muted-foreground text-sm">
                       {t("dmgBlockedPer10Min", {
                         num: round(
                           (playerStat.damage_blocked /
@@ -241,7 +241,7 @@ export default async function SpecificHero({
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-muted-foreground text-sm">
                       {t("dmgTakenPer10Min", {
                         num: round(
                           (playerStat.damage_taken /
@@ -273,7 +273,7 @@ export default async function SpecificHero({
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-muted-foreground text-sm">
                       {t("finalBlowsPer10Min", {
                         num: round(
                           (playerStat.final_blows /
@@ -306,7 +306,7 @@ export default async function SpecificHero({
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-muted-foreground text-sm">
                       {t("soloKillsPer10Min", {
                         num: round(
                           (playerStat.solo_kills /
@@ -338,7 +338,7 @@ export default async function SpecificHero({
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-muted-foreground text-sm">
                       {t("healingDealtPer10Min", {
                         num: round(
                           (playerStat.healing_dealt /
@@ -366,7 +366,7 @@ export default async function SpecificHero({
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-muted-foreground text-sm">
                       {t("healingReceivedPer10Min", {
                         num: round(
                           (playerStat.healing_received /
