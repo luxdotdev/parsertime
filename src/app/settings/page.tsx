@@ -5,7 +5,7 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { getCustomerPortalUrl } from "@/lib/stripe";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
-import { Route } from "next";
+import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -14,7 +14,7 @@ export default async function SettingsProfilePage() {
   const t = await getTranslations("settingsPage.profile");
 
   const session = await auth();
-  if (!session || !session.user) {
+  if (!session?.user) {
     redirect("/sign-in");
   }
 

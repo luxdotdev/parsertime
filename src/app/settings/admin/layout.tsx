@@ -1,8 +1,7 @@
 import NoAuthCard from "@/components/auth/no-auth";
+import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { $Enums } from "@prisma/client";
-import prisma from "@/lib/prisma";
-import { getUser } from "@/data/user-dto";
 
 export default async function AdminLayout({
   children,

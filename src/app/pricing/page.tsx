@@ -4,11 +4,12 @@ import { auth } from "@/lib/auth";
 import { createCheckout, getCustomerPortalUrl } from "@/lib/stripe";
 import { toTitleCase } from "@/lib/utils";
 import { CheckIcon, MinusIcon } from "@heroicons/react/20/solid";
-import { Route } from "next";
+import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
-import React, { Fragment } from "react";
+import type React from "react";
+import { Fragment } from "react";
 
 function classNames(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(" ");
@@ -369,7 +370,7 @@ export default async function PricingPage() {
                     tier.mostPopular
                       ? "bg-sky-600 text-white hover:bg-sky-400 focus-visible:outline-sky-500 dark:bg-sky-500"
                       : "text-sky-600 hover:bg-white/20 focus-visible:outline-white dark:bg-white/10 dark:text-white",
-                    "mt-8 block rounded-md px-3 py-2 text-center text-sm leading-6 font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                    "mt-8 block rounded-md px-3 py-2 text-center text-sm leading-6 font-semibold focus-visible:outline focus-visible:outline-offset-2"
                   )}
                 >
                   {tier.name === "Free"
@@ -482,7 +483,7 @@ export default async function PricingPage() {
                               tier.mostPopular
                                 ? "bg-sky-600 text-white hover:bg-sky-500 dark:bg-sky-500 dark:hover:bg-sky-400 dark:focus-visible:outline-sky-600"
                                 : "text-sky-600 ring-1 ring-sky-200 ring-inset hover:ring-sky-300 dark:bg-white/10 dark:ring-0 dark:hover:bg-white/20 dark:focus-visible:outline-white",
-                              "mt-8 block rounded-md px-3 py-2 text-center text-sm leading-6 font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:text-white dark:focus-visible:ring-0"
+                              "mt-8 block rounded-md px-3 py-2 text-center text-sm leading-6 font-semibold focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:text-white dark:focus-visible:ring-0"
                             )}
                           >
                             {t("pricing.currentPlan")}
@@ -494,7 +495,7 @@ export default async function PricingPage() {
                               tier.mostPopular
                                 ? "bg-sky-600 text-white hover:bg-sky-500 dark:bg-sky-500 dark:hover:bg-sky-400 dark:focus-visible:outline-sky-600"
                                 : "text-sky-600 ring-1 ring-sky-200 ring-inset hover:ring-sky-300 dark:bg-white/10 dark:ring-0 dark:hover:bg-white/20 dark:focus-visible:outline-white",
-                              "mt-8 block rounded-md px-3 py-2 text-center text-sm leading-6 font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:text-white dark:focus-visible:ring-0"
+                              "mt-8 block rounded-md px-3 py-2 text-center text-sm leading-6 font-semibold focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:text-white dark:focus-visible:ring-0"
                             )}
                           >
                             {tier.name === "Free"

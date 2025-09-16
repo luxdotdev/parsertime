@@ -10,7 +10,7 @@ export default async function LinkedAccountSettingsPage() {
   const t = await getTranslations("settingsPage.linkedAccounts");
 
   const session = await auth();
-  if (!session || !session.user) {
+  if (!session?.user) {
     redirect("/sign-in");
   }
 

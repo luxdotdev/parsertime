@@ -32,19 +32,15 @@ export default function ContactPage() {
   const formSchema = z.object({
     name: z
       .string({
-        required_error: t("contactForm.nameRequiredError"),
+        error: t("contactForm.nameRequiredError"),
       })
       .min(1),
-    email: z
-      .string({
-        required_error: t("contactForm.emailRequiredError"),
-      })
-      .email({
-        message: t("contactForm.emailMessage"),
-      }),
+    email: z.email({
+      message: t("contactForm.emailMessage"),
+    }),
     message: z
       .string({
-        required_error: t("contactForm.messageRequiredError"),
+        error: t("contactForm.messageRequiredError"),
       })
       .min(1, {
         message: t("contactForm.messageMessage"),

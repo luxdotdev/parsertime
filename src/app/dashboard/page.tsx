@@ -4,14 +4,10 @@ import { UpdateModalWrapper } from "@/components/dashboard/update-modal-wrapper"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import { PagePropsWithLocale, SearchParams } from "@/types/next";
+import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-
-type Props = {
-  searchParams: SearchParams;
-};
 
 export async function generateMetadata(
   props: PagePropsWithLocale<"/dashboard">
@@ -46,10 +42,7 @@ export async function generateMetadata(
   };
 }
 
-export default async function DashboardPage(
-  props: PagePropsWithLocale<"/dashboard">
-) {
-  const searchParams = await props.searchParams;
+export default async function DashboardPage() {
   const session = await auth();
 
   const userData = await getUser(session?.user?.email);

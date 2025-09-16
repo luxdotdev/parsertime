@@ -12,8 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getMostPlayedHeroes } from "@/data/player-dto";
 import prisma from "@/lib/prisma";
 import { toTitleCase, translateMapName } from "@/lib/utils";
-import { PagePropsWithLocale } from "@/types/next";
-import { Metadata } from "next";
+import type { PagePropsWithLocale } from "@/types/next";
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
@@ -74,7 +74,7 @@ export default async function MapDashboardPage() {
     },
   });
 
-  const translatedMapName = await translateMapName(mapName?.map_name || "Map");
+  const translatedMapName = await translateMapName(mapName?.map_name ?? "Map");
 
   return (
     <div className="flex-col md:flex">

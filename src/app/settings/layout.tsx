@@ -1,11 +1,10 @@
-import { Metadata, Route } from "next";
-
 import DashboardLayout from "@/components/dashboard-layout";
 import { SidebarNav } from "@/components/settings/sidebar-nav";
 import { Separator } from "@/components/ui/separator";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { $Enums } from "@prisma/client";
+import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
 
 export async function generateMetadata(

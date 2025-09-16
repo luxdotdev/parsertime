@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { PagePropsWithLocale } from "@/types/next";
+import type { PagePropsWithLocale } from "@/types/next";
 import { redirect } from "next/navigation";
 
 export default async function TokenPage(
@@ -31,7 +31,7 @@ export default async function TokenPage(
     });
 
     Logger.log(`User now belongs to team: ${JSON.stringify(team)}`);
-  } catch (e) {
+  } catch {
     const teamInviteToken = await prisma.teamInviteToken.findUnique({
       where: { token },
     });

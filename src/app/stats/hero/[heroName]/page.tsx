@@ -1,4 +1,7 @@
-import { RangePicker, Timeframe } from "@/components/stats/hero/range-picker";
+import {
+  RangePicker,
+  type Timeframe,
+} from "@/components/stats/hero/range-picker";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
 import {
@@ -11,10 +14,10 @@ import { auth } from "@/lib/auth";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { translateHeroName } from "@/lib/utils";
-import { HeroName, heroRoleMapping } from "@/types/heroes";
-import { PagePropsWithLocale } from "@/types/next";
-import { Kill, PlayerStat, Scrim } from "@prisma/client";
-import { Metadata } from "next";
+import { type HeroName, heroRoleMapping } from "@/types/heroes";
+import type { PagePropsWithLocale } from "@/types/next";
+import type { Kill, PlayerStat, Scrim } from "@prisma/client";
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
@@ -144,7 +147,7 @@ export default async function HeroStats(
       getAllKillsForHero(allScrimIds, hero),
       getAllDeathsForHero(allScrimIds, hero),
     ]);
-  } catch (e) {
+  } catch {
     return (
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">

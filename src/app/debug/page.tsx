@@ -14,7 +14,7 @@ import { parseData } from "@/lib/parser";
 import { ParserDataSchema } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
-import { JsonEditor } from "json-edit-react";
+import { JsonEditor, type ThemeInput } from "json-edit-react";
 import { startTransition, useState } from "react";
 import { toast } from "sonner";
 
@@ -57,7 +57,7 @@ export default function DebugPage() {
     e.stopPropagation();
     setDragActive(false);
 
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+    if (e.dataTransfer.files?.[0]) {
       void handleFile(e.dataTransfer.files[0]);
     }
   }
@@ -80,12 +80,12 @@ export default function DebugPage() {
     const result = ParserDataSchema.safeParse(data);
 
     if (!result.success) {
-      const errorMessages = result.error.errors
+      const errorMessages = result.error.issues
         .map((err) => `${err.path.join(".")}: ${err.message}`)
         .join("\n");
 
       setErrors(
-        result.error.errors.map(
+        result.error.issues.map(
           (err) => `${err.path.join(".")}: ${err.message}`
         )
       );
@@ -202,7 +202,7 @@ export default function DebugPage() {
         <div className="flex flex-col items-center">
           <JsonEditor
             data={data}
-            theme="githubDark"
+            theme={"githubDark" as ThemeInput}
             restrictEdit
             restrictAdd
             restrictDelete
@@ -212,14 +212,13 @@ export default function DebugPage() {
             onUpdate={({ newData }) => {
               const isValid = ParserDataSchema.safeParse(newData);
               if (!isValid.success) {
-                const errorMessages = isValid.error.errors
+                const errorMessages = isValid.error.issues
                   .map((err) => `${err.path.join(".")}: ${err.message}`)
                   .join("\n");
 
-                toast({
-                  title: "Invalid data",
+                toast.error("Invalid data", {
                   description: errorMessages,
-                  variant: "destructive",
+                  duration: 5000,
                 });
 
                 return "Schema validation failed";

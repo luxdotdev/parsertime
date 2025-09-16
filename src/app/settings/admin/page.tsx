@@ -11,7 +11,7 @@ export default async function AdminSettingsPage() {
   const t = await getTranslations("settingsPage.admin");
 
   const session = await auth();
-  if (!session || !session.user) {
+  if (!session?.user) {
     redirect("/sign-in");
   }
 
