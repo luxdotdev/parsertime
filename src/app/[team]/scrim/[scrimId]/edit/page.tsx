@@ -1,18 +1,13 @@
 import DashboardLayout from "@/components/dashboard-layout";
 import { DangerZone } from "@/components/scrim/danger-zone";
 import { EditScrimForm } from "@/components/scrim/edit-scrim-form";
+import { Link } from "@/components/ui/link";
 import { getScrim } from "@/data/scrim-dto";
 import { getTeamsWithPerms } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { SearchParams } from "@/types/next";
+import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
-
-type Props = {
-  params: Promise<{ team: string; scrimId: string }>;
-  searchParams: SearchParams;
-};
 
 export default async function EditScrimPage(
   props: PageProps<"/[team]/scrim/[scrimId]/edit">
@@ -23,7 +18,7 @@ export default async function EditScrimPage(
   const t = await getTranslations("scrimPage.editScrim");
 
   if (!scrim) {
-    return <div>Scrim not found</div>;
+    return <div>{t("scrimNotFound")}</div>;
   }
 
   const teamsWithPerms = await getTeamsWithPerms(session?.user?.email);
@@ -40,7 +35,7 @@ export default async function EditScrimPage(
     <DashboardLayout>
       <main className="container py-2">
         <h4 className="pb-2 text-gray-600 dark:text-gray-400">
-          <Link href={`/${params.team}/scrim/${params.scrimId}`}>
+          <Link href={`/${params.team}/scrim/${params.scrimId}` as Route}>
             &larr; {t("back")}
           </Link>
         </h4>

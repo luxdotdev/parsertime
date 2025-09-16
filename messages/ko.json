@@ -568,7 +568,8 @@
           "errorTitle": "오류",
           "errorDescription": "오류가 발생했습니다: {res}"
         }
-      }
+      },
+      "scrimNotFound": "스크림을 찾을 수 없습니다"
     },
     "replayCode": {
       "title": "리플레이 코드 (클릭하여 복사)",

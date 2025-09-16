@@ -568,7 +568,8 @@
           "errorTitle": "错误",
           "errorDescription": "发生错误： {res}"
         }
-      }
+      },
+      "scrimNotFound": "训练赛未找到"
     },
     "replayCode": {
       "title": "重播代码（点击复制）",
@@ -1882,7 +1883,6 @@
       "allTime": "所有时间",
       "custom": "自定义时间范围"
     },
-
     "support": {
       "title": "支持",
       "discord": "社区 Discord",

@@ -572,7 +572,8 @@
           "errorTitle": "Error",
           "errorDescription": "An error occurred: {res}"
         }
-      }
+      },
+      "scrimNotFound": "Scrim not found"
     },
     "replayCode": {
       "title": "Replay Code (click to copy)",
