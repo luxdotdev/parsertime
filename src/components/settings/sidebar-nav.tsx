@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Route } from "next";
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   items: {
-    href: string;
+    href: Route;
     title: string;
   }[];
 }

@@ -20,6 +20,7 @@ import {
 import { cn, toHero } from "@/lib/utils";
 import { HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+import { Route } from "next";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
@@ -68,7 +69,7 @@ export default function PlayerSwitcher({
   const mapUrl =
     pathname.split("/")[1] === "demo"
       ? "/demo"
-      : pathname.split("/").slice(0, 6).join("/");
+      : (pathname.split("/").slice(0, 6).join("/") as Route);
 
   React.useEffect(() => {
     const playerId = decodeURIComponent(pathname.split("/").pop()!);
@@ -152,7 +153,9 @@ export default function PlayerSwitcher({
                     <CommandItem
                       key={player.label}
                       onSelect={() => {
-                        router.push(`${mapUrl}/player/${player.label}`);
+                        router.push(
+                          `${mapUrl}/player/${player.label}` as Route
+                        );
                       }}
                       className="text-sm"
                     >

@@ -3,9 +3,9 @@ import { sendEmail } from "@/lib/email";
 import Logger from "@/lib/logger";
 import { render } from "@react-email/render";
 import { Ratelimit } from "@upstash/ratelimit";
+import { ipAddress } from "@vercel/functions";
 import { kv } from "@vercel/kv";
 import { NextRequest } from "next/server";
-import { ipAddress } from "@vercel/functions";
 import { z } from "zod";
 
 const ContactFormEmailSchema = z.object({
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     return new Response("Invalid request", { status: 400 });
   }
 
-  const emailHtml = render(
+  const emailHtml = await render(
     ContactFormEmail({
       name: body.data.name,
       email: body.data.email,

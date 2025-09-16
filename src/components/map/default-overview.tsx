@@ -224,13 +224,13 @@ export async function DefaultOverview({ id }: { id: number }) {
                     color: (chunks) => (
                       <span className="text-blue-500">{chunks}</span>
                     ),
-                    teamName: matchDetails?.team_1_name,
+                    teamName: matchDetails?.team_1_name ?? "",
                   })
                 : t.rich("dealtMore", {
                     color: (chunks) => (
                       <span className="text-red-500">{chunks}</span>
                     ),
-                    teamName: matchDetails?.team_2_name,
+                    teamName: matchDetails?.team_2_name ?? "",
                   })}
             </p>
           </CardFooter>
@@ -257,13 +257,13 @@ export async function DefaultOverview({ id }: { id: number }) {
                     color: (chunks) => (
                       <span className="text-blue-500">{chunks}</span>
                     ),
-                    teamName: matchDetails?.team_1_name,
+                    teamName: matchDetails?.team_1_name ?? "",
                   })
                 : t.rich("healedMore", {
                     color: (chunks) => (
                       <span className="text-red-500">{chunks}</span>
                     ),
-                    teamName: matchDetails?.team_2_name,
+                    teamName: matchDetails?.team_2_name ?? "",
                   })}
             </p>
           </CardFooter>
@@ -346,7 +346,7 @@ export async function DefaultOverview({ id }: { id: number }) {
                   span1: (chunks) => (
                     <span className="text-blue-500">{chunks}</span>
                   ),
-                  team1Name: matchDetails?.team_1_name,
+                  team1Name: matchDetails?.team_1_name ?? "",
                   team1FirstDeaths,
                   span2: (chunks) => (
                     <span
@@ -370,7 +370,7 @@ export async function DefaultOverview({ id }: { id: number }) {
                   span1: (chunks) => (
                     <span className="text-red-500">{chunks}</span>
                   ),
-                  team2Name: matchDetails?.team_2_name,
+                  team2Name: matchDetails?.team_2_name ?? "",
                   team2FirstDeaths: fights.length - team1FirstDeaths,
                   span2: (chunks) => (
                     <span
@@ -397,7 +397,7 @@ export async function DefaultOverview({ id }: { id: number }) {
                     span: (chunks) => (
                       <span className="text-blue-500">{chunks}</span>
                     ),
-                    team1Name: matchDetails?.team_1_name,
+                    team1Name: matchDetails?.team_1_name ?? "",
                     team1UltimateKills,
                   })}
 
@@ -406,7 +406,7 @@ export async function DefaultOverview({ id }: { id: number }) {
                     span: (chunks) => (
                       <span className="text-red-500">{chunks}</span>
                     ),
-                    team2Name: matchDetails?.team_2_name,
+                    team2Name: matchDetails?.team_2_name ?? "",
                     team2UltimateKills,
                   })}
 

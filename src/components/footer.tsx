@@ -5,6 +5,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { get } from "@vercel/edge-config";
+import { Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,7 +15,7 @@ export default async function Footer() {
 
   const [version, changelog] = await Promise.all([
     get<string>("version"),
-    get<string>("changelog"),
+    get<Route>("changelog"),
   ]);
 
   return (

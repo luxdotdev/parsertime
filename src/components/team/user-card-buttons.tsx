@@ -62,7 +62,7 @@ export function UserCardButtons({ user, managers }: Props) {
       toast({
         title: t("promote.handlePromote.title"),
         description: t("promote.handlePromote.description", {
-          user: user.name,
+          user: user.name ?? "",
         }),
         duration: 5000,
       });
@@ -95,7 +95,7 @@ export function UserCardButtons({ user, managers }: Props) {
       toast({
         title: t("demote.handleDemote.title"),
         description: t("demote.handleDemote.description", {
-          user: user.name,
+          user: user.name ?? "",
         }),
         duration: 5000,
       });
@@ -128,7 +128,7 @@ export function UserCardButtons({ user, managers }: Props) {
       toast({
         title: t("remove.handleRemove.title"),
         description: t("remove.handleRemove.description", {
-          user: user.name,
+          user: user.name ?? "",
         }),
         duration: 5000,
       });

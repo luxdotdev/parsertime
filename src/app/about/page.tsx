@@ -6,6 +6,7 @@ import {
   ServerStackIcon,
   UserGroupIcon,
 } from "@heroicons/react/20/solid";
+import { Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
@@ -411,7 +412,7 @@ export default async function AboutPage() {
                 {footerNavigation.social.map((item) => (
                   <Link
                     key={item.name}
-                    href={item.href}
+                    href={item.href as Route}
                     className="text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
                     target={
                       item.href.startsWith("https") ? "_blank" : undefined
@@ -433,7 +434,7 @@ export default async function AboutPage() {
                     {footerNavigation.solutions.map((item) => (
                       <li key={item.name}>
                         <Link
-                          href={item.href}
+                          href={item.href as Route}
                           className="text-sm leading-6 text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
                           target={
                             item.href.startsWith("https") ? "_blank" : undefined
@@ -453,7 +454,7 @@ export default async function AboutPage() {
                     {footerNavigation.support.map((item) => (
                       <li key={item.name}>
                         <Link
-                          href={item.href}
+                          href={item.href as Route}
                           className="text-sm leading-6 text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
                           target={
                             item.href.startsWith("https") ? "_blank" : undefined
@@ -475,7 +476,7 @@ export default async function AboutPage() {
                     {footerNavigation.company.map((item) => (
                       <li key={item.name}>
                         <Link
-                          href={item.href}
+                          href={item.href as Route}
                           className="text-sm leading-6 text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
                           target={
                             item.href.startsWith("https") ? "_blank" : undefined
@@ -495,7 +496,7 @@ export default async function AboutPage() {
                     {footerNavigation.legal.map((item) => (
                       <li key={item.name}>
                         <Link
-                          href={item.href}
+                          href={item.href as Route}
                           className="text-sm leading-6 text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
                           target={
                             item.href.startsWith("https") ? "_blank" : undefined

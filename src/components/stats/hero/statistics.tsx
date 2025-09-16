@@ -382,7 +382,9 @@ export function Statistics({
                   timeframe1:
                     timeframe === "custom"
                       ? customScrims.length
-                      : timeframe === "all-time" && scrims["all-time"].length,
+                      : timeframe === "all-time"
+                        ? scrims["all-time"].length
+                        : 0,
                   timeframe2:
                     timeframe === "all-time"
                       ? t("timeframe.all-time-data")
@@ -507,7 +509,9 @@ export function Statistics({
                   timeframe1:
                     timeframe === "custom"
                       ? customScrims.length
-                      : timeframe === "all-time" && scrims["all-time"].length,
+                      : timeframe === "all-time"
+                        ? scrims["all-time"].length
+                        : 0,
                   timeframe2:
                     timeframe === "all-time"
                       ? t("timeframe.all-time-data")
@@ -653,7 +657,9 @@ export function Statistics({
                   timeframe1:
                     timeframe === "custom"
                       ? customScrims.length
-                      : timeframe === "all-time" && scrims["all-time"].length,
+                      : timeframe === "all-time"
+                        ? scrims["all-time"].length
+                        : 0,
                   timeframe2:
                     timeframe === "all-time"
                       ? t("timeframe.all-time-data")
@@ -761,7 +767,9 @@ export function Statistics({
                   timeframe1:
                     timeframe === "custom"
                       ? customScrims.length
-                      : timeframe === "all-time" && scrims["all-time"].length,
+                      : timeframe === "all-time"
+                        ? scrims["all-time"].length
+                        : 0,
                   timeframe2:
                     timeframe === "all-time"
                       ? t("timeframe.all-time-data")

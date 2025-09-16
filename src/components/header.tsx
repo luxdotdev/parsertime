@@ -2,6 +2,7 @@
 
 import { Dialog } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Route } from "next";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,7 +12,7 @@ export default function Header() {
   const t = useTranslations("marketing.header");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const navigation = [
+  const navigation: { name: string; href: Route }[] = [
     { name: t("home"), href: "/" },
     { name: t("about"), href: "/about" },
     { name: t("pricing"), href: "/pricing" },

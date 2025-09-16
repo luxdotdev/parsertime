@@ -13,11 +13,12 @@ import { Link } from "@/components/ui/link";
 import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { Route } from "next";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { startTransition, useEffect, useState } from "react";
 
-export function DangerZone({ url }: { url: string }) {
+export function DangerZone({ url }: { url: Route }) {
   const t = useTranslations("settingsPage");
   const [firstDialogOpen, setFirstDialogOpen] = useState(false);
 
@@ -56,7 +57,7 @@ function FirstDialog({
   firstDialogOpen,
   setFirstDialogOpen,
 }: {
-  url: string;
+  url: Route;
   firstDialogOpen: boolean;
   setFirstDialogOpen: (open: boolean) => void;
 }) {

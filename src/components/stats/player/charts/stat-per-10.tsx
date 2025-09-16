@@ -147,7 +147,7 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
               dataKey="pv"
               stroke="#3b82f6"
               activeDot={{ r: 8 }}
-              name={t(`stats.${stat}`)}
+              name={t(`stats.${stat}` as never)}
             />
           </LineChart>
         </ResponsiveContainer>

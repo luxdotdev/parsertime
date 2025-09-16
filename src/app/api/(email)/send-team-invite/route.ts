@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     `${baseUrl}/team/join/${inviteToken}`
   );
 
-  const emailHtml = render(
+  const emailHtml = await render(
     TeamInviteUserEmail({
       username: inviteeEmail,
       userImage: user.image ?? `https://avatar.vercel.sh/${user.name}.png`,

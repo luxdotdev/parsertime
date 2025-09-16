@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import { Metadata, Route } from "next";
 
 import DashboardLayout from "@/components/dashboard-layout";
 import { SidebarNav } from "@/components/settings/sidebar-nav";
@@ -41,7 +41,7 @@ export default async function SettingsLayout({
 }: LayoutPropsWithLocale<"/settings">) {
   const t = await getTranslations("settingsPage");
 
-  const sidebarNavItems = [
+  const sidebarNavItems: { title: string; href: Route }[] = [
     {
       title: t("sideNav.profile"),
       href: "/settings",
@@ -52,7 +52,7 @@ export default async function SettingsLayout({
     },
   ];
 
-  const adminNavItems = [
+  const adminNavItems: { title: string; href: Route }[] = [
     ...sidebarNavItems,
     {
       title: t("sideNav.admin"),

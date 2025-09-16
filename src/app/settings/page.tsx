@@ -5,6 +5,7 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { getCustomerPortalUrl } from "@/lib/stripe";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
+import { Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -23,7 +24,7 @@ export default async function SettingsProfilePage() {
     redirect("/sign-up");
   }
 
-  const billingPortalUrl = await getCustomerPortalUrl(user);
+  const billingPortalUrl = (await getCustomerPortalUrl(user)) as Route;
 
   return (
     <div className="space-y-6">

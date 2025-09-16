@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { createCheckout, getCustomerPortalUrl } from "@/lib/stripe";
 import { toTitleCase } from "@/lib/utils";
 import { CheckIcon, MinusIcon } from "@heroicons/react/20/solid";
+import { Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
@@ -33,7 +34,7 @@ export default async function PricingPage() {
     if (session) {
       if (plan === "Free") {
         const checkout = await createCheckout(session, tier);
-        return checkout.url;
+        return checkout.url as Route;
       }
       return await getCustomerPortalUrl(user!);
     }
@@ -41,7 +42,16 @@ export default async function PricingPage() {
     return "/dashboard";
   }
 
-  const tiers = [
+  type Tier = {
+    name: string;
+    id: string;
+    href: Route;
+    priceMonthly: string;
+    description: string;
+    mostPopular: boolean;
+  };
+
+  const tiers: Tier[] = [
     {
       name: t("tiers.free"),
       id: "tier-free",
@@ -53,7 +63,7 @@ export default async function PricingPage() {
     {
       name: t("tiers.basic"),
       id: "tier-basic",
-      href: (await getLink("Basic")) ?? "/sign-in",
+      href: ((await getLink("Basic")) as Route) ?? "/sign-in",
       priceMonthly: t("tiers.basicMonthly"),
       description: t("tiers.basicDescription"),
       mostPopular: true,
@@ -61,7 +71,7 @@ export default async function PricingPage() {
     {
       name: t("tiers.premium"),
       id: "tier-premium",
-      href: (await getLink("Premium")) ?? "/sign-in",
+      href: ((await getLink("Premium")) as Route) ?? "/sign-in",
       priceMonthly: t("tiers.premiumMonthly"),
       description: t("tiers.premiumDescription"),
       mostPopular: false,

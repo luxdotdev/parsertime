@@ -330,7 +330,7 @@ export function EditScrimForm({
                           <FormItem className="pl-1">
                             <FormLabel>
                               {t("maps.replayCodeLabel", {
-                                map: mapNames.get(toKebabCase(map.name)),
+                                map: mapNames.get(toKebabCase(map.name)) ?? "",
                               })}
                             </FormLabel>
                             <FormControl>
@@ -359,7 +359,7 @@ export function EditScrimForm({
                             <AlertDialogDescription>
                               {t.rich("maps.deleteDialog.description", {
                                 strong: (chunks) => <strong>{chunks}</strong>,
-                                map: mapNames.get(toKebabCase(map.name)),
+                                map: mapNames.get(toKebabCase(map.name)) ?? "",
                               })}
                             </AlertDialogDescription>
                             <AlertDialogFooter>

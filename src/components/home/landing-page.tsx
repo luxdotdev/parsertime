@@ -15,6 +15,7 @@ import {
   PresentationChartBarIcon,
 } from "@heroicons/react/24/outline";
 import { get } from "@vercel/edge-config";
+import { Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,7 +23,15 @@ import { SVGProps } from "react";
 
 type IconProps = Omit<SVGProps<SVGSVGElement>, "fill" | "viewbox">;
 
-const footerNavigation = {
+type FooterNavigation = {
+  social: {
+    name: string;
+    href: Route;
+    icon: (props: IconProps) => React.ReactNode;
+  }[];
+};
+
+const footerNavigation: FooterNavigation = {
   social: [
     {
       name: "X",
@@ -66,12 +75,19 @@ export default async function LandingPage() {
 
   const latestUpdates = await get<{
     title: string;
-    url: string;
+    url: Route;
   }>("latestUpdates");
 
   const t = await getTranslations("landingPage");
 
-  const primaryFeatures = [
+  type PrimaryFeature = {
+    name: string;
+    description: string;
+    href: Route;
+    icon: React.ElementType;
+  };
+
+  const primaryFeatures: PrimaryFeature[] = [
     {
       name: t("primaryFeatures.builtByCoaches.name"),
       description: t("primaryFeatures.builtByCoaches.description"),

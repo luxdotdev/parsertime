@@ -64,7 +64,7 @@ export async function handleSubscriptionEvent(
           to: user.email,
           from: "noreply@lux.dev",
           subject: `Thank you for subscribing to Parsertime!`,
-          html: render(
+          html: await render(
             SubscriptionCreatedEmail({ user, billingPlan: billingPlan.name })
           ),
         });
@@ -101,7 +101,7 @@ export async function handleSubscriptionEvent(
             to: user.email,
             from: "noreply@lux.dev",
             subject: `Your Parsertime subscription has been updated`,
-            html: render(
+            html: await render(
               SubscriptionUpdatedEmail({ user, billingPlan: billingPlan.name })
             ),
           });
@@ -131,7 +131,7 @@ export async function handleSubscriptionEvent(
           to: user.email,
           from: "noreply@lux.dev",
           subject: `Your subscription to Parsertime has been cancelled`,
-          html: render(SubscriptionDeletedEmail({ user })),
+          html: await render(SubscriptionDeletedEmail({ user })),
         });
         Logger.log("Subscription deleted email sent");
       } catch (e) {
