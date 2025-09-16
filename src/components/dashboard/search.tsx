@@ -4,8 +4,8 @@ import { CommandDialogMenu } from "@/components/command-menu";
 import { CommandMenuContext } from "@/components/command-menu-provider";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { User } from "@prisma/client";
-import { DialogProps } from "@radix-ui/react-dialog";
+import type { User } from "@prisma/client";
+import type { DialogProps } from "@radix-ui/react-dialog";
 import { useTranslations } from "next-intl";
 import { use } from "react";
 

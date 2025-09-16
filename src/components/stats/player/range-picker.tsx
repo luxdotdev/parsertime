@@ -18,16 +18,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Winrate } from "@/data/scrim-dto";
+import type { Winrate } from "@/data/scrim-dto";
 import { cn, toHero, useHeroNames } from "@/lib/utils";
-import { HeroName, roleHeroMapping } from "@/types/heroes";
-import { Kill, PlayerStat, Scrim } from "@prisma/client";
+import { type HeroName, roleHeroMapping } from "@/types/heroes";
+import type { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { SelectGroup } from "@radix-ui/react-select";
 import { addMonths, addWeeks, addYears, format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { DateRange } from "react-day-picker";
+import type { DateRange } from "react-day-picker";
 
 export type Timeframe =
   | "one-week"
@@ -214,7 +214,7 @@ export function RangePicker({
             <SelectLabel>{t("tank")}</SelectLabel>
             {roleHeroMapping["Tank"].map((hero) => (
               <SelectItem key={hero} value={hero}>
-                {heroNames.get(toHero(hero)) || hero}
+                {heroNames.get(toHero(hero)) ?? hero}
               </SelectItem>
             ))}
           </SelectGroup>
@@ -223,7 +223,7 @@ export function RangePicker({
             <SelectLabel>{t("damage")}</SelectLabel>
             {roleHeroMapping["Damage"].map((hero) => (
               <SelectItem key={hero} value={hero}>
-                {heroNames.get(toHero(hero)) || hero}
+                {heroNames.get(toHero(hero)) ?? hero}
               </SelectItem>
             ))}
           </SelectGroup>
@@ -232,7 +232,7 @@ export function RangePicker({
             <SelectLabel>{t("support")}</SelectLabel>
             {roleHeroMapping["Support"].map((hero) => (
               <SelectItem key={hero} value={hero}>
-                {heroNames.get(toHero(hero)) || hero}
+                {heroNames.get(toHero(hero)) ?? hero}
               </SelectItem>
             ))}
           </SelectGroup>

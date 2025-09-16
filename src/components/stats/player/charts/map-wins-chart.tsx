@@ -1,9 +1,9 @@
 "use client";
 
 import { CardContent, CardFooter } from "@/components/ui/card";
-import { Winrate } from "@/data/scrim-dto";
+import type { Winrate } from "@/data/scrim-dto";
 import { cn, toKebabCase, toTitleCase, useMapNames } from "@/lib/utils";
-import { MapName, mapNameToMapTypeMapping } from "@/types/map";
+import { type MapName, mapNameToMapTypeMapping } from "@/types/map";
 import { $Enums } from "@prisma/client";
 import { useTranslations } from "next-intl";
 import {
@@ -13,11 +13,11 @@ import {
   Legend,
   ResponsiveContainer,
   Tooltip,
-  TooltipProps,
+  type TooltipProps,
   XAxis,
   YAxis,
 } from "recharts";
-import {
+import type {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
@@ -67,7 +67,7 @@ function processMapWinrates(
   });
 
   const data: Data = Object.keys(mapData).map((mapName) => ({
-    name: toTitleCase(maps.get(toKebabCase(mapName)) || mapName),
+    name: toTitleCase(maps.get(toKebabCase(mapName)) ?? mapName),
     wins: mapData[mapName].wins,
     losses: mapData[mapName].losses,
   }));
@@ -82,7 +82,7 @@ function CustomTooltip({
 }: TooltipProps<ValueType, NameType>) {
   const t = useTranslations("statsPage.playerStats.mapWinrates");
 
-  if (active && payload && payload.length) {
+  if (active && payload?.length) {
     const percentage =
       ((payload[0].value as number) /
         ((payload[0].value as number) + (payload[1].value as number))) *

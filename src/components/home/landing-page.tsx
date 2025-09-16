@@ -15,11 +15,11 @@ import {
   PresentationChartBarIcon,
 } from "@heroicons/react/24/outline";
 import { get } from "@vercel/edge-config";
-import { Route } from "next";
+import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
-import { SVGProps } from "react";
+import type { SVGProps } from "react";
 
 type IconProps = Omit<SVGProps<SVGSVGElement>, "fill" | "viewbox">;
 

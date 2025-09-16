@@ -19,14 +19,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { HeroName } from "@/types/heroes";
-import { Kill, PlayerStat, Scrim } from "@prisma/client";
+import type { HeroName } from "@/types/heroes";
+import type { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { SelectGroup } from "@radix-ui/react-select";
 import { addMonths, addWeeks, addYears, format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { DateRange } from "react-day-picker";
+import type { DateRange } from "react-day-picker";
 
 export type Timeframe =
   | "one-week"

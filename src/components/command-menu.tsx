@@ -196,10 +196,10 @@ export function CommandDialogMenu({ user }: { user: User | null }) {
           <CommandItem onSelect={() => runCommand(() => router.push("/debug"))}>
             <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
               <DialogTrigger asChild>
-                <>
+                <div>
                   <MagicWandIcon className="mr-2 h-4 w-4" />
                   <span>{t("debugging.assistant")}</span>
-                </>
+                </div>
               </DialogTrigger>
               <DialogContent>
                 <BugReportForm
@@ -215,10 +215,10 @@ export function CommandDialogMenu({ user }: { user: User | null }) {
           <CommandItem onSelect={() => setReportDialogOpen(true)}>
             <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
               <DialogTrigger asChild>
-                <>
+                <div>
                   <ExclamationTriangleIcon className="mr-2 h-4 w-4" />
                   <span>{t("feedback.bugReport")}</span>
-                </>
+                </div>
               </DialogTrigger>
               <DialogContent>
                 <BugReportForm

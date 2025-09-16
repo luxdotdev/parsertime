@@ -20,18 +20,18 @@ import {
   toTimestamp,
 } from "@/lib/utils";
 import { calculateWinner } from "@/lib/winrate";
-import { HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
+import { type HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
 import { $Enums } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 
 export async function DefaultOverview({ id }: { id: number }) {
   const [finalRound, matchDetails, finalRoundStats, playerStats, fights] =
     await Promise.all([
-      await prisma.roundEnd.findFirst({
+      prisma.roundEnd.findFirst({
         where: { MapDataId: id },
         orderBy: { round_number: "desc" },
       }),
-      await prisma.matchStart.findFirst({ where: { MapDataId: id } }),
+      prisma.matchStart.findFirst({ where: { MapDataId: id } }),
       getFinalRoundStats(id),
       prisma.playerStat.findMany({ where: { MapDataId: id } }),
       groupKillsIntoFights(id),

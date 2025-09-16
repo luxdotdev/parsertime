@@ -1,9 +1,5 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,14 +13,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { ClientOnly } from "@/lib/client-only";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
 
 const adminFormSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  isProd: z.boolean().default(true),
+  isProd: z.boolean(),
 });
 
 type AdminFormValues = z.infer<typeof adminFormSchema>;

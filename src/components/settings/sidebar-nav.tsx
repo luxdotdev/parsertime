@@ -5,14 +5,14 @@ import { usePathname } from "next/navigation";
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Route } from "next";
+import type { Route } from "next";
 
-interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
+type SidebarNavProps = {
   items: {
     href: Route;
     title: string;
   }[];
-}
+} & React.HTMLAttributes<HTMLElement>;
 
 export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
   const pathname = usePathname();

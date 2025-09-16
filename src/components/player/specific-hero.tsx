@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/card";
 import CardIcon from "@/components/ui/card-icon";
 import { cn, getHeroNames, round, toHero, toMins } from "@/lib/utils";
-import { HeroName, heroRoleMapping } from "@/types/heroes";
-import { PlayerStat } from "@prisma/client";
+import { type HeroName, heroRoleMapping } from "@/types/heroes";
+import type { PlayerStat } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
@@ -30,7 +30,7 @@ export default async function SpecificHero({
   return (
     <main>
       <h1 className="scroll-m-20 pb-2 pl-2 text-3xl font-semibold tracking-tight first:mt-0">
-        {heroNames.get(toHero(hero)) || hero}
+        {heroNames.get(toHero(hero)) ?? hero}
       </h1>
       <div className="flex flex-1">
         <div className={cn("p-2", showTable && "w-full lg:w-1/2")}>
@@ -39,7 +39,7 @@ export default async function SpecificHero({
               <Image
                 src={`/heroes/${toHero(hero)}.png`}
                 alt={t("altText", {
-                  hero: heroNames.get(toHero(hero)) || hero,
+                  hero: heroNames.get(toHero(hero)) ?? hero,
                 })}
                 width={256}
                 height={256}

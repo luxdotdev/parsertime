@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Locale, locales } from "@/i18n/config";
+import { type Locale, locales } from "@/i18n/config";
 import { setUserLocale } from "@/lib/locale";
 import { useRouter } from "next/navigation";
 

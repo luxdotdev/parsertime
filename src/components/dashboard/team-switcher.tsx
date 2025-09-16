@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  CaretSortIcon,
-  CheckIcon,
-  PlusCircledIcon,
-} from "@radix-ui/react-icons";
-import * as React from "react";
-
-import { GetTeamsResponse } from "@/app/api/team/get-teams/route";
+import type { GetTeamsResponse } from "@/app/api/team/get-teams/route";
 import { CreateTeamDialog } from "@/components/dashboard/create-team-dialog";
 import { TeamSwitcherContext } from "@/components/team-switcher-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -28,15 +21,21 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import {
+  CaretSortIcon,
+  CheckIcon,
+  PlusCircledIcon,
+} from "@radix-ui/react-icons";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Session } from "next-auth";
+import type { Session } from "next-auth";
 import { useTranslations } from "next-intl";
+import * as React from "react";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
 >;
 
-interface TeamSwitcherProps extends PopoverTriggerProps {}
+type TeamSwitcherProps = {} & PopoverTriggerProps;
 
 export function TeamSwitcher({
   className,

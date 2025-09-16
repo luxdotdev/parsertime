@@ -1,23 +1,22 @@
 "use client";
 
-import * as React from "react";
-
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
-import { signIn } from "next-auth/react";
-
 import { ClientOnly } from "@/lib/client-only";
+import { cn } from "@/lib/utils";
 import { EnvelopeOpenIcon } from "@radix-ui/react-icons";
 import { track } from "@vercel/analytics";
+import { signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
+import * as React from "react";
 import { z } from "zod";
 
-interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
+export function UserAuthForm({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [email, setEmail] = React.useState("");
 

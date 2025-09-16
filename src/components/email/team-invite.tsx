@@ -1,8 +1,8 @@
 import {
   Body,
   Button,
-  Container,
   Column,
+  Container,
   Head,
   Heading,
   Hr,
@@ -15,9 +15,8 @@ import {
   Text,
 } from "@react-email/components";
 import { Tailwind } from "@react-email/tailwind";
-import * as React from "react";
 
-interface TeamInviteUserEmailProps {
+type TeamInviteUserEmailProps = {
   username?: string;
   userImage?: string;
   invitedByUsername?: string;
@@ -25,7 +24,7 @@ interface TeamInviteUserEmailProps {
   teamName?: string;
   teamImage?: string;
   inviteLink?: string;
-}
+};
 
 export const TeamInviteUserEmail = ({
   username,

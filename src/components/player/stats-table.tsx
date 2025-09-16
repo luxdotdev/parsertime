@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
+  type ColumnDef,
+  type ColumnFiltersState,
+  type SortingState,
+  type VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -22,7 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn, round, toMins } from "@/lib/utils";
-import { PlayerStat } from "@prisma/client";
+import type { PlayerStat } from "@prisma/client";
 import { GeistMono } from "geist/font/mono";
 import { useTranslations } from "next-intl";
 

@@ -2,7 +2,7 @@
 
 import { CardContent, CardFooter } from "@/components/ui/card";
 import { format } from "@/lib/utils";
-import { Kill } from "@prisma/client";
+import type { Kill } from "@prisma/client";
 import { useTranslations } from "next-intl";
 import {
   PolarAngleAxis,
@@ -11,9 +11,9 @@ import {
   RadarChart,
   ResponsiveContainer,
   Tooltip,
-  TooltipProps,
+  type TooltipProps,
 } from "recharts";
-import {
+import type {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
@@ -35,7 +35,7 @@ function CustomTooltip({
 }: TooltipProps<ValueType, NameType>) {
   const t = useTranslations("statsPage.playerStats.finalBlowsByMethod");
 
-  if (active && payload && payload.length) {
+  if (active && payload?.length) {
     return (
       <div className="bg-primary text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 overflow-hidden rounded-md px-3 py-1.5 text-xs">
         <h3 className="text-base font-bold">{label}</h3>
@@ -70,7 +70,7 @@ export function KillMethodChart({ data }: Props) {
   // sum the kill data
   const killDataMap = new Map<string, number>();
   killData.forEach((kill) => {
-    killDataMap.set(kill.method, (killDataMap.get(kill.method) || 0) + 1);
+    killDataMap.set(kill.method, (killDataMap.get(kill.method) ?? 0) + 1);
   });
 
   const processedData: Data = Array.from(killDataMap.entries()).map(

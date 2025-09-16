@@ -61,7 +61,7 @@ export function ScrimCreationForm({
   const FormSchema = z.object({
     name: z
       .string({
-        required_error: t("scrimRequiredError"),
+        error: t("scrimRequiredError"),
       })
       .min(2, {
         message: t("scrimMinMessage"),
@@ -70,10 +70,10 @@ export function ScrimCreationForm({
         message: t("scrimMaxMessage"),
       }),
     team: z.string({
-      required_error: t("teamRequiredError"),
+      error: t("teamRequiredError"),
     }),
     date: z.date({
-      required_error: t("dateRequiredError"),
+      error: t("dateRequiredError"),
     }),
     map: z.any(),
     replayCode: z

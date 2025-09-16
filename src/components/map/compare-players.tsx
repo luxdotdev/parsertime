@@ -2,7 +2,7 @@ import PlayerCard from "@/components/map/player-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import prisma from "@/lib/prisma";
-import { HeroName, heroRoleMapping } from "@/types/heroes";
+import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import { getTranslations } from "next-intl/server";
 
 type PlayerToSort = {
@@ -86,7 +86,7 @@ export async function ComparePlayers({ id }: { id: number }) {
     <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
       <Card className="col-span-3">
         <CardHeader>
-          <CardTitle>{teamNames?.team_1_name || t("team1")}</CardTitle>
+          <CardTitle>{teamNames?.team_1_name ?? t("team1")}</CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="0" className="space-y-4">
@@ -107,7 +107,7 @@ export async function ComparePlayers({ id }: { id: number }) {
       </Card>
       <Card className="col-span-3">
         <CardHeader>
-          <CardTitle>{teamNames?.team_2_name || t("team2")}</CardTitle>
+          <CardTitle>{teamNames?.team_2_name ?? t("team2")}</CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="0" className="space-y-4">

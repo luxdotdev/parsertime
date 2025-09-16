@@ -5,21 +5,21 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { Route } from "next";
-import { Session } from "next-auth";
+import type { Route } from "next";
+import type { Session } from "next-auth";
 import Image from "next/image";
-import Link, { LinkProps } from "next/link";
+import Link, { type LinkProps } from "next/link";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 
-const mainNav = [
+const mainNav: { title: string; href: Route }[] = [
   { title: "Dashboard", href: "/dashboard" },
   { title: "Stats", href: "/stats" },
   { title: "Teams", href: "/team" },
   { title: "Settings", href: "/settings" },
   { title: "Contact", href: "/contact" },
   { title: "Docs", href: "https://docs.parsertime.app" },
-] as { title: string; href: Route }[];
+];
 
 export function MobileNav({ session }: { session: Session | null }) {
   const [open, setOpen] = React.useState(false);
@@ -101,12 +101,12 @@ export function MobileNav({ session }: { session: Session | null }) {
   );
 }
 
-interface MobileLinkProps extends LinkProps<Route> {
+type MobileLinkProps = LinkProps<Route> & {
   href: Route;
   onOpenChange?: (open: boolean) => void;
   children: React.ReactNode;
   className?: string;
-}
+};
 
 function MobileLink({
   href,

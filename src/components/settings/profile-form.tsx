@@ -1,9 +1,5 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
 import { AvatarUpdateDialog } from "@/components/settings/avatar-update-dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,12 +13,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ClientOnly } from "@/lib/client-only";
+import { zodResolver } from "@hookform/resolvers/zod";
 import type { User } from "@prisma/client";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { type ChangeEvent, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
 
 const profileFormSchema = z.object({
   name: z

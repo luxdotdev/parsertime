@@ -12,10 +12,8 @@ import { auth } from "@/lib/auth";
 
 export default async function DashboardLayout({
   children,
-  teamSwitcherHidden,
 }: {
   children: React.ReactNode;
-  teamSwitcherHidden?: boolean;
 }) {
   const session = await auth();
   const user = await getUser(session?.user?.email);

@@ -38,10 +38,10 @@ export async function UserNav() {
           <Avatar className="h-8 w-8">
             <AvatarImage
               src={
-                session?.user?.image ||
+                session?.user?.image ??
                 `https://avatar.vercel.sh/${session?.user?.name}.png`
               }
-              alt={session?.user?.name || "User"}
+              alt={session?.user?.name ?? "User"}
             />
           </Avatar>
         </Button>
@@ -50,10 +50,10 @@ export async function UserNav() {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm leading-none font-medium">
-              {session?.user?.name || ""}
+              {session?.user?.name ?? ""}
             </p>
             <p className="text-muted-foreground text-xs leading-none">
-              {session?.user?.email || ""}
+              {session?.user?.email ?? ""}
             </p>
           </div>
         </DropdownMenuLabel>

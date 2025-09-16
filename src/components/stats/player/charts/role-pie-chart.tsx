@@ -2,8 +2,8 @@
 
 import { CardContent, CardFooter } from "@/components/ui/card";
 import { cn, toTimestampWithHours } from "@/lib/utils";
-import { HeroName, heroRoleMapping } from "@/types/heroes";
-import { PlayerStat } from "@prisma/client";
+import { type HeroName, heroRoleMapping } from "@/types/heroes";
+import type { PlayerStat } from "@prisma/client";
 import { useTranslations } from "next-intl";
 import {
   Cell,
@@ -11,9 +11,9 @@ import {
   PieChart,
   ResponsiveContainer,
   Tooltip,
-  TooltipProps,
+  type TooltipProps,
 } from "recharts";
-import {
+import type {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
@@ -25,22 +25,13 @@ type Data = {
 
 const COLORS = ["#3b82f6", "#ef4444", "#22c55e"] as const;
 
-function CustomTooltip({
-  active,
-  payload,
-  label,
-}: TooltipProps<ValueType, NameType>) {
+function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
   const t = useTranslations("statsPage.playerStats.timeSpent");
 
-  if (active && payload && payload.length) {
+  if (active && payload?.length) {
     return (
       <div className="bg-primary text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 overflow-hidden rounded-md px-3 py-1.5 text-xs">
-        <h3 className="text-base font-bold">
-          {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            payload[0].name
-          }
-        </h3>
+        <h3 className="text-base font-bold">{payload[0].name}</h3>
         <p className="text-sm">
           <span
             className={cn(
@@ -95,7 +86,8 @@ export function RolePieChart({ data }: Props) {
     .filter((entry) => entry.pv > 0);
 
   const RADIAN = Math.PI / 180;
-  const renderCustomizedLabel = ({
+
+  function renderCustomizedLabel({
     cx,
     cy,
     midAngle,
@@ -109,7 +101,7 @@ export function RolePieChart({ data }: Props) {
     innerRadius: number;
     outerRadius: number;
     percent: number;
-  }) => {
+  }) {
     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
@@ -125,7 +117,7 @@ export function RolePieChart({ data }: Props) {
         {`${(percent * 100).toFixed(0)}%`}
       </text>
     );
-  };
+  }
 
   return (
     <>

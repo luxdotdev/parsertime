@@ -1,8 +1,8 @@
 "use client";
 
+import { Link } from "@/components/ui/link";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
 import { useState } from "react";
 
 export default function DemoBanner() {

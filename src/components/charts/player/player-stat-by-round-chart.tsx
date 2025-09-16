@@ -1,6 +1,6 @@
 "use client";
 
-import { NonMappableStat, Stat } from "@/lib/player-charts";
+import type { NonMappableStat, Stat } from "@/lib/player-charts";
 import { cn, round as roundNum } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import {
@@ -12,11 +12,11 @@ import {
   Legend,
   ResponsiveContainer,
   Tooltip,
-  TooltipProps,
+  type TooltipProps,
   XAxis,
   YAxis,
 } from "recharts";
-import {
+import type {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
@@ -36,7 +36,7 @@ function CustomTooltip({
   playerName: string;
   playerTeam: "Team1" | "Team2";
 }) {
-  if (active && payload && payload.length) {
+  if (active && payload?.length) {
     return (
       <div className="bg-primary text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 overflow-hidden rounded-md px-3 py-1.5 text-xs">
         <h3 className="text-base">{label}</h3>

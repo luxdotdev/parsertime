@@ -1,11 +1,13 @@
 "use client";
 
-import React from "react";
-import { createContext } from "react";
+import React, { createContext } from "react";
 
 export const CommandMenuContext = createContext({
   open: false,
-  setOpen: (open: boolean) => {},
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setOpen: (open: boolean) => {
+    // empty
+  },
 });
 
 export function CommandMenuProvider({
@@ -16,12 +18,12 @@ export function CommandMenuProvider({
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
-    const down = (e: KeyboardEvent) => {
+    function down(e: KeyboardEvent) {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setOpen(!open);
       }
-    };
+    }
 
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);

@@ -1,11 +1,11 @@
 "use client";
 
 import {
-  ColumnDef,
-  ColumnFiltersState,
-  Header,
-  SortingState,
-  VisibilityState,
+  type ColumnDef,
+  type ColumnFiltersState,
+  type Header,
+  type SortingState,
+  type VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -30,14 +30,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { PlayerData, aggregatePlayerData } from "@/lib/player-table-data";
+import { type PlayerData, aggregatePlayerData } from "@/lib/player-table-data";
 import { cn, toTimestamp } from "@/lib/utils";
 import {
   ChevronDownIcon,
   ChevronUpDownIcon,
   ChevronUpIcon,
 } from "@heroicons/react/20/solid";
-import { PlayerStat } from "@prisma/client";
+import type { PlayerStat } from "@prisma/client";
 import { GeistMono } from "geist/font/mono";
 import { useTranslations } from "next-intl";
 
@@ -420,7 +420,7 @@ export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
   );
 }
 
-const OverviewTableHeader = ({
+function OverviewTableHeader({
   tooltip,
   header,
   children,
@@ -428,7 +428,7 @@ const OverviewTableHeader = ({
   tooltip?: string;
   header: Header<PlayerData, unknown>;
   children: React.ReactNode;
-}) => {
+}) {
   return (
     <TooltipProvider>
       <Tooltip>
@@ -456,4 +456,4 @@ const OverviewTableHeader = ({
       </Tooltip>
     </TooltipProvider>
   );
-};
+}

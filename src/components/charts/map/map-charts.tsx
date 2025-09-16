@@ -16,7 +16,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import prisma from "@/lib/prisma";
-import { Kill } from "@prisma/client";
+import type { Kill } from "@prisma/client";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { getTranslations } from "next-intl/server";
 

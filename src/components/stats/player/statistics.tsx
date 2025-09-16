@@ -5,7 +5,7 @@ import { MapWinsChart } from "@/components/stats/player/charts/map-wins-chart";
 import { RolePieChart } from "@/components/stats/player/charts/role-pie-chart";
 import { StatPer10Chart } from "@/components/stats/player/charts/stat-per-10";
 import { WinsPerMapTypeChart } from "@/components/stats/player/charts/wins-per-map-type";
-import { Timeframe } from "@/components/stats/player/range-picker";
+import type { Timeframe } from "@/components/stats/player/range-picker";
 import {
   Card,
   CardContent,
@@ -34,17 +34,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Winrate } from "@/data/scrim-dto";
-import { NonMappableStat, Stat } from "@/lib/player-charts";
+import type { Winrate } from "@/data/scrim-dto";
+import type { NonMappableStat, Stat } from "@/lib/player-charts";
 import { cn, toHero, useHeroNames } from "@/lib/utils";
-import { HeroName } from "@/types/heroes";
-import { Kill, PlayerStat, Scrim } from "@prisma/client";
+import type { HeroName } from "@/types/heroes";
+import type { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { DateRange } from "react-day-picker";
+import type { DateRange } from "react-day-picker";
 
 function ChartTooltip({ children }: { children: React.ReactNode }) {
   return (
@@ -272,8 +272,8 @@ export function Statistics({
       setFilteredWins(
         mapWinrates.filter((win) => {
           return (
-            win.date >= (date?.from || new Date()) &&
-            win.date <= (date?.to || new Date())
+            win.date >= (date?.from ?? new Date()) &&
+            win.date <= (date?.to ?? new Date())
           );
         })
       );
@@ -421,7 +421,7 @@ export function Statistics({
                           )}
                         />{" "}
                       </div>
-                      {heroNames.get(toHero(hero)) || hero}
+                      {heroNames.get(toHero(hero)) ?? hero}
                     </span>
                   </TableCell>
                   <TableCell>{games}</TableCell>
@@ -538,7 +538,7 @@ export function Statistics({
                               }/scrim/${scrimId}/map/${mapId}`}
                               target="_blank"
                             >
-                              {heroNames.get(toHero(hero as string)) || hero}
+                              {heroNames.get(toHero(hero as string)) ?? hero}
                             </Link>
                           </TooltipTrigger>
                           <TooltipContent>
@@ -710,7 +710,7 @@ export function Statistics({
                           )}
                         />{" "}
                       </div>
-                      {heroNames.get(toHero(hero)) || hero}
+                      {heroNames.get(toHero(hero)) ?? hero}
                     </span>
                   </TableCell>
                   <TableCell>{deaths}</TableCell>
@@ -817,7 +817,7 @@ export function Statistics({
                           )}
                         />{" "}
                       </div>
-                      {heroNames.get(toHero(hero)) || hero}
+                      {heroNames.get(toHero(hero)) ?? hero}
                     </span>
                   </TableCell>
                   <TableCell>{elims}</TableCell>

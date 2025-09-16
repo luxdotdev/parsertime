@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn, toHero, toKebabCase, toTimestamp } from "@/lib/utils";
-import { Kill } from "@prisma/client";
+import type { Kill } from "@prisma/client";
 import { GeistMono } from "geist/font/mono";
 import { useTranslations } from "next-intl";
 import Image from "next/image";

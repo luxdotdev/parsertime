@@ -1,9 +1,5 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
 import {
   Accordion,
   AccordionContent,
@@ -50,13 +46,16 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { ClientOnly } from "@/lib/client-only";
 import { cn, toKebabCase, useMapNames } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
 import type { Map, Scrim, Team } from "@prisma/client";
 import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
 import { Calendar } from "../ui/calendar";
 
 export function EditScrimForm({

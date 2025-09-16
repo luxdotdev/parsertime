@@ -24,13 +24,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Scrim } from "@prisma/client";
+import type { Scrim } from "@prisma/client";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import { use, useState } from "react";
 
 type Props = {
-  scrims: Array<Scrim & { team: string; creator: string; hasPerms: boolean }>;
+  scrims: (Scrim & { team: string; creator: string; hasPerms: boolean })[];
 };
 
 export function ScrimPagination({ scrims }: Props) {
@@ -137,7 +137,6 @@ export function ScrimPagination({ scrims }: Props) {
                       className="hidden md:flex"
                       onClick={() => setCurrPage(currPage - 1)}
                       href="#"
-                      text={t("pagination.previous")}
                     />
                     <PaginationItem className="md:hidden">
                       <PaginationLink
@@ -156,7 +155,6 @@ export function ScrimPagination({ scrims }: Props) {
                       <PaginationEllipsis
                         // eslint-disable-next-line react/no-array-index-key
                         key={`ellipsis-${index}`}
-                        text={t("pagination.morePages")}
                       />
                     );
                   }
@@ -178,7 +176,6 @@ export function ScrimPagination({ scrims }: Props) {
                       className="hidden md:flex"
                       onClick={() => setCurrPage(currPage + 1)}
                       href="#"
-                      text={t("pagination.next")}
                     />
                     <PaginationItem className="md:hidden">
                       <PaginationLink
@@ -225,7 +222,7 @@ function handlePagination({
     };
   }
 
-  let pages = [] as Array<number | "...">;
+  let pages: (number | "...")[] = [];
 
   // Define fixed boundaries if there are enough pages beyond the boundaryCount
   const startPages = Array.from(

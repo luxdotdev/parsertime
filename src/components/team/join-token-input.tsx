@@ -10,7 +10,7 @@ export function JoinTokenInput({
 }) {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]); // Refs for managing focus
 
-  const handleChange = (index: number, char: string) => {
+  function handleChange(index: number, char: string) {
     const newToken = [...token];
     newToken[index] = char;
     setToken(newToken);
@@ -21,9 +21,9 @@ export function JoinTokenInput({
     } else if (!char && index > 0) {
       inputRefs.current[index - 1]?.focus(); // Move focus to the previous input on delete
     }
-  };
+  }
 
-  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+  function handlePaste(e: React.ClipboardEvent<HTMLInputElement>) {
     e.preventDefault(); // Prevent the default paste behavior
 
     const pasteData = e.clipboardData.getData("text").replace(/-/g, ""); // Remove dashes from the pasted data
@@ -52,7 +52,7 @@ export function JoinTokenInput({
     // Focus the next input slot if available, or the last slot if we've reached the end
     const nextIndex = Math.min(endIndex + 1, newToken.length - 1);
     inputRefs.current[nextIndex]?.focus();
-  };
+  }
 
   return (
     <div className="flex items-center gap-1">

@@ -13,11 +13,11 @@ import {
 } from "@react-email/components";
 import { Tailwind } from "@react-email/tailwind";
 
-interface ContactFormEmailProps {
+type ContactFormEmailProps = {
   name?: string;
   email?: string;
   message?: string;
-}
+};
 
 export const ContactFormEmail = ({
   name,

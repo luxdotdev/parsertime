@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { TODO } from "@/types/utils";
-import { Kill } from "@prisma/client";
+import type { $Enums, Kill } from "@prisma/client";
 import { useTranslations } from "next-intl";
 
 type Fight = {
@@ -11,6 +9,24 @@ type Fight = {
   start: number;
   end: number;
 };
+
+type FlattenedData = {
+  fight_number: number;
+  fight_start: number;
+  fight_end: number;
+  event_type: $Enums.EventType;
+  match_time: number;
+  attacker_team: string;
+  attacker_name: string;
+  attacker_hero: string;
+  victim_team: string;
+  victim_name: string;
+  victim_hero: string;
+  event_ability: string;
+  event_damage: number;
+  is_critical_hit: string;
+  is_environmental: string;
+}[];
 
 export function KillfeedExport({ fights }: { fights: Fight[] }) {
   const t = useTranslations("mapPage.killfeedTable");
@@ -35,14 +51,14 @@ export function KillfeedExport({ fights }: { fights: Fight[] }) {
     }))
   );
 
-  function generateCSV(flattenedData: TODO[]): string {
+  function generateCSV(flattenedData: FlattenedData): string {
     // Generate the headers
     const headers = Object.keys(flattenedData[0]).join(",");
 
     // Generate the rows
     const rows = flattenedData.map((obj) =>
       Object.values(obj)
-        .map((value) => (value === null ? "" : value?.toString()))
+        .map((value) => (value === null ? "" : String(value)))
         .join(",")
     );
 

@@ -14,10 +14,10 @@ import {
   Text,
 } from "@react-email/components";
 
-interface MagicLinkEmailProps {
+type MagicLinkEmailProps = {
   username?: string;
   magicLink?: string;
-}
+};
 
 export const MagicLinkEmail = ({
   magicLink,

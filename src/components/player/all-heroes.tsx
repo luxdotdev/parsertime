@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/card";
 import CardIcon from "@/components/ui/card-icon";
 import { cn, round, toMins } from "@/lib/utils";
-import { HeroName, heroRoleMapping } from "@/types/heroes";
-import { PlayerStat } from "@prisma/client";
+import { type HeroName, heroRoleMapping } from "@/types/heroes";
+import type { PlayerStat } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 

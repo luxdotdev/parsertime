@@ -7,9 +7,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getPlayerFinalStats } from "@/data/scrim-dto";
-import { NonMappableStat, Stat, sumStatByRound } from "@/lib/player-charts";
+import {
+  type NonMappableStat,
+  type Stat,
+  sumStatByRound,
+} from "@/lib/player-charts";
 import prisma from "@/lib/prisma";
-import { HeroName, heroRoleMapping } from "@/types/heroes";
+import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import { getTranslations } from "next-intl/server";
 
 type Props = {
@@ -22,7 +26,7 @@ export async function PlayerCharts({ id, playerName }: Props) {
 
   async function getStatByRound<T extends keyof Omit<Stat, NonMappableStat>>(
     stat: T
-  ): Promise<Array<{ round_number: number } & Record<T, number>>> {
+  ): Promise<({ round_number: number } & Record<T, number>)[]> {
     const playerStatByRound = (await prisma.playerStat.findMany({
       where: {
         MapDataId: id,
@@ -65,11 +69,11 @@ export async function PlayerCharts({ id, playerName }: Props) {
 
   const finalStats = await getPlayerFinalStats(id, playerName);
 
-  const mostPlayedHero = finalStats.filter(
+  const mostPlayedHero = finalStats.find(
     (stat) =>
       stat.hero_time_played ===
       Math.max(...finalStats.map((stat) => stat.hero_time_played))
-  )[0].player_hero as HeroName;
+  )?.player_hero as HeroName;
 
   const playerRole = heroRoleMapping[mostPlayedHero];
 
