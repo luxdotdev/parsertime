@@ -1,13 +1,11 @@
 import NoAuthCard from "@/components/auth/no-auth";
 import { isAuthedToViewTeam } from "@/lib/auth";
 
-export default async function TeamLayout({
-  children,
-  params,
-}: {
-  children: React.ReactNode;
-  params: { teamId: string };
-}) {
+export default async function TeamLayout(props: LayoutProps<"/team/[teamId]">) {
+  const params = await props.params;
+
+  const { children } = props;
+
   const id = parseInt(params.teamId);
   const isAuthed = await isAuthedToViewTeam(id);
 

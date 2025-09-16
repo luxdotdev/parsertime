@@ -11,14 +11,16 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
+import { PagePropsWithLocale } from "@/types/next";
 import { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-type Props = { params: { playerName: string; locale: string } };
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(
+  props: PagePropsWithLocale<"/stats/[playerName]">
+): Promise<Metadata> {
+  const params = await props.params;
   const t = await getTranslations("statsPage.playerMetadata");
   const playerName = decodeURIComponent(params.playerName);
   const suffix = playerName.endsWith("s") ? "'" : "'s";
@@ -47,7 +49,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function PlayerStats({ params }: Props) {
+export default async function PlayerStats(
+  props: PagePropsWithLocale<"/stats/[playerName]">
+) {
+  const params = await props.params;
   const t = await getTranslations("statsPage.playerStats");
   const name = decodeURIComponent(params.playerName);
 

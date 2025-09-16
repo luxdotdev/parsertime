@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { SearchParams } from "@/types/next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
-type Props = { searchParams: SearchParams };
+
 type Error =
   | "Configuration"
   | "AccessDenied"
@@ -10,7 +9,8 @@ type Error =
   | "AuthorizedCallbackError"
   | "Default";
 
-export default async function AuthErrorPage({ searchParams }: Props) {
+export default async function AuthErrorPage(props: PageProps<"/auth-error">) {
+  const searchParams = await props.searchParams;
   const t = await getTranslations("authError");
 
   const error = searchParams.error as Error;

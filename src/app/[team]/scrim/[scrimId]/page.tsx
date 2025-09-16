@@ -26,20 +26,18 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { getMapNames, toKebabCase } from "@/lib/utils";
-import { SearchParams } from "@/types/next";
+import { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
 import { ExclamationTriangleIcon, Pencil2Icon } from "@radix-ui/react-icons";
-import { Metadata } from "next";
+import { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-type Props = {
-  params: { team: string; scrimId: string; locale: string };
-  searchParams: SearchParams;
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(
+  props: PagePropsWithLocale<"/[team]/scrim/[scrimId]">
+): Promise<Metadata> {
+  const params = await props.params;
   const t = await getTranslations({
     locale: params.locale,
     namespace: "scrimPage.metadata",
@@ -78,7 +76,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ScrimDashboardPage({ params }: Props) {
+export default async function ScrimDashboardPage(
+  props: PagePropsWithLocale<"/[team]/scrim/[scrimId]">
+) {
+  const params = await props.params;
   const id = parseInt(params.scrimId);
   const session = await auth();
   const t = await getTranslations("scrimPage");
@@ -147,7 +148,9 @@ export default async function ScrimDashboardPage({ params }: Props) {
                 {hasPerms && (
                   <Link
                     className="pl-2"
-                    href={`/${params.team}/scrim/${params.scrimId}/edit`}
+                    href={
+                      `/${params.team}/scrim/${params.scrimId}/edit` as Route
+                    }
                     aria-label={t("edit")}
                   >
                     <TooltipProvider>
@@ -175,7 +178,9 @@ export default async function ScrimDashboardPage({ params }: Props) {
                 <div key={map.id} className="w-full p-2 md:w-1/3">
                   <Card className="relative h-48 max-w-md bg-cover">
                     <Link
-                      href={`/${params.team}/scrim/${params.scrimId}/map/${map.id}`}
+                      href={
+                        `/${params.team}/scrim/${params.scrimId}/map/${map.id}` as Route
+                      }
                     >
                       <CardHeader className="">
                         <h3 className="z-10 text-3xl font-semibold tracking-tight text-white">

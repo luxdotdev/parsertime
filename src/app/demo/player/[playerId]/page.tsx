@@ -10,23 +10,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getMostPlayedHeroes } from "@/data/player-dto";
 import prisma from "@/lib/prisma";
 import { toTitleCase } from "@/lib/utils";
-import { SearchParams } from "@/types/next";
+import { PagePropsWithLocale } from "@/types/next";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
-type Props = {
-  params: {
-    team: string;
-    scrimId: string;
-    mapId: string;
-    playerId: string;
-    locale: string;
-  };
-  searchParams: SearchParams;
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(
+  props: PagePropsWithLocale<"/demo/player/[playerId]">
+): Promise<Metadata> {
+  const params = await props.params;
   const t = await getTranslations({
     locale: params.locale,
     namespace: "mapPage.playerMetadata",
@@ -56,7 +48,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function PlayerDashboardDemoPage({ params }: Props) {
+export default async function PlayerDashboardDemoPage(
+  props: PagePropsWithLocale<"/demo/player/[playerId]">
+) {
+  const params = await props.params;
   const t = await getTranslations("mapPage.player.dashboard");
   const id = 268;
   const playerName = decodeURIComponent(params.playerId);

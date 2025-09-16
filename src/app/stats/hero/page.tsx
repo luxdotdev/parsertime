@@ -2,15 +2,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
 import { getHeroNames, toHero } from "@/lib/utils";
 import { roleHeroMapping } from "@/types/heroes";
-import { Metadata } from "next";
+import { PagePropsWithLocale } from "@/types/next";
+import { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { locale: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: PagePropsWithLocale<"/stats/hero">
+): Promise<Metadata> {
+  const params = await props.params;
   const t = await getTranslations("statsPage.heroStatsMetadata");
   return {
     title: t("title"),
@@ -59,7 +59,7 @@ export default async function HeroSelect() {
               {tankHeroes.map((hero) => (
                 <Link
                   key={hero}
-                  href={`/stats/hero/${hero}`}
+                  href={`/stats/hero/${hero}` as Route}
                   className="flex flex-col items-center text-center"
                 >
                   <Image
@@ -88,7 +88,7 @@ export default async function HeroSelect() {
               {damageHeroes.map((hero) => (
                 <Link
                   key={hero}
-                  href={`/stats/hero/${hero}`}
+                  href={`/stats/hero/${hero}` as Route}
                   className="flex flex-col items-center text-center"
                 >
                   <Image
@@ -117,7 +117,7 @@ export default async function HeroSelect() {
               {supportHeroes.map((hero) => (
                 <Link
                   key={hero}
-                  href={`/stats/hero/${hero}`}
+                  href={`/stats/hero/${hero}` as Route}
                   className="flex flex-col items-center text-center"
                 >
                   <Image

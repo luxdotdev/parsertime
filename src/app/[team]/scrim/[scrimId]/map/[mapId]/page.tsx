@@ -16,17 +16,15 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { translateMapName } from "@/lib/utils";
-import { SearchParams } from "@/types/next";
+import { PagePropsWithLocale } from "@/types/next";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
-type Props = {
-  params: { team: string; scrimId: string; mapId: string; locale: string };
-  searchParams: SearchParams;
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(
+  props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]">
+): Promise<Metadata> {
+  const params = await props.params;
   const mapId = decodeURIComponent(params.mapId);
   const t = await getTranslations({
     locale: params.locale,
@@ -65,7 +63,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function MapDashboardPage({ params }: Props) {
+export default async function MapDashboardPage(
+  props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]">
+) {
+  const params = await props.params;
   const id = parseInt(params.mapId);
   const session = await auth();
   const user = await getUser(session?.user?.email);

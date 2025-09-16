@@ -7,9 +7,9 @@ import { cookies } from "next/headers";
 const COOKIE_NAME = "LOCALE";
 
 export async function getUserLocale() {
-  return cookies().get(COOKIE_NAME)?.value || defaultLocale;
+  return (await cookies()).get(COOKIE_NAME)?.value || defaultLocale;
 }
 
 export async function setUserLocale(locale: Locale) {
-  cookies().set(COOKIE_NAME, locale);
+  (await cookies()).set(COOKIE_NAME, locale);
 }

@@ -6,6 +6,7 @@ import prisma from "@/lib/prisma";
 import { Ratelimit } from "@upstash/ratelimit";
 import { kv } from "@vercel/kv";
 import { NextRequest } from "next/server";
+import { ipAddress } from "@vercel/functions";
 import { z } from "zod";
 
 const TeamCreationRequestSchema = z.object({
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
   });
 
   // Limit the requests to 5 per minute per user
-  const identifier = request.ip ?? "127.0.0.1";
+  const identifier = ipAddress(request) ?? "127.0.0.1";
   const { success } = await ratelimit.limit(identifier);
 
   if (!success) {

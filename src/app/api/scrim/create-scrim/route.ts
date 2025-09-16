@@ -9,6 +9,7 @@ import {
 import { ParserData } from "@/types/parser";
 import { User } from "@prisma/client";
 import { Ratelimit } from "@upstash/ratelimit";
+import { ipAddress } from "@vercel/functions";
 import { kv } from "@vercel/kv";
 import { NextRequest, userAgent } from "next/server";
 
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
   });
 
   // Limit the requests to 5 per minute per user
-  const identifier = request.ip ?? "127.0.0.1";
+  const identifier = ipAddress(request) ?? "127.0.0.1";
   const { success } = await ratelimit.limit(identifier);
 
   if (!success) {

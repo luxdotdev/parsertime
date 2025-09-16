@@ -4,17 +4,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { locale: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: PagePropsWithLocale<"/team">
+): Promise<Metadata> {
+  const params = await props.params;
   const t = await getTranslations("teamPage.metadata");
   return {
     title: t("title"),

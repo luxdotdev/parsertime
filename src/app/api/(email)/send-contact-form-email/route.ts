@@ -5,6 +5,7 @@ import { render } from "@react-email/render";
 import { Ratelimit } from "@upstash/ratelimit";
 import { kv } from "@vercel/kv";
 import { NextRequest } from "next/server";
+import { ipAddress } from "@vercel/functions";
 import { z } from "zod";
 
 const ContactFormEmailSchema = z.object({
@@ -22,7 +23,7 @@ export async function POST(req: NextRequest) {
   });
 
   // Limit the requests to 5 per minute per user
-  const identifier = req.ip ?? "127.0.0.1";
+  const identifier = ipAddress(req) ?? "127.0.0.1";
   const { success } = await ratelimit.limit(identifier);
 
   if (!success) {

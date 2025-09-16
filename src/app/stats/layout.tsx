@@ -1,12 +1,12 @@
 import DashboardLayout from "@/components/dashboard-layout";
+import { LayoutPropsWithLocale } from "@/types/next";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { locale: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: LayoutPropsWithLocale<"/stats">
+): Promise<Metadata> {
+  const params = await props.params;
   const t = await getTranslations("statsPage.layoutMetadata");
 
   return {
@@ -32,8 +32,6 @@ export async function generateMetadata({
 
 export default function StatsLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}: LayoutPropsWithLocale<"/stats">) {
   return <DashboardLayout>{children}</DashboardLayout>;
 }

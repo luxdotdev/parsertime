@@ -14,23 +14,15 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { toTitleCase } from "@/lib/utils";
-import { SearchParams } from "@/types/next";
+import { PagePropsWithLocale } from "@/types/next";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
-type Props = {
-  params: {
-    team: string;
-    scrimId: string;
-    mapId: string;
-    playerId: string;
-    locale: string;
-  };
-  searchParams: SearchParams;
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(
+  props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]/player/[playerId]">
+): Promise<Metadata> {
+  const params = await props.params;
   const t = await getTranslations({
     locale: params.locale,
     namespace: "mapPage.playerMetadata",
@@ -60,7 +52,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function PlayerDashboardPage({ params }: Props) {
+export default async function PlayerDashboardPage(
+  props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]/player/[playerId]">
+) {
+  const params = await props.params;
   const t = await getTranslations("mapPage.player.dashboard");
   const id = parseInt(params.mapId);
   const playerName = decodeURIComponent(params.playerId);

@@ -4,15 +4,10 @@ import { getUserViewableScrims } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { SearchParams } from "@/types/next";
 import { $Enums } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 
-type Props = {
-  searchParams: SearchParams;
-};
-
-export async function ScrimList({ searchParams }: Props) {
+export async function ScrimList() {
   const session = await auth();
 
   let scrims = [];

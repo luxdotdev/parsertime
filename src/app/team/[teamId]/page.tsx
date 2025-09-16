@@ -7,14 +7,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { PagePropsWithLocale } from "@/types/next";
 import { $Enums, User } from "@prisma/client";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
-type Props = { params: { teamId: string; locale: string } };
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(
+  props: PagePropsWithLocale<"/team/[teamId]">
+): Promise<Metadata> {
+  const params = await props.params;
   const t = await getTranslations("teamPage.teamMetadata");
   const teamId = decodeURIComponent(params.teamId);
 
@@ -46,7 +48,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function Team({ params }: { params: { teamId: string } }) {
+export default async function Team(
+  props: PagePropsWithLocale<"/team/[teamId]">
+) {
+  const params = await props.params;
   const t = await getTranslations("teamPage");
   const session = await auth();
 

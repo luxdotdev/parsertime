@@ -12,18 +12,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getMostPlayedHeroes } from "@/data/player-dto";
 import prisma from "@/lib/prisma";
 import { toTitleCase, translateMapName } from "@/lib/utils";
-
-import { SearchParams } from "@/types/next";
+import { PagePropsWithLocale } from "@/types/next";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
-type Props = {
-  params: { team: string; scrimId: string; mapId: string; locale: string };
-  searchParams: SearchParams;
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(
+  props: PagePropsWithLocale<"/demo">
+): Promise<Metadata> {
+  const params = await props.params;
   const t = await getTranslations("demoPage.metadata");
 
   const mapName = await prisma.matchStart.findFirst({
@@ -62,7 +59,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function MapDashboardPage({ params }: Props) {
+export default async function MapDashboardPage() {
   const t = await getTranslations("mapPage");
   const id = 268;
 

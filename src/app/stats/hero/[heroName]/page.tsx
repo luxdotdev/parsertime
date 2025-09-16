@@ -12,16 +12,16 @@ import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { translateHeroName } from "@/lib/utils";
 import { HeroName, heroRoleMapping } from "@/types/heroes";
+import { PagePropsWithLocale } from "@/types/next";
 import { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-type Props = {
-  params: { heroName: string; locale: string };
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(
+  props: PagePropsWithLocale<"/stats/hero/[heroName]">
+): Promise<Metadata> {
+  const params = await props.params;
   const heroName = decodeURIComponent(params.heroName);
   const hero = await translateHeroName(heroName);
   const t = await getTranslations("statsPage.heroMetadata");
@@ -47,7 +47,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function HeroStats({ params }: Props) {
+export default async function HeroStats(
+  props: PagePropsWithLocale<"/stats/hero/[heroName]">
+) {
+  const params = await props.params;
   const t = await getTranslations("statsPage.heroStats");
 
   const hero = decodeURIComponent(params.heroName);

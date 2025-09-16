@@ -1,19 +1,21 @@
-import { Metadata } from "next";
-import Link from "next/link";
-
 import { UserAuthForm } from "@/components/auth/user-auth-form";
 import { buttonVariants } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
+import { PagePropsWithLocale } from "@/types/next";
+import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
-export async function generateMetadata({
-  params: { locale },
-}: {
-  params: { locale: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: PagePropsWithLocale<"/sign-in">
+): Promise<Metadata> {
+  const params = await props.params;
+
+  const { locale } = params;
+
   const t = await getTranslations({
     locale,
     namespace: "signInPage.metadataSignIn",
