@@ -1,9 +1,5 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
 import { AvatarUpdateDialog } from "@/components/team/avatar-update-dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,13 +20,16 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ClientOnly } from "@/lib/client-only";
+import { zodResolver } from "@hookform/resolvers/zod";
 import type { Team } from "@prisma/client";
 import { ClipboardCopyIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { type ChangeEvent, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
 
 export function TeamSettingsForm({ team }: { team: Team }) {
   const t = useTranslations("teamPage");
@@ -119,8 +118,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
               <div className="items-center">
                 <p>{t("teamInviteLink.subtitle")}</p>
                 <code className="rounded bg-zinc-800 p-1 text-zinc-800 transition-colors hover:text-white">
-                  https://parsertime.app/team/join/
-                  {btoa(team.createdAt.toISOString())}
+                  {`https://parsertime.app/team/join/${btoa(team.createdAt.toISOString())}`}
                 </code>
                 <TooltipProvider>
                   <Tooltip>
