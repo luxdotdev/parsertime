@@ -4,7 +4,8 @@ import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
-import { NextRequest } from "next/server";
+import { unauthorized } from "next/navigation";
+import type { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   const params = req.nextUrl.searchParams;
@@ -16,7 +17,7 @@ export async function POST(req: NextRequest) {
   if (!session) {
     if (token !== process.env.DEV_TOKEN) {
       Logger.warn("Unauthorized request to remove scrim: ", id);
-      return new Response("Unauthorized", { status: 401 });
+      unauthorized();
     }
     Logger.log("Authorized removal of scrim with dev token");
   }
@@ -50,7 +51,7 @@ export async function POST(req: NextRequest) {
     user.id === scrim.creatorId || // Creators can delete their own scrims
     isManager; // Managers of the scrim's team can delete the scrim
 
-  if (!hasPerms) return new Response("Unauthorized", { status: 401 });
+  if (!hasPerms) unauthorized();
 
   const scrimId = parseInt(id);
 

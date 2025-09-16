@@ -2,7 +2,8 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { NextRequest } from "next/server";
+import { unauthorized } from "next/navigation";
+import type { NextRequest } from "next/server";
 import { z } from "zod";
 
 const PromoteUserSchema = z.object({
@@ -16,9 +17,8 @@ export async function POST(req: NextRequest) {
   const devTokenAuthed = authToken === process.env.DEV_TOKEN;
 
   if (!session || !session.user || !session.user.email) {
-    if (!devTokenAuthed) {
-      return new Response("Unauthorized", { status: 401 });
-    }
+    if (!devTokenAuthed) unauthorized();
+
     Logger.log("Authorized with dev token");
   }
 
@@ -53,9 +53,7 @@ export async function POST(req: NextRequest) {
       (manager) => manager.userId === authedUser?.id
     );
 
-    if (team.ownerId !== authedUser?.id && !isManager) {
-      return new Response("Unauthorized", { status: 401 });
-    }
+    if (team.ownerId !== authedUser?.id && !isManager) unauthorized();
   }
 
   // add user as a manager

@@ -3,7 +3,8 @@ import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
-import { NextRequest } from "next/server";
+import { unauthorized } from "next/navigation";
+import type { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   const params = req.nextUrl.searchParams;
@@ -18,7 +19,7 @@ export async function POST(req: NextRequest) {
   if (!session) {
     if (token !== process.env.DEV_TOKEN) {
       Logger.warn("Unauthorized request to remove team: ", id);
-      return new Response("Unauthorized", { status: 401 });
+      unauthorized();
     }
     Logger.log("Authorized removal of team with dev token");
   }
@@ -34,9 +35,7 @@ export async function POST(req: NextRequest) {
     user.role === $Enums.UserRole.MANAGER || // Managers can delete anything
     user.id === team.ownerId; // Creators can delete their own teams
 
-  if (!hasPerms) {
-    return new Response("Unauthorized", { status: 401 });
-  }
+  if (!hasPerms) unauthorized();
 
   await prisma.team.delete({ where: { id } });
   await prisma.teamManager.deleteMany({ where: { teamId: id } });

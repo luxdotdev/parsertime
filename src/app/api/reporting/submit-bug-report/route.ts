@@ -3,13 +3,13 @@ import {
   newBugReportWebhookConstructor,
   sendDiscordWebhook,
 } from "@/lib/webhooks";
-import { NextRequest, userAgent } from "next/server";
+import { type NextRequest, userAgent } from "next/server";
 import { z } from "zod";
 
 const BugReportSchema = z.object({
   title: z.string().min(1),
   description: z.string().min(1),
-  email: z.string().email(),
+  email: z.email(),
   url: z.string().min(1),
 });
 

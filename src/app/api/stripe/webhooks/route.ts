@@ -1,9 +1,8 @@
-/* eslint-disable no-case-declarations */
 import { handleSubscriptionEvent } from "@/lib/billing-plans";
 import Logger from "@/lib/logger";
 import { stripe } from "@/lib/stripe";
 import { track } from "@vercel/analytics/server";
-import Stripe from "stripe";
+import type Stripe from "stripe";
 
 const relevantEvents = new Set([
   "customer.created",
@@ -16,7 +15,7 @@ const relevantEvents = new Set([
 
 export async function POST(req: Request) {
   const body = await req.text();
-  const sig = req.headers.get("stripe-signature") as string;
+  const sig = req.headers.get("stripe-signature")!;
   const webhookSecret =
     process.env.NODE_ENV === "production"
       ? process.env.STRIPE_WEBHOOK_SECRET

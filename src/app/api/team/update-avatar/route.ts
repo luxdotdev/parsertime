@@ -2,7 +2,8 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { NextRequest } from "next/server";
+import { unauthorized } from "next/navigation";
+import type { NextRequest } from "next/server";
 import { z } from "zod";
 
 const TeamAvatarUpdateSchema = z.object({
@@ -12,9 +13,9 @@ const TeamAvatarUpdateSchema = z.object({
 
 export async function POST(req: NextRequest) {
   const session = await auth();
-  if (!session || !session.user) {
+  if (!session?.user) {
     Logger.log("No session found", session);
-    return new Response("Unauthorized", { status: 401 });
+    unauthorized();
   }
 
   const body = TeamAvatarUpdateSchema.safeParse(await req.json());
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
   const authedUser = await getUser(session.user.email);
   if (!authedUser) {
     Logger.log("User not found", session.user.email);
-    return new Response("Unauthorized", { status: 401 });
+    unauthorized();
   }
 
   if (
@@ -43,7 +44,7 @@ export async function POST(req: NextRequest) {
     teamManagers.some((m) => m.userId === authedUser.id) === false
   ) {
     Logger.log("Not a team owner or manager", team.name, authedUser.email);
-    return new Response("Unauthorized", { status: 401 });
+    unauthorized();
   }
 
   await prisma.team.update({

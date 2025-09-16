@@ -6,13 +6,12 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { track } from "@vercel/analytics/server";
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { kv } from "@vercel/kv";
-import { NextRequest, NextResponse } from "next/server";
+import { unauthorized } from "next/navigation";
+import { type NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const session = await auth();
-  if (!session || !session.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!session?.user) unauthorized();
 
   const userId = await getUser(session.user.email);
   if (!userId) {
@@ -48,20 +47,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const jsonResponse = await handleUpload({
       body,
       request,
-      onBeforeGenerateToken: async (
-        pathname: string
+      onBeforeGenerateToken: async () =>
         /* clientPayload?: string, */
-      ) => {
-        // Generate a client token for the browser to upload the file
-        // ⚠️ Authenticate and authorize users before generating the token.
-        // Otherwise, you're allowing anonymous uploads.
-        const team = await prisma.team.findUnique({
-          where: { id: parseInt(teamId) },
-        });
-        if (!team) throw new Error("Team not found");
+        {
+          // Generate a client token for the browser to upload the file
+          // ⚠️ Authenticate and authorize users before generating the token.
+          // Otherwise, you're allowing anonymous uploads.
+          const team = await prisma.team.findUnique({
+            where: { id: parseInt(teamId) },
+          });
+          if (!team) throw new Error("Team not found");
 
-        return { tokenPayload: JSON.stringify({ teamId: team.id }) };
-      },
+          return { tokenPayload: JSON.stringify({ teamId: team.id }) };
+        },
       onUploadCompleted: async ({ blob, tokenPayload }) => {
         // Get notified of client upload completion
         // ⚠️ This will not work on `localhost` websites,
@@ -83,7 +81,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             where: { id: team.id },
             data: { image: blob.url },
           });
-        } catch (error) {
+        } catch {
           throw new Error("Could not update team");
         }
       },

@@ -6,12 +6,13 @@ import {
   newSuspiciousActivityWebhookConstructor,
   sendDiscordWebhook,
 } from "@/lib/webhooks";
-import { ParserData } from "@/types/parser";
-import { User } from "@prisma/client";
+import type { ParserData } from "@/types/parser";
+import type { User } from "@prisma/client";
 import { Ratelimit } from "@upstash/ratelimit";
 import { ipAddress } from "@vercel/functions";
 import { kv } from "@vercel/kv";
-import { NextRequest, userAgent } from "next/server";
+import { unauthorized } from "next/navigation";
+import { type NextRequest, userAgent } from "next/server";
 
 export type CreateScrimRequestData = {
   name: string;
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest) {
 
   if (!session) {
     Logger.warn("Unauthorized request to create scrim");
-    return new Response("Unauthorized", { status: 401 });
+    unauthorized();
   }
 
   // Create a new ratelimiter, that allows 5 requests per 1 minute
@@ -47,6 +48,7 @@ export async function POST(request: NextRequest) {
 
     const user = await getUser(session.user.email);
 
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const fallbackUser = {
       name: "Unknown",
       email: "unknown",

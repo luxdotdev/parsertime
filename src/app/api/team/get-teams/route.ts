@@ -2,7 +2,8 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { Team } from "@prisma/client";
+import type { Team } from "@prisma/client";
+import { unauthorized } from "next/navigation";
 
 export type GetTeamsResponse = {
   teams: Team[];
@@ -13,7 +14,7 @@ export async function GET() {
 
   if (!session) {
     Logger.warn("Unauthorized request to get teams API");
-    return new Response("Unauthorized", { status: 401 });
+    unauthorized();
   }
 
   const userId = await getUser(session?.user?.email);

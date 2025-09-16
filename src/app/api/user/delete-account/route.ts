@@ -7,14 +7,14 @@ import {
   sendDiscordWebhook,
 } from "@/lib/webhooks";
 import { track } from "@vercel/analytics/server";
-import { NextRequest } from "next/server";
+import { unauthorized } from "next/navigation";
 
-export async function DELETE(req: NextRequest) {
+export async function DELETE() {
   const session = await auth();
-  if (!session) return new Response("Unauthorized", { status: 401 });
+  if (!session) unauthorized();
 
   const user = await getUser(session.user.email);
-  if (!user) return new Response("Unauthorized", { status: 401 });
+  if (!user) unauthorized();
 
   await track("User Deleted Account", { email: user.email });
 

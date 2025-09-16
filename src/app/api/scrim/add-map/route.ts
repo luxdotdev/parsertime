@@ -1,9 +1,10 @@
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import { createNewMap } from "@/lib/parser";
-import { ParserData } from "@/types/parser";
+import type { ParserData } from "@/types/parser";
 import { track } from "@vercel/analytics/server";
-import { NextRequest } from "next/server";
+import { unauthorized } from "next/navigation";
+import type { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -14,7 +15,7 @@ export async function POST(req: NextRequest) {
 
   if (!session || !session.user || !session.user.email) {
     Logger.warn("Unauthorized request to add map");
-    return new Response("Unauthorized", { status: 401 });
+    unauthorized();
   }
 
   try {

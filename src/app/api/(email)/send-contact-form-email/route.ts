@@ -5,12 +5,12 @@ import { render } from "@react-email/render";
 import { Ratelimit } from "@upstash/ratelimit";
 import { ipAddress } from "@vercel/functions";
 import { kv } from "@vercel/kv";
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import { z } from "zod";
 
 const ContactFormEmailSchema = z.object({
   name: z.string().min(1),
-  email: z.string().email(),
+  email: z.email(),
   message: z.string().min(1),
 });
 

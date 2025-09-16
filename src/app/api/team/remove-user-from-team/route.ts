@@ -1,8 +1,9 @@
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { User } from "@prisma/client";
-import { NextRequest } from "next/server";
+import type { User } from "@prisma/client";
+import { unauthorized } from "next/navigation";
+import type { NextRequest } from "next/server";
 import { z } from "zod";
 
 const RemoveUserFromTeamSchema = z.object({
@@ -12,9 +13,7 @@ const RemoveUserFromTeamSchema = z.object({
 
 export async function POST(req: NextRequest) {
   const session = await auth();
-  if (!session || !session.user || !session.user.email) {
-    return new Response("Unauthorized", { status: 401 });
-  }
+  if (!session || !session.user || !session.user.email) unauthorized();
 
   const body = RemoveUserFromTeamSchema.safeParse(await req.json());
   if (!body.success) return new Response("Invalid request", { status: 400 });
@@ -28,7 +27,7 @@ export async function POST(req: NextRequest) {
   if (!user) return new Response("User not found", { status: 404 });
 
   const authedUser = await getUser(session.user.email);
-  if (!authedUser) return new Response("Unauthorized", { status: 401 });
+  if (!authedUser) unauthorized();
 
   const managers = await prisma.team.findFirst({
     where: { id: parseInt(body.data.teamId) },
@@ -44,7 +43,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (team.ownerId !== authedUser.id && !authedUserIsManager) {
-    return new Response("Unauthorized", { status: 401 });
+    unauthorized();
   }
 
   if (team.ownerId === user.id) {

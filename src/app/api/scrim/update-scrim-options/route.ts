@@ -3,7 +3,8 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
-import { NextRequest } from "next/server";
+import { unauthorized } from "next/navigation";
+import type { NextRequest } from "next/server";
 import { z } from "zod";
 
 const UpdateScrimSchema = z.object({
@@ -23,14 +24,14 @@ const UpdateScrimSchema = z.object({
 export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session || !session.user || !session.user.email) {
-    return new Response("Unauthorized", { status: 401 });
+    unauthorized();
   }
 
   const body = UpdateScrimSchema.safeParse(await req.json());
   if (!body.success) return new Response("Invalid request", { status: 400 });
 
   const user = await getUser(session.user.email);
-  if (!user) return new Response("Unauthorized", { status: 401 });
+  if (!user) unauthorized();
 
   const userIsManager = await prisma.teamManager.findFirst({
     where: { userId: user.id },
@@ -45,7 +46,7 @@ export async function POST(req: NextRequest) {
     user.role === $Enums.UserRole.ADMIN || // user is an admin
     user.role === $Enums.UserRole.MANAGER; // user is a manager
 
-  if (!hasPerms) return new Response("Unauthorized", { status: 401 });
+  if (!hasPerms) unauthorized();
 
   await prisma.scrim.update({
     where: { id: body.data.scrimId },

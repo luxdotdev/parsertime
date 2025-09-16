@@ -1,7 +1,8 @@
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { NextRequest } from "next/server";
+import { unauthorized } from "next/navigation";
+import type { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -12,7 +13,7 @@ export async function POST(req: NextRequest) {
   if (!session) {
     if (authToken !== process.env.DEV_TOKEN) {
       Logger.warn("Unauthorized request to create team invite");
-      return new Response("Unauthorized", { status: 401 });
+      unauthorized();
     }
     Logger.log("Authorized request to create team invite using dev token");
   }

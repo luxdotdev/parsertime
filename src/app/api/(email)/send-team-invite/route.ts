@@ -5,7 +5,7 @@ import { createShortLink } from "@/lib/link-service";
 import prisma from "@/lib/prisma";
 import { render } from "@react-email/render";
 import { track } from "@vercel/analytics/server";
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   const inviteeEmail = req.nextUrl.searchParams.get("email");
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
       subject: `Join ${team.name} on Parsertime`,
       html: emailHtml,
     });
-  } catch (error) {
+  } catch {
     return new Response("Error sending email", { status: 500 });
   }
 

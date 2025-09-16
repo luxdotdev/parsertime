@@ -4,7 +4,8 @@ import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
-import { NextRequest } from "next/server";
+import { unauthorized } from "next/navigation";
+import type { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   const params = req.nextUrl.searchParams;
@@ -16,7 +17,7 @@ export async function POST(req: NextRequest) {
   if (!session) {
     if (token !== process.env.DEV_TOKEN) {
       Logger.warn("Unauthorized request to remove map: ", id);
-      return new Response("Unauthorized", { status: 401 });
+      unauthorized();
     }
     Logger.log("Authorized removal of map with dev token");
   }
@@ -55,7 +56,7 @@ export async function POST(req: NextRequest) {
     isManager; // Managers of the scrim's team can delete the map
 
   if (!hasPerms) {
-    return new Response("Unauthorized", { status: 401 });
+    unauthorized();
   }
 
   Logger.log("Removing map: ", id);

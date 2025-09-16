@@ -2,7 +2,8 @@ import { auth } from "@/lib/auth";
 import { generateRandomToken } from "@/lib/invite-token";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { NextRequest } from "next/server";
+import { unauthorized } from "next/navigation";
+import type { NextRequest } from "next/server";
 
 const FREE_MEMBER_CAP = 5;
 const BASIC_MEMBER_CAP = 10;
@@ -17,13 +18,13 @@ export async function POST(req: NextRequest) {
   if (!session) {
     if (token !== process.env.DEV_TOKEN) {
       Logger.warn("Unauthorized request to create team invite");
-      return new Response("Unauthorized", { status: 401 });
+      unauthorized();
     }
     Logger.log("Authorized request to create team invite using dev token");
   }
 
   const teamId = req.nextUrl.searchParams.get("id")
-    ? parseInt(req.nextUrl.searchParams.get("id") as string)
+    ? parseInt(req.nextUrl.searchParams.get("id")!)
     : null;
 
   if (!teamId) {
@@ -78,8 +79,7 @@ export async function POST(req: NextRequest) {
       }
       break;
     default:
-      if (teamCreator.role !== "ADMIN")
-        return new Response("Unauthorized", { status: 401 });
+      if (teamCreator.role !== "ADMIN") unauthorized();
       break;
   }
 

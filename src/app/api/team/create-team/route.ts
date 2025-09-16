@@ -4,9 +4,9 @@ import Logger from "@/lib/logger";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { Ratelimit } from "@upstash/ratelimit";
-import { kv } from "@vercel/kv";
-import { NextRequest } from "next/server";
 import { ipAddress } from "@vercel/functions";
+import { kv } from "@vercel/kv";
+import type { NextRequest } from "next/server";
 import { z } from "zod";
 
 const TeamCreationRequestSchema = z.object({
