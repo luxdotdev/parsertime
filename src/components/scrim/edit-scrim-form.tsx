@@ -48,15 +48,15 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
 import { cn, toKebabCase, useMapNames } from "@/lib/utils";
-import { Map, Scrim, Team } from "@prisma/client";
+import type { Map, Scrim, Team } from "@prisma/client";
 import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
+import { toast } from "sonner";
 import { Calendar } from "../ui/calendar";
 
 export function EditScrimForm({
@@ -141,19 +141,16 @@ export function EditScrimForm({
     });
 
     if (res.ok) {
-      toast({
-        title: t("onSubmit.title"),
+      toast.success(t("onSubmit.title"), {
         description: t("onSubmit.description"),
         duration: 5000,
       });
       router.refresh();
     } else {
-      toast({
-        title: t("onSubmit.errorTitle"),
+      toast.error(t("onSubmit.errorTitle"), {
         description: t("onSubmit.errorDescription", {
           res: `${await res.text()} (${res.status})`,
         }),
-        variant: "destructive",
         duration: 5000,
       });
     }
@@ -167,19 +164,16 @@ export function EditScrimForm({
     });
 
     if (res.ok) {
-      toast({
-        title: t("deleteMap.title"),
+      toast.success(t("deleteMap.title"), {
         description: t("deleteMap.description"),
         duration: 5000,
       });
       router.refresh();
     } else {
-      toast({
-        title: t("deleteMap.errorTitle"),
+      toast.error(t("deleteMap.errorTitle"), {
         description: t("deleteMap.errorDescription", {
           res: `${await res.text()} (${res.status})`,
         }),
-        variant: "destructive",
         duration: 5000,
       });
     }
@@ -280,7 +274,7 @@ export function EditScrimForm({
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      disabled={(date) =>
+                      disabled={(date: Date) =>
                         date > new Date() || date < new Date("2016-01-01")
                       }
                     />
@@ -296,7 +290,7 @@ export function EditScrimForm({
             control={form.control}
             name="guestMode"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md shadow">
+              <FormItem className="flex flex-row items-start space-y-0 space-x-3 rounded-md shadow">
                 <FormControl>
                   <Switch
                     checked={field.value}

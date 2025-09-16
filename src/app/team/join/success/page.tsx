@@ -1,20 +1,18 @@
 "use client";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function TeamJoinSuccessPage() {
   const t = useTranslations("teamPage.join");
 
-  const { toast } = useToast();
   const router = useRouter();
 
   // Show a success message if the user has successfully joined the team
-  toast({
-    title: t("handleSubmit.title"),
+  toast.success(t("handleSubmit.title"), {
     description: t("handleSubmit.description"),
     duration: 5000,
   });

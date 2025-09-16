@@ -10,13 +10,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@/components/ui/link";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "@/components/ui/use-toast";
 import { parseData } from "@/lib/parser";
 import { ParserDataSchema } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { JsonEditor } from "json-edit-react";
 import { startTransition, useState } from "react";
+import { toast } from "sonner";
 
 const defaultData = {
   kill: [
@@ -90,10 +90,9 @@ export default function DebugPage() {
         )
       );
 
-      toast({
-        title: "Invalid data",
+      toast.error("Invalid data", {
         description: errorMessages,
-        variant: "destructive",
+        duration: 5000,
       });
     } else {
       setErrors([]);
@@ -142,7 +141,7 @@ export default function DebugPage() {
           </Card>
 
           {errors.length > 0 && (
-            <Card className="destructive group flex w-full max-w-md flex-col border-destructive bg-destructive text-destructive-foreground">
+            <Card className="destructive border-destructive bg-destructive text-destructive-foreground group flex w-full max-w-md flex-col">
               <CardHeader>Errors</CardHeader>
               <CardContent>
                 <ul>
@@ -163,7 +162,7 @@ export default function DebugPage() {
           )}
 
           <div className="max-w-sm">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               Drag and drop a file to convert it to a JSON object. You can then
               view the data and see any errors with the data.
             </p>
@@ -178,7 +177,7 @@ export default function DebugPage() {
                 message.
               </li>
             </ul>
-            <p className="pt-4 text-sm text-muted-foreground">
+            <p className="text-muted-foreground pt-4 text-sm">
               The path is formatted like this:{" "}
               <code className="text-foreground">`key.index.index`</code>. For
               example, seeing an error that says{" "}

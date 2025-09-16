@@ -7,16 +7,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { toast } from "@/components/ui/use-toast";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 
 export function ReplayCode({ replayCode }: { replayCode: string }) {
   const t = useTranslations("scrimPage.replayCode");
 
   function handleClick({ replayCode }: { replayCode: string }) {
     void navigator.clipboard.writeText(replayCode);
-    toast({
-      title: t("onClick.title"),
+    toast.success(t("onClick.title"), {
       description: t("onClick.description"),
       duration: 5000,
     });

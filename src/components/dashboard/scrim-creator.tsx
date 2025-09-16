@@ -1,12 +1,6 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
-import { format } from "date-fns";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-
-import { GetTeamsResponse } from "@/app/api/team/get-teams/route";
+import type { GetTeamsResponse } from "@/app/api/team/get-teams/route";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -32,15 +26,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/components/ui/use-toast";
 import { parseData } from "@/lib/parser";
 import { cn } from "@/lib/utils";
-import { ParserData } from "@/types/parser";
+import type { ParserData } from "@/types/parser";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { useQuery } from "@tanstack/react-query";
 import { track } from "@vercel/analytics";
+import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
 
 const ACCEPTED_FILE_TYPES = [
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -55,7 +54,6 @@ export function ScrimCreationForm({
   setOpen: (open: boolean) => void;
 }) {
   const [mapData, setMapData] = useState<ParserData>();
-  const { toast } = useToast();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const t = useTranslations("dashboard.scrimCreationForm");
@@ -98,7 +96,7 @@ export function ScrimCreationForm({
     }));
   }
 
-  const { data: teams, isLoading } = useQuery({
+  const { data: teams } = useQuery({
     queryKey: ["teams"],
     queryFn: getTeams,
     staleTime: Infinity,
@@ -109,16 +107,16 @@ export function ScrimCreationForm({
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
       if (file.size > MAX_FILE_SIZE) {
-        toast({
-          title: t("fileSize.title"),
+        toast.error(t("fileSize.title"), {
+          duration: 5000,
           description: t("fileSize.description"),
         });
         return;
       }
 
       if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
-        toast({
-          title: t("fileType.title"),
+        toast.error(t("fileType.title"), {
+          duration: 5000,
           description: t("fileType.description"),
         });
         return;
@@ -135,8 +133,7 @@ export function ScrimCreationForm({
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setLoading(true);
-    toast({
-      title: t("creatingScrim.title"),
+    toast.error(t("creatingScrim.title"), {
       description: t("creatingScrim.description"),
       duration: 5000,
     });
@@ -150,8 +147,7 @@ export function ScrimCreationForm({
     });
 
     if (res.ok) {
-      toast({
-        title: t("createdScrim.title"),
+      toast.success(t("createdScrim.title"), {
         description: t("createdScrim.description"),
         duration: 5000,
       });
@@ -159,8 +155,7 @@ export function ScrimCreationForm({
       setOpen(false);
       setLoading(false);
     } else {
-      toast({
-        title: t("createdScrim.errorTitle"),
+      toast.error(t("createdScrim.errorTitle"), {
         description: t.rich("createdScrim.errorDescription", {
           res: `${await res.text()} (${res.status})`,
           here: (chunks) => (
@@ -175,7 +170,6 @@ export function ScrimCreationForm({
           ),
         }),
         duration: 5000,
-        variant: "destructive",
       });
       setLoading(false);
     }
@@ -262,7 +256,7 @@ export function ScrimCreationForm({
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
-                    disabled={(date) =>
+                    disabled={(date: Date) =>
                       date > new Date() || date < new Date("2016-01-01")
                     }
                   />

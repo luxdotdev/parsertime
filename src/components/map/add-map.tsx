@@ -10,7 +10,6 @@ import { FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@/components/ui/link";
-import { useToast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
 import { parseData } from "@/lib/parser";
 import { cn } from "@/lib/utils";
@@ -20,6 +19,7 @@ import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Form, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const XLSX =
@@ -33,7 +33,6 @@ const MAX_FILE_SIZE = 1000000; // 1MB in bytes
 
 export function AddMapCard() {
   const [dragActive, setDragActive] = useState(false);
-  const { toast } = useToast();
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations("scrimPage.addMap");
@@ -60,8 +59,7 @@ export function AddMapCard() {
     // pathname should look like this: /team/scrim/:id
     const scrimId = pathname.split("/")[3];
 
-    toast({
-      title: t("handleFile.creatingTitle"),
+    toast.error(t("handleFile.creatingTitle"), {
       description: t("handleFile.creatingDescription"),
       duration: 5000,
     });
@@ -74,15 +72,13 @@ export function AddMapCard() {
     });
 
     if (res.ok) {
-      toast({
-        title: t("handleFile.createTitle"),
+      toast.success(t("handleFile.createTitle"), {
         description: t("handleFile.createDescription"),
         duration: 5000,
       });
       router.refresh();
     } else {
-      toast({
-        title: t("handleFile.errorTitle"),
+      toast.error(t("handleFile.errorTitle"), {
         description: t.rich("handleFile.errorDescription", {
           res: `${await res.text()} (${res.status})`,
           here: (chunks) => (
@@ -97,7 +93,6 @@ export function AddMapCard() {
           ),
         }),
         duration: 5000,
-        variant: "destructive",
       });
     }
   }
@@ -117,7 +112,7 @@ export function AddMapCard() {
     e.stopPropagation();
     setDragActive(false);
 
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+    if (e.dataTransfer.files?.[0]) {
       // at least one file has been selected so do something
       void handleFile(e.dataTransfer.files[0]);
     }
@@ -125,7 +120,7 @@ export function AddMapCard() {
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
-    if (e.target.files && e.target.files[0]) {
+    if (e.target.files?.[0]) {
       // at least one file has been selected so do something
       void handleFile(e.target.files[0]);
     }

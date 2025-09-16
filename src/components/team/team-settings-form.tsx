@@ -23,14 +23,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
-import { Team } from "@prisma/client";
+import type { Team } from "@prisma/client";
 import { ClipboardCopyIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useRef, useState } from "react";
+import { type ChangeEvent, useRef, useState } from "react";
+import { toast } from "sonner";
 
 export function TeamSettingsForm({ team }: { team: Team }) {
   const t = useTranslations("teamPage");
@@ -81,36 +81,33 @@ export function TeamSettingsForm({ team }: { team: Team }) {
     });
 
     if (res.ok) {
-      toast({
-        title: t("update.onSubmit.title"),
+      toast.success(t("update.onSubmit.title"), {
         description: t("update.onSubmit.description"),
         duration: 5000,
       });
       router.refresh();
     } else {
-      toast({
-        title: t("update.onSubmit.errorTitle"),
+      toast.error(t("update.onSubmit.errorTitle"), {
         description: t("update.onSubmit.errorDescription", {
           res: `${await res.text()} (${res.status})`,
         }),
-        variant: "destructive",
         duration: 5000,
       });
     }
     setLoading(false);
   }
 
-  const handleAvatarClick = () => {
+  function handleAvatarClick() {
     fileInputRef.current?.click();
-  };
+  }
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+  function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const files = event.target.files;
-    if (files && files[0]) {
+    if (files?.[0]) {
       setSelectedFile(files[0]);
       setAvatarDialogOpen(true); // Open the dialog upon file selection
     }
-  };
+  }
 
   return (
     <ClientOnly>
@@ -136,8 +133,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
                               team.createdAt.toISOString()
                             )}`
                           );
-                          toast({
-                            title: t("clipboard.title"),
+                          toast.success(t("clipboard.title"), {
                             description: t("clipboard.description"),
                             duration: 5000,
                           });
@@ -184,7 +180,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
                 />
                 <Image
                   src={
-                    team.image || `https://avatar.vercel.sh/${team.name}.png`
+                    team.image ?? `https://avatar.vercel.sh/${team.name}.png`
                   }
                   width={800}
                   height={800}
@@ -207,7 +203,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
             control={form.control}
             name="readonly"
             render={({ field }) => (
-              <FormItem className="flex max-w-lg flex-row items-start space-x-3 space-y-0 rounded-md p-4 shadow">
+              <FormItem className="flex max-w-lg flex-row items-start space-y-0 space-x-3 rounded-md p-4 shadow">
                 <FormControl>
                   <Switch
                     checked={field.value}

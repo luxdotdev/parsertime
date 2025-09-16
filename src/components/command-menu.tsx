@@ -1,5 +1,22 @@
 "use client";
 
+import type { GetTeamsResponse } from "@/app/api/team/get-teams/route";
+import { BugReportForm } from "@/components/bug-reporting-form";
+import { CommandMenuContext } from "@/components/command-menu-provider";
+import {
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from "@/components/ui/command";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { locales } from "@/i18n/config";
+import { setUserLocale } from "@/lib/locale";
+import type { User } from "@prisma/client";
 import {
   ChevronRightIcon,
   DashboardIcon,
@@ -17,31 +34,13 @@ import {
   Share2Icon,
   SunIcon,
 } from "@radix-ui/react-icons";
-
-import { GetTeamsResponse } from "@/app/api/team/get-teams/route";
-import { BugReportForm } from "@/components/bug-reporting-form";
-import { CommandMenuContext } from "@/components/command-menu-provider";
-import {
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-  CommandShortcut,
-} from "@/components/ui/command";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { toast } from "@/components/ui/use-toast";
-import { locales } from "@/i18n/config";
-import { setUserLocale } from "@/lib/locale";
-import { User } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { track } from "@vercel/analytics";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { usePathname, useRouter } from "next/navigation";
 import { use, useCallback, useState } from "react";
+import { toast } from "sonner";
 
 export function CommandDialogMenu({ user }: { user: User | null }) {
   const { open, setOpen } = use(CommandMenuContext);
@@ -128,8 +127,7 @@ export function CommandDialogMenu({ user }: { user: User | null }) {
                       link = link.split("/edit")[0];
                     }
                     void navigator.clipboard.writeText(link);
-                    toast({
-                      title: t("link.title"),
+                    toast.success(t("link.title"), {
                       description: t("link.description", {
                         pathname: pathname.includes("/map")
                           ? t("link.map")

@@ -15,13 +15,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
-import { Team } from "@prisma/client";
+import type { Team } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { startTransition, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export function DangerZone({ team }: { team: Team }) {
   const t = useTranslations("teamPage");
@@ -45,20 +45,17 @@ export function DangerZone({ team }: { team: Team }) {
     );
 
     if (res.ok) {
-      toast({
-        title: t("transferOwner.handleTransfer.title"),
+      toast.success(t("transferOwner.handleTransfer.title"), {
         description: t("transferOwner.handleTransfer.description"),
         duration: 5000,
       });
       router.refresh();
     } else {
-      toast({
-        title: t("transferOwner.handleTransfer.errorTitle"),
+      toast.error(t("transferOwner.handleTransfer.errorTitle"), {
         description: t("transferOwner.handleTransfer.errorDescription", {
           error: `${await res.text()} (${res.status})`,
         }),
         duration: 5000,
-        variant: "destructive",
       });
     }
 
@@ -76,20 +73,17 @@ export function DangerZone({ team }: { team: Team }) {
     });
 
     if (res.ok) {
-      toast({
-        title: t("deleteTeam.handleDelete.title"),
+      toast.success(t("deleteTeam.handleDelete.title"), {
         description: t("deleteTeam.handleDelete.description"),
         duration: 5000,
       });
       router.push("/team");
     } else {
-      toast({
-        title: t("deleteTeam.handleDelete.errorTitle"),
+      toast.error(t("deleteTeam.handleDelete.errorTitle"), {
         description: t("deleteTeam.handleDelete.errorDescription", {
           error: `${await res.text()} (${res.status})`,
         }),
         duration: 5000,
-        variant: "destructive",
       });
     }
 

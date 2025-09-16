@@ -16,13 +16,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
-import { User } from "@prisma/client";
+import type { User } from "@prisma/client";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useRef, useState } from "react";
+import { type ChangeEvent, useRef, useState } from "react";
+import { toast } from "sonner";
 
 const profileFormSchema = z.object({
   name: z
@@ -67,35 +67,32 @@ export function ProfileForm({ user }: { user: User }) {
     });
 
     if (res.ok) {
-      toast({
-        title: t("onSubmit.title"),
+      toast.success(t("onSubmit.title"), {
         description: t("onSubmit.description"),
         duration: 5000,
       });
       router.refresh();
     } else {
-      toast({
-        title: t("onSubmit.errorTitle"),
+      toast.error(t("onSubmit.errorTitle"), {
         description: t("onSubmit.errorDescription", {
           res: `${await res.text()} (${res.status})`,
         }),
-        variant: "destructive",
         duration: 5000,
       });
     }
   }
 
-  const handleAvatarClick = () => {
+  function handleAvatarClick() {
     fileInputRef.current?.click();
-  };
+  }
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+  function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const files = event.target.files;
-    if (files && files[0]) {
+    if (files?.[0]) {
       setSelectedFile(files[0]);
       setAvatarDialogOpen(true); // Open the dialog upon file selection
     }
-  };
+  }
 
   return (
     <ClientOnly>
@@ -132,7 +129,7 @@ export function ProfileForm({ user }: { user: User }) {
                   aria-label={t("avatar.ariaLabel")}
                 />
                 <Image
-                  src={user.image || "https://avatar.vercel.sh/parsertime.png"}
+                  src={user.image ?? "https://avatar.vercel.sh/parsertime.png"}
                   width={800}
                   height={800}
                   alt={t("avatar.altText")}

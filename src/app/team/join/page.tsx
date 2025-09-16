@@ -2,10 +2,10 @@
 
 import { JoinTokenInput } from "@/components/team/join-token-input";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { startTransition, useState } from "react";
+import { toast } from "sonner";
 
 function toInviteToken(tokenArr: string[]) {
   // Join all parts into a single string
@@ -26,18 +26,15 @@ export default function TeamJoinPage() {
   const t = useTranslations("teamPage.join");
 
   const [token, setToken] = useState<string[]>(Array(19).fill("")); // Initialize state with 19 empty strings
-  const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const error = searchParams.get("error");
 
   if (error === "invalid-token") {
-    toast({
-      title: t("invalidToken.title"),
+    toast.error(t("invalidToken.title"), {
       description: t("invalidToken.description"),
       duration: 5000,
-      variant: "destructive",
     });
     router.replace("/team/join");
   }
@@ -52,20 +49,17 @@ export default function TeamJoinPage() {
     });
 
     if (res.ok) {
-      toast({
-        title: t("handleSubmit.title"),
+      toast.success(t("handleSubmit.title"), {
         description: t("handleSubmit.description"),
         duration: 5000,
       });
       router.push("/dashboard");
     } else {
-      toast({
-        title: t("handleSubmit.errorTitle"),
+      toast.error(t("handleSubmit.errorTitle"), {
         description: t("handleSubmit.errorDescription", {
           error: `${await res.text()} (${res.status})`,
         }),
         duration: 5000,
-        variant: "destructive",
       });
     }
   }

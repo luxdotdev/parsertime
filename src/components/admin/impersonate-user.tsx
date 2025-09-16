@@ -16,9 +16,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 
 const adminFormSchema = z.object({
   email: z.string().email({
@@ -57,16 +57,13 @@ export function ImpersonateUserForm() {
 
       await navigator.clipboard.writeText(url);
 
-      toast({
-        title: t("onSubmit.title"),
+      toast.success(t("onSubmit.title"), {
         description: t("onSubmit.description"),
         duration: 5000,
       });
-    } catch (e) {
-      toast({
-        title: t("onSubmit.errorTitle"),
+    } catch {
+      toast.error(t("onSubmit.errorTitle"), {
         description: t("onSubmit.errorDescription"),
-        variant: "destructive",
       });
     }
   }
@@ -97,7 +94,7 @@ export function ImpersonateUserForm() {
             control={form.control}
             name="isProd"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+              <FormItem className="flex flex-row items-start space-y-0 space-x-3 rounded-md border p-4 shadow">
                 <FormControl>
                   <Switch
                     checked={field.value}
