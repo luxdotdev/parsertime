@@ -5,14 +5,13 @@ import { SidebarNav } from "@/components/settings/sidebar-nav";
 import { Separator } from "@/components/ui/separator";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import { LayoutPropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 
 export async function generateMetadata(
-  props: LayoutPropsWithLocale<"/settings">
+  props: LayoutProps<"/settings">
 ): Promise<Metadata> {
-  const params = await props.params;
+  const params = (await props.params) as { locale: string };
   const t = await getTranslations("settingsPage.metadata");
 
   return {
@@ -38,7 +37,7 @@ export async function generateMetadata(
 
 export default async function SettingsLayout({
   children,
-}: LayoutPropsWithLocale<"/settings">) {
+}: LayoutProps<"/settings">) {
   const t = await getTranslations("settingsPage");
 
   const sidebarNavItems: { title: string; href: Route }[] = [
