@@ -1,4 +1,4 @@
-import { AppRoutes } from "../../.next/types/routes";
+import type { AppRoutes } from "../../.next/types/routes";
 
 export type SearchParams = Promise<{
   [key: string]: string | string[] | undefined;
