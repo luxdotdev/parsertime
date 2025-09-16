@@ -30,6 +30,9 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  experimental: {
+    authInterrupts: true,
+  },
   images: {
     remotePatterns: [
       {
