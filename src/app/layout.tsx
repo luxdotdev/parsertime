@@ -59,7 +59,7 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang={locale} className="h-full">
+    <html lang={locale} className="h-full" suppressHydrationWarning>
       <body className={cn(GeistSans.className, "h-full")}>
         <QueryProvider>
           <ThemeProvider
