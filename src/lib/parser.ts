@@ -1,6 +1,7 @@
 import type { CreateScrimRequestData } from "@/app/api/scrim/create-scrim/route";
 import { headers } from "@/lib/headers";
 import Logger from "@/lib/logger";
+import { notifications } from "@/lib/notifications";
 import prisma from "@/lib/prisma";
 import { toTitleCase } from "@/lib/utils";
 import type { ParserData } from "@/types/parser";
@@ -226,6 +227,30 @@ export async function createNewScrimFromParsedData(
   });
 
   Logger.log("Scrim created: ", scrim, session);
+
+  // Get all users in the team and get the team name
+  const [users, team] = await Promise.all([
+    prisma.user.findMany({
+      select: { id: true },
+      where: { teams: { some: { id: teamId ?? 0 } } },
+    }),
+    prisma.team.findFirst({
+      where: { id: teamId ?? 0 },
+      select: { name: true },
+    }),
+  ]);
+
+  // Create a notification for each user UNLESS individual scrim
+  if (teamId !== 0 && teamId !== null) {
+    for (const user of users) {
+      await notifications.createInAppNotification({
+        userId: user.id,
+        title: `${team?.name}: New scrim uploaded by ${session.user?.name}`,
+        description: `Scrim "${scrim.name}" has been uploaded by ${session.user?.name} to ${team?.name}.`,
+        href: `/${teamId}/scrim/${scrim.id}`,
+      });
+    }
+  }
 
   const mapData = await prisma.mapData.create({
     data: {
