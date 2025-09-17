@@ -38,11 +38,12 @@ export async function POST(req: Request) {
   if (relevantEvents.has(event.type)) {
     try {
       switch (event.type) {
-        case "customer.created":
+        case "customer.created": {
           const customer = event.data.object;
           Logger.log("New customer", customer);
           await track("New Customer", { customerId: customer.id });
           break;
+        }
         case "customer.deleted":
           Logger.log("Deleted customer", event.data.object);
           await track("Deleted Customer", { customerId: event.data.object.id });
@@ -52,7 +53,7 @@ export async function POST(req: Request) {
         case "customer.subscription.deleted":
           await handleSubscriptionEvent(event, event.type);
           break;
-        case "checkout.session.completed":
+        case "checkout.session.completed": {
           const checkoutSession = event.data.object;
           if (checkoutSession.mode === "subscription") {
             const subscriptionId = checkoutSession.subscription;
@@ -63,6 +64,7 @@ export async function POST(req: Request) {
             );
           }
           break;
+        }
         default:
           throw new Error("Unhandled relevant event!");
       }

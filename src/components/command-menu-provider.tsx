@@ -31,9 +31,5 @@ export function CommandMenuProvider({
 
   const value = React.useMemo(() => ({ open, setOpen }), [open, setOpen]);
 
-  return (
-    <CommandMenuContext.Provider value={value}>
-      {children}
-    </CommandMenuContext.Provider>
-  );
+  return <CommandMenuContext value={value}>{children}</CommandMenuContext>;
 }

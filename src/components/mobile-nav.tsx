@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import type { Route } from "next";
 import type { Session } from "next-auth";
 import Image from "next/image";
-import Link, { type LinkProps } from "next/link";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 
@@ -101,7 +101,7 @@ export function MobileNav({ session }: { session: Session | null }) {
   );
 }
 
-type MobileLinkProps = LinkProps<Route> & {
+type MobileLinkProps = {
   href: Route;
   onOpenChange?: (open: boolean) => void;
   children: React.ReactNode;
@@ -113,7 +113,6 @@ function MobileLink({
   onOpenChange,
   className,
   children,
-  ...props
 }: MobileLinkProps) {
   const router = useRouter();
   return (
@@ -126,7 +125,6 @@ function MobileLink({
       }}
       className={cn(className)}
       target={href.toString().startsWith("http") ? "_blank" : undefined}
-      {...props}
     >
       {children}
     </Link>

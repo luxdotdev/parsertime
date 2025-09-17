@@ -22,9 +22,5 @@ export function TeamSwitcherProvider({
     [teamId, setTeamId]
   );
 
-  return (
-    <TeamSwitcherContext.Provider value={value}>
-      {children}
-    </TeamSwitcherContext.Provider>
-  );
+  return <TeamSwitcherContext value={value}>{children}</TeamSwitcherContext>;
 }

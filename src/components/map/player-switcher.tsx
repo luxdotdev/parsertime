@@ -255,8 +255,6 @@ export function SelectedPlayerProvider({
   );
 
   return (
-    <SelectedPlayerContext.Provider value={value}>
-      {children}
-    </SelectedPlayerContext.Provider>
+    <SelectedPlayerContext value={value}>{children}</SelectedPlayerContext>
   );
 }
