@@ -32,11 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function PrivacyLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function PrivacyLayout({ children }: LayoutProps<"/privacy">) {
   return (
     <>
       <Header />

@@ -34,9 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function TermsLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}: LayoutProps<"/terms-of-service">) {
   return (
     <>
       <Header />

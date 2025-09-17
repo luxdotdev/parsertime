@@ -5,9 +5,7 @@ import { $Enums } from "@prisma/client";
 
 export default async function AdminLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}: LayoutProps<"/settings/admin">) {
   const session = await auth();
 
   const user = await getUser(session?.user?.email);
