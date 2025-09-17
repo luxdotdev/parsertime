@@ -4,7 +4,7 @@ import { ClientOnly } from "@/lib/client-only";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { useState } from "react";
 
-export default function BetaBanner() {
+export function BetaBanner() {
   const [isDismissed, setIsDismissed] = useState(false);
 
   if (typeof window !== "undefined") {

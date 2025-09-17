@@ -1,6 +1,6 @@
 import { CommandDialogMenu } from "@/components/command-menu";
 import { CommandMenuProvider } from "@/components/command-menu-provider";
-import BetaBanner from "@/components/home/beta-banner";
+import { BetaBanner } from "@/components/home/beta-banner";
 import { StaffToolbar } from "@/components/staff-toolbar";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { ThemeProvider } from "@/components/theme-provider";
