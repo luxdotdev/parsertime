@@ -2076,5 +2076,22 @@
       "demo": "您正在查看 Parsertime 的演示。点击此处注册",
       "dismiss": "关闭"
     }
+  },
+  "notifications": {
+    "title": "通知",
+    "mark-all-as-read": "全部已读",
+    "view-all-notifications": "查看所有通知",
+    "no-notifications": "没有通知",
+    "unread-notifications": "您有 {count, plural, =0 {没有未读通知} =1 {一个未读通知} other {未读通知}}",
+    "notifications": "通知 ({count, plural, =0 {没有未读} =1 {一个未读} other {未读}})",
+    "mark-all-as-read-error": "标记全部已读失败",
+    "mark-as-read-error": "标记已读失败",
+    "error-loading": "加载通知失败",
+    "marking-all-as-read": "更新中...",
+    "mark-as-read": "标记已读",
+    "delete": "删除",
+    "delete-error": "删除通知失败",
+    "notification-created": "通知创建成功",
+    "create-notification-error": "创建通知失败"
   }
 }

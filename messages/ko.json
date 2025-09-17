@@ -2073,5 +2073,22 @@
       "demo": "Parsertime의 데모를 보고 계십니다. 가입하려면 여기를 클릭하세요.",
       "dismiss": "닫기"
     }
+  },
+  "notifications": {
+    "title": "알림",
+    "mark-all-as-read": "모두 읽음으로 표시",
+    "view-all-notifications": "모든 알림 보기",
+    "no-notifications": "알림이 없습니다.",
+    "unread-notifications": "읽지 않은 알림이 {count, plural, =0 {없습니다} =1 {하나} other {개}}",
+    "notifications": "알림 ({count, plural, =0 {읽지 않은 알림 없음} =1 {읽지 않은 알림 하나} other {읽지 않은 알림}})",
+    "mark-all-as-read-error": "모두 읽음으로 표시 실패",
+    "mark-as-read-error": "읽음으로 표시 실패",
+    "error-loading": "알림 로딩 오류",
+    "marking-all-as-read": "업데이트 중...",
+    "mark-as-read": "읽음으로 표시",
+    "delete": "삭제",
+    "delete-error": "알림 삭제 실패",
+    "notification-created": "알림 생성 성공",
+    "create-notification-error": "알림 생성 실패"
   }
 }

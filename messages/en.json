@@ -2092,5 +2092,22 @@
       "demo": "You are viewing a demo of Parsertime. Click here to sign up",
       "dismiss": "Dismiss"
     }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "mark-all-as-read": "Mark all as read",
+    "view-all-notifications": "View all notifications",
+    "no-notifications": "No notifications",
+    "unread-notifications": "You have {count, plural, =0 {no unread notifications} =1 {one unread notification} other {unread notifications}}",
+    "notifications": "Notifications ({count, plural, =0 {no unread} =1 {one unread} other {unread}})",
+    "mark-all-as-read-error": "Failed to mark all as read",
+    "mark-as-read-error": "Failed to mark as read",
+    "error-loading": "Error loading notifications",
+    "marking-all-as-read": "Updating...",
+    "mark-as-read": "Mark as read",
+    "delete": "Delete",
+    "delete-error": "Failed to delete notification",
+    "notification-created": "Notification created successfully",
+    "create-notification-error": "Failed to create notification"
   }
 }
