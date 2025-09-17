@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (id) {
-      await notifications.markAsRead(user.id, parseInt(id));
+      await notifications.markAsRead(user.id, id);
       return new Response("OK", { status: 200 });
     }
 
