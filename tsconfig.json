@@ -16,6 +16,9 @@
     "plugins": [
       {
         "name": "next"
+      },
+      {
+        "name": "@effect/language-service"
       }
     ],
     "paths": {
