@@ -95,7 +95,7 @@ export function ScrimPagination({ scrims }: Props) {
   }
 
   return (
-    <Card>
+    <Card className="bg-background">
       <span className="inline-flex gap-2 p-4">
         <Select onValueChange={(v) => setFilter(v)}>
           <SelectTrigger className="w-[180px]">
