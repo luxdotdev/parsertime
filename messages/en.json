@@ -217,13 +217,21 @@
     "parsertime": "Parsertime",
     "signUp": "Sign Up",
     "signIn": "Sign In",
+    "welcomeBack": "Welcome back",
+    "oauthSignIn": "Login with your account below",
+    "email": "Email",
     "login": "Login",
+    "dontHaveAccount": "Don't have an account? <signUp>Sign up</signUp>",
+    "alreadyHaveAccount": "Already have an account? <signIn>Sign in</signIn>",
+    "loginWithDiscord": "Login with Discord",
+    "loginWithGoogle": "Login with Google",
+    "loginWithGitHub": "Login with GitHub",
     "createAccount": "Create an account",
     "enterEmailCreateAccount": "Enter your email below to create your account",
     "enterEmailSignIn": "Enter your email below to sign in",
     "signInEmail": "Sign In with Email",
     "orContinueWith": "Or continue with",
-    "madeBy": "Made with ❤️ by lux.dev"
+    "byClickingContinue": "By clicking continue, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>."
   },
   "dashboard": {
     "metadata": {
@@ -1919,6 +1927,12 @@
     }
   },
   "privacyPage": {
+    "metadata": {
+      "title": "Privacy Policy | Parsertime",
+      "description": "Privacy Policy for Parsertime - A tool for analyzing Overwatch scrims.",
+      "ogTitle": "Privacy Policy | Parsertime",
+      "ogDescription": "Privacy Policy for Parsertime - A tool for analyzing Overwatch scrims."
+    },
     "privacyPolicy": {
       "title": "Privacy Policy",
       "description": "At Parsertime, we are committed to maintaining the trust and confidence of our visitors to our web site. In particular, we want you to know that Parsertime is not in the business of selling, renting, or trading email lists with other companies and businesses for marketing purposes. In this Privacy Policy, we've provided detailed information on when and why we collect your personal information, how we use it, and how we keep it secure."
@@ -1962,6 +1976,84 @@
     "contactUs": {
       "title": "Contact Us",
       "description": "For more information about our privacy practices, if you have questions, or if you would like to make a complaint, please contact us by email at <link>privacy@lux.dev</link>."
+    }
+  },
+  "termsPage": {
+    "metadata": {
+      "title": "Terms of Service | Parsertime",
+      "description": "Terms of Service for Parsertime - A tool for analyzing Overwatch scrims.",
+      "ogTitle": "Terms of Service | Parsertime",
+      "ogDescription": "Terms of Service for Parsertime - A tool for analyzing Overwatch scrims."
+    },
+    "termsOfService": {
+      "title": "Terms of Service",
+      "description": "These Terms of Service govern your use of Parsertime, an open source tool for analyzing Overwatch scrims. By accessing or using our service, you agree to be bound by these Terms."
+    },
+    "acceptance": {
+      "title": "Acceptance of Terms",
+      "description": "By accessing and using this website, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service."
+    },
+    "openSource": {
+      "title": "Open Source License",
+      "description": "Parsertime is released under the MIT License, which means:",
+      "list1": "The source code is freely available and can be modified, distributed, and used for any purpose;",
+      "list2": "There are no trademark restrictions - the name 'Parsertime' is not trademarked;",
+      "list3": "You are free to fork, modify, and create derivative works of the software."
+    },
+    "useOfService": {
+      "title": "Use of Service",
+      "description": "While Parsertime is open source, when using our hosted service you agree to:",
+      "list1": "Use the service for its intended purpose of analyzing Overwatch scrims;",
+      "list2": "Not attempt to overload or disrupt our servers;",
+      "list3": "Respect other users and maintain appropriate conduct;",
+      "list4": "Not use the service for any illegal or harmful activities."
+    },
+    "userAccounts": {
+      "title": "User Accounts",
+      "description": "When you create an account with us, you must provide information that is accurate, complete, and current at all times. You are responsible for:",
+      "list1": "Safeguarding the password and all activities that occur under your account;",
+      "list2": "Notifying us immediately upon becoming aware of any breach of security or unauthorized use of your account;",
+      "list3": "Ensuring that your account information remains accurate and up-to-date."
+    },
+    "prohibitedUses": {
+      "title": "Prohibited Uses",
+      "description": "You may not use our service:",
+      "list1": "For any unlawful purpose or to solicit others to perform unlawful acts;",
+      "list2": "To violate any international, federal, provincial, or state regulations, rules, laws, or local ordinances;",
+      "list3": "To harass, abuse, insult, harm, defame, slander, disparage, intimidate, or discriminate;",
+      "list4": "To submit false or misleading information or to interfere with the proper functioning of the service;",
+      "list5": "To attempt to gain unauthorized access to our systems or other users' accounts."
+    },
+    "abuseAndMisuse": {
+      "title": "Abuse and Misuse",
+      "description": "We reserve the right to take action against users who abuse or misuse our service:",
+      "list1": "Accounts may be suspended or terminated for violations of these terms;",
+      "list2": "We may implement rate limiting or other technical measures to prevent abuse;",
+      "list3": "Repeated violations may result in permanent bans from the service."
+    },
+    "disclaimers": {
+      "title": "Disclaimers",
+      "description": "The information on this website is provided on an 'as is' basis. To the fullest extent permitted by law, we exclude all representations, warranties, conditions and terms relating to our website and the use of this website."
+    },
+    "limitationOfLiability": {
+      "title": "Limitation of Liability",
+      "description": "In no event shall Parsertime, nor its contributors, be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your use of the service."
+    },
+    "termination": {
+      "title": "Termination",
+      "description": "We may terminate or suspend your account and bar access to the service immediately, without prior notice or liability, under our sole discretion, for any reason whatsoever and without limitation, including but not limited to a breach of the Terms."
+    },
+    "governingLaw": {
+      "title": "Governing Law",
+      "description": "These Terms shall be interpreted and governed by the laws of the United States, without regard to its conflict of law provisions. Our failure to enforce any right or provision of these Terms will not be considered a waiver of those rights."
+    },
+    "changesToTerms": {
+      "title": "Changes to Terms",
+      "description": "We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days notice prior to any new terms taking effect."
+    },
+    "contactUs": {
+      "title": "Contact Information",
+      "description": "If you have any questions about these Terms of Service, please contact us at <link>legal@lux.dev</link>."
     }
   },
   "notFound": {

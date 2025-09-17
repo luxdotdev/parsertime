@@ -214,16 +214,24 @@
       "ogTitle": "注册 | Parsertime",
       "ogDescription": "注册账户。Parsertime 是一款用于分析《守望先锋》训练赛的工具。"
     },
+    "welcomeBack": "欢迎回来",
+    "oauthSignIn": "使用您的账户登录",
+    "email": "电子邮件",
     "parsertime": "Parsertime",
     "signUp": "注册",
     "signIn": "登录",
     "login": "登录",
+    "dontHaveAccount": "没有账户？<signUp>注册</signUp>",
+    "alreadyHaveAccount": "已有账户？<signIn>登录</signIn>",
+    "loginWithDiscord": "使用 Discord 登录",
+    "loginWithGoogle": "使用 Google 登录",
+    "loginWithGitHub": "使用 GitHub 登录",
     "createAccount": "创建账户",
     "enterEmailCreateAccount": "请输入您的电子邮件地址以创建账户",
     "enterEmailSignIn": "请输入您的电子邮件地址以登录",
     "signInEmail": "使用电子邮件登录",
     "orContinueWith": "或者继续使用",
-    "madeBy": "使用 ❤️ 制作，作者 lux.dev"
+    "byClickingContinue": "点击继续，您同意我们的 <terms>服务条款</terms>和 <privacy>隐私政策</privacy>。"
   },
   "dashboard": {
     "metadata": {
@@ -1958,6 +1966,78 @@
     "contactUs": {
       "title": "联系我们",
       "description": "如果您想了解更多关于我们的隐私实践的信息，有任何问题，或希望提出投诉，请通过电子邮件联系我们：<link>privacy@lux.dev</link>。"
+    }
+  },
+  "termsPage": {
+    "termsOfService": {
+      "title": "服务条款",
+      "description": "本服务条款规范您对 Parsertime 的使用，这是一个用于分析《守望先锋》训练赛的开源工具。通过访问或使用我们的服务，您同意受这些条款的约束。"
+    },
+    "acceptance": {
+      "title": "条款接受",
+      "description": "通过访问和使用本网站，您接受并同意受本协议条款和规定的约束。如果您不同意遵守上述条款，请不要使用本服务。"
+    },
+    "openSource": {
+      "title": "开源许可证",
+      "description": "Parsertime 在 MIT 许可证下发布，这意味着：",
+      "list1": "源代码可自由获取，可以修改、分发和用于任何目的；",
+      "list2": "没有商标限制 - 'Parsertime' 名称未注册商标；",
+      "list3": "您可以自由分叉、修改和创建软件的衍生作品。"
+    },
+    "useOfService": {
+      "title": "服务使用",
+      "description": "虽然 Parsertime 是开源的，但在使用我们的托管服务时，您同意：",
+      "list1": "将服务用于分析《守望先锋》训练赛的预期目的；",
+      "list2": "不试图使我们的服务器过载或中断；",
+      "list3": "尊重其他用户并保持适当的行为；",
+      "list4": "不将服务用于任何非法或有害的活动。"
+    },
+    "userAccounts": {
+      "title": "用户账户",
+      "description": "当您与我们创建账户时，您必须提供准确、完整且始终最新的信息。您负责：",
+      "list1": "保护密码和您账户下发生的所有活动；",
+      "list2": "在发现安全漏洞或账户被未经授权使用时立即通知我们；",
+      "list3": "确保您的账户信息保持准确和最新。"
+    },
+    "prohibitedUses": {
+      "title": "禁止使用",
+      "description": "您不得将我们的服务用于：",
+      "list1": "任何非法目的或怂恿他人进行非法行为；",
+      "list2": "违反任何国际、联邦、省或州法规、规则、法律或地方法令；",
+      "list3": "骚扰、虐待、侮辱、伤害、诽谤、中伤、贬低、恐吓或歧视；",
+      "list4": "提交虚假或误导性信息或干扰服务的正常功能；",
+      "list5": "试图未经授权访问我们的系统或其他用户的账户。"
+    },
+    "abuseAndMisuse": {
+      "title": "滥用和误用",
+      "description": "我们保留对滥用或误用我们服务的用户采取行动的权利：",
+      "list1": "违反这些条款的账户可能被暂停或终止；",
+      "list2": "我们可能实施速率限制或其他技术措施来防止滥用；",
+      "list3": "重复违规可能导致永久禁止使用服务。"
+    },
+    "disclaimers": {
+      "title": "免责声明",
+      "description": "本网站上的信息按“原样”提供。在法律允许的最大范围内，我们排除与我们的网站和本网站使用相关的所有陈述、保证、条件和条款。"
+    },
+    "limitationOfLiability": {
+      "title": "责任限制",
+      "description": "在任何情况下，Parsertime 或其贡献者均不对因使用服务而产生的任何间接、偶然、特殊、后果性或惩罚性损害承担责任，包括但不限于利润、数据、使用、商誉或其他无形损失的损失。"
+    },
+    "termination": {
+      "title": "终止",
+      "description": "我们可以在我们的唯一裁量权下，出于任何原因（包括但不限于违反条款）立即终止或暂停您的账户并禁止访问服务，无需事先通知或承担责任。"
+    },
+    "governingLaw": {
+      "title": "适用法律",
+      "description": "这些条款应根据美国法律进行解释和管辖，不考虑其法律冲突条款。我们不执行这些条款的任何权利或规定不应被视为放弃这些权利。"
+    },
+    "changesToTerms": {
+      "title": "条款变更",
+      "description": "我们保留在我们的唯一裁量权下随时修改或替换这些条款的权利。如果修订是重要的，我们将在任何新条款生效前至少提前 30 天通知。"
+    },
+    "contactUs": {
+      "title": "联系信息",
+      "description": "如果您对这些服务条款有任何疑问，请通过 <link>legal@lux.dev</link> 联系我们。"
     }
   },
   "notFound": {
