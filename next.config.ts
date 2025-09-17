@@ -1,4 +1,6 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+import withVercelToolbar from "@vercel/toolbar/plugins/next";
+import { withAxiom } from "next-axiom";
+import createNextIntlPlugin from "next-intl/plugin";
 
 const cspHeader = `
     default-src 'self';
@@ -21,7 +23,6 @@ const cspHeader = `
     upgrade-insecure-requests;
 `;
 
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   typedRoutes: true,
   eslint: {
@@ -94,9 +95,7 @@ const nextConfig = {
   },
 };
 
-const withVercelToolbar = require("@vercel/toolbar/plugins/next")();
-const { withAxiom } = require("next-axiom");
-const createNextIntlPlugin = require("next-intl/plugin");
 const withNextIntl = createNextIntlPlugin();
 
-module.exports = withNextIntl(withAxiom(withVercelToolbar(nextConfig)));
+// @ts-ignore - broken types
+export default withNextIntl(withAxiom(withVercelToolbar()(nextConfig)));
