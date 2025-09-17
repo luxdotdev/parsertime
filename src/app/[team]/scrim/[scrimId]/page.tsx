@@ -142,12 +142,12 @@ export default async function ScrimDashboardPage(
             <Link href="/dashboard">&larr; {t("back")}</Link>
           </h4>
           <div className="flex items-center justify-between space-y-2">
-            <h2 className="text-3xl font-bold tracking-tight">
+            <h2 className="text-3xl leading-none font-bold tracking-tight">
               <span className="flex items-center space-x-2">
                 {scrim?.name ?? t("newScrim")}{" "}
                 {hasPerms && (
                   <Link
-                    className="pl-2"
+                    className="inline-flex items-center pl-2"
                     href={
                       `/${params.team}/scrim/${params.scrimId}/edit` as Route
                     }
@@ -156,7 +156,7 @@ export default async function ScrimDashboardPage(
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Pencil2Icon className="h-6 w-6" />
+                          <Pencil2Icon className="h-6 w-6 align-middle" />
                         </TooltipTrigger>
                         <TooltipContent>{t("edit")}</TooltipContent>
                       </Tooltip>
