@@ -60,6 +60,7 @@ export default async function TermsPage() {
           <li>{t("prohibitedUses.list3")}</li>
           <li>{t("prohibitedUses.list4")}</li>
           <li>{t("prohibitedUses.list5")}</li>
+          <li>{t("prohibitedUses.list6")}</li>
         </ul>
 
         <h2 className="mt-16 text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
