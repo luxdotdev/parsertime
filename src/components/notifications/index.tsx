@@ -197,7 +197,6 @@ function NotificationItem({
     >
       <Link
         href={(notification.href as Route) ?? "#"}
-        external={notification.href?.startsWith("http")}
         className="flex flex-col gap-1"
         onClick={(e) => {
           e.preventDefault();
