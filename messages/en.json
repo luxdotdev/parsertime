@@ -231,7 +231,14 @@
     "enterEmailSignIn": "Enter your email below to sign in",
     "signInEmail": "Sign In with Email",
     "orContinueWith": "Or continue with",
-    "byClickingContinue": "By clicking continue, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>."
+    "byClickingContinue": "By clicking continue, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
+    "lastUsed": "Last used",
+    "provider": {
+      "discord": "Discord",
+      "google": "Google",
+      "github": "GitHub",
+      "email": "Email"
+    }
   },
   "dashboard": {
     "metadata": {

@@ -231,7 +231,14 @@
     "enterEmailSignIn": "请输入您的电子邮件地址以登录",
     "signInEmail": "使用电子邮件登录",
     "orContinueWith": "或者继续使用",
-    "byClickingContinue": "点击继续，您同意我们的 <terms>服务条款</terms>和 <privacy>隐私政策</privacy>。"
+    "byClickingContinue": "点击继续，您同意我们的 <terms>服务条款</terms>和 <privacy>隐私政策</privacy>。",
+    "lastUsed": "上次使用",
+    "provider": {
+      "discord": "Discord",
+      "google": "Google",
+      "github": "GitHub",
+      "email": "电子邮件"
+    }
   },
   "dashboard": {
     "metadata": {
