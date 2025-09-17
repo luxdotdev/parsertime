@@ -174,6 +174,7 @@ function NotificationItem({
 
   function handleMarkAsRead(e: React.MouseEvent) {
     e.preventDefault();
+    e.stopPropagation();
     if (!notification.read && !isLoading?.markAsRead) {
       onMarkAsRead(notification.id);
     }
@@ -181,6 +182,7 @@ function NotificationItem({
 
   function handleDelete(e: React.MouseEvent) {
     e.preventDefault();
+    e.stopPropagation();
     if (!isLoading?.delete) {
       onDelete(notification.id);
     }
