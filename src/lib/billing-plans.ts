@@ -1,7 +1,7 @@
 import SubscriptionCreatedEmail from "@/components/email/subscription-created";
 import SubscriptionDeletedEmail from "@/components/email/subscription-deleted";
 import SubscriptionUpdatedEmail from "@/components/email/subscription-updated";
-import { sendEmail } from "@/lib/email";
+import { email } from "@/lib/email";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
@@ -60,7 +60,7 @@ export async function handleSubscriptionEvent(
       });
 
       try {
-        await sendEmail({
+        await email.sendEmail({
           to: user.email,
           from: "noreply@lux.dev",
           subject: `Thank you for subscribing to Parsertime!`,
@@ -97,7 +97,7 @@ export async function handleSubscriptionEvent(
         "items" in event.data.previous_attributes
       ) {
         try {
-          await sendEmail({
+          await email.sendEmail({
             to: user.email,
             from: "noreply@lux.dev",
             subject: `Your Parsertime subscription has been updated`,
@@ -127,7 +127,7 @@ export async function handleSubscriptionEvent(
       });
 
       try {
-        await sendEmail({
+        await email.sendEmail({
           to: user.email,
           from: "noreply@lux.dev",
           subject: `Your subscription to Parsertime has been cancelled`,

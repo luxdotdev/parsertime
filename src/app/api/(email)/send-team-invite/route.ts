@@ -1,6 +1,6 @@
 import TeamInviteUserEmail from "@/components/email/team-invite";
 import { getUser } from "@/data/user-dto";
-import { sendEmail } from "@/lib/email";
+import { email } from "@/lib/email";
 import { createShortLink } from "@/lib/link-service";
 import prisma from "@/lib/prisma";
 import { render } from "@react-email/render";
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
   );
 
   try {
-    await sendEmail({
+    await email.sendEmail({
       to: inviteeEmail,
       from: "noreply@lux.dev",
       subject: `Join ${team.name} on Parsertime`,

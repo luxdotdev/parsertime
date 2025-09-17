@@ -2,7 +2,7 @@ import MagicLinkEmail from "@/components/email/magic-link";
 import UserOnboardingEmail from "@/components/email/onboarding";
 import { getScrim, getUserViewableScrims } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
-import { sendEmail } from "@/lib/email";
+import { email } from "@/lib/email";
 import { createShortLink } from "@/lib/link-service";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
@@ -57,20 +57,20 @@ export const config = {
       server: "",
       maxAge: 60 * 10,
       options: {},
-      async sendVerificationRequest({ identifier: email, url }) {
-        if (!isEmail(email)) {
+      async sendVerificationRequest({ identifier: userEmail, url }) {
+        if (!isEmail(userEmail)) {
           throw new Error("Invalid email address");
         }
 
         const shortLink = await createShortLink(url);
 
         const emailHtml = await render(
-          MagicLinkEmail({ magicLink: shortLink, username: email })
+          MagicLinkEmail({ magicLink: shortLink, username: userEmail })
         );
 
         try {
-          await sendEmail({
-            to: email,
+          await email.sendEmail({
+            to: userEmail,
             from: "noreply@lux.dev",
             subject: "Sign in to Parsertime",
             html: emailHtml,
@@ -166,7 +166,7 @@ export const config = {
         );
 
         try {
-          await sendEmail({
+          await email.sendEmail({
             to: user.email!,
             from: "noreply@lux.dev",
             subject: `Welcome to Parsertime!`,

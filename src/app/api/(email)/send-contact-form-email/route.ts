@@ -1,5 +1,5 @@
 import ContactFormEmail from "@/components/email/contact-form";
-import { sendEmail } from "@/lib/email";
+import { email } from "@/lib/email";
 import Logger from "@/lib/logger";
 import { render } from "@react-email/render";
 import { Ratelimit } from "@upstash/ratelimit";
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
   );
 
   try {
-    await sendEmail({
+    await email.sendEmail({
       to: "help@parsertime.app",
       from: "noreply@lux.dev",
       subject: `New message from ${body.data.name} | Parsertime`,
