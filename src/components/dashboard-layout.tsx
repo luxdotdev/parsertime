@@ -4,6 +4,7 @@ import { TeamSwitcher } from "@/components/dashboard/team-switcher";
 import Footer from "@/components/footer";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { MobileNav } from "@/components/mobile-nav";
+import { Notifications } from "@/components/notifications";
 import { TeamSwitcherProvider } from "@/components/team-switcher-provider";
 import { ModeToggle } from "@/components/theme-switcher";
 import { UserNav } from "@/components/user-nav";
@@ -29,6 +30,7 @@ export default async function DashboardLayout({
               <Search user={user} />
               <ModeToggle />
               <LocaleSwitcher />
+              <Notifications />
               <UserNav />
             </div>
           </div>
@@ -36,6 +38,8 @@ export default async function DashboardLayout({
             <MobileNav session={session} />
             <div className="ml-auto flex items-center space-x-4">
               <ModeToggle />
+              <LocaleSwitcher />
+              <Notifications />
               <UserNav />
             </div>
           </div>

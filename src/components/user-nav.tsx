@@ -11,12 +11,12 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Link } from "@/components/ui/link";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { $Enums } from "@prisma/client";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export async function UserNav() {
