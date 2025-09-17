@@ -1,5 +1,6 @@
 import { CommandDialogMenu } from "@/components/command-menu";
 import { CommandMenuProvider } from "@/components/command-menu-provider";
+import BetaBanner from "@/components/home/beta-banner";
 import { StaffToolbar } from "@/components/staff-toolbar";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -70,6 +71,7 @@ export default async function RootLayout({
           >
             <NextIntlClientProvider messages={messages}>
               <CommandMenuProvider>
+                <BetaBanner />
                 {children}
                 <CommandDialogMenu user={user} />
               </CommandMenuProvider>
