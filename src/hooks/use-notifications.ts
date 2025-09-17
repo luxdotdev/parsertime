@@ -17,7 +17,7 @@ import type { Notification } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSelector } from "@xstate/store/react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 type NotificationResponse = {
@@ -30,8 +30,6 @@ type NotificationResponse = {
   };
 };
 
-const POLLING_INTERVAL = 30 * 1000; // 30 seconds
-
 export function useNotifications() {
   const t = useTranslations("notifications");
   const queryClient = useQueryClient();
@@ -39,8 +37,6 @@ export function useNotifications() {
     null
   );
   const [hasInitialized, setHasInitialized] = useState(false);
-  const [isPollingEnabled, setIsPollingEnabled] = useState(true);
-  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Subscribe to store state
   const notifications = useSelector(
@@ -127,92 +123,6 @@ export function useNotifications() {
     []
   );
 
-  // Poll for new notifications - now using client utilities
-  const pollNotifications = useCallback(async () => {
-    try {
-      const data = (await fetchNotificationsAPI(1, 10)) as NotificationResponse;
-
-      // Only update if we have new notifications or changes
-      const currentNotifications =
-        notificationsStore.getSnapshot().context.notifications;
-      const hasChanges =
-        data.notifications.length !== currentNotifications.length ||
-        data.notifications.some((newNotif, index) => {
-          const currentNotif = currentNotifications[index];
-          return (
-            !currentNotif ||
-            newNotif.id !== currentNotif.id ||
-            newNotif.read !== currentNotif.read ||
-            newNotif.title !== currentNotif.title
-          );
-        });
-
-      if (hasChanges) {
-        notificationsStore.trigger.setNotifications({
-          notifications: data.notifications,
-          pagination: data.pagination,
-        });
-      }
-    } catch (error) {
-      Logger.error("Failed to poll notifications:", error);
-      // Don't set error state for polling failures to avoid disrupting UX
-    }
-  }, []);
-
-  // Start polling
-  const startPolling = useCallback(() => {
-    if (pollingIntervalRef.current) {
-      clearInterval(pollingIntervalRef.current);
-    }
-
-    pollingIntervalRef.current = setInterval(() => {
-      if (isPollingEnabled && hasInitialized) {
-        void pollNotifications();
-      }
-    }, POLLING_INTERVAL);
-  }, [isPollingEnabled, hasInitialized, pollNotifications]);
-
-  // Stop polling
-  const stopPolling = useCallback(() => {
-    if (pollingIntervalRef.current) {
-      clearInterval(pollingIntervalRef.current);
-      pollingIntervalRef.current = null;
-    }
-  }, []);
-
-  // Control polling based on page visibility
-  useEffect(() => {
-    function handleVisibilityChange() {
-      if (document.hidden) {
-        setIsPollingEnabled(false);
-        stopPolling();
-      } else {
-        setIsPollingEnabled(true);
-        if (hasInitialized) {
-          // Immediately poll when page becomes visible
-          void pollNotifications();
-          startPolling();
-        }
-      }
-    }
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [hasInitialized, pollNotifications, startPolling, stopPolling]);
-
-  // Start polling when component initializes
-  useEffect(() => {
-    if (hasInitialized && isPollingEnabled) {
-      startPolling();
-    }
-
-    return () => {
-      stopPolling();
-    };
-  }, [hasInitialized, isPollingEnabled, startPolling, stopPolling]);
-
   // Fetch next page - simplified without dependencies
   const fetchNextPage = useCallback(async () => {
     const currentPagination =
@@ -227,7 +137,7 @@ export function useNotifications() {
     await fetchNotifications(currentPagination.page + 1, true);
   }, [fetchNotifications]);
 
-  // Initialize notifications only once
+  // Initialize notifications on mount
   useEffect(() => {
     if (!hasInitialized && !isLoading && !isError) {
       void fetchNotifications();
@@ -403,11 +313,6 @@ export function useNotifications() {
     // Pagination
     hasNextPage,
     loadMoreRef,
-
-    // Polling
-    isPollingEnabled,
-    startPolling,
-    stopPolling,
 
     // Actions
     handleMarkAllAsRead,
