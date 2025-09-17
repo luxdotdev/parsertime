@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Link } from "@/components/ui/link";
 import {
   Popover,
   PopoverContent,
@@ -18,7 +19,9 @@ import { cn } from "@/lib/utils";
 import type { Notification } from "@prisma/client";
 import { formatDistanceToNow } from "date-fns";
 import { Bell, Loader2, Trash2 } from "lucide-react";
+import type { Route } from "next";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 
 export function Notifications() {
   const {
@@ -33,6 +36,7 @@ export function Notifications() {
     handleMarkAllAsRead,
     handleMarkAsRead,
     handleDelete,
+    fetchNotifications,
   } = useNotifications();
 
   const unreadCount = notifications.filter(
@@ -42,6 +46,10 @@ export function Notifications() {
 
   const t = useTranslations("notifications");
 
+  function handleBellClick() {
+    void fetchNotifications(1, false);
+  }
+
   return (
     <div className="relative">
       <Popover>
@@ -49,7 +57,12 @@ export function Notifications() {
           <Tooltip>
             <TooltipTrigger asChild>
               <PopoverTrigger asChild>
-                <Button variant="outline" size="icon" className="relative">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="relative"
+                  onClick={handleBellClick}
+                >
                   <Bell className="h-5 w-5" />
                   {hasUnread && (
                     <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
@@ -157,6 +170,7 @@ function NotificationItem({
   isLoading,
 }: NotificationItemProps) {
   const t = useTranslations("notifications");
+  const router = useRouter();
 
   function handleMarkAsRead(e: React.MouseEvent) {
     e.preventDefault();
@@ -179,10 +193,15 @@ function NotificationItem({
         !notification.read && "bg-muted/30"
       )}
     >
-      <a
-        href={notification.href ?? "#"}
+      <Link
+        href={(notification.href as Route) ?? "#"}
+        external={notification.href?.startsWith("http")}
         className="flex flex-col gap-1"
-        onClick={handleMarkAsRead}
+        onClick={(e) => {
+          e.preventDefault();
+          handleMarkAsRead(e);
+          router.push((notification.href as Route) ?? "#");
+        }}
       >
         <div className="flex items-start justify-between gap-2">
           <span className="font-medium">{notification.title}</span>
@@ -230,7 +249,7 @@ function NotificationItem({
             </Button>
           </div>
         </div>
-      </a>
+      </Link>
     </div>
   );
 }
