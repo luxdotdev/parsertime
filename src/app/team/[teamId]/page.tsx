@@ -102,32 +102,36 @@ export default async function Team(
               {teamMembers?.users.map((user) => (
                 <div key={user.id} className="w-full p-2 md:w-1/2 xl:w-1/3">
                   <Card className="relative min-h-[144px] max-w-md">
-                    <Image
-                      src={
-                        user.image ??
-                        `https://avatar.vercel.sh/${user.email}.png`
-                      }
-                      alt={
-                        user.name
-                          ? t("altText.userProfile", { user: user.name })
-                          : t("altText.noAvatar")
-                      }
-                      width={100}
-                      height={100}
-                      className="float-right rounded-full p-4"
-                    />
-                    <CardHeader className="flex">
-                      <div>
-                        <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-                          {user.name} {userIsManager(user) && t("manager")}{" "}
-                          {user.id === teamData?.ownerId && t("owner")}{" "}
-                          {user.name === session?.user?.name && t("you")}
-                        </h4>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 pr-4">
+                        <CardHeader>
+                          <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
+                            {user.name} {userIsManager(user) && t("manager")}{" "}
+                            {user.id === teamData?.ownerId && t("owner")}{" "}
+                            {user.name === session?.user?.name && t("you")}
+                          </h4>
+                        </CardHeader>
+                        <CardContent>
+                          <p>{user.email}</p>
+                        </CardContent>
                       </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p>{user.email}</p>
-                    </CardContent>
+                      <div className="flex-shrink-0 pt-0 pr-6">
+                        <Image
+                          src={
+                            user.image ??
+                            `https://avatar.vercel.sh/${user.email}.png`
+                          }
+                          alt={
+                            user.name
+                              ? t("altText.userProfile", { user: user.name })
+                              : t("altText.noAvatar")
+                          }
+                          width={80}
+                          height={80}
+                          className="rounded-full"
+                        />
+                      </div>
+                    </div>
                     {hasPerms &&
                       user.email !== session?.user?.email &&
                       user.id !== teamData?.ownerId && (
