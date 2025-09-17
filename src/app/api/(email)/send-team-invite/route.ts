@@ -2,6 +2,7 @@ import TeamInviteUserEmail from "@/components/email/team-invite";
 import { getUser } from "@/data/user-dto";
 import { email } from "@/lib/email";
 import { createShortLink } from "@/lib/link-service";
+import { notifications } from "@/lib/notifications";
 import prisma from "@/lib/prisma";
 import { render } from "@react-email/render";
 import { track } from "@vercel/analytics/server";
@@ -51,6 +52,13 @@ export async function POST(req: NextRequest) {
       inviteLink: shortLink,
     })
   );
+
+  await notifications.createInAppNotification({
+    userId: user.id,
+    title: `You've been invited to join ${team.name} on Parsertime`,
+    description: `You've been invited to join ${team.name} on Parsertime by ${inviter.name}. Click this notification to accept the invitation.`,
+    href: `/team/join/${inviteToken}`,
+  });
 
   try {
     await email.sendEmail({
