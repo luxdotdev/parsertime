@@ -7,7 +7,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
   const t = await getTranslations({
     locale,
-    namespace: "privacyPage.metadata",
+    namespace: "termsPage.metadata",
   });
 
   return {
@@ -32,7 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function PrivacyLayout({
+export default function TermsLayout({
   children,
 }: {
   children: React.ReactNode;
