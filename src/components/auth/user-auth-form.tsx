@@ -1,6 +1,7 @@
 "use client";
 
 import { Icons } from "@/components/icons";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -29,16 +30,20 @@ export function UserAuthForm({
   const [isLoading, setIsLoading] = React.useState(false);
   const [email, setEmail] = React.useState("");
 
+  const lastSignedInUsing = localStorage.getItem("lastSignedInUsing");
+
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
     setIsLoading(true);
     track("Sign In", { location: "Auth form", method: "Email" });
+    localStorage.setItem("lastSignedInUsing", "email");
     await signIn("email", { email });
   }
 
   async function handleProviderSignIn(provider: string) {
     setIsLoading(true);
     track("Sign In", { location: "Auth form", method: provider });
+    localStorage.setItem("lastSignedInUsing", provider);
     await signIn(provider);
   }
 
@@ -64,48 +69,75 @@ export function UserAuthForm({
             <form onSubmit={onSubmit}>
               <div className="grid gap-6">
                 <div className="flex flex-col gap-4">
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    type="button"
-                    disabled={isLoading}
-                    onClick={() => handleProviderSignIn("discord")}
-                  >
-                    {isLoading ? (
-                      <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <Icons.discord className="mr-2 h-4 w-4" />
+                  <div className="relative">
+                    {lastSignedInUsing === "discord" && (
+                      <div className="absolute -top-3 -right-2 z-10">
+                        <Badge variant="default" className="text-xs">
+                          {t("lastUsed")}
+                        </Badge>
+                      </div>
                     )}
-                    {t("loginWithDiscord")}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    type="button"
-                    disabled={isLoading}
-                    onClick={() => handleProviderSignIn("google")}
-                  >
-                    {isLoading ? (
-                      <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <Icons.google className="mr-2 h-4 w-4" />
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      type="button"
+                      disabled={isLoading}
+                      onClick={() => handleProviderSignIn("discord")}
+                    >
+                      {isLoading ? (
+                        <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Icons.discord className="mr-2 h-4 w-4" />
+                      )}
+                      {t("loginWithDiscord")}
+                    </Button>
+                  </div>
+                  <div className="relative">
+                    {lastSignedInUsing === "google" && (
+                      <div className="absolute -top-3 -right-2 z-10">
+                        <Badge variant="default" className="text-xs">
+                          {t("lastUsed")}
+                        </Badge>
+                      </div>
                     )}
-                    {t("loginWithGoogle")}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    type="button"
-                    disabled={isLoading}
-                    onClick={() => handleProviderSignIn("github")}
-                  >
-                    {isLoading ? (
-                      <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <Icons.gitHub className="mr-2 h-4 w-4" />
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      type="button"
+                      disabled={isLoading}
+                      onClick={() => handleProviderSignIn("google")}
+                    >
+                      {isLoading ? (
+                        <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Icons.google className="mr-2 h-4 w-4" />
+                      )}
+                      {t("loginWithGoogle")}
+                    </Button>
+                  </div>
+                  <div className="relative">
+                    {lastSignedInUsing === "github" && (
+                      <div className="absolute -top-3 -right-2 z-10">
+                        <Badge variant="default" className="text-xs">
+                          {t("lastUsed")}
+                        </Badge>
+                      </div>
                     )}
-                    {t("loginWithGitHub")}
-                  </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      type="button"
+                      disabled={isLoading}
+                      onClick={() => handleProviderSignIn("github")}
+                    >
+                      {isLoading ? (
+                        <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Icons.gitHub className="mr-2 h-4 w-4" />
+                      )}
+                      {t("loginWithGitHub")}
+                    </Button>
+                  </div>
                 </div>
                 <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                   <span className="bg-card text-muted-foreground relative z-10 px-2">
@@ -136,17 +168,26 @@ export function UserAuthForm({
                       }}
                     />
                   </div>
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={isLoading || !email}
-                  >
-                    {isLoading && (
-                      <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  <div className="relative">
+                    {lastSignedInUsing === "email" && (
+                      <div className="absolute -top-3 -right-2 z-10">
+                        <Badge variant="default" className="text-xs">
+                          {t("lastUsed")}
+                        </Badge>
+                      </div>
                     )}
-                    <EnvelopeOpenIcon className="mr-2 h-4 w-4" />
-                    {t("signInEmail")}
-                  </Button>
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      disabled={isLoading || !email}
+                    >
+                      {isLoading && (
+                        <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      <EnvelopeOpenIcon className="mr-2 h-4 w-4" />
+                      {t("signInEmail")}
+                    </Button>
+                  </div>
                 </div>
                 <div className="text-center text-sm">
                   {pathname === "/sign-up"
