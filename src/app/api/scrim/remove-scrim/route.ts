@@ -2,6 +2,7 @@ import { getScrim } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
+import { notifications } from "@/lib/notifications";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
 import { unauthorized } from "next/navigation";
@@ -54,6 +55,26 @@ export async function POST(req: NextRequest) {
   if (!hasPerms) unauthorized();
 
   const scrimId = parseInt(id);
+
+  // If not an individual scrim, create a notification for the team
+  if (scrim.teamId !== 0) {
+    const team = await prisma.team.findFirst({
+      where: { id: scrim.teamId ?? 0 },
+    });
+    if (!team) return new Response("Team not found", { status: 404 });
+
+    const teamMembers = await prisma.user.findMany({
+      where: { teams: { some: { id: scrim.teamId ?? 0 } } },
+    });
+
+    for (const member of teamMembers) {
+      await notifications.createInAppNotification({
+        userId: member.id,
+        title: `${team.name}: Scrim ${scrim.name} has been deleted`,
+        description: `Scrim ${scrim.name} has been deleted by ${user.name}.`,
+      });
+    }
+  }
 
   await Promise.all([
     prisma.scrim.delete({ where: { id: scrimId } }),
