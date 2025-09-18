@@ -4,6 +4,7 @@ import { Search } from "@/components/dashboard/search";
 import { GuestNav } from "@/components/guest-nav";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import PlayerSwitcher from "@/components/map/player-switcher";
+import { Notifications } from "@/components/notifications";
 import { PlayerAnalytics } from "@/components/player/analytics";
 import { DefaultOverview } from "@/components/player/default-overview";
 import { ModeToggle } from "@/components/theme-switcher";
@@ -94,7 +95,10 @@ export default async function PlayerDashboardPage(
             <ModeToggle />
             <LocaleSwitcher />
             {session ? (
-              <UserNav />
+              <>
+                <Notifications />
+                <UserNav />
+              </>
             ) : (
               <GuestNav guestMode={visibility.guestMode} />
             )}
@@ -106,7 +110,10 @@ export default async function PlayerDashboardPage(
             <ModeToggle />
             <LocaleSwitcher />
             {session ? (
-              <UserNav />
+              <>
+                <Notifications />
+                <UserNav />
+              </>
             ) : (
               <GuestNav guestMode={visibility.guestMode} />
             )}

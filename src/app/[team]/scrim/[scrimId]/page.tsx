@@ -3,6 +3,7 @@ import { GuestNav } from "@/components/guest-nav";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { AddMapCard } from "@/components/map/add-map";
 import { MobileNav } from "@/components/mobile-nav";
+import { Notifications } from "@/components/notifications";
 import { ClientDate } from "@/components/scrim/client-date";
 import { ReplayCode } from "@/components/scrim/replay-code";
 import { ModeToggle } from "@/components/theme-switcher";
@@ -131,7 +132,10 @@ export default async function ScrimDashboardPage(
             <ModeToggle />
             <LocaleSwitcher />
             {session ? (
-              <UserNav />
+              <>
+                <Notifications />
+                <UserNav />
+              </>
             ) : (
               <GuestNav guestMode={visibility.guestMode} />
             )}
@@ -142,7 +146,7 @@ export default async function ScrimDashboardPage(
             <Link href="/dashboard">&larr; {t("back")}</Link>
           </h4>
           <div className="flex items-center justify-between space-y-2">
-            <h2 className="text-3xl leading-none font-bold tracking-tight">
+            <h2 className="text-3xl font-bold leading-none tracking-tight">
               <span className="flex items-center space-x-2">
                 {scrim?.name ?? t("newScrim")}{" "}
                 {hasPerms && (
@@ -195,7 +199,7 @@ export default async function ScrimDashboardPage(
                               mapNames.get(toKebabCase(map.name)) ?? map.name,
                           })}
                           fill
-                          className="rounded-md object-cover brightness-[0.65] select-none"
+                          className="select-none rounded-md object-cover brightness-[0.65]"
                         />
                       </CardContent>
                     </Link>
