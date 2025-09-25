@@ -1,0 +1,38 @@
+name: Prisma Migrate Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: 
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: production
+
+    strategy:
+      matrix:
+        node-version: [22.x]
+
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: pnpm
+
+      - run: pnpm install --ignore-scripts   
+
+      - name: Deploy Prisma migrations
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_PROD }}
+        run: pnpm dlx prisma migrate deploy
