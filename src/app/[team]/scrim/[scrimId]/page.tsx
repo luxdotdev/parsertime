@@ -146,7 +146,7 @@ export default async function ScrimDashboardPage(
             <Link href="/dashboard">&larr; {t("back")}</Link>
           </h4>
           <div className="flex items-center justify-between space-y-2">
-            <h2 className="text-3xl font-bold leading-none tracking-tight">
+            <h2 className="text-3xl leading-none font-bold tracking-tight">
               <span className="flex items-center space-x-2">
                 {scrim?.name ?? t("newScrim")}{" "}
                 {hasPerms && (
@@ -199,7 +199,7 @@ export default async function ScrimDashboardPage(
                               mapNames.get(toKebabCase(map.name)) ?? map.name,
                           })}
                           fill
-                          className="select-none rounded-md object-cover brightness-[0.65]"
+                          className="rounded-md object-cover brightness-[0.65] select-none"
                         />
                       </CardContent>
                     </Link>
