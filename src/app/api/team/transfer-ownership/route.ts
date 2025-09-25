@@ -1,10 +1,11 @@
 import { getUser } from "@/data/user-dto";
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
 import { forbidden, unauthorized } from "next/navigation";
-import type { NextRequest } from "next/server";
+import { after, type NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   const params = req.nextUrl.searchParams;
@@ -51,6 +52,15 @@ export async function POST(req: NextRequest) {
   await prisma.team.update({
     where: { id },
     data: { users: { connect: { id: newOwner.id } } },
+  });
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: user.email,
+      action: "TEAM_OWNERSHIP_TRANSFERRED",
+      target: newOwner.email,
+      details: `Transferred ownership of team ${team.name} to ${newOwner.name}`,
+    });
   });
 
   return new Response("OK", { status: 200 });
