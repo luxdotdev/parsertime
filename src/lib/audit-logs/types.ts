@@ -5,7 +5,7 @@ export type AuditLogAction = $Enums.AuditLogAction;
 
 // Arguments for creating an audit log entry
 export type AuditLogArgs = {
-  adminName: string;
+  userEmail: string;
   action: AuditLogAction;
   target: string;
   details: string;

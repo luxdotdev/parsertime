@@ -19,13 +19,13 @@ function createService(): Effect.Effect<Service, never> {
   const service: Service = {
     createAuditLog: (args: AuditLogArgs) =>
       Effect.gen(function* () {
-        const { adminName, action, target, details } = args;
+        const { userEmail, action, target, details } = args;
 
         // Create audit log entry in database with retry logic
         const auditLog = yield* Effect.tryPromise({
           try: () =>
             prisma.auditLog.create({
-              data: { adminName, action, target, details },
+              data: { userEmail, action, target, details },
             }),
           catch: (error) =>
             new DatabaseError({
@@ -41,7 +41,7 @@ function createService(): Effect.Effect<Service, never> {
           ),
           Effect.withSpan("audit-log.create", {
             attributes: {
-              adminName,
+              userEmail,
               action,
               target,
               detailsLength: details.length,
@@ -50,11 +50,11 @@ function createService(): Effect.Effect<Service, never> {
           Effect.tapBoth({
             onFailure: (error) =>
               Effect.logError(
-                `Failed to create audit log for ${adminName}: ${error._tag} - ${error.message}`
+                `Failed to create audit log for ${userEmail}: ${error._tag} - ${error.message}`
               ),
             onSuccess: (auditLog) =>
               Effect.logInfo(
-                `Audit log created for ${adminName}: ${JSON.stringify(auditLog)}`
+                `Audit log created for ${userEmail}: ${JSON.stringify(auditLog)}`
               ),
           })
         );
@@ -63,7 +63,7 @@ function createService(): Effect.Effect<Service, never> {
       }).pipe(
         Effect.withSpan("audit-log.createAuditLog", {
           attributes: {
-            adminName: args.adminName,
+            userEmail: args.userEmail,
             action: args.action,
             target: args.target,
           },
@@ -85,9 +85,6 @@ export const auditLogRuntime = ManagedRuntime.make(layer());
 
 /**
  * Audit log service instance that provides a simplified API for creating audit logs.
- *
- * This service handles all the complexity of Effect-based audit log operations
- * and database integration behind a clean Promise-based API.
  *
  * Features:
  * - Database integration with Prisma
