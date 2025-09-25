@@ -1,8 +1,9 @@
 import { getUser } from "@/data/user-dto";
+import { auditLog } from "@/lib/audit-logs";
 import { auth, getImpersonateUrl } from "@/lib/auth";
 import { $Enums } from "@prisma/client";
 import { unauthorized } from "next/navigation";
-import type { NextRequest } from "next/server";
+import { after, type NextRequest } from "next/server";
 import { z } from "zod";
 
 const ImpersonateUserSchema = z.object({
@@ -23,6 +24,15 @@ export async function POST(req: NextRequest) {
   if (!body.success) return new Response("Invalid request", { status: 400 });
 
   const url = await getImpersonateUrl(body.data.email, body.data.isProd);
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: session.user.email,
+      action: "IMPERSONATE_USER",
+      target: body.data.email,
+      details: `Impersonated ${body.data.email}`,
+    });
+  });
 
   return new Response(JSON.stringify({ url }), {
     headers: { "content-type": "application/json" },
