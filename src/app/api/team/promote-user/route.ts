@@ -1,9 +1,10 @@
 import { getUser } from "@/data/user-dto";
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { unauthorized } from "next/navigation";
-import type { NextRequest } from "next/server";
+import { after, type NextRequest } from "next/server";
 import { z } from "zod";
 
 const PromoteUserSchema = z.object({
@@ -59,6 +60,15 @@ export async function POST(req: NextRequest) {
   // add user as a manager
   await prisma.teamManager.create({
     data: { userId, teamId: parseInt(teamId) },
+  });
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: authedUser!.email,
+      action: "TEAM_MEMBER_PROMOTED",
+      target: user.email,
+      details: `Promoted ${user.name ?? user.email} to manager of team ${team.name}`,
+    });
   });
 
   return new Response("OK", { status: 200 });
