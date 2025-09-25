@@ -3,11 +3,13 @@ import { getUser } from "@/data/user-dto";
 import { auditLog } from "@/lib/audit-logs";
 import { email } from "@/lib/email";
 import { createShortLink } from "@/lib/link-service";
+import Logger from "@/lib/logger";
 import { notifications } from "@/lib/notifications";
 import prisma from "@/lib/prisma";
+import { isTaggedError } from "@/lib/utils";
 import { render } from "@react-email/render";
 import { track } from "@vercel/analytics/server";
-import type { NextRequest } from "next/server";
+import { after, type NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   const inviteeEmail = req.nextUrl.searchParams.get("email");
@@ -54,20 +56,19 @@ export async function POST(req: NextRequest) {
     })
   );
 
-  await Promise.all([
-    notifications.createInAppNotification({
+  try {
+    await notifications.createInAppNotification({
       userId: user.id,
       title: `You've been invited to join ${team.name} on Parsertime`,
       description: `You've been invited to join ${team.name} on Parsertime by ${inviter.name}. Click this notification to accept the invitation.`,
       href: `/team/join/${inviteToken}`,
-    }),
-    auditLog.createAuditLog({
-      adminName: inviter.email,
-      action: "TEAM_INVITE_SENT",
-      target: inviteeEmail,
-      details: `Invited ${inviteeEmail} to join ${team.name}`,
-    }),
-  ]);
+    });
+  } catch (error) {
+    if (error && typeof error === "object" && "_tag" in error) {
+      Logger.error("Error creating in-app notification", error._tag);
+    }
+    // fail silently, just log the error as notifications are not critical
+  }
 
   try {
     await email.sendEmail({
@@ -76,16 +77,55 @@ export async function POST(req: NextRequest) {
       subject: `Join ${team.name} on Parsertime`,
       html: emailHtml,
     });
-  } catch {
-    return new Response("Error sending email", { status: 500 });
+  } catch (error) {
+    if (isTaggedError(error)) {
+      switch (error._tag) {
+        case "ValidationError":
+          return new Response("Invalid email arguments", { status: 400 });
+        case "ConfigurationError":
+          return new Response(
+            "Configuration error with email service. Please contact support.",
+            { status: 500 }
+          );
+        case "RateLimitError":
+          return new Response(
+            "Rate limit exceeded for sending email. Try again later.",
+            { status: 429 }
+          );
+        case "EmailSendError":
+          return new Response(
+            "Error sending email with email service. Please contact support.",
+            { status: 500 }
+          );
+        default:
+          return new Response(
+            "Unknown error sending email. Please contact support.",
+            { status: 500 }
+          );
+      }
+    }
+
+    return new Response(
+      "Unknown error sending email. Please contact support.",
+      { status: 500 }
+    );
   }
 
-  await track("Email Sent", { type: "Team Invite" });
-
-  await track("Team Invite Sent", {
-    user: inviter.email,
-    team: team.name,
-    invitee: inviteeEmail,
+  after(async () => {
+    await Promise.all([
+      auditLog.createAuditLog({
+        userEmail: inviter.email,
+        action: "TEAM_INVITE_SENT",
+        target: inviteeEmail,
+        details: `Invited ${inviteeEmail} to join ${team.name}`,
+      }),
+      track("Team Invite Sent", {
+        user: inviter.email,
+        team: team.name,
+        invitee: inviteeEmail,
+      }),
+      track("Email Sent", { type: "Team Invite" }),
+    ]);
   });
 
   return new Response("OK", { status: 200 });
