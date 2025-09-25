@@ -1,4 +1,5 @@
 import { getUser } from "@/data/user-dto";
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
@@ -8,6 +9,7 @@ import {
 } from "@/lib/webhooks";
 import { track } from "@vercel/analytics/server";
 import { unauthorized } from "next/navigation";
+import { after } from "next/server";
 
 export async function DELETE() {
   const session = await auth();
@@ -24,6 +26,15 @@ export async function DELETE() {
   Logger.log(`User ${user.email} deleted their account`);
 
   await prisma.user.delete({ where: { id: user.id } });
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: user.email,
+      action: "USER_ACCOUNT_DELETED",
+      target: user.email,
+      details: `User deleted their account`,
+    });
+  });
 
   return new Response("OK", { status: 200 });
 }
