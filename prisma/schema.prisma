@@ -118,14 +118,14 @@ enum AuditLogAction {
 
 model AuditLog {
   id        Int            @id @default(autoincrement())
-  adminName String
+  userEmail String
   action    AuditLogAction
   target    String
   details   String
   createdAt DateTime       @default(now())
   updatedAt DateTime       @updatedAt
 
-  @@index([adminName, target])
+  @@index([userEmail, target])
 }
 
 model Team {
