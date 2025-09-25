@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import CardIcon from "@/components/ui/card-icon";
+import { CardIcon } from "@/components/ui/card-icon";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getTranslations } from "next-intl/server";
 

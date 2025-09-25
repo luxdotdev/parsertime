@@ -1,4 +1,4 @@
-import Statistics from "@/components/player/statistics";
+import { Statistics } from "@/components/player/statistics";
 import {
   Card,
   CardContent,
@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import CardIcon from "@/components/ui/card-icon";
+import { CardIcon } from "@/components/ui/card-icon";
 import { getPlayerFinalStats } from "@/data/scrim-dto";
 import prisma from "@/lib/prisma";
 import {

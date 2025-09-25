@@ -6,14 +6,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import CardIcon from "@/components/ui/card-icon";
+import { CardIcon } from "@/components/ui/card-icon";
 import { cn, getHeroNames, round, toHero, toMins } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import type { PlayerStat } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
-export default async function SpecificHero({
+export async function SpecificHero({
   playerStats,
   showTable = true,
 }: {

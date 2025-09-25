@@ -1,4 +1,4 @@
-import Header from "@/components/header";
+import { Header } from "@/components/header";
 
 export default function AboutPageLayout({ children }: LayoutProps<"/about">) {
   return (

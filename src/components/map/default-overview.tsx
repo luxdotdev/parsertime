@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import CardIcon from "@/components/ui/card-icon";
+import { CardIcon } from "@/components/ui/card-icon";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getFinalRoundStats } from "@/data/scrim-dto";
 import { getAjaxes } from "@/lib/analytics";

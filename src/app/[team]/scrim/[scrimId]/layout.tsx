@@ -1,4 +1,4 @@
-import NoAuthCard from "@/components/auth/no-auth";
+import { NoAuthCard } from "@/components/auth/no-auth";
 import { SelectedPlayerProvider } from "@/components/map/player-switcher";
 import { isAuthedToViewScrim } from "@/lib/auth";
 

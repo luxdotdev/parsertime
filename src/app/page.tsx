@@ -1,5 +1,5 @@
-import ClosedBetaBanner from "@/components/home/banner";
-import LandingPage from "@/components/home/landing-page";
+import { ClosedBetaBanner } from "@/components/home/banner";
+import { LandingPage } from "@/components/home/landing-page";
 import type { Availability } from "@/lib/auth";
 import { get } from "@vercel/edge-config";
 

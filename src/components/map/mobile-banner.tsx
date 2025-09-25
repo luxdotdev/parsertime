@@ -3,7 +3,7 @@
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { useState } from "react";
 
-export default function MobileBanner() {
+export function MobileBanner() {
   const [isDismissed, setIsDismissed] = useState(false);
 
   return (

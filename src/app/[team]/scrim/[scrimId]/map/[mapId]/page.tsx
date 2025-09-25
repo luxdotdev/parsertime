@@ -7,7 +7,7 @@ import { ComparePlayers } from "@/components/map/compare-players";
 import { DefaultOverview } from "@/components/map/default-overview";
 import { Killfeed } from "@/components/map/killfeed";
 import { MapEvents } from "@/components/map/map-events";
-import PlayerSwitcher from "@/components/map/player-switcher";
+import { PlayerSwitcher } from "@/components/map/player-switcher";
 import { Notifications } from "@/components/notifications";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

@@ -1,7 +1,7 @@
 import { MainNav } from "@/components/dashboard/main-nav";
 import { Search } from "@/components/dashboard/search";
 import { TeamSwitcher } from "@/components/dashboard/team-switcher";
-import Footer from "@/components/footer";
+import { Footer } from "@/components/footer";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { MobileNav } from "@/components/mobile-nav";
 import { Notifications } from "@/components/notifications";
@@ -11,7 +11,7 @@ import { UserNav } from "@/components/user-nav";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 
-export default async function DashboardLayout({
+export async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;

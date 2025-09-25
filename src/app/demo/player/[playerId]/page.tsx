@@ -2,7 +2,7 @@ import { PlayerCharts } from "@/components/charts/player/player-charts";
 import { MainNav } from "@/components/dashboard/main-nav";
 import { Search } from "@/components/dashboard/search";
 import { LocaleSwitcher } from "@/components/locale-switcher";
-import PlayerSwitcher from "@/components/map/player-switcher";
+import { PlayerSwitcher } from "@/components/map/player-switcher";
 import { PlayerAnalytics } from "@/components/player/analytics";
 import { DefaultOverview } from "@/components/player/default-overview";
 import { ModeToggle } from "@/components/theme-switcher";

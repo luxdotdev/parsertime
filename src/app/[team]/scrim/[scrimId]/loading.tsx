@@ -1,9 +1,9 @@
-import DashboardLayout from "@/components/dashboard-layout";
+import { DashboardLayout } from "@/components/dashboard-layout";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getTranslations } from "next-intl/server";
 
-export default async function ScrimLoading() {
+export async function ScrimLoading() {
   const t = await getTranslations("scrimPage");
 
   return (

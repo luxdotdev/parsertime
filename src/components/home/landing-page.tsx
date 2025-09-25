@@ -67,7 +67,7 @@ const footerNavigation: FooterNavigation = {
   ],
 };
 
-export default async function LandingPage() {
+export async function LandingPage() {
   const stats =
     await get<[{ id: string; name: string; value: string }]>(
       "landingPageStats"

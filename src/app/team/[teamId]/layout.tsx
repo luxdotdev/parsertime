@@ -1,4 +1,4 @@
-import NoAuthCard from "@/components/auth/no-auth";
+import { NoAuthCard } from "@/components/auth/no-auth";
 import { isAuthedToViewTeam } from "@/lib/auth";
 
 export default async function TeamLayout(props: LayoutProps<"/team/[teamId]">) {

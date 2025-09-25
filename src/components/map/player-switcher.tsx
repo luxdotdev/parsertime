@@ -48,7 +48,7 @@ type MostPlayedHeroesType = {
   hero_time_played: number;
 }[];
 
-export default function PlayerSwitcher({
+export function PlayerSwitcher({
   className,
   mostPlayedHeroes,
 }: TeamSwitcherProps & {

@@ -1,5 +1,5 @@
-import AllHeroes from "@/components/player/all-heroes";
-import SpecificHero from "@/components/player/specific-hero";
+import { AllHeroes } from "@/components/player/all-heroes";
+import { SpecificHero } from "@/components/player/specific-hero";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getPlayerFinalStats } from "@/data/scrim-dto";
@@ -8,7 +8,7 @@ import { getTranslations } from "next-intl/server";
 
 type Props = { id: number; playerName: string };
 
-export default async function PlayerCard({ playerName, id }: Props) {
+export async function PlayerCard({ playerName, id }: Props) {
   const t = await getTranslations("mapPage.compare.playerCard");
   const heroNames = await getHeroNames();
 

@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import CardIcon from "@/components/ui/card-icon";
+import { CardIcon } from "@/components/ui/card-icon";
 import {
   Table,
   TableBody,

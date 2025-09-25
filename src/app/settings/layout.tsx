@@ -1,4 +1,4 @@
-import DashboardLayout from "@/components/dashboard-layout";
+import { DashboardLayout } from "@/components/dashboard-layout";
 import { SidebarNav } from "@/components/settings/sidebar-nav";
 import { Separator } from "@/components/ui/separator";
 import { getUser } from "@/data/user-dto";

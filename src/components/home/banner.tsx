@@ -4,7 +4,7 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import { useState } from "react";
 
-export default function ClosedBetaBanner() {
+export function ClosedBetaBanner() {
   const [isDismissed, setIsDismissed] = useState(false);
 
   return (

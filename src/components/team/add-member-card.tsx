@@ -1,6 +1,6 @@
 "use client";
 
-import InviteMemberModal from "@/components/team/invite-member-modal";
+import { InviteMemberModal } from "@/components/team/invite-member-modal";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
 import { PlusCircledIcon } from "@radix-ui/react-icons";

@@ -5,7 +5,7 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-export default function DemoBanner() {
+export function DemoBanner() {
   const t = useTranslations("demoPage.banner");
   const [isDismissed, setIsDismissed] = useState(false);
 

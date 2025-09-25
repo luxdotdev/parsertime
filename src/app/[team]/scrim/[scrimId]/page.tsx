@@ -1,4 +1,4 @@
-import DashboardLayout from "@/components/dashboard-layout";
+import { DashboardLayout } from "@/components/dashboard-layout";
 import { GuestNav } from "@/components/guest-nav";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { AddMapCard } from "@/components/map/add-map";

@@ -8,7 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
-export default function Header() {
+export function Header() {
   const t = useTranslations("marketing.header");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 

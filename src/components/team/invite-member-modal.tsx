@@ -30,7 +30,7 @@ const formSchema = z.object({
   email: z.string().email().min(1, "Email is required"),
 });
 
-export default function InviteMemberModal({
+export function InviteMemberModal({
   showInviteMemberModal,
   setShowInviteMemberModal,
 }: {

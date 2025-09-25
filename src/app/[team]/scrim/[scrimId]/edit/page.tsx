@@ -1,4 +1,4 @@
-import DashboardLayout from "@/components/dashboard-layout";
+import { DashboardLayout } from "@/components/dashboard-layout";
 import { DangerZone } from "@/components/scrim/danger-zone";
 import { EditScrimForm } from "@/components/scrim/edit-scrim-form";
 import { Link } from "@/components/ui/link";

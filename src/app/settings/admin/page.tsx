@@ -1,5 +1,5 @@
 import { ImpersonateUserForm } from "@/components/admin/impersonate-user";
-import NoAuthCard from "@/components/auth/no-auth";
+import { NoAuthCard } from "@/components/auth/no-auth";
 import { Separator } from "@/components/ui/separator";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
