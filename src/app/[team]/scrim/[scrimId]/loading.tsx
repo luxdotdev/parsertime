@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getTranslations } from "next-intl/server";
 
-export async function ScrimLoading() {
+export default async function ScrimLoading() {
   const t = await getTranslations("scrimPage");
 
   return (
