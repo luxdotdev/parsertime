@@ -408,3 +408,17 @@ export function useHeroNames() {
   const heroNames = useMessages()["heroes"] as Record<string, string>;
   return new Map(Object.entries(heroNames));
 }
+
+export type TaggedError = {
+  _tag: string;
+};
+
+/**
+ * Checks if the given error is a tagged error.
+ *
+ * @param error - The error to check.
+ * @returns True if the error is a tagged error, false otherwise.
+ */
+export function isTaggedError(error: unknown): error is TaggedError {
+  return error instanceof Error && "_tag" in error;
+}
