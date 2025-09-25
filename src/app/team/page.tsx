@@ -7,7 +7,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
-import type { Metadata } from "next";
+import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
@@ -78,7 +78,7 @@ export default async function TeamPage() {
                   .map((team) => (
                     <div key={team.id} className="p-2">
                       <Card className="relative min-h-[144px] md:w-60 xl:w-80">
-                        <Link href={`/team/${team.id}`}>
+                        <Link href={`/team/${team.id}` as Route}>
                           <Image
                             src={
                               team.image ??
@@ -113,7 +113,7 @@ export default async function TeamPage() {
                 .map((team) => (
                   <div key={team.id} className="p-2">
                     <Card className="relative min-h-[144px] md:w-60 xl:w-80">
-                      <Link href={`/team/${team.id}`}>
+                      <Link href={`/team/${team.id}` as Route}>
                         <Image
                           src={
                             team.image ??
