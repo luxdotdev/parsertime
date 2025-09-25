@@ -1,9 +1,10 @@
 import { getUser } from "@/data/user-dto";
+import { auditLog } from "@/lib/audit-logs";
 import {
   newBugReportWebhookConstructor,
   sendDiscordWebhook,
 } from "@/lib/webhooks";
-import { type NextRequest, userAgent } from "next/server";
+import { after, type NextRequest, userAgent } from "next/server";
 import { z } from "zod";
 
 const BugReportSchema = z.object({
@@ -34,6 +35,15 @@ export async function POST(req: NextRequest) {
   );
 
   await sendDiscordWebhook(process.env.BUG_REPORT_WEBHOOK_URL, wh);
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: user?.email ?? "Unknown",
+      action: "BUG_REPORT_SUBMITTED",
+      target: body.data.title,
+      details: `Bug report submitted: ${body.data.title}`,
+    });
+  });
 
   return new Response("OK", { status: 200 });
 }
