@@ -1,6 +1,6 @@
+import { Link } from "@/components/ui/link";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
-import Link from "next/link";
 
 export default async function NotFound() {
   const t = await getTranslations("notFound");

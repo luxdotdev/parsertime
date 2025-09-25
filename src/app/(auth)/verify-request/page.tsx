@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "@/components/ui/link";
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
 
 export default async function VerifyRequestPage() {
   const t = await getTranslations("verifyRequest");

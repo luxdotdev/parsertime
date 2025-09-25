@@ -2,13 +2,13 @@
 
 import { TeamSwitcher } from "@/components/dashboard/team-switcher";
 import { Button } from "@/components/ui/button";
+import { Link } from "@/components/ui/link";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import type { Route } from "next";
 import type { Session } from "next-auth";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 

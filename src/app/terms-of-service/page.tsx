@@ -1,5 +1,5 @@
+import { Link } from "@/components/ui/link";
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
 
 export default async function TermsPage() {
   const t = await getTranslations("termsPage");

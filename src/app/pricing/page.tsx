@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { Link } from "@/components/ui/link";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { createCheckout, getCustomerPortalUrl } from "@/lib/stripe";
@@ -7,7 +8,6 @@ import { CheckIcon, MinusIcon } from "@heroicons/react/20/solid";
 import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
-import Link from "next/link";
 import type React from "react";
 import { Fragment } from "react";
 

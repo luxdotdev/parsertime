@@ -1,3 +1,4 @@
+import { Link } from "@/components/ui/link";
 import {
   Tooltip,
   TooltipContent,
@@ -8,7 +9,6 @@ import { get } from "@vercel/edge-config";
 import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
-import Link from "next/link";
 
 export async function Footer() {
   const t = await getTranslations("footer");
