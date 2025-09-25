@@ -1,12 +1,7 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
-import { GuestNav } from "@/components/guest-nav";
-import { LocaleSwitcher } from "@/components/locale-switcher";
 import { AddMapCard } from "@/components/map/add-map";
-import { MobileNav } from "@/components/mobile-nav";
-import { Notifications } from "@/components/notifications";
 import { ClientDate } from "@/components/scrim/client-date";
 import { ReplayCode } from "@/components/scrim/replay-code";
-import { ModeToggle } from "@/components/theme-switcher";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Card,
@@ -21,7 +16,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { UserNav } from "@/components/user-nav";
 import { getScrim } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
@@ -124,116 +118,96 @@ export default async function ScrimDashboardPage(
   const mapNames = await getMapNames();
 
   return (
-    <DashboardLayout>
-      <div className="min-h-[90vh] flex-col md:flex">
-        <div className="flex h-16 items-center px-4 md:hidden">
-          <MobileNav session={session} />
-          <div className="ml-auto flex items-center space-x-4">
-            <ModeToggle />
-            <LocaleSwitcher />
-            {session ? (
-              <>
-                <Notifications />
-                <UserNav />
-              </>
-            ) : (
-              <GuestNav guestMode={visibility.guestMode} />
-            )}
-          </div>
+    <DashboardLayout guestMode={visibility.guestMode}>
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <h4 className="text-gray-600 dark:text-gray-400">
+          <Link href="/dashboard">&larr; {t("back")}</Link>
+        </h4>
+        <div className="flex items-center justify-between space-y-2">
+          <h2 className="text-3xl leading-none font-bold tracking-tight">
+            <span className="flex items-center space-x-2">
+              {scrim?.name ?? t("newScrim")}{" "}
+              {hasPerms && (
+                <Link
+                  className="inline-flex items-center pl-2"
+                  href={`/${params.team}/scrim/${params.scrimId}/edit` as Route}
+                  aria-label={t("edit")}
+                >
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Pencil2Icon className="h-6 w-6 align-middle" />
+                      </TooltipTrigger>
+                      <TooltipContent>{t("edit")}</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </Link>
+              )}
+            </span>
+          </h2>
         </div>
-        <div className="flex-1 space-y-4 p-8 pt-6">
-          <h4 className="text-gray-600 dark:text-gray-400">
-            <Link href="/dashboard">&larr; {t("back")}</Link>
-          </h4>
-          <div className="flex items-center justify-between space-y-2">
-            <h2 className="text-3xl leading-none font-bold tracking-tight">
-              <span className="flex items-center space-x-2">
-                {scrim?.name ?? t("newScrim")}{" "}
-                {hasPerms && (
+        <h4 className="scroll-m-20 pb-4 text-xl font-semibold tracking-tight">
+          <ClientDate date={scrim.date} />
+        </h4>
+        <p className="scroll-m-20 pb-2 text-2xl font-semibold tracking-tight">
+          {t("maps.title")}
+        </p>
+        {maps.length > 0 ? (
+          <div className="-m-2 flex flex-wrap">
+            {maps.map((map) => (
+              <div key={map.id} className="w-full p-2 md:w-1/3">
+                <Card className="relative h-48 max-w-md bg-cover">
                   <Link
-                    className="inline-flex items-center pl-2"
                     href={
-                      `/${params.team}/scrim/${params.scrimId}/edit` as Route
+                      `/${params.team}/scrim/${params.scrimId}/map/${map.id}` as Route
                     }
-                    aria-label={t("edit")}
                   >
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Pencil2Icon className="h-6 w-6 align-middle" />
-                        </TooltipTrigger>
-                        <TooltipContent>{t("edit")}</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <CardHeader className="">
+                      <h3 className="z-10 text-3xl font-semibold tracking-tight text-white">
+                        {mapNames.get(toKebabCase(map.name)) ?? map.name}
+                      </h3>
+                    </CardHeader>
+                    <CardContent>
+                      <Image
+                        src={`/maps/${toKebabCase(map.name)}.webp`}
+                        alt={t("maps.altText", {
+                          map: mapNames.get(toKebabCase(map.name)) ?? map.name,
+                        })}
+                        fill
+                        className="rounded-md object-cover brightness-[0.65] select-none"
+                      />
+                    </CardContent>
                   </Link>
-                )}
-              </span>
-            </h2>
+                  <CardFooter className="flex items-center justify-end pt-12">
+                    <div className="z-10 font-semibold tracking-tight text-white">
+                      <ReplayCode replayCode={map.replayCode ?? ""} />
+                    </div>
+                  </CardFooter>
+                </Card>
+              </div>
+            ))}
+            {hasPerms && <AddMapCard />}
           </div>
-          <h4 className="scroll-m-20 pb-4 text-xl font-semibold tracking-tight">
-            <ClientDate date={scrim.date} />
-          </h4>
-          <p className="scroll-m-20 pb-2 text-2xl font-semibold tracking-tight">
-            {t("maps.title")}
-          </p>
-          {maps.length > 0 ? (
-            <div className="-m-2 flex flex-wrap">
-              {maps.map((map) => (
-                <div key={map.id} className="w-full p-2 md:w-1/3">
-                  <Card className="relative h-48 max-w-md bg-cover">
-                    <Link
-                      href={
-                        `/${params.team}/scrim/${params.scrimId}/map/${map.id}` as Route
-                      }
-                    >
-                      <CardHeader className="">
-                        <h3 className="z-10 text-3xl font-semibold tracking-tight text-white">
-                          {mapNames.get(toKebabCase(map.name)) ?? map.name}
-                        </h3>
-                      </CardHeader>
-                      <CardContent>
-                        <Image
-                          src={`/maps/${toKebabCase(map.name)}.webp`}
-                          alt={t("maps.altText", {
-                            map:
-                              mapNames.get(toKebabCase(map.name)) ?? map.name,
-                          })}
-                          fill
-                          className="rounded-md object-cover brightness-[0.65] select-none"
-                        />
-                      </CardContent>
-                    </Link>
-                    <CardFooter className="flex items-center justify-end pt-12">
-                      <div className="z-10 font-semibold tracking-tight text-white">
-                        <ReplayCode replayCode={map.replayCode ?? ""} />
-                      </div>
-                    </CardFooter>
-                  </Card>
-                </div>
-              ))}
-              {hasPerms && <AddMapCard />}
-            </div>
-          ) : (
-            <>
-              <Alert variant="destructive" className="max-w-xl">
-                <ExclamationTriangleIcon className="h-4 w-4" />
-                <AlertTitle>{t("noMaps.title")}</AlertTitle>
-                <AlertDescription>
-                  {t("noMaps.description")}
-                  <Link
-                    href="https://docs.parsertime.app"
-                    target="_blank"
-                    external
-                  >
-                    {t("noMaps.link")}
-                  </Link>
-                  .
-                </AlertDescription>
-              </Alert>
-              <div>{hasPerms && <AddMapCard />}</div>
-            </>
-          )}
-        </div>
+        ) : (
+          <>
+            <Alert variant="destructive" className="max-w-xl">
+              <ExclamationTriangleIcon className="h-4 w-4" />
+              <AlertTitle>{t("noMaps.title")}</AlertTitle>
+              <AlertDescription>
+                {t("noMaps.description")}
+                <Link
+                  href="https://docs.parsertime.app"
+                  target="_blank"
+                  external
+                >
+                  {t("noMaps.link")}
+                </Link>
+                .
+              </AlertDescription>
+            </Alert>
+            <div>{hasPerms && <AddMapCard />}</div>
+          </>
+        )}
       </div>
     </DashboardLayout>
   );
