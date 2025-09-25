@@ -1,9 +1,10 @@
 import { getUser } from "@/data/user-dto";
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import type { User } from "@prisma/client";
 import { unauthorized } from "next/navigation";
-import type { NextRequest } from "next/server";
+import { after, type NextRequest } from "next/server";
 import { z } from "zod";
 
 const RemoveUserFromTeamSchema = z.object({
@@ -72,6 +73,15 @@ export async function POST(req: NextRequest) {
   await prisma.team.update({
     where: { id: parseInt(body.data.teamId) },
     data: { users: { disconnect: { id: body.data.userId } } },
+  });
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: authedUser.email,
+      action: "TEAM_MEMBER_REMOVED",
+      target: user.email,
+      details: `Removed ${user.name ?? user.email} from team ${team.name}`,
+    });
   });
 
   return new Response("OK", { status: 200 });
