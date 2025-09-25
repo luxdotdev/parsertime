@@ -1,5 +1,6 @@
 import TeamInviteUserEmail from "@/components/email/team-invite";
 import { getUser } from "@/data/user-dto";
+import { auditLog } from "@/lib/audit-logs";
 import { email } from "@/lib/email";
 import { createShortLink } from "@/lib/link-service";
 import { notifications } from "@/lib/notifications";
@@ -53,12 +54,20 @@ export async function POST(req: NextRequest) {
     })
   );
 
-  await notifications.createInAppNotification({
-    userId: user.id,
-    title: `You've been invited to join ${team.name} on Parsertime`,
-    description: `You've been invited to join ${team.name} on Parsertime by ${inviter.name}. Click this notification to accept the invitation.`,
-    href: `/team/join/${inviteToken}`,
-  });
+  await Promise.all([
+    notifications.createInAppNotification({
+      userId: user.id,
+      title: `You've been invited to join ${team.name} on Parsertime`,
+      description: `You've been invited to join ${team.name} on Parsertime by ${inviter.name}. Click this notification to accept the invitation.`,
+      href: `/team/join/${inviteToken}`,
+    }),
+    auditLog.createAuditLog({
+      adminName: inviter.email,
+      action: "TEAM_INVITE_SENT",
+      target: inviteeEmail,
+      details: `Invited ${inviteeEmail} to join ${team.name}`,
+    }),
+  ]);
 
   try {
     await email.sendEmail({
