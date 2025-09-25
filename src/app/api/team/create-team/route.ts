@@ -1,4 +1,5 @@
 import { getUser } from "@/data/user-dto";
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import { Permission } from "@/lib/permissions";
@@ -6,7 +7,7 @@ import prisma from "@/lib/prisma";
 import { Ratelimit } from "@upstash/ratelimit";
 import { ipAddress } from "@vercel/functions";
 import { kv } from "@vercel/kv";
-import type { NextRequest } from "next/server";
+import { after, type NextRequest } from "next/server";
 import { z } from "zod";
 
 const TeamCreationRequestSchema = z.object({
@@ -106,6 +107,15 @@ export async function POST(request: NextRequest) {
   await prisma.user.update({
     where: { id: userId.id ?? "" },
     data: { teams: { connect: [{ id: team.id }] } },
+  });
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: session.user.email,
+      action: "TEAM_CREATED",
+      target: team.name,
+      details: `Team created: ${team.name}`,
+    });
   });
 
   return new Response("Success", { status: 200 });
