@@ -5,6 +5,11 @@ import { email } from "@/lib/email";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
+import {
+  sendDiscordWebhook,
+  userSubscribedWebhookConstructor,
+  userUnsubscribedWebhookConstructor,
+} from "@/lib/webhooks";
 import type { BillingPlans } from "@/types/billing-plans";
 import { $Enums } from "@prisma/client";
 import { render } from "@react-email/render";
@@ -69,6 +74,9 @@ export async function handleSubscriptionEvent(
           ),
         });
         Logger.log("Subscription created email sent");
+
+        const wh = userSubscribedWebhookConstructor(user, billingPlan.name);
+        await sendDiscordWebhook(process.env.DISCORD_WEBHOOK_URL, wh);
       } catch (e) {
         Logger.error("Error sending email", e);
       }
@@ -134,6 +142,9 @@ export async function handleSubscriptionEvent(
           html: await render(SubscriptionDeletedEmail({ user })),
         });
         Logger.log("Subscription deleted email sent");
+
+        const wh = userUnsubscribedWebhookConstructor(user, billingPlan.name);
+        await sendDiscordWebhook(process.env.DISCORD_WEBHOOK_URL, wh);
       } catch (e) {
         Logger.error("Error sending email", e);
       }
