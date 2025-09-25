@@ -1,17 +1,18 @@
 import { getScrim } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
 import { unauthorized } from "next/navigation";
-import type { NextRequest } from "next/server";
+import { after, type NextRequest } from "next/server";
 import { z } from "zod";
 
 const UpdateScrimSchema = z.object({
   name: z.string().min(1).max(30),
   teamId: z.string().min(1),
   scrimId: z.number(),
-  date: z.string().datetime(),
+  date: z.iso.datetime(),
   guestMode: z.boolean(),
   maps: z.array(
     z.object({
@@ -66,6 +67,15 @@ export async function POST(req: NextRequest) {
       });
     }
   }
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: user.email,
+      action: "SCRIM_UPDATED",
+      target: `${scrim.name} (ID: ${scrim.id})`,
+      details: `Scrim updated: ${scrim.name} (ID: ${scrim.id})`,
+    });
+  });
 
   return new Response("OK", { status: 200 });
 }
