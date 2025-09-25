@@ -87,6 +87,47 @@ model Notification {
   @@index([userId])
 }
 
+enum AuditLogAction {
+  USER_BAN
+  USER_UNBAN
+  TRUST_SCORE_ADJUST
+  IMPERSONATE_USER
+  SUSPICIOUS_ACTIVITY_DETECTED
+  TEAM_INVITE_SENT
+  TEAM_AVATAR_UPDATED
+  TEAM_JOINED
+  TEAM_LEFT
+  TEAM_CREATED
+  TEAM_DELETED
+  TEAM_UPDATED
+  TEAM_MEMBER_PROMOTED
+  TEAM_MEMBER_DEMOTED
+  TEAM_MEMBER_REMOVED
+  TEAM_OWNERSHIP_TRANSFERRED
+  SCRIM_CREATED
+  SCRIM_UPDATED
+  SCRIM_DELETED
+  MAP_CREATED
+  MAP_UPDATED
+  MAP_DELETED
+  USER_AVATAR_UPDATED
+  USER_ACCOUNT_DELETED
+  USER_NAME_UPDATED
+  BUG_REPORT_SUBMITTED
+}
+
+model AuditLog {
+  id        Int            @id @default(autoincrement())
+  adminName String
+  action    AuditLogAction
+  target    String
+  details   String
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@index([adminName, target])
+}
+
 model Team {
   id        Int           @id @default(autoincrement())
   name      String
