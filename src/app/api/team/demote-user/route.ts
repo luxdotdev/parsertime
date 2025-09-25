@@ -1,9 +1,10 @@
 import { getUser } from "@/data/user-dto";
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { unauthorized } from "next/navigation";
-import type { NextRequest } from "next/server";
+import { after, type NextRequest } from "next/server";
 import { z } from "zod";
 
 const DemoteUserSchema = z.object({
@@ -52,6 +53,15 @@ export async function POST(req: NextRequest) {
   // demote user to member
   await prisma.teamManager.deleteMany({
     where: { userId: user.id, teamId: team.id },
+  });
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: authedUser!.email,
+      action: "TEAM_MEMBER_DEMOTED",
+      target: team.name,
+      details: `Demoted ${user.name} to member`,
+    });
   });
 
   return new Response("OK", { status: 200 });
