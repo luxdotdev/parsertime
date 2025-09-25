@@ -1,12 +1,13 @@
 import { getScrim } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import { notifications } from "@/lib/notifications";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
 import { unauthorized } from "next/navigation";
-import type { NextRequest } from "next/server";
+import { after, type NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   const params = req.nextUrl.searchParams;
@@ -104,6 +105,15 @@ export async function POST(req: NextRequest) {
     prisma.ultimateEnd.deleteMany({ where: { scrimId } }),
     prisma.ultimateStart.deleteMany({ where: { scrimId } }),
   ]);
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: user.email,
+      action: "SCRIM_DELETED",
+      target: `${scrim.name} (Team: ${scrim.teamId ?? "Individual"})`,
+      details: `Scrim deleted: ${id}`,
+    });
+  });
 
   return new Response("OK", { status: 200 });
 }
