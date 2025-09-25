@@ -2,6 +2,7 @@ import { MainNav } from "@/components/dashboard/main-nav";
 import { Search } from "@/components/dashboard/search";
 import { TeamSwitcher } from "@/components/dashboard/team-switcher";
 import { Footer } from "@/components/footer";
+import { GuestNav } from "@/components/guest-nav";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { MobileNav } from "@/components/mobile-nav";
 import { Notifications } from "@/components/notifications";
@@ -13,8 +14,10 @@ import { auth } from "@/lib/auth";
 
 export async function DashboardLayout({
   children,
+  guestMode,
 }: {
   children: React.ReactNode;
+  guestMode?: boolean;
 }) {
   const session = await auth();
   const user = await getUser(session?.user?.email);
@@ -30,8 +33,14 @@ export async function DashboardLayout({
               <Search user={user} />
               <ModeToggle />
               <LocaleSwitcher />
-              <Notifications />
-              <UserNav />
+              {session ? (
+                <>
+                  <Notifications />
+                  <UserNav />
+                </>
+              ) : (
+                <GuestNav guestMode={guestMode ?? false} />
+              )}
             </div>
           </div>
           <div className="flex h-16 items-center px-4 md:hidden">
@@ -39,8 +48,14 @@ export async function DashboardLayout({
             <div className="ml-auto flex items-center space-x-4">
               <ModeToggle />
               <LocaleSwitcher />
-              <Notifications />
-              <UserNav />
+              {session ? (
+                <>
+                  <Notifications />
+                  <UserNav />
+                </>
+              ) : (
+                <GuestNav guestMode={guestMode ?? false} />
+              )}
             </div>
           </div>
         </div>
