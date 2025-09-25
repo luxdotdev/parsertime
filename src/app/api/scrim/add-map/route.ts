@@ -1,10 +1,11 @@
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import { createNewMap } from "@/lib/parser";
 import type { ParserData } from "@/types/parser";
 import { track } from "@vercel/analytics/server";
 import { unauthorized } from "next/navigation";
-import type { NextRequest } from "next/server";
+import { after, type NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -21,7 +22,17 @@ export async function POST(req: NextRequest) {
   try {
     await createNewMap({ map: data, scrimId: parseInt(id) }, session);
 
-    await track("Create Map", { user: session.user.email });
+    after(async () => {
+      await Promise.all([
+        track("Create Map", { user: session.user.email }),
+        auditLog.createAuditLog({
+          userEmail: session.user.email,
+          action: "MAP_CREATED",
+          target: id,
+          details: `Map created: ${id}`,
+        }),
+      ]);
+    });
 
     return new Response("OK", { status: 200 });
   } catch (e: unknown) {
