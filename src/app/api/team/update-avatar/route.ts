@@ -1,9 +1,10 @@
 import { getUser } from "@/data/user-dto";
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { unauthorized } from "next/navigation";
-import type { NextRequest } from "next/server";
+import { after, type NextRequest } from "next/server";
 import { z } from "zod";
 
 const TeamAvatarUpdateSchema = z.object({
@@ -53,6 +54,15 @@ export async function POST(req: NextRequest) {
   });
 
   Logger.log("new avatar uploaded for team: ", team.name, body.data.image);
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: authedUser.email,
+      action: "TEAM_AVATAR_UPDATED",
+      target: team.name,
+      details: `Updated avatar for team ${team.name}`,
+    });
+  });
 
   return new Response("OK", { status: 200 });
 }
