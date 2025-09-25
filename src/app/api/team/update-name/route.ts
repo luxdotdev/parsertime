@@ -1,7 +1,8 @@
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { unauthorized } from "next/navigation";
-import type { NextRequest } from "next/server";
+import { after, type NextRequest } from "next/server";
 import { z } from "zod";
 
 const TeamNameUpdateSchema = z.object({
@@ -34,6 +35,15 @@ export async function POST(req: NextRequest) {
       name: body.data.name,
       readonly: body.data.readonly,
     },
+  });
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: session.user.email,
+      action: "TEAM_UPDATED",
+      target: body.data.name,
+      details: `Updated name for team ${body.data.name}`,
+    });
   });
 
   return new Response("OK", { status: 200 });
