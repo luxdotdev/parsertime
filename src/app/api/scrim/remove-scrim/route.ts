@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
       await notifications.createInAppNotification({
         userId: member.id,
         title: `${team.name}: Scrim ${scrim.name} has been deleted`,
-        description: `Scrim ${scrim.name} has been deleted by ${user.name}.`,
+        description: `Scrim "${scrim.name}" has been deleted by ${user.name}.`,
       });
     }
   }
