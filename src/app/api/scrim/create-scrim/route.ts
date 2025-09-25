@@ -1,4 +1,5 @@
 import { getUser } from "@/data/user-dto";
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import { createNewScrimFromParsedData } from "@/lib/parser";
@@ -12,7 +13,7 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { ipAddress } from "@vercel/functions";
 import { kv } from "@vercel/kv";
 import { unauthorized } from "next/navigation";
-import { type NextRequest, userAgent } from "next/server";
+import { after, type NextRequest, userAgent } from "next/server";
 
 export type CreateScrimRequestData = {
   name: string;
@@ -78,6 +79,15 @@ export async function POST(request: NextRequest) {
   Logger.log("Creating new scrim for user: ", session.user?.email);
 
   await createNewScrimFromParsedData(data, session);
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: session.user.email,
+      action: "SCRIM_CREATED",
+      target: `${data.name} (Team: ${data.team})`,
+      details: `Scrim created: ${data.name}`,
+    });
+  });
 
   return new Response("OK", { status: 200 });
 }
