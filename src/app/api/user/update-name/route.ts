@@ -1,7 +1,8 @@
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { unauthorized } from "next/navigation";
-import type { NextRequest } from "next/server";
+import { after, type NextRequest } from "next/server";
 import { z } from "zod";
 
 const UpdateNameSchema = z.object({
@@ -29,6 +30,15 @@ export async function POST(req: NextRequest) {
   await prisma.user.update({
     where: { email: session.user.email },
     data: { name: body.data.name },
+  });
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: session.user.email,
+      action: "USER_NAME_UPDATED",
+      target: session.user.email,
+      details: `Updated name for user ${session.user.email} to ${body.data.name}`,
+    });
   });
 
   return new Response("OK", { status: 200 });
