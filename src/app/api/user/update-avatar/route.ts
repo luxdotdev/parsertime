@@ -1,8 +1,9 @@
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { unauthorized } from "next/navigation";
-import type { NextRequest } from "next/server";
+import { after, type NextRequest } from "next/server";
 import { z } from "zod";
 
 const AvatarUpdateSchema = z.object({
@@ -34,6 +35,15 @@ export async function POST(req: NextRequest) {
   });
 
   Logger.log("new avatar uploaded for user: ", user.email, body.data.image);
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: user.email,
+      action: "USER_AVATAR_UPDATED",
+      target: user.email,
+      details: `Updated avatar for user ${user.email}`,
+    });
+  });
 
   return new Response("OK", { status: 200 });
 }
