@@ -1,6 +1,6 @@
 import ContactFormEmail from "@/components/email/contact-form";
 import { email } from "@/lib/email";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import { render } from "@react-email/render";
 import { Ratelimit } from "@upstash/ratelimit";
 import { ipAddress } from "@vercel/functions";

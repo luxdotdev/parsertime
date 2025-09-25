@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
 import { redirect } from "next/navigation";

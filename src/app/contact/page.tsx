@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ClientOnly } from "@/lib/client-only";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import { EnvelopeIcon, UserGroupIcon } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EnvelopeOpenIcon, ExternalLinkIcon } from "@radix-ui/react-icons";

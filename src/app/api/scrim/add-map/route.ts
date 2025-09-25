@@ -1,6 +1,6 @@
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import { createNewMap } from "@/lib/parser";
 import type { ParserData } from "@/types/parser";
 import { track } from "@vercel/analytics/server";

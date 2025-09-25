@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { generateRandomToken } from "@/lib/invite-token";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { unauthorized } from "next/navigation";
 import type { NextRequest } from "next/server";

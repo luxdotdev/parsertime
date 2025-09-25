@@ -1,6 +1,6 @@
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { Ratelimit } from "@upstash/ratelimit";
 import { track } from "@vercel/analytics/server";

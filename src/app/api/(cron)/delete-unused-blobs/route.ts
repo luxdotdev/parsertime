@@ -1,4 +1,4 @@
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { del, list } from "@vercel/blob";
 

@@ -3,7 +3,7 @@ import { getUser } from "@/data/user-dto";
 import { auditLog } from "@/lib/audit-logs";
 import { email } from "@/lib/email";
 import { createShortLink } from "@/lib/link-service";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import { notifications } from "@/lib/notifications";
 import prisma from "@/lib/prisma";
 import { isTaggedError } from "@/lib/utils";

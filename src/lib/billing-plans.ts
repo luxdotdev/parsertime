@@ -2,7 +2,7 @@ import SubscriptionCreatedEmail from "@/components/email/subscription-created";
 import SubscriptionDeletedEmail from "@/components/email/subscription-deleted";
 import SubscriptionUpdatedEmail from "@/components/email/subscription-updated";
 import { email } from "@/lib/email";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import {

@@ -1,7 +1,7 @@
 import { getUser } from "@/data/user-dto";
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import { createNewScrimFromParsedData } from "@/lib/parser";
 import {
   newSuspiciousActivityWebhookConstructor,

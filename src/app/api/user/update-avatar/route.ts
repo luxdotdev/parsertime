@@ -1,6 +1,6 @@
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { unauthorized } from "next/navigation";
 import { after, type NextRequest } from "next/server";

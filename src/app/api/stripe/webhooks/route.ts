@@ -1,5 +1,5 @@
 import { handleSubscriptionEvent } from "@/lib/billing-plans";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import { stripe } from "@/lib/stripe";
 import { track } from "@vercel/analytics/server";
 import type Stripe from "stripe";

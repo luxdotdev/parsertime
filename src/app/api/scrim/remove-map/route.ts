@@ -2,7 +2,7 @@ import { getScrim } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
 import { unauthorized } from "next/navigation";

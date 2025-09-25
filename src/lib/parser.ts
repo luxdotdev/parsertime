@@ -1,6 +1,6 @@
 import type { CreateScrimRequestData } from "@/app/api/scrim/create-scrim/route";
 import { headers } from "@/lib/headers";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import { notifications } from "@/lib/notifications";
 import prisma from "@/lib/prisma";
 import { toTitleCase } from "@/lib/utils";

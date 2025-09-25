@@ -1,4 +1,4 @@
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import {
   createNotificationForCurrentUser,
   createNotificationForUser,

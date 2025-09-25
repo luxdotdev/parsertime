@@ -1,6 +1,6 @@
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import { notifications } from "@/lib/notifications";
 import { getSession } from "next-auth/react";
 import { notFound, unauthorized } from "next/navigation";

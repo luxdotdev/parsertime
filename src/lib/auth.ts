@@ -4,7 +4,7 @@ import { getScrim, getUserViewableScrims } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
 import { email } from "@/lib/email";
 import { createShortLink } from "@/lib/link-service";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { isTaggedError } from "@/lib/utils";
