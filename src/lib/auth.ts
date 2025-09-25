@@ -7,6 +7,7 @@ import { createShortLink } from "@/lib/link-service";
 import Logger from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
+import { isTaggedError } from "@/lib/utils";
 import {
   newSuspiciousActivityWebhookConstructor,
   newUserWebhookConstructor,
@@ -30,6 +31,31 @@ const isProd = process.env.NODE_ENV === "production";
 const isPreview = process.env.VERCEL_ENV === "preview";
 
 export type Availability = "public" | "private";
+
+function handleEmailError(error: unknown) {
+  if (isTaggedError(error)) {
+    switch (error._tag) {
+      case "ValidationError":
+        throw new Error("Invalid email arguments");
+      case "ConfigurationError":
+        throw new Error(
+          "Configuration error with email service. Please contact support."
+        );
+      case "RateLimitError":
+        throw new Error(
+          "Rate limit exceeded for sending email. Try again later."
+        );
+      case "EmailSendError":
+        throw new Error(
+          "Error sending email with email service. Please contact support."
+        );
+      default:
+        throw new Error("Unknown error sending email. Please contact support.");
+    }
+  } else {
+    throw new Error("Unknown error sending email");
+  }
+}
 
 export const config = {
   adapter: PrismaAdapter(prisma),
@@ -75,9 +101,8 @@ export const config = {
             subject: "Sign in to Parsertime",
             html: emailHtml,
           });
-        } catch (e) {
-          Logger.error("Error sending email", e);
-          throw new Error("Error sending email");
+        } catch (error) {
+          handleEmailError(error);
         }
 
         await track("Email Sent", { type: "Magic Link" });
@@ -172,9 +197,8 @@ export const config = {
             subject: `Welcome to Parsertime!`,
             html: emailHtml,
           });
-        } catch (e) {
-          Logger.error("Error sending email", e);
-          throw new Error("Error sending email");
+        } catch (error) {
+          handleEmailError(error);
         }
       }
     },
