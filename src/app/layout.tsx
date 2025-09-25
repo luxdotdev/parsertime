@@ -1,22 +1,19 @@
 import { CommandDialogMenu } from "@/components/command-menu";
 import { CommandMenuProvider } from "@/components/command-menu-provider";
+import { DevTools } from "@/components/devtools";
 import { BetaBanner } from "@/components/home/beta-banner";
-import { StaffToolbar } from "@/components/staff-toolbar";
-import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { QueryProvider } from "@/lib/query";
 import { cn } from "@/lib/utils";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
-import { Suspense } from "react";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -75,12 +72,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             <Toaster />
             <SpeedInsights />
             <Analytics />
-            <Suspense>
-              <StaffToolbar />
-            </Suspense>
-            <TailwindIndicator />
+            <DevTools />
           </ThemeProvider>
-          <ReactQueryDevtools initialIsOpen={false} />
         </QueryProvider>
       </body>
     </html>
