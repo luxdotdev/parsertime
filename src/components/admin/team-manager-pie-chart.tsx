@@ -56,14 +56,14 @@ export function TeamManagerPieChart({ data }: TeamManagerPieChartProps) {
           fill="#8884d8"
         >
           {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            <Cell key={entry.role} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
         <ChartTooltip
           content={<ChartTooltipContent />}
           formatter={(value, name) => [
-            `${value} (${data.find((d) => d.role === name)?.percentage}%)`,
-            name,
+            `${String(value)} (${data.find((d) => d.role === name)?.percentage}%)`,
+            String(name),
           ]}
         />
         <ChartLegend content={<ChartLegendContent />} />
