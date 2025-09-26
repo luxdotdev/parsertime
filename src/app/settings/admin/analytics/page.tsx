@@ -1,3 +1,4 @@
+import { BillingPlanPieChart } from "@/components/admin/billing-plan-pie-chart";
 import { MonthlyUserChart } from "@/components/admin/monthly-user-chart";
 import { ScrimActivityChart } from "@/components/admin/scrim-activity-chart";
 import { SignupMethodPieChart } from "@/components/admin/signup-method-pie-chart";
@@ -205,6 +206,26 @@ async function getSignupMethodData() {
   return result;
 }
 
+async function getBillingPlanData() {
+  const billingPlans = await prisma.user.groupBy({
+    by: ["billingPlan"],
+    _count: {
+      id: true,
+    },
+  });
+
+  const totalUsers = billingPlans.reduce(
+    (sum, plan) => sum + plan._count.id,
+    0
+  );
+
+  return billingPlans.map((plan) => ({
+    plan: plan.billingPlan,
+    count: plan._count.id,
+    percentage: Math.round((plan._count.id / totalUsers) * 100),
+  }));
+}
+
 export default async function AdminAnalyticsPage() {
   const session = await auth();
   if (!session?.user) {
@@ -226,12 +247,14 @@ export default async function AdminAnalyticsPage() {
     teamCreationData,
     teamManagerData,
     signupMethodData,
+    billingPlanData,
   ] = await Promise.all([
     getMonthlyUserData(),
     getScrimActivityData(),
     getTeamCreationData(),
     getTeamManagerData(),
     getSignupMethodData(),
+    getBillingPlanData(),
   ]);
 
   return (
@@ -284,15 +307,28 @@ export default async function AdminAnalyticsPage() {
             </CardContent>
           </Card>
         </div>
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("signupMethods.title")}</CardTitle>
-            <CardDescription>{t("signupMethods.description")}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <SignupMethodPieChart data={signupMethodData} />
-          </CardContent>
-        </Card>
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("signupMethods.title")}</CardTitle>
+              <CardDescription>
+                {t("signupMethods.description")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SignupMethodPieChart data={signupMethodData} />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("billingPlans.title")}</CardTitle>
+              <CardDescription>{t("billingPlans.description")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <BillingPlanPieChart data={billingPlanData} />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

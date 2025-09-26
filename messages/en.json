@@ -1774,6 +1774,10 @@
         "signupMethods": {
           "title": "User Signup Methods",
           "description": "Breakdown of how users signed up (OAuth providers vs email)"
+        },
+        "billingPlans": {
+          "title": "Billing Plan Distribution",
+          "description": "Breakdown of users by billing plan (Free, Basic, Premium)"
         }
       },
       "title": "Admin Settings",
