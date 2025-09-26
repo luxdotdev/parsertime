@@ -265,24 +265,50 @@ export default async function AdminAnalyticsPage() {
       </div>
       <Separator />
       <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("userGrowth.title")}</CardTitle>
-            <CardDescription>{t("userGrowth.description")}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <MonthlyUserChart data={monthlyUserData} />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("scrimActivity.title")}</CardTitle>
-            <CardDescription>{t("scrimActivity.description")}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ScrimActivityChart data={scrimActivityData} />
-          </CardContent>
-        </Card>
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("userGrowth.title")}</CardTitle>
+              <CardDescription>{t("userGrowth.description")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <MonthlyUserChart data={monthlyUserData} />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("signupMethods.title")}</CardTitle>
+              <CardDescription>
+                {t("signupMethods.description")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SignupMethodPieChart data={signupMethodData} />
+            </CardContent>
+          </Card>
+        </div>
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("billingPlans.title")}</CardTitle>
+              <CardDescription>{t("billingPlans.description")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <BillingPlanPieChart data={billingPlanData} />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("scrimActivity.title")}</CardTitle>
+              <CardDescription>
+                {t("scrimActivity.description")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ScrimActivityChart data={scrimActivityData} />
+            </CardContent>
+          </Card>
+        </div>
         <div className="grid gap-6 md:grid-cols-2">
           <Card>
             <CardHeader>
@@ -304,28 +330,6 @@ export default async function AdminAnalyticsPage() {
             </CardHeader>
             <CardContent>
               <TeamManagerPieChart data={teamManagerData} />
-            </CardContent>
-          </Card>
-        </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("signupMethods.title")}</CardTitle>
-              <CardDescription>
-                {t("signupMethods.description")}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <SignupMethodPieChart data={signupMethodData} />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("billingPlans.title")}</CardTitle>
-              <CardDescription>{t("billingPlans.description")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <BillingPlanPieChart data={billingPlanData} />
             </CardContent>
           </Card>
         </div>
