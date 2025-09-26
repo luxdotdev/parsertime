@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
   const limit = searchParams.get("limit") ?? "10";
   const parsedLimit = parseInt(limit);
   const searchQuery = searchParams.get("search");
+  const billingPlan = searchParams.get("billingPlan");
 
   const whereClause: Prisma.UserWhereInput = {
     AND: [
@@ -39,6 +40,12 @@ export async function GET(req: NextRequest) {
                 },
               },
             ],
+          }
+        : {},
+      // Filter by billing plan
+      billingPlan
+        ? {
+            billingPlan: billingPlan as $Enums.BillingPlan,
           }
         : {},
     ],
