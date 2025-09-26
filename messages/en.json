@@ -1676,7 +1676,11 @@
         "stats-cards": {
           "total-users": {
             "title": "Total Users",
-            "delta": "{delta} from last week"
+            "delta": "{delta} new users this month"
+          },
+          "user-growth": {
+            "title": "User Growth",
+            "delta": "{delta} vs {lastMonth} last month"
           },
           "low-trust-users": {
             "title": "Low Trust Users",

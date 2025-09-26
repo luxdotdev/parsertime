@@ -1,33 +1,61 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangle, ImageIcon, ShieldAlert, Users } from "lucide-react";
+import prisma from "@/lib/prisma";
+import { TrendingDown, TrendingUp, Users } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-
-// Mock data for scaffolding
-const data = {
-  totalUsers: {
-    value: 12345,
-    delta: 180,
-  },
-  lowTrustUsers: {
-    value: 243,
-    delta: 12,
-  },
-  pendingReports: {
-    value: 57,
-    delta: -3,
-  },
-  imagesPendingReview: {
-    value: 29,
-    delta: 5,
-  },
-};
 
 function formatDelta(delta: number) {
   return delta > 0 ? `+${delta}` : delta;
 }
 
+async function getUserStats() {
+  const now = new Date();
+  const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+  const [totalUsers, usersThisMonth, usersLastMonth] = await Promise.all([
+    prisma.user.count(),
+    prisma.user.count({
+      where: {
+        createdAt: {
+          gte: thisMonthStart,
+        },
+      },
+    }),
+    prisma.user.count({
+      where: {
+        createdAt: {
+          gte: lastMonthStart,
+          lt: thisMonthStart,
+        },
+      },
+    }),
+  ]);
+
+  // Calculate growth comparison
+  const growthComparison = usersThisMonth - usersLastMonth;
+  const growthTrend =
+    growthComparison > 0 ? "up" : growthComparison < 0 ? "down" : "neutral";
+
+  return {
+    totalUsers,
+    monthlyGrowth: usersThisMonth,
+    usersThisMonth,
+    usersLastMonth,
+    growthComparison,
+    growthTrend,
+  };
+}
+
 export async function StatsCards() {
   const t = await getTranslations("settingsPage.admin.dashboard.stats-cards");
+  const {
+    totalUsers,
+    monthlyGrowth,
+    usersThisMonth,
+    usersLastMonth,
+    growthComparison,
+    growthTrend,
+  } = await getUserStats();
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -39,10 +67,12 @@ export async function StatsCards() {
           <Users className="text-muted-foreground h-4 w-4" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{data.totalUsers.value}</div>
+          <div className="text-2xl font-bold">
+            {totalUsers.toLocaleString()}
+          </div>
           <p className="text-muted-foreground text-xs">
             {t("total-users.delta", {
-              delta: formatDelta(data.totalUsers.delta),
+              delta: formatDelta(monthlyGrowth),
             })}
           </p>
         </CardContent>
@@ -50,49 +80,26 @@ export async function StatsCards() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">
-            {t("low-trust-users.title")}
+            {t("user-growth.title")}
           </CardTitle>
-          <ShieldAlert className="text-muted-foreground h-4 w-4" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{data.lowTrustUsers.value}</div>
-          <p className="text-muted-foreground text-xs">
-            {t("low-trust-users.delta", {
-              delta: formatDelta(data.lowTrustUsers.delta),
-            })}
-          </p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            {t("pending-reports.title")}
-          </CardTitle>
-          <AlertTriangle className="text-muted-foreground h-4 w-4" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{data.pendingReports.value}</div>
-          <p className="text-muted-foreground text-xs">
-            {t("pending-reports.delta", {
-              delta: formatDelta(data.pendingReports.delta),
-            })}
-          </p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            {t("images-pending-review.title")}
-          </CardTitle>
-          <ImageIcon className="text-muted-foreground h-4 w-4" />
+          {growthTrend === "up" && (
+            <TrendingUp className="h-4 w-4 text-green-500" />
+          )}
+          {growthTrend === "down" && (
+            <TrendingDown className="h-4 w-4 text-red-500" />
+          )}
+          {growthTrend === "neutral" && (
+            <Users className="text-muted-foreground h-4 w-4" />
+          )}
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {data.imagesPendingReview.value}
+            {usersThisMonth.toLocaleString()}
           </div>
           <p className="text-muted-foreground text-xs">
-            {t("images-pending-review.delta", {
-              delta: formatDelta(data.imagesPendingReview.delta),
+            {t("user-growth.delta", {
+              delta: formatDelta(growthComparison),
+              lastMonth: usersLastMonth.toLocaleString(),
             })}
           </p>
         </CardContent>
