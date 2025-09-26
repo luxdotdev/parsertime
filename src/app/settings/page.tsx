@@ -27,7 +27,7 @@ export default async function SettingsProfilePage() {
   const billingPortalUrl = (await getCustomerPortalUrl(user)) as Route;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 lg:max-w-2xl">
       <div>
         <h3 className="text-lg font-medium">{t("title")}</h3>
         <p className="text-muted-foreground text-sm">{t("description")}</p>

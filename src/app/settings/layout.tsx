@@ -55,6 +55,10 @@ export default async function SettingsLayout({
       title: t("sideNav.impersonateUser"),
       href: "/settings/admin/impersonate-user",
     },
+    {
+      title: t("sideNav.auditLogs"),
+      href: "/settings/admin/audit-logs",
+    },
   ];
 
   const session = await auth();
@@ -84,7 +88,7 @@ export default async function SettingsLayout({
               </>
             )}
           </aside>
-          <div className="flex-1 lg:max-w-2xl">{children}</div>
+          <div className="flex-1">{children}</div>
         </div>
       </div>
     </DashboardLayout>

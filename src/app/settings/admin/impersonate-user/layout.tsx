@@ -15,6 +15,6 @@ export default async function AdminLayout({
   }
 
   // Must be wrapped in an element due to Next.js Server Component typing
-  // eslint-disable-next-line react/jsx-no-useless-fragment
-  return <>{children}</>;
+
+  return <div className="lg:max-w-2xl">{children}</div>;
 }
