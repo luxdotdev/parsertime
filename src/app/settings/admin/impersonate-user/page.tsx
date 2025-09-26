@@ -8,7 +8,7 @@ import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 export default async function AdminSettingsPage() {
-  const t = await getTranslations("settingsPage.admin");
+  const t = await getTranslations("settingsPage.admin.impersonateUser");
 
   const session = await auth();
   if (!session?.user) {

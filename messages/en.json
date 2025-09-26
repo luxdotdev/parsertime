@@ -1612,6 +1612,15 @@
       }
     },
     "admin": {
+      "impersonateUser": {
+        "title": "Impersonate User",
+        "description": "Impersonate a user to see the site as they do.",
+        "email": {
+          "title": "Email",
+          "description": "This is the email of the user you want to impersonate.",
+          "message": "Please enter a valid email address."
+        }
+      },
       "title": "Admin Settings",
       "description": "Manage admin settings and preferences.",
       "email": {

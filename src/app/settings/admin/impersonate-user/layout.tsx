@@ -5,7 +5,7 @@ import { $Enums } from "@prisma/client";
 
 export default async function AdminLayout({
   children,
-}: LayoutProps<"/settings/admin">) {
+}: LayoutProps<"/settings/admin/impersonate-user">) {
   const session = await auth();
 
   const user = await getUser(session?.user?.email);
