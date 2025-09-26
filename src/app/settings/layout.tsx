@@ -56,6 +56,10 @@ export default async function SettingsLayout({
       href: "/settings/admin",
     },
     {
+      title: t("sideNav.analytics"),
+      href: "/settings/admin/analytics",
+    },
+    {
       title: t("sideNav.impersonateUser"),
       href: "/settings/admin/impersonate-user",
     },
