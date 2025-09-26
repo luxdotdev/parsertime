@@ -1556,9 +1556,10 @@
       "profile": "Profile",
       "linkedAccounts": "Linked Accounts",
       "admin": "Admin",
+      "dashboard": "Dashboard",
+      "analytics": "Analytics",
       "impersonateUser": "Impersonate User",
-      "auditLogs": "Audit Logs",
-      "dashboard": "Dashboard"
+      "auditLogs": "Audit Logs"
     },
     "profile": {
       "title": "Profile",
@@ -1682,6 +1683,10 @@
             "title": "User Growth",
             "delta": "{delta} vs {lastMonth} last month"
           },
+          "monthly-chart": {
+            "title": "Monthly User Registrations",
+            "description": "New user registrations over the last 12 months"
+          },
           "low-trust-users": {
             "title": "Low Trust Users",
             "delta": "{delta} from last week"
@@ -1746,6 +1751,14 @@
           "verified": "Verified"
         },
         "showing-users": "Showing {count} users."
+      },
+      "analytics": {
+        "title": "Analytics",
+        "description": "View detailed analytics and charts for user activity and growth.",
+        "userGrowth": {
+          "title": "User Growth Over Time",
+          "description": "Monthly user registration trends over the last 12 months"
+        }
       },
       "title": "Admin Settings",
       "description": "Manage admin settings and preferences.",
