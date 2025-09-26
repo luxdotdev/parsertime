@@ -66,6 +66,15 @@ export async function POST(request: NextRequest) {
     );
     await sendDiscordWebhook(process.env.DISCORD_WEBHOOK_URL, wh);
 
+    after(async () => {
+      await auditLog.createAuditLog({
+        userEmail: "System",
+        action: "SUSPICIOUS_ACTIVITY_DETECTED",
+        target: `${user?.email ?? "Unknown"}`,
+        details: `Scrim creation (rate limit exceeded) by ${user?.name} (${user?.email})`,
+      });
+    });
+
     return new Response("Rate limit exceeded", { status: 429 });
   }
 
