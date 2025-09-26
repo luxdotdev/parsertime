@@ -1557,7 +1557,8 @@
       "linkedAccounts": "Linked Accounts",
       "admin": "Admin",
       "impersonateUser": "Impersonate User",
-      "auditLogs": "Audit Logs"
+      "auditLogs": "Audit Logs",
+      "dashboard": "Dashboard"
     },
     "profile": {
       "title": "Profile",
@@ -1660,6 +1661,87 @@
           "timestamp": "Timestamp",
           "auto-generated": "This action was performed automatically by the system."
         }
+      },
+      "dashboard": {
+        "title": "Admin Dashboard",
+        "description": "Manage users, content, and monitor platform activity",
+        "user-search": {
+          "title": "User Search",
+          "description": "Search for users with advanced filtering options"
+        },
+        "audit-log": {
+          "title": "Audit Log",
+          "description": "Recent actions performed by staff members"
+        },
+        "stats-cards": {
+          "total-users": {
+            "title": "Total Users",
+            "delta": "{delta} from last week"
+          },
+          "low-trust-users": {
+            "title": "Low Trust Users",
+            "delta": "{delta} from last week"
+          },
+          "pending-reports": {
+            "title": "Pending Reports",
+            "delta": "{delta} from last week"
+          },
+          "images-pending-review": {
+            "title": "Images Pending Review",
+            "delta": "{delta} from last week"
+          }
+        }
+      },
+      "user-search": {
+        "metadata": {
+          "title": "User Search — Admin | Enter Queue",
+          "description": "Search for users with advanced filtering options"
+        },
+        "title": "User Search",
+        "description": "Search for users with advanced filtering options",
+        "search-placeholder": "Search by username or email...",
+        "filters": {
+          "title": "Filters",
+          "trust-score": "Trust Score Range",
+          "status": "User Status",
+          "select-status": "Select status",
+          "all-statuses": "All Statuses",
+          "verification-status": "Verification Status",
+          "select-verification-status": "Select verification status",
+          "all-users": "All Users",
+          "verified-only": "Verified Only",
+          "unverified-only": "Unverified Only",
+          "billing-plan": "Billing Plan",
+          "select-billing-plan": "Select billing plan",
+          "all-plans": "All Plans",
+          "reset-filters": "Reset Filters"
+        },
+        "table": {
+          "username": "Username",
+          "email": "Email",
+          "trust-score": "Trust Score",
+          "verification": "Verification Status",
+          "join-date": "Join Date",
+          "actions": "Actions",
+          "view-profile": "View Profile",
+          "edit-user": "Edit User",
+          "adjust-trust-score": "Adjust Trust Score",
+          "ban-user": "Ban User",
+          "unban-user": "Unban User",
+          "no-users-found": "No users found matching your filters.",
+          "open-menu": "Open Menu",
+          "error-loading-users": "Error loading users",
+          "status": "Status",
+          "banned": "Banned",
+          "active": "Active",
+          "name": "Name",
+          "billing-plan": "Billing Plan",
+          "role": "Role",
+          "email-verified": "Email Verified?",
+          "unverified": "Unverified",
+          "verified": "Verified"
+        },
+        "showing-users": "Showing {count} users."
       },
       "title": "Admin Settings",
       "description": "Manage admin settings and preferences.",
