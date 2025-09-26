@@ -1,5 +1,7 @@
 import { MonthlyUserChart } from "@/components/admin/monthly-user-chart";
 import { ScrimActivityChart } from "@/components/admin/scrim-activity-chart";
+import { TeamCreationChart } from "@/components/admin/team-creation-chart";
+import { TeamManagerPieChart } from "@/components/admin/team-manager-pie-chart";
 import { NoAuthCard } from "@/components/auth/no-auth";
 import {
   Card,
@@ -89,6 +91,62 @@ async function getScrimActivityData() {
   return dataArray;
 }
 
+async function getTeamCreationData() {
+  const now = new Date();
+  const monthlyData = [];
+
+  // Get data for the last 12 months
+  for (let i = 11; i >= 0; i--) {
+    const monthStart = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const monthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+
+    const teamCount = await prisma.team.count({
+      where: {
+        createdAt: {
+          gte: monthStart,
+          lt: monthEnd,
+        },
+      },
+    });
+
+    const monthName = monthStart.toLocaleDateString("en-US", { month: "long" });
+    monthlyData.push({
+      month: monthName,
+      teams: teamCount,
+    });
+  }
+
+  return monthlyData;
+}
+
+async function getTeamManagerData() {
+  const [totalUsers, teamManagers] = await Promise.all([
+    prisma.user.count(),
+    prisma.teamManager.groupBy({
+      by: ["userId"],
+      _count: {
+        userId: true,
+      },
+    }),
+  ]);
+
+  const uniqueTeamManagers = teamManagers.length;
+  const regularUsers = totalUsers - uniqueTeamManagers;
+
+  return [
+    {
+      role: "Regular Users",
+      count: regularUsers,
+      percentage: Math.round((regularUsers / totalUsers) * 100),
+    },
+    {
+      role: "Team Managers",
+      count: uniqueTeamManagers,
+      percentage: Math.round((uniqueTeamManagers / totalUsers) * 100),
+    },
+  ];
+}
+
 export default async function AdminAnalyticsPage() {
   const session = await auth();
   if (!session?.user) {
@@ -104,9 +162,16 @@ export default async function AdminAnalyticsPage() {
   }
 
   const t = await getTranslations("settingsPage.admin.analytics");
-  const [monthlyUserData, scrimActivityData] = await Promise.all([
+  const [
+    monthlyUserData,
+    scrimActivityData,
+    teamCreationData,
+    teamManagerData,
+  ] = await Promise.all([
     getMonthlyUserData(),
     getScrimActivityData(),
+    getTeamCreationData(),
+    getTeamManagerData(),
   ]);
 
   return (
@@ -135,6 +200,30 @@ export default async function AdminAnalyticsPage() {
             <ScrimActivityChart data={scrimActivityData} />
           </CardContent>
         </Card>
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("teamCreations.title")}</CardTitle>
+              <CardDescription>
+                {t("teamCreations.description")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TeamCreationChart data={teamCreationData} />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("teamManagerDistribution.title")}</CardTitle>
+              <CardDescription>
+                {t("teamManagerDistribution.description")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TeamManagerPieChart data={teamManagerData} />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

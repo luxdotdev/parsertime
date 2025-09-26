@@ -1762,6 +1762,14 @@
         "scrimActivity": {
           "title": "Scrim Activity",
           "description": "Daily scrim creation activity over the last 30 days"
+        },
+        "teamCreations": {
+          "title": "Team Creations",
+          "description": "Monthly team creation trends over the last 12 months"
+        },
+        "teamManagerDistribution": {
+          "title": "User Roles Distribution",
+          "description": "Percentage breakdown of regular users vs team managers"
         }
       },
       "title": "Admin Settings",
