@@ -49,7 +49,6 @@ model User {
   accounts      Account[]
   sessions      Session[]
   role          UserRole       @default(USER)
-  teamId        Int?
   teams         Team[]
   managedTeams  TeamManager[]
   stripeId      String?        @unique
