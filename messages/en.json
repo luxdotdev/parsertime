@@ -1555,7 +1555,8 @@
     "sideNav": {
       "profile": "Profile",
       "linkedAccounts": "Linked Accounts",
-      "admin": "Admin"
+      "admin": "Admin",
+      "impersonateUser": "Impersonate User"
     },
     "profile": {
       "title": "Profile",

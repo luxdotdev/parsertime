@@ -51,10 +51,9 @@ export default async function SettingsLayout({
   ];
 
   const adminNavItems: { title: string; href: Route }[] = [
-    ...sidebarNavItems,
     {
-      title: t("sideNav.admin"),
-      href: "/settings/admin",
+      title: t("sideNav.impersonateUser"),
+      href: "/settings/admin/impersonate-user",
     },
   ];
 
@@ -74,7 +73,16 @@ export default async function SettingsLayout({
         <Separator className="my-6" />
         <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
           <aside className="-mx-4 lg:w-1/5">
-            <SidebarNav items={isAdmin ? adminNavItems : sidebarNavItems} />
+            <SidebarNav items={sidebarNavItems} />
+            {isAdmin && (
+              <>
+                <h3 className="text-muted-foreground mt-6 pl-2 text-sm tracking-tight">
+                  {t("sideNav.admin")}
+                </h3>
+                <Separator className="mb-4" />
+                <SidebarNav items={adminNavItems} />
+              </>
+            )}
           </aside>
           <div className="flex-1 lg:max-w-2xl">{children}</div>
         </div>
