@@ -1,4 +1,5 @@
 import { MonthlyUserChart } from "@/components/admin/monthly-user-chart";
+import { ScrimActivityChart } from "@/components/admin/scrim-activity-chart";
 import { NoAuthCard } from "@/components/auth/no-auth";
 import {
   Card,
@@ -43,6 +44,51 @@ async function getMonthlyUserData() {
   return monthlyData;
 }
 
+async function getScrimActivityData() {
+  const now = new Date();
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+  // Get scrims created in the last 30 days, grouped by day
+  const scrimData = await prisma.scrim.findMany({
+    where: {
+      createdAt: {
+        gte: thirtyDaysAgo,
+      },
+    },
+    select: {
+      createdAt: true,
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
+
+  // Group scrims by day
+  const dailyData = new Map<string, number>();
+
+  // Initialize all days in the range with 0
+  for (let i = 0; i < 30; i++) {
+    const date = new Date(thirtyDaysAgo.getTime() + i * 24 * 60 * 60 * 1000);
+    const dateKey = date.toISOString().split("T")[0];
+    dailyData.set(dateKey, 0);
+  }
+
+  // Count scrims per day
+  scrimData.forEach((scrim) => {
+    const dateKey = scrim.createdAt.toISOString().split("T")[0];
+    const currentCount = dailyData.get(dateKey) ?? 0;
+    dailyData.set(dateKey, currentCount + 1);
+  });
+
+  // Convert to array
+  const dataArray = Array.from(dailyData.entries()).map(([date, count]) => ({
+    date,
+    scrims: count,
+  }));
+
+  return dataArray;
+}
+
 export default async function AdminAnalyticsPage() {
   const session = await auth();
   if (!session?.user) {
@@ -58,7 +104,10 @@ export default async function AdminAnalyticsPage() {
   }
 
   const t = await getTranslations("settingsPage.admin.analytics");
-  const monthlyUserData = await getMonthlyUserData();
+  const [monthlyUserData, scrimActivityData] = await Promise.all([
+    getMonthlyUserData(),
+    getScrimActivityData(),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -75,6 +124,15 @@ export default async function AdminAnalyticsPage() {
           </CardHeader>
           <CardContent>
             <MonthlyUserChart data={monthlyUserData} />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("scrimActivity.title")}</CardTitle>
+            <CardDescription>{t("scrimActivity.description")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ScrimActivityChart data={scrimActivityData} />
           </CardContent>
         </Card>
       </div>

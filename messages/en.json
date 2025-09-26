@@ -1758,6 +1758,10 @@
         "userGrowth": {
           "title": "User Growth Over Time",
           "description": "Monthly user registration trends over the last 12 months"
+        },
+        "scrimActivity": {
+          "title": "Scrim Activity",
+          "description": "Daily scrim creation activity over the last 30 days"
         }
       },
       "title": "Admin Settings",
