@@ -40,13 +40,27 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { addWeeks, format } from "date-fns";
 import {
   Bot,
+  Bug,
   CalendarIcon,
   ChevronDown,
+  Crown,
+  Edit,
   Filter,
+  ImageIcon,
   Loader2,
+  Mail,
+  Map,
+  Minus,
+  Plus,
   Shield,
   ShieldAlert,
+  Target,
+  Trash2,
+  TrendingDown,
+  TrendingUp,
   UserCheck,
+  UserMinus,
+  UserPlus,
   UserX,
   VenetianMask,
   X,
@@ -57,6 +71,7 @@ import type { DateRange } from "react-day-picker";
 import { useDebounce } from "use-debounce";
 
 const actionTypes = {
+  // User Management Actions
   [$Enums.AuditLogAction.USER_BAN]: {
     label: "User Ban",
     className: "border-red-500 text-red-500",
@@ -69,6 +84,26 @@ const actionTypes = {
     iconClassName: "text-emerald-500",
     icon: UserCheck,
   },
+  [$Enums.AuditLogAction.USER_AVATAR_UPDATED]: {
+    label: "User Avatar Updated",
+    className: "border-blue-500 text-blue-500",
+    iconClassName: "text-blue-500",
+    icon: ImageIcon,
+  },
+  [$Enums.AuditLogAction.USER_ACCOUNT_DELETED]: {
+    label: "User Account Deleted",
+    className: "border-red-600 text-red-600",
+    iconClassName: "text-red-600",
+    icon: UserMinus,
+  },
+  [$Enums.AuditLogAction.USER_NAME_UPDATED]: {
+    label: "User Name Updated",
+    className: "border-blue-400 text-blue-400",
+    iconClassName: "text-blue-400",
+    icon: Edit,
+  },
+
+  // Security & Admin Actions
   [$Enums.AuditLogAction.TRUST_SCORE_ADJUST]: {
     label: "Trust Score Adjust",
     className: "border-indigo-500 text-indigo-500",
@@ -80,6 +115,128 @@ const actionTypes = {
     className: "border-purple-500 text-purple-500",
     iconClassName: "text-purple-500",
     icon: VenetianMask,
+  },
+  [$Enums.AuditLogAction.SUSPICIOUS_ACTIVITY_DETECTED]: {
+    label: "Suspicious Activity Detected",
+    className: "border-orange-500 text-orange-500",
+    iconClassName: "text-orange-500",
+    icon: ShieldAlert,
+  },
+
+  // Team Management Actions
+  [$Enums.AuditLogAction.TEAM_CREATED]: {
+    label: "Team Created",
+    className: "border-green-500 text-green-500",
+    iconClassName: "text-green-500",
+    icon: Plus,
+  },
+  [$Enums.AuditLogAction.TEAM_UPDATED]: {
+    label: "Team Updated",
+    className: "border-blue-500 text-blue-500",
+    iconClassName: "text-blue-500",
+    icon: Edit,
+  },
+  [$Enums.AuditLogAction.TEAM_DELETED]: {
+    label: "Team Deleted",
+    className: "border-red-500 text-red-500",
+    iconClassName: "text-red-500",
+    icon: Trash2,
+  },
+  [$Enums.AuditLogAction.TEAM_AVATAR_UPDATED]: {
+    label: "Team Avatar Updated",
+    className: "border-cyan-500 text-cyan-500",
+    iconClassName: "text-cyan-500",
+    icon: ImageIcon,
+  },
+  [$Enums.AuditLogAction.TEAM_INVITE_SENT]: {
+    label: "Team Invite Sent",
+    className: "border-violet-500 text-violet-500",
+    iconClassName: "text-violet-500",
+    icon: Mail,
+  },
+  [$Enums.AuditLogAction.TEAM_JOINED]: {
+    label: "Team Joined",
+    className: "border-green-400 text-green-400",
+    iconClassName: "text-green-400",
+    icon: UserPlus,
+  },
+  [$Enums.AuditLogAction.TEAM_LEFT]: {
+    label: "Team Left",
+    className: "border-yellow-500 text-yellow-500",
+    iconClassName: "text-yellow-500",
+    icon: UserMinus,
+  },
+  [$Enums.AuditLogAction.TEAM_MEMBER_PROMOTED]: {
+    label: "Team Member Promoted",
+    className: "border-emerald-600 text-emerald-600",
+    iconClassName: "text-emerald-600",
+    icon: TrendingUp,
+  },
+  [$Enums.AuditLogAction.TEAM_MEMBER_DEMOTED]: {
+    label: "Team Member Demoted",
+    className: "border-orange-400 text-orange-400",
+    iconClassName: "text-orange-400",
+    icon: TrendingDown,
+  },
+  [$Enums.AuditLogAction.TEAM_MEMBER_REMOVED]: {
+    label: "Team Member Removed",
+    className: "border-red-400 text-red-400",
+    iconClassName: "text-red-400",
+    icon: Minus,
+  },
+  [$Enums.AuditLogAction.TEAM_OWNERSHIP_TRANSFERRED]: {
+    label: "Team Ownership Transferred",
+    className: "border-amber-500 text-amber-500",
+    iconClassName: "text-amber-500",
+    icon: Crown,
+  },
+
+  // Scrim Management Actions
+  [$Enums.AuditLogAction.SCRIM_CREATED]: {
+    label: "Scrim Created",
+    className: "border-teal-500 text-teal-500",
+    iconClassName: "text-teal-500",
+    icon: Target,
+  },
+  [$Enums.AuditLogAction.SCRIM_UPDATED]: {
+    label: "Scrim Updated",
+    className: "border-teal-400 text-teal-400",
+    iconClassName: "text-teal-400",
+    icon: Edit,
+  },
+  [$Enums.AuditLogAction.SCRIM_DELETED]: {
+    label: "Scrim Deleted",
+    className: "border-red-300 text-red-300",
+    iconClassName: "text-red-300",
+    icon: Trash2,
+  },
+
+  // Map Management Actions
+  [$Enums.AuditLogAction.MAP_CREATED]: {
+    label: "Map Created",
+    className: "border-slate-500 text-slate-500",
+    iconClassName: "text-slate-500",
+    icon: Map,
+  },
+  [$Enums.AuditLogAction.MAP_UPDATED]: {
+    label: "Map Updated",
+    className: "border-slate-400 text-slate-400",
+    iconClassName: "text-slate-400",
+    icon: Edit,
+  },
+  [$Enums.AuditLogAction.MAP_DELETED]: {
+    label: "Map Deleted",
+    className: "border-slate-600 text-slate-600",
+    iconClassName: "text-slate-600",
+    icon: Trash2,
+  },
+
+  // System Actions
+  [$Enums.AuditLogAction.BUG_REPORT_SUBMITTED]: {
+    label: "Bug Report Submitted",
+    className: "border-pink-500 text-pink-500",
+    iconClassName: "text-pink-500",
+    icon: Bug,
   },
 };
 
