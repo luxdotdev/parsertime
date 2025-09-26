@@ -55,6 +55,8 @@ model User {
   stripeId      String?        @unique
   billingPlan   BillingPlan    @default(FREE)
   Notification  Notification[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now()) @updatedAt
 
   @@index([id, email])
 }
