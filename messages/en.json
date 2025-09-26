@@ -1683,6 +1683,14 @@
             "title": "User Growth",
             "delta": "{delta} vs {lastMonth} last month"
           },
+          "scrim-activity": {
+            "title": "Scrim Activity",
+            "delta": "{delta} vs {lastMonth} last month"
+          },
+          "conversion-rate": {
+            "title": "Conversion Rate",
+            "delta": "{paidUsers} paid users"
+          },
           "monthly-chart": {
             "title": "Monthly User Registrations",
             "description": "New user registrations over the last 12 months"
