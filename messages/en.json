@@ -1556,7 +1556,8 @@
       "profile": "Profile",
       "linkedAccounts": "Linked Accounts",
       "admin": "Admin",
-      "impersonateUser": "Impersonate User"
+      "impersonateUser": "Impersonate User",
+      "auditLogs": "Audit Logs"
     },
     "profile": {
       "title": "Profile",
@@ -1620,6 +1621,44 @@
           "title": "Email",
           "description": "This is the email of the user you want to impersonate.",
           "message": "Please enter a valid email address."
+        }
+      },
+      "audit-log": {
+        "title": "Recent User Actions",
+        "action-types": "Action Types",
+        "filter-label": "Filter by Action Type",
+        "clear-filters": "Clear All",
+        "user-email": "User Email: {userEmail}",
+        "target": "Target: {target}",
+        "search-user-email": "Search User Email",
+        "search-target": "Search Target",
+        "download": {
+          "button": "Download CSV",
+          "downloading": "Downloading...",
+          "filename": "audit-logs-{date}.csv",
+          "tooltip": "Downloads the currently filtered audit logs as a CSV file.",
+          "error": "Error downloading CSV: {error}",
+          "unknown-error": "Unknown error"
+        },
+        "table": {
+          "user-email": "User Email",
+          "action": "Action",
+          "target": "Target",
+          "details": "Details",
+          "date-time": "Date & Time",
+          "date-time-format": "{date} at {time}",
+          "no-logs-found": "No audit logs found matching your filters.",
+          "error-loading-logs": "Error loading audit logs"
+        },
+        "showing-logs": "Showing {count} logs.",
+        "hover": {
+          "user-email": "User Email",
+          "action": "Action",
+          "target": "Target",
+          "details": "Details",
+          "id": "ID: {id}",
+          "timestamp": "Timestamp",
+          "auto-generated": "This action was performed automatically by the system."
         }
       },
       "title": "Admin Settings",
