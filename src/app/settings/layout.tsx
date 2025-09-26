@@ -52,6 +52,10 @@ export default async function SettingsLayout({
 
   const adminNavItems: { title: string; href: Route }[] = [
     {
+      title: t("sideNav.dashboard"),
+      href: "/settings/admin",
+    },
+    {
       title: t("sideNav.impersonateUser"),
       href: "/settings/admin/impersonate-user",
     },
