@@ -1,5 +1,6 @@
 import { MonthlyUserChart } from "@/components/admin/monthly-user-chart";
 import { ScrimActivityChart } from "@/components/admin/scrim-activity-chart";
+import { SignupMethodPieChart } from "@/components/admin/signup-method-pie-chart";
 import { TeamCreationChart } from "@/components/admin/team-creation-chart";
 import { TeamManagerPieChart } from "@/components/admin/team-manager-pie-chart";
 import { NoAuthCard } from "@/components/auth/no-auth";
@@ -147,6 +148,63 @@ async function getTeamManagerData() {
   ];
 }
 
+async function getSignupMethodData() {
+  const [totalUsers, oauthAccounts] = await Promise.all([
+    prisma.user.count(),
+    prisma.account.groupBy({
+      by: ["provider"],
+      _count: {
+        userId: true,
+      },
+    }),
+  ]);
+
+  // Create a map of provider counts
+  const providerCounts = new Map<string, number>();
+  let totalOAuthUsers = 0;
+
+  oauthAccounts.forEach((account) => {
+    const count = account._count.userId;
+    providerCounts.set(account.provider, count);
+    totalOAuthUsers += count;
+  });
+
+  // Users who signed up via email (no OAuth account)
+  const emailUsers = totalUsers - totalOAuthUsers;
+
+  // Build the result array
+  const result = [];
+
+  // Add email users
+  if (emailUsers > 0) {
+    result.push({
+      method: "Email",
+      count: emailUsers,
+      percentage: Math.round((emailUsers / totalUsers) * 100),
+    });
+  }
+
+  // Add OAuth providers
+  const providerNames = {
+    discord: "Discord",
+    google: "Google",
+    github: "GitHub",
+  };
+
+  ["discord", "google", "github"].forEach((provider) => {
+    const count = providerCounts.get(provider) ?? 0;
+    if (count > 0) {
+      result.push({
+        method: providerNames[provider as keyof typeof providerNames],
+        count,
+        percentage: Math.round((count / totalUsers) * 100),
+      });
+    }
+  });
+
+  return result;
+}
+
 export default async function AdminAnalyticsPage() {
   const session = await auth();
   if (!session?.user) {
@@ -167,11 +225,13 @@ export default async function AdminAnalyticsPage() {
     scrimActivityData,
     teamCreationData,
     teamManagerData,
+    signupMethodData,
   ] = await Promise.all([
     getMonthlyUserData(),
     getScrimActivityData(),
     getTeamCreationData(),
     getTeamManagerData(),
+    getSignupMethodData(),
   ]);
 
   return (
@@ -224,6 +284,15 @@ export default async function AdminAnalyticsPage() {
             </CardContent>
           </Card>
         </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("signupMethods.title")}</CardTitle>
+            <CardDescription>{t("signupMethods.description")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <SignupMethodPieChart data={signupMethodData} />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

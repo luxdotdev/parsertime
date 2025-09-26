@@ -1770,6 +1770,10 @@
         "teamManagerDistribution": {
           "title": "User Roles Distribution",
           "description": "Percentage breakdown of regular users vs team managers"
+        },
+        "signupMethods": {
+          "title": "User Signup Methods",
+          "description": "Breakdown of how users signed up (OAuth providers vs email)"
         }
       },
       "title": "Admin Settings",
