@@ -50,7 +50,7 @@ type ScrimResponse = {
   };
 };
 
-export function ScrimPagination() {
+export function ScrimPagination({ isAdmin = false }: { isAdmin?: boolean }) {
   const [currPage, setCurrPage] = useState(1);
   const [filter, setFilter] = useState("");
   const [search, setSearch] = useState("");
@@ -63,18 +63,25 @@ export function ScrimPagination() {
   const siblingCount = 1; // Number of pages to show around the current page
   const boundaryCount = 1; // Number of pages to show at the boundaries (start and end)
 
-  // Reset page to 1 when search, filter, or team changes
+  // Reset page to 1 when search, filter, or team changes (no teamId for admin)
+  const effectiveTeamId = isAdmin ? null : teamId;
   useEffect(() => {
     setCurrPage(1);
-  }, [debouncedSearch, filter, teamId]);
+  }, [debouncedSearch, filter, effectiveTeamId]);
 
   // Fetch scrims using React Query
   const { data, isLoading, isError, error } = useQuery<ScrimResponse, Error>({
-    queryKey: ["scrims", currPage, debouncedSearch, filter, teamId],
+    queryKey: isAdmin
+      ? ["admin-scrims", currPage, debouncedSearch, filter]
+      : ["scrims", currPage, debouncedSearch, filter, teamId],
     queryFn: async () => {
       const params = new URLSearchParams();
       params.set("page", currPage.toString());
       params.set("limit", pageSize.toString());
+
+      if (isAdmin) {
+        params.set("adminMode", "true");
+      }
 
       if (debouncedSearch) {
         params.set("search", debouncedSearch);
@@ -84,7 +91,7 @@ export function ScrimPagination() {
         params.set("filter", filter);
       }
 
-      if (teamId) {
+      if (teamId && !isAdmin) {
         params.set("teamId", teamId.toString());
       }
 
@@ -112,13 +119,17 @@ export function ScrimPagination() {
 
   // Check if user has any scrims at all (without filters)
   const { data: totalScrimsData } = useQuery<ScrimResponse, Error>({
-    queryKey: ["scrims-total", teamId],
+    queryKey: isAdmin ? ["admin-scrims-total"] : ["scrims-total", teamId],
     queryFn: async () => {
       const params = new URLSearchParams();
       params.set("page", "1");
       params.set("limit", "1"); // Just need to check if any exist
 
-      if (teamId) {
+      if (isAdmin) {
+        params.set("adminMode", "true");
+      }
+
+      if (teamId && !isAdmin) {
         params.set("teamId", teamId.toString());
       }
 

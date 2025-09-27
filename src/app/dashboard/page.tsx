@@ -1,4 +1,3 @@
-import { AdminScrimView } from "@/components/dashboard/admin-scrim-view";
 import { ScrimPagination } from "@/components/dashboard/scrim-pagination";
 import { UpdateModalWrapper } from "@/components/dashboard/update-modal-wrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -69,7 +68,9 @@ export default async function DashboardPage() {
           </main>
         </TabsContent>
         <TabsContent value="admin" className="space-y-4">
-          <AdminScrimView />
+          <main>
+            <ScrimPagination isAdmin={true} />
+          </main>
         </TabsContent>
       </Tabs>
       <UpdateModalWrapper />
