@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Link } from "@/components/ui/link";
 import { ClientOnly } from "@/lib/client-only";
 import { parseData } from "@/lib/parser";
-import { cn } from "@/lib/utils";
+import { cn, detectFileCorruption } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
@@ -64,6 +64,25 @@ export function AddMapCard() {
       duration: 5000,
     });
 
+    // Check for corrupted data before parsing
+    const hasCorruptedData = await detectFileCorruption(file);
+
+    if (hasCorruptedData.isCorrupted) {
+      let warningMessage = t("dataCorruption.warning.baseDescription");
+
+      if (hasCorruptedData.hasInvalidMercyRez) {
+        warningMessage += `\n${t("dataCorruption.warning.invalidMercyRez")}`;
+      }
+      if (hasCorruptedData.hasAsterisks) {
+        warningMessage += `\n${t("dataCorruption.warning.asteriskValues")}`;
+      }
+
+      toast.warning(t("dataCorruption.warning.title"), {
+        description: warningMessage,
+        duration: 8000,
+      });
+    }
+
     const data = await parseData(file);
 
     const res = await fetch(`/api/scrim/add-map?id=${scrimId}`, {
@@ -72,10 +91,17 @@ export function AddMapCard() {
     });
 
     if (res.ok) {
-      toast.success(t("handleFile.createTitle"), {
-        description: t("handleFile.createDescription"),
-        duration: 5000,
-      });
+      if (hasCorruptedData.isCorrupted) {
+        toast.success(t("dataCorruption.success.title"), {
+          description: t("dataCorruption.success.description"),
+          duration: 6000,
+        });
+      } else {
+        toast.success(t("handleFile.createTitle"), {
+          description: t("handleFile.createDescription"),
+          duration: 5000,
+        });
+      }
       router.refresh();
     } else {
       toast.error(t("handleFile.errorTitle"), {

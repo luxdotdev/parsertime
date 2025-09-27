@@ -12,9 +12,10 @@ import { Link } from "@/components/ui/link";
 import { Separator } from "@/components/ui/separator";
 import { parseData } from "@/lib/parser";
 import { ParserDataSchema } from "@/lib/schema";
-import { cn } from "@/lib/utils";
+import { cn, detectCorruptedData } from "@/lib/utils";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
-import { JsonEditor, type ThemeInput } from "json-edit-react";
+import { JsonEditor } from "json-edit-react";
+import { useTranslations } from "next-intl";
 import { startTransition, useState } from "react";
 import { toast } from "sonner";
 
@@ -41,6 +42,7 @@ export default function DebugPage() {
   const [data, setData] = useState<object>(defaultData);
   const [errors, setErrors] = useState<string[]>([]);
   const [dragActive, setDragActive] = useState(false);
+  const t = useTranslations("dataCorruption");
 
   function handleDrag(e: React.DragEvent) {
     e.preventDefault();
@@ -73,6 +75,26 @@ export default function DebugPage() {
   }
 
   async function handleFile(file: File) {
+    // Check for corrupted data before parsing
+    const fileContent = await file.text();
+    const corruptionInfo = detectCorruptedData(fileContent);
+
+    if (corruptionInfo.isCorrupted) {
+      let warningMessage = t("warning.baseDescription");
+
+      if (corruptionInfo.hasInvalidMercyRez) {
+        warningMessage += `\n${t("warning.invalidMercyRez")}`;
+      }
+      if (corruptionInfo.hasAsterisks) {
+        warningMessage += `\n${t("warning.asteriskValues")}`;
+      }
+
+      toast.warning(t("warning.title"), {
+        description: warningMessage,
+        duration: 8000,
+      });
+    }
+
     const data = await parseData(file);
 
     setData(data);
@@ -116,11 +138,11 @@ export default function DebugPage() {
             onDragOver={handleDrag}
             onDrop={handleDrop}
           >
-            <CardHeader className="text-center text-xl">
-              <span className="inline-flex items-center justify-center space-x-2">
-                <PlusCircledIcon className="h-6 w-6" />{" "}
+            <CardHeader className="flex items-center justify-center text-xl">
+              <div className="flex items-center gap-2 whitespace-nowrap">
+                <PlusCircledIcon className="h-6 w-6" />
                 <span>Add a file...</span>
-              </span>
+              </div>
             </CardHeader>
             <CardDescription className="pb-4">
               Drag and drop or select a file to upload.
@@ -141,7 +163,7 @@ export default function DebugPage() {
           </Card>
 
           {errors.length > 0 && (
-            <Card className="destructive border-destructive bg-destructive text-destructive-foreground group flex w-full max-w-md flex-col">
+            <Card className="destructive border-destructive bg-destructive text-destructive-background group flex w-full max-w-md flex-col">
               <CardHeader>Errors</CardHeader>
               <CardContent>
                 <ul>
@@ -202,7 +224,7 @@ export default function DebugPage() {
         <div className="flex flex-col items-center">
           <JsonEditor
             data={data}
-            theme={"githubDark" as ThemeInput}
+            // theme={"githubDark" as ThemeInput}
             restrictEdit
             restrictAdd
             restrictDelete

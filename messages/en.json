@@ -440,6 +440,18 @@
         "errorTitle": "Error",
         "errorDescription": "An error occurred: {res}. Please read the docs <here>here</here> to see if the error can be resolved."
       },
+      "dataCorruption": {
+        "warning": {
+          "title": "Data Corruption Detected",
+          "baseDescription": "Corrupted data detected. Attempting to fix automatically:",
+          "invalidMercyRez": "Invalid mercy_rez lines will be removed",
+          "asteriskValues": "Asterisk values will be replaced with 0"
+        },
+        "success": {
+          "title": "Scrim Created Successfully",
+          "description": "Corrupted data was automatically fixed and your scrim has been created successfully."
+        }
+      },
       "scrimName": "Scrim Name",
       "scrimPlaceholder": "New Scrim",
       "scrimDescription": "This is the name of the scrim. It will be displayed on the dashboard.",
@@ -510,6 +522,18 @@
         "createDescription": "Your map has been created successfully.",
         "errorTitle": "Error",
         "errorDescription": "An error occurred: {res}. Please read the docs <here>here</here> to see if the error can be resolved."
+      },
+      "dataCorruption": {
+        "warning": {
+          "title": "Data Corruption Detected",
+          "baseDescription": "Corrupted data detected. Attempting to fix automatically:",
+          "invalidMercyRez": "Invalid mercy_rez lines will be removed",
+          "asteriskValues": "Asterisk values will be replaced with 0"
+        },
+        "success": {
+          "title": "Map Added Successfully",
+          "description": "Corrupted data was automatically fixed and your map has been added successfully."
+        }
       }
     },
     "editScrim": {
@@ -2286,5 +2310,13 @@
     "delete-error": "Failed to delete notification",
     "notification-created": "Notification created successfully",
     "create-notification-error": "Failed to create notification"
+  },
+  "dataCorruption": {
+    "warning": {
+      "title": "Data Corruption Detected",
+      "baseDescription": "Corrupted data detected. Attempting to fix automatically:",
+      "invalidMercyRez": "Invalid mercy_rez lines will be removed",
+      "asteriskValues": "Asterisk values will be replaced with 0"
+    }
   }
 }
