@@ -31,6 +31,32 @@ export async function parseData(file: File) {
   }
 }
 
+/**
+ * Cleans invalid lines from the parsed data
+ * - Removes mercy_rez lines that contain null values (empty fields)
+ * - Replaces asterisk values with "0"
+ */
+function cleanInvalidLines(lines: string[][]): string[][] {
+  return lines
+    .filter((line) => {
+      // Remove invalid mercy_rez lines that contain empty values
+      if (line[0] === "mercy_rez") {
+        // Check if any field (except the first one which is event type) is empty
+        return !line.slice(1).some((field) => field === "" || field == null);
+      }
+      return true;
+    })
+    .map((line) => {
+      // Replace asterisk values with "0"
+      return line.map((field) => {
+        if (field.includes("*")) {
+          return "0";
+        }
+        return field;
+      });
+    });
+}
+
 export async function parseDataFromTXT(file: File) {
   const fileContent =
     process.env.NODE_ENV !== "test"
@@ -41,6 +67,9 @@ export async function parseDataFromTXT(file: File) {
 
   // remove first element of each array
   lines.forEach((line) => line.shift());
+
+  // Clean invalid lines
+  const cleanedLines = cleanInvalidLines(lines);
 
   // Indexes for the 'kill' event type to skip parsing
   const killSkipIndexes = {
@@ -109,7 +138,7 @@ export async function parseDataFromTXT(file: File) {
   }
 
   const categorizedData: Record<string, string[][]> = {};
-  lines.forEach((line) => {
+  cleanedLines.forEach((line) => {
     const eventType = line[0];
     if (headers[eventType]) {
       if (!categorizedData[eventType]) {
