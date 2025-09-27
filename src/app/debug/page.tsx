@@ -12,9 +12,10 @@ import { Link } from "@/components/ui/link";
 import { Separator } from "@/components/ui/separator";
 import { parseData } from "@/lib/parser";
 import { ParserDataSchema } from "@/lib/schema";
-import { cn } from "@/lib/utils";
+import { cn, detectCorruptedData } from "@/lib/utils";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { JsonEditor } from "json-edit-react";
+import { useTranslations } from "next-intl";
 import { startTransition, useState } from "react";
 import { toast } from "sonner";
 
@@ -41,6 +42,7 @@ export default function DebugPage() {
   const [data, setData] = useState<object>(defaultData);
   const [errors, setErrors] = useState<string[]>([]);
   const [dragActive, setDragActive] = useState(false);
+  const t = useTranslations("dataCorruption");
 
   function handleDrag(e: React.DragEvent) {
     e.preventDefault();
@@ -73,6 +75,26 @@ export default function DebugPage() {
   }
 
   async function handleFile(file: File) {
+    // Check for corrupted data before parsing
+    const fileContent = await file.text();
+    const corruptionInfo = detectCorruptedData(fileContent);
+
+    if (corruptionInfo.isCorrupted) {
+      let warningMessage = t("warning.baseDescription");
+
+      if (corruptionInfo.hasInvalidMercyRez) {
+        warningMessage += `\n${t("warning.invalidMercyRez")}`;
+      }
+      if (corruptionInfo.hasAsterisks) {
+        warningMessage += `\n${t("warning.asteriskValues")}`;
+      }
+
+      toast.warning(t("warning.title"), {
+        description: warningMessage,
+        duration: 8000,
+      });
+    }
+
     const data = await parseData(file);
 
     setData(data);

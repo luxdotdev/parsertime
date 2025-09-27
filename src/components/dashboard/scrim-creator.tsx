@@ -27,7 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { parseData } from "@/lib/parser";
-import { cn } from "@/lib/utils";
+import { cn, detectFileCorruption } from "@/lib/utils";
 import type { ParserData } from "@/types/parser";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
@@ -56,6 +56,7 @@ export function ScrimCreationForm({
   const [mapData, setMapData] = useState<ParserData>();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [hasCorruptedData, setHasCorruptedData] = useState(false);
   const t = useTranslations("dashboard.scrimCreationForm");
 
   const FormSchema = z.object({
@@ -122,8 +123,30 @@ export function ScrimCreationForm({
         return;
       }
 
+      // Check for corrupted data before parsing
+      const hasCorruptedData = await detectFileCorruption(file);
+
+      if (hasCorruptedData.isCorrupted) {
+        let warningMessage = t("dataCorruption.warning.baseDescription");
+
+        if (hasCorruptedData.hasInvalidMercyRez) {
+          warningMessage += `\n${t("dataCorruption.warning.invalidMercyRez")}`;
+        }
+        if (hasCorruptedData.hasAsterisks) {
+          warningMessage += `\n${t("dataCorruption.warning.asteriskValues")}`;
+        }
+
+        toast.warning(t("dataCorruption.warning.title"), {
+          description: warningMessage,
+          duration: 8000,
+        });
+      }
+
       const data = await parseData(file);
       setMapData(data);
+
+      // Store corruption info for success message
+      setHasCorruptedData(hasCorruptedData.isCorrupted);
     }
   }
 
@@ -147,10 +170,17 @@ export function ScrimCreationForm({
     });
 
     if (res.ok) {
-      toast.success(t("createdScrim.title"), {
-        description: t("createdScrim.description"),
-        duration: 5000,
-      });
+      if (hasCorruptedData) {
+        toast.success(t("dataCorruption.success.title"), {
+          description: t("dataCorruption.success.description"),
+          duration: 6000,
+        });
+      } else {
+        toast.success(t("createdScrim.title"), {
+          description: t("createdScrim.description"),
+          duration: 5000,
+        });
+      }
       router.refresh();
       setOpen(false);
       setLoading(false);
