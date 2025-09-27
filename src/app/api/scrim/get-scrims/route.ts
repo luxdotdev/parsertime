@@ -73,7 +73,7 @@ export async function GET(req: NextRequest) {
           creatorId: scrim.creatorId,
           guestMode: scrim.guestMode,
           team: teamName?.name ?? "No Team",
-          creator: creatorName?.name ?? "No Creator",
+          creator: creatorName?.name ?? "Unknown",
           hasPerms,
         };
       })
