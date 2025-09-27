@@ -349,7 +349,9 @@
       "select": "Select a filter",
       "oldToNew": "Oldest to Newest",
       "newToOld": "Newest to Oldest",
-      "search": "Search..."
+      "search": "Search...",
+      "noScrimsFound": "No scrims found matching your filters.",
+      "tryAdjustingFilters": "Try adjusting your search terms or filters."
     },
     "pagination": {
       "previous": "Previous",

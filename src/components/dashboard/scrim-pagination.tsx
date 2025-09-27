@@ -3,6 +3,7 @@
 import { AddScrimCard } from "@/components/dashboard/add-scrim-card";
 import { EmptyScrimList } from "@/components/dashboard/empty-scrim-list";
 import { ScrimCard } from "@/components/dashboard/scrim-card";
+import { ScrimCardSkeleton } from "@/components/dashboard/scrim-card-skeleton";
 import { TeamSwitcherContext } from "@/components/team-switcher-provider";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,77 +26,153 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Scrim } from "@prisma/client";
-import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import { useQuery } from "@tanstack/react-query";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
+import { useDebounce } from "use-debounce";
 
-type Props = {
-  scrims: (Scrim & { team: string; creator: string; hasPerms: boolean })[];
+type ScrimWithDetails = Scrim & {
+  team: string;
+  creator: string;
+  hasPerms: boolean;
 };
 
-export function ScrimPagination({ scrims }: Props) {
+type ScrimResponse = {
+  scrims: ScrimWithDetails[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalCount: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+    limit: number;
+  };
+};
+
+export function ScrimPagination() {
   const [currPage, setCurrPage] = useState(1);
   const [filter, setFilter] = useState("");
   const [search, setSearch] = useState("");
+  const [debouncedSearch] = useDebounce(search, 300);
   const t = useTranslations("dashboard");
 
   const { teamId } = use(TeamSwitcherContext);
-
-  if (teamId) {
-    scrims = scrims.filter((scrim) => scrim.teamId === teamId);
-  }
 
   const pageSize = 15;
   const siblingCount = 1; // Number of pages to show around the current page
   const boundaryCount = 1; // Number of pages to show at the boundaries (start and end)
 
-  // Sort scrims based on the filter
-  const sortedScrims = scrims.sort((a, b) => {
-    if (filter === "date-asc") {
-      return new Date(a.date).getTime() - new Date(b.date).getTime();
-    }
-    if (filter === "date-desc") {
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
-    }
-    return 0; // No sorting applied
+  // Reset page to 1 when search, filter, or team changes
+  useEffect(() => {
+    setCurrPage(1);
+  }, [debouncedSearch, filter, teamId]);
+
+  // Fetch scrims using React Query
+  const { data, isLoading, isError, error } = useQuery<ScrimResponse, Error>({
+    queryKey: ["scrims", currPage, debouncedSearch, filter, teamId],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      params.set("page", currPage.toString());
+      params.set("limit", pageSize.toString());
+
+      if (debouncedSearch) {
+        params.set("search", debouncedSearch);
+      }
+
+      if (filter) {
+        params.set("filter", filter);
+      }
+
+      if (teamId) {
+        params.set("teamId", teamId.toString());
+      }
+
+      const response = await fetch(
+        `/api/scrim/get-scrims?${params.toString()}`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch scrims");
+      }
+
+      const result = (await response.json()) as ScrimResponse;
+
+      // Convert date strings back to Date objects
+      result.scrims = result.scrims.map((scrim) => ({
+        ...scrim,
+        date: new Date(scrim.date),
+        createdAt: new Date(scrim.createdAt),
+        updatedAt: new Date(scrim.updatedAt),
+      }));
+
+      return result;
+    },
   });
 
-  // Filter and search logic combined
-  const filteredAndSearchedScrims = sortedScrims.filter((scrim) => {
-    if (search.startsWith("team:")) {
-      const teamName = search.slice(5).toLowerCase(); // Extract team name from search query
-      return scrim.team.toLowerCase().includes(teamName);
-    }
-    if (search.startsWith("creator:")) {
-      const creatorName = search.slice(8).toLowerCase(); // Extract creator name from search query
-      return scrim.creator.toLowerCase().includes(creatorName);
-    }
-    // General search by scrim name
-    return scrim.name.toLowerCase().includes(search.toLowerCase());
-  });
+  // Check if user has any scrims at all (without filters)
+  const { data: totalScrimsData } = useQuery<ScrimResponse, Error>({
+    queryKey: ["scrims-total", teamId],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      params.set("page", "1");
+      params.set("limit", "1"); // Just need to check if any exist
 
-  // Pagination logic
-  const pages = Math.ceil(filteredAndSearchedScrims.length / pageSize);
-  const startIndex = (currPage - 1) * pageSize;
-  const currentPageScrims = filteredAndSearchedScrims.slice(
-    startIndex,
-    startIndex + pageSize
-  );
+      if (teamId) {
+        params.set("teamId", teamId.toString());
+      }
+
+      const response = await fetch(
+        `/api/scrim/get-scrims?${params.toString()}`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch scrims");
+      }
+
+      return response.json() as Promise<ScrimResponse>;
+    },
+  });
 
   const pagination = handlePagination({
     currentPage: currPage,
-    totalCount: filteredAndSearchedScrims.length,
+    totalCount: data?.pagination.totalCount ?? 0,
     siblingCount,
     pageSize,
     boundaryCount,
   });
 
-  if (scrims.length === 0) {
+  // Generate skeleton cards array for consistent loading experience
+  const skeletonCards = Array.from({ length: pageSize }, (_, index) => (
+    <ScrimCardSkeleton key={`skeleton-${index}`} />
+  ));
+
+  // Handle error state
+  if (isError) {
+    return (
+      <Card className="bg-background">
+        <div className="flex h-96 items-center justify-center">
+          <div className="text-center">
+            <p className="text-muted-foreground">
+              Error loading scrims: {error?.message}
+            </p>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
+  // Show empty scrim list only if user has no scrims at all
+  if (
+    !isLoading &&
+    totalScrimsData &&
+    totalScrimsData.pagination.totalCount === 0
+  ) {
     return <EmptyScrimList />;
   }
 
   // prefetch the first 5 scrims
-  const firstFiveScrims = currentPageScrims.slice(0, 5);
+  const firstFiveScrims = data?.scrims.slice(0, 5) ?? [];
 
   return (
     <Card className="bg-background">
@@ -117,6 +194,7 @@ export function ScrimPagination({ scrims }: Props) {
           type="search"
           placeholder={t("filter.search")}
           className="md:w-[100px] lg:w-[260px]"
+          value={search}
           onChange={(e) => {
             setSearch(e.target.value);
           }}
@@ -124,18 +202,40 @@ export function ScrimPagination({ scrims }: Props) {
       </span>
 
       <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {currentPageScrims.map((scrim) => (
-          <ScrimCard
-            key={scrim.id}
-            scrim={scrim}
-            prefetch={firstFiveScrims.includes(scrim)}
-          />
-        ))}
-
-        <AddScrimCard />
+        {isLoading ? (
+          <>
+            {/* Show skeleton cards during loading */}
+            {skeletonCards}
+            <AddScrimCard />
+          </>
+        ) : data && data.scrims.length > 0 ? (
+          <>
+            {data.scrims.map((scrim) => (
+              <ScrimCard
+                key={scrim.id}
+                scrim={scrim}
+                prefetch={firstFiveScrims.includes(scrim)}
+              />
+            ))}
+            <AddScrimCard />
+          </>
+        ) : (
+          <>
+            {/* Show "no results" message when search/filter returns empty but user has scrims */}
+            <div className="col-span-full flex flex-col items-center justify-center py-12">
+              <p className="text-muted-foreground text-lg font-medium">
+                {t("filter.noScrimsFound")}
+              </p>
+              <p className="text-muted-foreground text-sm">
+                {t("filter.tryAdjustingFilters")}
+              </p>
+            </div>
+            <AddScrimCard />
+          </>
+        )}
 
         <div className="col-span-full">
-          {pages > 1 && (
+          {!isLoading && data && data.pagination.totalPages > 1 && (
             <Pagination>
               <PaginationContent>
                 {pagination.hasPrevious && (
