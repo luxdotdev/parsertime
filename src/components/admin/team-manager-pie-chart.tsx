@@ -35,8 +35,8 @@ export function TeamManagerPieChart({ data }: TeamManagerPieChartProps) {
       label: "Regular Users",
       color: "var(--chart-1)",
     },
-    "Team Managers": {
-      label: "Team Managers",
+    "Power Users": {
+      label: "Power Users",
       color: "var(--chart-4)",
     },
   };

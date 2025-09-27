@@ -122,7 +122,7 @@ async function getTeamCreationData() {
 }
 
 async function getTeamManagerData() {
-  const [totalUsers, teamManagers] = await Promise.all([
+  const [totalUsers, teamManagers, teamOwners] = await Promise.all([
     prisma.user.count(),
     prisma.teamManager.groupBy({
       by: ["userId"],
@@ -130,10 +130,22 @@ async function getTeamManagerData() {
         userId: true,
       },
     }),
+    prisma.team.groupBy({
+      by: ["ownerId"],
+      _count: {
+        ownerId: true,
+      },
+    }),
   ]);
 
-  const uniqueTeamManagers = teamManagers.length;
-  const regularUsers = totalUsers - uniqueTeamManagers;
+  // Create sets to avoid double counting users who are both owners and managers
+  const managerUserIds = new Set(teamManagers.map((tm) => tm.userId));
+  const ownerUserIds = new Set(teamOwners.map((to) => to.ownerId));
+
+  // Combine both sets to get unique power users (owners or managers)
+  const powerUserIds = new Set([...managerUserIds, ...ownerUserIds]);
+  const uniquePowerUsers = powerUserIds.size;
+  const regularUsers = totalUsers - uniquePowerUsers;
 
   return [
     {
@@ -142,9 +154,9 @@ async function getTeamManagerData() {
       percentage: Math.round((regularUsers / totalUsers) * 100),
     },
     {
-      role: "Team Managers",
-      count: uniqueTeamManagers,
-      percentage: Math.round((uniqueTeamManagers / totalUsers) * 100),
+      role: "Power Users",
+      count: uniquePowerUsers,
+      percentage: Math.round((uniquePowerUsers / totalUsers) * 100),
     },
   ];
 }
