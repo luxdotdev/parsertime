@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
   const scrimId = parseInt(id);
 
   // If not an individual scrim, create a notification for the team
-  if (scrim.teamId !== 0) {
+  if (scrim.teamId !== 0 && scrim.teamId !== null) {
     const team = await prisma.team.findFirst({
       where: { id: scrim.teamId ?? 0 },
     });
