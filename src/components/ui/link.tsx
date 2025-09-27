@@ -8,13 +8,15 @@ type LinkProps = React.ComponentProps<typeof NextLink> & {
 };
 
 export function Link(props: LinkProps) {
+  const { external, ...nextLinkProps } = props;
+
   return (
     <ProximityPrefetch>
-      <NextLink {...props} target={props.external ? "_blank" : props.target}>
-        <span className={cn(props.external && "underline", props.className)}>
+      <NextLink {...nextLinkProps} target={external ? "_blank" : props.target}>
+        <span className={cn(external && "underline", props.className)}>
           {props.children}
         </span>
-        {props.external && (
+        {external && (
           <>
             {" "}
             <ExternalLinkIcon className="inline h-4 w-4" />
