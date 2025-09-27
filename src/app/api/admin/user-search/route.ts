@@ -20,6 +20,8 @@ export async function GET(req: NextRequest) {
   const parsedLimit = parseInt(limit);
   const searchQuery = searchParams.get("search");
   const billingPlan = searchParams.get("billingPlan");
+  const joinedAfter = searchParams.get("joinedAfter");
+  const joinedBefore = searchParams.get("joinedBefore");
 
   const whereClause: Prisma.UserWhereInput = {
     AND: [
@@ -48,6 +50,15 @@ export async function GET(req: NextRequest) {
             billingPlan: billingPlan as $Enums.BillingPlan,
           }
         : {},
+      // Filter by join date range
+      joinedAfter || joinedBefore
+        ? {
+            createdAt: {
+              ...(joinedAfter && { gte: new Date(joinedAfter) }),
+              ...(joinedBefore && { lte: new Date(joinedBefore) }),
+            },
+          }
+        : {},
     ],
   };
 
@@ -60,6 +71,7 @@ export async function GET(req: NextRequest) {
       billingPlan: true,
       role: true,
       emailVerified: true,
+      createdAt: true,
     },
     take: parsedLimit,
     ...(cursor

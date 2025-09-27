@@ -2,8 +2,14 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
@@ -24,9 +30,19 @@ import {
 import { cn } from "@/lib/utils";
 import type { User } from "@prisma/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { CheckCircle, Filter, Loader2, Search, X } from "lucide-react";
+import { format } from "date-fns";
+import {
+  CalendarIcon,
+  CheckCircle,
+  ChevronDown,
+  Filter,
+  Loader2,
+  Search,
+  X,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
+import type { DateRange } from "react-day-picker";
 import { useDebounce } from "use-debounce";
 
 type UserResponse = {
@@ -50,6 +66,7 @@ export function UserSearch({
   const [searchQuery, setSearchQuery] = useState("");
   const [trustRange, setTrustRange] = useState([0, 100]);
   const [billingPlanFilter, setBillingPlanFilter] = useState<string>("all");
+  const [joinDateRange, setJoinDateRange] = useState<DateRange | undefined>();
   const [showFilters, setShowFilters] = useState(false);
   const [debouncedSearch] = useDebounce(searchQuery, 300);
 
@@ -66,6 +83,7 @@ export function UserSearch({
       debouncedSearch,
       trustRange,
       billingPlanFilter,
+      joinDateRange,
       limit,
     ] as const,
     initialPageParam: null as string | null,
@@ -79,6 +97,11 @@ export function UserSearch({
       params.set("trustScoreMax", trustRange[1].toString());
       if (billingPlanFilter !== "all")
         params.set("billingPlan", billingPlanFilter);
+
+      if (joinDateRange?.from)
+        params.set("joinedAfter", joinDateRange.from.toISOString());
+      if (joinDateRange?.to)
+        params.set("joinedBefore", joinDateRange.to.toISOString());
 
       const res = await fetch(`/api/admin/user-search?${params.toString()}`);
       if (!res.ok) throw new Error("Failed to fetch users");
@@ -135,10 +158,34 @@ export function UserSearch({
     return <Badge className="bg-red-500">UNKNOWN</Badge>;
   }
 
+  function formatJoinDateRange() {
+    if (!joinDateRange) return "Select join date range";
+
+    if (joinDateRange.from && joinDateRange.to) {
+      if (
+        joinDateRange.from.toDateString() === joinDateRange.to.toDateString()
+      ) {
+        return format(joinDateRange.from, "PPP");
+      }
+      return `${format(joinDateRange.from, "PP")} - ${format(joinDateRange.to, "PP")}`;
+    }
+
+    if (joinDateRange.from) {
+      return `From ${format(joinDateRange.from, "PP")}`;
+    }
+
+    if (joinDateRange.to) {
+      return `Until ${format(joinDateRange.to, "PP")}`;
+    }
+
+    return "Select join date range";
+  }
+
   function clearFilters() {
     setSearchQuery("");
     setTrustRange([0, 100]);
     setBillingPlanFilter("all");
+    setJoinDateRange(undefined);
   }
 
   return (
@@ -165,7 +212,7 @@ export function UserSearch({
       </div>
 
       {showFilters && (
-        <div className="grid gap-4 rounded-lg border p-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 rounded-lg border p-4 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-2">
             <Label htmlFor="trust-score">{t("filters.trust-score")}</Label>
             <div className="pt-4">
@@ -204,6 +251,36 @@ export function UserSearch({
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="join-date">{t("filters.join-date-range")}</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  id="join-date"
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !joinDateRange && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {formatJoinDateRange()}
+                  <ChevronDown className="ml-auto h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  initialFocus
+                  mode="range"
+                  defaultMonth={joinDateRange?.from}
+                  selected={joinDateRange}
+                  onSelect={setJoinDateRange}
+                  numberOfMonths={2}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <div className="space-y-2">
             <Label>&nbsp;</Label>
             <Button
               variant="secondary"
@@ -226,6 +303,7 @@ export function UserSearch({
                 <TableHead>{t("table.billing-plan")}</TableHead>
                 <TableHead>{t("table.role")}</TableHead>
                 <TableHead>{t("table.email-verified")}</TableHead>
+                <TableHead>{t("table.join-date")}</TableHead>
                 {/* <TableHead className="text-right">
                     {t("table.actions")}
                 </TableHead> */}
@@ -234,19 +312,19 @@ export function UserSearch({
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center">
+                  <TableCell colSpan={7} className="h-24 text-center">
                     <Loader2 className="mx-auto animate-spin" />
                   </TableCell>
                 </TableRow>
               ) : isError ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center">
+                  <TableCell colSpan={7} className="h-24 text-center">
                     {t("table.error-loading-users")}
                   </TableCell>
                 </TableRow>
               ) : users.length > 0 ? (
                 <>
-                  {users.map((user: User) => (
+                  {users.map((user: User & { createdAt: Date }) => (
                     <TableRow key={user.id}>
                       <TableCell className="font-medium">{user.name}</TableCell>
                       <TableCell>{user.email}</TableCell>
@@ -274,6 +352,11 @@ export function UserSearch({
                             {t("table.unverified")}
                           </Badge>
                         )}
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-muted-foreground text-sm">
+                          {format(new Date(user.createdAt), "PPP")}
+                        </span>
                       </TableCell>
 
                       {/* <TableCell className="text-right">
@@ -311,7 +394,7 @@ export function UserSearch({
                   ))}
                   {hasNextPage && (
                     <TableRow ref={loadMoreRef}>
-                      <TableCell colSpan={6} className="h-20 text-center">
+                      <TableCell colSpan={7} className="h-20 text-center">
                         {isFetchingNextPage && (
                           <Loader2 className="mx-auto h-6 w-6 animate-spin" />
                         )}
@@ -321,7 +404,7 @@ export function UserSearch({
                 </>
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center">
+                  <TableCell colSpan={7} className="h-24 text-center">
                     {t("table.no-users-found")}
                   </TableCell>
                 </TableRow>

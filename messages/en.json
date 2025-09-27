@@ -1731,6 +1731,7 @@
           "billing-plan": "Billing Plan",
           "select-billing-plan": "Select billing plan",
           "all-plans": "All Plans",
+          "join-date-range": "Join Date Range",
           "reset-filters": "Reset Filters"
         },
         "table": {
