@@ -1,9 +1,11 @@
 name: Prisma Migrate Deploy
+permissions:
+  contents: read
 
 on:
   push:
     branches: [main]
-  workflow_dispatch: 
+  workflow_dispatch:
 
 jobs:
   migrate:
@@ -15,7 +17,6 @@ jobs:
     strategy:
       matrix:
         node-version: [22.x]
-
 
     steps:
       - uses: actions/checkout@v3
@@ -30,7 +31,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: pnpm
 
-      - run: pnpm install --ignore-scripts   
+      - run: pnpm install --ignore-scripts
 
       - name: Deploy Prisma migrations
         env:
