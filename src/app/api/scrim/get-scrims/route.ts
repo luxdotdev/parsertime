@@ -21,15 +21,28 @@ export async function GET(req: NextRequest) {
   const search = searchParams.get("search") ?? "";
   const filter = searchParams.get("filter") ?? "";
   const teamId = searchParams.get("teamId");
+  const adminMode = searchParams.get("adminMode") === "true";
 
   try {
-    // Get user viewable scrims
-    const userViewableScrims = await getUserViewableScrims(userData.id);
+    // Check if user is admin/manager for admin mode
+    const isAdmin =
+      userData.role === $Enums.UserRole.ADMIN ||
+      userData.role === $Enums.UserRole.MANAGER;
+
+    // Get scrims based on admin mode
+    let allScrims;
+    if (adminMode && isAdmin) {
+      // Admin mode: get all scrims
+      allScrims = await prisma.scrim.findMany();
+    } else {
+      // Regular mode: get user viewable scrims
+      allScrims = await getUserViewableScrims(userData.id);
+    }
 
     // Filter by team if teamId is provided
     const filteredScrims = teamId
-      ? userViewableScrims.filter((scrim) => scrim.teamId === parseInt(teamId))
-      : userViewableScrims;
+      ? allScrims.filter((scrim) => scrim.teamId === parseInt(teamId))
+      : allScrims;
 
     // Get team names and creator names for all scrims in parallel
     const scrimDetails = await Promise.all(
@@ -44,9 +57,11 @@ export async function GET(req: NextRequest) {
         ]);
 
         const hasPerms =
-          userData.role === $Enums.UserRole.ADMIN ||
-          userData.role === $Enums.UserRole.MANAGER ||
-          userData.id === scrim.creatorId;
+          adminMode && isAdmin
+            ? true // Admins have permissions on all scrims in admin mode
+            : userData.role === $Enums.UserRole.ADMIN ||
+              userData.role === $Enums.UserRole.MANAGER ||
+              userData.id === scrim.creatorId;
 
         return {
           id: scrim.id,
