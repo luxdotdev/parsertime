@@ -161,6 +161,7 @@ export default async function ScrimDashboardPage(
                     href={
                       `/${params.team}/scrim/${params.scrimId}/map/${map.id}` as Route
                     }
+                    prefetch={true}
                   >
                     <CardHeader className="">
                       <h3 className="z-10 text-3xl font-semibold tracking-tight text-white">
