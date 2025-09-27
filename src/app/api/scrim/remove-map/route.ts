@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
 
   let isManager = false;
 
-  if (scrim.teamId !== 0) {
+  if (scrim.teamId !== 0 && scrim.teamId !== null) {
     // scrim is associated with a team
     const managers = await prisma.team.findFirst({
       where: { id: scrim.teamId ?? 0 },
