@@ -15,13 +15,17 @@ import { useTranslations } from "next-intl";
 
 type Props = {
   scrim: Scrim & { team: string; creator: string; hasPerms: boolean };
+  prefetch: boolean;
 };
 
-export function ScrimCard({ scrim }: Props) {
+export function ScrimCard({ scrim, prefetch }: Props) {
   const t = useTranslations("dashboard.scrimCard");
 
   return (
-    <Link href={`/${scrim.teamId}/scrim/${scrim.id}` as Route}>
+    <Link
+      href={`/${scrim.teamId}/scrim/${scrim.id}` as Route}
+      prefetch={prefetch}
+    >
       <Card className="max-w-md sm:h-48 md:h-64 xl:h-48">
         <CardHeader className="text-lg font-semibold">
           <div className="flex items-center justify-between">
