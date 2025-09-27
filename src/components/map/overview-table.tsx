@@ -16,6 +16,7 @@ import {
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
+import { Link } from "@/components/ui/link";
 import {
   Table,
   TableBody,
@@ -39,7 +40,9 @@ import {
 } from "@heroicons/react/20/solid";
 import type { PlayerStat } from "@prisma/client";
 import { GeistMono } from "geist/font/mono";
+import type { Route } from "next";
 import { useTranslations } from "next-intl";
+import { usePathname } from "next/navigation";
 
 export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -49,6 +52,7 @@ export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const pathname = usePathname();
 
   const tableData = React.useMemo(
     () => aggregatePlayerData(playerStats),
@@ -73,16 +77,14 @@ export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
         </OverviewTableHeader>
       ),
       cell: ({ row }) => (
-        <button
-          type="button"
-          onClick={() =>
-            (window.location.href = `${
-              window.location.href
-            }/player/${encodeURIComponent(row.getValue("playerName"))}`)
+        <Link
+          href={
+            `${pathname}/player/${encodeURIComponent(row.getValue("playerName"))}` as Route
           }
+          prefetch={true}
         >
           {row.getValue("playerName")}
-        </button>
+        </Link>
       ),
       enableSorting: true,
       sortingFn: "basic",
