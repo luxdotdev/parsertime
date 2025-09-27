@@ -24,9 +24,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Logger } from "@/lib/logger";
 import type { Scrim } from "@prisma/client";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import type { Route } from "next";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { use, useState } from "react";
 
 type Props = {
@@ -38,6 +41,7 @@ export function ScrimPagination({ scrims }: Props) {
   const [filter, setFilter] = useState("");
   const [search, setSearch] = useState("");
   const t = useTranslations("dashboard");
+  const router = useRouter();
 
   const { teamId } = use(TeamSwitcherContext);
 
@@ -92,6 +96,12 @@ export function ScrimPagination({ scrims }: Props) {
 
   if (scrims.length === 0) {
     return <EmptyScrimList />;
+  }
+
+  // prefetch the first 5 scrims
+  for (const scrim of currentPageScrims.slice(0, 5)) {
+    Logger.info("prefetching", `/scrim/${scrim.id}`);
+    router.prefetch(`/scrim/${scrim.id}` as Route);
   }
 
   return (
