@@ -422,3 +422,53 @@ export type TaggedError = {
 export function isTaggedError(error: unknown): error is TaggedError {
   return error instanceof Error && "_tag" in error;
 }
+
+export type CorruptionInfo = {
+  isCorrupted: boolean;
+  hasInvalidMercyRez: boolean;
+  hasAsterisks: boolean;
+};
+
+/**
+ * Detects corrupted data in file content using regex patterns
+ *
+ * @param fileContent - The file content to check for corruption
+ * @returns Object containing corruption detection results
+ */
+export function detectCorruptedData(fileContent: string): CorruptionInfo {
+  // Check for invalid mercy_rez lines (mercy_rez with empty fields between commas)
+  const mercyRezPattern = /mercy_rez,[^,]*,,/;
+  const hasInvalidMercyRez = mercyRezPattern.test(fileContent);
+
+  // Check for asterisk values (corrupted numeric data)
+  const asteriskPattern = /,\*+,/;
+  const hasAsterisks = asteriskPattern.test(fileContent);
+
+  return {
+    isCorrupted: hasInvalidMercyRez || hasAsterisks,
+    hasInvalidMercyRez,
+    hasAsterisks,
+  };
+}
+
+/**
+ * Safely detects corrupted data from a file, handling potential errors
+ *
+ * @param file - The file to check for corruption
+ * @returns Promise resolving to corruption detection results
+ */
+export async function detectFileCorruption(
+  file: File
+): Promise<CorruptionInfo> {
+  try {
+    const fileContent = await file.text();
+    return detectCorruptedData(fileContent);
+  } catch {
+    // If file reading fails, return no corruption detected
+    return {
+      isCorrupted: false,
+      hasInvalidMercyRez: false,
+      hasAsterisks: false,
+    };
+  }
+}
