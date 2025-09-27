@@ -437,7 +437,8 @@ export type CorruptionInfo = {
  */
 export function detectCorruptedData(fileContent: string): CorruptionInfo {
   // Check for invalid mercy_rez lines (mercy_rez with empty fields between commas)
-  const mercyRezPattern = /mercy_rez,[^,]*,,/;
+  const mercyRezPattern =
+    /^(?=[\s\S]*\bmercy_rez\b)[\s\S]*?(?:^|[^,])(,,)(?!,)/;
   const hasInvalidMercyRez = mercyRezPattern.test(fileContent);
 
   // Check for asterisk values (corrupted numeric data)
