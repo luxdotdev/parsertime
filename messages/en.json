@@ -740,7 +740,7 @@
           "footer": "This chart shows the cumulative damage taken and healing received by round. The x-axis represents the round number, and the y-axis represents the cumulative damage taken or healing received.",
           "round": "Round {round}",
           "dmgTaken": "Damage Taken",
-          "healingReceived": "Healing Receieved"
+          "healingReceived": "Healing Received"
         },
         "dmgDoneDmgTaken": {
           "title": "Hero Damage Dealt vs Damage Taken",
