@@ -25,6 +25,11 @@ export function useColorblindMode() {
         team1: "var(--team-1-tritanopia)",
         team2: "var(--team-2-tritanopia)",
       };
+    case $Enums.ColorblindMode.CUSTOM:
+      return {
+        team1: appSettings.customTeam1Color || "var(--team-1-off)",
+        team2: appSettings.customTeam2Color || "var(--team-2-off)",
+      };
     default:
       return {
         team1: "var(--team-1-off)",
