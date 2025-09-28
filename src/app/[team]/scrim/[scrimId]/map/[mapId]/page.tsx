@@ -16,7 +16,7 @@ import { getMostPlayedHeroes } from "@/data/player-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { translateMapName } from "@/lib/utils";
+import { getColorblindMode, translateMapName } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
 import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
@@ -95,6 +95,8 @@ export default async function MapDashboardPage(
 
   const translatedMapName = await translateMapName(mapName?.map_name ?? "Map");
 
+  const { team1, team2 } = await getColorblindMode(user?.id ?? "");
+
   return (
     <div className="flex-col md:flex">
       <div className="border-b">
@@ -160,16 +162,16 @@ export default async function MapDashboardPage(
             <TabsTrigger value="compare">{t("tabs.compare")}</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
-            <DefaultOverview id={id} />
+            <DefaultOverview id={id} team1Color={team1} team2Color={team2} />
           </TabsContent>
           <TabsContent value="killfeed" className="space-y-4">
-            <Killfeed id={id} />
+            <Killfeed id={id} team1Color={team1} team2Color={team2} />
           </TabsContent>
           <TabsContent value="charts" className="space-y-4">
             <MapCharts id={id} />
           </TabsContent>
           <TabsContent value="events" className="space-y-4">
-            <MapEvents id={id} />
+            <MapEvents id={id} team1Color={team1} team2Color={team2} />
           </TabsContent>
           <TabsContent value="compare" className="space-y-4">
             <ComparePlayers id={id} />
