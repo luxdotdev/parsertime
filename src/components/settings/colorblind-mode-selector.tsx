@@ -123,6 +123,30 @@ export function ColorblindModeSelector() {
                   <p className="text-muted-foreground text-sm">
                     {option.description}
                   </p>
+                  <div className="mt-2 flex items-center gap-2">
+                    <div className="flex items-center gap-1">
+                      <div
+                        className="border-border bg-team-1-off size-4 rounded-sm border"
+                        style={{
+                          backgroundColor: `var(--team-1-${option.value.toLowerCase()})`,
+                        }}
+                      />
+                      <span className="text-muted-foreground text-xs">
+                        Team 1
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div
+                        className="border-border size-4 rounded-sm border"
+                        style={{
+                          backgroundColor: `var(--team-2-${option.value.toLowerCase()})`,
+                        }}
+                      />
+                      <span className="text-muted-foreground text-xs">
+                        Team 2
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
