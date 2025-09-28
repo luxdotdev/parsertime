@@ -8,7 +8,6 @@
 
 import prisma from "@/lib/prisma";
 import {
-  cn,
   getHeroNames,
   groupKillsIntoFights,
   removeDuplicateRows,
@@ -87,7 +86,11 @@ const priority: Record<string, number> = {
   match_end: 4,
 };
 
-export async function getMapEvents(id: number) {
+export async function getMapEvents(
+  id: number,
+  team1Color: string,
+  team2Color: string
+) {
   const [
     matchStart,
     matchEnd,
@@ -144,11 +147,10 @@ export async function getMapEvents(id: number) {
         return t.rich("mapEvents.captureString1", {
           color: (chunks) => (
             <span
-              className={cn(
-                team === matchStart!.team_1_name
-                  ? "text-blue-500"
-                  : "text-red-500"
-              )}
+              style={{
+                color:
+                  team === matchStart!.team_1_name ? team1Color : team2Color,
+              }}
             >
               {chunks}
             </span>
@@ -159,11 +161,10 @@ export async function getMapEvents(id: number) {
         return t.rich("mapEvents.captureString2", {
           color: (chunks) => (
             <span
-              className={cn(
-                team === matchStart!.team_1_name
-                  ? "text-blue-500"
-                  : "text-red-500"
-              )}
+              style={{
+                color:
+                  team === matchStart!.team_1_name ? team1Color : team2Color,
+              }}
             >
               {chunks}
             </span>
@@ -300,21 +301,23 @@ export async function getMapEvents(id: number) {
                     alt={`${event.player_name}'s hero`}
                     width={256}
                     height={256}
-                    className={cn(
-                      "h-8 w-8 rounded border-2",
-                      event.player_team === matchStart.team_1_name
-                        ? "border-blue-500"
-                        : "border-red-500"
-                    )}
+                    className="h-8 w-8 rounded border-2"
+                    style={{
+                      border:
+                        event.player_team === matchStart.team_1_name
+                          ? `2px solid ${team1Color}`
+                          : `2px solid ${team2Color}`,
+                    }}
                   />
                 ),
                 color: (chunks) => (
                   <span
-                    className={cn(
-                      event.player_team === matchStart.team_1_name
-                        ? "text-blue-500"
-                        : "text-red-500"
-                    )}
+                    style={{
+                      color:
+                        event.player_team === matchStart.team_1_name
+                          ? team1Color
+                          : team2Color,
+                    }}
                   >
                     {chunks}
                   </span>
@@ -325,12 +328,13 @@ export async function getMapEvents(id: number) {
                     alt={`${event.player_name}'s new hero`}
                     width={256}
                     height={256}
-                    className={cn(
-                      "h-8 w-8 rounded border-2",
-                      event.player_team === matchStart.team_1_name
-                        ? "border-blue-500"
-                        : "border-red-500"
-                    )}
+                    className="h-8 w-8 rounded border-2"
+                    style={{
+                      border:
+                        event.player_team === matchStart.team_1_name
+                          ? `2px solid ${team1Color}`
+                          : `2px solid ${team2Color}`,
+                    }}
                   />
                 ),
                 hero:
@@ -354,21 +358,23 @@ export async function getMapEvents(id: number) {
                     alt={`${event.player_name}'s hero`}
                     width={256}
                     height={256}
-                    className={cn(
-                      "h-8 w-8 rounded border-2",
-                      event.player_team === matchStart.team_1_name
-                        ? "border-blue-500"
-                        : "border-red-500"
-                    )}
+                    className="h-8 w-8 rounded border-2"
+                    style={{
+                      border:
+                        event.player_team === matchStart.team_1_name
+                          ? `2px solid ${team1Color}`
+                          : `2px solid ${team2Color}`,
+                    }}
                   />
                 ),
                 color: (chunks) => (
                   <span
-                    className={cn(
-                      event.player_team === matchStart.team_1_name
-                        ? "text-blue-500"
-                        : "text-red-500"
-                    )}
+                    style={{
+                      color:
+                        event.player_team === matchStart.team_1_name
+                          ? team1Color
+                          : team2Color,
+                    }}
                   >
                     {chunks}
                   </span>
@@ -436,21 +442,23 @@ export async function getMapEvents(id: number) {
                   alt={`${event.player_name}'s hero`}
                   width={256}
                   height={256}
-                  className={cn(
-                    "h-8 w-8 rounded border-2",
-                    event.player_team === matchStart.team_1_name
-                      ? "border-blue-500"
-                      : "border-red-500"
-                  )}
+                  className="h-8 w-8 rounded border-2"
+                  style={{
+                    border:
+                      event.player_team === matchStart.team_1_name
+                        ? `2px solid ${team1Color}`
+                        : `2px solid ${team2Color}`,
+                  }}
                 />
               ),
               color: (chunks) => (
                 <span
-                  className={cn(
-                    event.player_team === matchStart.team_1_name
-                      ? "text-blue-500"
-                      : "text-red-500"
-                  )}
+                  style={{
+                    color:
+                      event.player_team === matchStart.team_1_name
+                        ? team1Color
+                        : team2Color,
+                  }}
                 >
                   {chunks}
                 </span>
@@ -476,21 +484,23 @@ export async function getMapEvents(id: number) {
                   alt={`${event.player_name}'s hero`}
                   width={256}
                   height={256}
-                  className={cn(
-                    "h-8 w-8 rounded border-2",
-                    event.player_team === matchStart.team_1_name
-                      ? "border-blue-500"
-                      : "border-red-500"
-                  )}
+                  className="h-8 w-8 rounded border-2"
+                  style={{
+                    border:
+                      event.player_team === matchStart.team_1_name
+                        ? `2px solid ${team1Color}`
+                        : `2px solid ${team2Color}`,
+                  }}
                 />
               ),
               color: (chunks) => (
                 <span
-                  className={cn(
-                    event.player_team === matchStart.team_1_name
-                      ? "text-blue-500"
-                      : "text-red-500"
-                  )}
+                  style={{
+                    color:
+                      event.player_team === matchStart.team_1_name
+                        ? team1Color
+                        : team2Color,
+                  }}
                 >
                   {chunks}
                 </span>
@@ -509,7 +519,11 @@ export async function getMapEvents(id: number) {
   return eventList;
 }
 
-export async function getUltimatesUsedList(id: number) {
+export async function getUltimatesUsedList(
+  id: number,
+  team1Color: string,
+  team2Color: string
+) {
   const t = await getTranslations("mapPage.events");
 
   const [ultimateStartRows, matchStart, matchEnd, roundStarts, roundEndRows] =
@@ -620,21 +634,23 @@ export async function getUltimatesUsedList(id: number) {
                   alt={`${event.player_name}'s hero`}
                   width={256}
                   height={256}
-                  className={cn(
-                    "h-8 w-8 rounded border-2",
-                    event.player_team === matchStart.team_1_name
-                      ? "border-blue-500"
-                      : "border-red-500"
-                  )}
+                  className="h-8 w-8 rounded border-2"
+                  style={{
+                    border:
+                      event.player_team === matchStart.team_1_name
+                        ? `2px solid ${team1Color}`
+                        : `2px solid ${team2Color}`,
+                  }}
                 />
               ),
               color: (chunks) => (
                 <span
-                  className={cn(
-                    event.player_team === matchStart.team_1_name
-                      ? "text-blue-500"
-                      : "text-red-500"
-                  )}
+                  style={{
+                    color:
+                      event.player_team === matchStart.team_1_name
+                        ? team1Color
+                        : team2Color,
+                  }}
                 >
                   {chunks}
                 </span>
