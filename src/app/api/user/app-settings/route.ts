@@ -11,6 +11,8 @@ export type GetAppSettingsResponse = {
   id: number;
   userId: string;
   colorblindMode: $Enums.ColorblindMode;
+  customTeam1Color?: string;
+  customTeam2Color?: string;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -45,6 +47,8 @@ export async function GET() {
       id: appSettings.id,
       userId: appSettings.userId,
       colorblindMode: appSettings.colorblindMode,
+      customTeam1Color: appSettings.customTeam1Color ?? undefined,
+      customTeam2Color: appSettings.customTeam2Color ?? undefined,
       createdAt: appSettings.createdAt,
       updatedAt: appSettings.updatedAt,
     };
@@ -61,6 +65,8 @@ export async function GET() {
 
 const updateAppSettingsSchema = z.object({
   colorblindMode: z.enum(Object.values($Enums.ColorblindMode)),
+  customTeam1Color: z.string().optional(),
+  customTeam2Color: z.string().optional(),
 });
 
 export type UpdateAppSettingsRequest = z.infer<typeof updateAppSettingsSchema>;
@@ -92,7 +98,11 @@ export async function PUT(request: NextRequest) {
       // Update existing settings
       appSettings = await prisma.appSettings.update({
         where: { id: existingSettings.id },
-        data: { colorblindMode: validatedData.colorblindMode },
+        data: {
+          colorblindMode: validatedData.colorblindMode,
+          customTeam1Color: validatedData.customTeam1Color,
+          customTeam2Color: validatedData.customTeam2Color,
+        },
       });
     } else {
       // Create new settings
@@ -100,6 +110,8 @@ export async function PUT(request: NextRequest) {
         data: {
           userId: user.id,
           colorblindMode: validatedData.colorblindMode,
+          customTeam1Color: validatedData.customTeam1Color,
+          customTeam2Color: validatedData.customTeam2Color,
         },
       });
     }
@@ -108,6 +120,8 @@ export async function PUT(request: NextRequest) {
       id: appSettings.id,
       userId: appSettings.userId,
       colorblindMode: appSettings.colorblindMode,
+      customTeam1Color: appSettings.customTeam1Color ?? undefined,
+      customTeam2Color: appSettings.customTeam2Color ?? undefined,
       createdAt: appSettings.createdAt,
       updatedAt: appSettings.updatedAt,
     };
