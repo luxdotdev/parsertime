@@ -474,9 +474,9 @@ export async function detectFileCorruption(
   }
 }
 
-export async function getColorblindMode(email: string) {
+export async function getColorblindMode(userId: string) {
   const appSettings = await prisma.appSettings.findFirst({
-    where: { userId: email },
+    where: { userId },
   });
   switch (appSettings?.colorblindMode) {
     case ColorblindMode.OFF:
