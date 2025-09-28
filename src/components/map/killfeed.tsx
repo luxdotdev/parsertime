@@ -11,7 +11,15 @@ import prisma from "@/lib/prisma";
 import { groupKillsIntoFights, toTimestamp } from "@/lib/utils";
 import { getTranslations } from "next-intl/server";
 
-export async function Killfeed({ id }: { id: number }) {
+export async function Killfeed({
+  id,
+  team1Color,
+  team2Color,
+}: {
+  id: number;
+  team1Color: string;
+  team2Color: string;
+}) {
   const [finalRound, playerTeams, fights] = await Promise.all([
     prisma.roundEnd.findFirst({
       where: { MapDataId: id },
@@ -108,8 +116,8 @@ export async function Killfeed({ id }: { id: number }) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              <span className="text-blue-500">{team1Kills}</span> /{" "}
-              <span className="text-red-500">{team2Kills}</span>
+              <span style={{ color: team1Color }}>{team1Kills}</span> /{" "}
+              <span style={{ color: team2Color }}>{team2Kills}</span>
             </div>
           </CardContent>
           <CardFooter>
@@ -140,8 +148,8 @@ export async function Killfeed({ id }: { id: number }) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              <span className="text-blue-500">{team2Kills}</span> /{" "}
-              <span className="text-red-500">{team1Kills}</span>
+              <span style={{ color: team2Color }}>{team2Kills}</span> /{" "}
+              <span style={{ color: team1Color }}>{team1Kills}</span>
             </div>
           </CardContent>
           <CardFooter>
@@ -175,8 +183,8 @@ export async function Killfeed({ id }: { id: number }) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              <span className="text-blue-500">{team1FightWins}</span> /{" "}
-              <span className="text-red-500">{team2FightWins}</span>
+              <span style={{ color: team1Color }}>{team1FightWins}</span> /{" "}
+              <span style={{ color: team2Color }}>{team2FightWins}</span>
             </div>
           </CardContent>
           <CardFooter>
@@ -196,6 +204,8 @@ export async function Killfeed({ id }: { id: number }) {
               fights={fights}
               team1={team1Name ?? "Team 1"}
               team2={team2Name ?? "Team 2"}
+              team1Color={team1Color}
+              team2Color={team2Color}
             />
           </CardContent>
           <CardFooter className="float-right">
