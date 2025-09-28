@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
-import type { $Enums, Kill } from "@prisma/client";
-import { type ClassValue, clsx } from "clsx";
+import { ColorblindMode, type $Enums, type Kill } from "@prisma/client";
+import { clsx, type ClassValue } from "clsx";
 import { useMessages, useTranslations } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { twMerge } from "tailwind-merge";
@@ -471,5 +471,38 @@ export async function detectFileCorruption(
       hasInvalidMercyRez: false,
       hasAsterisks: false,
     };
+  }
+}
+
+export async function getColorblindMode(email: string) {
+  const appSettings = await prisma.appSettings.findFirst({
+    where: { userId: email },
+  });
+  switch (appSettings?.colorblindMode) {
+    case ColorblindMode.OFF:
+      return {
+        team1: "var(--team-1-off)",
+        team2: "var(--team-2-off)",
+      };
+    case ColorblindMode.DEUTERANOPIA:
+      return {
+        team1: "var(--team-1-deuteranopia)",
+        team2: "var(--team-2-deuteranopia)",
+      };
+    case ColorblindMode.PROTANOPIA:
+      return {
+        team1: "var(--team-1-protanopia)",
+        team2: "var(--team-2-protanopia)",
+      };
+    case ColorblindMode.TRITANOPIA:
+      return {
+        team1: "var(--team-1-tritanopia)",
+        team2: "var(--team-2-tritanopia)",
+      };
+    default:
+      return {
+        team1: "var(--team-1-off)",
+        team2: "var(--team-2-off)",
+      };
   }
 }
