@@ -2323,7 +2323,9 @@
     "delete": "Delete",
     "delete-error": "Failed to delete notification",
     "notification-created": "Notification created successfully",
-    "create-notification-error": "Failed to create notification"
+    "create-notification-error": "Failed to create notification",
+    "error-loading-description": "Please try refreshing the page.",
+    "no-notifications-description": "You'll see notifications here when they arrive."
   },
   "dataCorruption": {
     "warning": {

@@ -146,8 +146,9 @@ export function Notifications() {
               variant="ghost"
               size="sm"
               className="text-muted-foreground hover:text-foreground w-full justify-center text-xs"
+              asChild
             >
-              {t("view-all-notifications")}
+              <Link href="/notifications">{t("view-all-notifications")}</Link>
             </Button>
           </div>
         </PopoverContent>
