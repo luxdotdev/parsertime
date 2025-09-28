@@ -1,8 +1,7 @@
-import { ColorblindModeSelector } from "@/components/settings/colorblind-mode-selector";
 import { DangerZone } from "@/components/settings/danger-zone";
 import { ProfileForm } from "@/components/settings/profile-form";
 import { Separator } from "@/components/ui/separator";
-import { getUser } from "@/data/user-dto";
+import { getAppSettings, getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { getCustomerPortalUrl } from "@/lib/stripe";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
@@ -25,6 +24,7 @@ export default async function SettingsProfilePage() {
     redirect("/sign-up");
   }
 
+  const appSettings = await getAppSettings(session.user.email);
   const billingPortalUrl = (await getCustomerPortalUrl(user)) as Route;
 
   return (
@@ -52,9 +52,7 @@ export default async function SettingsProfilePage() {
           </span>
         )}
       </Link>
-      <ProfileForm user={user} />
-      <div className="p-1" />
-      <ColorblindModeSelector />
+      <ProfileForm user={user} appSettings={appSettings} />
       <DangerZone url={billingPortalUrl} />
     </div>
   );
