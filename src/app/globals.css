@@ -37,6 +37,14 @@
   --sidebar-ring: oklch(0.705 0.015 286.067);
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
+  --team-1-off: oklch(0.753 0.153965 232.1809);
+  --team-2-off: oklch(0.6218 0.224 17.51);
+  --team-1-deuteranopia: oklch(0.6074 0.1504 244.22);
+  --team-2-deuteranopia: oklch(0.8268 0.0775 352.56);
+  --team-1-tritanopia: oklch(0.7243 0.2464 142.5);
+  --team-2-tritanopia: oklch(0.6781 0.3168 324.84);
+  --team-1-protanopia: oklch(0.6921 0.1347 227.9);
+  --team-2-protanopia: oklch(0.7307 0.1638 346.28);
 }
 
 .dark {
