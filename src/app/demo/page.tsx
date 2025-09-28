@@ -76,6 +76,11 @@ export default async function MapDashboardPage() {
 
   const translatedMapName = await translateMapName(mapName?.map_name ?? "Map");
 
+  const { team1, team2 } = {
+    team1: "var(--team-1-off)",
+    team2: "var(--team-2-off)",
+  };
+
   return (
     <div className="flex-col md:flex">
       <div className="border-b">
@@ -123,16 +128,16 @@ export default async function MapDashboardPage() {
             <TabsTrigger value="compare">{t("tabs.compare")}</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
-            <DefaultOverview id={id} />
+            <DefaultOverview id={id} team1Color={team1} team2Color={team2} />
           </TabsContent>
           <TabsContent value="killfeed" className="space-y-4">
-            <Killfeed id={id} />
+            <Killfeed id={id} team1Color={team1} team2Color={team2} />
           </TabsContent>
           <TabsContent value="charts" className="space-y-4">
             <MapCharts id={id} />
           </TabsContent>
           <TabsContent value="events" className="space-y-4">
-            <MapEvents id={id} />
+            <MapEvents id={id} team1Color={team1} team2Color={team2} />
           </TabsContent>
           <TabsContent value="compare" className="space-y-4">
             <ComparePlayers id={id} />
