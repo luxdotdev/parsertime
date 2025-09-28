@@ -24,7 +24,15 @@ import { type HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
 import { $Enums } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 
-export async function DefaultOverview({ id }: { id: number }) {
+export async function DefaultOverview({
+  id,
+  team1Color: team1,
+  team2Color: team2,
+}: {
+  id: number;
+  team1Color: string;
+  team2Color: string;
+}) {
   const [finalRound, matchDetails, finalRoundStats, playerStats, fights] =
     await Promise.all([
       prisma.roundEnd.findFirst({
@@ -188,11 +196,10 @@ export async function DefaultOverview({ id }: { id: number }) {
                 <>
                   {t("winner")}{" "}
                   <span
-                    className={
-                      winner === matchDetails?.team_1_name
-                        ? "text-blue-500"
-                        : "text-red-500"
-                    }
+                    style={{
+                      color:
+                        winner === matchDetails?.team_1_name ? team1 : team2,
+                    }}
                   >
                     {winner}
                   </span>
@@ -222,13 +229,13 @@ export async function DefaultOverview({ id }: { id: number }) {
               {team1Damage > team2Damage
                 ? t.rich("dealtMore", {
                     color: (chunks) => (
-                      <span className="text-blue-500">{chunks}</span>
+                      <span style={{ color: team1 }}>{chunks}</span>
                     ),
                     teamName: matchDetails?.team_1_name ?? "",
                   })
                 : t.rich("dealtMore", {
                     color: (chunks) => (
-                      <span className="text-red-500">{chunks}</span>
+                      <span style={{ color: team2 }}>{chunks}</span>
                     ),
                     teamName: matchDetails?.team_2_name ?? "",
                   })}
@@ -255,13 +262,13 @@ export async function DefaultOverview({ id }: { id: number }) {
               {team1Healing > team2Healing
                 ? t.rich("healedMore", {
                     color: (chunks) => (
-                      <span className="text-blue-500">{chunks}</span>
+                      <span style={{ color: team1 }}>{chunks}</span>
                     ),
                     teamName: matchDetails?.team_1_name ?? "",
                   })
                 : t.rich("healedMore", {
                     color: (chunks) => (
-                      <span className="text-red-500">{chunks}</span>
+                      <span style={{ color: team2 }}>{chunks}</span>
                     ),
                     teamName: matchDetails?.team_2_name ?? "",
                   })}
@@ -344,7 +351,7 @@ export async function DefaultOverview({ id }: { id: number }) {
               <li>
                 {t.rich("analysis.deathDescriptionTeam1", {
                   span1: (chunks) => (
-                    <span className="text-blue-500">{chunks}</span>
+                    <span style={{ color: team1 }}>{chunks}</span>
                   ),
                   team1Name: matchDetails?.team_1_name ?? "",
                   team1FirstDeaths,
@@ -368,7 +375,7 @@ export async function DefaultOverview({ id }: { id: number }) {
                 })}{" "}
                 {t.rich("analysis.deathDescriptionTeam2", {
                   span1: (chunks) => (
-                    <span className="text-red-500">{chunks}</span>
+                    <span style={{ color: team2 }}>{chunks}</span>
                   ),
                   team2Name: matchDetails?.team_2_name ?? "",
                   team2FirstDeaths: fights.length - team1FirstDeaths,
@@ -395,7 +402,7 @@ export async function DefaultOverview({ id }: { id: number }) {
                 {team1UltimateKills > team2UltimateKills &&
                   t.rich("analysis.ultKillsDescriptionTeam1", {
                     span: (chunks) => (
-                      <span className="text-blue-500">{chunks}</span>
+                      <span style={{ color: team1 }}>{chunks}</span>
                     ),
                     team1Name: matchDetails?.team_1_name ?? "",
                     team1UltimateKills,
@@ -404,7 +411,7 @@ export async function DefaultOverview({ id }: { id: number }) {
                 {team1UltimateKills < team2UltimateKills &&
                   t.rich("analysis.ultKillsDescriptionTeam2", {
                     span: (chunks) => (
-                      <span className="text-red-500">{chunks}</span>
+                      <span style={{ color: team2 }}>{chunks}</span>
                     ),
                     team2Name: matchDetails?.team_2_name ?? "",
                     team2UltimateKills,
@@ -422,14 +429,15 @@ export async function DefaultOverview({ id }: { id: number }) {
                 {t.rich("analysis.playerDeathDescription", {
                   span: (chunks) => (
                     <span
-                      className={cn(
-                        finalRoundStats.find(
-                          (player) =>
-                            player.player_name === playerWithMostFirstDeaths
-                        )?.player_team === matchDetails?.team_1_name
-                          ? "text-blue-500"
-                          : "text-red-500"
-                      )}
+                      style={{
+                        color:
+                          finalRoundStats.find(
+                            (player) =>
+                              player.player_name === playerWithMostFirstDeaths
+                          )?.player_team === matchDetails?.team_1_name
+                            ? team1
+                            : team2,
+                      }}
                     >
                       {chunks}
                     </span>
@@ -450,11 +458,13 @@ export async function DefaultOverview({ id }: { id: number }) {
                         {t.rich("analysis.ajax", {
                           span: (chunks) => (
                             <span
-                              className={cn(
-                                player.player_team === matchDetails?.team_1_name
-                                  ? "text-blue-500"
-                                  : "text-red-500"
-                              )}
+                              style={{
+                                color:
+                                  player.player_team ===
+                                  matchDetails?.team_1_name
+                                    ? team1
+                                    : team2,
+                              }}
                             >
                               {chunks}
                             </span>
