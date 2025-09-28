@@ -1,7 +1,8 @@
 "use client";
 
+import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import type { NonMappableStat, Stat } from "@/lib/player-charts";
-import { cn, round as roundNum } from "@/lib/utils";
+import { round as roundNum } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import {
   Area,
@@ -36,16 +37,14 @@ function CustomTooltip({
   playerName: string;
   playerTeam: "Team1" | "Team2";
 }) {
+  const { team1, team2 } = useColorblindMode();
+
   if (active && payload?.length) {
     return (
       <div className="bg-primary text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 overflow-hidden rounded-md px-3 py-1.5 text-xs">
         <h3 className="text-base">{label}</h3>
         <p className="text-sm">
-          <strong
-            className={cn(
-              playerTeam === "Team1" ? "text-blue-500" : "text-red-500"
-            )}
-          >
+          <strong style={{ color: playerTeam === "Team1" ? team1 : team2 }}>
             {playerName}
           </strong>
           : {(payload[0].value as number).toFixed(2)}
@@ -70,6 +69,7 @@ export function PlayerStatByRoundChart<
   T extends keyof Omit<Stat, NonMappableStat>,
 >({ stat, playerStatByRound, playerName, playerTeam }: Props<T>) {
   const t = useTranslations("mapPage.player.charts");
+  const { team1, team2 } = useColorblindMode();
 
   const data: Data = playerStatByRound.map((round, index) => ({
     name: t("round", { index: index + 1 }),
@@ -93,12 +93,12 @@ export function PlayerStatByRoundChart<
           >
             <defs>
               <linearGradient id="colorTeam1" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
+                <stop offset="5%" stopColor={team1} stopOpacity={0.8} />
+                <stop offset="95%" stopColor={team1} stopOpacity={0} />
               </linearGradient>
               <linearGradient id="colorTeam2" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                <stop offset="5%" stopColor={team2} stopOpacity={0.8} />
+                <stop offset="95%" stopColor={team2} stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" />
@@ -116,7 +116,7 @@ export function PlayerStatByRoundChart<
             <Area
               type="monotone"
               dataKey="playerStat"
-              stroke={playerTeam === "Team1" ? "#0ea5e9" : "#ef4444"}
+              stroke={playerTeam === "Team1" ? team1 : team2}
               fill={`url(#color${playerTeam})`}
               name={playerName}
             />
@@ -150,7 +150,7 @@ export function PlayerStatByRoundChart<
             />
             <Bar
               dataKey="playerStat"
-              fill={playerTeam === "Team1" ? "#0ea5e9" : "#ef4444"}
+              fill={playerTeam === "Team1" ? team1 : team2}
               name={playerName}
             />
           </BarChart>
