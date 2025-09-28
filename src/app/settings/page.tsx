@@ -1,3 +1,4 @@
+import { ColorblindModeSelector } from "@/components/settings/colorblind-mode-selector";
 import { DangerZone } from "@/components/settings/danger-zone";
 import { ProfileForm } from "@/components/settings/profile-form";
 import { Separator } from "@/components/ui/separator";
@@ -53,6 +54,7 @@ export default async function SettingsProfilePage() {
       </Link>
       <ProfileForm user={user} />
       <div className="p-1" />
+      <ColorblindModeSelector />
       <DangerZone url={billingPortalUrl} />
     </div>
   );
