@@ -26,10 +26,14 @@ export function KillfeedTable({
   fights,
   team1,
   team2,
+  team1Color,
+  team2Color,
 }: {
   fights: Fight[];
   team1: string;
   team2: string;
+  team1Color: string;
+  team2Color: string;
 }) {
   const pathname = usePathname();
   const teamId = pathname.split("/")[1];
@@ -72,15 +76,15 @@ export function KillfeedTable({
                             alt=""
                             width={256}
                             height={256}
-                            className={cn(
-                              "h-8 w-8 rounded border-2",
-                              kill.attacker_team === team1
-                                ? "border-blue-500"
-                                : "border-red-500",
-                              kill.attacker_name === kill.victim_name
-                                ? "opacity-0"
-                                : ""
-                            )}
+                            className="h-8 w-8 rounded border-2"
+                            style={{
+                              border:
+                                kill.attacker_team === team1
+                                  ? `2px solid ${team1Color}`
+                                  : `2px solid ${team2Color}`,
+                              opacity:
+                                kill.attacker_name === kill.victim_name ? 0 : 1,
+                            }}
                           />
                         </div>
                         <div
@@ -100,12 +104,15 @@ export function KillfeedTable({
                             alt=""
                             width={256}
                             height={256}
-                            className={cn(
-                              "h-8 w-8 rounded border-2",
-                              kill.victim_team === team1
-                                ? "border-blue-500"
-                                : "border-red-500"
-                            )}
+                            className="h-8 w-8 rounded border-2"
+                            style={{
+                              border:
+                                kill.victim_team === team1
+                                  ? `2px solid ${team1Color}`
+                                  : `2px solid ${team2Color}`,
+                              opacity:
+                                kill.attacker_name === kill.victim_name ? 0 : 1,
+                            }}
                           />
                         </div>
                         <div className="w-32">{kill.victim_name}</div>
