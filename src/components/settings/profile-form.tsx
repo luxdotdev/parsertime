@@ -3,6 +3,15 @@
 import { AvatarUpdateDialog } from "@/components/settings/avatar-update-dialog";
 import { Button } from "@/components/ui/button";
 import {
+  ColorPicker,
+  ColorPickerAlpha,
+  ColorPickerEyeDropper,
+  ColorPickerFormat,
+  ColorPickerHue,
+  ColorPickerOutput,
+  ColorPickerSelection,
+} from "@/components/ui/color-picker";
+import {
   Form,
   FormControl,
   FormDescription,
@@ -12,16 +21,48 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Separator } from "@/components/ui/separator";
 import { ClientOnly } from "@/lib/client-only";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { User } from "@prisma/client";
+import { $Enums, type User } from "@prisma/client";
+import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { type ChangeEvent, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+
+const colorblindModeOptions = [
+  {
+    value: $Enums.ColorblindMode.OFF,
+    label: "Off",
+    description: "Standard colors",
+  },
+  {
+    value: $Enums.ColorblindMode.DEUTERANOPIA,
+    label: "Deuteranopia",
+    description: "Red-green colorblind (green-weak)",
+  },
+  {
+    value: $Enums.ColorblindMode.PROTANOPIA,
+    label: "Protanopia",
+    description: "Red-green colorblind (red-weak)",
+  },
+  {
+    value: $Enums.ColorblindMode.TRITANOPIA,
+    label: "Tritanopia",
+    description: "Blue-yellow colorblind",
+  },
+  {
+    value: $Enums.ColorblindMode.CUSTOM,
+    label: "Custom",
+    description: "Choose your own team colors",
+  },
+];
 
 const profileFormSchema = z.object({
   name: z
@@ -36,11 +77,30 @@ const profileFormSchema = z.object({
     .regex(/^(?!.*?:).*$/, {
       message: "Name must not contain special characters.",
     }),
+  colorblindMode: z.nativeEnum($Enums.ColorblindMode),
+  customTeam1Color: z.string().optional(),
+  customTeam2Color: z.string().optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
-export function ProfileForm({ user }: { user: User }) {
+type AppSettings = {
+  id: number;
+  userId: string;
+  colorblindMode: $Enums.ColorblindMode;
+  customTeam1Color: string | null;
+  customTeam2Color: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+} | null;
+
+export function ProfileForm({
+  user,
+  appSettings,
+}: {
+  user: User;
+  appSettings: AppSettings;
+}) {
   const t = useTranslations("settingsPage.profileForm");
 
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
@@ -52,29 +112,83 @@ export function ProfileForm({ user }: { user: User }) {
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
       name: user.name ?? "",
+      colorblindMode: appSettings?.colorblindMode ?? $Enums.ColorblindMode.OFF,
+      customTeam1Color: appSettings?.customTeam1Color ?? "#3b82f6",
+      customTeam2Color: appSettings?.customTeam2Color ?? "#ef4444",
     },
     mode: "onChange",
   });
 
-  async function onSubmit(data: ProfileFormValues) {
-    const res = await fetch("/api/user/update-name", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+  // Watch form values to prevent infinite re-renders
+  const watchedColorblindMode = useWatch({
+    control: form.control,
+    name: "colorblindMode",
+  });
+  const watchedTeam1Color = useWatch({
+    control: form.control,
+    name: "customTeam1Color",
+  });
+  const watchedTeam2Color = useWatch({
+    control: form.control,
+    name: "customTeam2Color",
+  });
 
-    if (res.ok) {
+  async function onSubmit(data: ProfileFormValues) {
+    try {
+      // Update name if it changed
+      if (data.name !== user.name) {
+        const nameRes = await fetch("/api/user/update-name", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name: data.name }),
+        });
+
+        if (!nameRes.ok) {
+          throw new Error(`Failed to update name: ${await nameRes.text()}`);
+        }
+      }
+
+      // Update app settings if they changed
+      const currentColorblindMode =
+        appSettings?.colorblindMode ?? $Enums.ColorblindMode.OFF;
+      const currentTeam1Color = appSettings?.customTeam1Color ?? "#3b82f6";
+      const currentTeam2Color = appSettings?.customTeam2Color ?? "#ef4444";
+
+      if (
+        data.colorblindMode !== currentColorblindMode ||
+        data.customTeam1Color !== currentTeam1Color ||
+        data.customTeam2Color !== currentTeam2Color
+      ) {
+        const settingsRes = await fetch("/api/user/app-settings", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            colorblindMode: data.colorblindMode,
+            customTeam1Color: data.customTeam1Color,
+            customTeam2Color: data.customTeam2Color,
+          }),
+        });
+
+        if (!settingsRes.ok) {
+          throw new Error(
+            `Failed to update settings: ${await settingsRes.text()}`
+          );
+        }
+      }
+
       toast.success(t("onSubmit.title"), {
         description: t("onSubmit.description"),
         duration: 5000,
       });
       router.refresh();
-    } else {
+    } catch (error) {
       toast.error(t("onSubmit.errorTitle"), {
         description: t("onSubmit.errorDescription", {
-          res: `${await res.text()} (${res.status})`,
+          res: error instanceof Error ? error.message : "Unknown error",
         }),
         duration: 5000,
       });
@@ -90,6 +204,31 @@ export function ProfileForm({ user }: { user: User }) {
     if (files?.[0]) {
       setSelectedFile(files[0]);
       setAvatarDialogOpen(true); // Open the dialog upon file selection
+    }
+  }
+
+  function handleCustomColorChange(team: "team1" | "team2", color: unknown) {
+    // Convert RGBA array to hex string if needed
+    let hexColor: string;
+    if (Array.isArray(color) && color.length >= 3) {
+      const [r, g, b] = color as number[];
+      hexColor = `#${Math.round(r).toString(16).padStart(2, "0")}${Math.round(g).toString(16).padStart(2, "0")}${Math.round(b).toString(16).padStart(2, "0")}`;
+    } else if (typeof color === "string") {
+      hexColor = color;
+    } else {
+      // Fallback to current color
+      const currentValue =
+        team === "team1"
+          ? form.getValues("customTeam1Color")
+          : form.getValues("customTeam2Color");
+      hexColor = currentValue ?? (team === "team1" ? "#3b82f6" : "#ef4444");
+    }
+
+    // Update form value
+    if (team === "team1") {
+      form.setValue("customTeam1Color", hexColor, { shouldDirty: true });
+    } else {
+      form.setValue("customTeam2Color", hexColor, { shouldDirty: true });
     }
   }
 
@@ -146,7 +285,193 @@ export function ProfileForm({ user }: { user: User }) {
             <FormDescription>{t("avatar.description")}</FormDescription>
             <FormMessage />
           </FormItem>
-          <Button type="submit">{t("update")}</Button>
+
+          <Separator />
+
+          {/* Colorblind Mode Section */}
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-medium">Accessibility Settings</h3>
+              <p className="text-muted-foreground text-sm">
+                Configure colorblind accessibility options to improve your
+                experience
+              </p>
+            </div>
+
+            <FormField
+              control={form.control}
+              name="colorblindMode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-medium">
+                    Colorblind Mode
+                  </FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={form.formState.isSubmitting}
+                      className="mt-2"
+                    >
+                      {colorblindModeOptions.map((option) => (
+                        <div
+                          key={option.value}
+                          className="flex items-start space-x-2"
+                        >
+                          <RadioGroupItem
+                            value={option.value}
+                            id={option.value}
+                            className="mt-1"
+                          />
+                          <div className="flex-1">
+                            <Label
+                              htmlFor={option.value}
+                              className="cursor-pointer font-medium"
+                            >
+                              {option.label}
+                            </Label>
+                            <p className="text-muted-foreground text-sm">
+                              {option.description}
+                            </p>
+                            <div className="mt-2 flex items-center gap-2">
+                              <div className="flex items-center gap-1">
+                                <div
+                                  className="border-border bg-team-1-off size-4 rounded-sm border"
+                                  style={{
+                                    backgroundColor:
+                                      option.value ===
+                                      $Enums.ColorblindMode.CUSTOM
+                                        ? watchedTeam1Color
+                                        : `var(--team-1-${option.value?.toLowerCase() ?? "off"})`,
+                                  }}
+                                />
+                                <span className="text-muted-foreground text-xs">
+                                  Team 1
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <div
+                                  className="border-border size-4 rounded-sm border"
+                                  style={{
+                                    backgroundColor:
+                                      option.value ===
+                                      $Enums.ColorblindMode.CUSTOM
+                                        ? watchedTeam2Color
+                                        : `var(--team-2-${option.value?.toLowerCase() ?? "off"})`,
+                                  }}
+                                />
+                                <span className="text-muted-foreground text-xs">
+                                  Team 2
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Custom Color Pickers - only show when CUSTOM mode is selected */}
+            {watchedColorblindMode === $Enums.ColorblindMode.CUSTOM && (
+              <div className="space-y-6 rounded-md border p-4">
+                <div>
+                  <Label className="text-base font-medium">
+                    Custom Team Colors
+                  </Label>
+                  <p className="text-muted-foreground text-sm">
+                    Choose custom colors for each team
+                  </p>
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="customTeam1Color"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium">
+                          Team 1 Color
+                        </FormLabel>
+                        <FormControl>
+                          <ColorPicker
+                            value={field.value}
+                            onChange={(color) => {
+                              handleCustomColorChange("team1", color);
+                            }}
+                            className="bg-background max-w-sm rounded-md border p-4 shadow-sm"
+                          >
+                            <ColorPickerSelection />
+                            <div className="flex items-center gap-4">
+                              <ColorPickerEyeDropper />
+                              <div className="grid w-full gap-1">
+                                <ColorPickerHue />
+                                <ColorPickerAlpha />
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <ColorPickerOutput />
+                              <ColorPickerFormat />
+                            </div>
+                          </ColorPicker>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="customTeam2Color"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium">
+                          Team 2 Color
+                        </FormLabel>
+                        <FormControl>
+                          <ColorPicker
+                            value={field.value}
+                            onChange={(color) => {
+                              handleCustomColorChange("team2", color);
+                            }}
+                            className="bg-background max-w-sm rounded-md border p-4 shadow-sm"
+                          >
+                            <ColorPickerSelection />
+                            <div className="flex items-center gap-4">
+                              <ColorPickerEyeDropper />
+                              <div className="grid w-full gap-1">
+                                <ColorPickerHue />
+                                <ColorPickerAlpha />
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <ColorPickerOutput />
+                              <ColorPickerFormat />
+                            </div>
+                          </ColorPicker>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <Button type="submit" disabled={form.formState.isSubmitting}>
+            {form.formState.isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Updating...
+              </>
+            ) : (
+              t("update")
+            )}
+          </Button>
         </form>
       </Form>
     </ClientOnly>
