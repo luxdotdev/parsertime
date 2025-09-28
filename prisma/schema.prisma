@@ -55,10 +55,29 @@ model User {
   stripeId      String?        @unique
   billingPlan   BillingPlan    @default(FREE)
   Notification  Notification[]
+  AppSettings   AppSettings[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @default(now()) @updatedAt
 
   @@index([id, email])
+}
+
+enum ColorblindMode {
+  OFF
+  DEUTERANOPIA
+  PROTANOPIA
+  TRITANOPIA
+}
+
+model AppSettings {
+  id             Int            @id @default(autoincrement())
+  userId         String
+  colorblindMode ColorblindMode @default(OFF)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 enum BillingPlan {
