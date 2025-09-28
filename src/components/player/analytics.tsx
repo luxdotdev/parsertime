@@ -16,9 +16,10 @@ import {
   getAverageUltChargeTime,
   getDuelWinrates,
 } from "@/lib/analytics";
+import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import {
-  cn,
+  getColorblindMode,
   groupPlayerKillsIntoFights,
   removeDuplicateRows,
   toHero,
@@ -47,6 +48,7 @@ export async function PlayerAnalytics({
     allDamageTakens,
     allHealingReceiveds,
     allHeroDamageDone,
+    session,
   ] = await Promise.all([
     getAverageUltChargeTime(id, playerName),
     getAverageTimeToUseUlt(id, playerName),
@@ -67,6 +69,7 @@ export async function PlayerAnalytics({
       where: { MapDataId: id, player_name: playerName },
       select: { id: true, round_number: true, hero_damage_dealt: true },
     }),
+    auth(),
   ]);
 
   const allDamageTakensByRound = removeDuplicateRows(allDamageTakens);
@@ -105,6 +108,10 @@ export async function PlayerAnalytics({
       return acc;
     },
     {} as Record<number, number>
+  );
+
+  const { team1: team1Color, team2: team2Color } = await getColorblindMode(
+    session?.user.id ?? ""
   );
 
   return (
@@ -221,12 +228,13 @@ export async function PlayerAnalytics({
                       alt=""
                       width={256}
                       height={256}
-                      className={cn(
-                        "h-12 w-12 rounded border-2",
-                        duel.player_team === match?.team_1_name
-                          ? "border-blue-500"
-                          : "border-red-500"
-                      )}
+                      className="h-12 w-12 rounded border-2"
+                      style={{
+                        border:
+                          duel.player_team === match?.team_1_name
+                            ? `2px solid ${team1Color}`
+                            : `2px solid ${team2Color}`,
+                      }}
                     />
                     <div className="text-lg font-medium">
                       {duel.player_name}
@@ -237,12 +245,13 @@ export async function PlayerAnalytics({
                       alt=""
                       width={256}
                       height={256}
-                      className={cn(
-                        "h-12 w-12 rounded border-2",
-                        duel.enemy_team === match?.team_1_name
-                          ? "border-blue-500"
-                          : "border-red-500"
-                      )}
+                      className="h-12 w-12 rounded border-2"
+                      style={{
+                        border:
+                          duel.enemy_team === match?.team_1_name
+                            ? `2px solid ${team1Color}`
+                            : `2px solid ${team2Color}`,
+                      }}
                     />
                     <div className="text-lg font-medium">{duel.enemy_name}</div>
                   </div>
@@ -250,21 +259,23 @@ export async function PlayerAnalytics({
                 <div className="align-middle text-lg">
                   {t("versus.score")}{" "}
                   <span
-                    className={cn(
-                      duel.player_team === match?.team_1_name
-                        ? "text-blue-500"
-                        : "text-red-500"
-                    )}
+                    style={{
+                      color:
+                        duel.player_team === match?.team_1_name
+                          ? team1Color
+                          : team2Color,
+                    }}
                   >
                     {duel.enemy_deaths}
                   </span>{" "}
                   -{" "}
                   <span
-                    className={cn(
-                      duel.enemy_team === match?.team_1_name
-                        ? "text-blue-500"
-                        : "text-red-500"
-                    )}
+                    style={{
+                      color:
+                        duel.enemy_team === match?.team_1_name
+                          ? team1Color
+                          : team2Color,
+                    }}
                   >
                     {duel.enemy_kills}
                   </span>
@@ -272,17 +283,18 @@ export async function PlayerAnalytics({
                 {t.rich("versus.winrate", {
                   color: (chunks) => (
                     <span
-                      className={cn(
-                        duel.enemy_deaths > duel.enemy_kills
-                          ? duel.player_team === match?.team_1_name
-                            ? "text-blue-500"
-                            : "text-red-500"
-                          : duel.enemy_deaths < duel.enemy_kills
+                      style={{
+                        color:
+                          duel.enemy_deaths > duel.enemy_kills
                             ? duel.player_team === match?.team_1_name
-                              ? "text-red-500"
-                              : "text-blue-500"
-                            : "text-purple-500"
-                      )}
+                              ? team1Color
+                              : team2Color
+                            : duel.enemy_deaths < duel.enemy_kills
+                              ? duel.player_team === match?.team_1_name
+                                ? team2Color
+                                : team1Color
+                              : "purple-500",
+                      }}
                     >
                       {chunks}
                     </span>
@@ -311,6 +323,8 @@ export async function PlayerAnalytics({
               fights={fights}
               team1={match?.team_1_name ?? t("playerKillfeed.team1")}
               team2={match?.team_2_name ?? t("playerKillfeed.team2")}
+              team1Color={team1Color}
+              team2Color={team2Color}
             />
           </CardContent>
         </Card>
