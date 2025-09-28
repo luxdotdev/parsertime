@@ -2,6 +2,7 @@ import { CommandDialogMenu } from "@/components/command-menu";
 import { CommandMenuProvider } from "@/components/command-menu-provider";
 import { DevTools } from "@/components/devtools";
 import { BetaBanner } from "@/components/home/beta-banner";
+import { AppSettingsProvider } from "@/components/settings/app-settings-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { getUser } from "@/data/user-dto";
@@ -64,9 +65,11 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           >
             <NextIntlClientProvider messages={messages}>
               <CommandMenuProvider>
-                <BetaBanner />
-                {children}
-                <CommandDialogMenu user={user} />
+                <AppSettingsProvider>
+                  <BetaBanner />
+                  {children}
+                  <CommandDialogMenu user={user} />
+                </AppSettingsProvider>
               </CommandMenuProvider>
             </NextIntlClientProvider>
             <Toaster />
