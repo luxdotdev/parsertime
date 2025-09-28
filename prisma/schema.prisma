@@ -67,15 +67,18 @@ enum ColorblindMode {
   DEUTERANOPIA
   PROTANOPIA
   TRITANOPIA
+  CUSTOM
 }
 
 model AppSettings {
-  id             Int            @id @default(autoincrement())
-  userId         String
-  colorblindMode ColorblindMode @default(OFF)
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id               Int            @id @default(autoincrement())
+  userId           String
+  colorblindMode   ColorblindMode @default(OFF)
+  customTeam1Color String?
+  customTeam2Color String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
