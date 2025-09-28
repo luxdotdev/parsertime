@@ -182,6 +182,8 @@ export function ScrimPagination({ isAdmin = false }: { isAdmin?: boolean }) {
     return <EmptyScrimList />;
   }
 
+  const firstFiveScrims = data?.scrims.slice(0, 5) ?? [];
+
   return (
     <Card className="bg-background">
       <span className="inline-flex gap-2 p-4">
@@ -222,7 +224,7 @@ export function ScrimPagination({ isAdmin = false }: { isAdmin?: boolean }) {
               <ScrimCard
                 key={scrim.id}
                 scrim={scrim}
-                prefetch={true} // prefetch all scrims on the page
+                prefetch={firstFiveScrims.includes(scrim)}
               />
             ))}
             <AddScrimCard />
