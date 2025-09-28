@@ -1631,7 +1631,19 @@
           }
         }
       },
-      "update": "Update profile"
+      "update": "Update profile",
+      "colorblindMode": {
+        "title": "Accessibility Settings",
+        "description": "Configure colorblind accessibility options to improve your experience",
+        "label": "Colorblind Mode",
+        "team1": "Team 1",
+        "team2": "Team 2",
+        "customTeamColors": "Custom Team Colors",
+        "customTeamColorsDescription": "Choose custom colors for each team",
+        "team1Color": "Team 1 Color",
+        "team2Color": "Team 2 Color"
+      },
+      "updating": "Updating..."
     },
     "linkedAccounts": {
       "title": "Linked Accounts",
