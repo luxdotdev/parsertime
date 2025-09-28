@@ -27,6 +27,7 @@ import { Separator } from "@/components/ui/separator";
 import { ClientOnly } from "@/lib/client-only";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { $Enums, type User } from "@prisma/client";
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -107,6 +108,7 @@ export function ProfileForm({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -178,6 +180,10 @@ export function ProfileForm({
             `Failed to update settings: ${await settingsRes.text()}`
           );
         }
+
+        void queryClient.invalidateQueries({
+          queryKey: ["appSettings"],
+        });
       }
 
       toast.success(t("onSubmit.title"), {
@@ -291,10 +297,11 @@ export function ProfileForm({
           {/* Colorblind Mode Section */}
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium">Accessibility Settings</h3>
+              <h3 className="text-lg font-medium">
+                {t("colorblindMode.title")}
+              </h3>
               <p className="text-muted-foreground text-sm">
-                Configure colorblind accessibility options to improve your
-                experience
+                {t("colorblindMode.description")}
               </p>
             </div>
 
@@ -304,7 +311,7 @@ export function ProfileForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-base font-medium">
-                    Colorblind Mode
+                    {t("colorblindMode.label")}
                   </FormLabel>
                   <FormControl>
                     <RadioGroup
@@ -346,7 +353,7 @@ export function ProfileForm({
                                   }}
                                 />
                                 <span className="text-muted-foreground text-xs">
-                                  Team 1
+                                  {t("colorblindMode.team1")}
                                 </span>
                               </div>
                               <div className="flex items-center gap-1">
@@ -361,7 +368,7 @@ export function ProfileForm({
                                   }}
                                 />
                                 <span className="text-muted-foreground text-xs">
-                                  Team 2
+                                  {t("colorblindMode.team2")}
                                 </span>
                               </div>
                             </div>
@@ -380,10 +387,10 @@ export function ProfileForm({
               <div className="space-y-6 rounded-md border p-4">
                 <div>
                   <Label className="text-base font-medium">
-                    Custom Team Colors
+                    {t("colorblindMode.customTeamColors")}
                   </Label>
                   <p className="text-muted-foreground text-sm">
-                    Choose custom colors for each team
+                    {t("colorblindMode.customTeamColorsDescription")}
                   </p>
                 </div>
 
@@ -394,7 +401,7 @@ export function ProfileForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-sm font-medium">
-                          Team 1 Color
+                          {t("colorblindMode.team1Color")}
                         </FormLabel>
                         <FormControl>
                           <ColorPicker
@@ -429,7 +436,7 @@ export function ProfileForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-sm font-medium">
-                          Team 2 Color
+                          {t("colorblindMode.team2Color")}
                         </FormLabel>
                         <FormControl>
                           <ColorPicker
@@ -466,7 +473,7 @@ export function ProfileForm({
             {form.formState.isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Updating...
+                {t("updating")}
               </>
             ) : (
               t("update")
