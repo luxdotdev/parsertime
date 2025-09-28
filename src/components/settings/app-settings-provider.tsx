@@ -13,6 +13,7 @@ type AppSettingsContextType = {
   isLoading: boolean;
   error: Error | null;
   updateColorblindMode: (mode: $Enums.ColorblindMode) => Promise<void>;
+  updateAppSettings: (data: UpdateAppSettingsRequest) => Promise<void>;
   refetch: () => Promise<void>;
 };
 
@@ -21,6 +22,9 @@ const AppSettingsContext = createContext<AppSettingsContextType>({
   isLoading: true,
   error: null,
   updateColorblindMode: async () => {
+    // empty function
+  },
+  updateAppSettings: async () => {
     // empty function
   },
   refetch: async () => {
@@ -104,12 +108,21 @@ export function AppSettingsProvider({
     },
   });
 
-  // Wrapper functions to match the original interface
+  // Create stable mutation functions that don't depend on the mutation object
   const updateColorblindMode = React.useCallback(
-    async (mode: $Enums.ColorblindMode) => {
+    async (mode: $Enums.ColorblindMode): Promise<void> => {
       await updateMutation.mutateAsync({ colorblindMode: mode });
     },
-    [updateMutation]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  const updateAppSettingsWrapper = React.useCallback(
+    async (data: UpdateAppSettingsRequest): Promise<void> => {
+      await updateMutation.mutateAsync(data);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
 
   const refetch = React.useCallback(async () => {
@@ -122,9 +135,11 @@ export function AppSettingsProvider({
       isLoading,
       error,
       updateColorblindMode,
+      updateAppSettings: updateAppSettingsWrapper,
       refetch,
     }),
-    [appSettings, isLoading, error, updateColorblindMode, refetch]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [appSettings, isLoading, error, refetch]
   );
 
   return <AppSettingsContext value={value}>{children}</AppSettingsContext>;
