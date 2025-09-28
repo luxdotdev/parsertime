@@ -1,5 +1,6 @@
 "use client";
 
+import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import type { Kill } from "@prisma/client";
 import { useTranslations } from "next-intl";
 import {
@@ -33,6 +34,7 @@ function CustomTooltip({
   teamNames: readonly [string, string];
 }) {
   const t = useTranslations("mapPage.charts");
+  const { team1, team2 } = useColorblindMode();
 
   if (active && payload?.length) {
     return (
@@ -41,11 +43,11 @@ function CustomTooltip({
           {t("time", { time: (label as number).toFixed(2) })}
         </h3>
         <p className="text-sm">
-          <strong className="text-blue-500">{teamNames[0]}</strong>:{" "}
+          <strong style={{ color: team1 }}>{teamNames[0]}</strong>:{" "}
           {payload[0].value}
         </p>
         <p className="text-sm">
-          <strong className="text-red-500">{teamNames[1]}</strong>:{" "}
+          <strong style={{ color: team2 }}>{teamNames[1]}</strong>:{" "}
           {payload[1].value}
         </p>
       </div>
@@ -90,6 +92,8 @@ export function KillsByFightChart({ fights, teamNames }: Props) {
 
   data.pop();
 
+  const { team1, team2 } = useColorblindMode();
+
   return (
     <ResponsiveContainer width="100%" height={500}>
       <LineChart
@@ -111,13 +115,13 @@ export function KillsByFightChart({ fights, teamNames }: Props) {
         <Line
           type="monotone"
           dataKey="team1Kills"
-          stroke="#0ea5e9"
+          stroke={team1}
           name={teamNames[0]}
         />
         <Line
           type="monotone"
           dataKey="team2Kills"
-          stroke="#ef4444"
+          stroke={team2}
           name={teamNames[1]}
         />
       </LineChart>
