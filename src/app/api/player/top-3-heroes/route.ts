@@ -75,6 +75,8 @@ export async function GET(request: NextRequest) {
           ...hero,
           hero_rating: 0,
           mapsPlayed: mapCount,
+          percentile: "0",
+          rank: 0,
         };
       }
 
@@ -82,6 +84,8 @@ export async function GET(request: NextRequest) {
         ...hero,
         hero_rating: compositeLeaderboard?.composite_sr ?? 0,
         mapsPlayed: compositeLeaderboard?.maps ?? 0,
+        percentile: compositeLeaderboard?.percentile ?? "0",
+        rank: compositeLeaderboard?.rank ?? 0,
       };
     })
   );
@@ -90,7 +94,9 @@ export async function GET(request: NextRequest) {
     return {
       ...hero,
       hero_rating: heroRatings[index].hero_rating ?? 0,
-      mapsPlayed: Number(heroRatings[index].mapsPlayed ?? 0),
+      mapsPlayed: heroRatings[index].mapsPlayed ?? 0,
+      percentile: heroRatings[index].percentile ?? "0",
+      rank: heroRatings[index].rank ?? 0,
     };
   });
 
