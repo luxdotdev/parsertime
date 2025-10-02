@@ -116,56 +116,62 @@ type CalculateMVPScoreParams = {
 
 /**
  * Calculate MVP score for a single hero/stat row.
+ * Uses parallel queries for all stats to improve performance.
  */
 async function calculateHeroMVPScore(
   playerName: string,
   hero: HeroName,
   stats: PlayerStat,
-  minMaps = 10,
-  minTimeSeconds = 600
+  minMaps = 5,
+  minTimeSeconds = 300
 ): Promise<Omit<MVPScoreResult, "totalScore"> | null> {
-  const contributions: StatContribution[] = [];
-
-  for (const stat of MVP_STATS) {
+  const statQueries = MVP_STATS.map((stat) => {
     const statValue = stats[stat as keyof PlayerStat] as number | undefined;
 
     if (statValue === undefined || statValue === null) {
-      continue;
+      return null;
     }
 
-    try {
-      const comparison = await compareStatValueToDistribution({
+    return {
+      stat,
+      statValue,
+      promise: compareStatValueToDistribution({
         hero,
         stat,
         value: statValue,
         timePlayedSeconds: stats.hero_time_played,
         minMaps,
         minTimeSeconds,
-      });
+        sampleLimit: 150,
+      }).catch(() => null),
+    };
+  }).filter((q): q is NonNullable<typeof q> => q !== null);
 
-      if (!comparison) {
-        continue;
-      }
+  const results = await Promise.all(statQueries.map((q) => q.promise));
 
-      const weight = STAT_WEIGHTS[stat] ?? 1.0;
-      const pointsAwarded = calculatePointsFromZScore(
-        comparison.z_score,
-        weight
-      );
+  const contributions: StatContribution[] = [];
 
-      contributions.push({
-        stat,
-        rawValue: Number(statValue),
-        per10Value: Number(comparison.input_per10),
-        heroAverage: Number(comparison.hero_avg_per10),
-        zScore: Number(comparison.z_score),
-        pointsAwarded: Number(pointsAwarded),
-        percentile: Number(comparison.estimated_percentile),
-        totalPlayers: Number(comparison.total_players),
-      });
-    } catch {
+  for (let i = 0; i < statQueries.length; i++) {
+    const query = statQueries[i];
+    const comparison = results[i];
+
+    if (!comparison) {
       continue;
     }
+
+    const weight = STAT_WEIGHTS[query.stat] ?? 1.0;
+    const pointsAwarded = calculatePointsFromZScore(comparison.z_score, weight);
+
+    contributions.push({
+      stat: query.stat,
+      rawValue: Number(query.statValue),
+      per10Value: Number(comparison.input_per10),
+      heroAverage: Number(comparison.hero_avg_per10),
+      zScore: Number(comparison.z_score),
+      pointsAwarded: Number(pointsAwarded),
+      percentile: Number(comparison.estimated_percentile),
+      totalPlayers: Number(comparison.total_players),
+    });
   }
 
   if (contributions.length === 0) {
@@ -183,12 +189,13 @@ async function calculateHeroMVPScore(
 /**
  * Calculate the total MVP score for a player on a map.
  * If the player played multiple heroes, their scores are combined.
+ * Uses parallel calculations for all heroes to improve performance.
  */
 export async function calculateMVPScore({
   mapId,
   playerName,
-  minMaps = 10,
-  minTimeSeconds = 600,
+  minMaps = 5,
+  minTimeSeconds = 300,
 }: CalculateMVPScoreParams): Promise<MVPScoreResult | null> {
   const playerStats = await getPlayerFinalStats(mapId, playerName);
 
@@ -196,27 +203,29 @@ export async function calculateMVPScore({
     return null;
   }
 
+  const validStats = playerStats.filter((s) => s.hero_time_played >= 60);
+
+  if (validStats.length === 0) {
+    return null;
+  }
+
+  const heroScores = await Promise.all(
+    validStats.map((statRow) =>
+      calculateHeroMVPScore(
+        playerName,
+        statRow.player_hero as HeroName,
+        statRow,
+        minMaps,
+        minTimeSeconds
+      )
+    )
+  );
+
   const allContributions: StatContribution[] = [];
   let totalScore = 0;
   let totalTimePlayedSeconds = 0;
-  const heroesPlayed: HeroName[] = [];
 
-  for (const statRow of playerStats) {
-    if (statRow.hero_time_played < 60) {
-      continue;
-    }
-
-    const hero = statRow.player_hero as HeroName;
-    heroesPlayed.push(hero);
-
-    const heroScore = await calculateHeroMVPScore(
-      playerName,
-      hero,
-      statRow,
-      minMaps,
-      minTimeSeconds
-    );
-
+  for (const heroScore of heroScores) {
     if (heroScore) {
       allContributions.push(...heroScore.contributions);
       totalScore += heroScore.contributions.reduce(
@@ -232,8 +241,8 @@ export async function calculateMVPScore({
   }
 
   const primaryHero =
-    heroesPlayed.length > 0
-      ? (playerStats.reduce((prev, current) =>
+    validStats.length > 0
+      ? (validStats.reduce((prev, current) =>
           prev.hero_time_played > current.hero_time_played ? prev : current
         ).player_hero as HeroName)
       : ("Unknown" as HeroName);
@@ -253,8 +262,8 @@ export async function calculateMVPScore({
  */
 export async function calculateMVPScoresForMap(
   mapId: number,
-  minMaps = 10,
-  minTimeSeconds = 600
+  minMaps = 5,
+  minTimeSeconds = 300
 ): Promise<MVPScoreResult[]> {
   const allStats = await getFinalRoundStats(mapId);
 
@@ -281,8 +290,8 @@ export async function calculateMVPScoresForMap(
  */
 export async function getMVPForMap(
   mapId: number,
-  minMaps = 10,
-  minTimeSeconds = 600
+  minMaps = 5,
+  minTimeSeconds = 300
 ): Promise<MVPScoreResult | null> {
   const results = await calculateMVPScoresForMap(
     mapId,
