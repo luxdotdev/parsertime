@@ -58,6 +58,7 @@ export async function GET(request: NextRequest) {
       const compositeLeaderboard = await getCompositeSRLeaderboard({
         hero: hero.player_hero as HeroName,
         player: validPlayer.data,
+        limit: 300,
       });
 
       if (!compositeLeaderboard) {
