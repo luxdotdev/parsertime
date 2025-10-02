@@ -220,14 +220,42 @@ type CompositeSRLeaderboardResult = {
   percentile: number;
 };
 
-export async function getCompositeSRLeaderboard(
-  params: CompositeLeaderboardParams
-) {
+// Overload: when player is provided, return single result or undefined
+export async function getCompositeSRLeaderboard(params: {
+  hero: HeroName;
+  player: string;
+  minMaps?: number;
+  minTimeSeconds?: number;
+  limit?: number;
+  customWeights?: Record<string, number>;
+}): Promise<CompositeSRLeaderboardResult | null>;
+
+// Overload: when player is not provided, return array
+export async function getCompositeSRLeaderboard(params: {
+  hero: HeroName;
+  player?: undefined;
+  minMaps?: number;
+  minTimeSeconds?: number;
+  limit?: number;
+  customWeights?: Record<string, number>;
+}): Promise<CompositeSRLeaderboardResult[]>;
+
+// Implementation
+export async function getCompositeSRLeaderboard(params: {
+  hero: HeroName;
+  player?: string;
+  minMaps?: number;
+  minTimeSeconds?: number;
+  limit?: number;
+  customWeights?: Record<string, number>;
+}): Promise<
+  CompositeSRLeaderboardResult | CompositeSRLeaderboardResult[] | null
+> {
   const query = buildCompositeSRQuery(params);
   const result = await prisma.$queryRaw<CompositeSRLeaderboardResult[]>(query);
 
   if (params.player) {
-    return result.filter((row) => row.player_name === params.player);
+    return result.find((row) => row.player_name === params.player) ?? null;
   }
 
   return result;
