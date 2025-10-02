@@ -99,7 +99,7 @@ function displayHeroRating(heroRating: number, mapsPlayed: number) {
       // Master
       return (
         <div className="flex items-center gap-1">
-          <Image src="/ranks/master.png" alt="Master" width={16} height={16} />
+          <Image src="/ranks/masters.png" alt="Master" width={16} height={16} />
           <span className="text-xs text-emerald-500">{heroRating} SR</span>
         </div>
       );
