@@ -178,7 +178,7 @@ function buildCompositeSRQuery({
       ${role}::text AS role,
       player_name,
       ${Prisma.raw(displayColumns)},
-      maps,
+      maps::int AS maps,
       ROUND((total_secs / 60.0)::numeric, 1) AS minutes_played,
       ROUND(composite_z_score::numeric, 2) AS composite_z_score,
       FLOOR(
@@ -191,7 +191,7 @@ function buildCompositeSRQuery({
       )::int AS composite_sr,
       ROW_NUMBER() OVER (
         ORDER BY composite_z_score DESC
-      ) AS rank,
+      )::int AS rank,
       ROUND((PERCENT_RANK() OVER (
         ORDER BY composite_z_score
       ) * 100)::numeric, 1) AS percentile
