@@ -289,6 +289,7 @@ export function Statistics({
     .slice(0, 3);
 
   const top3MostPlayedHeroes = filteredStats
+    .filter((stat) => stat.hero_time_played > 0)
     .map((stat) => stat.player_hero)
     .reduce(
       (acc, hero) => {

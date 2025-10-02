@@ -67,6 +67,9 @@ export async function GET(request: NextRequest) {
           where: {
             player_name: validPlayer.data,
             player_hero: hero.player_hero as HeroName,
+            hero_time_played: {
+              gt: 0,
+            },
           },
         });
 
