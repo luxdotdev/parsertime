@@ -66,7 +66,7 @@ function getStatAlias(column: string): string {
 function buildCompositeSRQuery({
   hero,
   minMaps = 10,
-  minTimeSeconds = 600,
+  minTimeSeconds = 60,
   limit = 100,
   customWeights,
 }: CompositeLeaderboardParams): Prisma.Sql {
