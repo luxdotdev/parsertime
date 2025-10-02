@@ -5,6 +5,7 @@ import { BetaBanner } from "@/components/home/beta-banner";
 import { AppSettingsProvider } from "@/components/settings/app-settings-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { QueryProvider } from "@/lib/query";
@@ -63,15 +64,17 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             enableSystem
             disableTransitionOnChange
           >
-            <NextIntlClientProvider messages={messages}>
-              <CommandMenuProvider>
-                <AppSettingsProvider>
-                  <BetaBanner />
-                  {children}
-                  <CommandDialogMenu user={user} />
-                </AppSettingsProvider>
-              </CommandMenuProvider>
-            </NextIntlClientProvider>
+            <TooltipProvider>
+              <NextIntlClientProvider messages={messages}>
+                <CommandMenuProvider>
+                  <AppSettingsProvider>
+                    <BetaBanner />
+                    {children}
+                    <CommandDialogMenu user={user} />
+                  </AppSettingsProvider>
+                </CommandMenuProvider>
+              </NextIntlClientProvider>
+            </TooltipProvider>
             <Toaster />
             <SpeedInsights />
             <Analytics />
