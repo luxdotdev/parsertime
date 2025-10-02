@@ -135,7 +135,8 @@ function buildCompositeSRQuery({
         ORDER BY
           "MapDataId",
           player_name,
-          round_number DESC
+          round_number DESC,
+          id DESC
       ),
       per_player_totals AS (
         SELECT
