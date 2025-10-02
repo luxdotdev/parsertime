@@ -39,6 +39,14 @@ const ROLE_STAT_CONFIGS: Record<HeroRole, StatConfig[]> = {
   ],
 };
 
+// Mercy-specific configuration that excludes eliminations, final_blows, and solo_kills
+const MERCY_STAT_CONFIG: StatConfig[] = [
+  { column: "deaths", weight: 0.35, invert: true }, // Increased from 0.25
+  { column: "hero_damage_dealt", weight: 0.25 }, // Increased from 0.14
+  { column: "healing_dealt", weight: 0.35 }, // Same as Support
+  { column: "ultimates_earned", weight: 0.05 }, // Same as Support
+];
+
 type CompositeLeaderboardParams = {
   hero: HeroName;
   player?: string;
@@ -71,7 +79,8 @@ function buildCompositeSRQuery({
   customWeights,
 }: CompositeLeaderboardParams): Prisma.Sql {
   const role = heroRoleMapping[hero] || "Damage";
-  let statConfigs = ROLE_STAT_CONFIGS[role];
+  let statConfigs =
+    hero === "Mercy" ? MERCY_STAT_CONFIG : ROLE_STAT_CONFIGS[role];
 
   if (customWeights) {
     statConfigs = statConfigs.map((stat) => ({
@@ -207,11 +216,15 @@ type CompositeSRLeaderboardResult = {
   hero: string;
   role: string;
   player_name: string;
-  elims_per10: number;
-  fb_per10: number;
+  elims_per10?: number;
+  fb_per10?: number;
   deaths_per10: number;
   damage_per10: number;
-  solo_per10: number;
+  healing_per10?: number;
+  blocked_per10?: number;
+  taken_per10?: number;
+  solo_per10?: number;
+  ults_per10?: number;
   maps: number;
   minutes_played: number;
   composite_z_score: number;
