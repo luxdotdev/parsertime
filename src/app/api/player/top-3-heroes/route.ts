@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
             player_name: validPlayer.data,
             player_hero: hero.player_hero as HeroName,
             hero_time_played: {
-              gt: 0,
+              gt: 60,
             },
           },
         });
