@@ -28,7 +28,6 @@ import {
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { NonMappableStat, Stat } from "@/lib/player-charts";
@@ -44,14 +43,12 @@ import type { DateRange } from "react-day-picker";
 
 function ChartTooltip({ children }: { children: React.ReactNode }) {
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <InfoCircledIcon className="h-4 w-4" />
-        </TooltipTrigger>
-        <TooltipContent className="max-w-[280px]">{children}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <InfoCircledIcon className="h-4 w-4" />
+      </TooltipTrigger>
+      <TooltipContent className="max-w-[280px]">{children}</TooltipContent>
+    </Tooltip>
   );
 }
 
@@ -465,18 +462,16 @@ export function Statistics({
                           )}
                         />{" "}
                       </div>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Link href={`/stats/${player}`} target="_blank">
-                              {player}
-                            </Link>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{t("bestPerformance.clickPlayer")}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Link href={`/stats/${player}`} target="_blank">
+                            {player}
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{t("bestPerformance.clickPlayer")}</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </span>
                   </TableCell>
                   <TableCell>{finalBlows}</TableCell>

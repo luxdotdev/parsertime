@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useTranslations } from "next-intl";
@@ -22,17 +21,15 @@ export function ReplayCode({ replayCode }: { replayCode: string }) {
   }
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="link" onClick={() => handleClick({ replayCode })}>
-            <p className="z-10 font-semibold tracking-tight text-white">
-              {replayCode}
-            </p>
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>{t("title")}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button variant="link" onClick={() => handleClick({ replayCode })}>
+          <p className="z-10 font-semibold tracking-tight text-white">
+            {replayCode}
+          </p>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>{t("title")}</TooltipContent>
+    </Tooltip>
   );
 }

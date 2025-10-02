@@ -5,7 +5,6 @@ import { Link } from "@/components/ui/link";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { Scrim } from "@prisma/client";
@@ -31,19 +30,17 @@ export function ScrimCard({ scrim, prefetch }: Props) {
           <div className="flex items-center justify-between">
             <span>{scrim.name}</span>
             {scrim.hasPerms && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link
-                      href={`/${scrim.teamId}/scrim/${scrim.id}/edit` as Route}
-                      aria-label={t("editScrim")}
-                    >
-                      <Pencil2Icon className="h-4 w-4" />
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent>{t("editScrim")}</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href={`/${scrim.teamId}/scrim/${scrim.id}/edit` as Route}
+                    aria-label={t("editScrim")}
+                  >
+                    <Pencil2Icon className="h-4 w-4" />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>{t("editScrim")}</TooltipContent>
+              </Tooltip>
             )}
           </div>
           <p className="text-muted-foreground text-sm font-normal">

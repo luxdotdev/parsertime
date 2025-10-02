@@ -2,7 +2,6 @@ import { Link } from "@/components/ui/link";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { get } from "@vercel/edge-config";
@@ -31,20 +30,19 @@ export async function Footer() {
               className="h-7 w-auto dark:invert"
             />
           </Link>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href={changelog ?? "https://lux.dev/blog"}
-                  target="_blank"
-                  className="text-xs text-gray-600 dark:text-gray-300"
-                >
-                  {version ?? ""}
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent>{t("changelog")}</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href={changelog ?? "https://lux.dev/blog"}
+                target="_blank"
+                className="text-xs text-gray-600 dark:text-gray-300"
+              >
+                {version ?? ""}
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>{t("changelog")}</TooltipContent>
+          </Tooltip>
         </div>
 
         <div className="mt-6 flex flex-wrap items-center justify-center gap-4 lg:mt-0 lg:gap-6">

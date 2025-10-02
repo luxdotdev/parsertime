@@ -11,7 +11,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useNotifications } from "@/hooks/use-notifications";
@@ -53,35 +52,33 @@ export function Notifications() {
   return (
     <div className="relative">
       <Popover>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="relative"
-                  onClick={handleBellClick}
-                >
-                  <Bell className="h-5 w-5" />
-                  {hasUnread && (
-                    <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
-                      {unreadCount > 9 ? "9+" : unreadCount}
-                    </span>
-                  )}
-                  <span className="sr-only">
-                    {hasUnread
-                      ? t("notifications", { count: unreadCount })
-                      : t("title")}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="relative"
+                onClick={handleBellClick}
+              >
+                <Bell className="h-5 w-5" />
+                {hasUnread && (
+                  <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
+                    {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
-                </Button>
-              </PopoverTrigger>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              {t("unread-notifications", { count: unreadCount })}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+                )}
+                <span className="sr-only">
+                  {hasUnread
+                    ? t("notifications", { count: unreadCount })
+                    : t("title")}
+                </span>
+              </Button>
+            </PopoverTrigger>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            {t("unread-notifications", { count: unreadCount })}
+          </TooltipContent>
+        </Tooltip>
         <PopoverContent className="w-80 p-0" align="end">
           <div className="border-border flex items-center justify-between border-b p-4">
             <h3 className="font-medium">{t("title")}</h3>

@@ -13,7 +13,6 @@ import { Link } from "@/components/ui/link";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { getScrim } from "@/data/scrim-dto";
@@ -133,14 +132,12 @@ export default async function ScrimDashboardPage(
                   href={`/${params.team}/scrim/${params.scrimId}/edit` as Route}
                   aria-label={t("edit")}
                 >
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Pencil2Icon className="h-6 w-6 align-middle" />
-                      </TooltipTrigger>
-                      <TooltipContent>{t("edit")}</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Pencil2Icon className="h-6 w-6 align-middle" />
+                    </TooltipTrigger>
+                    <TooltipContent>{t("edit")}</TooltipContent>
+                  </Tooltip>
                 </Link>
               )}
             </span>

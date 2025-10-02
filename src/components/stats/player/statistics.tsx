@@ -31,7 +31,6 @@ import {
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { Winrate } from "@/data/scrim-dto";
@@ -48,14 +47,12 @@ import type { DateRange } from "react-day-picker";
 
 function ChartTooltip({ children }: { children: React.ReactNode }) {
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <InfoCircledIcon className="h-4 w-4" />
-        </TooltipTrigger>
-        <TooltipContent className="max-w-[280px]">{children}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <InfoCircledIcon className="h-4 w-4" />
+      </TooltipTrigger>
+      <TooltipContent className="max-w-[280px]">{children}</TooltipContent>
+    </Tooltip>
   );
 }
 
@@ -527,25 +524,23 @@ export function Statistics({
                           )}
                         />{" "}
                       </div>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Link
-                              href={`/${
-                                scrims[timeframe].find(
-                                  (scrim) => scrim.id === scrimId
-                                )?.teamId
-                              }/scrim/${scrimId}/map/${mapId}`}
-                              target="_blank"
-                            >
-                              {heroNames.get(toHero(hero as string)) ?? hero}
-                            </Link>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{t("bestPerformance.clickMap")}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Link
+                            href={`/${
+                              scrims[timeframe].find(
+                                (scrim) => scrim.id === scrimId
+                              )?.teamId
+                            }/scrim/${scrimId}/map/${mapId}`}
+                            target="_blank"
+                          >
+                            {heroNames.get(toHero(hero as string)) ?? hero}
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{t("bestPerformance.clickMap")}</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </span>
                   </TableCell>
                   <TableCell>{finalBlows}</TableCell>

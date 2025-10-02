@@ -16,7 +16,6 @@ import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ClientOnly } from "@/lib/client-only";
@@ -120,27 +119,25 @@ export function TeamSettingsForm({ team }: { team: Team }) {
                 <code className="rounded bg-zinc-800 p-1 text-zinc-800 transition-colors hover:text-white">
                   {`https://parsertime.app/team/join/${btoa(team.createdAt.toISOString())}`}
                 </code>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <ClipboardCopyIcon
-                        className="ml-2 inline-block h-5 w-5 cursor-pointer"
-                        onClick={() => {
-                          void navigator.clipboard.writeText(
-                            `https://parsertime.app/team/join/${btoa(
-                              team.createdAt.toISOString()
-                            )}`
-                          );
-                          toast.success(t("clipboard.title"), {
-                            description: t("clipboard.description"),
-                            duration: 5000,
-                          });
-                        }}
-                      />
-                    </TooltipTrigger>
-                    <TooltipContent>{t("clipboard.tooltip")}</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <ClipboardCopyIcon
+                      className="ml-2 inline-block h-5 w-5 cursor-pointer"
+                      onClick={() => {
+                        void navigator.clipboard.writeText(
+                          `https://parsertime.app/team/join/${btoa(
+                            team.createdAt.toISOString()
+                          )}`
+                        );
+                        toast.success(t("clipboard.title"), {
+                          description: t("clipboard.description"),
+                          duration: 5000,
+                        });
+                      }}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>{t("clipboard.tooltip")}</TooltipContent>
+                </Tooltip>
               </div>
             </FormControl>
             <FormDescription>{t("teamInviteLink.description")}</FormDescription>
