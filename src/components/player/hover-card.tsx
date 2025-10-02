@@ -3,6 +3,11 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { toHero, toTimestampWithHours, useHeroNames } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
@@ -15,6 +20,8 @@ async function getTop3Heroes(player: string) {
       total_time_played: z.number(),
       hero_rating: z.number(),
       mapsPlayed: z.number(),
+      rank: z.number(),
+      percentile: z.string(),
     })
   );
 
@@ -177,30 +184,59 @@ export function PlayerHoverCard({
             )}
             {top3Heroes && top3Heroes.length > 0 && (
               <div className="flex justify-center gap-4">
-                {top3Heroes.map((hero) => (
-                  <div
-                    key={hero.player_hero}
-                    className="flex flex-col items-center space-y-1"
-                  >
-                    <Image
-                      src={`/heroes/${toHero(hero.player_hero)}.png`}
-                      alt={`${hero.player_hero} hero portrait`}
-                      width={48}
-                      height={48}
-                      className="h-12 w-12 rounded border"
-                    />
-                    <span className="text-center text-xs font-medium">
-                      {heroNames.get(toHero(hero.player_hero)) ??
-                        hero.player_hero}
-                    </span>
-                    <span className="text-muted-foreground text-xs">
-                      {toTimestampWithHours(hero.total_time_played)}
-                    </span>
-                    <span className="text-muted-foreground text-xs">
-                      {displayHeroRating(hero.hero_rating, hero.mapsPlayed)}
-                    </span>
-                  </div>
-                ))}
+                {top3Heroes.map((hero) => {
+                  const percentile = parseInt(hero.percentile);
+                  const suffix =
+                    percentile % 10 === 1 && percentile !== 11
+                      ? "st"
+                      : percentile % 10 === 2 && percentile !== 12
+                        ? "nd"
+                        : percentile % 10 === 3 && percentile !== 13
+                          ? "rd"
+                          : "th";
+
+                  const percentileText =
+                    hero.rank <= 15
+                      ? `Top ${hero.rank} (${percentile}${suffix} percentile)`
+                      : `${percentile}${suffix} percentile`;
+
+                  return (
+                    <div
+                      key={hero.player_hero}
+                      className="flex flex-col items-center space-y-1"
+                    >
+                      <Image
+                        src={`/heroes/${toHero(hero.player_hero)}.png`}
+                        alt={`${hero.player_hero} hero portrait`}
+                        width={48}
+                        height={48}
+                        className="h-12 w-12 rounded border"
+                      />
+                      <span className="text-center text-xs font-medium">
+                        {heroNames.get(toHero(hero.player_hero)) ??
+                          hero.player_hero}
+                      </span>
+                      <span className="text-muted-foreground text-xs">
+                        {toTimestampWithHours(hero.total_time_played)}
+                      </span>
+                      <span className="text-muted-foreground text-xs">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            {displayHeroRating(
+                              hero.hero_rating,
+                              hero.mapsPlayed
+                            )}
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {percentile === 0
+                              ? `Play ${10 - hero.mapsPlayed} more maps to be placed`
+                              : percentileText}
+                          </TooltipContent>
+                        </Tooltip>
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             )}
             {top3Heroes && top3Heroes.length === 0 && (
@@ -208,6 +244,9 @@ export function PlayerHoverCard({
                 No hero data available
               </div>
             )}
+            <p className="text-muted-foreground text-xs">
+              Hover over a hero&apos;s rating to see their rank and percentile.
+            </p>
           </div>
         </div>
       </HoverCardContent>
