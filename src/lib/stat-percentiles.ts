@@ -173,7 +173,13 @@ function buildStatValueComparisonQuery({
   const isInverted = INVERTED_STATS.includes(stat);
   const per10Value = (value / timePlayedSeconds) * 600.0;
 
-  const zScoreCalc = isInverted
+  // Z-score calculation for players based on their actual stat values
+  const playerZScoreCalc = isInverted
+    ? `(b.avg_per10 - p.stat_per10) / NULLIF(b.std_per10, 0)`
+    : `(p.stat_per10 - b.avg_per10) / NULLIF(b.std_per10, 0)`;
+
+  // Z-score calculation for the input value
+  const inputZScoreCalc = isInverted
     ? `(b.avg_per10 - ${per10Value}) / NULLIF(b.std_per10, 0)`
     : `(${per10Value} - b.avg_per10) / NULLIF(b.std_per10, 0)`;
 
@@ -218,9 +224,11 @@ function buildStatValueComparisonQuery({
       ),
       player_z_scores AS (
         SELECT
-          ${Prisma.raw(zScoreCalc.replace(/b\./g, ""))} AS player_z_score
+          p.player_name,
+          p.stat_per10,
+          ${Prisma.raw(playerZScoreCalc)} AS z_score
         FROM
-          per_player_totals
+          per_player_totals p
           CROSS JOIN stat_baseline b
       ),
       input_stats AS (
@@ -229,10 +237,10 @@ function buildStatValueComparisonQuery({
           b.std_per10,
           b.total_players,
           ${per10Value}::numeric AS input_per10,
-          ${Prisma.raw(zScoreCalc)} AS input_z_score,
-          (COUNT(CASE WHEN pz.player_z_score > ${Prisma.raw(zScoreCalc)} THEN 1 END) + 1)::int AS estimated_rank,
+          ${Prisma.raw(inputZScoreCalc)} AS input_z_score,
+          (COUNT(CASE WHEN pz.z_score > ${Prisma.raw(inputZScoreCalc)} THEN 1 END) + 1)::int AS estimated_rank,
           ROUND(
-            (COUNT(CASE WHEN pz.player_z_score < ${Prisma.raw(zScoreCalc)} THEN 1 END)::numeric / 
+            (COUNT(CASE WHEN pz.z_score < ${Prisma.raw(inputZScoreCalc)} THEN 1 END)::numeric / 
             b.total_players * 100)::numeric, 
             1
           ) AS estimated_percentile
