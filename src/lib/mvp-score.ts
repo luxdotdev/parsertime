@@ -17,12 +17,13 @@ import {
  * 1. Starts each player at 0 points
  * 2. For each significant stat (eliminations, hero damage, etc.):
  *    - Calculates how many standard deviations the player is from the global hero average
- *    - Awards/detracts points based on the z-score (10 points per standard deviation)
- *    - Applies stat-specific weights (e.g., solo kills are worth more)
+ *    - Awards/detracts points based on the z-score (4 points per standard deviation)
+ *    - Applies stat-specific weights (core stats weighted 1.0x, minor stats 0.3-0.6x)
+ *    - Caps each stat's contribution at ±10 points to prevent single-stat dominance
  * 3. Sums all contributions to get the total MVP score
  *
- * The result includes a full breakdown of each stat's contribution, allowing the UI
- * to display exactly how the score was calculated.
+ * The result is a score typically ranging from -100 to +100, with a full breakdown
+ * of each stat's contribution for transparency.
  */
 
 type StatContribution = {
@@ -65,38 +66,45 @@ const MVP_STATS: ValidStatColumn[] = [
 /**
  * Weight multipliers for each stat.
  * Higher weights mean the stat has more impact on the final MVP score.
- * - High impact stats (solo_kills, objective_kills): 1.4-1.5x
- * - Important stats (final_blows, ultimates_earned): 1.2-1.3x
- * - Standard stats (eliminations, damage, healing): 1.0x
- * - Supporting stats (assists, damage_blocked): 0.8-0.9x
+ * - Core impact stats (eliminations, final_blows, deaths, damage, healing, solo_kills): 1.0x
+ * - Supporting stats (damage_blocked): 0.6x
+ * - Minor stats (assists, ultimates, objective_kills): 0.3-0.4x
  */
 const STAT_WEIGHTS: Record<ValidStatColumn, number> = {
   eliminations: 1.0,
-  final_blows: 1.2,
+  final_blows: 1.0,
   deaths: 1.0,
   hero_damage_dealt: 1.0,
   healing_dealt: 1.0,
-  damage_blocked: 0.8,
-  damage_taken: 0.5,
-  solo_kills: 1.5,
-  ultimates_earned: 1.3,
-  objective_kills: 1.4,
-  offensive_assists: 0.9,
-  defensive_assists: 0.9,
+  damage_blocked: 0.6,
+  damage_taken: 0.3,
+  solo_kills: 1.0,
+  ultimates_earned: 0.4,
+  objective_kills: 0.4,
+  offensive_assists: 0.3,
+  defensive_assists: 0.3,
 };
 
 /**
- * Converts a z-score to MVP points.
- * Base formula: z-score * 10 * weight
+ * Maximum points any single stat can contribute (positive or negative).
+ */
+const MAX_STAT_CONTRIBUTION = 10;
+
+/**
+ * Converts a z-score to MVP points with capping.
+ * Base formula: z-score * 4 * weight, capped at ±MAX_STAT_CONTRIBUTION
  *
  * Examples:
- * - 2 standard deviations above average = +20 base points
- * - 1 standard deviation below average = -10 base points
+ * - 2.5 standard deviations above average (weight 1.0) = +10 points (capped)
+ * - 1 standard deviation below average (weight 1.0) = -4 points
  * - At average (z-score = 0) = 0 points
  */
 function calculatePointsFromZScore(zScore: number, weight = 1.0): number {
-  const basePoints = zScore * 10;
-  return basePoints * weight;
+  const basePoints = zScore * 4 * weight;
+  return Math.max(
+    -MAX_STAT_CONTRIBUTION,
+    Math.min(MAX_STAT_CONTRIBUTION, basePoints)
+  );
 }
 
 type CalculateMVPScoreParams = {
