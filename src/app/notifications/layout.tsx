@@ -7,4 +7,3 @@ export default function NotificationsLayout({
 }) {
   return <DashboardLayout>{children}</DashboardLayout>;
 }
-
