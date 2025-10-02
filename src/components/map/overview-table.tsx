@@ -31,6 +31,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import { type PlayerData, aggregatePlayerData } from "@/lib/player-table-data";
 import { cn, toTimestamp } from "@/lib/utils";
 import {
@@ -44,7 +45,13 @@ import type { Route } from "next";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 
-export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
+export function OverviewTable({
+  playerStats,
+  team1Name,
+}: {
+  playerStats: PlayerStat[];
+  team1Name: string;
+}) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -58,6 +65,8 @@ export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
     () => aggregatePlayerData(playerStats),
     [playerStats]
   );
+
+  const { team1: team1Color, team2: team2Color } = useColorblindMode();
 
   const t = useTranslations("mapPage.overviewTable");
 
@@ -78,6 +87,7 @@ export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
       ),
       cell: ({ row }) => {
         const playerName = row.getValue<string>("playerName");
+        const playerTeam = row.getValue<string>("playerTeam");
 
         return (
           <PlayerHoverCard player={playerName}>
@@ -87,7 +97,13 @@ export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
               }
               prefetch={true}
             >
-              {playerName}
+              <span
+                style={{
+                  color: playerTeam === team1Name ? team1Color : team2Color,
+                }}
+              >
+                {playerName}
+              </span>
             </Link>
           </PlayerHoverCard>
         );
@@ -119,7 +135,17 @@ export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
         </OverviewTableHeader>
       ),
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("playerTeam")}</div>
+        <div
+          className="capitalize"
+          style={{
+            color:
+              row.getValue("playerTeam") === team1Name
+                ? team1Color
+                : team2Color,
+          }}
+        >
+          {row.getValue("playerTeam")}
+        </div>
       ),
       enableSorting: true,
       enableColumnFilter: false,

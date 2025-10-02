@@ -282,11 +282,17 @@ export async function DefaultOverview({
             <CardTitle>{t("title")}</CardTitle>
           </CardHeader>
           <CardContent className="flex md:hidden">
-            <OverviewTable playerStats={finalRoundStats} />
+            <OverviewTable
+              playerStats={finalRoundStats}
+              team1Name={matchDetails?.team_1_name ?? ""}
+            />
           </CardContent>
           <CardContent className="hidden md:flex">
             {numberOfRounds === 1 ? (
-              <OverviewTable playerStats={finalRoundStats} />
+              <OverviewTable
+                playerStats={finalRoundStats}
+                team1Name={matchDetails?.team_1_name ?? ""}
+              />
             ) : (
               <Tabs
                 defaultValue="final"
@@ -301,7 +307,10 @@ export async function DefaultOverview({
                   ))}
                 </TabsList>
                 <TabsContent value="final" className="space-y-4">
-                  <OverviewTable playerStats={finalRoundStats} />
+                  <OverviewTable
+                    playerStats={finalRoundStats}
+                    team1Name={matchDetails?.team_1_name ?? ""}
+                  />
                 </TabsContent>
                 {range(numberOfRounds).map((round) => (
                   <TabsContent
@@ -311,6 +320,7 @@ export async function DefaultOverview({
                   >
                     <OverviewTable
                       key={round + 1}
+                      team1Name={matchDetails?.team_1_name ?? ""}
                       playerStats={removeDuplicateRows(playerStats)
                         .filter(
                           (stat) =>
