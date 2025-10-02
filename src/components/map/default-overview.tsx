@@ -150,11 +150,7 @@ export async function DefaultOverview({
     (player) => player.player_hero === "Lúcio"
   );
 
-  // TODO: remove after testing in staging
-  console.time("calculateMVPScoresForMap");
   const mvpScores = await calculateMVPScoresForMap(id);
-
-  console.timeEnd("calculateMVPScoresForMap");
 
   const team1Players = mvpScores.filter(
     (score) =>
