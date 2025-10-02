@@ -40,7 +40,7 @@ const ROLE_STAT_CONFIGS: Record<HeroRole, StatConfig[]> = {
 };
 
 type CompositeLeaderboardParams = {
-  hero: string;
+  hero: HeroName;
   player?: string;
   minMaps?: number;
   minTimeSeconds?: number;
@@ -70,7 +70,7 @@ function buildCompositeSRQuery({
   limit = 100,
   customWeights,
 }: CompositeLeaderboardParams): Prisma.Sql {
-  const role = heroRoleMapping[hero as HeroName] || "Damage";
+  const role = heroRoleMapping[hero] || "Damage";
   let statConfigs = ROLE_STAT_CONFIGS[role];
 
   if (customWeights) {
