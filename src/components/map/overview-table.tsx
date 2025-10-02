@@ -15,6 +15,7 @@ import {
 } from "@tanstack/react-table";
 import * as React from "react";
 
+import { PlayerHoverCard } from "@/components/player/hover-card";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/components/ui/link";
 import {
@@ -28,7 +29,6 @@ import {
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { type PlayerData, aggregatePlayerData } from "@/lib/player-table-data";
@@ -76,16 +76,22 @@ export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
           {t("header.playerName")}
         </OverviewTableHeader>
       ),
-      cell: ({ row }) => (
-        <Link
-          href={
-            `${pathname}/player/${encodeURIComponent(row.getValue("playerName"))}` as Route
-          }
-          prefetch={true}
-        >
-          {row.getValue("playerName")}
-        </Link>
-      ),
+      cell: ({ row }) => {
+        const playerName = row.getValue<string>("playerName");
+
+        return (
+          <PlayerHoverCard player={playerName}>
+            <Link
+              href={
+                `${pathname}/player/${encodeURIComponent(playerName)}` as Route
+              }
+              prefetch={true}
+            >
+              {playerName}
+            </Link>
+          </PlayerHoverCard>
+        );
+      },
       enableSorting: true,
       sortingFn: "basic",
       filterFn: "includesString",
@@ -432,30 +438,28 @@ function OverviewTableHeader({
   children: React.ReactNode;
 }) {
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger>
-          {header.isPlaceholder ? null : header.column.getCanSort() ? (
-            <Button
-              variant="ghost"
-              onClick={header.column.getToggleSortingHandler()}
-              className="h-max w-full p-1"
-            >
-              {children}
-              {!header.column.getIsSorted() && (
-                <ChevronUpDownIcon className="w-4 min-w-4" />
-              )}
-              {{
-                asc: <ChevronUpIcon className="w-4 min-w-4" />,
-                desc: <ChevronDownIcon className="w-4 min-w-4" />,
-              }[header.column.getIsSorted() as string] ?? null}
-            </Button>
-          ) : (
-            children
-          )}
-        </TooltipTrigger>
-        <TooltipContent>{tooltip ?? ""}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger>
+        {header.isPlaceholder ? null : header.column.getCanSort() ? (
+          <Button
+            variant="ghost"
+            onClick={header.column.getToggleSortingHandler()}
+            className="h-max w-full p-1"
+          >
+            {children}
+            {!header.column.getIsSorted() && (
+              <ChevronUpDownIcon className="w-4 min-w-4" />
+            )}
+            {{
+              asc: <ChevronUpIcon className="w-4 min-w-4" />,
+              desc: <ChevronDownIcon className="w-4 min-w-4" />,
+            }[header.column.getIsSorted() as string] ?? null}
+          </Button>
+        ) : (
+          children
+        )}
+      </TooltipTrigger>
+      <TooltipContent>{tooltip ?? ""}</TooltipContent>
+    </Tooltip>
   );
 }
