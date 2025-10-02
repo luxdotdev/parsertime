@@ -36,7 +36,6 @@ export function useNotifications() {
   const [loadMoreElement, setLoadMoreElement] = useState<HTMLDivElement | null>(
     null
   );
-  const [hasInitialized, setHasInitialized] = useState(false);
 
   // Subscribe to store state
   const notifications = useSelector(
@@ -66,6 +65,10 @@ export function useNotifications() {
   const loadingOperations = useSelector(
     notificationsStore,
     (state) => state.context.loadingOperations
+  );
+  const hasInitialized = useSelector(
+    notificationsStore,
+    (state) => state.context.hasInitialized
   );
 
   // Derived state
@@ -105,8 +108,6 @@ export function useNotifications() {
             pagination: data.pagination,
           });
         }
-
-        setHasInitialized(true);
       } catch (error) {
         Logger.error("Failed to fetch notifications:", error);
         notificationsStore.trigger.setError({ isError: true });
@@ -137,12 +138,17 @@ export function useNotifications() {
     await fetchNotifications(currentPagination.page + 1, true);
   }, [fetchNotifications]);
 
-  // Initialize notifications on mount
+  // Initialize notifications on mount - only if not already initialized globally
   useEffect(() => {
-    if (!hasInitialized && !isLoading && !isError) {
+    const snapshot = notificationsStore.getSnapshot();
+    if (
+      !snapshot.context.hasInitialized &&
+      !snapshot.context.isLoading &&
+      !snapshot.context.isError
+    ) {
       void fetchNotifications();
     }
-  }, [hasInitialized, isLoading, isError, fetchNotifications]);
+  }, [fetchNotifications]);
 
   // Create a callback ref function
   const loadMoreRef = useCallback((node: HTMLDivElement | null) => {

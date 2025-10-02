@@ -26,6 +26,7 @@ type NotificationContext = {
 
   // UI state
   isPopoverOpen: boolean;
+  hasInitialized: boolean;
 };
 
 export const notificationsStore = createStore({
@@ -38,6 +39,7 @@ export const notificationsStore = createStore({
     isMarkingAllAsRead: false,
     loadingOperations: {},
     isPopoverOpen: false,
+    hasInitialized: false,
   } satisfies NotificationContext,
   on: {
     // Data operations
@@ -51,6 +53,7 @@ export const notificationsStore = createStore({
       ...context,
       notifications: event.notifications,
       pagination: event.pagination,
+      hasInitialized: true,
     }),
 
     appendNotifications: (

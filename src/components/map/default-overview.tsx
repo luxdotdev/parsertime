@@ -10,6 +10,7 @@ import { CardIcon } from "@/components/ui/card-icon";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getFinalRoundStats } from "@/data/scrim-dto";
 import { getAjaxes } from "@/lib/analytics";
+import { calculateMVPScoresForMap } from "@/lib/mvp-score";
 import prisma from "@/lib/prisma";
 import {
   cn,
@@ -149,6 +150,23 @@ export async function DefaultOverview({
     (player) => player.player_hero === "Lúcio"
   );
 
+  const mvpScores = await calculateMVPScoresForMap(id);
+
+  const team1Players = mvpScores.filter(
+    (score) =>
+      finalRoundStats.find((stat) => stat.player_name === score.playerName)
+        ?.player_team === matchDetails?.team_1_name
+  );
+
+  const team2Players = mvpScores.filter(
+    (score) =>
+      finalRoundStats.find((stat) => stat.player_name === score.playerName)
+        ?.player_team === matchDetails?.team_2_name
+  );
+
+  const team1MVP = team1Players[0]?.playerName ?? "";
+  const team2MVP = team2Players[0]?.playerName ?? "";
+
   return (
     <>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -285,6 +303,10 @@ export async function DefaultOverview({
             <OverviewTable
               playerStats={finalRoundStats}
               team1Name={matchDetails?.team_1_name ?? ""}
+              team2Name={matchDetails?.team_2_name ?? ""}
+              team1MVP={team1MVP}
+              team2MVP={team2MVP}
+              mvpScores={mvpScores}
             />
           </CardContent>
           <CardContent className="hidden md:flex">
@@ -292,6 +314,10 @@ export async function DefaultOverview({
               <OverviewTable
                 playerStats={finalRoundStats}
                 team1Name={matchDetails?.team_1_name ?? ""}
+                team2Name={matchDetails?.team_2_name ?? ""}
+                team1MVP={team1MVP}
+                team2MVP={team2MVP}
+                mvpScores={mvpScores}
               />
             ) : (
               <Tabs
@@ -310,6 +336,10 @@ export async function DefaultOverview({
                   <OverviewTable
                     playerStats={finalRoundStats}
                     team1Name={matchDetails?.team_1_name ?? ""}
+                    team2Name={matchDetails?.team_2_name ?? ""}
+                    team1MVP={team1MVP}
+                    team2MVP={team2MVP}
+                    mvpScores={mvpScores}
                   />
                 </TabsContent>
                 {range(numberOfRounds).map((round) => (
@@ -321,6 +351,10 @@ export async function DefaultOverview({
                     <OverviewTable
                       key={round + 1}
                       team1Name={matchDetails?.team_1_name ?? ""}
+                      team2Name={matchDetails?.team_2_name ?? ""}
+                      team1MVP={team1MVP}
+                      team2MVP={team2MVP}
+                      mvpScores={mvpScores}
                       playerStats={removeDuplicateRows(playerStats)
                         .filter(
                           (stat) =>
