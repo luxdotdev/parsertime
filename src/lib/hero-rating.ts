@@ -217,7 +217,7 @@ type CompositeSRLeaderboardResult = {
   composite_z_score: number;
   composite_sr: number;
   rank: number;
-  percentile: number;
+  percentile: string; // Prisma.$queryRaw returns a string for numerics
 };
 
 // Overload: when player is provided, return single result or undefined
