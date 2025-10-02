@@ -4,7 +4,7 @@ import { getFinalRoundStats, getPlayerFinalStats } from "@/data/scrim-dto";
 import type { HeroName } from "@/types/heroes";
 import type { PlayerStat } from "@prisma/client";
 import {
-  compareStatValueToDistribution,
+  compareMultipleStatsToDistribution,
   type ValidStatColumn,
 } from "./stat-percentiles";
 
@@ -116,7 +116,7 @@ type CalculateMVPScoreParams = {
 
 /**
  * Calculate MVP score for a single hero/stat row.
- * Uses parallel queries for all stats to improve performance.
+ * Uses a single batched query for all stats to improve performance.
  */
 async function calculateHeroMVPScore(
   playerName: string,
@@ -125,65 +125,66 @@ async function calculateHeroMVPScore(
   minMaps = 5,
   minTimeSeconds = 300
 ): Promise<Omit<MVPScoreResult, "totalScore"> | null> {
-  const statQueries = MVP_STATS.map((stat) => {
+  const statValues: { stat: ValidStatColumn; value: number }[] = [];
+
+  for (const stat of MVP_STATS) {
     const statValue = stats[stat as keyof PlayerStat] as number | undefined;
 
-    if (statValue === undefined || statValue === null) {
-      return null;
+    if (statValue !== undefined && statValue !== null) {
+      statValues.push({ stat, value: statValue });
     }
-
-    return {
-      stat,
-      statValue,
-      promise: compareStatValueToDistribution({
-        hero,
-        stat,
-        value: statValue,
-        timePlayedSeconds: stats.hero_time_played,
-        minMaps,
-        minTimeSeconds,
-        sampleLimit: 150,
-      }).catch(() => null),
-    };
-  }).filter((q): q is NonNullable<typeof q> => q !== null);
-
-  const results = await Promise.all(statQueries.map((q) => q.promise));
-
-  const contributions: StatContribution[] = [];
-
-  for (let i = 0; i < statQueries.length; i++) {
-    const query = statQueries[i];
-    const comparison = results[i];
-
-    if (!comparison) {
-      continue;
-    }
-
-    const weight = STAT_WEIGHTS[query.stat] ?? 1.0;
-    const pointsAwarded = calculatePointsFromZScore(comparison.z_score, weight);
-
-    contributions.push({
-      stat: query.stat,
-      rawValue: Number(query.statValue),
-      per10Value: Number(comparison.input_per10),
-      heroAverage: Number(comparison.hero_avg_per10),
-      zScore: Number(comparison.z_score),
-      pointsAwarded: Number(pointsAwarded),
-      percentile: Number(comparison.estimated_percentile),
-      totalPlayers: Number(comparison.total_players),
-    });
   }
 
-  if (contributions.length === 0) {
+  if (statValues.length === 0) {
     return null;
   }
 
-  return {
-    contributions,
-    playerName,
-    hero,
-    timePlayedSeconds: stats.hero_time_played,
-  };
+  try {
+    const result = await compareMultipleStatsToDistribution({
+      hero,
+      stats: statValues,
+      timePlayedSeconds: stats.hero_time_played,
+      minMaps,
+      minTimeSeconds,
+      sampleLimit: 150,
+    });
+
+    if (!result?.comparisons) {
+      return null;
+    }
+
+    const contributions: StatContribution[] = result.comparisons.map(
+      (comparison) => {
+        const weight = STAT_WEIGHTS[comparison.stat] ?? 1.0;
+        const pointsAwarded = calculatePointsFromZScore(
+          comparison.z_score,
+          weight
+        );
+        const statValue =
+          statValues.find((s) => s.stat === comparison.stat)?.value ?? 0;
+
+        return {
+          stat: comparison.stat,
+          rawValue: Number(statValue),
+          per10Value: Number(comparison.input_per10),
+          heroAverage: Number(comparison.hero_avg_per10),
+          zScore: Number(comparison.z_score),
+          pointsAwarded: Number(pointsAwarded),
+          percentile: Number(comparison.estimated_percentile),
+          totalPlayers: Number(comparison.total_players),
+        };
+      }
+    );
+
+    return {
+      contributions,
+      playerName,
+      hero,
+      timePlayedSeconds: stats.hero_time_played,
+    };
+  } catch {
+    return null;
+  }
 }
 
 /**
