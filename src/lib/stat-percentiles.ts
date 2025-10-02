@@ -148,6 +148,7 @@ type StatValueComparisonParams = {
   timePlayedSeconds: number;
   minMaps?: number;
   minTimeSeconds?: number;
+  sampleLimit?: number;
 };
 
 type StatValueComparisonResult = {
@@ -169,6 +170,7 @@ function buildStatValueComparisonQuery({
   timePlayedSeconds,
   minMaps = 10,
   minTimeSeconds = 600,
+  sampleLimit = 200,
 }: StatValueComparisonParams): Prisma.Sql {
   const isInverted = INVERTED_STATS.includes(stat);
   const per10Value = (value / timePlayedSeconds) * 600.0;
@@ -205,7 +207,8 @@ function buildStatValueComparisonQuery({
       per_player_totals AS (
         SELECT
           player_name,
-          (SUM(${Prisma.raw(stat)})::numeric / SUM(hero_time_played)) * 600.0 AS stat_per10
+          (SUM(${Prisma.raw(stat)})::numeric / SUM(hero_time_played)) * 600.0 AS stat_per10,
+          COUNT(*) AS maps
         FROM
           final_rows
         GROUP BY
@@ -213,6 +216,9 @@ function buildStatValueComparisonQuery({
         HAVING
           COUNT(*) >= ${minMaps}
           AND SUM(hero_time_played) >= ${minTimeSeconds}
+        ORDER BY
+          maps DESC, player_name
+        LIMIT ${sampleLimit}
       ),
       stat_baseline AS (
         SELECT
