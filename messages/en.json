@@ -762,6 +762,14 @@
           "round": "Round {round}",
           "dmgDone": "Damage Done",
           "dmgTaken": "Damage Taken"
+        },
+        "mvpScore": {
+          "title": "MVP Score",
+          "footer": "The MVP score is a calculation based on a player's statistics compared to the averages of all other players who have played the same hero in scrims. Hover over this card to see how the MVP score is calculated.",
+          "totalScore": "Total Score: {score}",
+          "per10Value": "{per10Value}/10min vs avg {heroAverage}",
+          "percentile": "{percentile, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} percentile",
+          "explanation": "The MVP score can be used to understand how a player is performing compared to similar players on their hero. The MVP stat does not take into account a player's performance compared to their teammates—it is a way to see who is having a stand-out performance compared to the global averages on their hero. MVP scores range between -100 and +100, with a normal distribution centered around 0."
         }
       },
       "charts": {
