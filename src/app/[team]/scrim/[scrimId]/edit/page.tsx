@@ -31,6 +31,32 @@ export default async function EditScrimPage(
     })
   ).sort((a, b) => a.id - b.id);
 
+  const [heroBansByMap, teamNamesByMap] = await Promise.all([
+    Promise.all(
+      maps.map((map) =>
+        prisma.heroBan.findMany({
+          where: { MapDataId: map.id },
+          orderBy: { banPosition: "asc" },
+        })
+      )
+    ),
+    Promise.all(
+      maps.map((map) =>
+        prisma.matchStart.findFirst({
+          where: { MapDataId: map.id },
+          select: { team_1_name: true, team_2_name: true },
+        })
+      )
+    ),
+  ]);
+
+  const mapsWithHeroBans = maps.map((map, index) => ({
+    ...map,
+    heroBans: heroBansByMap[index],
+    team1Name: teamNamesByMap[index]?.team_1_name ?? "Team 1",
+    team2Name: teamNamesByMap[index]?.team_2_name ?? "Team 2",
+  }));
+
   return (
     <DashboardLayout>
       <main className="container py-2">
@@ -44,7 +70,11 @@ export default async function EditScrimPage(
             {t("title")}
           </h3>
 
-          <EditScrimForm scrim={scrim} teams={teamsWithPerms} maps={maps} />
+          <EditScrimForm
+            scrim={scrim}
+            teams={teamsWithPerms}
+            maps={mapsWithHeroBans}
+          />
           <div className="p-4" />
           <DangerZone scrim={scrim} />
         </div>
