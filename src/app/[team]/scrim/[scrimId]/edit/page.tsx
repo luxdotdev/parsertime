@@ -39,16 +39,15 @@ export default async function EditScrimPage(
             &larr; {t("back")}
           </Link>
         </h4>
+        <div className="mx-auto max-w-lg px-4">
+          <h3 className="scroll-m-20 pb-2 text-2xl font-semibold tracking-tight">
+            {t("title")}
+          </h3>
 
-        <h3 className="scroll-m-20 pb-2 text-2xl font-semibold tracking-tight">
-          {t("title")}
-        </h3>
-
-        <EditScrimForm scrim={scrim} teams={teamsWithPerms} maps={maps} />
-
-        <div className="p-4" />
-
-        <DangerZone scrim={scrim} />
+          <EditScrimForm scrim={scrim} teams={teamsWithPerms} maps={maps} />
+          <div className="p-4" />
+          <DangerZone scrim={scrim} />
+        </div>
       </main>
     </DashboardLayout>
   );
