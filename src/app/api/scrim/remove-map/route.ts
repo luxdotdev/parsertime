@@ -90,6 +90,7 @@ export async function POST(req: NextRequest) {
     prisma.ultimateCharged.deleteMany({ where: { MapDataId: mapId } }),
     prisma.ultimateEnd.deleteMany({ where: { MapDataId: mapId } }),
     prisma.ultimateStart.deleteMany({ where: { MapDataId: mapId } }),
+    prisma.heroBan.deleteMany({ where: { MapDataId: mapId } }),
   ]);
 
   after(async () => {
