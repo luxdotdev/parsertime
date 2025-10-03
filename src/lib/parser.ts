@@ -301,6 +301,21 @@ export async function createNewScrimFromParsedData(
     },
   });
 
+  if (data.heroBans) {
+    await prisma.heroBan.createMany({
+      data: data.heroBans.map((ban) => ({
+        scrimId: scrim.id,
+        hero: ban.hero,
+        team:
+          ban.team === "team1"
+            ? data.map.match_start[0][4]
+            : data.map.match_start[0][5],
+        banPosition: ban.banPosition,
+        MapDataId: map.id,
+      })),
+    });
+  }
+
   await prisma.scrim.update({
     where: {
       id: scrim.id,
