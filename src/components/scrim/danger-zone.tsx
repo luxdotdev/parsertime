@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { ClientOnly } from "@/lib/client-only";
 import type { Scrim } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { startTransition, useEffect, useState } from "react";
@@ -22,6 +23,7 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
   const [deleteInput, setDeleteInput] = useState("");
   const [deleteEnabled, setDeleteEnabled] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const queryClient = useQueryClient();
   const router = useRouter();
   const t = useTranslations("scrimPage.editScrim");
 
@@ -40,6 +42,7 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
         description: t("deleteScrim.handleDelete.description"),
         duration: 5000,
       });
+      void queryClient.invalidateQueries({ queryKey: ["scrims"] });
       router.push("/dashboard");
     } else {
       toast.error(t("deleteScrim.handleDelete.errorTitle"), {
