@@ -477,7 +477,15 @@
       "mapName": "First Map",
       "mapDescription": "Upload the first map of the scrim. Only .xlsx and .txt files are accepted, and max file size is 1MB. You can add more maps after the scrim is created.",
       "submit": "Submit",
-      "submitting": "Submitting..."
+      "submitting": "Submitting...",
+      "heroBansName": "Hero Bans",
+      "heroBansDescription": "Add the heroes banned by each team. Ban order will be preserved.",
+      "addHeroBan": "Add Hero Ban",
+      "orderName": "Order",
+      "selectTeam": "Select team",
+      "team": "Team",
+      "hero": "Hero",
+      "selectHero": "Select hero"
     }
   },
   "updateModal": {
