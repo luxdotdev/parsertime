@@ -1,6 +1,7 @@
 import { DmgDoneVsDmgTakenChart } from "@/components/charts/player/dmg-done-vs-dmg-taken-chart";
 import { DmgTakenVsHealingReceivedChart } from "@/components/charts/player/dmg-taken-vs-healing-chart";
 import { KillfeedTable } from "@/components/map/killfeed-table";
+import { MVPCard } from "@/components/player/mvp-card";
 import {
   Card,
   CardContent,
@@ -11,12 +12,12 @@ import {
 import { CardIcon } from "@/components/ui/card-icon";
 import {
   calculateDroughtTime,
-  calculateXFactor,
   getAverageTimeToUseUlt,
   getAverageUltChargeTime,
   getDuelWinrates,
 } from "@/lib/analytics";
 import { auth } from "@/lib/auth";
+import { calculateMVPScoresForMap } from "@/lib/mvp-score";
 import prisma from "@/lib/prisma";
 import {
   getColorblindMode,
@@ -44,11 +45,11 @@ export async function PlayerAnalytics({
     duels,
     match,
     fights,
-    xFactor,
     allDamageTakens,
     allHealingReceiveds,
     allHeroDamageDone,
     session,
+    mvpScore,
   ] = await Promise.all([
     getAverageUltChargeTime(id, playerName),
     getAverageTimeToUseUlt(id, playerName),
@@ -56,7 +57,6 @@ export async function PlayerAnalytics({
     getDuelWinrates(id, playerName),
     prisma.matchStart.findFirst({ where: { MapDataId: id } }),
     groupPlayerKillsIntoFights(id, playerName),
-    calculateXFactor(id, playerName),
     prisma.playerStat.findMany({
       where: { MapDataId: id, player_name: playerName },
       select: { id: true, round_number: true, damage_taken: true },
@@ -70,6 +70,7 @@ export async function PlayerAnalytics({
       select: { id: true, round_number: true, hero_damage_dealt: true },
     }),
     auth(),
+    calculateMVPScoresForMap(id),
   ]);
 
   const allDamageTakensByRound = removeDuplicateRows(allDamageTakens);
@@ -184,28 +185,7 @@ export async function PlayerAnalytics({
             </p>
           </CardFooter>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {t("xFactor.title")}
-            </CardTitle>
-            <CardIcon>
-              <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
-              <path d="M5 3v4" />
-              <path d="M19 17v4" />
-              <path d="M3 5h4" />
-              <path d="M17 19h4" />
-            </CardIcon>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{xFactor.toFixed(2)}</div>
-          </CardContent>
-          <CardFooter>
-            <p className="text-muted-foreground text-xs">
-              {t("xFactor.footer")}
-            </p>
-          </CardFooter>
-        </Card>
+        <MVPCard playerName={playerName} mvpScores={mvpScore} />
         <Card className="col-span-full max-h-[80vh] overflow-y-auto 2xl:col-span-1">
           <CardHeader>
             <CardTitle className="text-sm font-medium">
