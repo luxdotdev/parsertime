@@ -219,6 +219,21 @@ model Map {
   @@index([scrimId])
 }
 
+model HeroBan {
+  id          Int      @id @default(autoincrement())
+  scrimId     Int
+  hero        String
+  team        String
+  banPosition Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  MapData     MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId   Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
 enum EventType {
   defensive_assist
   dva_remech
@@ -283,6 +298,7 @@ model MapData {
   ultimate_charged     UltimateCharged[]
   ultimate_end         UltimateEnd[]
   ultimate_start       UltimateStart[]
+  HeroBan              HeroBan[]
   Map                  Map?                 @relation(fields: [mapId], references: [id])
   mapId                Int?
 
