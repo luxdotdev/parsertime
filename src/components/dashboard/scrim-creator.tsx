@@ -77,12 +77,6 @@ export function ScrimCreationForm({
       error: t("dateRequiredError"),
     }),
     map: z.any(),
-    replayCode: z
-      .string()
-      .max(6, {
-        message: "Replay code must not be longer than 6 characters.",
-      })
-      .optional(),
   });
 
   async function getTeams() {
