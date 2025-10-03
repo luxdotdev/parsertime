@@ -7,12 +7,21 @@ import { track } from "@vercel/analytics/server";
 import { unauthorized } from "next/navigation";
 import { after, type NextRequest } from "next/server";
 
+export type AddMapRequestData = {
+  map: ParserData;
+  heroBans?: {
+    hero: string;
+    team: string;
+    banPosition: number;
+  }[];
+};
+
 export async function POST(req: NextRequest) {
   const session = await auth();
 
   const id = req.nextUrl.searchParams.get("id") ?? "";
 
-  const data = (await req.json()) as ParserData;
+  const data = (await req.json()) as AddMapRequestData;
 
   if (!session || !session.user || !session.user.email) {
     Logger.warn("Unauthorized request to add map");
@@ -20,7 +29,14 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await createNewMap({ map: data, scrimId: parseInt(id) }, session);
+    await createNewMap(
+      {
+        map: data.map,
+        scrimId: parseInt(id),
+        heroBans: data.heroBans,
+      },
+      session
+    );
 
     after(async () => {
       await Promise.all([
