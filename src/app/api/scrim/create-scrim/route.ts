@@ -21,6 +21,11 @@ export type CreateScrimRequestData = {
   date: string;
   map: ParserData;
   replayCode: string;
+  heroBans: {
+    hero: string;
+    team: string;
+    banPosition: number;
+  }[];
 };
 
 export async function POST(request: NextRequest) {
