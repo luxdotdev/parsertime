@@ -544,7 +544,12 @@
           "title": "Map Added Successfully",
           "description": "Corrupted data was automatically fixed and your map has been added successfully."
         }
-      }
+      },
+      "submitting": "Submitting",
+      "submit": "Submit",
+      "addHeroBan": "Add Hero Ban",
+      "heroBansDescription": "Configure hero bans for this map. You can skip this step by clicking Submit without adding any bans.",
+      "heroBansTitle": "Add Hero Bans (Optional)"
     },
     "editScrim": {
       "back": "Back to scrim",
