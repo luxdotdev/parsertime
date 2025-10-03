@@ -35,6 +35,7 @@ type StatContribution = {
   pointsAwarded: number;
   percentile: number;
   totalPlayers: number;
+  hero: HeroName;
 };
 
 type MVPScoreResult = {
@@ -172,6 +173,7 @@ async function calculateHeroMVPScore(
           pointsAwarded: Number(pointsAwarded),
           percentile: Number(comparison.estimated_percentile),
           totalPlayers: Number(comparison.total_players),
+          hero,
         };
       }
     );
