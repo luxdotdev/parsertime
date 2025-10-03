@@ -75,41 +75,31 @@ export default async function MapDashboardPage(
   const user = await getUser(session?.user?.email);
   const t = await getTranslations("mapPage");
 
-  const mostPlayedHeroes = await getMostPlayedHeroes(id);
+  const { team1, team2 } = await getColorblindMode(user?.id ?? "");
 
-  const mapDetails = await prisma.matchStart.findFirst({
-    where: {
-      MapDataId: id,
-    },
-    select: {
-      map_name: true,
-      team_1_name: true,
-    },
-  });
-
-  const map = await prisma.map.findFirst({
-    where: { id },
-    select: { replayCode: true },
-  });
-
-  const visibility = (await prisma.scrim.findFirst({
-    where: {
-      id: parseInt(params.scrimId),
-    },
-    select: {
-      guestMode: true,
-    },
-  })) ?? { guestMode: false };
+  const [mostPlayedHeroes, mapDetails, map, visibility, heroBans] =
+    await Promise.all([
+      getMostPlayedHeroes(id),
+      prisma.matchStart.findFirst({
+        where: { MapDataId: id },
+        select: { map_name: true, team_1_name: true },
+      }),
+      prisma.map.findFirst({
+        where: { id },
+        select: { replayCode: true },
+      }),
+      prisma.scrim.findFirst({
+        where: { id: parseInt(params.scrimId) },
+        select: { guestMode: true },
+      }),
+      prisma.heroBan.findMany({
+        where: { MapDataId: id },
+      }),
+    ]);
 
   const translatedMapName = await translateMapName(
     mapDetails?.map_name ?? "Map"
   );
-
-  const heroBans = await prisma.heroBan.findMany({
-    where: { MapDataId: id },
-  });
-
-  const { team1, team2 } = await getColorblindMode(user?.id ?? "");
 
   return (
     <div className="flex-col md:flex">
@@ -127,7 +117,7 @@ export default async function MapDashboardPage(
                 <UserNav />
               </>
             ) : (
-              <GuestNav guestMode={visibility.guestMode} />
+              <GuestNav guestMode={visibility?.guestMode ?? false} />
             )}
           </div>
         </div>
@@ -142,7 +132,7 @@ export default async function MapDashboardPage(
                 <UserNav />
               </>
             ) : (
-              <GuestNav guestMode={visibility.guestMode} />
+              <GuestNav guestMode={visibility?.guestMode ?? false} />
             )}
           </div>
         </div>
