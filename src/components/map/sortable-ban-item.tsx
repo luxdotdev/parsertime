@@ -19,6 +19,8 @@ export function SortableBanItem({
   onHeroChange,
   onTeamChange,
   onRemove,
+  team1Name,
+  team2Name,
 }: {
   ban: { hero: string; team: string; banPosition: number };
   index: number;
@@ -26,6 +28,8 @@ export function SortableBanItem({
   onHeroChange: (value: string) => void;
   onTeamChange: (value: string) => void;
   onRemove: () => void;
+  team1Name?: string;
+  team2Name?: string;
 }) {
   const t = useTranslations("dashboard.scrimCreationForm");
   const {
@@ -77,8 +81,8 @@ export function SortableBanItem({
             <SelectValue placeholder={t("selectTeam")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="team1">Team 1</SelectItem>
-            <SelectItem value="team2">Team 2</SelectItem>
+            <SelectItem value="team1">{team1Name ?? "Team 1"}</SelectItem>
+            <SelectItem value="team2">{team2Name ?? "Team 2"}</SelectItem>
           </SelectContent>
         </Select>
       </div>
