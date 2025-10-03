@@ -212,50 +212,34 @@ export async function calculateMVPScore({
     return null;
   }
 
-  const heroScores = await Promise.all(
-    validStats.map((statRow) =>
-      calculateHeroMVPScore(
-        playerName,
-        statRow.player_hero as HeroName,
-        statRow,
-        minMaps,
-        minTimeSeconds
-      )
-    )
+  // Only evaluate the most-played hero to avoid bias towards frequent swaps
+  const mostPlayedRow = validStats.reduce((prev, current) =>
+    prev.hero_time_played > current.hero_time_played ? prev : current
   );
 
-  const allContributions: StatContribution[] = [];
-  let totalScore = 0;
-  let totalTimePlayedSeconds = 0;
+  const heroScore = await calculateHeroMVPScore(
+    playerName,
+    mostPlayedRow.player_hero as HeroName,
+    mostPlayedRow,
+    minMaps,
+    minTimeSeconds
+  );
 
-  for (const heroScore of heroScores) {
-    if (heroScore) {
-      allContributions.push(...heroScore.contributions);
-      totalScore += heroScore.contributions.reduce(
-        (sum, c) => sum + c.pointsAwarded,
-        0
-      );
-      totalTimePlayedSeconds += heroScore.timePlayedSeconds;
-    }
-  }
-
-  if (allContributions.length === 0) {
+  if (!heroScore) {
     return null;
   }
 
-  const primaryHero =
-    validStats.length > 0
-      ? (validStats.reduce((prev, current) =>
-          prev.hero_time_played > current.hero_time_played ? prev : current
-        ).player_hero as HeroName)
-      : ("Unknown" as HeroName);
+  const totalScore = heroScore.contributions.reduce(
+    (sum, c) => sum + c.pointsAwarded,
+    0
+  );
 
   return {
     totalScore: Number((Math.round(totalScore * 100) / 100).toFixed(2)),
-    contributions: allContributions,
+    contributions: heroScore.contributions,
     playerName,
-    hero: primaryHero,
-    timePlayedSeconds: Number(totalTimePlayedSeconds),
+    hero: mostPlayedRow.player_hero as HeroName,
+    timePlayedSeconds: Number(mostPlayedRow.hero_time_played),
   };
 }
 
