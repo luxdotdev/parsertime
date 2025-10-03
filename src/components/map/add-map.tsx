@@ -1,11 +1,21 @@
 "use client";
 
+import { SortableBanItem } from "@/components/map/sortable-ban-item";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,8 +23,25 @@ import { Link } from "@/components/ui/link";
 import { ClientOnly } from "@/lib/client-only";
 import { parseData } from "@/lib/parser";
 import { cn, detectFileCorruption } from "@/lib/utils";
+import { heroRoleMapping } from "@/types/heroes";
+import type { ParserData } from "@/types/parser";
+import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusCircledIcon } from "@radix-ui/react-icons";
+import { PlusCircledIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -33,9 +60,23 @@ const MAX_FILE_SIZE = 1000000; // 1MB in bytes
 
 export function AddMapCard() {
   const [dragActive, setDragActive] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [parsedData, setParsedData] = useState<ParserData | null>(null);
+  const [heroBans, setHeroBans] = useState<
+    { hero: string; team: string; banPosition: number }[]
+  >([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations("scrimPage.addMap");
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const formSchema = z.object({
     file: z
@@ -56,14 +97,6 @@ export function AddMapCard() {
   });
 
   async function handleFile(file: File) {
-    // pathname should look like this: /team/scrim/:id
-    const scrimId = pathname.split("/")[3];
-
-    toast.error(t("handleFile.creatingTitle"), {
-      description: t("handleFile.creatingDescription"),
-      duration: 5000,
-    });
-
     // Check for corrupted data before parsing
     const hasCorruptedData = await detectFileCorruption(file);
 
@@ -85,9 +118,34 @@ export function AddMapCard() {
 
     const data = await parseData(file);
 
+    setSelectedFile(file);
+    setParsedData(data);
+    setModalOpen(true);
+  }
+
+  async function handleSubmit() {
+    if (!parsedData) return;
+
+    setIsSubmitting(true);
+    const scrimId = pathname.split("/")[3];
+
+    toast.error(t("handleFile.creatingTitle"), {
+      description: t("handleFile.creatingDescription"),
+      duration: 5000,
+    });
+
+    const hasCorruptedData = selectedFile
+      ? await detectFileCorruption(selectedFile)
+      : { isCorrupted: false };
+
+    const requestData = {
+      map: parsedData,
+      heroBans: heroBans.length > 0 ? heroBans : undefined,
+    };
+
     const res = await fetch(`/api/scrim/add-map?id=${scrimId}`, {
       method: "POST",
-      body: JSON.stringify(data),
+      body: JSON.stringify(requestData),
     });
 
     if (res.ok) {
@@ -102,6 +160,10 @@ export function AddMapCard() {
           duration: 5000,
         });
       }
+      setModalOpen(false);
+      setHeroBans([]);
+      setSelectedFile(null);
+      setParsedData(null);
       router.refresh();
     } else {
       toast.error(t("handleFile.errorTitle"), {
@@ -121,6 +183,7 @@ export function AddMapCard() {
         duration: 5000,
       });
     }
+    setIsSubmitting(false);
   }
 
   function handleDrag(e: React.DragEvent) {
@@ -206,6 +269,123 @@ export function AddMapCard() {
           />
         </form>
       </Form>
+
+      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{t("heroBansTitle")}</DialogTitle>
+            <DialogDescription>{t("heroBansDescription")}</DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={heroBans.map(
+                  (ban) => `ban-${ban.hero}-${ban.team}-${ban.banPosition}`
+                )}
+                strategy={verticalListSortingStrategy}
+              >
+                {heroBans.map((ban, index) => (
+                  <SortableBanItem
+                    key={`ban-${ban.hero}-${ban.team}-${ban.banPosition}`}
+                    ban={ban}
+                    index={index}
+                    overwatchHeroes={Object.keys(heroRoleMapping)}
+                    team1Name={parsedData?.match_start?.[0]?.[4]}
+                    team2Name={parsedData?.match_start?.[0]?.[5]}
+                    onHeroChange={(value) => {
+                      const newBans = [...heroBans];
+                      newBans[index] = {
+                        ...newBans[index],
+                        hero: value,
+                      };
+                      setHeroBans(newBans);
+                    }}
+                    onTeamChange={(value) => {
+                      const newBans = [...heroBans];
+                      newBans[index] = {
+                        ...newBans[index],
+                        team: value,
+                      };
+                      setHeroBans(newBans);
+                    }}
+                    onRemove={() => {
+                      const newBans = heroBans.filter((_, i) => i !== index);
+                      const updatedBans = newBans.map((ban, i) => ({
+                        ...ban,
+                        banPosition: i + 1,
+                      }));
+                      setHeroBans(updatedBans);
+                    }}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setHeroBans([
+                  ...heroBans,
+                  {
+                    hero: "",
+                    team: "",
+                    banPosition: heroBans.length + 1,
+                  },
+                ]);
+              }}
+            >
+              {t("addHeroBan")}
+            </Button>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setModalOpen(false)}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleSubmit} disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                  {t("submitting")}
+                </>
+              ) : (
+                t("submit")
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </ClientOnly>
   );
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = heroBans.findIndex(
+        (ban) => `ban-${ban.hero}-${ban.team}-${ban.banPosition}` === active.id
+      );
+      const newIndex = heroBans.findIndex(
+        (ban) => `ban-${ban.hero}-${ban.team}-${ban.banPosition}` === over.id
+      );
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const reorderedBans = arrayMove(heroBans, oldIndex, newIndex);
+        const updatedBans = reorderedBans.map((ban, i) => ({
+          ...ban,
+          banPosition: i + 1,
+        }));
+        setHeroBans(updatedBans);
+      }
+    }
+  }
 }
