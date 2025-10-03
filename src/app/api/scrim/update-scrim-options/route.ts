@@ -18,6 +18,16 @@ const UpdateScrimSchema = z.object({
     z.object({
       id: z.number(),
       replayCode: z.string().max(6).optional(),
+      heroBans: z
+        .array(
+          z.object({
+            id: z.number().optional(),
+            hero: z.string(),
+            team: z.string(),
+            banPosition: z.number(),
+          })
+        )
+        .optional(),
     })
   ),
 });
@@ -65,6 +75,24 @@ export async function POST(req: NextRequest) {
         where: { id: mapUpdate.id },
         data: { replayCode: mapUpdate.replayCode },
       });
+
+      if (mapUpdate.heroBans) {
+        await prisma.heroBan.deleteMany({
+          where: { MapDataId: mapUpdate.id },
+        });
+
+        if (mapUpdate.heroBans.length > 0) {
+          await prisma.heroBan.createMany({
+            data: mapUpdate.heroBans.map((ban) => ({
+              scrimId: body.data.scrimId,
+              hero: ban.hero,
+              team: ban.team,
+              banPosition: ban.banPosition,
+              MapDataId: mapUpdate.id,
+            })),
+          });
+        }
+      }
     }
   }
 
