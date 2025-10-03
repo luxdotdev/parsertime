@@ -1,5 +1,6 @@
 "use client";
 
+import { SortableBanItem } from "@/components/map/sortable-ban-item";
 import {
   Accordion,
   AccordionContent,
@@ -46,8 +47,24 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { ClientOnly } from "@/lib/client-only";
 import { cn, toKebabCase, useMapNames } from "@/lib/utils";
+import { heroRoleMapping } from "@/types/heroes";
+import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Map, Scrim, Team } from "@prisma/client";
+import type { HeroBan, Map, Scrim, Team } from "@prisma/client";
 import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -59,6 +76,12 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { Calendar } from "../ui/calendar";
 
+type MapWithHeroBans = Map & {
+  heroBans: HeroBan[];
+  team1Name: string;
+  team2Name: string;
+};
+
 export function EditScrimForm({
   scrim,
   teams,
@@ -66,13 +89,20 @@ export function EditScrimForm({
 }: {
   scrim: Scrim;
   teams: Team[];
-  maps: Map[];
+  maps: MapWithHeroBans[];
 }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const t = useTranslations("scrimPage.editScrim");
   const mapNames = useMapNames();
   const queryClient = useQueryClient();
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const profileFormSchema = z.object({
     name: z
@@ -95,6 +125,14 @@ export function EditScrimForm({
             message: t("replayCode"),
           })
           .optional(),
+        heroBans: z.array(
+          z.object({
+            id: z.number().optional(),
+            hero: z.string(),
+            team: z.string(),
+            banPosition: z.number(),
+          })
+        ),
       })
     ),
   });
@@ -111,6 +149,12 @@ export function EditScrimForm({
       maps: maps.map((map) => ({
         id: map.id,
         replayCode: map.replayCode ?? "",
+        heroBans: map.heroBans.map((ban) => ({
+          id: ban.id,
+          hero: ban.hero,
+          team: ban.team === map.team1Name ? "team1" : "team2",
+          banPosition: ban.banPosition,
+        })),
       })),
     },
     mode: "onChange",
@@ -124,12 +168,21 @@ export function EditScrimForm({
       date: data.date.toISOString(),
       scrimId: scrim.id,
       guestMode: data.guestMode,
-      maps: data.maps.map((map) => ({
+      maps: data.maps.map((map, mapIndex) => ({
         id: map.id,
         // Replay code is trimmed and converted to uppercase
         replayCode: map.replayCode
           ? map.replayCode.trim().toUpperCase()
           : undefined,
+        heroBans: map.heroBans.map((ban) => ({
+          id: ban.id,
+          hero: ban.hero,
+          team:
+            ban.team === "team1"
+              ? maps[mapIndex].team1Name
+              : maps[mapIndex].team2Name,
+          banPosition: ban.banPosition,
+        })),
       })),
     };
 
@@ -318,12 +371,12 @@ export function EditScrimForm({
                     {mapNames.get(toKebabCase(map.name))}
                   </AccordionTrigger>
                   <AccordionContent>
-                    <div className="flex items-center justify-between">
+                    <div className="space-y-4 pl-1">
                       <FormField
                         control={form.control}
                         name={`maps.${index}.replayCode`}
                         render={({ field }) => (
-                          <FormItem className="pl-1">
+                          <FormItem>
                             <FormLabel>
                               {t("maps.replayCodeLabel", {
                                 map: mapNames.get(toKebabCase(map.name)) ?? "",
@@ -340,7 +393,133 @@ export function EditScrimForm({
                           </FormItem>
                         )}
                       />
-                      <Separator orientation="vertical" />
+
+                      <FormField
+                        control={form.control}
+                        name={`maps.${index}.heroBans`}
+                        render={({ field }) => {
+                          const handleDragEnd = (event: DragEndEvent) => {
+                            const { active, over } = event;
+
+                            if (over && active.id !== over.id) {
+                              const bans = field.value || [];
+                              const oldIndex = bans.findIndex(
+                                (ban) =>
+                                  `ban-${ban.hero}-${ban.team}-${ban.banPosition}` ===
+                                  active.id
+                              );
+                              const newIndex = bans.findIndex(
+                                (ban) =>
+                                  `ban-${ban.hero}-${ban.team}-${ban.banPosition}` ===
+                                  over.id
+                              );
+
+                              if (oldIndex !== -1 && newIndex !== -1) {
+                                const reorderedBans = arrayMove(
+                                  bans,
+                                  oldIndex,
+                                  newIndex
+                                );
+                                const updatedBans = reorderedBans.map(
+                                  (ban, i) => ({
+                                    ...ban,
+                                    banPosition: i + 1,
+                                  })
+                                );
+                                field.onChange(updatedBans);
+                              }
+                            }
+                          };
+
+                          return (
+                            <FormItem>
+                              <FormLabel>Hero Bans</FormLabel>
+                              <div className="space-y-2">
+                                <DndContext
+                                  sensors={sensors}
+                                  collisionDetection={closestCenter}
+                                  onDragEnd={handleDragEnd}
+                                >
+                                  <SortableContext
+                                    items={(field.value || []).map(
+                                      (ban) =>
+                                        `ban-${ban.hero}-${ban.team}-${ban.banPosition}`
+                                    )}
+                                    strategy={verticalListSortingStrategy}
+                                  >
+                                    {field.value?.map((ban, banIndex) => (
+                                      <SortableBanItem
+                                        key={`ban-${ban.hero}-${ban.team}-${ban.banPosition}`}
+                                        ban={ban}
+                                        index={banIndex}
+                                        overwatchHeroes={Object.keys(
+                                          heroRoleMapping
+                                        )}
+                                        team1Name={map.team1Name}
+                                        team2Name={map.team2Name}
+                                        onHeroChange={(value) => {
+                                          const newBans = [
+                                            ...(field.value || []),
+                                          ];
+                                          newBans[banIndex] = {
+                                            ...newBans[banIndex],
+                                            hero: value,
+                                          };
+                                          field.onChange(newBans);
+                                        }}
+                                        onTeamChange={(value) => {
+                                          const newBans = [
+                                            ...(field.value || []),
+                                          ];
+                                          newBans[banIndex] = {
+                                            ...newBans[banIndex],
+                                            team: value,
+                                          };
+                                          field.onChange(newBans);
+                                        }}
+                                        onRemove={() => {
+                                          const newBans =
+                                            field.value?.filter(
+                                              (_, i) => i !== banIndex
+                                            ) || [];
+                                          const updatedBans = newBans.map(
+                                            (ban, i) => ({
+                                              ...ban,
+                                              banPosition: i + 1,
+                                            })
+                                          );
+                                          field.onChange(updatedBans);
+                                        }}
+                                      />
+                                    ))}
+                                  </SortableContext>
+                                </DndContext>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    const currentBans = field.value || [];
+                                    field.onChange([
+                                      ...currentBans,
+                                      {
+                                        hero: "",
+                                        team: "",
+                                        banPosition: currentBans.length + 1,
+                                      },
+                                    ]);
+                                  }}
+                                >
+                                  Add Hero Ban
+                                </Button>
+                              </div>
+                            </FormItem>
+                          );
+                        }}
+                      />
+
+                      <Separator />
+
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button className="mt-3" variant="destructive">
