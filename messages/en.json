@@ -477,7 +477,15 @@
       "mapName": "First Map",
       "mapDescription": "Upload the first map of the scrim. Only .xlsx and .txt files are accepted, and max file size is 1MB. You can add more maps after the scrim is created.",
       "submit": "Submit",
-      "submitting": "Submitting..."
+      "submitting": "Submitting...",
+      "heroBansName": "Hero Bans",
+      "heroBansDescription": "Add the heroes banned by each team. Ban order will be preserved.",
+      "addHeroBan": "Add Hero Ban",
+      "orderName": "Order",
+      "selectTeam": "Select team",
+      "team": "Team",
+      "hero": "Hero",
+      "selectHero": "Select hero"
     }
   },
   "updateModal": {
@@ -536,7 +544,12 @@
           "title": "Map Added Successfully",
           "description": "Corrupted data was automatically fixed and your map has been added successfully."
         }
-      }
+      },
+      "submitting": "Submitting",
+      "submit": "Submit",
+      "addHeroBan": "Add Hero Ban",
+      "heroBansDescription": "Configure hero bans for this map. You can skip this step by clicking Submit without adding any bans.",
+      "heroBansTitle": "Add Hero Bans (Optional)"
     },
     "editScrim": {
       "back": "Back to scrim",
@@ -621,7 +634,8 @@
       "onClick": {
         "title": "Copied to clipboard!",
         "description": "The replay code has been copied to your clipboard."
-      }
+      },
+      "code": "Replay code: {replayCode}"
     }
   },
   "mapPage": {
@@ -1008,6 +1022,9 @@
           "healingReceivedPer10Min": "{num} healing received per 10 minutes"
         }
       }
+    },
+    "heroBans": {
+      "bannedBy": "{hero} banned by {team}"
     }
   },
   "statsPage": {

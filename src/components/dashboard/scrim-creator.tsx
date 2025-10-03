@@ -1,6 +1,7 @@
 "use client";
 
 import type { GetTeamsResponse } from "@/app/api/team/get-teams/route";
+import { SortableBanItem } from "@/components/map/sortable-ban-item";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -28,10 +29,26 @@ import {
 } from "@/components/ui/select";
 import { parseData } from "@/lib/parser";
 import { cn, detectFileCorruption } from "@/lib/utils";
+import { heroRoleMapping } from "@/types/heroes";
 import type { ParserData } from "@/types/parser";
+import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { track } from "@vercel/analytics";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
@@ -57,7 +74,15 @@ export function ScrimCreationForm({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [hasCorruptedData, setHasCorruptedData] = useState(false);
+  const queryClient = useQueryClient();
   const t = useTranslations("dashboard.scrimCreationForm");
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const FormSchema = z.object({
     name: z
@@ -77,12 +102,13 @@ export function ScrimCreationForm({
       error: t("dateRequiredError"),
     }),
     map: z.any(),
-    replayCode: z
-      .string()
-      .max(6, {
-        message: "Replay code must not be longer than 6 characters.",
+    heroBans: z.array(
+      z.object({
+        hero: z.string(),
+        team: z.string(),
+        banPosition: z.number(),
       })
-      .optional(),
+    ),
   });
 
   async function getTeams() {
@@ -181,6 +207,7 @@ export function ScrimCreationForm({
           duration: 5000,
         });
       }
+      void queryClient.invalidateQueries({ queryKey: ["scrims"] });
       router.refresh();
       setOpen(false);
       setLoading(false);
@@ -318,6 +345,116 @@ export function ScrimCreationForm({
               <FormMessage />
             </FormItem>
           )}
+        />
+        <FormField
+          control={form.control}
+          name="heroBans"
+          render={({ field }) => {
+            const handleDragEnd = (event: DragEndEvent) => {
+              const { active, over } = event;
+
+              if (over && active.id !== over.id) {
+                const bans = field.value || [];
+                const oldIndex = bans.findIndex(
+                  (ban) =>
+                    `ban-${ban.hero}-${ban.team}-${ban.banPosition}` ===
+                    active.id
+                );
+                const newIndex = bans.findIndex(
+                  (ban) =>
+                    `ban-${ban.hero}-${ban.team}-${ban.banPosition}` === over.id
+                );
+
+                if (oldIndex !== -1 && newIndex !== -1) {
+                  const reorderedBans = arrayMove(bans, oldIndex, newIndex);
+                  const updatedBans = reorderedBans.map((ban, i) => ({
+                    ...ban,
+                    banPosition: i + 1,
+                  }));
+                  field.onChange(updatedBans);
+                }
+              }
+            };
+
+            return (
+              <FormItem className="flex flex-col">
+                <FormLabel>{t("heroBansName")}</FormLabel>
+                <FormControl>
+                  <div className="space-y-4">
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragEnd={handleDragEnd}
+                    >
+                      <SortableContext
+                        items={(field.value || []).map(
+                          (ban) =>
+                            `ban-${ban.hero}-${ban.team}-${ban.banPosition}`
+                        )}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        {field.value?.map((ban, index) => (
+                          <SortableBanItem
+                            key={`ban-${ban.hero}-${ban.team}-${ban.banPosition}`}
+                            ban={ban}
+                            index={index}
+                            overwatchHeroes={Object.keys(heroRoleMapping)}
+                            team1Name={mapData?.match_start?.[0]?.[4]}
+                            team2Name={mapData?.match_start?.[0]?.[5]}
+                            onHeroChange={(value) => {
+                              const newBans = [...(field.value || [])];
+                              newBans[index] = {
+                                ...newBans[index],
+                                hero: value,
+                              };
+                              field.onChange(newBans);
+                            }}
+                            onTeamChange={(value) => {
+                              const newBans = [...(field.value || [])];
+                              newBans[index] = {
+                                ...newBans[index],
+                                team: value,
+                              };
+                              field.onChange(newBans);
+                            }}
+                            onRemove={() => {
+                              const newBans =
+                                field.value?.filter((_, i) => i !== index) ||
+                                [];
+                              const updatedBans = newBans.map((ban, i) => ({
+                                ...ban,
+                                banPosition: i + 1,
+                              }));
+                              field.onChange(updatedBans);
+                            }}
+                          />
+                        ))}
+                      </SortableContext>
+                    </DndContext>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        const currentBans = field.value || [];
+                        field.onChange([
+                          ...currentBans,
+                          {
+                            hero: "",
+                            team: "",
+                            banPosition: currentBans.length + 1,
+                          },
+                        ]);
+                      }}
+                    >
+                      Add Hero Ban
+                    </Button>
+                  </div>
+                </FormControl>
+                <FormDescription>{t("heroBansDescription")}</FormDescription>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
         />
         <Button
           type="submit"

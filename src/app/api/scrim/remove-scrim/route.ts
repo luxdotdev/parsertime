@@ -104,6 +104,7 @@ export async function POST(req: NextRequest) {
     prisma.ultimateCharged.deleteMany({ where: { scrimId } }),
     prisma.ultimateEnd.deleteMany({ where: { scrimId } }),
     prisma.ultimateStart.deleteMany({ where: { scrimId } }),
+    prisma.heroBan.deleteMany({ where: { scrimId } }),
   ]);
 
   after(async () => {

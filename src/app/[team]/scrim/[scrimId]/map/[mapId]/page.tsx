@@ -5,10 +5,12 @@ import { GuestNav } from "@/components/guest-nav";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ComparePlayers } from "@/components/map/compare-players";
 import { DefaultOverview } from "@/components/map/default-overview";
+import { HeroBans } from "@/components/map/hero-bans";
 import { Killfeed } from "@/components/map/killfeed";
 import { MapEvents } from "@/components/map/map-events";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
 import { Notifications } from "@/components/notifications";
+import { ReplayCode } from "@/components/scrim/replay-code";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserNav } from "@/components/user-nav";
@@ -73,29 +75,31 @@ export default async function MapDashboardPage(
   const user = await getUser(session?.user?.email);
   const t = await getTranslations("mapPage");
 
-  const mostPlayedHeroes = await getMostPlayedHeroes(id);
-
-  const mapName = await prisma.matchStart.findFirst({
-    where: {
-      MapDataId: id,
-    },
-    select: {
-      map_name: true,
-    },
-  });
-
-  const visibility = (await prisma.scrim.findFirst({
-    where: {
-      id: parseInt(params.scrimId),
-    },
-    select: {
-      guestMode: true,
-    },
-  })) ?? { guestMode: false };
-
-  const translatedMapName = await translateMapName(mapName?.map_name ?? "Map");
-
   const { team1, team2 } = await getColorblindMode(user?.id ?? "");
+
+  const [mostPlayedHeroes, mapDetails, map, visibility, heroBans] =
+    await Promise.all([
+      getMostPlayedHeroes(id),
+      prisma.matchStart.findFirst({
+        where: { MapDataId: id },
+        select: { map_name: true, team_1_name: true },
+      }),
+      prisma.map.findFirst({
+        where: { id },
+        select: { replayCode: true },
+      }),
+      prisma.scrim.findFirst({
+        where: { id: parseInt(params.scrimId) },
+        select: { guestMode: true },
+      }),
+      prisma.heroBan.findMany({
+        where: { MapDataId: id },
+      }),
+    ]);
+
+  const translatedMapName = await translateMapName(
+    mapDetails?.map_name ?? "Map"
+  );
 
   return (
     <div className="flex-col md:flex">
@@ -113,7 +117,7 @@ export default async function MapDashboardPage(
                 <UserNav />
               </>
             ) : (
-              <GuestNav guestMode={visibility.guestMode} />
+              <GuestNav guestMode={visibility?.guestMode ?? false} />
             )}
           </div>
         </div>
@@ -128,7 +132,7 @@ export default async function MapDashboardPage(
                 <UserNav />
               </>
             ) : (
-              <GuestNav guestMode={visibility.guestMode} />
+              <GuestNav guestMode={visibility?.guestMode ?? false} />
             )}
           </div>
         </div>
@@ -145,6 +149,15 @@ export default async function MapDashboardPage(
           <h2 className="text-3xl font-bold tracking-tight">
             {translatedMapName}
           </h2>
+          <HeroBans
+            heroBans={heroBans}
+            team1Name={mapDetails?.team_1_name ?? "Team 1"}
+          />
+        </div>
+        <div className="font-semibold tracking-tight text-white">
+          {map?.replayCode && (
+            <ReplayCode replayCode={map?.replayCode ?? ""} subtitle={true} />
+          )}
         </div>
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList>

@@ -301,6 +301,21 @@ export async function createNewScrimFromParsedData(
     },
   });
 
+  if (data.heroBans) {
+    await prisma.heroBan.createMany({
+      data: data.heroBans.map((ban) => ({
+        scrimId: scrim.id,
+        hero: ban.hero,
+        team:
+          ban.team === "team1"
+            ? data.map.match_start[0][4]
+            : data.map.match_start[0][5],
+        banPosition: ban.banPosition,
+        MapDataId: map.id,
+      })),
+    });
+  }
+
   await prisma.scrim.update({
     where: {
       id: scrim.id,
@@ -367,6 +382,11 @@ export async function createNewScrimFromParsedData(
 type CreateNewMapArgs = {
   scrimId: number;
   map: ParserData;
+  heroBans?: {
+    hero: string;
+    team: string;
+    banPosition: number;
+  }[];
 };
 
 export async function createNewMap(data: CreateNewMapArgs, session: Session) {
@@ -400,6 +420,21 @@ export async function createNewMap(data: CreateNewMapArgs, session: Session) {
   });
 
   Logger.log("Map created: ", map, session);
+
+  if (data.heroBans && data.heroBans.length > 0) {
+    await prisma.heroBan.createMany({
+      data: data.heroBans.map((ban) => ({
+        scrimId: data.scrimId,
+        hero: ban.hero,
+        team:
+          ban.team === "team1"
+            ? data.map.match_start[0][4]
+            : data.map.match_start[0][5],
+        banPosition: ban.banPosition,
+        MapDataId: map.id,
+      })),
+    });
+  }
 
   await prisma.scrim.update({
     where: {
