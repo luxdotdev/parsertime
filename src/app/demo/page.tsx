@@ -4,6 +4,7 @@ import { Search } from "@/components/dashboard/search";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ComparePlayers } from "@/components/map/compare-players";
 import { DefaultOverview } from "@/components/map/default-overview";
+import { HeroBans } from "@/components/map/hero-bans";
 import { Killfeed } from "@/components/map/killfeed";
 import { MapEvents } from "@/components/map/map-events";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
@@ -65,21 +66,28 @@ export default async function MapDashboardPage() {
 
   const mostPlayedHeroes = await getMostPlayedHeroes(id);
 
-  const mapName = await prisma.matchStart.findFirst({
+  const mapDetails = await prisma.matchStart.findFirst({
     where: {
       MapDataId: id,
     },
     select: {
       map_name: true,
+      team_1_name: true,
     },
   });
 
-  const translatedMapName = await translateMapName(mapName?.map_name ?? "Map");
+  const translatedMapName = await translateMapName(
+    mapDetails?.map_name ?? "Map"
+  );
 
   const { team1, team2 } = {
     team1: "var(--team-1-off)",
     team2: "var(--team-2-off)",
   };
+
+  const heroBans = await prisma.heroBan.findMany({
+    where: { MapDataId: id },
+  });
 
   return (
     <div className="flex-col md:flex">
@@ -111,6 +119,10 @@ export default async function MapDashboardPage() {
           <h2 className="text-3xl font-bold tracking-tight">
             {translatedMapName}
           </h2>
+          <HeroBans
+            heroBans={heroBans}
+            team1Name={mapDetails?.team_1_name ?? "Team 1"}
+          />
         </div>
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList>
