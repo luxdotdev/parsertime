@@ -1021,6 +1021,9 @@
           "healingReceivedPer10Min": "{num} healing received per 10 minutes"
         }
       }
+    },
+    "heroBans": {
+      "bannedBy": "{hero} banned by {team}"
     }
   },
   "statsPage": {
