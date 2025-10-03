@@ -178,7 +178,9 @@ export default async function ScrimDashboardPage(
                   </Link>
                   <CardFooter className="flex items-center justify-end pt-12">
                     <div className="z-10 font-semibold tracking-tight text-white">
-                      <ReplayCode replayCode={map.replayCode ?? ""} />
+                      {map.replayCode && (
+                        <ReplayCode replayCode={map.replayCode ?? ""} />
+                      )}
                     </div>
                   </CardFooter>
                 </Card>
