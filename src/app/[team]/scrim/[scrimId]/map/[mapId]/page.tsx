@@ -10,6 +10,7 @@ import { Killfeed } from "@/components/map/killfeed";
 import { MapEvents } from "@/components/map/map-events";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
 import { Notifications } from "@/components/notifications";
+import { ReplayCode } from "@/components/scrim/replay-code";
 import { ModeToggle } from "@/components/theme-switcher";
 import { TipTap } from "@/components/tiptap/tiptap";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -87,6 +88,11 @@ export default async function MapDashboardPage(
     },
   });
 
+  const map = await prisma.map.findFirst({
+    where: { id },
+    select: { replayCode: true },
+  });
+
   const visibility = (await prisma.scrim.findFirst({
     where: {
       id: parseInt(params.scrimId),
@@ -158,6 +164,11 @@ export default async function MapDashboardPage(
             heroBans={heroBans}
             team1Name={mapDetails?.team_1_name ?? "Team 1"}
           />
+        </div>
+        <div className="font-semibold tracking-tight text-white">
+          {map?.replayCode && (
+            <ReplayCode replayCode={map?.replayCode ?? ""} subtitle={true} />
+          )}
         </div>
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList>
