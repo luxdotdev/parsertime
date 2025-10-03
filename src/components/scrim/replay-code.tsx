@@ -9,7 +9,13 @@ import {
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
-export function ReplayCode({ replayCode }: { replayCode: string }) {
+export function ReplayCode({
+  replayCode,
+  subtitle = false,
+}: {
+  replayCode: string;
+  subtitle?: boolean;
+}) {
   const t = useTranslations("scrimPage.replayCode");
 
   function handleClick({ replayCode }: { replayCode: string }) {
@@ -23,11 +29,22 @@ export function ReplayCode({ replayCode }: { replayCode: string }) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Button variant="link" onClick={() => handleClick({ replayCode })}>
-          <p className="z-10 font-semibold tracking-tight text-white">
-            {replayCode}
-          </p>
-        </Button>
+        {subtitle ? (
+          <Button
+            variant="link"
+            asChild
+            className="text-md -mt-4 mb-2 p-0"
+            onClick={() => handleClick({ replayCode })}
+          >
+            <h3>{t("code", { replayCode })}</h3>
+          </Button>
+        ) : (
+          <Button variant="link" onClick={() => handleClick({ replayCode })}>
+            <p className="z-10 font-semibold tracking-tight text-white">
+              {replayCode}
+            </p>
+          </Button>
+        )}
       </TooltipTrigger>
       <TooltipContent>{t("title")}</TooltipContent>
     </Tooltip>
