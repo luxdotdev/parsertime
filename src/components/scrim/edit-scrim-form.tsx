@@ -49,6 +49,7 @@ import { cn, toKebabCase, useMapNames } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Map, Scrim, Team } from "@prisma/client";
 import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
+import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -71,6 +72,7 @@ export function EditScrimForm({
   const router = useRouter();
   const t = useTranslations("scrimPage.editScrim");
   const mapNames = useMapNames();
+  const queryClient = useQueryClient();
 
   const profileFormSchema = z.object({
     name: z
@@ -144,6 +146,7 @@ export function EditScrimForm({
         description: t("onSubmit.description"),
         duration: 5000,
       });
+      void queryClient.invalidateQueries({ queryKey: ["scrims"] });
       router.refresh();
     } else {
       toast.error(t("onSubmit.errorTitle"), {
