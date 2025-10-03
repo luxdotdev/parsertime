@@ -634,7 +634,8 @@
       "onClick": {
         "title": "Copied to clipboard!",
         "description": "The replay code has been copied to your clipboard."
-      }
+      },
+      "code": "Replay code: {replayCode}"
     }
   },
   "mapPage": {
