@@ -113,9 +113,18 @@ function displayHeroRating(heroRating: number) {
         </div>
       );
     default:
+      // Champion
       return (
-        <div className="items-center gap-1 pt-2">
-          <p className="text-muted-foreground text-xs">Unplaced</p>
+        <div className="flex items-center gap-1 pt-2">
+          <Image
+            src="/ranks/champion.png"
+            alt="Champion"
+            width={16}
+            height={16}
+          />
+          <span className="text-xs text-violet-500">
+            {heroRating} SR (Max score!)
+          </span>
         </div>
       );
   }
@@ -139,6 +148,12 @@ export function StatCardFooter({
       <Tooltip>
         <TooltipTrigger>
           <div className="flex items-center gap-1">
+            <span>
+              {t("vsAverage", {
+                average: comparison.heroAverage,
+              })}
+            </span>
+            <span>&mdash;</span>
             <span className="text-foreground">
               {t("percentile", {
                 percentile: comparison.percentile.toFixed(0),
