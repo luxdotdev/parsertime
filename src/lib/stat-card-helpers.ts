@@ -190,8 +190,7 @@ export async function calculateCompositeHeroSR(
       const config = statConfigs.find((c) => c.column === comparison.stat);
       if (config) {
         const zScore = Number(comparison.z_score);
-        const adjustedZScore = config.invert ? -zScore : zScore;
-        compositeZScore += adjustedZScore * config.weight;
+        compositeZScore += zScore * config.weight;
       }
     }
 
