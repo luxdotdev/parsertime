@@ -138,16 +138,15 @@ export function StatCardFooter({
       <div className="text-sm">{baseText}</div>
       <Tooltip>
         <TooltipTrigger>
-          <div className="flex items-center gap-2">
-            <span>
-              {comparison.zScore > 0 ? "+" : ""}
-              {comparison.zScore.toFixed(2)}σ
-            </span>
-            <span>•</span>
-            <span>
+          <div className="flex items-center gap-1">
+            <span className="text-foreground">
               {t("percentile", {
                 percentile: comparison.percentile.toFixed(0),
               })}
+            </span>
+            <span>
+              ({comparison.zScore > 0 ? "+" : ""}
+              {comparison.zScore.toFixed(2)}σ)
             </span>
           </div>
           <span>{displayHeroRating(comparison.estimatedSR)}</span>
