@@ -1033,7 +1033,8 @@
           "healingReceived": "Healing Receieved",
           "healingReceivedNum": "{num} Healing Receieved",
           "healingReceivedPer10Min": "{num} healing received per 10 minutes"
-        }
+        },
+        "percentile": "{percentile, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} percentile"
       }
     },
     "heroBans": {
