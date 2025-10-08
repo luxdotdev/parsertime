@@ -8,6 +8,7 @@ type ValidStatColumn =
   | "deaths"
   | "hero_damage_dealt"
   | "healing_dealt"
+  | "healing_received"
   | "damage_blocked"
   | "damage_taken"
   | "solo_kills"
