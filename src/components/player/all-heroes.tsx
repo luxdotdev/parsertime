@@ -218,7 +218,7 @@ export async function AllHeroes({
                         (acc, stat) => acc + stat.hero_damage_dealt,
                         0
                       )
-                    ).toFixed(2),
+                    ).toLocaleString(),
                   })}
                 </div>
               </CardContent>
@@ -237,7 +237,7 @@ export async function AllHeroes({
                           )
                         )) *
                         10
-                    ),
+                    ).toLocaleString(),
                   })}
                 </div>
               </CardFooter>
@@ -261,7 +261,7 @@ export async function AllHeroes({
                             (acc, stat) => acc + stat.damage_blocked,
                             0
                           )
-                        ).toFixed(2),
+                        ).toLocaleString(),
                       })}
                     </div>
                   </CardContent>
@@ -280,7 +280,7 @@ export async function AllHeroes({
                               )
                             )) *
                             10
-                        ),
+                        ).toLocaleString(),
                       })}
                     </div>
                   </CardFooter>
@@ -304,7 +304,7 @@ export async function AllHeroes({
                             (acc, stat) => acc + stat.damage_taken,
                             0
                           )
-                        ).toFixed(2),
+                        ).toLocaleString(),
                       })}
                     </div>
                   </CardContent>
@@ -323,7 +323,7 @@ export async function AllHeroes({
                               )
                             )) *
                             10
-                        ),
+                        ).toLocaleString(),
                       })}
                     </div>
                   </CardFooter>
@@ -442,7 +442,7 @@ export async function AllHeroes({
                             (acc, stat) => acc + stat.healing_dealt,
                             0
                           )
-                        ).toFixed(2),
+                        ).toLocaleString(),
                       })}
                     </div>
                   </CardContent>
@@ -461,7 +461,7 @@ export async function AllHeroes({
                               )
                             )) *
                             10
-                        ),
+                        ).toLocaleString(),
                       })}
                     </div>
                   </CardFooter>
@@ -483,7 +483,7 @@ export async function AllHeroes({
                             (acc, stat) => acc + stat.healing_received,
                             0
                           )
-                        ).toFixed(2),
+                        ).toLocaleString(),
                       })}
                     </div>
                   </CardContent>
@@ -502,7 +502,7 @@ export async function AllHeroes({
                               )
                             )) *
                             10
-                        ),
+                        ).toLocaleString(),
                       })}
                     </div>
                   </CardFooter>
