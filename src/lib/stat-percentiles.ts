@@ -12,6 +12,7 @@ type ValidStatColumn =
   | "damage_taken"
   | "solo_kills"
   | "ultimates_earned"
+  | "ultimates_used"
   | "objective_kills"
   | "offensive_assists"
   | "defensive_assists";
