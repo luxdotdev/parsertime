@@ -1033,7 +1033,9 @@
           "healingReceived": "Healing Receieved",
           "healingReceivedNum": "{num} Healing Receieved",
           "healingReceivedPer10Min": "{num} healing received per 10 minutes",
-          "ratingTooltip": "Your hero SR is calculated based on map performance. For overall hero SR, hover over your player name in the statistics table on the map overview page."
+          "ratingTooltip": "Your hero SR is calculated based on map performance. For overall hero SR, hover over your player name in the statistics table on the map overview page.",
+          "unratedTooltip": "Play at least 60 seconds to be ranked",
+          "unplaced": "Unplaced"
         },
         "percentile": "{percentile, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} percentile",
         "percentileExplanation": "{stat} performance in the top {percent}% of {hero} players"
