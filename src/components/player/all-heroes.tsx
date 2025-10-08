@@ -1,3 +1,4 @@
+import { StatCardFooter } from "@/components/player/stat-card-footer";
 import { StatsTable } from "@/components/player/stats-table";
 import {
   Card,
@@ -7,6 +8,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CardIcon } from "@/components/ui/card-icon";
+import { getMultipleStatComparisons } from "@/lib/stat-card-helpers";
+import type { ValidStatColumn } from "@/lib/stat-percentiles";
 import { cn, round, toMins } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import type { PlayerStat } from "@prisma/client";
@@ -21,8 +24,72 @@ export async function AllHeroes({
   showTable?: boolean;
 }) {
   const t = await getTranslations("mapPage.compare.playerCard.allHeroes");
-  const hero = playerStats[0].player_hero as HeroName;
+
+  const mostPlayedHero = playerStats.reduce((prev, current) =>
+    prev.hero_time_played > current.hero_time_played ? prev : current
+  );
+
+  const hero = mostPlayedHero.player_hero as HeroName;
   const role = heroRoleMapping[hero];
+
+  const totalTimePlayed = playerStats.reduce(
+    (acc, stat) => acc + stat.hero_time_played,
+    0
+  );
+
+  const statsToCompare: { stat: ValidStatColumn; value: number }[] = [
+    {
+      stat: "eliminations",
+      value: playerStats.reduce((acc, stat) => acc + stat.eliminations, 0),
+    },
+    {
+      stat: "deaths",
+      value: playerStats.reduce((acc, stat) => acc + stat.deaths, 0),
+    },
+    {
+      stat: "hero_damage_dealt",
+      value: playerStats.reduce((acc, stat) => acc + stat.hero_damage_dealt, 0),
+    },
+    {
+      stat: "ultimates_used",
+      value: playerStats.reduce((acc, stat) => acc + stat.ultimates_used, 0),
+    },
+  ];
+
+  if (role === "Tank") {
+    statsToCompare.push(
+      {
+        stat: "damage_blocked",
+        value: playerStats.reduce((acc, stat) => acc + stat.damage_blocked, 0),
+      },
+      {
+        stat: "damage_taken",
+        value: playerStats.reduce((acc, stat) => acc + stat.damage_taken, 0),
+      }
+    );
+  } else if (role === "Damage") {
+    statsToCompare.push(
+      {
+        stat: "final_blows",
+        value: playerStats.reduce((acc, stat) => acc + stat.final_blows, 0),
+      },
+      {
+        stat: "solo_kills",
+        value: playerStats.reduce((acc, stat) => acc + stat.solo_kills, 0),
+      }
+    );
+  } else if (role === "Support") {
+    statsToCompare.push({
+      stat: "healing_dealt",
+      value: playerStats.reduce((acc, stat) => acc + stat.healing_dealt, 0),
+    });
+  }
+
+  const comparisons = await getMultipleStatComparisons(
+    hero,
+    statsToCompare,
+    totalTimePlayed
+  );
 
   return (
     <main>
@@ -96,8 +163,8 @@ export async function AllHeroes({
                 </div>
               </CardContent>
               <CardFooter>
-                <div className="text-muted-foreground text-sm">
-                  {t("elimsPer10Min", {
+                <StatCardFooter
+                  baseText={t("elimsPer10Min", {
                     elims: round(
                       (playerStats.reduce(
                         (acc, stat) => acc + stat.eliminations,
@@ -112,7 +179,8 @@ export async function AllHeroes({
                         10
                     ),
                   })}
-                </div>
+                  comparison={comparisons.get("eliminations")}
+                />
               </CardFooter>
             </Card>
             <Card>
@@ -138,8 +206,8 @@ export async function AllHeroes({
                 </div>
               </CardContent>
               <CardFooter>
-                <div className="text-muted-foreground text-sm">
-                  {t("deathsPer10Min", {
+                <StatCardFooter
+                  baseText={t("deathsPer10Min", {
                     deaths: round(
                       (playerStats.reduce((acc, stat) => acc + stat.deaths, 0) /
                         toMins(
@@ -151,7 +219,8 @@ export async function AllHeroes({
                         10
                     ),
                   })}
-                </div>
+                  comparison={comparisons.get("deaths")}
+                />
               </CardFooter>
             </Card>
             <Card>
@@ -177,8 +246,8 @@ export async function AllHeroes({
                 </div>
               </CardContent>
               <CardFooter>
-                <div className="text-muted-foreground text-sm">
-                  {t("ultsPer10Min", {
+                <StatCardFooter
+                  baseText={t("ultsPer10Min", {
                     num: round(
                       (playerStats.reduce(
                         (acc, stat) => acc + stat.ultimates_used,
@@ -193,7 +262,8 @@ export async function AllHeroes({
                         10
                     ),
                   })}
-                </div>
+                  comparison={comparisons.get("ultimates_used")}
+                />
               </CardFooter>
             </Card>
             <Card>
@@ -218,8 +288,8 @@ export async function AllHeroes({
                 </div>
               </CardContent>
               <CardFooter>
-                <div className="text-muted-foreground text-sm">
-                  {t("heroDmgPer10Min", {
+                <StatCardFooter
+                  baseText={t("heroDmgPer10Min", {
                     num: round(
                       (playerStats.reduce(
                         (acc, stat) => acc + stat.hero_damage_dealt,
@@ -234,7 +304,8 @@ export async function AllHeroes({
                         10
                     ),
                   })}
-                </div>
+                  comparison={comparisons.get("hero_damage_dealt")}
+                />
               </CardFooter>
             </Card>
             {role === "Tank" && (
@@ -261,8 +332,8 @@ export async function AllHeroes({
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-muted-foreground text-sm">
-                      {t("dmgBlockedPer10Min", {
+                    <StatCardFooter
+                      baseText={t("dmgBlockedPer10Min", {
                         num: round(
                           (playerStats.reduce(
                             (acc, stat) => acc + stat.damage_blocked,
@@ -277,7 +348,8 @@ export async function AllHeroes({
                             10
                         ),
                       })}
-                    </div>
+                      comparison={comparisons.get("damage_blocked")}
+                    />
                   </CardFooter>
                 </Card>
                 <Card>
@@ -304,8 +376,8 @@ export async function AllHeroes({
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-muted-foreground text-sm">
-                      {t("dmgTakenPer10Min", {
+                    <StatCardFooter
+                      baseText={t("dmgTakenPer10Min", {
                         num: round(
                           (playerStats.reduce(
                             (acc, stat) => acc + stat.damage_taken,
@@ -320,7 +392,8 @@ export async function AllHeroes({
                             10
                         ),
                       })}
-                    </div>
+                      comparison={comparisons.get("damage_taken")}
+                    />
                   </CardFooter>
                 </Card>
               </>
@@ -349,8 +422,8 @@ export async function AllHeroes({
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-muted-foreground text-sm">
-                      {t("finalBlowsPer10Min", {
+                    <StatCardFooter
+                      baseText={t("finalBlowsPer10Min", {
                         num: round(
                           (playerStats.reduce(
                             (acc, stat) => acc + stat.final_blows,
@@ -365,7 +438,8 @@ export async function AllHeroes({
                             10
                         ),
                       })}
-                    </div>
+                      comparison={comparisons.get("final_blows")}
+                    />
                   </CardFooter>
                 </Card>
                 <Card>
@@ -397,8 +471,8 @@ export async function AllHeroes({
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-muted-foreground text-sm">
-                      {t("soloKillsPer10Min", {
+                    <StatCardFooter
+                      baseText={t("soloKillsPer10Min", {
                         num: round(
                           (playerStats.reduce(
                             (acc, stat) => acc + stat.solo_kills,
@@ -413,7 +487,8 @@ export async function AllHeroes({
                             10
                         ),
                       })}
-                    </div>
+                      comparison={comparisons.get("solo_kills")}
+                    />
                   </CardFooter>
                 </Card>
               </>
@@ -442,8 +517,8 @@ export async function AllHeroes({
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-muted-foreground text-sm">
-                      {t("healingDealtPer10Min", {
+                    <StatCardFooter
+                      baseText={t("healingDealtPer10Min", {
                         num: round(
                           (playerStats.reduce(
                             (acc, stat) => acc + stat.healing_dealt,
@@ -458,7 +533,8 @@ export async function AllHeroes({
                             10
                         ),
                       })}
-                    </div>
+                      comparison={comparisons.get("healing_dealt")}
+                    />
                   </CardFooter>
                 </Card>
                 <Card>
