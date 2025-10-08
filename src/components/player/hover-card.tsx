@@ -32,12 +32,27 @@ async function getTop3Heroes(player: string) {
   return parsedData.success ? parsedData.data : [];
 }
 
-function displayHeroRating(heroRating: number, mapsPlayed: number) {
+function displayHeroRating(
+  heroRating: number,
+  mapsPlayed: number,
+  rank: number
+) {
   if (heroRating === 0) {
     return (
       <div className="items-center gap-1">
         <p className="text-muted-foreground text-xs">Unplaced</p>
         <p className="text-muted-foreground text-xs">({mapsPlayed}/10 maps)</p>
+      </div>
+    );
+  }
+
+  if (rank <= 5 && heroRating > 2500) {
+    // If a player is top 5 and the hero rating is under 2500, it is too small
+    // of a sample size to show top 500, show hero rating instead
+    return (
+      <div className="flex items-center gap-1">
+        <Image src="/ranks/top-500.png" alt="Top 5" width={16} height={16} />
+        <span className="text-xs text-amber-400">{heroRating} SR</span>
       </div>
     );
   }
@@ -224,7 +239,8 @@ export function PlayerHoverCard({
                           <TooltipTrigger asChild>
                             {displayHeroRating(
                               hero.hero_rating,
-                              hero.mapsPlayed
+                              hero.mapsPlayed,
+                              hero.rank
                             )}
                           </TooltipTrigger>
                           <TooltipContent>
