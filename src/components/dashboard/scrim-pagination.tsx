@@ -40,18 +40,16 @@ type ScrimWithDetails = Scrim & {
 
 type ScrimResponse = {
   scrims: ScrimWithDetails[];
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    totalCount: number;
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
-    limit: number;
-  };
+  nextCursor?: string;
+  hasMore: boolean;
+  totalCount: number;
 };
 
 export function ScrimPagination({ isAdmin = false }: { isAdmin?: boolean }) {
-  const [currPage, setCurrPage] = useState(1);
+  const [cursorStack, setCursorStack] = useState<(string | undefined)[]>([
+    undefined,
+  ]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [filter, setFilter] = useState("");
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 300);
@@ -60,24 +58,35 @@ export function ScrimPagination({ isAdmin = false }: { isAdmin?: boolean }) {
   const { teamId } = use(TeamSwitcherContext);
 
   const pageSize = 15;
-  const siblingCount = 1; // Number of pages to show around the current page
-  const boundaryCount = 1; // Number of pages to show at the boundaries (start and end)
 
-  // Reset page to 1 when search, filter, or team changes (no teamId for admin)
+  // Reset cursor stack when search, filter, or team changes
   const effectiveTeamId = isAdmin ? null : teamId;
   useEffect(() => {
-    setCurrPage(1);
+    setCursorStack([undefined]);
+    setCurrentIndex(0);
   }, [debouncedSearch, filter, effectiveTeamId]);
+
+  const currentCursor = cursorStack[currentIndex];
 
   // Fetch scrims using React Query
   const { data, isLoading, isError, error } = useQuery<ScrimResponse, Error>({
     queryKey: isAdmin
-      ? ["admin-scrims", currPage, debouncedSearch, filter]
-      : ["scrims", currPage, debouncedSearch, filter, teamId],
+      ? ["admin-scrims", currentCursor, debouncedSearch, filter]
+      : ["scrims", currentCursor, debouncedSearch, filter, teamId],
     queryFn: async () => {
       const params = new URLSearchParams();
-      params.set("page", currPage.toString());
       params.set("limit", pageSize.toString());
+
+      if (currentCursor) {
+        if (currentCursor === "LAST_PAGE") {
+          params.set("lastPage", "true");
+        } else if (currentCursor.startsWith("PAGE_")) {
+          const pageNum = parseInt(currentCursor.replace("PAGE_", ""));
+          params.set("page", pageNum.toString());
+        } else {
+          params.set("cursor", currentCursor);
+        }
+      }
 
       if (isAdmin) {
         params.set("adminMode", "true");
@@ -122,8 +131,7 @@ export function ScrimPagination({ isAdmin = false }: { isAdmin?: boolean }) {
     queryKey: isAdmin ? ["admin-scrims-total"] : ["scrims-total", teamId],
     queryFn: async () => {
       const params = new URLSearchParams();
-      params.set("page", "1");
-      params.set("limit", "1"); // Just need to check if any exist
+      params.set("limit", "1");
 
       if (isAdmin) {
         params.set("adminMode", "true");
@@ -145,13 +153,74 @@ export function ScrimPagination({ isAdmin = false }: { isAdmin?: boolean }) {
     },
   });
 
+  const totalCount = data?.totalCount ?? 0;
+  const totalPages = Math.ceil(totalCount / pageSize);
+
+  // Determine current page based on cursor type
+  let currentPage: number;
+  if (currentCursor === "LAST_PAGE") {
+    currentPage = totalPages;
+  } else if (currentCursor?.startsWith("PAGE_")) {
+    currentPage = parseInt(currentCursor.replace("PAGE_", ""));
+  } else {
+    currentPage = currentIndex + 1;
+  }
+
+  const siblingCount = 1;
+  const boundaryCount = 1;
+
   const pagination = handlePagination({
-    currentPage: currPage,
-    totalCount: data?.pagination.totalCount ?? 0,
+    currentPage,
+    totalCount,
     siblingCount,
     pageSize,
     boundaryCount,
   });
+
+  function goToNextPage() {
+    if (data?.nextCursor) {
+      setCursorStack((prev) => {
+        const newStack = [...prev.slice(0, currentIndex + 1), data.nextCursor];
+        return newStack;
+      });
+      setCurrentIndex((prev) => prev + 1);
+    }
+  }
+
+  function goToPreviousPage() {
+    if (currentIndex > 0) {
+      // If we're on the last page (jumped via LAST_PAGE), go to second-to-last
+      if (currentCursor === "LAST_PAGE" && pagination.totalPages > 2) {
+        setCursorStack([undefined, `PAGE_${pagination.totalPages - 1}`]);
+        setCurrentIndex(1);
+      } else {
+        setCurrentIndex((prev) => prev - 1);
+      }
+    }
+  }
+
+  function canNavigateToPage(page: number): boolean {
+    if (page === currentPage) return true;
+    if (page === 1) return true;
+    if (page === pagination.totalPages) return true;
+    if (page === currentPage - 1 && currentIndex > 0) return true;
+    if (page === currentPage + 1 && data?.hasMore) return true;
+    return false;
+  }
+
+  function navigateToPage(page: number) {
+    if (page === 1) {
+      setCursorStack([undefined]);
+      setCurrentIndex(0);
+    } else if (page === pagination.totalPages) {
+      setCursorStack([undefined, "LAST_PAGE"]);
+      setCurrentIndex(1);
+    } else if (page === currentPage - 1) {
+      goToPreviousPage();
+    } else if (page === currentPage + 1) {
+      goToNextPage();
+    }
+  }
 
   // Generate skeleton cards array for consistent loading experience
   const skeletonCards = Array.from({ length: pageSize }, (_, index) => (
@@ -174,11 +243,7 @@ export function ScrimPagination({ isAdmin = false }: { isAdmin?: boolean }) {
   }
 
   // Show empty scrim list only if user has no scrims at all
-  if (
-    !isLoading &&
-    totalScrimsData &&
-    totalScrimsData.pagination.totalCount === 0
-  ) {
+  if (!isLoading && totalScrimsData && totalScrimsData.totalCount === 0) {
     return <EmptyScrimList />;
   }
 
@@ -245,21 +310,18 @@ export function ScrimPagination({ isAdmin = false }: { isAdmin?: boolean }) {
         )}
 
         <div className="col-span-full">
-          {!isLoading && data && data.pagination.totalPages > 1 && (
+          {!isLoading && data && pagination.totalPages > 1 && (
             <Pagination>
               <PaginationContent>
                 {pagination.hasPrevious && (
                   <>
                     <PaginationPrevious
                       className="hidden md:flex"
-                      onClick={() => setCurrPage(currPage - 1)}
+                      onClick={goToPreviousPage}
                       href="#"
                     />
                     <PaginationItem className="md:hidden">
-                      <PaginationLink
-                        onClick={() => setCurrPage(currPage - 1)}
-                        href="#"
-                      >
+                      <PaginationLink onClick={goToPreviousPage} href="#">
                         <ChevronLeftIcon className="h-4 w-4" />
                       </PaginationLink>
                     </PaginationItem>
@@ -267,7 +329,6 @@ export function ScrimPagination({ isAdmin = false }: { isAdmin?: boolean }) {
                 )}
                 {pagination.pages.map((page, index) => {
                   if (page === "...") {
-                    // Rendering ellipsis for skipped pages
                     return (
                       <PaginationEllipsis
                         // eslint-disable-next-line react/no-array-index-key
@@ -275,12 +336,20 @@ export function ScrimPagination({ isAdmin = false }: { isAdmin?: boolean }) {
                       />
                     );
                   }
+                  const canNavigate = canNavigateToPage(page);
                   return (
                     <PaginationItem key={page}>
                       <PaginationLink
-                        onClick={() => setCurrPage(page)}
-                        isActive={currPage === page}
+                        onClick={
+                          canNavigate ? () => navigateToPage(page) : undefined
+                        }
+                        isActive={currentPage === page}
                         href="#"
+                        className={
+                          !canNavigate && currentPage !== page
+                            ? "cursor-not-allowed opacity-50"
+                            : ""
+                        }
                       >
                         {page}
                       </PaginationLink>
@@ -291,14 +360,11 @@ export function ScrimPagination({ isAdmin = false }: { isAdmin?: boolean }) {
                   <>
                     <PaginationNext
                       className="hidden md:flex"
-                      onClick={() => setCurrPage(currPage + 1)}
+                      onClick={goToNextPage}
                       href="#"
                     />
                     <PaginationItem className="md:hidden">
-                      <PaginationLink
-                        onClick={() => setCurrPage(currPage + 1)}
-                        href="#"
-                      >
+                      <PaginationLink onClick={goToNextPage} href="#">
                         <ChevronRightIcon className="h-4 w-4" />
                       </PaginationLink>
                     </PaginationItem>
