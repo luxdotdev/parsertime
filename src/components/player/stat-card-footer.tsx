@@ -150,7 +150,7 @@ export function StatCardFooter({
           <div className="flex items-center gap-1">
             <span>
               {t("vsAverage", {
-                average: comparison.heroAverage,
+                average: comparison.heroAverage.toLocaleString(),
               })}
             </span>
             <span>&mdash;</span>
