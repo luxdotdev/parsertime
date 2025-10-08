@@ -175,6 +175,7 @@ export async function SpecificHero({
                   })}
                   comparison={comparisons.get("eliminations")}
                   stat={t("eliminations")}
+                  hero={hero}
                 />
               </CardFooter>
             </Card>
@@ -207,6 +208,7 @@ export async function SpecificHero({
                   })}
                   comparison={comparisons.get("deaths")}
                   stat={t("deaths")}
+                  hero={hero}
                 />
               </CardFooter>
             </Card>
@@ -236,6 +238,7 @@ export async function SpecificHero({
                   })}
                   comparison={comparisons.get("ultimates_used")}
                   stat={t("ultsUsed")}
+                  hero={hero}
                 />
               </CardFooter>
             </Card>
@@ -266,6 +269,7 @@ export async function SpecificHero({
                   })}
                   comparison={comparisons.get("hero_damage_dealt")}
                   stat={t("heroDmgDealt")}
+                  hero={hero}
                 />
               </CardFooter>
             </Card>
@@ -298,6 +302,7 @@ export async function SpecificHero({
                       })}
                       comparison={comparisons.get("damage_blocked")}
                       stat={t("dmgBlocked")}
+                      hero={hero}
                     />
                   </CardFooter>
                 </Card>
@@ -330,6 +335,7 @@ export async function SpecificHero({
                       })}
                       comparison={comparisons.get("damage_taken")}
                       stat={t("dmgTaken")}
+                      hero={hero}
                     />
                   </CardFooter>
                 </Card>
@@ -364,6 +370,7 @@ export async function SpecificHero({
                       })}
                       comparison={comparisons.get("final_blows")}
                       stat={t("finalBlows")}
+                      hero={hero}
                     />
                   </CardFooter>
                 </Card>
@@ -399,6 +406,7 @@ export async function SpecificHero({
                       })}
                       comparison={comparisons.get("solo_kills")}
                       stat={t("soloKills")}
+                      hero={hero}
                     />
                   </CardFooter>
                 </Card>
@@ -433,6 +441,7 @@ export async function SpecificHero({
                       })}
                       comparison={comparisons.get("healing_dealt")}
                       stat={t("healingDealt")}
+                      hero={hero}
                     />
                   </CardFooter>
                 </Card>
@@ -463,6 +472,7 @@ export async function SpecificHero({
                       })}
                       comparison={comparisons.get("healing_received")}
                       stat={t("healingReceived")}
+                      hero={hero}
                     />
                   </CardFooter>
                 </Card>
