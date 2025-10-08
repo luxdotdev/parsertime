@@ -12,6 +12,7 @@ import { CardIcon } from "@/components/ui/card-icon";
 import {
   calculateCompositeHeroSR,
   getMultipleStatComparisons,
+  type StatCardComparison,
 } from "@/lib/stat-card-helpers";
 import type { ValidStatColumn } from "@/lib/stat-percentiles";
 import { cn, getHeroNames, round, toHero, toMins } from "@/lib/utils";
@@ -64,34 +65,38 @@ export async function SpecificHero({
     );
   }
 
-  const comparisons = await getMultipleStatComparisons(
-    hero,
-    statsToCompare,
-    playerStat.hero_time_played
-  );
+  let comparisons = new Map<ValidStatColumn, StatCardComparison>();
+  let compositeHeroSR = 0;
 
-  const allStats: Record<ValidStatColumn, number> = {
-    eliminations: playerStat.eliminations,
-    final_blows: playerStat.final_blows,
-    deaths: playerStat.deaths,
-    hero_damage_dealt: playerStat.hero_damage_dealt,
-    healing_dealt: playerStat.healing_dealt,
-    healing_received: playerStat.healing_received,
-    damage_blocked: playerStat.damage_blocked,
-    damage_taken: playerStat.damage_taken,
-    solo_kills: playerStat.solo_kills,
-    ultimates_earned: playerStat.ultimates_earned,
-    ultimates_used: playerStat.ultimates_used,
-    objective_kills: playerStat.objective_kills,
-    offensive_assists: playerStat.offensive_assists,
-    defensive_assists: playerStat.defensive_assists,
-  };
+  if (playerStat.hero_time_played >= 60) {
+    comparisons = await getMultipleStatComparisons(
+      hero,
+      statsToCompare,
+      playerStat.hero_time_played
+    );
+    const allStats: Record<ValidStatColumn, number> = {
+      eliminations: playerStat.eliminations,
+      final_blows: playerStat.final_blows,
+      deaths: playerStat.deaths,
+      hero_damage_dealt: playerStat.hero_damage_dealt,
+      healing_dealt: playerStat.healing_dealt,
+      healing_received: playerStat.healing_received,
+      damage_blocked: playerStat.damage_blocked,
+      damage_taken: playerStat.damage_taken,
+      solo_kills: playerStat.solo_kills,
+      ultimates_earned: playerStat.ultimates_earned,
+      ultimates_used: playerStat.ultimates_used,
+      objective_kills: playerStat.objective_kills,
+      offensive_assists: playerStat.offensive_assists,
+      defensive_assists: playerStat.defensive_assists,
+    };
 
-  const compositeHeroSR = await calculateCompositeHeroSR(
-    hero,
-    allStats,
-    playerStat.hero_time_played
-  );
+    compositeHeroSR = await calculateCompositeHeroSR(
+      hero,
+      allStats,
+      playerStat.hero_time_played
+    );
+  }
 
   return (
     <main>
