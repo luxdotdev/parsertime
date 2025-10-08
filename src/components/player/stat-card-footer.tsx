@@ -13,6 +13,7 @@ type StatCardFooterProps = {
   baseText: string;
   comparison?: StatCardComparison | null;
   stat: string;
+  hero: string;
 };
 
 function displayHeroRating(heroRating: number) {
@@ -124,6 +125,7 @@ export function StatCardFooter({
   baseText,
   comparison,
   stat,
+  hero,
 }: StatCardFooterProps) {
   const t = useTranslations("mapPage.compare.playerCard");
 
@@ -155,6 +157,7 @@ export function StatCardFooter({
             {t("percentileExplanation", {
               stat,
               percent: (100 - comparison.percentile).toFixed(0),
+              hero,
             })}
           </p>
         </TooltipContent>
