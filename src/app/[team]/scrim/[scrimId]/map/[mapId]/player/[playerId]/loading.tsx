@@ -45,7 +45,7 @@ export default async function PlayerDashboardLoading() {
         <div className="space-y-4">
           <Skeleton className="h-8 w-32" />
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
@@ -138,9 +138,9 @@ export default async function PlayerDashboardLoading() {
                 <h1 className="scroll-m-20 pb-2 pl-2 text-3xl font-semibold tracking-tight first:mt-0">
                   <Skeleton className="h-10 w-32" />
                 </h1>
-                <div className="flex flex-1">
-                  <div className="w-full p-2 lg:w-1/2">
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="flex flex-1 flex-col 2xl:flex-row">
+                  <div className="w-full p-2 2xl:w-1/2">
+                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                       <Card>
                         <Skeleton className="h-56 w-full" />
                       </Card>
@@ -167,7 +167,7 @@ export default async function PlayerDashboardLoading() {
                       </Card>
                     </div>
                   </div>
-                  <div className="hidden w-1/2 p-2 md:grid">
+                  <div className="w-full p-2 2xl:w-1/2">
                     <div className="space-y-4">
                       <div className="max-h-[29.5rem] rounded-xl border">
                         <Skeleton className="h-[29.5rem] w-full" />
