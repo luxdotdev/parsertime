@@ -34,7 +34,7 @@ import {
 import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import type { MVPScoreResult } from "@/lib/mvp-score";
 import { type PlayerData, aggregatePlayerData } from "@/lib/player-table-data";
-import { cn, toTimestamp } from "@/lib/utils";
+import { cn, round, toTimestamp } from "@/lib/utils";
 import {
   ChevronDownIcon,
   ChevronUpDownIcon,
@@ -299,7 +299,7 @@ export function OverviewTable({
       ),
       cell: ({ row }) => (
         <div className={cn(GeistMono.className, "text-right capitalize")}>
-          {row.getValue<number>("heroDmgDealt").toFixed(2)}
+          {round(row.getValue<number>("heroDmgDealt")).toLocaleString()}
         </div>
       ),
       enableSorting: true,
@@ -314,7 +314,7 @@ export function OverviewTable({
       ),
       cell: ({ row }) => (
         <div className={cn(GeistMono.className, "text-right capitalize")}>
-          {row.getValue<number>("dmgReceived").toFixed(2)}
+          {round(row.getValue<number>("dmgReceived")).toLocaleString()}
         </div>
       ),
       enableSorting: true,
@@ -329,7 +329,7 @@ export function OverviewTable({
       ),
       cell: ({ row }) => (
         <div className={cn(GeistMono.className, "text-right capitalize")}>
-          {row.getValue<number>("healingReceived").toFixed(2)}
+          {round(row.getValue<number>("healingReceived")).toLocaleString()}
         </div>
       ),
       enableSorting: true,
@@ -344,7 +344,7 @@ export function OverviewTable({
       ),
       cell: ({ row }) => (
         <div className={cn(GeistMono.className, "text-right capitalize")}>
-          {row.getValue<number>("healingDealt").toFixed(2)}
+          {round(row.getValue<number>("healingDealt")).toLocaleString()}
         </div>
       ),
       enableSorting: true,

@@ -239,7 +239,8 @@ export async function DefaultOverview({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {round(team1Damage)} - {round(team2Damage)}
+              {round(team1Damage).toLocaleString()} -{" "}
+              {round(team2Damage).toLocaleString()}
             </div>
           </CardContent>
           <CardFooter>
@@ -272,7 +273,8 @@ export async function DefaultOverview({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {round(team1Healing)} - {round(team2Healing)}
+              {round(team1Healing).toLocaleString()} -{" "}
+              {round(team2Healing).toLocaleString()}
             </div>
           </CardContent>
           <CardFooter>

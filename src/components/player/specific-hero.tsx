@@ -264,7 +264,7 @@ export async function SpecificHero({
               <CardContent>
                 <div className="text-2xl font-bold">
                   {t("heroDmgDealtNum", {
-                    num: playerStat.hero_damage_dealt.toFixed(2),
+                    num: round(playerStat.hero_damage_dealt).toLocaleString(),
                   })}
                 </div>
               </CardContent>
@@ -275,7 +275,7 @@ export async function SpecificHero({
                       (playerStat.hero_damage_dealt /
                         toMins(playerStat.hero_time_played)) *
                         10
-                    ),
+                    ).toLocaleString(),
                   })}
                   comparison={comparisons.get("hero_damage_dealt")}
                   stat={t("heroDmgDealt")}
@@ -297,7 +297,7 @@ export async function SpecificHero({
                   <CardContent>
                     <div className="text-2xl font-bold">
                       {t("dmgBlockedNum", {
-                        num: playerStat.damage_blocked.toFixed(2),
+                        num: round(playerStat.damage_blocked).toLocaleString(),
                       })}
                     </div>
                   </CardContent>
@@ -308,7 +308,7 @@ export async function SpecificHero({
                           (playerStat.damage_blocked /
                             toMins(playerStat.hero_time_played)) *
                             10
-                        ),
+                        ).toLocaleString(),
                       })}
                       comparison={comparisons.get("damage_blocked")}
                       stat={t("dmgBlocked")}
@@ -330,7 +330,7 @@ export async function SpecificHero({
                   <CardContent>
                     <div className="text-2xl font-bold">
                       {t("dmgTakenNum", {
-                        num: playerStat.damage_taken.toFixed(2),
+                        num: round(playerStat.damage_taken).toLocaleString(),
                       })}
                     </div>
                   </CardContent>
@@ -341,7 +341,7 @@ export async function SpecificHero({
                           (playerStat.damage_taken /
                             toMins(playerStat.hero_time_played)) *
                             10
-                        ),
+                        ).toLocaleString(),
                       })}
                       comparison={comparisons.get("damage_taken")}
                       stat={t("dmgTaken")}
@@ -436,7 +436,7 @@ export async function SpecificHero({
                   <CardContent>
                     <div className="text-2xl font-bold">
                       {t("healingDealtNum", {
-                        num: playerStat.healing_dealt.toFixed(2),
+                        num: round(playerStat.healing_dealt).toLocaleString(),
                       })}
                     </div>
                   </CardContent>
@@ -447,7 +447,7 @@ export async function SpecificHero({
                           (playerStat.healing_dealt /
                             toMins(playerStat.hero_time_played)) *
                             10
-                        ),
+                        ).toLocaleString(),
                       })}
                       comparison={comparisons.get("healing_dealt")}
                       stat={t("healingDealt")}
@@ -467,7 +467,9 @@ export async function SpecificHero({
                   <CardContent>
                     <div className="text-2xl font-bold">
                       {t("healingReceivedNum", {
-                        num: playerStat.healing_received.toFixed(2),
+                        num: round(
+                          playerStat.healing_received
+                        ).toLocaleString(),
                       })}
                     </div>
                   </CardContent>
@@ -478,7 +480,7 @@ export async function SpecificHero({
                           (playerStat.healing_received /
                             toMins(playerStat.hero_time_played)) *
                             10
-                        ),
+                        ).toLocaleString(),
                       })}
                       comparison={comparisons.get("healing_received")}
                       stat={t("healingReceived")}
