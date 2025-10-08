@@ -79,10 +79,19 @@ export async function AllHeroes({
       }
     );
   } else if (role === "Support") {
-    statsToCompare.push({
-      stat: "healing_dealt",
-      value: playerStats.reduce((acc, stat) => acc + stat.healing_dealt, 0),
-    });
+    statsToCompare.push(
+      {
+        stat: "healing_dealt",
+        value: playerStats.reduce((acc, stat) => acc + stat.healing_dealt, 0),
+      },
+      {
+        stat: "healing_received",
+        value: playerStats.reduce(
+          (acc, stat) => acc + stat.healing_received,
+          0
+        ),
+      }
+    );
   }
 
   const comparisons = await getMultipleStatComparisons(
@@ -180,6 +189,7 @@ export async function AllHeroes({
                     ),
                   })}
                   comparison={comparisons.get("eliminations")}
+                  stat={t("eliminations")}
                 />
               </CardFooter>
             </Card>
@@ -220,6 +230,7 @@ export async function AllHeroes({
                     ),
                   })}
                   comparison={comparisons.get("deaths")}
+                  stat={t("deaths")}
                 />
               </CardFooter>
             </Card>
@@ -263,6 +274,7 @@ export async function AllHeroes({
                     ),
                   })}
                   comparison={comparisons.get("ultimates_used")}
+                  stat={t("ultsUsed")}
                 />
               </CardFooter>
             </Card>
@@ -305,6 +317,7 @@ export async function AllHeroes({
                     ),
                   })}
                   comparison={comparisons.get("hero_damage_dealt")}
+                  stat={t("heroDmgDealt")}
                 />
               </CardFooter>
             </Card>
@@ -349,6 +362,7 @@ export async function AllHeroes({
                         ),
                       })}
                       comparison={comparisons.get("damage_blocked")}
+                      stat={t("dmgBlocked")}
                     />
                   </CardFooter>
                 </Card>
@@ -393,6 +407,7 @@ export async function AllHeroes({
                         ),
                       })}
                       comparison={comparisons.get("damage_taken")}
+                      stat={t("dmgTaken")}
                     />
                   </CardFooter>
                 </Card>
@@ -439,6 +454,7 @@ export async function AllHeroes({
                         ),
                       })}
                       comparison={comparisons.get("final_blows")}
+                      stat={t("finalBlows")}
                     />
                   </CardFooter>
                 </Card>
@@ -488,6 +504,7 @@ export async function AllHeroes({
                         ),
                       })}
                       comparison={comparisons.get("solo_kills")}
+                      stat={t("soloKills")}
                     />
                   </CardFooter>
                 </Card>
@@ -534,6 +551,7 @@ export async function AllHeroes({
                         ),
                       })}
                       comparison={comparisons.get("healing_dealt")}
+                      stat={t("healingDealt")}
                     />
                   </CardFooter>
                 </Card>
@@ -559,8 +577,8 @@ export async function AllHeroes({
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-muted-foreground text-sm">
-                      {t("healingReceivedPer10Min", {
+                    <StatCardFooter
+                      baseText={t("healingReceivedPer10Min", {
                         num: round(
                           (playerStats.reduce(
                             (acc, stat) => acc + stat.healing_received,
@@ -575,7 +593,9 @@ export async function AllHeroes({
                             10
                         ),
                       })}
-                    </div>
+                      comparison={comparisons.get("healing_received")}
+                      stat={t("healingReceived")}
+                    />
                   </CardFooter>
                 </Card>
               </>
