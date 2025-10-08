@@ -26,13 +26,22 @@ function RatingTooltip({ children }: { children: React.ReactNode }) {
 }
 
 export function HeroSRDisplay({ sr }: HeroSRDisplayProps) {
+  const t = useTranslations("mapPage.compare.playerCard.specificHero");
+
   if (sr === 0) {
     return (
-      <RatingTooltip>
-        <div className="inline-flex items-center gap-1 pl-4">
-          <span className="text-muted-foreground text-lg">Unplaced</span>
-        </div>
-      </RatingTooltip>
+      <Tooltip>
+        <TooltipTrigger>
+          <div className="inline-flex items-center gap-1 pl-4">
+            <span className="text-muted-foreground text-lg">
+              {t("unplaced")}
+            </span>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p className="max-w-prose">{t("unratedTooltip")}</p>
+        </TooltipContent>
+      </Tooltip>
     );
   }
 
