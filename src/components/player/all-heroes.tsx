@@ -29,9 +29,14 @@ export async function AllHeroes({
       <h1 className="scroll-m-20 pb-2 pl-2 text-3xl font-semibold tracking-tight first:mt-0">
         {t("title")}
       </h1>
-      <div className="flex flex-1">
-        <div className={cn("p-2", showTable && "w-full lg:w-1/2")}>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="flex flex-1 flex-col 2xl:flex-row">
+        <div className={cn("p-2", showTable && "w-full 2xl:w-1/2")}>
+          <div
+            className={cn(
+              "grid gap-4 md:grid-cols-2 xl:grid-cols-4",
+              !showTable && "xl:grid-cols-2"
+            )}
+          >
             <Card>
               <Image
                 src="/heroes/default.png"
@@ -507,7 +512,7 @@ export async function AllHeroes({
           </div>
         </div>
         {showTable && (
-          <div className="hidden w-1/2 p-2 md:grid">
+          <div className="w-full p-2 2xl:w-1/2">
             <StatsTable data={playerStats[0]} />
           </div>
         )}
