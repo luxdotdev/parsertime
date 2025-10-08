@@ -1,3 +1,4 @@
+import { HeroSRDisplay } from "@/components/player/hero-sr-display";
 import { StatCardFooter } from "@/components/player/stat-card-footer";
 import { StatsTable } from "@/components/player/stats-table";
 import {
@@ -8,7 +9,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CardIcon } from "@/components/ui/card-icon";
-import { getMultipleStatComparisons } from "@/lib/stat-card-helpers";
+import {
+  calculateCompositeHeroSR,
+  getMultipleStatComparisons,
+} from "@/lib/stat-card-helpers";
 import type { ValidStatColumn } from "@/lib/stat-percentiles";
 import { cn, getHeroNames, round, toHero, toMins } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
@@ -66,11 +70,37 @@ export async function SpecificHero({
     playerStat.hero_time_played
   );
 
+  const allStats: Record<ValidStatColumn, number> = {
+    eliminations: playerStat.eliminations,
+    final_blows: playerStat.final_blows,
+    deaths: playerStat.deaths,
+    hero_damage_dealt: playerStat.hero_damage_dealt,
+    healing_dealt: playerStat.healing_dealt,
+    healing_received: playerStat.healing_received,
+    damage_blocked: playerStat.damage_blocked,
+    damage_taken: playerStat.damage_taken,
+    solo_kills: playerStat.solo_kills,
+    ultimates_earned: playerStat.ultimates_earned,
+    ultimates_used: playerStat.ultimates_used,
+    objective_kills: playerStat.objective_kills,
+    offensive_assists: playerStat.offensive_assists,
+    defensive_assists: playerStat.defensive_assists,
+  };
+
+  const compositeHeroSR = await calculateCompositeHeroSR(
+    hero,
+    allStats,
+    playerStat.hero_time_played
+  );
+
   return (
     <main>
-      <h1 className="scroll-m-20 pb-2 pl-2 text-3xl font-semibold tracking-tight first:mt-0">
-        {heroNames.get(toHero(hero)) ?? hero}
-      </h1>
+      <div className="flex items-center justify-between pb-2 pl-2">
+        <h1 className="scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0">
+          {heroNames.get(toHero(hero)) ?? hero}{" "}
+          <HeroSRDisplay sr={compositeHeroSR} />
+        </h1>
+      </div>
       <div className="flex flex-1">
         <div className={cn("p-2", showTable && "w-full lg:w-1/2")}>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
