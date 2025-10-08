@@ -1038,7 +1038,8 @@
           "unplaced": "Unplaced"
         },
         "percentile": "{percentile, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} percentile",
-        "percentileExplanation": "{stat} performance in the top {percent}% of {hero} players"
+        "percentileExplanation": "{stat} performance in the top {percent}% of {hero} players",
+        "vsAverage": "vs avg {average}/10min"
       }
     },
     "heroBans": {
