@@ -9,7 +9,15 @@ export type StatCardComparison = {
   heroAverage: number;
   zScore: number;
   percentile: number;
+  estimatedSR: number;
 };
+
+function calculateEstimatedSR(zScore: number): number {
+  const baseSR = 2500;
+  const adjustment = zScore * (1250.0 / (1.0 + Math.abs(zScore) / 3.0));
+  const estimatedSR = baseSR + adjustment;
+  return Math.floor(Math.max(1, Math.min(5000, estimatedSR)));
+}
 
 export async function getStatComparison(
   hero: HeroName,
@@ -32,12 +40,14 @@ export async function getStatComparison(
     }
 
     const comparison = result.comparisons[0];
+    const zScore = Number(comparison.z_score);
 
     return {
       per10Value: Number(comparison.input_per10),
       heroAverage: Number(comparison.hero_avg_per10),
-      zScore: Number(comparison.z_score),
+      zScore,
       percentile: Number(comparison.estimated_percentile),
+      estimatedSR: calculateEstimatedSR(zScore),
     };
   } catch {
     return null;
@@ -66,11 +76,13 @@ export async function getMultipleStatComparisons(
     }
 
     for (const comparison of comparisonResult.comparisons) {
+      const zScore = Number(comparison.z_score);
       result.set(comparison.stat, {
         per10Value: Number(comparison.input_per10),
         heroAverage: Number(comparison.hero_avg_per10),
-        zScore: Number(comparison.z_score),
+        zScore,
         percentile: Number(comparison.estimated_percentile),
+        estimatedSR: calculateEstimatedSR(zScore),
       });
     }
   } catch {
