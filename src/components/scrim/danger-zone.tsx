@@ -15,7 +15,7 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { startTransition, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export function DangerZone({ scrim }: { scrim: Scrim }) {
@@ -32,7 +32,6 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
   }, [deleteInput, scrim.name]);
 
   async function handleDelete() {
-    setDeleteLoading(true);
     const res = await fetch(`/api/scrim/remove-scrim?id=${scrim.id}`, {
       method: "POST",
     });
@@ -97,10 +96,11 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
               <div className="mt-4 flex justify-end space-x-4">
                 <Button
                   variant="destructive"
-                  disabled={!deleteEnabled || deleteLoading}
-                  onClick={() =>
-                    startTransition(async () => await handleDelete())
-                  }
+                  disabled={deleteLoading || !deleteEnabled}
+                  onClick={() => {
+                    setDeleteLoading(true);
+                    void handleDelete();
+                  }}
                 >
                   {deleteLoading ? (
                     <>
