@@ -84,6 +84,10 @@ const STAT_WEIGHTS: Record<ValidStatColumn, number> = {
   objective_kills: 0.4,
   offensive_assists: 0.3,
   defensive_assists: 0.3,
+
+  // Unweighted stats
+  healing_received: 0.0,
+  ultimates_used: 0.0,
 };
 
 /**
