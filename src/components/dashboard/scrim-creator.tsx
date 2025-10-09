@@ -104,9 +104,15 @@ export function ScrimCreationForm({
     map: z.any(),
     heroBans: z.array(
       z.object({
-        hero: z.string(),
-        team: z.string(),
-        banPosition: z.number(),
+        hero: z.string().min(1, {
+          message: t("heroBanRequiredError"),
+        }),
+        team: z.string().min(1, {
+          message: t("teamRequiredError"),
+        }),
+        banPosition: z.number().min(1, {
+          message: t("banPositionRequiredError"),
+        }),
       })
     ),
   });
@@ -178,6 +184,10 @@ export function ScrimCreationForm({
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    defaultValues: {
+      date: new Date(),
+      heroBans: [],
+    },
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
