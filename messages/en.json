@@ -786,7 +786,12 @@
       "kills": "Kills",
       "charts": "Charts",
       "events": "Events",
-      "compare": "Compare"
+      "compare": "Compare",
+      "notes": "Notes"
+    },
+    "tiptap": {
+      "placeholder": "Write, format, and highlight your text below.",
+      "notes": "Notes"
     },
     "overview": {
       "matchTime": "Total Match Time",
