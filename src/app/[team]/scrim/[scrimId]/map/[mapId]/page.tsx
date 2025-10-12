@@ -10,6 +10,7 @@ import { MapEvents } from "@/components/map/map-events";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
 import { Notifications } from "@/components/notifications";
 import { ModeToggle } from "@/components/theme-switcher";
+import { TipTap } from "@/components/tiptap/tiptap";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserNav } from "@/components/user-nav";
 import { getMostPlayedHeroes } from "@/data/player-dto";
@@ -160,6 +161,7 @@ export default async function MapDashboardPage(
               {t("tabs.events")}
             </TabsTrigger>
             <TabsTrigger value="compare">{t("tabs.compare")}</TabsTrigger>
+            <TabsTrigger value="notes">{t("tabs.notes")}</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
             <DefaultOverview id={id} team1Color={team1} team2Color={team2} />
@@ -175,6 +177,11 @@ export default async function MapDashboardPage(
           </TabsContent>
           <TabsContent value="compare" className="space-y-4">
             <ComparePlayers id={id} />
+          </TabsContent>
+          <TabsContent value="notes" className="space-y-4">
+            <div className="mx-auto py-8">
+              <TipTap />
+            </div>
           </TabsContent>
         </Tabs>
       </div>
