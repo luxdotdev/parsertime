@@ -1,7 +1,7 @@
-import { noteDataSchema } from "@/components/tiptap/tiptap";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { upsertNote } from "@/lib/notes";
+import { noteDataSchema } from "@/lib/utils";
 import { notFound, unauthorized } from "next/navigation";
 import type { NextRequest } from "next/server";
 
