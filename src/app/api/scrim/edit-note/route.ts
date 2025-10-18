@@ -25,5 +25,5 @@ export async function POST(request: NextRequest) {
     content: noteData.data.content,
   });
 
-  return new Response("Note created", { status: 201 });
+  return new Response(JSON.stringify(noteData.data), { status: 201 });
 }
