@@ -228,10 +228,23 @@ model HeroBan {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   MapData     MapData? @relation(fields: [MapDataId], references: [id])
-  MapDataId   Int?
+  MapDataId   Int
 
   @@index([scrimId])
   @@index([MapDataId])
+}
+
+model Note {
+  id        Int      @id @default(autoincrement())
+  content   String   @default("")
+  scrimId   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  MapData   MapData  @relation(fields: [MapDataId], references: [id])
+  MapDataId Int
+
+  @@unique([scrimId, MapDataId])
+  @@index([scrimId, MapDataId])
 }
 
 enum EventType {
@@ -299,8 +312,10 @@ model MapData {
   ultimate_end         UltimateEnd[]
   ultimate_start       UltimateStart[]
   HeroBan              HeroBan[]
-  Map                  Map?                 @relation(fields: [mapId], references: [id])
-  mapId                Int?
+  Note                 Note[]
+
+  Map   Map? @relation(fields: [mapId], references: [id])
+  mapId Int?
 
   @@index([scrimId])
   @@index([mapId])
