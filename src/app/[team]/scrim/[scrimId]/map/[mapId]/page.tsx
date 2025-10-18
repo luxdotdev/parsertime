@@ -78,7 +78,7 @@ export default async function MapDashboardPage(
 
   const { team1, team2 } = await getColorblindMode(user?.id ?? "");
 
-  const [mostPlayedHeroes, mapDetails, map, visibility, heroBans] =
+  const [mostPlayedHeroes, mapDetails, map, visibility, heroBans, noteContent] =
     await Promise.all([
       getMostPlayedHeroes(id),
       prisma.matchStart.findFirst({
@@ -95,6 +95,13 @@ export default async function MapDashboardPage(
       }),
       prisma.heroBan.findMany({
         where: { MapDataId: id },
+      }),
+      prisma.note.findFirst({
+        where: {
+          scrimId: parseInt(params.scrimId),
+          MapDataId: id,
+        },
+        select: { content: true },
       }),
     ]);
 
@@ -193,7 +200,7 @@ export default async function MapDashboardPage(
           </TabsContent>
           <TabsContent value="notes" className="space-y-4">
             <div className="mx-auto py-8">
-              <TipTap />
+              <TipTap noteContent={noteContent?.content ?? ""} />
             </div>
           </TabsContent>
         </Tabs>
