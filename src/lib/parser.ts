@@ -449,6 +449,14 @@ export async function createNewMap(data: CreateNewMapArgs, session: Session) {
     },
   });
 
+  await prisma.note.create({
+    data: {
+      content: "<p>Add your notes here...</p>",
+      scrimId: data.scrimId,
+      MapDataId: mapData.id,
+    },
+  });
+
   try {
     await Promise.all([
       createDefensiveAssistsRows(data.map, { id: data.scrimId }, map.id),
