@@ -22,7 +22,7 @@ export async function upsertNote(data: UpsertNoteArgs) {
     throw new Error("User not found");
   }
 
-  const map = await prisma.mapData.findFirst({
+  const map = await prisma.map.findFirst({
     where: { id: data.mapDataId, scrimId: data.scrimId },
   });
 
