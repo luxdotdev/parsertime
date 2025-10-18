@@ -4,6 +4,7 @@ import { clsx, type ClassValue } from "clsx";
 import { useMessages, useTranslations } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { twMerge } from "tailwind-merge";
+import { z } from "zod";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -511,3 +512,9 @@ export async function getColorblindMode(userId: string) {
       };
   }
 }
+
+export const noteDataSchema = z.object({
+  scrimId: z.number(),
+  mapDataId: z.number(),
+  content: z.string(),
+});
