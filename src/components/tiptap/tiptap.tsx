@@ -8,20 +8,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useQuery } from "@tanstack/react-query";
+import { noteDataSchema } from "@/lib/utils";
 import Highlight from "@tiptap/extension-highlight";
 import TextAlign from "@tiptap/extension-text-align";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
-import z from "zod";
+import { useEffect } from "react";
+import { useDebouncedCallback } from "use-debounce";
 
-export const noteDataSchema = z.object({
-  scrimId: z.number(),
-  mapDataId: z.number(),
-  content: z.string(),
-});
+function showContent(content: string) {
+  return content;
+}
 
 async function fetchNotes(mapDataId: number, scrimId: number, content: string) {
   const response = await fetch("/api/scrim/edit-note", {
@@ -34,12 +33,13 @@ async function fetchNotes(mapDataId: number, scrimId: number, content: string) {
   if (!response.ok) {
     throw new Error("Failed to fetch notes");
   }
+
   const data = noteDataSchema.parse(await response.json());
 
   return data;
 }
 
-export function TipTap() {
+export function TipTap({ noteContent }: { noteContent: string }) {
   const t = useTranslations("mapPage.tiptap");
 
   const pathname = usePathname();
@@ -48,25 +48,12 @@ export function TipTap() {
   const scrimId = Number(pathSegments[3]);
   const mapDataId = Number(pathSegments[5]);
 
-  const {
-    data: noteData,
-    isError,
-    isLoading,
-  } = useQuery({
-    queryKey: ["fetch-scrim-notes"],
-    queryFn: async () => {
-      return fetchNotes(mapDataId, scrimId, "");
-    },
-  });
-
-  const content = isError
-    ? "Error loading notes."
-    : isLoading
-      ? "Loading notes..."
-      : noteData?.content;
+  const debouncedFetchNotes = useDebouncedCallback((content: string) => {
+    void fetchNotes(mapDataId, scrimId, content);
+  }, 1000);
 
   const editor = useEditor({
-    content,
+    content: noteContent,
     extensions: [
       StarterKit.configure({
         bulletList: {
@@ -95,7 +82,14 @@ export function TipTap() {
       },
     },
     immediatelyRender: false,
+    onUpdate: ({ editor }) => {
+      void debouncedFetchNotes(editor.getHTML());
+    },
   });
+
+  useEffect(() => {
+    editor?.commands.setContent(showContent(noteContent));
+  }, [noteContent, editor]);
 
   return (
     <Card className="border-muted shadow-md">
