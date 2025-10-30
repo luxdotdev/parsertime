@@ -255,7 +255,7 @@ export function PlayerHoverCard({
                 })}
               </div>
             )}
-            {top3Heroes && top3Heroes.length === 0 && (
+            {top3Heroes?.length === 0 && (
               <div className="text-muted-foreground text-center text-sm">
                 No hero data available
               </div>
