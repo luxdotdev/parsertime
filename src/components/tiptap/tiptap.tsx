@@ -18,10 +18,6 @@ import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
-function showContent(content: string) {
-  return content;
-}
-
 async function fetchNotes(mapDataId: number, scrimId: number, content: string) {
   const response = await fetch("/api/scrim/edit-note", {
     method: "POST",
@@ -88,7 +84,7 @@ export function TipTap({ noteContent }: { noteContent: string }) {
   });
 
   useEffect(() => {
-    editor?.commands.setContent(showContent(noteContent));
+    editor?.commands.setContent(noteContent);
   }, [noteContent, editor]);
 
   return (
