@@ -243,7 +243,7 @@ export function ScrimPagination({ isAdmin = false }: { isAdmin?: boolean }) {
   }
 
   // Show empty scrim list only if user has no scrims at all
-  if (!isLoading && totalScrimsData && totalScrimsData.totalCount === 0) {
+  if (!isLoading && totalScrimsData?.totalCount === 0) {
     return <EmptyScrimList />;
   }
 
