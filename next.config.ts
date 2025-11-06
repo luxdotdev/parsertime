@@ -1,4 +1,5 @@
 import withVercelToolbar from "@vercel/toolbar/plugins/next";
+import { withBotId } from "botid/next/config";
 import { withAxiom } from "next-axiom";
 import createNextIntlPlugin from "next-intl/plugin";
 
@@ -98,5 +99,7 @@ const nextConfig = {
 
 const withNextIntl = createNextIntlPlugin();
 
-// @ts-ignore - broken types
-export default withNextIntl(withAxiom(withVercelToolbar()(nextConfig)));
+export default withBotId(
+  // @ts-ignore - broken types
+  withNextIntl(withAxiom(withVercelToolbar()(nextConfig)))
+);
