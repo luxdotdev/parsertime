@@ -9,9 +9,15 @@ import prisma from "@/lib/prisma";
 import { isTaggedError } from "@/lib/utils";
 import { render } from "@react-email/render";
 import { track } from "@vercel/analytics/server";
+import { checkBotId } from "botid/server";
 import { after, type NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
+  const verification = await checkBotId();
+  if (verification.isBot) {
+    return new Response("Access denied", { status: 403 });
+  }
+
   const inviteeEmail = req.nextUrl.searchParams.get("email");
   const inviteToken = req.nextUrl.searchParams.get("token");
 
