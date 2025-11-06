@@ -5,6 +5,7 @@ import { render } from "@react-email/render";
 import { Ratelimit } from "@upstash/ratelimit";
 import { ipAddress } from "@vercel/functions";
 import { kv } from "@vercel/kv";
+import { checkBotId } from "botid/server";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
 
@@ -15,6 +16,11 @@ const ContactFormEmailSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const verification = await checkBotId();
+  if (verification.isBot) {
+    return new Response("Access denied", { status: 403 });
+  }
+
   // Create a new ratelimiter, that allows 3 requests per 1 minute
   const ratelimit = new Ratelimit({
     redis: kv,
