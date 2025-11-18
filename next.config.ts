@@ -27,9 +27,6 @@ const cspHeader = `
 const nextConfig = {
   reactCompiler: true,
   typedRoutes: true,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
