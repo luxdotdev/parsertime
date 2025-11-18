@@ -39,6 +39,7 @@ async function getTeamsWithPermsFn(email: string | undefined) {
         },
         { managers: { some: { userId: user?.id } } },
       ],
+      id: { not: 0 },
     },
   });
 
