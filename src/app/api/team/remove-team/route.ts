@@ -40,6 +40,7 @@ export async function POST(req: NextRequest) {
 
   await prisma.team.delete({ where: { id } });
   await prisma.teamManager.deleteMany({ where: { teamId: id } });
+  await prisma.scrim.updateMany({ where: { teamId: id }, data: { teamId: 0 } });
 
   after(async () => {
     await auditLog.createAuditLog({
