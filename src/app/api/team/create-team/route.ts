@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
 
   switch (userId.billingPlan) {
     case "FREE":
-      if (numberOfTeams >= 2) {
+      if (numberOfTeams >= 2 && userId.role !== "ADMIN") {
         return new Response(
           "You have hit the limit of teams that your account can create.  Please upgrade your plan or contact support.",
           { status: 403 }
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
       }
       break;
     case "BASIC":
-      if (numberOfTeams >= 5) {
+      if (numberOfTeams >= 5 && userId.role !== "ADMIN") {
         return new Response(
           "You have hit the limit of teams that your account can create.  Please upgrade your plan or contact support.",
           { status: 403 }
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
       }
       break;
     case "PREMIUM":
-      if (numberOfTeams >= 10) {
+      if (numberOfTeams >= 10 && userId.role !== "ADMIN") {
         return new Response(
           "You have hit the limit of teams that your account can create.  Please upgrade your plan or contact support.",
           { status: 403 }
