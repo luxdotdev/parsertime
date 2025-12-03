@@ -104,7 +104,7 @@
     "radix-ui": "^1.4.3",
     "react": "19.2.1",
     "react-day-picker": "^9.10.0",
-    "react-dom": "19.2.0",
+    "react-dom": "19.2.1",
     "react-easy-crop": "^5.5.1",
     "react-hook-form": "^7.62.0",
     "react-resizable-panels": "^3.0.6",
