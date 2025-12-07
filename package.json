@@ -118,7 +118,8 @@
     "validator": "^13.15.15",
     "vaul": "^1.1.2",
     "xlsx": "^0.18.5",
-    "zod": "^4.1.8"
+    "zod": "^4.1.8",
+    "partysocket": "1.1.6"
   },
   "devDependencies": {
     "@eslint-react/eslint-plugin": "^1.53.1",
@@ -151,7 +152,8 @@
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.44.0",
     "vitest": "^3.2.4",
-    "vitest-mock-extended": "^3.1.0"
+    "vitest-mock-extended": "^3.1.0",
+    "partykit": "0.0.115"
   },
   "pnpm": {
     "overrides": {
