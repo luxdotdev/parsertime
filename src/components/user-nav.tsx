@@ -1,4 +1,5 @@
 import { SignOutButton } from "@/components/auth/auth-components";
+import { SupporterHeart } from "@/components/profile/supporter-heart";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -50,8 +51,12 @@ export async function UserNav() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm leading-none font-medium">
-              {session?.user?.name ?? ""}
+            <p className="text-primary flex items-center gap-2 text-sm leading-none font-medium">
+              {session?.user?.name ?? ""}{" "}
+              <SupporterHeart
+                billingPlan={user?.billingPlan ?? $Enums.BillingPlan.FREE}
+                className="h-4 w-4"
+              />
             </p>
             <p className="text-muted-foreground text-xs leading-none">
               {session?.user?.email ?? ""}
