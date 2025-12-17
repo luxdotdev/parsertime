@@ -486,8 +486,6 @@ export async function createNewMap(data: CreateNewMapArgs, session: Session) {
       createUltimateEndRows(data.map, { id: data.scrimId }, map.id),
       createUltimateStartRows(data.map, { id: data.scrimId }, map.id),
     ]);
-
-    await calculateStatsForMap(mapData.id, data.scrimId);
   } catch (error) {
     Logger.error("Error creating map data: ", error, session);
 
@@ -501,12 +499,15 @@ export async function createNewMap(data: CreateNewMapArgs, session: Session) {
 
     throw new Error("Invalid Log Format");
   }
+
+  await calculateStatsForMap(map.id, data.scrimId);
 }
 
-export async function calculateStatsForMap(mapId: number, scrimId: number) {
+export async function calculateStatsForMap(mapDataId: number, scrimId: number) {
+  Logger.log("Calculating stats for map: ", mapDataId, "scrim: ", scrimId);
   const players = await prisma.playerStat.findMany({
     where: {
-      MapDataId: mapId,
+      MapDataId: mapDataId,
     },
     select: {
       player_name: true,
@@ -514,18 +515,27 @@ export async function calculateStatsForMap(mapId: number, scrimId: number) {
     distinct: ["player_name"],
   });
 
+  Logger.log(
+    "Found ",
+    players.length,
+    " players for map: ",
+    mapDataId,
+    "scrim: ",
+    scrimId
+  );
+
   for (const player of players) {
     try {
       Logger.log(
         "Calculating stats for player: ",
         player.player_name,
         "on map: ",
-        mapId,
+        mapDataId,
         "scrim: ",
         scrimId
       );
 
-      const stats = await calculateStats(mapId, player.player_name);
+      const stats = await calculateStats(mapDataId, player.player_name);
 
       const calculatedStatRecords = [];
 
@@ -540,7 +550,7 @@ export async function calculateStatsForMap(mapId: number, scrimId: number) {
           role: stats.role as Role,
           stat: "FLETA_DEADLIFT_PERCENTAGE" as const,
           value: stats.fletaDeadliftPercentage,
-          MapDataId: mapId,
+          MapDataId: mapDataId,
         });
       }
 
@@ -555,7 +565,7 @@ export async function calculateStatsForMap(mapId: number, scrimId: number) {
           role: stats.role as Role,
           stat: "FIRST_PICK_PERCENTAGE" as const,
           value: stats.firstPickPercentage,
-          MapDataId: mapId,
+          MapDataId: mapDataId,
         });
       }
 
@@ -567,7 +577,7 @@ export async function calculateStatsForMap(mapId: number, scrimId: number) {
           role: stats.role as Role,
           stat: "FIRST_PICK_COUNT" as const,
           value: stats.firstPickCount,
-          MapDataId: mapId,
+          MapDataId: mapDataId,
         });
       }
 
@@ -582,7 +592,7 @@ export async function calculateStatsForMap(mapId: number, scrimId: number) {
           role: stats.role as Role,
           stat: "FIRST_DEATH_PERCENTAGE" as const,
           value: stats.firstDeathPercentage,
-          MapDataId: mapId,
+          MapDataId: mapDataId,
         });
       }
 
@@ -594,7 +604,7 @@ export async function calculateStatsForMap(mapId: number, scrimId: number) {
           role: stats.role as Role,
           stat: "FIRST_DEATH_COUNT" as const,
           value: stats.firstDeathCount,
-          MapDataId: mapId,
+          MapDataId: mapDataId,
         });
       }
 
@@ -610,7 +620,7 @@ export async function calculateStatsForMap(mapId: number, scrimId: number) {
           role: stats.role as Role,
           stat: "MVP_SCORE" as const,
           value: stats.mvpScore,
-          MapDataId: mapId,
+          MapDataId: mapDataId,
         });
       }
 
@@ -622,7 +632,7 @@ export async function calculateStatsForMap(mapId: number, scrimId: number) {
           role: stats.role as Role,
           stat: "MAP_MVP_COUNT" as const,
           value: 1,
-          MapDataId: mapId,
+          MapDataId: mapDataId,
         });
       }
 
@@ -634,7 +644,7 @@ export async function calculateStatsForMap(mapId: number, scrimId: number) {
           role: stats.role as Role,
           stat: "AJAX_COUNT" as const,
           value: stats.ajaxCount,
-          MapDataId: mapId,
+          MapDataId: mapDataId,
         });
       }
 
@@ -649,7 +659,7 @@ export async function calculateStatsForMap(mapId: number, scrimId: number) {
           role: stats.role as Role,
           stat: "AVERAGE_ULT_CHARGE_TIME" as const,
           value: stats.averageUltChargeTime,
-          MapDataId: mapId,
+          MapDataId: mapDataId,
         });
       }
 
@@ -664,7 +674,7 @@ export async function calculateStatsForMap(mapId: number, scrimId: number) {
           role: stats.role as Role,
           stat: "AVERAGE_TIME_TO_USE_ULT" as const,
           value: stats.averageTimeToUseUlt,
-          MapDataId: mapId,
+          MapDataId: mapDataId,
         });
       }
 
@@ -676,7 +686,7 @@ export async function calculateStatsForMap(mapId: number, scrimId: number) {
           role: stats.role as Role,
           stat: "AVERAGE_DROUGHT_TIME" as const,
           value: stats.droughtTime,
-          MapDataId: mapId,
+          MapDataId: mapDataId,
         });
       }
 
@@ -688,7 +698,7 @@ export async function calculateStatsForMap(mapId: number, scrimId: number) {
           role: stats.role as Role,
           stat: "KILLS_PER_ULTIMATE" as const,
           value: stats.killsPerUltimate,
-          MapDataId: mapId,
+          MapDataId: mapDataId,
         });
       }
 
@@ -706,7 +716,7 @@ export async function calculateStatsForMap(mapId: number, scrimId: number) {
             role: stats.role as Role,
             stat: "DUEL_WINRATE_PERCENTAGE" as const,
             value: duelWinrate,
-            MapDataId: mapId,
+            MapDataId: mapDataId,
           });
         }
       }
@@ -722,7 +732,7 @@ export async function calculateStatsForMap(mapId: number, scrimId: number) {
           role: stats.role as Role,
           stat: "FIGHT_REVERSAL_PERCENTAGE" as const,
           value: stats.fightReversalPercentage,
-          MapDataId: mapId,
+          MapDataId: mapDataId,
         });
       }
 
@@ -736,7 +746,7 @@ export async function calculateStatsForMap(mapId: number, scrimId: number) {
           "Stats saved for player: ",
           player.player_name,
           "on map: ",
-          mapId,
+          mapDataId,
           "scrim: ",
           scrimId,
           "calculated stats: ",
@@ -745,7 +755,7 @@ export async function calculateStatsForMap(mapId: number, scrimId: number) {
       }
     } catch (error) {
       Logger.error(
-        `Error calculating stats for player ${player.player_name} on map ${mapId}:`,
+        `Error calculating stats for player ${player.player_name} on map ${mapDataId}:`,
         error
       );
     }
