@@ -3,6 +3,7 @@ import { HeroRating } from "@/components/profile/hero-rating";
 import { PersonalRecords } from "@/components/profile/personal-records";
 import { PlayStyleIndicator } from "@/components/profile/play-style-indicator";
 import { ProfileHeader } from "@/components/profile/profile-header";
+import { RecentActivityCalendar } from "@/components/profile/recent-activity-calendar";
 import { StatFluctuationCards } from "@/components/profile/stat-fluctuation-cards";
 import { Statistics } from "@/components/stats/player/statistics";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -305,16 +306,17 @@ export default async function ProfilePage(
                   </div>
                 </div>
               </div>
+              <RecentActivityCalendar scrims={allScrims} />
 
-              <Tabs defaultValue="all-time">
+              <Tabs defaultValue="one-week">
                 <TabsList>
-                  <TabsTrigger value="all-time">All Time</TabsTrigger>
                   <TabsTrigger value="one-week">One Week</TabsTrigger>
                   <TabsTrigger value="two-weeks">Two Weeks</TabsTrigger>
                   <TabsTrigger value="one-month">One Month</TabsTrigger>
                   <TabsTrigger value="three-months">Three Months</TabsTrigger>
                   <TabsTrigger value="six-months">Six Months</TabsTrigger>
                   <TabsTrigger value="one-year">One Year</TabsTrigger>
+                  <TabsTrigger value="all-time">All Time</TabsTrigger>
                 </TabsList>
                 <TabsContent value="all-time">
                   <StatFluctuationCards
