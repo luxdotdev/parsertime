@@ -15,7 +15,12 @@ import {
 } from "@/data/scrim-dto";
 import { getCompositeSRLeaderboard } from "@/lib/hero-rating";
 import prisma from "@/lib/prisma";
-import { toHero, toTimestampWithHours } from "@/lib/utils";
+import {
+  cn,
+  getHeroRatingBorderColor,
+  toHero,
+  toTimestampWithHours,
+} from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import type { PagePropsWithLocale } from "@/types/next";
 import type { Scrim } from "@prisma/client";
@@ -271,13 +276,16 @@ export default async function ProfilePage(
                         className="flex flex-col items-center gap-2"
                       >
                         <div
-                          className={`bg-muted relative overflow-hidden rounded-full border-4 ${
+                          className={cn(
+                            "bg-muted relative overflow-hidden rounded-full border-4",
+                            getHeroRatingBorderColor(
+                              hero.hero_rating,
+                              hero.rank
+                            ),
                             index === 0
-                              ? "h-28 w-28 scale-110 border-blue-500 shadow-lg"
-                              : index === 1
-                                ? "h-24 w-24 border-orange-600"
-                                : "h-24 w-24 border-blue-400"
-                          }`}
+                              ? "h-28 w-28 scale-110 shadow-lg"
+                              : "h-24 w-24"
+                          )}
                         >
                           <Image
                             src={`/heroes/${toHero(hero.player_hero)}.png`}
