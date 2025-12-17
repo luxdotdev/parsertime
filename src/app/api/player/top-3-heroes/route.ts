@@ -112,17 +112,24 @@ export async function GET(request: NextRequest) {
       ],
     },
     select: {
+      id: true,
       name: true,
       image: true,
       role: true,
+      bannerImage: true,
     },
+  });
+
+  const appliedTitle = await prisma.appliedTitle.findFirst({
+    where: { userId: user?.id },
+    select: { title: true },
   });
 
   return NextResponse.json({
     player: {
       name: user?.name ?? validPlayer.data,
       image: user?.image ?? null,
-      title: user?.role === "ADMIN" ? "Administrator" : "Player",
+      title: appliedTitle?.title ?? null,
     },
     heroes: result,
   });
