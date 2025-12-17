@@ -520,7 +520,7 @@
     },
     "addMap": {
       "title": "Add a map...",
-      "description": "Drag and drop or select a file to upload.",
+      "description": "or, <here>click to browse</here> (1MB max)",
       "addFile": "Add a file",
       "fileMessage": {
         "required": "File is required.",

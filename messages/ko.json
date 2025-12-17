@@ -492,7 +492,7 @@
     },
     "addMap": {
       "title": "맵 추가...",
-      "description": "파일을 드래그 앤 드롭하거나 선택하여 업로드하세요.",
+      "description": "또는, <here>클릭하여 탐색</here> (1MB 최대)",
       "addFile": "파일 추가",
       "fileMessage": {
         "required": "파일이 필요합니다.",

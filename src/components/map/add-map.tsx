@@ -3,12 +3,6 @@
 import { SortableBanItem } from "@/components/map/sortable-ban-item";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-} from "@/components/ui/card";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -41,7 +35,8 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusCircledIcon, ReloadIcon } from "@radix-ui/react-icons";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -215,6 +210,10 @@ export function AddMapCard() {
     }
   }
 
+  function handleClick() {
+    document.getElementById("file")?.click();
+  }
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -231,39 +230,55 @@ export function AddMapCard() {
             name="file"
             render={() => (
               <FormItem>
-                <Card
+                <div
                   className={cn(
-                    "flex h-48 max-w-md flex-col items-center justify-center border-dashed",
+                    "h-48 max-w-md rounded-2xl",
                     dragActive && "border-green-500"
                   )}
-                  onDragEnter={handleDrag}
-                  onDragLeave={handleDrag}
-                  onDragOver={handleDrag}
-                  onDrop={handleDrop}
                 >
-                  <CardHeader className="flex items-center justify-center text-xl">
-                    <div className="flex items-center gap-2 whitespace-nowrap">
-                      <PlusCircledIcon className="h-6 w-6" />
-                      <span>{t("title")}</span>
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        handleClick();
+                      }
+                    }}
+                    className="border-border flex cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed p-8 text-center"
+                    onDragEnter={handleDrag}
+                    onDragLeave={handleDrag}
+                    onDragOver={handleDrag}
+                    onDrop={handleDrop}
+                    onClick={handleClick}
+                  >
+                    <div className="bg-muted mb-2 rounded-full p-3">
+                      <Upload className="text-muted-foreground h-5 w-5" />
                     </div>
-                  </CardHeader>
-                  <CardDescription className="pb-4">
-                    {t("description")}
-                  </CardDescription>
-                  <CardContent className="flex items-center justify-center">
-                    <Label htmlFor="file" className="hidden">
-                      {t("addFile")}
-                    </Label>
+                    <p className="text-foreground text-sm font-medium">
+                      {t("title")}
+                    </p>
+                    <p className="text-muted-foreground mt-1 text-sm">
+                      {t.rich("description", {
+                        here: (chunks) => (
+                          <Label
+                            htmlFor="file"
+                            className="text-primary hover:text-primary/90 inline-block cursor-pointer font-medium"
+                            onClick={(e) => e.stopPropagation()} // Prevent triggering handleBoxClick
+                          >
+                            {chunks}
+                          </Label>
+                        ),
+                      })}
+                    </p>
                     <Input
-                      id="file"
                       type="file"
-                      onChange={handleChange}
-                      className="w-64"
+                      id="file"
+                      className="hidden w-64"
                       accept=".xlsx, .txt"
+                      onChange={handleChange}
                     />
-                    <div className="pl-2" />
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               </FormItem>
             )}
           />

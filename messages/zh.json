@@ -492,7 +492,7 @@
     },
     "addMap": {
       "title": "添加地图...",
-      "description": "拖放或选择要上传的文件。",
+      "description": "或, <here>点击浏览</here> (1MB 最大)",
       "addFile": "添加文件",
       "fileMessage": {
         "required": "需要文件。",
