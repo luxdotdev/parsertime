@@ -11,6 +11,10 @@
     {
       "path": "/api/delete-empty-scrims",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/user/award-titles",
+      "schedule": "0 0 * * *"
     }
   ],
   "regions": ["iad1"]
