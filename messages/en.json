@@ -2475,5 +2475,14 @@
     "TOP_3_DEATHS-description": "Awarded to users who have achieved a spot on the top 3 deaths leaderboard.",
     "TOP_3_TIME_PLAYED": "Chronically Online",
     "TOP_3_TIME_PLAYED-description": "Awarded to users who have achieved a spot on the top 3 time played leaderboard. Go outside!"
+  },
+  "leaderboardPage": {
+    "metadata": {
+      "title": "Leaderboard | Parsertime",
+      "description": "View the highest ranked players for each hero.",
+      "ogTitle": "Leaderboard | Parsertime",
+      "ogDescription": "View the highest ranked players for each hero.",
+      "ogImage": "Leaderboard"
+    }
   }
 }
