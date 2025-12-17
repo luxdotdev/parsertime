@@ -8,11 +8,13 @@ import {
 } from "@/components/ui/tooltip";
 import { cn, useTitleTranslation } from "@/lib/utils";
 import type { BillingPlan, Title } from "@prisma/client";
+import Image from "next/image";
 
 type ProfileHeaderProps = {
   player: {
     name: string;
     image?: string | null;
+    bannerImage?: string | null;
     title?: Title | null; // e.g. "Squire", "Grandmaster"
     level?: number;
     endorsementLevel?: number;
@@ -35,7 +37,15 @@ export function ProfileHeader({ player, className }: ProfileHeaderProps) {
     >
       {/* Banner Section */}
       <div className="relative h-48 w-full bg-gradient-to-r from-blue-600 to-purple-600">
-        {/* Optional: Add a real banner image here if available */}
+        {player.bannerImage && (
+          <Image
+            src={player.bannerImage}
+            alt={`${player.name} banner`}
+            fill
+            className="object-cover"
+            priority
+          />
+        )}
         <div className="absolute inset-0 bg-black/20" />
       </div>
 
