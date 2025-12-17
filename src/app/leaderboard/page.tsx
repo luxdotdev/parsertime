@@ -200,22 +200,207 @@ export default async function LeaderboardPage(props: {
                   How do I get on the leaderboard?
                 </AccordionTrigger>
                 <AccordionContent>
-                  <p>
-                    To get on the leaderboard, you need to have{" "}
-                    <strong>at least 10 maps</strong> played on the hero. This
-                    ensures that the data is statistically significant.
-                  </p>
-                  <p className="mt-2">
-                    You also need to have played{" "}
-                    <strong>at least 60 seconds</strong> on the hero. Switching
-                    to a hero mid-game for a few seconds will not count as a
-                    map.
-                  </p>
-                  <p className="mt-2">
-                    While the leaderboard shows the top 50 players for each
-                    hero, your rank is still calculated and can be shown on your
-                    profile page.
-                  </p>
+                  <div className="space-y-4 text-left">
+                    <div>
+                      <h4 className="font-semibold">Minimum Requirements</h4>
+                      <p className="mt-1">
+                        To appear on the leaderboard, you must meet the
+                        following criteria:
+                      </p>
+                      <ul className="mt-2 list-inside list-disc space-y-1 pl-2">
+                        <li>
+                          <strong>At least 10 maps</strong> played on the hero.
+                          This ensures the data is statistically significant and
+                          represents consistent performance.
+                        </li>
+                        <li>
+                          <strong>At least 60 seconds</strong> of playtime per
+                          map. Brief hero swaps mid-game won&apos;t count toward
+                          your map total.
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold">Leaderboard Display</h4>
+                      <p className="mt-1">
+                        The leaderboard displays the{" "}
+                        <strong>top 50 players</strong> for each hero. Even if
+                        you don&apos;t appear in the top 50, your rank is still
+                        calculated and visible on your profile page, allowing
+                        you to track your progress over time.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold">Improving Your Rank</h4>
+                      <p className="mt-1">
+                        Focus on the statistics that matter most for your
+                        hero&apos;s role. Review the role weighting information
+                        above to understand which stats contribute most to your
+                        Composite SR calculation.
+                      </p>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="using-the-interactive-leaderboard">
+                <AccordionTrigger>
+                  How do I use the interactive leaderboard?
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4 text-left">
+                    <p>
+                      The leaderboard features an interactive interface that
+                      lets you explore detailed player statistics and
+                      performance data.
+                    </p>
+
+                    <div>
+                      <h4 className="font-semibold">Selecting a Player</h4>
+                      <p className="mt-1">
+                        Click on any player row in the leaderboard table to view
+                        their detailed statistics. The selected row will be
+                        highlighted, and a detailed stats panel will appear:
+                      </p>
+                      <ul className="mt-2 list-inside list-disc space-y-1 pl-2">
+                        <li>
+                          On <strong>desktop</strong>, the stats panel appears
+                          in a sticky column on the right side of the screen.
+                        </li>
+                        <li>
+                          On <strong>mobile</strong>, the stats panel appears
+                          below the table for easier viewing.
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold">Table Features</h4>
+                      <p className="mt-1">
+                        The leaderboard table displays key information for each
+                        player:
+                      </p>
+                      <ul className="mt-2 list-inside list-disc space-y-1 pl-2">
+                        <li>
+                          <strong>Rank:</strong> Player&apos;s position on the
+                          leaderboard
+                        </li>
+                        <li>
+                          <strong>Player:</strong> Clickable name that links to
+                          their profile page
+                        </li>
+                        <li>
+                          <strong>SR:</strong> Composite Skill Rating
+                        </li>
+                        <li>
+                          <strong>Maps:</strong> Number of maps played on the
+                          hero
+                        </li>
+                        <li>
+                          <strong>Time:</strong> Total minutes played
+                        </li>
+                        <li>
+                          <strong>Per 10 min stats:</strong> Eliminations,
+                          Deaths, Damage, and role-specific stats (Healing for
+                          Supports, Blocked for Tanks)
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold">Accessibility</h4>
+                      <p className="mt-1">
+                        All player rows are keyboard accessible. Use{" "}
+                        <kbd>Tab</kbd> to navigate and <kbd>Enter</kbd> or{" "}
+                        <kbd>Space</kbd> to select a player.
+                      </p>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="understanding-player-stats">
+                <AccordionTrigger>
+                  What information is shown in the detailed stats panel?
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4 text-left">
+                    <p>
+                      When you select a player, the detailed stats panel
+                      provides a comprehensive view of their performance,
+                      including visualizations and statistical breakdowns.
+                    </p>
+
+                    <div>
+                      <h4 className="font-semibold">Overview Cards</h4>
+                      <p className="mt-1">
+                        The top section displays four key metrics:
+                      </p>
+                      <ul className="mt-2 list-inside list-disc space-y-1 pl-2">
+                        <li>
+                          <strong>Composite SR:</strong> The player&apos;s
+                          overall skill rating
+                        </li>
+                        <li>
+                          <strong>Percentile:</strong> What percentage of
+                          players they outperform (e.g., &quot;Top 5% -
+                          Exceptional&quot;)
+                        </li>
+                        <li>
+                          <strong>Maps Played:</strong> Total number of maps on
+                          this hero
+                        </li>
+                        <li>
+                          <strong>Time Played:</strong> Total minutes of
+                          gameplay
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold">SR Distribution Chart</h4>
+                      <p className="mt-1">
+                        This visualization shows where the selected player ranks
+                        compared to all other players on the leaderboard. It
+                        helps you understand their position within the
+                        distribution of skill ratings.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold">
+                        Performance Breakdown (Radar Chart)
+                      </h4>
+                      <p className="mt-1">
+                        A radar chart displays how the player&apos;s statistics
+                        compare to the average player. Each axis represents a
+                        different stat (Eliminations, Deaths, Damage, etc.),
+                        allowing you to quickly identify strengths and areas for
+                        improvement.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold">
+                        Detailed Stats (per 10 minutes)
+                      </h4>
+                      <p className="mt-1">
+                        The bottom section lists all available statistics
+                        normalized to per 10 minutes, including:
+                      </p>
+                      <ul className="mt-2 list-inside list-disc space-y-1 pl-2">
+                        <li>Eliminations, Final Blows, Solo Kills</li>
+                        <li>Deaths, Damage Dealt, Damage Taken</li>
+                        <li>Healing (for Support heroes)</li>
+                        <li>Damage Blocked (for Tank heroes)</li>
+                        <li>Ultimates Used</li>
+                      </ul>
+                      <p className="text-muted-foreground mt-2 text-xs">
+                        *Stats are normalized to per 10 minutes to allow fair
+                        comparison regardless of playtime.
+                      </p>
+                    </div>
+                  </div>
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
