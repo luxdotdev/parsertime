@@ -120,10 +120,13 @@ export async function GET(request: NextRequest) {
     },
   });
 
-  const appliedTitle = await prisma.appliedTitle.findFirst({
-    where: { userId: user?.id },
-    select: { title: true },
-  });
+  let appliedTitle = null;
+  if (user) {
+    appliedTitle = await prisma.appliedTitle.findFirst({
+      where: { userId: user.id },
+      select: { title: true },
+    });
+  }
 
   return NextResponse.json({
     player: {

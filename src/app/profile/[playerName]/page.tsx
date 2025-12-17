@@ -54,10 +54,13 @@ export default async function ProfilePage(
     },
   });
 
-  const appliedTitle = await prisma.appliedTitle.findFirst({
-    where: { userId: user?.id },
-    select: { title: true },
-  });
+  let appliedTitle = null;
+  if (user) {
+    appliedTitle = await prisma.appliedTitle.findFirst({
+      where: { userId: user?.id },
+      select: { title: true },
+    });
+  }
 
   const playerData = {
     name: user?.name ?? name,
