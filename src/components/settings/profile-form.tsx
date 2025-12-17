@@ -402,56 +402,58 @@ export function ProfileForm({
             <FormDescription>{t("avatar.description")}</FormDescription>
             <FormMessage />
           </FormItem>
-          <FormItem>
-            <FormLabel>{t("banner.title")}</FormLabel>
-            <FormControl aria-readonly>
-              <>
-                <input
-                  type="file"
-                  ref={bannerFileInputRef}
-                  onChange={handleBannerFileChange}
-                  className="hidden"
-                  accept="image/*"
-                  aria-label={t("banner.ariaLabel")}
-                />
-                <div
-                  role="button"
-                  tabIndex={0}
-                  className="hover:border-primary relative h-32 w-full cursor-pointer overflow-hidden rounded-lg border-2 border-dashed transition-colors"
-                  onClick={handleBannerClick}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      handleBannerClick();
-                    }
-                  }}
-                >
-                  {user.bannerImage ? (
-                    <Image
-                      src={user.bannerImage}
-                      fill
-                      alt={t("banner.altText")}
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center bg-gradient-to-r from-blue-600 to-purple-600">
-                      <span className="text-sm font-medium text-white">
-                        {t("banner.placeholder")}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <BannerUpdateDialog
-                  user={user}
-                  isOpen={bannerDialogOpen}
-                  setIsOpen={setBannerDialogOpen}
-                  selectedFile={selectedBannerFile}
-                />
-              </>
-            </FormControl>
-            <FormDescription>{t("banner.description")}</FormDescription>
-            <FormMessage />
-          </FormItem>
+          {user.billingPlan === $Enums.BillingPlan.PREMIUM && (
+            <FormItem>
+              <FormLabel>{t("banner.title")}</FormLabel>
+              <FormControl aria-readonly>
+                <>
+                  <input
+                    type="file"
+                    ref={bannerFileInputRef}
+                    onChange={handleBannerFileChange}
+                    className="hidden"
+                    accept="image/*"
+                    aria-label={t("banner.ariaLabel")}
+                  />
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    className="hover:border-primary relative h-32 w-full cursor-pointer overflow-hidden rounded-lg border-2 border-dashed transition-colors"
+                    onClick={handleBannerClick}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleBannerClick();
+                      }
+                    }}
+                  >
+                    {user.bannerImage ? (
+                      <Image
+                        src={user.bannerImage}
+                        fill
+                        alt={t("banner.altText")}
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center bg-gradient-to-r from-blue-600 to-purple-600">
+                        <span className="text-sm font-medium text-white">
+                          {t("banner.placeholder")}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <BannerUpdateDialog
+                    user={user}
+                    isOpen={bannerDialogOpen}
+                    setIsOpen={setBannerDialogOpen}
+                    selectedFile={selectedBannerFile}
+                  />
+                </>
+              </FormControl>
+              <FormDescription>{t("banner.description")}</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
 
           <Separator />
 
