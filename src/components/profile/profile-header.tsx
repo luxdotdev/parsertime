@@ -1,5 +1,11 @@
 import { SupporterHeart } from "@/components/profile/supporter-heart";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn, useTitleTranslation } from "@/lib/utils";
 import type { BillingPlan, Title } from "@prisma/client";
 
@@ -12,6 +18,7 @@ type ProfileHeaderProps = {
     endorsementLevel?: number;
     rankIcon?: string; // URL to rank icon
     billingPlan: BillingPlan;
+    email?: string | null;
   };
   className?: string;
 };
@@ -72,6 +79,21 @@ export function ProfileHeader({ player, className }: ProfileHeaderProps) {
           {/* Rank/Extra Info (Right Side) */}
           <div className="ml-auto hidden sm:block">
             {/* Could put rank icon here */}
+            {player.email?.endsWith("@lux.dev") && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge
+                    variant="default"
+                    className="drop-shadow-[0_0_8px_rgba(100,104,240,0.5)]"
+                  >
+                    Verified Employee
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent>
+                  This user is a verified employee of lux.dev LLC.
+                </TooltipContent>
+              </Tooltip>
+            )}
           </div>
         </div>
       </div>

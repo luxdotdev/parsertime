@@ -67,6 +67,7 @@ export default async function ProfilePage(
     image: user?.image ?? null,
     title: appliedTitle?.title ?? null,
     billingPlan: user?.billingPlan ?? $Enums.BillingPlan.FREE,
+    email: user?.email ?? null,
   };
 
   // 1. Fetch all heroes played by the user, sorted by time played
