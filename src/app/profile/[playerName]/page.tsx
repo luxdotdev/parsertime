@@ -1,5 +1,7 @@
 import { HeroMasteryGrid } from "@/components/profile/hero-mastery-grid";
 import { HeroRating } from "@/components/profile/hero-rating";
+import { PersonalRecords } from "@/components/profile/personal-records";
+import { PlayStyleIndicator } from "@/components/profile/play-style-indicator";
 import { ProfileHeader } from "@/components/profile/profile-header";
 import { StatFluctuationCards } from "@/components/profile/stat-fluctuation-cards";
 import { Statistics } from "@/components/stats/player/statistics";
@@ -240,9 +242,7 @@ export default async function ProfilePage(
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="progression" disabled>
-            Progression
-          </TabsTrigger>
+          <TabsTrigger value="progression">Progression</TabsTrigger>
           <TabsTrigger value="statistics">Statistics</TabsTrigger>
           <TabsTrigger value="history" disabled>
             History
@@ -493,6 +493,19 @@ export default async function ProfilePage(
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </TabsContent>
+        <TabsContent value="progression" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+            {/* Left Column: Play Style Indicator */}
+            <div className="col-span-4 space-y-4 lg:col-span-4">
+              <PlayStyleIndicator calculatedStats={calculatedStats} />
+            </div>
+
+            {/* Right Column: Personal Records */}
+            <div className="col-span-3 space-y-4 lg:col-span-3">
+              <PersonalRecords stats={stats} heroesData={allHeroesData} />
             </div>
           </div>
         </TabsContent>
