@@ -38,6 +38,22 @@ type StatConfig = {
   aggregation: "sum" | "average";
 };
 
+const STAT_ORDER: CalculatedStatType[] = [
+  "MVP_SCORE",
+  "MAP_MVP_COUNT",
+  "FLETA_DEADLIFT_PERCENTAGE",
+  "FIRST_PICK_PERCENTAGE",
+  "FIRST_PICK_COUNT",
+  "FIRST_DEATH_PERCENTAGE",
+  "FIRST_DEATH_COUNT",
+  "FIGHT_REVERSAL_PERCENTAGE",
+  "AVERAGE_DROUGHT_TIME",
+  "AVERAGE_ULT_CHARGE_TIME",
+  "AVERAGE_TIME_TO_USE_ULT",
+  "KILLS_PER_ULTIMATE",
+  "AJAX_COUNT",
+];
+
 const STAT_CONFIGS: Record<string, StatConfig> = {
   MVP_SCORE: {
     name: "MVP_SCORE",
@@ -128,7 +144,7 @@ const STAT_CONFIGS: Record<string, StatConfig> = {
     label: "Ajax Count",
     formatValue: (value) => value.toFixed(1),
     color: "hsl(217.2 91.2% 59.8%)",
-    aggregation: "average",
+    aggregation: "sum",
   },
 };
 
@@ -236,6 +252,14 @@ export function StatFluctuationCards({
         data: prepareChartData(stats, config.label),
         aggregation: config.aggregation,
       };
+    })
+    .sort((a, b) => {
+      const indexA = STAT_ORDER.indexOf(a.statType);
+      const indexB = STAT_ORDER.indexOf(b.statType);
+      if (indexA === -1 && indexB === -1) return 0;
+      if (indexA === -1) return 1;
+      if (indexB === -1) return -1;
+      return indexA - indexB;
     });
 
   if (summary.length === 0) {
