@@ -1,6 +1,7 @@
 "use client";
 
 import { HeroRating } from "@/components/profile/hero-rating";
+import { SupporterHeart } from "@/components/profile/supporter-heart";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   HoverCard,
@@ -9,6 +10,7 @@ import {
 } from "@/components/ui/hover-card";
 import { Link } from "@/components/ui/link";
 import { toHero, toTimestampWithHours, useHeroNames } from "@/lib/utils";
+import { BillingPlan } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import type { Route } from "next";
 import { z } from "zod";
@@ -19,6 +21,7 @@ async function getTop3Heroes(player: string) {
       name: z.string(),
       image: z.string().nullable(),
       title: z.string().nullable(),
+      billingPlan: z.enum(BillingPlan),
     }),
     heroes: z.array(
       z.object({
@@ -39,7 +42,12 @@ async function getTop3Heroes(player: string) {
   return parsedData.success
     ? parsedData.data
     : {
-        player: { name: player, image: null, title: null },
+        player: {
+          name: player,
+          image: null,
+          title: null,
+          billingPlan: BillingPlan.FREE,
+        },
         heroes: [],
       };
 }
@@ -58,7 +66,12 @@ export function PlayerHoverCard({
 
   const heroNames = useHeroNames();
   const heroes = data?.heroes ?? [];
-  const playerData = data?.player ?? { name: player, image: null, title: null };
+  const playerData = data?.player ?? {
+    name: player,
+    image: null,
+    title: null,
+    billingPlan: BillingPlan.FREE,
+  };
   const maxTimePlayed =
     heroes.length > 0 ? Math.max(...heroes.map((h) => h.total_time_played)) : 1;
 
@@ -83,8 +96,12 @@ export function PlayerHoverCard({
               </AvatarFallback>
             </Avatar>
             <div className="mb-1">
-              <h4 className="text-lg leading-none font-bold">
-                {playerData.name}
+              <h4 className="flex items-center gap-1 text-lg leading-none font-bold">
+                {playerData.name}{" "}
+                <SupporterHeart
+                  billingPlan={playerData.billingPlan}
+                  className="h-4 w-4"
+                />
               </h4>
               {playerData.title && (
                 <p className="text-muted-foreground mt-1 text-xs font-semibold tracking-wider uppercase">
