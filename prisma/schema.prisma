@@ -249,6 +249,36 @@ model Note {
   @@index([scrimId, MapDataId])
 }
 
+enum CalculatedStatType {
+  FLETA_DEADLIFT_PERCENTAGE
+  FIRST_PICK_PERCENTAGE
+  FIRST_PICK_COUNT
+  FIRST_DEATH_PERCENTAGE
+  FIRST_DEATH_COUNT
+  MVP_SCORE
+  MAP_MVP_COUNT
+  AJAX_COUNT
+  AVERAGE_ULT_CHARGE_TIME
+  AVERAGE_TIME_TO_USE_ULT
+  AVERAGE_DROUGHT_TIME
+}
+
+model CalculatedStat {
+  id         Int                @id @default(autoincrement())
+  scrimId    Int
+  playerName String
+  hero       String
+  stat       CalculatedStatType
+  value      Float
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+  MapData    MapData            @relation(fields: [MapDataId], references: [id])
+  MapDataId  Int
+
+  @@index([scrimId, MapDataId])
+  @@index([playerName, hero, stat])
+}
+
 enum EventType {
   defensive_assist
   dva_remech
@@ -315,6 +345,7 @@ model MapData {
   ultimate_start       UltimateStart[]
   HeroBan              HeroBan[]
   Note                 Note[]
+  calculatedStats      CalculatedStat[]
 
   Map   Map? @relation(fields: [mapId], references: [id])
   mapId Int?
