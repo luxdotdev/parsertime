@@ -1410,6 +1410,17 @@
         "deaths": "Deaths",
         "hero_damage_dealt": "Hero Damage Dealt"
       }
+    },
+    "playerMetrics": {
+      "mvpScore": "Avg MVP Score",
+      "fletaDeadliftPercentage": "Fleta Deadlift %",
+      "firstPickPercentage": "First Pick %",
+      "firstDeathPercentage": "First Death %",
+      "fightReversalPercentage": "Fight Reversal %",
+      "killsPerUltimate": "Kills per Ultimate",
+      "averageUltChargeTime": "Avg Ult Charge Time",
+      "droughtTime": "Avg Drought Time",
+      "mapMVPCount": "Total Map MVPs"
     }
   },
   "teamPage": {
@@ -2394,6 +2405,15 @@
       "baseDescription": "Corrupted data detected. Attempting to fix automatically:",
       "invalidMercyRez": "Invalid mercy_rez lines will be removed",
       "asteriskValues": "Asterisk values will be replaced with 0"
+    }
+  },
+  "profilePage": {
+    "layoutMetadata": {
+      "title": "{playerName}'s Profile | Parsertime",
+      "description": "View {playerName}'s profile and stats on Parsertime.",
+      "ogTitle": "{playerName}'s Profile | Parsertime",
+      "ogDescription": "View {playerName}'s profile and stats on Parsertime.",
+      "ogImage": "{playerName}'s Profile"
     }
   }
 }
