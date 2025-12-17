@@ -288,7 +288,11 @@ export async function getCompositeSRLeaderboard(params: {
   const result = await prisma.$queryRaw<CompositeSRLeaderboardResult[]>(query);
 
   if (params.player) {
-    return result.find((row) => row.player_name === params.player) ?? null;
+    return (
+      result.find(
+        (row) => row.player_name.toLowerCase() === params.player!.toLowerCase()
+      ) ?? null
+    );
   }
 
   return result;
