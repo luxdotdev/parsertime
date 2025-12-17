@@ -1,5 +1,6 @@
 "use client";
 
+import { PlayerHoverCard } from "@/components/player/hover-card";
 import {
   Table,
   TableBody,
@@ -105,13 +106,15 @@ export function LeaderboardTable({
                 >
                   <TableCell className="font-medium">{row.rank}</TableCell>
                   <TableCell>
-                    <Link
-                      href={`/profile/${row.player_name}`}
-                      className="hover:underline"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {row.player_name}
-                    </Link>
+                    <PlayerHoverCard player={row.player_name}>
+                      <Link
+                        href={`/profile/${row.player_name}`}
+                        className="hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {row.player_name}
+                      </Link>
+                    </PlayerHoverCard>
                   </TableCell>
                   <TableCell className="text-right">
                     {row.composite_sr}
