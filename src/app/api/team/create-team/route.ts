@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
+import { TEAM_CREATION_LIMIT } from "@/lib/usage";
 import { Ratelimit } from "@upstash/ratelimit";
 import { ipAddress } from "@vercel/functions";
 import { kv } from "@vercel/kv";
@@ -45,7 +46,10 @@ export async function POST(request: NextRequest) {
 
   switch (userId.billingPlan) {
     case "FREE":
-      if (numberOfTeams >= 2 && userId.role !== "ADMIN") {
+      if (
+        numberOfTeams >= TEAM_CREATION_LIMIT[userId.billingPlan] &&
+        userId.role !== "ADMIN"
+      ) {
         return new Response(
           "You have hit the limit of teams that your account can create.  Please upgrade your plan or contact support.",
           { status: 403 }
@@ -53,7 +57,10 @@ export async function POST(request: NextRequest) {
       }
       break;
     case "BASIC":
-      if (numberOfTeams >= 5 && userId.role !== "ADMIN") {
+      if (
+        numberOfTeams >= TEAM_CREATION_LIMIT[userId.billingPlan] &&
+        userId.role !== "ADMIN"
+      ) {
         return new Response(
           "You have hit the limit of teams that your account can create.  Please upgrade your plan or contact support.",
           { status: 403 }
@@ -61,7 +68,10 @@ export async function POST(request: NextRequest) {
       }
       break;
     case "PREMIUM":
-      if (numberOfTeams >= 10 && userId.role !== "ADMIN") {
+      if (
+        numberOfTeams >= TEAM_CREATION_LIMIT[userId.billingPlan] &&
+        userId.role !== "ADMIN"
+      ) {
         return new Response(
           "You have hit the limit of teams that your account can create.  Please upgrade your plan or contact support.",
           { status: 403 }

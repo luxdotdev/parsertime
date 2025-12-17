@@ -2,12 +2,9 @@ import { auth } from "@/lib/auth";
 import { generateRandomToken } from "@/lib/invite-token";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
+import { TEAM_MEMBER_LIMIT } from "@/lib/usage";
 import { unauthorized } from "next/navigation";
 import type { NextRequest } from "next/server";
-
-const FREE_MEMBER_CAP = 5;
-const BASIC_MEMBER_CAP = 10;
-const PREMIUM_MEMBER_CAP = 20;
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -49,7 +46,7 @@ export async function POST(req: NextRequest) {
 
   switch (teamCreator.billingPlan) {
     case "FREE":
-      if (numberOfMembers >= FREE_MEMBER_CAP) {
+      if (numberOfMembers >= TEAM_MEMBER_LIMIT[teamCreator.billingPlan]) {
         return new Response(
           "You have hit the limit of members that can be invited to this team.  Please upgrade your plan or contact support.",
           {
@@ -59,7 +56,7 @@ export async function POST(req: NextRequest) {
       }
       break;
     case "BASIC":
-      if (numberOfMembers >= BASIC_MEMBER_CAP) {
+      if (numberOfMembers >= TEAM_MEMBER_LIMIT[teamCreator.billingPlan]) {
         return new Response(
           "You have hit the limit of members that can be invited to this team.  Please upgrade your plan or contact support.",
           {
@@ -69,7 +66,7 @@ export async function POST(req: NextRequest) {
       }
       break;
     case "PREMIUM":
-      if (numberOfMembers >= PREMIUM_MEMBER_CAP) {
+      if (numberOfMembers >= TEAM_MEMBER_LIMIT[teamCreator.billingPlan]) {
         return new Response(
           "You have hit the limit of members that can be invited to this team.  Please upgrade your plan or contact support.",
           {
