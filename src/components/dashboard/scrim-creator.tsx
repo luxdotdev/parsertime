@@ -5,14 +5,12 @@ import { SortableBanItem } from "@/components/map/sortable-ban-item";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Link } from "@/components/ui/link";
 import {
@@ -54,7 +52,7 @@ import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
@@ -243,34 +241,39 @@ export function ScrimCreationForm({
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <FieldGroup>
+        <Controller
           control={form.control}
           name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("scrimName")}</FormLabel>
-              <FormControl>
-                <Input placeholder={t("scrimPlaceholder")} {...field} />
-              </FormControl>
-              <FormDescription>{t("scrimDescription")}</FormDescription>
-              <FormMessage />
-            </FormItem>
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>{t("scrimName")}</FieldLabel>
+              <Input
+                {...field}
+                id={field.name}
+                aria-invalid={fieldState.invalid}
+                placeholder={t("scrimPlaceholder")}
+              />
+              <FieldDescription>{t("scrimDescription")}</FieldDescription>
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
           )}
         />
-        <FormField
+        <Controller
           control={form.control}
           name="team"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>{t("teamName")}</FormLabel>
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>{t("teamName")}</FieldLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger className="w-[240px] pl-3 text-left font-normal">
-                    <SelectValue placeholder={t("teamPlaceholder")} />
-                  </SelectTrigger>
-                </FormControl>
+                <SelectTrigger
+                  id={field.name}
+                  aria-invalid={fieldState.invalid}
+                  className="w-[240px] pl-3 text-left font-normal"
+                >
+                  <SelectValue placeholder={t("teamPlaceholder")} />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="0">{t("teamIndividual")}</SelectItem>
                   {teams ? (
@@ -284,39 +287,39 @@ export function ScrimCreationForm({
                   )}
                 </SelectContent>
               </Select>
-              <FormDescription>
+              <FieldDescription>
                 {t.rich("teamDescription", {
                   link: (chunks) => <Link href="/dashboard">{chunks}</Link>,
                 })}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
+              </FieldDescription>
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
           )}
         />
-        <FormField
+        <Controller
           control={form.control}
           name="date"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>{t("dateName")}</FormLabel>
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>{t("dateName")}</FieldLabel>
               <Popover>
                 <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>{t("datePlaceholder")}</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
+                  <Button
+                    id={field.name}
+                    variant="outline"
+                    aria-invalid={fieldState.invalid}
+                    className={cn(
+                      "w-[240px] pl-3 text-left font-normal",
+                      !field.value && "text-muted-foreground"
+                    )}
+                  >
+                    {field.value ? (
+                      format(field.value, "PPP")
+                    ) : (
+                      <span>{t("datePlaceholder")}</span>
+                    )}
+                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                  </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
@@ -329,37 +332,37 @@ export function ScrimCreationForm({
                   />
                 </PopoverContent>
               </Popover>
-              <FormDescription>{t("dateDescription")}</FormDescription>
-              <FormMessage />
-            </FormItem>
+              <FieldDescription>{t("dateDescription")}</FieldDescription>
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
           )}
         />
-        <FormField
+        <Controller
           control={form.control}
           name="map"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>{t("mapName")}</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  onChange={(e) => {
-                    startTransition(async () => await handleFile(e));
-                  }}
-                  type="file"
-                  className="w-64"
-                  accept=".xlsx, .txt"
-                />
-              </FormControl>
-              <FormDescription>{t("mapDescription")}</FormDescription>
-              <FormMessage />
-            </FormItem>
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>{t("mapName")}</FieldLabel>
+              <Input
+                {...field}
+                id={field.name}
+                aria-invalid={fieldState.invalid}
+                onChange={(e) => {
+                  startTransition(async () => await handleFile(e));
+                }}
+                type="file"
+                className="w-64"
+                accept=".xlsx, .txt"
+              />
+              <FieldDescription>{t("mapDescription")}</FieldDescription>
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
           )}
         />
-        <FormField
+        <Controller
           control={form.control}
           name="heroBans"
-          render={({ field }) => {
+          render={({ field, fieldState }) => {
             const handleDragEnd = (event: DragEndEvent) => {
               const { active, over } = event;
 
@@ -387,82 +390,83 @@ export function ScrimCreationForm({
             };
 
             return (
-              <FormItem className="flex flex-col">
-                <FormLabel>{t("heroBansName")}</FormLabel>
-                <FormControl>
-                  <div className="space-y-4">
-                    <DndContext
-                      sensors={sensors}
-                      collisionDetection={closestCenter}
-                      onDragEnd={handleDragEnd}
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>
+                  {t("heroBansName")}
+                </FieldLabel>
+                <div className="space-y-4">
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext
+                      items={(field.value || []).map(
+                        (ban) =>
+                          `ban-${ban.hero}-${ban.team}-${ban.banPosition}`
+                      )}
+                      strategy={verticalListSortingStrategy}
                     >
-                      <SortableContext
-                        items={(field.value || []).map(
-                          (ban) =>
-                            `ban-${ban.hero}-${ban.team}-${ban.banPosition}`
-                        )}
-                        strategy={verticalListSortingStrategy}
-                      >
-                        {field.value?.map((ban, index) => (
-                          <SortableBanItem
-                            key={`ban-${ban.hero}-${ban.team}-${ban.banPosition}`}
-                            ban={ban}
-                            index={index}
-                            overwatchHeroes={Object.keys(heroRoleMapping)}
-                            team1Name={mapData?.match_start?.[0]?.[4]}
-                            team2Name={mapData?.match_start?.[0]?.[5]}
-                            onHeroChange={(value) => {
-                              const newBans = [...(field.value || [])];
-                              newBans[index] = {
-                                ...newBans[index],
-                                hero: value,
-                              };
-                              field.onChange(newBans);
-                            }}
-                            onTeamChange={(value) => {
-                              const newBans = [...(field.value || [])];
-                              newBans[index] = {
-                                ...newBans[index],
-                                team: value,
-                              };
-                              field.onChange(newBans);
-                            }}
-                            onRemove={() => {
-                              const newBans =
-                                field.value?.filter((_, i) => i !== index) ||
-                                [];
-                              const updatedBans = newBans.map((ban, i) => ({
-                                ...ban,
-                                banPosition: i + 1,
-                              }));
-                              field.onChange(updatedBans);
-                            }}
-                          />
-                        ))}
-                      </SortableContext>
-                    </DndContext>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        const currentBans = field.value || [];
-                        field.onChange([
-                          ...currentBans,
-                          {
-                            hero: "",
-                            team: "",
-                            banPosition: currentBans.length + 1,
-                          },
-                        ]);
-                      }}
-                    >
-                      Add Hero Ban
-                    </Button>
-                  </div>
-                </FormControl>
-                <FormDescription>{t("heroBansDescription")}</FormDescription>
-                <FormMessage />
-              </FormItem>
+                      {field.value?.map((ban, index) => (
+                        <SortableBanItem
+                          key={`ban-${ban.hero}-${ban.team}-${ban.banPosition}`}
+                          ban={ban}
+                          index={index}
+                          overwatchHeroes={Object.keys(heroRoleMapping)}
+                          team1Name={mapData?.match_start?.[0]?.[4]}
+                          team2Name={mapData?.match_start?.[0]?.[5]}
+                          onHeroChange={(value) => {
+                            const newBans = [...(field.value || [])];
+                            newBans[index] = {
+                              ...newBans[index],
+                              hero: value,
+                            };
+                            field.onChange(newBans);
+                          }}
+                          onTeamChange={(value) => {
+                            const newBans = [...(field.value || [])];
+                            newBans[index] = {
+                              ...newBans[index],
+                              team: value,
+                            };
+                            field.onChange(newBans);
+                          }}
+                          onRemove={() => {
+                            const newBans =
+                              field.value?.filter((_, i) => i !== index) || [];
+                            const updatedBans = newBans.map((ban, i) => ({
+                              ...ban,
+                              banPosition: i + 1,
+                            }));
+                            field.onChange(updatedBans);
+                          }}
+                        />
+                      ))}
+                    </SortableContext>
+                  </DndContext>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      const currentBans = field.value || [];
+                      field.onChange([
+                        ...currentBans,
+                        {
+                          hero: "",
+                          team: "",
+                          banPosition: currentBans.length + 1,
+                        },
+                      ]);
+                    }}
+                  >
+                    Add Hero Ban
+                  </Button>
+                </div>
+                <FieldDescription>{t("heroBansDescription")}</FieldDescription>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
             );
           }}
         />
@@ -480,7 +484,7 @@ export function ScrimCreationForm({
             <>{t("submit")}</>
           )}
         </Button>
-      </form>
-    </Form>
+      </FieldGroup>
+    </form>
   );
 }
