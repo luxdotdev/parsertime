@@ -104,5 +104,26 @@ export async function GET(request: NextRequest) {
     };
   });
 
-  return NextResponse.json(result);
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { name: { equals: validPlayer.data, mode: "insensitive" } },
+        { battletag: { equals: validPlayer.data, mode: "insensitive" } },
+      ],
+    },
+    select: {
+      name: true,
+      image: true,
+      role: true,
+    },
+  });
+
+  return NextResponse.json({
+    player: {
+      name: user?.name ?? validPlayer.data,
+      image: user?.image ?? null,
+      title: user?.role === "ADMIN" ? "Administrator" : "Player",
+    },
+    heroes: result,
+  });
 }
