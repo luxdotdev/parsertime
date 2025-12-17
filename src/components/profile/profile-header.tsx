@@ -1,6 +1,7 @@
+import { SupporterHeart } from "@/components/profile/supporter-heart";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn, useTitleTranslation } from "@/lib/utils";
-import type { Title } from "@prisma/client";
+import type { BillingPlan, Title } from "@prisma/client";
 
 type ProfileHeaderProps = {
   player: {
@@ -10,6 +11,7 @@ type ProfileHeaderProps = {
     level?: number;
     endorsementLevel?: number;
     rankIcon?: string; // URL to rank icon
+    billingPlan: BillingPlan;
   };
   className?: string;
 };
@@ -51,8 +53,12 @@ export function ProfileHeader({ player, className }: ProfileHeaderProps) {
           {/* Player Details */}
           <div className="mb-2 flex flex-col space-y-1">
             <div className="flex items-center gap-3">
-              <h1 className="text-foreground text-4xl font-black tracking-tighter uppercase italic">
+              <h1 className="text-foreground flex items-center gap-4 text-4xl font-black tracking-tighter uppercase italic">
                 {player.name}
+                <SupporterHeart
+                  billingPlan={player.billingPlan}
+                  className="h-6 w-6"
+                />
               </h1>
             </div>
 
