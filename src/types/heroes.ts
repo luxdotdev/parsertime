@@ -187,6 +187,11 @@ export type Tracer = {
   image: "tracer.png";
 };
 
+export type Vendetta = {
+  name: "Vendetta";
+  image: "vendetta.png";
+};
+
 export type Venture = {
   name: "Venture";
   image: "venture.png";
@@ -254,6 +259,7 @@ export type DPS =
   | Symmetra
   | Torbjorn
   | Tracer
+  | Vendetta
   | Venture
   | Widowmaker;
 export type Support =
@@ -309,6 +315,7 @@ export const heroRoleMapping: Record<HeroName, "Tank" | "Damage" | "Support"> =
     Symmetra: "Damage",
     Torbjörn: "Damage",
     Tracer: "Damage",
+    Vendetta: "Damage",
     Venture: "Damage",
     Widowmaker: "Damage",
     Winston: "Tank",
@@ -355,6 +362,7 @@ export const roleHeroMapping: Record<
     "Symmetra",
     "Torbjörn",
     "Tracer",
+    "Vendetta",
     "Venture",
     "Widowmaker",
   ],
