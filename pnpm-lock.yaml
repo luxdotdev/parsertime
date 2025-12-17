@@ -381,11 +381,11 @@ importers:
         specifier: ^8.5.6
         version: 8.5.6
       prettier:
-        specifier: ^3.6.2
-        version: 3.6.2
+        specifier: ^3.7.4
+        version: 3.7.4
       prettier-plugin-tailwindcss:
         specifier: ^0.6.14
-        version: 0.6.14(prettier@3.6.2)
+        version: 0.6.14(prettier@3.7.4)
       prisma:
         specifier: ^6.16.2
         version: 6.16.2(typescript@5.9.2)
@@ -5129,8 +5129,8 @@ packages:
       prettier-plugin-svelte:
         optional: true
 
-  prettier@3.6.2:
-    resolution: {integrity: sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ==}
+  prettier@3.7.4:
+    resolution: {integrity: sha512-v6UNi1+3hSlVvv8fSaoUbggEM5VErKmmpGA7Pl3HF8V6uKY7rvClBOJlH6yNwQtfTueNkGVpOv/mtWL9L4bgRA==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -7980,7 +7980,7 @@ snapshots:
   '@react-email/render@1.2.3(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
     dependencies:
       html-to-text: 9.0.5
-      prettier: 3.6.2
+      prettier: 3.7.4
       react: 19.2.1
       react-dom: 19.2.1(react@19.2.1)
       react-promise-suspense: 0.3.4
@@ -11096,11 +11096,11 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-tailwindcss@0.6.14(prettier@3.6.2):
+  prettier-plugin-tailwindcss@0.6.14(prettier@3.7.4):
     dependencies:
-      prettier: 3.6.2
+      prettier: 3.7.4
 
-  prettier@3.6.2: {}
+  prettier@3.7.4: {}
 
   pretty-format@3.8.0: {}
 

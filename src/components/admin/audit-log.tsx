@@ -554,9 +554,9 @@ export function AuditLog({
           )}
           {Boolean(
             selectedActions.length > 0 ||
-              dateRange ||
-              debouncedUserEmailSearch ||
-              debouncedTargetSearch
+            dateRange ||
+            debouncedUserEmailSearch ||
+            debouncedTargetSearch
           ) && (
             <Button
               variant="ghost"
