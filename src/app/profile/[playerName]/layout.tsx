@@ -1,5 +1,4 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
-import { toTitleCase } from "@/lib/utils";
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 
@@ -9,7 +8,7 @@ export async function generateMetadata(
   const params = await props.params;
   const t = await getTranslations("profilePage.layoutMetadata");
   const locale = await getLocale();
-  const playerName = toTitleCase(decodeURIComponent(params.playerName));
+  const playerName = decodeURIComponent(params.playerName);
 
   return {
     title: t("title", { playerName }),
