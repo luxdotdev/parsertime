@@ -1,3 +1,4 @@
+import { PlayerHoverCard } from "@/components/player/hover-card";
 import { Searchbar } from "@/components/stats/searchbar";
 import {
   Card,
@@ -7,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CardIcon } from "@/components/ui/card-icon";
+import { Link } from "@/components/ui/link";
 import {
   Table,
   TableBody,
@@ -23,6 +25,7 @@ import {
   toTimestampWithDays,
   toTimestampWithHours,
 } from "@/lib/utils";
+import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
 
 export default async function StatsPage() {
@@ -345,7 +348,17 @@ export default async function StatsPage() {
                         <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
                       </svg>
                     </TableCell>
-                    <TableCell>{row.attacker_name}</TableCell>
+                    <TableCell>
+                      <PlayerHoverCard player={row.attacker_name}>
+                        <Link
+                          href={
+                            `/profile/${encodeURIComponent(row.attacker_name)}` as Route
+                          }
+                        >
+                          {row.attacker_name}
+                        </Link>
+                      </PlayerHoverCard>
+                    </TableCell>
                     <TableCell>{format(row._count.attacker_name)}</TableCell>
                   </TableRow>
                 ))}
@@ -407,7 +420,17 @@ export default async function StatsPage() {
                         <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
                       </svg>
                     </TableCell>
-                    <TableCell>{row.player_name}</TableCell>
+                    <TableCell>
+                      <PlayerHoverCard player={row.player_name}>
+                        <Link
+                          href={
+                            `/profile/${encodeURIComponent(row.player_name)}` as Route
+                          }
+                        >
+                          {row.player_name}
+                        </Link>
+                      </PlayerHoverCard>
+                    </TableCell>
                     <TableCell>
                       {format(round(row._sum.hero_damage_dealt!))}
                     </TableCell>
@@ -471,7 +494,17 @@ export default async function StatsPage() {
                         <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
                       </svg>
                     </TableCell>
-                    <TableCell>{row.player_name}</TableCell>
+                    <TableCell>
+                      <PlayerHoverCard player={row.player_name}>
+                        <Link
+                          href={
+                            `/profile/${encodeURIComponent(row.player_name)}` as Route
+                          }
+                        >
+                          {row.player_name}
+                        </Link>
+                      </PlayerHoverCard>
+                    </TableCell>
                     <TableCell>
                       {" "}
                       {format(round(row._sum.healing_dealt!))}
@@ -536,7 +569,17 @@ export default async function StatsPage() {
                         <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
                       </svg>
                     </TableCell>
-                    <TableCell>{row.player_name}</TableCell>
+                    <TableCell>
+                      <PlayerHoverCard player={row.player_name}>
+                        <Link
+                          href={
+                            `/profile/${encodeURIComponent(row.player_name)}` as Route
+                          }
+                        >
+                          {row.player_name}
+                        </Link>
+                      </PlayerHoverCard>
+                    </TableCell>
                     <TableCell>
                       {" "}
                       {format(round(row._sum.damage_blocked!))}
@@ -605,7 +648,17 @@ export default async function StatsPage() {
                         <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
                       </svg>
                     </TableCell>
-                    <TableCell>{row.victim_name}</TableCell>
+                    <TableCell>
+                      <PlayerHoverCard player={row.victim_name}>
+                        <Link
+                          href={
+                            `/profile/${encodeURIComponent(row.victim_name)}` as Route
+                          }
+                        >
+                          {row.victim_name}
+                        </Link>
+                      </PlayerHoverCard>
+                    </TableCell>
                     <TableCell>
                       {" "}
                       {format(round(row._count.victim_name))}
@@ -673,7 +726,17 @@ export default async function StatsPage() {
                         <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
                       </svg>
                     </TableCell>
-                    <TableCell>{row.player_name}</TableCell>
+                    <TableCell>
+                      <PlayerHoverCard player={row.player_name}>
+                        <Link
+                          href={
+                            `/profile/${encodeURIComponent(row.player_name)}` as Route
+                          }
+                        >
+                          {row.player_name}
+                        </Link>
+                      </PlayerHoverCard>
+                    </TableCell>
                     <TableCell>
                       {toTimestampWithHours(row._sum.hero_time_played!)}
                     </TableCell>
@@ -739,7 +802,17 @@ export default async function StatsPage() {
                         <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
                       </svg>
                     </TableCell>
-                    <TableCell>{row.player_name}</TableCell>
+                    <TableCell>
+                      <PlayerHoverCard player={row.player_name}>
+                        <Link
+                          href={
+                            `/profile/${encodeURIComponent(row.player_name)}` as Route
+                          }
+                        >
+                          {row.player_name}
+                        </Link>
+                      </PlayerHoverCard>
+                    </TableCell>
                     <TableCell>{row.coincidence_count.toString()}</TableCell>
                   </TableRow>
                 ))}
