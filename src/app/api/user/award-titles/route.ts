@@ -165,15 +165,14 @@ export async function GET() {
     top3Deaths,
     top3TimePlayed,
   ] = await Promise.all([
-    prisma.calculatedStat.groupBy({
-      by: ["playerName"],
-      where: {
-        stat: $Enums.CalculatedStatType.AJAX_COUNT,
-      },
-      _sum: { value: true },
-      orderBy: { _sum: { value: "desc" } },
-      take: 100,
-    }),
+    prisma.$queryRaw<{ playerName: string; total_ajaxes: number }[]>`SELECT
+      "playerName",
+      SUM("value") AS total_ajaxes
+    FROM "CalculatedStat"
+    WHERE "stat" = 'AJAX_COUNT'
+    GROUP BY "playerName"
+    ORDER BY total_ajaxes DESC
+    LIMIT 100;`,
     prisma.calculatedStat.findFirst({
       where: {
         stat: $Enums.CalculatedStatType.FLETA_DEADLIFT_PERCENTAGE,
