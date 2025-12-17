@@ -13,6 +13,7 @@ import { toHero, toTimestampWithHours, useHeroNames } from "@/lib/utils";
 import { BillingPlan } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import type { Route } from "next";
+import { useTranslations } from "next-intl";
 import { z } from "zod";
 
 async function getTop3Heroes(player: string) {
@@ -75,6 +76,8 @@ export function PlayerHoverCard({
   const maxTimePlayed =
     heroes.length > 0 ? Math.max(...heroes.map((h) => h.total_time_played)) : 1;
 
+  const t = useTranslations("titles");
+
   return (
     <HoverCard>
       <HoverCardTrigger asChild>{children}</HoverCardTrigger>
@@ -85,7 +88,7 @@ export function PlayerHoverCard({
         </div>
 
         <div className="px-4 pb-4">
-          <div className="-mt-10 mb-4 flex items-end gap-3">
+          <div className="-mt-8 mb-4 flex items-end gap-3">
             <Avatar className="border-background h-20 w-20 border-4 shadow-sm">
               <AvatarImage
                 src={playerData.image ?? undefined}
@@ -95,7 +98,7 @@ export function PlayerHoverCard({
                 {playerData.name.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <div className="mb-1">
+            <div className="mt-6 mb-1">
               <h4 className="flex items-center gap-1 text-lg leading-none font-bold">
                 {playerData.name}{" "}
                 <SupporterHeart
@@ -103,10 +106,12 @@ export function PlayerHoverCard({
                   className="h-4 w-4"
                 />
               </h4>
-              {playerData.title && (
+              {playerData.title ? (
                 <p className="text-muted-foreground mt-1 text-xs font-semibold tracking-wider uppercase">
-                  {playerData.title}
+                  {t(playerData.title)}
                 </p>
+              ) : (
+                <div className="h-4 w-4" aria-hidden="true" /> // Empty space for the title
               )}
             </div>
           </div>
