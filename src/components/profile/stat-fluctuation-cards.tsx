@@ -199,13 +199,13 @@ function calculateChange(stats: CalculatedStat[]) {
 }
 
 const TIMEFRAME_MAP: Record<Timeframe, number> = {
-  "all-time": 0,
-  "three-months": 3,
-  "six-months": 6,
-  "one-year": 12,
   "one-week": 1,
   "two-weeks": 2,
   "one-month": 1,
+  "three-months": 3,
+  "six-months": 6,
+  "one-year": 12,
+  "all-time": 0,
   custom: 0,
 };
 
@@ -216,8 +216,16 @@ export function StatFluctuationCards({
 }: StatFluctuationCardsProps) {
   const timeframeAgo = new Date();
 
-  if (timeframe !== "all-time") {
+  if (
+    timeframe !== "all-time" &&
+    timeframe !== "one-week" &&
+    timeframe !== "two-weeks"
+  ) {
     timeframeAgo.setMonth(timeframeAgo.getMonth() - TIMEFRAME_MAP[timeframe]);
+  } else if (timeframe === "one-week") {
+    timeframeAgo.setDate(timeframeAgo.getDate() - 7);
+  } else if (timeframe === "two-weeks") {
+    timeframeAgo.setDate(timeframeAgo.getDate() - 14);
   }
 
   const recentStats = calculatedStats.filter(
