@@ -54,10 +54,15 @@ export default async function ProfilePage(
     },
   });
 
+  const appliedTitle = await prisma.appliedTitle.findFirst({
+    where: { userId: user?.id },
+    select: { title: true },
+  });
+
   const playerData = {
     name: user?.name ?? name,
     image: user?.image ?? null,
-    title: user?.role === "ADMIN" ? "Administrator" : "Player", // Mock title logic
+    title: appliedTitle?.title ?? null,
   };
 
   // 1. Fetch all heroes played by the user, sorted by time played

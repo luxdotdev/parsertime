@@ -1,11 +1,12 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { cn, useTitleTranslation } from "@/lib/utils";
+import type { Title } from "@prisma/client";
 
 type ProfileHeaderProps = {
   player: {
     name: string;
     image?: string | null;
-    title?: string; // e.g. "Squire", "Grandmaster"
+    title?: Title | null; // e.g. "Squire", "Grandmaster"
     level?: number;
     endorsementLevel?: number;
     rankIcon?: string; // URL to rank icon
@@ -14,6 +15,8 @@ type ProfileHeaderProps = {
 };
 
 export function ProfileHeader({ player, className }: ProfileHeaderProps) {
+  const titleTranslation = useTitleTranslation(player.title!);
+
   return (
     <div
       className={cn(
@@ -55,7 +58,7 @@ export function ProfileHeader({ player, className }: ProfileHeaderProps) {
 
             {player.title && (
               <div className="text-muted-foreground text-sm font-semibold tracking-widest uppercase">
-                {player.title}
+                {titleTranslation}
               </div>
             )}
           </div>
