@@ -518,3 +518,53 @@ export const noteDataSchema = z.object({
   mapDataId: z.number(),
   content: z.string(),
 });
+
+/**
+ * Returns the appropriate border color class based on hero rating (SR).
+ *
+ * @param heroRating - The hero rating (skill rating).
+ * @param rank - The player's rank for this hero.
+ * @returns Tailwind CSS border color class string.
+ */
+export function getHeroRatingBorderColor(
+  heroRating: number,
+  rank: number
+): string {
+  if (rank <= 5 && heroRating > 2500) {
+    return "border-amber-400";
+  }
+
+  if (heroRating === 0) {
+    return "border-gray-400";
+  }
+
+  if (heroRating < 1500) {
+    return "border-amber-900";
+  }
+
+  if (heroRating < 2000) {
+    return "border-gray-400";
+  }
+
+  if (heroRating < 2500) {
+    return "border-amber-400";
+  }
+
+  if (heroRating < 3000) {
+    return "border-gray-500";
+  }
+
+  if (heroRating < 3500) {
+    return "border-sky-300";
+  }
+
+  if (heroRating < 4000) {
+    return "border-emerald-500";
+  }
+
+  if (heroRating < 4500) {
+    return "border-indigo-400";
+  }
+
+  return "border-violet-500";
+}
