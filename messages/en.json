@@ -1624,7 +1624,8 @@
       "dashboard": "Dashboard",
       "analytics": "Analytics",
       "impersonateUser": "Impersonate User",
-      "auditLogs": "Audit Logs"
+      "auditLogs": "Audit Logs",
+      "billing": "Billing"
     },
     "profile": {
       "title": "Profile",
@@ -1637,6 +1638,23 @@
       },
       "planUpgrade": "Upgrade your plan",
       "manageSubscription": "Manage your subscription"
+    },
+    "billing": {
+      "title": "Billing",
+      "description": "Manage your billing settings and preferences.",
+      "planDescription": "Your current plan is the <plan>{billingPlan}</plan> plan.",
+      "billingPlan": {
+        "FREE": "Free",
+        "BASIC": "Basic",
+        "PREMIUM": "Premium"
+      },
+      "planUpgrade": "Upgrade your plan",
+      "manageSubscription": "Manage your subscription",
+      "teamCount": "Teams",
+      "teamMemberCount": "Team Members",
+      "scrimCount": "Scrims",
+      "viewOtherPlans": "View other plans",
+      "usage": "{current} of {allowed} used"
     },
     "profileForm": {
       "minMessage": "Name must be at least 2 characters.",
