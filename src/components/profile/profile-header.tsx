@@ -37,8 +37,8 @@ export function ProfileHeader({ player, className }: ProfileHeaderProps) {
         <div className="-mt-12 flex flex-col items-start gap-6 sm:-mt-16 sm:flex-row sm:items-end">
           {/* Avatar Section */}
           <div className="relative">
-            <div className="border-background bg-background rounded-sm border-4 p-1">
-              <Avatar className="border-muted h-32 w-32 rounded-sm border-2">
+            <div className="border-background bg-background rounded-full border-4 p-1">
+              <Avatar className="border-muted h-32 w-32 rounded-full border-2">
                 <AvatarImage
                   src={player.image ?? undefined}
                   alt={player.name}
