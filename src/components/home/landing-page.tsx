@@ -228,7 +228,7 @@ export async function LandingPage() {
                   target="_blank"
                   className="inline-flex space-x-6"
                 >
-                  <span className="rounded-full bg-sky-600/10 px-3 py-1 text-sm leading-6 font-semibold text-sky-600 ring-1 ring-sky-600/20 ring-inset dark:bg-sky-500/10 dark:text-sky-400 dark:ring-sky-500/20">
+                  <span className="bg-primary/10 text-primary ring-primary/20 dark:bg-primary/10 dark:text-primary dark:ring-primary/20 rounded-full px-3 py-1 text-sm leading-6 font-semibold ring-1 ring-inset">
                     {t("hero.latestUpdates")}
                   </span>
                   <span className="inline-flex items-center space-x-2 text-sm leading-6 font-medium text-gray-600 dark:text-gray-300">
@@ -339,7 +339,7 @@ export async function LandingPage() {
         {/* Feature section */}
         <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-56 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-base leading-7 font-semibold text-sky-600 dark:text-sky-400">
+            <h2 className="text-primary text-base leading-7 font-semibold">
               {t("feature1.subtitle")}
             </h2>
             <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-white">
@@ -354,7 +354,7 @@ export async function LandingPage() {
               {primaryFeatures.map((feature) => (
                 <div key={feature.name} className="flex flex-col">
                   <dt className="text-base leading-7 font-semibold text-gray-900 dark:text-white">
-                    <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg text-sky-600 dark:bg-sky-500">
+                    <div className="text-primary dark:bg-primary mb-6 flex h-10 w-10 items-center justify-center rounded-lg">
                       <feature.icon
                         className="h-6 w-6 dark:text-white"
                         aria-hidden="true"
@@ -367,7 +367,7 @@ export async function LandingPage() {
                     <p className="mt-6">
                       <Link
                         href={feature.href}
-                        className="text-sm leading-6 font-semibold text-sky-600 dark:text-sky-400"
+                        className="text-primary text-sm leading-6 font-semibold"
                       >
                         {t("primaryFeatures.href")}{" "}
                         <span aria-hidden="true">→</span>
@@ -384,7 +384,7 @@ export async function LandingPage() {
         <div className="mt-32 sm:mt-56">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto max-w-2xl sm:text-center">
-              <h2 className="text-base leading-7 font-semibold text-sky-600 dark:text-sky-400">
+              <h2 className="text-primary text-base leading-7 font-semibold">
                 {t("feature2.subtitle")}
               </h2>
               <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-white">
@@ -422,7 +422,7 @@ export async function LandingPage() {
                 <div key={feature.name} className="relative pl-9">
                   <dt className="inline font-semibold text-gray-900 dark:text-white">
                     <feature.icon
-                      className="absolute top-1 left-1 h-5 w-5 text-sky-600 dark:text-sky-500"
+                      className="text-primary dark:text-primary absolute top-1 left-1 h-5 w-5"
                       aria-hidden="true"
                     />
                     {feature.name}
@@ -437,7 +437,7 @@ export async function LandingPage() {
         {/* Stats */}
         <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-56 lg:px-8">
           <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl">
-            <h2 className="text-base leading-8 font-semibold text-sky-600 dark:text-sky-400">
+            <h2 className="text-primary text-base leading-8 font-semibold">
               {t("stats.subtitle")}
             </h2>
             <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-white">
@@ -466,7 +466,7 @@ export async function LandingPage() {
         <section className="bg-white px-6 pt-24 sm:pt-32 lg:px-8 dark:bg-black">
           <figure className="mx-auto max-w-2xl">
             <p className="sr-only">{t("testimonial.starRating")}</p>
-            <div className="flex gap-x-1 text-sky-600 dark:text-sky-400">
+            <div className="text-primary dark:text-primary flex gap-x-1">
               <StarIcon className="h-5 w-5 flex-none" aria-hidden="true" />
               <StarIcon className="h-5 w-5 flex-none" aria-hidden="true" />
               <StarIcon className="h-5 w-5 flex-none" aria-hidden="true" />
