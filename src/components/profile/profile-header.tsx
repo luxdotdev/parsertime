@@ -96,11 +96,12 @@ export function ProfileHeader({ player, className }: ProfileHeaderProps) {
                     variant="default"
                     className="drop-shadow-[0_0_8px_rgba(100,104,240,0.5)]"
                   >
-                    Verified Employee
+                    Employee Account
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent>
-                  This user is a verified employee of lux.dev LLC.
+                  This user is a verified employee of lux.dev LLC. Their account
+                  is made with their lux.dev email address.
                 </TooltipContent>
               </Tooltip>
             )}
