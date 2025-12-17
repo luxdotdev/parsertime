@@ -1716,6 +1716,10 @@
       "battletag": {
         "title": "Battletag",
         "description": "This is the in-game username to associate your account with. Do not include the numbers after the hashtag."
+      },
+      "title": {
+        "title": "Title",
+        "description": "Select a title to use on your profile."
       }
     },
     "linkedAccounts": {
@@ -2416,5 +2420,23 @@
       "ogDescription": "View {playerName}'s profile and stats on Parsertime.",
       "ogImage": "{playerName}'s Profile"
     }
+  },
+  "titles": {
+    "DEVELOPER": "Developer",
+    "EMPLOYEE": "lux.dev Employee",
+    "BETA_TESTER": "Beta Tester",
+    "DAY_ONE_USER": "Here Since the Beginning",
+    "BASIC_PLAN_SUBSCRIBER": "Supporter",
+    "PREMIUM_PLAN_SUBSCRIBER": "Premium Supporter",
+    "VIP": "VIP",
+    "HIGHEST_RANK_ON_A_HERO": "Achieved Greatness",
+    "HIGHEST_AJAX_Count": "Ajax King",
+    "HIGHEST_FLETA_DEADLIFT_PERCENTAGE": "Fleta's Disciple",
+    "TOP_3_KILLS": "Serial Killer",
+    "TOP_3_DAMAGE_DEALT": "Damage Dealer",
+    "TOP_3_HEALING": "Ultimate Medic",
+    "TOP_3_DAMAGE_BLOCKED": "Damage Sponge",
+    "TOP_3_DEATHS": "Feeder",
+    "TOP_3_TIME_PLAYED": "Chronically Online"
   }
 }
