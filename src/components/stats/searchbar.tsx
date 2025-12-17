@@ -1,14 +1,15 @@
 "use client";
 
 import {
-  Form,
-  FormDescription,
-  FormField,
-  FormMessage,
-} from "@/components/ui/form";
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+  FieldSet,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Link } from "@/components/ui/link";
-import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -40,34 +41,31 @@ export function Searchbar() {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="username"
-          render={({ field }) => (
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <FieldGroup>
+        <FieldSet>
+          <Field>
+            <FieldLabel htmlFor="username">{t("placeholder")}</FieldLabel>
             <Input
-              {...field}
+              id="username"
               placeholder={t("placeholder")}
               className="h-12 text-lg"
             />
-          )}
-        />
-        <FormDescription>
-          {t.rich("description", {
-            span: (chunks) => <span className="font-semibold">{chunks}</span>,
-          })}
-        </FormDescription>
-        <FormMessage />
-      </form>
-
-      <div className="p-1" />
-
-      <Link href="/stats/hero" className="text-foreground text-sm">
-        {t("link")} &rarr;
-      </Link>
-
-      <Separator />
-    </Form>
+            <FieldDescription>
+              {t.rich("description", {
+                span: (chunks) => (
+                  <span className="font-semibold">{chunks}</span>
+                ),
+              })}
+            </FieldDescription>
+          </Field>
+          <FieldSeparator>
+            <Link href="/stats/hero" className="text-foreground text-sm">
+              {t("link")} &rarr;
+            </Link>
+          </FieldSeparator>
+        </FieldSet>
+      </FieldGroup>
+    </form>
   );
 }
