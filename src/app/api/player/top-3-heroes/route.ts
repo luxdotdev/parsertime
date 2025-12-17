@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { getCompositeSRLeaderboard } from "@/lib/hero-rating";
 import prisma from "@/lib/prisma";
 import type { HeroName } from "@/types/heroes";
+import { $Enums } from "@prisma/client";
 import { unauthorized } from "next/navigation";
 import { NextResponse, type NextRequest } from "next/server";
 import z from "zod";
@@ -117,6 +118,7 @@ export async function GET(request: NextRequest) {
       image: true,
       role: true,
       bannerImage: true,
+      billingPlan: true,
     },
   });
 
@@ -133,6 +135,7 @@ export async function GET(request: NextRequest) {
       name: user?.name ?? validPlayer.data,
       image: user?.image ?? null,
       title: appliedTitle?.title ?? null,
+      billingPlan: user?.billingPlan ?? $Enums.BillingPlan.FREE,
     },
     heroes: result,
   });
