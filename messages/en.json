@@ -264,7 +264,8 @@
       "contact": "Contact",
       "docs": "Docs",
       "admin": "Admin",
-      "signOut": "Sign Out"
+      "signOut": "Sign Out",
+      "profile": "Profile"
     },
     "commandMenu": {
       "searchPlaceholder": "Type a command or search...",

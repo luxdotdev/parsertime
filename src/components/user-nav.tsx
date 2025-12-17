@@ -62,6 +62,9 @@ export async function UserNav() {
           <Link href="/dashboard">
             <DropdownMenuItem>{t("dashboard")}</DropdownMenuItem>
           </Link>
+          <Link href="/profile">
+            <DropdownMenuItem>{t("profile")}</DropdownMenuItem>
+          </Link>
           <Link href="/team">
             <DropdownMenuItem>{t("teams")}</DropdownMenuItem>
           </Link>
