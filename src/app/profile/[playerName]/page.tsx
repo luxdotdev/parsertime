@@ -1,3 +1,4 @@
+import { Achievements } from "@/components/profile/achievements";
 import { HeroMasteryGrid } from "@/components/profile/hero-mastery-grid";
 import { HeroRating } from "@/components/profile/hero-rating";
 import { PersonalRecords } from "@/components/profile/personal-records";
@@ -264,12 +265,7 @@ export default async function ProfilePage(
           <TabsTrigger value="history" disabled>
             History
           </TabsTrigger>
-          <TabsTrigger value="achievements" disabled>
-            Achievements
-          </TabsTrigger>
-          <TabsTrigger value="customization" disabled>
-            Customization
-          </TabsTrigger>
+          {user && <TabsTrigger value="achievements">Achievements</TabsTrigger>}
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
@@ -541,6 +537,9 @@ export default async function ProfilePage(
             mapWinrates={mapWinrates}
             deaths={deaths}
           />
+        </TabsContent>
+        <TabsContent value="achievements" className="space-y-4">
+          <Achievements user={user!} />
         </TabsContent>
       </Tabs>
     </div>
