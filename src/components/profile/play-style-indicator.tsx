@@ -58,7 +58,8 @@ function calculatePlayStyleMetrics(
 
   const clutch = Math.min(100, fightReversalPct);
 
-  const performance = Math.min(100, (mvpScore / 15) * 100);
+  // If the player has a negative MVP score, set it to 0
+  const performance = Math.min(100, (Math.max(0, mvpScore) / 15) * 100);
 
   return [
     {
