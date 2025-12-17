@@ -23,7 +23,7 @@ import {
 } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import type { PagePropsWithLocale } from "@/types/next";
-import type { Scrim } from "@prisma/client";
+import { $Enums, type Scrim } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
@@ -66,6 +66,7 @@ export default async function ProfilePage(
     name: user?.name ?? name,
     image: user?.image ?? null,
     title: appliedTitle?.title ?? null,
+    billingPlan: user?.billingPlan ?? $Enums.BillingPlan.FREE,
   };
 
   // 1. Fetch all heroes played by the user, sorted by time played
