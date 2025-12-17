@@ -26,7 +26,7 @@ type TeamInviteUserEmailProps = {
   inviteLink?: string;
 };
 
-export const TeamInviteUserEmail = ({
+export function TeamInviteUserEmail({
   username,
   userImage,
   invitedByUsername,
@@ -34,7 +34,7 @@ export const TeamInviteUserEmail = ({
   teamName,
   teamImage,
   inviteLink,
-}: TeamInviteUserEmailProps) => {
+}: TeamInviteUserEmailProps) {
   const previewText = `Join ${invitedByUsername} on Parsertime`;
 
   return (
@@ -137,6 +137,6 @@ export const TeamInviteUserEmail = ({
       </Tailwind>
     </Html>
   );
-};
+}
 
 export default TeamInviteUserEmail;

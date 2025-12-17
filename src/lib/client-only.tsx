@@ -1,7 +1,10 @@
 import { useSyncExternalStore } from "react";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const emptySubscribe = () => () => {};
+function emptySubscribe() {
+  return () => {
+    // intentionally empty
+  };
+}
 
 export function ClientOnly({ children }: { children: React.ReactNode }) {
   const isServer = useSyncExternalStore(

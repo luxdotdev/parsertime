@@ -1,4 +1,3 @@
-/* eslint-disable require-yield */
 import prisma from "@/lib/prisma";
 import type { Notification } from "@prisma/client";
 import { Context, Effect, Layer, ManagedRuntime } from "effect";
@@ -341,7 +340,9 @@ export const layerFromPrisma = Layer.effect(
   createService({ prisma })
 );
 
-export const layer = () => layerFromPrisma;
+export function layer() {
+  return layerFromPrisma;
+}
 
 // Runtime for Promise-based usage
 export const notificationRuntime = ManagedRuntime.make(layer());

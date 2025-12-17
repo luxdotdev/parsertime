@@ -363,7 +363,7 @@ export function ScrimCreationForm({
           control={form.control}
           name="heroBans"
           render={({ field, fieldState }) => {
-            const handleDragEnd = (event: DragEndEvent) => {
+            function handleDragEnd(event: DragEndEvent) {
               const { active, over } = event;
 
               if (over && active.id !== over.id) {
@@ -387,7 +387,7 @@ export function ScrimCreationForm({
                   field.onChange(updatedBans);
                 }
               }
-            };
+            }
 
             return (
               <Field data-invalid={fieldState.invalid}>

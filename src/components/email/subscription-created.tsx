@@ -20,10 +20,10 @@ type SubscriptionEmailProps = {
   billingPlan: string;
 };
 
-export const SubscriptionCreatedEmail = ({
+export function SubscriptionCreatedEmail({
   user,
   billingPlan,
-}: SubscriptionEmailProps) => {
+}: SubscriptionEmailProps) {
   const previewText = "Thank you for subscribing to Parsertime!";
 
   return (
@@ -102,6 +102,6 @@ export const SubscriptionCreatedEmail = ({
       </Tailwind>
     </Html>
   );
-};
+}
 
 export default SubscriptionCreatedEmail;

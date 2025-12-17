@@ -66,10 +66,6 @@ export function useNotifications() {
     notificationsStore,
     (state) => state.context.loadingOperations
   );
-  const hasInitialized = useSelector(
-    notificationsStore,
-    (state) => state.context.hasInitialized
-  );
 
   // Derived state
   const unreadCount = useSelector(notificationsStore, (state) =>
@@ -81,48 +77,45 @@ export function useNotifications() {
   const hasNextPage = pagination?.hasMore ?? false;
 
   // Fetch notifications function - now using client utilities
-  const fetchNotifications = useCallback(
-    async (page: number = 1, append: boolean = false) => {
-      try {
-        if (!append) {
-          notificationsStore.trigger.setLoading({ isLoading: true });
-        } else {
-          notificationsStore.trigger.setFetchingNextPage({
-            isFetchingNextPage: true,
-          });
-        }
-
-        const data = (await fetchNotificationsAPI(
-          page,
-          10
-        )) as NotificationResponse;
-
-        if (append) {
-          notificationsStore.trigger.appendNotifications({
-            notifications: data.notifications,
-            pagination: data.pagination,
-          });
-        } else {
-          notificationsStore.trigger.setNotifications({
-            notifications: data.notifications,
-            pagination: data.pagination,
-          });
-        }
-      } catch (error) {
-        Logger.error("Failed to fetch notifications:", error);
-        notificationsStore.trigger.setError({ isError: true });
-      } finally {
-        if (!append) {
-          notificationsStore.trigger.setLoading({ isLoading: false });
-        } else {
-          notificationsStore.trigger.setFetchingNextPage({
-            isFetchingNextPage: false,
-          });
-        }
+  const fetchNotifications = useCallback(async (page = 1, append = false) => {
+    try {
+      if (!append) {
+        notificationsStore.trigger.setLoading({ isLoading: true });
+      } else {
+        notificationsStore.trigger.setFetchingNextPage({
+          isFetchingNextPage: true,
+        });
       }
-    },
-    []
-  );
+
+      const data = (await fetchNotificationsAPI(
+        page,
+        10
+      )) as NotificationResponse;
+
+      if (append) {
+        notificationsStore.trigger.appendNotifications({
+          notifications: data.notifications,
+          pagination: data.pagination,
+        });
+      } else {
+        notificationsStore.trigger.setNotifications({
+          notifications: data.notifications,
+          pagination: data.pagination,
+        });
+      }
+    } catch (error) {
+      Logger.error("Failed to fetch notifications:", error);
+      notificationsStore.trigger.setError({ isError: true });
+    } finally {
+      if (!append) {
+        notificationsStore.trigger.setLoading({ isLoading: false });
+      } else {
+        notificationsStore.trigger.setFetchingNextPage({
+          isFetchingNextPage: false,
+        });
+      }
+    }
+  }, []);
 
   // Fetch next page - simplified without dependencies
   const fetchNextPage = useCallback(async () => {

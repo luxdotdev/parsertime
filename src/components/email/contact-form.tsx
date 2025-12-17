@@ -19,11 +19,11 @@ type ContactFormEmailProps = {
   message?: string;
 };
 
-export const ContactFormEmail = ({
+export function ContactFormEmail({
   name,
   email,
   message,
-}: ContactFormEmailProps) => {
+}: ContactFormEmailProps) {
   const previewText = `New Message from ${name} | Parsertime`;
 
   return (
@@ -83,6 +83,6 @@ export const ContactFormEmail = ({
       </Tailwind>
     </Html>
   );
-};
+}
 
 export default ContactFormEmail;

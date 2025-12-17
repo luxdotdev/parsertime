@@ -20,10 +20,10 @@ type SubscriptionEmailProps = {
   billingPlan: string;
 };
 
-export const SubscriptionUpdatedEmail = ({
+export function SubscriptionUpdatedEmail({
   user,
   billingPlan,
-}: SubscriptionEmailProps) => {
+}: SubscriptionEmailProps) {
   const previewText = "Your subscription has been updated.";
 
   return (
@@ -100,6 +100,6 @@ export const SubscriptionUpdatedEmail = ({
       </Tailwind>
     </Html>
   );
-};
+}
 
 export default SubscriptionUpdatedEmail;

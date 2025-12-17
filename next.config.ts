@@ -97,6 +97,6 @@ const nextConfig = {
 const withNextIntl = createNextIntlPlugin();
 
 export default withBotId(
-  // @ts-ignore - broken types
+  // @ts-expect-error - broken types
   withNextIntl(withAxiom(withVercelToolbar()(nextConfig)))
 );

@@ -417,6 +417,7 @@ export function OverviewTable({
     ultsUsed: t("tooltips.ultsUsed"),
   };
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: tableData,
     columns,

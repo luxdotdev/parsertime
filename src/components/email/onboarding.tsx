@@ -18,7 +18,7 @@ type OnboardingEmailProps = {
   email?: string;
 };
 
-export const UserOnboardingEmail = ({ name, email }: OnboardingEmailProps) => {
+export function UserOnboardingEmail({ name, email }: OnboardingEmailProps) {
   const previewText = "Welcome to Parsertime!";
 
   return (
@@ -132,6 +132,6 @@ export const UserOnboardingEmail = ({ name, email }: OnboardingEmailProps) => {
       </Tailwind>
     </Html>
   );
-};
+}
 
 export default UserOnboardingEmail;

@@ -187,7 +187,9 @@ function createService() {
 export const layerFromConfig = Layer.effect(EmailService, createService());
 
 // Layer composition for easy use
-export const layer = () => layerFromConfig;
+export function layer() {
+  return layerFromConfig;
+}
 
 // Runtime for Promise-based usage
 export const emailRuntime = ManagedRuntime.make(layer());

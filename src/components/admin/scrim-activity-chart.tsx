@@ -35,13 +35,13 @@ export function ScrimActivityChart({ data }: ScrimActivityChartProps) {
   };
 
   // Format date for display (show only day/month)
-  const formatXAxisLabel = (value: string) => {
+  function formatXAxisLabel(value: string) {
     const date = new Date(value);
     return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
     });
-  };
+  }
 
   return (
     <ChartContainer config={chartConfig} className="h-[200px] w-full">

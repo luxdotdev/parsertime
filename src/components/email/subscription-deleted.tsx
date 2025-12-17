@@ -18,7 +18,7 @@ type SubscriptionEmailProps = {
   user: User;
 };
 
-export const SubscriptionDeletedEmail = ({ user }: SubscriptionEmailProps) => {
+export function SubscriptionDeletedEmail({ user }: SubscriptionEmailProps) {
   const previewText = "Your subscription has been cancelled.";
 
   return (
@@ -95,6 +95,6 @@ export const SubscriptionDeletedEmail = ({ user }: SubscriptionEmailProps) => {
       </Tailwind>
     </Html>
   );
-};
+}
 
 export default SubscriptionDeletedEmail;

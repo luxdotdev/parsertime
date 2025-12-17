@@ -268,6 +268,7 @@ export function StatsTable({ data: playerStat }: { data: PlayerStat }) {
     },
   ];
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: tableData,
     // @ts-expect-error idk how to fix this

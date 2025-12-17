@@ -78,7 +78,9 @@ function createService(): Effect.Effect<Service, never> {
 export const layerFromConfig = Layer.effect(AuditLogService, createService());
 
 // Layer composition for easy use
-export const layer = () => layerFromConfig;
+export function layer() {
+  return layerFromConfig;
+}
 
 // Runtime for Promise-based usage
 export const auditLogRuntime = ManagedRuntime.make(layer());

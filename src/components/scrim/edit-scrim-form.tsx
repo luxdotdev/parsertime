@@ -398,7 +398,7 @@ export function EditScrimForm({
                         control={form.control}
                         name={`maps.${index}.heroBans`}
                         render={({ field }) => {
-                          const handleDragEnd = (event: DragEndEvent) => {
+                          function handleDragEnd(event: DragEndEvent) {
                             const { active, over } = event;
 
                             if (over && active.id !== over.id) {
@@ -429,7 +429,7 @@ export function EditScrimForm({
                                 field.onChange(updatedBans);
                               }
                             }
-                          };
+                          }
 
                           return (
                             <FormItem>

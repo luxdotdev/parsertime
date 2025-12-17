@@ -180,13 +180,18 @@ export const notificationsStore = createStore({
 });
 
 // Selectors
-export const selectUnreadCount = (state: NotificationContext) =>
-  state.notifications.filter((notification) => !notification.read).length;
+export function selectUnreadCount(state: NotificationContext) {
+  return state.notifications.filter((notification) => !notification.read)
+    .length;
+}
 
-export const selectHasUnread = (state: NotificationContext) =>
-  selectUnreadCount(state) > 0;
+export function selectHasUnread(state: NotificationContext) {
+  return selectUnreadCount(state) > 0;
+}
 
-export const selectNotificationLoadingState = (
+export function selectNotificationLoadingState(
   state: NotificationContext,
   id: number
-) => state.loadingOperations[id] ?? { markAsRead: false, delete: false };
+) {
+  return state.loadingOperations[id] ?? { markAsRead: false, delete: false };
+}

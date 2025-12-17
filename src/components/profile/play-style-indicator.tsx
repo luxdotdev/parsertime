@@ -38,11 +38,11 @@ function calculatePlayStyleMetrics(
     statsMap.get(stat.stat)!.push(stat.value);
   });
 
-  const getAverage = (statType: CalculatedStatType): number => {
+  function getAverage(statType: CalculatedStatType) {
     const values = statsMap.get(statType);
     if (!values || values.length === 0) return 0;
     return values.reduce((sum, val) => sum + val, 0) / values.length;
-  };
+  }
 
   const firstPickPct = getAverage("FIRST_PICK_PERCENTAGE");
   const firstDeathPct = getAverage("FIRST_DEATH_PERCENTAGE");
