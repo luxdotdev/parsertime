@@ -191,6 +191,9 @@ export async function GET(req: NextRequest) {
         creatorId: scrim.creatorId,
         guestMode: scrim.guestMode,
         team: scrim.Team?.name ?? "Individual",
+        teamImage:
+          scrim.Team?.image ??
+          `https://avatar.vercel.sh/${scrim.Team?.name}.png`,
         creator: creatorMap.get(scrim.creatorId) ?? "Unknown",
         hasPerms,
       };
