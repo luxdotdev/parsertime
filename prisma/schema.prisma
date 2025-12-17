@@ -57,11 +57,35 @@ model User {
   billingPlan   BillingPlan    @default(FREE)
   Notification  Notification[]
   AppSettings   AppSettings[]
+  titles        Title[]        @default([])
+  bannerImage   String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @default(now()) @updatedAt
   battletag     String?
 
   @@index([id, email])
+}
+
+enum Title {
+  // Special user titles
+  DEVELOPER
+  EMPLOYEE
+  BETA_TESTER
+  DAY_ONE_USER
+  BASIC_PLAN_SUBSCRIBER
+  PREMIUM_PLAN_SUBSCRIBER
+  VIP
+
+  // Achievement titles
+  HIGHEST_RANK_ON_A_HERO
+  HIGHEST_AJAX_COUNT
+  HIGHEST_FLETA_DEADLIFT_PERCENTAGE
+  TOP_3_KILLS
+  TOP_3_DAMAGE_DEALT
+  TOP_3_HEALING
+  TOP_3_DAMAGE_BLOCKED
+  TOP_3_DEATHS
+  TOP_3_TIME_PLAYED
 }
 
 enum ColorblindMode {
