@@ -78,6 +78,7 @@ const profileFormSchema = z.object({
     .regex(/^(?!.*?:).*$/, {
       message: "Name must not contain special characters.",
     }),
+  battletag: z.string().optional(),
   colorblindMode: z.nativeEnum($Enums.ColorblindMode),
   customTeam1Color: z.string().optional(),
   customTeam2Color: z.string().optional(),
@@ -114,6 +115,7 @@ export function ProfileForm({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
       name: user.name ?? "",
+      battletag: user.battletag ?? "",
       colorblindMode: appSettings?.colorblindMode ?? $Enums.ColorblindMode.OFF,
       customTeam1Color: appSettings?.customTeam1Color ?? "#3b82f6",
       customTeam2Color: appSettings?.customTeam2Color ?? "#ef4444",
@@ -149,6 +151,23 @@ export function ProfileForm({
 
         if (!nameRes.ok) {
           throw new Error(`Failed to update name: ${await nameRes.text()}`);
+        }
+      }
+
+      // Update battletag if it changed
+      if (data.battletag !== user.battletag) {
+        const battletagRes = await fetch("/api/user/update-battletag", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ battletag: data.battletag }),
+        });
+
+        if (!battletagRes.ok) {
+          throw new Error(
+            `Failed to update battletag: ${await battletagRes.text()}`
+          );
         }
       }
 
@@ -256,6 +275,24 @@ export function ProfileForm({
                   />
                 </FormControl>
                 <FormDescription>{t("username.description")}</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="battletag"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("battletag.title")}</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="lux"
+                    defaultValue={user.battletag ?? ""}
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>{t("battletag.description")}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
