@@ -366,7 +366,8 @@
       "teams": "Teams",
       "settings": "Settings",
       "contact": "Contact",
-      "docs": "Docs"
+      "docs": "Docs",
+      "leaderboard": "Leaderboard"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "Search team...",

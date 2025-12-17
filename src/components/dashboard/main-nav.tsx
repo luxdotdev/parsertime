@@ -36,6 +36,15 @@ export function MainNav({
         {t("stats")}
       </Link>
       <Link
+        href="/leaderboard"
+        className={cn(
+          "text-muted-foreground hover:text-primary text-sm font-medium transition-colors",
+          pathname === "/leaderboard" ? "text-primary" : "text-muted-foreground"
+        )}
+      >
+        {t("leaderboard")}
+      </Link>
+      <Link
         href="/team"
         className={cn(
           "hover:text-primary text-sm font-medium transition-colors",
