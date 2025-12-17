@@ -36,7 +36,7 @@ export function TailwindIndicator() {
   return (
     <div
       className={cn(
-        "text-primary-foreground fixed right-5 bottom-5 z-50 flex items-center space-x-2 rounded-full bg-black px-2.5 py-1 font-mono text-xs font-medium dark:bg-white",
+        "fixed right-5 bottom-5 z-50 flex items-center space-x-2 rounded-full bg-black px-2.5 py-1 font-mono text-xs font-medium text-white dark:bg-white dark:text-black",
         isDev && "right-20",
         GeistMono.className
       )}
