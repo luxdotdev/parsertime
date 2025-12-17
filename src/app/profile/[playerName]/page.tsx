@@ -65,6 +65,7 @@ export default async function ProfilePage(
   const playerData = {
     name: user?.name ?? name,
     image: user?.image ?? null,
+    bannerImage: user?.bannerImage ?? null,
     title: appliedTitle?.title ?? null,
     billingPlan: user?.billingPlan ?? $Enums.BillingPlan.FREE,
     email: user?.email ?? null,
