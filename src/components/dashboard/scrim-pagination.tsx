@@ -34,6 +34,7 @@ import { useDebounce } from "use-debounce";
 
 type ScrimWithDetails = Scrim & {
   team: string;
+  teamImage: string;
   creator: string;
   hasPerms: boolean;
 };
