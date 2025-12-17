@@ -1,6 +1,7 @@
+import { HeroMasteryGrid } from "@/components/profile/hero-mastery-grid";
 import { HeroRating } from "@/components/profile/hero-rating";
 import { ProfileHeader } from "@/components/profile/profile-header";
-import { PlayerMetrics } from "@/components/stats/player/player-metrics";
+import { StatFluctuationCards } from "@/components/profile/stat-fluctuation-cards";
 import { Statistics } from "@/components/stats/player/statistics";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -169,50 +170,6 @@ export default async function ProfilePage(
     where: { playerName: { equals: name, mode: "insensitive" } },
   });
 
-  function getAverageStat(statName: string): number {
-    const filtered = calculatedStats.filter((stat) => stat.stat === statName);
-    if (filtered.length === 0) return 0;
-    return (
-      filtered.reduce((acc, stat) => acc + stat.value, 0) / filtered.length
-    );
-  }
-
-  function getTotalStat(statName: string): number {
-    return calculatedStats
-      .filter((stat) => stat.stat === statName)
-      .reduce((acc, stat) => acc + stat.value, 0);
-  }
-
-  const mvpScore = getAverageStat("MVP_SCORE");
-  const fletaDeadliftPercentage = getAverageStat("FLETA_DEADLIFT_PERCENTAGE");
-  const firstPickCount = getTotalStat("FIRST_PICK_COUNT");
-  const firstPickPercentage = getAverageStat("FIRST_PICK_PERCENTAGE");
-  const firstDeathPercentage = getAverageStat("FIRST_DEATH_PERCENTAGE");
-  const firstDeathCount = getTotalStat("FIRST_DEATH_COUNT");
-  const fightReversalPercentage = getAverageStat("FIGHT_REVERSAL_PERCENTAGE");
-  const droughtTime = getAverageStat("AVERAGE_DROUGHT_TIME");
-  const averageUltChargeTime = getAverageStat("AVERAGE_ULT_CHARGE_TIME");
-  const averageTimeToUseUlt = getAverageStat("AVERAGE_TIME_TO_USE_ULT");
-  const killsPerUltimate = getAverageStat("KILLS_PER_ULTIMATE");
-  const ajaxCount = getAverageStat("AJAX_COUNT");
-  const mapMVPCount = getTotalStat("MAP_MVP_COUNT");
-
-  const metrics = {
-    mvpScore,
-    fletaDeadliftPercentage,
-    firstPickCount,
-    firstPickPercentage,
-    firstDeathCount,
-    firstDeathPercentage,
-    fightReversalPercentage,
-    droughtTime,
-    averageUltChargeTime,
-    averageTimeToUseUlt,
-    killsPerUltimate,
-    ajaxCount,
-    mapMVPCount,
-  };
-
   const playerScrims = await prisma.playerStat.findMany({
     where: { player_name: { equals: name, mode: "insensitive" } },
     select: { scrimId: true },
@@ -349,7 +306,59 @@ export default async function ProfilePage(
                 </div>
               </div>
 
-              <PlayerMetrics metrics={metrics} />
+              <Tabs defaultValue="all-time">
+                <TabsList>
+                  <TabsTrigger value="all-time">All Time</TabsTrigger>
+                  <TabsTrigger value="one-week">One Week</TabsTrigger>
+                  <TabsTrigger value="two-weeks">Two Weeks</TabsTrigger>
+                  <TabsTrigger value="one-month">One Month</TabsTrigger>
+                  <TabsTrigger value="three-months">Three Months</TabsTrigger>
+                  <TabsTrigger value="six-months">Six Months</TabsTrigger>
+                  <TabsTrigger value="one-year">One Year</TabsTrigger>
+                </TabsList>
+                <TabsContent value="all-time">
+                  <StatFluctuationCards
+                    calculatedStats={calculatedStats}
+                    timeframe="all-time"
+                  />
+                </TabsContent>
+                <TabsContent value="one-week">
+                  <StatFluctuationCards
+                    calculatedStats={calculatedStats}
+                    timeframe="one-week"
+                  />
+                </TabsContent>
+                <TabsContent value="two-weeks">
+                  <StatFluctuationCards
+                    calculatedStats={calculatedStats}
+                    timeframe="two-weeks"
+                  />
+                </TabsContent>
+                <TabsContent value="one-month">
+                  <StatFluctuationCards
+                    calculatedStats={calculatedStats}
+                    timeframe="one-month"
+                  />
+                </TabsContent>
+                <TabsContent value="three-months">
+                  <StatFluctuationCards
+                    calculatedStats={calculatedStats}
+                    timeframe="three-months"
+                  />
+                </TabsContent>
+                <TabsContent value="six-months">
+                  <StatFluctuationCards
+                    calculatedStats={calculatedStats}
+                    timeframe="six-months"
+                  />
+                </TabsContent>
+                <TabsContent value="one-year">
+                  <StatFluctuationCards
+                    calculatedStats={calculatedStats}
+                    timeframe="one-year"
+                  />
+                </TabsContent>
+              </Tabs>
             </div>
 
             {/* Right Column: Comparison / Role Stats */}
@@ -416,7 +425,7 @@ export default async function ProfilePage(
                   <div className="space-y-2">
                     <div className="bg-muted/50 grid grid-cols-3 items-center gap-2 rounded p-2">
                       <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 rounded-full bg-gray-400" />
+                        <div className="h-4 w-4 rounded-full bg-blue-500" />
                         <span>Tank</span>
                       </div>
                       <div className="text-right">
@@ -438,7 +447,7 @@ export default async function ProfilePage(
                     </div>
                     <div className="bg-muted/50 grid grid-cols-3 items-center gap-2 rounded p-2">
                       <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 rounded-full bg-red-400" />
+                        <div className="h-4 w-4 rounded-full bg-red-500" />
                         <span>Damage</span>
                       </div>
                       <div className="text-right">
@@ -460,7 +469,7 @@ export default async function ProfilePage(
                     </div>
                     <div className="bg-muted/50 grid grid-cols-3 items-center gap-2 rounded p-2">
                       <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 rounded-full bg-green-400" />
+                        <div className="h-4 w-4 rounded-full bg-green-500" />
                         <span>Support</span>
                       </div>
                       <div className="text-right">
@@ -480,6 +489,7 @@ export default async function ProfilePage(
                         )}
                       </div>
                     </div>
+                    <HeroMasteryGrid heroesData={allHeroesData} />
                   </div>
                 </div>
               </div>
