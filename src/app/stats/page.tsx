@@ -28,13 +28,15 @@ import { getTranslations } from "next-intl/server";
 export default async function StatsPage() {
   const t = await getTranslations("statsPage");
 
-  const [userNum, scrimNum, killNum, statNum, mapNum] = await Promise.all([
-    prisma.user.count(),
-    prisma.scrim.count(),
-    prisma.kill.count(),
-    prisma.playerStat.count(),
-    prisma.mapData.count(),
-  ]);
+  const [userNum, scrimNum, killNum, statNum, mapNum, calculatedStatNum] =
+    await Promise.all([
+      prisma.user.count(),
+      prisma.scrim.count(),
+      prisma.kill.count(),
+      prisma.playerStat.count(),
+      prisma.mapData.count(),
+      prisma.calculatedStat.count(),
+    ]);
 
   type MostPlayedHeroes = {
     player_hero: string;
@@ -206,7 +208,9 @@ export default async function StatsPage() {
             </CardIcon>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{format(statNum)}</div>
+            <div className="text-2xl font-bold">
+              {format(statNum + calculatedStatNum)}
+            </div>
           </CardContent>
           <CardFooter>
             <p className="text-muted-foreground text-xs">
