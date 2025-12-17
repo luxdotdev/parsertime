@@ -16,6 +16,7 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { $Enums } from "@prisma/client";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
+import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
@@ -62,7 +63,7 @@ export async function UserNav() {
           <Link href="/dashboard">
             <DropdownMenuItem>{t("dashboard")}</DropdownMenuItem>
           </Link>
-          <Link href="/profile">
+          <Link href={`/profile/${user?.battletag ?? ""}` as Route}>
             <DropdownMenuItem>{t("profile")}</DropdownMenuItem>
           </Link>
           <Link href="/team">
