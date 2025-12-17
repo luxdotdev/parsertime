@@ -262,9 +262,6 @@ export default async function ProfilePage(
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="progression">Progression</TabsTrigger>
           <TabsTrigger value="statistics">Statistics</TabsTrigger>
-          <TabsTrigger value="history" disabled>
-            History
-          </TabsTrigger>
           {user && <TabsTrigger value="achievements">Achievements</TabsTrigger>}
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
