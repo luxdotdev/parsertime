@@ -3,8 +3,16 @@
 import type { Timeframe } from "@/components/stats/player/range-picker";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChartContainer } from "@/components/ui/chart";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { cn } from "@/lib/utils";
 import type { CalculatedStatType } from "@prisma/client";
+import { ChartBar } from "lucide-react";
 import { Area, AreaChart, Bar, BarChart, XAxis } from "recharts";
 
 type CalculatedStat = {
@@ -231,7 +239,19 @@ export function StatFluctuationCards({
     });
 
   if (summary.length === 0) {
-    return null;
+    return (
+      <Empty>
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <ChartBar />
+          </EmptyMedia>
+          <EmptyTitle>No data available</EmptyTitle>
+          <EmptyDescription>
+            No data available for this player in the selected timeframe.
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
+    );
   }
 
   return (
