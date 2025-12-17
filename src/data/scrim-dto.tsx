@@ -1,5 +1,3 @@
-import "server-only";
-
 import prisma from "@/lib/prisma";
 import { removeDuplicateRows } from "@/lib/utils";
 import { calculateWinner } from "@/lib/winrate";

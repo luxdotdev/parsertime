@@ -1,5 +1,3 @@
-import "server-only";
-
 import { getFinalRoundStats, getPlayerFinalStats } from "@/data/scrim-dto";
 import type { HeroName } from "@/types/heroes";
 import type { PlayerStat } from "@prisma/client";
