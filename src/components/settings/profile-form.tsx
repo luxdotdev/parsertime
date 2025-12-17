@@ -1,6 +1,7 @@
 "use client";
 
 import { AvatarUpdateDialog } from "@/components/settings/avatar-update-dialog";
+import { BannerUpdateDialog } from "@/components/settings/banner-update-dialog";
 import { Button } from "@/components/ui/button";
 import {
   ColorPicker,
@@ -117,8 +118,13 @@ export function ProfileForm({
   const t = useTranslations("settingsPage.profileForm");
 
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
+  const [bannerDialogOpen, setBannerDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedBannerFile, setSelectedBannerFile] = useState<File | null>(
+    null
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bannerFileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -259,7 +265,19 @@ export function ProfileForm({
     const files = event.target.files;
     if (files?.[0]) {
       setSelectedFile(files[0]);
-      setAvatarDialogOpen(true); // Open the dialog upon file selection
+      setAvatarDialogOpen(true);
+    }
+  }
+
+  function handleBannerClick() {
+    bannerFileInputRef.current?.click();
+  }
+
+  function handleBannerFileChange(event: ChangeEvent<HTMLInputElement>) {
+    const files = event.target.files;
+    if (files?.[0]) {
+      setSelectedBannerFile(files[0]);
+      setBannerDialogOpen(true);
     }
   }
 
@@ -382,6 +400,56 @@ export function ProfileForm({
               </>
             </FormControl>
             <FormDescription>{t("avatar.description")}</FormDescription>
+            <FormMessage />
+          </FormItem>
+          <FormItem>
+            <FormLabel>{t("banner.title")}</FormLabel>
+            <FormControl aria-readonly>
+              <>
+                <input
+                  type="file"
+                  ref={bannerFileInputRef}
+                  onChange={handleBannerFileChange}
+                  className="hidden"
+                  accept="image/*"
+                  aria-label={t("banner.ariaLabel")}
+                />
+                <div
+                  role="button"
+                  tabIndex={0}
+                  className="hover:border-primary relative h-32 w-full cursor-pointer overflow-hidden rounded-lg border-2 border-dashed transition-colors"
+                  onClick={handleBannerClick}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleBannerClick();
+                    }
+                  }}
+                >
+                  {user.bannerImage ? (
+                    <Image
+                      src={user.bannerImage}
+                      fill
+                      alt={t("banner.altText")}
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center bg-gradient-to-r from-blue-600 to-purple-600">
+                      <span className="text-sm font-medium text-white">
+                        {t("banner.placeholder")}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <BannerUpdateDialog
+                  user={user}
+                  isOpen={bannerDialogOpen}
+                  setIsOpen={setBannerDialogOpen}
+                  selectedFile={selectedBannerFile}
+                />
+              </>
+            </FormControl>
+            <FormDescription>{t("banner.description")}</FormDescription>
             <FormMessage />
           </FormItem>
 
