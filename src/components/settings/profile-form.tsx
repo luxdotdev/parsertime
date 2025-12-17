@@ -23,10 +23,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { ClientOnly } from "@/lib/client-only";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { $Enums, type User } from "@prisma/client";
+import { $Enums, type AppliedTitle, type User } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -79,7 +86,8 @@ const profileFormSchema = z.object({
       message: "Name must not contain special characters.",
     }),
   battletag: z.string().optional(),
-  colorblindMode: z.nativeEnum($Enums.ColorblindMode),
+  title: z.enum($Enums.Title).optional(),
+  colorblindMode: z.enum($Enums.ColorblindMode),
   customTeam1Color: z.string().optional(),
   customTeam2Color: z.string().optional(),
 });
@@ -99,10 +107,13 @@ type AppSettings = {
 export function ProfileForm({
   user,
   appSettings,
+  appliedTitle,
 }: {
   user: User;
   appSettings: AppSettings;
+  appliedTitle: AppliedTitle | null;
 }) {
+  const titleT = useTranslations("titles");
   const t = useTranslations("settingsPage.profileForm");
 
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
@@ -116,6 +127,7 @@ export function ProfileForm({
     defaultValues: {
       name: user.name ?? "",
       battletag: user.battletag ?? "",
+      title: appliedTitle?.title ?? undefined,
       colorblindMode: appSettings?.colorblindMode ?? $Enums.ColorblindMode.OFF,
       customTeam1Color: appSettings?.customTeam1Color ?? "#3b82f6",
       customTeam2Color: appSettings?.customTeam2Color ?? "#ef4444",
@@ -168,6 +180,25 @@ export function ProfileForm({
           throw new Error(
             `Failed to update battletag: ${await battletagRes.text()}`
           );
+        }
+      }
+
+      // Update title if it changed
+      if (data.title !== appliedTitle?.title) {
+        const titleRes = await fetch("/api/user/update-title", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: user.id,
+            appliedTitleId: appliedTitle?.id,
+            newTitle: data.title,
+          }),
+        });
+
+        if (!titleRes.ok) {
+          throw new Error(`Failed to update title: ${await titleRes.text()}`);
         }
       }
 
@@ -293,6 +324,31 @@ export function ProfileForm({
                   />
                 </FormControl>
                 <FormDescription>{t("battletag.description")}</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("title.title")}</FormLabel>
+                <FormControl>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a title" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {user.titles.map((title) => (
+                        <SelectItem key={title} value={title}>
+                          {titleT(title)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormDescription>{t("title.description")}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
