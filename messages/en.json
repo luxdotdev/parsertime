@@ -1700,7 +1700,11 @@
         "team1Color": "Team 1 Color",
         "team2Color": "Team 2 Color"
       },
-      "updating": "Updating..."
+      "updating": "Updating...",
+      "battletag": {
+        "title": "Battletag",
+        "description": "This is the in-game username to associate your account with. Do not include the numbers after the hashtag."
+      }
     },
     "linkedAccounts": {
       "title": "Linked Accounts",
