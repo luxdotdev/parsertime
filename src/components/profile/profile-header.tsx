@@ -60,7 +60,7 @@ export function ProfileHeader({ player, className }: ProfileHeaderProps) {
                   src={player.image ?? undefined}
                   alt={player.name}
                 />
-                <AvatarFallback className="rounded-sm text-4xl font-bold">
+                <AvatarFallback className="text-4xl font-bold">
                   {player.name.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
