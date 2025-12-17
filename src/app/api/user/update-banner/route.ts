@@ -34,7 +34,11 @@ export async function POST(req: NextRequest) {
     data: { bannerImage: body.data.bannerImage },
   });
 
-  Logger.log("new banner uploaded for user: ", user.email, body.data.bannerImage);
+  Logger.log(
+    "new banner uploaded for user: ",
+    user.email,
+    body.data.bannerImage
+  );
 
   after(async () => {
     await auditLog.createAuditLog({
@@ -47,4 +51,3 @@ export async function POST(req: NextRequest) {
 
   return new Response("OK", { status: 200 });
 }
-
