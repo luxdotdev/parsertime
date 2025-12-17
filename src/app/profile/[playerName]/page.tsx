@@ -306,6 +306,7 @@ export default async function ProfilePage(
                             heroRating={hero.hero_rating}
                             mapsPlayed={hero.mapsPlayed}
                             rank={hero.rank}
+                            percentile={hero.percentile}
                           />
                           <div className="text-muted-foreground text-sm font-semibold uppercase">
                             {t(toHero(hero.player_hero))}
@@ -403,6 +404,7 @@ export default async function ProfilePage(
                               heroRating={hero.hero_rating}
                               mapsPlayed={hero.mapsPlayed}
                               rank={hero.rank}
+                              percentile={hero.percentile}
                             />
                           ) : (
                             <span className="text-muted-foreground text-xs">

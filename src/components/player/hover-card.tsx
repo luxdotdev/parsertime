@@ -167,6 +167,7 @@ export function PlayerHoverCard({
                         heroRating={hero.hero_rating}
                         mapsPlayed={hero.mapsPlayed}
                         rank={hero.rank}
+                        percentile={hero.percentile}
                       />
                     </div>
                     <div className="flex flex-1 items-center gap-2">
