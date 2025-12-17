@@ -14,6 +14,7 @@ import { BillingPlan } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import type { Route } from "next";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 import { z } from "zod";
 
 async function getTop3Heroes(player: string) {
@@ -21,6 +22,7 @@ async function getTop3Heroes(player: string) {
     player: z.object({
       name: z.string(),
       image: z.string().nullable(),
+      bannerImage: z.string().nullable(),
       title: z.string().nullable(),
       billingPlan: z.enum(BillingPlan),
     }),
@@ -46,6 +48,7 @@ async function getTop3Heroes(player: string) {
         player: {
           name: player,
           image: null,
+          bannerImage: null,
           title: null,
           billingPlan: BillingPlan.FREE,
         },
@@ -70,6 +73,7 @@ export function PlayerHoverCard({
   const playerData = data?.player ?? {
     name: player,
     image: null,
+    bannerImage: null,
     title: null,
     billingPlan: BillingPlan.FREE,
   };
@@ -84,6 +88,15 @@ export function PlayerHoverCard({
       <HoverCardContent className="w-80 overflow-hidden p-0">
         {/* Banner */}
         <div className="relative h-20 w-full bg-gradient-to-r from-blue-600 to-purple-600">
+          {playerData.bannerImage && (
+            <Image
+              src={playerData.bannerImage}
+              alt={`${playerData.name} banner`}
+              fill
+              className="object-cover"
+              priority
+            />
+          )}
           <div className="absolute inset-0 bg-black/20" />
         </div>
 

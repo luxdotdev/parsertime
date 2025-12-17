@@ -134,6 +134,7 @@ export async function GET(request: NextRequest) {
     player: {
       name: user?.name ?? validPlayer.data,
       image: user?.image ?? null,
+      bannerImage: user?.bannerImage ?? null,
       title: appliedTitle?.title ?? null,
       billingPlan: user?.billingPlan ?? $Enums.BillingPlan.FREE,
     },
