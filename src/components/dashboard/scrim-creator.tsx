@@ -470,20 +470,29 @@ export function ScrimCreationForm({
             );
           }}
         />
-        <Button
-          type="submit"
-          onClick={() => track("Create Scrim", { location: "Dashboard" })}
-          disabled={loading}
-        >
-          {loading ? (
-            <>
-              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
-              {t("submitting")}
-            </>
-          ) : (
-            <>{t("submit")}</>
-          )}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            type="submit"
+            onClick={() => track("Create Scrim", { location: "Dashboard" })}
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
+                {t("submitting")}
+              </>
+            ) : (
+              <>{t("submit")}</>
+            )}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setOpen(false)}
+          >
+            {t("cancel")}
+          </Button>
+        </div>
       </FieldGroup>
     </form>
   );

@@ -487,7 +487,8 @@
       "hero": "Hero",
       "selectHero": "Select hero",
       "heroBanRequiredError": "A hero to ban is required.",
-      "banPositionRequiredError": "A ban order is required."
+      "banPositionRequiredError": "A ban order is required.",
+      "cancel": "Cancel"
     }
   },
   "updateModal": {
