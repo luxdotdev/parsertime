@@ -261,6 +261,15 @@ enum CalculatedStatType {
   AVERAGE_ULT_CHARGE_TIME
   AVERAGE_TIME_TO_USE_ULT
   AVERAGE_DROUGHT_TIME
+  KILLS_PER_ULTIMATE
+  DUEL_WINRATE_PERCENTAGE
+  FIGHT_REVERSAL_PERCENTAGE
+}
+
+enum Role {
+  TANK
+  DAMAGE
+  SUPPORT
 }
 
 model CalculatedStat {
@@ -268,6 +277,7 @@ model CalculatedStat {
   scrimId    Int
   playerName String
   hero       String
+  role       Role
   stat       CalculatedStatType
   value      Float
   createdAt  DateTime           @default(now())
