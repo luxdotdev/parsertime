@@ -1700,6 +1700,26 @@
           }
         }
       },
+      "banner": {
+        "title": "Profile Banner",
+        "altText": "Profile banner",
+        "ariaLabel": "Banner upload",
+        "placeholder": "Click to upload banner",
+        "description": "This is your profile banner. Click on the banner to upload a custom one from your files.",
+        "editBanner": {
+          "title": "Edit Banner",
+          "description": "Upload and crop your banner image. Click save when you're done.",
+          "save": "Save Changes",
+          "updating": "Updating...",
+          "handleCrop": {
+            "title": "Banner updated successfully",
+            "description": "Your banner has been updated successfully.",
+            "errorTitle": "An error occurred",
+            "errorDescription1": "An error occurred: {res}",
+            "errorDescription2": "An error occurred while updating your banner. Please try again later or contact support."
+          }
+        }
+      },
       "update": "Update profile",
       "colorblindMode": {
         "title": "Accessibility Settings",

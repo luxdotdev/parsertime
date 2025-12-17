@@ -1597,6 +1597,26 @@
           }
         }
       },
+      "banner": {
+        "title": "个人资料横幅",
+        "altText": "个人资料横幅",
+        "ariaLabel": "横幅上传",
+        "placeholder": "点击上传横幅",
+        "description": "这是您的个人资料横幅。点击横幅可以从您的文件中上传自定义横幅。",
+        "editBanner": {
+          "title": "编辑横幅",
+          "description": "上传并裁剪您的横幅图片。完成后点击保存。",
+          "save": "保存更改",
+          "updating": "更新中...",
+          "handleCrop": {
+            "title": "横幅更新成功",
+            "description": "您的横幅已成功更新。",
+            "errorTitle": "发生错误",
+            "errorDescription1": "发生错误：{res}",
+            "errorDescription2": "更新横幅时发生错误。请稍后再试或联系支持。"
+          }
+        }
+      },
       "update": "更新个人资料"
     },
     "linkedAccounts": {
