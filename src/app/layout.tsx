@@ -12,10 +12,10 @@ import { QueryProvider } from "@/lib/query";
 import { cn } from "@/lib/utils";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
+import { Atkinson_Hyperlegible, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -44,6 +44,16 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+const atkinsonHyperlegible = Atkinson_Hyperlegible({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+});
+
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const locale = await getLocale();
   const messages = await getMessages();
@@ -56,7 +66,13 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 
   return (
     <html lang={locale} className="h-full" suppressHydrationWarning>
-      <body className={cn(GeistSans.className, "h-full")}>
+      <body
+        className={cn(
+          atkinsonHyperlegible.className,
+          geistMono.variable,
+          "h-full antialiased"
+        )}
+      >
         <QueryProvider>
           <ThemeProvider
             attribute="class"
