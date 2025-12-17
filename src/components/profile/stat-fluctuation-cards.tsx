@@ -249,6 +249,16 @@ export function StatFluctuationCards({
       const { change, percentageChange } = calculateChange(stats);
       const changeType = change >= 0 ? "positive" : "negative";
 
+      const maxValue =
+        stats.length > 0 ? Math.max(...stats.map((stat) => stat.value)) : 0;
+
+      const isWeightedStat =
+        statType.includes("_PERCENTAGE") ||
+        (config.aggregation === "average" &&
+          statType !== "AVERAGE_DROUGHT_TIME" &&
+          statType !== "AVERAGE_ULT_CHARGE_TIME" &&
+          statType !== "AVERAGE_TIME_TO_USE_ULT");
+
       return {
         name: config.label,
         statType,
@@ -259,6 +269,7 @@ export function StatFluctuationCards({
         color: config.color,
         data: prepareChartData(stats, config.label),
         aggregation: config.aggregation,
+        maxValue: isWeightedStat ? config.formatValue(maxValue) : null,
       };
     })
     .sort((a, b) => {
@@ -331,6 +342,11 @@ export function StatFluctuationCards({
                       </span>
                     </dd>
                   </div>
+                  {item.maxValue && (
+                    <div className="text-muted-foreground mt-1 text-xs">
+                      Max: {item.maxValue}
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-2 h-16 overflow-hidden">
