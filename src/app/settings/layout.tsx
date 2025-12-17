@@ -45,6 +45,10 @@ export default async function SettingsLayout({
       href: "/settings",
     },
     {
+      title: t("sideNav.billing"),
+      href: "/settings/billing",
+    },
+    {
       title: t("sideNav.linkedAccounts"),
       href: "/settings/accounts",
     },
