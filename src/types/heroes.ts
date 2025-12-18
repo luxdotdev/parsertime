@@ -382,6 +382,62 @@ export const roleHeroMapping: Record<
   ],
 };
 
+export const subroleHeroMapping: Record<
+  | "HitscanDamage"
+  | "FlexDamage"
+  | "GroundTank"
+  | "DiveTank"
+  | "FlexSupport"
+  | "MainSupport",
+  HeroName[]
+> = {
+  HitscanDamage: [
+    "Ashe",
+    "Bastion",
+    "Cassidy",
+    "Freja",
+    "Sojourn",
+    "Soldier: 76",
+    "Widowmaker",
+  ],
+  FlexDamage: [
+    "Echo",
+    "Genji",
+    "Hanzo",
+    "Junkrat",
+    "Mei",
+    "Pharah",
+    "Reaper",
+    "Sombra",
+    "Symmetra",
+    "Torbjörn",
+    "Tracer",
+    "Vendetta",
+    "Venture",
+  ],
+  GroundTank: [
+    "Junker Queen",
+    "Mauga",
+    "Orisa",
+    "Ramattra",
+    "Reinhardt",
+    "Roadhog",
+    "Sigma",
+    "Zarya",
+  ],
+  DiveTank: ["D.Va", "Doomfist", "Hazard", "Winston", "Wrecking Ball"],
+  FlexSupport: [
+    "Ana",
+    "Baptiste",
+    "Illari",
+    "Kiriko",
+    "Moira",
+    "Wuyang",
+    "Zenyatta",
+  ],
+  MainSupport: ["Brigitte", "Juno", "Lifeweaver", "Lúcio", "Mercy"],
+};
+
 export const heroPriority = {
   Damage: 1,
   Tank: 2,
