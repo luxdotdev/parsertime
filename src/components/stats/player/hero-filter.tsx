@@ -16,7 +16,20 @@ import {
   roleHeroMapping,
   subroleHeroMapping,
 } from "@/types/heroes";
-import { ChevronsUpDownIcon, SearchIcon } from "lucide-react";
+import {
+  BowArrow,
+  ChevronsUpDownIcon,
+  Cross,
+  Hammer,
+  HeartPulse,
+  PlaneTakeoff,
+  RotateCcw,
+  SearchIcon,
+  Shield,
+  Sword,
+  Syringe,
+  Target,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
@@ -133,34 +146,38 @@ export function HeroFilter({
                 size="sm"
                 onClick={handleReset}
                 className={cn(
-                  "h-8 text-xs",
+                  "h-8 gap-2 text-xs",
                   isAllSelected && "border-primary bg-primary/10"
                 )}
               >
+                <RotateCcw className="h-4 w-4" />
                 {t("reset")}
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => handleQuickSelect(roleHeroMapping.Tank)}
-                className="h-8 text-xs"
+                className="h-8 gap-2 text-xs"
               >
+                <Shield className="h-4 w-4" />
                 {t("allTanks")}
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => handleQuickSelect(roleHeroMapping.Damage)}
-                className="h-8 text-xs"
+                className="h-8 gap-2 text-xs"
               >
+                <Sword className="h-4 w-4" />
                 {t("allDamage")}
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => handleQuickSelect(roleHeroMapping.Support)}
-                className="h-8 text-xs"
+                className="h-8 gap-2 text-xs"
               >
+                <Cross className="h-4 w-4" />
                 {t("allSupport")}
               </Button>
             </div>
@@ -171,32 +188,36 @@ export function HeroFilter({
                 onClick={() =>
                   handleQuickSelect(subroleHeroMapping.HitscanDamage)
                 }
-                className="h-8 text-xs"
+                className="h-8 gap-2 text-xs"
               >
+                <Target className="h-4 w-4" />
                 {t("hitscanDPS")}
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => handleQuickSelect(subroleHeroMapping.FlexDamage)}
-                className="h-8 text-xs"
+                className="h-8 gap-2 text-xs"
               >
+                <BowArrow className="h-4 w-4" />
                 {t("flexDPS")}
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => handleQuickSelect(subroleHeroMapping.GroundTank)}
-                className="h-8 text-xs"
+                className="h-8 gap-2 text-xs"
               >
+                <Hammer className="h-4 w-4" />
                 {t("groundTanks")}
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => handleQuickSelect(subroleHeroMapping.DiveTank)}
-                className="h-8 text-xs"
+                className="h-8 gap-2 text-xs"
               >
+                <PlaneTakeoff className="h-4 w-4" />
                 {t("diveTanks")}
               </Button>
               <Button
@@ -205,8 +226,9 @@ export function HeroFilter({
                 onClick={() =>
                   handleQuickSelect(subroleHeroMapping.FlexSupport)
                 }
-                className="h-8 text-xs"
+                className="h-8 gap-2 text-xs"
               >
+                <Syringe className="h-4 w-4" />
                 {t("flexSupports")}
               </Button>
               <Button
@@ -217,6 +239,7 @@ export function HeroFilter({
                 }
                 className="h-8 text-xs"
               >
+                <HeartPulse className="h-4 w-4" />
                 {t("mainSupports")}
               </Button>
             </div>
