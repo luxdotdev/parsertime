@@ -1,5 +1,6 @@
 "use client";
 
+import { Link } from "@/components/ui/link";
 import {
   Tooltip,
   TooltipContent,
@@ -134,38 +135,45 @@ function HeroTile({ hero }: { hero: HeroData }) {
       <Tooltip>
         <TooltipTrigger asChild>
           <div
-            className={`group relative flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 p-3 transition-all duration-200 hover:scale-105 hover:shadow-lg ${tier.borderColor} ${tier.bgColor}`}
+            className={`group relative flex flex-col items-center gap-2 rounded-lg border-2 p-3 transition-all duration-200 hover:scale-105 hover:shadow-lg ${tier.borderColor} ${tier.bgColor}`}
           >
-            <div className="relative h-16 w-16 overflow-hidden rounded-full">
-              <Image
-                src={`/heroes/${heroName}.png`}
-                alt={hero.player_hero}
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-center text-xs font-semibold">
-                {t(heroName)}
-              </span>
-              {hero.hero_rating > 0 ? (
-                <div className="flex items-center gap-1">
-                  {tier.rankImage && (
-                    <Image
-                      src={tier.rankImage}
-                      alt={tier.name}
-                      width={16}
-                      height={16}
-                    />
-                  )}
-                  <span className={`text-xs font-bold ${tier.textColor}`}>
-                    {hero.hero_rating}
+            <Link
+              href={`/leaderboard?hero=${hero.player_hero}`}
+              target="_blank"
+            >
+              <div className="relative h-16 w-16 overflow-hidden rounded-full">
+                <Image
+                  src={`/heroes/${heroName}.png`}
+                  alt={hero.player_hero}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-center text-xs font-semibold">
+                  {t(heroName)}
+                </span>
+                {hero.hero_rating > 0 ? (
+                  <div className="flex items-center gap-1">
+                    {tier.rankImage && (
+                      <Image
+                        src={tier.rankImage}
+                        alt={tier.name}
+                        width={16}
+                        height={16}
+                      />
+                    )}
+                    <span className={`text-xs font-bold ${tier.textColor}`}>
+                      {hero.hero_rating}
+                    </span>
+                  </div>
+                ) : (
+                  <span className="text-muted-foreground text-xs">
+                    Unplaced
                   </span>
-                </div>
-              ) : (
-                <span className="text-muted-foreground text-xs">Unplaced</span>
-              )}
-            </div>
+                )}
+              </div>
+            </Link>
           </div>
         </TooltipTrigger>
         <TooltipContent side="top" className="max-w-xs">
