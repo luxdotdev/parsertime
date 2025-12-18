@@ -1,17 +1,16 @@
 import { AddMemberCard } from "@/components/team/add-member-card";
 import { DangerZone } from "@/components/team/danger-zone";
+import { TeamMemberCard } from "@/components/team/team-member-card";
 import { TeamSettingsForm } from "@/components/team/team-settings-form";
 import { UserCardButtons } from "@/components/team/user-card-buttons";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
-import { $Enums, type User } from "@prisma/client";
+import { $Enums } from "@prisma/client";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import Image from "next/image";
 
 export async function generateMetadata(
   props: PagePropsWithLocale<"/team/[teamId]">
@@ -59,7 +58,26 @@ export default async function Team(
 
   const [teamData, teamMembersData, teamManagers] = await Promise.all([
     prisma.team.findFirst({ where: { id: teamId } }),
-    prisma.team.findFirst({ where: { id: teamId }, select: { users: true } }),
+    prisma.team.findFirst({
+      where: { id: teamId },
+      select: {
+        users: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+            bannerImage: true,
+            billingPlan: true,
+            appliedTitles: {
+              select: {
+                title: true,
+              },
+            },
+          },
+        },
+      },
+    }),
     prisma.teamManager.findMany({ where: { teamId } }),
   ]);
 
@@ -67,7 +85,7 @@ export default async function Team(
 
   const user = await getUser(session?.user?.email);
 
-  function userIsManager(user: User) {
+  function userIsManager(user: { id: string }) {
     return teamManagers.some((manager) => manager.userId === user.id);
   }
 
@@ -101,43 +119,18 @@ export default async function Team(
             <div className="-m-2 flex flex-wrap">
               {teamMembers?.users.map((user) => (
                 <div key={user.id} className="w-full p-2 md:w-1/2 xl:w-1/3">
-                  <Card className="relative min-h-[144px] max-w-md">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1 pr-4">
-                        <CardHeader>
-                          <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-                            {user.name} {userIsManager(user) && t("manager")}{" "}
-                            {user.id === teamData?.ownerId && t("owner")}{" "}
-                            {user.name === session?.user?.name && t("you")}
-                          </h4>
-                        </CardHeader>
-                        <CardContent>
-                          <p>{user.email}</p>
-                        </CardContent>
-                      </div>
-                      <div className="flex-shrink-0 pt-0 pr-6">
-                        <Image
-                          src={
-                            user.image ??
-                            `https://avatar.vercel.sh/${user.email}.png`
-                          }
-                          alt={
-                            user.name
-                              ? t("altText.userProfile", { user: user.name })
-                              : t("altText.noAvatar")
-                          }
-                          width={80}
-                          height={80}
-                          className="rounded-full"
-                        />
-                      </div>
-                    </div>
+                  <TeamMemberCard
+                    user={user}
+                    isManager={userIsManager(user)}
+                    isOwner={user.id === teamData?.ownerId}
+                    isCurrentUser={user.email === session?.user?.email}
+                  >
                     {hasPerms &&
                       user.email !== session?.user?.email &&
                       user.id !== teamData?.ownerId && (
                         <UserCardButtons user={user} managers={teamManagers} />
                       )}
-                  </Card>
+                  </TeamMemberCard>
                 </div>
               ))}
               {hasPerms && <AddMemberCard />}
