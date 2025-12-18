@@ -569,12 +569,12 @@ export function getHeroRatingBorderColor(
   return "border-violet-500";
 }
 
-export async function getTitleTranslation(title: $Enums.Title) {
+export async function getTitleTranslation(title: $Enums.Title | null) {
   const t = await getTranslations("titles");
-  return t(title);
+  return title ? t(title) : null;
 }
 
-export function useTitleTranslation(title: $Enums.Title) {
+export function useTitleTranslation(title: $Enums.Title | null) {
   const t = useTranslations("titles");
-  return t(title);
+  return title ? t(title) : null;
 }
