@@ -1,0 +1,281 @@
+"use client";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn, toHero, useHeroNames } from "@/lib/utils";
+import {
+  type HeroName,
+  roleHeroMapping,
+  subroleHeroMapping,
+} from "@/types/heroes";
+import { ChevronsUpDownIcon, SearchIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useMemo, useState } from "react";
+
+type HeroFilterProps = {
+  selectedHeroes: HeroName[];
+  onSelectionChange: (heroes: HeroName[]) => void;
+};
+
+const allHeroes: HeroName[] = [
+  ...roleHeroMapping.Tank,
+  ...roleHeroMapping.Damage,
+  ...roleHeroMapping.Support,
+];
+
+export function HeroFilter({
+  selectedHeroes,
+  onSelectionChange,
+}: HeroFilterProps) {
+  const t = useTranslations("statsPage.playerStats.heroFilter");
+  const heroNames = useHeroNames();
+  const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const isAllSelected = selectedHeroes.length === 0;
+
+  function handleQuickSelect(heroes: HeroName[]) {
+    onSelectionChange(heroes);
+  }
+
+  function handleReset() {
+    onSelectionChange([]);
+  }
+
+  function toggleHero(hero: HeroName) {
+    if (selectedHeroes.includes(hero)) {
+      onSelectionChange(selectedHeroes.filter((h) => h !== hero));
+    } else {
+      onSelectionChange([...selectedHeroes, hero]);
+    }
+  }
+
+  const filteredHeroes = useMemo(() => {
+    if (!searchQuery) return allHeroes;
+
+    const query = searchQuery.toLowerCase();
+    return allHeroes.filter((hero) => {
+      const localizedName = heroNames.get(toHero(hero)) ?? hero;
+      return localizedName.toLowerCase().includes(query);
+    });
+  }, [searchQuery, heroNames]);
+
+  const groupedHeroes = useMemo(() => {
+    const groups: Record<string, HeroName[]> = {
+      Tank: [],
+      Damage: [],
+      Support: [],
+    };
+
+    filteredHeroes.forEach((hero) => {
+      if (roleHeroMapping.Tank.includes(hero)) {
+        groups.Tank.push(hero);
+      } else if (roleHeroMapping.Damage.includes(hero)) {
+        groups.Damage.push(hero);
+      } else if (roleHeroMapping.Support.includes(hero)) {
+        groups.Support.push(hero);
+      }
+    });
+
+    return groups;
+  }, [filteredHeroes]);
+
+  function renderTriggerContent() {
+    if (selectedHeroes.length === 0) {
+      return <span>{t("allHeroes")}</span>;
+    }
+
+    if (selectedHeroes.length <= 3) {
+      return (
+        <div className="flex flex-wrap gap-1">
+          {selectedHeroes.map((hero) => (
+            <Badge key={hero} variant="outline" className="text-xs">
+              {heroNames.get(toHero(hero)) ?? hero}
+            </Badge>
+          ))}
+        </div>
+      );
+    }
+
+    return <span>{t("heroesSelected", { count: selectedHeroes.length })}</span>;
+  }
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="h-auto min-h-9 w-[280px] justify-between px-3 py-1.5"
+        >
+          <div className="flex-1 overflow-hidden text-left">
+            {renderTriggerContent()}
+          </div>
+          <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[600px] p-0" align="start">
+        <div className="flex flex-col gap-3 p-4">
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold">{t("quickSelect")}</Label>
+            <div className="grid grid-cols-4 gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleReset}
+                className={cn(
+                  "h-8 text-xs",
+                  isAllSelected && "border-primary bg-primary/10"
+                )}
+              >
+                {t("reset")}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleQuickSelect(roleHeroMapping.Tank)}
+                className="h-8 text-xs"
+              >
+                {t("allTanks")}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleQuickSelect(roleHeroMapping.Damage)}
+                className="h-8 text-xs"
+              >
+                {t("allDamage")}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleQuickSelect(roleHeroMapping.Support)}
+                className="h-8 text-xs"
+              >
+                {t("allSupport")}
+              </Button>
+            </div>
+            <div className="grid grid-cols-3 gap-2 pt-1">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  handleQuickSelect(subroleHeroMapping.HitscanDamage)
+                }
+                className="h-8 text-xs"
+              >
+                {t("hitscanDPS")}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleQuickSelect(subroleHeroMapping.FlexDamage)}
+                className="h-8 text-xs"
+              >
+                {t("flexDPS")}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleQuickSelect(subroleHeroMapping.GroundTank)}
+                className="h-8 text-xs"
+              >
+                {t("groundTanks")}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleQuickSelect(subroleHeroMapping.DiveTank)}
+                className="h-8 text-xs"
+              >
+                {t("diveTanks")}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  handleQuickSelect(subroleHeroMapping.FlexSupport)
+                }
+                className="h-8 text-xs"
+              >
+                {t("flexSupports")}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  handleQuickSelect(subroleHeroMapping.MainSupport)
+                }
+                className="h-8 text-xs"
+              >
+                {t("mainSupports")}
+              </Button>
+            </div>
+          </div>
+
+          <div className="relative">
+            <SearchIcon className="text-muted-foreground absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2" />
+            <Input
+              placeholder={t("searchHeroes")}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+
+          <div className="max-h-[400px] space-y-3 overflow-y-auto">
+            {Object.entries(groupedHeroes).map(([role, heroes]) => {
+              if (heroes.length === 0) return null;
+
+              return (
+                <div key={role} className="space-y-2">
+                  <Label className="text-muted-foreground text-xs font-semibold">
+                    {t(role.toLowerCase() as "tank" | "damage" | "support")}
+                  </Label>
+                  <div className="grid grid-cols-1 gap-1.5 md:grid-cols-2 lg:grid-cols-4">
+                    {heroes.map((hero) => {
+                      const isChecked = selectedHeroes.includes(hero);
+                      return (
+                        <div
+                          key={hero}
+                          className="hover:bg-accent flex cursor-pointer items-center space-x-2 rounded-sm p-2"
+                          onClick={() => toggleHero(hero)}
+                        >
+                          <Checkbox
+                            checked={isChecked}
+                            onCheckedChange={() => toggleHero(hero)}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          <Label
+                            htmlFor={hero}
+                            className="flex-1 cursor-pointer text-sm font-normal"
+                          >
+                            {heroNames.get(toHero(hero)) ?? hero}
+                          </Label>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+            {filteredHeroes.length === 0 && (
+              <div className="text-muted-foreground py-6 text-center text-sm">
+                {t("noHeroesFound")}
+              </div>
+            )}
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
