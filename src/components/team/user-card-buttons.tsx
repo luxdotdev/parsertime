@@ -12,7 +12,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { CardFooter } from "@/components/ui/card";
 import { ClientOnly } from "@/lib/client-only";
-import type { User } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
@@ -20,7 +19,10 @@ import { startTransition, useState } from "react";
 import { toast } from "sonner";
 
 type Props = {
-  user: User;
+  user: {
+    id: string;
+    name: string | null;
+  };
   managers: {
     id: number;
     teamId: number;
