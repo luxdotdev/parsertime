@@ -46,9 +46,14 @@ export function UsageCard({
     },
     {
       name: t("teamMemberCount"),
-      capacity: (teamMemberCount / TEAM_MEMBER_LIMIT[billingPlan]) * 100,
+      capacity: (
+        (teamMemberCount /
+          (TEAM_MEMBER_LIMIT[billingPlan] * TEAM_CREATION_LIMIT[billingPlan])) *
+        100
+      ).toFixed(0),
       current: teamMemberCount,
-      allowed: TEAM_MEMBER_LIMIT[billingPlan],
+      allowed:
+        TEAM_MEMBER_LIMIT[billingPlan] * TEAM_CREATION_LIMIT[billingPlan],
       fill: "var(--chart-3)",
     },
     {
