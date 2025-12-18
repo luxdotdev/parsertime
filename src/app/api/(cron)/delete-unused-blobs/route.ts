@@ -8,11 +8,13 @@ const VALID_IMAGE_URL_HOSTS = {
 
 export async function DELETE() {
   const usersWithImages = await prisma.user.findMany({
-    where: { image: { not: null } },
-    select: { image: true },
+    where: { OR: [{ image: { not: null } }, { bannerImage: { not: null } }] },
+    select: { image: true, bannerImage: true },
   });
 
-  const userImages = usersWithImages.map((user) => user.image).filter(Boolean);
+  const userImages = usersWithImages.flatMap((user) =>
+    [user.image, user.bannerImage].filter(Boolean)
+  );
   const userBlobs = userImages.filter((url) =>
     url.includes(VALID_IMAGE_URL_HOSTS.vercel_blob)
   );
