@@ -16,6 +16,7 @@ import {
   roleHeroMapping,
   subroleHeroMapping,
 } from "@/types/heroes";
+import Fuse from "fuse.js";
 import {
   BowArrow,
   ChevronsUpDownIcon,
@@ -44,6 +45,23 @@ const allHeroes: HeroName[] = [
   ...roleHeroMapping.Support,
 ];
 
+function normalizeForSearch(input: string): string {
+  return (
+    input
+      .toLowerCase()
+      // remove punctuation/symbols (keeps letters/numbers/spaces)
+      .replace(/[^\p{L}\p{N}\s]/gu, "")
+      // collapse whitespace
+      .replace(/\s+/g, " ")
+      .trim()
+  );
+}
+
+type FuseHeroItem = {
+  hero: HeroName;
+  searchKey: string;
+};
+
 export function HeroFilter({
   selectedHeroes,
   onSelectionChange,
@@ -52,6 +70,22 @@ export function HeroFilter({
   const heroNames = useHeroNames();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const fuseItems = useMemo<FuseHeroItem[]>(() => {
+    return allHeroes.map((hero) => ({
+      hero,
+      searchKey: normalizeForSearch(hero),
+    }));
+  }, []);
+
+  const fuse = useMemo(() => {
+    return new Fuse<FuseHeroItem>(fuseItems, {
+      includeScore: true,
+      ignoreDiacritics: true,
+      threshold: 0.2,
+      keys: ["searchKey"],
+    });
+  }, [fuseItems]);
 
   const isAllSelected = selectedHeroes.length === 0;
 
@@ -71,15 +105,12 @@ export function HeroFilter({
     }
   }
 
-  const filteredHeroes = useMemo(() => {
+  const filteredHeroes = useMemo<HeroName[]>(() => {
     if (!searchQuery) return allHeroes;
 
-    const query = searchQuery.toLowerCase();
-    return allHeroes.filter((hero) => {
-      const localizedName = heroNames.get(toHero(hero)) ?? hero;
-      return localizedName.toLowerCase().includes(query);
-    });
-  }, [searchQuery, heroNames]);
+    const query = normalizeForSearch(searchQuery);
+    return fuse.search(query).map((r) => r.item.hero);
+  }, [searchQuery, fuse]);
 
   const groupedHeroes = useMemo(() => {
     const groups: Record<string, HeroName[]> = {
