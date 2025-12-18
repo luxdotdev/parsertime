@@ -1,6 +1,7 @@
 import { AddMemberCard } from "@/components/team/add-member-card";
 import { DangerZone } from "@/components/team/danger-zone";
 import { TeamMemberCard } from "@/components/team/team-member-card";
+import { TeamMemberUsage } from "@/components/team/team-member-usage";
 import { TeamSettingsForm } from "@/components/team/team-settings-form";
 import { UserCardButtons } from "@/components/team/user-card-buttons";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -102,6 +103,10 @@ export default async function Team(
     user?.role === $Enums.UserRole.MANAGER ||
     user?.role === $Enums.UserRole.ADMIN;
 
+  const teamOwner = await prisma.user.findFirst({
+    where: { id: teamData?.ownerId },
+  });
+
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -149,6 +154,10 @@ export default async function Team(
                 </div>
               ))}
               {hasPerms && <AddMemberCard />}
+              <TeamMemberUsage
+                teamMemberCount={teamMembers?.users.length ?? 0}
+                billingPlan={teamOwner?.billingPlan ?? $Enums.BillingPlan.FREE}
+              />
             </div>
           )}
         </TabsContent>
