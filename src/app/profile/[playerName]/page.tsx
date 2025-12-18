@@ -6,7 +6,7 @@ import { PlayStyleIndicator } from "@/components/profile/play-style-indicator";
 import { ProfileHeader } from "@/components/profile/profile-header";
 import { RecentActivityCalendar } from "@/components/profile/recent-activity-calendar";
 import { StatFluctuationCards } from "@/components/profile/stat-fluctuation-cards";
-import { Statistics } from "@/components/stats/player/statistics";
+import { RangePicker } from "@/components/stats/player/range-picker";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   getAllDeathsForPlayer,
@@ -15,6 +15,7 @@ import {
   getAllStatsForPlayer,
 } from "@/data/scrim-dto";
 import { getCompositeSRLeaderboard } from "@/lib/hero-rating";
+import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import {
   cn,
@@ -54,6 +55,18 @@ export default async function ProfilePage(
       ],
     },
   });
+
+  const [timeframe1, timeframe2, timeframe3] = await Promise.all([
+    new Permission("stats-timeframe-1").check(),
+    new Permission("stats-timeframe-2").check(),
+    new Permission("stats-timeframe-3").check(),
+  ]);
+
+  const permissions = {
+    "stats-timeframe-1": timeframe1,
+    "stats-timeframe-2": timeframe2,
+    "stats-timeframe-3": timeframe3,
+  };
 
   let appliedTitle = null;
   if (user) {
@@ -526,12 +539,19 @@ export default async function ProfilePage(
           </div>
         </TabsContent>
         <TabsContent value="statistics" className="space-y-4">
-          <Statistics
-            timeframe="all-time"
-            date={undefined}
-            scrims={scrims}
+          <RangePicker
+            permissions={permissions}
+            data={{
+              "one-week": scrims["one-week"],
+              "two-weeks": scrims["two-weeks"],
+              "one-month": scrims["one-month"],
+              "three-months": scrims["three-months"],
+              "six-months": scrims["six-months"],
+              "one-year": scrims["one-year"],
+              "all-time": scrims["all-time"],
+              custom: [],
+            }}
             stats={stats}
-            hero="all"
             kills={kills}
             mapWinrates={mapWinrates}
             deaths={deaths}
