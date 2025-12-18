@@ -1,5 +1,6 @@
 "use client";
 
+import { HeroFilter } from "@/components/stats/player/hero-filter";
 import { Statistics } from "@/components/stats/player/statistics";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -19,8 +20,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Winrate } from "@/data/scrim-dto";
-import { cn, toHero, useHeroNames } from "@/lib/utils";
-import { type HeroName, roleHeroMapping } from "@/types/heroes";
+import { cn } from "@/lib/utils";
+import type { HeroName } from "@/types/heroes";
 import type { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { SelectGroup } from "@radix-ui/react-select";
 import { addMonths, addWeeks, addYears, format } from "date-fns";
@@ -55,7 +56,6 @@ export function RangePicker({
   deaths: Kill[];
 }) {
   const t = useTranslations("statsPage.playerStats.rangePicker");
-  const heroNames = useHeroNames();
 
   const TODAY = new Date();
   const LAST_WEEK = addWeeks(TODAY, -1);
@@ -65,7 +65,7 @@ export function RangePicker({
     from: LAST_WEEK,
     to: TODAY,
   });
-  const [hero, setHero] = useState<HeroName | "all">("all");
+  const [selectedHeroes, setSelectedHeroes] = useState<HeroName[]>([]);
 
   function onTimeframeChange(val: Timeframe) {
     setTimeframe(val);
@@ -197,54 +197,17 @@ export function RangePicker({
         )}
       </div>
 
-      <Select
-        onValueChange={(val: HeroName) => setHero(val)}
-        defaultValue="all"
-      >
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder={t("selectHero")} />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>{t("selectHero")}</SelectLabel>
-            <SelectItem value="all">{t("allHeroes")}</SelectItem>
-          </SelectGroup>
-          <SelectSeparator />
-          <SelectGroup>
-            <SelectLabel>{t("tank")}</SelectLabel>
-            {roleHeroMapping["Tank"].map((hero) => (
-              <SelectItem key={hero} value={hero}>
-                {heroNames.get(toHero(hero)) ?? hero}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-          <SelectSeparator />
-          <SelectGroup>
-            <SelectLabel>{t("damage")}</SelectLabel>
-            {roleHeroMapping["Damage"].map((hero) => (
-              <SelectItem key={hero} value={hero}>
-                {heroNames.get(toHero(hero)) ?? hero}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-          <SelectSeparator />
-          <SelectGroup>
-            <SelectLabel>{t("support")}</SelectLabel>
-            {roleHeroMapping["Support"].map((hero) => (
-              <SelectItem key={hero} value={hero}>
-                {heroNames.get(toHero(hero)) ?? hero}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+      <HeroFilter
+        selectedHeroes={selectedHeroes}
+        onSelectionChange={setSelectedHeroes}
+      />
 
       <Statistics
         timeframe={timeframe}
         date={date}
         scrims={data}
         stats={stats}
-        hero={hero}
+        heroes={selectedHeroes}
         kills={kills}
         mapWinrates={mapWinrates}
         deaths={deaths}
