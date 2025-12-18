@@ -34,67 +34,59 @@ export function TeamMemberUsage({
   ];
 
   return (
-    <div className="flex w-full items-center justify-center p-10">
-      <div className="w-full">
-        <h2 className="text-foreground text-xl font-medium">{t("title")}</h2>
-        <p className="text-muted-foreground mt-1 text-sm leading-6">
-          {t("description")}
-        </p>
-        <dl className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {data.map((item) => (
-            <Card key={item.name} className="p-4">
-              <CardContent className="flex items-center space-x-4 p-0">
-                <div className="relative flex items-center justify-center">
-                  <ChartContainer
-                    config={chartConfig}
-                    className="h-[80px] w-[80px]"
-                  >
-                    <RadialBarChart
-                      data={[item]}
-                      innerRadius={30}
-                      outerRadius={60}
-                      barSize={6}
-                      startAngle={90}
-                      endAngle={-270}
-                    >
-                      <PolarAngleAxis
-                        type="number"
-                        domain={[0, 100]}
-                        angleAxisId={0}
-                        tick={false}
-                        axisLine={false}
-                      />
-                      <RadialBar
-                        dataKey="capacity"
-                        background
-                        cornerRadius={10}
-                        fill="var(--primary)"
-                        angleAxisId={0}
-                      />
-                    </RadialBarChart>
-                  </ChartContainer>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-foreground text-base font-medium">
-                      {item.capacity}%
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <dt className="text-foreground text-sm font-medium">
-                    {item.name}
-                  </dt>
-                  <dd className="text-muted-foreground text-sm">
-                    {t("usage", {
-                      current: item.current,
-                      allowed: item.allowed,
-                    })}
-                  </dd>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </dl>
-      </div>
-    </div>
+    <dl className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {data.map((item) => (
+        <Card key={item.name} className="p-4">
+          <CardContent className="flex items-center space-x-4 p-0">
+            <div className="relative flex items-center justify-center">
+              <ChartContainer
+                config={chartConfig}
+                className="h-[80px] w-[80px]"
+              >
+                <RadialBarChart
+                  data={[item]}
+                  innerRadius={30}
+                  outerRadius={60}
+                  barSize={6}
+                  startAngle={90}
+                  endAngle={-270}
+                >
+                  <PolarAngleAxis
+                    type="number"
+                    domain={[0, 100]}
+                    angleAxisId={0}
+                    tick={false}
+                    axisLine={false}
+                  />
+                  <RadialBar
+                    dataKey="capacity"
+                    background
+                    cornerRadius={10}
+                    fill="var(--primary)"
+                    angleAxisId={0}
+                  />
+                </RadialBarChart>
+              </ChartContainer>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-foreground text-base font-medium">
+                  {item.capacity}%
+                </span>
+              </div>
+            </div>
+            <div>
+              <dt className="text-foreground text-sm font-medium">
+                {item.name}
+              </dt>
+              <dd className="text-muted-foreground text-sm">
+                {t("usage", {
+                  current: item.current,
+                  allowed: item.allowed,
+                })}
+              </dd>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </dl>
   );
 }
