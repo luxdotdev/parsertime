@@ -92,6 +92,7 @@
     "effect": "^3.17.13",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.23.13",
+    "fuse.js": "^7.1.0",
     "geist": "^1.5.1",
     "input-otp": "^1.4.2",
     "json-edit-react": "^1.28.2",
