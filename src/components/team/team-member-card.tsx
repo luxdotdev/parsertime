@@ -3,8 +3,10 @@
 import { SupporterHeart } from "@/components/profile/supporter-heart";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
+import { Link } from "@/components/ui/link";
 import { useTitleTranslation } from "@/lib/utils";
 import type { BillingPlan, Title } from "@prisma/client";
+import type { Route } from "next";
 import Image from "next/image";
 
 type TeamMemberCardProps = {
@@ -16,6 +18,7 @@ type TeamMemberCardProps = {
     bannerImage: string | null;
     billingPlan: BillingPlan;
     appliedTitles: { title: Title }[];
+    battletag: string | null;
   };
   isManager: boolean;
   isOwner: boolean;
@@ -77,7 +80,11 @@ export function TeamMemberCard({
           {/* User Details */}
           <div className="w-full space-y-1">
             <div className="flex items-center gap-2">
-              <h4 className="text-xl font-bold tracking-tight">{user.name}</h4>
+              <h4 className="text-xl font-bold tracking-tight hover:underline">
+                <Link href={`/profile/${user.battletag ?? ""}` as Route}>
+                  {user.name}
+                </Link>
+              </h4>
               <SupporterHeart
                 billingPlan={user.billingPlan}
                 className="h-4 w-4"

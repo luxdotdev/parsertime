@@ -75,6 +75,7 @@ export default async function Team(
             image: true,
             bannerImage: true,
             billingPlan: true,
+            battletag: true,
             appliedTitles: {
               select: {
                 title: true,
