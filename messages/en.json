@@ -1200,6 +1200,27 @@
         "damage": "Damage",
         "support": "Support"
       },
+      "heroFilter": {
+        "selectHeroes": "Select Heroes",
+        "allHeroes": "All Heroes",
+        "heroesSelected": "{count} heroes selected",
+        "searchHeroes": "Search heroes...",
+        "noHeroesFound": "No heroes found",
+        "quickSelect": "Quick Select",
+        "reset": "Reset",
+        "allTanks": "All Tanks",
+        "allDamage": "All Damage",
+        "allSupport": "All Support",
+        "hitscanDPS": "Hitscan DPS",
+        "flexDPS": "Flex DPS",
+        "groundTanks": "Ground Tanks",
+        "diveTanks": "Dive Tanks",
+        "flexSupports": "Flex Supports",
+        "mainSupports": "Main Supports",
+        "tank": "Tanks",
+        "damage": "Damage",
+        "support": "Support"
+      },
       "mostPlayed": {
         "title": "Most Played Heroes",
         "rank": "Rank",
