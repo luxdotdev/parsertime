@@ -154,12 +154,18 @@ export default async function Team(
                 </div>
               ))}
               {hasPerms && <AddMemberCard />}
-              <TeamMemberUsage
-                teamMemberCount={teamMembers?.users.length ?? 0}
-                billingPlan={teamOwner?.billingPlan ?? $Enums.BillingPlan.FREE}
-              />
             </div>
           )}
+
+          <div className="space-y-4 pt-12">
+            <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+              {t("teamMemberUsage.title")}
+            </h3>
+            <TeamMemberUsage
+              teamMemberCount={teamMembers?.users.length ?? 0}
+              billingPlan={teamOwner?.billingPlan ?? $Enums.BillingPlan.FREE}
+            />
+          </div>
         </TabsContent>
         <TabsContent value="settings" className="space-y-4">
           <TeamSettingsForm team={teamData!} />
