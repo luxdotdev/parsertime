@@ -7,8 +7,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import type { Scrim } from "@prisma/client";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 type RecentActivityCalendarProps = {
   scrims: Scrim[];
@@ -20,25 +21,46 @@ type DayActivity = {
   level: 0 | 1 | 2 | 3 | 4;
 };
 
-function generateCalendarData(scrims: Scrim[]): DayActivity[] {
+function generateCalendarData(
+  scrims: Scrim[],
+  selectedYear: number
+): DayActivity[] {
   const today = new Date();
-  const weeksToShow = 52;
-  const daysToShow = weeksToShow * 7;
-  const startDate = new Date(today);
-  startDate.setDate(today.getDate() - daysToShow);
+  const currentYear = today.getFullYear();
+  const isCurrentYear = selectedYear === currentYear;
+
+  let startDate: Date;
+  let endDate: Date;
+
+  if (isCurrentYear) {
+    const weeksToShow = 52;
+    const daysToShow = weeksToShow * 7;
+    startDate = new Date(today);
+    startDate.setDate(today.getDate() - daysToShow);
+    endDate = today;
+  } else {
+    startDate = new Date(selectedYear, 0, 1);
+    endDate = new Date(selectedYear, 11, 31);
+  }
 
   const activityMap = new Map<string, number>();
 
   scrims.forEach((scrim) => {
-    const dateKey = new Date(scrim.date).toISOString().split("T")[0];
-    activityMap.set(dateKey, (activityMap.get(dateKey) ?? 0) + 1);
+    const scrimDate = new Date(scrim.date);
+    if (scrimDate.getFullYear() === selectedYear) {
+      const dateKey = scrimDate.toISOString().split("T")[0];
+      activityMap.set(dateKey, (activityMap.get(dateKey) ?? 0) + 1);
+    }
   });
 
   const maxActivity = Math.max(...Array.from(activityMap.values()), 1);
 
   const calendarData: DayActivity[] = [];
+  const daysDiff = Math.ceil(
+    (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+  );
 
-  for (let i = 0; i < daysToShow; i++) {
+  for (let i = 0; i <= daysDiff; i++) {
     const date = new Date(startDate);
     date.setDate(startDate.getDate() + i);
     const dateKey = date.toISOString().split("T")[0];
@@ -63,13 +85,23 @@ function generateCalendarData(scrims: Scrim[]): DayActivity[] {
   return calendarData;
 }
 
-function calculateStreak(scrims: Scrim[]): {
+function calculateStreak(
+  scrims: Scrim[],
+  selectedYear: number
+): {
   currentStreak: number;
   longestStreak: number;
 } {
-  if (scrims.length === 0) return { currentStreak: 0, longestStreak: 0 };
+  const currentYear = new Date().getFullYear();
+  const isCurrentYear = selectedYear === currentYear;
 
-  const sortedDates = scrims
+  const yearScrims = scrims.filter(
+    (s) => new Date(s.date).getFullYear() === selectedYear
+  );
+
+  if (yearScrims.length === 0) return { currentStreak: 0, longestStreak: 0 };
+
+  const sortedDates = yearScrims
     .map((s) => new Date(s.date).toISOString().split("T")[0])
     .sort()
     .filter((date, index, self) => self.indexOf(date) === index);
@@ -78,26 +110,28 @@ function calculateStreak(scrims: Scrim[]): {
   let longestStreak = 0;
   let tempStreak = 1;
 
-  const today = new Date().toISOString().split("T")[0];
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = yesterday.toISOString().split("T")[0];
+  if (isCurrentYear) {
+    const today = new Date().toISOString().split("T")[0];
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split("T")[0];
 
-  const lastPlayDate = sortedDates[sortedDates.length - 1];
-  if (lastPlayDate === today || lastPlayDate === yesterdayStr) {
-    currentStreak = 1;
+    const lastPlayDate = sortedDates[sortedDates.length - 1];
+    if (lastPlayDate === today || lastPlayDate === yesterdayStr) {
+      currentStreak = 1;
 
-    for (let i = sortedDates.length - 2; i >= 0; i--) {
-      const current = new Date(sortedDates[i]);
-      const next = new Date(sortedDates[i + 1]);
-      const diffDays = Math.floor(
-        (next.getTime() - current.getTime()) / (1000 * 60 * 60 * 24)
-      );
+      for (let i = sortedDates.length - 2; i >= 0; i--) {
+        const current = new Date(sortedDates[i]);
+        const next = new Date(sortedDates[i + 1]);
+        const diffDays = Math.floor(
+          (next.getTime() - current.getTime()) / (1000 * 60 * 60 * 24)
+        );
 
-      if (diffDays === 1) {
-        currentStreak++;
-      } else {
-        break;
+        if (diffDays === 1) {
+          currentStreak++;
+        } else {
+          break;
+        }
       }
     }
   }
@@ -163,10 +197,24 @@ function DayCell({ day }: { day: DayActivity }) {
 export function RecentActivityCalendar({
   scrims,
 }: RecentActivityCalendarProps) {
-  const calendarData = useMemo(() => generateCalendarData(scrims), [scrims]);
+  const currentYear = new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+
+  const years = useMemo(() => {
+    const yearList = [];
+    for (let year = 2023; year <= currentYear; year++) {
+      yearList.push(year);
+    }
+    return yearList.reverse();
+  }, [currentYear]);
+
+  const calendarData = useMemo(
+    () => generateCalendarData(scrims, selectedYear),
+    [scrims, selectedYear]
+  );
   const { currentStreak, longestStreak } = useMemo(
-    () => calculateStreak(scrims),
-    [scrims]
+    () => calculateStreak(scrims, selectedYear),
+    [scrims, selectedYear]
   );
 
   const weeks: DayActivity[][] = [];
@@ -188,7 +236,10 @@ export function RecentActivityCalendar({
     }
   });
 
-  const totalScrims = scrims.length;
+  const yearScrims = scrims.filter(
+    (s) => new Date(s.date).getFullYear() === selectedYear
+  );
+  const totalScrims = yearScrims.length;
   const daysActive = calendarData.filter((day) => day.count > 0).length;
 
   return (
@@ -213,67 +264,88 @@ export function RecentActivityCalendar({
             </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <div className="relative min-w-max">
-              <div
-                className="mb-2 flex gap-1 text-xs"
-                style={{ paddingLeft: "20px" }}
-              >
-                {monthLabels.map((month) => (
-                  <div
-                    key={month.label}
-                    className="text-muted-foreground"
-                    style={{
-                      position: "absolute",
-                      left: `${month.weekIndex * 16 + 20}px`,
-                    }}
-                  >
-                    {month.label}
-                  </div>
-                ))}
-              </div>
+          <div className="flex items-start gap-4">
+            <div className="flex shrink-0 flex-col gap-1">
+              {years.map((year) => (
+                <button
+                  key={year}
+                  type="button"
+                  className={cn(
+                    "h-7 min-w-[3rem] rounded-md px-2 text-xs font-normal transition-colors",
+                    "flex items-center justify-center",
+                    selectedYear === year
+                      ? "bg-secondary text-secondary-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                  onClick={() => setSelectedYear(year)}
+                >
+                  {year}
+                </button>
+              ))}
+            </div>
 
-              <div className="flex gap-1" style={{ marginTop: "20px" }}>
-                <div className="text-muted-foreground flex flex-col gap-1 pr-2 text-xs">
-                  <div className="h-3" />
-                  <div>Mon</div>
-                  <div className="h-3" />
-                  <div>Wed</div>
-                  <div className="h-3" />
-                  <div>Fri</div>
-                  <div className="h-3" />
+            <div className="min-w-0 flex-1 overflow-x-auto">
+              <div className="relative min-w-max">
+                <div
+                  className="mb-2 flex gap-1 text-xs"
+                  style={{ paddingLeft: "20px" }}
+                >
+                  {monthLabels.map((month) => (
+                    <div
+                      key={month.label}
+                      className="text-muted-foreground"
+                      style={{
+                        position: "absolute",
+                        left: `${month.weekIndex * 16 + 20}px`,
+                      }}
+                    >
+                      {month.label}
+                    </div>
+                  ))}
                 </div>
 
-                {weeks.map((week) => (
-                  <div
-                    key={week.map((day) => day.date.toISOString()).join(",")}
-                    className="flex flex-col gap-1"
-                  >
-                    {week.map((day) => (
-                      <DayCell key={day.date.toISOString()} day={day} />
-                    ))}
+                <div className="flex gap-1" style={{ marginTop: "20px" }}>
+                  <div className="text-muted-foreground flex flex-col gap-1 pr-2 text-xs">
+                    <div className="h-3" />
+                    <div>Mon</div>
+                    <div className="h-3" />
+                    <div>Wed</div>
+                    <div className="h-3" />
+                    <div>Fri</div>
+                    <div className="h-3" />
                   </div>
-                ))}
-              </div>
 
-              <div className="mt-4 flex items-center justify-end gap-2 text-xs">
-                <span className="text-muted-foreground">Less</span>
-                <div className="bg-muted h-3 w-3 rounded-sm" />
-                <div className="h-3 w-3 rounded-sm bg-green-200 dark:bg-green-900" />
-                <div className="h-3 w-3 rounded-sm bg-green-300 dark:bg-green-700" />
-                <div className="h-3 w-3 rounded-sm bg-green-400 dark:bg-green-600" />
-                <div className="h-3 w-3 rounded-sm bg-green-500 dark:bg-green-500" />
-                <span className="text-muted-foreground">More</span>
+                  {weeks.map((week) => (
+                    <div
+                      key={week.map((day) => day.date.toISOString()).join(",")}
+                      className="flex flex-col gap-1"
+                    >
+                      {week.map((day) => (
+                        <DayCell key={day.date.toISOString()} day={day} />
+                      ))}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-4 flex items-center justify-end gap-2 text-xs">
+                  <span className="text-muted-foreground">Less</span>
+                  <div className="bg-muted h-3 w-3 rounded-sm" />
+                  <div className="h-3 w-3 rounded-sm bg-green-200 dark:bg-green-900" />
+                  <div className="h-3 w-3 rounded-sm bg-green-300 dark:bg-green-700" />
+                  <div className="h-3 w-3 rounded-sm bg-green-400 dark:bg-green-600" />
+                  <div className="h-3 w-3 rounded-sm bg-green-500 dark:bg-green-500" />
+                  <span className="text-muted-foreground">More</span>
+                </div>
+
+                {daysActive > 0 && (
+                  <div className="text-muted-foreground mt-4 text-center text-sm">
+                    Active on {daysActive} days in the last{" "}
+                    {Math.ceil(calendarData.length / 7)} weeks
+                  </div>
+                )}
               </div>
             </div>
           </div>
-
-          {daysActive > 0 && (
-            <div className="text-muted-foreground text-center text-sm">
-              Active on {daysActive} days in the last {calendarData.length / 7}{" "}
-              weeks
-            </div>
-          )}
         </div>
       </CardContent>
     </Card>
