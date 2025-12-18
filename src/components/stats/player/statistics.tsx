@@ -61,7 +61,7 @@ export function Statistics({
   date,
   scrims,
   stats,
-  hero,
+  heroes,
   kills,
   mapWinrates,
   deaths,
@@ -70,7 +70,7 @@ export function Statistics({
   date: DateRange | undefined;
   scrims: Record<Timeframe, Scrim[]>;
   stats: PlayerStat[];
-  hero: HeroName | "all";
+  heroes: HeroName[];
   kills: Kill[];
   mapWinrates: Winrate;
   deaths: Kill[];
@@ -102,165 +102,35 @@ export function Statistics({
   }, [timeframe, date, scrims]);
 
   useEffect(() => {
-    setFilteredStats(
-      stats.filter((stat) => {
-        if (timeframe === "one-week") {
-          return scrims["one-week"].some((scrim) => scrim.id === stat.scrimId);
-        }
+    const currentScrims =
+      timeframe === "custom" ? customScrims : scrims[timeframe];
 
-        if (timeframe === "two-weeks") {
-          return scrims["two-weeks"].some((scrim) => scrim.id === stat.scrimId);
-        }
-
-        if (timeframe === "one-month") {
-          return scrims["one-month"].some((scrim) => scrim.id === stat.scrimId);
-        }
-
-        if (timeframe === "three-months") {
-          return scrims["three-months"].some(
-            (scrim) => scrim.id === stat.scrimId
-          );
-        }
-
-        if (timeframe === "six-months") {
-          return scrims["six-months"].some(
-            (scrim) => scrim.id === stat.scrimId
-          );
-        }
-
-        if (timeframe === "one-year") {
-          return scrims["one-year"].some((scrim) => scrim.id === stat.scrimId);
-        }
-
-        if (timeframe === "all-time") {
-          return scrims["all-time"].some((scrim) => scrim.id === stat.scrimId);
-        }
-
-        if (timeframe === "custom") {
-          return customScrims.some((scrim) => scrim.id === stat.scrimId);
-        }
-
-        return false;
-      })
+    let timeFilteredStats = stats.filter((stat) =>
+      currentScrims.some((scrim) => scrim.id === stat.scrimId)
     );
-  }, [timeframe, scrims, stats, customScrims]);
+    let timeFilteredKills = kills.filter((kill) =>
+      currentScrims.some((scrim) => scrim.id === kill.scrimId)
+    );
+    let timeFilteredDeaths = deaths.filter((death) =>
+      currentScrims.some((scrim) => scrim.id === death.scrimId)
+    );
 
-  useEffect(() => {
-    if (hero !== "all") {
-      setFilteredStats(stats.filter((stat) => stat.player_hero === hero));
-      setFilteredKills(kills.filter((kill) => kill.attacker_hero === hero));
-      setFilteredDeaths(deaths.filter((death) => death.victim_hero === hero));
-    }
-    if (hero === "all") {
-      setFilteredStats(
-        stats.filter((stat) =>
-          scrims[timeframe].some((scrim) => scrim.id === stat.scrimId)
-        )
+    if (heroes.length > 0) {
+      timeFilteredStats = timeFilteredStats.filter((stat) =>
+        heroes.includes(stat.player_hero as HeroName)
       );
-      setFilteredKills(
-        kills.filter((kill) =>
-          scrims[timeframe].some((scrim) => scrim.id === kill.scrimId)
-        )
+      timeFilteredKills = timeFilteredKills.filter((kill) =>
+        heroes.includes(kill.attacker_hero as HeroName)
       );
-      setFilteredDeaths(
-        deaths.filter((death) =>
-          scrims[timeframe].some((scrim) => scrim.id === death.scrimId)
-        )
+      timeFilteredDeaths = timeFilteredDeaths.filter((death) =>
+        heroes.includes(death.victim_hero as HeroName)
       );
     }
-  }, [hero, stats, timeframe, scrims, kills, deaths]);
 
-  useEffect(() => {
-    setFilteredKills(
-      kills.filter((kill) => {
-        if (timeframe === "one-week") {
-          return scrims["one-week"].some((scrim) => scrim.id === kill.scrimId);
-        }
-
-        if (timeframe === "two-weeks") {
-          return scrims["two-weeks"].some((scrim) => scrim.id === kill.scrimId);
-        }
-
-        if (timeframe === "one-month") {
-          return scrims["one-month"].some((scrim) => scrim.id === kill.scrimId);
-        }
-
-        if (timeframe === "three-months") {
-          return scrims["three-months"].some(
-            (scrim) => scrim.id === kill.scrimId
-          );
-        }
-
-        if (timeframe === "six-months") {
-          return scrims["six-months"].some(
-            (scrim) => scrim.id === kill.scrimId
-          );
-        }
-
-        if (timeframe === "one-year") {
-          return scrims["one-year"].some((scrim) => scrim.id === kill.scrimId);
-        }
-
-        if (timeframe === "all-time") {
-          return scrims["all-time"].some((scrim) => scrim.id === kill.scrimId);
-        }
-
-        if (timeframe === "custom") {
-          return customScrims.some((scrim) => scrim.id === kill.scrimId);
-        }
-
-        return false;
-      })
-    );
-  }, [timeframe, kills, scrims, customScrims]);
-
-  useEffect(() => {
-    setFilteredDeaths(
-      deaths.filter((death) => {
-        if (timeframe === "one-week") {
-          return scrims["one-week"].some((scrim) => scrim.id === death.scrimId);
-        }
-
-        if (timeframe === "two-weeks") {
-          return scrims["two-weeks"].some(
-            (scrim) => scrim.id === death.scrimId
-          );
-        }
-
-        if (timeframe === "one-month") {
-          return scrims["one-month"].some(
-            (scrim) => scrim.id === death.scrimId
-          );
-        }
-
-        if (timeframe === "three-months") {
-          return scrims["three-months"].some(
-            (scrim) => scrim.id === death.scrimId
-          );
-        }
-
-        if (timeframe === "six-months") {
-          return scrims["six-months"].some(
-            (scrim) => scrim.id === death.scrimId
-          );
-        }
-
-        if (timeframe === "one-year") {
-          return scrims["one-year"].some((scrim) => scrim.id === death.scrimId);
-        }
-
-        if (timeframe === "all-time") {
-          return scrims["all-time"].some((scrim) => scrim.id === death.scrimId);
-        }
-
-        if (timeframe === "custom") {
-          return customScrims.some((scrim) => scrim.id === death.scrimId);
-        }
-
-        return false;
-      })
-    );
-  }, [timeframe, deaths, scrims, customScrims]);
+    setFilteredStats(timeFilteredStats);
+    setFilteredKills(timeFilteredKills);
+    setFilteredDeaths(timeFilteredDeaths);
+  }, [heroes, stats, timeframe, scrims, kills, deaths, customScrims]);
 
   useEffect(() => {
     if (timeframe === "all-time") {
