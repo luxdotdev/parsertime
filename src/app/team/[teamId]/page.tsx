@@ -4,11 +4,17 @@ import { TeamMemberCard } from "@/components/team/team-member-card";
 import { TeamSettingsForm } from "@/components/team/team-settings-form";
 import { UserCardButtons } from "@/components/team/user-card-buttons";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
+import { Lock } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
@@ -98,8 +104,16 @@ export default async function Team(
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">
-          {teamData?.name ?? t("defaultName")}
+        <h2 className="flex items-center gap-2 text-3xl font-bold tracking-tight">
+          {teamData?.name ?? t("defaultName")}{" "}
+          {teamData?.readonly && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Lock className="text-muted-foreground h-6 w-6" />
+              </TooltipTrigger>
+              <TooltipContent>{t("readonly.title")}</TooltipContent>
+            </Tooltip>
+          )}
         </h2>
       </div>
 
