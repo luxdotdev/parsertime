@@ -54,6 +54,7 @@ export function Searchbar() {
             <FieldLabel htmlFor="username">{t("placeholder")}</FieldLabel>
             <InputGroup className="max-w-xl">
               <InputGroupInput
+                id="username"
                 placeholder={t("placeholder")}
                 className="h-12 text-lg"
                 {...form.register("username")}
