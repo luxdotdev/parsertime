@@ -8,9 +8,15 @@ import {
   FieldSeparator,
   FieldSet,
 } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import { Link } from "@/components/ui/link";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowRight, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -46,11 +52,25 @@ export function Searchbar() {
         <FieldSet>
           <Field>
             <FieldLabel htmlFor="username">{t("placeholder")}</FieldLabel>
-            <Input
-              id="username"
-              placeholder={t("placeholder")}
-              className="h-12 text-lg"
-            />
+            <InputGroup className="max-w-xl">
+              <InputGroupInput
+                placeholder={t("placeholder")}
+                className="h-12 text-lg"
+                {...form.register("username")}
+              />
+              <InputGroupAddon>
+                <Search />
+              </InputGroupAddon>
+              <InputGroupAddon align="inline-end">
+                <InputGroupButton
+                  type="submit"
+                  onClick={() => form.handleSubmit(onSubmit)}
+                >
+                  Search
+                  <ArrowRight />
+                </InputGroupButton>
+              </InputGroupAddon>
+            </InputGroup>
             <FieldDescription>
               {t.rich("description", {
                 span: (chunks) => (
