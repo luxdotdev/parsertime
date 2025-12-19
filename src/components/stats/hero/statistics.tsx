@@ -414,7 +414,7 @@ export function Statistics({
             </TableHeader>
             <tbody>
               {top3FinalBlows.map(([hero, player, finalBlows, mapId], idx) => (
-                <TableRow key={`${hero}-${mapId}`}>
+                <TableRow key={`${hero}-${mapId}-${player}-${finalBlows}`}>
                   <TableCell>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
