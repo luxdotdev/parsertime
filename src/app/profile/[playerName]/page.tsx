@@ -10,6 +10,7 @@ import {
   RangePicker,
   type Timeframe,
 } from "@/components/stats/player/range-picker";
+import { Link } from "@/components/ui/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   getAllDeathsForPlayer,
@@ -367,6 +368,13 @@ export default async function ProfilePage(
                     All Time
                   </TabsTrigger>
                 </TabsList>
+                {user?.billingPlan !== $Enums.BillingPlan.PREMIUM && (
+                  <div className="text-muted-foreground text-sm">
+                    <Link href="/pricing" external>
+                      Upgrade to view more timeframes
+                    </Link>
+                  </div>
+                )}
                 <TabsContent value="all-time">
                   <StatFluctuationCards
                     calculatedStats={calculatedStats}
