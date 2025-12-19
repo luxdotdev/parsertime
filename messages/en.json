@@ -1333,6 +1333,23 @@
         "hero_damage_dealt": "Hero Damage Dealt"
       }
     },
+    "compareStats": {
+      "title": "Compare Player Statistics",
+      "enterPlayerNames": "Enter Player Names",
+      "player1": "Player 1",
+      "player2": "Player 2",
+      "player1Placeholder": "Enter first player name",
+      "player2Placeholder": "Enter second player name",
+      "compare": "Compare",
+      "reset": "Reset",
+      "loading": "Loading player statistics...",
+      "errorLoading": "Error loading player data",
+      "errorPlayer1": "Failed to load Player 1 data",
+      "errorPlayer2": "Failed to load Player 2 data",
+      "errorBoth": " and ",
+      "enterPlayersPrompt": "Enter two player names above to compare their statistics",
+      "filters": "Filters"
+    },
     "heroStats": {
       "title": "Hero Stats",
       "description": "Select a hero to view their stats. Stats are aggregated from all scrims played.",
