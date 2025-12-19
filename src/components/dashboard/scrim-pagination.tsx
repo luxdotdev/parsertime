@@ -6,7 +6,11 @@ import { ScrimCard } from "@/components/dashboard/scrim-card";
 import { ScrimCardSkeleton } from "@/components/dashboard/scrim-card-skeleton";
 import { TeamSwitcherContext } from "@/components/team-switcher-provider";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import {
   Pagination,
   PaginationContent,
@@ -25,9 +29,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { Scrim } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, Info, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { use, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
@@ -266,15 +275,36 @@ export function ScrimPagination({ isAdmin = false }: { isAdmin?: boolean }) {
           </SelectContent>
         </Select>
 
-        <Input
-          type="search"
-          placeholder={t("filter.search")}
-          className="md:w-[100px] lg:w-[260px]"
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-          }}
-        />
+        <InputGroup className="md:w-[100px] lg:w-[260px]">
+          <InputGroupInput
+            type="search"
+            placeholder={t("filter.search")}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <InputGroupAddon>
+            <Search />
+          </InputGroupAddon>
+          <InputGroupAddon align="inline-end">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info />
+              </TooltipTrigger>
+              <TooltipContent>
+                {t.rich("filter.searchDescription", {
+                  code: (chunks) => (
+                    <code className="bg-muted-foreground/10 rounded-md px-1 py-0.5 font-mono">
+                      {chunks}
+                    </code>
+                  ),
+                  strong: (chunks) => (
+                    <span className="font-semibold">{chunks}</span>
+                  ),
+                })}
+              </TooltipContent>
+            </Tooltip>
+          </InputGroupAddon>
+        </InputGroup>
       </span>
 
       <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
