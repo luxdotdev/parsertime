@@ -28,7 +28,8 @@ export async function DashboardLayout({
         <div className="border-b">
           <div className="hidden h-16 items-center px-4 md:flex">
             <TeamSwitcher session={session} />
-            <MainNav className="mx-6" />
+            <MainNav className="mx-6 hidden lg:block" />
+            <MobileNav className="block pl-2 lg:hidden" session={session} />
             <div className="ml-auto flex items-center space-x-4">
               <Search user={user} />
               <ModeToggle />

@@ -15,13 +15,21 @@ import * as React from "react";
 const mainNav: { title: string; href: Route }[] = [
   { title: "Dashboard", href: "/dashboard" },
   { title: "Stats", href: "/stats" },
+  { title: "Hero Stats", href: "/stats/hero" },
+  { title: "Compare Players", href: "/stats/compare" },
   { title: "Teams", href: "/team" },
   { title: "Settings", href: "/settings" },
   { title: "Contact", href: "/contact" },
   { title: "Docs", href: "https://docs.parsertime.app" },
 ];
 
-export function MobileNav({ session }: { session: Session | null }) {
+export function MobileNav({
+  session,
+  className,
+}: {
+  session: Session | null;
+  className?: string;
+}) {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -29,7 +37,10 @@ export function MobileNav({ session }: { session: Session | null }) {
       <SheetTrigger asChild>
         <Button
           variant="ghost"
-          className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
+          className={cn(
+            "mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0",
+            className
+          )}
         >
           <svg
             strokeWidth="1.5"
@@ -63,9 +74,9 @@ export function MobileNav({ session }: { session: Session | null }) {
           <span className="sr-only">Toggle Menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="pr-0">
+      <SheetContent side="left" className="pt-3 pr-0 pl-4">
         <TeamSwitcher session={session} />
-        <div className="p-4" />
+        <div className="p-2" />
         <MobileLink
           href="/"
           className="flex items-center"
