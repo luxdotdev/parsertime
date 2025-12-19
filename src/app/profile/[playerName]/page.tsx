@@ -6,7 +6,10 @@ import { PlayStyleIndicator } from "@/components/profile/play-style-indicator";
 import { ProfileHeader } from "@/components/profile/profile-header";
 import { RecentActivityCalendar } from "@/components/profile/recent-activity-calendar";
 import { StatFluctuationCards } from "@/components/profile/stat-fluctuation-cards";
-import { RangePicker } from "@/components/stats/player/range-picker";
+import {
+  RangePicker,
+  type Timeframe,
+} from "@/components/stats/player/range-picker";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   getAllDeathsForPlayer,
@@ -241,7 +244,7 @@ export default async function ProfilePage(
   year.setFullYear(year.getFullYear() - 1);
   const yearScrims = allScrims.filter((scrim) => scrim.date >= year);
 
-  const scrims: Record<string, Scrim[]> = {
+  const data: Record<Timeframe, Scrim[]> = {
     "one-week": oneWeekScrims,
     "two-weeks": twoWeeksScrims,
     "one-month": monthScrims,
@@ -252,13 +255,19 @@ export default async function ProfilePage(
     custom: [],
   };
 
-  const allScrimIds = allScrims.map((scrim) => scrim.id);
+  const permitted = timeframe3
+    ? "all-time"
+    : timeframe2
+      ? "six-months"
+      : "one-month";
+
+  const permittedScrimIds = data[permitted].map((scrim) => scrim.id);
 
   const [stats, kills, deaths, mapWinrates] = await Promise.all([
-    getAllStatsForPlayer(allScrimIds, name),
-    getAllKillsForPlayer(allScrimIds, name),
-    getAllDeathsForPlayer(allScrimIds, name),
-    getAllMapWinratesForPlayer(allScrimIds, name),
+    getAllStatsForPlayer(permittedScrimIds, name),
+    getAllKillsForPlayer(permittedScrimIds, name),
+    getAllDeathsForPlayer(permittedScrimIds, name),
+    getAllMapWinratesForPlayer(permittedScrimIds, name),
   ]);
 
   // Calculate max time for bar chart scaling
@@ -336,13 +345,27 @@ export default async function ProfilePage(
 
               <Tabs defaultValue="one-week">
                 <TabsList>
-                  <TabsTrigger value="one-week">One Week</TabsTrigger>
-                  <TabsTrigger value="two-weeks">Two Weeks</TabsTrigger>
-                  <TabsTrigger value="one-month">One Month</TabsTrigger>
-                  <TabsTrigger value="three-months">Three Months</TabsTrigger>
-                  <TabsTrigger value="six-months">Six Months</TabsTrigger>
-                  <TabsTrigger value="one-year">One Year</TabsTrigger>
-                  <TabsTrigger value="all-time">All Time</TabsTrigger>
+                  <TabsTrigger value="one-week" disabled={!timeframe1}>
+                    One Week
+                  </TabsTrigger>
+                  <TabsTrigger value="two-weeks" disabled={!timeframe1}>
+                    Two Weeks
+                  </TabsTrigger>
+                  <TabsTrigger value="one-month" disabled={!timeframe1}>
+                    One Month
+                  </TabsTrigger>
+                  <TabsTrigger value="three-months" disabled={!timeframe2}>
+                    Three Months
+                  </TabsTrigger>
+                  <TabsTrigger value="six-months" disabled={!timeframe2}>
+                    Six Months
+                  </TabsTrigger>
+                  <TabsTrigger value="one-year" disabled={!timeframe3}>
+                    One Year
+                  </TabsTrigger>
+                  <TabsTrigger value="all-time" disabled={!timeframe3}>
+                    All Time
+                  </TabsTrigger>
                 </TabsList>
                 <TabsContent value="all-time">
                   <StatFluctuationCards
@@ -541,16 +564,7 @@ export default async function ProfilePage(
         <TabsContent value="statistics" className="space-y-4">
           <RangePicker
             permissions={permissions}
-            data={{
-              "one-week": scrims["one-week"],
-              "two-weeks": scrims["two-weeks"],
-              "one-month": scrims["one-month"],
-              "three-months": scrims["three-months"],
-              "six-months": scrims["six-months"],
-              "one-year": scrims["one-year"],
-              "all-time": scrims["all-time"],
-              custom: [],
-            }}
+            data={data}
             stats={stats}
             kills={kills}
             mapWinrates={mapWinrates}
