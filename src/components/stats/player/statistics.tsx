@@ -65,6 +65,7 @@ export function Statistics({
   kills,
   mapWinrates,
   deaths,
+  comparisonView = false,
 }: {
   timeframe: Timeframe;
   date: DateRange | undefined;
@@ -74,6 +75,7 @@ export function Statistics({
   kills: Kill[];
   mapWinrates: Winrate;
   deaths: Kill[];
+  comparisonView?: boolean;
 }) {
   const t = useTranslations("statsPage.playerStats");
   const heroNames = useHeroNames();
@@ -223,8 +225,20 @@ export function Statistics({
   const top3MostKilledHeroesLength = top3MostKilledHeroesArray.length;
 
   return (
-    <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <Card className="col-span-1 md:col-span-2 xl:col-span-1">
+    <section
+      className={cn(
+        "grid gap-4 md:grid-cols-2 lg:grid-cols-4",
+        comparisonView &&
+          "grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4"
+      )}
+    >
+      <Card
+        className={cn(
+          "col-span-1 md:col-span-2 xl:col-span-1",
+          comparisonView &&
+            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+        )}
+      >
         <CardHeader>
           <CardTitle>{t("mostPlayed.title")}</CardTitle>
         </CardHeader>
@@ -331,7 +345,13 @@ export function Statistics({
           </p>
         </CardFooter>
       </Card>
-      <Card className="col-span-1 md:col-span-2 xl:col-span-1">
+      <Card
+        className={cn(
+          "col-span-1 md:col-span-2 xl:col-span-1",
+          comparisonView &&
+            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+        )}
+      >
         <CardHeader>
           <CardTitle>{t("bestPerformance.title")}</CardTitle>
         </CardHeader>
@@ -455,7 +475,13 @@ export function Statistics({
           </p>
         </CardFooter>
       </Card>
-      <Card className="col-span-1 md:col-span-2">
+      <Card
+        className={cn(
+          "col-span-1 md:col-span-2",
+          comparisonView &&
+            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+        )}
+      >
         <CardHeader>
           <CardTitle className="flex items-center gap-1">
             {t("avgHeroDmgDealtPer10.title")}{" "}
@@ -487,31 +513,60 @@ export function Statistics({
           better="lower"
         />
       </Card>
-      <Card className="col-span-1 md:col-span-2 xl:col-span-1">
+      <Card
+        className={cn(
+          "col-span-1 md:col-span-2 xl:col-span-1",
+          comparisonView &&
+            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+        )}
+      >
         <CardHeader>
           <CardTitle>{t("timeSpent.title")}</CardTitle>
         </CardHeader>
         <RolePieChart data={filteredStats} />
       </Card>
-      <Card className="col-span-1 md:col-span-2 xl:col-span-1">
+      <Card
+        className={cn(
+          "col-span-1 md:col-span-2 xl:col-span-1",
+          comparisonView &&
+            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+        )}
+      >
         <CardHeader>
           <CardTitle>{t("finalBlowsByMethod.title")}</CardTitle>
         </CardHeader>
         <KillMethodChart data={filteredKills} />
       </Card>
-      <Card className="col-span-full xl:col-span-3">
+      <Card
+        className={cn(
+          "col-span-full xl:col-span-3",
+          comparisonView && "col-span-full lg:col-span-2 xl:col-span-full"
+        )}
+      >
         <CardHeader>
           <CardTitle>{t("mapWinrates.title")}</CardTitle>
         </CardHeader>
         <MapWinsChart data={filteredWins} />
       </Card>
-      <Card className="col-span-1 md:col-span-2 xl:col-span-1">
+      <Card
+        className={cn(
+          "col-span-1 md:col-span-2 xl:col-span-1",
+          comparisonView &&
+            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+        )}
+      >
         <CardHeader>
           <CardTitle>{t("winrateMapType.title")}</CardTitle>
         </CardHeader>
         <WinsPerMapTypeChart data={filteredWins} />
       </Card>
-      <Card className="col-span-1 md:col-span-2 xl:col-span-1">
+      <Card
+        className={cn(
+          "col-span-1 md:col-span-2 xl:col-span-1",
+          comparisonView &&
+            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+        )}
+      >
         <CardHeader>
           <CardTitle>{t("heroesDiedToMost.title")}</CardTitle>
         </CardHeader>
@@ -618,7 +673,13 @@ export function Statistics({
           </p>
         </CardFooter>
       </Card>
-      <Card className="col-span-1 md:col-span-2 xl:col-span-1">
+      <Card
+        className={cn(
+          "col-span-1 md:col-span-2 xl:col-span-1",
+          comparisonView &&
+            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+        )}
+      >
         <CardHeader>
           <CardTitle>{t("heroesElimMost.title")}</CardTitle>
         </CardHeader>
@@ -725,7 +786,12 @@ export function Statistics({
           </p>
         </CardFooter>
       </Card>
-      <Card className="col-span-1 md:col-span-2">
+      <Card
+        className={cn(
+          "col-span-1 md:col-span-2",
+          comparisonView && "col-span-full lg:col-span-2"
+        )}
+      >
         <CardHeader>
           <Select
             value={selectedStat}
