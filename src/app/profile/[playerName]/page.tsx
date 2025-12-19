@@ -368,7 +368,7 @@ export default async function ProfilePage(
                     All Time
                   </TabsTrigger>
                 </TabsList>
-                {user?.billingPlan !== $Enums.BillingPlan.PREMIUM && (
+                {!timeframe3 && (
                   <div className="text-muted-foreground text-sm">
                     <Link href="/pricing" external>
                       Upgrade to view more timeframes
