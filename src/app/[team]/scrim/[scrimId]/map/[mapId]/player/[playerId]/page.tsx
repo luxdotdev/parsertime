@@ -4,6 +4,7 @@ import { Search } from "@/components/dashboard/search";
 import { GuestNav } from "@/components/guest-nav";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
+import { MobileNav } from "@/components/mobile-nav";
 import { Notifications } from "@/components/notifications";
 import { PlayerAnalytics } from "@/components/player/analytics";
 import { DefaultOverview } from "@/components/player/default-overview";
@@ -89,7 +90,8 @@ export default async function PlayerDashboardPage(
       <div className="border-b">
         <div className="hidden h-16 items-center px-4 md:flex">
           <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
-          <MainNav className="mx-6" />
+          <MainNav className="mx-6 hidden lg:block" />
+          <MobileNav className="block pl-2 lg:hidden" session={session} />
           <div className="ml-auto flex items-center space-x-4">
             <Search user={user} />
             <ModeToggle />

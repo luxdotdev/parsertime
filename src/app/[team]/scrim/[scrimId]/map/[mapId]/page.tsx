@@ -9,6 +9,7 @@ import { HeroBans } from "@/components/map/hero-bans";
 import { Killfeed } from "@/components/map/killfeed";
 import { MapEvents } from "@/components/map/map-events";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
+import { MobileNav } from "@/components/mobile-nav";
 import { Notifications } from "@/components/notifications";
 import { ReplayCode } from "@/components/scrim/replay-code";
 import { ModeToggle } from "@/components/theme-switcher";
@@ -114,7 +115,8 @@ export default async function MapDashboardPage(
       <div className="border-b">
         <div className="hidden h-16 items-center px-4 md:flex">
           <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
-          <MainNav className="mx-6" />
+          <MainNav className="mx-6 hidden lg:block" />
+          <MobileNav className="block pl-2 lg:hidden" session={session} />
           <div className="ml-auto flex items-center space-x-4">
             <Search user={user} />
             <ModeToggle />
