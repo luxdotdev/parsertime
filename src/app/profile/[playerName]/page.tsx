@@ -124,12 +124,11 @@ export default async function ProfilePage(
       total_time_played DESC
   `;
 
-  // 2. Fetch SR for top 10 heroes to avoid too many DB calls
-  // For others we will just show play time
-  const topHeroesToRate = heroesPlayed.slice(0, 10);
+  // Uncomment this to rate only the top 10 heroes to avoid too many DB calls
+  // const topHeroesToRate = heroesPlayed.slice(0, 10);
 
   const heroRatings = await Promise.all(
-    topHeroesToRate.map(async (hero) => {
+    heroesPlayed.map(async (hero) => {
       const compositeLeaderboard = await getCompositeSRLeaderboard({
         hero: hero.player_hero as HeroName,
         player: name,
