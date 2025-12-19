@@ -112,6 +112,8 @@ async function getFinalRoundStatsForPlayerFn(id: number, playerName: string) {
 export const getPlayerFinalStats = cache(getFinalRoundStatsForPlayerFn);
 
 async function getAllStatsForPlayerFn(scrimIds: number[], name: string) {
+  if (scrimIds.length === 0) return [];
+
   const mapDataIds = await prisma.scrim.findMany({
     where: { id: { in: scrimIds } },
     select: { maps: true },
