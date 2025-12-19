@@ -395,9 +395,11 @@ export const subroleHeroMapping: Record<
     "Ashe",
     "Bastion",
     "Cassidy",
+    "Hanzo",
     "Freja",
     "Sojourn",
     "Soldier: 76",
+    "Tracer",
     "Widowmaker",
   ],
   FlexDamage: [
