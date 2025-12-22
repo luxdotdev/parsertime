@@ -62,7 +62,7 @@ export function MainNav({ className }: React.HTMLAttributes<HTMLElement>) {
                         : "text-muted-foreground"
                     )}
                   >
-                    {t("stats")}
+                    {t("playerStats")}
                   </Link>
                 </NavigationMenuLink>
                 <NavigationMenuLink asChild>

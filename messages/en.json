@@ -364,12 +364,13 @@
     },
     "mainNav": {
       "dashboard": "Dashboard",
-      "stats": "Player Stats",
+      "stats": "Stats",
       "teams": "Teams",
       "settings": "Settings",
       "contact": "Contact",
       "docs": "Docs",
       "leaderboard": "Leaderboard",
+      "playerStats": "Player Stats",
       "heroStats": "Hero Stats",
       "compareStats": "Compare Players"
     },
