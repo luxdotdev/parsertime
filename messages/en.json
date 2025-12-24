@@ -372,7 +372,8 @@
       "leaderboard": "Leaderboard",
       "playerStats": "Player Stats",
       "heroStats": "Hero Stats",
-      "compareStats": "Compare Players"
+      "compareStats": "Compare Players",
+      "teamStats": "Team Stats"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "Search team...",

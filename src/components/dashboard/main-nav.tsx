@@ -80,6 +80,19 @@ export function MainNav({ className }: React.HTMLAttributes<HTMLElement>) {
                 </NavigationMenuLink>
                 <NavigationMenuLink asChild>
                   <Link
+                    href="/stats/team"
+                    className={cn(
+                      "text-muted-foreground hover:text-primary px-1 py-1 text-sm font-medium transition-colors",
+                      pathname === "/stats/team"
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {t("teamStats")}
+                  </Link>
+                </NavigationMenuLink>
+                <NavigationMenuLink asChild>
+                  <Link
                     href="/stats/compare"
                     className={cn(
                       "text-muted-foreground hover:text-primary px-1 py-1 text-sm font-medium transition-colors",
