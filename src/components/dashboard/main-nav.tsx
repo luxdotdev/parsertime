@@ -57,7 +57,9 @@ export function MainNav({ className }: React.HTMLAttributes<HTMLElement>) {
                     href="/stats"
                     className={cn(
                       "text-muted-foreground hover:text-primary px-1 py-1 text-sm font-medium transition-colors",
-                      pathname === "/stats"
+                      /^\/stats\/(?!hero$|team$|compare$)[^\/]+$/.test(
+                        pathname
+                      ) || pathname === "/stats"
                         ? "text-primary"
                         : "text-muted-foreground"
                     )}
@@ -70,7 +72,7 @@ export function MainNav({ className }: React.HTMLAttributes<HTMLElement>) {
                     href="/stats/hero"
                     className={cn(
                       "text-muted-foreground hover:text-primary px-1 py-1 text-sm font-medium transition-colors",
-                      pathname === "/stats/hero"
+                      pathname.startsWith("/stats/hero")
                         ? "text-primary"
                         : "text-muted-foreground"
                     )}
@@ -83,7 +85,7 @@ export function MainNav({ className }: React.HTMLAttributes<HTMLElement>) {
                     href="/stats/team"
                     className={cn(
                       "text-muted-foreground hover:text-primary px-1 py-1 text-sm font-medium transition-colors",
-                      pathname === "/stats/team"
+                      pathname.startsWith("/stats/team")
                         ? "text-primary"
                         : "text-muted-foreground"
                     )}
