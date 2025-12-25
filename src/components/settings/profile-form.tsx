@@ -44,6 +44,7 @@ import { type ChangeEvent, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Switch } from "../ui/switch";
 
 const colorblindModeOptions = [
   {
@@ -91,6 +92,7 @@ const profileFormSchema = z.object({
   colorblindMode: z.enum($Enums.ColorblindMode),
   customTeam1Color: z.string().optional(),
   customTeam2Color: z.string().optional(),
+  seeOnboarding: z.boolean().optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
@@ -101,6 +103,7 @@ type AppSettings = {
   colorblindMode: $Enums.ColorblindMode;
   customTeam1Color: string | null;
   customTeam2Color: string | null;
+  seeOnboarding: boolean;
   createdAt: Date;
   updatedAt: Date;
 } | null;
@@ -137,6 +140,7 @@ export function ProfileForm({
       colorblindMode: appSettings?.colorblindMode ?? $Enums.ColorblindMode.OFF,
       customTeam1Color: appSettings?.customTeam1Color ?? "#3b82f6",
       customTeam2Color: appSettings?.customTeam2Color ?? "#ef4444",
+      seeOnboarding: appSettings?.seeOnboarding ?? false,
     },
     mode: "onChange",
   });
@@ -213,11 +217,12 @@ export function ProfileForm({
         appSettings?.colorblindMode ?? $Enums.ColorblindMode.OFF;
       const currentTeam1Color = appSettings?.customTeam1Color ?? "#3b82f6";
       const currentTeam2Color = appSettings?.customTeam2Color ?? "#ef4444";
-
+      const currentSeeOnboarding = appSettings?.seeOnboarding;
       if (
         data.colorblindMode !== currentColorblindMode ||
         data.customTeam1Color !== currentTeam1Color ||
-        data.customTeam2Color !== currentTeam2Color
+        data.customTeam2Color !== currentTeam2Color ||
+        data.seeOnboarding !== currentSeeOnboarding
       ) {
         const settingsRes = await fetch("/api/user/app-settings", {
           method: "PUT",
@@ -228,6 +233,7 @@ export function ProfileForm({
             colorblindMode: data.colorblindMode,
             customTeam1Color: data.customTeam1Color,
             customTeam2Color: data.customTeam2Color,
+            seeOnboarding: data.seeOnboarding,
           }),
         });
 
@@ -630,6 +636,31 @@ export function ProfileForm({
                 </div>
               </div>
             )}
+          </div>
+
+          <div className="space-y-2">
+            <FormField
+              control={form.control}
+              name="seeOnboarding"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center space-y-0 space-x-2">
+                  <FormControl>
+                    <Switch
+                      id="see-onboarding"
+                      checked={field.value}
+                      disabled={form.formState.isSubmitting}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel htmlFor="see-onboarding" className="font-normal">
+                    {t("seeOnboarding.title")}
+                  </FormLabel>
+                </FormItem>
+              )}
+            />
+            <Label className="text-muted-foreground">
+              {t("seeOnboarding.description")}
+            </Label>
           </div>
 
           <Button type="submit" disabled={form.formState.isSubmitting}>
