@@ -407,6 +407,41 @@
       "question": "Unsure how to get the data for a scrim?",
       "documentation": "Check out our documentation here."
     },
+    "tour": {
+      "title": "Dashboard-Tour",
+      "step1": {
+        "title": "Welcome to Parsertime!",
+        "description": "This tour will guide you through the main features of the dashboard. Let's get started!"
+      },
+      "step2": {
+        "title": "First Steps",
+        "description": "Everything starts here! Click the Create Scrim button to set up your first session. Don't worry, we'll guide you through the upload process next!"
+      },
+      "step3": {
+        "title": "Name your Scrim",
+        "description": "Give your scrim a name! Use something like 'Team A vs Team B - MM/DD/YYYY' to keep things organized."
+      },
+      "step4": {
+        "title": "Assign a Team",
+        "description": "Select the team that participated in the scrim. If you haven't created any teams yet, you can do so from the Teams page."
+      },
+      "step5": {
+        "title": "Set the Date",
+        "description": "Choose the date when the scrim took place. This helps keep your scrims organized chronologically."
+      },
+      "step6": {
+        "title": "Upload your first map",
+        "description": "Upload your Workshop Log (.xlsx or .txt) here. This is the raw data our engine uses to generate your heatmaps and stats!"
+      },
+      "step7": {
+        "title": "Hero Bans (Optional)",
+        "description": "If your scrim had hero bans, you can add them here. This helps provide context to the stats and strategies used during the scrim."
+      },
+      "step8": {
+        "title": "All set!",
+        "description": "You're all set to start analyzing your scrim data! Head over to the Scrim Overview page to explore detailed stats, heatmaps, and more. Happy analyzing!"
+      }
+    },
     "addScrim": {
       "title": "Add a scrim...",
       "description": "Click the button to create a scrim.",
@@ -1727,6 +1762,12 @@
         "description": "Your profile has been successfully updated.",
         "errorTitle": "An error occurred",
         "errorDescription": "An error occurred: {res}"
+      },
+      "onboarding": {
+        "seenOnboarding": {
+          "title": "See Onboarding",
+          "description": "If enabled, you will see the introductory onboarding flow the next time you log in."
+        }
       },
       "username": {
         "title": "Username",
