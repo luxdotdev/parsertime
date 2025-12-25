@@ -4,6 +4,7 @@ import type { GetTeamsResponse } from "@/app/api/team/get-teams/route";
 import { SortableBanItem } from "@/components/map/sortable-ban-item";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+
 import {
   Field,
   FieldDescription,
@@ -248,15 +249,18 @@ export function ScrimCreationForm({
           name="name"
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor={field.name}>{t("scrimName")}</FieldLabel>
-              <Input
-                {...field}
-                id={field.name}
-                aria-invalid={fieldState.invalid}
-                placeholder={t("scrimPlaceholder")}
-              />
-              <FieldDescription>{t("scrimDescription")}</FieldDescription>
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              <div id="docs-demo-step3">
+                <FieldLabel htmlFor={field.name}>{t("scrimName")}</FieldLabel>
+                <Input
+                  {...field}
+                  aria-invalid={fieldState.invalid}
+                  placeholder={t("scrimPlaceholder")}
+                />
+                <FieldDescription>{t("scrimDescription")}</FieldDescription>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </div>
             </Field>
           )}
         />
@@ -264,7 +268,7 @@ export function ScrimCreationForm({
           control={form.control}
           name="team"
           render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
+            <Field data-invalid={fieldState.invalid} id="docs-demo-step4">
               <FieldLabel htmlFor={field.name}>{t("teamName")}</FieldLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <SelectTrigger
@@ -300,7 +304,7 @@ export function ScrimCreationForm({
           control={form.control}
           name="date"
           render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
+            <Field data-invalid={fieldState.invalid} id="docs-demo-step5">
               <FieldLabel htmlFor={field.name}>{t("dateName")}</FieldLabel>
               <Popover>
                 <PopoverTrigger asChild>
@@ -341,7 +345,7 @@ export function ScrimCreationForm({
           control={form.control}
           name="map"
           render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
+            <Field data-invalid={fieldState.invalid} id="docs-demo-step6">
               <FieldLabel htmlFor={field.name}>{t("mapName")}</FieldLabel>
               <Input
                 {...field}
@@ -390,7 +394,7 @@ export function ScrimCreationForm({
             }
 
             return (
-              <Field data-invalid={fieldState.invalid}>
+              <Field data-invalid={fieldState.invalid} id="docs-demo-step7">
                 <FieldLabel htmlFor={field.name}>
                   {t("heroBansName")}
                 </FieldLabel>
@@ -473,6 +477,7 @@ export function ScrimCreationForm({
         <div className="flex gap-2">
           <Button
             type="submit"
+            id="docs-demo-step8"
             onClick={() => track("Create Scrim", { location: "Dashboard" })}
             disabled={loading}
           >
