@@ -55,7 +55,13 @@ type ScrimResponse = {
   totalCount: number;
 };
 
-export function ScrimPagination({ isAdmin = false }: { isAdmin?: boolean }) {
+export function ScrimPagination({
+  isAdmin = false,
+  seeOnboarding,
+}: {
+  isAdmin?: boolean;
+  seeOnboarding?: boolean;
+}) {
   const [cursorStack, setCursorStack] = useState<(string | undefined)[]>([
     undefined,
   ]);
@@ -254,7 +260,7 @@ export function ScrimPagination({ isAdmin = false }: { isAdmin?: boolean }) {
 
   // Show empty scrim list only if user has no scrims at all
   if (!isLoading && totalScrimsData?.totalCount === 0) {
-    return <EmptyScrimList />;
+    return <EmptyScrimList isOnboarding={seeOnboarding} />;
   }
 
   const firstFiveScrims = data?.scrims.slice(0, 5) ?? [];
