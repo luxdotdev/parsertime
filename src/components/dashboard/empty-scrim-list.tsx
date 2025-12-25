@@ -5,13 +5,15 @@ import { useTranslations } from "next-intl";
 import { useNextStep } from "nextstepjs";
 import { useEffect } from "react";
 
-export function EmptyScrimList() {
+export function EmptyScrimList(isOnboarding: { isOnboarding?: boolean }) {
   const t = useTranslations("dashboard");
   const { startNextStep } = useNextStep();
 
   useEffect(() => {
-    startNextStep(`${t("tour.title")}`);
-  }, [startNextStep, t]);
+    if (isOnboarding.isOnboarding === true) {
+      startNextStep(`${t("tour.title")}`);
+    }
+  }, [t, isOnboarding, startNextStep]);
 
   return (
     <Card className="border-dashed">
