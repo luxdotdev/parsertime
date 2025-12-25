@@ -1763,11 +1763,9 @@
         "errorTitle": "An error occurred",
         "errorDescription": "An error occurred: {res}"
       },
-      "onboarding": {
-        "seenOnboarding": {
-          "title": "See Onboarding",
-          "description": "If enabled, you will see the introductory onboarding flow the next time you log in."
-        }
+      "seeOnboarding": {
+        "title": "See Onboarding",
+        "description": "If enabled, you will see the introduction the next time you visit the dashboard."
       },
       "username": {
         "title": "Username",
