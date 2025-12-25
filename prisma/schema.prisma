@@ -97,10 +97,16 @@ enum ColorblindMode {
   CUSTOM
 }
 
+enum SeeOnboarding {
+  YES
+  NO
+}
+
 model AppSettings {
   id               Int            @id @default(autoincrement())
   userId           String
   colorblindMode   ColorblindMode @default(OFF)
+  seeOnboarding    SeeOnboarding  @default(YES)
   customTeam1Color String?
   customTeam2Color String?
   createdAt        DateTime       @default(now())
