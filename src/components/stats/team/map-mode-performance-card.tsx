@@ -88,7 +88,9 @@ export function MapModePerformanceCard({
   }
 
   const chartData = Object.values($Enums.MapType)
-    .filter((type) => type !== $Enums.MapType.Push)
+    .filter(
+      (type) => type !== $Enums.MapType.Push && type !== $Enums.MapType.Clash
+    )
     .map((mapType) => {
       const stats = modePerformance.byMode[mapType];
       return {
@@ -133,6 +135,7 @@ export function MapModePerformanceCard({
               .filter(
                 (type) =>
                   type !== $Enums.MapType.Push &&
+                  type !== $Enums.MapType.Clash &&
                   modePerformance.byMode[type].gamesPlayed > 0
               )
               .sort(

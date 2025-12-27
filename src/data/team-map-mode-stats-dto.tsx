@@ -179,7 +179,15 @@ async function getMapModePerformanceUncached(
 
   const modeData = new Map<$Enums.MapType, MapModeData>();
 
-  for (const mapType of Object.values($Enums.MapType)) {
+  // Only initialize modes that are actually playable competitively
+  const activeModes = [
+    $Enums.MapType.Control,
+    $Enums.MapType.Hybrid,
+    $Enums.MapType.Escort,
+    $Enums.MapType.Flashpoint,
+  ];
+
+  for (const mapType of activeModes) {
     modeData.set(mapType, {
       wins: 0,
       losses: 0,
@@ -202,6 +210,11 @@ async function getMapModePerformanceUncached(
       mapNameToMapTypeMapping[mapName as keyof typeof mapNameToMapTypeMapping];
     if (!mapType) continue;
 
+    // Skip Push (can't be calculated) and Clash (no longer played competitively)
+    if (mapType === $Enums.MapType.Push || mapType === $Enums.MapType.Clash) {
+      continue;
+    }
+
     const teamName = findTeamNameForMapInMemory(
       mapDataId,
       allPlayerStats,
@@ -217,10 +230,6 @@ async function getMapModePerformanceUncached(
 
     const matchDetails = matchStartMap.get(mapDataId) ?? null;
     const finalRound = finalRoundMap.get(mapDataId) ?? null;
-
-    if (mapType === $Enums.MapType.Push) {
-      continue;
-    }
 
     const winner = calculateWinner({
       matchDetails,
