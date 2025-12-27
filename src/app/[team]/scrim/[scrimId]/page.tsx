@@ -121,6 +121,10 @@ export default async function ScrimDashboardPage(
       <div className="flex-1 space-y-4 p-8 pt-6">
         <h4 className="text-gray-600 dark:text-gray-400">
           <Link href="/dashboard">&larr; {t("back")}</Link>
+          {" | "}
+          <Link href={`/stats/team/${scrim.teamId}` as Route}>
+            {t("viewStats")} &rarr;
+          </Link>
         </h4>
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl leading-none font-bold tracking-tight">

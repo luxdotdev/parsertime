@@ -648,7 +648,8 @@
         "description": "The replay code has been copied to your clipboard."
       },
       "code": "Replay code: {replayCode}"
-    }
+    },
+    "viewStats": "View team stats"
   },
   "mapPage": {
     "mapMetadata": {
