@@ -1,11 +1,19 @@
 import { RecentActivityCalendar } from "@/components/profile/recent-activity-calendar";
+import { BestRoleTriosCard } from "@/components/stats/team/best-role-trios-card";
 import { MapWinrateGallery } from "@/components/stats/team/map-winrate-gallery";
+import { RoleBalanceRadar } from "@/components/stats/team/role-balance-radar";
+import { RolePerformanceCard } from "@/components/stats/team/role-performance-card";
 import { StrengthsWeaknessesCard } from "@/components/stats/team/strengths-weaknesses-card";
 import { TeamFightStatsCard } from "@/components/stats/team/team-fight-stats-card";
 import { TeamRosterGrid } from "@/components/stats/team/team-roster-grid";
 import { TopMapsCard } from "@/components/stats/team/top-maps-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getTeamFightStats } from "@/data/team-fight-stats-dto";
+import {
+  getBestRoleTrios,
+  getRoleBalanceAnalysis,
+  getRolePerformanceStats,
+} from "@/data/team-role-stats-dto";
 import {
   getBestMapByWinrate,
   getBlindSpotMap,
@@ -52,6 +60,9 @@ export default async function TeamStatsPage(
     blindSpotMap,
     fightStats,
     mapNames,
+    roleStats,
+    roleBalance,
+    bestTrios,
   ] = await Promise.all([
     prisma.scrim.findMany({
       where: { teamId },
@@ -64,6 +75,9 @@ export default async function TeamStatsPage(
     getBlindSpotMap(teamId),
     getTeamFightStats(teamId),
     getMapNames(),
+    getRolePerformanceStats(teamId),
+    getRoleBalanceAnalysis(teamId),
+    getBestRoleTrios(teamId),
   ]);
 
   // Convert playtime array to Record for gallery
@@ -96,6 +110,7 @@ export default async function TeamStatsPage(
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="performance">Performance</TabsTrigger>
           <TabsTrigger value="maps">Maps</TabsTrigger>
           <TabsTrigger value="teamfights">Teamfights</TabsTrigger>
         </TabsList>
@@ -123,6 +138,20 @@ export default async function TeamStatsPage(
               mapNames={mapNames}
             />
           </div>
+
+          {/* Role Balance Overview */}
+          <div className="grid gap-4 md:grid-cols-1">
+            <RoleBalanceRadar
+              roleStats={roleStats}
+              balanceAnalysis={roleBalance}
+            />
+          </div>
+        </TabsContent>
+
+        {/* Performance Tab */}
+        <TabsContent value="performance" className="space-y-4">
+          <RolePerformanceCard roleStats={roleStats} />
+          <BestRoleTriosCard trios={bestTrios} />
         </TabsContent>
 
         {/* Maps Tab */}
