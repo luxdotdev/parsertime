@@ -1,8 +1,10 @@
 import { RecentActivityCalendar } from "@/components/profile/recent-activity-calendar";
 import { BestRoleTriosCard } from "@/components/stats/team/best-role-trios-card";
+import { HeroPickrateHeatmap } from "@/components/stats/team/hero-pickrate-heatmap";
 import { HeroPoolContainer } from "@/components/stats/team/hero-pool-container";
 import { MapModePerformanceCard } from "@/components/stats/team/map-mode-performance-card";
 import { MapWinrateGallery } from "@/components/stats/team/map-winrate-gallery";
+import { PlayerMapPerformanceCard } from "@/components/stats/team/player-map-performance-card";
 import { QuickStatsCard } from "@/components/stats/team/quick-stats-card";
 import { RecentFormCard } from "@/components/stats/team/recent-form-card";
 import { RoleBalanceRadar } from "@/components/stats/team/role-balance-radar";
@@ -12,8 +14,13 @@ import { TeamFightStatsCard } from "@/components/stats/team/team-fight-stats-car
 import { TeamRosterGrid } from "@/components/stats/team/team-roster-grid";
 import { TopMapsCard } from "@/components/stats/team/top-maps-card";
 import { WinLossStreaksCard } from "@/components/stats/team/win-loss-streaks-card";
+import { WinProbabilityInsights } from "@/components/stats/team/win-probability-insights";
 import { WinrateOverTimeChart } from "@/components/stats/team/winrate-over-time-chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  getHeroPickrateMatrix,
+  getPlayerMapPerformanceMatrix,
+} from "@/data/team-analytics-dto";
 import { getTeamFightStats } from "@/data/team-fight-stats-dto";
 import {
   getHeroPoolAnalysis,
@@ -89,6 +96,8 @@ export default async function TeamStatsPage(
     heroPool,
     heroPoolRawData,
     quickStats,
+    heroPickrateMatrix,
+    playerMapPerformance,
   ] = await Promise.all([
     prisma.scrim.findMany({
       where: { teamId },
@@ -112,6 +121,8 @@ export default async function TeamStatsPage(
     getHeroPoolAnalysis(teamId),
     getHeroPoolRawData(teamId),
     getQuickWinsStats(teamId),
+    getHeroPickrateMatrix(teamId),
+    getPlayerMapPerformanceMatrix(teamId),
   ]);
 
   // Convert playtime array to Record for gallery
@@ -157,6 +168,7 @@ export default async function TeamStatsPage(
           <TabsTrigger value="heroes">Heroes</TabsTrigger>
           <TabsTrigger value="trends">Trends</TabsTrigger>
           <TabsTrigger value="maps">Maps</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="teamfights">Teamfights</TabsTrigger>
         </TabsList>
 
@@ -229,9 +241,16 @@ export default async function TeamStatsPage(
           />
         </TabsContent>
 
+        {/* Analytics Tab */}
+        <TabsContent value="analytics" className="space-y-4">
+          <HeroPickrateHeatmap data={heroPickrateMatrix} />
+          <PlayerMapPerformanceCard data={playerMapPerformance} />
+        </TabsContent>
+
         {/* Teamfights Tab */}
         <TabsContent value="teamfights" className="space-y-4">
           <TeamFightStatsCard fightStats={fightStats} />
+          <WinProbabilityInsights fightStats={fightStats} />
         </TabsContent>
       </Tabs>
     </div>
