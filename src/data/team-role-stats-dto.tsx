@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma";
 import { calculateWinner } from "@/lib/winrate";
 import type { HeroName } from "@/types/heroes";
 import { cache } from "react";
-import { getTeamNameForRoster, getTeamRoster } from "./team-stats-dto";
+import { getTeamRoster } from "./team-stats-dto";
 
 export type RoleStats = {
   role: "Tank" | "Damage" | "Support";
@@ -335,6 +335,37 @@ async function getRoleBalanceAnalysisUncached(
 
 export const getRoleBalanceAnalysis = cache(getRoleBalanceAnalysisUncached);
 
+function findTeamNameForMapInMemory(
+  mapDataId: number,
+  allPlayerStats: {
+    player_name: string;
+    player_team: string;
+    MapDataId: number | null;
+  }[],
+  teamRosterSet: Set<string>
+): string | null {
+  const teamCounts = new Map<string, number>();
+
+  for (const stat of allPlayerStats) {
+    if (stat.MapDataId === mapDataId && teamRosterSet.has(stat.player_name)) {
+      const currentCount = teamCounts.get(stat.player_team) ?? 0;
+      teamCounts.set(stat.player_team, currentCount + 1);
+    }
+  }
+
+  let maxCount = 0;
+  let teamName: string | null = null;
+
+  for (const [team, count] of teamCounts.entries()) {
+    if (count > maxCount) {
+      maxCount = count;
+      teamName = team;
+    }
+  }
+
+  return teamName;
+}
+
 async function getBestRoleTriosUncached(teamId: number): Promise<RoleTrio[]> {
   const teamRoster = await getTeamRoster(teamId);
   const teamRosterSet = new Set(teamRoster);
@@ -437,7 +468,11 @@ async function getBestRoleTriosUncached(teamId: number): Promise<RoleTrio[]> {
   for (const mapDataRecord of mapDataRecords) {
     const mapDataId = mapDataRecord.id;
 
-    const teamName = await getTeamNameForRoster(teamId, mapDataId);
+    const teamName = findTeamNameForMapInMemory(
+      mapDataId,
+      allPlayerStats,
+      teamRosterSet
+    );
     if (!teamName) continue;
 
     const playersOnMap = allPlayerStats.filter(
@@ -637,7 +672,11 @@ async function getRoleWinratesByMapUncached(
     const mapDataId = mapDataRecord.id;
     const mapName = mapDataRecord.name ?? "Unknown";
 
-    const teamName = await getTeamNameForRoster(teamId, mapDataId);
+    const teamName = findTeamNameForMapInMemory(
+      mapDataId,
+      allPlayerStats,
+      teamRosterSet
+    );
     if (!teamName) continue;
 
     const playersOnMap = allPlayerStats.filter(
