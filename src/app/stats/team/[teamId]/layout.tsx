@@ -38,6 +38,8 @@ export async function generateMetadata(
   };
 }
 
-export default function TeamStatsLayout({ children }: LayoutProps<"/stats">) {
+export default function TeamStatsLayout({
+  children,
+}: LayoutProps<"/stats/team/[teamId]">) {
   return children;
 }
