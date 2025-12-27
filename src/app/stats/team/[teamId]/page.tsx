@@ -49,6 +49,7 @@ import {
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { calculateHeroPickrateMatrix } from "@/lib/hero-pickrate-utils";
+import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { getMapNames } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
@@ -94,11 +95,11 @@ export default async function TeamStatsPage(
     recentForm,
     streakInfo,
     mapModePerformance,
-    heroPool,
-    heroPoolRawData,
     quickStats,
-    heroPickrateRawData,
     playerMapPerformance,
+    timeframe1,
+    timeframe2,
+    timeframe3,
   ] = await Promise.all([
     prisma.scrim.findMany({
       where: { teamId },
@@ -119,12 +120,76 @@ export default async function TeamStatsPage(
     getRecentForm(teamId),
     getStreakInfo(teamId),
     getMapModePerformance(teamId),
-    getHeroPoolAnalysis(teamId),
-    getHeroPoolRawData(teamId),
     getQuickWinsStats(teamId),
-    getHeroPickrateRawData(teamId),
     getPlayerMapPerformanceMatrix(teamId),
+    new Permission("stats-timeframe-1").check(),
+    new Permission("stats-timeframe-2").check(),
+    new Permission("stats-timeframe-3").check(),
   ]);
+
+  // Determine the maximum permitted timeframe based on permissions
+  const permitted = timeframe3
+    ? "all-time"
+    : timeframe2
+      ? "six-months"
+      : "one-month";
+
+  // Calculate date limits based on permitted timeframe
+  let dateFrom: Date | undefined;
+  const dateTo = new Date();
+
+  if (permitted !== "all-time") {
+    dateFrom = new Date();
+    if (permitted === "one-month") {
+      dateFrom.setMonth(dateFrom.getMonth() - 1);
+    } else if (permitted === "six-months") {
+      dateFrom.setMonth(dateFrom.getMonth() - 6);
+    }
+  }
+
+  // Fetch hero data with date restrictions
+  const heroPoolRawData = await getHeroPoolRawData(teamId);
+
+  // Filter raw data client-side for the permitted timeframe
+  let filteredHeroPoolRawData = heroPoolRawData;
+  if (dateFrom) {
+    filteredHeroPoolRawData = {
+      ...heroPoolRawData,
+      mapDataRecords: heroPoolRawData.mapDataRecords.filter(
+        (record) => record.scrimDate >= dateFrom && record.scrimDate <= dateTo
+      ),
+    };
+  }
+
+  // Fetch pickrate data with the same restrictions
+  const heroPickrateRawData = await getHeroPickrateRawData(teamId);
+
+  // Filter pickrate raw data for the permitted timeframe
+  let filteredPickrateRawData = heroPickrateRawData;
+  if (dateFrom) {
+    filteredPickrateRawData = {
+      ...heroPickrateRawData,
+      mapDataRecords: heroPickrateRawData.mapDataRecords.filter(
+        (record) => record.scrimDate >= dateFrom && record.scrimDate <= dateTo
+      ),
+    };
+  }
+
+  // Calculate initial data for one-week view (default)
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+  const oneWeekPickrateRawData = {
+    ...heroPickrateRawData,
+    mapDataRecords: heroPickrateRawData.mapDataRecords.filter(
+      (record) => record.scrimDate >= oneWeekAgo && record.scrimDate <= dateTo
+    ),
+  };
+
+  const initialHeroPool = await getHeroPoolAnalysis(teamId, oneWeekAgo, dateTo);
+  const initialHeroPickrateMatrix = calculateHeroPickrateMatrix(
+    oneWeekPickrateRawData
+  );
 
   // Convert playtime array to Record for gallery
   const mapPlaytimes: Record<string, number> = {};
@@ -134,8 +199,12 @@ export default async function TeamStatsPage(
 
   const totalGames = winrates.overallWins + winrates.overallLosses;
 
-  // Calculate initial hero pickrate heatmap data
-  const heroPickrateMatrix = calculateHeroPickrateMatrix(heroPickrateRawData);
+  // Build permissions object for timeframe restrictions
+  const permissions = {
+    "stats-timeframe-1": timeframe1,
+    "stats-timeframe-2": timeframe2,
+    "stats-timeframe-3": timeframe3,
+  };
 
   return (
     <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
@@ -220,10 +289,11 @@ export default async function TeamStatsPage(
         {/* Heroes Tab */}
         <TabsContent value="heroes" className="space-y-4">
           <HeroPoolContainer
-            rawData={heroPoolRawData}
-            initialData={heroPool}
-            heatmapRawData={heroPickrateRawData}
-            heatmapInitialData={heroPickrateMatrix}
+            rawData={filteredHeroPoolRawData}
+            initialData={initialHeroPool}
+            heatmapRawData={filteredPickrateRawData}
+            heatmapInitialData={initialHeroPickrateMatrix}
+            permissions={permissions}
           />
         </TabsContent>
 
