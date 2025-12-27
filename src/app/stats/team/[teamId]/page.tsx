@@ -322,8 +322,8 @@ export default async function TeamStatsPage(
 
         {/* Teamfights Tab */}
         <TabsContent value="teamfights" className="space-y-4">
-          <UltimateEconomyCard fightStats={fightStats} />
           <TeamFightStatsCard fightStats={fightStats} />
+          <UltimateEconomyCard fightStats={fightStats} />
           <WinProbabilityInsights fightStats={fightStats} />
         </TabsContent>
       </Tabs>
