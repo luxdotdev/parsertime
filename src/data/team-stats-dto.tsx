@@ -5,7 +5,6 @@ import { calculateWinner } from "@/lib/winrate";
 import { mapNameToMapTypeMapping } from "@/types/map";
 import type { PlayerStat } from "@prisma/client";
 import { $Enums } from "@prisma/client";
-import console from "console";
 import { cache } from "react";
 
 /**
@@ -262,8 +261,6 @@ async function getTeamWinratesUncached(teamId: number): Promise<TeamWinrates> {
   }
 
   const mapDataIds = mapDataRecords.map((md) => md.id);
-
-  console.log("Map data ids: ", mapDataIds);
 
   // 2. Get all necessary data in batch queries
   const [allPlayerStats, matchStarts, finalRounds, captures] =
