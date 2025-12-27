@@ -13,6 +13,7 @@ import { StrengthsWeaknessesCard } from "@/components/stats/team/strengths-weakn
 import { TeamFightStatsCard } from "@/components/stats/team/team-fight-stats-card";
 import { TeamRosterGrid } from "@/components/stats/team/team-roster-grid";
 import { TopMapsCard } from "@/components/stats/team/top-maps-card";
+import { UltimateEconomyCard } from "@/components/stats/team/ultimate-economy-card";
 import { WinLossStreaksCard } from "@/components/stats/team/win-loss-streaks-card";
 import { WinProbabilityInsights } from "@/components/stats/team/win-probability-insights";
 import { WinrateOverTimeChart } from "@/components/stats/team/winrate-over-time-chart";
@@ -249,6 +250,7 @@ export default async function TeamStatsPage(
 
         {/* Teamfights Tab */}
         <TabsContent value="teamfights" className="space-y-4">
+          <UltimateEconomyCard fightStats={fightStats} />
           <TeamFightStatsCard fightStats={fightStats} />
           <WinProbabilityInsights fightStats={fightStats} />
         </TabsContent>
