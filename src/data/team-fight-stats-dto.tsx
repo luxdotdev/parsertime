@@ -34,6 +34,13 @@ export type TeamFightStats = {
   nonDryFights: number;
   totalUltsInNonDryFights: number;
   avgUltsPerNonDryFight: number;
+
+  // Ultimate economy
+  ultimateEfficiency: number; // fights won per ultimate used
+  avgUltsInWonFights: number;
+  avgUltsInLostFights: number;
+  wastedUltimates: number; // ults used in losing fights after 3+ player disadvantage
+  totalUltsUsed: number;
 };
 
 type FightEvent = Kill & {
@@ -53,6 +60,7 @@ type FightAnalysis = {
   usedFirstUlt: boolean;
   isDryFight: boolean;
   ultCount: number;
+  wastedUlts: number; // ults used after fight was likely lost
 };
 
 function analyzeFightOutcome(fight: Fight, ourTeamName: string): FightAnalysis {
@@ -69,31 +77,46 @@ function analyzeFightOutcome(fight: Fight, ourTeamName: string): FightAnalysis {
     (e) => e.event_type === "ultimate_start"
   );
 
-  // Count kills per team
+  // Count our team's ultimates
+  const ourUlts = ultimates.filter((u) => u.attacker_team === ourTeamName);
+  const ultCount = ourUlts.length;
+  const isDryFight = ultCount === 0;
+
+  // Track kill differential over time to detect "already lost" scenarios
   let ourKills = 0;
   let enemyKills = 0;
+  let wastedUlts = 0;
 
-  for (const kill of kills) {
-    if (kill.event_type === "mercy_rez") {
-      // Mercy rez counts as a negative kill for the team that lost the player
-      if (kill.victim_team === ourTeamName) {
-        // We got rezzed, subtract from enemy kills
+  for (const event of sortedEvents) {
+    // Update kill counts
+    if (event.event_type === "mercy_rez") {
+      if (event.victim_team === ourTeamName) {
         enemyKills = Math.max(0, enemyKills - 1);
       } else {
-        // Enemy got rezzed, subtract from our kills
         ourKills = Math.max(0, ourKills - 1);
       }
-    } else {
-      // Regular kill
-      if (kill.attacker_team === ourTeamName) {
+    } else if (event.event_type === "kill") {
+      if (event.attacker_team === ourTeamName) {
         ourKills++;
       } else {
         enemyKills++;
       }
     }
+
+    // Check if we used an ultimate at this timestamp
+    if (
+      event.event_type === "ultimate_start" &&
+      event.attacker_team === ourTeamName
+    ) {
+      // If we're down 3+ players, this ult is likely wasted
+      const killDiff = ourKills - enemyKills;
+      if (killDiff <= -3) {
+        wastedUlts++;
+      }
+    }
   }
 
-  // Determine fight winner based on kill differential
+  // Determine fight winner based on final kill differential
   const won = ourKills > enemyKills;
 
   // Find first pick (first kill event, excluding mercy rez for this check)
@@ -111,11 +134,6 @@ function analyzeFightOutcome(fight: Fight, ourTeamName: string): FightAnalysis {
     ? firstUlt.attacker_team === ourTeamName
     : false;
 
-  // Count our team's ultimates
-  const ourUlts = ultimates.filter((u) => u.attacker_team === ourTeamName);
-  const ultCount = ourUlts.length;
-  const isDryFight = ultCount === 0;
-
   return {
     won,
     hadFirstPick,
@@ -123,6 +141,7 @@ function analyzeFightOutcome(fight: Fight, ourTeamName: string): FightAnalysis {
     usedFirstUlt,
     isDryFight,
     ultCount,
+    wastedUlts,
   };
 }
 
@@ -158,6 +177,11 @@ async function getTeamFightStatsUncached(
       nonDryFights: 0,
       totalUltsInNonDryFights: 0,
       avgUltsPerNonDryFight: 0,
+      ultimateEfficiency: 0,
+      avgUltsInWonFights: 0,
+      avgUltsInLostFights: 0,
+      wastedUltimates: 0,
+      totalUltsUsed: 0,
     };
   }
 
@@ -269,6 +293,10 @@ async function getTeamFightStatsUncached(
   let dryFightWins = 0;
   let nonDryFights = 0;
   let totalUltsInNonDryFights = 0;
+  let totalUltsUsed = 0;
+  let ultsInWonFights = 0;
+  let ultsInLostFights = 0;
+  let totalWastedUlts = 0;
 
   // Process each map (all in-memory now)
   for (const mapDataId of mapDataIds) {
@@ -379,6 +407,16 @@ async function getTeamFightStatsUncached(
         nonDryFights++;
         totalUltsInNonDryFights += analysis.ultCount;
       }
+
+      // Track ultimate economy metrics
+      totalUltsUsed += analysis.ultCount;
+      totalWastedUlts += analysis.wastedUlts;
+
+      if (analysis.won) {
+        ultsInWonFights += analysis.ultCount;
+      } else {
+        ultsInLostFights += analysis.ultCount;
+      }
     }
   }
 
@@ -393,6 +431,12 @@ async function getTeamFightStatsUncached(
   const dryFightWinrate = dryFights > 0 ? (dryFightWins / dryFights) * 100 : 0;
   const avgUltsPerNonDryFight =
     nonDryFights > 0 ? totalUltsInNonDryFights / nonDryFights : 0;
+
+  // Ultimate economy calculations
+  const ultimateEfficiency = totalUltsUsed > 0 ? fightsWon / totalUltsUsed : 0;
+  const avgUltsInWonFights = fightsWon > 0 ? ultsInWonFights / fightsWon : 0;
+  const avgUltsInLostFights =
+    fightsLost > 0 ? ultsInLostFights / fightsLost : 0;
 
   return {
     totalFights,
@@ -414,6 +458,11 @@ async function getTeamFightStatsUncached(
     nonDryFights,
     totalUltsInNonDryFights,
     avgUltsPerNonDryFight,
+    ultimateEfficiency,
+    avgUltsInWonFights,
+    avgUltsInLostFights,
+    wastedUltimates: totalWastedUlts,
+    totalUltsUsed,
   };
 }
 
