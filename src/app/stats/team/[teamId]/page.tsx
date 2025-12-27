@@ -169,7 +169,6 @@ export default async function TeamStatsPage(
           <TabsTrigger value="heroes">Heroes</TabsTrigger>
           <TabsTrigger value="trends">Trends</TabsTrigger>
           <TabsTrigger value="maps">Maps</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="teamfights">Teamfights</TabsTrigger>
         </TabsList>
 
@@ -218,6 +217,7 @@ export default async function TeamStatsPage(
         {/* Heroes Tab */}
         <TabsContent value="heroes" className="space-y-4">
           <HeroPoolContainer rawData={heroPoolRawData} initialData={heroPool} />
+          <HeroPickrateHeatmap data={heroPickrateMatrix} />
         </TabsContent>
 
         {/* Trends Tab */}
@@ -240,11 +240,6 @@ export default async function TeamStatsPage(
             mapPlaytimes={mapPlaytimes}
             mapNames={mapNames}
           />
-        </TabsContent>
-
-        {/* Analytics Tab */}
-        <TabsContent value="analytics" className="space-y-4">
-          <HeroPickrateHeatmap data={heroPickrateMatrix} />
           <PlayerMapPerformanceCard data={playerMapPerformance} />
         </TabsContent>
 
