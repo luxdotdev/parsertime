@@ -49,7 +49,8 @@ export default async function TeamStatsPage() {
           <Accordion type="single" collapsible>
             <AccordionItem value="overview-tab">
               <AccordionTrigger>
-                What&apos;s Your Team&apos;s Overall Performance?
+                <span className="font-semibold">Overview</span>: What&apos;s
+                Your Team&apos;s Overall Performance?
               </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-4 text-left">
@@ -153,7 +154,8 @@ export default async function TeamStatsPage() {
 
             <AccordionItem value="performance-tab">
               <AccordionTrigger>
-                Which Roles Are Your Strongest?
+                <span className="font-semibold">Performance</span>: Which Roles
+                Are Your Strongest?
               </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-4 text-left">
@@ -199,7 +201,8 @@ export default async function TeamStatsPage() {
 
             <AccordionItem value="heroes-tab">
               <AccordionTrigger>
-                What Heroes Does Your Team Actually Play?
+                <span className="font-semibold">Heroes</span>: What Heroes Does
+                Your Team Actually Play?
               </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-4 text-left">
@@ -279,7 +282,10 @@ export default async function TeamStatsPage() {
             </AccordionItem>
 
             <AccordionItem value="trends-tab">
-              <AccordionTrigger>Is Your Team Getting Better?</AccordionTrigger>
+              <AccordionTrigger>
+                <span className="font-semibold">Trends</span>: Is Your Team
+                Getting Better?
+              </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-4 text-left">
                   <p>
@@ -343,7 +349,8 @@ export default async function TeamStatsPage() {
 
             <AccordionItem value="maps-tab">
               <AccordionTrigger>
-                Which Maps Are Your Best and Worst?
+                <span className="font-semibold">Maps</span>: Which Maps Are Your
+                Best and Worst?
               </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-4 text-left">
@@ -424,7 +431,10 @@ export default async function TeamStatsPage() {
             </AccordionItem>
 
             <AccordionItem value="teamfights-tab">
-              <AccordionTrigger>How Do You Win Team Fights?</AccordionTrigger>
+              <AccordionTrigger>
+                <span className="font-semibold">Teamfights</span>: How Do You
+                Win Team Fights?
+              </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-4 text-left">
                   <p>
@@ -505,7 +515,8 @@ export default async function TeamStatsPage() {
 
             <AccordionItem value="how-to-use">
               <AccordionTrigger>
-                How Can I Turn This Data Into Wins?
+                <span className="font-semibold">How to Use</span>: How Can I
+                Turn This Data Into Wins?
               </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-4 text-left">
