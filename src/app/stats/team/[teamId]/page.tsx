@@ -1,14 +1,22 @@
 import { RecentActivityCalendar } from "@/components/profile/recent-activity-calendar";
 import { BestRoleTriosCard } from "@/components/stats/team/best-role-trios-card";
 import { MapWinrateGallery } from "@/components/stats/team/map-winrate-gallery";
+import { RecentFormCard } from "@/components/stats/team/recent-form-card";
 import { RoleBalanceRadar } from "@/components/stats/team/role-balance-radar";
 import { RolePerformanceCard } from "@/components/stats/team/role-performance-card";
 import { StrengthsWeaknessesCard } from "@/components/stats/team/strengths-weaknesses-card";
 import { TeamFightStatsCard } from "@/components/stats/team/team-fight-stats-card";
 import { TeamRosterGrid } from "@/components/stats/team/team-roster-grid";
 import { TopMapsCard } from "@/components/stats/team/top-maps-card";
+import { WinLossStreaksCard } from "@/components/stats/team/win-loss-streaks-card";
+import { WinrateOverTimeChart } from "@/components/stats/team/winrate-over-time-chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getTeamFightStats } from "@/data/team-fight-stats-dto";
+import {
+  getRecentForm,
+  getStreakInfo,
+  getWinrateOverTime,
+} from "@/data/team-performance-trends-dto";
 import {
   getBestRoleTrios,
   getRoleBalanceAnalysis,
@@ -63,6 +71,10 @@ export default async function TeamStatsPage(
     roleStats,
     roleBalance,
     bestTrios,
+    weeklyWinrate,
+    monthlyWinrate,
+    recentForm,
+    streakInfo,
   ] = await Promise.all([
     prisma.scrim.findMany({
       where: { teamId },
@@ -78,6 +90,10 @@ export default async function TeamStatsPage(
     getRolePerformanceStats(teamId),
     getRoleBalanceAnalysis(teamId),
     getBestRoleTrios(teamId),
+    getWinrateOverTime(teamId, "week"),
+    getWinrateOverTime(teamId, "month"),
+    getRecentForm(teamId),
+    getStreakInfo(teamId),
   ]);
 
   // Convert playtime array to Record for gallery
@@ -111,6 +127,7 @@ export default async function TeamStatsPage(
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="performance">Performance</TabsTrigger>
+          <TabsTrigger value="trends">Trends</TabsTrigger>
           <TabsTrigger value="maps">Maps</TabsTrigger>
           <TabsTrigger value="teamfights">Teamfights</TabsTrigger>
         </TabsList>
@@ -152,6 +169,18 @@ export default async function TeamStatsPage(
         <TabsContent value="performance" className="space-y-4">
           <RolePerformanceCard roleStats={roleStats} />
           <BestRoleTriosCard trios={bestTrios} />
+        </TabsContent>
+
+        {/* Trends Tab */}
+        <TabsContent value="trends" className="space-y-4">
+          <WinrateOverTimeChart
+            weeklyData={weeklyWinrate}
+            monthlyData={monthlyWinrate}
+          />
+          <div className="grid gap-4 md:grid-cols-2">
+            <RecentFormCard recentForm={recentForm} />
+            <WinLossStreaksCard streakInfo={streakInfo} />
+          </div>
         </TabsContent>
 
         {/* Maps Tab */}
