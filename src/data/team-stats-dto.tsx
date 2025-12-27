@@ -549,7 +549,7 @@ async function getTopMapsByPlaytimeFn(teamId: number) {
   return mapsWithPlaytime.sort((a, b) => b.playtime - a.playtime);
 }
 
-const getTopMapsByPlaytime = cache(getTopMapsByPlaytimeFn);
+export const getTopMapsByPlaytime = cache(getTopMapsByPlaytimeFn);
 
 async function getTop5MapsByPlaytimeFn(teamId: number) {
   const top5Maps = await getTopMapsByPlaytime(teamId);
