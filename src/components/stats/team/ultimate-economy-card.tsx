@@ -92,7 +92,10 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
                 Wasted Ultimates
               </div>
               <div
-                className={cn("mb-1 text-3xl font-bold", getWasteColor(wastePercentage))}
+                className={cn(
+                  "mb-1 text-3xl font-bold",
+                  getWasteColor(wastePercentage)
+                )}
               >
                 {fightStats.wastedUltimates}
               </div>
@@ -127,7 +130,7 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
               Ultimate Usage: Won vs Lost Fights
             </h4>
             <div className="grid gap-4 md:grid-cols-2">
-              <div className="bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-500 p-4">
+              <div className="rounded-lg border border-green-500 bg-green-50 p-4 dark:bg-green-950/30">
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-sm font-medium">Winning Fights</span>
                   <span className="rounded bg-green-600 px-2 py-1 text-xs font-bold text-white">
@@ -142,7 +145,7 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
                 </div>
               </div>
 
-              <div className="bg-red-50 dark:bg-red-950/30 rounded-lg border border-red-500 p-4">
+              <div className="rounded-lg border border-red-500 bg-red-50 p-4 dark:bg-red-950/30">
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-sm font-medium">Losing Fights</span>
                   <span className="rounded bg-red-600 px-2 py-1 text-xs font-bold text-white">
@@ -160,20 +163,21 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
 
             {/* Insight */}
             <div className="bg-muted mt-4 rounded-lg p-3 text-sm">
-              {fightStats.avgUltsInWonFights > fightStats.avgUltsInLostFights ? (
+              {fightStats.avgUltsInWonFights >
+              fightStats.avgUltsInLostFights ? (
                 <>
-                  <span className="font-semibold">Good ult discipline:</span> You
-                  use more ults when winning (
+                  <span className="font-semibold">Good ult discipline:</span>{" "}
+                  You use more ults when winning (
                   {fightStats.avgUltsInWonFights.toFixed(1)}) than when losing (
-                  {fightStats.avgUltsInLostFights.toFixed(1)}), showing you avoid
-                  wasting resources in lost fights.
+                  {fightStats.avgUltsInLostFights.toFixed(1)}), showing you
+                  avoid wasting resources in lost fights.
                 </>
               ) : (
                 <>
-                  <span className="font-semibold">Room for improvement:</span> You
-                  use more ults when losing (
-                  {fightStats.avgUltsInLostFights.toFixed(1)}) than when winning (
-                  {fightStats.avgUltsInWonFights.toFixed(1)}). Consider holding
+                  <span className="font-semibold">Room for improvement:</span>{" "}
+                  You use more ults when losing (
+                  {fightStats.avgUltsInLostFights.toFixed(1)}) than when winning
+                  ({fightStats.avgUltsInWonFights.toFixed(1)}). Consider holding
                   ults in disadvantaged situations.
                 </>
               )}
@@ -182,13 +186,13 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
 
           {/* Additional Context */}
           <div className="bg-muted rounded-lg p-4">
-            <h4 className="mb-3 font-semibold text-sm">Context</h4>
+            <h4 className="mb-3 text-sm font-semibold">Context</h4>
             <div className="grid gap-3 text-sm md:grid-cols-2">
               <div>
                 <span className="text-muted-foreground">Dry Fights:</span>{" "}
                 <span className="font-medium">
-                  {fightStats.dryFights} ({fightStats.dryFightWinrate.toFixed(1)}
-                  % WR)
+                  {fightStats.dryFights} (
+                  {fightStats.dryFightWinrate.toFixed(1)}% WR)
                 </span>
               </div>
               <div>
@@ -205,4 +209,3 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
     </Card>
   );
 }
-
