@@ -1,7 +1,7 @@
 "use client";
 
+import { HeroPickrateHeatmap } from "@/components/stats/team/hero-pickrate-heatmap";
 import { HeroPoolOverviewCard } from "@/components/stats/team/hero-pool-overview-card";
-import { HeroSpecialistsCard } from "@/components/stats/team/hero-specialists-card";
 import { HeroWinratesCard } from "@/components/stats/team/hero-winrates-card";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -18,9 +18,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type {
+  HeroPickrateMatrix,
+  HeroPickrateRawData,
+} from "@/data/team-analytics-dto";
+import type {
   HeroPoolAnalysis,
   HeroPoolRawData,
 } from "@/data/team-hero-pool-dto";
+import { calculateHeroPickrateMatrix } from "@/lib/hero-pickrate-utils";
 import { calculateHeroPoolAnalysis } from "@/lib/hero-pool-utils";
 import { cn } from "@/lib/utils";
 import { addMonths, addWeeks, addYears, format } from "date-fns";
@@ -41,11 +46,15 @@ type Timeframe =
 type HeroPoolContainerProps = {
   rawData: HeroPoolRawData;
   initialData: HeroPoolAnalysis;
+  heatmapRawData: HeroPickrateRawData;
+  heatmapInitialData: HeroPickrateMatrix;
 };
 
 export function HeroPoolContainer({
   rawData,
   initialData,
+  heatmapRawData,
+  heatmapInitialData,
 }: HeroPoolContainerProps) {
   const TODAY = new Date();
 
@@ -53,6 +62,8 @@ export function HeroPoolContainer({
   const [date, setDate] = useState<DateRange | undefined>(undefined);
   const [heroPoolData, setHeroPoolData] =
     useState<HeroPoolAnalysis>(initialData);
+  const [heatmapData, setHeatmapData] =
+    useState<HeroPickrateMatrix>(heatmapInitialData);
 
   function onTimeframeChange(val: Timeframe) {
     setTimeframe(val);
@@ -72,6 +83,8 @@ export function HeroPoolContainer({
     if (timeframe === "all-time" || !date?.from || !date?.to) {
       const calculatedData = calculateHeroPoolAnalysis(rawData);
       setHeroPoolData(calculatedData);
+      const calculatedHeatmap = calculateHeroPickrateMatrix(heatmapRawData);
+      setHeatmapData(calculatedHeatmap);
       return;
     }
 
@@ -81,7 +94,13 @@ export function HeroPoolContainer({
       date.to
     );
     setHeroPoolData(calculatedData);
-  }, [rawData, date, timeframe]);
+    const calculatedHeatmap = calculateHeroPickrateMatrix(
+      heatmapRawData,
+      date.from,
+      date.to
+    );
+    setHeatmapData(calculatedHeatmap);
+  }, [rawData, heatmapRawData, date, timeframe]);
 
   return (
     <div className="space-y-4">
@@ -145,10 +164,8 @@ export function HeroPoolContainer({
 
       {/* Hero Pool Content */}
       <HeroPoolOverviewCard heroPool={heroPoolData} />
-      <div className="grid gap-4 md:grid-cols-2">
-        <HeroWinratesCard heroPool={heroPoolData} />
-        <HeroSpecialistsCard heroPool={heroPoolData} />
-      </div>
+      <HeroWinratesCard heroPool={heroPoolData} />
+      <HeroPickrateHeatmap data={heatmapData} />
     </div>
   );
 }
