@@ -1,5 +1,6 @@
 import { RecentActivityCalendar } from "@/components/profile/recent-activity-calendar";
 import { BestRoleTriosCard } from "@/components/stats/team/best-role-trios-card";
+import { MapModePerformanceCard } from "@/components/stats/team/map-mode-performance-card";
 import { MapWinrateGallery } from "@/components/stats/team/map-winrate-gallery";
 import { RecentFormCard } from "@/components/stats/team/recent-form-card";
 import { RoleBalanceRadar } from "@/components/stats/team/role-balance-radar";
@@ -12,6 +13,7 @@ import { WinLossStreaksCard } from "@/components/stats/team/win-loss-streaks-car
 import { WinrateOverTimeChart } from "@/components/stats/team/winrate-over-time-chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getTeamFightStats } from "@/data/team-fight-stats-dto";
+import { getMapModePerformance } from "@/data/team-map-mode-stats-dto";
 import {
   getRecentForm,
   getStreakInfo,
@@ -36,6 +38,7 @@ import prisma from "@/lib/prisma";
 import { getMapNames } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 
 export default async function TeamStatsPage(
@@ -75,6 +78,7 @@ export default async function TeamStatsPage(
     monthlyWinrate,
     recentForm,
     streakInfo,
+    mapModePerformance,
   ] = await Promise.all([
     prisma.scrim.findMany({
       where: { teamId },
@@ -94,6 +98,7 @@ export default async function TeamStatsPage(
     getWinrateOverTime(teamId, "month"),
     getRecentForm(teamId),
     getStreakInfo(teamId),
+    getMapModePerformance(teamId),
   ]);
 
   // Convert playtime array to Record for gallery
@@ -107,7 +112,14 @@ export default async function TeamStatsPage(
   return (
     <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
       {/* Header Section */}
-      <div className="mb-6 space-y-2">
+      <div className="mb-6 flex flex-col items-center space-y-2">
+        <Image
+          src={team.image ?? `https://avatar.vercel.sh/${team.name}.png`}
+          alt={team.name}
+          width={100}
+          height={100}
+          className="border-muted rounded-full border-2"
+        />
         <h1 className="text-3xl font-bold tracking-tight">{team.name}</h1>
         {totalGames > 0 && (
           <div className="flex items-center gap-4 text-sm">
@@ -185,6 +197,7 @@ export default async function TeamStatsPage(
 
         {/* Maps Tab */}
         <TabsContent value="maps" className="space-y-4">
+          <MapModePerformanceCard modePerformance={mapModePerformance} />
           <MapWinrateGallery
             winrates={winrates.byMap}
             mapPlaytimes={mapPlaytimes}
