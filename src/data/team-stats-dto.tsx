@@ -493,40 +493,60 @@ async function getTeamWinratesUncached(teamId: number): Promise<TeamWinrates> {
 export const getTeamWinrates = cache(getTeamWinratesUncached);
 
 async function getTopMapsByPlaytimeFn(teamId: number) {
-  const mapDataIds = await prisma.mapData.findMany({
-    where: { Map: { Scrim: { Team: { id: teamId } } } },
+  // Get all Maps for the team (MapDataId in event tables actually stores Map.id)
+  const maps = await prisma.map.findMany({
+    where: { Scrim: { Team: { id: teamId } } },
     select: {
       id: true,
-      Map: { select: { name: true } },
+      name: true,
     },
   });
 
+  if (maps.length === 0) {
+    return [];
+  }
+
+  const mapIds = maps.map((m) => m.id);
+
   const matchEnds = await prisma.matchEnd.findMany({
-    where: { MapDataId: { in: mapDataIds.map((md) => md.id) } },
+    where: { MapDataId: { in: mapIds } },
     select: {
       match_time: true,
       MapDataId: true,
     },
   });
 
-  // Sum all match ends that the team has played
-  const playtimeByMap = new Map<number, number>();
+  // First, sum all match ends by Map ID
+  const playtimeByMapId = new Map<number, number>();
 
   for (const matchEnd of matchEnds) {
-    const mapDataId = matchEnd.MapDataId;
-    if (!mapDataId) continue;
+    const mapId = matchEnd.MapDataId;
+    if (!mapId) continue;
 
-    const currentPlaytime = playtimeByMap.get(mapDataId) ?? 0;
-    playtimeByMap.set(mapDataId, currentPlaytime + matchEnd.match_time);
+    const currentPlaytime = playtimeByMapId.get(mapId) ?? 0;
+    playtimeByMapId.set(mapId, currentPlaytime + matchEnd.match_time);
   }
 
-  const top5Maps = mapDataIds.map((md) => ({
-    id: md.id,
-    name: md.Map?.name ?? "Unknown Map",
-    playtime: playtimeByMap.get(md.id) ?? 0,
-  }));
+  // Then, aggregate by map name (since same map can appear in multiple scrims)
+  const playtimeByMapName = new Map<string, number>();
 
-  return top5Maps.sort((a, b) => b.playtime - a.playtime);
+  for (const map of maps) {
+    const mapName = map.name ?? "Unknown Map";
+    const playtime = playtimeByMapId.get(map.id) ?? 0;
+
+    const currentPlaytime = playtimeByMapName.get(mapName) ?? 0;
+    playtimeByMapName.set(mapName, currentPlaytime + playtime);
+  }
+
+  // Convert to array format
+  const mapsWithPlaytime = Array.from(playtimeByMapName.entries()).map(
+    ([name, playtime]) => ({
+      name,
+      playtime,
+    })
+  );
+
+  return mapsWithPlaytime.sort((a, b) => b.playtime - a.playtime);
 }
 
 const getTopMapsByPlaytime = cache(getTopMapsByPlaytimeFn);
@@ -559,3 +579,30 @@ async function getBestMapByWinrateFn(teamId: number) {
 }
 
 export const getBestMapByWinrate = cache(getBestMapByWinrateFn);
+
+/**
+ * Finds the map with the lowest winrate, then breaks ties by playtime.
+ */
+async function getBlindSpotMapFn(teamId: number) {
+  const [winrates, topMaps] = await Promise.all([
+    getTeamWinrates(teamId),
+    getTopMapsByPlaytime(teamId),
+  ]);
+
+  const mapsWithStats = Object.keys(winrates.byMap).map((map) => ({
+    mapName: map,
+    playtime: topMaps.find((m) => m.name === map)?.playtime ?? 0,
+    winrate: winrates.byMap[map].totalWinrate,
+  }));
+
+  const sortedMapsWithStats = mapsWithStats.sort((a, b) => {
+    if (b.winrate !== a.winrate) {
+      return a.winrate - b.winrate;
+    }
+    return b.playtime - a.playtime;
+  });
+
+  return sortedMapsWithStats[0];
+}
+
+export const getBlindSpotMap = cache(getBlindSpotMapFn);
