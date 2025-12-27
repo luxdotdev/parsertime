@@ -96,14 +96,6 @@ export function HeroPickrateHeatmap({ data }: HeroPickrateHeatmapProps) {
                   key={heroName}
                   className="flex flex-col items-center justify-end gap-1 pb-2"
                 >
-                  <div className="relative h-10 w-10">
-                    <Image
-                      src={`/heroes/${toHero(heroName)}.png`}
-                      alt={heroName}
-                      fill
-                      className="rounded object-cover"
-                    />
-                  </div>
                   <span
                     className="text-xs font-medium"
                     style={{
@@ -113,6 +105,14 @@ export function HeroPickrateHeatmap({ data }: HeroPickrateHeatmapProps) {
                   >
                     {heroName}
                   </span>
+                  <div className="relative h-10 w-10">
+                    <Image
+                      src={`/heroes/${toHero(heroName)}.png`}
+                      alt={heroName}
+                      fill
+                      className="rounded object-cover"
+                    />
+                  </div>
                 </div>
               ))}
 
