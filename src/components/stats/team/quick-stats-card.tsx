@@ -1,0 +1,144 @@
+"use client";
+
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { QuickWinsStats } from "@/data/team-quick-wins-dto";
+import { cn } from "@/lib/utils";
+import { CalendarCheck, Clock, TrendingUp, Trophy } from "lucide-react";
+
+type QuickStatsCardProps = {
+  stats: QuickWinsStats;
+};
+
+function formatFightDuration(seconds: number | null): string {
+  if (seconds === null) return "N/A";
+  return `${seconds.toFixed(1)}s`;
+}
+
+function getWinrateColor(winrate: number): string {
+  if (winrate >= 60) return "text-green-600 dark:text-green-400";
+  if (winrate >= 50) return "text-blue-600 dark:text-blue-400";
+  if (winrate >= 40) return "text-yellow-600 dark:text-yellow-400";
+  return "text-red-600 dark:text-red-400";
+}
+
+export function QuickStatsCard({ stats }: QuickStatsCardProps) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <TrendingUp className="h-5 w-5" />
+          Quick Stats
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {/* Last 10 Games */}
+          <div className="space-y-2">
+            <div className="text-muted-foreground flex items-center gap-2 text-sm">
+              <Trophy className="h-4 w-4" />
+              <span>Last 10 Games</span>
+            </div>
+            <div className="space-y-1">
+              <div
+                className={cn(
+                  "text-3xl font-bold",
+                  getWinrateColor(stats.last10GamesPerformance.winrate)
+                )}
+              >
+                {stats.last10GamesPerformance.winrate.toFixed(0)}%
+              </div>
+              <div className="text-muted-foreground text-xs">
+                {stats.last10GamesPerformance.wins}W -{" "}
+                {stats.last10GamesPerformance.losses}L
+              </div>
+            </div>
+          </div>
+
+          {/* Best Day of Week */}
+          <div className="space-y-2">
+            <div className="text-muted-foreground flex items-center gap-2 text-sm">
+              <CalendarCheck className="h-4 w-4" />
+              <span>Best Day</span>
+            </div>
+            {stats.bestDayOfWeek ? (
+              <div className="space-y-1">
+                <div className="text-2xl font-bold">
+                  {stats.bestDayOfWeek.day}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      "text-xs",
+                      stats.bestDayOfWeek.winrate >= 60 &&
+                        "border-green-500 text-green-600 dark:text-green-400"
+                    )}
+                  >
+                    {stats.bestDayOfWeek.winrate.toFixed(0)}% WR
+                  </Badge>
+                  <span className="text-muted-foreground text-xs">
+                    {stats.bestDayOfWeek.gamesPlayed} games
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="text-muted-foreground text-sm">
+                Not enough data
+                <div className="text-xs">(need 3+ games per day)</div>
+              </div>
+            )}
+          </div>
+
+          {/* Average Fight Duration */}
+          <div className="space-y-2">
+            <div className="text-muted-foreground flex items-center gap-2 text-sm">
+              <Clock className="h-4 w-4" />
+              <span>Avg Fight Duration</span>
+            </div>
+            <div className="space-y-1">
+              <div className="text-3xl font-bold">
+                {formatFightDuration(stats.averageFightDuration)}
+              </div>
+              {stats.averageFightDuration !== null && (
+                <div className="text-muted-foreground text-xs">
+                  {stats.averageFightDuration < 20
+                    ? "Quick fights"
+                    : stats.averageFightDuration < 30
+                      ? "Standard"
+                      : "Long fights"}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* First Pick Success Rate */}
+          <div className="space-y-2">
+            <div className="text-muted-foreground flex items-center gap-2 text-sm">
+              <Trophy className="h-4 w-4" />
+              <span>First Pick Success</span>
+            </div>
+            {stats.firstPickSuccessRate ? (
+              <div className="space-y-1">
+                <div
+                  className={cn(
+                    "text-3xl font-bold",
+                    getWinrateColor(stats.firstPickSuccessRate.successRate)
+                  )}
+                >
+                  {stats.firstPickSuccessRate.successRate.toFixed(0)}%
+                </div>
+                <div className="text-muted-foreground text-xs">
+                  {stats.firstPickSuccessRate.successfulFirstPicks}/
+                  {stats.firstPickSuccessRate.totalFirstPicks} picks won
+                </div>
+              </div>
+            ) : (
+              <div className="text-muted-foreground text-sm">No data</div>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
