@@ -313,4 +313,3 @@ export function calculateHeroPoolAnalysis(
     diversity,
   };
 }
-

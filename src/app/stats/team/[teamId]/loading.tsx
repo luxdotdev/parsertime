@@ -1,6 +1,7 @@
+/* eslint-disable react/no-array-index-key */
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export default function TeamStatsLoading() {
   return (
@@ -200,4 +201,3 @@ export default function TeamStatsLoading() {
     </div>
   );
 }
-

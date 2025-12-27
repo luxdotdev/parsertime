@@ -1,10 +1,10 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { cn, toKebabCase, toTimestampWithHours } from "@/lib/utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toKebabCase, toTimestampWithHours } from "@/lib/utils";
+import { TrendingDown, TrendingUp } from "lucide-react";
 import Image from "next/image";
-import { TrendingUp, TrendingDown } from "lucide-react";
 
 type StrengthsWeaknessesCardProps = {
   bestMap?: {
@@ -59,7 +59,9 @@ export function StrengthsWeaknessesCard({
             <div className="relative h-32 overflow-hidden rounded-lg border-2 border-green-500">
               <Image
                 src={`/maps/${toKebabCase(bestMap.mapName)}.webp`}
-                alt={mapNames.get(toKebabCase(bestMap.mapName)) ?? bestMap.mapName}
+                alt={
+                  mapNames.get(toKebabCase(bestMap.mapName)) ?? bestMap.mapName
+                }
                 fill
                 className="object-cover brightness-[0.4]"
               />
@@ -67,9 +69,10 @@ export function StrengthsWeaknessesCard({
               <div className="absolute inset-0 flex flex-col justify-between p-4">
                 <div className="flex items-start justify-between">
                   <h4 className="text-lg font-bold text-white drop-shadow-lg">
-                    {mapNames.get(toKebabCase(bestMap.mapName)) ?? bestMap.mapName}
+                    {mapNames.get(toKebabCase(bestMap.mapName)) ??
+                      bestMap.mapName}
                   </h4>
-                  <Badge className="bg-green-500 text-white font-bold">
+                  <Badge className="bg-green-500 font-bold text-white">
                     {bestMap.winrate.toFixed(1)}%
                   </Badge>
                 </div>
@@ -100,7 +103,10 @@ export function StrengthsWeaknessesCard({
             <div className="relative h-32 overflow-hidden rounded-lg border-2 border-red-500">
               <Image
                 src={`/maps/${toKebabCase(blindSpot.mapName)}.webp`}
-                alt={mapNames.get(toKebabCase(blindSpot.mapName)) ?? blindSpot.mapName}
+                alt={
+                  mapNames.get(toKebabCase(blindSpot.mapName)) ??
+                  blindSpot.mapName
+                }
                 fill
                 className="object-cover brightness-[0.4]"
               />
@@ -108,9 +114,10 @@ export function StrengthsWeaknessesCard({
               <div className="absolute inset-0 flex flex-col justify-between p-4">
                 <div className="flex items-start justify-between">
                   <h4 className="text-lg font-bold text-white drop-shadow-lg">
-                    {mapNames.get(toKebabCase(blindSpot.mapName)) ?? blindSpot.mapName}
+                    {mapNames.get(toKebabCase(blindSpot.mapName)) ??
+                      blindSpot.mapName}
                   </h4>
-                  <Badge className="bg-red-500 text-white font-bold">
+                  <Badge className="bg-red-500 font-bold text-white">
                     {blindSpot.winrate.toFixed(1)}%
                   </Badge>
                 </div>
@@ -131,4 +138,3 @@ export function StrengthsWeaknessesCard({
     </Card>
   );
 }
-

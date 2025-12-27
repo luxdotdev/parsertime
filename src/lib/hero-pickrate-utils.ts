@@ -53,10 +53,7 @@ export function calculateHeroPickrateMatrix(
     const teamCounts = new Map<string, number>();
 
     for (const stat of allPlayerStats) {
-      if (
-        stat.MapDataId === mapDataId &&
-        teamRosterSet.has(stat.player_name)
-      ) {
+      if (stat.MapDataId === mapDataId && teamRosterSet.has(stat.player_name)) {
         const currentCount = teamCounts.get(stat.player_team) ?? 0;
         teamCounts.set(stat.player_team, currentCount + 1);
       }
@@ -150,4 +147,3 @@ export function calculateHeroPickrateMatrix(
     allHeroes: Array.from(allHeroesSet),
   };
 }
-
