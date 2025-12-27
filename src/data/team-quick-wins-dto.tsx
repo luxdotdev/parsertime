@@ -1,13 +1,17 @@
 import "server-only";
 
-import prisma from "@/lib/prisma";
 import { calculateWinner } from "@/lib/winrate";
-import { mapNameToMapTypeMapping } from "@/types/map";
 import type { Kill } from "@prisma/client";
-import { $Enums } from "@prisma/client";
 import { cache } from "react";
 import { getTeamFightStats } from "./team-fight-stats-dto";
-import { getTeamRoster } from "./team-stats-dto";
+import type { ExtendedTeamData } from "./team-shared-data";
+import {
+  buildCapturesMaps,
+  buildFinalRoundMap,
+  buildMatchStartMap,
+  findTeamNameForMapInMemory,
+  getExtendedTeamData,
+} from "./team-shared-data";
 
 export type QuickWinsStats = {
   last10GamesPerformance: {
@@ -29,37 +33,6 @@ export type QuickWinsStats = {
     successRate: number;
   } | null;
 };
-
-function findTeamNameForMapInMemory(
-  mapDataId: number,
-  allPlayerStats: {
-    player_name: string;
-    player_team: string;
-    MapDataId: number | null;
-  }[],
-  teamRosterSet: Set<string>
-): string | null {
-  const teamCounts = new Map<string, number>();
-
-  for (const stat of allPlayerStats) {
-    if (stat.MapDataId === mapDataId && teamRosterSet.has(stat.player_name)) {
-      const currentCount = teamCounts.get(stat.player_team) ?? 0;
-      teamCounts.set(stat.player_team, currentCount + 1);
-    }
-  }
-
-  let maxCount = 0;
-  let teamName: string | null = null;
-
-  for (const [team, count] of teamCounts.entries()) {
-    if (count > maxCount) {
-      maxCount = count;
-      teamName = team;
-    }
-  }
-
-  return teamName;
-}
 
 type FightEvent = Kill & {
   ultimate_id?: number;
@@ -115,48 +88,44 @@ function analyzeFightOutcome(
 async function getQuickWinsStatsUncached(
   teamId: number
 ): Promise<QuickWinsStats> {
-  const [teamRoster, fightStats] = await Promise.all([
-    getTeamRoster(teamId),
+  const [fightStats, sharedData] = await Promise.all([
     getTeamFightStats(teamId),
+    getExtendedTeamData(teamId, {
+      excludePush: true,
+      excludeClash: true,
+      includeDateInfo: true,
+    }),
   ]);
 
-  const teamRosterSet = new Set(teamRoster);
+  return processQuickWinsStats(sharedData, fightStats);
+}
 
-  if (teamRoster.length === 0) {
-    return {
-      last10GamesPerformance: { wins: 0, losses: 0, winrate: 0 },
-      bestDayOfWeek: null,
-      averageFightDuration: null,
-      firstPickSuccessRate: null,
+function processQuickWinsStats(
+  sharedData: ExtendedTeamData,
+  fightStats: Awaited<ReturnType<typeof getTeamFightStats>>
+): QuickWinsStats {
+  const {
+    teamRosterSet,
+    mapDataRecords: rawMapDataRecords,
+    allPlayerStats,
+    matchStarts,
+    finalRounds,
+    captures,
+    allKills,
+    allRezzes,
+    allUltimates,
+  } = sharedData;
+
+  // Type assertion to ensure we have the Scrim data
+  const mapDataRecords = rawMapDataRecords as {
+    id: number;
+    name: string | null;
+    Scrim?: {
+      id: number;
+      name: string;
+      date: Date;
     };
-  }
-
-  const allMapDataRecords = await prisma.map.findMany({
-    where: { Scrim: { Team: { id: teamId } } },
-    select: {
-      id: true,
-      name: true,
-      Scrim: {
-        select: {
-          id: true,
-          date: true,
-        },
-      },
-    },
-    orderBy: {
-      Scrim: {
-        date: "desc",
-      },
-    },
-  });
-
-  const mapDataRecords = allMapDataRecords.filter((record) => {
-    const mapName = record.name;
-    if (!mapName) return false;
-    const mapType =
-      mapNameToMapTypeMapping[mapName as keyof typeof mapNameToMapTypeMapping];
-    return mapType !== $Enums.MapType.Push && mapType !== $Enums.MapType.Clash;
-  });
+  }[];
 
   if (mapDataRecords.length === 0) {
     return {
@@ -167,92 +136,12 @@ async function getQuickWinsStatsUncached(
     };
   }
 
-  const mapDataIds = mapDataRecords.map((md) => md.id);
-
-  const [
-    allPlayerStats,
-    matchStarts,
-    finalRounds,
+  const finalRoundMap = buildFinalRoundMap(finalRounds);
+  const matchStartMap = buildMatchStartMap(matchStarts);
+  const { team1CapturesMap, team2CapturesMap } = buildCapturesMaps(
     captures,
-    allKills,
-    allRezzes,
-    allUltimates,
-  ] = await Promise.all([
-    prisma.playerStat.findMany({
-      where: { MapDataId: { in: mapDataIds } },
-      select: {
-        player_name: true,
-        player_team: true,
-        MapDataId: true,
-      },
-    }),
-    prisma.matchStart.findMany({
-      where: { MapDataId: { in: mapDataIds } },
-    }),
-    prisma.roundEnd.findMany({
-      where: {
-        MapDataId: { in: mapDataIds },
-      },
-      orderBy: { round_number: "desc" },
-    }),
-    prisma.objectiveCaptured.findMany({
-      where: { MapDataId: { in: mapDataIds } },
-    }),
-    prisma.kill.findMany({
-      where: { MapDataId: { in: mapDataIds } },
-      orderBy: { match_time: "asc" },
-    }),
-    prisma.mercyRez.findMany({
-      where: { MapDataId: { in: mapDataIds } },
-      orderBy: { match_time: "asc" },
-    }),
-    prisma.ultimateStart.findMany({
-      where: { MapDataId: { in: mapDataIds } },
-      orderBy: { match_time: "asc" },
-    }),
-  ]);
-
-  // Build lookup maps
-  const finalRoundMap = new Map<number, (typeof finalRounds)[0]>();
-  for (const round of finalRounds) {
-    const mapDataId = round.MapDataId;
-    if (mapDataId) {
-      const existing = finalRoundMap.get(mapDataId);
-      if (!existing || round.round_number > existing.round_number) {
-        finalRoundMap.set(mapDataId, round);
-      }
-    }
-  }
-
-  const matchStartMap = new Map<number, (typeof matchStarts)[0]>();
-  for (const match of matchStarts) {
-    if (match.MapDataId) {
-      matchStartMap.set(match.MapDataId, match);
-    }
-  }
-
-  const team1CapturesMap = new Map<number, typeof captures>();
-  const team2CapturesMap = new Map<number, typeof captures>();
-
-  for (const capture of captures) {
-    const mapDataId = capture.MapDataId;
-    if (!mapDataId) continue;
-
-    const match = matchStartMap.get(mapDataId);
-    if (!match) continue;
-
-    if (capture.capturing_team === match.team_1_name) {
-      if (!team1CapturesMap.has(mapDataId)) {
-        team1CapturesMap.set(mapDataId, []);
-      }
-      team1CapturesMap.get(mapDataId)!.push(capture);
-    } else if (capture.capturing_team === match.team_2_name) {
-      if (!team2CapturesMap.has(mapDataId)) {
-        team2CapturesMap.set(mapDataId, []);
-      }
-      team2CapturesMap.get(mapDataId)!.push(capture);
-    }
-  }
+    matchStartMap
+  );
 
   // Calculate match results
   type MatchResult = {
@@ -266,6 +155,8 @@ async function getQuickWinsStatsUncached(
 
   for (const mapDataRecord of mapDataRecords) {
     const mapDataId = mapDataRecord.id;
+
+    // Get scrim date, default to current date if not available
     const scrimDate = mapDataRecord.Scrim?.date ?? new Date();
 
     const teamName = findTeamNameForMapInMemory(

@@ -1,9 +1,12 @@
 import "server-only";
 
-import prisma from "@/lib/prisma";
 import type { Kill } from "@prisma/client";
 import { cache } from "react";
-
+import type { ExtendedTeamData } from "./team-shared-data";
+import {
+  findTeamNameForMapInMemory,
+  getExtendedTeamData,
+} from "./team-shared-data";
 export type TeamFightStats = {
   totalFights: number;
   fightsWon: number;
@@ -148,13 +151,19 @@ function analyzeFightOutcome(fight: Fight, ourTeamName: string): FightAnalysis {
 async function getTeamFightStatsUncached(
   teamId: number
 ): Promise<TeamFightStats> {
-  // Get all map data for the team
-  const mapDataRecords = await prisma.map.findMany({
-    where: { Scrim: { Team: { id: teamId } } },
-    select: { id: true },
-  });
+  const sharedData = await getExtendedTeamData(teamId);
+  return processTeamFightStats(sharedData);
+}
 
-  const mapDataIds = mapDataRecords.map((md) => md.id);
+function processTeamFightStats(sharedData: ExtendedTeamData): TeamFightStats {
+  const {
+    teamRosterSet,
+    mapDataIds,
+    allPlayerStats,
+    allKills,
+    allRezzes,
+    allUltimates,
+  } = sharedData;
 
   if (mapDataIds.length === 0) {
     return {
@@ -185,69 +194,18 @@ async function getTeamFightStatsUncached(
     };
   }
 
-  // Batch fetch ALL data for ALL maps in parallel (minimize DB round trips)
-  const [allKills, allRezzes, allUltimates, allPlayerStats, teamRoster] =
-    await Promise.all([
-      prisma.kill.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-        orderBy: { match_time: "asc" },
-      }),
-      prisma.mercyRez.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-        orderBy: { match_time: "asc" },
-      }),
-      prisma.ultimateStart.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-        orderBy: { match_time: "asc" },
-      }),
-      prisma.playerStat.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-        select: {
-          player_name: true,
-          player_team: true,
-          MapDataId: true,
-        },
-      }),
-      prisma.playerStat.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-        select: { player_name: true, MapDataId: true },
-        distinct: ["player_name"],
-      }),
-    ]);
-
   // Build team name lookup for each map based on roster
-  const rosterPlayerNames = new Set(teamRoster.map((stat) => stat.player_name));
-
   const teamNameByMapId = new Map<number, string>();
   for (const mapDataId of mapDataIds) {
-    const teamCounts = new Map<string, number>();
-
-    for (const stat of allPlayerStats) {
-      if (
-        stat.MapDataId === mapDataId &&
-        rosterPlayerNames.has(stat.player_name)
-      ) {
-        const currentCount = teamCounts.get(stat.player_team) ?? 0;
-        teamCounts.set(stat.player_team, currentCount + 1);
-      }
-    }
-
-    let maxCount = 0;
-    let teamName: string | null = null;
-
-    for (const [team, count] of teamCounts.entries()) {
-      if (count > maxCount) {
-        maxCount = count;
-        teamName = team;
-      }
-    }
-
+    const teamName = findTeamNameForMapInMemory(
+      mapDataId,
+      allPlayerStats,
+      teamRosterSet
+    );
     if (teamName) {
       teamNameByMapId.set(mapDataId, teamName);
     }
   }
-
-  // Group events by map ID for in-memory processing
   const killsByMap = new Map<number, typeof allKills>();
   const rezzesByMap = new Map<number, typeof allRezzes>();
   const ultsByMap = new Map<number, typeof allUltimates>();

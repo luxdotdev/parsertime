@@ -8,7 +8,15 @@ import { mapNameToMapTypeMapping } from "@/types/map";
 import type { MatchStart, ObjectiveCaptured, RoundEnd } from "@prisma/client";
 import { $Enums } from "@prisma/client";
 import { cache } from "react";
-import { getTeamRoster } from "./team-stats-dto";
+import type { BaseTeamData } from "./team-shared-data";
+import {
+  buildCapturesMaps,
+  buildFinalRoundMap,
+  buildMatchStartMap,
+  findTeamNameForMapInMemory,
+  getBaseTeamData,
+  getTeamRoster,
+} from "./team-shared-data";
 
 export type HeroPlaytime = {
   heroName: HeroName;
@@ -78,41 +86,29 @@ export type HeroPoolRawData = {
   captures: ObjectiveCaptured[];
 };
 
-function findTeamNameForMapInMemory(
-  mapDataId: number,
-  allPlayerStats: {
-    player_name: string;
-    player_team: string;
-    MapDataId: number | null;
-  }[],
-  teamRosterSet: Set<string>
-): string | null {
-  const teamCounts = new Map<string, number>();
-
-  for (const stat of allPlayerStats) {
-    if (stat.MapDataId === mapDataId && teamRosterSet.has(stat.player_name)) {
-      const currentCount = teamCounts.get(stat.player_team) ?? 0;
-      teamCounts.set(stat.player_team, currentCount + 1);
-    }
-  }
-
-  let maxCount = 0;
-  let teamName: string | null = null;
-
-  for (const [team, count] of teamCounts.entries()) {
-    if (count > maxCount) {
-      maxCount = count;
-      teamName = team;
-    }
-  }
-
-  return teamName;
-}
-
 async function getHeroPoolAnalysisUncached(
   teamId: number,
   dateFrom?: Date,
   dateTo?: Date
+): Promise<HeroPoolAnalysis> {
+  // Special handling for date range filtering - need custom query
+  if (dateFrom && dateTo) {
+    return getHeroPoolAnalysisWithCustomDateRange(teamId, dateFrom, dateTo);
+  }
+
+  // Use shared data layer
+  const sharedData = await getBaseTeamData(teamId, {
+    excludePush: true,
+    excludeClash: true,
+  });
+
+  return processHeroPoolAnalysis(sharedData);
+}
+
+async function getHeroPoolAnalysisWithCustomDateRange(
+  teamId: number,
+  dateFrom: Date,
+  dateTo: Date
 ): Promise<HeroPoolAnalysis> {
   const teamRoster = await getTeamRoster(teamId);
   const teamRosterSet = new Set(teamRoster);
@@ -121,15 +117,12 @@ async function getHeroPoolAnalysisUncached(
     return createEmptyHeroPoolAnalysis();
   }
 
-  const dateFilter =
-    dateFrom && dateTo
-      ? {
-          date: {
-            gte: dateFrom,
-            lte: dateTo,
-          },
-        }
-      : {};
+  const dateFilter = {
+    date: {
+      gte: dateFrom,
+      lte: dateTo,
+    },
+  };
 
   const allMapDataRecords = await prisma.map.findMany({
     where: {
@@ -168,6 +161,15 @@ async function getHeroPoolAnalysisUncached(
           player_hero: true,
           hero_time_played: true,
           MapDataId: true,
+          eliminations: true,
+          final_blows: true,
+          deaths: true,
+          offensive_assists: true,
+          hero_damage_dealt: true,
+          damage_taken: true,
+          healing_dealt: true,
+          ultimates_earned: true,
+          ultimates_used: true,
         },
       }),
       prisma.matchStart.findMany({
@@ -184,46 +186,41 @@ async function getHeroPoolAnalysisUncached(
       }),
     ]);
 
-  const finalRoundMap = new Map<number, (typeof finalRounds)[0]>();
-  for (const round of finalRounds) {
-    const mapDataId = round.MapDataId;
-    if (mapDataId) {
-      const existing = finalRoundMap.get(mapDataId);
-      if (!existing || round.round_number > existing.round_number) {
-        finalRoundMap.set(mapDataId, round);
-      }
-    }
+  const baseData: BaseTeamData = {
+    teamId,
+    teamRoster,
+    teamRosterSet,
+    mapDataRecords,
+    mapDataIds,
+    allPlayerStats,
+    matchStarts,
+    finalRounds,
+    captures,
+  };
+
+  return processHeroPoolAnalysis(baseData);
+}
+
+function processHeroPoolAnalysis(sharedData: BaseTeamData): HeroPoolAnalysis {
+  const {
+    teamRosterSet,
+    mapDataRecords,
+    allPlayerStats,
+    matchStarts,
+    finalRounds,
+    captures,
+  } = sharedData;
+
+  if (mapDataRecords.length === 0) {
+    return createEmptyHeroPoolAnalysis();
   }
 
-  const matchStartMap = new Map<number, (typeof matchStarts)[0]>();
-  for (const match of matchStarts) {
-    if (match.MapDataId) {
-      matchStartMap.set(match.MapDataId, match);
-    }
-  }
-
-  const team1CapturesMap = new Map<number, typeof captures>();
-  const team2CapturesMap = new Map<number, typeof captures>();
-
-  for (const capture of captures) {
-    const mapDataId = capture.MapDataId;
-    if (!mapDataId) continue;
-
-    const match = matchStartMap.get(mapDataId);
-    if (!match) continue;
-
-    if (capture.capturing_team === match.team_1_name) {
-      if (!team1CapturesMap.has(mapDataId)) {
-        team1CapturesMap.set(mapDataId, []);
-      }
-      team1CapturesMap.get(mapDataId)!.push(capture);
-    } else if (capture.capturing_team === match.team_2_name) {
-      if (!team2CapturesMap.has(mapDataId)) {
-        team2CapturesMap.set(mapDataId, []);
-      }
-      team2CapturesMap.get(mapDataId)!.push(capture);
-    }
-  }
+  const finalRoundMap = buildFinalRoundMap(finalRounds);
+  const matchStartMap = buildMatchStartMap(matchStarts);
+  const { team1CapturesMap, team2CapturesMap } = buildCapturesMaps(
+    captures,
+    matchStartMap
+  );
 
   type HeroData = {
     playtime: number;
@@ -446,19 +443,7 @@ export async function getHeroPoolAnalysisWithDateRange(
 async function getHeroPoolRawDataUncached(
   teamId: number
 ): Promise<HeroPoolRawData> {
-  const teamRoster = await getTeamRoster(teamId);
-
-  if (teamRoster.length === 0) {
-    return {
-      teamRoster: [],
-      mapDataRecords: [],
-      allPlayerStats: [],
-      matchStarts: [],
-      finalRounds: [],
-      captures: [],
-    };
-  }
-
+  // Fetch with date info for raw data
   const allMapDataRecords = await prisma.map.findMany({
     where: {
       Scrim: {
@@ -475,6 +460,19 @@ async function getHeroPoolRawDataUncached(
       },
     },
   });
+
+  const teamRoster = await getTeamRoster(teamId);
+
+  if (teamRoster.length === 0) {
+    return {
+      teamRoster: [],
+      mapDataRecords: [],
+      allPlayerStats: [],
+      matchStarts: [],
+      finalRounds: [],
+      captures: [],
+    };
+  }
 
   const mapDataRecords = allMapDataRecords
     .filter((record) => {

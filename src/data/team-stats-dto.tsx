@@ -2,10 +2,40 @@ import "server-only";
 
 import prisma from "@/lib/prisma";
 import { calculateWinner } from "@/lib/winrate";
-import { mapNameToMapTypeMapping } from "@/types/map";
 import type { PlayerStat } from "@prisma/client";
-import { $Enums } from "@prisma/client";
 import { cache } from "react";
+import type { BaseTeamData } from "./team-shared-data";
+import {
+  buildCapturesMaps,
+  buildFinalRoundMap,
+  buildMatchStartMap,
+  getBaseTeamData,
+  getTeamRoster,
+} from "./team-shared-data";
+
+// Re-export getTeamRoster for backwards compatibility
+export { getTeamRoster };
+
+/**
+ * Gets the roster (list of player names) for a specific team on a specific map.
+ */
+function getRosterForMap(
+  mapDataId: number,
+  teamName: string,
+  allPlayerStats: {
+    player_name: string;
+    player_team: string;
+    MapDataId: number | null;
+  }[]
+): string[] {
+  const roster = new Set<string>();
+  for (const stat of allPlayerStats) {
+    if (stat.MapDataId === mapDataId && stat.player_team === teamName) {
+      roster.add(stat.player_name);
+    }
+  }
+  return Array.from(roster).sort();
+}
 
 /**
  * Finds the anchor player's team name for a specific map.
@@ -30,120 +60,6 @@ function findTeamNameForMap(
   }
   return null;
 }
-
-/**
- * Gets the roster (list of player names) for a specific team on a specific map.
- */
-function getRosterForMap(
-  mapDataId: number,
-  teamName: string,
-  allPlayerStats: {
-    player_name: string;
-    player_team: string;
-    MapDataId: number | null;
-  }[]
-): string[] {
-  const roster = new Set<string>();
-  for (const stat of allPlayerStats) {
-    if (stat.MapDataId === mapDataId && stat.player_team === teamName) {
-      roster.add(stat.player_name);
-    }
-  }
-  return Array.from(roster).sort();
-}
-
-async function getTeamRosterUncached(teamId: number) {
-  // 1. Get all MapData for the team ID through the relationship chain
-  const mapDataRecords = await prisma.map.findMany({
-    where: { Scrim: { Team: { id: teamId } } },
-    select: { id: true },
-  });
-
-  const mapDataIds = mapDataRecords.map((md) => md.id);
-
-  if (mapDataIds.length === 0) {
-    return [];
-  }
-
-  // 2. Get ALL PlayerStat records for ALL maps in a single query (batch optimization)
-  const allPlayerStats = await prisma.playerStat.findMany({
-    where: { MapDataId: { in: mapDataIds } },
-    select: {
-      player_name: true,
-      player_team: true,
-      MapDataId: true,
-    },
-  });
-
-  // 3. Process in memory: count each unique player exactly once per map
-  const playerFrequencyMap = new Map<string, number>();
-  const mapPlayerSets = new Map<number, Set<string>>();
-
-  for (const stat of allPlayerStats) {
-    const mapDataId = stat.MapDataId;
-
-    if (!mapDataId) continue;
-
-    if (!mapPlayerSets.has(mapDataId)) {
-      mapPlayerSets.set(mapDataId, new Set<string>());
-    }
-
-    const playersInMap = mapPlayerSets.get(mapDataId)!;
-
-    if (!playersInMap.has(stat.player_name)) {
-      playersInMap.add(stat.player_name);
-
-      const currentCount = playerFrequencyMap.get(stat.player_name) ?? 0;
-      playerFrequencyMap.set(stat.player_name, currentCount + 1);
-    }
-  }
-
-  // 4. Find the most frequently occurring player to use as anchor
-  const sortedPlayers = Array.from(playerFrequencyMap.entries()).sort(
-    (a, b) => b[1] - a[1]
-  );
-
-  if (sortedPlayers.length === 0) {
-    return [];
-  }
-
-  // 5. Find an anchor player who appears in the data
-  let anchorPlayer: string | null = null;
-
-  for (const [playerName] of sortedPlayers) {
-    const playerExists = allPlayerStats.some(
-      (stat) => stat.player_name === playerName
-    );
-    if (playerExists) {
-      anchorPlayer = playerName;
-      break;
-    }
-  }
-
-  if (!anchorPlayer) {
-    return [];
-  }
-
-  // 6. For each map, find the anchor player's team name, then collect all players on that team
-  const rosterPlayers = new Set<string>();
-
-  for (const mapDataId of mapDataIds) {
-    const teamName = findTeamNameForMap(
-      mapDataId,
-      allPlayerStats,
-      sortedPlayers
-    );
-
-    if (teamName) {
-      const mapRoster = getRosterForMap(mapDataId, teamName, allPlayerStats);
-      mapRoster.forEach((player) => rosterPlayers.add(player));
-    }
-  }
-
-  return Array.from(rosterPlayers);
-}
-
-export const getTeamRoster = cache(getTeamRosterUncached);
 
 export async function getTeamNameForRoster(teamId: number, mapDataId: number) {
   const roster = await getTeamRoster(teamId);
@@ -219,11 +135,22 @@ type TeamWinrates = {
 };
 
 async function getTeamWinratesUncached(teamId: number): Promise<TeamWinrates> {
-  // 0. Get the team's actual roster first
-  const teamRoster = await getTeamRoster(teamId);
-  const teamRosterSet = new Set(teamRoster);
+  const sharedData = await getBaseTeamData(teamId, { excludePush: true });
+  return processTeamWinrates(sharedData);
+}
 
-  if (teamRoster.length === 0) {
+function processTeamWinrates(sharedData: BaseTeamData): TeamWinrates {
+  const {
+    teamRoster,
+    teamRosterSet,
+    mapDataRecords,
+    allPlayerStats,
+    matchStarts,
+    finalRounds,
+    captures,
+  } = sharedData;
+
+  if (teamRoster.length === 0 || mapDataRecords.length === 0) {
     return {
       overallWins: 0,
       overallLosses: 0,
@@ -232,62 +159,7 @@ async function getTeamWinratesUncached(teamId: number): Promise<TeamWinrates> {
     };
   }
 
-  // 1. Get all MapData IDs for the team
-  const allMapDataRecords = await prisma.map.findMany({
-    where: { Scrim: { Team: { id: teamId } } },
-    select: {
-      id: true,
-      name: true,
-    },
-  });
-
-  // Filter out Push maps as they cannot be calculated
-  const mapDataRecords = allMapDataRecords.filter((record) => {
-    const mapName = record.name;
-    if (!mapName) return false;
-
-    const mapType =
-      mapNameToMapTypeMapping[mapName as keyof typeof mapNameToMapTypeMapping];
-    return mapType !== $Enums.MapType.Push;
-  });
-
-  if (mapDataRecords.length === 0) {
-    return {
-      overallWins: 0,
-      overallLosses: 0,
-      overallWinrate: 0,
-      byMap: {},
-    };
-  }
-
-  const mapDataIds = mapDataRecords.map((md) => md.id);
-
-  // 2. Get all necessary data in batch queries
-  const [allPlayerStats, matchStarts, finalRounds, captures] =
-    await Promise.all([
-      prisma.playerStat.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-        select: {
-          player_name: true,
-          player_team: true,
-          MapDataId: true,
-        },
-      }),
-      prisma.matchStart.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-      }),
-      prisma.roundEnd.findMany({
-        where: {
-          MapDataId: { in: mapDataIds },
-        },
-        orderBy: { round_number: "desc" },
-      }),
-      prisma.objectiveCaptured.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-      }),
-    ]);
-
-  // 3. Build frequency map for anchor player identification
+  // Build frequency map for anchor player identification
   const playerFrequencyMap = new Map<string, number>();
   const mapPlayerSets = new Map<number, Set<string>>();
 
@@ -311,50 +183,12 @@ async function getTeamWinratesUncached(teamId: number): Promise<TeamWinrates> {
     (a, b) => b[1] - a[1]
   );
 
-  // 4. Create lookup maps for winner calculation
-  const finalRoundMap = new Map<number, (typeof finalRounds)[0]>();
-  for (const round of finalRounds) {
-    const mapDataId = round.MapDataId;
-    if (mapDataId) {
-      const existing = finalRoundMap.get(mapDataId);
-      if (!existing || round.round_number > existing.round_number) {
-        finalRoundMap.set(mapDataId, round);
-      }
-    }
-  }
-
-  const matchStartMap = new Map<number, (typeof matchStarts)[0]>();
-  for (const match of matchStarts) {
-    if (match.MapDataId) {
-      matchStartMap.set(match.MapDataId, match);
-    }
-  }
-
-  // Organize captures by map and team
-  const team1CapturesMap = new Map<number, typeof captures>();
-  const team2CapturesMap = new Map<number, typeof captures>();
-
-  for (const capture of captures) {
-    const mapDataId = capture.MapDataId;
-    if (!mapDataId) continue;
-
-    const match = matchStartMap.get(mapDataId);
-    if (!match) continue;
-
-    if (capture.capturing_team === match.team_1_name) {
-      if (!team1CapturesMap.has(mapDataId)) {
-        team1CapturesMap.set(mapDataId, []);
-      }
-      team1CapturesMap.get(mapDataId)!.push(capture);
-    } else if (capture.capturing_team === match.team_2_name) {
-      if (!team2CapturesMap.has(mapDataId)) {
-        team2CapturesMap.set(mapDataId, []);
-      }
-      team2CapturesMap.get(mapDataId)!.push(capture);
-    }
-  }
-
-  // 5. Calculate winrates for each map and roster combination
+  const finalRoundMap = buildFinalRoundMap(finalRounds);
+  const matchStartMap = buildMatchStartMap(matchStarts);
+  const { team1CapturesMap, team2CapturesMap } = buildCapturesMaps(
+    captures,
+    matchStartMap
+  );
   const mapWinrateData = new Map<string, MapWinrate>();
   let overallWins = 0;
   let overallLosses = 0;

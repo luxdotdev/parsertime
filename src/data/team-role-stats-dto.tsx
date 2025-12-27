@@ -1,11 +1,17 @@
 import "server-only";
 
 import { determineRole } from "@/lib/player-table-data";
-import prisma from "@/lib/prisma";
 import { calculateWinner } from "@/lib/winrate";
 import type { HeroName } from "@/types/heroes";
 import { cache } from "react";
-import { getTeamRoster } from "./team-stats-dto";
+import type { BaseTeamData } from "./team-shared-data";
+import {
+  buildCapturesMaps,
+  buildFinalRoundMap,
+  buildMatchStartMap,
+  findTeamNameForMapInMemory,
+  getBaseTeamData,
+} from "./team-shared-data";
 
 export type RoleStats = {
   role: "Tank" | "Damage" | "Support";
@@ -61,43 +67,18 @@ export type RoleTrio = {
 async function getRolePerformanceStatsUncached(
   teamId: number
 ): Promise<RolePerformanceStats> {
-  const teamRoster = await getTeamRoster(teamId);
-  const teamRosterSet = new Set(teamRoster);
+  const sharedData = await getBaseTeamData(teamId);
+  return processRolePerformanceStats(sharedData);
+}
 
-  if (teamRoster.length === 0) {
-    return createEmptyRoleStats();
-  }
-
-  const mapDataRecords = await prisma.map.findMany({
-    where: { Scrim: { Team: { id: teamId } } },
-    select: { id: true },
-  });
-
-  const mapDataIds = mapDataRecords.map((md) => md.id);
+function processRolePerformanceStats(
+  sharedData: BaseTeamData
+): RolePerformanceStats {
+  const { teamRosterSet, mapDataIds, allPlayerStats } = sharedData;
 
   if (mapDataIds.length === 0) {
     return createEmptyRoleStats();
   }
-
-  const allPlayerStats = await prisma.playerStat.findMany({
-    where: { MapDataId: { in: mapDataIds } },
-    select: {
-      player_name: true,
-      player_team: true,
-      player_hero: true,
-      MapDataId: true,
-      eliminations: true,
-      final_blows: true,
-      deaths: true,
-      offensive_assists: true,
-      hero_damage_dealt: true,
-      damage_taken: true,
-      healing_dealt: true,
-      ultimates_earned: true,
-      ultimates_used: true,
-      hero_time_played: true,
-    },
-  });
 
   const roleAggregates: Record<
     "Tank" | "Damage" | "Support",
@@ -335,122 +316,31 @@ async function getRoleBalanceAnalysisUncached(
 
 export const getRoleBalanceAnalysis = cache(getRoleBalanceAnalysisUncached);
 
-function findTeamNameForMapInMemory(
-  mapDataId: number,
-  allPlayerStats: {
-    player_name: string;
-    player_team: string;
-    MapDataId: number | null;
-  }[],
-  teamRosterSet: Set<string>
-): string | null {
-  const teamCounts = new Map<string, number>();
-
-  for (const stat of allPlayerStats) {
-    if (stat.MapDataId === mapDataId && teamRosterSet.has(stat.player_name)) {
-      const currentCount = teamCounts.get(stat.player_team) ?? 0;
-      teamCounts.set(stat.player_team, currentCount + 1);
-    }
-  }
-
-  let maxCount = 0;
-  let teamName: string | null = null;
-
-  for (const [team, count] of teamCounts.entries()) {
-    if (count > maxCount) {
-      maxCount = count;
-      teamName = team;
-    }
-  }
-
-  return teamName;
+async function getBestRoleTriosUncached(teamId: number): Promise<RoleTrio[]> {
+  const sharedData = await getBaseTeamData(teamId);
+  return processBestRoleTrios(sharedData);
 }
 
-async function getBestRoleTriosUncached(teamId: number): Promise<RoleTrio[]> {
-  const teamRoster = await getTeamRoster(teamId);
-  const teamRosterSet = new Set(teamRoster);
+function processBestRoleTrios(sharedData: BaseTeamData): RoleTrio[] {
+  const {
+    teamRosterSet,
+    mapDataRecords,
+    allPlayerStats,
+    matchStarts,
+    finalRounds,
+    captures,
+  } = sharedData;
 
-  if (teamRoster.length === 0) {
+  if (mapDataRecords.length === 0) {
     return [];
   }
 
-  const mapDataRecords = await prisma.map.findMany({
-    where: { Scrim: { Team: { id: teamId } } },
-    select: { id: true, name: true },
-  });
-
-  const mapDataIds = mapDataRecords.map((md) => md.id);
-
-  if (mapDataIds.length === 0) {
-    return [];
-  }
-
-  const [allPlayerStats, matchStarts, finalRounds, captures] =
-    await Promise.all([
-      prisma.playerStat.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-        select: {
-          player_name: true,
-          player_team: true,
-          player_hero: true,
-          MapDataId: true,
-        },
-        distinct: ["player_name", "MapDataId"],
-      }),
-      prisma.matchStart.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-      }),
-      prisma.roundEnd.findMany({
-        where: {
-          MapDataId: { in: mapDataIds },
-        },
-        orderBy: { round_number: "desc" },
-      }),
-      prisma.objectiveCaptured.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-      }),
-    ]);
-
-  const finalRoundMap = new Map<number, (typeof finalRounds)[0]>();
-  for (const round of finalRounds) {
-    const mapDataId = round.MapDataId;
-    if (mapDataId) {
-      const existing = finalRoundMap.get(mapDataId);
-      if (!existing || round.round_number > existing.round_number) {
-        finalRoundMap.set(mapDataId, round);
-      }
-    }
-  }
-
-  const matchStartMap = new Map<number, (typeof matchStarts)[0]>();
-  for (const match of matchStarts) {
-    if (match.MapDataId) {
-      matchStartMap.set(match.MapDataId, match);
-    }
-  }
-
-  const team1CapturesMap = new Map<number, typeof captures>();
-  const team2CapturesMap = new Map<number, typeof captures>();
-
-  for (const capture of captures) {
-    const mapDataId = capture.MapDataId;
-    if (!mapDataId) continue;
-
-    const match = matchStartMap.get(mapDataId);
-    if (!match) continue;
-
-    if (capture.capturing_team === match.team_1_name) {
-      if (!team1CapturesMap.has(mapDataId)) {
-        team1CapturesMap.set(mapDataId, []);
-      }
-      team1CapturesMap.get(mapDataId)!.push(capture);
-    } else if (capture.capturing_team === match.team_2_name) {
-      if (!team2CapturesMap.has(mapDataId)) {
-        team2CapturesMap.set(mapDataId, []);
-      }
-      team2CapturesMap.get(mapDataId)!.push(capture);
-    }
-  }
+  const finalRoundMap = buildFinalRoundMap(finalRounds);
+  const matchStartMap = buildMatchStartMap(matchStarts);
+  const { team1CapturesMap, team2CapturesMap } = buildCapturesMaps(
+    captures,
+    matchStartMap
+  );
 
   type RosterCombo = {
     tank: string;
@@ -576,89 +466,32 @@ export type RoleWinrateByMap = {
 async function getRoleWinratesByMapUncached(
   teamId: number
 ): Promise<RoleWinrateByMap[]> {
-  const teamRoster = await getTeamRoster(teamId);
-  const teamRosterSet = new Set(teamRoster);
+  const sharedData = await getBaseTeamData(teamId);
+  return processRoleWinratesByMap(sharedData);
+}
 
-  if (teamRoster.length === 0) {
+function processRoleWinratesByMap(
+  sharedData: BaseTeamData
+): RoleWinrateByMap[] {
+  const {
+    teamRosterSet,
+    mapDataRecords,
+    allPlayerStats,
+    matchStarts,
+    finalRounds,
+    captures,
+  } = sharedData;
+
+  if (mapDataRecords.length === 0) {
     return [];
   }
 
-  const mapDataRecords = await prisma.map.findMany({
-    where: { Scrim: { Team: { id: teamId } } },
-    select: { id: true, name: true },
-  });
-
-  const mapDataIds = mapDataRecords.map((md) => md.id);
-
-  if (mapDataIds.length === 0) {
-    return [];
-  }
-
-  const [allPlayerStats, matchStarts, finalRounds, captures] =
-    await Promise.all([
-      prisma.playerStat.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-        select: {
-          player_name: true,
-          player_team: true,
-          player_hero: true,
-          MapDataId: true,
-        },
-      }),
-      prisma.matchStart.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-      }),
-      prisma.roundEnd.findMany({
-        where: {
-          MapDataId: { in: mapDataIds },
-        },
-        orderBy: { round_number: "desc" },
-      }),
-      prisma.objectiveCaptured.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-      }),
-    ]);
-
-  const finalRoundMap = new Map<number, (typeof finalRounds)[0]>();
-  for (const round of finalRounds) {
-    const mapDataId = round.MapDataId;
-    if (mapDataId) {
-      const existing = finalRoundMap.get(mapDataId);
-      if (!existing || round.round_number > existing.round_number) {
-        finalRoundMap.set(mapDataId, round);
-      }
-    }
-  }
-
-  const matchStartMap = new Map<number, (typeof matchStarts)[0]>();
-  for (const match of matchStarts) {
-    if (match.MapDataId) {
-      matchStartMap.set(match.MapDataId, match);
-    }
-  }
-
-  const team1CapturesMap = new Map<number, typeof captures>();
-  const team2CapturesMap = new Map<number, typeof captures>();
-
-  for (const capture of captures) {
-    const mapDataId = capture.MapDataId;
-    if (!mapDataId) continue;
-
-    const match = matchStartMap.get(mapDataId);
-    if (!match) continue;
-
-    if (capture.capturing_team === match.team_1_name) {
-      if (!team1CapturesMap.has(mapDataId)) {
-        team1CapturesMap.set(mapDataId, []);
-      }
-      team1CapturesMap.get(mapDataId)!.push(capture);
-    } else if (capture.capturing_team === match.team_2_name) {
-      if (!team2CapturesMap.has(mapDataId)) {
-        team2CapturesMap.set(mapDataId, []);
-      }
-      team2CapturesMap.get(mapDataId)!.push(capture);
-    }
-  }
+  const finalRoundMap = buildFinalRoundMap(finalRounds);
+  const matchStartMap = buildMatchStartMap(matchStarts);
+  const { team1CapturesMap, team2CapturesMap } = buildCapturesMaps(
+    captures,
+    matchStartMap
+  );
 
   type MapRoleStats = {
     Tank: { wins: number; losses: number };
