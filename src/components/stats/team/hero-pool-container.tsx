@@ -2,7 +2,6 @@
 
 import { HeroPickrateHeatmap } from "@/components/stats/team/hero-pickrate-heatmap";
 import { HeroPoolOverviewCard } from "@/components/stats/team/hero-pool-overview-card";
-import { HeroWinratesCard } from "@/components/stats/team/hero-winrates-card";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -208,7 +207,6 @@ export function HeroPoolContainer({
 
       {/* Hero Pool Content */}
       <HeroPoolOverviewCard heroPool={heroPoolData} />
-      <HeroWinratesCard heroPool={heroPoolData} />
       <HeroPickrateHeatmap data={heatmapData} />
     </div>
   );
