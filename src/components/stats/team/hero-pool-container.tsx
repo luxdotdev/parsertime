@@ -48,6 +48,7 @@ type HeroPoolContainerProps = {
   initialData: HeroPoolAnalysis;
   heatmapRawData: HeroPickrateRawData;
   heatmapInitialData: HeroPickrateMatrix;
+  permissions: { [key: string]: boolean };
 };
 
 export function HeroPoolContainer({
@@ -55,11 +56,15 @@ export function HeroPoolContainer({
   initialData,
   heatmapRawData,
   heatmapInitialData,
+  permissions,
 }: HeroPoolContainerProps) {
   const TODAY = new Date();
 
-  const [timeframe, setTimeframe] = useState<Timeframe>("all-time");
-  const [date, setDate] = useState<DateRange | undefined>(undefined);
+  const [timeframe, setTimeframe] = useState<Timeframe>("one-week");
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: addWeeks(TODAY, -1),
+    to: TODAY,
+  });
   const [heroPoolData, setHeroPoolData] =
     useState<HeroPoolAnalysis>(initialData);
   const [heatmapData, setHeatmapData] =
@@ -106,18 +111,57 @@ export function HeroPoolContainer({
     <div className="space-y-4">
       {/* Date Range Controls */}
       <div className="flex flex-wrap items-center gap-2">
-        <Select value={timeframe} onValueChange={onTimeframeChange}>
+        <Select
+          value={timeframe}
+          onValueChange={onTimeframeChange}
+          defaultValue="one-week"
+        >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select timeframe" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="one-week">Last Week</SelectItem>
-            <SelectItem value="two-weeks">Last 2 Weeks</SelectItem>
-            <SelectItem value="one-month">Last Month</SelectItem>
-            <SelectItem value="three-months">Last 3 Months</SelectItem>
-            <SelectItem value="six-months">Last 6 Months</SelectItem>
-            <SelectItem value="one-year">Last Year</SelectItem>
-            <SelectItem value="all-time">All Time</SelectItem>
+            <SelectItem
+              value="one-week"
+              disabled={!permissions["stats-timeframe-1"]}
+            >
+              Last Week
+            </SelectItem>
+            <SelectItem
+              value="two-weeks"
+              disabled={!permissions["stats-timeframe-1"]}
+            >
+              Last 2 Weeks
+            </SelectItem>
+            <SelectItem
+              value="one-month"
+              disabled={!permissions["stats-timeframe-1"]}
+            >
+              Last Month
+            </SelectItem>
+            <SelectItem
+              value="three-months"
+              disabled={!permissions["stats-timeframe-2"]}
+            >
+              Last 3 Months
+            </SelectItem>
+            <SelectItem
+              value="six-months"
+              disabled={!permissions["stats-timeframe-2"]}
+            >
+              Last 6 Months
+            </SelectItem>
+            <SelectItem
+              value="one-year"
+              disabled={!permissions["stats-timeframe-3"]}
+            >
+              Last Year
+            </SelectItem>
+            <SelectItem
+              value="all-time"
+              disabled={!permissions["stats-timeframe-3"]}
+            >
+              All Time
+            </SelectItem>
             <SelectItem value="custom">Custom Range</SelectItem>
           </SelectContent>
         </Select>
