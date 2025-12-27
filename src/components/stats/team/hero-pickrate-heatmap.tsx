@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { HeroPickrateMatrix } from "@/data/team-analytics-dto";
 import { cn, toHero, toTimestampWithHours } from "@/lib/utils";
+import { heroPriority, heroRoleMapping } from "@/types/heroes";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -43,6 +44,14 @@ export function HeroPickrateHeatmap({ data }: HeroPickrateHeatmapProps) {
   const topHeroes = Array.from(heroPlaytimeMap.entries())
     .sort((a, b) => b[1] - a[1])
     .slice(0, 15)
+    .sort((a, b) => {
+      const roleA = heroRoleMapping[a[0] as keyof typeof heroRoleMapping];
+      const roleB = heroRoleMapping[b[0] as keyof typeof heroRoleMapping];
+      const priorityA = heroPriority[roleA];
+      const priorityB = heroPriority[roleB];
+
+      return priorityA - priorityB;
+    })
     .map((e) => e[0]);
 
   // Calculate max playtime for color scaling
