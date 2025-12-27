@@ -492,7 +492,7 @@ async function getTeamWinratesUncached(teamId: number): Promise<TeamWinrates> {
 
 export const getTeamWinrates = cache(getTeamWinratesUncached);
 
-async function getTop5MapsByPlaytimeFn(teamId: number) {
+async function getTopMapsByPlaytimeFn(teamId: number) {
   const mapDataIds = await prisma.mapData.findMany({
     where: { Map: { Scrim: { Team: { id: teamId } } } },
     select: {
@@ -526,7 +526,14 @@ async function getTop5MapsByPlaytimeFn(teamId: number) {
     playtime: playtimeByMap.get(md.id) ?? 0,
   }));
 
-  return top5Maps.sort((a, b) => b.playtime - a.playtime).slice(0, 5);
+  return top5Maps.sort((a, b) => b.playtime - a.playtime);
+}
+
+const getTopMapsByPlaytime = cache(getTopMapsByPlaytimeFn);
+
+async function getTop5MapsByPlaytimeFn(teamId: number) {
+  const top5Maps = await getTopMapsByPlaytime(teamId);
+  return top5Maps.slice(0, 5);
 }
 
 export const getTop5MapsByPlaytime = cache(getTop5MapsByPlaytimeFn);
@@ -534,7 +541,7 @@ export const getTop5MapsByPlaytime = cache(getTop5MapsByPlaytimeFn);
 async function getBestMapByWinrateFn(teamId: number) {
   const [winrates, top5Maps] = await Promise.all([
     getTeamWinrates(teamId),
-    getTop5MapsByPlaytime(teamId),
+    getTopMapsByPlaytime(teamId),
   ]);
 
   // Get the map(s) with the highest winrate, then break ties by playtime
