@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { HeroPoolAnalysis } from "@/data/team-hero-pool-dto";
-import { cn } from "@/lib/utils";
+import { cn, toHero } from "@/lib/utils";
 import Image from "next/image";
 
 type HeroWinratesCardProps = {
@@ -21,7 +21,8 @@ export function HeroWinratesCard({ heroPool }: HeroWinratesCardProps) {
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground text-sm">
-            Not enough games played to calculate hero winrates (need 3+ games per hero).
+            Not enough games played to calculate hero winrates (need 3+ games
+            per hero).
           </p>
         </CardContent>
       </Card>
@@ -37,7 +38,7 @@ export function HeroWinratesCard({ heroPool }: HeroWinratesCardProps) {
         </p>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
+        <div className="grid gap-4 md:grid-cols-2">
           {topHeroes.map((hero, idx) => (
             <div
               key={hero.heroName}
@@ -51,7 +52,7 @@ export function HeroWinratesCard({ heroPool }: HeroWinratesCardProps) {
               </span>
               <div className="relative h-12 w-12 overflow-hidden rounded">
                 <Image
-                  src={`/heroes/${hero.heroName.toLowerCase().replace(/[.: ]/g, "")}.png`}
+                  src={`/heroes/${toHero(hero.heroName)}.png`}
                   alt={hero.heroName}
                   fill
                   className="object-cover"
@@ -82,4 +83,3 @@ export function HeroWinratesCard({ heroPool }: HeroWinratesCardProps) {
     </Card>
   );
 }
-
