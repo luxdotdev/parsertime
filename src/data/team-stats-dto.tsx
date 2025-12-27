@@ -5,6 +5,7 @@ import { calculateWinner } from "@/lib/winrate";
 import { mapNameToMapTypeMapping } from "@/types/map";
 import type { PlayerStat } from "@prisma/client";
 import { $Enums } from "@prisma/client";
+import console from "console";
 import { cache } from "react";
 
 /**
@@ -233,17 +234,17 @@ async function getTeamWinratesUncached(teamId: number): Promise<TeamWinrates> {
   }
 
   // 1. Get all MapData IDs for the team
-  const allMapDataRecords = await prisma.mapData.findMany({
-    where: { Map: { Scrim: { Team: { id: teamId } } } },
+  const allMapDataRecords = await prisma.map.findMany({
+    where: { Scrim: { Team: { id: teamId } } },
     select: {
       id: true,
-      Map: { select: { name: true } },
+      name: true,
     },
   });
 
   // Filter out Push maps as they cannot be calculated
   const mapDataRecords = allMapDataRecords.filter((record) => {
-    const mapName = record.Map?.name;
+    const mapName = record.name;
     if (!mapName) return false;
 
     const mapType =
@@ -261,6 +262,8 @@ async function getTeamWinratesUncached(teamId: number): Promise<TeamWinrates> {
   }
 
   const mapDataIds = mapDataRecords.map((md) => md.id);
+
+  console.log("Map data ids: ", mapDataIds);
 
   // 2. Get all necessary data in batch queries
   const [allPlayerStats, matchStarts, finalRounds, captures] =
@@ -361,7 +364,7 @@ async function getTeamWinratesUncached(teamId: number): Promise<TeamWinrates> {
 
   for (const mapDataRecord of mapDataRecords) {
     const mapDataId = mapDataRecord.id;
-    const mapName = mapDataRecord.Map?.name ?? "Unknown Map";
+    const mapName = mapDataRecord.name ?? "Unknown Map";
 
     // Find team name for this map
     const teamName = findTeamNameForMap(
@@ -544,18 +547,18 @@ async function getBestMapByWinrateFn(teamId: number) {
     getTopMapsByPlaytime(teamId),
   ]);
 
-  // Get the map(s) with the highest winrate, then break ties by playtime
-  const bestMaps = Object.keys(winrates.byMap).sort(
-    (a, b) => winrates.byMap[b].totalWinrate - winrates.byMap[a].totalWinrate
-  );
+  const mapsWithStats = Object.keys(winrates.byMap).map((map) => ({
+    mapName: map,
+    playtime: top5Maps.find((m) => m.name === map)?.playtime ?? 0,
+    winrate: winrates.byMap[map].totalWinrate,
+  }));
 
-  return bestMaps
-    .map((map) => ({
-      mapName: map,
-      playtime: top5Maps.find((m) => m.name === map)?.playtime ?? 0,
-      winrate: winrates.byMap[map].totalWinrate,
-    }))
-    .sort((a, b) => b.playtime - a.playtime)[0];
+  return mapsWithStats.sort((a, b) => {
+    if (b.winrate !== a.winrate) {
+      return b.winrate - a.winrate;
+    }
+    return b.playtime - a.playtime;
+  })[0];
 }
 
 export const getBestMapByWinrate = cache(getBestMapByWinrateFn);
