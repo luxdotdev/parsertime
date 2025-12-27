@@ -3,6 +3,7 @@ import { BestRoleTriosCard } from "@/components/stats/team/best-role-trios-card"
 import { HeroPoolContainer } from "@/components/stats/team/hero-pool-container";
 import { MapModePerformanceCard } from "@/components/stats/team/map-mode-performance-card";
 import { MapWinrateGallery } from "@/components/stats/team/map-winrate-gallery";
+import { QuickStatsCard } from "@/components/stats/team/quick-stats-card";
 import { RecentFormCard } from "@/components/stats/team/recent-form-card";
 import { RoleBalanceRadar } from "@/components/stats/team/role-balance-radar";
 import { RolePerformanceCard } from "@/components/stats/team/role-performance-card";
@@ -24,6 +25,7 @@ import {
   getStreakInfo,
   getWinrateOverTime,
 } from "@/data/team-performance-trends-dto";
+import { getQuickWinsStats } from "@/data/team-quick-wins-dto";
 import {
   getBestRoleTrios,
   getRoleBalanceAnalysis,
@@ -86,6 +88,7 @@ export default async function TeamStatsPage(
     mapModePerformance,
     heroPool,
     heroPoolRawData,
+    quickStats,
   ] = await Promise.all([
     prisma.scrim.findMany({
       where: { teamId },
@@ -108,6 +111,7 @@ export default async function TeamStatsPage(
     getMapModePerformance(teamId),
     getHeroPoolAnalysis(teamId),
     getHeroPoolRawData(teamId),
+    getQuickWinsStats(teamId),
   ]);
 
   // Convert playtime array to Record for gallery
@@ -158,6 +162,9 @@ export default async function TeamStatsPage(
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-4">
+          {/* Quick Stats */}
+          <QuickStatsCard stats={quickStats} />
+
           <div className="grid gap-4 md:grid-cols-2">
             {/* Team Roster */}
             <TeamRosterGrid roster={teamRoster} />
