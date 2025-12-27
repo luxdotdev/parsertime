@@ -4,6 +4,7 @@ import { HeroPickrateHeatmap } from "@/components/stats/team/hero-pickrate-heatm
 import { HeroPoolOverviewCard } from "@/components/stats/team/hero-pool-overview-card";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Link } from "@/components/ui/link";
 import {
   Popover,
   PopoverContent,
@@ -12,7 +13,10 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -161,7 +165,24 @@ export function HeroPoolContainer({
             >
               All Time
             </SelectItem>
-            <SelectItem value="custom">Custom Range</SelectItem>
+            <SelectItem
+              value="custom"
+              disabled={!permissions["stats-timeframe-3"]}
+            >
+              Custom Range
+            </SelectItem>
+            {!permissions["stats-timeframe-3"] && (
+              <>
+                <SelectSeparator />
+                <SelectGroup>
+                  <SelectLabel>
+                    <Link href="/pricing" external>
+                      Upgrade to view more timeframes
+                    </Link>
+                  </SelectLabel>
+                </SelectGroup>
+              </>
+            )}
           </SelectContent>
         </Select>
 
