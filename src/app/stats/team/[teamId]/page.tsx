@@ -112,7 +112,7 @@ export default async function TeamStatsPage(
   return (
     <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
       {/* Header Section */}
-      <div className="mb-6 flex flex-col items-center space-y-2">
+      <div className="mb-6 flex items-center gap-4">
         <Image
           src={team.image ?? `https://avatar.vercel.sh/${team.name}.png`}
           alt={team.name}
@@ -120,18 +120,20 @@ export default async function TeamStatsPage(
           height={100}
           className="border-muted rounded-full border-2"
         />
-        <h1 className="text-3xl font-bold tracking-tight">{team.name}</h1>
-        {totalGames > 0 && (
-          <div className="flex items-center gap-4 text-sm">
-            <span className="text-muted-foreground">
-              Overall Record: {winrates.overallWins}W - {winrates.overallLosses}
-              L
-            </span>
-            <span className="font-semibold">
-              {winrates.overallWinrate.toFixed(1)}% Win Rate
-            </span>
-          </div>
-        )}
+        <div className="flex flex-col space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight">{team.name}</h1>
+          {totalGames > 0 && (
+            <div className="flex items-center gap-4 text-sm">
+              <span className="text-muted-foreground">
+                Overall Record: {winrates.overallWins}W -{" "}
+                {winrates.overallLosses}L
+              </span>
+              <span className="font-semibold">
+                {winrates.overallWinrate.toFixed(1)}% Win Rate
+              </span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Tabbed Content */}
