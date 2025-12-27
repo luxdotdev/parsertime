@@ -1,5 +1,6 @@
 import { RecentActivityCalendar } from "@/components/profile/recent-activity-calendar";
 import { BestRoleTriosCard } from "@/components/stats/team/best-role-trios-card";
+import { HeroPoolContainer } from "@/components/stats/team/hero-pool-container";
 import { MapModePerformanceCard } from "@/components/stats/team/map-mode-performance-card";
 import { MapWinrateGallery } from "@/components/stats/team/map-winrate-gallery";
 import { RecentFormCard } from "@/components/stats/team/recent-form-card";
@@ -13,6 +14,10 @@ import { WinLossStreaksCard } from "@/components/stats/team/win-loss-streaks-car
 import { WinrateOverTimeChart } from "@/components/stats/team/winrate-over-time-chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getTeamFightStats } from "@/data/team-fight-stats-dto";
+import {
+  getHeroPoolAnalysis,
+  getHeroPoolRawData,
+} from "@/data/team-hero-pool-dto";
 import { getMapModePerformance } from "@/data/team-map-mode-stats-dto";
 import {
   getRecentForm,
@@ -79,6 +84,8 @@ export default async function TeamStatsPage(
     recentForm,
     streakInfo,
     mapModePerformance,
+    heroPool,
+    heroPoolRawData,
   ] = await Promise.all([
     prisma.scrim.findMany({
       where: { teamId },
@@ -99,6 +106,8 @@ export default async function TeamStatsPage(
     getRecentForm(teamId),
     getStreakInfo(teamId),
     getMapModePerformance(teamId),
+    getHeroPoolAnalysis(teamId),
+    getHeroPoolRawData(teamId),
   ]);
 
   // Convert playtime array to Record for gallery
@@ -141,6 +150,7 @@ export default async function TeamStatsPage(
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="performance">Performance</TabsTrigger>
+          <TabsTrigger value="heroes">Heroes</TabsTrigger>
           <TabsTrigger value="trends">Trends</TabsTrigger>
           <TabsTrigger value="maps">Maps</TabsTrigger>
           <TabsTrigger value="teamfights">Teamfights</TabsTrigger>
@@ -183,6 +193,11 @@ export default async function TeamStatsPage(
         <TabsContent value="performance" className="space-y-4">
           <RolePerformanceCard roleStats={roleStats} />
           <BestRoleTriosCard trios={bestTrios} />
+        </TabsContent>
+
+        {/* Heroes Tab */}
+        <TabsContent value="heroes" className="space-y-4">
+          <HeroPoolContainer rawData={heroPoolRawData} initialData={heroPool} />
         </TabsContent>
 
         {/* Trends Tab */}
