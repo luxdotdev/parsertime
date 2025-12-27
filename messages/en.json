@@ -2554,5 +2554,15 @@
       "avgUltsPerFight": "Avg Ults Per Fight",
       "avgUltsDescription": "In {count} non-dry fights"
     }
+  },
+  "teamStatsPage": {
+    "layoutMetadata": {
+      "defaultTeam": "Team",
+      "title": "{teamName} Stats | Parsertime",
+      "description": "Stats for {teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{teamName} Stats | Parsertime",
+      "ogDescription": "Stats for {teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogImage": "{teamName} Stats"
+    }
   }
 }
