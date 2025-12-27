@@ -1670,7 +1670,8 @@
       "description": "Your team member usage is shown below. The usage is based on your billing plan and the number of teams you have created.",
       "teamMemberCount": "Team Members",
       "usage": "{current} of {allowed} used"
-    }
+    },
+    "viewStats": "View stats"
   },
   "settingsPage": {
     "metadata": {
