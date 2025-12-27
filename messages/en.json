@@ -2535,5 +2535,24 @@
       "ogDescription": "View the highest ranked players for each hero.",
       "ogImage": "Leaderboard"
     }
+  },
+  "teamStats": {
+    "fightStats": {
+      "title": "Team Fight Statistics",
+      "description": "Analyzed across {count} total fights",
+      "noData": "No fight data available yet. Upload scrims to see team fight statistics.",
+      "overallWinrate": "Overall Fight Winrate",
+      "record": "{wins}W - {losses}L",
+      "firstPickWinrate": "First Pick Winrate",
+      "firstPickCount": "In {count} fights with first pick",
+      "firstDeathWinrate": "First Death Winrate",
+      "firstDeathCount": "In {count} fights losing first pick",
+      "firstUltWinrate": "First Ultimate Winrate",
+      "firstUltCount": "In {count} fights using first ult",
+      "dryFights": "Dry Fight Rate",
+      "dryFightDetails": "{count} dry fights ({winrate}% winrate)",
+      "avgUltsPerFight": "Avg Ults Per Fight",
+      "avgUltsDescription": "In {count} non-dry fights"
+    }
   }
 }
