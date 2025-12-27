@@ -1,6 +1,5 @@
 import { RecentActivityCalendar } from "@/components/profile/recent-activity-calendar";
 import { BestRoleTriosCard } from "@/components/stats/team/best-role-trios-card";
-import { HeroPickrateHeatmap } from "@/components/stats/team/hero-pickrate-heatmap";
 import { HeroPoolContainer } from "@/components/stats/team/hero-pool-container";
 import { MapModePerformanceCard } from "@/components/stats/team/map-mode-performance-card";
 import { MapWinrateGallery } from "@/components/stats/team/map-winrate-gallery";
@@ -19,7 +18,7 @@ import { WinProbabilityInsights } from "@/components/stats/team/win-probability-
 import { WinrateOverTimeChart } from "@/components/stats/team/winrate-over-time-chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  getHeroPickrateMatrix,
+  getHeroPickrateRawData,
   getPlayerMapPerformanceMatrix,
 } from "@/data/team-analytics-dto";
 import { getTeamFightStats } from "@/data/team-fight-stats-dto";
@@ -49,6 +48,7 @@ import {
 } from "@/data/team-stats-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
+import { calculateHeroPickrateMatrix } from "@/lib/hero-pickrate-utils";
 import prisma from "@/lib/prisma";
 import { getMapNames } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
@@ -97,7 +97,7 @@ export default async function TeamStatsPage(
     heroPool,
     heroPoolRawData,
     quickStats,
-    heroPickrateMatrix,
+    heroPickrateRawData,
     playerMapPerformance,
   ] = await Promise.all([
     prisma.scrim.findMany({
@@ -122,7 +122,7 @@ export default async function TeamStatsPage(
     getHeroPoolAnalysis(teamId),
     getHeroPoolRawData(teamId),
     getQuickWinsStats(teamId),
-    getHeroPickrateMatrix(teamId),
+    getHeroPickrateRawData(teamId),
     getPlayerMapPerformanceMatrix(teamId),
   ]);
 
@@ -133,6 +133,9 @@ export default async function TeamStatsPage(
   });
 
   const totalGames = winrates.overallWins + winrates.overallLosses;
+
+  // Calculate initial hero pickrate heatmap data
+  const heroPickrateMatrix = calculateHeroPickrateMatrix(heroPickrateRawData);
 
   return (
     <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
@@ -216,8 +219,12 @@ export default async function TeamStatsPage(
 
         {/* Heroes Tab */}
         <TabsContent value="heroes" className="space-y-4">
-          <HeroPoolContainer rawData={heroPoolRawData} initialData={heroPool} />
-          <HeroPickrateHeatmap data={heroPickrateMatrix} />
+          <HeroPoolContainer
+            rawData={heroPoolRawData}
+            initialData={heroPool}
+            heatmapRawData={heroPickrateRawData}
+            heatmapInitialData={heroPickrateMatrix}
+          />
         </TabsContent>
 
         {/* Trends Tab */}
