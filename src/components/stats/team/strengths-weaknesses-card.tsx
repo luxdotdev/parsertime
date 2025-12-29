@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toKebabCase, toTimestampWithHours } from "@/lib/utils";
 import { TrendingDown, TrendingUp } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 
 type StrengthsWeaknessesCardProps = {
@@ -25,16 +26,16 @@ export function StrengthsWeaknessesCard({
   blindSpot,
   mapNames,
 }: StrengthsWeaknessesCardProps) {
+  const t = useTranslations("teamStatsPage.strengthsWeaknessesCard");
+
   if (!bestMap && !blindSpot) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Strengths & Weaknesses</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-sm">
-            Not enough data to determine strengths and weaknesses yet.
-          </p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </CardContent>
       </Card>
     );
@@ -43,7 +44,7 @@ export function StrengthsWeaknessesCard({
   return (
     <Card className="h-full">
       <CardHeader>
-        <CardTitle>Strengths & Weaknesses</CardTitle>
+        <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Best Map - Strength */}
@@ -52,7 +53,7 @@ export function StrengthsWeaknessesCard({
             <div className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
               <h3 className="font-semibold text-green-600 dark:text-green-400">
-                Strongest Map
+                {t("strongestMap")}
               </h3>
             </div>
 
@@ -79,10 +80,12 @@ export function StrengthsWeaknessesCard({
 
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-white/90">
-                    {toTimestampWithHours(bestMap.playtime)} played
+                    {t("playtime", {
+                      time: toTimestampWithHours(bestMap.playtime),
+                    })}
                   </span>
                   <span className="text-xs text-white/70">
-                    Best performance
+                    {t("bestPerformance")}
                   </span>
                 </div>
               </div>
@@ -96,7 +99,7 @@ export function StrengthsWeaknessesCard({
             <div className="flex items-center gap-2">
               <TrendingDown className="h-5 w-5 text-red-600 dark:text-red-400" />
               <h3 className="font-semibold text-red-600 dark:text-red-400">
-                Blind Spot
+                {t("blindSpot")}
               </h3>
             </div>
 
@@ -124,10 +127,12 @@ export function StrengthsWeaknessesCard({
 
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-white/90">
-                    {toTimestampWithHours(blindSpot.playtime)} played
+                    {t("playtime", {
+                      time: toTimestampWithHours(blindSpot.playtime),
+                    })}
                   </span>
                   <span className="text-xs text-white/70">
-                    Needs improvement
+                    {t("needsImprovement")}
                   </span>
                 </div>
               </div>

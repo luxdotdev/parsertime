@@ -2752,6 +2752,15 @@
     },
     "selector": {
       "select": "Select a team..."
+    },
+    "strengthsWeaknessesCard": {
+      "title": "Strengths & Weaknesses",
+      "noData": "Not enough data to determine strengths and weaknesses yet.",
+      "strongestMap": "Strongest Map",
+      "bestPerformance": "Best performance",
+      "playtime": "{time} played",
+      "blindSpot": "Blind Spot",
+      "needsImprovement": "Needs improvement"
     }
   }
 }
