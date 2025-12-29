@@ -2734,6 +2734,21 @@
       "averagePerformance": "Average performance",
       "win": "W",
       "loss": "L"
+    },
+    "rolePerformanceCard": {
+      "title": "Role Performance",
+      "noDataAvailable": "No role performance data available yet.",
+      "noData": "No data",
+      "playtime": "Playtime",
+      "maps": "Maps",
+      "kd": "K/D",
+      "damagePerMin": "Damage/min",
+      "healingPerMin": "Healing/min",
+      "deathsPerMin": "Deaths/min",
+      "ultEfficiency": "Ult Efficiency",
+      "elims": "Elims",
+      "deaths": "Deaths",
+      "assists": "Assists"
     }
   }
 }

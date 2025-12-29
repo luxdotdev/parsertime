@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { RolePerformanceStats } from "@/data/team-role-stats-dto";
 import { cn } from "@/lib/utils";
 import { Heart, Shield, Swords } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type RolePerformanceCardProps = {
   roleStats: RolePerformanceStats;
@@ -28,6 +29,8 @@ const roleBgColors = {
 };
 
 export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
+  const t = useTranslations("teamStatsPage.rolePerformanceCard");
+
   const roles: ("Tank" | "Damage" | "Support")[] = [
     "Tank",
     "Damage",
@@ -40,11 +43,11 @@ export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Role Performance</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground text-sm">
-            No role performance data available yet.
+            {t("noDataAvailable")}
           </p>
         </CardContent>
       </Card>
@@ -67,7 +70,7 @@ export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Role Performance</CardTitle>
+        <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid gap-6 md:grid-cols-3">
@@ -92,25 +95,27 @@ export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
                 </div>
 
                 {!hasRoleData ? (
-                  <p className="text-muted-foreground text-sm">No data</p>
+                  <p className="text-muted-foreground text-sm">{t("noData")}</p>
                 ) : (
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Playtime</span>
+                      <span className="text-muted-foreground">
+                        {t("playtime")}
+                      </span>
                       <span className="font-medium">
                         {formatTime(stats.totalPlaytime)}
                       </span>
                     </div>
 
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Maps</span>
+                      <span className="text-muted-foreground">{t("maps")}</span>
                       <span className="font-medium">{stats.mapCount}</span>
                     </div>
 
                     <div className="border-muted-foreground my-3 border-t" />
 
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">K/D</span>
+                      <span className="text-muted-foreground">{t("kd")}</span>
                       <span
                         className={cn(
                           "font-bold",
@@ -124,7 +129,9 @@ export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
                     </div>
 
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Damage/min</span>
+                      <span className="text-muted-foreground">
+                        {t("damagePerMin")}
+                      </span>
                       <span className="font-medium">
                         {formatStat(stats.damagePerMin, 0)}
                       </span>
@@ -133,7 +140,7 @@ export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
                     {role === "Support" && (
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">
-                          Healing/min
+                          {t("healingPerMin")}
                         </span>
                         <span className="font-medium">
                           {formatStat(stats.healingPerMin, 0)}
@@ -142,7 +149,9 @@ export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
                     )}
 
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Deaths/min</span>
+                      <span className="text-muted-foreground">
+                        {t("deathsPerMin")}
+                      </span>
                       <span
                         className={cn(
                           "font-medium",
@@ -159,7 +168,7 @@ export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
 
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">
-                        Ult Efficiency
+                        {t("ultEfficiency")}
                       </span>
                       <span className="font-medium">
                         {formatStat(stats.ultEfficiency, 1)}
@@ -170,17 +179,23 @@ export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
 
                     <div className="grid grid-cols-3 gap-2 text-xs">
                       <div className="text-center">
-                        <div className="text-muted-foreground">Elims</div>
+                        <div className="text-muted-foreground">
+                          {t("elims")}
+                        </div>
                         <div className="font-semibold">
                           {stats.eliminations}
                         </div>
                       </div>
                       <div className="text-center">
-                        <div className="text-muted-foreground">Deaths</div>
+                        <div className="text-muted-foreground">
+                          {t("deaths")}
+                        </div>
                         <div className="font-semibold">{stats.deaths}</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-muted-foreground">Assists</div>
+                        <div className="text-muted-foreground">
+                          {t("assists")}
+                        </div>
                         <div className="font-semibold">{stats.assists}</div>
                       </div>
                     </div>
