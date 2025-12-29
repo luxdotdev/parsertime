@@ -18,6 +18,7 @@ export function CreateScrimButton() {
   const [open, setOpen] = useState(false);
   const t = useTranslations("dashboard.addScrim");
   const { currentStep, isNextStepVisible } = useNextStep();
+
   return (
     <Dialog
       open={open || (currentStep >= 2 && isNextStepVisible)}
