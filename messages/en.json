@@ -419,11 +419,11 @@
       },
       "step3": {
         "title": "Name your Scrim",
-        "description": "Give your scrim a name! Use something like 'Team A vs Team B - MM/DD/YYYY' to keep things organized."
+        "description": "Give your scrim a name! Use something like 'Team A vs Team B' to keep things organized."
       },
       "step4": {
         "title": "Assign a Team",
-        "description": "Select the team that participated in the scrim. If you haven't created any teams yet, you can do so from the Teams page."
+        "description": "Select a team to share the scrim with. If you haven't created any teams yet, you can do so from the Teams page."
       },
       "step5": {
         "title": "Set the Date",
@@ -431,15 +431,15 @@
       },
       "step6": {
         "title": "Upload your first map",
-        "description": "Upload your Workshop Log (.xlsx or .txt) here. This is the raw data our engine uses to generate your heatmaps and stats!"
+        "description": "Upload your Workshop Log (.xlsx or .txt) here. We'll process it and create your scrim."
       },
       "step7": {
         "title": "Hero Bans (Optional)",
-        "description": "If your scrim had hero bans, you can add them here. This helps provide context to the stats and strategies used during the scrim."
+        "description": "If your scrim had hero bans, you can add them here. This helps provide context upon reviewing the scrim."
       },
       "step8": {
         "title": "All set!",
-        "description": "You're all set to start analyzing your scrim data! Head over to the Scrim Overview page to explore detailed stats, heatmaps, and more. Happy analyzing!"
+        "description": "You're all set to start analyzing your scrim data!"
       }
     },
     "addScrim": {
