@@ -2749,6 +2749,9 @@
       "elims": "Elims",
       "deaths": "Deaths",
       "assists": "Assists"
+    },
+    "selector": {
+      "select": "Select a team..."
     }
   }
 }
