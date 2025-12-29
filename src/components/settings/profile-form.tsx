@@ -44,6 +44,7 @@ import { type ChangeEvent, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Switch } from "../ui/switch";
 
 const colorblindModeOptions = [
   {
@@ -91,6 +92,7 @@ const profileFormSchema = z.object({
   colorblindMode: z.enum($Enums.ColorblindMode),
   customTeam1Color: z.string().optional(),
   customTeam2Color: z.string().optional(),
+  seenOnboarding: z.boolean().optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
@@ -137,6 +139,7 @@ export function ProfileForm({
       colorblindMode: appSettings?.colorblindMode ?? $Enums.ColorblindMode.OFF,
       customTeam1Color: appSettings?.customTeam1Color ?? "#3b82f6",
       customTeam2Color: appSettings?.customTeam2Color ?? "#ef4444",
+      seenOnboarding: user.seenOnboarding ?? false,
     },
     mode: "onChange",
   });
@@ -208,12 +211,29 @@ export function ProfileForm({
         }
       }
 
+      if (data.seenOnboarding !== user.seenOnboarding) {
+        const seeOnboardingRes = await fetch("/api/user/update-onboarding", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            seenOnboarding: data.seenOnboarding,
+          }),
+        });
+
+        if (!seeOnboardingRes.ok) {
+          throw new Error(
+            `Failed to update onboarding: ${await seeOnboardingRes.text()}`
+          );
+        }
+      }
+
       // Update app settings if they changed
       const currentColorblindMode =
         appSettings?.colorblindMode ?? $Enums.ColorblindMode.OFF;
       const currentTeam1Color = appSettings?.customTeam1Color ?? "#3b82f6";
       const currentTeam2Color = appSettings?.customTeam2Color ?? "#ef4444";
-
       if (
         data.colorblindMode !== currentColorblindMode ||
         data.customTeam1Color !== currentTeam1Color ||
@@ -454,6 +474,31 @@ export function ProfileForm({
               <FormMessage />
             </FormItem>
           )}
+
+          <div className="space-y-2">
+            <FormField
+              control={form.control}
+              name="seenOnboarding"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center space-y-0 space-x-2">
+                  <FormControl>
+                    <Switch
+                      id="seen-onboarding"
+                      checked={field.value}
+                      disabled={form.formState.isSubmitting}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel htmlFor="seen-onboarding" className="font-normal">
+                    {t("seenOnboarding.title")}
+                  </FormLabel>
+                </FormItem>
+              )}
+            />
+            <Label className="text-muted-foreground">
+              {t("seenOnboarding.description")}
+            </Label>
+          </div>
 
           <Separator />
 

@@ -42,27 +42,28 @@ model Session {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  name          String?
-  email         String         @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  role          UserRole       @default(USER)
-  teamId        Int?
-  teams         Team[]
-  managedTeams  TeamManager[]
-  stripeId      String?        @unique
-  billingPlan   BillingPlan    @default(FREE)
-  Notification  Notification[]
-  AppSettings   AppSettings[]
-  titles        Title[]        @default([])
-  bannerImage   String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @default(now()) @updatedAt
-  battletag     String?
-  appliedTitles AppliedTitle[]
+  id             String         @id @default(cuid())
+  name           String?
+  email          String         @unique
+  emailVerified  DateTime?
+  image          String?
+  accounts       Account[]
+  sessions       Session[]
+  role           UserRole       @default(USER)
+  teamId         Int?
+  teams          Team[]
+  managedTeams   TeamManager[]
+  stripeId       String?        @unique
+  billingPlan    BillingPlan    @default(FREE)
+  Notification   Notification[]
+  AppSettings    AppSettings[]
+  titles         Title[]        @default([])
+  bannerImage    String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @default(now()) @updatedAt
+  battletag      String?
+  appliedTitles  AppliedTitle[]
+  seenOnboarding Boolean        @default(false)
 
   @@index([id, email])
 }

@@ -64,12 +64,12 @@ export default async function DashboardPage() {
         )}
         <TabsContent value="overview" className="space-y-4">
           <main>
-            <ScrimPagination />
+            <ScrimPagination seenOnboarding={userData?.seenOnboarding} />
           </main>
         </TabsContent>
         <TabsContent value="admin" className="space-y-4">
           <main>
-            <ScrimPagination isAdmin={true} />
+            <ScrimPagination isAdmin={true} seenOnboarding={true} />
           </main>
         </TabsContent>
       </Tabs>
