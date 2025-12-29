@@ -3,7 +3,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { HeroPoolAnalysis } from "@/data/team-hero-pool-dto";
-import { cn, toHero } from "@/lib/utils";
+import { cn, toHero, useHeroNames } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 
 type HeroWinratesCardProps = {
@@ -11,19 +12,18 @@ type HeroWinratesCardProps = {
 };
 
 export function HeroWinratesCard({ heroPool }: HeroWinratesCardProps) {
+  const t = useTranslations("teamStatsPage.heroWinratesCard");
+  const heroNames = useHeroNames();
   const topHeroes = heroPool.topHeroWinrates;
 
   if (topHeroes.length === 0) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Top Hero Winrates</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-sm">
-            Not enough games played to calculate hero winrates (need 3+ games
-            per hero).
-          </p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </CardContent>
       </Card>
     );
@@ -31,10 +31,7 @@ export function HeroWinratesCard({ heroPool }: HeroWinratesCardProps) {
 
   return (
     <div className="space-y-4">
-      <h3 className="font-semibold">Top Hero Winrates</h3>
-      {/* <p className="text-muted-foreground text-sm">
-        Best performing heroes (minimum 3 games)
-      </p> */}
+      <h3 className="font-semibold">{t("title")}</h3>
 
       {topHeroes.map((hero, idx) => (
         <div
@@ -50,15 +47,21 @@ export function HeroWinratesCard({ heroPool }: HeroWinratesCardProps) {
           <div className="relative h-12 w-12 overflow-hidden rounded">
             <Image
               src={`/heroes/${toHero(hero.heroName)}.png`}
-              alt={hero.heroName}
+              alt={heroNames.get(toHero(hero.heroName)) ?? hero.heroName}
               fill
               className="object-cover"
             />
           </div>
           <div className="flex-1">
-            <div className="font-semibold">{hero.heroName}</div>
+            <div className="font-semibold">
+              {heroNames.get(toHero(hero.heroName)) ?? hero.heroName}
+            </div>
             <div className="text-muted-foreground text-xs">
-              {hero.wins}W - {hero.losses}L • {hero.gamesPlayed} games
+              {t("winsAndLosses", {
+                wins: hero.wins,
+                losses: hero.losses,
+                games: hero.gamesPlayed,
+              })}
             </div>
           </div>
           <Badge

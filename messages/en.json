@@ -2643,6 +2643,11 @@
       "tankHeroes": "Tank Heroes",
       "dpsHeroes": "Damage Heroes",
       "supportHeroes": "Support Heroes"
+    },
+    "heroWinratesCard": {
+      "title": "Top Hero Winrates",
+      "noData": "Not enough games played to calculate hero winrates (need 3+ games per hero).",
+      "winsAndLosses": "{wins}W - {losses}L • {games} games"
     }
   }
 }
