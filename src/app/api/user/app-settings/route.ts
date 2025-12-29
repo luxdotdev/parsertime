@@ -67,7 +67,7 @@ export async function GET() {
 }
 
 const updateAppSettingsSchema = z.object({
-  colorblindMode: z.enum(Object.values($Enums.ColorblindMode)),
+  colorblindMode: z.enum(Object.values($Enums.ColorblindMode)).optional(),
   customTeam1Color: z.string().optional(),
   customTeam2Color: z.string().optional(),
   seeOnboarding: z.boolean(),
