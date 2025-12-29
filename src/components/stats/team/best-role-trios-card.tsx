@@ -17,6 +17,7 @@ import {
   TrendingDown,
   TrendingUp,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 type BestRoleTriosCardProps = {
@@ -24,19 +25,17 @@ type BestRoleTriosCardProps = {
 };
 
 export function BestRoleTriosCard({ trios }: BestRoleTriosCardProps) {
+  const t = useTranslations("teamStatsPage.bestRoleTriosCard");
   const [expandedTrios, setExpandedTrios] = useState<Set<number>>(new Set([0]));
 
   if (trios.length === 0) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Best Role Trios</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-sm">
-            Not enough data to determine best player combinations yet. Need at
-            least 3 games with the same roster.
-          </p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </CardContent>
       </Card>
     );
@@ -93,19 +92,18 @@ export function BestRoleTriosCard({ trios }: BestRoleTriosCardProps) {
                           {trio.winrate.toFixed(1)}%
                         </Badge>
                         <span className="text-muted-foreground text-sm">
-                          {trio.gamesPlayed} game
-                          {trio.gamesPlayed !== 1 ? "s" : ""}
+                          {t("gamesPlayed", { count: trio.gamesPlayed })}
                         </span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="text-right text-sm">
                         <span className="text-green-600 dark:text-green-400">
-                          {trio.wins}W
+                          {t("wins", { count: trio.wins })}
                         </span>
                         {" - "}
                         <span className="text-red-600 dark:text-red-400">
-                          {trio.losses}L
+                          {t("losses", { count: trio.losses })}
                         </span>
                       </div>
                       <ChevronDown
@@ -124,7 +122,7 @@ export function BestRoleTriosCard({ trios }: BestRoleTriosCardProps) {
                       <div className="mb-2 flex items-center gap-2">
                         <Shield className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                         <span className="text-xs font-semibold text-blue-600 uppercase dark:text-blue-400">
-                          Tank
+                          {t("tank")}
                         </span>
                       </div>
                       <p className="font-medium">{trio.tank}</p>
@@ -134,7 +132,7 @@ export function BestRoleTriosCard({ trios }: BestRoleTriosCardProps) {
                       <div className="mb-2 flex items-center gap-2">
                         <Swords className="h-4 w-4 text-red-600 dark:text-red-400" />
                         <span className="text-xs font-semibold text-red-600 uppercase dark:text-red-400">
-                          Damage
+                          {t("damage")}
                         </span>
                       </div>
                       <div className="space-y-1">
@@ -147,7 +145,7 @@ export function BestRoleTriosCard({ trios }: BestRoleTriosCardProps) {
                       <div className="mb-2 flex items-center gap-2">
                         <Heart className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
                         <span className="text-xs font-semibold text-yellow-600 uppercase dark:text-yellow-400">
-                          Support
+                          {t("support")}
                         </span>
                       </div>
                       <div className="space-y-1">
@@ -158,7 +156,7 @@ export function BestRoleTriosCard({ trios }: BestRoleTriosCardProps) {
 
                     <div className="bg-muted/50 flex items-center justify-between rounded-lg p-3">
                       <span className="text-muted-foreground text-sm">
-                        Win Rate
+                        {t("winRate")}
                       </span>
                       <div className="flex items-center gap-2">
                         {trio.winrate >= 50 ? (
@@ -187,7 +185,7 @@ export function BestRoleTriosCard({ trios }: BestRoleTriosCardProps) {
 
         {trios.length === 0 && (
           <p className="text-muted-foreground text-center text-sm">
-            Play more games to see your best roster combinations
+            {t("playMoreGames")}
           </p>
         )}
       </CardContent>

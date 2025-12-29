@@ -2590,6 +2590,18 @@
       "strongest": "Strongest:",
       "needsWork": "Needs Work:",
       "balanceScore": "Balance Score:"
+    },
+    "bestRoleTriosCard": {
+      "title": "Best Role Trios",
+      "noData": "Not enough data to determine best player combinations yet. Need at least 3 games with the same roster.",
+      "gamesPlayed": "{count, plural, =0 {no games} =1 {one game} other {# games}}",
+      "wins": "{count}W",
+      "losses": "{count}L",
+      "tank": "Tank",
+      "damage": "Damage",
+      "support": "Support",
+      "winRate": "Win Rate",
+      "playMoreGames": "Play more games to see your best roster combinations"
     }
   }
 }
