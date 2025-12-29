@@ -103,7 +103,6 @@ type AppSettings = {
   colorblindMode: $Enums.ColorblindMode;
   customTeam1Color: string | null;
   customTeam2Color: string | null;
-  seeOnboarding: boolean;
   createdAt: Date;
   updatedAt: Date;
 } | null;
