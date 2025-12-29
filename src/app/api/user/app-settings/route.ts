@@ -13,7 +13,6 @@ export type GetAppSettingsResponse = {
   colorblindMode: $Enums.ColorblindMode;
   customTeam1Color?: string;
   customTeam2Color?: string;
-  seeOnboarding: boolean;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -40,7 +39,6 @@ export async function GET() {
         data: {
           userId: user.id,
           colorblindMode: $Enums.ColorblindMode.OFF,
-          seeOnboarding: true,
         },
       });
     }
@@ -51,7 +49,6 @@ export async function GET() {
       colorblindMode: appSettings.colorblindMode,
       customTeam1Color: appSettings.customTeam1Color ?? undefined,
       customTeam2Color: appSettings.customTeam2Color ?? undefined,
-      seeOnboarding: appSettings.seeOnboarding,
       createdAt: appSettings.createdAt,
       updatedAt: appSettings.updatedAt,
     };
@@ -67,10 +64,9 @@ export async function GET() {
 }
 
 const updateAppSettingsSchema = z.object({
-  colorblindMode: z.enum(Object.values($Enums.ColorblindMode)).optional(),
+  colorblindMode: z.enum(Object.values($Enums.ColorblindMode)),
   customTeam1Color: z.string().optional(),
   customTeam2Color: z.string().optional(),
-  seeOnboarding: z.boolean(),
 });
 
 export type UpdateAppSettingsRequest = z.infer<typeof updateAppSettingsSchema>;
@@ -106,7 +102,6 @@ export async function PUT(request: NextRequest) {
           colorblindMode: validatedData.colorblindMode,
           customTeam1Color: validatedData.customTeam1Color,
           customTeam2Color: validatedData.customTeam2Color,
-          seeOnboarding: validatedData.seeOnboarding,
         },
       });
     } else {
@@ -117,7 +112,6 @@ export async function PUT(request: NextRequest) {
           colorblindMode: validatedData.colorblindMode,
           customTeam1Color: validatedData.customTeam1Color,
           customTeam2Color: validatedData.customTeam2Color,
-          seeOnboarding: validatedData.seeOnboarding,
         },
       });
     }
@@ -130,7 +124,6 @@ export async function PUT(request: NextRequest) {
       customTeam2Color: appSettings.customTeam2Color ?? undefined,
       createdAt: appSettings.createdAt,
       updatedAt: appSettings.updatedAt,
-      seeOnboarding: appSettings.seeOnboarding,
     };
 
     return new Response(JSON.stringify(response), {
