@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { QuickWinsStats } from "@/data/team-quick-wins-dto";
 import { cn } from "@/lib/utils";
-import { CalendarCheck, Clock, TrendingUp, Trophy } from "lucide-react";
+import { CalendarCheck, Clock, Trophy } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 type QuickStatsCardProps = {
@@ -29,10 +29,7 @@ export function QuickStatsCard({ stats }: QuickStatsCardProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <TrendingUp className="h-5 w-5" />
-          {t("title")}
-        </CardTitle>
+        <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
