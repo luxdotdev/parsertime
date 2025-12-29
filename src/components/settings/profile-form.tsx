@@ -461,6 +461,31 @@ export function ProfileForm({
             </FormItem>
           )}
 
+          <div className="space-y-2">
+            <FormField
+              control={form.control}
+              name="seeOnboarding"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center space-y-0 space-x-2">
+                  <FormControl>
+                    <Switch
+                      id="see-onboarding"
+                      checked={field.value}
+                      disabled={form.formState.isSubmitting}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel htmlFor="see-onboarding" className="font-normal">
+                    {t("seeOnboarding.title")}
+                  </FormLabel>
+                </FormItem>
+              )}
+            />
+            <Label className="text-muted-foreground">
+              {t("seeOnboarding.description")}
+            </Label>
+          </div>
+
           <Separator />
 
           {/* Colorblind Mode Section */}
@@ -636,31 +661,6 @@ export function ProfileForm({
                 </div>
               </div>
             )}
-          </div>
-
-          <div className="space-y-2">
-            <FormField
-              control={form.control}
-              name="seeOnboarding"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center space-y-0 space-x-2">
-                  <FormControl>
-                    <Switch
-                      id="see-onboarding"
-                      checked={field.value}
-                      disabled={form.formState.isSubmitting}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormLabel htmlFor="see-onboarding" className="font-normal">
-                    {t("seeOnboarding.title")}
-                  </FormLabel>
-                </FormItem>
-              )}
-            />
-            <Label className="text-muted-foreground">
-              {t("seeOnboarding.description")}
-            </Label>
           </div>
 
           <Button type="submit" disabled={form.formState.isSubmitting}>
