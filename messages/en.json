@@ -2769,6 +2769,35 @@
     "topMapsCard": {
       "title": "Top Maps by Playtime",
       "noData": "No map data available yet."
+    },
+    "ultimateEconomyCard": {
+      "title": "Ultimate Economy",
+      "noData": "No ultimate usage data available yet.",
+      "description": "How efficiently your team uses ultimates",
+      "ultimateEfficiency": "Ultimate Efficiency",
+      "fightsWonPerUltUsed": "Fights won per ult used",
+      "wastedUltimates": "Wasted Ultimates",
+      "wastePercentage": "{percentage}% of total ults",
+      "usedInLostSituations": "Used in lost situations",
+      "totalUltimates": "Total Ultimates",
+      "acrossFights": "Across {fights} fights",
+      "ultimatesPerFight": "{ultimates} per fight",
+      "excellent": "Excellent",
+      "good": "Good",
+      "average": "Average",
+      "poor": "Poor",
+      "ultimateUsage": "Ultimate Usage: Won vs Lost Fights",
+      "winningFights": "Winning Fights",
+      "fights": "{count} fights",
+      "averageUltsUsed": "Average ultimates used",
+      "losingFights": "Losing Fights",
+      "goodUltDiscipline": "<span>Good ult discipline:</span> You use more ults when winning ({ultsInWonFights}) than when losing ({ultsInLostFights}), showing you avoid wasting resources in lost fights.",
+      "roomForImprovement": "<span>Room for improvement:</span> You use more ults when losing ({ultsInLostFights}) than when winning ({ultsInWonFights}). Consider holding ults in disadvantaged situations.",
+      "context": "Context",
+      "dryFights": "Dry Fights:",
+      "dryFightWinrate": "{count} dry fights ({winrate}% WR)",
+      "nonDryFights": "Non-Dry Fights:",
+      "nonDryFightsCount": "{count} non-dry fights ({ults} ults avg)"
     }
   }
 }

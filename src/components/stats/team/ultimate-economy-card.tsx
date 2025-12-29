@@ -3,26 +3,25 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { TeamFightStats } from "@/data/team-fight-stats-dto";
 import { cn } from "@/lib/utils";
-import { Zap } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type UltimateEconomyCardProps = {
   fightStats: TeamFightStats;
 };
 
 export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
+  const t = useTranslations("teamStatsPage.ultimateEconomyCard");
+
   if (fightStats.totalFights === 0 || fightStats.totalUltsUsed === 0) {
     return (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5" />
-            Ultimate Economy
+            {t("title")}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-sm">
-            No ultimate usage data available yet.
-          </p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </CardContent>
       </Card>
     );
@@ -39,10 +38,10 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
   }
 
   function getEfficiencyRating(efficiency: number): string {
-    if (efficiency >= 0.4) return "Excellent";
-    if (efficiency >= 0.25) return "Good";
-    if (efficiency >= 0.15) return "Average";
-    return "Poor";
+    if (efficiency >= 0.4) return t("excellent");
+    if (efficiency >= 0.25) return t("good");
+    if (efficiency >= 0.15) return t("average");
+    return t("poor");
   }
 
   function getWasteColor(percentage: number): string {
@@ -55,13 +54,8 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Zap className="h-5 w-5" />
-          Ultimate Economy
-        </CardTitle>
-        <p className="text-muted-foreground text-sm">
-          How efficiently your team uses ultimates
-        </p>
+        <CardTitle className="flex items-center gap-2">{t("title")}</CardTitle>
+        <p className="text-muted-foreground text-sm">{t("description")}</p>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
@@ -69,7 +63,7 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
           <div className="grid gap-4 md:grid-cols-3">
             <div className="rounded-lg border p-4">
               <div className="text-muted-foreground mb-2 text-sm">
-                Ultimate Efficiency
+                {t("ultimateEfficiency")}
               </div>
               <div
                 className={cn(
@@ -80,7 +74,7 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
                 {fightStats.ultimateEfficiency.toFixed(2)}
               </div>
               <div className="text-muted-foreground text-xs">
-                Fights won per ult used
+                {t("fightsWonPerUltUsed")}
               </div>
               <div className="mt-2 text-xs font-medium">
                 {getEfficiencyRating(fightStats.ultimateEfficiency)}
@@ -89,7 +83,7 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
 
             <div className="rounded-lg border p-4">
               <div className="text-muted-foreground mb-2 text-sm">
-                Wasted Ultimates
+                {t("wastedUltimates")}
               </div>
               <div
                 className={cn(
@@ -100,63 +94,76 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
                 {fightStats.wastedUltimates}
               </div>
               <div className="text-muted-foreground text-xs">
-                {wastePercentage.toFixed(1)}% of total ults
+                {t("wastePercentage", {
+                  percentage: wastePercentage.toFixed(1),
+                })}
               </div>
               <div className="mt-2 text-xs font-medium">
-                Used in lost situations
+                {t("usedInLostSituations")}
               </div>
             </div>
 
             <div className="rounded-lg border p-4">
               <div className="text-muted-foreground mb-2 text-sm">
-                Total Ultimates
+                {t("totalUltimates")}
               </div>
               <div className="mb-1 text-3xl font-bold">
                 {fightStats.totalUltsUsed}
               </div>
               <div className="text-muted-foreground text-xs">
-                Across {fightStats.totalFights} fights
+                {t("acrossFights", {
+                  fights: fightStats.totalFights,
+                })}
               </div>
               <div className="mt-2 text-xs font-medium">
-                {(fightStats.totalUltsUsed / fightStats.totalFights).toFixed(1)}{" "}
-                per fight
+                {t("ultimatesPerFight", {
+                  ultimates: (
+                    fightStats.totalUltsUsed / fightStats.totalFights
+                  ).toFixed(1),
+                })}
               </div>
             </div>
           </div>
 
           {/* Usage Timing Comparison */}
           <div>
-            <h4 className="mb-3 font-semibold">
-              Ultimate Usage: Won vs Lost Fights
-            </h4>
+            <h4 className="mb-3 font-semibold">{t("ultimateUsage")}</h4>
             <div className="grid gap-4 md:grid-cols-2">
               <div className="rounded-lg border border-green-500 bg-green-50 p-4 dark:bg-green-950/30">
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-sm font-medium">Winning Fights</span>
+                  <span className="text-sm font-medium">
+                    {t("winningFights")}
+                  </span>
                   <span className="rounded bg-green-600 px-2 py-1 text-xs font-bold text-white">
-                    {fightStats.fightsWon} fights
+                    {t("fights", {
+                      count: fightStats.fightsWon,
+                    })}
                   </span>
                 </div>
                 <div className="text-3xl font-bold text-green-600 dark:text-green-400">
                   {fightStats.avgUltsInWonFights.toFixed(1)}
                 </div>
                 <div className="text-muted-foreground text-xs">
-                  Average ultimates used
+                  {t("averageUltsUsed")}
                 </div>
               </div>
 
               <div className="rounded-lg border border-red-500 bg-red-50 p-4 dark:bg-red-950/30">
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-sm font-medium">Losing Fights</span>
+                  <span className="text-sm font-medium">
+                    {t("losingFights")}
+                  </span>
                   <span className="rounded bg-red-600 px-2 py-1 text-xs font-bold text-white">
-                    {fightStats.fightsLost} fights
+                    {t("fights", {
+                      count: fightStats.fightsLost,
+                    })}
                   </span>
                 </div>
                 <div className="text-3xl font-bold text-red-600 dark:text-red-400">
                   {fightStats.avgUltsInLostFights.toFixed(1)}
                 </div>
                 <div className="text-muted-foreground text-xs">
-                  Average ultimates used
+                  {t("averageUltsUsed")}
                 </div>
               </div>
             </div>
@@ -166,19 +173,23 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
               {fightStats.avgUltsInWonFights >
               fightStats.avgUltsInLostFights ? (
                 <>
-                  <span className="font-semibold">Good ult discipline:</span>{" "}
-                  You use more ults when winning (
-                  {fightStats.avgUltsInWonFights.toFixed(1)}) than when losing (
-                  {fightStats.avgUltsInLostFights.toFixed(1)}), showing you
-                  avoid wasting resources in lost fights.
+                  {t.rich("goodUltDiscipline", {
+                    span: (chunks) => (
+                      <span className="font-semibold">{chunks}</span>
+                    ),
+                    ultsInWonFights: fightStats.avgUltsInWonFights.toFixed(1),
+                    ultsInLostFights: fightStats.avgUltsInLostFights.toFixed(1),
+                  })}
                 </>
               ) : (
                 <>
-                  <span className="font-semibold">Room for improvement:</span>{" "}
-                  You use more ults when losing (
-                  {fightStats.avgUltsInLostFights.toFixed(1)}) than when winning
-                  ({fightStats.avgUltsInWonFights.toFixed(1)}). Consider holding
-                  ults in disadvantaged situations.
+                  {t.rich("roomForImprovement", {
+                    span: (chunks) => (
+                      <span className="font-semibold">{chunks}</span>
+                    ),
+                    ultsInLostFights: fightStats.avgUltsInLostFights.toFixed(1),
+                    ultsInWonFights: fightStats.avgUltsInWonFights.toFixed(1),
+                  })}
                 </>
               )}
             </div>
@@ -186,20 +197,26 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
 
           {/* Additional Context */}
           <div className="bg-muted rounded-lg p-4">
-            <h4 className="mb-3 text-sm font-semibold">Context</h4>
+            <h4 className="mb-3 text-sm font-semibold">{t("context")}</h4>
             <div className="grid gap-3 text-sm md:grid-cols-2">
               <div>
-                <span className="text-muted-foreground">Dry Fights:</span>{" "}
+                <span className="text-muted-foreground">{t("dryFights")}</span>{" "}
                 <span className="font-medium">
-                  {fightStats.dryFights} (
-                  {fightStats.dryFightWinrate.toFixed(1)}% WR)
+                  {t("dryFightWinrate", {
+                    count: fightStats.dryFights,
+                    winrate: fightStats.dryFightWinrate.toFixed(1),
+                  })}
                 </span>
               </div>
               <div>
-                <span className="text-muted-foreground">Non-Dry Fights:</span>{" "}
+                <span className="text-muted-foreground">
+                  {t("nonDryFights")}
+                </span>{" "}
                 <span className="font-medium">
-                  {fightStats.nonDryFights} (
-                  {fightStats.avgUltsPerNonDryFight.toFixed(1)} ults avg)
+                  {t("nonDryFightsCount", {
+                    count: fightStats.nonDryFights,
+                    ults: fightStats.avgUltsPerNonDryFight.toFixed(1),
+                  })}
                 </span>
               </div>
             </div>
