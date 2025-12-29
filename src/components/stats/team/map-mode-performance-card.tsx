@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { MapModePerformance } from "@/data/team-map-mode-stats-dto";
 import { cn, toTimestampWithHours } from "@/lib/utils";
 import { $Enums } from "@prisma/client";
+import { useTranslations } from "next-intl";
 import {
   Bar,
   BarChart,
@@ -44,6 +45,8 @@ const mapTypeLabels: Record<$Enums.MapType, string> = {
 };
 
 function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
+  const t = useTranslations("teamStatsPage.mapModePerformanceCard");
+
   if (active && payload?.length) {
     const data = payload[0].payload as {
       name: string;
@@ -56,10 +59,17 @@ function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
       <div className="bg-popover text-popover-foreground border-border z-50 overflow-hidden rounded-md border px-3 py-2 shadow-xl">
         <p className="text-sm font-semibold">{data.name}</p>
         <p className="text-sm">
-          Winrate: <span className="font-bold">{data.winrate.toFixed(1)}%</span>
+          {t.rich("winrate", {
+            span: (chunks) => <span className="font-bold">{chunks}</span>,
+            winrate: data.winrate.toFixed(1),
+          })}
         </p>
         <p className="text-muted-foreground text-xs">
-          {data.wins}W - {data.losses}L ({data.games} games)
+          {t("winsAndLosses", {
+            wins: data.wins,
+            losses: data.losses,
+            games: data.games,
+          })}
         </p>
       </div>
     );
@@ -70,18 +80,17 @@ function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
 export function MapModePerformanceCard({
   modePerformance,
 }: MapModePerformanceCardProps) {
+  const t = useTranslations("teamStatsPage.mapModePerformanceCard");
   const hasData = modePerformance.overall.totalGames > 0;
 
   if (!hasData) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Map Mode Performance</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-sm">
-            No map mode data available yet.
-          </p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </CardContent>
       </Card>
     );
@@ -109,10 +118,10 @@ export function MapModePerformanceCard({
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>Map Mode Performance</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
           {modePerformance.bestMode && (
             <Badge className="bg-green-500">
-              Best: {mapTypeLabels[modePerformance.bestMode]}
+              {t("best", { mode: mapTypeLabels[modePerformance.bestMode] })}
             </Badge>
           )}
         </div>
@@ -126,7 +135,11 @@ export function MapModePerformanceCard({
               <YAxis domain={[0, 100]} />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
-              <Bar dataKey="winrate" name="Winrate %" radius={[4, 4, 0, 0]} />
+              <Bar
+                dataKey="winrate"
+                name={t("winrateLabel")}
+                radius={[4, 4, 0, 0]}
+              />
             </BarChart>
           </ResponsiveContainer>
 
@@ -172,19 +185,28 @@ export function MapModePerformanceCard({
 
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Record</span>
+                        <span className="text-muted-foreground">
+                          {t("record")}
+                        </span>
                         <span className="font-medium">
-                          {stats.wins}W - {stats.losses}L
+                          {t("winsLossesRecord", {
+                            wins: stats.wins,
+                            losses: stats.losses,
+                          })}
                         </span>
                       </div>
 
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Games</span>
+                        <span className="text-muted-foreground">
+                          {t("gamesLabel")}
+                        </span>
                         <span className="font-medium">{stats.gamesPlayed}</span>
                       </div>
 
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Avg Time</span>
+                        <span className="text-muted-foreground">
+                          {t("avgTimeLabel")}
+                        </span>
                         <span className="font-medium">
                           {toTimestampWithHours(stats.avgPlaytime)}
                         </span>
@@ -193,7 +215,7 @@ export function MapModePerformanceCard({
                       {stats.bestMap && (
                         <div className="border-muted-foreground mt-3 border-t pt-2">
                           <div className="text-muted-foreground text-xs">
-                            Best Map
+                            {t("bestMap")}
                           </div>
                           <div className="flex justify-between">
                             <span className="text-xs">
@@ -210,7 +232,7 @@ export function MapModePerformanceCard({
                         stats.bestMap?.name !== stats.worstMap.name && (
                           <div>
                             <div className="text-muted-foreground text-xs">
-                              Worst Map
+                              {t("worstMap")}
                             </div>
                             <div className="flex justify-between">
                               <span className="text-xs">
@@ -230,29 +252,35 @@ export function MapModePerformanceCard({
 
           {modePerformance.bestMode && modePerformance.worstMode && (
             <div className="bg-muted/50 rounded-lg p-4">
-              <h4 className="mb-2 text-sm font-semibold">Insights</h4>
-              <ul className="text-muted-foreground space-y-1 text-sm">
+              <h4 className="mb-2 text-sm font-semibold">{t("insights")}</h4>
+              <ul className="text-muted-foreground list-inside list-disc space-y-1 text-sm">
                 <li>
-                  • Your team excels at{" "}
-                  <span className="font-semibold text-green-600 dark:text-green-400">
-                    {mapTypeLabels[modePerformance.bestMode]}
-                  </span>{" "}
-                  maps (
-                  {modePerformance.byMode[
-                    modePerformance.bestMode
-                  ].winrate.toFixed(1)}
-                  % winrate)
+                  {t.rich("excelsAt", {
+                    span: (chunks) => (
+                      <span className="font-semibold text-green-600 dark:text-green-400">
+                        {chunks}
+                      </span>
+                    ),
+                    mode: mapTypeLabels[modePerformance.bestMode],
+                    winrate:
+                      modePerformance.byMode[
+                        modePerformance.bestMode
+                      ].winrate.toFixed(1),
+                  })}
                 </li>
                 <li>
-                  • Consider practicing{" "}
-                  <span className="font-semibold text-red-600 dark:text-red-400">
-                    {mapTypeLabels[modePerformance.worstMode]}
-                  </span>{" "}
-                  maps to improve balance (
-                  {modePerformance.byMode[
-                    modePerformance.worstMode
-                  ].winrate.toFixed(1)}
-                  % winrate)
+                  {t.rich("considerPracticing", {
+                    span: (chunks) => (
+                      <span className="font-semibold text-red-600 dark:text-red-400">
+                        {chunks}
+                      </span>
+                    ),
+                    mode: mapTypeLabels[modePerformance.worstMode],
+                    winrate:
+                      modePerformance.byMode[
+                        modePerformance.worstMode
+                      ].winrate.toFixed(1),
+                  })}
                 </li>
               </ul>
             </div>

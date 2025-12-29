@@ -2648,6 +2648,23 @@
       "title": "Top Hero Winrates",
       "noData": "Not enough games played to calculate hero winrates (need 3+ games per hero).",
       "winsAndLosses": "{wins}W - {losses}L • {games} games"
+    },
+    "mapModePerformanceCard": {
+      "winrate": "Winrate: <span>{winrate}</span>",
+      "winsAndLosses": "{wins}W - {losses}L ({games, plural, =0 {no games} =1 {1 game} other {# games}})",
+      "title": "Map Mode Performance",
+      "noData": "No map mode data available yet.",
+      "best": "Best: {mode}",
+      "winrateLabel": "Winrate %",
+      "record": "Record",
+      "winsLossesRecord": "{wins}W - {losses}L",
+      "gamesLabel": "Games",
+      "avgTimeLabel": "Avg Time",
+      "bestMap": "Best Map",
+      "worstMap": "Worst Map",
+      "insights": "Insights",
+      "excelsAt": "Your team excels at <span>{mode}</span> maps ({winrate}% winrate)",
+      "considerPracticing": "Consider practicing <span>{mode}</span> maps to improve balance ({winrate}% winrate)"
     }
   }
 }
