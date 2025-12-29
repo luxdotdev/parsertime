@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
 import prisma from "@/lib/prisma";
 import type { Route } from "next";
+import { getTranslations } from "next-intl/server";
 
 type TeamRosterGridProps = {
   roster: string[];
@@ -28,17 +29,16 @@ async function getPlayerData(playerName: string) {
 }
 
 export async function TeamRosterGrid({ roster }: TeamRosterGridProps) {
+  const t = await getTranslations("teamStatsPage.teamRosterGrid");
+
   if (roster.length === 0) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Team Roster</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-sm">
-            No roster data available. Players will appear here once they&apos;ve
-            played in matches.
-          </p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </CardContent>
       </Card>
     );
@@ -58,7 +58,7 @@ export async function TeamRosterGrid({ roster }: TeamRosterGridProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Team Roster</CardTitle>
+        <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
