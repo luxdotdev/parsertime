@@ -1,7 +1,7 @@
 import { ScrimPagination } from "@/components/dashboard/scrim-pagination";
 import { UpdateModalWrapper } from "@/components/dashboard/update-modal-wrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getAppSettings, getUser } from "@/data/user-dto";
+import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
@@ -50,7 +50,6 @@ export default async function DashboardPage() {
 
   const t = await getTranslations("dashboard");
 
-  const appSettings = await getAppSettings(session?.user.email);
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -65,15 +64,12 @@ export default async function DashboardPage() {
         )}
         <TabsContent value="overview" className="space-y-4">
           <main>
-            <ScrimPagination seeOnboarding={appSettings?.seeOnboarding} />
+            <ScrimPagination seenOnboarding={userData?.seenOnboarding} />
           </main>
         </TabsContent>
         <TabsContent value="admin" className="space-y-4">
           <main>
-            <ScrimPagination
-              isAdmin={true}
-              seeOnboarding={appSettings?.seeOnboarding}
-            />
+            <ScrimPagination isAdmin={true} seenOnboarding={true} />
           </main>
         </TabsContent>
       </Tabs>
