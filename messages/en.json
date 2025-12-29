@@ -2721,6 +2721,19 @@
       "firstPickSuccess": "First Pick Success",
       "firstPickSuccessRate": "{successfulFirstPicks} / {totalFirstPicks} picks won",
       "noData": "No data"
+    },
+    "recentFormCard": {
+      "title": "Recent Form",
+      "noData": "No recent matches to display.",
+      "winsLosses": "{wins}W - {losses}L • {winrate}% winrate",
+      "last5": "Last 5",
+      "last10": "Last 10",
+      "last20": "Last 20",
+      "strongRecentPerformance": "Strong recent performance",
+      "strugglingRecently": "Struggling recently",
+      "averagePerformance": "Average performance",
+      "win": "W",
+      "loss": "L"
     }
   }
 }

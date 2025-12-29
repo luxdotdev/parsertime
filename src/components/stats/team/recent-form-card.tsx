@@ -12,6 +12,7 @@ import {
 import type { RecentForm } from "@/data/team-performance-trends-dto";
 import { cn } from "@/lib/utils";
 import { TrendingDown, TrendingUp } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 type RecentFormCardProps = {
@@ -19,6 +20,7 @@ type RecentFormCardProps = {
 };
 
 export function RecentFormCard({ recentForm }: RecentFormCardProps) {
+  const t = useTranslations("teamStatsPage.recentFormCard");
   const [view, setView] = useState<"5" | "10" | "20">("5");
 
   const matches =
@@ -38,12 +40,10 @@ export function RecentFormCard({ recentForm }: RecentFormCardProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Recent Form</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-sm">
-            No recent matches to display.
-          </p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </CardContent>
       </Card>
     );
@@ -57,9 +57,13 @@ export function RecentFormCard({ recentForm }: RecentFormCardProps) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Recent Form</CardTitle>
+            <CardTitle>{t("title")}</CardTitle>
             <p className="text-muted-foreground mt-1 text-sm">
-              {wins}W - {losses}L • {winrate.toFixed(1)}% winrate
+              {t("winsLosses", {
+                wins,
+                losses,
+                winrate: winrate.toFixed(1),
+              })}
             </p>
           </div>
           <Select
@@ -70,9 +74,9 @@ export function RecentFormCard({ recentForm }: RecentFormCardProps) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="5">Last 5</SelectItem>
-              <SelectItem value="10">Last 10</SelectItem>
-              <SelectItem value="20">Last 20</SelectItem>
+              <SelectItem value="5">{t("last5")}</SelectItem>
+              <SelectItem value="10">{t("last10")}</SelectItem>
+              <SelectItem value="20">{t("last20")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -88,10 +92,10 @@ export function RecentFormCard({ recentForm }: RecentFormCardProps) {
               ) : null}
               <span className="text-sm font-medium">
                 {winrate >= 60
-                  ? "Strong recent performance"
+                  ? t("strongRecentPerformance")
                   : winrate <= 40
-                    ? "Struggling recently"
-                    : "Average performance"}
+                    ? t("strugglingRecently")
+                    : t("averagePerformance")}
               </span>
             </div>
             <Badge
@@ -123,7 +127,7 @@ export function RecentFormCard({ recentForm }: RecentFormCardProps) {
                         : "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400"
                     )}
                   >
-                    {match.result === "win" ? "W" : "L"}
+                    {match.result === "win" ? t("win") : t("loss")}
                   </div>
                   <div>
                     <p className="text-sm font-medium">{match.scrimName}</p>
@@ -150,7 +154,7 @@ export function RecentFormCard({ recentForm }: RecentFormCardProps) {
                   "h-3 w-3 rounded-full",
                   match.result === "win" ? "bg-green-500" : "bg-red-500"
                 )}
-                title={`${match.scrimName} - ${match.result === "win" ? "Win" : "Loss"}`}
+                title={`${match.scrimName} - ${match.result === "win" ? t("win") : t("loss")}`}
               />
             ))}
           </div>
