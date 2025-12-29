@@ -111,10 +111,13 @@ export function AppSettingsProvider({
   // Create stable mutation functions that don't depend on the mutation object
   const updateColorblindMode = React.useCallback(
     async (mode: $Enums.ColorblindMode): Promise<void> => {
-      await updateMutation.mutateAsync({ colorblindMode: mode });
+      await updateMutation.mutateAsync({
+        colorblindMode: mode,
+        seeOnboarding: Boolean(appSettings?.seeOnboarding ?? false),
+      });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [appSettings?.seeOnboarding]
   );
 
   const updateAppSettingsWrapper = React.useCallback(
