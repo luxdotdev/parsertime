@@ -5,12 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { StreakInfo } from "@/data/team-performance-trends-dto";
 import { cn } from "@/lib/utils";
 import { Flame, TrendingDown, TrendingUp } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type WinLossStreaksCardProps = {
   streakInfo: StreakInfo;
 };
 
 export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
+  const t = useTranslations("teamStatsPage.winLossStreaksCard");
+
   const { currentStreak, longestWinStreak, longestLossStreak } = streakInfo;
 
   const hasData =
@@ -22,19 +25,17 @@ export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Win/Loss Streaks</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-sm">
-            No streak data available yet.
-          </p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </CardContent>
       </Card>
     );
   }
 
   function formatDateRange(start: Date | null, end: Date | null): string {
-    if (!start || !end) return "N/A";
+    if (!start || !end) return t("na");
     const startStr = start.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -50,7 +51,7 @@ export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Win/Loss Streaks</CardTitle>
+        <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -72,13 +73,17 @@ export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
                       : "text-red-600 dark:text-red-400"
                   )}
                 />
-                <h3 className="text-sm font-semibold">Current Streak</h3>
+                <h3 className="text-sm font-semibold">{t("currentStreak")}</h3>
               </div>
               <div className="mt-2 flex items-center justify-between">
                 <span className="text-2xl font-bold">
-                  {currentStreak.count}{" "}
-                  {currentStreak.type === "win" ? "Win" : "Loss"}
-                  {currentStreak.count !== 1 ? "s" : ""}
+                  {currentStreak.type === "win"
+                    ? t("winStreakCount", {
+                        count: currentStreak.count,
+                      })
+                    : t("lossStreakCount", {
+                        count: currentStreak.count,
+                      })}
                 </span>
                 <Badge
                   className={cn(
@@ -86,7 +91,7 @@ export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
                     currentStreak.type === "win" ? "bg-green-500" : "bg-red-500"
                   )}
                 >
-                  {currentStreak.type === "win" ? "🔥 Hot" : "❄️ Cold"}
+                  {currentStreak.type === "win" ? t("hot") : t("cold")}
                 </Badge>
               </div>
             </div>
@@ -97,7 +102,7 @@ export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
               <div className="mb-3 flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
                 <h3 className="text-sm font-semibold text-green-600 dark:text-green-400">
-                  Longest Win Streak
+                  {t("longestWinStreak")}
                 </h3>
               </div>
               {longestWinStreak.count > 0 ? (
@@ -113,7 +118,9 @@ export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
                   </p>
                 </>
               ) : (
-                <p className="text-muted-foreground text-sm">No wins yet</p>
+                <p className="text-muted-foreground text-sm">
+                  {t("noWinsYet")}
+                </p>
               )}
             </div>
 
@@ -121,7 +128,7 @@ export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
               <div className="mb-3 flex items-center gap-2">
                 <TrendingDown className="h-4 w-4 text-red-600 dark:text-red-400" />
                 <h3 className="text-sm font-semibold text-red-600 dark:text-red-400">
-                  Longest Loss Streak
+                  {t("longestLossStreak")}
                 </h3>
               </div>
               {longestLossStreak.count > 0 ? (
@@ -137,7 +144,9 @@ export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
                   </p>
                 </>
               ) : (
-                <p className="text-muted-foreground text-sm">No losses yet</p>
+                <p className="text-muted-foreground text-sm">
+                  {t("noLossesYet")}
+                </p>
               )}
             </div>
           </div>
@@ -146,7 +155,7 @@ export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
             <div className="bg-muted/50 rounded-lg p-3 text-center">
               <p className="text-sm">
                 🎯{" "}
-                <span className="font-semibold">Keep the momentum going!</span>
+                <span className="font-semibold">{t("keepMomentumGoing")}</span>
               </p>
             </div>
           )}
@@ -155,9 +164,7 @@ export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
             <div className="bg-muted/50 rounded-lg p-3 text-center">
               <p className="text-sm">
                 💪{" "}
-                <span className="font-semibold">
-                  Time to break the streak - review recent VODs
-                </span>
+                <span className="font-semibold">{t("timeToBreakStreak")}</span>
               </p>
             </div>
           )}

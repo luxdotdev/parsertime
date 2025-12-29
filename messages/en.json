@@ -2798,6 +2798,22 @@
       "dryFightWinrate": "{count} dry fights ({winrate}% WR)",
       "nonDryFights": "Non-Dry Fights:",
       "nonDryFightsCount": "{count} non-dry fights ({ults} ults avg)"
+    },
+    "winLossStreaksCard": {
+      "title": "Win/Loss Streaks",
+      "noData": "No streak data available yet.",
+      "na": "N/A",
+      "currentStreak": "Current Streak",
+      "winStreakCount": "{count} {count, plural, =0 {wins} =1 {win} other {wins}}",
+      "lossStreakCount": "{count} {count, plural, =0 {losses} =1 {loss} other {losses}}",
+      "hot": "🔥 Hot",
+      "cold": "❄️ Cold",
+      "longestWinStreak": "Longest Win Streak",
+      "noWinsYet": "No wins yet",
+      "longestLossStreak": "Longest Loss Streak",
+      "noLossesYet": "No losses yet",
+      "keepMomentumGoing": "Keep the momentum going!",
+      "timeToBreakStreak": "Time to break the streak - review recent VODs"
     }
   }
 }
