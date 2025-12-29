@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { PlayerMapPerformanceMatrix } from "@/data/team-analytics-dto";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 type PlayerMapPerformanceCardProps = {
@@ -12,6 +13,8 @@ type PlayerMapPerformanceCardProps = {
 export function PlayerMapPerformanceCard({
   data,
 }: PlayerMapPerformanceCardProps) {
+  const t = useTranslations("teamStatsPage.playerMapPerformanceCard");
+
   const [hoveredCell, setHoveredCell] = useState<{
     player: string;
     map: string;
@@ -21,12 +24,10 @@ export function PlayerMapPerformanceCard({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Player Map Performance Matrix</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-sm">
-            No map performance data available yet.
-          </p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </CardContent>
       </Card>
     );
@@ -49,10 +50,8 @@ export function PlayerMapPerformanceCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Player Map Performance Matrix</CardTitle>
-        <p className="text-muted-foreground text-sm">
-          Each player&apos;s best and worst maps by winrate
-        </p>
+        <CardTitle>{t("title")}</CardTitle>
+        <p className="text-muted-foreground text-sm">{t("description")}</p>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
@@ -129,8 +128,17 @@ export function PlayerMapPerformanceCard({
                           onMouseLeave={() => setHoveredCell(null)}
                           title={
                             perf
-                              ? `${playerName} on ${mapName}: ${perf.winrate.toFixed(1)}% (${perf.wins}W-${perf.losses}L)`
-                              : `${playerName} - ${mapName}: No data`
+                              ? t("playerOnMap", {
+                                  player: playerName,
+                                  map: mapName,
+                                  winrate: perf.winrate.toFixed(1),
+                                  wins: perf.wins,
+                                  losses: perf.losses,
+                                })
+                              : t("noDataTitle", {
+                                  player: playerName,
+                                  map: mapName,
+                                })
                           }
                         >
                           {perf ? (
@@ -139,7 +147,10 @@ export function PlayerMapPerformanceCard({
                                 {perf.winrate.toFixed(0)}%
                               </span>
                               <span className="text-xs opacity-90">
-                                {perf.wins}W-{perf.losses}L
+                                {t("winsLossesRecord", {
+                                  wins: perf.wins,
+                                  losses: perf.losses,
+                                })}
                               </span>
                             </>
                           ) : (
@@ -162,37 +173,47 @@ export function PlayerMapPerformanceCard({
               if (!perf) {
                 return (
                   <>
-                    <span className="font-semibold">{hoveredCell.player}</span>{" "}
-                    hasn&apos;t played{" "}
-                    <span className="font-semibold">{hoveredCell.map}</span>{" "}
-                    yet.
+                    {t.rich("hasntPlayedMap", {
+                      player: hoveredCell.player,
+                      map: hoveredCell.map,
+                      span: (chunks) => (
+                        <span className="font-semibold">{chunks}</span>
+                      ),
+                    })}
                   </>
                 );
               }
               return (
                 <>
-                  <span className="font-semibold">{hoveredCell.player}</span> on{" "}
-                  <span className="font-semibold">{hoveredCell.map}</span>:{" "}
-                  {perf.winrate.toFixed(1)}% winrate ({perf.wins}W-{perf.losses}
-                  L) in {perf.gamesPlayed} games
+                  {t.rich("playerMapPerformance", {
+                    player: hoveredCell.player,
+                    map: hoveredCell.map,
+                    winrate: perf.winrate.toFixed(1),
+                    wins: perf.wins,
+                    losses: perf.losses,
+                    games: perf.gamesPlayed,
+                    span: (chunks) => (
+                      <span className="font-semibold">{chunks}</span>
+                    ),
+                  })}
                 </>
               );
             })()}
           </div>
         ) : (
           <div className="bg-muted mt-4 rounded-lg p-3 text-sm">
-            Hover over a cell to see the player&apos;s performance on that map.
+            {t("hoverToSeePerformance")}
           </div>
         )}
 
         <div className="mt-4 flex items-center gap-4 text-xs">
           <div className="flex items-center gap-2">
             <div className="h-4 w-4 rounded bg-green-600 ring-2 ring-green-400" />
-            <span className="text-muted-foreground">Best map</span>
+            <span className="text-muted-foreground">{t("bestMap")}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="h-4 w-4 rounded bg-red-500 ring-2 ring-red-400" />
-            <span className="text-muted-foreground">Worst map</span>
+            <span className="text-muted-foreground">{t("worstMap")}</span>
           </div>
         </div>
       </CardContent>

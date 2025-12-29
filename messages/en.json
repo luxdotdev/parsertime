@@ -2693,6 +2693,19 @@
       "noMapsMatchFilters": "No maps match your current filters. Try adjusting your search or filters.",
       "gamesLabel": "{count, plural, =0 {no games} =1 {1 game} other {# games}} played",
       "clickToSeeRosterPerformance": "Click on any map to see roster performance details"
+    },
+    "playerMapPerformanceCard": {
+      "title": "Player Map Performance Matrix",
+      "noData": "No map performance data available yet.",
+      "description": "Each player's best and worst maps by winrate",
+      "playerOnMap": "{player} on {map}: {winrate}% ({wins}W-{losses}L)",
+      "noDataTitle": "{player} - {map}: No data",
+      "winsLossesRecord": "{wins}W - {losses}L",
+      "hasntPlayedMap": "<span>{player}</span> hasn't played <span>{map}</span> yet.",
+      "playerMapPerformance": "<span>{player}</span> on <span>{map}</span>: {winrate}% ({wins}W-{losses}L) in {games, plural, =0 {0 games} =1 {1 game} other {# games}} played",
+      "hoverToSeePerformance": "Hover over a cell to see the player's performance on that map.",
+      "bestMap": "Best map",
+      "worstMap": "Worst map"
     }
   }
 }
