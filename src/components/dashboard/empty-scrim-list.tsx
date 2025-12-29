@@ -7,13 +7,19 @@ import { useNextStep } from "nextstepjs";
 import { useEffect, useState } from "react";
 
 async function setOnboardingFlag() {
-  await fetch("/api/user/update-onboarding", {
+  const res = await fetch("/api/user/update-onboarding", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ seenOnboarding: true }),
   });
+
+  if (!res.ok) {
+    throw new Error(`Failed to set onboarding flag: ${await res.text()}`);
+  }
+
+  return res.json();
 }
 
 export function EmptyScrimList({ isOnboarding }: { isOnboarding?: boolean }) {
@@ -29,8 +35,8 @@ export function EmptyScrimList({ isOnboarding }: { isOnboarding?: boolean }) {
   }, [t, isOnboarding, startNextStep]);
 
   useQuery({
-    queryKey: ["finishOnboard"],
-    queryFn: () => setOnboardingFlag(),
+    queryKey: ["finishOnboarding"],
+    queryFn: setOnboardingFlag,
     enabled: !isNextStepVisible && hasStarted,
     staleTime: Infinity,
   });
