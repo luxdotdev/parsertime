@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn, toKebabCase, toTimestampWithHours } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 
 type TopMapsCardProps = {
@@ -21,16 +22,16 @@ type TopMapsCardProps = {
 };
 
 export function TopMapsCard({ topMaps, winrates, mapNames }: TopMapsCardProps) {
+  const t = useTranslations("teamStatsPage.topMapsCard");
+
   if (topMaps.length === 0) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Top Maps by Playtime</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-sm">
-            No map data available yet.
-          </p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </CardContent>
       </Card>
     );
@@ -41,7 +42,7 @@ export function TopMapsCard({ topMaps, winrates, mapNames }: TopMapsCardProps) {
   return (
     <Card className="h-full">
       <CardHeader>
-        <CardTitle>Top Maps by Playtime</CardTitle>
+        <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

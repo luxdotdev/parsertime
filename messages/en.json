@@ -2765,6 +2765,10 @@
     "teamRosterGrid": {
       "title": "Team Roster",
       "noData": "No roster data available. Players will appear here once they've played in matches."
+    },
+    "topMapsCard": {
+      "title": "Top Maps by Playtime",
+      "noData": "No map data available yet."
     }
   }
 }
