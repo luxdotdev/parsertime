@@ -2838,6 +2838,17 @@
       "totalFights": "Total Fights",
       "fightsWon": "Fights Won",
       "overallWinrate": "Overall Winrate"
+    },
+    "winrateOverTimeChart": {
+      "title": "Winrate Over Time",
+      "noData": "Not enough data to show winrate trends yet.",
+      "average": "Average: {avgWinrate}% • <span>{trend} {trendValue}%</span>",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "winrateLabel": "Winrate (%)",
+      "50PercentLine": "50% Line",
+      "winrate": "Winrate: <span>{winrate}%</span>",
+      "winsAndLosses": "{wins}W - {losses}L"
     }
   }
 }

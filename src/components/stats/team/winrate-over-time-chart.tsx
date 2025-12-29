@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { WinrateDataPoint } from "@/data/team-performance-trends-dto";
-import { round } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import {
   CartesianGrid,
@@ -37,16 +37,24 @@ function CustomTooltip({
   payload,
   label,
 }: TooltipProps<ValueType, NameType>) {
+  const t = useTranslations("teamStatsPage.winrateOverTimeChart");
+
   if (active && payload?.length) {
     const data = payload[0].payload as WinrateDataPoint;
     return (
       <div className="bg-popover text-popover-foreground border-border z-50 overflow-hidden rounded-md border px-3 py-2 shadow-xl">
         <p className="text-sm font-semibold">{label}</p>
         <p className="text-sm">
-          Winrate: <span className="font-bold">{round(data.winrate)}%</span>
+          {t.rich("winrate", {
+            span: (chunks) => <span className="font-bold">{chunks}</span>,
+            winrate: data.winrate.toFixed(1),
+          })}
         </p>
         <p className="text-muted-foreground text-xs">
-          {data.wins}W - {data.losses}L
+          {t("winsAndLosses", {
+            wins: data.wins,
+            losses: data.losses,
+          })}
         </p>
       </div>
     );
@@ -58,6 +66,7 @@ export function WinrateOverTimeChart({
   weeklyData,
   monthlyData,
 }: WinrateOverTimeChartProps) {
+  const t = useTranslations("teamStatsPage.winrateOverTimeChart");
   const [timeframe, setTimeframe] = useState<"week" | "month">("week");
 
   const data = timeframe === "week" ? weeklyData : monthlyData;
@@ -68,12 +77,10 @@ export function WinrateOverTimeChart({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Winrate Over Time</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-sm">
-            Not enough data to show winrate trends yet.
-          </p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </CardContent>
       </Card>
     );
@@ -92,21 +99,26 @@ export function WinrateOverTimeChart({
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Winrate Over Time</CardTitle>
+            <CardTitle>{t("title")}</CardTitle>
             <p className="text-muted-foreground mt-1 text-sm">
-              Average: {avgWinrate.toFixed(1)}% •{" "}
-              <span
-                className={
-                  trend > 0
-                    ? "text-green-600 dark:text-green-400"
-                    : trend < 0
-                      ? "text-red-600 dark:text-red-400"
-                      : ""
-                }
-              >
-                {trend > 0 ? "↑" : trend < 0 ? "↓" : "→"}{" "}
-                {Math.abs(trend).toFixed(1)}%
-              </span>
+              {t.rich("average", {
+                avgWinrate: avgWinrate.toFixed(1),
+                trend: trend > 0 ? "↑" : trend < 0 ? "↓" : "→",
+                trendValue: Math.abs(trend).toFixed(1),
+                span: (chunks) => (
+                  <span
+                    className={
+                      trend > 0
+                        ? "text-green-600 dark:text-green-400"
+                        : trend < 0
+                          ? "text-red-600 dark:text-red-400"
+                          : ""
+                    }
+                  >
+                    {chunks}
+                  </span>
+                ),
+              })}
             </p>
           </div>
           <Select
@@ -117,8 +129,8 @@ export function WinrateOverTimeChart({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="week">Weekly</SelectItem>
-              <SelectItem value="month">Monthly</SelectItem>
+              <SelectItem value="week">{t("weekly")}</SelectItem>
+              <SelectItem value="month">{t("monthly")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -139,7 +151,7 @@ export function WinrateOverTimeChart({
             <YAxis
               domain={[0, 100]}
               label={{
-                value: "Winrate (%)",
+                value: t("winrateLabel"),
                 angle: -90,
                 position: "insideLeft",
               }}
@@ -151,7 +163,7 @@ export function WinrateOverTimeChart({
               dataKey="winrate"
               stroke="#3b82f6"
               strokeWidth={2}
-              name="Winrate"
+              name={t("winrateLabel")}
               dot={{ r: 4 }}
               activeDot={{ r: 6 }}
             />
@@ -161,7 +173,7 @@ export function WinrateOverTimeChart({
               stroke="#94a3b8"
               strokeDasharray="5 5"
               strokeWidth={1}
-              name="50% Line"
+              name={t("50PercentLine")}
               dot={false}
             />
           </LineChart>
