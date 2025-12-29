@@ -412,9 +412,15 @@ async function getPlayerMapPerformanceMatrixUncached(
 
     const isWin = winner === teamName;
 
+    // Get unique players on this map to avoid counting the same player multiple times
+    // (since players can have multiple entries for different heroes)
+    const uniquePlayersOnMap = new Set<string>();
     for (const stat of playersOnMap) {
-      const playerName = stat.player_name;
+      uniquePlayersOnMap.add(stat.player_name);
+    }
 
+    // Now count each player only once per map
+    for (const playerName of uniquePlayersOnMap) {
       if (!playerMapStats.has(playerName)) {
         playerMapStats.set(playerName, new Map());
       }
