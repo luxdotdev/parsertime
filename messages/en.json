@@ -2602,6 +2602,13 @@
       "support": "Support",
       "winRate": "Win Rate",
       "playMoreGames": "Play more games to see your best roster combinations"
+    },
+    "heroPickrateHeatmap": {
+      "title": "Hero Pickrate Heatmap",
+      "noData": "No hero pickrate data available yet.",
+      "description": "Top 15 most played heroes across the team",
+      "hoverText": "<player>{playerName}</player> on <hero>{heroName}</hero>: {playtime}",
+      "hoverTextDescription": "Hover over a cell to see the player's pickrate for that hero."
     }
   }
 }

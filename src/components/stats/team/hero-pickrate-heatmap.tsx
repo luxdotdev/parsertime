@@ -2,8 +2,9 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { HeroPickrateMatrix } from "@/data/team-analytics-dto";
-import { cn, toHero, toTimestampWithHours } from "@/lib/utils";
+import { cn, toHero, toTimestampWithHours, useHeroNames } from "@/lib/utils";
 import { heroPriority, heroRoleMapping } from "@/types/heroes";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -12,6 +13,9 @@ type HeroPickrateHeatmapProps = {
 };
 
 export function HeroPickrateHeatmap({ data }: HeroPickrateHeatmapProps) {
+  const t = useTranslations("teamStatsPage.heroPickrateHeatmap");
+  const heroNames = useHeroNames();
+
   const [hoveredCell, setHoveredCell] = useState<{
     player: string;
     hero: string;
@@ -21,12 +25,10 @@ export function HeroPickrateHeatmap({ data }: HeroPickrateHeatmapProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Hero Pickrate Heatmap</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-sm">
-            No hero pickrate data available yet.
-          </p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </CardContent>
       </Card>
     );
@@ -84,10 +86,8 @@ export function HeroPickrateHeatmap({ data }: HeroPickrateHeatmapProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Hero Pickrate Heatmap</CardTitle>
-        <p className="text-muted-foreground text-sm">
-          Top 15 most played heroes across the team
-        </p>
+        <CardTitle>{t("title")}</CardTitle>
+        <p className="text-muted-foreground text-sm">{t("description")}</p>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
@@ -112,12 +112,12 @@ export function HeroPickrateHeatmap({ data }: HeroPickrateHeatmapProps) {
                       transform: "rotate(180deg)",
                     }}
                   >
-                    {heroName}
+                    {heroNames.get(toHero(heroName)) ?? heroName}
                   </span>
                   <div className="relative h-10 w-10">
                     <Image
                       src={`/heroes/${toHero(heroName)}.png`}
-                      alt={heroName}
+                      alt={heroNames.get(toHero(heroName)) ?? heroName}
                       fill
                       className="rounded object-cover"
                     />
@@ -176,15 +176,22 @@ export function HeroPickrateHeatmap({ data }: HeroPickrateHeatmapProps) {
 
         {hoveredCell ? (
           <div className="bg-muted mt-4 rounded-lg p-3 text-sm">
-            <span className="font-semibold">{hoveredCell.player}</span> on{" "}
-            <span className="font-semibold">{hoveredCell.hero}</span>:{" "}
-            {toTimestampWithHours(
-              getPlaytime(hoveredCell.player, hoveredCell.hero)
-            )}
+            {t.rich("hoverText", {
+              player: (chunks) => (
+                <span className="font-semibold">{chunks}</span>
+              ),
+              playerName: hoveredCell.player,
+              hero: (chunks) => <span className="font-semibold">{chunks}</span>,
+              heroName:
+                heroNames.get(toHero(hoveredCell.hero)) ?? hoveredCell.hero,
+              playtime: toTimestampWithHours(
+                getPlaytime(hoveredCell.player, hoveredCell.hero)
+              ),
+            })}
           </div>
         ) : (
           <div className="bg-muted mt-4 rounded-lg p-3 text-sm">
-            Hover over a cell to see the player&apos;s pickrate for that hero.
+            {t("hoverTextDescription")}
           </div>
         )}
       </CardContent>
