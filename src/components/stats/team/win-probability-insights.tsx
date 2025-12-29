@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { TeamFightStats } from "@/data/team-fight-stats-dto";
+import { useTranslations } from "next-intl";
 
 type WinProbabilityInsightsProps = {
   fightStats: TeamFightStats;
@@ -10,16 +11,16 @@ type WinProbabilityInsightsProps = {
 export function WinProbabilityInsights({
   fightStats,
 }: WinProbabilityInsightsProps) {
+  const t = useTranslations("teamStatsPage.winProbabilityInsights");
+
   if (fightStats.totalFights === 0) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Win Probability Insights</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-sm">
-            No teamfight data available yet.
-          </p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </CardContent>
       </Card>
     );
@@ -27,52 +28,72 @@ export function WinProbabilityInsights({
 
   const insights = [
     {
-      title: "First Pick Impact",
+      title: t("firstPickImpact"),
       value: `${fightStats.firstPickWinrate.toFixed(1)}%`,
-      description: `When getting first pick, your team wins ${fightStats.firstPickWinrate.toFixed(1)}% of fights`,
+      description: t("firstPickImpactDescription", {
+        winrate: fightStats.firstPickWinrate.toFixed(1),
+      }),
       impact:
         fightStats.firstPickWinrate > 65
           ? "high-positive"
           : fightStats.firstPickWinrate < 45
             ? "negative"
             : "moderate",
-      detail: `${fightStats.firstPickWins}W / ${fightStats.firstPickFights} fights`,
+      detail: t("firstPickCount", {
+        wins: fightStats.firstPickWins,
+        fights: fightStats.firstPickFights,
+      }),
     },
     {
-      title: "First Death Comeback",
+      title: t("firstDeathComeback"),
       value: `${fightStats.firstDeathWinrate.toFixed(1)}%`,
-      description: `When suffering first death, your team still wins ${fightStats.firstDeathWinrate.toFixed(1)}% of fights`,
+      description: t("firstDeathComebackDescription", {
+        winrate: fightStats.firstDeathWinrate.toFixed(1),
+      }),
       impact:
         fightStats.firstDeathWinrate > 35
           ? "high-positive"
           : fightStats.firstDeathWinrate < 20
             ? "negative"
             : "moderate",
-      detail: `${fightStats.firstDeathWins}W / ${fightStats.firstDeathFights} fights`,
+      detail: t("firstDeathCount", {
+        wins: fightStats.firstDeathWins,
+        fights: fightStats.firstDeathFights,
+      }),
     },
     {
-      title: "Ultimate Advantage",
+      title: t("ultimateAdvantage"),
       value: `${fightStats.firstUltWinrate.toFixed(1)}%`,
-      description: `Using first ultimate leads to ${fightStats.firstUltWinrate.toFixed(1)}% fight winrate`,
+      description: t("ultimateAdvantageDescription", {
+        winrate: fightStats.firstUltWinrate.toFixed(1),
+      }),
       impact:
         fightStats.firstUltWinrate > 60
           ? "high-positive"
           : fightStats.firstUltWinrate < 45
             ? "negative"
             : "moderate",
-      detail: `${fightStats.firstUltWins}W / ${fightStats.firstUltFights} fights`,
+      detail: t("ultimateCount", {
+        wins: fightStats.firstUltWins,
+        fights: fightStats.firstUltFights,
+      }),
     },
     {
-      title: "Dry Fight Success",
+      title: t("dryFightSuccess"),
       value: `${fightStats.dryFightWinrate.toFixed(1)}%`,
-      description: `Winning ${fightStats.dryFightWinrate.toFixed(1)}% of fights without using ultimates`,
+      description: t("dryFightSuccessDescription", {
+        winrate: fightStats.dryFightWinrate.toFixed(1),
+      }),
       impact:
         fightStats.dryFightWinrate > 55
           ? "high-positive"
           : fightStats.dryFightWinrate < 40
             ? "negative"
             : "moderate",
-      detail: `${fightStats.dryFightWins}W / ${fightStats.dryFights} dry fights`,
+      detail: t("dryFightCount", {
+        wins: fightStats.dryFightWins,
+        fights: fightStats.dryFights,
+      }),
     },
   ];
 
@@ -85,20 +106,16 @@ export function WinProbabilityInsights({
   }
 
   function getImpactBadge(impact: string): string {
-    if (impact === "high-positive") return "Strong Advantage";
-    if (impact === "negative") return "Needs Improvement";
-    return "Average";
+    if (impact === "high-positive") return t("strongAdvantage");
+    if (impact === "negative") return t("needsImprovement");
+    return t("average");
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          Win Probability Insights
-        </CardTitle>
-        <p className="text-muted-foreground text-sm">
-          How different fight scenarios impact your win probability
-        </p>
+        <CardTitle className="flex items-center gap-2">{t("title")}</CardTitle>
+        <p className="text-muted-foreground text-sm">{t("description")}</p>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4 md:grid-cols-2">
@@ -132,22 +149,26 @@ export function WinProbabilityInsights({
 
         <div className="bg-muted mt-6 rounded-lg p-4">
           <h4 className="mb-2 text-sm font-semibold">
-            Overall Fight Performance
+            {t("overallFightPerformance")}
           </h4>
           <div className="grid gap-4 md:grid-cols-3">
             <div>
-              <div className="text-muted-foreground text-xs">Total Fights</div>
+              <div className="text-muted-foreground text-xs">
+                {t("totalFights")}
+              </div>
               <div className="text-2xl font-bold">{fightStats.totalFights}</div>
             </div>
             <div>
-              <div className="text-muted-foreground text-xs">Fights Won</div>
+              <div className="text-muted-foreground text-xs">
+                {t("fightsWon")}
+              </div>
               <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                 {fightStats.fightsWon}
               </div>
             </div>
             <div>
               <div className="text-muted-foreground text-xs">
-                Overall Winrate
+                {t("overallWinrate")}
               </div>
               <div
                 className={`text-2xl font-bold ${

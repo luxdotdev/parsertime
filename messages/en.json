@@ -2814,6 +2814,30 @@
       "noLossesYet": "No losses yet",
       "keepMomentumGoing": "Keep the momentum going!",
       "timeToBreakStreak": "Time to break the streak - review recent VODs"
+    },
+    "winProbabilityInsights": {
+      "title": "Win Probability Insights",
+      "noData": "No teamfight data available yet.",
+      "firstPickImpact": "First Pick Impact",
+      "firstPickImpactDescription": "When getting first pick, your team wins {winrate}% of fights",
+      "firstPickCount": "{wins}W / {fights} fights",
+      "firstDeathComeback": "First Death Comeback",
+      "firstDeathComebackDescription": "When suffering first death, your team still wins {winrate}% of fights",
+      "firstDeathCount": "{wins}W / {fights} fights",
+      "ultimateAdvantage": "Ultimate Advantage",
+      "ultimateAdvantageDescription": "Using first ultimate leads to {winrate}% fight winrate",
+      "ultimateCount": "{wins}W / {fights} fights",
+      "dryFightSuccess": "Dry Fight Success",
+      "dryFightSuccessDescription": "Winning {winrate}% of fights without using ultimates",
+      "dryFightCount": "{wins}W / {fights} dry fights",
+      "strongAdvantage": "Strong Advantage",
+      "needsImprovement": "Needs Improvement",
+      "average": "Average",
+      "description": "How different fight scenarios impact your win probability",
+      "overallFightPerformance": "Overall Fight Performance",
+      "totalFights": "Total Fights",
+      "fightsWon": "Fights Won",
+      "overallWinrate": "Overall Winrate"
     }
   }
 }
