@@ -2674,6 +2674,25 @@
       "winsLossesRecord": "{wins}W - {losses}L",
       "gamesLabel": "{count, plural, =0 {no games} =1 {1 game} other {# games}} played",
       "smallSample": "Small sample"
+    },
+    "mapWinrateGallery": {
+      "title": "Map Performance",
+      "noData": "No map data available yet. Play some matches to see your team's map performance!",
+      "mapFilters": "Map Filters",
+      "clearFilters": "Clear Filters",
+      "searchMaps": "Search Maps",
+      "searchMapNames": "Search map names...",
+      "mapType": "Map Type",
+      "allTypes": "All Types",
+      "sortBy": "Sort By",
+      "sortByPlaceholder": "Sort by...",
+      "highestWinrate": "Highest Winrate",
+      "mostPlayed": "Most Played",
+      "alphabetical": "Alphabetical",
+      "showingMaps": "Showing {count} of {total} maps",
+      "noMapsMatchFilters": "No maps match your current filters. Try adjusting your search or filters.",
+      "gamesLabel": "{count, plural, =0 {no games} =1 {1 game} other {# games}} played",
+      "clickToSeeRosterPerformance": "Click on any map to see roster performance details"
     }
   }
 }

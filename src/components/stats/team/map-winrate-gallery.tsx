@@ -17,6 +17,7 @@ import { cn, toKebabCase } from "@/lib/utils";
 import { mapNameToMapTypeMapping } from "@/types/map";
 import type { $Enums } from "@prisma/client";
 import { Search, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 
@@ -72,6 +73,8 @@ export function MapWinrateGallery({
   mapPlaytimes,
   mapNames,
 }: MapWinrateGalleryProps) {
+  const t = useTranslations("teamStatsPage.mapWinrateGallery");
+
   const [selectedMap, setSelectedMap] = useState<string | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>("winrate");
@@ -167,13 +170,10 @@ export function MapWinrateGallery({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Map Performance</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-sm">
-            No map data available yet. Play some matches to see your team&apos;s
-            map performance!
-          </p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </CardContent>
       </Card>
     );
@@ -186,7 +186,7 @@ export function MapWinrateGallery({
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
-              <span>Map Filters</span>
+              <span>{t("mapFilters")}</span>
               {hasActiveFilters && (
                 <Button
                   variant="ghost"
@@ -195,7 +195,7 @@ export function MapWinrateGallery({
                   className="h-8"
                 >
                   <X className="mr-2 h-4 w-4" />
-                  Clear Filters
+                  {t("clearFilters")}
                 </Button>
               )}
             </CardTitle>
@@ -204,12 +204,12 @@ export function MapWinrateGallery({
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {/* Search */}
               <div className="space-y-2">
-                <Label htmlFor="search">Search Maps</Label>
+                <Label htmlFor="search">{t("searchMaps")}</Label>
                 <div className="relative">
                   <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                   <Input
                     id="search"
-                    placeholder="Search map names..."
+                    placeholder={t("searchMapNames")}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-9"
@@ -219,13 +219,13 @@ export function MapWinrateGallery({
 
               {/* Map Type Filter */}
               <div className="space-y-2">
-                <Label htmlFor="map-type">Map Type</Label>
+                <Label htmlFor="map-type">{t("mapType")}</Label>
                 <Select value={filterMapType} onValueChange={setFilterMapType}>
                   <SelectTrigger id="map-type">
-                    <SelectValue placeholder="All Types" />
+                    <SelectValue placeholder={t("allTypes")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="all">{t("allTypes")}</SelectItem>
                     {availableMapTypes.map((type) => (
                       <SelectItem key={type} value={type}>
                         {type}
@@ -237,25 +237,29 @@ export function MapWinrateGallery({
 
               {/* Sort By */}
               <div className="space-y-2">
-                <Label htmlFor="sort">Sort By</Label>
+                <Label htmlFor="sort">{t("sortBy")}</Label>
                 <Select
                   value={sortBy}
                   onValueChange={(value) => setSortBy(value as SortOption)}
                 >
                   <SelectTrigger id="sort">
-                    <SelectValue placeholder="Sort by..." />
+                    <SelectValue placeholder={t("sortByPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="winrate">Highest Winrate</SelectItem>
+                    <SelectItem value="winrate">
+                      {t("highestWinrate")}
+                    </SelectItem>
                     <SelectItem
                       value="playtime"
                       disabled={
                         !mapPlaytimes || Object.keys(mapPlaytimes).length === 0
                       }
                     >
-                      Most Played
+                      {t("mostPlayed")}
                     </SelectItem>
-                    <SelectItem value="alphabetical">Alphabetical</SelectItem>
+                    <SelectItem value="alphabetical">
+                      {t("alphabetical")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -266,7 +270,10 @@ export function MapWinrateGallery({
         {/* Results Count */}
         <div className="text-muted-foreground flex items-center justify-between text-sm">
           <span>
-            Showing {filteredAndSortedMaps.length} of {mapEntries.length} maps
+            {t("showingMaps", {
+              count: filteredAndSortedMaps.length,
+              total: mapEntries.length,
+            })}
           </span>
           {filterMapType !== "all" && (
             <Badge variant="secondary">{filterMapType}</Badge>
@@ -278,8 +285,7 @@ export function MapWinrateGallery({
           <Card>
             <CardContent className="py-12 text-center">
               <p className="text-muted-foreground text-sm">
-                No maps match your current filters. Try adjusting your search or
-                filters.
+                {t("noMapsMatchFilters")}
               </p>
             </CardContent>
           </Card>
@@ -345,7 +351,7 @@ export function MapWinrateGallery({
                         </span>
                       </div>
                       <span className="text-xs text-white/70">
-                        {totalGames} {totalGames === 1 ? "game" : "games"}
+                        {t("gamesLabel", { count: totalGames })}
                       </span>
                     </div>
                   </div>
@@ -356,7 +362,7 @@ export function MapWinrateGallery({
         )}
 
         <p className="text-muted-foreground text-center text-sm">
-          Click on any map to see roster performance details
+          {t("clickToSeeRosterPerformance")}
         </p>
       </div>
 
