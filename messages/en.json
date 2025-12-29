@@ -2665,6 +2665,15 @@
       "insights": "Insights",
       "excelsAt": "Your team excels at <span>{mode}</span> maps ({winrate}% winrate)",
       "considerPracticing": "Consider practicing <span>{mode}</span> maps to improve balance ({winrate}% winrate)"
+    },
+    "mapRosterDetailsSheet": {
+      "overall": "Overall: {wins}W - {losses}L ({winrate}% winrate) • {games, plural, =0 {no games} =1 {1 game} other {# games}} played",
+      "noData": "No roster data available for this map yet.",
+      "rosterPerformance": "Roster Performance ({count, plural, =0 {no lineups} =1 {1 lineup} other {# lineups}})",
+      "bestLineup": "Best Lineup",
+      "winsLossesRecord": "{wins}W - {losses}L",
+      "gamesLabel": "{count, plural, =0 {no games} =1 {1 game} other {# games}} played",
+      "smallSample": "Small sample"
     }
   }
 }

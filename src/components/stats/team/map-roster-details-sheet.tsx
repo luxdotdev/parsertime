@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -10,6 +11,7 @@ import {
 } from "@/components/ui/sheet";
 import { cn, toKebabCase } from "@/lib/utils";
 import { Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 
 type RosterVariant = {
@@ -48,6 +50,8 @@ export function MapRosterDetailsSheet({
   totalWinrate,
   rosterVariants,
 }: MapRosterDetailsSheetProps) {
+  const t = useTranslations("teamStatsPage.mapRosterDetailsSheet");
+
   const sortedRosters = [...rosterVariants].sort(
     (a, b) => b.winrate - a.winrate
   );
@@ -70,23 +74,24 @@ export function MapRosterDetailsSheet({
             {displayName}
           </SheetTitle>
           <SheetDescription>
-            Overall: {totalWins}W - {totalLosses}L ({totalWinrate.toFixed(1)}%
-            winrate) • {totalGames} {totalGames === 1 ? "game" : "games"} played
+            {t("overall", {
+              wins: totalWins,
+              losses: totalLosses,
+              winrate: totalWinrate.toFixed(1),
+              games: totalGames,
+            })}
           </SheetDescription>
         </SheetHeader>
 
         <div className="mt-6 space-y-4">
           {sortedRosters.length === 0 ? (
-            <p className="text-muted-foreground text-sm">
-              No roster data available for this map yet.
-            </p>
+            <p className="text-muted-foreground text-sm">{t("noData")}</p>
           ) : (
             <>
               <div className="flex items-center gap-2">
                 <Users className="h-5 w-5" />
                 <h3 className="font-semibold">
-                  Roster Performance ({sortedRosters.length}{" "}
-                  {sortedRosters.length === 1 ? "lineup" : "lineups"})
+                  {t("rosterPerformance", { count: sortedRosters.length })}
                 </h3>
               </div>
 
@@ -110,7 +115,7 @@ export function MapRosterDetailsSheet({
                           {/* Roster Badge */}
                           {isBestRoster && (
                             <Badge className="bg-green-500 text-white">
-                              Best Lineup
+                              {t("bestLineup")}
                             </Badge>
                           )}
 
@@ -129,10 +134,14 @@ export function MapRosterDetailsSheet({
                           {/* Stats */}
                           <div className="flex items-center gap-4 text-sm">
                             <span className="text-muted-foreground">
-                              {roster.wins}W - {roster.losses}L
+                              {t("winsLossesRecord", {
+                                wins: roster.wins,
+                                losses: roster.losses,
+                              })}
                             </span>
+                            <Separator orientation="vertical" />
                             <span className="text-muted-foreground">
-                              {games} {games === 1 ? "game" : "games"}
+                              {t("gamesLabel", { count: games })}
                             </span>
                           </div>
                         </div>
@@ -149,7 +158,7 @@ export function MapRosterDetailsSheet({
                           </Badge>
                           {games < 5 && (
                             <span className="text-muted-foreground text-xs">
-                              Small sample
+                              {t("smallSample")}
                             </span>
                           )}
                         </div>
