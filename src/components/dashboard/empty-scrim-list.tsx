@@ -1,19 +1,43 @@
 import { CreateScrimButton } from "@/components/dashboard/create-scrim";
 import { Card, CardDescription } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
+import { useQuery } from "@tanstack/react-query";
+
 import { useTranslations } from "next-intl";
 import { useNextStep } from "nextstepjs";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-export function EmptyScrimList(isOnboarding: { isOnboarding?: boolean }) {
+async function upsertOnBoard(body: { seeOnboarding: boolean }) {
+  const res = await fetch("/api/user/app-settings", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    throw new Error(`Something went wrong.`);
+  }
+  return res.json();
+}
+export function EmptyScrimList({ isOnboarding }: { isOnboarding?: boolean }) {
   const t = useTranslations("dashboard");
-  const { startNextStep } = useNextStep();
+  const { startNextStep, isNextStepVisible } = useNextStep();
+  const [hasStarted, setHasStarted] = useState(false);
 
   useEffect(() => {
-    if (isOnboarding.isOnboarding === true) {
+    if (isOnboarding === true) {
       startNextStep(`${t("tour.title")}`);
+      setHasStarted(true);
     }
   }, [t, isOnboarding, startNextStep]);
+
+  useQuery({
+    queryKey: ["finishOnboard"],
+    queryFn: () => upsertOnBoard({ seeOnboarding: false }),
+    enabled: !isNextStepVisible && hasStarted,
+    staleTime: Infinity,
+  });
 
   return (
     <Card className="border-dashed">
