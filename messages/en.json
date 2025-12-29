@@ -2565,6 +2565,31 @@
       "ogTitle": "{teamName} Stats | Parsertime",
       "ogDescription": "Stats for {teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
       "ogImage": "{teamName} Stats"
+    },
+    "roleBalanceRadar": {
+      "title": "Role Balance",
+      "noData": "Not enough data to analyze role balance yet.",
+      "eliminations": "Eliminations",
+      "survivability": "Survivability",
+      "ultUsage": "Ult Usage",
+      "activity": "Activity",
+      "balanced": "Balanced",
+      "tankHeavy": "Tank-heavy",
+      "damageHeavy": "Damage-heavy",
+      "supportHeavy": "Support-heavy",
+      "insufficientData": "Insufficient data",
+      "tank": "Tank",
+      "damage": "Damage",
+      "support": "Support",
+      "insights": "Insights",
+      "excellentBalance": "Your team shows excellent balance across all roles.",
+      "fairlyBalanced": "Your team is fairly balanced with minor role disparities.",
+      "considerStrengthening": "Consider strengthening your {weakestRole} performance to improve team balance.",
+      "negativeKD": "{role} players have a negative K/D ratio.",
+      "dyingFrequently": "{role} players are dying frequently - focus on positioning.",
+      "strongest": "Strongest:",
+      "needsWork": "Needs Work:",
+      "balanceScore": "Balance Score:"
     }
   }
 }

@@ -7,6 +7,7 @@ import type {
   RolePerformanceStats,
 } from "@/data/team-role-stats-dto";
 import { round } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import {
   Legend,
   PolarAngleAxis,
@@ -51,6 +52,8 @@ export function RoleBalanceRadar({
   roleStats,
   balanceAnalysis,
 }: RoleBalanceRadarProps) {
+  const t = useTranslations("teamStatsPage.roleBalanceRadar");
+
   const hasData = ["Tank", "Damage", "Support"].some(
     (role) => roleStats[role as keyof RolePerformanceStats].totalPlaytime > 0
   );
@@ -59,12 +62,10 @@ export function RoleBalanceRadar({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Role Balance</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-sm">
-            Not enough data to analyze role balance yet.
-          </p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </CardContent>
       </Card>
     );
@@ -88,25 +89,25 @@ export function RoleBalanceRadar({
 
   const chartData = [
     {
-      metric: "Eliminations",
+      metric: t("eliminations"),
       Tank: normalizeKD(roleStats.Tank.kd),
       Damage: normalizeKD(roleStats.Damage.kd),
       Support: normalizeKD(roleStats.Support.kd),
     },
     {
-      metric: "Survivability",
+      metric: t("survivability"),
       Tank: normalizeSurvivability(roleStats.Tank.deathsPerMin),
       Damage: normalizeSurvivability(roleStats.Damage.deathsPerMin),
       Support: normalizeSurvivability(roleStats.Support.deathsPerMin),
     },
     {
-      metric: "Ult Usage",
+      metric: t("ultUsage"),
       Tank: normalizeUltUsage(roleStats.Tank.ultEfficiency),
       Damage: normalizeUltUsage(roleStats.Damage.ultEfficiency),
       Support: normalizeUltUsage(roleStats.Support.ultEfficiency),
     },
     {
-      metric: "Activity",
+      metric: t("activity"),
       Tank: normalizeActivity(roleStats.Tank.totalPlaytime),
       Damage: normalizeActivity(roleStats.Damage.totalPlaytime),
       Support: normalizeActivity(roleStats.Support.totalPlaytime),
@@ -130,7 +131,7 @@ export function RoleBalanceRadar({
     <Card className="h-full">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>Role Balance</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
           <Badge className={getBalanceBadgeColor(balanceAnalysis.overall)}>
             {balanceAnalysis.overall}
           </Badge>
@@ -144,21 +145,21 @@ export function RoleBalanceRadar({
               <PolarAngleAxis dataKey="metric" />
               <PolarRadiusAxis angle={90} domain={[0, 100]} />
               <Radar
-                name="Tank"
+                name={t("tank")}
                 dataKey="Tank"
                 stroke="#3b82f6"
                 fill="#3b82f6"
                 fillOpacity={0.5}
               />
               <Radar
-                name="Damage"
+                name={t("damage")}
                 dataKey="Damage"
                 stroke="#ef4444"
                 fill="#ef4444"
                 fillOpacity={0.5}
               />
               <Radar
-                name="Support"
+                name={t("support")}
                 dataKey="Support"
                 stroke="#eab308"
                 fill="#eab308"
@@ -171,7 +172,7 @@ export function RoleBalanceRadar({
 
           {balanceAnalysis.insights.length > 0 && (
             <div className="space-y-2">
-              <h4 className="text-sm font-semibold">Insights</h4>
+              <h4 className="text-sm font-semibold">{t("insights")}</h4>
               <ul className="text-muted-foreground space-y-1 text-sm">
                 {balanceAnalysis.insights.map((insight) => (
                   <li key={insight} className="flex gap-2">
@@ -186,19 +187,21 @@ export function RoleBalanceRadar({
           {balanceAnalysis.strongestRole && balanceAnalysis.weakestRole && (
             <div className="bg-muted/50 rounded-lg p-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Strongest:</span>
+                <span className="text-muted-foreground">{t("strongest")}</span>
                 <span className="font-semibold text-green-600 dark:text-green-400">
                   {balanceAnalysis.strongestRole}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Needs Work:</span>
+                <span className="text-muted-foreground">{t("needsWork")}</span>
                 <span className="font-semibold text-red-600 dark:text-red-400">
                   {balanceAnalysis.weakestRole}
                 </span>
               </div>
               <div className="mt-2 flex justify-between">
-                <span className="text-muted-foreground">Balance Score:</span>
+                <span className="text-muted-foreground">
+                  {t("balanceScore")}
+                </span>
                 <span className="font-semibold">
                   {(balanceAnalysis.balanceScore * 100).toFixed(0)}%
                 </span>

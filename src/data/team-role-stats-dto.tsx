@@ -3,6 +3,7 @@ import "server-only";
 import { determineRole } from "@/lib/player-table-data";
 import { calculateWinner } from "@/lib/winrate";
 import type { HeroName } from "@/types/heroes";
+import { getTranslations } from "next-intl/server";
 import { cache } from "react";
 import type { BaseTeamData } from "./team-shared-data";
 import {
@@ -40,12 +41,7 @@ export type RolePerformanceStats = {
 };
 
 export type RoleBalanceAnalysis = {
-  overall:
-    | "Balanced"
-    | "Tank-heavy"
-    | "Damage-heavy"
-    | "Support-heavy"
-    | "Insufficient data";
+  overall: string;
   weakestRole: "Tank" | "Damage" | "Support" | null;
   strongestRole: "Tank" | "Damage" | "Support" | null;
   balanceScore: number;
@@ -230,6 +226,7 @@ export const getRolePerformanceStats = cache(getRolePerformanceStatsUncached);
 async function getRoleBalanceAnalysisUncached(
   teamId: number
 ): Promise<RoleBalanceAnalysis> {
+  const t = await getTranslations("teamStatsPage.roleBalanceRadar");
   const roleStats = await getRolePerformanceStats(teamId);
 
   const roles: ("Tank" | "Damage" | "Support")[] = [
@@ -245,11 +242,11 @@ async function getRoleBalanceAnalysisUncached(
 
   if (totalPlaytime === 0) {
     return {
-      overall: "Insufficient data",
+      overall: t("insufficientData"),
       weakestRole: null,
       strongestRole: null,
       balanceScore: 0,
-      insights: ["Not enough data to analyze role balance yet."],
+      insights: [t("noData")],
     };
   }
 
@@ -274,34 +271,30 @@ async function getRoleBalanceAnalysisUncached(
     roleScores[0].score - roleScores[roleScores.length - 1].score;
   const balanceScore = Math.max(0, 1 - scoreDiff);
 
-  let overall: RoleBalanceAnalysis["overall"] = "Balanced";
+  let overall: RoleBalanceAnalysis["overall"] = t("balanced");
   if (balanceScore < 0.6) {
     if (roleScores[0].score > 0.7) {
-      overall = `${strongestRole}-heavy` as RoleBalanceAnalysis["overall"];
+      overall = t(`${strongestRole.toLowerCase()}Heavy`);
     }
   }
 
   const insights: string[] = [];
 
   if (balanceScore >= 0.8) {
-    insights.push("Your team shows excellent balance across all roles.");
+    insights.push(t("excellentBalance"));
   } else if (balanceScore >= 0.6) {
-    insights.push("Your team is fairly balanced with minor role disparities.");
+    insights.push(t("fairlyBalanced"));
   } else {
-    insights.push(
-      `Consider strengthening your ${weakestRole} performance to improve team balance.`
-    );
+    insights.push(t("considerStrengthening", { role: weakestRole }));
   }
 
   roles.forEach((role) => {
     const stats = roleStats[role];
     if (stats.kd < 1.0 && stats.totalPlaytime > 600) {
-      insights.push(`${role} players have a negative K/D ratio.`);
+      insights.push(t("negativeKD", { role }));
     }
     if (stats.deathsPerMin > 1.5 && stats.totalPlaytime > 600) {
-      insights.push(
-        `${role} players are dying frequently - focus on positioning.`
-      );
+      insights.push(t("dyingFrequently", { role }));
     }
   });
 
