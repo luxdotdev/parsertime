@@ -2609,6 +2609,40 @@
       "description": "Top 15 most played heroes across the team",
       "hoverText": "<player>{playerName}</player> on <hero>{heroName}</hero>: {playtime}",
       "hoverTextDescription": "Hover over a cell to see the player's pickrate for that hero."
+    },
+    "heroPoolContainer": {
+      "selectTimeframe": "Select timeframe",
+      "lastWeek": "Last Week",
+      "last2Weeks": "Last 2 Weeks",
+      "lastMonth": "Last Month",
+      "last3Months": "Last 3 Months",
+      "last6Months": "Last 6 Months",
+      "lastYear": "Last Year",
+      "allTime": "All Time",
+      "customRange": "Custom Range",
+      "upgrade": "Upgrade to view more timeframes",
+      "pickDateRange": "Pick a date range"
+    },
+    "heroPoolOverviewCard": {
+      "title": "Hero Pool Overview",
+      "noData": "No hero pool data available yet.",
+      "excellent": "Excellent",
+      "good": "Good",
+      "average": "Average",
+      "limited": "Limited",
+      "totalHeroes": "Total Heroes",
+      "effectivePool": "Effective Pool",
+      "diversityScore": "Diversity Score",
+      "minGames": "3+ games",
+      "specialists": "Specialists",
+      "minOwnership": "30%+ ownership",
+      "mostPlayedByRole": "Most Played by Role",
+      "gamesPlayed": "{count, plural, =0 {no games} =1 {1 game} other {# games}}",
+      "players": "{count, plural, =0 {no players} =1 {1 player} other {# players}}",
+      "roleDistribution": "Role Distribution",
+      "tankHeroes": "Tank Heroes",
+      "dpsHeroes": "Damage Heroes",
+      "supportHeroes": "Support Heroes"
     }
   }
 }

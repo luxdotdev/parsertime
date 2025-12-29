@@ -33,6 +33,7 @@ import { calculateHeroPoolAnalysis } from "@/lib/hero-pool-utils";
 import { cn } from "@/lib/utils";
 import { addMonths, addWeeks, addYears, format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import type { DateRange } from "react-day-picker";
 
@@ -61,6 +62,8 @@ export function HeroPoolContainer({
   heatmapInitialData,
   permissions,
 }: HeroPoolContainerProps) {
+  const t = useTranslations("teamStatsPage.heroPoolContainer");
+
   const TODAY = new Date();
 
   const [timeframe, setTimeframe] = useState<Timeframe>("one-week");
@@ -120,56 +123,56 @@ export function HeroPoolContainer({
           defaultValue="one-week"
         >
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select timeframe" />
+            <SelectValue placeholder={t("selectTimeframe")} />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
               value="one-week"
               disabled={!permissions["stats-timeframe-1"]}
             >
-              Last Week
+              {t("lastWeek")}
             </SelectItem>
             <SelectItem
               value="two-weeks"
               disabled={!permissions["stats-timeframe-1"]}
             >
-              Last 2 Weeks
+              {t("last2Weeks")}
             </SelectItem>
             <SelectItem
               value="one-month"
               disabled={!permissions["stats-timeframe-1"]}
             >
-              Last Month
+              {t("lastMonth")}
             </SelectItem>
             <SelectItem
               value="three-months"
               disabled={!permissions["stats-timeframe-2"]}
             >
-              Last 3 Months
+              {t("last3Months")}
             </SelectItem>
             <SelectItem
               value="six-months"
               disabled={!permissions["stats-timeframe-2"]}
             >
-              Last 6 Months
+              {t("last6Months")}
             </SelectItem>
             <SelectItem
               value="one-year"
               disabled={!permissions["stats-timeframe-3"]}
             >
-              Last Year
+              {t("lastYear")}
             </SelectItem>
             <SelectItem
               value="all-time"
               disabled={!permissions["stats-timeframe-3"]}
             >
-              All Time
+              {t("allTime")}
             </SelectItem>
             <SelectItem
               value="custom"
               disabled={!permissions["stats-timeframe-3"]}
             >
-              Custom Range
+              {t("customRange")}
             </SelectItem>
             {!permissions["stats-timeframe-3"] && (
               <>
@@ -177,7 +180,7 @@ export function HeroPoolContainer({
                 <SelectGroup>
                   <SelectLabel>
                     <Link href="/pricing" external>
-                      Upgrade to view more timeframes
+                      {t("upgrade")}
                     </Link>
                   </SelectLabel>
                 </SelectGroup>
@@ -208,7 +211,7 @@ export function HeroPoolContainer({
                     format(date.from, "LLL dd, y")
                   )
                 ) : (
-                  <span>Pick a date range</span>
+                  <span>{t("pickDateRange")}</span>
                 )}
               </Button>
             </PopoverTrigger>
