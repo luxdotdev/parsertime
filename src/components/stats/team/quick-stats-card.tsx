@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { QuickWinsStats } from "@/data/team-quick-wins-dto";
 import { cn } from "@/lib/utils";
 import { CalendarCheck, Clock, TrendingUp, Trophy } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type QuickStatsCardProps = {
   stats: QuickWinsStats;
@@ -23,12 +24,14 @@ function getWinrateColor(winrate: number): string {
 }
 
 export function QuickStatsCard({ stats }: QuickStatsCardProps) {
+  const t = useTranslations("teamStatsPage.quickStatsCard");
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <TrendingUp className="h-5 w-5" />
-          Quick Stats
+          {t("title")}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -37,7 +40,7 @@ export function QuickStatsCard({ stats }: QuickStatsCardProps) {
           <div className="space-y-2">
             <div className="text-muted-foreground flex items-center gap-2 text-sm">
               <Trophy className="h-4 w-4" />
-              <span>Last 10 Games</span>
+              <span>{t("last10Games")}</span>
             </div>
             <div className="space-y-1">
               <div
@@ -49,8 +52,10 @@ export function QuickStatsCard({ stats }: QuickStatsCardProps) {
                 {stats.last10GamesPerformance.winrate.toFixed(0)}%
               </div>
               <div className="text-muted-foreground text-xs">
-                {stats.last10GamesPerformance.wins}W -{" "}
-                {stats.last10GamesPerformance.losses}L
+                {t("winsLossesRecord", {
+                  wins: stats.last10GamesPerformance.wins,
+                  losses: stats.last10GamesPerformance.losses,
+                })}
               </div>
             </div>
           </div>
@@ -59,7 +64,7 @@ export function QuickStatsCard({ stats }: QuickStatsCardProps) {
           <div className="space-y-2">
             <div className="text-muted-foreground flex items-center gap-2 text-sm">
               <CalendarCheck className="h-4 w-4" />
-              <span>Best Day</span>
+              <span>{t("bestDay")}</span>
             </div>
             {stats.bestDayOfWeek ? (
               <div className="space-y-1">
@@ -78,14 +83,17 @@ export function QuickStatsCard({ stats }: QuickStatsCardProps) {
                     {stats.bestDayOfWeek.winrate.toFixed(0)}% WR
                   </Badge>
                   <span className="text-muted-foreground text-xs">
-                    {stats.bestDayOfWeek.gamesPlayed} games
+                    {t("gamesLabel", {
+                      count: stats.bestDayOfWeek.gamesPlayed,
+                    })}
                   </span>
                 </div>
               </div>
             ) : (
               <div className="text-muted-foreground text-sm">
-                Not enough data
-                <div className="text-xs">(need 3+ games per day)</div>
+                {t.rich("notEnoughData", {
+                  span: (chunks) => <span className="text-xs">{chunks}</span>,
+                })}
               </div>
             )}
           </div>
@@ -94,7 +102,7 @@ export function QuickStatsCard({ stats }: QuickStatsCardProps) {
           <div className="space-y-2">
             <div className="text-muted-foreground flex items-center gap-2 text-sm">
               <Clock className="h-4 w-4" />
-              <span>Avg Fight Duration</span>
+              <span>{t("avgFightDuration")}</span>
             </div>
             <div className="space-y-1">
               <div className="text-3xl font-bold">
@@ -103,10 +111,10 @@ export function QuickStatsCard({ stats }: QuickStatsCardProps) {
               {stats.averageFightDuration !== null && (
                 <div className="text-muted-foreground text-xs">
                   {stats.averageFightDuration < 20
-                    ? "Quick fights"
+                    ? t("quickFights")
                     : stats.averageFightDuration < 30
-                      ? "Standard"
-                      : "Long fights"}
+                      ? t("standard")
+                      : t("longFights")}
                 </div>
               )}
             </div>
@@ -116,7 +124,7 @@ export function QuickStatsCard({ stats }: QuickStatsCardProps) {
           <div className="space-y-2">
             <div className="text-muted-foreground flex items-center gap-2 text-sm">
               <Trophy className="h-4 w-4" />
-              <span>First Pick Success</span>
+              <span>{t("firstPickSuccess")}</span>
             </div>
             {stats.firstPickSuccessRate ? (
               <div className="space-y-1">
@@ -129,12 +137,15 @@ export function QuickStatsCard({ stats }: QuickStatsCardProps) {
                   {stats.firstPickSuccessRate.successRate.toFixed(0)}%
                 </div>
                 <div className="text-muted-foreground text-xs">
-                  {stats.firstPickSuccessRate.successfulFirstPicks}/
-                  {stats.firstPickSuccessRate.totalFirstPicks} picks won
+                  {t("firstPickSuccessRate", {
+                    successfulFirstPicks:
+                      stats.firstPickSuccessRate.successfulFirstPicks,
+                    totalFirstPicks: stats.firstPickSuccessRate.totalFirstPicks,
+                  })}
                 </div>
               </div>
             ) : (
-              <div className="text-muted-foreground text-sm">No data</div>
+              <div className="text-muted-foreground text-sm">{t("noData")}</div>
             )}
           </div>
         </div>

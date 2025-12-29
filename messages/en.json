@@ -2706,6 +2706,21 @@
       "hoverToSeePerformance": "Hover over a cell to see the player's performance on that map.",
       "bestMap": "Best map",
       "worstMap": "Worst map"
+    },
+    "quickStatsCard": {
+      "title": "Quick Stats",
+      "last10Games": "Last 10 Games",
+      "winsLossesRecord": "{wins}W - {losses}L",
+      "bestDay": "Best Day",
+      "notEnoughData": "Not enough data <span>(need 3+ games per day)</span>",
+      "gamesLabel": "{count, plural, =0 {no games} =1 {1 game} other {# games}} played",
+      "avgFightDuration": "Avg Fight Duration",
+      "quickFights": "Quick fights",
+      "standard": "Standard",
+      "longFights": "Long fights",
+      "firstPickSuccess": "First Pick Success",
+      "firstPickSuccessRate": "{successfulFirstPicks} / {totalFirstPicks} picks won",
+      "noData": "No data"
     }
   }
 }
