@@ -161,9 +161,9 @@ export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
                       <span
                         className={cn(
                           "font-medium",
-                          stats.deathsPer10Min < 0.5
+                          stats.deathsPer10Min < 5
                             ? "text-green-600 dark:text-green-400"
-                            : stats.deathsPer10Min > 1
+                            : stats.deathsPer10Min > 10
                               ? "text-red-600 dark:text-red-400"
                               : ""
                         )}

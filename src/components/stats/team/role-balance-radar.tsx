@@ -75,8 +75,8 @@ export function RoleBalanceRadar({
     return Math.min((kd / 3) * 100, 100);
   }
 
-  function normalizeSurvivability(deathsPerMin: number): number {
-    return Math.max(0, 100 - deathsPerMin * 40);
+  function normalizeSurvivability(deathsPer10Min: number): number {
+    return Math.max(0, 100 - deathsPer10Min * 4);
   }
 
   function normalizeUltUsage(ultEfficiency: number): number {
@@ -96,9 +96,9 @@ export function RoleBalanceRadar({
     },
     {
       metric: t("survivability"),
-      Tank: normalizeSurvivability(roleStats.Tank.deathsPerMin),
-      Damage: normalizeSurvivability(roleStats.Damage.deathsPerMin),
-      Support: normalizeSurvivability(roleStats.Support.deathsPerMin),
+      Tank: normalizeSurvivability(roleStats.Tank.deathsPer10Min),
+      Damage: normalizeSurvivability(roleStats.Damage.deathsPer10Min),
+      Support: normalizeSurvivability(roleStats.Support.deathsPer10Min),
     },
     {
       metric: t("ultUsage"),
