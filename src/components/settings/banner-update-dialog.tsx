@@ -13,7 +13,13 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import { upload } from "@vercel/blob/client";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { startTransition, useCallback, useState } from "react";
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import Cropper, { type Area } from "react-easy-crop";
 import { toast } from "sonner";
 
@@ -75,6 +81,19 @@ export function BannerUpdateDialog({
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const imageUrl = useMemo(() => {
+    if (!selectedFile) return null;
+    return URL.createObjectURL(selectedFile);
+  }, [selectedFile]);
+
+  useEffect(() => {
+    return () => {
+      if (imageUrl) {
+        URL.revokeObjectURL(imageUrl);
+      }
+    };
+  }, [imageUrl]);
+
   const onCropComplete = useCallback(
     (croppedArea: Area, croppedAreaPixels: Area) => {
       setCroppedAreaPixels(croppedAreaPixels);
@@ -134,7 +153,7 @@ export function BannerUpdateDialog({
     });
   }
 
-  if (!selectedFile) return null;
+  if (!selectedFile || !imageUrl) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -146,10 +165,10 @@ export function BannerUpdateDialog({
 
         <div className="relative h-96 w-full">
           <Cropper
-            image={URL.createObjectURL(selectedFile)}
+            image={imageUrl}
             crop={crop}
             zoom={zoom}
-            aspect={16 / 9}
+            aspect={21 / 3}
             onCropChange={setCrop}
             onZoomChange={setZoom}
             onCropComplete={onCropComplete}
