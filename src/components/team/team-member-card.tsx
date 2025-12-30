@@ -1,6 +1,7 @@
 "use client";
 
 import { SupporterHeart } from "@/components/profile/supporter-heart";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
@@ -44,18 +45,20 @@ export function TeamMemberCard({
   return (
     <Card className="gap-0 overflow-hidden p-0 pb-4">
       {/* Banner */}
-      <div className="relative h-24 w-full rounded-t-xl bg-gradient-to-r from-blue-600 to-purple-600">
-        {user.bannerImage && (
-          <Image
-            src={user.bannerImage}
-            alt={`${user.name} banner`}
-            fill
-            className="rounded-t-xl object-cover"
-            priority
-          />
-        )}
-        <div className="absolute inset-0 rounded-t-xl bg-black/20" />
-      </div>
+      <AspectRatio ratio={21 / 3}>
+        <div className="relative h-full w-full rounded-t-xl bg-gradient-to-r from-blue-600 to-purple-600">
+          {user.bannerImage && (
+            <Image
+              src={user.bannerImage}
+              alt={`${user.name} banner`}
+              fill
+              className="rounded-t-xl object-cover"
+              priority
+            />
+          )}
+          <div className="absolute inset-0 rounded-t-xl bg-black/20" />
+        </div>
+      </AspectRatio>
 
       {/* User Info */}
       <div className="relative px-6 pb-4">
