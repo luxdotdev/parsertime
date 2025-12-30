@@ -2,6 +2,7 @@
 
 import { HeroRating } from "@/components/profile/hero-rating";
 import { SupporterHeart } from "@/components/profile/supporter-heart";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   HoverCard,
@@ -87,21 +88,23 @@ export function PlayerHoverCard({
       <HoverCardTrigger asChild>{children}</HoverCardTrigger>
       <HoverCardContent className="w-80 overflow-hidden p-0">
         {/* Banner */}
-        <div className="relative h-20 w-full bg-gradient-to-r from-blue-600 to-purple-600">
-          {playerData.bannerImage && (
-            <Image
-              src={playerData.bannerImage}
-              alt={`${playerData.name} banner`}
-              fill
-              className="object-cover"
-              priority
-            />
-          )}
-          <div className="absolute inset-0 bg-black/20" />
-        </div>
+        <AspectRatio ratio={21 / 3}>
+          <div className="relative h-20 w-full bg-gradient-to-r from-blue-600 to-purple-600">
+            {playerData.bannerImage && (
+              <Image
+                src={playerData.bannerImage}
+                alt={`${playerData.name} banner`}
+                fill
+                className="object-cover"
+                priority
+              />
+            )}
+            <div className="absolute inset-0 bg-black/20" />
+          </div>
+        </AspectRatio>
 
         <div className="px-4 pb-4">
-          <div className="-mt-8 mb-4 flex items-end gap-3">
+          <div className="-mt-0 mb-4 flex items-end gap-3">
             <Avatar className="border-background h-20 w-20 border-4 shadow-sm">
               <AvatarImage
                 src={playerData.image ?? undefined}
