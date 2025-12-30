@@ -133,7 +133,10 @@ export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
                         {t("damagePerMin")}
                       </span>
                       <span className="font-medium">
-                        {formatStat(stats.damagePerMin, 0)}
+                        {stats.damagePer10Min.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
                       </span>
                     </div>
 
@@ -143,7 +146,10 @@ export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
                           {t("healingPerMin")}
                         </span>
                         <span className="font-medium">
-                          {formatStat(stats.healingPerMin, 0)}
+                          {stats.healingPer10Min.toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
                         </span>
                       </div>
                     )}
@@ -155,14 +161,17 @@ export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
                       <span
                         className={cn(
                           "font-medium",
-                          stats.deathsPerMin < 0.5
+                          stats.deathsPer10Min < 0.5
                             ? "text-green-600 dark:text-green-400"
-                            : stats.deathsPerMin > 1
+                            : stats.deathsPer10Min > 1
                               ? "text-red-600 dark:text-red-400"
                               : ""
                         )}
                       >
-                        {formatStat(stats.deathsPerMin, 2)}
+                        {stats.deathsPer10Min.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
                       </span>
                     </div>
 
