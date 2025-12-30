@@ -28,9 +28,9 @@ export type RoleStats = {
   ultimatesEarned: number;
   ultimatesUsed: number;
   kd: number;
-  damagePerMin: number;
-  healingPerMin: number;
-  deathsPerMin: number;
+  damagePer10Min: number;
+  healingPer10Min: number;
+  deathsPer10Min: number;
   ultEfficiency: number;
 };
 
@@ -173,12 +173,16 @@ function processRolePerformanceStats(
       ultimatesEarned: aggregate.ultimatesEarned,
       ultimatesUsed: aggregate.ultimatesUsed,
       kd: aggregate.deaths > 0 ? aggregate.finalBlows / aggregate.deaths : 0,
-      damagePerMin:
-        playtimeInMinutes > 0 ? aggregate.heroDamage / playtimeInMinutes : 0,
-      healingPerMin:
-        playtimeInMinutes > 0 ? aggregate.healing / playtimeInMinutes : 0,
-      deathsPerMin:
-        playtimeInMinutes > 0 ? aggregate.deaths / playtimeInMinutes : 0,
+      damagePer10Min:
+        playtimeInMinutes > 0
+          ? (aggregate.heroDamage / playtimeInMinutes) * 10
+          : 0,
+      healingPer10Min:
+        playtimeInMinutes > 0
+          ? (aggregate.healing / playtimeInMinutes) * 10
+          : 0,
+      deathsPer10Min:
+        playtimeInMinutes > 0 ? (aggregate.deaths / playtimeInMinutes) * 10 : 0,
       ultEfficiency:
         aggregate.ultimatesUsed > 0
           ? aggregate.eliminations / aggregate.ultimatesUsed
@@ -208,9 +212,9 @@ function createEmptyRoleStats(): RolePerformanceStats {
     ultimatesEarned: 0,
     ultimatesUsed: 0,
     kd: 0,
-    damagePerMin: 0,
-    healingPerMin: 0,
-    deathsPerMin: 0,
+    damagePer10Min: 0,
+    healingPer10Min: 0,
+    deathsPer10Min: 0,
     ultEfficiency: 0,
   };
 
@@ -255,7 +259,7 @@ async function getRoleBalanceAnalysisUncached(
     if (stats.totalPlaytime === 0) return { role, score: 0 };
 
     const kdScore = Math.min(stats.kd / 2, 1);
-    const survivalScore = Math.max(0, 1 - stats.deathsPerMin / 2);
+    const survivalScore = Math.max(0, 1 - stats.deathsPer10Min / 2);
     const ultScore = Math.min(stats.ultEfficiency / 3, 1);
     const activityScore = Math.min(stats.totalPlaytime / 3600, 1);
 
@@ -293,7 +297,7 @@ async function getRoleBalanceAnalysisUncached(
     if (stats.kd < 1.0 && stats.totalPlaytime > 600) {
       insights.push(t("negativeKD", { role }));
     }
-    if (stats.deathsPerMin > 1.5 && stats.totalPlaytime > 600) {
+    if (stats.deathsPer10Min > 7 && stats.totalPlaytime > 600) {
       insights.push(t("dyingFrequently", { role }));
     }
   });
