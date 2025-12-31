@@ -5,17 +5,17 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const cspHeader = `
     default-src 'self';
-    script-src 'self' https://vercel.live https://vercel.com *.vercel-scripts.com 'unsafe-inline' ${
+    script-src 'self' https://vercel.live https://vercel.com *.vercel-scripts.com  cdn.jsdelivr.net 'unsafe-inline' ${
       process.env.NODE_ENV === "production" ? "" : `'unsafe-eval' localhost:*`
     };
-    style-src 'self' https://vercel.live https://vercel.com 'unsafe-inline';
+    style-src 'self' https://vercel.live https://vercel.com 'unsafe-inline' cdn.jsdelivr.net;
     connect-src 'self' https://vercel.live https://vercel.com *.vercel-storage.com *.pusher.com *.pusherapp.com wss://ws-us3.pusher.com ${
       process.env.NODE_ENV === "production"
         ? ""
         : `localhost:* ws://localhost:*`
     };
     img-src 'self' https://vercel.live https://vercel.com https://avatar.vercel.sh *.pusher.com/ https://lh3.googleusercontent.com https://cdn.discordapp.com https://avatars.githubusercontent.com *.vercel-storage.com blob: data:;
-    frame-src 'self' https://vercel.live https://vercel.com;
+    frame-src 'self' https://vercel.live https://vercel.com https://www.youtube.com https://www.youtube-nocookie.com https://player.twitch.tv https://clips.twitch.tv;
     font-src 'self' https://vercel.live https://assets.vercel.com;
     object-src 'none';
     base-uri 'self';
