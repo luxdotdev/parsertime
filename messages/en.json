@@ -857,7 +857,18 @@
       "charts": "Charts",
       "events": "Events",
       "compare": "Compare",
-      "notes": "Notes"
+      "notes": "Notes",
+      "vod": "VOD"
+    },
+    "vod": {
+      "title": "VOD",
+      "addVod": "Add VOD",
+      "changeVod": "Change VOD",
+      "uploadVod": "Upload VOD",
+      "cancel": "Cancel",
+      "inputPlaceholder": "Enter VOD URL here...",
+      "uploadVOD": "Upload Your VOD",
+      "noVod": "No VOD linked yet. Click here to add one."
     },
     "tiptap": {
       "placeholder": "Write, format, and highlight your text below.",
