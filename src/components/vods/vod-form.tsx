@@ -1,11 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-} from "@/components/ui/dialog";
+import { DialogClose, DialogHeader } from "@/components/ui/dialog";
 import { Form, FormField, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -71,44 +67,42 @@ export function VodForm({
   }
   return (
     <div>
-      <DialogContent>
-        <DialogHeader>{t("uploadVOD")}</DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
-              name="vodUrl"
-              render={({ field }) => (
-                <>
-                  <Input
-                    {...field}
-                    type="text"
-                    placeholder={t("inputPlaceholder")}
-                    className="mb-2"
-                  />
-                  <FormMessage />
-                </>
-              )}
-            />
-            <div className="flex gap-2">
-              <Button
-                className="mt-4"
-                variant="default"
-                type="submit"
-                disabled={loading}
-                key="submit"
-              >
-                {t("uploadVod")}
+      <DialogHeader className="mb-4">{t("uploadVOD")}</DialogHeader>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <FormField
+            control={form.control}
+            name="vodUrl"
+            render={({ field }) => (
+              <>
+                <Input
+                  {...field}
+                  type="text"
+                  placeholder={t("inputPlaceholder")}
+                  className="mb-2"
+                />
+                <FormMessage />
+              </>
+            )}
+          />
+          <div className="flex gap-2">
+            <Button
+              className="mt-4"
+              variant="default"
+              type="submit"
+              disabled={loading}
+              key="submit"
+            >
+              {t("uploadVod")}
+            </Button>
+            <DialogClose asChild>
+              <Button className="mt-4" variant="secondary" key="cancel">
+                {t("cancel")}
               </Button>
-              <DialogClose asChild>
-                <Button className="mt-4" variant="secondary" key="cancel">
-                  {t("cancel")}
-                </Button>
-              </DialogClose>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
+            </DialogClose>
+          </div>
+        </form>
+      </Form>
     </div>
   );
 }
