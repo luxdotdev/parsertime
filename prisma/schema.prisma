@@ -242,6 +242,7 @@ model Map {
   updatedAt  DateTime  @updatedAt
   mapData    MapData[]
   Scrim      Scrim?    @relation(fields: [scrimId], references: [id])
+  vod        String?
   scrimId    Int?
   replayCode String?
 
