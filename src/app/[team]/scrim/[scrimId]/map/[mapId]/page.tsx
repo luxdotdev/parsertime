@@ -16,6 +16,7 @@ import { ModeToggle } from "@/components/theme-switcher";
 import { TipTap } from "@/components/tiptap/tiptap";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserNav } from "@/components/user-nav";
+import { VodOverview } from "@/components/vods/vod-overview";
 import { getMostPlayedHeroes } from "@/data/player-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
@@ -79,32 +80,43 @@ export default async function MapDashboardPage(
 
   const { team1, team2 } = await getColorblindMode(user?.id ?? "");
 
-  const [mostPlayedHeroes, mapDetails, map, visibility, heroBans, noteContent] =
-    await Promise.all([
-      getMostPlayedHeroes(id),
-      prisma.matchStart.findFirst({
-        where: { MapDataId: id },
-        select: { map_name: true, team_1_name: true },
-      }),
-      prisma.map.findFirst({
-        where: { id },
-        select: { replayCode: true },
-      }),
-      prisma.scrim.findFirst({
-        where: { id: parseInt(params.scrimId) },
-        select: { guestMode: true },
-      }),
-      prisma.heroBan.findMany({
-        where: { MapDataId: id },
-      }),
-      prisma.note.findFirst({
-        where: {
-          scrimId: parseInt(params.scrimId),
-          MapDataId: id,
-        },
-        select: { content: true },
-      }),
-    ]);
+  const [
+    mostPlayedHeroes,
+    mapDetails,
+    map,
+    visibility,
+    heroBans,
+    noteContent,
+    vod,
+  ] = await Promise.all([
+    getMostPlayedHeroes(id),
+    prisma.matchStart.findFirst({
+      where: { MapDataId: id },
+      select: { map_name: true, team_1_name: true },
+    }),
+    prisma.map.findFirst({
+      where: { id },
+      select: { replayCode: true },
+    }),
+    prisma.scrim.findFirst({
+      where: { id: parseInt(params.scrimId) },
+      select: { guestMode: true },
+    }),
+    prisma.heroBan.findMany({
+      where: { MapDataId: id },
+    }),
+    prisma.note.findFirst({
+      where: {
+        scrimId: parseInt(params.scrimId),
+        MapDataId: id,
+      },
+      select: { content: true },
+    }),
+    prisma.map.findFirst({
+      where: { id },
+      select: { vod: true },
+    }),
+  ]);
 
   const translatedMapName = await translateMapName(
     mapDetails?.map_name ?? "Map"
@@ -184,6 +196,7 @@ export default async function MapDashboardPage(
             </TabsTrigger>
             <TabsTrigger value="compare">{t("tabs.compare")}</TabsTrigger>
             <TabsTrigger value="notes">{t("tabs.notes")}</TabsTrigger>
+            <TabsTrigger value="vods">{t("tabs.vod")}</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
             <DefaultOverview id={id} team1Color={team1} team2Color={team2} />
@@ -199,6 +212,9 @@ export default async function MapDashboardPage(
           </TabsContent>
           <TabsContent value="compare" className="space-y-4">
             <ComparePlayers id={id} />
+          </TabsContent>
+          <TabsContent value="vods" className="space-y-4">
+            <VodOverview vod={vod?.vod ?? ""} mapId={id} />
           </TabsContent>
           <TabsContent value="notes" className="space-y-4">
             <div className="mx-auto py-8">
