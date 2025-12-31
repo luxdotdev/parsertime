@@ -10,13 +10,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@/components/ui/link";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "@/components/ui/use-toast";
 import { parseData } from "@/lib/parser";
 import { ParserDataSchema } from "@/lib/schema";
-import { cn } from "@/lib/utils";
+import { cn, detectCorruptedData } from "@/lib/utils";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { JsonEditor } from "json-edit-react";
+import { useTranslations } from "next-intl";
 import { startTransition, useState } from "react";
+import { toast } from "sonner";
 
 const defaultData = {
   kill: [
@@ -41,6 +42,7 @@ export default function DebugPage() {
   const [data, setData] = useState<object>(defaultData);
   const [errors, setErrors] = useState<string[]>([]);
   const [dragActive, setDragActive] = useState(false);
+  const t = useTranslations("dataCorruption");
 
   function handleDrag(e: React.DragEvent) {
     e.preventDefault();
@@ -57,7 +59,7 @@ export default function DebugPage() {
     e.stopPropagation();
     setDragActive(false);
 
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+    if (e.dataTransfer.files?.[0]) {
       void handleFile(e.dataTransfer.files[0]);
     }
   }
@@ -73,6 +75,26 @@ export default function DebugPage() {
   }
 
   async function handleFile(file: File) {
+    // Check for corrupted data before parsing
+    const fileContent = await file.text();
+    const corruptionInfo = detectCorruptedData(fileContent);
+
+    if (corruptionInfo.isCorrupted) {
+      let warningMessage = t("warning.baseDescription");
+
+      if (corruptionInfo.hasInvalidMercyRez) {
+        warningMessage += `\n${t("warning.invalidMercyRez")}`;
+      }
+      if (corruptionInfo.hasAsterisks) {
+        warningMessage += `\n${t("warning.asteriskValues")}`;
+      }
+
+      toast.warning(t("warning.title"), {
+        description: warningMessage,
+        duration: 8000,
+      });
+    }
+
     const data = await parseData(file);
 
     setData(data);
@@ -80,20 +102,19 @@ export default function DebugPage() {
     const result = ParserDataSchema.safeParse(data);
 
     if (!result.success) {
-      const errorMessages = result.error.errors
+      const errorMessages = result.error.issues
         .map((err) => `${err.path.join(".")}: ${err.message}`)
         .join("\n");
 
       setErrors(
-        result.error.errors.map(
+        result.error.issues.map(
           (err) => `${err.path.join(".")}: ${err.message}`
         )
       );
 
-      toast({
-        title: "Invalid data",
+      toast.error("Invalid data", {
         description: errorMessages,
-        variant: "destructive",
+        duration: 5000,
       });
     } else {
       setErrors([]);
@@ -117,11 +138,11 @@ export default function DebugPage() {
             onDragOver={handleDrag}
             onDrop={handleDrop}
           >
-            <CardHeader className="text-center text-xl">
-              <span className="inline-flex items-center justify-center space-x-2">
-                <PlusCircledIcon className="h-6 w-6" />{" "}
+            <CardHeader className="flex items-center justify-center text-xl">
+              <div className="flex items-center gap-2 whitespace-nowrap">
+                <PlusCircledIcon className="h-6 w-6" />
                 <span>Add a file...</span>
-              </span>
+              </div>
             </CardHeader>
             <CardDescription className="pb-4">
               Drag and drop or select a file to upload.
@@ -142,7 +163,7 @@ export default function DebugPage() {
           </Card>
 
           {errors.length > 0 && (
-            <Card className="destructive group flex w-full max-w-md flex-col border-destructive bg-destructive text-destructive-foreground">
+            <Card className="destructive border-destructive bg-destructive text-destructive-background group flex w-full max-w-md flex-col">
               <CardHeader>Errors</CardHeader>
               <CardContent>
                 <ul>
@@ -163,7 +184,7 @@ export default function DebugPage() {
           )}
 
           <div className="max-w-sm">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               Drag and drop a file to convert it to a JSON object. You can then
               view the data and see any errors with the data.
             </p>
@@ -178,7 +199,7 @@ export default function DebugPage() {
                 message.
               </li>
             </ul>
-            <p className="pt-4 text-sm text-muted-foreground">
+            <p className="text-muted-foreground pt-4 text-sm">
               The path is formatted like this:{" "}
               <code className="text-foreground">`key.index.index`</code>. For
               example, seeing an error that says{" "}
@@ -203,7 +224,7 @@ export default function DebugPage() {
         <div className="flex flex-col items-center">
           <JsonEditor
             data={data}
-            theme="githubDark"
+            // theme={"githubDark" as ThemeInput}
             restrictEdit
             restrictAdd
             restrictDelete
@@ -213,14 +234,13 @@ export default function DebugPage() {
             onUpdate={({ newData }) => {
               const isValid = ParserDataSchema.safeParse(newData);
               if (!isValid.success) {
-                const errorMessages = isValid.error.errors
+                const errorMessages = isValid.error.issues
                   .map((err) => `${err.path.join(".")}: ${err.message}`)
                   .join("\n");
 
-                toast({
-                  title: "Invalid data",
+                toast.error("Invalid data", {
                   description: errorMessages,
-                  variant: "destructive",
+                  duration: 5000,
                 });
 
                 return "Schema validation failed";

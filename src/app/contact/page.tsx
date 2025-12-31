@@ -12,9 +12,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import { EnvelopeIcon, UserGroupIcon } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EnvelopeOpenIcon, ExternalLinkIcon } from "@radix-ui/react-icons";
@@ -22,6 +21,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 export default function ContactPage() {
@@ -32,19 +32,15 @@ export default function ContactPage() {
   const formSchema = z.object({
     name: z
       .string({
-        required_error: t("contactForm.nameRequiredError"),
+        error: t("contactForm.nameRequiredError"),
       })
       .min(1),
-    email: z
-      .string({
-        required_error: t("contactForm.emailRequiredError"),
-      })
-      .email({
-        message: t("contactForm.emailMessage"),
-      }),
+    email: z.email({
+      message: t("contactForm.emailMessage"),
+    }),
     message: z
       .string({
-        required_error: t("contactForm.messageRequiredError"),
+        error: t("contactForm.messageRequiredError"),
       })
       .min(1, {
         message: t("contactForm.messageMessage"),
@@ -65,27 +61,23 @@ export default function ContactPage() {
       });
 
       if (res.ok) {
-        toast({
-          title: t("contactForm.handleSubmit.title"),
+        toast.success(t("contactForm.handleSubmit.title"), {
           description: t("contactForm.handleSubmit.description"),
           duration: 5000,
         });
         form.reset();
       } else {
         Logger.error("Error sending email", res.statusText);
-        toast({
-          title: t("contactForm.handleSubmit.errorTitle1"),
+        toast.error(t("contactForm.handleSubmit.errorTitle1"), {
           description: t("contactForm.handleSubmit.errorDescription1", {
             res: `${await res.text()} (${res.status})`,
           }),
           duration: 5000,
-          variant: "destructive",
         });
       }
     } catch (error) {
       Logger.error("Error sending email", error);
-      toast({
-        title: t("contactForm.handleSubmit.errorTitle2"),
+      toast.error(t("contactForm.handleSubmit.errorTitle2"), {
         description: t("contactForm.handleSubmit.errorDescription2"),
         duration: 5000,
       });
@@ -94,13 +86,13 @@ export default function ContactPage() {
     setLoading(false);
   }
   return (
-    <div className="relative isolate bg-white dark:bg-black xl:h-[90vh]">
+    <div className="relative isolate bg-white xl:h-[90vh] dark:bg-black">
       <div className="mx-auto grid max-w-7xl grid-cols-1 lg:grid-cols-2">
-        <div className="relative px-6 pb-20 pt-24 sm:pt-32 lg:static lg:px-8 lg:py-48">
+        <div className="relative px-6 pt-24 pb-20 sm:pt-32 lg:static lg:px-8 lg:py-48">
           <div className="mx-auto max-w-xl lg:mx-0 lg:max-w-lg">
-            <div className="absolute inset-y-0 left-0 -z-10 w-full overflow-hidden bg-gray-100 ring-1 ring-gray-900/10 dark:bg-black dark:ring-white/5 lg:w-1/2">
+            <div className="absolute inset-y-0 left-0 -z-10 w-full overflow-hidden bg-gray-100 ring-1 ring-gray-900/10 lg:w-1/2 dark:bg-black dark:ring-white/5">
               <svg
-                className="absolute inset-0 hidden h-full w-full stroke-gray-200 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)] dark:flex dark:stroke-gray-700"
+                className="absolute inset-0 hidden h-full w-full [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)] stroke-gray-200 dark:flex dark:stroke-gray-700"
                 aria-hidden="true"
               >
                 <defs>
@@ -130,7 +122,7 @@ export default function ContactPage() {
                 />
               </svg>
               <svg
-                className="absolute inset-0 h-full w-full stroke-gray-200 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)] dark:hidden"
+                className="absolute inset-0 h-full w-full [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)] stroke-gray-200 dark:hidden"
                 aria-hidden="true"
               >
                 <defs>
@@ -157,7 +149,7 @@ export default function ContactPage() {
                 />
               </svg>
               <div
-                className="absolute -left-56 top-[calc(100%-13rem)] hidden transform-gpu blur-3xl dark:flex lg:left-[max(-14rem,calc(100%-59rem))] lg:top-[calc(50%-7rem)]"
+                className="absolute top-[calc(100%-13rem)] -left-56 hidden transform-gpu blur-3xl lg:top-[calc(50%-7rem)] lg:left-[max(-14rem,calc(100%-59rem))] dark:flex"
                 aria-hidden="true"
               >
                 <div
@@ -219,7 +211,7 @@ export default function ContactPage() {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleSubmit)}
-              className="px-6 pb-24 pt-20 sm:pb-32 lg:px-8 lg:py-48"
+              className="px-6 pt-20 pb-24 sm:pb-32 lg:px-8 lg:py-48"
             >
               <div className="mx-auto max-w-xl lg:mr-0 lg:max-w-lg">
                 <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
@@ -229,7 +221,7 @@ export default function ContactPage() {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="block text-sm font-semibold leading-6 text-gray-900 dark:text-white">
+                          <FormLabel className="block text-sm leading-6 font-semibold text-gray-900 dark:text-white">
                             {t("contactForm.name")}
                           </FormLabel>
                           <FormControl>
@@ -240,7 +232,7 @@ export default function ContactPage() {
                               id="name"
                               autoComplete="given-name"
                               value={field.value}
-                              className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:focus:ring-sky-500 sm:text-sm sm:leading-6"
+                              className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset focus:ring-2 focus:ring-sky-600 focus:ring-inset sm:text-sm sm:leading-6 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:focus:ring-sky-500"
                             />
                           </FormControl>
                           <FormMessage />
@@ -254,7 +246,7 @@ export default function ContactPage() {
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="block text-sm font-semibold leading-6 text-gray-900 dark:text-white">
+                          <FormLabel className="block text-sm leading-6 font-semibold text-gray-900 dark:text-white">
                             {t("contactForm.email")}
                           </FormLabel>
                           <FormControl>
@@ -265,7 +257,7 @@ export default function ContactPage() {
                               id="email"
                               autoComplete="email"
                               value={field.value}
-                              className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:focus:ring-sky-500 sm:text-sm sm:leading-6"
+                              className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset focus:ring-2 focus:ring-sky-600 focus:ring-inset sm:text-sm sm:leading-6 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:focus:ring-sky-500"
                             />
                           </FormControl>
                           <FormMessage />
@@ -279,7 +271,7 @@ export default function ContactPage() {
                       name="message"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="block text-sm font-semibold leading-6 text-gray-900 dark:text-white">
+                          <FormLabel className="block text-sm leading-6 font-semibold text-gray-900 dark:text-white">
                             {t("contactForm.message")}
                           </FormLabel>
                           <FormControl>
@@ -289,7 +281,7 @@ export default function ContactPage() {
                               id="message"
                               autoComplete="message"
                               value={field.value}
-                              className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:focus:ring-sky-500 sm:text-sm sm:leading-6"
+                              className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset focus:ring-2 focus:ring-sky-600 focus:ring-inset sm:text-sm sm:leading-6 dark:bg-white/5 dark:text-white dark:ring-white/10 dark:focus:ring-sky-500"
                             />
                           </FormControl>
                           <FormMessage />
@@ -301,7 +293,7 @@ export default function ContactPage() {
                 <div className="mt-6 flex justify-end">
                   <Button
                     type="submit"
-                    className="rounded-md bg-sky-500 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-sky-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
+                    className="rounded-md bg-sky-500 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-sky-400 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-sky-500"
                     disabled={loading}
                   >
                     {loading ? (

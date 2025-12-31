@@ -1,10 +1,8 @@
-import Footer from "@/components/footer";
+import { Footer } from "@/components/footer";
 
 export default function RequestLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}: LayoutProps<"/verify-request">) {
   return (
     <>
       {children}

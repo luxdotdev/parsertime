@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import CardIcon from "@/components/ui/card-icon";
+import { CardIcon } from "@/components/ui/card-icon";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getTranslations } from "next-intl/server";
 
@@ -18,7 +18,7 @@ export default async function PlayerDashboardLoading() {
         <div className="hidden h-16 items-center px-4 md:flex">
           <Skeleton className="h-6 w-24" />
           <div className="ml-auto flex items-center space-x-4">
-            <Skeleton className="hidden h-9 w-full rounded-md border border-input px-3 py-1 md:flex md:w-[100px] lg:w-[300px]" />
+            <Skeleton className="border-input hidden h-9 w-full rounded-md border px-3 py-1 md:flex md:w-[100px] lg:w-[300px]" />
             <Skeleton className="h-9 w-9" />
             <Skeleton className="h-8 w-8 rounded-full" />
           </div>
@@ -45,7 +45,7 @@ export default async function PlayerDashboardLoading() {
         <div className="space-y-4">
           <Skeleton className="h-8 w-32" />
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
@@ -138,9 +138,9 @@ export default async function PlayerDashboardLoading() {
                 <h1 className="scroll-m-20 pb-2 pl-2 text-3xl font-semibold tracking-tight first:mt-0">
                   <Skeleton className="h-10 w-32" />
                 </h1>
-                <div className="flex flex-1">
-                  <div className="w-full p-2 lg:w-1/2">
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="flex flex-1 flex-col 2xl:flex-row">
+                  <div className="w-full p-2 2xl:w-1/2">
+                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                       <Card>
                         <Skeleton className="h-56 w-full" />
                       </Card>
@@ -167,7 +167,7 @@ export default async function PlayerDashboardLoading() {
                       </Card>
                     </div>
                   </div>
-                  <div className="hidden w-1/2 p-2 md:grid">
+                  <div className="w-full p-2 2xl:w-1/2">
                     <div className="space-y-4">
                       <div className="max-h-[29.5rem] rounded-xl border">
                         <Skeleton className="h-[29.5rem] w-full" />

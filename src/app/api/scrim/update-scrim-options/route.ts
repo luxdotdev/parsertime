@@ -1,21 +1,33 @@
 import { getScrim } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
-import { NextRequest } from "next/server";
+import { unauthorized } from "next/navigation";
+import { after, type NextRequest } from "next/server";
 import { z } from "zod";
 
 const UpdateScrimSchema = z.object({
   name: z.string().min(1).max(30),
   teamId: z.string().min(1),
   scrimId: z.number(),
-  date: z.string().datetime(),
+  date: z.iso.datetime(),
   guestMode: z.boolean(),
   maps: z.array(
     z.object({
       id: z.number(),
       replayCode: z.string().max(6).optional(),
+      heroBans: z
+        .array(
+          z.object({
+            id: z.number().optional(),
+            hero: z.string(),
+            team: z.string(),
+            banPosition: z.number(),
+          })
+        )
+        .optional(),
     })
   ),
 });
@@ -23,14 +35,14 @@ const UpdateScrimSchema = z.object({
 export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session || !session.user || !session.user.email) {
-    return new Response("Unauthorized", { status: 401 });
+    unauthorized();
   }
 
   const body = UpdateScrimSchema.safeParse(await req.json());
   if (!body.success) return new Response("Invalid request", { status: 400 });
 
   const user = await getUser(session.user.email);
-  if (!user) return new Response("Unauthorized", { status: 401 });
+  if (!user) unauthorized();
 
   const userIsManager = await prisma.teamManager.findFirst({
     where: { userId: user.id },
@@ -45,7 +57,7 @@ export async function POST(req: NextRequest) {
     user.role === $Enums.UserRole.ADMIN || // user is an admin
     user.role === $Enums.UserRole.MANAGER; // user is a manager
 
-  if (!hasPerms) return new Response("Unauthorized", { status: 401 });
+  if (!hasPerms) unauthorized();
 
   await prisma.scrim.update({
     where: { id: body.data.scrimId },
@@ -63,8 +75,35 @@ export async function POST(req: NextRequest) {
         where: { id: mapUpdate.id },
         data: { replayCode: mapUpdate.replayCode },
       });
+
+      if (mapUpdate.heroBans) {
+        await prisma.heroBan.deleteMany({
+          where: { MapDataId: mapUpdate.id },
+        });
+
+        if (mapUpdate.heroBans.length > 0) {
+          await prisma.heroBan.createMany({
+            data: mapUpdate.heroBans.map((ban) => ({
+              scrimId: body.data.scrimId,
+              hero: ban.hero,
+              team: ban.team,
+              banPosition: ban.banPosition,
+              MapDataId: mapUpdate.id,
+            })),
+          });
+        }
+      }
     }
   }
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: user.email,
+      action: "SCRIM_UPDATED",
+      target: `${scrim.name} (ID: ${scrim.id})`,
+      details: `Scrim updated: ${scrim.name} (ID: ${scrim.id})`,
+    });
+  });
 
   return new Response("OK", { status: 200 });
 }

@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
+  type ColumnDef,
+  type ColumnFiltersState,
+  type SortingState,
+  type VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -22,7 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn, round, toMins } from "@/lib/utils";
-import { PlayerStat } from "@prisma/client";
+import type { PlayerStat } from "@prisma/client";
 import { GeistMono } from "geist/font/mono";
 import { useTranslations } from "next-intl";
 
@@ -104,62 +104,62 @@ export function StatsTable({ data: playerStat }: { data: PlayerStat }) {
     },
     {
       stat: t("allDmgDealt"),
-      value: playerStat.all_damage_dealt.toFixed(2),
+      value: round(playerStat.all_damage_dealt).toLocaleString(),
       per10: round(
         (playerStat.all_damage_dealt / toMins(playerStat.hero_time_played)) * 10
-      ),
+      ).toLocaleString(),
     },
     {
       stat: t("barrierDmgDealt"),
-      value: playerStat.barrier_damage_dealt.toFixed(2),
+      value: round(playerStat.barrier_damage_dealt).toLocaleString(),
       per10: round(
         (playerStat.barrier_damage_dealt /
           toMins(playerStat.hero_time_played)) *
           10
-      ),
+      ).toLocaleString(),
     },
     {
       stat: t("heroDmgDealt"),
-      value: playerStat.hero_damage_dealt.toFixed(2),
+      value: round(playerStat.hero_damage_dealt).toLocaleString(),
       per10: round(
         (playerStat.hero_damage_dealt / toMins(playerStat.hero_time_played)) *
           10
-      ),
+      ).toLocaleString(),
     },
     {
       stat: t("healingDealt"),
-      value: playerStat.healing_dealt.toFixed(2),
+      value: round(playerStat.healing_dealt).toLocaleString(),
       per10: round(
         (playerStat.healing_dealt / toMins(playerStat.hero_time_played)) * 10
-      ),
+      ).toLocaleString(),
     },
     {
       stat: t("healingReceived"),
-      value: playerStat.healing_received.toFixed(2),
+      value: round(playerStat.healing_received).toLocaleString(),
       per10: round(
         (playerStat.healing_received / toMins(playerStat.hero_time_played)) * 10
-      ),
+      ).toLocaleString(),
     },
     {
       stat: t("selfHealing"),
-      value: playerStat.self_healing.toFixed(2),
+      value: round(playerStat.self_healing).toLocaleString(),
       per10: round(
         (playerStat.self_healing / toMins(playerStat.hero_time_played)) * 10
-      ),
+      ).toLocaleString(),
     },
     {
       stat: t("dmgTaken"),
-      value: playerStat.damage_taken.toFixed(2),
+      value: round(playerStat.damage_taken).toLocaleString(),
       per10: round(
         (playerStat.damage_taken / toMins(playerStat.hero_time_played)) * 10
-      ),
+      ).toLocaleString(),
     },
     {
       stat: t("dmgBlocked"),
-      value: playerStat.damage_blocked.toFixed(2),
+      value: round(playerStat.damage_blocked).toLocaleString(),
       per10: round(
         (playerStat.damage_blocked / toMins(playerStat.hero_time_played)) * 10
-      ),
+      ).toLocaleString(),
     },
     {
       stat: t("defenseAssist"),
@@ -268,6 +268,7 @@ export function StatsTable({ data: playerStat }: { data: PlayerStat }) {
     },
   ];
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: tableData,
     // @ts-expect-error idk how to fix this

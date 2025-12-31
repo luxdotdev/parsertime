@@ -1,20 +1,21 @@
 import { EmptyTeamView } from "@/components/team/empty-team-view";
-import { Card, CardHeader } from "@/components/ui/card";
+import { Card, CardFooter, CardHeader } from "@/components/ui/card";
+import { Link } from "@/components/ui/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
-import { Metadata } from "next";
+import { ChartBarIcon } from "lucide-react";
+import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
-import Link from "next/link";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { locale: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: PagePropsWithLocale<"/team">
+): Promise<Metadata> {
+  const params = await props.params;
   const t = await getTranslations("teamPage.metadata");
   return {
     title: t("title"),
@@ -78,7 +79,7 @@ export default async function TeamPage() {
                   .map((team) => (
                     <div key={team.id} className="p-2">
                       <Card className="relative min-h-[144px] md:w-60 xl:w-80">
-                        <Link href={`/team/${team.id}`}>
+                        <Link href={`/team/${team.id}` as Route}>
                           <Image
                             src={
                               team.image ??
@@ -99,6 +100,15 @@ export default async function TeamPage() {
                             </h3>
                           </CardHeader>
                         </Link>
+                        <Link
+                          href={`/stats/team/${team.id}` as Route}
+                          className="hover:underline"
+                        >
+                          <CardFooter className="flex items-center gap-2">
+                            <ChartBarIcon className="h-4 w-4" />
+                            {t("viewStats")} &rarr;
+                          </CardFooter>
+                        </Link>
                       </Card>
                     </div>
                   ))}
@@ -113,7 +123,7 @@ export default async function TeamPage() {
                 .map((team) => (
                   <div key={team.id} className="p-2">
                     <Card className="relative min-h-[144px] md:w-60 xl:w-80">
-                      <Link href={`/team/${team.id}`}>
+                      <Link href={`/team/${team.id}` as Route}>
                         <Image
                           src={
                             team.image ??
@@ -133,6 +143,15 @@ export default async function TeamPage() {
                             {team.name}
                           </h3>
                         </CardHeader>
+                      </Link>
+                      <Link
+                        href={`/stats/team/${team.id}` as Route}
+                        className="hover:underline"
+                      >
+                        <CardFooter className="flex items-center gap-2">
+                          <ChartBarIcon className="h-4 w-4" />
+                          {t("viewStats")} &rarr;
+                        </CardFooter>
                       </Link>
                     </Card>
                   </div>

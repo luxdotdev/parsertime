@@ -2,7 +2,7 @@
 
 import { KillMethodChart } from "@/components/stats/player/charts/kill-methods";
 import { StatPer10Chart } from "@/components/stats/player/charts/stat-per-10";
-import { Timeframe } from "@/components/stats/player/range-picker";
+import type { Timeframe } from "@/components/stats/player/range-picker";
 import {
   Card,
   CardContent,
@@ -28,30 +28,27 @@ import {
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { NonMappableStat, Stat } from "@/lib/player-charts";
+import type { NonMappableStat, Stat } from "@/lib/player-charts";
 import { cn, toHero, useHeroNames } from "@/lib/utils";
-import { HeroName } from "@/types/heroes";
-import { Kill, PlayerStat, Scrim } from "@prisma/client";
+import type { HeroName } from "@/types/heroes";
+import type { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { DateRange } from "react-day-picker";
+import type { DateRange } from "react-day-picker";
 
 function ChartTooltip({ children }: { children: React.ReactNode }) {
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <InfoCircledIcon className="h-4 w-4" />
-        </TooltipTrigger>
-        <TooltipContent className="max-w-[280px]">{children}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <InfoCircledIcon className="h-4 w-4" />
+      </TooltipTrigger>
+      <TooltipContent className="max-w-[280px]">{children}</TooltipContent>
+    </Tooltip>
   );
 }
 
@@ -246,6 +243,7 @@ export function Statistics({
     .slice(0, 3);
 
   const top3MostPlayedHeroes = filteredStats
+    .filter((stat) => stat.hero_time_played > 60)
     .map((stat) => stat.player_hero)
     .reduce(
       (acc, hero) => {
@@ -326,7 +324,7 @@ export function Statistics({
           </div>
           <div className="col-span-1 space-y-2">
             <h4 className="pb-4 text-lg font-bold">
-              {heroNames.get(toHero(hero)) || hero}
+              {heroNames.get(toHero(hero)) ?? hero}
             </h4>
             <h5 className="text-md font-semibold tracking-tight">
               {t("statistics.totalGames")}
@@ -334,7 +332,7 @@ export function Statistics({
             <p className="text-2xl font-bold">
               {t.rich("statistics.games", {
                 span: (chunks) => (
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-muted-foreground text-sm">
                     {chunks}
                   </span>
                 ),
@@ -348,7 +346,7 @@ export function Statistics({
             <p className="text-2xl font-bold">
               {t.rich("statistics.kills", {
                 span: (chunks) => (
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-muted-foreground text-sm">
                     {chunks}
                   </span>
                 ),
@@ -362,7 +360,7 @@ export function Statistics({
             <p className="text-2xl font-bold">
               {t.rich("statistics.kills", {
                 span: (chunks) => (
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-muted-foreground text-sm">
                     {chunks}
                   </span>
                 ),
@@ -372,7 +370,7 @@ export function Statistics({
           </div>
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {timeframe !== "custom" && timeframe !== "all-time"
               ? t("statistics.footer1", {
                   scrims: scrims[timeframe].length,
@@ -382,7 +380,9 @@ export function Statistics({
                   timeframe1:
                     timeframe === "custom"
                       ? customScrims.length
-                      : timeframe === "all-time" && scrims["all-time"].length,
+                      : timeframe === "all-time"
+                        ? scrims["all-time"].length
+                        : 0,
                   timeframe2:
                     timeframe === "all-time"
                       ? t("timeframe.all-time-data")
@@ -394,7 +394,7 @@ export function Statistics({
                         : t("timeframe.all-time"),
                 })}
             {t("statistics.footer3", {
-              hero: heroNames.get(toHero(hero)) || hero,
+              hero: heroNames.get(toHero(hero)) ?? hero,
             })}
           </p>
         </CardFooter>
@@ -413,75 +413,71 @@ export function Statistics({
               </TableRow>
             </TableHeader>
             <tbody>
-              {top3FinalBlows.map(
-                ([hero, player, finalBlows, scrimId, mapId], idx) => (
-                  <TableRow key={`${hero}-${mapId}`}>
-                    <TableCell>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        className={cn(
-                          "h-4 w-4",
-                          idx === 0
-                            ? "text-amber-400"
-                            : idx === 1
-                              ? "text-gray-400"
-                              : idx === 2
-                                ? "text-amber-900"
-                                : "text-muted-foreground"
-                        )}
-                      >
-                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-                        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-                        <path d="M4 22h16" />
-                        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-                        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-                        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-                      </svg>
-                    </TableCell>
-                    <TableCell>
-                      <span className="flex items-center space-x-2">
-                        <div className="pr-2">
-                          <Image
-                            src={`/heroes/${toHero(hero as HeroName)}.png`}
-                            alt=""
-                            width={256}
-                            height={256}
-                            className={cn(
-                              "h-8 w-8 rounded border-2",
-                              idx === 0
-                                ? "border-amber-400"
-                                : idx === 1
-                                  ? "border-gray-400"
-                                  : idx === 2
-                                    ? "border-amber-900"
-                                    : "border-muted-foreground"
-                            )}
-                          />{" "}
-                        </div>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Link href={`/stats/${player}`} target="_blank">
-                                {player}
-                              </Link>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{t("bestPerformance.clickPlayer")}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </span>
-                    </TableCell>
-                    <TableCell>{finalBlows}</TableCell>
-                  </TableRow>
-                )
-              )}
+              {top3FinalBlows.map(([hero, player, finalBlows, mapId], idx) => (
+                <TableRow key={`${hero}-${mapId}-${player}-${finalBlows}`}>
+                  <TableCell>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      className={cn(
+                        "h-4 w-4",
+                        idx === 0
+                          ? "text-amber-400"
+                          : idx === 1
+                            ? "text-gray-400"
+                            : idx === 2
+                              ? "text-amber-900"
+                              : "text-muted-foreground"
+                      )}
+                    >
+                      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+                      <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                      <path d="M4 22h16" />
+                      <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+                      <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+                      <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+                    </svg>
+                  </TableCell>
+                  <TableCell>
+                    <span className="flex items-center space-x-2">
+                      <div className="pr-2">
+                        <Image
+                          src={`/heroes/${toHero(hero as HeroName)}.png`}
+                          alt=""
+                          width={256}
+                          height={256}
+                          className={cn(
+                            "h-8 w-8 rounded border-2",
+                            idx === 0
+                              ? "border-amber-400"
+                              : idx === 1
+                                ? "border-gray-400"
+                                : idx === 2
+                                  ? "border-amber-900"
+                                  : "border-muted-foreground"
+                          )}
+                        />{" "}
+                      </div>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Link href={`/stats/${player}`} target="_blank">
+                            {player}
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{t("bestPerformance.clickPlayer")}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </span>
+                  </TableCell>
+                  <TableCell>{finalBlows}</TableCell>
+                </TableRow>
+              ))}
               {top3FinalBlows.length < 3 &&
                 Array.from({ length: 3 - top3FinalBlows.length }).map(
                   (_, idx) => (
@@ -497,7 +493,7 @@ export function Statistics({
           </Table>
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {timeframe !== "custom" && timeframe !== "all-time"
               ? t("bestPerformance.footer1", {
                   scrims: scrims[timeframe].length,
@@ -507,7 +503,9 @@ export function Statistics({
                   timeframe1:
                     timeframe === "custom"
                       ? customScrims.length
-                      : timeframe === "all-time" && scrims["all-time"].length,
+                      : timeframe === "all-time"
+                        ? scrims["all-time"].length
+                        : 0,
                   timeframe2:
                     timeframe === "all-time"
                       ? t("timeframe.all-time-data")
@@ -624,7 +622,7 @@ export function Statistics({
                           )}
                         />{" "}
                       </div>
-                      {heroNames.get(toHero(hero)) || hero}
+                      {heroNames.get(toHero(hero)) ?? hero}
                     </span>
                   </TableCell>
                   <TableCell>{deaths}</TableCell>
@@ -643,7 +641,7 @@ export function Statistics({
           </Table>
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {timeframe !== "custom" && timeframe !== "all-time"
               ? t("heroesDiedToMost.footer1", {
                   scrims: scrims[timeframe].length,
@@ -653,7 +651,9 @@ export function Statistics({
                   timeframe1:
                     timeframe === "custom"
                       ? customScrims.length
-                      : timeframe === "all-time" && scrims["all-time"].length,
+                      : timeframe === "all-time"
+                        ? scrims["all-time"].length
+                        : 0,
                   timeframe2:
                     timeframe === "all-time"
                       ? t("timeframe.all-time-data")
@@ -732,7 +732,7 @@ export function Statistics({
                           )}
                         />{" "}
                       </div>
-                      {heroNames.get(toHero(hero)) || hero}
+                      {heroNames.get(toHero(hero)) ?? hero}
                     </span>
                   </TableCell>
                   <TableCell>{elims}</TableCell>
@@ -751,7 +751,7 @@ export function Statistics({
           </Table>
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {timeframe !== "custom" && timeframe !== "all-time"
               ? t("heroesElimMost.footer1", {
                   scrims: scrims[timeframe].length,
@@ -761,7 +761,9 @@ export function Statistics({
                   timeframe1:
                     timeframe === "custom"
                       ? customScrims.length
-                      : timeframe === "all-time" && scrims["all-time"].length,
+                      : timeframe === "all-time"
+                        ? scrims["all-time"].length
+                        : 0,
                   timeframe2:
                     timeframe === "all-time"
                       ? t("timeframe.all-time-data")

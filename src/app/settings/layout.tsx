@@ -1,18 +1,16 @@
-import { Metadata } from "next";
-
-import DashboardLayout from "@/components/dashboard-layout";
+import { DashboardLayout } from "@/components/dashboard-layout";
 import { SidebarNav } from "@/components/settings/sidebar-nav";
 import { Separator } from "@/components/ui/separator";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { $Enums } from "@prisma/client";
+import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { locale: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: LayoutProps<"/settings">
+): Promise<Metadata> {
+  const params = (await props.params) as { locale: string };
   const t = await getTranslations("settingsPage.metadata");
 
   return {
@@ -36,19 +34,19 @@ export async function generateMetadata({
   };
 }
 
-interface SettingsLayoutProps {
-  children: React.ReactNode;
-}
-
 export default async function SettingsLayout({
   children,
-}: SettingsLayoutProps) {
+}: LayoutProps<"/settings">) {
   const t = await getTranslations("settingsPage");
 
-  const sidebarNavItems = [
+  const sidebarNavItems: { title: string; href: Route }[] = [
     {
       title: t("sideNav.profile"),
       href: "/settings",
+    },
+    {
+      title: t("sideNav.billing"),
+      href: "/settings/billing",
     },
     {
       title: t("sideNav.linkedAccounts"),
@@ -56,11 +54,22 @@ export default async function SettingsLayout({
     },
   ];
 
-  const adminNavItems = [
-    ...sidebarNavItems,
+  const adminNavItems: { title: string; href: Route }[] = [
     {
-      title: t("sideNav.admin"),
+      title: t("sideNav.dashboard"),
       href: "/settings/admin",
+    },
+    {
+      title: t("sideNav.analytics"),
+      href: "/settings/admin/analytics",
+    },
+    {
+      title: t("sideNav.impersonateUser"),
+      href: "/settings/admin/impersonate-user",
+    },
+    {
+      title: t("sideNav.auditLogs"),
+      href: "/settings/admin/audit-logs",
     },
   ];
 
@@ -78,11 +87,20 @@ export default async function SettingsLayout({
           <p className="text-muted-foreground">{t("description")}</p>
         </div>
         <Separator className="my-6" />
-        <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
-          <aside className="-mx-4 lg:w-1/5">
-            <SidebarNav items={isAdmin ? adminNavItems : sidebarNavItems} />
+        <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
+          <aside className="lg:w-1/6">
+            <SidebarNav items={sidebarNavItems} />
+            {isAdmin && (
+              <>
+                <h3 className="text-muted-foreground mt-6 pl-2 text-sm tracking-tight">
+                  {t("sideNav.admin")}
+                </h3>
+                <Separator className="mb-4" />
+                <SidebarNav items={adminNavItems} />
+              </>
+            )}
           </aside>
-          <div className="flex-1 lg:max-w-2xl">{children}</div>
+          <div className="flex-1">{children}</div>
         </div>
       </div>
     </DashboardLayout>

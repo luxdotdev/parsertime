@@ -2,15 +2,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
 import { getHeroNames, toHero } from "@/lib/utils";
 import { roleHeroMapping } from "@/types/heroes";
-import { Metadata } from "next";
+import type { PagePropsWithLocale } from "@/types/next";
+import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { locale: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: PagePropsWithLocale<"/stats/hero">
+): Promise<Metadata> {
+  const params = await props.params;
   const t = await getTranslations("statsPage.heroStatsMetadata");
   return {
     title: t("title"),
@@ -59,20 +59,20 @@ export default async function HeroSelect() {
               {tankHeroes.map((hero) => (
                 <Link
                   key={hero}
-                  href={`/stats/hero/${hero}`}
+                  href={`/stats/hero/${hero}` as Route}
                   className="flex flex-col items-center text-center"
                 >
                   <Image
                     src={`/heroes/${toHero(hero)}.png`}
                     alt={t("altText", {
-                      hero: heroNames.get(toHero(hero)) || hero,
+                      hero: heroNames.get(toHero(hero)) ?? hero,
                     })}
                     width={128}
                     height={128}
                     className="h-12 w-12 rounded border md:h-16 md:w-16"
                   />
                   <span className="text-sm font-semibold tracking-tight">
-                    {heroNames.get(toHero(hero)) || hero}
+                    {heroNames.get(toHero(hero)) ?? hero}
                   </span>
                 </Link>
               ))}
@@ -88,20 +88,20 @@ export default async function HeroSelect() {
               {damageHeroes.map((hero) => (
                 <Link
                   key={hero}
-                  href={`/stats/hero/${hero}`}
+                  href={`/stats/hero/${hero}` as Route}
                   className="flex flex-col items-center text-center"
                 >
                   <Image
                     src={`/heroes/${toHero(hero)}.png`}
                     alt={t("altText", {
-                      hero: heroNames.get(toHero(hero)) || hero,
+                      hero: heroNames.get(toHero(hero)) ?? hero,
                     })}
                     width={128}
                     height={128}
                     className="h-12 w-12 rounded border md:h-16 md:w-16"
                   />
                   <span className="text-sm font-semibold tracking-tight">
-                    {heroNames.get(toHero(hero)) || hero}
+                    {heroNames.get(toHero(hero)) ?? hero}
                   </span>
                 </Link>
               ))}
@@ -117,20 +117,20 @@ export default async function HeroSelect() {
               {supportHeroes.map((hero) => (
                 <Link
                   key={hero}
-                  href={`/stats/hero/${hero}`}
+                  href={`/stats/hero/${hero}` as Route}
                   className="flex flex-col items-center text-center"
                 >
                   <Image
                     src={`/heroes/${toHero(hero)}.png`}
                     alt={t("altText", {
-                      hero: heroNames.get(toHero(hero)) || hero,
+                      hero: heroNames.get(toHero(hero)) ?? hero,
                     })}
                     width={128}
                     height={128}
                     className="h-12 w-12 rounded border md:h-16 md:w-16"
                   />
                   <span className="text-sm font-semibold tracking-tight">
-                    {heroNames.get(toHero(hero)) || hero}
+                    {heroNames.get(toHero(hero)) ?? hero}
                   </span>
                 </Link>
               ))}
@@ -138,7 +138,7 @@ export default async function HeroSelect() {
           </CardContent>
         </Card>
 
-        <p className="col-span-6 text-center text-muted-foreground">
+        <p className="text-muted-foreground col-span-6 text-center">
           {t("description")}
         </p>
       </div>

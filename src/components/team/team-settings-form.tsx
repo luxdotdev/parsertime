@@ -1,9 +1,5 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
 import { AvatarUpdateDialog } from "@/components/team/avatar-update-dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,17 +16,19 @@ import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
-import { Team } from "@prisma/client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { Team } from "@prisma/client";
 import { ClipboardCopyIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useRef, useState } from "react";
+import { type ChangeEvent, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 export function TeamSettingsForm({ team }: { team: Team }) {
   const t = useTranslations("teamPage");
@@ -81,36 +79,33 @@ export function TeamSettingsForm({ team }: { team: Team }) {
     });
 
     if (res.ok) {
-      toast({
-        title: t("update.onSubmit.title"),
+      toast.success(t("update.onSubmit.title"), {
         description: t("update.onSubmit.description"),
         duration: 5000,
       });
       router.refresh();
     } else {
-      toast({
-        title: t("update.onSubmit.errorTitle"),
+      toast.error(t("update.onSubmit.errorTitle"), {
         description: t("update.onSubmit.errorDescription", {
           res: `${await res.text()} (${res.status})`,
         }),
-        variant: "destructive",
         duration: 5000,
       });
     }
     setLoading(false);
   }
 
-  const handleAvatarClick = () => {
+  function handleAvatarClick() {
     fileInputRef.current?.click();
-  };
+  }
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+  function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const files = event.target.files;
-    if (files && files[0]) {
+    if (files?.[0]) {
       setSelectedFile(files[0]);
       setAvatarDialogOpen(true); // Open the dialog upon file selection
     }
-  };
+  }
 
   return (
     <ClientOnly>
@@ -122,31 +117,27 @@ export function TeamSettingsForm({ team }: { team: Team }) {
               <div className="items-center">
                 <p>{t("teamInviteLink.subtitle")}</p>
                 <code className="rounded bg-zinc-800 p-1 text-zinc-800 transition-colors hover:text-white">
-                  https://parsertime.app/team/join/
-                  {btoa(team.createdAt.toISOString())}
+                  {`https://parsertime.app/team/join/${btoa(team.createdAt.toISOString())}`}
                 </code>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <ClipboardCopyIcon
-                        className="ml-2 inline-block h-5 w-5 cursor-pointer"
-                        onClick={() => {
-                          void navigator.clipboard.writeText(
-                            `https://parsertime.app/team/join/${btoa(
-                              team.createdAt.toISOString()
-                            )}`
-                          );
-                          toast({
-                            title: t("clipboard.title"),
-                            description: t("clipboard.description"),
-                            duration: 5000,
-                          });
-                        }}
-                      />
-                    </TooltipTrigger>
-                    <TooltipContent>{t("clipboard.tooltip")}</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <ClipboardCopyIcon
+                      className="ml-2 inline-block h-5 w-5 cursor-pointer"
+                      onClick={() => {
+                        void navigator.clipboard.writeText(
+                          `https://parsertime.app/team/join/${btoa(
+                            team.createdAt.toISOString()
+                          )}`
+                        );
+                        toast.success(t("clipboard.title"), {
+                          description: t("clipboard.description"),
+                          duration: 5000,
+                        });
+                      }}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>{t("clipboard.tooltip")}</TooltipContent>
+                </Tooltip>
               </div>
             </FormControl>
             <FormDescription>{t("teamInviteLink.description")}</FormDescription>
@@ -184,7 +175,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
                 />
                 <Image
                   src={
-                    team.image || `https://avatar.vercel.sh/${team.name}.png`
+                    team.image ?? `https://avatar.vercel.sh/${team.name}.png`
                   }
                   width={800}
                   height={800}
@@ -207,7 +198,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
             control={form.control}
             name="readonly"
             render={({ field }) => (
-              <FormItem className="flex max-w-lg flex-row items-start space-x-3 space-y-0 rounded-md p-4 shadow">
+              <FormItem className="flex max-w-lg flex-row items-start space-y-0 space-x-3 rounded-md p-4 shadow">
                 <FormControl>
                   <Switch
                     checked={field.value}

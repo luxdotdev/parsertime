@@ -4,26 +4,24 @@ import { Search } from "@/components/dashboard/search";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ComparePlayers } from "@/components/map/compare-players";
 import { DefaultOverview } from "@/components/map/default-overview";
+import { HeroBans } from "@/components/map/hero-bans";
 import { Killfeed } from "@/components/map/killfeed";
 import { MapEvents } from "@/components/map/map-events";
-import PlayerSwitcher from "@/components/map/player-switcher";
+import { PlayerSwitcher } from "@/components/map/player-switcher";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getMostPlayedHeroes } from "@/data/player-dto";
 import prisma from "@/lib/prisma";
 import { toTitleCase, translateMapName } from "@/lib/utils";
-
-import { SearchParams } from "@/types/next";
-import { Metadata } from "next";
+import type { PagePropsWithLocale } from "@/types/next";
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
-type Props = {
-  params: { team: string; scrimId: string; mapId: string; locale: string };
-  searchParams: SearchParams;
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(
+  props: PagePropsWithLocale<"/demo">
+): Promise<Metadata> {
+  const params = await props.params;
   const t = await getTranslations("demoPage.metadata");
 
   const mapName = await prisma.matchStart.findFirst({
@@ -62,22 +60,34 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function MapDashboardPage({ params }: Props) {
+export default async function MapDashboardPage() {
   const t = await getTranslations("mapPage");
   const id = 268;
 
   const mostPlayedHeroes = await getMostPlayedHeroes(id);
 
-  const mapName = await prisma.matchStart.findFirst({
+  const mapDetails = await prisma.matchStart.findFirst({
     where: {
       MapDataId: id,
     },
     select: {
       map_name: true,
+      team_1_name: true,
     },
   });
 
-  const translatedMapName = await translateMapName(mapName?.map_name || "Map");
+  const translatedMapName = await translateMapName(
+    mapDetails?.map_name ?? "Map"
+  );
+
+  const { team1, team2 } = {
+    team1: "var(--team-1-off)",
+    team2: "var(--team-2-off)",
+  };
+
+  const heroBans = await prisma.heroBan.findMany({
+    where: { MapDataId: id },
+  });
 
   return (
     <div className="flex-col md:flex">
@@ -109,6 +119,10 @@ export default async function MapDashboardPage({ params }: Props) {
           <h2 className="text-3xl font-bold tracking-tight">
             {translatedMapName}
           </h2>
+          <HeroBans
+            heroBans={heroBans}
+            team1Name={mapDetails?.team_1_name ?? "Team 1"}
+          />
         </div>
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList>
@@ -126,16 +140,16 @@ export default async function MapDashboardPage({ params }: Props) {
             <TabsTrigger value="compare">{t("tabs.compare")}</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
-            <DefaultOverview id={id} />
+            <DefaultOverview id={id} team1Color={team1} team2Color={team2} />
           </TabsContent>
           <TabsContent value="killfeed" className="space-y-4">
-            <Killfeed id={id} />
+            <Killfeed id={id} team1Color={team1} team2Color={team2} />
           </TabsContent>
           <TabsContent value="charts" className="space-y-4">
             <MapCharts id={id} />
           </TabsContent>
           <TabsContent value="events" className="space-y-4">
-            <MapEvents id={id} />
+            <MapEvents id={id} team1Color={team1} team2Color={team2} />
           </TabsContent>
           <TabsContent value="compare" className="space-y-4">
             <ComparePlayers id={id} />

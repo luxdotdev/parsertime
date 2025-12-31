@@ -3,7 +3,9 @@ import { MainNav } from "@/components/dashboard/main-nav";
 import { Search } from "@/components/dashboard/search";
 import { GuestNav } from "@/components/guest-nav";
 import { LocaleSwitcher } from "@/components/locale-switcher";
-import PlayerSwitcher from "@/components/map/player-switcher";
+import { PlayerSwitcher } from "@/components/map/player-switcher";
+import { MobileNav } from "@/components/mobile-nav";
+import { Notifications } from "@/components/notifications";
 import { PlayerAnalytics } from "@/components/player/analytics";
 import { DefaultOverview } from "@/components/player/default-overview";
 import { ModeToggle } from "@/components/theme-switcher";
@@ -14,23 +16,15 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { toTitleCase } from "@/lib/utils";
-import { SearchParams } from "@/types/next";
-import { Metadata } from "next";
+import type { PagePropsWithLocale } from "@/types/next";
+import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
-type Props = {
-  params: {
-    team: string;
-    scrimId: string;
-    mapId: string;
-    playerId: string;
-    locale: string;
-  };
-  searchParams: SearchParams;
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(
+  props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]/player/[playerId]">
+): Promise<Metadata> {
+  const params = await props.params;
   const t = await getTranslations({
     locale: params.locale,
     namespace: "mapPage.playerMetadata",
@@ -60,7 +54,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function PlayerDashboardPage({ params }: Props) {
+export default async function PlayerDashboardPage(
+  props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]/player/[playerId]">
+) {
+  const params = await props.params;
   const t = await getTranslations("mapPage.player.dashboard");
   const id = parseInt(params.mapId);
   const playerName = decodeURIComponent(params.playerId);
@@ -93,13 +90,17 @@ export default async function PlayerDashboardPage({ params }: Props) {
       <div className="border-b">
         <div className="hidden h-16 items-center px-4 md:flex">
           <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
-          <MainNav className="mx-6" />
+          <MainNav className="mx-6 hidden lg:block" />
+          <MobileNav className="block pl-2 lg:hidden" session={session} />
           <div className="ml-auto flex items-center space-x-4">
             <Search user={user} />
             <ModeToggle />
             <LocaleSwitcher />
             {session ? (
-              <UserNav />
+              <>
+                <Notifications />
+                <UserNav />
+              </>
             ) : (
               <GuestNav guestMode={visibility.guestMode} />
             )}
@@ -111,7 +112,10 @@ export default async function PlayerDashboardPage({ params }: Props) {
             <ModeToggle />
             <LocaleSwitcher />
             {session ? (
-              <UserNav />
+              <>
+                <Notifications />
+                <UserNav />
+              </>
             ) : (
               <GuestNav guestMode={visibility.guestMode} />
             )}
@@ -122,7 +126,9 @@ export default async function PlayerDashboardPage({ params }: Props) {
         <div>
           <h4 className="text-gray-600 dark:text-gray-400">
             <Link
-              href={`/${params.team}/scrim/${params.scrimId}/map/${params.mapId}`}
+              href={
+                `/${params.team}/scrim/${params.scrimId}/map/${params.mapId}` as Route
+              }
             >
               &larr; {t("back")}
             </Link>

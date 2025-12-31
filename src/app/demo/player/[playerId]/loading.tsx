@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import CardIcon from "@/components/ui/card-icon";
+import { CardIcon } from "@/components/ui/card-icon";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getTranslations } from "next-intl/server";
 
@@ -18,7 +18,7 @@ export default async function PlayerDashboardLoading() {
         <div className="hidden h-16 items-center px-4 md:flex">
           <Skeleton className="h-6 w-24" />
           <div className="ml-auto flex items-center space-x-4">
-            <Skeleton className="hidden h-9 w-full rounded-md border border-input px-3 py-1 md:flex md:w-[100px] lg:w-[300px]" />
+            <Skeleton className="border-input hidden h-9 w-full rounded-md border px-3 py-1 md:flex md:w-[100px] lg:w-[300px]" />
             <Skeleton className="h-9 w-9" />
             <Skeleton className="h-8 w-8 rounded-full" />
           </div>

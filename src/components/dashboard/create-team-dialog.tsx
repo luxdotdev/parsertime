@@ -14,12 +14,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 export function CreateTeamDialog({
@@ -29,7 +29,6 @@ export function CreateTeamDialog({
   setShowNewTeamDialog: (show: boolean) => void;
   setNewTeamCreated: (created: boolean) => void;
 }) {
-  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const t = useTranslations("dashboard.createTeam");
 
@@ -58,15 +57,14 @@ export function CreateTeamDialog({
     if (res.ok) {
       setShowNewTeamDialog(false);
       setNewTeamCreated(true);
-      toast({
-        title: t("newTeamCreated.title"),
+      toast.success(t("newTeamCreated.title"), {
+        duration: 5000,
         description: t("newTeamCreated.description"),
       });
       setLoading(false);
     } else {
-      toast({
-        variant: "destructive",
-        title: t("error.title"),
+      toast.error(t("error.title"), {
+        duration: 5000,
         description: t("error.description", {
           res: `${await res.text()} (${res.status})`,
         }),

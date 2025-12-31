@@ -1,6 +1,7 @@
 import { DmgDoneVsDmgTakenChart } from "@/components/charts/player/dmg-done-vs-dmg-taken-chart";
 import { DmgTakenVsHealingReceivedChart } from "@/components/charts/player/dmg-taken-vs-healing-chart";
 import { KillfeedTable } from "@/components/map/killfeed-table";
+import { MVPCard } from "@/components/player/mvp-card";
 import {
   Card,
   CardContent,
@@ -8,17 +9,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import CardIcon from "@/components/ui/card-icon";
+import { CardIcon } from "@/components/ui/card-icon";
 import {
   calculateDroughtTime,
-  calculateXFactor,
   getAverageTimeToUseUlt,
   getAverageUltChargeTime,
   getDuelWinrates,
 } from "@/lib/analytics";
+import { auth } from "@/lib/auth";
+import { calculateMVPScoresForMap } from "@/lib/mvp-score";
 import prisma from "@/lib/prisma";
 import {
-  cn,
+  getColorblindMode,
   groupPlayerKillsIntoFights,
   removeDuplicateRows,
   toHero,
@@ -43,10 +45,11 @@ export async function PlayerAnalytics({
     duels,
     match,
     fights,
-    xFactor,
     allDamageTakens,
     allHealingReceiveds,
     allHeroDamageDone,
+    session,
+    mvpScore,
   ] = await Promise.all([
     getAverageUltChargeTime(id, playerName),
     getAverageTimeToUseUlt(id, playerName),
@@ -54,7 +57,6 @@ export async function PlayerAnalytics({
     getDuelWinrates(id, playerName),
     prisma.matchStart.findFirst({ where: { MapDataId: id } }),
     groupPlayerKillsIntoFights(id, playerName),
-    calculateXFactor(id, playerName),
     prisma.playerStat.findMany({
       where: { MapDataId: id, player_name: playerName },
       select: { id: true, round_number: true, damage_taken: true },
@@ -67,6 +69,8 @@ export async function PlayerAnalytics({
       where: { MapDataId: id, player_name: playerName },
       select: { id: true, round_number: true, hero_damage_dealt: true },
     }),
+    auth(),
+    calculateMVPScoresForMap(id),
   ]);
 
   const allDamageTakensByRound = removeDuplicateRows(allDamageTakens);
@@ -107,6 +111,10 @@ export async function PlayerAnalytics({
     {} as Record<number, number>
   );
 
+  const { team1: team1Color, team2: team2Color } = await getColorblindMode(
+    session?.user.id ?? ""
+  );
+
   return (
     <main className="min-h-[65vh]">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -127,7 +135,7 @@ export async function PlayerAnalytics({
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("avgUltChargeTime.footer")}
             </p>
           </CardFooter>
@@ -150,7 +158,7 @@ export async function PlayerAnalytics({
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("avgTimeUseUlt.footer")}
             </p>
           </CardFooter>
@@ -172,39 +180,18 @@ export async function PlayerAnalytics({
             <div className="text-2xl font-bold">{toTimestamp(droughtTime)}</div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("avgDroughtTime.footer")}
             </p>
           </CardFooter>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {t("xFactor.title")}
-            </CardTitle>
-            <CardIcon>
-              <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
-              <path d="M5 3v4" />
-              <path d="M19 17v4" />
-              <path d="M3 5h4" />
-              <path d="M17 19h4" />
-            </CardIcon>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{xFactor.toFixed(2)}</div>
-          </CardContent>
-          <CardFooter>
-            <p className="text-xs text-muted-foreground">
-              {t("xFactor.footer")}
-            </p>
-          </CardFooter>
-        </Card>
+        <MVPCard playerName={playerName} mvpScores={mvpScore} />
         <Card className="col-span-full max-h-[80vh] overflow-y-auto 2xl:col-span-1">
           <CardHeader>
             <CardTitle className="text-sm font-medium">
               {t("versus.title")}
             </CardTitle>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("versus.description", { playerName })}
             </p>
           </CardHeader>
@@ -221,12 +208,13 @@ export async function PlayerAnalytics({
                       alt=""
                       width={256}
                       height={256}
-                      className={cn(
-                        "h-12 w-12 rounded border-2",
-                        duel.player_team === match?.team_1_name
-                          ? "border-blue-500"
-                          : "border-red-500"
-                      )}
+                      className="h-12 w-12 rounded border-2"
+                      style={{
+                        border:
+                          duel.player_team === match?.team_1_name
+                            ? `2px solid ${team1Color}`
+                            : `2px solid ${team2Color}`,
+                      }}
                     />
                     <div className="text-lg font-medium">
                       {duel.player_name}
@@ -237,12 +225,13 @@ export async function PlayerAnalytics({
                       alt=""
                       width={256}
                       height={256}
-                      className={cn(
-                        "h-12 w-12 rounded border-2",
-                        duel.enemy_team === match?.team_1_name
-                          ? "border-blue-500"
-                          : "border-red-500"
-                      )}
+                      className="h-12 w-12 rounded border-2"
+                      style={{
+                        border:
+                          duel.enemy_team === match?.team_1_name
+                            ? `2px solid ${team1Color}`
+                            : `2px solid ${team2Color}`,
+                      }}
                     />
                     <div className="text-lg font-medium">{duel.enemy_name}</div>
                   </div>
@@ -250,21 +239,23 @@ export async function PlayerAnalytics({
                 <div className="align-middle text-lg">
                   {t("versus.score")}{" "}
                   <span
-                    className={cn(
-                      duel.player_team === match?.team_1_name
-                        ? "text-blue-500"
-                        : "text-red-500"
-                    )}
+                    style={{
+                      color:
+                        duel.player_team === match?.team_1_name
+                          ? team1Color
+                          : team2Color,
+                    }}
                   >
                     {duel.enemy_deaths}
                   </span>{" "}
                   -{" "}
                   <span
-                    className={cn(
-                      duel.enemy_team === match?.team_1_name
-                        ? "text-blue-500"
-                        : "text-red-500"
-                    )}
+                    style={{
+                      color:
+                        duel.enemy_team === match?.team_1_name
+                          ? team1Color
+                          : team2Color,
+                    }}
                   >
                     {duel.enemy_kills}
                   </span>
@@ -272,17 +263,18 @@ export async function PlayerAnalytics({
                 {t.rich("versus.winrate", {
                   color: (chunks) => (
                     <span
-                      className={cn(
-                        duel.enemy_deaths > duel.enemy_kills
-                          ? duel.player_team === match?.team_1_name
-                            ? "text-blue-500"
-                            : "text-red-500"
-                          : duel.enemy_deaths < duel.enemy_kills
+                      style={{
+                        color:
+                          duel.enemy_deaths > duel.enemy_kills
                             ? duel.player_team === match?.team_1_name
-                              ? "text-red-500"
-                              : "text-blue-500"
-                            : "text-purple-500"
-                      )}
+                              ? team1Color
+                              : team2Color
+                            : duel.enemy_deaths < duel.enemy_kills
+                              ? duel.player_team === match?.team_1_name
+                                ? team2Color
+                                : team1Color
+                              : "purple-500",
+                      }}
                     >
                       {chunks}
                     </span>
@@ -302,7 +294,7 @@ export async function PlayerAnalytics({
             <CardTitle className="text-sm font-medium">
               {t("playerKillfeed.title")}
             </CardTitle>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("playerKillfeed.description", { playerName })}
             </p>
           </CardHeader>
@@ -311,6 +303,8 @@ export async function PlayerAnalytics({
               fights={fights}
               team1={match?.team_1_name ?? t("playerKillfeed.team1")}
               team2={match?.team_2_name ?? t("playerKillfeed.team2")}
+              team1Color={team1Color}
+              team2Color={team2Color}
             />
           </CardContent>
         </Card>
@@ -327,7 +321,7 @@ export async function PlayerAnalytics({
             />
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("dmgTakenHealingReceived.footer")}
             </p>
           </CardFooter>
@@ -345,7 +339,7 @@ export async function PlayerAnalytics({
             />
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("dmgDoneDmgTaken.footer")}
             </p>
           </CardFooter>

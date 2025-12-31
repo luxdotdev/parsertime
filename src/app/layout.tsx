@@ -1,21 +1,21 @@
 import { CommandDialogMenu } from "@/components/command-menu";
 import { CommandMenuProvider } from "@/components/command-menu-provider";
-import { StaffToolbar } from "@/components/staff-toolbar";
-import { TailwindIndicator } from "@/components/tailwind-indicator";
+import { DevTools } from "@/components/devtools";
+import { BetaBanner } from "@/components/home/beta-banner";
+import { AppSettingsProvider } from "@/components/settings/app-settings-provider";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { QueryProvider } from "@/lib/query";
 import { cn } from "@/lib/utils";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
-import { Suspense } from "react";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -44,11 +44,17 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const geistSans = Geist({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+});
+
+export default async function RootLayout({ children }: LayoutProps<"/">) {
   const locale = await getLocale();
   const messages = await getMessages();
   const session = await auth();
@@ -59,8 +65,14 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang={locale} className="h-full">
-      <body className={cn(GeistSans.className, "h-full")}>
+    <html lang={locale} className="h-full" suppressHydrationWarning>
+      <body
+        className={cn(
+          geistSans.className,
+          geistMono.variable,
+          "h-full antialiased"
+        )}
+      >
         <QueryProvider>
           <ThemeProvider
             attribute="class"
@@ -68,21 +80,22 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <NextIntlClientProvider messages={messages}>
-              <CommandMenuProvider>
-                {children}
-                <CommandDialogMenu user={user} />
-              </CommandMenuProvider>
-            </NextIntlClientProvider>
+            <TooltipProvider>
+              <NextIntlClientProvider messages={messages}>
+                <CommandMenuProvider>
+                  <AppSettingsProvider>
+                    <BetaBanner />
+                    {children}
+                    <CommandDialogMenu user={user} />
+                  </AppSettingsProvider>
+                </CommandMenuProvider>
+              </NextIntlClientProvider>
+            </TooltipProvider>
             <Toaster />
             <SpeedInsights />
             <Analytics />
-            <Suspense>
-              <StaffToolbar />
-            </Suspense>
-            <TailwindIndicator />
+            <DevTools />
           </ThemeProvider>
-          <ReactQueryDevtools initialIsOpen={false} />
         </QueryProvider>
       </body>
     </html>

@@ -1,10 +1,13 @@
 import { getScrim } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
+import { notifications } from "@/lib/notifications";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
-import { NextRequest } from "next/server";
+import { unauthorized } from "next/navigation";
+import { after, type NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   const params = req.nextUrl.searchParams;
@@ -16,7 +19,7 @@ export async function POST(req: NextRequest) {
   if (!session) {
     if (token !== process.env.DEV_TOKEN) {
       Logger.warn("Unauthorized request to remove scrim: ", id);
-      return new Response("Unauthorized", { status: 401 });
+      unauthorized();
     }
     Logger.log("Authorized removal of scrim with dev token");
   }
@@ -50,9 +53,29 @@ export async function POST(req: NextRequest) {
     user.id === scrim.creatorId || // Creators can delete their own scrims
     isManager; // Managers of the scrim's team can delete the scrim
 
-  if (!hasPerms) return new Response("Unauthorized", { status: 401 });
+  if (!hasPerms) unauthorized();
 
   const scrimId = parseInt(id);
+
+  // If not an individual scrim, create a notification for the team
+  if (scrim.teamId !== 0 && scrim.teamId !== null) {
+    const team = await prisma.team.findFirst({
+      where: { id: scrim.teamId ?? 0 },
+    });
+    if (!team) return new Response("Team not found", { status: 404 });
+
+    const teamMembers = await prisma.user.findMany({
+      where: { teams: { some: { id: scrim.teamId ?? 0 } } },
+    });
+
+    for (const member of teamMembers) {
+      await notifications.createInAppNotification({
+        userId: member.id,
+        title: `${team.name}: Scrim ${scrim.name} has been deleted`,
+        description: `Scrim "${scrim.name}" has been deleted by ${user.name}.`,
+      });
+    }
+  }
 
   await Promise.all([
     prisma.scrim.delete({ where: { id: scrimId } }),
@@ -81,7 +104,17 @@ export async function POST(req: NextRequest) {
     prisma.ultimateCharged.deleteMany({ where: { scrimId } }),
     prisma.ultimateEnd.deleteMany({ where: { scrimId } }),
     prisma.ultimateStart.deleteMany({ where: { scrimId } }),
+    prisma.heroBan.deleteMany({ where: { scrimId } }),
   ]);
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: user.email,
+      action: "SCRIM_DELETED",
+      target: `${scrim.name} (Team: ${scrim.teamId ?? "Individual"})`,
+      details: `Scrim deleted: ${id}`,
+    });
+  });
 
   return new Response("OK", { status: 200 });
 }

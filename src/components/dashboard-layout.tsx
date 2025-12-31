@@ -1,21 +1,23 @@
 import { MainNav } from "@/components/dashboard/main-nav";
 import { Search } from "@/components/dashboard/search";
 import { TeamSwitcher } from "@/components/dashboard/team-switcher";
-import Footer from "@/components/footer";
+import { Footer } from "@/components/footer";
+import { GuestNav } from "@/components/guest-nav";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { MobileNav } from "@/components/mobile-nav";
+import { Notifications } from "@/components/notifications";
 import { TeamSwitcherProvider } from "@/components/team-switcher-provider";
 import { ModeToggle } from "@/components/theme-switcher";
 import { UserNav } from "@/components/user-nav";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 
-export default async function DashboardLayout({
+export async function DashboardLayout({
   children,
-  teamSwitcherHidden,
+  guestMode,
 }: {
   children: React.ReactNode;
-  teamSwitcherHidden?: boolean;
+  guestMode?: boolean;
 }) {
   const session = await auth();
   const user = await getUser(session?.user?.email);
@@ -26,19 +28,35 @@ export default async function DashboardLayout({
         <div className="border-b">
           <div className="hidden h-16 items-center px-4 md:flex">
             <TeamSwitcher session={session} />
-            <MainNav className="mx-6" />
+            <MainNav className="mx-6 hidden lg:block" />
+            <MobileNav className="block pl-2 lg:hidden" session={session} />
             <div className="ml-auto flex items-center space-x-4">
               <Search user={user} />
               <ModeToggle />
               <LocaleSwitcher />
-              <UserNav />
+              {session ? (
+                <>
+                  <Notifications />
+                  <UserNav />
+                </>
+              ) : (
+                <GuestNav guestMode={guestMode ?? false} />
+              )}
             </div>
           </div>
           <div className="flex h-16 items-center px-4 md:hidden">
             <MobileNav session={session} />
             <div className="ml-auto flex items-center space-x-4">
               <ModeToggle />
-              <UserNav />
+              <LocaleSwitcher />
+              {session ? (
+                <>
+                  <Notifications />
+                  <UserNav />
+                </>
+              ) : (
+                <GuestNav guestMode={guestMode ?? false} />
+              )}
             </div>
           </div>
         </div>

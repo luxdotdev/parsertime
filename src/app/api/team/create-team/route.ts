@@ -1,11 +1,14 @@
 import { getUser } from "@/data/user-dto";
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
+import { TEAM_CREATION_LIMIT } from "@/lib/usage";
 import { Ratelimit } from "@upstash/ratelimit";
+import { ipAddress } from "@vercel/functions";
 import { kv } from "@vercel/kv";
-import { NextRequest } from "next/server";
+import { after, type NextRequest } from "next/server";
 import { z } from "zod";
 
 const TeamCreationRequestSchema = z.object({
@@ -21,7 +24,7 @@ export async function POST(request: NextRequest) {
   });
 
   // Limit the requests to 5 per minute per user
-  const identifier = request.ip ?? "127.0.0.1";
+  const identifier = ipAddress(request) ?? "127.0.0.1";
   const { success } = await ratelimit.limit(identifier);
 
   if (!success) {
@@ -43,7 +46,10 @@ export async function POST(request: NextRequest) {
 
   switch (userId.billingPlan) {
     case "FREE":
-      if (numberOfTeams >= 2) {
+      if (
+        numberOfTeams >= TEAM_CREATION_LIMIT[userId.billingPlan] &&
+        userId.role !== "ADMIN"
+      ) {
         return new Response(
           "You have hit the limit of teams that your account can create.  Please upgrade your plan or contact support.",
           { status: 403 }
@@ -51,7 +57,10 @@ export async function POST(request: NextRequest) {
       }
       break;
     case "BASIC":
-      if (numberOfTeams >= 5) {
+      if (
+        numberOfTeams >= TEAM_CREATION_LIMIT[userId.billingPlan] &&
+        userId.role !== "ADMIN"
+      ) {
         return new Response(
           "You have hit the limit of teams that your account can create.  Please upgrade your plan or contact support.",
           { status: 403 }
@@ -59,7 +68,10 @@ export async function POST(request: NextRequest) {
       }
       break;
     case "PREMIUM":
-      if (numberOfTeams >= 10) {
+      if (
+        numberOfTeams >= TEAM_CREATION_LIMIT[userId.billingPlan] &&
+        userId.role !== "ADMIN"
+      ) {
         return new Response(
           "You have hit the limit of teams that your account can create.  Please upgrade your plan or contact support.",
           { status: 403 }
@@ -105,6 +117,15 @@ export async function POST(request: NextRequest) {
   await prisma.user.update({
     where: { id: userId.id ?? "" },
     data: { teams: { connect: [{ id: team.id }] } },
+  });
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: session.user.email,
+      action: "TEAM_CREATED",
+      target: team.name,
+      details: `Team created: ${team.name}`,
+    });
   });
 
   return new Response("Success", { status: 200 });

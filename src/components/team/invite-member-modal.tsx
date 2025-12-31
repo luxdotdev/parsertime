@@ -17,20 +17,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const formSchema = z.object({
   email: z.string().email().min(1, "Email is required"),
 });
 
-export default function InviteMemberModal({
+export function InviteMemberModal({
   showInviteMemberModal,
   setShowInviteMemberModal,
 }: {
@@ -39,7 +39,6 @@ export default function InviteMemberModal({
 }) {
   const t = useTranslations("teamPage.inviteMember");
 
-  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const params = useParams<{ teamId: string }>();
 
@@ -60,12 +59,11 @@ export default function InviteMemberModal({
       }
     );
     if (!getToken.ok) {
-      toast({
-        variant: "destructive",
-        title: t("onSubmit.errorTitle"),
+      toast.error(t("onSubmit.errorTitle"), {
         description: t("onSubmit.errorDescription", {
           res: `${await getToken.text()} (${getToken.status})`,
         }),
+        duration: 5000,
       });
       setLoading(false);
       return;
@@ -82,18 +80,17 @@ export default function InviteMemberModal({
 
     if (res.ok) {
       setShowInviteMemberModal(false);
-      toast({
-        title: t("onSubmit.title"),
+      toast.success(t("onSubmit.title"), {
         description: t("onSubmit.description"),
+        duration: 5000,
       });
       setLoading(false);
     } else {
-      toast({
-        variant: "destructive",
-        title: t("onSubmit.errorTitle"),
+      toast.error(t("onSubmit.errorTitle"), {
         description: `${t("onSubmit.errorDescription", {
           res: `${await res.text()} (${res.status})`,
         })}${t("onSubmit.errorStatus")}`,
+        duration: 5000,
       });
       setLoading(false);
     }

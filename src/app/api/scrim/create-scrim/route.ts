@@ -1,16 +1,19 @@
 import { getUser } from "@/data/user-dto";
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import { createNewScrimFromParsedData } from "@/lib/parser";
 import {
   newSuspiciousActivityWebhookConstructor,
   sendDiscordWebhook,
 } from "@/lib/webhooks";
-import { ParserData } from "@/types/parser";
-import { User } from "@prisma/client";
+import type { ParserData } from "@/types/parser";
+import type { User } from "@prisma/client";
 import { Ratelimit } from "@upstash/ratelimit";
+import { ipAddress } from "@vercel/functions";
 import { kv } from "@vercel/kv";
-import { NextRequest, userAgent } from "next/server";
+import { unauthorized } from "next/navigation";
+import { after, type NextRequest, userAgent } from "next/server";
 
 export type CreateScrimRequestData = {
   name: string;
@@ -18,6 +21,11 @@ export type CreateScrimRequestData = {
   date: string;
   map: ParserData;
   replayCode: string;
+  heroBans: {
+    hero: string;
+    team: string;
+    banPosition: number;
+  }[];
 };
 
 export async function POST(request: NextRequest) {
@@ -25,7 +33,7 @@ export async function POST(request: NextRequest) {
 
   if (!session) {
     Logger.warn("Unauthorized request to create scrim");
-    return new Response("Unauthorized", { status: 401 });
+    unauthorized();
   }
 
   // Create a new ratelimiter, that allows 5 requests per 1 minute
@@ -36,7 +44,7 @@ export async function POST(request: NextRequest) {
   });
 
   // Limit the requests to 5 per minute per user
-  const identifier = request.ip ?? "127.0.0.1";
+  const identifier = ipAddress(request) ?? "127.0.0.1";
   const { success } = await ratelimit.limit(identifier);
 
   if (!success) {
@@ -46,6 +54,7 @@ export async function POST(request: NextRequest) {
 
     const user = await getUser(session.user.email);
 
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const fallbackUser = {
       name: "Unknown",
       email: "unknown",
@@ -62,6 +71,15 @@ export async function POST(request: NextRequest) {
     );
     await sendDiscordWebhook(process.env.DISCORD_WEBHOOK_URL, wh);
 
+    after(async () => {
+      await auditLog.createAuditLog({
+        userEmail: "System",
+        action: "SUSPICIOUS_ACTIVITY_DETECTED",
+        target: `${user?.email ?? "Unknown"}`,
+        details: `Scrim creation (rate limit exceeded) by ${user?.name} (${user?.email})`,
+      });
+    });
+
     return new Response("Rate limit exceeded", { status: 429 });
   }
 
@@ -75,6 +93,15 @@ export async function POST(request: NextRequest) {
   Logger.log("Creating new scrim for user: ", session.user?.email);
 
   await createNewScrimFromParsedData(data, session);
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: session.user.email,
+      action: "SCRIM_CREATED",
+      target: `${data.name} (Team: ${data.team})`,
+      details: `Scrim created: ${data.name}`,
+    });
+  });
 
   return new Response("OK", { status: 200 });
 }

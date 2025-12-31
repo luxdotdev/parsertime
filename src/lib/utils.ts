@@ -1,9 +1,10 @@
 import prisma from "@/lib/prisma";
-import { $Enums, Kill } from "@prisma/client";
-import { type ClassValue, clsx } from "clsx";
+import { ColorblindMode, type $Enums, type Kill } from "@prisma/client";
+import { clsx, type ClassValue } from "clsx";
 import { useMessages, useTranslations } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { twMerge } from "tailwind-merge";
+import { z } from "zod";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -155,6 +156,7 @@ export function removeDuplicateRows<T extends { id: number }>(rows: T[]): T[] {
   const uniqueSet = new Set<string>();
   return rows.filter((row) => {
     // Destructure the row to separate `id` from the rest of the properties
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, ...rest } = row;
 
     const uniqueString = JSON.stringify(rest);
@@ -406,4 +408,173 @@ export async function getHeroNames() {
 export function useHeroNames() {
   const heroNames = useMessages()["heroes"] as Record<string, string>;
   return new Map(Object.entries(heroNames));
+}
+
+export type TaggedError = {
+  _tag: string;
+};
+
+/**
+ * Checks if the given error is a tagged error.
+ *
+ * @param error - The error to check.
+ * @returns True if the error is a tagged error, false otherwise.
+ */
+export function isTaggedError(error: unknown): error is TaggedError {
+  return error instanceof Error && "_tag" in error;
+}
+
+export type CorruptionInfo = {
+  isCorrupted: boolean;
+  hasInvalidMercyRez: boolean;
+  hasAsterisks: boolean;
+};
+
+/**
+ * Detects corrupted data in file content using regex patterns
+ *
+ * @param fileContent - The file content to check for corruption
+ * @returns Object containing corruption detection results
+ */
+export function detectCorruptedData(fileContent: string): CorruptionInfo {
+  // Check for invalid mercy_rez lines (mercy_rez with empty fields between commas)
+  const mercyRezPattern =
+    /^(?=[\s\S]*\bmercy_rez\b)[\s\S]*?(?:^|[^,])(,,)(?!,)/;
+  const hasInvalidMercyRez = mercyRezPattern.test(fileContent);
+
+  // Check for asterisk values (corrupted numeric data)
+  const asteriskPattern = /,\*+,/;
+  const hasAsterisks = asteriskPattern.test(fileContent);
+
+  return {
+    isCorrupted: hasInvalidMercyRez || hasAsterisks,
+    hasInvalidMercyRez,
+    hasAsterisks,
+  };
+}
+
+/**
+ * Safely detects corrupted data from a file, handling potential errors
+ *
+ * @param file - The file to check for corruption
+ * @returns Promise resolving to corruption detection results
+ */
+export async function detectFileCorruption(
+  file: File
+): Promise<CorruptionInfo> {
+  try {
+    const fileContent = await file.text();
+    return detectCorruptedData(fileContent);
+  } catch {
+    // If file reading fails, return no corruption detected
+    return {
+      isCorrupted: false,
+      hasInvalidMercyRez: false,
+      hasAsterisks: false,
+    };
+  }
+}
+
+export async function getColorblindMode(userId: string) {
+  const appSettings = await prisma.appSettings.findFirst({
+    where: { userId },
+  });
+  switch (appSettings?.colorblindMode) {
+    case ColorblindMode.OFF:
+      return {
+        team1: "var(--team-1-off)",
+        team2: "var(--team-2-off)",
+      };
+    case ColorblindMode.DEUTERANOPIA:
+      return {
+        team1: "var(--team-1-deuteranopia)",
+        team2: "var(--team-2-deuteranopia)",
+      };
+    case ColorblindMode.PROTANOPIA:
+      return {
+        team1: "var(--team-1-protanopia)",
+        team2: "var(--team-2-protanopia)",
+      };
+    case ColorblindMode.TRITANOPIA:
+      return {
+        team1: "var(--team-1-tritanopia)",
+        team2: "var(--team-2-tritanopia)",
+      };
+    case ColorblindMode.CUSTOM:
+      return {
+        team1: appSettings.customTeam1Color ?? "var(--team-1-off)",
+        team2: appSettings.customTeam2Color ?? "var(--team-2-off)",
+      };
+    default:
+      return {
+        team1: "var(--team-1-off)",
+        team2: "var(--team-2-off)",
+      };
+  }
+}
+
+export const noteDataSchema = z.object({
+  scrimId: z.number(),
+  mapDataId: z.number(),
+  content: z.string(),
+});
+
+/**
+ * Returns the appropriate border color class based on hero rating (SR).
+ *
+ * @param heroRating - The hero rating (skill rating).
+ * @param rank - The player's rank for this hero.
+ * @returns Tailwind CSS border color class string.
+ */
+export function getHeroRatingBorderColor(
+  heroRating: number,
+  rank: number
+): string {
+  if (rank <= 5 && heroRating > 2500) {
+    return "border-amber-400";
+  }
+
+  if (heroRating === 0) {
+    return "border-gray-400";
+  }
+
+  if (heroRating < 1500) {
+    return "border-amber-900";
+  }
+
+  if (heroRating < 2000) {
+    return "border-gray-400";
+  }
+
+  if (heroRating < 2500) {
+    return "border-amber-400";
+  }
+
+  if (heroRating < 3000) {
+    return "border-gray-500";
+  }
+
+  if (heroRating < 3500) {
+    return "border-sky-300";
+  }
+
+  if (heroRating < 4000) {
+    return "border-emerald-500";
+  }
+
+  if (heroRating < 4500) {
+    return "border-indigo-400";
+  }
+
+  return "border-violet-500";
+}
+
+export async function getTitleTranslation(title: $Enums.Title | null) {
+  const t = await getTranslations("titles");
+  return title ? t(title) : null;
+}
+
+export function useTitleTranslation(title: $Enums.Title | null) {
+  const t = useTranslations("titles");
+  return title ? t(title) : null;
 }

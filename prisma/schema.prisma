@@ -2,8 +2,9 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 generator client {
@@ -41,21 +42,73 @@ model Session {
 }
 
 model User {
-  id            String        @id @default(cuid())
-  name          String?
-  email         String        @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  role          UserRole      @default(USER)
-  teamId        Int?
-  teams         Team[]
-  managedTeams  TeamManager[]
-  stripeId      String?       @unique
-  billingPlan   BillingPlan   @default(FREE)
+  id             String         @id @default(cuid())
+  name           String?
+  email          String         @unique
+  emailVerified  DateTime?
+  image          String?
+  accounts       Account[]
+  sessions       Session[]
+  role           UserRole       @default(USER)
+  teamId         Int?
+  teams          Team[]
+  managedTeams   TeamManager[]
+  stripeId       String?        @unique
+  billingPlan    BillingPlan    @default(FREE)
+  Notification   Notification[]
+  AppSettings    AppSettings[]
+  titles         Title[]        @default([])
+  bannerImage    String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @default(now()) @updatedAt
+  battletag      String?
+  appliedTitles  AppliedTitle[]
+  seenOnboarding Boolean        @default(false)
 
   @@index([id, email])
+}
+
+enum Title {
+  // Special user titles
+  DEVELOPER
+  EMPLOYEE
+  BETA_TESTER
+  DAY_ONE_USER
+  BASIC_PLAN_SUBSCRIBER
+  PREMIUM_PLAN_SUBSCRIBER
+  VIP
+
+  // Achievement titles
+  HIGHEST_RANK_ON_A_HERO
+  HIGHEST_AJAX_COUNT
+  HIGHEST_FLETA_DEADLIFT_PERCENTAGE
+  TOP_3_KILLS
+  TOP_3_DAMAGE_DEALT
+  TOP_3_HEALING
+  TOP_3_DAMAGE_BLOCKED
+  TOP_3_DEATHS
+  TOP_3_TIME_PLAYED
+}
+
+enum ColorblindMode {
+  OFF
+  DEUTERANOPIA
+  PROTANOPIA
+  TRITANOPIA
+  CUSTOM
+}
+
+model AppSettings {
+  id               Int            @id @default(autoincrement())
+  userId           String
+  colorblindMode   ColorblindMode @default(OFF)
+  customTeam1Color String?
+  customTeam2Color String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 enum BillingPlan {
@@ -70,6 +123,63 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Notification {
+  id          Int      @id @default(autoincrement())
+  userId      String
+  title       String
+  description String
+  read        Boolean  @default(false)
+  href        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+enum AuditLogAction {
+  USER_BAN
+  USER_UNBAN
+  TRUST_SCORE_ADJUST
+  IMPERSONATE_USER
+  SUSPICIOUS_ACTIVITY_DETECTED
+  TEAM_INVITE_SENT
+  TEAM_AVATAR_UPDATED
+  TEAM_JOINED
+  TEAM_LEFT
+  TEAM_CREATED
+  TEAM_DELETED
+  TEAM_UPDATED
+  TEAM_MEMBER_PROMOTED
+  TEAM_MEMBER_DEMOTED
+  TEAM_MEMBER_REMOVED
+  TEAM_OWNERSHIP_TRANSFERRED
+  SCRIM_CREATED
+  SCRIM_UPDATED
+  SCRIM_DELETED
+  MAP_CREATED
+  MAP_UPDATED
+  MAP_DELETED
+  USER_AVATAR_UPDATED
+  USER_BANNER_UPDATED
+  USER_ACCOUNT_DELETED
+  USER_NAME_UPDATED
+  USER_BATTLETAG_UPDATED
+  BUG_REPORT_SUBMITTED
+}
+
+model AuditLog {
+  id        Int            @id @default(autoincrement())
+  userEmail String
+  action    AuditLogAction
+  target    String
+  details   String
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@index([userEmail, target])
 }
 
 model Team {
@@ -138,6 +248,86 @@ model Map {
   @@index([scrimId])
 }
 
+model HeroBan {
+  id          Int      @id @default(autoincrement())
+  scrimId     Int
+  hero        String
+  team        String
+  banPosition Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  MapData     MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId   Int
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model Note {
+  id        Int      @id @default(autoincrement())
+  content   String   @default("")
+  scrimId   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  MapData   MapData  @relation(fields: [MapDataId], references: [id])
+  MapDataId Int
+
+  @@unique([scrimId, MapDataId])
+  @@index([scrimId, MapDataId])
+}
+
+model AppliedTitle {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  title     Title
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, title])
+  @@index([userId])
+}
+
+enum CalculatedStatType {
+  FLETA_DEADLIFT_PERCENTAGE
+  FIRST_PICK_PERCENTAGE
+  FIRST_PICK_COUNT
+  FIRST_DEATH_PERCENTAGE
+  FIRST_DEATH_COUNT
+  MVP_SCORE
+  MAP_MVP_COUNT
+  AJAX_COUNT
+  AVERAGE_ULT_CHARGE_TIME
+  AVERAGE_TIME_TO_USE_ULT
+  AVERAGE_DROUGHT_TIME
+  KILLS_PER_ULTIMATE
+  DUEL_WINRATE_PERCENTAGE
+  FIGHT_REVERSAL_PERCENTAGE
+}
+
+enum Role {
+  TANK
+  DAMAGE
+  SUPPORT
+}
+
+model CalculatedStat {
+  id         Int                @id @default(autoincrement())
+  scrimId    Int
+  playerName String
+  hero       String
+  role       Role
+  stat       CalculatedStatType
+  value      Float
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+  MapData    MapData            @relation(fields: [MapDataId], references: [id])
+  MapDataId  Int
+
+  @@index([scrimId, MapDataId])
+  @@index([playerName, hero, stat])
+}
+
 enum EventType {
   defensive_assist
   dva_remech
@@ -202,8 +392,12 @@ model MapData {
   ultimate_charged     UltimateCharged[]
   ultimate_end         UltimateEnd[]
   ultimate_start       UltimateStart[]
-  Map                  Map?                 @relation(fields: [mapId], references: [id])
-  mapId                Int?
+  HeroBan              HeroBan[]
+  Note                 Note[]
+  calculatedStats      CalculatedStat[]
+
+  Map   Map? @relation(fields: [mapId], references: [id])
+  mapId Int?
 
   @@index([scrimId])
   @@index([mapId])

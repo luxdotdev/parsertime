@@ -10,7 +10,7 @@ export default async function LinkedAccountSettingsPage() {
   const t = await getTranslations("settingsPage.linkedAccounts");
 
   const session = await auth();
-  if (!session || !session.user) {
+  if (!session?.user) {
     redirect("/sign-in");
   }
 
@@ -31,10 +31,10 @@ export default async function LinkedAccountSettingsPage() {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 lg:max-w-2xl">
       <div>
         <h3 className="text-lg font-medium">{t("title")}</h3>
-        <p className="text-sm text-muted-foreground">{t("description")}</p>
+        <p className="text-muted-foreground text-sm">{t("description")}</p>
       </div>
       <Separator />
       {discordAccount ? <p>{t("discord.linked")}</p> : <DiscordLoginButton />}

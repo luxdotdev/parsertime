@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
-import { Button } from "@/components/ui/button";
+import type { Button } from "@/components/ui/button";
 import { signOut } from "@/lib/auth";
 import { useTranslations } from "next-intl";
 

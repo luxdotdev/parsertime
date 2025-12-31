@@ -11,16 +11,18 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { CardFooter } from "@/components/ui/card";
-import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
-import { User } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
+import { toast } from "sonner";
 
 type Props = {
-  user: User;
+  user: {
+    id: string;
+    name: string | null;
+  };
   managers: {
     id: number;
     teamId: number;
@@ -59,18 +61,16 @@ export function UserCardButtons({ user, managers }: Props) {
 
     if (res.ok) {
       setPromotionLoading(false);
-      toast({
-        title: t("promote.handlePromote.title"),
+      toast.success(t("promote.handlePromote.title"), {
         description: t("promote.handlePromote.description", {
-          user: user.name,
+          user: user.name ?? "",
         }),
         duration: 5000,
       });
       router.refresh();
     } else {
       setPromotionLoading(false);
-      toast({
-        title: t("promote.handlePromote.errorTitle"),
+      toast.error(t("promote.handlePromote.errorTitle"), {
         description: t("promote.handlePromote.errorDescription", {
           res: `${await res.text()} (${res.status})`,
         }),
@@ -92,18 +92,16 @@ export function UserCardButtons({ user, managers }: Props) {
 
     if (res.ok) {
       setDemotionLoading(false);
-      toast({
-        title: t("demote.handleDemote.title"),
+      toast.success(t("demote.handleDemote.title"), {
         description: t("demote.handleDemote.description", {
-          user: user.name,
+          user: user.name ?? "",
         }),
         duration: 5000,
       });
       router.refresh();
     } else {
       setDemotionLoading(false);
-      toast({
-        title: t("demote.handleDemote.errorTitle"),
+      toast.error(t("demote.handleDemote.errorTitle"), {
         description: t("demote.handleDemote.errorDescription", {
           res: `${await res.text()} (${res.status})`,
         }),
@@ -125,18 +123,16 @@ export function UserCardButtons({ user, managers }: Props) {
 
     if (res.ok) {
       setRemovalLoading(false);
-      toast({
-        title: t("remove.handleRemove.title"),
+      toast.success(t("remove.handleRemove.title"), {
         description: t("remove.handleRemove.description", {
-          user: user.name,
+          user: user.name ?? "",
         }),
         duration: 5000,
       });
       router.refresh();
     } else {
       setRemovalLoading(false);
-      toast({
-        title: t("remove.handleRemove.errorTitle"),
+      toast.error(t("remove.handleRemove.errorTitle"), {
         description: t("remove.handleRemove.errorDescription", {
           res: `${await res.text()} (${res.status})`,
         }),

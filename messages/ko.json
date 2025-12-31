@@ -214,15 +214,31 @@
       "ogTitle": "가입하기 | Parsertime",
       "ogDescription": "계정을 생성하세요. Parsertime은 오버워치 스크림 분석 도구입니다."
     },
+    "welcomeBack": "환영합니다",
+    "oauthSignIn": "아래 계정으로 로그인하세요",
+    "email": "이메일",
+    "parsertime": "Parsertime",
     "signUp": "가입하기",
     "signIn": "로그인",
     "login": "로그인",
+    "dontHaveAccount": "계정이 없으신가요? <signUp>가입하기</signUp>",
+    "alreadyHaveAccount": "계정이 있으신가요? <signIn>로그인</signIn>",
+    "loginWithDiscord": "Discord로 로그인",
+    "loginWithGoogle": "Google로 로그인",
+    "loginWithGitHub": "GitHub로 로그인",
     "createAccount": "계정 생성",
     "enterEmailCreateAccount": "아래 이메일을 입력하여 계정을 생성하세요",
     "enterEmailSignIn": "아래 이메일을 입력하여 로그인하세요",
     "signInEmail": "이메일로 로그인",
     "orContinueWith": "또는 계속하기",
-    "madeBy": "❤️로 만든 lux.dev"
+    "byClickingContinue": "계속하기를 클릭하면, 우리의 <terms>서비스 약관</terms>과 <privacy>개인정보 보호정책</privacy>에 동의하게 됩니다.",
+    "lastUsed": "마지막 사용",
+    "provider": {
+      "discord": "Discord",
+      "google": "Google",
+      "github": "GitHub",
+      "email": "이메일"
+    }
   },
   "dashboard": {
     "metadata": {
@@ -476,7 +492,7 @@
     },
     "addMap": {
       "title": "맵 추가...",
-      "description": "파일을 드래그 앤 드롭하거나 선택하여 업로드하세요.",
+      "description": "또는, <here>클릭하여 탐색</here> (1MB 최대)",
       "addFile": "파일 추가",
       "fileMessage": {
         "required": "파일이 필요합니다.",
@@ -567,7 +583,8 @@
           "errorTitle": "오류",
           "errorDescription": "오류가 발생했습니다: {res}"
         }
-      }
+      },
+      "scrimNotFound": "스크림을 찾을 수 없습니다"
     },
     "replayCode": {
       "title": "리플레이 코드 (클릭하여 복사)",
@@ -1577,6 +1594,26 @@
           }
         }
       },
+      "banner": {
+        "title": "프로필 배너",
+        "altText": "프로필 배너",
+        "ariaLabel": "배너 업로드",
+        "placeholder": "클릭하여 배너 업로드",
+        "description": "프로필 배너입니다. 배너를 클릭하여 파일에서 커스텀 배너를 업로드하세요.",
+        "editBanner": {
+          "title": "배너 편집",
+          "description": "배너 이미지를 업로드하고 자르세요. 완료되면 저장을 클릭하세요.",
+          "save": "변경 사항 저장",
+          "updating": "업데이트 중...",
+          "handleCrop": {
+            "title": "배너가 성공적으로 업데이트되었습니다",
+            "description": "배너가 성공적으로 업데이트되었습니다.",
+            "errorTitle": "오류가 발생했습니다",
+            "errorDescription1": "오류가 발생했습니다: {res}",
+            "errorDescription2": "배너를 업데이트하는 중 오류가 발생했습니다. 나중에 다시 시도하거나 지원팀에 문의하세요."
+          }
+        }
+      },
       "update": "프로필 업데이트"
     },
     "linkedAccounts": {
@@ -1955,6 +1992,79 @@
       "description": "당사의 개인정보 보호 관행에 대한 추가 정보가 필요하거나, 질문이 있거나, 불만을 제기하고 싶으신 경우, <link>privacy@lux.dev</link>으로 이메일을 보내주십시오."
     }
   },
+  "termsPage": {
+    "termsOfService": {
+      "title": "서비스 이용약관",
+      "description": "이 서비스 이용약관은 오버워치 스크림 분석을 위한 오픈소스 도구인 Parsertime의 사용을 규정합니다. 당사의 서비스에 접근하거나 사용함으로써 이 약관에 구속되는 것에 동의합니다."
+    },
+    "acceptance": {
+      "title": "약관 수락",
+      "description": "이 웹사이트에 접근하고 사용함으로써 귀하는 이 계약의 조건과 조항에 구속되는 것에 동의합니다. 위의 내용에 동의하지 않으시면 이 서비스를 사용하지 마십시오."
+    },
+    "openSource": {
+      "title": "오픈소스 라이선스",
+      "description": "Parsertime은 MIT 라이선스 하에 출시되며, 이는 다음을 의미합니다:",
+      "list1": "소스 코드가 자유롭게 제공되며 수정, 배포 및 어떤 목적으로든 사용할 수 있습니다;",
+      "list2": "상표권 제한이 없습니다 - 'Parsertime'이라는 이름은 상표권이 없습니다;",
+      "list3": "소프트웨어를 포크, 수정 및 파생 작품을 자유롭게 만들 수 있습니다."
+    },
+    "useOfService": {
+      "title": "서비스 사용",
+      "description": "Parsertime이 오픈소스이지만, 당사의 호스팅 서비스를 사용할 때 다음에 동의합니다:",
+      "list1": "오버워치 스크림 분석이라는 의도된 목적으로 서비스를 사용하기;",
+      "list2": "당사 서버에 과부하를 주거나 방해하지 않기;",
+      "list3": "다른 사용자를 존중하고 적절한 행동을 유지하기;",
+      "list4": "불법적이거나 유해한 활동에 서비스를 사용하지 않기."
+    },
+    "userAccounts": {
+      "title": "사용자 계정",
+      "description": "당사와 계정을 생성할 때 정확하고 완전하며 항상 최신 상태인 정보를 제공해야 합니다. 귀하는 다음에 대해 책임집니다:",
+      "list1": "비밀번호를 보호하고 귀하의 계정에서 발생하는 모든 활동에 대해 책임지기;",
+      "list2": "보안 위반이나 계정의 무단 사용을 인지하는 즉시 당사에 즉시 알리기;",
+      "list3": "계정 정보가 정확하고 최신 상태로 유지되도록 하기."
+    },
+    "prohibitedUses": {
+      "title": "금지된 사용",
+      "description": "다음 목적으로 당사 서비스를 사용할 수 없습니다:",
+      "list1": "불법적인 목적이나 다른 사람에게 불법 행위를 수행하도록 유도하기;",
+      "list2": "국제, 연방, 주 또는 지방 규정, 규칙, 법률 또는 조례를 위반하기;",
+      "list3": "괴롭힘, 학대, 모욕, 해를 끼치거나, 명예훼손, 중상, 경멸, 위협 또는 차별하기;",
+      "list4": "거짓이거나 오해의 소지가 있는 정보를 제출하거나 서비스의 정상적인 기능을 방해하기;",
+      "list5": "당사 시스템이나 다른 사용자의 계정에 무단으로 접근하려고 시도하기.",
+      "list6": "NSFW(부적절) 콘텐츠, 포르노, 성적으로 노골적이거나 성인용 콘텐츠를 업로드, 게시 또는 공유하기."
+    },
+    "abuseAndMisuse": {
+      "title": "남용 및 오용",
+      "description": "당사는 서비스를 남용하거나 오용하는 사용자에 대해 조치를 취할 권리를 보유합니다:",
+      "list1": "이 약관을 위반한 경우 계정이 정지되거나 해지될 수 있습니다;",
+      "list2": "남용을 방지하기 위해 속도 제한이나 기타 기술적 조치를 구현할 수 있습니다;",
+      "list3": "반복적인 위반은 서비스에서 영구적으로 차단될 수 있습니다."
+    },
+    "disclaimers": {
+      "title": "면책 조항",
+      "description": "이 웹사이트의 정보는 '있는 그대로' 제공됩니다. 법률에서 허용하는 최대 범위까지, 당사는 웹사이트 및 이 웹사이트 사용과 관련된 모든 표현, 보증, 조건 및 약관을 제외합니다."
+    },
+    "limitationOfLiability": {
+      "title": "책임의 제한",
+      "description": "어떠한 경우에도 Parsertime이나 그 기여자들은 서비스 사용으로 인한 간접적, 부수적, 특별, 결과적 또는 징벌적 손해, 이익 손실, 데이터, 사용, 평판 또는 기타 무형 손실을 포함하되 이에 국한되지 않는 손해에 대해 책임지지 않습니다."
+    },
+    "termination": {
+      "title": "해지",
+      "description": "당사는 단독 재량에 따라 사전 통지나 책임 없이 약관 위반을 포함하되 이에 국한되지 않는 어떠한 이유로든 계정을 해지하거나 정지하고 서비스 접근을 즉시 차단할 수 있습니다."
+    },
+    "governingLaw": {
+      "title": "준거법",
+      "description": "이 약관은 법률 충돌 조항에 관계없이 미국 법률에 따라 해석되고 적용됩니다. 이 약관의 권리나 조항을 시행하지 않는 것은 해당 권리의 포기로 간주되지 않습니다."
+    },
+    "changesToTerms": {
+      "title": "약관 변경",
+      "description": "당사는 단독 재량에 따라 언제든지 이 약관을 수정하거나 교체할 권리를 보유합니다. 수정사항이 중요한 경우, 새로운 약관이 효력을 발생하기 전에 최소 30일 전에 통지하겠습니다."
+    },
+    "contactUs": {
+      "title": "연락처 정보",
+      "description": "이 서비스 이용약관에 대한 질문이 있으시면 <link>legal@lux.dev</link>로 연락해 주십시오."
+    }
+  },
   "notFound": {
     "404": "404",
     "header": "페이지를 찾을 수 없습니다",
@@ -1983,5 +2093,22 @@
       "demo": "Parsertime의 데모를 보고 계십니다. 가입하려면 여기를 클릭하세요.",
       "dismiss": "닫기"
     }
+  },
+  "notifications": {
+    "title": "알림",
+    "mark-all-as-read": "모두 읽음으로 표시",
+    "view-all-notifications": "모든 알림 보기",
+    "no-notifications": "알림이 없습니다.",
+    "unread-notifications": "읽지 않은 알림이 {count, plural, =0 {없습니다} =1 {하나} other {개}}",
+    "notifications": "알림 ({count, plural, =0 {읽지 않은 알림 없음} =1 {읽지 않은 알림 하나} other {읽지 않은 알림}})",
+    "mark-all-as-read-error": "모두 읽음으로 표시 실패",
+    "mark-as-read-error": "읽음으로 표시 실패",
+    "error-loading": "알림 로딩 오류",
+    "marking-all-as-read": "업데이트 중...",
+    "mark-as-read": "읽음으로 표시",
+    "delete": "삭제",
+    "delete-error": "알림 삭제 실패",
+    "notification-created": "알림 생성 성공",
+    "create-notification-error": "알림 생성 실패"
   }
 }

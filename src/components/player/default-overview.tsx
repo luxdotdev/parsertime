@@ -1,4 +1,4 @@
-import Statistics from "@/components/player/statistics";
+import { Statistics } from "@/components/player/statistics";
 import {
   Card,
   CardContent,
@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import CardIcon from "@/components/ui/card-icon";
+import { CardIcon } from "@/components/ui/card-icon";
 import { getPlayerFinalStats } from "@/data/scrim-dto";
 import prisma from "@/lib/prisma";
 import {
@@ -97,7 +97,7 @@ export async function DefaultOverview({
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("minutes", {
                 time: ((finalRound?.match_time ?? 0) / 60).toFixed(2),
               })}
@@ -126,7 +126,7 @@ export async function DefaultOverview({
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("fletaDescription")}
             </p>
           </CardFooter>
@@ -151,7 +151,7 @@ export async function DefaultOverview({
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("firstPickDescription", {
                 fights: fights.length,
                 player: playerNameDecoded,
@@ -177,7 +177,7 @@ export async function DefaultOverview({
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("firstDeathDescription", {
                 fights: fights.length,
                 player: playerNameDecoded,

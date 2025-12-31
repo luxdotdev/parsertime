@@ -1,15 +1,16 @@
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
+import { unauthorized } from "next/navigation";
 
 export async function GET() {
   const session = await auth();
 
   if (!session) {
     Logger.warn("Unauthorized request to get teams API");
-    return new Response("Unauthorized", { status: 401 });
+    unauthorized();
   }
 
   const userId = await getUser(session?.user?.email);
@@ -29,6 +30,7 @@ export async function GET() {
         },
         { managers: { some: { userId: userId?.id } } },
       ],
+      id: { not: 0 },
     },
   });
 

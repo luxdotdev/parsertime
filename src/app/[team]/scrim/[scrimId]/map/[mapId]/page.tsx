@@ -5,28 +5,31 @@ import { GuestNav } from "@/components/guest-nav";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ComparePlayers } from "@/components/map/compare-players";
 import { DefaultOverview } from "@/components/map/default-overview";
+import { HeroBans } from "@/components/map/hero-bans";
 import { Killfeed } from "@/components/map/killfeed";
 import { MapEvents } from "@/components/map/map-events";
-import PlayerSwitcher from "@/components/map/player-switcher";
+import { PlayerSwitcher } from "@/components/map/player-switcher";
+import { MobileNav } from "@/components/mobile-nav";
+import { Notifications } from "@/components/notifications";
+import { ReplayCode } from "@/components/scrim/replay-code";
 import { ModeToggle } from "@/components/theme-switcher";
+import { TipTap } from "@/components/tiptap/tiptap";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserNav } from "@/components/user-nav";
 import { getMostPlayedHeroes } from "@/data/player-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { translateMapName } from "@/lib/utils";
-import { SearchParams } from "@/types/next";
-import { Metadata } from "next";
+import { getColorblindMode, translateMapName } from "@/lib/utils";
+import type { PagePropsWithLocale } from "@/types/next";
+import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
-type Props = {
-  params: { team: string; scrimId: string; mapId: string; locale: string };
-  searchParams: SearchParams;
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(
+  props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]">
+): Promise<Metadata> {
+  const params = await props.params;
   const mapId = decodeURIComponent(params.mapId);
   const t = await getTranslations({
     locale: params.locale,
@@ -42,7 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
   });
 
-  const translatedMapName = await translateMapName(mapName?.map_name || "Map");
+  const translatedMapName = await translateMapName(mapName?.map_name ?? "Map");
 
   return {
     title: t("title", { mapName: translatedMapName }),
@@ -65,48 +68,66 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function MapDashboardPage({ params }: Props) {
+export default async function MapDashboardPage(
+  props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]">
+) {
+  const params = await props.params;
   const id = parseInt(params.mapId);
   const session = await auth();
   const user = await getUser(session?.user?.email);
   const t = await getTranslations("mapPage");
 
-  const mostPlayedHeroes = await getMostPlayedHeroes(id);
+  const { team1, team2 } = await getColorblindMode(user?.id ?? "");
 
-  const mapName = await prisma.matchStart.findFirst({
-    where: {
-      MapDataId: id,
-    },
-    select: {
-      map_name: true,
-    },
-  });
+  const [mostPlayedHeroes, mapDetails, map, visibility, heroBans, noteContent] =
+    await Promise.all([
+      getMostPlayedHeroes(id),
+      prisma.matchStart.findFirst({
+        where: { MapDataId: id },
+        select: { map_name: true, team_1_name: true },
+      }),
+      prisma.map.findFirst({
+        where: { id },
+        select: { replayCode: true },
+      }),
+      prisma.scrim.findFirst({
+        where: { id: parseInt(params.scrimId) },
+        select: { guestMode: true },
+      }),
+      prisma.heroBan.findMany({
+        where: { MapDataId: id },
+      }),
+      prisma.note.findFirst({
+        where: {
+          scrimId: parseInt(params.scrimId),
+          MapDataId: id,
+        },
+        select: { content: true },
+      }),
+    ]);
 
-  const visibility = (await prisma.scrim.findFirst({
-    where: {
-      id: parseInt(params.scrimId),
-    },
-    select: {
-      guestMode: true,
-    },
-  })) ?? { guestMode: false };
-
-  const translatedMapName = await translateMapName(mapName?.map_name || "Map");
+  const translatedMapName = await translateMapName(
+    mapDetails?.map_name ?? "Map"
+  );
 
   return (
     <div className="flex-col md:flex">
       <div className="border-b">
         <div className="hidden h-16 items-center px-4 md:flex">
           <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
-          <MainNav className="mx-6" />
+          <MainNav className="mx-6 hidden lg:block" />
+          <MobileNav className="block pl-2 lg:hidden" session={session} />
           <div className="ml-auto flex items-center space-x-4">
             <Search user={user} />
             <ModeToggle />
             <LocaleSwitcher />
             {session ? (
-              <UserNav />
+              <>
+                <Notifications />
+                <UserNav />
+              </>
             ) : (
-              <GuestNav guestMode={visibility.guestMode} />
+              <GuestNav guestMode={visibility?.guestMode ?? false} />
             )}
           </div>
         </div>
@@ -116,9 +137,12 @@ export default async function MapDashboardPage({ params }: Props) {
             <ModeToggle />
             <LocaleSwitcher />
             {session ? (
-              <UserNav />
+              <>
+                <Notifications />
+                <UserNav />
+              </>
             ) : (
-              <GuestNav guestMode={visibility.guestMode} />
+              <GuestNav guestMode={visibility?.guestMode ?? false} />
             )}
           </div>
         </div>
@@ -126,7 +150,7 @@ export default async function MapDashboardPage({ params }: Props) {
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div>
           <h4 className="text-gray-600 dark:text-gray-400">
-            <Link href={`/${params.team}/scrim/${params.scrimId}`}>
+            <Link href={`/${params.team}/scrim/${params.scrimId}` as Route}>
               &larr; {t("back")}
             </Link>
           </h4>
@@ -135,6 +159,15 @@ export default async function MapDashboardPage({ params }: Props) {
           <h2 className="text-3xl font-bold tracking-tight">
             {translatedMapName}
           </h2>
+          <HeroBans
+            heroBans={heroBans}
+            team1Name={mapDetails?.team_1_name ?? "Team 1"}
+          />
+        </div>
+        <div className="font-semibold tracking-tight text-white">
+          {map?.replayCode && (
+            <ReplayCode replayCode={map?.replayCode ?? ""} subtitle={true} />
+          )}
         </div>
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList>
@@ -150,21 +183,27 @@ export default async function MapDashboardPage({ params }: Props) {
               {t("tabs.events")}
             </TabsTrigger>
             <TabsTrigger value="compare">{t("tabs.compare")}</TabsTrigger>
+            <TabsTrigger value="notes">{t("tabs.notes")}</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
-            <DefaultOverview id={id} />
+            <DefaultOverview id={id} team1Color={team1} team2Color={team2} />
           </TabsContent>
           <TabsContent value="killfeed" className="space-y-4">
-            <Killfeed id={id} />
+            <Killfeed id={id} team1Color={team1} team2Color={team2} />
           </TabsContent>
           <TabsContent value="charts" className="space-y-4">
             <MapCharts id={id} />
           </TabsContent>
           <TabsContent value="events" className="space-y-4">
-            <MapEvents id={id} />
+            <MapEvents id={id} team1Color={team1} team2Color={team2} />
           </TabsContent>
           <TabsContent value="compare" className="space-y-4">
             <ComparePlayers id={id} />
+          </TabsContent>
+          <TabsContent value="notes" className="space-y-4">
+            <div className="mx-auto py-8">
+              <TipTap noteContent={noteContent?.content ?? ""} />
+            </div>
           </TabsContent>
         </Tabs>
       </div>

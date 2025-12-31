@@ -17,13 +17,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { User } from "@prisma/client";
+import type { User } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -60,18 +60,15 @@ export function BugReportForm({
     });
 
     if (res.ok) {
-      toast({
-        title: t("successToast.title"),
+      toast.success(t("successToast.title"), {
         description: t("successToast.description"),
         duration: 5000,
       });
       setReportDialogOpen(false);
     } else {
-      toast({
-        title: t("errorToast.title"),
+      toast.error(t("errorToast.title"), {
         description: t("errorToast.description"),
         duration: 5000,
-        variant: "destructive",
       });
     }
 

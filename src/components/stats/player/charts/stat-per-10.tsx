@@ -1,9 +1,10 @@
 "use client";
 
 import { CardContent, CardFooter } from "@/components/ui/card";
-import { NonMappableStat, Stat } from "@/lib/player-charts";
+import { useColorblindMode } from "@/hooks/use-colorblind-mode";
+import type { NonMappableStat, Stat } from "@/lib/player-charts";
 import { cn, format, round, toMins } from "@/lib/utils";
-import { PlayerStat, Scrim } from "@prisma/client";
+import type { PlayerStat, Scrim } from "@prisma/client";
 import { TrendingDownIcon, TrendingUpIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
@@ -13,11 +14,11 @@ import {
   LineChart,
   ResponsiveContainer,
   Tooltip,
-  TooltipProps,
+  type TooltipProps,
   XAxis,
   YAxis,
 } from "recharts";
-import {
+import type {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
@@ -33,12 +34,14 @@ function CustomTooltip({
   payload,
   label,
 }: TooltipProps<ValueType, NameType>) {
-  if (active && payload && payload.length) {
+  const { team1 } = useColorblindMode();
+
+  if (active && payload?.length) {
     return (
-      <div className="z-50 overflow-hidden rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
+      <div className="bg-primary text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 overflow-hidden rounded-md px-3 py-1.5 text-xs">
         <h3 className="text-base font-bold">{label}</h3>
         <p className="text-sm">
-          <span className="text-blue-500">
+          <span style={{ color: team1 }}>
             {(payload[0].value as number).toFixed(2)}
           </span>
         </p>
@@ -76,6 +79,7 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
   better,
 }: Props<T>) {
   const t = useTranslations("statsPage.playerStats");
+  const { team1 } = useColorblindMode();
 
   // We want to merge the stat values when the date is the same
   // Then we want to get the value per 10 minutes
@@ -145,16 +149,16 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
             <Line
               type="monotone"
               dataKey="pv"
-              stroke="#3b82f6"
+              stroke={team1}
               activeDot={{ r: 8 }}
-              name={t(`stats.${stat}`)}
+              name={t(`stats.${stat}` as never)}
             />
           </LineChart>
         </ResponsiveContainer>
       </CardContent>
       <CardFooter>
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-1 text-foreground">
+          <div className="text-foreground inline-flex items-center gap-1">
             <p>
               {t.rich("statPer10.footer", {
                 span: (chunks) => (
@@ -185,7 +189,7 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
               </span>
             </p>
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {t("statPer10.avg")}{" "}
             <span className="text-foreground">{format(round(avg))}</span>{" "}
             {t("statPer10.max")}{" "}

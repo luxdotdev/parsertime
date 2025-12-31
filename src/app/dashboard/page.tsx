@@ -1,23 +1,20 @@
-import { AdminScrimView } from "@/components/dashboard/admin-scrim-view";
-import { ScrimList } from "@/components/dashboard/scrim-list";
+import { ScrimPagination } from "@/components/dashboard/scrim-pagination";
 import { UpdateModalWrapper } from "@/components/dashboard/update-modal-wrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import { SearchParams } from "@/types/next";
+import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
-type Props = {
-  searchParams: SearchParams;
-};
+export async function generateMetadata(
+  props: PagePropsWithLocale<"/dashboard">
+): Promise<Metadata> {
+  const params = await props.params;
 
-export async function generateMetadata({
-  params: { locale },
-}: {
-  params: { locale: string };
-}): Promise<Metadata> {
+  const { locale } = params;
+
   const t = await getTranslations({
     locale,
     namespace: "dashboard.metadata",
@@ -44,7 +41,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function DashboardPage({ searchParams }: Props) {
+export default async function DashboardPage() {
   const session = await auth();
 
   const userData = await getUser(session?.user?.email);
@@ -66,10 +63,14 @@ export default async function DashboardPage({ searchParams }: Props) {
           </TabsList>
         )}
         <TabsContent value="overview" className="space-y-4">
-          <ScrimList searchParams={searchParams} />
+          <main>
+            <ScrimPagination seenOnboarding={userData?.seenOnboarding} />
+          </main>
         </TabsContent>
         <TabsContent value="admin" className="space-y-4">
-          <AdminScrimView />
+          <main>
+            <ScrimPagination isAdmin={true} seenOnboarding={true} />
+          </main>
         </TabsContent>
       </Tabs>
       <UpdateModalWrapper />

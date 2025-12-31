@@ -1,0 +1,116 @@
+import { SupporterHeart } from "@/components/profile/supporter-heart";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn, useTitleTranslation } from "@/lib/utils";
+import type { BillingPlan, Title } from "@prisma/client";
+import Image from "next/image";
+
+type ProfileHeaderProps = {
+  player: {
+    name: string;
+    image?: string | null;
+    bannerImage?: string | null;
+    title?: Title | null; // e.g. "Squire", "Grandmaster"
+    level?: number;
+    endorsementLevel?: number;
+    rankIcon?: string; // URL to rank icon
+    billingPlan: BillingPlan;
+    email?: string | null;
+  };
+  className?: string;
+};
+
+export function ProfileHeader({ player, className }: ProfileHeaderProps) {
+  const titleTranslation = useTitleTranslation(player.title!);
+
+  return (
+    <div
+      className={cn(
+        "bg-background relative w-full overflow-hidden rounded-lg border",
+        className
+      )}
+    >
+      {/* Banner Section */}
+      <AspectRatio ratio={21 / 3}>
+        <div className="relative h-full w-full bg-gradient-to-r from-blue-600 to-purple-600">
+          {player.bannerImage && (
+            <Image
+              src={player.bannerImage}
+              alt={`${player.name} banner`}
+              fill
+              className="object-cover"
+              priority
+            />
+          )}
+          <div className="absolute inset-0 bg-black/20" />
+        </div>
+      </AspectRatio>
+
+      {/* User Info Bar */}
+      <div className="relative px-8 pb-6">
+        <div className="-mt-12 flex flex-col items-start gap-6 sm:-mt-16 sm:flex-row sm:items-end">
+          {/* Avatar Section */}
+          <div className="relative">
+            <div className="border-background bg-background rounded-full border-4 p-1">
+              <Avatar className="border-muted h-32 w-32 rounded-full border-2">
+                <AvatarImage
+                  src={player.image ?? undefined}
+                  alt={player.name}
+                />
+                <AvatarFallback className="text-4xl font-bold">
+                  {player.name.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+          </div>
+
+          {/* Player Details */}
+          <div className="mb-2 flex flex-col space-y-1">
+            <div className="flex items-center gap-3">
+              <h1 className="text-foreground flex items-center gap-4 text-4xl font-black tracking-tighter uppercase italic">
+                {player.name}
+                <SupporterHeart
+                  billingPlan={player.billingPlan}
+                  className="h-6 w-6"
+                />
+              </h1>
+            </div>
+
+            {player.title && (
+              <div className="text-muted-foreground text-sm font-semibold tracking-widest uppercase">
+                {titleTranslation}
+              </div>
+            )}
+          </div>
+
+          {/* Rank/Extra Info (Right Side) */}
+          <div className="ml-auto hidden sm:block">
+            {/* Could put rank icon here */}
+            {player.email?.endsWith("@lux.dev") && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge
+                    variant="default"
+                    className="drop-shadow-[0_0_8px_rgba(100,104,240,0.5)]"
+                  >
+                    Employee Account
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent>
+                  This user is a verified employee of lux.dev LLC. Their account
+                  is made with their lux.dev email address.
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,4 +1,7 @@
-import { RangePicker, Timeframe } from "@/components/stats/player/range-picker";
+import {
+  RangePicker,
+  type Timeframe,
+} from "@/components/stats/player/range-picker";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
 import {
@@ -11,14 +14,16 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
-import { Kill, PlayerStat, Scrim } from "@prisma/client";
-import { Metadata } from "next";
+import type { PagePropsWithLocale } from "@/types/next";
+import type { Kill, PlayerStat, Scrim } from "@prisma/client";
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-type Props = { params: { playerName: string; locale: string } };
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(
+  props: PagePropsWithLocale<"/stats/[playerName]">
+): Promise<Metadata> {
+  const params = await props.params;
   const t = await getTranslations("statsPage.playerMetadata");
   const playerName = decodeURIComponent(params.playerName);
   const suffix = playerName.endsWith("s") ? "'" : "'s";
@@ -47,7 +52,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function PlayerStats({ params }: Props) {
+export default async function PlayerStats(
+  props: PagePropsWithLocale<"/stats/[playerName]">
+) {
+  const params = await props.params;
   const t = await getTranslations("statsPage.playerStats");
   const name = decodeURIComponent(params.playerName);
 
@@ -145,7 +153,7 @@ export default async function PlayerStats({ params }: Props) {
         getAllMapWinratesForPlayer(permittedScrimIds, name),
         getAllDeathsForPlayer(permittedScrimIds, name),
       ]);
-  } catch (e) {
+  } catch {
     return (
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
@@ -161,7 +169,7 @@ export default async function PlayerStats({ params }: Props) {
               <div className="text-center">
                 <Link
                   href="/stats"
-                  className="text-base font-normal text-muted-foreground"
+                  className="text-muted-foreground text-base font-normal"
                 >
                   &larr; {t("back")}
                 </Link>

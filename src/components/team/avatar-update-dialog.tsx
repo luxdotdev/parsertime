@@ -7,20 +7,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { toast } from "@/components/ui/use-toast";
-import Logger from "@/lib/logger";
-import { Team } from "@prisma/client";
+import { Logger } from "@/lib/logger";
+import type { Team } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { upload } from "@vercel/blob/client";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { startTransition, useCallback, useState } from "react";
-import Cropper, { Area } from "react-easy-crop";
+import Cropper, { type Area } from "react-easy-crop";
+import { toast } from "sonner";
 
 async function getCroppedImg(
   file: File,
-  pixelCrop: { x: number; y: number; width: number; height: number },
-  rotation = 0
+  pixelCrop: { x: number; y: number; width: number; height: number }
 ): Promise<Blob> {
   const image = new Image();
   const canvas = document.createElement("canvas");
@@ -112,16 +111,14 @@ export function AvatarUpdateDialog({
         });
 
         if (res.ok) {
-          toast({
-            title: t("avatar.handleCrop.title"),
+          toast.success(t("avatar.handleCrop.title"), {
             description: t("avatar.handleCrop.description"),
             duration: 5000,
           });
           setIsOpen(false);
           router.refresh();
         } else {
-          toast({
-            title: t("avatar.handleCrop.errorTitle"),
+          toast.error(t("avatar.handleCrop.errorTitle"), {
             description: t("avatar.handleCrop.errorDescription1", {
               res: `${await res.text()} (${res.status})`,
             }),
@@ -129,8 +126,7 @@ export function AvatarUpdateDialog({
           });
         }
       } catch (e) {
-        toast({
-          title: t("avatar.handleCrop.errorTitle"),
+        toast.error(t("avatar.handleCrop.errorTitle"), {
           description: t("avatar.handleCrop.errorDescription2"),
           duration: 5000,
         });

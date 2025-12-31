@@ -1,9 +1,10 @@
 "use client";
 
 import { CardContent, CardFooter } from "@/components/ui/card";
-import { Winrate } from "@/data/scrim-dto";
+import type { Winrate } from "@/data/scrim-dto";
+import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import { cn, toKebabCase, toTitleCase, useMapNames } from "@/lib/utils";
-import { MapName, mapNameToMapTypeMapping } from "@/types/map";
+import { type MapName, mapNameToMapTypeMapping } from "@/types/map";
 import { $Enums } from "@prisma/client";
 import { useTranslations } from "next-intl";
 import {
@@ -13,11 +14,11 @@ import {
   Legend,
   ResponsiveContainer,
   Tooltip,
-  TooltipProps,
+  type TooltipProps,
   XAxis,
   YAxis,
 } from "recharts";
-import {
+import type {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
@@ -67,7 +68,7 @@ function processMapWinrates(
   });
 
   const data: Data = Object.keys(mapData).map((mapName) => ({
-    name: toTitleCase(maps.get(toKebabCase(mapName)) || mapName),
+    name: toTitleCase(maps.get(toKebabCase(mapName)) ?? mapName),
     wins: mapData[mapName].wins,
     losses: mapData[mapName].losses,
   }));
@@ -81,23 +82,24 @@ function CustomTooltip({
   label,
 }: TooltipProps<ValueType, NameType>) {
   const t = useTranslations("statsPage.playerStats.mapWinrates");
+  const { team1, team2 } = useColorblindMode();
 
-  if (active && payload && payload.length) {
+  if (active && payload?.length) {
     const percentage =
       ((payload[0].value as number) /
         ((payload[0].value as number) + (payload[1].value as number))) *
       100;
 
     return (
-      <div className="z-50 overflow-hidden rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
+      <div className="bg-primary text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 overflow-hidden rounded-md px-3 py-1.5 text-xs">
         <h3 className="text-base font-bold">{label}</h3>
         <p className="text-sm">
           {t("tooltip.wins")}{" "}
-          <span className="text-blue-500">{payload[0].value as number}</span>
+          <span style={{ color: team1 }}>{payload[0].value as number}</span>
         </p>
         <p className="text-sm">
           {t("tooltip.losses")}{" "}
-          <span className="text-red-500">{payload[1].value as number}</span>
+          <span style={{ color: team2 }}>{payload[1].value as number}</span>
         </p>
         <p className="text-sm">
           {t("tooltip.percentage")}{" "}
@@ -122,6 +124,7 @@ export function MapWinsChart({ data }: Props) {
   const t = useTranslations("statsPage.playerStats.mapWinrates");
   const maps = useMapNames();
   const processedData = processMapWinrates(data, maps);
+  const { team1, team2 } = useColorblindMode();
 
   return (
     <>
@@ -149,19 +152,19 @@ export function MapWinsChart({ data }: Props) {
             <YAxis />
             <Tooltip content={<CustomTooltip />} />
             <Legend layout="vertical" verticalAlign="top" align="left" />
-            <Bar dataKey="wins" name={t("wins")} stackId="a" fill="#3b82f6" />
+            <Bar dataKey="wins" name={t("wins")} stackId="a" fill={team1} />
             <Bar
               dataKey="losses"
               name={t("losses")}
               stackId="a"
-              fill="#ef4444"
+              fill={team2}
               radius={[4, 4, 0, 0]}
             />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
       <CardFooter>
-        <p className="text-sm text-muted-foreground">{t("footer")}</p>
+        <p className="text-muted-foreground text-sm">{t("footer")}</p>
       </CardFooter>
     </>
   );

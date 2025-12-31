@@ -1,15 +1,22 @@
 "use client";
 
 import {
-  Form,
-  FormDescription,
-  FormField,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+  FieldSet,
+} from "@/components/ui/field";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import { Link } from "@/components/ui/link";
-import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowRight, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -40,34 +47,46 @@ export function Searchbar() {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="username"
-          render={({ field }) => (
-            <Input
-              {...field}
-              placeholder={t("placeholder")}
-              className="h-12 text-lg"
-            />
-          )}
-        />
-        <FormDescription>
-          {t.rich("description", {
-            span: (chunks) => <span className="font-semibold">{chunks}</span>,
-          })}
-        </FormDescription>
-        <FormMessage />
-      </form>
-
-      <div className="p-1" />
-
-      <Link href="/stats/hero" className="text-sm text-foreground">
-        {t("link")} &rarr;
-      </Link>
-
-      <Separator />
-    </Form>
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <FieldGroup>
+        <FieldSet>
+          <Field>
+            <FieldLabel htmlFor="username">{t("placeholder")}</FieldLabel>
+            <InputGroup className="max-w-xl">
+              <InputGroupInput
+                id="username"
+                placeholder={t("placeholder")}
+                className="h-12 text-lg"
+                {...form.register("username")}
+              />
+              <InputGroupAddon>
+                <Search />
+              </InputGroupAddon>
+              <InputGroupAddon align="inline-end">
+                <InputGroupButton
+                  type="submit"
+                  onClick={() => form.handleSubmit(onSubmit)}
+                >
+                  Search
+                  <ArrowRight />
+                </InputGroupButton>
+              </InputGroupAddon>
+            </InputGroup>
+            <FieldDescription>
+              {t.rich("description", {
+                span: (chunks) => (
+                  <span className="font-semibold">{chunks}</span>
+                ),
+              })}
+            </FieldDescription>
+          </Field>
+          <FieldSeparator>
+            <Link href="/stats/hero" className="text-foreground text-sm">
+              {t("link")} &rarr;
+            </Link>
+          </FieldSeparator>
+        </FieldSet>
+      </FieldGroup>
+    </form>
   );
 }

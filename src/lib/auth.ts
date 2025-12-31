@@ -2,25 +2,26 @@ import MagicLinkEmail from "@/components/email/magic-link";
 import UserOnboardingEmail from "@/components/email/onboarding";
 import { getScrim, getUserViewableScrims } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
-import { sendEmail } from "@/lib/email";
+import { email } from "@/lib/email";
 import { createShortLink } from "@/lib/link-service";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
+import { isTaggedError } from "@/lib/utils";
 import {
   newSuspiciousActivityWebhookConstructor,
   newUserWebhookConstructor,
   sendDiscordWebhook,
 } from "@/lib/webhooks";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { $Enums, User } from "@prisma/client";
+import { $Enums, type User } from "@prisma/client";
 import { render } from "@react-email/render";
 import { Ratelimit } from "@upstash/ratelimit";
 import { track } from "@vercel/analytics/server";
 import { get } from "@vercel/edge-config";
 import { kv } from "@vercel/kv";
 import { createHash, randomBytes } from "crypto";
-import NextAuth, { NextAuthConfig } from "next-auth";
+import NextAuth, { type NextAuthConfig } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
@@ -30,6 +31,31 @@ const isProd = process.env.NODE_ENV === "production";
 const isPreview = process.env.VERCEL_ENV === "preview";
 
 export type Availability = "public" | "private";
+
+function handleEmailError(error: unknown) {
+  if (isTaggedError(error)) {
+    switch (error._tag) {
+      case "ValidationError":
+        throw new Error("Invalid email arguments");
+      case "ConfigurationError":
+        throw new Error(
+          "Configuration error with email service. Please contact support."
+        );
+      case "RateLimitError":
+        throw new Error(
+          "Rate limit exceeded for sending email. Try again later."
+        );
+      case "EmailSendError":
+        throw new Error(
+          "Error sending email with email service. Please contact support."
+        );
+      default:
+        throw new Error("Unknown error sending email. Please contact support.");
+    }
+  } else {
+    throw new Error("Unknown error sending email");
+  }
+}
 
 export const config = {
   adapter: PrismaAdapter(prisma),
@@ -57,27 +83,26 @@ export const config = {
       server: "",
       maxAge: 60 * 10,
       options: {},
-      async sendVerificationRequest({ identifier: email, url }) {
-        if (!isEmail(email)) {
+      async sendVerificationRequest({ identifier: userEmail, url }) {
+        if (!isEmail(userEmail)) {
           throw new Error("Invalid email address");
         }
 
         const shortLink = await createShortLink(url);
 
-        const emailHtml = render(
-          MagicLinkEmail({ magicLink: shortLink, username: email })
+        const emailHtml = await render(
+          MagicLinkEmail({ magicLink: shortLink, username: userEmail })
         );
 
         try {
-          await sendEmail({
-            to: email,
+          await email.sendEmail({
+            to: userEmail,
             from: "noreply@lux.dev",
             subject: "Sign in to Parsertime",
             html: emailHtml,
           });
-        } catch (e) {
-          Logger.error("Error sending email", e);
-          throw new Error("Error sending email");
+        } catch (error) {
+          handleEmailError(error);
         }
 
         await track("Email Sent", { type: "Magic Link" });
@@ -85,7 +110,7 @@ export const config = {
     },
   ],
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
+    async signIn({ user }) {
       if (!isProd) return true; // allow all sign ins in dev
 
       if (!user.email) return false;
@@ -130,6 +155,7 @@ export const config = {
       if (!success) {
         Logger.log("Rate limit exceeded for sign in attempt", identifier);
 
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const userObj = {
           name: user.name ?? "Unknown",
           email: user.email ?? "unknown",
@@ -160,20 +186,19 @@ export const config = {
         // Track new user signups with Vercel Analytics
         await track("New User", { email: user.email ?? "unknown" });
 
-        const emailHtml = render(
+        const emailHtml = await render(
           UserOnboardingEmail({ name: user.name ?? "user", email: user.email! })
         );
 
         try {
-          await sendEmail({
+          await email.sendEmail({
             to: user.email!,
             from: "noreply@lux.dev",
             subject: `Welcome to Parsertime!`,
             html: emailHtml,
           });
-        } catch (e) {
-          Logger.error("Error sending email", e);
-          throw new Error("Error sending email");
+        } catch (error) {
+          handleEmailError(error);
         }
       }
     },

@@ -1,5 +1,5 @@
 import { removeDuplicateRows, toHero, toTitleCase } from "@/lib/utils";
-import { PlayerStat } from "@prisma/client";
+import type { PlayerStat } from "@prisma/client";
 import { expect, test } from "vitest";
 
 test("should return a hero name that is lowercase and without accents", () => {

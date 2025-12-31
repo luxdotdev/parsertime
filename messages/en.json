@@ -75,10 +75,12 @@
     "symmetra": "Symmetra",
     "torbjorn": "Torbjörn",
     "tracer": "Tracer",
+    "vendetta": "Vendetta",
     "venture": "Venture",
     "widowmaker": "Widowmaker",
     "winston": "Winston",
     "wreckingball": "Wrecking Ball",
+    "wuyang": "Wuyang",
     "zarya": "Zarya",
     "zenyatta": "Zenyatta"
   },
@@ -214,15 +216,31 @@
       "ogTitle": "Sign Up | Parsertime",
       "ogDescription": "Sign up for an account. Parsertime is a tool for analyzing Overwatch scrims."
     },
+    "parsertime": "Parsertime",
     "signUp": "Sign Up",
     "signIn": "Sign In",
+    "welcomeBack": "Welcome back",
+    "oauthSignIn": "Login with your account below",
+    "email": "Email",
     "login": "Login",
+    "dontHaveAccount": "Don't have an account? <signUp>Sign up</signUp>",
+    "alreadyHaveAccount": "Already have an account? <signIn>Sign in</signIn>",
+    "loginWithDiscord": "Login with Discord",
+    "loginWithGoogle": "Login with Google",
+    "loginWithGitHub": "Login with GitHub",
     "createAccount": "Create an account",
     "enterEmailCreateAccount": "Enter your email below to create your account",
     "enterEmailSignIn": "Enter your email below to sign in",
     "signInEmail": "Sign In with Email",
     "orContinueWith": "Or continue with",
-    "madeBy": "Made with ❤️ by lux.dev"
+    "byClickingContinue": "By clicking continue, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
+    "lastUsed": "Last used",
+    "provider": {
+      "discord": "Discord",
+      "google": "Google",
+      "github": "GitHub",
+      "email": "Email"
+    }
   },
   "dashboard": {
     "metadata": {
@@ -248,7 +266,8 @@
       "contact": "Contact",
       "docs": "Docs",
       "admin": "Admin",
-      "signOut": "Sign Out"
+      "signOut": "Sign Out",
+      "profile": "Profile"
     },
     "commandMenu": {
       "searchPlaceholder": "Type a command or search...",
@@ -333,7 +352,10 @@
       "select": "Select a filter",
       "oldToNew": "Oldest to Newest",
       "newToOld": "Newest to Oldest",
-      "search": "Search..."
+      "search": "Search...",
+      "noScrimsFound": "No scrims found matching your filters.",
+      "tryAdjustingFilters": "Try adjusting your search terms or filters.",
+      "searchDescription": "<strong>Tip:</strong> Improve your search results by using the following syntax: <code>team:teamname</code>, <code>creator:username</code>."
     },
     "pagination": {
       "previous": "Previous",
@@ -346,7 +368,12 @@
       "teams": "Teams",
       "settings": "Settings",
       "contact": "Contact",
-      "docs": "Docs"
+      "docs": "Docs",
+      "leaderboard": "Leaderboard",
+      "playerStats": "Player Stats",
+      "heroStats": "Hero Stats",
+      "compareStats": "Compare Players",
+      "teamStats": "Team Stats"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "Search team...",
@@ -380,6 +407,41 @@
       "description": "Click the button to create a scrim.",
       "question": "Unsure how to get the data for a scrim?",
       "documentation": "Check out our documentation here."
+    },
+    "tour": {
+      "title": "Dashboard-Tour",
+      "step1": {
+        "title": "Welcome to Parsertime!",
+        "description": "This tour will guide you through the main features of the dashboard. Let's get started!"
+      },
+      "step2": {
+        "title": "First Steps",
+        "description": "Everything starts here! Click the Create Scrim button to set up your first session. Don't worry, we'll guide you through the upload process next!"
+      },
+      "step3": {
+        "title": "Name your Scrim",
+        "description": "Give your scrim a name! Use something like 'Team A vs Team B' to keep things organized."
+      },
+      "step4": {
+        "title": "Assign a Team",
+        "description": "Select a team to share the scrim with. If you haven't created any teams yet, you can do so from the Teams page."
+      },
+      "step5": {
+        "title": "Set the Date",
+        "description": "Choose the date when the scrim took place. This helps keep your scrims organized chronologically."
+      },
+      "step6": {
+        "title": "Upload your first map",
+        "description": "Upload your Workshop Log (.xlsx or .txt) here. We'll process it and create your scrim."
+      },
+      "step7": {
+        "title": "Hero Bans (Optional)",
+        "description": "If your scrim had hero bans, you can add them here. This helps provide context upon reviewing the scrim."
+      },
+      "step8": {
+        "title": "All set!",
+        "description": "You're all set to start analyzing your scrim data!"
+      }
     },
     "addScrim": {
       "title": "Add a scrim...",
@@ -424,6 +486,18 @@
         "errorTitle": "Error",
         "errorDescription": "An error occurred: {res}. Please read the docs <here>here</here> to see if the error can be resolved."
       },
+      "dataCorruption": {
+        "warning": {
+          "title": "Data Corruption Detected",
+          "baseDescription": "Corrupted data detected. Attempting to fix automatically:",
+          "invalidMercyRez": "Invalid mercy_rez lines will be removed",
+          "asteriskValues": "Asterisk values will be replaced with 0"
+        },
+        "success": {
+          "title": "Scrim Created Successfully",
+          "description": "Corrupted data was automatically fixed and your scrim has been created successfully."
+        }
+      },
       "scrimName": "Scrim Name",
       "scrimPlaceholder": "New Scrim",
       "scrimDescription": "This is the name of the scrim. It will be displayed on the dashboard.",
@@ -447,7 +521,18 @@
       "mapName": "First Map",
       "mapDescription": "Upload the first map of the scrim. Only .xlsx and .txt files are accepted, and max file size is 1MB. You can add more maps after the scrim is created.",
       "submit": "Submit",
-      "submitting": "Submitting..."
+      "submitting": "Submitting...",
+      "heroBansName": "Hero Bans",
+      "heroBansDescription": "Add the heroes banned by each team. Ban order will be preserved.",
+      "addHeroBan": "Add Hero Ban",
+      "orderName": "Order",
+      "selectTeam": "Select team",
+      "team": "Team",
+      "hero": "Hero",
+      "selectHero": "Select hero",
+      "heroBanRequiredError": "A hero to ban is required.",
+      "banPositionRequiredError": "A ban order is required.",
+      "cancel": "Cancel"
     }
   },
   "updateModal": {
@@ -480,7 +565,7 @@
     },
     "addMap": {
       "title": "Add a map...",
-      "description": "Drag and drop or select a file to upload.",
+      "description": "or, <here>click to browse</here> (1MB max)",
       "addFile": "Add a file",
       "fileMessage": {
         "required": "File is required.",
@@ -494,7 +579,24 @@
         "createDescription": "Your map has been created successfully.",
         "errorTitle": "Error",
         "errorDescription": "An error occurred: {res}. Please read the docs <here>here</here> to see if the error can be resolved."
-      }
+      },
+      "dataCorruption": {
+        "warning": {
+          "title": "Data Corruption Detected",
+          "baseDescription": "Corrupted data detected. Attempting to fix automatically:",
+          "invalidMercyRez": "Invalid mercy_rez lines will be removed",
+          "asteriskValues": "Asterisk values will be replaced with 0"
+        },
+        "success": {
+          "title": "Map Added Successfully",
+          "description": "Corrupted data was automatically fixed and your map has been added successfully."
+        }
+      },
+      "submitting": "Submitting",
+      "submit": "Submit",
+      "addHeroBan": "Add Hero Ban",
+      "heroBansDescription": "Configure hero bans for this map. You can skip this step by clicking Submit without adding any bans.",
+      "heroBansTitle": "Add Hero Bans (Optional)"
     },
     "editScrim": {
       "back": "Back to scrim",
@@ -571,15 +673,18 @@
           "errorTitle": "Error",
           "errorDescription": "An error occurred: {res}"
         }
-      }
+      },
+      "scrimNotFound": "Scrim not found"
     },
     "replayCode": {
       "title": "Replay Code (click to copy)",
       "onClick": {
         "title": "Copied to clipboard!",
         "description": "The replay code has been copied to your clipboard."
-      }
-    }
+      },
+      "code": "Replay code: {replayCode}"
+    },
+    "viewStats": "View team stats"
   },
   "mapPage": {
     "mapMetadata": {
@@ -697,7 +802,7 @@
           "footer": "This chart shows the cumulative damage taken and healing received by round. The x-axis represents the round number, and the y-axis represents the cumulative damage taken or healing received.",
           "round": "Round {round}",
           "dmgTaken": "Damage Taken",
-          "healingReceived": "Healing Receieved"
+          "healingReceived": "Healing Received"
         },
         "dmgDoneDmgTaken": {
           "title": "Hero Damage Dealt vs Damage Taken",
@@ -705,6 +810,14 @@
           "round": "Round {round}",
           "dmgDone": "Damage Done",
           "dmgTaken": "Damage Taken"
+        },
+        "mvpScore": {
+          "title": "MVP Score",
+          "footer": "The MVP score is a calculation based on a player's statistics compared to the averages of all other players who have played the same hero in scrims. Hover over this card to see how the MVP score is calculated.",
+          "totalScore": "Total Score: {score}",
+          "per10Value": "{per10Value}/10min vs avg {heroAverage}",
+          "percentile": "{percentile, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} percentile",
+          "explanation": "The MVP score can be used to understand how a player is performing compared to similar players on their hero. The MVP stat does not take into account a player's performance compared to their teammates—it is a way to see who is having a stand-out performance compared to the global averages on their hero. MVP scores typically range between -100 and +100, with a normal distribution centered around 0."
         }
       },
       "charts": {
@@ -743,7 +856,12 @@
       "kills": "Kills",
       "charts": "Charts",
       "events": "Events",
-      "compare": "Compare"
+      "compare": "Compare",
+      "notes": "Notes"
+    },
+    "tiptap": {
+      "placeholder": "Write, format, and highlight your text below.",
+      "notes": "Notes"
     },
     "overview": {
       "matchTime": "Total Match Time",
@@ -962,9 +1080,18 @@
           "healingDealtPer10Min": "{num} healing dealt per 10 minutes",
           "healingReceived": "Healing Receieved",
           "healingReceivedNum": "{num} Healing Receieved",
-          "healingReceivedPer10Min": "{num} healing received per 10 minutes"
-        }
+          "healingReceivedPer10Min": "{num} healing received per 10 minutes",
+          "ratingTooltip": "Your hero SR is calculated based on map performance. For overall hero SR, hover over your player name in the statistics table on the map overview page.",
+          "unratedTooltip": "Play at least 60 seconds to be ranked",
+          "unplaced": "Unplaced"
+        },
+        "percentile": "{percentile, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} percentile",
+        "percentileExplanation": "{stat} performance in the top {percent}% of {hero} players",
+        "vsAverage": "vs avg {average}/10min"
       }
+    },
+    "heroBans": {
+      "bannedBy": "{hero} banned by {team}"
     }
   },
   "statsPage": {
@@ -1114,6 +1241,27 @@
         "damage": "Damage",
         "support": "Support"
       },
+      "heroFilter": {
+        "selectHeroes": "Select Heroes",
+        "allHeroes": "All Heroes",
+        "heroesSelected": "{count} heroes selected",
+        "searchHeroes": "Search heroes...",
+        "noHeroesFound": "No heroes found",
+        "quickSelect": "Quick Select",
+        "reset": "Reset",
+        "allTanks": "All Tanks",
+        "allDamage": "All Damage",
+        "allSupport": "All Support",
+        "hitscanDPS": "Hitscan DPS",
+        "flexDPS": "Flex DPS",
+        "groundTanks": "Ground Tanks",
+        "diveTanks": "Dive Tanks",
+        "flexSupports": "Flex Supports",
+        "mainSupports": "Main Supports",
+        "tank": "Tanks",
+        "damage": "Damage",
+        "support": "Support"
+      },
       "mostPlayed": {
         "title": "Most Played Heroes",
         "rank": "Rank",
@@ -1225,6 +1373,23 @@
         "hero_damage_dealt": "Hero Damage Dealt"
       }
     },
+    "compareStats": {
+      "title": "Compare Player Statistics",
+      "enterPlayerNames": "Enter Player Names",
+      "player1": "Player 1",
+      "player2": "Player 2",
+      "player1Placeholder": "Enter first player name",
+      "player2Placeholder": "Enter second player name",
+      "compare": "Compare",
+      "reset": "Reset",
+      "loading": "Loading player statistics...",
+      "errorLoading": "Error loading player data",
+      "errorPlayer1": "Failed to load Player 1 data",
+      "errorPlayer2": "Failed to load Player 2 data",
+      "errorBoth": " and ",
+      "enterPlayersPrompt": "Enter two player names above to compare their statistics",
+      "filters": "Filters"
+    },
     "heroStats": {
       "title": "Hero Stats",
       "description": "Select a hero to view their stats. Stats are aggregated from all scrims played.",
@@ -1328,6 +1493,17 @@
         "deaths": "Deaths",
         "hero_damage_dealt": "Hero Damage Dealt"
       }
+    },
+    "playerMetrics": {
+      "mvpScore": "Avg MVP Score",
+      "fletaDeadliftPercentage": "Fleta Deadlift %",
+      "firstPickPercentage": "First Pick %",
+      "firstDeathPercentage": "First Death %",
+      "fightReversalPercentage": "Fight Reversal %",
+      "killsPerUltimate": "Kills per Ultimate",
+      "averageUltChargeTime": "Avg Ult Charge Time",
+      "droughtTime": "Avg Drought Time",
+      "mapMVPCount": "Total Map MVPs"
     }
   },
   "teamPage": {
@@ -1523,7 +1699,14 @@
         "errorTitle": "Error",
         "errorDescription": "An error occurred: {res}"
       }
-    }
+    },
+    "teamMemberUsage": {
+      "title": "Usage Details",
+      "description": "Your team member usage is shown below. The usage is based on your billing plan and the number of teams you have created.",
+      "teamMemberCount": "Team Members",
+      "usage": "{current} of {allowed} used"
+    },
+    "viewStats": "View stats"
   },
   "settingsPage": {
     "metadata": {
@@ -1538,7 +1721,12 @@
     "sideNav": {
       "profile": "Profile",
       "linkedAccounts": "Linked Accounts",
-      "admin": "Admin"
+      "admin": "Admin",
+      "dashboard": "Dashboard",
+      "analytics": "Analytics",
+      "impersonateUser": "Impersonate User",
+      "auditLogs": "Audit Logs",
+      "billing": "Billing"
     },
     "profile": {
       "title": "Profile",
@@ -1552,6 +1740,23 @@
       "planUpgrade": "Upgrade your plan",
       "manageSubscription": "Manage your subscription"
     },
+    "billing": {
+      "title": "Billing",
+      "description": "Manage your billing settings and preferences.",
+      "planDescription": "Your current plan is the <plan>{billingPlan}</plan> plan.",
+      "billingPlan": {
+        "FREE": "Free",
+        "BASIC": "Basic",
+        "PREMIUM": "Premium"
+      },
+      "planUpgrade": "Upgrade your plan",
+      "manageSubscription": "Manage your subscription",
+      "teamCount": "Teams",
+      "teamMemberCount": "Team Members",
+      "scrimCount": "Scrims",
+      "viewOtherPlans": "View other plans",
+      "usage": "{current} of {allowed} used"
+    },
     "profileForm": {
       "minMessage": "Name must be at least 2 characters.",
       "maxMessage": "Name must not be longer than 30 characters.",
@@ -1560,6 +1765,10 @@
         "description": "Your profile has been successfully updated.",
         "errorTitle": "An error occurred",
         "errorDescription": "An error occurred: {res}"
+      },
+      "seenOnboarding": {
+        "title": "Seen Onboarding",
+        "description": "If enabled, you will not see the introduction the next time you visit the dashboard."
       },
       "username": {
         "title": "Username",
@@ -1584,7 +1793,47 @@
           }
         }
       },
-      "update": "Update profile"
+      "banner": {
+        "title": "Profile Banner",
+        "altText": "Profile banner",
+        "ariaLabel": "Banner upload",
+        "placeholder": "Click to upload banner",
+        "description": "This is your profile banner. Click on the banner to upload a custom one from your files.",
+        "editBanner": {
+          "title": "Edit Banner",
+          "description": "Upload and crop your banner image. Click save when you're done.",
+          "save": "Save Changes",
+          "updating": "Updating...",
+          "handleCrop": {
+            "title": "Banner updated successfully",
+            "description": "Your banner has been updated successfully.",
+            "errorTitle": "An error occurred",
+            "errorDescription1": "An error occurred: {res}",
+            "errorDescription2": "An error occurred while updating your banner. Please try again later or contact support."
+          }
+        }
+      },
+      "update": "Update profile",
+      "colorblindMode": {
+        "title": "Accessibility Settings",
+        "description": "Configure colorblind accessibility options to improve your experience",
+        "label": "Colorblind Mode",
+        "team1": "Team 1",
+        "team2": "Team 2",
+        "customTeamColors": "Custom Team Colors",
+        "customTeamColorsDescription": "Choose custom colors for each team",
+        "team1Color": "Team 1 Color",
+        "team2Color": "Team 2 Color"
+      },
+      "updating": "Updating...",
+      "battletag": {
+        "title": "Battletag",
+        "description": "This is the in-game username to associate your account with. Do not include the numbers after the hashtag."
+      },
+      "title": {
+        "title": "Title",
+        "description": "Select a title to use on your profile."
+      }
     },
     "linkedAccounts": {
       "title": "Linked Accounts",
@@ -1595,6 +1844,179 @@
       }
     },
     "admin": {
+      "impersonateUser": {
+        "title": "Impersonate User",
+        "description": "Impersonate a user to see the site as they do.",
+        "email": {
+          "title": "Email",
+          "description": "This is the email of the user you want to impersonate.",
+          "message": "Please enter a valid email address."
+        }
+      },
+      "audit-log": {
+        "title": "Recent User Actions",
+        "action-types": "Action Types",
+        "filter-label": "Filter by Action Type",
+        "clear-filters": "Clear All",
+        "user-email": "User Email: {userEmail}",
+        "target": "Target: {target}",
+        "search-user-email": "Search User Email",
+        "search-target": "Search Target",
+        "download": {
+          "button": "Download CSV",
+          "downloading": "Downloading...",
+          "filename": "audit-logs-{date}.csv",
+          "tooltip": "Downloads the currently filtered audit logs as a CSV file.",
+          "error": "Error downloading CSV: {error}",
+          "unknown-error": "Unknown error"
+        },
+        "table": {
+          "user-email": "User Email",
+          "action": "Action",
+          "target": "Target",
+          "details": "Details",
+          "date-time": "Date & Time",
+          "date-time-format": "{date} at {time}",
+          "no-logs-found": "No audit logs found matching your filters.",
+          "error-loading-logs": "Error loading audit logs"
+        },
+        "showing-logs": "Showing {count} logs.",
+        "hover": {
+          "user-email": "User Email",
+          "action": "Action",
+          "target": "Target",
+          "details": "Details",
+          "id": "ID: {id}",
+          "timestamp": "Timestamp",
+          "auto-generated": "This action was performed automatically by the system."
+        }
+      },
+      "dashboard": {
+        "title": "Admin Dashboard",
+        "description": "Manage users, content, and monitor platform activity",
+        "user-search": {
+          "title": "User Search",
+          "description": "Search for users with advanced filtering options"
+        },
+        "audit-log": {
+          "title": "Audit Log",
+          "description": "Recent actions performed by staff members"
+        },
+        "stats-cards": {
+          "total-users": {
+            "title": "Total Users",
+            "delta": "{delta} new users this month"
+          },
+          "user-growth": {
+            "title": "User Growth",
+            "delta": "{delta} vs {lastMonth} last month"
+          },
+          "scrim-activity": {
+            "title": "Scrim Activity",
+            "delta": "{delta} vs {lastMonth} last month"
+          },
+          "conversion-rate": {
+            "title": "Conversion Rate",
+            "delta": "{paidUsers} paid users"
+          },
+          "monthly-chart": {
+            "title": "Monthly User Registrations",
+            "description": "New user registrations over the last 12 months"
+          },
+          "low-trust-users": {
+            "title": "Low Trust Users",
+            "delta": "{delta} from last week"
+          },
+          "pending-reports": {
+            "title": "Pending Reports",
+            "delta": "{delta} from last week"
+          },
+          "images-pending-review": {
+            "title": "Images Pending Review",
+            "delta": "{delta} from last week"
+          }
+        }
+      },
+      "user-search": {
+        "metadata": {
+          "title": "User Search — Admin | Enter Queue",
+          "description": "Search for users with advanced filtering options"
+        },
+        "title": "User Search",
+        "description": "Search for users with advanced filtering options",
+        "search-placeholder": "Search by username or email...",
+        "filters": {
+          "title": "Filters",
+          "trust-score": "Trust Score Range",
+          "status": "User Status",
+          "select-status": "Select status",
+          "all-statuses": "All Statuses",
+          "verification-status": "Verification Status",
+          "select-verification-status": "Select verification status",
+          "all-users": "All Users",
+          "verified-only": "Verified Only",
+          "unverified-only": "Unverified Only",
+          "billing-plan": "Billing Plan",
+          "select-billing-plan": "Select billing plan",
+          "all-plans": "All Plans",
+          "join-date-range": "Join Date Range",
+          "reset-filters": "Reset Filters"
+        },
+        "table": {
+          "username": "Username",
+          "email": "Email",
+          "trust-score": "Trust Score",
+          "verification": "Verification Status",
+          "join-date": "Join Date",
+          "actions": "Actions",
+          "view-profile": "View Profile",
+          "edit-user": "Edit User",
+          "adjust-trust-score": "Adjust Trust Score",
+          "ban-user": "Ban User",
+          "unban-user": "Unban User",
+          "no-users-found": "No users found matching your filters.",
+          "open-menu": "Open Menu",
+          "error-loading-users": "Error loading users",
+          "status": "Status",
+          "banned": "Banned",
+          "active": "Active",
+          "name": "Name",
+          "billing-plan": "Billing Plan",
+          "role": "Role",
+          "email-verified": "Email Verified?",
+          "unverified": "Unverified",
+          "verified": "Verified"
+        },
+        "showing-users": "Showing {count} users."
+      },
+      "analytics": {
+        "title": "Analytics",
+        "description": "View detailed analytics and charts for user activity and growth.",
+        "userGrowth": {
+          "title": "User Growth Over Time",
+          "description": "Monthly user registration trends over the last 12 months"
+        },
+        "scrimActivity": {
+          "title": "Scrim Activity",
+          "description": "Daily scrim creation activity over the last 30 days"
+        },
+        "teamCreations": {
+          "title": "Team Creations",
+          "description": "Monthly team creation trends over the last 12 months"
+        },
+        "teamManagerDistribution": {
+          "title": "User Roles Distribution",
+          "description": "Percentage breakdown of regular users vs team managers"
+        },
+        "signupMethods": {
+          "title": "User Signup Methods",
+          "description": "Breakdown of how users signed up (OAuth providers vs email)"
+        },
+        "billingPlans": {
+          "title": "Billing Plan Distribution",
+          "description": "Breakdown of users by billing plan (Free, Basic, Premium)"
+        }
+      },
       "title": "Admin Settings",
       "description": "Manage admin settings and preferences.",
       "email": {
@@ -1917,6 +2339,12 @@
     }
   },
   "privacyPage": {
+    "metadata": {
+      "title": "Privacy Policy | Parsertime",
+      "description": "Privacy Policy for Parsertime - A tool for analyzing Overwatch scrims.",
+      "ogTitle": "Privacy Policy | Parsertime",
+      "ogDescription": "Privacy Policy for Parsertime - A tool for analyzing Overwatch scrims."
+    },
     "privacyPolicy": {
       "title": "Privacy Policy",
       "description": "At Parsertime, we are committed to maintaining the trust and confidence of our visitors to our web site. In particular, we want you to know that Parsertime is not in the business of selling, renting, or trading email lists with other companies and businesses for marketing purposes. In this Privacy Policy, we've provided detailed information on when and why we collect your personal information, how we use it, and how we keep it secure."
@@ -1962,6 +2390,85 @@
       "description": "For more information about our privacy practices, if you have questions, or if you would like to make a complaint, please contact us by email at <link>privacy@lux.dev</link>."
     }
   },
+  "termsPage": {
+    "metadata": {
+      "title": "Terms of Service | Parsertime",
+      "description": "Terms of Service for Parsertime - A tool for analyzing Overwatch scrims.",
+      "ogTitle": "Terms of Service | Parsertime",
+      "ogDescription": "Terms of Service for Parsertime - A tool for analyzing Overwatch scrims."
+    },
+    "termsOfService": {
+      "title": "Terms of Service",
+      "description": "These Terms of Service govern your use of Parsertime, an open source tool for analyzing Overwatch scrims. By accessing or using our service, you agree to be bound by these Terms."
+    },
+    "acceptance": {
+      "title": "Acceptance of Terms",
+      "description": "By accessing and using this website, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service."
+    },
+    "openSource": {
+      "title": "Open Source License",
+      "description": "Parsertime is released under the MIT License, which means:",
+      "list1": "The source code is freely available and can be modified, distributed, and used for any purpose;",
+      "list2": "There are no trademark restrictions - the name 'Parsertime' is not trademarked;",
+      "list3": "You are free to fork, modify, and create derivative works of the software."
+    },
+    "useOfService": {
+      "title": "Use of Service",
+      "description": "While Parsertime is open source, when using our hosted service you agree to:",
+      "list1": "Use the service for its intended purpose of analyzing Overwatch scrims;",
+      "list2": "Not attempt to overload or disrupt our servers;",
+      "list3": "Respect other users and maintain appropriate conduct;",
+      "list4": "Not use the service for any illegal or harmful activities."
+    },
+    "userAccounts": {
+      "title": "User Accounts",
+      "description": "When you create an account with us, you must provide information that is accurate, complete, and current at all times. You are responsible for:",
+      "list1": "Safeguarding the password and all activities that occur under your account;",
+      "list2": "Notifying us immediately upon becoming aware of any breach of security or unauthorized use of your account;",
+      "list3": "Ensuring that your account information remains accurate and up-to-date."
+    },
+    "prohibitedUses": {
+      "title": "Prohibited Uses",
+      "description": "You may not use our service:",
+      "list1": "For any unlawful purpose or to solicit others to perform unlawful acts;",
+      "list2": "To violate any international, federal, provincial, or state regulations, rules, laws, or local ordinances;",
+      "list3": "To harass, abuse, insult, harm, defame, slander, disparage, intimidate, or discriminate;",
+      "list4": "To submit false or misleading information or to interfere with the proper functioning of the service;",
+      "list5": "To attempt to gain unauthorized access to our systems or other users' accounts.",
+      "list6": "To upload, post, or share NSFW, pornographic, sexually explicit, or otherwise adult content."
+    },
+    "abuseAndMisuse": {
+      "title": "Abuse and Misuse",
+      "description": "We reserve the right to take action against users who abuse or misuse our service:",
+      "list1": "Accounts may be suspended or terminated for violations of these terms;",
+      "list2": "We may implement rate limiting or other technical measures to prevent abuse;",
+      "list3": "Repeated violations may result in permanent bans from the service."
+    },
+    "disclaimers": {
+      "title": "Disclaimers",
+      "description": "The information on this website is provided on an 'as is' basis. To the fullest extent permitted by law, we exclude all representations, warranties, conditions and terms relating to our website and the use of this website."
+    },
+    "limitationOfLiability": {
+      "title": "Limitation of Liability",
+      "description": "In no event shall Parsertime, nor its contributors, be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your use of the service."
+    },
+    "termination": {
+      "title": "Termination",
+      "description": "We may terminate or suspend your account and bar access to the service immediately, without prior notice or liability, under our sole discretion, for any reason whatsoever and without limitation, including but not limited to a breach of the Terms."
+    },
+    "governingLaw": {
+      "title": "Governing Law",
+      "description": "These Terms shall be interpreted and governed by the laws of the United States, without regard to its conflict of law provisions. Our failure to enforce any right or provision of these Terms will not be considered a waiver of those rights."
+    },
+    "changesToTerms": {
+      "title": "Changes to Terms",
+      "description": "We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days notice prior to any new terms taking effect."
+    },
+    "contactUs": {
+      "title": "Contact Information",
+      "description": "If you have any questions about these Terms of Service, please contact us at <link>legal@lux.dev</link>."
+    }
+  },
   "notFound": {
     "404": "404",
     "header": "Page not found",
@@ -1989,6 +2496,398 @@
     "banner": {
       "demo": "You are viewing a demo of Parsertime. Click here to sign up",
       "dismiss": "Dismiss"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "mark-all-as-read": "Mark all as read",
+    "view-all-notifications": "View all notifications",
+    "no-notifications": "No notifications",
+    "unread-notifications": "You have {count, plural, =0 {no unread notifications} =1 {one unread notification} other {unread notifications}}",
+    "notifications": "Notifications ({count, plural, =0 {no unread} =1 {one unread} other {unread}})",
+    "mark-all-as-read-error": "Failed to mark all as read",
+    "mark-as-read-error": "Failed to mark as read",
+    "error-loading": "Error loading notifications",
+    "marking-all-as-read": "Updating...",
+    "mark-as-read": "Mark as read",
+    "delete": "Delete",
+    "delete-error": "Failed to delete notification",
+    "notification-created": "Notification created successfully",
+    "create-notification-error": "Failed to create notification",
+    "error-loading-description": "Please try refreshing the page.",
+    "no-notifications-description": "You'll see notifications here when they arrive."
+  },
+  "dataCorruption": {
+    "warning": {
+      "title": "Data Corruption Detected",
+      "baseDescription": "Corrupted data detected. Attempting to fix automatically:",
+      "invalidMercyRez": "Invalid mercy_rez lines will be removed",
+      "asteriskValues": "Asterisk values will be replaced with 0"
+    }
+  },
+  "profilePage": {
+    "layoutMetadata": {
+      "title": "{playerName}'s Profile | Parsertime",
+      "description": "View {playerName}'s profile and stats on Parsertime.",
+      "ogTitle": "{playerName}'s Profile | Parsertime",
+      "ogDescription": "View {playerName}'s profile and stats on Parsertime.",
+      "ogImage": "{playerName}'s Profile"
+    }
+  },
+  "titles": {
+    "DEVELOPER": "Parsertime Developer",
+    "DEVELOPER-description": "Awarded to users who have contributed to the development of Parsertime.",
+    "EMPLOYEE": "lux.dev Employee",
+    "EMPLOYEE-description": "Awarded to users who are employees of lux.dev LLC.",
+    "BETA_TESTER": "Beta Tester",
+    "BETA_TESTER-description": "Awarded to users who have been added to the beta tester list.",
+    "DAY_ONE_USER": "Here Since the Beginning",
+    "DAY_ONE_USER-description": "For users who have been with us since the beginning. This title is awarded to users who have signed up before the launch date (April 14, 2024).",
+    "BASIC_PLAN_SUBSCRIBER": "Supporter",
+    "BASIC_PLAN_SUBSCRIBER-description": "For users who have subscribed to the basic plan. Subscribers are also rewarded with a pink heart icon next to their name.",
+    "PREMIUM_PLAN_SUBSCRIBER": "Premium Supporter",
+    "PREMIUM_PLAN_SUBSCRIBER-description": "For users who have subscribed to the premium plan. Subscribers are also rewarded with a gold heart icon next to their name.",
+    "VIP": "VIP",
+    "VIP-description": "Awarded to users who have contributed significantly to the Parsertime community.",
+    "HIGHEST_RANK_ON_A_HERO": "Achieved Greatness",
+    "HIGHEST_RANK_ON_A_HERO-description": "Awarded to users who have achieved the highest rank on a hero.",
+    "HIGHEST_AJAX_COUNT": "Ajax King",
+    "HIGHEST_AJAX_COUNT-description": "Awarded to users who have achieved the highest Ajax count.",
+    "HIGHEST_FLETA_DEADLIFT_PERCENTAGE": "Fleta's Disciple",
+    "HIGHEST_FLETA_DEADLIFT_PERCENTAGE-description": "Awarded to users who have achieved the highest Fleta deadlift percentage.",
+    "TOP_3_KILLS": "Serial Killer",
+    "TOP_3_KILLS-description": "Awarded to users who have achieved a spot on the top 3 kills leaderboard.",
+    "TOP_3_DAMAGE_DEALT": "Damage Dealer",
+    "TOP_3_DAMAGE_DEALT-description": "Awarded to users who have achieved a spot on the top 3 damage dealt leaderboard.",
+    "TOP_3_HEALING": "Ultimate Medic",
+    "TOP_3_HEALING-description": "Awarded to users who have achieved a spot on the top 3 healing leaderboard.",
+    "TOP_3_DAMAGE_BLOCKED": "Damage Sponge",
+    "TOP_3_DAMAGE_BLOCKED-description": "Awarded to users who have achieved a spot on the top 3 damage blocked leaderboard.",
+    "TOP_3_DEATHS": "Feeder",
+    "TOP_3_DEATHS-description": "Awarded to users who have achieved a spot on the top 3 deaths leaderboard.",
+    "TOP_3_TIME_PLAYED": "Chronically Online",
+    "TOP_3_TIME_PLAYED-description": "Awarded to users who have achieved a spot on the top 3 time played leaderboard. Go outside!"
+  },
+  "leaderboardPage": {
+    "metadata": {
+      "title": "Leaderboard | Parsertime",
+      "description": "View the highest ranked players for each hero.",
+      "ogTitle": "Leaderboard | Parsertime",
+      "ogDescription": "View the highest ranked players for each hero.",
+      "ogImage": "Leaderboard"
+    }
+  },
+  "teamStats": {
+    "fightStats": {
+      "title": "Team Fight Statistics",
+      "description": "Analyzed across {count} total fights",
+      "noData": "No fight data available yet. Upload scrims to see team fight statistics.",
+      "overallWinrate": "Overall Fight Winrate",
+      "record": "{wins}W - {losses}L",
+      "firstPickWinrate": "First Pick Winrate",
+      "firstPickCount": "In {count} fights with first pick",
+      "firstDeathWinrate": "First Death Winrate",
+      "firstDeathCount": "In {count} fights losing first pick",
+      "firstUltWinrate": "First Ultimate Winrate",
+      "firstUltCount": "In {count} fights using first ult",
+      "dryFights": "Dry Fight Rate",
+      "dryFightDetails": "{count} dry fights ({winrate}% winrate)",
+      "avgUltsPerFight": "Avg Ults Per Fight",
+      "avgUltsDescription": "In {count} non-dry fights"
+    }
+  },
+  "teamStatsPage": {
+    "layoutMetadata": {
+      "defaultTeam": "Team",
+      "title": "{teamName} Stats | Parsertime",
+      "description": "Stats for {teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{teamName} Stats | Parsertime",
+      "ogDescription": "Stats for {teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogImage": "{teamName} Stats"
+    },
+    "roleBalanceRadar": {
+      "title": "Role Balance",
+      "noData": "Not enough data to analyze role balance yet.",
+      "eliminations": "Eliminations",
+      "survivability": "Survivability",
+      "ultUsage": "Ult Usage",
+      "activity": "Activity",
+      "balanced": "Balanced",
+      "tankHeavy": "Tank-heavy",
+      "damageHeavy": "Damage-heavy",
+      "supportHeavy": "Support-heavy",
+      "insufficientData": "Insufficient data",
+      "tank": "Tank",
+      "damage": "Damage",
+      "support": "Support",
+      "insights": "Insights",
+      "excellentBalance": "Your team shows excellent balance across all roles.",
+      "fairlyBalanced": "Your team is fairly balanced with minor role disparities.",
+      "considerStrengthening": "Consider strengthening your {weakestRole} performance to improve team balance.",
+      "negativeKD": "{role} players have a negative K/D ratio.",
+      "dyingFrequently": "{role} players are dying frequently - focus on positioning.",
+      "strongest": "Strongest:",
+      "needsWork": "Needs Work:",
+      "balanceScore": "Balance Score:"
+    },
+    "bestRoleTriosCard": {
+      "title": "Best Role Trios",
+      "noData": "Not enough data to determine best player combinations yet. Need at least 3 games with the same roster.",
+      "gamesPlayed": "{count, plural, =0 {no games} =1 {one game} other {# games}}",
+      "wins": "{count}W",
+      "losses": "{count}L",
+      "tank": "Tank",
+      "damage": "Damage",
+      "support": "Support",
+      "winRate": "Win Rate",
+      "playMoreGames": "Play more games to see your best roster combinations"
+    },
+    "heroPickrateHeatmap": {
+      "title": "Hero Pickrate Heatmap",
+      "noData": "No hero pickrate data available yet.",
+      "description": "Top 15 most played heroes across the team",
+      "hoverText": "<player>{playerName}</player> on <hero>{heroName}</hero>: {playtime}",
+      "hoverTextDescription": "Hover over a cell to see the player's pickrate for that hero."
+    },
+    "heroPoolContainer": {
+      "selectTimeframe": "Select timeframe",
+      "lastWeek": "Last Week",
+      "last2Weeks": "Last 2 Weeks",
+      "lastMonth": "Last Month",
+      "last3Months": "Last 3 Months",
+      "last6Months": "Last 6 Months",
+      "lastYear": "Last Year",
+      "allTime": "All Time",
+      "customRange": "Custom Range",
+      "upgrade": "Upgrade to view more timeframes",
+      "pickDateRange": "Pick a date range"
+    },
+    "heroPoolOverviewCard": {
+      "title": "Hero Pool Overview",
+      "noData": "No hero pool data available yet.",
+      "excellent": "Excellent",
+      "good": "Good",
+      "average": "Average",
+      "limited": "Limited",
+      "totalHeroes": "Total Heroes",
+      "effectivePool": "Effective Pool",
+      "diversityScore": "Diversity Score",
+      "minGames": "3+ games",
+      "specialists": "Specialists",
+      "minOwnership": "30%+ ownership",
+      "mostPlayedByRole": "Most Played by Role",
+      "gamesPlayed": "{count, plural, =0 {no games} =1 {1 game} other {# games}}",
+      "players": "{count, plural, =0 {no players} =1 {1 player} other {# players}}",
+      "roleDistribution": "Role Distribution",
+      "tankHeroes": "Tank Heroes",
+      "dpsHeroes": "Damage Heroes",
+      "supportHeroes": "Support Heroes"
+    },
+    "heroWinratesCard": {
+      "title": "Top Hero Winrates",
+      "noData": "Not enough games played to calculate hero winrates (need 3+ games per hero).",
+      "winsAndLosses": "{wins}W - {losses}L • {games} games"
+    },
+    "mapModePerformanceCard": {
+      "winrate": "Winrate: <span>{winrate}</span>",
+      "winsAndLosses": "{wins}W - {losses}L ({games, plural, =0 {no games} =1 {1 game} other {# games}})",
+      "title": "Map Mode Performance",
+      "noData": "No map mode data available yet.",
+      "best": "Best: {mode}",
+      "winrateLabel": "Winrate %",
+      "record": "Record",
+      "winsLossesRecord": "{wins}W - {losses}L",
+      "gamesLabel": "Games",
+      "avgTimeLabel": "Avg Time",
+      "bestMap": "Best Map",
+      "worstMap": "Worst Map",
+      "insights": "Insights",
+      "excelsAt": "Your team excels at <span>{mode}</span> maps ({winrate}% winrate)",
+      "considerPracticing": "Consider practicing <span>{mode}</span> maps to improve balance ({winrate}% winrate)"
+    },
+    "mapRosterDetailsSheet": {
+      "overall": "Overall: {wins}W - {losses}L ({winrate}% winrate) • {games, plural, =0 {no games} =1 {1 game} other {# games}} played",
+      "noData": "No roster data available for this map yet.",
+      "rosterPerformance": "Roster Performance ({count, plural, =0 {no lineups} =1 {1 lineup} other {# lineups}})",
+      "bestLineup": "Best Lineup",
+      "winsLossesRecord": "{wins}W - {losses}L",
+      "gamesLabel": "{count, plural, =0 {no games} =1 {1 game} other {# games}} played",
+      "smallSample": "Small sample"
+    },
+    "mapWinrateGallery": {
+      "title": "Map Performance",
+      "noData": "No map data available yet. Play some matches to see your team's map performance!",
+      "mapFilters": "Map Filters",
+      "clearFilters": "Clear Filters",
+      "searchMaps": "Search Maps",
+      "searchMapNames": "Search map names...",
+      "mapType": "Map Type",
+      "allTypes": "All Types",
+      "sortBy": "Sort By",
+      "sortByPlaceholder": "Sort by...",
+      "highestWinrate": "Highest Winrate",
+      "mostPlayed": "Most Played",
+      "alphabetical": "Alphabetical",
+      "showingMaps": "Showing {count} of {total} maps",
+      "noMapsMatchFilters": "No maps match your current filters. Try adjusting your search or filters.",
+      "gamesLabel": "{count, plural, =0 {no games} =1 {1 game} other {# games}} played",
+      "clickToSeeRosterPerformance": "Click on any map to see roster performance details"
+    },
+    "playerMapPerformanceCard": {
+      "title": "Player Map Performance Matrix",
+      "noData": "No map performance data available yet.",
+      "description": "Each player's best and worst maps by winrate",
+      "playerOnMap": "{player} on {map}: {winrate}% ({wins}W-{losses}L)",
+      "noDataTitle": "{player} - {map}: No data",
+      "winsLossesRecord": "{wins}W - {losses}L",
+      "hasntPlayedMap": "<span>{player}</span> hasn't played <span>{map}</span> yet.",
+      "playerMapPerformance": "<span>{player}</span> on <span>{map}</span>: {winrate}% ({wins}W-{losses}L) in {games, plural, =0 {0 games} =1 {1 game} other {# games}} played",
+      "hoverToSeePerformance": "Hover over a cell to see the player's performance on that map.",
+      "bestMap": "Best map",
+      "worstMap": "Worst map"
+    },
+    "quickStatsCard": {
+      "title": "Quick Stats",
+      "last10Games": "Last 10 Games",
+      "winsLossesRecord": "{wins}W - {losses}L",
+      "bestDay": "Best Day",
+      "notEnoughData": "Not enough data <span>(need 3+ games per day)</span>",
+      "gamesLabel": "{count, plural, =0 {no games} =1 {1 game} other {# games}} played",
+      "avgFightDuration": "Avg Fight Duration",
+      "quickFights": "Quick fights",
+      "standard": "Standard",
+      "longFights": "Long fights",
+      "firstPickSuccess": "First Pick Success",
+      "firstPickSuccessRate": "{successfulFirstPicks} / {totalFirstPicks} picks won",
+      "noData": "No data"
+    },
+    "recentFormCard": {
+      "title": "Recent Form",
+      "noData": "No recent matches to display.",
+      "winsLosses": "{wins}W - {losses}L • {winrate}% winrate",
+      "last5": "Last 5",
+      "last10": "Last 10",
+      "last20": "Last 20",
+      "strongRecentPerformance": "Strong recent performance",
+      "strugglingRecently": "Struggling recently",
+      "averagePerformance": "Average performance",
+      "win": "W",
+      "loss": "L"
+    },
+    "rolePerformanceCard": {
+      "title": "Role Performance",
+      "noDataAvailable": "No role performance data available yet.",
+      "noData": "No data",
+      "playtime": "Playtime",
+      "maps": "Maps",
+      "kd": "K/D",
+      "damagePerMin": "Damage/10 min",
+      "healingPerMin": "Healing/10 min",
+      "deathsPerMin": "Deaths/10 min",
+      "ultEfficiency": "Ult Efficiency",
+      "elims": "Elims",
+      "deaths": "Deaths",
+      "assists": "Assists"
+    },
+    "selector": {
+      "select": "Select a team..."
+    },
+    "strengthsWeaknessesCard": {
+      "title": "Strengths & Weaknesses",
+      "noData": "Not enough data to determine strengths and weaknesses yet.",
+      "strongestMap": "Strongest Map",
+      "bestPerformance": "Best performance",
+      "playtime": "{time} played",
+      "blindSpot": "Blind Spot",
+      "needsImprovement": "Needs improvement"
+    },
+    "teamRosterGrid": {
+      "title": "Team Roster",
+      "noData": "No roster data available. Players will appear here once they've played in matches."
+    },
+    "topMapsCard": {
+      "title": "Top Maps by Playtime",
+      "noData": "No map data available yet."
+    },
+    "ultimateEconomyCard": {
+      "title": "Ultimate Economy",
+      "noData": "No ultimate usage data available yet.",
+      "description": "How efficiently your team uses ultimates",
+      "ultimateEfficiency": "Ultimate Efficiency",
+      "fightsWonPerUltUsed": "Fights won per ult used",
+      "wastedUltimates": "Wasted Ultimates",
+      "wastePercentage": "{percentage}% of total ults",
+      "usedInLostSituations": "Used in lost situations",
+      "totalUltimates": "Total Ultimates",
+      "acrossFights": "Across {fights} fights",
+      "ultimatesPerFight": "{ultimates} per fight",
+      "excellent": "Excellent",
+      "good": "Good",
+      "average": "Average",
+      "poor": "Poor",
+      "ultimateUsage": "Ultimate Usage: Won vs Lost Fights",
+      "winningFights": "Winning Fights",
+      "fights": "{count} fights",
+      "averageUltsUsed": "Average ultimates used",
+      "losingFights": "Losing Fights",
+      "goodUltDiscipline": "<span>Good ult discipline:</span> You use more ults when winning ({ultsInWonFights}) than when losing ({ultsInLostFights}), showing you avoid wasting resources in lost fights.",
+      "roomForImprovement": "<span>Room for improvement:</span> You use more ults when losing ({ultsInLostFights}) than when winning ({ultsInWonFights}). Consider holding ults in disadvantaged situations.",
+      "context": "Context",
+      "dryFights": "Dry Fights:",
+      "dryFightWinrate": "{count} dry fights ({winrate}% WR)",
+      "nonDryFights": "Non-Dry Fights:",
+      "nonDryFightsCount": "{count} non-dry fights ({ults} ults avg)"
+    },
+    "winLossStreaksCard": {
+      "title": "Win/Loss Streaks",
+      "noData": "No streak data available yet.",
+      "na": "N/A",
+      "currentStreak": "Current Streak",
+      "winStreakCount": "{count} {count, plural, =0 {wins} =1 {win} other {wins}}",
+      "lossStreakCount": "{count} {count, plural, =0 {losses} =1 {loss} other {losses}}",
+      "hot": "🔥 Hot",
+      "cold": "❄️ Cold",
+      "longestWinStreak": "Longest Win Streak",
+      "noWinsYet": "No wins yet",
+      "longestLossStreak": "Longest Loss Streak",
+      "noLossesYet": "No losses yet",
+      "keepMomentumGoing": "Keep the momentum going!",
+      "timeToBreakStreak": "Time to break the streak - review recent VODs"
+    },
+    "winProbabilityInsights": {
+      "title": "Win Probability Insights",
+      "noData": "No teamfight data available yet.",
+      "firstPickImpact": "First Pick Impact",
+      "firstPickImpactDescription": "When getting first pick, your team wins {winrate}% of fights",
+      "firstPickCount": "{wins}W / {fights} fights",
+      "firstDeathComeback": "First Death Comeback",
+      "firstDeathComebackDescription": "When suffering first death, your team still wins {winrate}% of fights",
+      "firstDeathCount": "{wins}W / {fights} fights",
+      "ultimateAdvantage": "Ultimate Advantage",
+      "ultimateAdvantageDescription": "Using first ultimate leads to {winrate}% fight winrate",
+      "ultimateCount": "{wins}W / {fights} fights",
+      "dryFightSuccess": "Dry Fight Success",
+      "dryFightSuccessDescription": "Winning {winrate}% of fights without using ultimates",
+      "dryFightCount": "{wins}W / {fights} dry fights",
+      "strongAdvantage": "Strong Advantage",
+      "needsImprovement": "Needs Improvement",
+      "average": "Average",
+      "description": "How different fight scenarios impact your win probability",
+      "overallFightPerformance": "Overall Fight Performance",
+      "totalFights": "Total Fights",
+      "fightsWon": "Fights Won",
+      "overallWinrate": "Overall Winrate"
+    },
+    "winrateOverTimeChart": {
+      "title": "Winrate Over Time",
+      "noData": "Not enough data to show winrate trends yet.",
+      "average": "Average: {avgWinrate}% • <span>{trend} {trendValue}%</span>",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "winrateLabel": "Winrate (%)",
+      "50PercentLine": "50% Line",
+      "winrate": "Winrate: <span>{winrate}%</span>",
+      "winsAndLosses": "{wins}W - {losses}L"
     }
   }
 }

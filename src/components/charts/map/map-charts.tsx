@@ -12,33 +12,30 @@ import { Link } from "@/components/ui/link";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import prisma from "@/lib/prisma";
-import { Kill } from "@prisma/client";
+import type { Kill } from "@prisma/client";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { getTranslations } from "next-intl/server";
 
 async function ChartTooltip() {
   const t = await getTranslations("mapPage.charts");
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <InfoCircledIcon className="h-4 w-4" />
-        </TooltipTrigger>
-        <TooltipContent className="max-w-[280px]">
-          {t.rich("tooltip", {
-            link: (chunks) => (
-              <Link href="https://docs.parsertime.app/maps/charts" external>
-                {chunks}
-              </Link>
-            ),
-          })}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <InfoCircledIcon className="h-4 w-4" />
+      </TooltipTrigger>
+      <TooltipContent className="max-w-[280px]">
+        {t.rich("tooltip", {
+          link: (chunks) => (
+            <Link href="https://docs.parsertime.app/maps/charts" external>
+              {chunks}
+            </Link>
+          ),
+        })}
+      </TooltipContent>
+    </Tooltip>
   );
 }
 

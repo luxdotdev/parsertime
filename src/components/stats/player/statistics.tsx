@@ -5,7 +5,7 @@ import { MapWinsChart } from "@/components/stats/player/charts/map-wins-chart";
 import { RolePieChart } from "@/components/stats/player/charts/role-pie-chart";
 import { StatPer10Chart } from "@/components/stats/player/charts/stat-per-10";
 import { WinsPerMapTypeChart } from "@/components/stats/player/charts/wins-per-map-type";
-import { Timeframe } from "@/components/stats/player/range-picker";
+import type { Timeframe } from "@/components/stats/player/range-picker";
 import {
   Card,
   CardContent,
@@ -31,31 +31,28 @@ import {
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Winrate } from "@/data/scrim-dto";
-import { NonMappableStat, Stat } from "@/lib/player-charts";
+import type { Winrate } from "@/data/scrim-dto";
+import type { NonMappableStat, Stat } from "@/lib/player-charts";
 import { cn, toHero, useHeroNames } from "@/lib/utils";
-import { HeroName } from "@/types/heroes";
-import { Kill, PlayerStat, Scrim } from "@prisma/client";
+import type { HeroName } from "@/types/heroes";
+import type { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { DateRange } from "react-day-picker";
+import type { DateRange } from "react-day-picker";
 
 function ChartTooltip({ children }: { children: React.ReactNode }) {
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <InfoCircledIcon className="h-4 w-4" />
-        </TooltipTrigger>
-        <TooltipContent className="max-w-[280px]">{children}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <InfoCircledIcon className="h-4 w-4" />
+      </TooltipTrigger>
+      <TooltipContent className="max-w-[280px]">{children}</TooltipContent>
+    </Tooltip>
   );
 }
 
@@ -64,19 +61,21 @@ export function Statistics({
   date,
   scrims,
   stats,
-  hero,
+  heroes,
   kills,
   mapWinrates,
   deaths,
+  comparisonView = false,
 }: {
   timeframe: Timeframe;
   date: DateRange | undefined;
   scrims: Record<Timeframe, Scrim[]>;
   stats: PlayerStat[];
-  hero: HeroName | "all";
+  heroes: HeroName[];
   kills: Kill[];
   mapWinrates: Winrate;
   deaths: Kill[];
+  comparisonView?: boolean;
 }) {
   const t = useTranslations("statsPage.playerStats");
   const heroNames = useHeroNames();
@@ -105,165 +104,35 @@ export function Statistics({
   }, [timeframe, date, scrims]);
 
   useEffect(() => {
-    setFilteredStats(
-      stats.filter((stat) => {
-        if (timeframe === "one-week") {
-          return scrims["one-week"].some((scrim) => scrim.id === stat.scrimId);
-        }
+    const currentScrims =
+      timeframe === "custom" ? customScrims : scrims[timeframe];
 
-        if (timeframe === "two-weeks") {
-          return scrims["two-weeks"].some((scrim) => scrim.id === stat.scrimId);
-        }
-
-        if (timeframe === "one-month") {
-          return scrims["one-month"].some((scrim) => scrim.id === stat.scrimId);
-        }
-
-        if (timeframe === "three-months") {
-          return scrims["three-months"].some(
-            (scrim) => scrim.id === stat.scrimId
-          );
-        }
-
-        if (timeframe === "six-months") {
-          return scrims["six-months"].some(
-            (scrim) => scrim.id === stat.scrimId
-          );
-        }
-
-        if (timeframe === "one-year") {
-          return scrims["one-year"].some((scrim) => scrim.id === stat.scrimId);
-        }
-
-        if (timeframe === "all-time") {
-          return scrims["all-time"].some((scrim) => scrim.id === stat.scrimId);
-        }
-
-        if (timeframe === "custom") {
-          return customScrims.some((scrim) => scrim.id === stat.scrimId);
-        }
-
-        return false;
-      })
+    let timeFilteredStats = stats.filter((stat) =>
+      currentScrims.some((scrim) => scrim.id === stat.scrimId)
     );
-  }, [timeframe, scrims, stats, customScrims]);
+    let timeFilteredKills = kills.filter((kill) =>
+      currentScrims.some((scrim) => scrim.id === kill.scrimId)
+    );
+    let timeFilteredDeaths = deaths.filter((death) =>
+      currentScrims.some((scrim) => scrim.id === death.scrimId)
+    );
 
-  useEffect(() => {
-    if (hero !== "all") {
-      setFilteredStats(stats.filter((stat) => stat.player_hero === hero));
-      setFilteredKills(kills.filter((kill) => kill.attacker_hero === hero));
-      setFilteredDeaths(deaths.filter((death) => death.victim_hero === hero));
-    }
-    if (hero === "all") {
-      setFilteredStats(
-        stats.filter((stat) =>
-          scrims[timeframe].some((scrim) => scrim.id === stat.scrimId)
-        )
+    if (heroes.length > 0) {
+      timeFilteredStats = timeFilteredStats.filter((stat) =>
+        heroes.includes(stat.player_hero as HeroName)
       );
-      setFilteredKills(
-        kills.filter((kill) =>
-          scrims[timeframe].some((scrim) => scrim.id === kill.scrimId)
-        )
+      timeFilteredKills = timeFilteredKills.filter((kill) =>
+        heroes.includes(kill.attacker_hero as HeroName)
       );
-      setFilteredDeaths(
-        deaths.filter((death) =>
-          scrims[timeframe].some((scrim) => scrim.id === death.scrimId)
-        )
+      timeFilteredDeaths = timeFilteredDeaths.filter((death) =>
+        heroes.includes(death.victim_hero as HeroName)
       );
     }
-  }, [hero, stats, timeframe, scrims, kills, deaths]);
 
-  useEffect(() => {
-    setFilteredKills(
-      kills.filter((kill) => {
-        if (timeframe === "one-week") {
-          return scrims["one-week"].some((scrim) => scrim.id === kill.scrimId);
-        }
-
-        if (timeframe === "two-weeks") {
-          return scrims["two-weeks"].some((scrim) => scrim.id === kill.scrimId);
-        }
-
-        if (timeframe === "one-month") {
-          return scrims["one-month"].some((scrim) => scrim.id === kill.scrimId);
-        }
-
-        if (timeframe === "three-months") {
-          return scrims["three-months"].some(
-            (scrim) => scrim.id === kill.scrimId
-          );
-        }
-
-        if (timeframe === "six-months") {
-          return scrims["six-months"].some(
-            (scrim) => scrim.id === kill.scrimId
-          );
-        }
-
-        if (timeframe === "one-year") {
-          return scrims["one-year"].some((scrim) => scrim.id === kill.scrimId);
-        }
-
-        if (timeframe === "all-time") {
-          return scrims["all-time"].some((scrim) => scrim.id === kill.scrimId);
-        }
-
-        if (timeframe === "custom") {
-          return customScrims.some((scrim) => scrim.id === kill.scrimId);
-        }
-
-        return false;
-      })
-    );
-  }, [timeframe, kills, scrims, customScrims]);
-
-  useEffect(() => {
-    setFilteredDeaths(
-      deaths.filter((death) => {
-        if (timeframe === "one-week") {
-          return scrims["one-week"].some((scrim) => scrim.id === death.scrimId);
-        }
-
-        if (timeframe === "two-weeks") {
-          return scrims["two-weeks"].some(
-            (scrim) => scrim.id === death.scrimId
-          );
-        }
-
-        if (timeframe === "one-month") {
-          return scrims["one-month"].some(
-            (scrim) => scrim.id === death.scrimId
-          );
-        }
-
-        if (timeframe === "three-months") {
-          return scrims["three-months"].some(
-            (scrim) => scrim.id === death.scrimId
-          );
-        }
-
-        if (timeframe === "six-months") {
-          return scrims["six-months"].some(
-            (scrim) => scrim.id === death.scrimId
-          );
-        }
-
-        if (timeframe === "one-year") {
-          return scrims["one-year"].some((scrim) => scrim.id === death.scrimId);
-        }
-
-        if (timeframe === "all-time") {
-          return scrims["all-time"].some((scrim) => scrim.id === death.scrimId);
-        }
-
-        if (timeframe === "custom") {
-          return customScrims.some((scrim) => scrim.id === death.scrimId);
-        }
-
-        return false;
-      })
-    );
-  }, [timeframe, deaths, scrims, customScrims]);
+    setFilteredStats(timeFilteredStats);
+    setFilteredKills(timeFilteredKills);
+    setFilteredDeaths(timeFilteredDeaths);
+  }, [heroes, stats, timeframe, scrims, kills, deaths, customScrims]);
 
   useEffect(() => {
     if (timeframe === "all-time") {
@@ -272,8 +141,8 @@ export function Statistics({
       setFilteredWins(
         mapWinrates.filter((win) => {
           return (
-            win.date >= (date?.from || new Date()) &&
-            win.date <= (date?.to || new Date())
+            win.date >= (date?.from ?? new Date()) &&
+            win.date <= (date?.to ?? new Date())
           );
         })
       );
@@ -292,6 +161,7 @@ export function Statistics({
     .slice(0, 3);
 
   const top3MostPlayedHeroes = filteredStats
+    .filter((stat) => stat.hero_time_played > 60)
     .map((stat) => stat.player_hero)
     .reduce(
       (acc, hero) => {
@@ -355,8 +225,20 @@ export function Statistics({
   const top3MostKilledHeroesLength = top3MostKilledHeroesArray.length;
 
   return (
-    <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <Card className="col-span-1 md:col-span-2 xl:col-span-1">
+    <section
+      className={cn(
+        "grid gap-4 md:grid-cols-2 lg:grid-cols-4",
+        comparisonView &&
+          "grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4"
+      )}
+    >
+      <Card
+        className={cn(
+          "col-span-1 md:col-span-2 xl:col-span-1",
+          comparisonView &&
+            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+        )}
+      >
         <CardHeader>
           <CardTitle>{t("mostPlayed.title")}</CardTitle>
         </CardHeader>
@@ -421,7 +303,7 @@ export function Statistics({
                           )}
                         />{" "}
                       </div>
-                      {heroNames.get(toHero(hero)) || hero}
+                      {heroNames.get(toHero(hero)) ?? hero}
                     </span>
                   </TableCell>
                   <TableCell>{games}</TableCell>
@@ -440,7 +322,7 @@ export function Statistics({
           </Table>
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {timeframe !== "custom" && timeframe !== "all-time"
               ? t("mostPlayed.footer1", {
                   scrims: scrims[timeframe].length,
@@ -450,7 +332,9 @@ export function Statistics({
                   timeframe1:
                     timeframe === "custom"
                       ? customScrims.length
-                      : timeframe === "all-time" && scrims["all-time"].length,
+                      : timeframe === "all-time"
+                        ? scrims["all-time"].length
+                        : 0,
                   timeframe2:
                     timeframe === "all-time"
                       ? t("timeframe.all-time-data")
@@ -461,7 +345,13 @@ export function Statistics({
           </p>
         </CardFooter>
       </Card>
-      <Card className="col-span-1 md:col-span-2 xl:col-span-1">
+      <Card
+        className={cn(
+          "col-span-1 md:col-span-2 xl:col-span-1",
+          comparisonView &&
+            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+        )}
+      >
         <CardHeader>
           <CardTitle>{t("bestPerformance.title")}</CardTitle>
         </CardHeader>
@@ -525,25 +415,23 @@ export function Statistics({
                           )}
                         />{" "}
                       </div>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Link
-                              href={`/${
-                                scrims[timeframe].find(
-                                  (scrim) => scrim.id === scrimId
-                                )?.teamId
-                              }/scrim/${scrimId}/map/${mapId}`}
-                              target="_blank"
-                            >
-                              {heroNames.get(toHero(hero as string)) || hero}
-                            </Link>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{t("bestPerformance.clickMap")}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Link
+                            href={`/${
+                              scrims[timeframe].find(
+                                (scrim) => scrim.id === scrimId
+                              )?.teamId
+                            }/scrim/${scrimId}/map/${mapId}`}
+                            target="_blank"
+                          >
+                            {heroNames.get(toHero(hero as string)) ?? hero}
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{t("bestPerformance.clickMap")}</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </span>
                   </TableCell>
                   <TableCell>{finalBlows}</TableCell>
@@ -564,7 +452,7 @@ export function Statistics({
           </Table>
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {timeframe !== "custom" && timeframe !== "all-time"
               ? t("bestPerformance.footer1", {
                   scrims: scrims[timeframe].length,
@@ -574,7 +462,9 @@ export function Statistics({
                   timeframe1:
                     timeframe === "custom"
                       ? customScrims.length
-                      : timeframe === "all-time" && scrims["all-time"].length,
+                      : timeframe === "all-time"
+                        ? scrims["all-time"].length
+                        : 0,
                   timeframe2:
                     timeframe === "all-time"
                       ? t("timeframe.all-time-data")
@@ -585,7 +475,13 @@ export function Statistics({
           </p>
         </CardFooter>
       </Card>
-      <Card className="col-span-1 md:col-span-2">
+      <Card
+        className={cn(
+          "col-span-1 md:col-span-2",
+          comparisonView &&
+            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+        )}
+      >
         <CardHeader>
           <CardTitle className="flex items-center gap-1">
             {t("avgHeroDmgDealtPer10.title")}{" "}
@@ -617,31 +513,60 @@ export function Statistics({
           better="lower"
         />
       </Card>
-      <Card className="col-span-1 md:col-span-2 xl:col-span-1">
+      <Card
+        className={cn(
+          "col-span-1 md:col-span-2 xl:col-span-1",
+          comparisonView &&
+            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+        )}
+      >
         <CardHeader>
           <CardTitle>{t("timeSpent.title")}</CardTitle>
         </CardHeader>
         <RolePieChart data={filteredStats} />
       </Card>
-      <Card className="col-span-1 md:col-span-2 xl:col-span-1">
+      <Card
+        className={cn(
+          "col-span-1 md:col-span-2 xl:col-span-1",
+          comparisonView &&
+            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+        )}
+      >
         <CardHeader>
           <CardTitle>{t("finalBlowsByMethod.title")}</CardTitle>
         </CardHeader>
         <KillMethodChart data={filteredKills} />
       </Card>
-      <Card className="col-span-full xl:col-span-3">
+      <Card
+        className={cn(
+          "col-span-full xl:col-span-3",
+          comparisonView && "col-span-full lg:col-span-2 xl:col-span-full"
+        )}
+      >
         <CardHeader>
           <CardTitle>{t("mapWinrates.title")}</CardTitle>
         </CardHeader>
         <MapWinsChart data={filteredWins} />
       </Card>
-      <Card className="col-span-1 md:col-span-2 xl:col-span-1">
+      <Card
+        className={cn(
+          "col-span-1 md:col-span-2 xl:col-span-1",
+          comparisonView &&
+            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+        )}
+      >
         <CardHeader>
           <CardTitle>{t("winrateMapType.title")}</CardTitle>
         </CardHeader>
         <WinsPerMapTypeChart data={filteredWins} />
       </Card>
-      <Card className="col-span-1 md:col-span-2 xl:col-span-1">
+      <Card
+        className={cn(
+          "col-span-1 md:col-span-2 xl:col-span-1",
+          comparisonView &&
+            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+        )}
+      >
         <CardHeader>
           <CardTitle>{t("heroesDiedToMost.title")}</CardTitle>
         </CardHeader>
@@ -706,7 +631,7 @@ export function Statistics({
                           )}
                         />{" "}
                       </div>
-                      {heroNames.get(toHero(hero)) || hero}
+                      {heroNames.get(toHero(hero)) ?? hero}
                     </span>
                   </TableCell>
                   <TableCell>{deaths}</TableCell>
@@ -725,7 +650,7 @@ export function Statistics({
           </Table>
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {timeframe !== "custom" && timeframe !== "all-time"
               ? t("heroesDiedToMost.footer1", {
                   scrims: scrims[timeframe].length,
@@ -735,7 +660,9 @@ export function Statistics({
                   timeframe1:
                     timeframe === "custom"
                       ? customScrims.length
-                      : timeframe === "all-time" && scrims["all-time"].length,
+                      : timeframe === "all-time"
+                        ? scrims["all-time"].length
+                        : 0,
                   timeframe2:
                     timeframe === "all-time"
                       ? t("timeframe.all-time-data")
@@ -746,7 +673,13 @@ export function Statistics({
           </p>
         </CardFooter>
       </Card>
-      <Card className="col-span-1 md:col-span-2 xl:col-span-1">
+      <Card
+        className={cn(
+          "col-span-1 md:col-span-2 xl:col-span-1",
+          comparisonView &&
+            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+        )}
+      >
         <CardHeader>
           <CardTitle>{t("heroesElimMost.title")}</CardTitle>
         </CardHeader>
@@ -811,7 +744,7 @@ export function Statistics({
                           )}
                         />{" "}
                       </div>
-                      {heroNames.get(toHero(hero)) || hero}
+                      {heroNames.get(toHero(hero)) ?? hero}
                     </span>
                   </TableCell>
                   <TableCell>{elims}</TableCell>
@@ -830,7 +763,7 @@ export function Statistics({
           </Table>
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {timeframe !== "custom" && timeframe !== "all-time"
               ? t("heroesElimMost.footer1", {
                   scrims: scrims[timeframe].length,
@@ -840,7 +773,9 @@ export function Statistics({
                   timeframe1:
                     timeframe === "custom"
                       ? customScrims.length
-                      : timeframe === "all-time" && scrims["all-time"].length,
+                      : timeframe === "all-time"
+                        ? scrims["all-time"].length
+                        : 0,
                   timeframe2:
                     timeframe === "all-time"
                       ? t("timeframe.all-time-data")
@@ -851,7 +786,12 @@ export function Statistics({
           </p>
         </CardFooter>
       </Card>
-      <Card className="col-span-1 md:col-span-2">
+      <Card
+        className={cn(
+          "col-span-1 md:col-span-2",
+          comparisonView && "col-span-full lg:col-span-2"
+        )}
+      >
         <CardHeader>
           <Select
             value={selectedStat}

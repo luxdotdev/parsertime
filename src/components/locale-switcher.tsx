@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Locale, locales } from "@/i18n/config";
+import { type Locale, locales } from "@/i18n/config";
 import { setUserLocale } from "@/lib/locale";
 import { useRouter } from "next/navigation";
 
@@ -33,7 +33,7 @@ export function LocaleSwitcher() {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all"
+            className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all"
           >
             <path d="m5 8 6 6" />
             <path d="m4 14 6-6 2-3" />

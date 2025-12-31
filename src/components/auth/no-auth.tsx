@@ -8,7 +8,7 @@ import {
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
-export default async function NoAuthCard() {
+export async function NoAuthCard() {
   const t = await getTranslations("noAuth");
 
   return (

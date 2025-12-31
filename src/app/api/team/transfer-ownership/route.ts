@@ -1,9 +1,11 @@
 import { getUser } from "@/data/user-dto";
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
-import { NextRequest } from "next/server";
+import { forbidden, unauthorized } from "next/navigation";
+import { after, type NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   const params = req.nextUrl.searchParams;
@@ -20,7 +22,7 @@ export async function POST(req: NextRequest) {
   if (!session) {
     if (token !== process.env.DEV_TOKEN) {
       Logger.warn("Unauthorized request to remove team: ", id);
-      return new Response("Unauthorized", { status: 401 });
+      unauthorized();
     }
     Logger.log("Authorized removal of team with dev token");
   }
@@ -36,7 +38,7 @@ export async function POST(req: NextRequest) {
     user.role === $Enums.UserRole.MANAGER || // Managers can transfer anything
     user.id === team.ownerId; // Creators can transfer their own teams
 
-  if (!hasPerms) return new Response("Unauthorized", { status: 401 });
+  if (!hasPerms) forbidden();
 
   const newOwner = await getUser(owner);
   if (!newOwner) return new Response("New owner not found", { status: 404 });
@@ -50,6 +52,15 @@ export async function POST(req: NextRequest) {
   await prisma.team.update({
     where: { id },
     data: { users: { connect: { id: newOwner.id } } },
+  });
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: user.email,
+      action: "TEAM_OWNERSHIP_TRANSFERRED",
+      target: newOwner.email,
+      details: `Transferred ownership of team ${team.name} to ${newOwner.name}`,
+    });
   });
 
   return new Response("OK", { status: 200 });

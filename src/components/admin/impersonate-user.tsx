@@ -1,9 +1,5 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -16,15 +12,18 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 const adminFormSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  isProd: z.boolean().default(true),
+  isProd: z.boolean(),
 });
 
 type AdminFormValues = z.infer<typeof adminFormSchema>;
@@ -57,16 +56,13 @@ export function ImpersonateUserForm() {
 
       await navigator.clipboard.writeText(url);
 
-      toast({
-        title: t("onSubmit.title"),
+      toast.success(t("onSubmit.title"), {
         description: t("onSubmit.description"),
         duration: 5000,
       });
-    } catch (e) {
-      toast({
-        title: t("onSubmit.errorTitle"),
+    } catch {
+      toast.error(t("onSubmit.errorTitle"), {
         description: t("onSubmit.errorDescription"),
-        variant: "destructive",
       });
     }
   }
@@ -97,7 +93,7 @@ export function ImpersonateUserForm() {
             control={form.control}
             name="isProd"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+              <FormItem className="flex flex-row items-start space-y-0 space-x-3 rounded-md border p-4 shadow">
                 <FormControl>
                   <Switch
                     checked={field.value}

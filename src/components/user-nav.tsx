@@ -1,4 +1,5 @@
 import { SignOutButton } from "@/components/auth/auth-components";
+import { SupporterHeart } from "@/components/profile/supporter-heart";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,12 +12,13 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Link } from "@/components/ui/link";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { $Enums } from "@prisma/client";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
+import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export async function UserNav() {
@@ -38,10 +40,10 @@ export async function UserNav() {
           <Avatar className="h-8 w-8">
             <AvatarImage
               src={
-                session?.user?.image ||
+                session?.user?.image ??
                 `https://avatar.vercel.sh/${session?.user?.name}.png`
               }
-              alt={session?.user?.name || "User"}
+              alt={session?.user?.name ?? "User"}
             />
           </Avatar>
         </Button>
@@ -49,11 +51,15 @@ export async function UserNav() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">
-              {session?.user?.name || ""}
+            <p className="text-primary flex items-center gap-2 text-sm leading-none font-medium">
+              {session?.user?.name ?? ""}{" "}
+              <SupporterHeart
+                billingPlan={user?.billingPlan ?? $Enums.BillingPlan.FREE}
+                className="h-4 w-4"
+              />
             </p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {session?.user?.email || ""}
+            <p className="text-muted-foreground text-xs leading-none">
+              {session?.user?.email ?? ""}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -61,6 +67,9 @@ export async function UserNav() {
         <DropdownMenuGroup>
           <Link href="/dashboard">
             <DropdownMenuItem>{t("dashboard")}</DropdownMenuItem>
+          </Link>
+          <Link href={`/profile/${user?.battletag ?? ""}` as Route}>
+            <DropdownMenuItem>{t("profile")}</DropdownMenuItem>
           </Link>
           <Link href="/team">
             <DropdownMenuItem>{t("teams")}</DropdownMenuItem>

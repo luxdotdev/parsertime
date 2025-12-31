@@ -1,20 +1,28 @@
 import { AddMemberCard } from "@/components/team/add-member-card";
 import { DangerZone } from "@/components/team/danger-zone";
+import { TeamMemberCard } from "@/components/team/team-member-card";
+import { TeamMemberUsage } from "@/components/team/team-member-usage";
 import { TeamSettingsForm } from "@/components/team/team-settings-form";
 import { UserCardButtons } from "@/components/team/user-card-buttons";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { $Enums, User } from "@prisma/client";
-import { Metadata } from "next";
+import type { PagePropsWithLocale } from "@/types/next";
+import { $Enums } from "@prisma/client";
+import { Lock } from "lucide-react";
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import Image from "next/image";
 
-type Props = { params: { teamId: string; locale: string } };
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(
+  props: PagePropsWithLocale<"/team/[teamId]">
+): Promise<Metadata> {
+  const params = await props.params;
   const t = await getTranslations("teamPage.teamMetadata");
   const teamId = decodeURIComponent(params.teamId);
 
@@ -46,7 +54,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function Team({ params }: { params: { teamId: string } }) {
+export default async function Team(
+  props: PagePropsWithLocale<"/team/[teamId]">
+) {
+  const params = await props.params;
   const t = await getTranslations("teamPage");
   const session = await auth();
 
@@ -54,7 +65,27 @@ export default async function Team({ params }: { params: { teamId: string } }) {
 
   const [teamData, teamMembersData, teamManagers] = await Promise.all([
     prisma.team.findFirst({ where: { id: teamId } }),
-    prisma.team.findFirst({ where: { id: teamId }, select: { users: true } }),
+    prisma.team.findFirst({
+      where: { id: teamId },
+      select: {
+        users: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+            bannerImage: true,
+            billingPlan: true,
+            battletag: true,
+            appliedTitles: {
+              select: {
+                title: true,
+              },
+            },
+          },
+        },
+      },
+    }),
     prisma.teamManager.findMany({ where: { teamId } }),
   ]);
 
@@ -62,7 +93,7 @@ export default async function Team({ params }: { params: { teamId: string } }) {
 
   const user = await getUser(session?.user?.email);
 
-  function userIsManager(user: User) {
+  function userIsManager(user: { id: string }) {
     return teamManagers.some((manager) => manager.userId === user.id);
   }
 
@@ -72,11 +103,23 @@ export default async function Team({ params }: { params: { teamId: string } }) {
     user?.role === $Enums.UserRole.MANAGER ||
     user?.role === $Enums.UserRole.ADMIN;
 
+  const teamOwner = await prisma.user.findFirst({
+    where: { id: teamData?.ownerId },
+  });
+
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">
-          {teamData?.name ?? t("defaultName")}
+        <h2 className="flex items-center gap-2 text-3xl font-bold tracking-tight">
+          {teamData?.name ?? t("defaultName")}{" "}
+          {teamData?.readonly && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Lock className="text-muted-foreground h-6 w-6" />
+              </TooltipTrigger>
+              <TooltipContent>{t("readonly.title")}</TooltipContent>
+            </Tooltip>
+          )}
         </h2>
       </div>
 
@@ -96,44 +139,33 @@ export default async function Team({ params }: { params: { teamId: string } }) {
             <div className="-m-2 flex flex-wrap">
               {teamMembers?.users.map((user) => (
                 <div key={user.id} className="w-full p-2 md:w-1/2 xl:w-1/3">
-                  <Card className="relative min-h-[144px] max-w-md">
-                    <Image
-                      src={
-                        user.image ??
-                        `https://avatar.vercel.sh/${user.email}.png`
-                      }
-                      alt={
-                        user.name
-                          ? t("altText.userProfile", { user: user.name })
-                          : t("altText.noAvatar")
-                      }
-                      width={100}
-                      height={100}
-                      className="float-right rounded-full p-4"
-                    />
-                    <CardHeader className="flex">
-                      <div>
-                        <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-                          {user.name} {userIsManager(user) && t("manager")}{" "}
-                          {user.id === teamData?.ownerId && t("owner")}{" "}
-                          {user.name === session?.user?.name && t("you")}
-                        </h4>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p>{user.email}</p>
-                    </CardContent>
+                  <TeamMemberCard
+                    user={user}
+                    isManager={userIsManager(user)}
+                    isOwner={user.id === teamData?.ownerId}
+                    isCurrentUser={user.email === session?.user?.email}
+                  >
                     {hasPerms &&
                       user.email !== session?.user?.email &&
                       user.id !== teamData?.ownerId && (
                         <UserCardButtons user={user} managers={teamManagers} />
                       )}
-                  </Card>
+                  </TeamMemberCard>
                 </div>
               ))}
               {hasPerms && <AddMemberCard />}
             </div>
           )}
+
+          <div className="space-y-4 pt-12">
+            <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+              {t("teamMemberUsage.title")}
+            </h3>
+            <TeamMemberUsage
+              teamMemberCount={teamMembers?.users.length ?? 0}
+              billingPlan={teamOwner?.billingPlan ?? $Enums.BillingPlan.FREE}
+            />
+          </div>
         </TabsContent>
         <TabsContent value="settings" className="space-y-4">
           <TeamSettingsForm team={teamData!} />

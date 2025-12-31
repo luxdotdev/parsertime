@@ -1,6 +1,10 @@
 import { useSyncExternalStore } from "react";
 
-const emptySubscribe = () => () => {};
+function emptySubscribe() {
+  return () => {
+    // intentionally empty
+  };
+}
 
 export function ClientOnly({ children }: { children: React.ReactNode }) {
   const isServer = useSyncExternalStore(

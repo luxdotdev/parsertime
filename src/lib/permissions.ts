@@ -1,6 +1,6 @@
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import { $Enums, User } from "@prisma/client";
+import { $Enums, type User } from "@prisma/client";
 import { get } from "@vercel/edge-config";
 
 const FEATURES = [
@@ -65,7 +65,7 @@ export class Permission {
 
   private async checkUser() {
     const session = await auth();
-    if (!session || !session.user) {
+    if (!session?.user) {
       return { user: null, isAuthed: false };
     }
 

@@ -10,7 +10,7 @@ import { log } from "next-axiom";
 
 type LogLevel = "log" | "error" | "warn" | "info";
 
-class Logger {
+export class Logger {
   static logLevel: LogLevel[] = ["log", "error", "warn", "info"];
 
   static isProduction = process.env.NODE_ENV === "production";
@@ -50,5 +50,3 @@ class Logger {
     return true;
   }
 }
-
-export default Logger;

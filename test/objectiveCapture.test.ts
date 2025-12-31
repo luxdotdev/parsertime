@@ -1,7 +1,7 @@
+import type { ObjectiveCapturedTableRow, ParserData } from "@/types/parser";
+import { type ObjectiveCaptured, PrismaClient } from "@prisma/client";
 import { expect, test } from "vitest";
-import { ObjectiveCaptured, PrismaClient } from "@prisma/client";
 import { createObjectiveCapturedRows } from "../src/lib/parser";
-import { ObjectiveCapturedTableRow, ParserData } from "@/types/parser";
 
 const prisma = new PrismaClient({
   datasourceUrl: process.env.TEST_DB_URL,
@@ -37,7 +37,7 @@ test("should return the generated objective capture row", async () => {
   };
 
   const objCapturedRow = await createObjectiveCapturedRows(
-    data as any,
+    data as never,
     { id: 1 },
     100
   );
@@ -47,7 +47,7 @@ test("should return the generated objective capture row", async () => {
 
   await prisma.objectiveCaptured.deleteMany({
     where: {
-      id: id,
+      id,
     },
   });
 
@@ -58,12 +58,10 @@ test("should return empty array", async () => {
   const data = {};
 
   const objCaptureRow = await createObjectiveCapturedRows(
-    data as any,
+    data as never,
     { id: 1 },
     1
   );
 
   expect(objCaptureRow).toEqual([]);
 });
-
-prisma.$disconnect();

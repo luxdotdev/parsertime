@@ -15,14 +15,23 @@ import {
   PresentationChartBarIcon,
 } from "@heroicons/react/24/outline";
 import { get } from "@vercel/edge-config";
+import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
-import { SVGProps } from "react";
+import type { SVGProps } from "react";
 
 type IconProps = Omit<SVGProps<SVGSVGElement>, "fill" | "viewbox">;
 
-const footerNavigation = {
+type FooterNavigation = {
+  social: {
+    name: string;
+    href: Route;
+    icon: (props: IconProps) => React.ReactNode;
+  }[];
+};
+
+const footerNavigation: FooterNavigation = {
   social: [
     {
       name: "X",
@@ -58,7 +67,7 @@ const footerNavigation = {
   ],
 };
 
-export default async function LandingPage() {
+export async function LandingPage() {
   const stats =
     await get<[{ id: string; name: string; value: string }]>(
       "landingPageStats"
@@ -66,12 +75,19 @@ export default async function LandingPage() {
 
   const latestUpdates = await get<{
     title: string;
-    url: string;
+    url: Route;
   }>("latestUpdates");
 
   const t = await getTranslations("landingPage");
 
-  const primaryFeatures = [
+  type PrimaryFeature = {
+    name: string;
+    description: string;
+    href: Route;
+    icon: React.ElementType;
+  };
+
+  const primaryFeatures: PrimaryFeature[] = [
     {
       name: t("primaryFeatures.builtByCoaches.name"),
       description: t("primaryFeatures.builtByCoaches.description"),
@@ -131,7 +147,7 @@ export default async function LandingPage() {
         {/* Hero section */}
         <div className="relative isolate overflow-hidden bg-white dark:bg-black">
           <svg
-            className="absolute inset-0 -z-10 h-full w-full stroke-gray-200 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)] dark:stroke-white/10"
+            className="absolute inset-0 -z-10 h-full w-full [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)] stroke-gray-200 dark:stroke-white/10"
             aria-hidden="true"
           >
             <defs>
@@ -186,7 +202,7 @@ export default async function LandingPage() {
             />
           </svg>
           <div
-            className="absolute left-[calc(50%-4rem)] top-10 -z-10 hidden transform-gpu blur-3xl dark:flex sm:left-[calc(50%-18rem)] lg:left-48 lg:top-[calc(50%-30rem)] xl:left-[calc(50%-24rem)]"
+            className="absolute top-10 left-[calc(50%-4rem)] -z-10 hidden transform-gpu blur-3xl sm:left-[calc(50%-18rem)] lg:top-[calc(50%-30rem)] lg:left-48 xl:left-[calc(50%-24rem)] dark:flex"
             aria-hidden="true"
           >
             <div
@@ -197,7 +213,7 @@ export default async function LandingPage() {
               }}
             />
           </div>
-          <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-40 lg:flex lg:px-8 lg:pt-40">
+          <div className="mx-auto max-w-7xl px-6 pt-10 pb-24 sm:pb-40 lg:flex lg:px-8 lg:pt-40">
             <div className="mx-auto max-w-2xl flex-shrink-0 lg:mx-0 lg:max-w-xl lg:pt-8">
               <Image
                 className="h-12 dark:invert"
@@ -212,10 +228,10 @@ export default async function LandingPage() {
                   target="_blank"
                   className="inline-flex space-x-6"
                 >
-                  <span className="rounded-full bg-sky-600/10 px-3 py-1 text-sm font-semibold leading-6 text-sky-600 ring-1 ring-inset ring-sky-600/20 dark:bg-sky-500/10 dark:text-sky-400 dark:ring-sky-500/20">
+                  <span className="bg-primary/10 text-primary ring-primary/20 dark:bg-primary/10 dark:text-primary dark:ring-primary/20 rounded-full px-3 py-1 text-sm leading-6 font-semibold ring-1 ring-inset">
                     {t("hero.latestUpdates")}
                   </span>
-                  <span className="inline-flex items-center space-x-2 text-sm font-medium leading-6 text-gray-600 dark:text-gray-300">
+                  <span className="inline-flex items-center space-x-2 text-sm leading-6 font-medium text-gray-600 dark:text-gray-300">
                     <span>{latestUpdates!.title}</span>
                     <ChevronRightIcon
                       className="h-5 w-5 text-gray-400 dark:text-gray-500"
@@ -224,7 +240,7 @@ export default async function LandingPage() {
                   </span>
                 </Link>
               </div>
-              <h1 className="mt-10 text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
+              <h1 className="mt-10 text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl dark:text-white">
                 {t("hero.title")}
               </h1>
               <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
@@ -236,24 +252,24 @@ export default async function LandingPage() {
                 </Button>
                 <Link
                   href="/demo"
-                  className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
+                  className="text-sm leading-6 font-semibold text-gray-900 dark:text-white"
                 >
                   {t("hero.liveDemo")} <span aria-hidden="true">→</span>
                 </Link>
               </div>
-              <div className="mt-4 flex items-center gap-x-2 text-muted-foreground">
+              <div className="text-muted-foreground mt-4 flex items-center gap-x-2">
                 <p className="text-xs">
                   {t("hero.accountDescription")}{" "}
                   <Link
                     href="/sign-in"
-                    className="font-semibold leading-6 text-gray-900 dark:text-white"
+                    className="leading-6 font-semibold text-gray-900 dark:text-white"
                   >
                     {t("hero.signIn")} <span aria-hidden="true">→</span>
                   </Link>
                 </p>
               </div>
             </div>
-            <div className="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32">
+            <div className="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:mt-0 lg:mr-0 lg:ml-10 lg:max-w-none lg:flex-none xl:ml-32">
               <div className="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
                 <Image
                   src="/player_page.png"
@@ -278,40 +294,40 @@ export default async function LandingPage() {
 
         {/* Logo cloud */}
         <div className="mx-auto mt-8 max-w-7xl px-6 sm:mt-16 lg:px-8">
-          <h2 className="text-center text-lg font-semibold leading-8 text-gray-900 dark:text-white">
+          <h2 className="text-center text-lg leading-8 font-semibold text-gray-900 dark:text-white">
             {t("logoCloud.title")}
           </h2>
           <div className="mx-auto mt-10 grid max-w-lg grid-cols-4 items-center gap-x-8 gap-y-10 sm:max-w-xl sm:grid-cols-6 sm:gap-x-10 lg:mx-0 lg:max-w-none lg:grid-cols-5">
             <Image
-              className="col-span-2 max-h-12 w-full object-contain invert dark:invert-0 lg:col-span-1"
+              className="col-span-2 max-h-12 w-full object-contain invert lg:col-span-1 dark:invert-0"
               src="/teams/stclair.svg"
               alt="St. Clair College"
               width={158}
               height={48}
             />
             <Image
-              className="col-span-2 max-h-12 w-full object-contain invert dark:invert-0 lg:col-span-1"
+              className="col-span-2 max-h-12 w-full object-contain invert lg:col-span-1 dark:invert-0"
               src="/teams/cornell.svg"
               alt="Cornell University"
               width={158}
               height={48}
             />
             <Image
-              className="col-span-2 max-h-12 w-full object-contain invert dark:invert-0 lg:col-span-1"
+              className="col-span-2 max-h-12 w-full object-contain invert lg:col-span-1 dark:invert-0"
               src="/teams/fiu.svg"
               alt="Florida International University"
               width={158}
               height={48}
             />
             <Image
-              className="col-span-2 max-h-12 w-full object-contain invert dark:invert-0 lg:col-span-1"
+              className="col-span-2 max-h-12 w-full object-contain invert lg:col-span-1 dark:invert-0"
               src="/teams/gsu.svg"
               alt="Georgia State University"
               width={158}
               height={48}
             />
             <Image
-              className="col-span-2 max-h-12 w-full object-contain invert dark:invert-0 lg:col-span-1"
+              className="col-span-2 max-h-12 w-full object-contain invert lg:col-span-1 dark:invert-0"
               src="/teams/vlln.png"
               alt="VLLN"
               width={158}
@@ -323,10 +339,10 @@ export default async function LandingPage() {
         {/* Feature section */}
         <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-56 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-base font-semibold leading-7 text-sky-600 dark:text-sky-400">
+            <h2 className="text-primary text-base leading-7 font-semibold">
               {t("feature1.subtitle")}
             </h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-white">
               {t("feature1.title")}
             </p>
             <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
@@ -337,8 +353,8 @@ export default async function LandingPage() {
             <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
               {primaryFeatures.map((feature) => (
                 <div key={feature.name} className="flex flex-col">
-                  <dt className="text-base font-semibold leading-7 text-gray-900 dark:text-white">
-                    <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg text-sky-600 dark:bg-sky-500">
+                  <dt className="text-base leading-7 font-semibold text-gray-900 dark:text-white">
+                    <div className="text-primary dark:bg-primary mb-6 flex h-10 w-10 items-center justify-center rounded-lg">
                       <feature.icon
                         className="h-6 w-6 dark:text-white"
                         aria-hidden="true"
@@ -351,7 +367,7 @@ export default async function LandingPage() {
                     <p className="mt-6">
                       <Link
                         href={feature.href}
-                        className="text-sm font-semibold leading-6 text-sky-600 dark:text-sky-400"
+                        className="text-primary text-sm leading-6 font-semibold"
                       >
                         {t("primaryFeatures.href")}{" "}
                         <span aria-hidden="true">→</span>
@@ -368,10 +384,10 @@ export default async function LandingPage() {
         <div className="mt-32 sm:mt-56">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto max-w-2xl sm:text-center">
-              <h2 className="text-base font-semibold leading-7 text-sky-600 dark:text-sky-400">
+              <h2 className="text-primary text-base leading-7 font-semibold">
                 {t("feature2.subtitle")}
               </h2>
-              <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+              <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-white">
                 {t("feature2.title")}
               </p>
               <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
@@ -401,12 +417,12 @@ export default async function LandingPage() {
             </div>
           </div>
           <div className="mx-auto mt-16 max-w-7xl px-6 sm:mt-20 md:mt-24 lg:px-8">
-            <dl className="mx-auto grid max-w-2xl grid-cols-1 gap-x-6 gap-y-10 text-base leading-7 text-gray-600 dark:text-gray-300 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-3 lg:gap-x-8 lg:gap-y-16">
+            <dl className="mx-auto grid max-w-2xl grid-cols-1 gap-x-6 gap-y-10 text-base leading-7 text-gray-600 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-3 lg:gap-x-8 lg:gap-y-16 dark:text-gray-300">
               {secondaryFeatures.map((feature) => (
                 <div key={feature.name} className="relative pl-9">
                   <dt className="inline font-semibold text-gray-900 dark:text-white">
                     <feature.icon
-                      className="absolute left-1 top-1 h-5 w-5 text-sky-600 dark:text-sky-500"
+                      className="text-primary dark:text-primary absolute top-1 left-1 h-5 w-5"
                       aria-hidden="true"
                     />
                     {feature.name}
@@ -421,17 +437,17 @@ export default async function LandingPage() {
         {/* Stats */}
         <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-56 lg:px-8">
           <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl">
-            <h2 className="text-base font-semibold leading-8 text-sky-600 dark:text-sky-400">
+            <h2 className="text-primary text-base leading-8 font-semibold">
               {t("stats.subtitle")}
             </h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-white">
               {t("stats.title")}
             </p>
             <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
               {t("stats.description")}
             </p>
           </div>
-          <dl className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-10 text-gray-900 dark:text-white sm:mt-20 sm:grid-cols-2 sm:gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-4">
+          <dl className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-10 text-gray-900 sm:mt-20 sm:grid-cols-2 sm:gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-4 dark:text-white">
             {stats!.map((stat) => (
               <div
                 key={stat.id}
@@ -447,17 +463,17 @@ export default async function LandingPage() {
         </div>
 
         {/* Testimonials */}
-        <section className="bg-white px-6 pt-24 dark:bg-black sm:pt-32 lg:px-8">
+        <section className="bg-white px-6 pt-24 sm:pt-32 lg:px-8 dark:bg-black">
           <figure className="mx-auto max-w-2xl">
             <p className="sr-only">{t("testimonial.starRating")}</p>
-            <div className="flex gap-x-1 text-sky-600 dark:text-sky-400">
+            <div className="text-primary dark:text-primary flex gap-x-1">
               <StarIcon className="h-5 w-5 flex-none" aria-hidden="true" />
               <StarIcon className="h-5 w-5 flex-none" aria-hidden="true" />
               <StarIcon className="h-5 w-5 flex-none" aria-hidden="true" />
               <StarIcon className="h-5 w-5 flex-none" aria-hidden="true" />
               <StarIcon className="h-5 w-5 flex-none" aria-hidden="true" />
             </div>
-            <blockquote className="mt-10 text-xl font-semibold leading-8 tracking-tight text-gray-900 dark:text-white sm:text-2xl sm:leading-9">
+            <blockquote className="mt-10 text-xl leading-8 font-semibold tracking-tight text-gray-900 sm:text-2xl sm:leading-9 dark:text-white">
               <p>{t("testimonial.quote")}</p>
             </blockquote>
             <figcaption className="mt-10 flex items-center gap-x-6">
@@ -483,7 +499,7 @@ export default async function LandingPage() {
         {/* CTA section */}
         <div className="relative isolate mt-24 px-6 py-32 sm:mt-56 sm:py-40 lg:px-8">
           <svg
-            className="absolute inset-0 -z-10 h-full w-full stroke-gray-200 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)] dark:stroke-white/10"
+            className="absolute inset-0 -z-10 h-full w-full [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)] stroke-gray-200 dark:stroke-white/10"
             aria-hidden="true"
           >
             <defs>
@@ -550,7 +566,7 @@ export default async function LandingPage() {
             />
           </div>
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-white">
               {t("cta.subtitle")}
               <br />
               {t("cta.title")}
@@ -564,7 +580,7 @@ export default async function LandingPage() {
               </Button>
               <Link
                 href="/about"
-                className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
+                className="text-sm leading-6 font-semibold text-gray-900 dark:text-white"
               >
                 {t("cta.learnMore")} <span aria-hidden="true">→</span>
               </Link>
@@ -578,8 +594,8 @@ export default async function LandingPage() {
         <h2 id="footer-heading" className="sr-only">
           {t("footer.screenReader")}
         </h2>
-        <div className="mx-auto max-w-7xl px-6 pb-8 pt-4 lg:px-8">
-          <div className="border-t border-gray-900/10 pt-8 dark:border-white/10 md:flex md:items-center md:justify-between">
+        <div className="mx-auto max-w-7xl px-6 pt-4 pb-8 lg:px-8">
+          <div className="border-t border-gray-900/10 pt-8 md:flex md:items-center md:justify-between dark:border-white/10">
             <div className="flex space-x-6 md:order-2">
               {footerNavigation.social.map((item) => (
                 <Link

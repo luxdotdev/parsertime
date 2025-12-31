@@ -9,19 +9,21 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
-import { Scrim } from "@prisma/client";
+import type { Scrim } from "@prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { startTransition, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export function DangerZone({ scrim }: { scrim: Scrim }) {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteInput, setDeleteInput] = useState("");
   const [deleteEnabled, setDeleteEnabled] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const queryClient = useQueryClient();
   const router = useRouter();
   const t = useTranslations("scrimPage.editScrim");
 
@@ -30,26 +32,23 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
   }, [deleteInput, scrim.name]);
 
   async function handleDelete() {
-    setDeleteLoading(true);
     const res = await fetch(`/api/scrim/remove-scrim?id=${scrim.id}`, {
       method: "POST",
     });
 
     if (res.ok) {
-      toast({
-        title: t("deleteScrim.handleDelete.title"),
+      toast.success(t("deleteScrim.handleDelete.title"), {
         description: t("deleteScrim.handleDelete.description"),
         duration: 5000,
       });
+      void queryClient.invalidateQueries({ queryKey: ["scrims"] });
       router.push("/dashboard");
     } else {
-      toast({
-        title: t("deleteScrim.handleDelete.errorTitle"),
+      toast.error(t("deleteScrim.handleDelete.errorTitle"), {
         description: t("deleteScrim.handleDelete.errorDescription", {
           res: `${await res.text()} (${res.status})`,
         }),
         duration: 5000,
-        variant: "destructive",
       });
     }
 
@@ -97,10 +96,11 @@ export function DangerZone({ scrim }: { scrim: Scrim }) {
               <div className="mt-4 flex justify-end space-x-4">
                 <Button
                   variant="destructive"
-                  disabled={!deleteEnabled || deleteLoading}
-                  onClick={() =>
-                    startTransition(async () => await handleDelete())
-                  }
+                  disabled={deleteLoading || !deleteEnabled}
+                  onClick={() => {
+                    setDeleteLoading(true);
+                    void handleDelete();
+                  }}
                 >
                   {deleteLoading ? (
                     <>

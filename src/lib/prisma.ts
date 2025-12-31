@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
-const prismaClientSingleton = () => {
+function prismaClientSingleton() {
   if (process.env.NODE_ENV === "test") {
     return new PrismaClient({
       datasources: {
@@ -13,10 +13,9 @@ const prismaClientSingleton = () => {
 
   // For other environments, return the default PrismaClient
   return new PrismaClient();
-};
+}
 
 declare global {
-  // eslint-disable-next-line no-var
   var prisma: undefined | ReturnType<typeof prismaClientSingleton>;
 }
 

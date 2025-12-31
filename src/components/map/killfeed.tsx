@@ -11,7 +11,15 @@ import prisma from "@/lib/prisma";
 import { groupKillsIntoFights, toTimestamp } from "@/lib/utils";
 import { getTranslations } from "next-intl/server";
 
-export async function Killfeed({ id }: { id: number }) {
+export async function Killfeed({
+  id,
+  team1Color,
+  team2Color,
+}: {
+  id: number;
+  team1Color: string;
+  team2Color: string;
+}) {
   const [finalRound, playerTeams, fights] = await Promise.all([
     prisma.roundEnd.findFirst({
       where: { MapDataId: id },
@@ -67,7 +75,7 @@ export async function Killfeed({ id }: { id: number }) {
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth="2"
-              className="h-4 w-4 text-muted-foreground"
+              className="text-muted-foreground h-4 w-4"
             >
               <circle cx="12" cy="12" r="10" />
               <polyline points="12 6 12 12 16 14" />
@@ -79,7 +87,7 @@ export async function Killfeed({ id }: { id: number }) {
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("minutes", {
                 count: ((finalRound?.match_time ?? 0) / 60).toFixed(2),
               })}
@@ -97,7 +105,7 @@ export async function Killfeed({ id }: { id: number }) {
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth="2"
-              className="h-4 w-4 text-muted-foreground"
+              className="text-muted-foreground h-4 w-4"
             >
               <circle cx="12" cy="12" r="10" />
               <line x1="22" x2="18" y1="12" y2="12" />
@@ -108,12 +116,12 @@ export async function Killfeed({ id }: { id: number }) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              <span className="text-blue-500">{team1Kills}</span> /{" "}
-              <span className="text-red-500">{team2Kills}</span>
+              <span style={{ color: team1Color }}>{team1Kills}</span> /{" "}
+              <span style={{ color: team2Color }}>{team2Kills}</span>
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {team1Name} / {team2Name}
             </p>
           </CardFooter>
@@ -129,7 +137,7 @@ export async function Killfeed({ id }: { id: number }) {
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth="2"
-              className="h-4 w-4 text-muted-foreground"
+              className="text-muted-foreground h-4 w-4"
             >
               <circle cx="9" cy="12" r="1" />
               <circle cx="15" cy="12" r="1" />
@@ -140,12 +148,12 @@ export async function Killfeed({ id }: { id: number }) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              <span className="text-blue-500">{team2Kills}</span> /{" "}
-              <span className="text-red-500">{team1Kills}</span>
+              <span style={{ color: team2Color }}>{team2Kills}</span> /{" "}
+              <span style={{ color: team1Color }}>{team1Kills}</span>
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {team1Name} / {team2Name}
             </p>
           </CardFooter>
@@ -163,7 +171,7 @@ export async function Killfeed({ id }: { id: number }) {
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth="2"
-              className="h-4 w-4 text-muted-foreground"
+              className="text-muted-foreground h-4 w-4"
             >
               <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
               <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
@@ -175,12 +183,12 @@ export async function Killfeed({ id }: { id: number }) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              <span className="text-blue-500">{team1FightWins}</span> /{" "}
-              <span className="text-red-500">{team2FightWins}</span>
+              <span style={{ color: team1Color }}>{team1FightWins}</span> /{" "}
+              <span style={{ color: team2Color }}>{team2FightWins}</span>
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {team1Name} / {team2Name}
             </p>
           </CardFooter>
@@ -196,6 +204,8 @@ export async function Killfeed({ id }: { id: number }) {
               fights={fights}
               team1={team1Name ?? "Team 1"}
               team2={team2Name ?? "Team 2"}
+              team1Color={team1Color}
+              team2Color={team2Color}
             />
           </CardContent>
           <CardFooter className="float-right">

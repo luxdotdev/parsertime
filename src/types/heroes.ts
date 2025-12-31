@@ -187,6 +187,11 @@ export type Tracer = {
   image: "tracer.png";
 };
 
+export type Vendetta = {
+  name: "Vendetta";
+  image: "vendetta.png";
+};
+
 export type Venture = {
   name: "Venture";
   image: "venture.png";
@@ -254,6 +259,7 @@ export type DPS =
   | Symmetra
   | Torbjorn
   | Tracer
+  | Vendetta
   | Venture
   | Widowmaker;
 export type Support =
@@ -309,6 +315,7 @@ export const heroRoleMapping: Record<HeroName, "Tank" | "Damage" | "Support"> =
     Symmetra: "Damage",
     Torbjörn: "Damage",
     Tracer: "Damage",
+    Vendetta: "Damage",
     Venture: "Damage",
     Widowmaker: "Damage",
     Winston: "Tank",
@@ -355,6 +362,7 @@ export const roleHeroMapping: Record<
     "Symmetra",
     "Torbjörn",
     "Tracer",
+    "Vendetta",
     "Venture",
     "Widowmaker",
   ],
@@ -372,6 +380,64 @@ export const roleHeroMapping: Record<
     "Wuyang",
     "Zenyatta",
   ],
+};
+
+export const subroleHeroMapping: Record<
+  | "HitscanDamage"
+  | "FlexDamage"
+  | "GroundTank"
+  | "DiveTank"
+  | "FlexSupport"
+  | "MainSupport",
+  HeroName[]
+> = {
+  HitscanDamage: [
+    "Ashe",
+    "Bastion",
+    "Cassidy",
+    "Hanzo",
+    "Freja",
+    "Sojourn",
+    "Soldier: 76",
+    "Tracer",
+    "Widowmaker",
+  ],
+  FlexDamage: [
+    "Echo",
+    "Genji",
+    "Hanzo",
+    "Junkrat",
+    "Mei",
+    "Pharah",
+    "Reaper",
+    "Sombra",
+    "Symmetra",
+    "Torbjörn",
+    "Tracer",
+    "Vendetta",
+    "Venture",
+  ],
+  GroundTank: [
+    "Junker Queen",
+    "Mauga",
+    "Orisa",
+    "Ramattra",
+    "Reinhardt",
+    "Roadhog",
+    "Sigma",
+    "Zarya",
+  ],
+  DiveTank: ["D.Va", "Doomfist", "Hazard", "Winston", "Wrecking Ball"],
+  FlexSupport: [
+    "Ana",
+    "Baptiste",
+    "Illari",
+    "Kiriko",
+    "Moira",
+    "Wuyang",
+    "Zenyatta",
+  ],
+  MainSupport: ["Brigitte", "Juno", "Lifeweaver", "Lúcio", "Mercy"],
 };
 
 export const heroPriority = {

@@ -1,11 +1,11 @@
 "use client";
 
 import {
-  ColumnDef,
-  ColumnFiltersState,
-  Header,
-  SortingState,
-  VisibilityState,
+  type ColumnDef,
+  type ColumnFiltersState,
+  type Header,
+  type SortingState,
+  type VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -15,7 +15,9 @@ import {
 } from "@tanstack/react-table";
 import * as React from "react";
 
+import { PlayerHoverCard } from "@/components/player/hover-card";
 import { Button } from "@/components/ui/button";
+import { Link } from "@/components/ui/link";
 import {
   Table,
   TableBody,
@@ -27,21 +29,39 @@ import {
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { PlayerData, aggregatePlayerData } from "@/lib/player-table-data";
-import { cn, toTimestamp } from "@/lib/utils";
+import { useColorblindMode } from "@/hooks/use-colorblind-mode";
+import type { MVPScoreResult } from "@/lib/mvp-score";
+import { type PlayerData, aggregatePlayerData } from "@/lib/player-table-data";
+import { cn, round, toTimestamp } from "@/lib/utils";
 import {
   ChevronDownIcon,
   ChevronUpDownIcon,
   ChevronUpIcon,
 } from "@heroicons/react/20/solid";
-import { PlayerStat } from "@prisma/client";
+import type { PlayerStat } from "@prisma/client";
+import { StarFilledIcon } from "@radix-ui/react-icons";
 import { GeistMono } from "geist/font/mono";
+import type { Route } from "next";
 import { useTranslations } from "next-intl";
+import { usePathname } from "next/navigation";
 
-export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
+export function OverviewTable({
+  playerStats,
+  team1Name,
+  team2Name,
+  team1MVP,
+  team2MVP,
+  mvpScores,
+}: {
+  playerStats: PlayerStat[];
+  team1Name: string;
+  team2Name: string;
+  team1MVP: string;
+  team2MVP: string;
+  mvpScores?: MVPScoreResult[];
+}) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -49,11 +69,14 @@ export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const pathname = usePathname();
 
   const tableData = React.useMemo(
     () => aggregatePlayerData(playerStats),
     [playerStats]
   );
+
+  const { team1: team1Color, team2: team2Color } = useColorblindMode();
 
   const t = useTranslations("mapPage.overviewTable");
 
@@ -72,18 +95,54 @@ export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
           {t("header.playerName")}
         </OverviewTableHeader>
       ),
-      cell: ({ row }) => (
-        <button
-          type="button"
-          onClick={() =>
-            (window.location.href = `${
-              window.location.href
-            }/player/${encodeURIComponent(row.getValue("playerName"))}`)
-          }
-        >
-          {row.getValue("playerName")}
-        </button>
-      ),
+      cell: ({ row }) => {
+        const playerName = row.getValue<string>("playerName");
+        const playerTeam = row.getValue<string>("playerTeam");
+
+        return (
+          <div className="flex items-center">
+            <PlayerHoverCard player={playerName}>
+              <Link
+                href={
+                  `${pathname}/player/${encodeURIComponent(playerName)}` as Route
+                }
+                prefetch={true}
+              >
+                <span
+                  style={{
+                    color: playerTeam === team1Name ? team1Color : team2Color,
+                  }}
+                >
+                  {playerName}
+                </span>
+              </Link>
+            </PlayerHoverCard>
+            {playerName === team1MVP || playerName === team2MVP ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <StarFilledIcon
+                    className="ml-1 w-4 min-w-4"
+                    style={{
+                      color: playerName === team1MVP ? team1Color : team2Color,
+                    }}
+                  />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-md">
+                  <MVPScoreBreakdown
+                    playerName={playerName}
+                    mvpScores={mvpScores}
+                    teamName={
+                      playerName === team1MVP
+                        ? `${team1Name} MVP`
+                        : `${team2Name} MVP`
+                    }
+                  />
+                </TooltipContent>
+              </Tooltip>
+            ) : null}
+          </div>
+        );
+      },
       enableSorting: true,
       sortingFn: "basic",
       filterFn: "includesString",
@@ -111,7 +170,17 @@ export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
         </OverviewTableHeader>
       ),
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("playerTeam")}</div>
+        <div
+          className="capitalize"
+          style={{
+            color:
+              row.getValue("playerTeam") === team1Name
+                ? team1Color
+                : team2Color,
+          }}
+        >
+          {row.getValue("playerTeam")}
+        </div>
       ),
       enableSorting: true,
       enableColumnFilter: false,
@@ -230,7 +299,7 @@ export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
       ),
       cell: ({ row }) => (
         <div className={cn(GeistMono.className, "text-right capitalize")}>
-          {row.getValue<number>("heroDmgDealt").toFixed(2)}
+          {round(row.getValue<number>("heroDmgDealt")).toLocaleString()}
         </div>
       ),
       enableSorting: true,
@@ -245,7 +314,7 @@ export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
       ),
       cell: ({ row }) => (
         <div className={cn(GeistMono.className, "text-right capitalize")}>
-          {row.getValue<number>("dmgReceived").toFixed(2)}
+          {round(row.getValue<number>("dmgReceived")).toLocaleString()}
         </div>
       ),
       enableSorting: true,
@@ -260,7 +329,7 @@ export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
       ),
       cell: ({ row }) => (
         <div className={cn(GeistMono.className, "text-right capitalize")}>
-          {row.getValue<number>("healingReceived").toFixed(2)}
+          {round(row.getValue<number>("healingReceived")).toLocaleString()}
         </div>
       ),
       enableSorting: true,
@@ -275,7 +344,7 @@ export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
       ),
       cell: ({ row }) => (
         <div className={cn(GeistMono.className, "text-right capitalize")}>
-          {row.getValue<number>("healingDealt").toFixed(2)}
+          {round(row.getValue<number>("healingDealt")).toLocaleString()}
         </div>
       ),
       enableSorting: true,
@@ -348,6 +417,7 @@ export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
     ultsUsed: t("tooltips.ultsUsed"),
   };
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: tableData,
     columns,
@@ -420,7 +490,7 @@ export function OverviewTable({ playerStats }: { playerStats: PlayerStat[] }) {
   );
 }
 
-const OverviewTableHeader = ({
+function OverviewTableHeader({
   tooltip,
   header,
   children,
@@ -428,32 +498,109 @@ const OverviewTableHeader = ({
   tooltip?: string;
   header: Header<PlayerData, unknown>;
   children: React.ReactNode;
-}) => {
+}) {
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger>
-          {header.isPlaceholder ? null : header.column.getCanSort() ? (
-            <Button
-              variant="ghost"
-              onClick={header.column.getToggleSortingHandler()}
-              className="h-max w-full p-1"
-            >
-              {children}
-              {!header.column.getIsSorted() && (
-                <ChevronUpDownIcon className="w-4 min-w-4" />
-              )}
-              {{
-                asc: <ChevronUpIcon className="w-4 min-w-4" />,
-                desc: <ChevronDownIcon className="w-4 min-w-4" />,
-              }[header.column.getIsSorted() as string] ?? null}
-            </Button>
-          ) : (
-            children
-          )}
-        </TooltipTrigger>
-        <TooltipContent>{tooltip ?? ""}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger>
+        {header.isPlaceholder ? null : header.column.getCanSort() ? (
+          <Button
+            variant="ghost"
+            onClick={header.column.getToggleSortingHandler()}
+            className="h-max w-full p-1"
+          >
+            {children}
+            {!header.column.getIsSorted() && (
+              <ChevronUpDownIcon className="w-4 min-w-4" />
+            )}
+            {{
+              asc: <ChevronUpIcon className="w-4 min-w-4" />,
+              desc: <ChevronDownIcon className="w-4 min-w-4" />,
+            }[header.column.getIsSorted() as string] ?? null}
+          </Button>
+        ) : (
+          children
+        )}
+      </TooltipTrigger>
+      <TooltipContent>{tooltip ?? ""}</TooltipContent>
+    </Tooltip>
   );
-};
+}
+
+function MVPScoreBreakdown({
+  playerName,
+  mvpScores,
+  teamName,
+}: {
+  playerName: string;
+  mvpScores?: MVPScoreResult[];
+  teamName: string;
+}) {
+  const playerScore = mvpScores?.find((s) => s.playerName === playerName);
+
+  if (!playerScore) {
+    return <div className="text-sm font-semibold">{teamName}</div>;
+  }
+
+  const topContributions = [...playerScore.contributions]
+    .sort((a, b) => Math.abs(b.pointsAwarded) - Math.abs(a.pointsAwarded))
+    .slice(0, 5);
+
+  function formatStatName(stat: string): string {
+    return stat
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="border-b pb-2">
+        <div className="text-sm font-semibold">{teamName}</div>
+        <div className="text-muted-foreground text-xs">
+          Total Score: {playerScore.totalScore.toFixed(2)}
+        </div>
+      </div>
+      <div className="space-y-1.5">
+        <div className="text-xs font-medium">Top Contributions:</div>
+        {topContributions.map((contribution) => (
+          <div key={contribution.stat} className="space-y-0.5 text-xs">
+            <div className="flex items-center justify-between">
+              <span className="font-medium">
+                {formatStatName(contribution.stat)}
+              </span>
+              <span
+                className={cn(
+                  "font-semibold",
+                  contribution.pointsAwarded > 0
+                    ? "text-green-500"
+                    : "text-red-500"
+                )}
+              >
+                {contribution.pointsAwarded > 0 ? "+" : ""}
+                {contribution.pointsAwarded.toFixed(1)} pts
+              </span>
+            </div>
+            <div className="text-muted-foreground space-x-2 text-[10px]">
+              <span>
+                {contribution.per10Value.toFixed(1)}/10min vs avg{" "}
+                {contribution.heroAverage.toFixed(1)}
+              </span>
+              <span>•</span>
+              <span>
+                {contribution.zScore > 0 ? "+" : ""}
+                {contribution.zScore.toFixed(2)}σ
+              </span>
+              <span>•</span>
+              <span>{contribution.percentile.toFixed(0)}th percentile</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      {playerScore.contributions.length > 5 && (
+        <div className="text-muted-foreground border-t pt-1 text-[10px]">
+          + {playerScore.contributions.length - 5} more stats calculated
+        </div>
+      )}
+    </div>
+  );
+}

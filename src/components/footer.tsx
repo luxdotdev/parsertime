@@ -1,20 +1,20 @@
+import { Link } from "@/components/ui/link";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { get } from "@vercel/edge-config";
+import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
-import Link from "next/link";
 
-export default async function Footer() {
+export async function Footer() {
   const t = await getTranslations("footer");
 
   const [version, changelog] = await Promise.all([
     get<string>("version"),
-    get<string>("changelog"),
+    get<Route>("changelog"),
   ]);
 
   return (
@@ -30,20 +30,19 @@ export default async function Footer() {
               className="h-7 w-auto dark:invert"
             />
           </Link>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href={changelog ?? "https://lux.dev/blog"}
-                  target="_blank"
-                  className="text-xs text-gray-600 dark:text-gray-300"
-                >
-                  {version ?? ""}
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent>{t("changelog")}</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href={changelog ?? "https://lux.dev/blog"}
+                target="_blank"
+                className="text-xs text-gray-600 dark:text-gray-300"
+              >
+                {version ?? ""}
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>{t("changelog")}</TooltipContent>
+          </Tooltip>
         </div>
 
         <div className="mt-6 flex flex-wrap items-center justify-center gap-4 lg:mt-0 lg:gap-6">
@@ -86,7 +85,7 @@ export default async function Footer() {
           </Link>
         </div>
 
-        <p className="mt-6 text-sm text-gray-500 dark:text-gray-400 lg:mt-0">
+        <p className="mt-6 text-sm text-gray-500 lg:mt-0 dark:text-gray-400">
           &copy; 2024&ndash;{new Date().getFullYear()} lux.dev.
         </p>
       </div>

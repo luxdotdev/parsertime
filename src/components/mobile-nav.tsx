@@ -2,25 +2,34 @@
 
 import { TeamSwitcher } from "@/components/dashboard/team-switcher";
 import { Button } from "@/components/ui/button";
+import { Link } from "@/components/ui/link";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { Session } from "next-auth";
+import type { Route } from "next";
+import type { Session } from "next-auth";
 import Image from "next/image";
-import Link, { LinkProps } from "next/link";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 
-const mainNav = [
+const mainNav: { title: string; href: Route }[] = [
   { title: "Dashboard", href: "/dashboard" },
   { title: "Stats", href: "/stats" },
+  { title: "Hero Stats", href: "/stats/hero" },
+  { title: "Compare Players", href: "/stats/compare" },
   { title: "Teams", href: "/team" },
   { title: "Settings", href: "/settings" },
   { title: "Contact", href: "/contact" },
   { title: "Docs", href: "https://docs.parsertime.app" },
 ];
 
-export function MobileNav({ session }: { session: Session | null }) {
+export function MobileNav({
+  session,
+  className,
+}: {
+  session: Session | null;
+  className?: string;
+}) {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -28,7 +37,10 @@ export function MobileNav({ session }: { session: Session | null }) {
       <SheetTrigger asChild>
         <Button
           variant="ghost"
-          className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
+          className={cn(
+            "mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0",
+            className
+          )}
         >
           <svg
             strokeWidth="1.5"
@@ -62,9 +74,9 @@ export function MobileNav({ session }: { session: Session | null }) {
           <span className="sr-only">Toggle Menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="pr-0">
+      <SheetContent side="left" className="pt-3 pr-0 pl-4">
         <TeamSwitcher session={session} />
-        <div className="p-4" />
+        <div className="p-2" />
         <MobileLink
           href="/"
           className="flex items-center"
@@ -100,19 +112,18 @@ export function MobileNav({ session }: { session: Session | null }) {
   );
 }
 
-interface MobileLinkProps extends LinkProps {
-  href: string;
+type MobileLinkProps = {
+  href: Route;
   onOpenChange?: (open: boolean) => void;
   children: React.ReactNode;
   className?: string;
-}
+};
 
 function MobileLink({
   href,
   onOpenChange,
   className,
   children,
-  ...props
 }: MobileLinkProps) {
   const router = useRouter();
   return (
@@ -120,12 +131,11 @@ function MobileLink({
       href={href}
       onClick={() => {
         if (href.toString().startsWith("http")) return;
-        router.push(href.toString());
+        router.push(href.toString() as Route);
         onOpenChange?.(false);
       }}
       className={cn(className)}
       target={href.toString().startsWith("http") ? "_blank" : undefined}
-      {...props}
     >
       {children}
     </Link>

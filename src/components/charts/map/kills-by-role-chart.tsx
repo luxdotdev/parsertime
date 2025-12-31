@@ -1,7 +1,8 @@
 "use client";
 
-import { HeroName, heroRoleMapping } from "@/types/heroes";
-import { Kill } from "@prisma/client";
+import { useColorblindMode } from "@/hooks/use-colorblind-mode";
+import { type HeroName, heroRoleMapping } from "@/types/heroes";
+import type { Kill } from "@prisma/client";
 import { useTranslations } from "next-intl";
 import {
   Bar,
@@ -10,11 +11,11 @@ import {
   Legend,
   ResponsiveContainer,
   Tooltip,
-  TooltipProps,
+  type TooltipProps,
   XAxis,
   YAxis,
 } from "recharts";
-import {
+import type {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
@@ -35,16 +36,18 @@ function CustomTooltip({
 }: TooltipProps<ValueType, NameType> & {
   teamNames: readonly [string, string];
 }) {
-  if (active && payload && payload.length) {
+  const { team1, team2 } = useColorblindMode();
+
+  if (active && payload?.length) {
     return (
-      <div className="z-50 overflow-hidden rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
+      <div className="bg-primary text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 overflow-hidden rounded-md px-3 py-1.5 text-xs">
         <h3 className="text-base">{label}</h3>
         <p className="text-sm">
-          <strong className="text-blue-500">{teamNames[0]}</strong>:{" "}
+          <strong style={{ color: team1 }}>{teamNames[0]}</strong>:{" "}
           {payload[0].value}
         </p>
         <p className="text-sm">
-          <strong className="text-red-500">{teamNames[1]}</strong>:{" "}
+          <strong style={{ color: team2 }}>{teamNames[1]}</strong>:{" "}
           {payload[1].value}
         </p>
       </div>
@@ -92,6 +95,8 @@ export function KillsByRoleChart({ team1Kills, team2Kills, teamNames }: Props) {
     },
   ];
 
+  const { team1, team2 } = useColorblindMode();
+
   return (
     <ResponsiveContainer width="100%" height={500}>
       <BarChart
@@ -112,13 +117,13 @@ export function KillsByRoleChart({ team1Kills, team2Kills, teamNames }: Props) {
         <Tooltip content={<CustomTooltip teamNames={teamNames} />} />
         <Bar
           dataKey="team1Kills"
-          fill="#0ea5e9"
+          fill={team1}
           name={teamNames[0]}
           radius={[4, 4, 0, 0]}
         />
         <Bar
           dataKey="team2Kills"
-          fill="#ef4444"
+          fill={team2}
           name={teamNames[1]}
           radius={[4, 4, 0, 0]}
         />

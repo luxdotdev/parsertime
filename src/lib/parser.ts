@@ -1,11 +1,13 @@
-import { CreateScrimRequestData } from "@/app/api/scrim/create-scrim/route";
+import type { CreateScrimRequestData } from "@/app/api/scrim/create-scrim/route";
+import { calculateStats } from "@/lib/calculate-stats";
 import { headers } from "@/lib/headers";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
+import { notifications } from "@/lib/notifications";
 import prisma from "@/lib/prisma";
 import { toTitleCase } from "@/lib/utils";
-import { ParserData } from "@/types/parser";
-import { $Enums, MapType } from "@prisma/client";
-import { Session } from "next-auth";
+import type { ParserData } from "@/types/parser";
+import { type $Enums, MapType, type Role } from "@prisma/client";
+import type { Session } from "next-auth";
 import * as XLSX from "xlsx";
 
 const XLSX_FILE =
@@ -30,6 +32,32 @@ export async function parseData(file: File) {
   }
 }
 
+/**
+ * Cleans invalid lines from the parsed data
+ * - Removes mercy_rez lines that contain null values (empty fields)
+ * - Replaces asterisk values with "0"
+ */
+function cleanInvalidLines(lines: string[][]): string[][] {
+  return lines
+    .filter((line) => {
+      // Remove invalid mercy_rez lines that contain empty values
+      if (line[0] === "mercy_rez") {
+        // Check if any field (except the first one which is event type) is empty
+        return !line.slice(1).some((field) => field === "" || field == null);
+      }
+      return true;
+    })
+    .map((line) => {
+      // Replace asterisk values with "0"
+      return line.map((field) => {
+        if (field.includes("*")) {
+          return "0";
+        }
+        return field;
+      });
+    });
+}
+
 export async function parseDataFromTXT(file: File) {
   const fileContent =
     process.env.NODE_ENV !== "test"
@@ -40,6 +68,9 @@ export async function parseDataFromTXT(file: File) {
 
   // remove first element of each array
   lines.forEach((line) => line.shift());
+
+  // Clean invalid lines
+  const cleanedLines = cleanInvalidLines(lines);
 
   // Indexes for the 'kill' event type to skip parsing
   const killSkipIndexes = {
@@ -108,7 +139,7 @@ export async function parseDataFromTXT(file: File) {
   }
 
   const categorizedData: Record<string, string[][]> = {};
-  lines.forEach((line) => {
+  cleanedLines.forEach((line) => {
     const eventType = line[0];
     if (headers[eventType]) {
       if (!categorizedData[eventType]) {
@@ -150,6 +181,7 @@ export async function parseDataFromTXT(file: File) {
 
   const sheetName = workbook.SheetNames as $Enums.EventType[];
 
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const result = {} as ParserData;
 
   // for each sheet, convert to json and add it to the result object.
@@ -178,6 +210,7 @@ export async function parseDataFromXLSX(file: File) {
   const workbook = XLSX.read(data, { type: "binary" });
   const sheetName = workbook.SheetNames as $Enums.EventType[];
 
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const result = {} as ParserData;
 
   // for each sheet, convert to json and add it to the result object.
@@ -225,6 +258,30 @@ export async function createNewScrimFromParsedData(
 
   Logger.log("Scrim created: ", scrim, session);
 
+  // Get all users in the team and get the team name
+  const [users, team] = await Promise.all([
+    prisma.user.findMany({
+      select: { id: true },
+      where: { teams: { some: { id: teamId ?? 0 } } },
+    }),
+    prisma.team.findFirst({
+      where: { id: teamId ?? 0 },
+      select: { name: true },
+    }),
+  ]);
+
+  // Create a notification for each user UNLESS individual scrim
+  if (teamId !== 0 && teamId !== null) {
+    for (const user of users) {
+      await notifications.createInAppNotification({
+        userId: user.id,
+        title: `${team?.name}: New scrim uploaded by ${session.user?.name}`,
+        description: `Scrim "${scrim.name}" has been uploaded by ${session.user?.name} to ${team?.name}.`,
+        href: `/${teamId}/scrim/${scrim.id}`,
+      });
+    }
+  }
+
   const mapData = await prisma.mapData.create({
     data: {
       scrimId: scrim.id,
@@ -244,6 +301,21 @@ export async function createNewScrimFromParsedData(
       },
     },
   });
+
+  if (data.heroBans) {
+    await prisma.heroBan.createMany({
+      data: data.heroBans.map((ban) => ({
+        scrimId: scrim.id,
+        hero: ban.hero,
+        team:
+          ban.team === "team1"
+            ? data.map.match_start[0][4]
+            : data.map.match_start[0][5],
+        banPosition: ban.banPosition,
+        MapDataId: map.id,
+      })),
+    });
+  }
 
   await prisma.scrim.update({
     where: {
@@ -286,6 +358,8 @@ export async function createNewScrimFromParsedData(
       createUltimateEndRows(firstMap, scrim, map.id),
       createUltimateStartRows(firstMap, scrim, map.id),
     ]);
+
+    await calculateStatsForMap(mapData.id, scrim.id);
   } catch (error) {
     Logger.error("Error creating map data: ", error, session);
 
@@ -311,6 +385,11 @@ export async function createNewScrimFromParsedData(
 type CreateNewMapArgs = {
   scrimId: number;
   map: ParserData;
+  heroBans?: {
+    hero: string;
+    team: string;
+    banPosition: number;
+  }[];
 };
 
 export async function createNewMap(data: CreateNewMapArgs, session: Session) {
@@ -345,6 +424,21 @@ export async function createNewMap(data: CreateNewMapArgs, session: Session) {
 
   Logger.log("Map created: ", map, session);
 
+  if (data.heroBans && data.heroBans.length > 0) {
+    await prisma.heroBan.createMany({
+      data: data.heroBans.map((ban) => ({
+        scrimId: data.scrimId,
+        hero: ban.hero,
+        team:
+          ban.team === "team1"
+            ? data.map.match_start[0][4]
+            : data.map.match_start[0][5],
+        banPosition: ban.banPosition,
+        MapDataId: map.id,
+      })),
+    });
+  }
+
   await prisma.scrim.update({
     where: {
       id: data.scrimId,
@@ -355,6 +449,14 @@ export async function createNewMap(data: CreateNewMapArgs, session: Session) {
           id: map.id,
         },
       },
+    },
+  });
+
+  await prisma.note.create({
+    data: {
+      content: "<p>Add your notes here...</p>",
+      scrimId: data.scrimId,
+      MapDataId: mapData.id,
     },
   });
 
@@ -396,6 +498,267 @@ export async function createNewMap(data: CreateNewMapArgs, session: Session) {
     Logger.log("Map deleted: ", map.id);
 
     throw new Error("Invalid Log Format");
+  }
+
+  await calculateStatsForMap(map.id, data.scrimId);
+}
+
+export async function calculateStatsForMap(mapDataId: number, scrimId: number) {
+  Logger.log("Calculating stats for map: ", mapDataId, "scrim: ", scrimId);
+  const players = await prisma.playerStat.findMany({
+    where: {
+      MapDataId: mapDataId,
+    },
+    select: {
+      player_name: true,
+    },
+    distinct: ["player_name"],
+  });
+
+  Logger.log(
+    "Found ",
+    players.length,
+    " players for map: ",
+    mapDataId,
+    "scrim: ",
+    scrimId
+  );
+
+  for (const player of players) {
+    try {
+      Logger.log(
+        "Calculating stats for player: ",
+        player.player_name,
+        "on map: ",
+        mapDataId,
+        "scrim: ",
+        scrimId
+      );
+
+      const stats = await calculateStats(mapDataId, player.player_name);
+
+      const calculatedStatRecords = [];
+
+      if (
+        stats.fletaDeadliftPercentage !== null &&
+        !isNaN(stats.fletaDeadliftPercentage)
+      ) {
+        calculatedStatRecords.push({
+          scrimId,
+          playerName: stats.playerName,
+          hero: stats.hero,
+          role: stats.role as Role,
+          stat: "FLETA_DEADLIFT_PERCENTAGE" as const,
+          value: stats.fletaDeadliftPercentage,
+          MapDataId: mapDataId,
+        });
+      }
+
+      if (
+        stats.firstPickPercentage !== null &&
+        !isNaN(stats.firstPickPercentage)
+      ) {
+        calculatedStatRecords.push({
+          scrimId,
+          playerName: stats.playerName,
+          hero: stats.hero,
+          role: stats.role as Role,
+          stat: "FIRST_PICK_PERCENTAGE" as const,
+          value: stats.firstPickPercentage,
+          MapDataId: mapDataId,
+        });
+      }
+
+      if (stats.firstPickCount !== null && !isNaN(stats.firstPickCount)) {
+        calculatedStatRecords.push({
+          scrimId,
+          playerName: stats.playerName,
+          hero: stats.hero,
+          role: stats.role as Role,
+          stat: "FIRST_PICK_COUNT" as const,
+          value: stats.firstPickCount,
+          MapDataId: mapDataId,
+        });
+      }
+
+      if (
+        stats.firstDeathPercentage !== null &&
+        !isNaN(stats.firstDeathPercentage)
+      ) {
+        calculatedStatRecords.push({
+          scrimId,
+          playerName: stats.playerName,
+          hero: stats.hero,
+          role: stats.role as Role,
+          stat: "FIRST_DEATH_PERCENTAGE" as const,
+          value: stats.firstDeathPercentage,
+          MapDataId: mapDataId,
+        });
+      }
+
+      if (stats.firstDeathCount !== null && !isNaN(stats.firstDeathCount)) {
+        calculatedStatRecords.push({
+          scrimId,
+          playerName: stats.playerName,
+          hero: stats.hero,
+          role: stats.role as Role,
+          stat: "FIRST_DEATH_COUNT" as const,
+          value: stats.firstDeathCount,
+          MapDataId: mapDataId,
+        });
+      }
+
+      if (
+        stats.mvpScore !== null &&
+        stats.mvpScore !== undefined &&
+        !isNaN(stats.mvpScore)
+      ) {
+        calculatedStatRecords.push({
+          scrimId,
+          playerName: stats.playerName,
+          hero: stats.hero,
+          role: stats.role as Role,
+          stat: "MVP_SCORE" as const,
+          value: stats.mvpScore,
+          MapDataId: mapDataId,
+        });
+      }
+
+      if (stats.isMapMVP) {
+        calculatedStatRecords.push({
+          scrimId,
+          playerName: stats.playerName,
+          hero: stats.hero,
+          role: stats.role as Role,
+          stat: "MAP_MVP_COUNT" as const,
+          value: 1,
+          MapDataId: mapDataId,
+        });
+      }
+
+      if (stats.ajaxCount !== null && !isNaN(stats.ajaxCount)) {
+        calculatedStatRecords.push({
+          scrimId,
+          playerName: stats.playerName,
+          hero: stats.hero,
+          role: stats.role as Role,
+          stat: "AJAX_COUNT" as const,
+          value: stats.ajaxCount,
+          MapDataId: mapDataId,
+        });
+      }
+
+      if (
+        stats.averageUltChargeTime !== null &&
+        !isNaN(stats.averageUltChargeTime)
+      ) {
+        calculatedStatRecords.push({
+          scrimId,
+          playerName: stats.playerName,
+          hero: stats.hero,
+          role: stats.role as Role,
+          stat: "AVERAGE_ULT_CHARGE_TIME" as const,
+          value: stats.averageUltChargeTime,
+          MapDataId: mapDataId,
+        });
+      }
+
+      if (
+        stats.averageTimeToUseUlt !== null &&
+        !isNaN(stats.averageTimeToUseUlt)
+      ) {
+        calculatedStatRecords.push({
+          scrimId,
+          playerName: stats.playerName,
+          hero: stats.hero,
+          role: stats.role as Role,
+          stat: "AVERAGE_TIME_TO_USE_ULT" as const,
+          value: stats.averageTimeToUseUlt,
+          MapDataId: mapDataId,
+        });
+      }
+
+      if (stats.droughtTime !== null && !isNaN(stats.droughtTime)) {
+        calculatedStatRecords.push({
+          scrimId,
+          playerName: stats.playerName,
+          hero: stats.hero,
+          role: stats.role as Role,
+          stat: "AVERAGE_DROUGHT_TIME" as const,
+          value: stats.droughtTime,
+          MapDataId: mapDataId,
+        });
+      }
+
+      if (stats.killsPerUltimate !== null && !isNaN(stats.killsPerUltimate)) {
+        calculatedStatRecords.push({
+          scrimId,
+          playerName: stats.playerName,
+          hero: stats.hero,
+          role: stats.role as Role,
+          stat: "KILLS_PER_ULTIMATE" as const,
+          value: stats.killsPerUltimate,
+          MapDataId: mapDataId,
+        });
+      }
+
+      if (
+        stats.duels &&
+        typeof stats.duels === "object" &&
+        "winrate" in stats.duels
+      ) {
+        const duelWinrate = (stats.duels as { winrate: number }).winrate;
+        if (duelWinrate !== null && !isNaN(duelWinrate)) {
+          calculatedStatRecords.push({
+            scrimId,
+            playerName: stats.playerName,
+            hero: stats.hero,
+            role: stats.role as Role,
+            stat: "DUEL_WINRATE_PERCENTAGE" as const,
+            value: duelWinrate,
+            MapDataId: mapDataId,
+          });
+        }
+      }
+
+      if (
+        stats.fightReversalPercentage !== null &&
+        !isNaN(stats.fightReversalPercentage)
+      ) {
+        calculatedStatRecords.push({
+          scrimId,
+          playerName: stats.playerName,
+          hero: stats.hero,
+          role: stats.role as Role,
+          stat: "FIGHT_REVERSAL_PERCENTAGE" as const,
+          value: stats.fightReversalPercentage,
+          MapDataId: mapDataId,
+        });
+      }
+
+      if (calculatedStatRecords.length > 0) {
+        await prisma.calculatedStat.createMany({
+          data: calculatedStatRecords,
+          skipDuplicates: true,
+        });
+
+        Logger.log(
+          "Stats saved for player: ",
+          player.player_name,
+          "on map: ",
+          mapDataId,
+          "scrim: ",
+          scrimId,
+          "calculated stats: ",
+          calculatedStatRecords.length
+        );
+      }
+    } catch (error) {
+      Logger.error(
+        `Error calculating stats for player ${player.player_name} on map ${mapDataId}:`,
+        error
+      );
+    }
   }
 }
 

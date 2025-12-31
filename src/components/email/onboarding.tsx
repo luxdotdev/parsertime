@@ -1,8 +1,6 @@
 import {
   Body,
-  Button,
   Container,
-  Column,
   Head,
   Heading,
   Hr,
@@ -10,19 +8,17 @@ import {
   Img,
   Link,
   Preview,
-  Row,
   Section,
   Text,
 } from "@react-email/components";
 import { Tailwind } from "@react-email/tailwind";
-import * as React from "react";
 
-interface OnboardingEmailProps {
+type OnboardingEmailProps = {
   name?: string;
   email?: string;
-}
+};
 
-export const UserOnboardingEmail = ({ name, email }: OnboardingEmailProps) => {
+export function UserOnboardingEmail({ name, email }: OnboardingEmailProps) {
   const previewText = "Welcome to Parsertime!";
 
   return (
@@ -136,6 +132,6 @@ export const UserOnboardingEmail = ({ name, email }: OnboardingEmailProps) => {
       </Tailwind>
     </Html>
   );
-};
+}
 
 export default UserOnboardingEmail;

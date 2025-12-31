@@ -1,3 +1,5 @@
+import { HeroSRDisplay } from "@/components/player/hero-sr-display";
+import { StatCardFooter } from "@/components/player/stat-card-footer";
 import { StatsTable } from "@/components/player/stats-table";
 import {
   Card,
@@ -6,14 +8,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import CardIcon from "@/components/ui/card-icon";
+import { CardIcon } from "@/components/ui/card-icon";
+import {
+  calculateCompositeHeroSR,
+  getMultipleStatComparisons,
+  type StatCardComparison,
+} from "@/lib/stat-card-helpers";
+import type { ValidStatColumn } from "@/lib/stat-percentiles";
 import { cn, getHeroNames, round, toHero, toMins } from "@/lib/utils";
-import { HeroName, heroRoleMapping } from "@/types/heroes";
-import { PlayerStat } from "@prisma/client";
+import { type HeroName, heroRoleMapping } from "@/types/heroes";
+import type { PlayerStat } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
-export default async function SpecificHero({
+export async function SpecificHero({
   playerStats,
   showTable = true,
 }: {
@@ -27,19 +35,90 @@ export default async function SpecificHero({
   const playerStat = playerStats[0];
   const role = heroRoleMapping[hero];
 
+  const statsToCompare: { stat: ValidStatColumn; value: number }[] = [
+    { stat: "eliminations", value: playerStat.eliminations },
+    { stat: "deaths", value: playerStat.deaths },
+    { stat: "hero_damage_dealt", value: playerStat.hero_damage_dealt },
+    { stat: "ultimates_used", value: playerStat.ultimates_used },
+  ];
+
+  if (role === "Tank") {
+    statsToCompare.push(
+      { stat: "damage_blocked", value: playerStat.damage_blocked },
+      { stat: "damage_taken", value: playerStat.damage_taken }
+    );
+  } else if (role === "Damage") {
+    statsToCompare.push(
+      { stat: "final_blows", value: playerStat.final_blows },
+      { stat: "solo_kills", value: playerStat.solo_kills }
+    );
+  } else if (role === "Support") {
+    statsToCompare.push(
+      {
+        stat: "healing_dealt",
+        value: playerStat.healing_dealt,
+      },
+      {
+        stat: "healing_received",
+        value: playerStat.healing_received,
+      }
+    );
+  }
+
+  let comparisons = new Map<ValidStatColumn, StatCardComparison>();
+  let compositeHeroSR = 0;
+
+  if (playerStat.hero_time_played >= 60) {
+    comparisons = await getMultipleStatComparisons(
+      hero,
+      statsToCompare,
+      playerStat.hero_time_played
+    );
+    const allStats: Record<ValidStatColumn, number> = {
+      eliminations: playerStat.eliminations,
+      final_blows: playerStat.final_blows,
+      deaths: playerStat.deaths,
+      hero_damage_dealt: playerStat.hero_damage_dealt,
+      healing_dealt: playerStat.healing_dealt,
+      healing_received: playerStat.healing_received,
+      damage_blocked: playerStat.damage_blocked,
+      damage_taken: playerStat.damage_taken,
+      solo_kills: playerStat.solo_kills,
+      ultimates_earned: playerStat.ultimates_earned,
+      ultimates_used: playerStat.ultimates_used,
+      objective_kills: playerStat.objective_kills,
+      offensive_assists: playerStat.offensive_assists,
+      defensive_assists: playerStat.defensive_assists,
+    };
+
+    compositeHeroSR = await calculateCompositeHeroSR(
+      hero,
+      allStats,
+      playerStat.hero_time_played
+    );
+  }
+
   return (
     <main>
-      <h1 className="scroll-m-20 pb-2 pl-2 text-3xl font-semibold tracking-tight first:mt-0">
-        {heroNames.get(toHero(hero)) || hero}
-      </h1>
-      <div className="flex flex-1">
-        <div className={cn("p-2", showTable && "w-full lg:w-1/2")}>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="flex items-center justify-between pb-2 pl-2">
+        <h1 className="scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0">
+          {heroNames.get(toHero(hero)) ?? hero}{" "}
+          <HeroSRDisplay sr={compositeHeroSR} />
+        </h1>
+      </div>
+      <div className="flex flex-1 flex-col 2xl:flex-row">
+        <div className={cn("p-2", showTable && "w-full 2xl:w-1/2")}>
+          <div
+            className={cn(
+              "grid gap-4 md:grid-cols-2 xl:grid-cols-4",
+              !showTable && "xl:grid-cols-2"
+            )}
+          >
             <Card>
               <Image
                 src={`/heroes/${toHero(hero)}.png`}
                 alt={t("altText", {
-                  hero: heroNames.get(toHero(hero)) || hero,
+                  hero: heroNames.get(toHero(hero)) ?? hero,
                 })}
                 width={256}
                 height={256}
@@ -64,7 +143,7 @@ export default async function SpecificHero({
                 </div>
               </CardContent>
               <CardFooter>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-muted-foreground text-sm">
                   {t("matchTime", {
                     percent: round(
                       (playerStat.hero_time_played / playerStat.match_time) *
@@ -96,15 +175,18 @@ export default async function SpecificHero({
                 </div>
               </CardContent>
               <CardFooter>
-                <div className="text-sm text-muted-foreground">
-                  {t("elimsPer10Min", {
+                <StatCardFooter
+                  baseText={t("elimsPer10Min", {
                     elims: round(
                       (playerStat.eliminations /
                         toMins(playerStat.hero_time_played)) *
                         10
                     ),
                   })}
-                </div>
+                  comparison={comparisons.get("eliminations")}
+                  stat={t("eliminations")}
+                  hero={hero}
+                />
               </CardFooter>
             </Card>
             <Card>
@@ -126,15 +208,18 @@ export default async function SpecificHero({
                 </div>
               </CardContent>
               <CardFooter>
-                <div className="text-sm text-muted-foreground">
-                  {t("deathsPer10Min", {
+                <StatCardFooter
+                  baseText={t("deathsPer10Min", {
                     deaths: round(
                       (playerStat.deaths /
                         toMins(playerStat.hero_time_played)) *
                         10
                     ),
                   })}
-                </div>
+                  comparison={comparisons.get("deaths")}
+                  stat={t("deaths")}
+                  hero={hero}
+                />
               </CardFooter>
             </Card>
             <Card>
@@ -153,15 +238,18 @@ export default async function SpecificHero({
                 </div>
               </CardContent>
               <CardFooter>
-                <div className="text-sm text-muted-foreground">
-                  {t("ultsPer10Min", {
+                <StatCardFooter
+                  baseText={t("ultsPer10Min", {
                     num: round(
                       (playerStat.ultimates_used /
                         toMins(playerStat.hero_time_played)) *
                         10
                     ),
                   })}
-                </div>
+                  comparison={comparisons.get("ultimates_used")}
+                  stat={t("ultsUsed")}
+                  hero={hero}
+                />
               </CardFooter>
             </Card>
             <Card>
@@ -176,20 +264,23 @@ export default async function SpecificHero({
               <CardContent>
                 <div className="text-2xl font-bold">
                   {t("heroDmgDealtNum", {
-                    num: playerStat.hero_damage_dealt.toFixed(2),
+                    num: round(playerStat.hero_damage_dealt).toLocaleString(),
                   })}
                 </div>
               </CardContent>
               <CardFooter>
-                <div className="text-sm text-muted-foreground">
-                  {t("heroDmgPer10Min", {
+                <StatCardFooter
+                  baseText={t("heroDmgPer10Min", {
                     num: round(
                       (playerStat.hero_damage_dealt /
                         toMins(playerStat.hero_time_played)) *
                         10
-                    ),
+                    ).toLocaleString(),
                   })}
-                </div>
+                  comparison={comparisons.get("hero_damage_dealt")}
+                  stat={t("heroDmgDealt")}
+                  hero={hero}
+                />
               </CardFooter>
             </Card>
             {role === "Tank" && (
@@ -206,20 +297,23 @@ export default async function SpecificHero({
                   <CardContent>
                     <div className="text-2xl font-bold">
                       {t("dmgBlockedNum", {
-                        num: playerStat.damage_blocked.toFixed(2),
+                        num: round(playerStat.damage_blocked).toLocaleString(),
                       })}
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-sm text-muted-foreground">
-                      {t("dmgBlockedPer10Min", {
+                    <StatCardFooter
+                      baseText={t("dmgBlockedPer10Min", {
                         num: round(
                           (playerStat.damage_blocked /
                             toMins(playerStat.hero_time_played)) *
                             10
-                        ),
+                        ).toLocaleString(),
                       })}
-                    </div>
+                      comparison={comparisons.get("damage_blocked")}
+                      stat={t("dmgBlocked")}
+                      hero={hero}
+                    />
                   </CardFooter>
                 </Card>
                 <Card>
@@ -236,20 +330,23 @@ export default async function SpecificHero({
                   <CardContent>
                     <div className="text-2xl font-bold">
                       {t("dmgTakenNum", {
-                        num: playerStat.damage_taken.toFixed(2),
+                        num: round(playerStat.damage_taken).toLocaleString(),
                       })}
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-sm text-muted-foreground">
-                      {t("dmgTakenPer10Min", {
+                    <StatCardFooter
+                      baseText={t("dmgTakenPer10Min", {
                         num: round(
                           (playerStat.damage_taken /
                             toMins(playerStat.hero_time_played)) *
                             10
-                        ),
+                        ).toLocaleString(),
                       })}
-                    </div>
+                      comparison={comparisons.get("damage_taken")}
+                      stat={t("dmgTaken")}
+                      hero={hero}
+                    />
                   </CardFooter>
                 </Card>
               </>
@@ -273,15 +370,18 @@ export default async function SpecificHero({
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-sm text-muted-foreground">
-                      {t("finalBlowsPer10Min", {
+                    <StatCardFooter
+                      baseText={t("finalBlowsPer10Min", {
                         num: round(
                           (playerStat.final_blows /
                             toMins(playerStat.hero_time_played)) *
                             10
                         ),
                       })}
-                    </div>
+                      comparison={comparisons.get("final_blows")}
+                      stat={t("finalBlows")}
+                      hero={hero}
+                    />
                   </CardFooter>
                 </Card>
                 <Card>
@@ -306,15 +406,18 @@ export default async function SpecificHero({
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-sm text-muted-foreground">
-                      {t("soloKillsPer10Min", {
+                    <StatCardFooter
+                      baseText={t("soloKillsPer10Min", {
                         num: round(
                           (playerStat.solo_kills /
                             toMins(playerStat.hero_time_played)) *
                             10
                         ),
                       })}
-                    </div>
+                      comparison={comparisons.get("solo_kills")}
+                      stat={t("soloKills")}
+                      hero={hero}
+                    />
                   </CardFooter>
                 </Card>
               </>
@@ -333,20 +436,23 @@ export default async function SpecificHero({
                   <CardContent>
                     <div className="text-2xl font-bold">
                       {t("healingDealtNum", {
-                        num: playerStat.healing_dealt.toFixed(2),
+                        num: round(playerStat.healing_dealt).toLocaleString(),
                       })}
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-sm text-muted-foreground">
-                      {t("healingDealtPer10Min", {
+                    <StatCardFooter
+                      baseText={t("healingDealtPer10Min", {
                         num: round(
                           (playerStat.healing_dealt /
                             toMins(playerStat.hero_time_played)) *
                             10
-                        ),
+                        ).toLocaleString(),
                       })}
-                    </div>
+                      comparison={comparisons.get("healing_dealt")}
+                      stat={t("healingDealt")}
+                      hero={hero}
+                    />
                   </CardFooter>
                 </Card>
                 <Card>
@@ -361,20 +467,25 @@ export default async function SpecificHero({
                   <CardContent>
                     <div className="text-2xl font-bold">
                       {t("healingReceivedNum", {
-                        num: playerStat.healing_received.toFixed(2),
+                        num: round(
+                          playerStat.healing_received
+                        ).toLocaleString(),
                       })}
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <div className="text-sm text-muted-foreground">
-                      {t("healingReceivedPer10Min", {
+                    <StatCardFooter
+                      baseText={t("healingReceivedPer10Min", {
                         num: round(
                           (playerStat.healing_received /
                             toMins(playerStat.hero_time_played)) *
                             10
-                        ),
+                        ).toLocaleString(),
                       })}
-                    </div>
+                      comparison={comparisons.get("healing_received")}
+                      stat={t("healingReceived")}
+                      hero={hero}
+                    />
                   </CardFooter>
                 </Card>
               </>
@@ -382,7 +493,7 @@ export default async function SpecificHero({
           </div>
         </div>
         {showTable && (
-          <div className="hidden w-1/2 p-2 md:grid">
+          <div className="w-full p-2 2xl:w-1/2">
             <StatsTable data={playerStat} />
           </div>
         )}

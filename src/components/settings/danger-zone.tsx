@@ -10,14 +10,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Link } from "@/components/ui/link";
-import { toast } from "@/components/ui/use-toast";
 import { ClientOnly } from "@/lib/client-only";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import type { Route } from "next";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { startTransition, useEffect, useState } from "react";
+import { toast } from "sonner";
 
-export function DangerZone({ url }: { url: string }) {
+export function DangerZone({ url }: { url: Route }) {
   const t = useTranslations("settingsPage");
   const [firstDialogOpen, setFirstDialogOpen] = useState(false);
 
@@ -56,7 +57,7 @@ function FirstDialog({
   firstDialogOpen,
   setFirstDialogOpen,
 }: {
-  url: string;
+  url: Route;
   firstDialogOpen: boolean;
   setFirstDialogOpen: (open: boolean) => void;
 }) {
@@ -116,8 +117,7 @@ function SecondDialog({
     });
 
     if (res.ok) {
-      toast({
-        title: t("handleDelete.title"),
+      toast.success(t("handleDelete.title"), {
         description: t("handleDelete.description"),
         duration: 5000,
       });
@@ -125,13 +125,11 @@ function SecondDialog({
       setModalOpen(false);
       router.push("/");
     } else {
-      toast({
-        title: t("handleDelete.errorTitle"),
+      toast.error(t("handleDelete.errorTitle"), {
         description: t("handleDelete.errorDescription", {
           res: `${await res.text()} (${res.status})`,
         }),
         duration: 5000,
-        variant: "destructive",
       });
       setDeleteLoading(false);
     }

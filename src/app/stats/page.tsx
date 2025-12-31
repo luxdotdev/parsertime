@@ -1,3 +1,4 @@
+import { PlayerHoverCard } from "@/components/player/hover-card";
 import { Searchbar } from "@/components/stats/searchbar";
 import {
   Card,
@@ -6,7 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import CardIcon from "@/components/ui/card-icon";
+import { CardIcon } from "@/components/ui/card-icon";
+import { Link } from "@/components/ui/link";
 import {
   Table,
   TableBody,
@@ -23,18 +25,21 @@ import {
   toTimestampWithDays,
   toTimestampWithHours,
 } from "@/lib/utils";
+import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
 
 export default async function StatsPage() {
   const t = await getTranslations("statsPage");
 
-  const [userNum, scrimNum, killNum, statNum, mapNum] = await Promise.all([
-    prisma.user.count(),
-    prisma.scrim.count(),
-    prisma.kill.count(),
-    prisma.playerStat.count(),
-    prisma.mapData.count(),
-  ]);
+  const [userNum, scrimNum, killNum, statNum, mapNum, calculatedStatNum] =
+    await Promise.all([
+      prisma.user.count(),
+      prisma.scrim.count(),
+      prisma.kill.count(),
+      prisma.playerStat.count(),
+      prisma.mapData.count(),
+      prisma.calculatedStat.count(),
+    ]);
 
   type MostPlayedHeroes = {
     player_hero: string;
@@ -147,7 +152,7 @@ export default async function StatsPage() {
             <div className="text-2xl font-bold">{format(userNum)}</div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">{t("users.footer")}</p>
+            <p className="text-muted-foreground text-xs">{t("users.footer")}</p>
           </CardFooter>
         </Card>
         <Card>
@@ -170,7 +175,7 @@ export default async function StatsPage() {
             <div className="text-2xl font-bold">{format(scrimNum)}</div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("scrims.footer")}
             </p>
           </CardFooter>
@@ -192,7 +197,7 @@ export default async function StatsPage() {
             <div className="text-2xl font-bold">{format(killNum)}</div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">{t("kills.footer")}</p>
+            <p className="text-muted-foreground text-xs">{t("kills.footer")}</p>
           </CardFooter>
         </Card>
         <Card>
@@ -206,10 +211,12 @@ export default async function StatsPage() {
             </CardIcon>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{format(statNum)}</div>
+            <div className="text-2xl font-bold">
+              {format(statNum + calculatedStatNum)}
+            </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("playerStat.footer")}
             </p>
           </CardFooter>
@@ -283,7 +290,7 @@ export default async function StatsPage() {
             </Table>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("top3MostPlayed.footer", { mapNum })}
             </p>
           </CardFooter>
@@ -341,7 +348,17 @@ export default async function StatsPage() {
                         <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
                       </svg>
                     </TableCell>
-                    <TableCell>{row.attacker_name}</TableCell>
+                    <TableCell>
+                      <PlayerHoverCard player={row.attacker_name}>
+                        <Link
+                          href={
+                            `/profile/${encodeURIComponent(row.attacker_name)}` as Route
+                          }
+                        >
+                          {row.attacker_name}
+                        </Link>
+                      </PlayerHoverCard>
+                    </TableCell>
                     <TableCell>{format(row._count.attacker_name)}</TableCell>
                   </TableRow>
                 ))}
@@ -349,7 +366,7 @@ export default async function StatsPage() {
             </Table>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("top3Kills.footer", { mapNum })}
             </p>
           </CardFooter>
@@ -403,7 +420,17 @@ export default async function StatsPage() {
                         <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
                       </svg>
                     </TableCell>
-                    <TableCell>{row.player_name}</TableCell>
+                    <TableCell>
+                      <PlayerHoverCard player={row.player_name}>
+                        <Link
+                          href={
+                            `/profile/${encodeURIComponent(row.player_name)}` as Route
+                          }
+                        >
+                          {row.player_name}
+                        </Link>
+                      </PlayerHoverCard>
+                    </TableCell>
                     <TableCell>
                       {format(round(row._sum.hero_damage_dealt!))}
                     </TableCell>
@@ -413,7 +440,7 @@ export default async function StatsPage() {
             </Table>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("top3Dmg.footer", { mapNum })}
             </p>
           </CardFooter>
@@ -467,7 +494,17 @@ export default async function StatsPage() {
                         <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
                       </svg>
                     </TableCell>
-                    <TableCell>{row.player_name}</TableCell>
+                    <TableCell>
+                      <PlayerHoverCard player={row.player_name}>
+                        <Link
+                          href={
+                            `/profile/${encodeURIComponent(row.player_name)}` as Route
+                          }
+                        >
+                          {row.player_name}
+                        </Link>
+                      </PlayerHoverCard>
+                    </TableCell>
                     <TableCell>
                       {" "}
                       {format(round(row._sum.healing_dealt!))}
@@ -478,7 +515,7 @@ export default async function StatsPage() {
             </Table>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("top3Healing.footer", { mapNum })}
             </p>
           </CardFooter>
@@ -532,7 +569,17 @@ export default async function StatsPage() {
                         <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
                       </svg>
                     </TableCell>
-                    <TableCell>{row.player_name}</TableCell>
+                    <TableCell>
+                      <PlayerHoverCard player={row.player_name}>
+                        <Link
+                          href={
+                            `/profile/${encodeURIComponent(row.player_name)}` as Route
+                          }
+                        >
+                          {row.player_name}
+                        </Link>
+                      </PlayerHoverCard>
+                    </TableCell>
                     <TableCell>
                       {" "}
                       {format(round(row._sum.damage_blocked!))}
@@ -543,7 +590,7 @@ export default async function StatsPage() {
             </Table>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("top3DmgBlocked.footer", { mapNum })}
             </p>
           </CardFooter>
@@ -601,7 +648,17 @@ export default async function StatsPage() {
                         <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
                       </svg>
                     </TableCell>
-                    <TableCell>{row.victim_name}</TableCell>
+                    <TableCell>
+                      <PlayerHoverCard player={row.victim_name}>
+                        <Link
+                          href={
+                            `/profile/${encodeURIComponent(row.victim_name)}` as Route
+                          }
+                        >
+                          {row.victim_name}
+                        </Link>
+                      </PlayerHoverCard>
+                    </TableCell>
                     <TableCell>
                       {" "}
                       {format(round(row._count.victim_name))}
@@ -612,7 +669,7 @@ export default async function StatsPage() {
             </Table>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("top3Deaths.footer", { mapNum })}
             </p>
           </CardFooter>
@@ -669,7 +726,17 @@ export default async function StatsPage() {
                         <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
                       </svg>
                     </TableCell>
-                    <TableCell>{row.player_name}</TableCell>
+                    <TableCell>
+                      <PlayerHoverCard player={row.player_name}>
+                        <Link
+                          href={
+                            `/profile/${encodeURIComponent(row.player_name)}` as Route
+                          }
+                        >
+                          {row.player_name}
+                        </Link>
+                      </PlayerHoverCard>
+                    </TableCell>
                     <TableCell>
                       {toTimestampWithHours(row._sum.hero_time_played!)}
                     </TableCell>
@@ -679,7 +746,7 @@ export default async function StatsPage() {
             </Table>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("top3TimePlayed.footer", { mapNum })}
             </p>
           </CardFooter>
@@ -735,7 +802,17 @@ export default async function StatsPage() {
                         <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
                       </svg>
                     </TableCell>
-                    <TableCell>{row.player_name}</TableCell>
+                    <TableCell>
+                      <PlayerHoverCard player={row.player_name}>
+                        <Link
+                          href={
+                            `/profile/${encodeURIComponent(row.player_name)}` as Route
+                          }
+                        >
+                          {row.player_name}
+                        </Link>
+                      </PlayerHoverCard>
+                    </TableCell>
                     <TableCell>{row.coincidence_count.toString()}</TableCell>
                   </TableRow>
                 ))}
@@ -743,7 +820,7 @@ export default async function StatsPage() {
             </Table>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("top3Ajax.footer", { mapNum })}
             </p>
           </CardFooter>

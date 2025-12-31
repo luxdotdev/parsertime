@@ -1,7 +1,9 @@
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { NextRequest } from "next/server";
+import { unauthorized } from "next/navigation";
+import { after, type NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -12,7 +14,7 @@ export async function POST(req: NextRequest) {
   if (!session) {
     if (authToken !== process.env.DEV_TOKEN) {
       Logger.warn("Unauthorized request to create team invite");
-      return new Response("Unauthorized", { status: 401 });
+      unauthorized();
     }
     Logger.log("Authorized request to create team invite using dev token");
   }
@@ -53,6 +55,15 @@ export async function POST(req: NextRequest) {
   });
 
   Logger.log(`User now belongs to team: ${JSON.stringify(teams)}`);
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: session?.user?.email ?? testingEmail,
+      action: "TEAM_JOINED",
+      target: `${teams[0].name}`,
+      details: `Joined team ${teams[0].name} (Team ID: ${teamInviteToken.teamId})`,
+    });
+  });
 
   return new Response("OK", { status: 200 });
 }

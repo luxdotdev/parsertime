@@ -1,11 +1,13 @@
 "use client";
 
-import React from "react";
-import { createContext } from "react";
+import React, { createContext } from "react";
 
 export const TeamSwitcherContext = createContext({
   teamId: undefined as number | undefined,
-  setTeamId: (teamId: number | undefined) => {},
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setTeamId: (teamId: number | undefined) => {
+    // empty function
+  },
 });
 
 export function TeamSwitcherProvider({
@@ -20,9 +22,5 @@ export function TeamSwitcherProvider({
     [teamId, setTeamId]
   );
 
-  return (
-    <TeamSwitcherContext.Provider value={value}>
-      {children}
-    </TeamSwitcherContext.Provider>
-  );
+  return <TeamSwitcherContext value={value}>{children}</TeamSwitcherContext>;
 }

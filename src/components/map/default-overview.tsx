@@ -6,10 +6,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import CardIcon from "@/components/ui/card-icon";
+import { CardIcon } from "@/components/ui/card-icon";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getFinalRoundStats } from "@/data/scrim-dto";
 import { getAjaxes } from "@/lib/analytics";
+import { calculateMVPScoresForMap } from "@/lib/mvp-score";
 import prisma from "@/lib/prisma";
 import {
   cn,
@@ -20,18 +21,26 @@ import {
   toTimestamp,
 } from "@/lib/utils";
 import { calculateWinner } from "@/lib/winrate";
-import { HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
+import { type HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
 import { $Enums } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 
-export async function DefaultOverview({ id }: { id: number }) {
+export async function DefaultOverview({
+  id,
+  team1Color: team1,
+  team2Color: team2,
+}: {
+  id: number;
+  team1Color: string;
+  team2Color: string;
+}) {
   const [finalRound, matchDetails, finalRoundStats, playerStats, fights] =
     await Promise.all([
-      await prisma.roundEnd.findFirst({
+      prisma.roundEnd.findFirst({
         where: { MapDataId: id },
         orderBy: { round_number: "desc" },
       }),
-      await prisma.matchStart.findFirst({ where: { MapDataId: id } }),
+      prisma.matchStart.findFirst({ where: { MapDataId: id } }),
       getFinalRoundStats(id),
       prisma.playerStat.findMany({ where: { MapDataId: id } }),
       groupKillsIntoFights(id),
@@ -141,6 +150,23 @@ export async function DefaultOverview({ id }: { id: number }) {
     (player) => player.player_hero === "Lúcio"
   );
 
+  const mvpScores = await calculateMVPScoresForMap(id);
+
+  const team1Players = mvpScores.filter(
+    (score) =>
+      finalRoundStats.find((stat) => stat.player_name === score.playerName)
+        ?.player_team === matchDetails?.team_1_name
+  );
+
+  const team2Players = mvpScores.filter(
+    (score) =>
+      finalRoundStats.find((stat) => stat.player_name === score.playerName)
+        ?.player_team === matchDetails?.team_2_name
+  );
+
+  const team1MVP = team1Players[0]?.playerName ?? "";
+  const team2MVP = team2Players[0]?.playerName ?? "";
+
   return (
     <>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -160,7 +186,7 @@ export async function DefaultOverview({ id }: { id: number }) {
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {t("minutes", {
                 time: ((finalRound?.match_time ?? 0) / 60).toFixed(2),
               })}
@@ -183,16 +209,15 @@ export async function DefaultOverview({ id }: { id: number }) {
             <div className="text-2xl font-bold">{calculateScore()}</div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {mapType !== $Enums.MapType.Push ? (
                 <>
                   {t("winner")}{" "}
                   <span
-                    className={
-                      winner === matchDetails?.team_1_name
-                        ? "text-blue-500"
-                        : "text-red-500"
-                    }
+                    style={{
+                      color:
+                        winner === matchDetails?.team_1_name ? team1 : team2,
+                    }}
                   >
                     {winner}
                   </span>
@@ -214,23 +239,24 @@ export async function DefaultOverview({ id }: { id: number }) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {round(team1Damage)} - {round(team2Damage)}
+              {round(team1Damage).toLocaleString()} -{" "}
+              {round(team2Damage).toLocaleString()}
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {team1Damage > team2Damage
                 ? t.rich("dealtMore", {
                     color: (chunks) => (
-                      <span className="text-blue-500">{chunks}</span>
+                      <span style={{ color: team1 }}>{chunks}</span>
                     ),
-                    teamName: matchDetails?.team_1_name,
+                    teamName: matchDetails?.team_1_name ?? "",
                   })
                 : t.rich("dealtMore", {
                     color: (chunks) => (
-                      <span className="text-red-500">{chunks}</span>
+                      <span style={{ color: team2 }}>{chunks}</span>
                     ),
-                    teamName: matchDetails?.team_2_name,
+                    teamName: matchDetails?.team_2_name ?? "",
                   })}
             </p>
           </CardFooter>
@@ -247,23 +273,24 @@ export async function DefaultOverview({ id }: { id: number }) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {round(team1Healing)} - {round(team2Healing)}
+              {round(team1Healing).toLocaleString()} -{" "}
+              {round(team2Healing).toLocaleString()}
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {team1Healing > team2Healing
                 ? t.rich("healedMore", {
                     color: (chunks) => (
-                      <span className="text-blue-500">{chunks}</span>
+                      <span style={{ color: team1 }}>{chunks}</span>
                     ),
-                    teamName: matchDetails?.team_1_name,
+                    teamName: matchDetails?.team_1_name ?? "",
                   })
                 : t.rich("healedMore", {
                     color: (chunks) => (
-                      <span className="text-red-500">{chunks}</span>
+                      <span style={{ color: team2 }}>{chunks}</span>
                     ),
-                    teamName: matchDetails?.team_2_name,
+                    teamName: matchDetails?.team_2_name ?? "",
                   })}
             </p>
           </CardFooter>
@@ -275,11 +302,25 @@ export async function DefaultOverview({ id }: { id: number }) {
             <CardTitle>{t("title")}</CardTitle>
           </CardHeader>
           <CardContent className="flex md:hidden">
-            <OverviewTable playerStats={finalRoundStats} />
+            <OverviewTable
+              playerStats={finalRoundStats}
+              team1Name={matchDetails?.team_1_name ?? ""}
+              team2Name={matchDetails?.team_2_name ?? ""}
+              team1MVP={team1MVP}
+              team2MVP={team2MVP}
+              mvpScores={mvpScores}
+            />
           </CardContent>
           <CardContent className="hidden md:flex">
             {numberOfRounds === 1 ? (
-              <OverviewTable playerStats={finalRoundStats} />
+              <OverviewTable
+                playerStats={finalRoundStats}
+                team1Name={matchDetails?.team_1_name ?? ""}
+                team2Name={matchDetails?.team_2_name ?? ""}
+                team1MVP={team1MVP}
+                team2MVP={team2MVP}
+                mvpScores={mvpScores}
+              />
             ) : (
               <Tabs
                 defaultValue="final"
@@ -294,7 +335,14 @@ export async function DefaultOverview({ id }: { id: number }) {
                   ))}
                 </TabsList>
                 <TabsContent value="final" className="space-y-4">
-                  <OverviewTable playerStats={finalRoundStats} />
+                  <OverviewTable
+                    playerStats={finalRoundStats}
+                    team1Name={matchDetails?.team_1_name ?? ""}
+                    team2Name={matchDetails?.team_2_name ?? ""}
+                    team1MVP={team1MVP}
+                    team2MVP={team2MVP}
+                    mvpScores={mvpScores}
+                  />
                 </TabsContent>
                 {range(numberOfRounds).map((round) => (
                   <TabsContent
@@ -304,6 +352,11 @@ export async function DefaultOverview({ id }: { id: number }) {
                   >
                     <OverviewTable
                       key={round + 1}
+                      team1Name={matchDetails?.team_1_name ?? ""}
+                      team2Name={matchDetails?.team_2_name ?? ""}
+                      team1MVP={team1MVP}
+                      team2MVP={team2MVP}
+                      mvpScores={mvpScores}
                       playerStats={removeDuplicateRows(playerStats)
                         .filter(
                           (stat) =>
@@ -344,9 +397,9 @@ export async function DefaultOverview({ id }: { id: number }) {
               <li>
                 {t.rich("analysis.deathDescriptionTeam1", {
                   span1: (chunks) => (
-                    <span className="text-blue-500">{chunks}</span>
+                    <span style={{ color: team1 }}>{chunks}</span>
                   ),
-                  team1Name: matchDetails?.team_1_name,
+                  team1Name: matchDetails?.team_1_name ?? "",
                   team1FirstDeaths,
                   span2: (chunks) => (
                     <span
@@ -368,9 +421,9 @@ export async function DefaultOverview({ id }: { id: number }) {
                 })}{" "}
                 {t.rich("analysis.deathDescriptionTeam2", {
                   span1: (chunks) => (
-                    <span className="text-red-500">{chunks}</span>
+                    <span style={{ color: team2 }}>{chunks}</span>
                   ),
-                  team2Name: matchDetails?.team_2_name,
+                  team2Name: matchDetails?.team_2_name ?? "",
                   team2FirstDeaths: fights.length - team1FirstDeaths,
                   span2: (chunks) => (
                     <span
@@ -395,18 +448,18 @@ export async function DefaultOverview({ id }: { id: number }) {
                 {team1UltimateKills > team2UltimateKills &&
                   t.rich("analysis.ultKillsDescriptionTeam1", {
                     span: (chunks) => (
-                      <span className="text-blue-500">{chunks}</span>
+                      <span style={{ color: team1 }}>{chunks}</span>
                     ),
-                    team1Name: matchDetails?.team_1_name,
+                    team1Name: matchDetails?.team_1_name ?? "",
                     team1UltimateKills,
                   })}
 
                 {team1UltimateKills < team2UltimateKills &&
                   t.rich("analysis.ultKillsDescriptionTeam2", {
                     span: (chunks) => (
-                      <span className="text-red-500">{chunks}</span>
+                      <span style={{ color: team2 }}>{chunks}</span>
                     ),
-                    team2Name: matchDetails?.team_2_name,
+                    team2Name: matchDetails?.team_2_name ?? "",
                     team2UltimateKills,
                   })}
 
@@ -422,14 +475,15 @@ export async function DefaultOverview({ id }: { id: number }) {
                 {t.rich("analysis.playerDeathDescription", {
                   span: (chunks) => (
                     <span
-                      className={cn(
-                        finalRoundStats.find(
-                          (player) =>
-                            player.player_name === playerWithMostFirstDeaths
-                        )?.player_team === matchDetails?.team_1_name
-                          ? "text-blue-500"
-                          : "text-red-500"
-                      )}
+                      style={{
+                        color:
+                          finalRoundStats.find(
+                            (player) =>
+                              player.player_name === playerWithMostFirstDeaths
+                          )?.player_team === matchDetails?.team_1_name
+                            ? team1
+                            : team2,
+                      }}
                     >
                       {chunks}
                     </span>
@@ -450,11 +504,13 @@ export async function DefaultOverview({ id }: { id: number }) {
                         {t.rich("analysis.ajax", {
                           span: (chunks) => (
                             <span
-                              className={cn(
-                                player.player_team === matchDetails?.team_1_name
-                                  ? "text-blue-500"
-                                  : "text-red-500"
-                              )}
+                              style={{
+                                color:
+                                  player.player_team ===
+                                  matchDetails?.team_1_name
+                                    ? team1
+                                    : team2,
+                              }}
                             >
                               {chunks}
                             </span>

@@ -1,5 +1,5 @@
 import { toTitleCase } from "@/lib/utils";
-import { User } from "@prisma/client";
+import type { User } from "@prisma/client";
 import {
   Body,
   Container,
@@ -15,15 +15,15 @@ import {
 } from "@react-email/components";
 import { Tailwind } from "@react-email/tailwind";
 
-interface SubscriptionEmailProps {
+type SubscriptionEmailProps = {
   user: User;
   billingPlan: string;
-}
+};
 
-export const SubscriptionUpdatedEmail = ({
+export function SubscriptionUpdatedEmail({
   user,
   billingPlan,
-}: SubscriptionEmailProps) => {
+}: SubscriptionEmailProps) {
   const previewText = "Your subscription has been updated.";
 
   return (
@@ -100,6 +100,6 @@ export const SubscriptionUpdatedEmail = ({
       </Tailwind>
     </Html>
   );
-};
+}
 
 export default SubscriptionUpdatedEmail;

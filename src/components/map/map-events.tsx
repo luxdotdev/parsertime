@@ -8,10 +8,18 @@ import {
 import { getMapEvents, getUltimatesUsedList } from "@/lib/get-map-events";
 import { getTranslations } from "next-intl/server";
 
-export async function MapEvents({ id }: { id: number }) {
+export async function MapEvents({
+  id,
+  team1Color,
+  team2Color,
+}: {
+  id: number;
+  team1Color: string;
+  team2Color: string;
+}) {
   const [events, ultimates] = await Promise.all([
-    getMapEvents(id),
-    getUltimatesUsedList(id),
+    getMapEvents(id, team1Color, team2Color),
+    getUltimatesUsedList(id, team1Color, team2Color),
   ]);
 
   const t = await getTranslations("mapPage.events");

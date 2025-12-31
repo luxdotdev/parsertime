@@ -1,8 +1,8 @@
 import {
   Body,
   Button,
-  Container,
   Column,
+  Container,
   Head,
   Heading,
   Hr,
@@ -15,9 +15,8 @@ import {
   Text,
 } from "@react-email/components";
 import { Tailwind } from "@react-email/tailwind";
-import * as React from "react";
 
-interface TeamInviteUserEmailProps {
+type TeamInviteUserEmailProps = {
   username?: string;
   userImage?: string;
   invitedByUsername?: string;
@@ -25,9 +24,9 @@ interface TeamInviteUserEmailProps {
   teamName?: string;
   teamImage?: string;
   inviteLink?: string;
-}
+};
 
-export const TeamInviteUserEmail = ({
+export function TeamInviteUserEmail({
   username,
   userImage,
   invitedByUsername,
@@ -35,7 +34,7 @@ export const TeamInviteUserEmail = ({
   teamName,
   teamImage,
   inviteLink,
-}: TeamInviteUserEmailProps) => {
+}: TeamInviteUserEmailProps) {
   const previewText = `Join ${invitedByUsername} on Parsertime`;
 
   return (
@@ -99,7 +98,7 @@ export const TeamInviteUserEmail = ({
                 </Column>
               </Row>
             </Section>
-            <Section className="mb-[32px] mt-[32px] text-center">
+            <Section className="mt-[32px] mb-[32px] text-center">
               <Button
                 className="rounded bg-[#000000] px-5 py-3 text-center text-[12px] font-semibold text-white no-underline"
                 href={inviteLink}
@@ -138,6 +137,6 @@ export const TeamInviteUserEmail = ({
       </Tailwind>
     </Html>
   );
-};
+}
 
 export default TeamInviteUserEmail;

@@ -1,4 +1,4 @@
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import { kv } from "@vercel/kv";
 import { nanoid } from "nanoid";
 

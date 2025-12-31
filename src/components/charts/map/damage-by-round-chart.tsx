@@ -1,5 +1,6 @@
 "use client";
 
+import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import { round as roundNum } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import {
@@ -11,11 +12,11 @@ import {
   Legend,
   ResponsiveContainer,
   Tooltip,
-  TooltipProps,
+  type TooltipProps,
   XAxis,
   YAxis,
 } from "recharts";
-import {
+import type {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
@@ -34,16 +35,18 @@ function CustomTooltip({
 }: TooltipProps<ValueType, NameType> & {
   teamNames: readonly [string, string];
 }) {
-  if (active && payload && payload.length) {
+  const { team1, team2 } = useColorblindMode();
+
+  if (active && payload?.length) {
     return (
-      <div className="z-50 overflow-hidden rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
+      <div className="bg-primary text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 overflow-hidden rounded-md px-3 py-1.5 text-xs">
         <h3 className="text-base">{label}</h3>
         <p className="text-sm">
-          <strong className="text-blue-500">{teamNames[0]}</strong>:{" "}
+          <strong style={{ color: team1 }}>{teamNames[0]}</strong>:{" "}
           {(payload[0].value as number).toFixed(2)}
         </p>
         <p className="text-sm">
-          <strong className="text-red-500">{teamNames[1]}</strong>:{" "}
+          <strong style={{ color: team2 }}>{teamNames[1]}</strong>:{" "}
           {(payload[1].value as number).toFixed(2)}
         </p>
       </div>
@@ -79,6 +82,8 @@ export function DamageByRoundChart({
     ),
   }));
 
+  const { team1, team2 } = useColorblindMode();
+
   return (
     <>
       {data.length > 1 && (
@@ -112,14 +117,14 @@ export function DamageByRoundChart({
             <Area
               type="monotone"
               dataKey="team1Damage"
-              stroke="#0ea5e9"
+              stroke={team1}
               fill="url(#colorTeam1)"
               name={teamNames[0]}
             />
             <Area
               type="monotone"
               dataKey="team2Damage"
-              stroke="#ef4444"
+              stroke={team2}
               fill="url(#colorTeam2)"
               name={teamNames[1]}
             />
@@ -144,8 +149,8 @@ export function DamageByRoundChart({
             <YAxis />
             <Legend />
             <Tooltip content={<CustomTooltip teamNames={teamNames} />} />
-            <Bar dataKey="team1Damage" fill="#0ea5e9" name={teamNames[0]} />
-            <Bar dataKey="team2Damage" fill="#ef4444" name={teamNames[1]} />
+            <Bar dataKey="team1Damage" fill={team1} name={teamNames[0]} />
+            <Bar dataKey="team2Damage" fill={team2} name={teamNames[1]} />
           </BarChart>
         </ResponsiveContainer>
       )}

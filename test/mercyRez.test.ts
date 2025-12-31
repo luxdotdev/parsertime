@@ -1,7 +1,7 @@
-import { expect, test } from "vitest";
-import { MercyRez, PrismaClient } from "@prisma/client";
 import { createMercyRezRows } from "@/lib/parser";
-import { MercyRezTableRow, ParserData } from "@/types/parser";
+import type { MercyRezTableRow, ParserData } from "@/types/parser";
+import { type MercyRez, PrismaClient } from "@prisma/client";
+import { expect, test } from "vitest";
 
 const prisma = new PrismaClient({
   datasourceUrl: process.env.TEST_DB_URL,
@@ -36,14 +36,14 @@ test("should return the generated mercy rez row", async () => {
     MapDataId: 100,
   };
 
-  const mercyRezRow = await createMercyRezRows(data as any, { id: 1 }, 100);
+  const mercyRezRow = await createMercyRezRows(data as never, { id: 1 }, 100);
 
   // Destructure the id from the result and compare the rest of the properties
   const { id, ...restOfMercyRezRow } = mercyRezRow[0];
 
   await prisma.mercyRez.deleteMany({
     where: {
-      id: id,
+      id,
     },
   });
 
@@ -53,9 +53,7 @@ test("should return the generated mercy rez row", async () => {
 test("should return empty array", async () => {
   const data = {};
 
-  const mercyRezRow = await createMercyRezRows(data as any, { id: 1 }, 1);
+  const mercyRezRow = await createMercyRezRows(data as never, { id: 1 }, 1);
 
   expect(mercyRezRow).toEqual([]);
 });
-
-prisma.$disconnect();

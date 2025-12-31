@@ -1,10 +1,12 @@
 import { getScrim } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
-import Logger from "@/lib/logger";
+import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
-import { NextRequest } from "next/server";
+import { unauthorized } from "next/navigation";
+import { after, type NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   const params = req.nextUrl.searchParams;
@@ -16,7 +18,7 @@ export async function POST(req: NextRequest) {
   if (!session) {
     if (token !== process.env.DEV_TOKEN) {
       Logger.warn("Unauthorized request to remove map: ", id);
-      return new Response("Unauthorized", { status: 401 });
+      unauthorized();
     }
     Logger.log("Authorized removal of map with dev token");
   }
@@ -36,7 +38,7 @@ export async function POST(req: NextRequest) {
 
   let isManager = false;
 
-  if (scrim.teamId !== 0) {
+  if (scrim.teamId !== 0 && scrim.teamId !== null) {
     // scrim is associated with a team
     const managers = await prisma.team.findFirst({
       where: { id: scrim.teamId ?? 0 },
@@ -55,7 +57,7 @@ export async function POST(req: NextRequest) {
     isManager; // Managers of the scrim's team can delete the map
 
   if (!hasPerms) {
-    return new Response("Unauthorized", { status: 401 });
+    unauthorized();
   }
 
   Logger.log("Removing map: ", id);
@@ -88,7 +90,17 @@ export async function POST(req: NextRequest) {
     prisma.ultimateCharged.deleteMany({ where: { MapDataId: mapId } }),
     prisma.ultimateEnd.deleteMany({ where: { MapDataId: mapId } }),
     prisma.ultimateStart.deleteMany({ where: { MapDataId: mapId } }),
+    prisma.heroBan.deleteMany({ where: { MapDataId: mapId } }),
   ]);
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: user.email,
+      action: "MAP_DELETED",
+      target: `${scrim.name} (ID: ${scrim.id})`,
+      details: `Map deleted: ${id}`,
+    });
+  });
 
   return new Response("OK", { status: 200 });
 }

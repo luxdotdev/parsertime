@@ -1,6 +1,8 @@
+import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { NextRequest } from "next/server";
+import { unauthorized } from "next/navigation";
+import { after, type NextRequest } from "next/server";
 import { z } from "zod";
 
 const TeamNameUpdateSchema = z.object({
@@ -21,7 +23,7 @@ const TeamNameUpdateSchema = z.object({
 export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session || !session.user || !session.user.email) {
-    return new Response("Unauthorized", { status: 401 });
+    unauthorized();
   }
 
   const body = TeamNameUpdateSchema.safeParse(await req.json());
@@ -33,6 +35,15 @@ export async function POST(req: NextRequest) {
       name: body.data.name,
       readonly: body.data.readonly,
     },
+  });
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: session.user.email,
+      action: "TEAM_UPDATED",
+      target: body.data.name,
+      details: `Updated name for team ${body.data.name}`,
+    });
   });
 
   return new Response("OK", { status: 200 });

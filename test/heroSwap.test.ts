@@ -1,7 +1,7 @@
+import type { HeroSwapTableRow, ParserData } from "@/types/parser";
+import { type HeroSwap, PrismaClient } from "@prisma/client";
 import { expect, test } from "vitest";
-import { HeroSwap, PrismaClient } from "@prisma/client";
 import { createHeroSwapRows } from "../src/lib/parser";
-import { HeroSwapTableRow, ParserData } from "@/types/parser";
 
 const prisma = new PrismaClient({
   datasourceUrl: process.env.TEST_DB_URL,
@@ -32,14 +32,14 @@ test("should return the generated hero swap row", async () => {
     MapDataId: 100,
   };
 
-  const heroSwapRow = await createHeroSwapRows(data as any, { id: 1 }, 100);
+  const heroSwapRow = await createHeroSwapRows(data as never, { id: 1 }, 100);
 
   // Destructure the id from the result and compare the rest of the properties
   const { id, ...restOfHeroSwapRow } = heroSwapRow[0];
 
   await prisma.heroSwap.deleteMany({
     where: {
-      id: id,
+      id,
     },
   });
 
@@ -49,9 +49,7 @@ test("should return the generated hero swap row", async () => {
 test("should return empty array", async () => {
   const data = {};
 
-  const heroSwapRow = await createHeroSwapRows(data as any, { id: 1 }, 1);
+  const heroSwapRow = await createHeroSwapRows(data as never, { id: 1 }, 1);
 
   expect(heroSwapRow).toEqual([]);
 });
-
-prisma.$disconnect();

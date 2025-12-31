@@ -18,27 +18,28 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn, toHero } from "@/lib/utils";
-import { HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
+import { type HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+import type { Route } from "next";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 
-interface TeamGroup {
+type TeamGroup = {
   label: string;
   players: { label: string; value: string }[];
-}
+};
 
-interface Player {
+type Player = {
   label: string;
   value: string;
-}
+};
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
 >;
 
-interface TeamSwitcherProps extends PopoverTriggerProps {}
+type TeamSwitcherProps = {} & PopoverTriggerProps;
 
 type MostPlayedHeroesType = {
   player_team: string;
@@ -47,7 +48,7 @@ type MostPlayedHeroesType = {
   hero_time_played: number;
 }[];
 
-export default function PlayerSwitcher({
+export function PlayerSwitcher({
   className,
   mostPlayedHeroes,
 }: TeamSwitcherProps & {
@@ -68,7 +69,7 @@ export default function PlayerSwitcher({
   const mapUrl =
     pathname.split("/")[1] === "demo"
       ? "/demo"
-      : pathname.split("/").slice(0, 6).join("/");
+      : (pathname.split("/").slice(0, 6).join("/") as Route);
 
   React.useEffect(() => {
     const playerId = decodeURIComponent(pathname.split("/").pop()!);
@@ -152,7 +153,9 @@ export default function PlayerSwitcher({
                     <CommandItem
                       key={player.label}
                       onSelect={() => {
-                        router.push(`${mapUrl}/player/${player.label}`);
+                        router.push(
+                          `${mapUrl}/player/${player.label}` as Route
+                        );
                       }}
                       className="text-sm"
                     >
@@ -228,7 +231,9 @@ export const SelectedPlayerContext = React.createContext<PlayerContextType>({
     label: "Default",
     value: "default",
   },
-  setSelectedPlayer: () => {},
+  setSelectedPlayer: () => {
+    // empty function
+  },
 });
 
 export function SelectedPlayerProvider({
@@ -250,8 +255,6 @@ export function SelectedPlayerProvider({
   );
 
   return (
-    <SelectedPlayerContext.Provider value={value}>
-      {children}
-    </SelectedPlayerContext.Provider>
+    <SelectedPlayerContext value={value}>{children}</SelectedPlayerContext>
   );
 }

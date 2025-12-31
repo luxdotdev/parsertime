@@ -1,6 +1,6 @@
 "use client";
 
-import { UpdateModalData } from "@/components/dashboard/update-modal-wrapper";
+import type { UpdateModalData } from "@/components/dashboard/update-modal-wrapper";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,12 +45,11 @@ export function UpdateModal({ data }: { data: UpdateModalData }) {
       <AlertDialogContent className="">
         <AlertDialogHeader>
           <AlertDialogTitle>Latest Updates: {data.title}</AlertDialogTitle>
-          <AlertDialogDescription className="pb-2 text-muted-foreground">
+          <AlertDialogDescription className="text-muted-foreground pb-2">
             {new Date(data.date).toDateString()}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogDescription>
-          {/* eslint-disable-next-line @eslint-react/dom/no-dangerously-set-innerhtml */}
           <div dangerouslySetInnerHTML={{ __html: data.content }} />
         </AlertDialogDescription>
         <AlertDialogFooter>

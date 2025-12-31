@@ -1,7 +1,7 @@
-import Logger from "@/lib/logger";
-import { $Enums, Prisma } from "@prisma/client";
-import { User } from "next-auth";
-import { User as PrismaUser } from "@prisma/client";
+import { Logger } from "@/lib/logger";
+import type { User as PrismaUser } from "@prisma/client";
+import { $Enums } from "@prisma/client";
+import type { User } from "next-auth";
 
 /**
  * The structure of a Discord webhook. This is a simplified version of the actual
@@ -190,6 +190,56 @@ export function newSuspiciousActivityWebhookConstructor(
         `,
         timestamp: new Date(),
         color: 0xff0000,
+        footer: {
+          text: "Parsertime",
+          icon_url: "https://parsertime.app/icon.png",
+        },
+      },
+    ],
+  };
+}
+
+export function userSubscribedWebhookConstructor(
+  user: User,
+  billingPlan: string
+): DiscordWebhook {
+  return {
+    username: "Parsertime",
+    avatar_url: "https://parsertime.app/icon.png",
+    embeds: [
+      {
+        title: `<@&${process.env.BUG_REPORT_NOTIFICATIONS_ROLE_ID}> User Subscribed`,
+        description: `User subscribed to ${billingPlan}: ${user.name} (${user.email})`,
+        timestamp: new Date(),
+        color: 0x0ea5e9,
+        thumbnail: {
+          url: user.image ?? `https://avatar.vercel.sh/${user.email}.png`,
+        },
+        footer: {
+          text: "Parsertime",
+          icon_url: "https://parsertime.app/icon.png",
+        },
+      },
+    ],
+  };
+}
+
+export function userUnsubscribedWebhookConstructor(
+  user: User,
+  billingPlan: string
+): DiscordWebhook {
+  return {
+    username: "Parsertime",
+    avatar_url: "https://parsertime.app/icon.png",
+    embeds: [
+      {
+        title: `<@&${process.env.BUG_REPORT_NOTIFICATIONS_ROLE_ID}> User Unsubscribed`,
+        description: `User unsubscribed from ${billingPlan}: ${user.name} (${user.email})`,
+        timestamp: new Date(),
+        color: 0x0ea5e9,
+        thumbnail: {
+          url: user.image ?? `https://avatar.vercel.sh/${user.email}.png`,
+        },
         footer: {
           text: "Parsertime",
           icon_url: "https://parsertime.app/icon.png",

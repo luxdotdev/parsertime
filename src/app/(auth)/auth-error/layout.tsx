@@ -1,10 +1,8 @@
-import Footer from "@/components/footer";
+import { Footer } from "@/components/footer";
 
 export default function AuthErrorLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}: LayoutProps<"/auth-error">) {
   return (
     <>
       {children}

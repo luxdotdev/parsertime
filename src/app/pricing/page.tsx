@@ -1,13 +1,15 @@
 import { Badge } from "@/components/ui/badge";
+import { Link } from "@/components/ui/link";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { createCheckout, getCustomerPortalUrl } from "@/lib/stripe";
 import { toTitleCase } from "@/lib/utils";
 import { CheckIcon, MinusIcon } from "@heroicons/react/20/solid";
+import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
-import Link from "next/link";
-import React, { Fragment } from "react";
+import type React from "react";
+import { Fragment } from "react";
 
 function classNames(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(" ");
@@ -33,7 +35,7 @@ export default async function PricingPage() {
     if (session) {
       if (plan === "Free") {
         const checkout = await createCheckout(session, tier);
-        return checkout.url;
+        return checkout.url as Route;
       }
       return await getCustomerPortalUrl(user!);
     }
@@ -41,7 +43,16 @@ export default async function PricingPage() {
     return "/dashboard";
   }
 
-  const tiers = [
+  type Tier = {
+    name: string;
+    id: string;
+    href: Route;
+    priceMonthly: string;
+    description: string;
+    mostPopular: boolean;
+  };
+
+  const tiers: Tier[] = [
     {
       name: t("tiers.free"),
       id: "tier-free",
@@ -53,7 +64,7 @@ export default async function PricingPage() {
     {
       name: t("tiers.basic"),
       id: "tier-basic",
-      href: (await getLink("Basic")) ?? "/sign-in",
+      href: ((await getLink("Basic")) as Route) ?? "/sign-in",
       priceMonthly: t("tiers.basicMonthly"),
       description: t("tiers.basicDescription"),
       mostPopular: true,
@@ -61,7 +72,7 @@ export default async function PricingPage() {
     {
       name: t("tiers.premium"),
       id: "tier-premium",
-      href: (await getLink("Premium")) ?? "/sign-in",
+      href: ((await getLink("Premium")) as Route) ?? "/sign-in",
       priceMonthly: t("tiers.premiumMonthly"),
       description: t("tiers.premiumDescription"),
       mostPopular: false,
@@ -312,13 +323,13 @@ export default async function PricingPage() {
 
   return (
     <main className="bg-white dark:bg-black">
-      <div className="bg-white py-24 dark:bg-black sm:py-32">
+      <div className="bg-white py-24 sm:py-32 dark:bg-black">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
-            <h2 className="text-base font-semibold leading-7 text-sky-600 dark:text-sky-400">
+            <h2 className="text-base leading-7 font-semibold text-sky-600 dark:text-sky-400">
               {t("pricing.title")}
             </h2>
-            <p className="mt-2 text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
+            <p className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl dark:text-white">
               {t("pricing.header")}
             </p>
           </div>
@@ -333,14 +344,14 @@ export default async function PricingPage() {
                 key={tier.id}
                 className={classNames(
                   tier.mostPopular
-                    ? "rounded-xl bg-gray-400/5 ring-1 ring-inset ring-gray-200 dark:bg-white/5 dark:ring-white/10"
+                    ? "rounded-xl bg-gray-400/5 ring-1 ring-gray-200 ring-inset dark:bg-white/5 dark:ring-white/10"
                     : "",
                   "p-8"
                 )}
               >
                 <h3
                   id={tier.id}
-                  className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
+                  className="text-sm leading-6 font-semibold text-gray-900 dark:text-white"
                 >
                   {tier.name}
                 </h3>
@@ -359,7 +370,7 @@ export default async function PricingPage() {
                     tier.mostPopular
                       ? "bg-sky-600 text-white hover:bg-sky-400 focus-visible:outline-sky-500 dark:bg-sky-500"
                       : "text-sky-600 hover:bg-white/20 focus-visible:outline-white dark:bg-white/10 dark:text-white",
-                    "mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                    "mt-8 block rounded-md px-3 py-2 text-center text-sm leading-6 font-semibold focus-visible:outline focus-visible:outline-offset-2"
                   )}
                 >
                   {tier.name === "Free"
@@ -443,7 +454,7 @@ export default async function PricingPage() {
                         scope="col"
                         className="px-6 pt-6 xl:px-8 xl:pt-8"
                       >
-                        <div className="text-sm font-semibold leading-7 text-gray-900 dark:text-white">
+                        <div className="text-sm leading-7 font-semibold text-gray-900 dark:text-white">
                           {tier.name}
                         </div>
                       </th>
@@ -461,7 +472,7 @@ export default async function PricingPage() {
                           <span className="text-4xl font-bold">
                             {tier.priceMonthly}
                           </span>
-                          <span className="text-sm font-semibold leading-6">
+                          <span className="text-sm leading-6 font-semibold">
                             {t("pricing.month")}
                           </span>
                         </div>
@@ -471,8 +482,8 @@ export default async function PricingPage() {
                             className={classNames(
                               tier.mostPopular
                                 ? "bg-sky-600 text-white hover:bg-sky-500 dark:bg-sky-500 dark:hover:bg-sky-400 dark:focus-visible:outline-sky-600"
-                                : "text-sky-600 ring-1 ring-inset ring-sky-200 hover:ring-sky-300 dark:bg-white/10 dark:ring-0 dark:hover:bg-white/20 dark:focus-visible:outline-white",
-                              "mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:text-white dark:focus-visible:ring-0"
+                                : "text-sky-600 ring-1 ring-sky-200 ring-inset hover:ring-sky-300 dark:bg-white/10 dark:ring-0 dark:hover:bg-white/20 dark:focus-visible:outline-white",
+                              "mt-8 block rounded-md px-3 py-2 text-center text-sm leading-6 font-semibold focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:text-white dark:focus-visible:ring-0"
                             )}
                           >
                             {t("pricing.currentPlan")}
@@ -483,8 +494,8 @@ export default async function PricingPage() {
                             className={classNames(
                               tier.mostPopular
                                 ? "bg-sky-600 text-white hover:bg-sky-500 dark:bg-sky-500 dark:hover:bg-sky-400 dark:focus-visible:outline-sky-600"
-                                : "text-sky-600 ring-1 ring-inset ring-sky-200 hover:ring-sky-300 dark:bg-white/10 dark:ring-0 dark:hover:bg-white/20 dark:focus-visible:outline-white",
-                              "mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:text-white dark:focus-visible:ring-0"
+                                : "text-sky-600 ring-1 ring-sky-200 ring-inset hover:ring-sky-300 dark:bg-white/10 dark:ring-0 dark:hover:bg-white/20 dark:focus-visible:outline-white",
+                              "mt-8 block rounded-md px-3 py-2 text-center text-sm leading-6 font-semibold focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:text-white dark:focus-visible:ring-0"
                             )}
                           >
                             {tier.name === "Free"
@@ -503,7 +514,7 @@ export default async function PricingPage() {
                           colSpan={4}
                           className={classNames(
                             sectionIdx === 0 ? "pt-8" : "pt-16",
-                            "pb-4 text-sm font-semibold leading-6 text-gray-900 dark:text-white"
+                            "pb-4 text-sm leading-6 font-semibold text-gray-900 dark:text-white"
                           )}
                         >
                           {section.name}
@@ -514,7 +525,7 @@ export default async function PricingPage() {
                         <tr key={feature.name}>
                           <th
                             scope="row"
-                            className="py-4 text-sm font-normal leading-6 text-gray-900 dark:text-white"
+                            className="py-4 text-sm leading-6 font-normal text-gray-900 dark:text-white"
                           >
                             {feature.name}{" "}
                             {feature.comingSoon && (
@@ -578,35 +589,35 @@ export default async function PricingPage() {
       <div className="mx-auto mt-8 max-w-7xl px-6 sm:mt-16 lg:px-8">
         <div className="mx-auto mt-10 grid max-w-lg grid-cols-4 items-center gap-x-8 gap-y-10 sm:max-w-xl sm:grid-cols-6 sm:gap-x-10 lg:mx-0 lg:max-w-none lg:grid-cols-5">
           <Image
-            className="col-span-2 max-h-12 w-full object-contain invert dark:invert-0 lg:col-span-1"
+            className="col-span-2 max-h-12 w-full object-contain invert lg:col-span-1 dark:invert-0"
             src="/teams/stclair.svg"
             alt="St. Clair College"
             width={158}
             height={48}
           />
           <Image
-            className="col-span-2 max-h-12 w-full object-contain invert dark:invert-0 lg:col-span-1"
+            className="col-span-2 max-h-12 w-full object-contain invert lg:col-span-1 dark:invert-0"
             src="/teams/cornell.svg"
             alt="Cornell University"
             width={158}
             height={48}
           />
           <Image
-            className="col-span-2 max-h-12 w-full object-contain invert dark:invert-0 lg:col-span-1"
+            className="col-span-2 max-h-12 w-full object-contain invert lg:col-span-1 dark:invert-0"
             src="/teams/fiu.svg"
             alt="Florida International University"
             width={158}
             height={48}
           />
           <Image
-            className="col-span-2 max-h-12 w-full object-contain invert dark:invert-0 lg:col-span-1"
+            className="col-span-2 max-h-12 w-full object-contain invert lg:col-span-1 dark:invert-0"
             src="/teams/gsu.svg"
             alt="Georgia State University"
             width={158}
             height={48}
           />
           <Image
-            className="col-span-2 max-h-12 w-full object-contain invert dark:invert-0 lg:col-span-1"
+            className="col-span-2 max-h-12 w-full object-contain invert lg:col-span-1 dark:invert-0"
             src="/teams/vlln.png"
             alt="VLLN"
             width={158}
@@ -614,7 +625,7 @@ export default async function PricingPage() {
           />
         </div>
         <div className="mt-16 flex justify-center">
-          <p className="relative rounded-full bg-gray-50 px-4 py-1.5 text-sm leading-6 text-gray-600 ring-1 ring-inset ring-gray-900/5 dark:bg-zinc-950 dark:text-gray-300 dark:ring-gray-50/5">
+          <p className="relative rounded-full bg-gray-50 px-4 py-1.5 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/5 ring-inset dark:bg-zinc-950 dark:text-gray-300 dark:ring-gray-50/5">
             <span className="hidden md:inline">{t("caseStudy.title")}</span>
             <Link
               href="https://lux.dev/blog"
@@ -628,7 +639,7 @@ export default async function PricingPage() {
         </div>
       </div>
 
-      <section className="relative isolate overflow-hidden bg-white px-6 py-24 dark:bg-black sm:py-32 lg:px-8">
+      <section className="relative isolate overflow-hidden bg-white px-6 py-24 sm:py-32 lg:px-8 dark:bg-black">
         <div className="mx-auto max-w-2xl lg:max-w-4xl">
           <Image
             className="mx-auto h-12 dark:invert"
@@ -638,7 +649,7 @@ export default async function PricingPage() {
             height={48}
           />
           <figure className="mt-10">
-            <blockquote className="text-center text-xl font-semibold leading-8 text-gray-900 dark:text-white sm:text-2xl sm:leading-9">
+            <blockquote className="text-center text-xl leading-8 font-semibold text-gray-900 sm:text-2xl sm:leading-9 dark:text-white">
               <p>{t("testimonial.quote")}</p>
             </blockquote>
             <figcaption className="mt-10">
@@ -675,7 +686,7 @@ export default async function PricingPage() {
         <div className="mx-auto max-w-7xl px-6 py-24 sm:pt-32 lg:px-8 lg:py-40">
           <div className="lg:grid lg:grid-cols-12 lg:gap-8">
             <div className="lg:col-span-5">
-              <h2 className="text-2xl font-bold leading-10 tracking-tight text-gray-900 dark:text-white">
+              <h2 className="text-2xl leading-10 font-bold tracking-tight text-gray-900 dark:text-white">
                 {t("faq.title")}
               </h2>
               <p className="mt-4 text-base leading-7 text-gray-600 dark:text-gray-300">
@@ -695,7 +706,7 @@ export default async function PricingPage() {
               <dl className="space-y-10">
                 {faqs.map((faq) => (
                   <div key={faq.question}>
-                    <dt className="text-base font-semibold leading-7 text-gray-900 dark:text-white">
+                    <dt className="text-base leading-7 font-semibold text-gray-900 dark:text-white">
                       {faq.question}
                     </dt>
                     <dd className="mt-2 text-base leading-7 text-gray-600 dark:text-gray-300">

@@ -1,15 +1,20 @@
 import SubscriptionCreatedEmail from "@/components/email/subscription-created";
 import SubscriptionDeletedEmail from "@/components/email/subscription-deleted";
 import SubscriptionUpdatedEmail from "@/components/email/subscription-updated";
-import { sendEmail } from "@/lib/email";
-import Logger from "@/lib/logger";
+import { email } from "@/lib/email";
+import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
-import { BillingPlans } from "@/types/billing-plans";
+import {
+  sendDiscordWebhook,
+  userSubscribedWebhookConstructor,
+  userUnsubscribedWebhookConstructor,
+} from "@/lib/webhooks";
+import type { BillingPlans } from "@/types/billing-plans";
 import { $Enums } from "@prisma/client";
 import { render } from "@react-email/render";
 import { get } from "@vercel/edge-config";
-import Stripe from "stripe";
+import type Stripe from "stripe";
 
 type SubscriptionEvent =
   | "customer.subscription.created"
@@ -60,15 +65,18 @@ export async function handleSubscriptionEvent(
       });
 
       try {
-        await sendEmail({
+        await email.sendEmail({
           to: user.email,
           from: "noreply@lux.dev",
           subject: `Thank you for subscribing to Parsertime!`,
-          html: render(
+          html: await render(
             SubscriptionCreatedEmail({ user, billingPlan: billingPlan.name })
           ),
         });
         Logger.log("Subscription created email sent");
+
+        const wh = userSubscribedWebhookConstructor(user, billingPlan.name);
+        await sendDiscordWebhook(process.env.DISCORD_WEBHOOK_URL, wh);
       } catch (e) {
         Logger.error("Error sending email", e);
       }
@@ -97,11 +105,11 @@ export async function handleSubscriptionEvent(
         "items" in event.data.previous_attributes
       ) {
         try {
-          await sendEmail({
+          await email.sendEmail({
             to: user.email,
             from: "noreply@lux.dev",
             subject: `Your Parsertime subscription has been updated`,
-            html: render(
+            html: await render(
               SubscriptionUpdatedEmail({ user, billingPlan: billingPlan.name })
             ),
           });
@@ -127,13 +135,16 @@ export async function handleSubscriptionEvent(
       });
 
       try {
-        await sendEmail({
+        await email.sendEmail({
           to: user.email,
           from: "noreply@lux.dev",
           subject: `Your subscription to Parsertime has been cancelled`,
-          html: render(SubscriptionDeletedEmail({ user })),
+          html: await render(SubscriptionDeletedEmail({ user })),
         });
         Logger.log("Subscription deleted email sent");
+
+        const wh = userUnsubscribedWebhookConstructor(user, billingPlan.name);
+        await sendDiscordWebhook(process.env.DISCORD_WEBHOOK_URL, wh);
       } catch (e) {
         Logger.error("Error sending email", e);
       }

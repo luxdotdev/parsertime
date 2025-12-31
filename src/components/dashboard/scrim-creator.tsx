@@ -1,23 +1,17 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
-import { format } from "date-fns";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-
-import { GetTeamsResponse } from "@/app/api/team/get-teams/route";
+import type { GetTeamsResponse } from "@/app/api/team/get-teams/route";
+import { SortableBanItem } from "@/components/map/sortable-ban-item";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Link } from "@/components/ui/link";
 import {
@@ -32,15 +26,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/components/ui/use-toast";
 import { parseData } from "@/lib/parser";
-import { cn } from "@/lib/utils";
-import { ParserData } from "@/types/parser";
-import { useQuery } from "@tanstack/react-query";
+import { cn, detectFileCorruption } from "@/lib/utils";
+import { heroRoleMapping } from "@/types/heroes";
+import type { ParserData } from "@/types/parser";
+import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { track } from "@vercel/analytics";
+import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
 
 const ACCEPTED_FILE_TYPES = [
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -55,15 +70,23 @@ export function ScrimCreationForm({
   setOpen: (open: boolean) => void;
 }) {
   const [mapData, setMapData] = useState<ParserData>();
-  const { toast } = useToast();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [hasCorruptedData, setHasCorruptedData] = useState(false);
+  const queryClient = useQueryClient();
   const t = useTranslations("dashboard.scrimCreationForm");
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const FormSchema = z.object({
     name: z
       .string({
-        required_error: t("scrimRequiredError"),
+        error: t("scrimRequiredError"),
       })
       .min(2, {
         message: t("scrimMinMessage"),
@@ -72,18 +95,25 @@ export function ScrimCreationForm({
         message: t("scrimMaxMessage"),
       }),
     team: z.string({
-      required_error: t("teamRequiredError"),
+      error: t("teamRequiredError"),
     }),
     date: z.date({
-      required_error: t("dateRequiredError"),
+      error: t("dateRequiredError"),
     }),
     map: z.any(),
-    replayCode: z
-      .string()
-      .max(6, {
-        message: "Replay code must not be longer than 6 characters.",
+    heroBans: z.array(
+      z.object({
+        hero: z.string().min(1, {
+          message: t("heroBanRequiredError"),
+        }),
+        team: z.string().min(1, {
+          message: t("teamRequiredError"),
+        }),
+        banPosition: z.number().min(1, {
+          message: t("banPositionRequiredError"),
+        }),
       })
-      .optional(),
+    ),
   });
 
   async function getTeams() {
@@ -98,7 +128,7 @@ export function ScrimCreationForm({
     }));
   }
 
-  const { data: teams, isLoading } = useQuery({
+  const { data: teams } = useQuery({
     queryKey: ["teams"],
     queryFn: getTeams,
     staleTime: Infinity,
@@ -109,34 +139,59 @@ export function ScrimCreationForm({
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
       if (file.size > MAX_FILE_SIZE) {
-        toast({
-          title: t("fileSize.title"),
+        toast.error(t("fileSize.title"), {
+          duration: 5000,
           description: t("fileSize.description"),
         });
         return;
       }
 
       if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
-        toast({
-          title: t("fileType.title"),
+        toast.error(t("fileType.title"), {
+          duration: 5000,
           description: t("fileType.description"),
         });
         return;
       }
 
+      // Check for corrupted data before parsing
+      const hasCorruptedData = await detectFileCorruption(file);
+
+      if (hasCorruptedData.isCorrupted) {
+        let warningMessage = t("dataCorruption.warning.baseDescription");
+
+        if (hasCorruptedData.hasInvalidMercyRez) {
+          warningMessage += `\n${t("dataCorruption.warning.invalidMercyRez")}`;
+        }
+        if (hasCorruptedData.hasAsterisks) {
+          warningMessage += `\n${t("dataCorruption.warning.asteriskValues")}`;
+        }
+
+        toast.warning(t("dataCorruption.warning.title"), {
+          description: warningMessage,
+          duration: 8000,
+        });
+      }
+
       const data = await parseData(file);
       setMapData(data);
+
+      // Store corruption info for success message
+      setHasCorruptedData(hasCorruptedData.isCorrupted);
     }
   }
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    defaultValues: {
+      date: new Date(),
+      heroBans: [],
+    },
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setLoading(true);
-    toast({
-      title: t("creatingScrim.title"),
+    toast.error(t("creatingScrim.title"), {
       description: t("creatingScrim.description"),
       duration: 5000,
     });
@@ -150,17 +205,23 @@ export function ScrimCreationForm({
     });
 
     if (res.ok) {
-      toast({
-        title: t("createdScrim.title"),
-        description: t("createdScrim.description"),
-        duration: 5000,
-      });
+      if (hasCorruptedData) {
+        toast.success(t("dataCorruption.success.title"), {
+          description: t("dataCorruption.success.description"),
+          duration: 6000,
+        });
+      } else {
+        toast.success(t("createdScrim.title"), {
+          description: t("createdScrim.description"),
+          duration: 5000,
+        });
+      }
+      void queryClient.invalidateQueries({ queryKey: ["scrims"] });
       router.refresh();
       setOpen(false);
       setLoading(false);
     } else {
-      toast({
-        title: t("createdScrim.errorTitle"),
+      toast.error(t("createdScrim.errorTitle"), {
         description: t.rich("createdScrim.errorDescription", {
           res: `${await res.text()} (${res.status})`,
           here: (chunks) => (
@@ -175,41 +236,48 @@ export function ScrimCreationForm({
           ),
         }),
         duration: 5000,
-        variant: "destructive",
       });
       setLoading(false);
     }
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <FieldGroup>
+        <Controller
           control={form.control}
           name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("scrimName")}</FormLabel>
-              <FormControl>
-                <Input placeholder={t("scrimPlaceholder")} {...field} />
-              </FormControl>
-              <FormDescription>{t("scrimDescription")}</FormDescription>
-              <FormMessage />
-            </FormItem>
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <div id="docs-demo-step3">
+                <FieldLabel htmlFor={field.name}>{t("scrimName")}</FieldLabel>
+                <Input
+                  {...field}
+                  aria-invalid={fieldState.invalid}
+                  placeholder={t("scrimPlaceholder")}
+                />
+                <FieldDescription>{t("scrimDescription")}</FieldDescription>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </div>
+            </Field>
           )}
         />
-        <FormField
+        <Controller
           control={form.control}
           name="team"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>{t("teamName")}</FormLabel>
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid} id="docs-demo-step4">
+              <FieldLabel htmlFor={field.name}>{t("teamName")}</FieldLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger className="w-[240px] pl-3 text-left font-normal">
-                    <SelectValue placeholder={t("teamPlaceholder")} />
-                  </SelectTrigger>
-                </FormControl>
+                <SelectTrigger
+                  id={field.name}
+                  aria-invalid={fieldState.invalid}
+                  className="w-[240px] pl-3 text-left font-normal"
+                >
+                  <SelectValue placeholder={t("teamPlaceholder")} />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="0">{t("teamIndividual")}</SelectItem>
                   {teams ? (
@@ -223,93 +291,214 @@ export function ScrimCreationForm({
                   )}
                 </SelectContent>
               </Select>
-              <FormDescription>
+              <FieldDescription>
                 {t.rich("teamDescription", {
                   link: (chunks) => <Link href="/dashboard">{chunks}</Link>,
                 })}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
+              </FieldDescription>
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
           )}
         />
-        <FormField
+        <Controller
           control={form.control}
           name="date"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>{t("dateName")}</FormLabel>
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid} id="docs-demo-step5">
+              <FieldLabel htmlFor={field.name}>{t("dateName")}</FieldLabel>
               <Popover>
                 <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>{t("datePlaceholder")}</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
+                  <Button
+                    id={field.name}
+                    variant="outline"
+                    aria-invalid={fieldState.invalid}
+                    className={cn(
+                      "w-[240px] pl-3 text-left font-normal",
+                      !field.value && "text-muted-foreground"
+                    )}
+                  >
+                    {field.value ? (
+                      format(field.value, "PPP")
+                    ) : (
+                      <span>{t("datePlaceholder")}</span>
+                    )}
+                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                  </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
-                    disabled={(date) =>
+                    disabled={(date: Date) =>
                       date > new Date() || date < new Date("2016-01-01")
                     }
                   />
                 </PopoverContent>
               </Popover>
-              <FormDescription>{t("dateDescription")}</FormDescription>
-              <FormMessage />
-            </FormItem>
+              <FieldDescription>{t("dateDescription")}</FieldDescription>
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
           )}
         />
-        <FormField
+        <Controller
           control={form.control}
           name="map"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>{t("mapName")}</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  onChange={(e) => {
-                    startTransition(async () => await handleFile(e));
-                  }}
-                  type="file"
-                  className="w-64"
-                  accept=".xlsx, .txt"
-                />
-              </FormControl>
-              <FormDescription>{t("mapDescription")}</FormDescription>
-              <FormMessage />
-            </FormItem>
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid} id="docs-demo-step6">
+              <FieldLabel htmlFor={field.name}>{t("mapName")}</FieldLabel>
+              <Input
+                {...field}
+                id={field.name}
+                aria-invalid={fieldState.invalid}
+                onChange={(e) => {
+                  startTransition(async () => await handleFile(e));
+                }}
+                type="file"
+                className="w-64"
+                accept=".xlsx, .txt"
+              />
+              <FieldDescription>{t("mapDescription")}</FieldDescription>
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
           )}
         />
-        <Button
-          type="submit"
-          onClick={() => track("Create Scrim", { location: "Dashboard" })}
-          disabled={loading}
-        >
-          {loading ? (
-            <>
-              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
-              {t("submitting")}
-            </>
-          ) : (
-            <>{t("submit")}</>
-          )}
-        </Button>
-      </form>
-    </Form>
+        <Controller
+          control={form.control}
+          name="heroBans"
+          render={({ field, fieldState }) => {
+            function handleDragEnd(event: DragEndEvent) {
+              const { active, over } = event;
+
+              if (over && active.id !== over.id) {
+                const bans = field.value || [];
+                const oldIndex = bans.findIndex(
+                  (ban) =>
+                    `ban-${ban.hero}-${ban.team}-${ban.banPosition}` ===
+                    active.id
+                );
+                const newIndex = bans.findIndex(
+                  (ban) =>
+                    `ban-${ban.hero}-${ban.team}-${ban.banPosition}` === over.id
+                );
+
+                if (oldIndex !== -1 && newIndex !== -1) {
+                  const reorderedBans = arrayMove(bans, oldIndex, newIndex);
+                  const updatedBans = reorderedBans.map((ban, i) => ({
+                    ...ban,
+                    banPosition: i + 1,
+                  }));
+                  field.onChange(updatedBans);
+                }
+              }
+            }
+
+            return (
+              <Field data-invalid={fieldState.invalid} id="docs-demo-step7">
+                <FieldLabel htmlFor={field.name}>
+                  {t("heroBansName")}
+                </FieldLabel>
+                <div className="space-y-4">
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext
+                      items={(field.value || []).map(
+                        (ban) =>
+                          `ban-${ban.hero}-${ban.team}-${ban.banPosition}`
+                      )}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      {field.value?.map((ban, index) => (
+                        <SortableBanItem
+                          key={`ban-${ban.hero}-${ban.team}-${ban.banPosition}`}
+                          ban={ban}
+                          index={index}
+                          overwatchHeroes={Object.keys(heroRoleMapping)}
+                          team1Name={mapData?.match_start?.[0]?.[4]}
+                          team2Name={mapData?.match_start?.[0]?.[5]}
+                          onHeroChange={(value) => {
+                            const newBans = [...(field.value || [])];
+                            newBans[index] = {
+                              ...newBans[index],
+                              hero: value,
+                            };
+                            field.onChange(newBans);
+                          }}
+                          onTeamChange={(value) => {
+                            const newBans = [...(field.value || [])];
+                            newBans[index] = {
+                              ...newBans[index],
+                              team: value,
+                            };
+                            field.onChange(newBans);
+                          }}
+                          onRemove={() => {
+                            const newBans =
+                              field.value?.filter((_, i) => i !== index) || [];
+                            const updatedBans = newBans.map((ban, i) => ({
+                              ...ban,
+                              banPosition: i + 1,
+                            }));
+                            field.onChange(updatedBans);
+                          }}
+                        />
+                      ))}
+                    </SortableContext>
+                  </DndContext>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      const currentBans = field.value || [];
+                      field.onChange([
+                        ...currentBans,
+                        {
+                          hero: "",
+                          team: "",
+                          banPosition: currentBans.length + 1,
+                        },
+                      ]);
+                    }}
+                  >
+                    Add Hero Ban
+                  </Button>
+                </div>
+                <FieldDescription>{t("heroBansDescription")}</FieldDescription>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            );
+          }}
+        />
+        <div className="flex gap-2">
+          <Button
+            type="submit"
+            id="docs-demo-step8"
+            onClick={() => track("Create Scrim", { location: "Dashboard" })}
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
+                {t("submitting")}
+              </>
+            ) : (
+              <>{t("submit")}</>
+            )}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setOpen(false)}
+          >
+            {t("cancel")}
+          </Button>
+        </div>
+      </FieldGroup>
+    </form>
   );
 }

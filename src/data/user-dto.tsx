@@ -1,7 +1,7 @@
 import "server-only";
 
 import prisma from "@/lib/prisma";
-import { $Enums, User } from "@prisma/client";
+import { $Enums } from "@prisma/client";
 import { cache } from "react";
 
 async function getUserFn(email: string | undefined) {
@@ -17,9 +17,8 @@ async function getUserFn(email: string | undefined) {
  * Get a user from the database by email address.
  * This function is cached for performance.
  *
- * @param {string} email - The email address of the user to get.
- * @returns {User} The user with the specified email address or null if no user was found.
- * @see {@link User}
+ * @param email - The email address of the user to get.
+ * @returns The user with the specified email address or null if no user was found.
  */
 export const getUser = cache(getUserFn);
 
@@ -40,6 +39,7 @@ async function getTeamsWithPermsFn(email: string | undefined) {
         },
         { managers: { some: { userId: user?.id } } },
       ],
+      id: { not: 0 },
     },
   });
 
@@ -50,8 +50,27 @@ async function getTeamsWithPermsFn(email: string | undefined) {
  * Get all teams that the user has permission to modify.
  * This function is cached for performance.
  *
- * @param {string} userId - The user ID of the user to get teams for.
- * @returns {Team[]} The teams that the user has permission to view.
- * @see {@link Team}
+ * @param userId - The user ID of the user to get teams for.
+ * @returns The teams that the user has permission to view.
  */
 export const getTeamsWithPerms = cache(getTeamsWithPermsFn);
+
+async function getAppSettingsFn(email: string | undefined) {
+  const user = await getUser(email);
+  if (!user) return null;
+
+  const appSettings = await prisma.appSettings.findFirst({
+    where: { userId: user?.id },
+  });
+
+  return appSettings;
+}
+
+/**
+ * Get the app settings for a user.
+ * This function is cached for performance.
+ *
+ * @param email - The email address of the user to get app settings for.
+ * @returns The app settings for the user.
+ */
+export const getAppSettings = cache(getAppSettingsFn);

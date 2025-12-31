@@ -1,6 +1,6 @@
 import { parseDataFromTXT } from "@/lib/parser";
-import { ParserData } from "@/types/parser";
-import { $Enums } from "@prisma/client";
+import type { ParserData } from "@/types/parser";
+import type { $Enums } from "@prisma/client";
 import { fail } from "assert";
 import * as fs from "fs";
 import { expect, test } from "vitest";
@@ -14,7 +14,7 @@ test("should be equivalent to control data", async () => {
 
   // @ts-expect-error - cannot pass File type in node
   const workbook1 = await parseDataFromTXT(file);
-  const workbook2 = await local_parseDataFromXLSX(
+  const workbook2 = local_parseDataFromXLSX(
     "./test/samples/Log-2024-01-22-20-02-45_parsed.xlsx"
   );
 
@@ -29,7 +29,7 @@ test("should be equivalent to control data v2", async () => {
 
   // @ts-expect-error - cannot pass File type in node
   const workbook1 = await parseDataFromTXT(file);
-  const workbook2 = await local_parseDataFromXLSX(
+  const workbook2 = local_parseDataFromXLSX(
     "./test/samples/Log-2024-01-22-20-21-43_parsed.xlsx"
   );
 
@@ -47,7 +47,7 @@ test("should be equivalent to control data v3", async () => {
 
   // @ts-expect-error - cannot pass File type in node
   const workbook1 = await parseDataFromTXT(file);
-  const workbook2 = await local_parseDataFromXLSX(
+  const workbook2 = local_parseDataFromXLSX(
     "./test/samples/Log-2024-01-22-21-35-38_parsed.xlsx"
   );
 
@@ -68,7 +68,7 @@ test.todo("should be equivalent to control data v4", async () => {
 
   // @ts-expect-error - cannot pass File type in node
   const workbook1 = await parseDataFromTXT(file);
-  const workbook2 = await local_parseDataFromXLSX(
+  const workbook2 = local_parseDataFromXLSX(
     "./test/samples/Log-2023-12-12-22-15-10_parsed.xlsx"
   );
 
@@ -86,7 +86,7 @@ test("should be equivalent to control data v5", async () => {
 
   // @ts-expect-error - cannot pass File type in node
   const workbook1 = await parseDataFromTXT(file);
-  const workbook2 = await local_parseDataFromXLSX(
+  const workbook2 = local_parseDataFromXLSX(
     "./test/samples/Log-2024-02-05-20-07-38_parsed.xlsx"
   );
 
@@ -104,7 +104,7 @@ test("should be equivalent to control data v6", async () => {
 
   // @ts-expect-error - cannot pass File type in node
   const workbook1 = await parseDataFromTXT(file);
-  const workbook2 = await local_parseDataFromXLSX(
+  const workbook2 = local_parseDataFromXLSX(
     "./test/samples/Log-2024-01-10-20-38-42_parsed.xlsx"
   );
 
@@ -123,8 +123,8 @@ test("should correctly handle deaths linked to All Teams", async () => {
   // @ts-expect-error - cannot pass File type in node
   const workbook1 = await parseDataFromTXT(file);
 
-  for (const kill in workbook1.kill) {
-    if (workbook1.kill[kill][2] === "All Teams") {
+  for (const kill of workbook1.kill) {
+    if (kill[2] === "All Teams") {
       fail("All Teams should not be present in kill events");
     }
   }
@@ -143,7 +143,7 @@ test("should pass without errors", async () => {
 
   // @ts-expect-error - cannot pass File type in node
   const workbook1 = await parseDataFromTXT(file);
-  const workbook2 = await local_parseDataFromXLSX(
+  const workbook2 = local_parseDataFromXLSX(
     "./test/samples/Log-2024-06-16-22-24-33_parsed.xlsx"
   );
 
@@ -156,7 +156,7 @@ test("should pass without errors", async () => {
   // expect(workbook2).toEqual(workbook1);
 });
 
-async function local_parseDataFromXLSX(fileName: string) {
+function local_parseDataFromXLSX(fileName: string) {
   // read the file binary
   const file = fs.readFileSync(fileName, "binary");
 
@@ -172,7 +172,7 @@ async function local_parseDataFromXLSX(fileName: string) {
         header: 1,
       })
       .slice(1);
-    result[sheet] = json as any; // cast to any because we don't know the exact type
+    result[sheet] = json as never; // cast to any because we don't know the exact type
   }
 
   return result as ParserData; // cast to ParserData because we know the structure matches
