@@ -27,7 +27,6 @@ export function VodOverview({
 
   // 2. Identify the content type and ID
   const t = useTranslations("mapPage.vod");
-  const isYouTube: boolean = vodState.includes("youtube.com");
   const isTwitch: boolean = vodState.includes("twitch.tv");
 
   // Determine Twitch Src (Channel vs Video vs Clip)
@@ -52,9 +51,9 @@ export function VodOverview({
       </CardHeader>
       <CardContent>
         <div className="aspect-video">
-          {isYouTube && (
+          {!isTwitch && (
             <YouTubeEmbed
-              videoid={vodState.split("v=")[1]?.split("&")[0]}
+              videoid={vodState.split("v=")[1]?.split("&")[0] || ""}
               params={`controls=1&start=${vodState.split("t=")[1] ? vodState.split("t=")[1].split("s")[0] : 0}`}
               style="width:full; height:full; max-width:100%; max-height:100%; border:0;"
             />
@@ -91,11 +90,13 @@ export function VodOverview({
               <DialogTrigger asChild>
                 <Button variant="secondary">{t("changeVod")}</Button>
               </DialogTrigger>
-              <VodForm
-                mapId={mapId}
-                setVodState={setVodState}
-                setIsOpen={setIsOpen}
-              />
+              <DialogContent>
+                <VodForm
+                  mapId={mapId}
+                  setVodState={setVodState}
+                  setIsOpen={setIsOpen}
+                />
+              </DialogContent>
             </Dialog>
           </div>
         )}
