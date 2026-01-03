@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -7,14 +8,7 @@ import { YouTubeEmbed } from "@next/third-parties/google";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-export function VodOverview({
-  vod,
-  mapId,
-}: {
-  vod: string;
-  scrimId?: number;
-  mapId: number;
-}) {
+export function VodOverview({ vod, mapId }: { vod: string; mapId: number }) {
   // 1. Clean the parent domain (Twitch rejects 'https://' and paths)
   const parentDomain = process.env.NEXT_PUBLIC_VERCEL_URL
     ? process.env.NEXT_PUBLIC_VERCEL_URL.replace(/^https?:\/\//, "").split(
@@ -27,21 +21,11 @@ export function VodOverview({
 
   // 2. Identify the content type and ID
   const t = useTranslations("mapPage.vod");
-  const isTwitch: boolean = vodState.includes("twitch.tv");
 
-  // Determine Twitch Src (Channel vs Video vs Clip)
   let twitchSrc = "";
-  if (isTwitch) {
-    if (vodState.includes("/clip/")) {
-      const clipId = vodState.split("/clip/")[1].split("?")[0];
-      twitchSrc = `https://clips.twitch.tv/embed?clip=${clipId}&parent=${parentDomain}`;
-    } else if (vod.includes("/videos/")) {
-      const videoId = vodState.split("/videos/")[1].split("?")[0];
-      twitchSrc = `https://player.twitch.tv/?video=${videoId}&parent=${parentDomain}`;
-    } else {
-      const channelName = vodState.split("twitch.tv/")[1].split("?")[0];
-      twitchSrc = `https://player.twitch.tv/?channel=${channelName}&parent=${parentDomain}`;
-    }
+  if (vodState.includes("https://www.twitch.tv/videos/")) {
+    const videoId = vodState.split("/videos/")[1].split("?")[0];
+    twitchSrc = `https://player.twitch.tv/?video=${videoId}&parent=${parentDomain}`;
   }
 
   return (
@@ -51,15 +35,20 @@ export function VodOverview({
       </CardHeader>
       <CardContent>
         <div className="aspect-video">
-          {!isTwitch && (
+          {(vodState.includes("https://www.youtube.com/watch?v=") ||
+            vodState.includes("https://youtu.be/")) && (
             <YouTubeEmbed
-              videoid={vodState.split("v=")[1]?.split("&")[0] || ""}
+              videoid={
+                vodState.includes("https://youtu.be/")
+                  ? vodState.split("youtu.be/")[1].split("?")[0]
+                  : vodState.split("v=")[1]?.split("&")[0] || ""
+              }
               params={`controls=1&start=${vodState.split("t=")[1] ? vodState.split("t=")[1].split("s")[0] : 0}`}
               style="width:full; height:full; max-width:100%; max-height:100%; border:0;"
             />
           )}
 
-          {isTwitch && (
+          {twitchSrc !== "" && (
             <iframe
               src={twitchSrc}
               className="h-full w-full border-0"
@@ -77,6 +66,7 @@ export function VodOverview({
                 <VodForm
                   mapId={mapId}
                   setVodState={setVodState}
+                  vodState={vodState}
                   setIsOpen={setIsOpen}
                 />
               </DialogContent>
@@ -94,6 +84,7 @@ export function VodOverview({
                 <VodForm
                   mapId={mapId}
                   setVodState={setVodState}
+                  vodState={vodState}
                   setIsOpen={setIsOpen}
                 />
               </DialogContent>
