@@ -12,25 +12,6 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-const ALLOWED_DOMAINS = [
-  "https://www.youtube.com/",
-  "https://youtube.com/",
-  "https://youtu.be/",
-  "https://www.twitch.tv/",
-  "https://twitch.tv/",
-];
-const formSchema = z.object({
-  vodUrl: z
-    .string()
-    .min(1, { message: "Please enter a VOD URL" })
-    .refine(
-      (url) => {
-        return ALLOWED_DOMAINS.some((domain) => url.startsWith(domain));
-      },
-      { message: "URL must be from YouTube or Twitch" }
-    ),
-});
-
 export function VodForm({
   mapId,
   setVodState,
@@ -43,8 +24,31 @@ export function VodForm({
   setIsOpen: Dispatch<React.SetStateAction<boolean>>;
 }) {
   const router = useRouter();
+
   const t = useTranslations("mapPage.vod");
+
+  const ALLOWED_DOMAINS = [
+    "https://www.youtube.com/",
+    "https://youtube.com/",
+    "https://youtu.be/",
+    "https://www.twitch.tv/",
+    "https://twitch.tv/",
+  ];
+
+  const formSchema = z.object({
+    vodUrl: z
+      .string()
+      .min(1, { message: t("vodLabel") })
+      .refine(
+        (url) => {
+          return ALLOWED_DOMAINS.some((domain) => url.startsWith(domain));
+        },
+        { message: t("invalidUrl") }
+      ),
+  });
+
   const [loading, setLoading] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -70,12 +74,12 @@ export function VodForm({
       });
 
       if (!res.ok) {
-        toast.error("Failed to link VOD:");
+        toast.error(t("vodFail"));
         setLoading(false);
         return;
       }
 
-      toast.success("Successfully linked VOD");
+      toast.success(t("vodSuccess"));
       setVodState(data.vodUrl);
       setLoading(false);
       setIsOpen(false);
@@ -83,7 +87,7 @@ export function VodForm({
 
       return res.json();
     } catch (error) {
-      toast.error("An error occurred while linking the VOD.", {
+      toast.error(t("vodFail"), {
         description: String(error),
       });
 
