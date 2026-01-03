@@ -80,11 +80,13 @@ export function VodForm({
       setLoading(false);
       setIsOpen(false);
       router.refresh();
+
       return res.json();
     } catch (error) {
       toast.error("An error occurred while linking the VOD.", {
         description: String(error),
       });
+
       setLoading(false);
     }
   }
