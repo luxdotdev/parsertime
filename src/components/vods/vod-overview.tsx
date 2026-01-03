@@ -28,6 +28,12 @@ export function VodOverview({ vod, mapId }: { vod: string; mapId: number }) {
     twitchSrc = `https://player.twitch.tv/?video=${videoId}&parent=${parentDomain}`;
   }
 
+  const vodSource =
+    vodState.startsWith("https://www.youtube.com/watch?v=") ||
+    vodState.startsWith("https://youtu.be/")
+      ? "youtube"
+      : "twitch";
+
   return (
     <Card className="overflow-hidden">
       <CardHeader>
@@ -35,8 +41,7 @@ export function VodOverview({ vod, mapId }: { vod: string; mapId: number }) {
       </CardHeader>
       <CardContent>
         <div className="aspect-video">
-          {(vodState.startsWith("https://www.youtube.com/watch?v=") ||
-            vodState.startsWith("https://youtu.be/")) && (
+          {vodSource === "youtube" && (
             <YouTubeEmbed
               videoid={
                 vodState.startsWith("https://youtu.be/")
@@ -48,7 +53,7 @@ export function VodOverview({ vod, mapId }: { vod: string; mapId: number }) {
             />
           )}
 
-          {twitchSrc !== "" && (
+          {vodSource === "twitch" && (
             <iframe
               src={twitchSrc}
               className="h-full w-full border-0"
