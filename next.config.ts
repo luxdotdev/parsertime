@@ -15,7 +15,7 @@ const cspHeader = `
         : `localhost:* ws://localhost:*`
     };
     img-src 'self' https://vercel.live https://vercel.com https://avatar.vercel.sh *.pusher.com/ https://lh3.googleusercontent.com https://cdn.discordapp.com https://avatars.githubusercontent.com *.vercel-storage.com blob: data:;
-    frame-src 'self' https://vercel.live https://vercel.com https://www.youtube.com https://www.youtube-nocookie.com https://player.twitch.tv https://clips.twitch.tv;
+    frame-src 'self' https://vercel.live https://vercel.com https://www.youtube.com https://youtu.be/ https://www.youtube-nocookie.com https://player.twitch.tv;
     font-src 'self' https://vercel.live https://assets.vercel.com;
     object-src 'none';
     base-uri 'self';
