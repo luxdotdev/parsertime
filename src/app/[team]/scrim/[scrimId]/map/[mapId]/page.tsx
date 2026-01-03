@@ -16,6 +16,7 @@ import { ModeToggle } from "@/components/theme-switcher";
 import { TipTap } from "@/components/tiptap/tiptap";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserNav } from "@/components/user-nav";
+import { VodOverview } from "@/components/vods/vod-overview";
 import { getMostPlayedHeroes } from "@/data/player-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
@@ -88,7 +89,7 @@ export default async function MapDashboardPage(
       }),
       prisma.map.findFirst({
         where: { id },
-        select: { replayCode: true },
+        select: { replayCode: true, vod: true },
       }),
       prisma.scrim.findFirst({
         where: { id: parseInt(params.scrimId) },
@@ -184,6 +185,7 @@ export default async function MapDashboardPage(
             </TabsTrigger>
             <TabsTrigger value="compare">{t("tabs.compare")}</TabsTrigger>
             <TabsTrigger value="notes">{t("tabs.notes")}</TabsTrigger>
+            <TabsTrigger value="vods">{t("tabs.vod")}</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
             <DefaultOverview id={id} team1Color={team1} team2Color={team2} />
@@ -199,6 +201,9 @@ export default async function MapDashboardPage(
           </TabsContent>
           <TabsContent value="compare" className="space-y-4">
             <ComparePlayers id={id} />
+          </TabsContent>
+          <TabsContent value="vods" className="space-y-4">
+            <VodOverview vod={map?.vod ?? ""} mapId={id} />
           </TabsContent>
           <TabsContent value="notes" className="space-y-4">
             <div className="mx-auto py-8">
