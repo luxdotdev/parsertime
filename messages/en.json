@@ -868,7 +868,11 @@
       "cancel": "Cancel",
       "inputPlaceholder": "Enter VOD URL here...",
       "uploadVOD": "Upload Your VOD",
-      "noVod": "No VOD linked yet. Click here to add one."
+      "noVod": "No VOD linked yet. Click here to add one.",
+      "vodSuccess": "VOD linked successfully.",
+      "vodFail": "Failed to link VOD",
+      "invalidUrl": "URL must be from YouTube or Twitch",
+      "vodLabel": "Please enter a VOD URL (YouTube or Twitch)."
     },
     "tiptap": {
       "placeholder": "Write, format, and highlight your text below.",
