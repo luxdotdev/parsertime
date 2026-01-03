@@ -23,7 +23,7 @@ export function VodOverview({ vod, mapId }: { vod: string; mapId: number }) {
   const t = useTranslations("mapPage.vod");
 
   let twitchSrc = "";
-  if (vodState.includes("https://www.twitch.tv/videos/")) {
+  if (vodState.startsWith("https://www.twitch.tv/videos/")) {
     const videoId = vodState.split("/videos/")[1].split("?")[0];
     twitchSrc = `https://player.twitch.tv/?video=${videoId}&parent=${parentDomain}`;
   }
@@ -35,11 +35,11 @@ export function VodOverview({ vod, mapId }: { vod: string; mapId: number }) {
       </CardHeader>
       <CardContent>
         <div className="aspect-video">
-          {(vodState.includes("https://www.youtube.com/watch?v=") ||
-            vodState.includes("https://youtu.be/")) && (
+          {(vodState.startsWith("https://www.youtube.com/watch?v=") ||
+            vodState.startsWith("https://youtu.be/")) && (
             <YouTubeEmbed
               videoid={
-                vodState.includes("https://youtu.be/")
+                vodState.startsWith("https://youtu.be/")
                   ? vodState.split("youtu.be/")[1].split("?")[0]
                   : vodState.split("v=")[1]?.split("&")[0] || ""
               }
