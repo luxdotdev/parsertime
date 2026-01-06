@@ -7,7 +7,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { getUser } from "@/data/user-dto";
+import { register } from "@/instrumentation";
 import { auth } from "@/lib/auth";
+import { WebVitals } from "@/lib/axiom/client";
 import { QueryProvider } from "@/lib/query";
 import { cn } from "@/lib/utils";
 import { Analytics } from "@vercel/analytics/react";
@@ -54,6 +56,8 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
 });
 
+register();
+
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const locale = await getLocale();
   const messages = await getMessages();
@@ -95,6 +99,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             <SpeedInsights />
             <Analytics />
             <DevTools />
+            <WebVitals />
           </ThemeProvider>
         </QueryProvider>
       </body>

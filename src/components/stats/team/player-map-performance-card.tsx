@@ -102,12 +102,9 @@ export function PlayerMapPerformanceCard({
                       const isHovered =
                         hoveredCell?.player === playerName &&
                         hoveredCell?.map === mapName;
-                      const isBest =
-                        perf && bestMap && perf.mapName === bestMap.mapName;
+                      const isBest = perf?.mapName === bestMap?.mapName;
                       const isWorst =
-                        perf &&
-                        worstMap &&
-                        perf.mapName === worstMap.mapName &&
+                        perf?.mapName === worstMap?.mapName &&
                         playerPerformances.length > 1;
 
                       return (

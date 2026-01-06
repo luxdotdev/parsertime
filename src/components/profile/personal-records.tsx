@@ -52,11 +52,6 @@ function calculatePersonalRecords(
     return stat.hero_damage_dealt > best.hero_damage_dealt ? stat : best;
   }, stats[0]);
 
-  const bestAccuracy = stats.reduce((best, stat) => {
-    if (stat.weapon_accuracy === 0) return best;
-    return stat.weapon_accuracy > best.weapon_accuracy ? stat : best;
-  }, stats[0]);
-
   const highestSR = heroesData.reduce((best, hero) => {
     return hero.hero_rating > best.hero_rating ? hero : best;
   }, heroesData[0]);
@@ -102,15 +97,6 @@ function calculatePersonalRecords(
       icon: <Shield className="h-5 w-5 text-blue-500" />,
     },
   ];
-
-  if (bestAccuracy.weapon_accuracy > 0) {
-    records.push({
-      label: "Best Accuracy",
-      value: `${Math.round(bestAccuracy.weapon_accuracy)}%`,
-      subtext: bestAccuracy.player_hero,
-      icon: <Crosshair className="h-5 w-5 text-purple-500" />,
-    });
-  }
 
   records.push({
     label: "Total Playtime",

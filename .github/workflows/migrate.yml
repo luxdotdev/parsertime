@@ -36,4 +36,5 @@ jobs:
       - name: Deploy Prisma migrations
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL_PROD }}
-        run: pnpm dlx prisma migrate deploy
+          DIRECT_URL: ${{ secrets.DIRECT_URL_PROD }}
+        run: pnpm db:deploy
