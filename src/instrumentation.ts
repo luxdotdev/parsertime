@@ -3,6 +3,7 @@ import { createOnRequestError } from "@axiomhq/nextjs";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { resourceFromAttributes } from "@opentelemetry/resources";
 import {
+  BatchSpanProcessor,
   NodeTracerProvider,
   SimpleSpanProcessor,
 } from "@opentelemetry/sdk-trace-node";
@@ -15,6 +16,14 @@ import {
 export const onRequestError = createOnRequestError(logger);
 
 export function register() {
+  const otlpTraceExporter = new OTLPTraceExporter({
+    url: `https://api.axiom.co/v1/traces`,
+    headers: {
+      Authorization: `Bearer ${process.env.AXIOM_OTEL_TOKEN}`,
+      "X-Axiom-Dataset": `${process.env.AXIOM_OTEL_DATASET}`,
+    },
+  });
+
   const provider = new NodeTracerProvider({
     resource: resourceFromAttributes(
       {
@@ -27,15 +36,9 @@ export function register() {
       }
     ),
     spanProcessors: [
-      new SimpleSpanProcessor(
-        new OTLPTraceExporter({
-          url: `https://api.axiom.co/v1/traces`,
-          headers: {
-            Authorization: `Bearer ${process.env.AXIOM_OTEL_TOKEN}`,
-            "X-Axiom-Dataset": `${process.env.AXIOM_OTEL_DATASET}`,
-          },
-        })
-      ),
+      process.env.NODE_ENV === "production"
+        ? new BatchSpanProcessor(otlpTraceExporter)
+        : new SimpleSpanProcessor(otlpTraceExporter),
     ],
   });
 
