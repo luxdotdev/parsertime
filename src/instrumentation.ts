@@ -7,6 +7,10 @@ import {
   SimpleSpanProcessor,
 } from "@opentelemetry/sdk-trace-node";
 import { ATTR_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
+import {
+  PrismaInstrumentation,
+  registerInstrumentations,
+} from "@prisma/instrumentation";
 
 export const onRequestError = createOnRequestError(logger);
 
@@ -33,6 +37,11 @@ export function register() {
         })
       ),
     ],
+  });
+
+  registerInstrumentations({
+    tracerProvider: provider,
+    instrumentations: [new PrismaInstrumentation()],
   });
 
   provider.register();
