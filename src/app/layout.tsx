@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { getUser } from "@/data/user-dto";
+import { register } from "@/instrumentation";
 import { auth } from "@/lib/auth";
 import { QueryProvider } from "@/lib/query";
 import { cn } from "@/lib/utils";
@@ -53,6 +54,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-geist-mono",
 });
+
+register();
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const locale = await getLocale();
