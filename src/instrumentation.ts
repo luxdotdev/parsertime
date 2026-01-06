@@ -1,3 +1,5 @@
+import { logger } from "@/lib/axiom/server";
+import { createOnRequestError } from "@axiomhq/nextjs";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { resourceFromAttributes } from "@opentelemetry/resources";
 import {
@@ -5,6 +7,8 @@ import {
   SimpleSpanProcessor,
 } from "@opentelemetry/sdk-trace-node";
 import { ATTR_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
+
+export const onRequestError = createOnRequestError(logger);
 
 export function register() {
   const provider = new NodeTracerProvider({
@@ -23,8 +27,8 @@ export function register() {
         new OTLPTraceExporter({
           url: `https://api.axiom.co/v1/traces`,
           headers: {
-            Authorization: `Bearer ${process.env.AXIOM_TOKEN}`,
-            "X-Axiom-Dataset": `${process.env.AXIOM_DATASET}`,
+            Authorization: `Bearer ${process.env.AXIOM_OTEL_TOKEN}`,
+            "X-Axiom-Dataset": `${process.env.AXIOM_OTEL_DATASET}`,
           },
         })
       ),
