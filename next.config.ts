@@ -9,7 +9,7 @@ const cspHeader = `
       process.env.NODE_ENV === "production" ? "" : `'unsafe-eval' localhost:*`
     };
     style-src 'self' https://vercel.live https://vercel.com 'unsafe-inline';
-    connect-src 'self' https://vercel.live https://vercel.com *.vercel-storage.com *.pusher.com *.pusherapp.com wss://ws-us3.pusher.com ${
+    connect-src 'self' https://vercel.live https://vercel.com *.vercel-storage.com *.pusher.com *.pusherapp.com wss://ws-us3.pusher.com https://api.axiom.co ${
       process.env.NODE_ENV === "production"
         ? ""
         : `localhost:* ws://localhost:*`
