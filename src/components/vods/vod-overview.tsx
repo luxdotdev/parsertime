@@ -32,7 +32,9 @@ export function VodOverview({ vod, mapId }: { vod: string; mapId: number }) {
     vodState.startsWith("https://www.youtube.com/watch?v=") ||
     vodState.startsWith("https://youtu.be/")
       ? "youtube"
-      : "twitch";
+      : vodState.startsWith("https://www.twitch.tv/videos/")
+        ? "twitch"
+        : "";
 
   return (
     <Card className="overflow-hidden">
