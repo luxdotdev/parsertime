@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
   const { success } = await ratelimit.limit(identifier);
 
   if (!success) {
-    Logger.log("Rate limit exceeded for contact form email", identifier);
+    Logger.warn(`Rate limit exceeded for contact form email: ${identifier}`);
     return new Response("Rate limit exceeded", { status: 429 });
   }
 

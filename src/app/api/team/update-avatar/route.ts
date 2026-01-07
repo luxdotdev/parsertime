@@ -15,7 +15,7 @@ const TeamAvatarUpdateSchema = z.object({
 export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session?.user) {
-    Logger.log("No session found", session);
+    Logger.warn("No session found", session);
     unauthorized();
   }
 
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     where: { id: body.data.teamId },
   });
   if (!team) {
-    Logger.log("Team not found", body.data.teamId);
+    Logger.error(`Team not found: ${body.data.teamId}`);
     return new Response("Not found", { status: 404 });
   }
 
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
 
   const authedUser = await getUser(session.user.email);
   if (!authedUser) {
-    Logger.log("User not found", session.user.email);
+    Logger.error(`User not found: ${session.user.email}`);
     unauthorized();
   }
 
@@ -44,7 +44,9 @@ export async function POST(req: NextRequest) {
     team.ownerId !== authedUser.id &&
     teamManagers.some((m) => m.userId === authedUser.id) === false
   ) {
-    Logger.log("Not a team owner or manager", team.name, authedUser.email);
+    Logger.error(
+      `Not a team owner or manager: ${team.name} for user: ${authedUser.email}`
+    );
     unauthorized();
   }
 
@@ -53,7 +55,7 @@ export async function POST(req: NextRequest) {
     data: { image: body.data.image },
   });
 
-  Logger.log("new avatar uploaded for team: ", team.name, body.data.image);
+  Logger.info(`new avatar uploaded for team: ${team.name}: ${body.data.image}`);
 
   after(async () => {
     await auditLog.createAuditLog({

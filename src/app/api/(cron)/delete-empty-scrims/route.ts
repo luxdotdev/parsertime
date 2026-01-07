@@ -8,9 +8,9 @@ export async function DELETE() {
   });
 
   if (scrimsWithoutMaps.length === 0) {
-    Logger.log("No empty scrims found");
+    Logger.info("No empty scrims found");
   } else {
-    Logger.log(
+    Logger.info(
       `Found the following empty scrims: ${scrimsWithoutMaps
         .map((scrim) => scrim.id)
         .join(", ")}`
@@ -18,7 +18,7 @@ export async function DELETE() {
   }
 
   for (const scrim of scrimsWithoutMaps) {
-    Logger.log(`Deleting scrim ${scrim.id}`);
+    Logger.info(`Deleting scrim ${scrim.id}`);
     await prisma.scrim.delete({ where: { id: scrim.id } });
   }
 

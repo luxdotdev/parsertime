@@ -34,10 +34,8 @@ export async function POST(req: NextRequest) {
     data: { bannerImage: body.data.bannerImage },
   });
 
-  Logger.log(
-    "new banner uploaded for user: ",
-    user.email,
-    body.data.bannerImage
+  Logger.info(
+    `new banner uploaded for user: ${user.email}: ${body.data.bannerImage}`
   );
 
   after(async () => {

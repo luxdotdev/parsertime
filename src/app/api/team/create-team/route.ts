@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
   const { success } = await ratelimit.limit(identifier);
 
   if (!success) {
-    Logger.log("Rate limit exceeded for creating a team", identifier);
+    Logger.warn(`Rate limit exceeded for creating a team: ${identifier}`);
     return new Response("Rate limit exceeded", { status: 429 });
   }
 

@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
 
   await prisma.teamInviteToken.delete({ where: { token } });
 
-  Logger.log(
+  Logger.info(
     `User ${session?.user?.email ?? testingEmail} joined team ${
       teamInviteToken.teamId
     }`
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
     where: { users: { some: { email: session?.user?.email ?? testingEmail } } },
   });
 
-  Logger.log(`User now belongs to team: ${JSON.stringify(teams)}`);
+  Logger.info(`User now belongs to team: ${JSON.stringify(teams)}`);
 
   after(async () => {
     await auditLog.createAuditLog({

@@ -37,11 +37,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const { success } = await ratelimit.limit(identifier);
 
   if (!success) {
-    Logger.log("Rate limit exceeded for team", teamId, userId);
+    Logger.warn(
+      `Rate limit exceeded for team: ${teamId} for user: ${userId.id}`
+    );
     return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
   }
 
-  Logger.log("Uploading avatar for team", teamId);
+  Logger.info(`Uploading avatar for team: ${teamId}`);
 
   try {
     const jsonResponse = await handleUpload({
@@ -65,7 +67,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         // ⚠️ This will not work on `localhost` websites,
         // Use ngrok or similar to get the full upload flow
 
-        Logger.log("blob upload completed", blob, tokenPayload);
+        Logger.info(`blob upload completed: ${blob.url} for team: ${teamId}`);
         await track("Image Upload", { label: "Team Avatar" });
 
         try {

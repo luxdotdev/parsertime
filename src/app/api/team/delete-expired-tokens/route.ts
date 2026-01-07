@@ -7,14 +7,14 @@ export async function DELETE() {
     where: { expires: { lt: now } },
   });
 
-  Logger.log(
-    `Deleting ${tokens.length} expired token${tokens.length === 1 ? "" : "s"}`,
-    tokens.length > 0 ? tokens : ""
+  Logger.info(
+    `Deleting ${tokens.length} expired token${tokens.length === 1 ? "" : "s"}: ${tokens.map((token) => token.id).join(", ")}`
   );
 
-  await prisma.teamInviteToken.deleteMany({
-    where: { id: { in: tokens.map((token) => token.id) } },
-  });
+  for (const token of tokens) {
+    Logger.info(`Deleting expired token: ${token.id}`);
+    await prisma.teamInviteToken.delete({ where: { id: token.id } });
+  }
 
   return new Response("OK", { status: 200 });
 }

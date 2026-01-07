@@ -59,8 +59,7 @@ export async function handleSubscriptionEvent(
         },
       });
 
-      Logger.log("Subscription created", {
-        id: subscription.id,
+      Logger.info(`Subscription created: ${subscription.id}`, {
         customer: subscription.customer,
       });
 
@@ -73,7 +72,7 @@ export async function handleSubscriptionEvent(
             SubscriptionCreatedEmail({ user, billingPlan: billingPlan.name })
           ),
         });
-        Logger.log("Subscription created email sent");
+        Logger.info("Subscription created email sent");
 
         const wh = userSubscribedWebhookConstructor(user, billingPlan.name);
         await sendDiscordWebhook(process.env.DISCORD_WEBHOOK_URL, wh);
@@ -94,8 +93,7 @@ export async function handleSubscriptionEvent(
         },
       });
 
-      Logger.log("Subscription updated", {
-        id: subscription.id,
+      Logger.info(`Subscription updated: ${subscription.id}`, {
         customer: subscription.customer,
       });
 
@@ -113,7 +111,7 @@ export async function handleSubscriptionEvent(
               SubscriptionUpdatedEmail({ user, billingPlan: billingPlan.name })
             ),
           });
-          Logger.log("Subscription updated email sent");
+          Logger.info("Subscription updated email sent");
         } catch (e) {
           Logger.error("Error sending email", e);
         }
@@ -129,8 +127,7 @@ export async function handleSubscriptionEvent(
         },
       });
 
-      Logger.log("Subscription deleted", {
-        id: subscription.id,
+      Logger.info(`Subscription deleted: ${subscription.id}`, {
         customer: subscription.customer,
       });
 
@@ -141,7 +138,7 @@ export async function handleSubscriptionEvent(
           subject: `Your subscription to Parsertime has been cancelled`,
           html: await render(SubscriptionDeletedEmail({ user })),
         });
-        Logger.log("Subscription deleted email sent");
+        Logger.info("Subscription deleted email sent");
 
         const wh = userUnsubscribedWebhookConstructor(user, billingPlan.name);
         await sendDiscordWebhook(process.env.DISCORD_WEBHOOK_URL, wh);

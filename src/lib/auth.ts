@@ -118,7 +118,7 @@ export const config = {
       // deny all blocked users
       const blockedUsers = (await get<string[]>("blockedUsers")) ?? [];
       if (blockedUsers.includes(user.email)) {
-        Logger.log("User blocked", { user });
+        Logger.warn(`User sign-in blocked: ${user.email}`);
         return false;
       }
 
@@ -134,7 +134,7 @@ export const config = {
       if (user.email.includes("lux.dev")) return true;
       if (allowedUsers.includes(user.email)) return true;
 
-      Logger.log("User not authorized for private access", { user });
+      Logger.warn(`User not authorized for private access: ${user.email}`);
       return false;
     },
     redirect({ baseUrl }) {
@@ -153,7 +153,7 @@ export const config = {
       const { success } = await ratelimit.limit(identifier);
 
       if (!success) {
-        Logger.log("Rate limit exceeded for sign in attempt", identifier);
+        Logger.warn(`Rate limit exceeded for sign in attempt: ${identifier}`);
 
         // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const userObj = {
@@ -177,7 +177,7 @@ export const config = {
 
       if (isNewUser) {
         // Log new user signups
-        Logger.log("New user signed up", { user });
+        Logger.info(`New user signed up: ${user.email}`);
 
         // Send a Discord webhook for new user signups
         const wh = newUserWebhookConstructor(user);
@@ -217,7 +217,7 @@ export const config = {
         },
       });
 
-      Logger.log("Stripe customer created", { updatedUser });
+      Logger.info(`Stripe customer created: ${updatedUser.email}`);
     },
   },
   pages: {
@@ -356,10 +356,8 @@ export async function getImpersonateUrl(email: string, isProd = true) {
     token,
   });
 
-  Logger.log(
-    "Impersonation URL generated for user: ",
-    { email },
-    `${callbackUrl}/api/auth/callback/email?${params.toString()}`
+  Logger.info(
+    `Impersonation URL generated for user: ${email}: ${callbackUrl}/api/auth/callback/email?${params.toString()}`
   );
 
   return `${callbackUrl}/api/auth/callback/email?${params.toString()}`;

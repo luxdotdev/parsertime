@@ -256,7 +256,7 @@ export async function createNewScrimFromParsedData(
     },
   });
 
-  Logger.log("Scrim created: ", scrim, session);
+  Logger.info("Scrim created: ", scrim, session);
 
   // Get all users in the team and get the team name
   const [users, team] = await Promise.all([
@@ -376,7 +376,7 @@ export async function createNewScrimFromParsedData(
       },
     });
 
-    Logger.log("Scrim and map deleted: ", scrim.id, map.id);
+    Logger.info("Scrim and map deleted: ", scrim.id, map.id);
 
     throw new Error("Invalid Log Format");
   }
@@ -422,7 +422,7 @@ export async function createNewMap(data: CreateNewMapArgs, session: Session) {
     },
   });
 
-  Logger.log("Map created: ", map, session);
+  Logger.info("Map created: ", map, session);
 
   if (data.heroBans && data.heroBans.length > 0) {
     await prisma.heroBan.createMany({
@@ -495,7 +495,7 @@ export async function createNewMap(data: CreateNewMapArgs, session: Session) {
       },
     });
 
-    Logger.log("Map deleted: ", map.id);
+    Logger.info("Map deleted: ", map.id);
 
     throw new Error("Invalid Log Format");
   }
@@ -742,7 +742,7 @@ export async function calculateStatsForMap(mapDataId: number, scrimId: number) {
           skipDuplicates: true,
         });
 
-        Logger.log(
+        Logger.info(
           "Stats saved for player: ",
           player.player_name,
           "on map: ",

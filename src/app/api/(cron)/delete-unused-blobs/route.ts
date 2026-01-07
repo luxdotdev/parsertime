@@ -39,11 +39,11 @@ export async function DELETE() {
     .map((blob) => blob.url);
 
   for (const url of filteredBlobs) {
-    Logger.log(`Deleting unused blob: ${url}`);
+    Logger.info(`Deleting unused blob: ${url}`);
     await del(url);
   }
 
-  Logger.log(`Deleted ${filteredBlobs.length} unused blobs`);
+  Logger.info(`Deleted ${filteredBlobs.length} unused blobs`);
 
   return new Response("OK", { status: 200 });
 }

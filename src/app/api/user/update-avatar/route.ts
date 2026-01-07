@@ -34,7 +34,9 @@ export async function POST(req: NextRequest) {
     data: { image: body.data.image },
   });
 
-  Logger.log("new avatar uploaded for user: ", user.email, body.data.image);
+  Logger.info(
+    `new avatar uploaded for user: ${user.email}: ${body.data.image}`
+  );
 
   after(async () => {
     await auditLog.createAuditLog({

@@ -30,7 +30,7 @@ export default async function TokenPage(
       data: { users: { connect: { email: session?.user?.email ?? "" } } },
     });
 
-    Logger.log(`User now belongs to team: ${JSON.stringify(team)}`);
+    Logger.info(`User now belongs to team: ${JSON.stringify(team)}`);
   } catch {
     const teamInviteToken = await prisma.teamInviteToken.findUnique({
       where: { token },
@@ -48,7 +48,7 @@ export default async function TokenPage(
 
     await prisma.teamInviteToken.delete({ where: { token } });
 
-    Logger.log(
+    Logger.info(
       `User ${session?.user?.email} joined team ${teamInviteToken.teamId}`
     );
 
@@ -56,7 +56,7 @@ export default async function TokenPage(
       where: { users: { some: { email: session?.user?.email } } },
     });
 
-    Logger.log(`User now belongs to team: ${JSON.stringify(teams)}`);
+    Logger.info(`User now belongs to team: ${JSON.stringify(teams)}`);
     redirect("/team/join/success");
   }
 

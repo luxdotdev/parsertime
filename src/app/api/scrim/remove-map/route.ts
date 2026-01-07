@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
     unauthorized();
   }
 
-  Logger.log("Removing map: ", id);
+  Logger.info(`Removing map: ${id}`);
 
   const mapId = parseInt(id);
 

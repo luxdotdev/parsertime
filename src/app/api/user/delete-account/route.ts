@@ -23,7 +23,7 @@ export async function DELETE() {
   const wh = deleteUserWebhookConstructor(user);
   await sendDiscordWebhook(process.env.DISCORD_WEBHOOK_URL, wh);
 
-  Logger.log(`User ${user.email} deleted their account`);
+  Logger.info(`User ${user.email} deleted their account`);
 
   await prisma.user.delete({ where: { id: user.id } });
 

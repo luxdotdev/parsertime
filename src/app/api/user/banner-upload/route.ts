@@ -39,11 +39,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const { success } = await ratelimit.limit(identifier);
 
   if (!success) {
-    Logger.log("Rate limit exceeded for user", authedUser.id);
+    Logger.warn(`Rate limit exceeded for user: ${authedUser.id}`);
     return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
   }
 
-  Logger.log("Uploading banner for user", userId);
+  Logger.info(`Uploading banner for user: ${userId}`);
 
   try {
     const jsonResponse = await handleUpload({
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         return { tokenPayload: JSON.stringify({ userId: user.id }) };
       },
       onUploadCompleted: async ({ blob, tokenPayload }) => {
-        Logger.log("blob upload completed", blob, tokenPayload);
+        Logger.info(`blob upload completed: ${blob.url} for user: ${userId}`);
         await track("Image Upload", { label: "User Banner" });
 
         try {

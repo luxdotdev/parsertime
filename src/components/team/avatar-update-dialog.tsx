@@ -130,7 +130,7 @@ export function AvatarUpdateDialog({
           description: t("avatar.handleCrop.errorDescription2"),
           duration: 5000,
         });
-        Logger.log(e);
+        Logger.error(e);
       } finally {
         setLoading(false);
       }

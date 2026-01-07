@@ -26,10 +26,10 @@ export async function POST(req: Request) {
     if (!sig || !webhookSecret)
       return new Response("Webhook secret not found.", { status: 400 });
     event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
-    Logger.log(`🔔  Webhook received: ${event.type}`);
+    Logger.info(`🔔  Webhook received: ${event.type}`);
   } catch (err) {
     if (err instanceof Error) {
-      Logger.log(`❌ Error message: ${err.message}`);
+      Logger.error(`❌ Error message: ${err.message}`);
       return new Response(`Webhook Error: ${err.message}`, { status: 400 });
     }
     return new Response(`Unknown error`, { status: 400 });
@@ -40,12 +40,12 @@ export async function POST(req: Request) {
       switch (event.type) {
         case "customer.created": {
           const customer = event.data.object;
-          Logger.log("New customer", customer);
+          Logger.info(`New customer: ${customer.id}`);
           await track("New Customer", { customerId: customer.id });
           break;
         }
         case "customer.deleted":
-          Logger.log("Deleted customer", event.data.object);
+          Logger.info(`Deleted customer: ${event.data.object.id}`);
           await track("Deleted Customer", { customerId: event.data.object.id });
           break;
         case "customer.subscription.created":
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
           throw new Error("Unhandled relevant event!");
       }
     } catch (error) {
-      Logger.log(error);
+      Logger.error(error);
       return new Response(
         "Webhook handler failed. View your Next.js function logs.",
         {
