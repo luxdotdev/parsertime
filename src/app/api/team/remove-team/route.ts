@@ -38,8 +38,8 @@ export async function POST(req: NextRequest) {
 
   if (!hasPerms) unauthorized();
 
-  await prisma.team.delete({ where: { id } });
   await prisma.teamManager.deleteMany({ where: { teamId: id } });
+  await prisma.team.delete({ where: { id } });
   await prisma.scrim.updateMany({ where: { teamId: id }, data: { teamId: 0 } });
 
   after(async () => {
