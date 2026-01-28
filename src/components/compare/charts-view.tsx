@@ -15,6 +15,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  ErrorBar,
   Line,
   LineChart,
   PolarAngleAxis,
@@ -31,16 +32,140 @@ type ChartsViewProps = {
   viewMode: "two-map" | "multi-map";
 };
 
+type CustomTooltipProps = {
+  active?: boolean;
+  payload?: unknown[];
+  label?: string;
+  config?: ChartConfig;
+};
+
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any */
+function CustomLineChartTooltip({
+  active,
+  payload,
+  config,
+}: CustomTooltipProps) {
+  const t = useTranslations("comparePage.charts");
+
+  if (!active || !payload || payload.length === 0) {
+    return null;
+  }
+
+  const firstItem = payload[0] as any;
+  const data = firstItem?.payload;
+
+  if (!data) {
+    return null;
+  }
+
+  return (
+    <div className="bg-background rounded-lg border p-3 shadow-md">
+      <p className="mb-2 font-semibold">{data.fullName}</p>
+      <div className="space-y-1">
+        {payload.map((item) => {
+          const entry = item as any;
+
+          if (!entry.dataKey || typeof entry.value !== "number") {
+            return null;
+          }
+
+          const dataKey = String(entry.dataKey);
+          const stdDevKey = `${dataKey}StdDev`;
+          const stdDev = data[stdDevKey];
+          const displayLabel =
+            config?.[dataKey]?.label ?? entry.name ?? dataKey;
+
+          return (
+            <div key={dataKey} className="flex flex-col gap-0.5">
+              <div className="flex items-center gap-2">
+                <div
+                  className="h-2 w-2 rounded-full"
+                  style={{ backgroundColor: entry.color }}
+                />
+                <span className="text-sm">
+                  {displayLabel}: {entry.value}
+                </span>
+              </div>
+              {typeof stdDev === "number" && stdDev > 0 && (
+                <div className="text-muted-foreground ml-4 text-xs">
+                  {t("stdDev")}: ±{stdDev}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+/* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any */
+
 export function ChartsView({ stats, viewMode }: ChartsViewProps) {
   const t = useTranslations("comparePage.charts");
 
-  // Prepare data for line chart (multi-map progression)
+  // Prepare data for line chart (multi-map progression) with error bars
   const lineChartData = stats.perMapBreakdown.map((map) => ({
     name: `${map.scrimName} - ${map.mapName}`,
     fullName: `${map.scrimName} - ${map.mapName}`,
     elimsPer10: Number((map.stats.eliminationsPer10 ?? 0).toFixed(2)),
+    elimsPer10StdDev: Number(
+      (stats.aggregated.eliminationsPer10StdDev ?? 0).toFixed(2)
+    ),
+    elimsPer10Error: [
+      Number(
+        Math.max(
+          0,
+          (map.stats.eliminationsPer10 ?? 0) -
+            (stats.aggregated.eliminationsPer10StdDev ?? 0)
+        ).toFixed(2)
+      ),
+      Number(
+        (
+          (map.stats.eliminationsPer10 ?? 0) +
+          (stats.aggregated.eliminationsPer10StdDev ?? 0)
+        ).toFixed(2)
+      ),
+    ],
     deathsPer10: Number((map.stats.deathsPer10 ?? 0).toFixed(2)),
+    deathsPer10StdDev: Number(
+      (stats.aggregated.deathsPer10StdDev ?? 0).toFixed(2)
+    ),
+    deathsPer10Error: [
+      Number(
+        Math.max(
+          0,
+          (map.stats.deathsPer10 ?? 0) -
+            (stats.aggregated.deathsPer10StdDev ?? 0)
+        ).toFixed(2)
+      ),
+      Number(
+        (
+          (map.stats.deathsPer10 ?? 0) +
+          (stats.aggregated.deathsPer10StdDev ?? 0)
+        ).toFixed(2)
+      ),
+    ],
     damagePer10: Number(((map.stats.allDamagePer10 ?? 0) / 1000).toFixed(2)), // Scale for better visualization
+    damagePer10StdDev: Number(
+      ((stats.aggregated.allDamagePer10StdDev ?? 0) / 1000).toFixed(2)
+    ),
+    damagePer10Error: [
+      Number(
+        Math.max(
+          0,
+          ((map.stats.allDamagePer10 ?? 0) -
+            (stats.aggregated.allDamagePer10StdDev ?? 0)) /
+            1000
+        ).toFixed(2)
+      ),
+      Number(
+        (
+          ((map.stats.allDamagePer10 ?? 0) +
+            (stats.aggregated.allDamagePer10StdDev ?? 0)) /
+          1000
+        ).toFixed(2)
+      ),
+    ],
   }));
 
   const lineChartConfig: ChartConfig = {
@@ -253,16 +378,12 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
                 />
                 <YAxis tickLine={false} axisLine={false} />
                 <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      labelFormatter={(_, payload) => {
-                        const item = payload?.[0]?.payload as
-                          | { fullName?: string }
-                          | undefined;
-                        return item?.fullName ?? "";
-                      }}
+                  content={(props) => (
+                    <CustomLineChartTooltip
+                      {...props}
+                      config={lineChartConfig}
                     />
-                  }
+                  )}
                 />
                 <ChartLegend content={<ChartLegendContent />} />
                 <Line
@@ -272,7 +393,14 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
                   strokeWidth={2}
                   dot={{ r: 4 }}
                   activeDot={{ r: 6 }}
-                />
+                >
+                  <ErrorBar
+                    dataKey="elimsPer10Error"
+                    stroke="var(--color-elimsPer10)"
+                    strokeWidth={1.5}
+                    width={8}
+                  />
+                </Line>
                 <Line
                   type="monotone"
                   dataKey="deathsPer10"
@@ -280,7 +408,14 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
                   strokeWidth={2}
                   dot={{ r: 4 }}
                   activeDot={{ r: 6 }}
-                />
+                >
+                  <ErrorBar
+                    dataKey="deathsPer10Error"
+                    stroke="var(--color-deathsPer10)"
+                    strokeWidth={1.5}
+                    width={8}
+                  />
+                </Line>
                 <Line
                   type="monotone"
                   dataKey="damagePer10"
@@ -288,7 +423,14 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
                   strokeWidth={2}
                   dot={{ r: 4 }}
                   activeDot={{ r: 6 }}
-                />
+                >
+                  <ErrorBar
+                    dataKey="damagePer10Error"
+                    stroke="var(--color-damagePer10)"
+                    strokeWidth={1.5}
+                    width={8}
+                  />
+                </Line>
               </LineChart>
             </ChartContainer>
           </CardContent>
