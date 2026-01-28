@@ -50,12 +50,40 @@ export async function GET(request: NextRequest) {
 
     wideEvent.team = { id: teamId };
 
-    const players = await getTeamPlayers(teamId);
+    const mapIdsParam = request.nextUrl.searchParams.get("mapIds");
+    let mapIds: number[] | undefined;
+
+    if (mapIdsParam) {
+      try {
+        mapIds = JSON.parse(mapIdsParam) as number[];
+        if (
+          !Array.isArray(mapIds) ||
+          !mapIds.every((id) => typeof id === "number")
+        ) {
+          wideEvent.status_code = 400;
+          wideEvent.outcome = "invalid_map_ids";
+          wideEvent.error = { message: "Map IDs must be an array of numbers" };
+          return new Response("Map IDs must be an array of numbers", {
+            status: 400,
+          });
+        }
+      } catch {
+        wideEvent.status_code = 400;
+        wideEvent.outcome = "invalid_map_ids_json";
+        wideEvent.error = { message: "Map IDs must be valid JSON" };
+        return new Response("Map IDs must be valid JSON", { status: 400 });
+      }
+    }
+
+    const players = await getTeamPlayers(teamId, mapIds);
 
     wideEvent.status_code = 200;
     wideEvent.outcome = "success";
     wideEvent.result = {
       player_count: players.length,
+      map_ids: mapIds,
+      map_count: mapIds?.length ?? 0,
+      filtered: !!mapIds,
     };
 
     return NextResponse.json({
