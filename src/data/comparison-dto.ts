@@ -750,8 +750,56 @@ export const getAvailableMapsForComparison = cache(
 );
 
 async function getTeamPlayersFn(
-  teamId: number
+  teamId: number,
+  mapIds?: number[]
 ): Promise<{ name: string; mapCount: number }[]> {
+  if (mapIds && mapIds.length > 0) {
+    // Verify the maps belong to this team and get their IDs
+    const maps = await prisma.map.findMany({
+      where: {
+        id: { in: mapIds },
+        Scrim: { teamId },
+      },
+      select: { id: true },
+    });
+
+    const validMapIds = maps.map((m) => m.id);
+
+    if (validMapIds.length === 0) {
+      return [];
+    }
+
+    // NOTE: PlayerStat.MapDataId actually stores Map.id, not MapData.id
+    // This is confusing but confirmed by runtime data
+    const allPlayerStats = await prisma.playerStat.findMany({
+      where: { MapDataId: { in: validMapIds } },
+      select: {
+        player_name: true,
+        MapDataId: true,
+      },
+    });
+
+    // Count unique maps per player
+    const playerMapCounts = new Map<string, Set<number>>();
+
+    for (const stat of allPlayerStats) {
+      const mapId = stat.MapDataId;
+      if (!mapId) continue;
+
+      const playerName = stat.player_name;
+      if (!playerMapCounts.has(playerName)) {
+        playerMapCounts.set(playerName, new Set());
+      }
+      playerMapCounts.get(playerName)!.add(mapId);
+    }
+
+    const players = Array.from(playerMapCounts.entries())
+      .map(([name, mapSet]) => ({ name, mapCount: mapSet.size }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    return players;
+  }
+
   const scrims = await prisma.scrim.findMany({
     where: { teamId },
     select: {
