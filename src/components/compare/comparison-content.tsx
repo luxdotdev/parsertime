@@ -1,9 +1,12 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { ComparisonStats } from "@/data/comparison-dto";
 import type { HeroName } from "@/types/heroes";
+import type { TeamComparisonStats } from "@/types/team-comparison";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -15,6 +18,7 @@ import { ConsistencyView } from "./consistency-view";
 import { DeltaView } from "./delta-view";
 import { EmptyState } from "./empty-state";
 import { SideBySideView } from "./side-by-side-view";
+import { TeamComparisonView } from "./team-comparison-view";
 import { TrendsView } from "./trends-view";
 
 type ComparisonContentProps = {
@@ -23,6 +27,7 @@ type ComparisonContentProps = {
 };
 
 type ViewMode = "side-by-side" | "delta" | "trends" | "charts" | "consistency";
+type ComparisonMode = "player" | "team";
 
 async function fetchComparisonStats(
   mapIds: number[],
@@ -47,6 +52,31 @@ async function fetchComparisonStats(
   return data.data;
 }
 
+async function fetchTeamComparisonStats(
+  mapIds: number[],
+  teamId: number,
+  heroes?: HeroName[]
+): Promise<TeamComparisonStats> {
+  const params = new URLSearchParams({
+    mapIds: JSON.stringify(mapIds),
+    teamId: teamId.toString(),
+  });
+
+  if (heroes && heroes.length > 0) {
+    params.set("heroes", heroes.join(","));
+  }
+
+  const response = await fetch(
+    `/api/compare/team-vs-team?${params.toString()}`
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch team comparison stats");
+  }
+
+  const data = (await response.json()) as { data: TeamComparisonStats };
+  return data.data;
+}
+
 export function ComparisonContent({ teamId }: ComparisonContentProps) {
   const t = useTranslations("comparePage");
   const searchParams = useSearchParams();
@@ -64,11 +94,15 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
     { from: Date; to: Date } | undefined
   >(undefined);
 
+  // Comparison mode state (player vs team)
+  const [comparisonMode, setComparisonMode] =
+    useState<ComparisonMode>("player");
+
   // View mode state
   const [activeView, setActiveView] = useState<ViewMode>("side-by-side");
 
-  // Fetch comparison stats
-  const { data: comparisonStats, isLoading } = useQuery({
+  // Fetch comparison stats (player mode)
+  const { data: comparisonStats, isLoading: isLoadingPlayer } = useQuery({
     queryKey: [
       "comparisonStats",
       selectedMapIds,
@@ -81,20 +115,45 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
         selectedPlayer!,
         selectedHeroes.length > 0 ? selectedHeroes : undefined
       ),
-    enabled: selectedMapIds.length > 0 && !!selectedPlayer,
+    enabled:
+      comparisonMode === "player" &&
+      selectedMapIds.length > 0 &&
+      !!selectedPlayer,
     staleTime: 5 * 60 * 1000,
   });
 
-  // Determine available views based on map count
+  // Fetch team comparison stats (team mode)
+  const { data: teamComparisonStats, isLoading: isLoadingTeam } = useQuery({
+    queryKey: ["teamComparisonStats", selectedMapIds, teamId, selectedHeroes],
+    queryFn: () =>
+      fetchTeamComparisonStats(
+        selectedMapIds,
+        teamId,
+        selectedHeroes.length > 0 ? selectedHeroes : undefined
+      ),
+    enabled: comparisonMode === "team" && selectedMapIds.length > 0,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const isLoading =
+    comparisonMode === "player" ? isLoadingPlayer : isLoadingTeam;
+
+  // Determine available views based on map count and comparison mode
   const availableViews: ViewMode[] = useMemo(() => {
+    // Team comparison doesn't support all views
+    if (comparisonMode === "team") {
+      return selectedMapIds.length >= 2 ? ["side-by-side"] : [];
+    }
+
+    // Player comparison views
     return selectedMapIds.length === 2
       ? ["side-by-side", "delta", "charts", "consistency"]
       : selectedMapIds.length >= 3
         ? ["trends", "charts", "consistency"]
         : [];
-  }, [selectedMapIds.length]);
+  }, [selectedMapIds.length, comparisonMode]);
 
-  // Auto-switch view when map selection changes
+  // Auto-switch view when map selection or comparison mode changes
   useEffect(() => {
     if (availableViews.length > 0 && !availableViews.includes(activeView)) {
       setActiveView(availableViews[0]);
@@ -130,19 +189,70 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
       </div>
 
       {/* Filters */}
-      <ComparisonFilters
-        teamId={teamId}
-        mapIds={selectedMapIds}
-        selectedPlayer={selectedPlayer}
-        selectedHeroes={selectedHeroes}
-        dateRange={dateRange}
-        onPlayerChange={setSelectedPlayer}
-        onHeroesChange={setSelectedHeroes}
-        onDateRangeChange={setDateRange}
-      />
+      <div className="space-y-4">
+        {/* Comparison Mode Toggle */}
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label
+                htmlFor="comparison-mode"
+                className="text-base font-medium"
+              >
+                {t("comparisonMode.label")}
+              </Label>
+              <p className="text-muted-foreground text-sm">
+                {comparisonMode === "player"
+                  ? t("comparisonMode.playerDescription")
+                  : t("comparisonMode.teamDescription")}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <span
+                className={`text-sm font-medium transition-colors ${
+                  comparisonMode === "player"
+                    ? "text-foreground"
+                    : "text-muted-foreground"
+                }`}
+              >
+                {t("comparisonMode.player")}
+              </span>
+              <Switch
+                id="comparison-mode"
+                checked={comparisonMode === "team"}
+                onCheckedChange={(checked) =>
+                  setComparisonMode(checked ? "team" : "player")
+                }
+              />
+              <span
+                className={`text-sm font-medium transition-colors ${
+                  comparisonMode === "team"
+                    ? "text-foreground"
+                    : "text-muted-foreground"
+                }`}
+              >
+                {t("comparisonMode.team")}
+              </span>
+            </div>
+          </div>
+        </Card>
+
+        {/* Player Filters (only show in player mode) */}
+        {comparisonMode === "player" && (
+          <ComparisonFilters
+            teamId={teamId}
+            mapIds={selectedMapIds}
+            selectedPlayer={selectedPlayer}
+            selectedHeroes={selectedHeroes}
+            dateRange={dateRange}
+            onPlayerChange={setSelectedPlayer}
+            onHeroesChange={setSelectedHeroes}
+            onDateRangeChange={setDateRange}
+          />
+        )}
+      </div>
 
       {/* Content */}
-      {!selectedPlayer ? (
+      {comparisonMode === "player" && !selectedPlayer ? (
         <EmptyState
           icon="UserX"
           title={t("emptyStates.noPlayer.title")}
@@ -155,14 +265,22 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
             <span className="text-lg">{t("loading")}</span>
           </div>
         </Card>
-      ) : !comparisonStats ? (
+      ) : comparisonMode === "player" && !comparisonStats ? (
         <EmptyState
           icon="TrendingDown"
           title={t("emptyStates.noData.title")}
           description={t("emptyStates.noData.description", {
-            player: selectedPlayer,
+            player: selectedPlayer ?? "Unknown Player",
           })}
         />
+      ) : comparisonMode === "team" && !teamComparisonStats ? (
+        <EmptyState
+          icon="TrendingDown"
+          title={t("emptyStates.noData.title")}
+          description={t("emptyStates.noTeamData.description")}
+        />
+      ) : comparisonMode === "team" ? (
+        <TeamComparisonView stats={teamComparisonStats!} />
       ) : (
         <Tabs
           value={activeView}
@@ -192,26 +310,26 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
 
           {availableViews.includes("side-by-side") && (
             <TabsContent value="side-by-side">
-              <SideBySideView stats={comparisonStats} />
+              <SideBySideView stats={comparisonStats!} />
             </TabsContent>
           )}
 
           {availableViews.includes("delta") && (
             <TabsContent value="delta">
-              <DeltaView stats={comparisonStats} />
+              <DeltaView stats={comparisonStats!} />
             </TabsContent>
           )}
 
           {availableViews.includes("trends") && (
             <TabsContent value="trends">
-              <TrendsView stats={comparisonStats} />
+              <TrendsView stats={comparisonStats!} />
             </TabsContent>
           )}
 
           {availableViews.includes("charts") && (
             <TabsContent value="charts">
               <ChartsView
-                stats={comparisonStats}
+                stats={comparisonStats!}
                 viewMode={selectedMapIds.length === 2 ? "two-map" : "multi-map"}
               />
             </TabsContent>
@@ -219,7 +337,7 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
 
           {availableViews.includes("consistency") && (
             <TabsContent value="consistency">
-              <ConsistencyView stats={comparisonStats} />
+              <ConsistencyView stats={comparisonStats!} />
             </TabsContent>
           )}
         </Tabs>
