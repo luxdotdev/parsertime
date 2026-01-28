@@ -12,6 +12,7 @@ import { PlayerSelector } from "./player-selector";
 
 type ComparisonFiltersProps = {
   teamId: number;
+  mapIds: number[];
   selectedPlayer: string | null;
   selectedHeroes: HeroName[];
   dateRange?: { from: Date; to: Date };
@@ -22,6 +23,7 @@ type ComparisonFiltersProps = {
 
 export function ComparisonFilters({
   teamId,
+  mapIds,
   selectedPlayer,
   selectedHeroes,
   onPlayerChange,
@@ -64,6 +66,7 @@ export function ComparisonFilters({
             </label>
             <PlayerSelector
               teamId={teamId}
+              mapIds={mapIds}
               value={selectedPlayer}
               onChange={onPlayerChange}
             />

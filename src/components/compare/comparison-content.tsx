@@ -164,6 +164,7 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
       {/* Filters */}
       <ComparisonFilters
         teamId={teamId}
+        mapIds={selectedMapIds}
         selectedPlayer={selectedPlayer}
         selectedHeroes={selectedHeroes}
         dateRange={dateRange}
