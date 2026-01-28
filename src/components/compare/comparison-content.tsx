@@ -6,10 +6,13 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { ComparisonStats } from "@/data/comparison-dto";
 import type { HeroName } from "@/types/heroes";
+import type { FormattedMapGroup } from "@/types/map-group";
 import type { TeamComparisonStats } from "@/types/team-comparison";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { FolderCog, Loader2 } from "lucide-react";
+import type { Route } from "next";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { ChartsView } from "./charts-view";
@@ -19,6 +22,7 @@ import { DeltaView } from "./delta-view";
 import { DetailedStatsView } from "./detailed-stats-view";
 import { EmptyState } from "./empty-state";
 import { ImpactMetricsView } from "./impact-metrics-view";
+import { MapGroupSelector } from "./map-group-selector";
 import { SideBySideView } from "./side-by-side-view";
 import { TeamComparisonView } from "./team-comparison-view";
 import { TrendsView } from "./trends-view";
@@ -37,6 +41,7 @@ type ViewMode =
   | "detailed-stats"
   | "impact-metrics";
 type ComparisonMode = "player" | "team";
+type MapSelectionMode = "individual" | "groups";
 
 async function fetchComparisonStats(
   mapIds: number[],
@@ -86,15 +91,27 @@ async function fetchTeamComparisonStats(
   return data.data;
 }
 
+async function fetchMapGroups(teamId: number): Promise<FormattedMapGroup[]> {
+  const response = await fetch(`/api/compare/map-groups?teamId=${teamId}`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch map groups");
+  }
+  const data = (await response.json()) as {
+    success: boolean;
+    groups: FormattedMapGroup[];
+  };
+  return data.groups;
+}
+
 export function ComparisonContent({ teamId }: ComparisonContentProps) {
   const t = useTranslations("comparePage");
   const searchParams = useSearchParams();
 
-  // Get map IDs from URL
-  const mapsParam = searchParams.get("maps");
-  const selectedMapIds = mapsParam
-    ? mapsParam.split(",").map((id) => parseInt(id, 10))
-    : [];
+  // Get map IDs from URL - memoize to prevent useMemo dependency issues
+  const selectedMapIds = useMemo(() => {
+    const mapsParam = searchParams.get("maps");
+    return mapsParam ? mapsParam.split(",").map((id) => parseInt(id, 10)) : [];
+  }, [searchParams]);
 
   // Filter state
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
@@ -107,40 +124,75 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
   const [comparisonMode, setComparisonMode] =
     useState<ComparisonMode>("player");
 
+  // Map selection mode state (individual maps vs map groups)
+  const [mapSelectionMode, setMapSelectionMode] =
+    useState<MapSelectionMode>("individual");
+  const [selectedMapGroups, setSelectedMapGroups] = useState<number[]>([]);
+
   // View mode state
   const [activeView, setActiveView] = useState<ViewMode>("side-by-side");
+
+  // Fetch map groups to resolve group IDs to map IDs
+  const { data: mapGroups } = useQuery({
+    queryKey: ["mapGroups", teamId],
+    queryFn: () => fetchMapGroups(teamId),
+    staleTime: 5 * 60 * 1000,
+    enabled: mapSelectionMode === "groups",
+  });
+
+  // Calculate effective map IDs based on selection mode
+  const effectiveMapIds = useMemo(() => {
+    if (mapSelectionMode === "individual") {
+      return selectedMapIds;
+    }
+
+    // In groups mode, combine all map IDs from selected groups
+    if (!mapGroups || selectedMapGroups.length === 0) {
+      return [];
+    }
+
+    const mapIdsSet = new Set<number>();
+    selectedMapGroups.forEach((groupId) => {
+      const group = mapGroups.find((g) => g.id === groupId);
+      if (group) {
+        group.mapIds.forEach((mapId) => mapIdsSet.add(mapId));
+      }
+    });
+
+    return Array.from(mapIdsSet);
+  }, [mapSelectionMode, selectedMapIds, selectedMapGroups, mapGroups]);
 
   // Fetch comparison stats (player mode)
   const { data: comparisonStats, isLoading: isLoadingPlayer } = useQuery({
     queryKey: [
       "comparisonStats",
-      selectedMapIds,
+      effectiveMapIds,
       selectedPlayer,
       selectedHeroes,
     ],
     queryFn: () =>
       fetchComparisonStats(
-        selectedMapIds,
+        effectiveMapIds,
         selectedPlayer!,
         selectedHeroes.length > 0 ? selectedHeroes : undefined
       ),
     enabled:
       comparisonMode === "player" &&
-      selectedMapIds.length > 0 &&
+      effectiveMapIds.length > 0 &&
       !!selectedPlayer,
     staleTime: 5 * 60 * 1000,
   });
 
   // Fetch team comparison stats (team mode)
   const { data: teamComparisonStats, isLoading: isLoadingTeam } = useQuery({
-    queryKey: ["teamComparisonStats", selectedMapIds, teamId, selectedHeroes],
+    queryKey: ["teamComparisonStats", effectiveMapIds, teamId, selectedHeroes],
     queryFn: () =>
       fetchTeamComparisonStats(
-        selectedMapIds,
+        effectiveMapIds,
         teamId,
         selectedHeroes.length > 0 ? selectedHeroes : undefined
       ),
-    enabled: comparisonMode === "team" && selectedMapIds.length > 0,
+    enabled: comparisonMode === "team" && effectiveMapIds.length > 0,
     staleTime: 5 * 60 * 1000,
   });
 
@@ -151,11 +203,11 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
   const availableViews: ViewMode[] = useMemo(() => {
     // Team comparison doesn't support all views
     if (comparisonMode === "team") {
-      return selectedMapIds.length >= 2 ? ["side-by-side"] : [];
+      return effectiveMapIds.length >= 2 ? ["side-by-side"] : [];
     }
 
     // Player comparison views
-    if (selectedMapIds.length === 2) {
+    if (effectiveMapIds.length === 2) {
       return [
         "side-by-side",
         "delta",
@@ -164,7 +216,7 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
         "detailed-stats",
         "impact-metrics",
       ];
-    } else if (selectedMapIds.length >= 3) {
+    } else if (effectiveMapIds.length >= 3) {
       return [
         "trends",
         "charts",
@@ -174,7 +226,7 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
       ];
     }
     return [];
-  }, [selectedMapIds.length, comparisonMode]);
+  }, [effectiveMapIds.length, comparisonMode]);
 
   // Auto-switch view when map selection or comparison mode changes
   useEffect(() => {
@@ -183,8 +235,8 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
     }
   }, [availableViews, activeView]);
 
-  // Empty state when no maps selected
-  if (selectedMapIds.length === 0) {
+  // Empty state when no maps selected (considering both modes)
+  if (effectiveMapIds.length === 0) {
     return (
       <div className="flex-1 space-y-6 p-8 pt-6">
         <div>
@@ -195,7 +247,11 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
         <EmptyState
           icon="MapPin"
           title={t("emptyStates.noMaps.title")}
-          description={t("emptyStates.noMaps.description")}
+          description={
+            mapSelectionMode === "groups"
+              ? t("emptyStates.noMapGroups.description")
+              : t("emptyStates.noMaps.description")
+          }
         />
       </div>
     );
@@ -207,9 +263,98 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
       <div>
         <h2 className="text-3xl font-bold tracking-tight">{t("title")}</h2>
         <p className="text-muted-foreground mt-2">
-          {t("comparingMaps", { count: selectedMapIds.length })}
+          {effectiveMapIds.length > 0
+            ? t("comparingMaps", { count: effectiveMapIds.length })
+            : t("subtitle")}
         </p>
       </div>
+
+      {/* Map Selection Mode Toggle */}
+      <Card className="p-4">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label
+                htmlFor="map-selection-mode"
+                className="text-base font-medium"
+              >
+                {t("mapSelectionMode.label")}
+              </Label>
+              <p className="text-muted-foreground text-sm">
+                {mapSelectionMode === "individual"
+                  ? t("mapSelectionMode.individualDescription")
+                  : t("mapSelectionMode.groupsDescription")}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <span
+                className={`text-sm font-medium transition-colors ${
+                  mapSelectionMode === "individual"
+                    ? "text-foreground"
+                    : "text-muted-foreground"
+                }`}
+              >
+                {t("mapSelectionMode.individual")}
+              </span>
+              <Switch
+                id="map-selection-mode"
+                checked={mapSelectionMode === "groups"}
+                onCheckedChange={(checked) =>
+                  setMapSelectionMode(checked ? "groups" : "individual")
+                }
+              />
+              <span
+                className={`text-sm font-medium transition-colors ${
+                  mapSelectionMode === "groups"
+                    ? "text-foreground"
+                    : "text-muted-foreground"
+                }`}
+              >
+                {t("mapSelectionMode.groups")}
+              </span>
+            </div>
+          </div>
+
+          {/* Map Group Selector (only show in groups mode) */}
+          {mapSelectionMode === "groups" && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm leading-none font-medium">
+                  {t("mapSelectionMode.selectGroups")}
+                </Label>
+                <Link
+                  href={`/${teamId}/map-groups` as Route}
+                  className="text-primary flex items-center gap-1 text-xs hover:underline"
+                >
+                  <FolderCog className="h-3 w-3" />
+                  {t("mapSelectionMode.manageGroups")}
+                </Link>
+              </div>
+              <MapGroupSelector
+                teamId={teamId}
+                value={selectedMapGroups}
+                onChange={setSelectedMapGroups}
+                multiSelect
+                placeholder={t("mapSelectionMode.selectGroupsPlaceholder")}
+              />
+              <p className="text-muted-foreground text-xs">
+                {t("mapSelectionMode.groupsHint")}
+              </p>
+            </div>
+          )}
+
+          {/* Individual Maps Info (only show in individual mode with selected maps) */}
+          {mapSelectionMode === "individual" && selectedMapIds.length > 0 && (
+            <div className="border-t pt-4">
+              <p className="text-muted-foreground text-sm">
+                {t("mapSelectionMode.individualMapsSelected", {
+                  count: selectedMapIds.length,
+                })}
+              </p>
+            </div>
+          )}
+        </div>
+      </Card>
 
       {/* Filters */}
       <div className="space-y-4">
@@ -263,7 +408,7 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
         {comparisonMode === "player" && (
           <ComparisonFilters
             teamId={teamId}
-            mapIds={selectedMapIds}
+            mapIds={effectiveMapIds}
             selectedPlayer={selectedPlayer}
             selectedHeroes={selectedHeroes}
             dateRange={dateRange}
@@ -363,7 +508,9 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
             <TabsContent value="charts">
               <ChartsView
                 stats={comparisonStats!}
-                viewMode={selectedMapIds.length === 2 ? "two-map" : "multi-map"}
+                viewMode={
+                  effectiveMapIds.length === 2 ? "two-map" : "multi-map"
+                }
               />
             </TabsContent>
           )}
