@@ -1,5 +1,9 @@
 import "server-only";
 
+import {
+  calculateMean,
+  calculateStandardDeviation,
+} from "@/lib/distribution-utils";
 import prisma from "@/lib/prisma";
 import { removeDuplicateRows } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";
@@ -70,6 +74,12 @@ export type AggregatedStats = {
   killsPerUltimate: number;
   duelWinratePercentage: number;
   fightReversalPercentage: number;
+  eliminationsPer10StdDev: number;
+  deathsPer10StdDev: number;
+  allDamagePer10StdDev: number;
+  healingDealtPer10StdDev: number;
+  firstPickPercentageStdDev: number;
+  consistencyScore: number;
 };
 
 export type MapBreakdown = {
@@ -258,9 +268,114 @@ function aggregateCalculatedStats(
   return result;
 }
 
+function calculateVarianceMetrics(
+  perMapStats: PlayerStat[],
+  perMapCalculatedStats: CalculatedStat[][]
+): {
+  eliminationsPer10StdDev: number;
+  deathsPer10StdDev: number;
+  allDamagePer10StdDev: number;
+  healingDealtPer10StdDev: number;
+  firstPickPercentageStdDev: number;
+  consistencyScore: number;
+} {
+  if (perMapStats.length < 2) {
+    return {
+      eliminationsPer10StdDev: 0,
+      deathsPer10StdDev: 0,
+      allDamagePer10StdDev: 0,
+      healingDealtPer10StdDev: 0,
+      firstPickPercentageStdDev: 0,
+      consistencyScore: 0,
+    };
+  }
+
+  const eliminationsPer10Values = perMapStats.map((stat) =>
+    calculatePer10(stat.eliminations, stat.hero_time_played)
+  );
+  const deathsPer10Values = perMapStats.map((stat) =>
+    calculatePer10(stat.deaths, stat.hero_time_played)
+  );
+  const allDamagePer10Values = perMapStats.map((stat) =>
+    calculatePer10(stat.all_damage_dealt, stat.hero_time_played)
+  );
+  const healingDealtPer10Values = perMapStats.map((stat) =>
+    calculatePer10(stat.healing_dealt, stat.hero_time_played)
+  );
+
+  const firstPickPercentageValues = perMapCalculatedStats
+    .map((stats) => {
+      const firstPickStat = stats.find(
+        (s) => s.stat === CalculatedStatType.FIRST_PICK_PERCENTAGE
+      );
+      return firstPickStat?.value ?? 0;
+    })
+    .filter((v) => v > 0);
+
+  const eliminationsPer10Mean = calculateMean(eliminationsPer10Values);
+  const deathsPer10Mean = calculateMean(deathsPer10Values);
+  const allDamagePer10Mean = calculateMean(allDamagePer10Values);
+  const healingDealtPer10Mean = calculateMean(healingDealtPer10Values);
+  const firstPickPercentageMean = calculateMean(firstPickPercentageValues);
+
+  const eliminationsPer10StdDev = calculateStandardDeviation(
+    eliminationsPer10Values,
+    eliminationsPer10Mean
+  );
+  const deathsPer10StdDev = calculateStandardDeviation(
+    deathsPer10Values,
+    deathsPer10Mean
+  );
+  const allDamagePer10StdDev = calculateStandardDeviation(
+    allDamagePer10Values,
+    allDamagePer10Mean
+  );
+  const healingDealtPer10StdDev = calculateStandardDeviation(
+    healingDealtPer10Values,
+    healingDealtPer10Mean
+  );
+  const firstPickPercentageStdDev =
+    firstPickPercentageValues.length > 1
+      ? calculateStandardDeviation(
+          firstPickPercentageValues,
+          firstPickPercentageMean
+        )
+      : 0;
+
+  const coefficientOfVariations = [
+    eliminationsPer10Mean > 0
+      ? eliminationsPer10StdDev / eliminationsPer10Mean
+      : 0,
+    deathsPer10Mean > 0 ? deathsPer10StdDev / deathsPer10Mean : 0,
+    allDamagePer10Mean > 0 ? allDamagePer10StdDev / allDamagePer10Mean : 0,
+    healingDealtPer10Mean > 0
+      ? healingDealtPer10StdDev / healingDealtPer10Mean
+      : 0,
+  ].filter((cv) => cv > 0);
+
+  const averageCV =
+    coefficientOfVariations.length > 0
+      ? calculateMean(coefficientOfVariations)
+      : 0;
+
+  const consistencyScore =
+    averageCV > 0 ? Math.max(0, Math.min(100, (1 - averageCV) * 100)) : 0;
+
+  return {
+    eliminationsPer10StdDev,
+    deathsPer10StdDev,
+    allDamagePer10StdDev,
+    healingDealtPer10StdDev,
+    firstPickPercentageStdDev,
+    consistencyScore,
+  };
+}
+
 function aggregatePlayerStats(
   stats: PlayerStat[],
-  calculatedStats: CalculatedStat[]
+  calculatedStats: CalculatedStat[],
+  perMapStats?: PlayerStat[],
+  perMapCalculatedStats?: CalculatedStat[][]
 ): AggregatedStats {
   const totals = stats.reduce(
     (acc, stat) => {
@@ -330,6 +445,18 @@ function aggregatePlayerStats(
 
   const calculatedAggregates = aggregateCalculatedStats(calculatedStats);
 
+  const varianceMetrics =
+    perMapStats && perMapCalculatedStats
+      ? calculateVarianceMetrics(perMapStats, perMapCalculatedStats)
+      : {
+          eliminationsPer10StdDev: 0,
+          deathsPer10StdDev: 0,
+          allDamagePer10StdDev: 0,
+          healingDealtPer10StdDev: 0,
+          firstPickPercentageStdDev: 0,
+          consistencyScore: 0,
+        };
+
   return {
     ...totals,
     eliminationsPer10: calculatePer10(
@@ -390,6 +517,7 @@ function aggregatePlayerStats(
     killsPerUltimate: calculatedAggregates.killsPerUltimate ?? 0,
     duelWinratePercentage: calculatedAggregates.duelWinratePercentage ?? 0,
     fightReversalPercentage: calculatedAggregates.fightReversalPercentage ?? 0,
+    ...varianceMetrics,
   };
 }
 
@@ -672,7 +800,12 @@ async function getComparisonStatsFn(
 
   perMapBreakdown.sort((a, b) => a.date.getTime() - b.date.getTime());
 
-  const aggregated = aggregatePlayerStats(finalRoundStats, calculatedStats);
+  const aggregated = aggregatePlayerStats(
+    finalRoundStats,
+    calculatedStats,
+    perMapBreakdown.map((m) => m.stats),
+    perMapBreakdown.map((m) => m.calculatedStats)
+  );
 
   const trends =
     perMapBreakdown.length >= 3
