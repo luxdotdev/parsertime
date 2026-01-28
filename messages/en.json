@@ -730,7 +730,8 @@
       "sideBySide": "Side by Side",
       "delta": "Delta",
       "trends": "Trends",
-      "charts": "Charts"
+      "charts": "Charts",
+      "consistency": "Consistency"
     },
     "filters": {
       "title": "Comparison Filters",
@@ -833,6 +834,33 @@
       "healingPer10Short": "Healing",
       "mitigatedPer10Short": "Mitigated",
       "averagePerformance": "Average Performance"
+    },
+    "consistency": {
+      "title": "Performance Consistency",
+      "subtitle": "Measures how reliable performance is across different maps and contexts",
+      "consistencyScore": "Consistency Score",
+      "highlyConsistent": "Highly Consistent",
+      "consistent": "Consistent",
+      "moderatelyConsistent": "Moderately Consistent",
+      "variablePerformance": "Variable Performance",
+      "meanStdDev": "Mean ± Standard Deviation",
+      "performanceAcrossMaps": "Performance Across Maps",
+      "understanding": {
+        "title": "Understanding Consistency Metrics",
+        "stdDev": "Measures how spread out performance is. Lower values = more consistent.",
+        "cv": "Normalized measure of dispersion. Allows comparison across different scales.",
+        "score": "Overall reliability metric (0-100). Higher scores indicate dependable, steady performance."
+      },
+      "metrics": {
+        "eliminations": "Eliminations",
+        "deaths": "Deaths",
+        "damage": "Damage",
+        "healing": "Healing",
+        "mean": "Mean",
+        "stdDev": "± Std Dev",
+        "range": "Range",
+        "variation": "Variation"
+      }
     }
   },
   "mapPage": {

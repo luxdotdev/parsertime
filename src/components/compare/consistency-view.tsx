@@ -58,6 +58,13 @@ function getConsistencyLevel(score: number): {
   };
 }
 
+const METRIC_LABELS: Record<string, string> = {
+  elimsPer10: "Eliminations",
+  deathsPer10: "Deaths",
+  damagePer10: "Damage (k)",
+  healingPer10: "Healing (k)",
+};
+
 export function ConsistencyView({ stats }: ConsistencyViewProps) {
   const { aggregated, perMapBreakdown } = stats;
 
@@ -424,19 +431,39 @@ export function ConsistencyView({ stats }: ConsistencyViewProps) {
                         const data = payload[0]
                           .payload as (typeof perMapData)[0];
                         return (
-                          <div className="bg-background rounded-lg border p-2 shadow-sm">
-                            <div className="space-y-1">
-                              <div className="font-semibold">
+                          <div className="bg-background rounded-lg border p-3 shadow-lg">
+                            <div className="space-y-2">
+                              <div className="text-base font-semibold">
                                 {data.fullName}
                               </div>
-                              {payload.map((entry) => (
-                                <div
-                                  key={entry.dataKey}
-                                  className="text-muted-foreground text-xs"
-                                >
-                                  {entry.name}: {entry.value}
-                                </div>
-                              ))}
+                              <div className="space-y-1">
+                                {payload.map((entry) => {
+                                  const label =
+                                    METRIC_LABELS[entry.dataKey as string] ||
+                                    entry.name;
+                                  return (
+                                    <div
+                                      key={entry.dataKey}
+                                      className="flex items-center justify-between gap-4 text-sm"
+                                    >
+                                      <div className="flex items-center gap-2">
+                                        <div
+                                          className="h-3 w-3 rounded-sm"
+                                          style={{
+                                            backgroundColor: entry.color,
+                                          }}
+                                        />
+                                        <span className="text-muted-foreground">
+                                          {label}:
+                                        </span>
+                                      </div>
+                                      <span className="font-mono font-semibold">
+                                        {entry.value}
+                                      </span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
                             </div>
                           </div>
                         );
