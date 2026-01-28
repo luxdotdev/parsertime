@@ -309,7 +309,7 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
           value={activeView}
           onValueChange={(v) => setActiveView(v as ViewMode)}
         >
-          <TabsList className="grid w-full max-w-4xl grid-cols-3 lg:grid-cols-7">
+          <TabsList>
             {availableViews.includes("side-by-side") && (
               <TabsTrigger value="side-by-side">
                 {t("views.sideBySide")}
