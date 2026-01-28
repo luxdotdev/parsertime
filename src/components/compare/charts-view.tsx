@@ -35,9 +35,9 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
   const t = useTranslations("comparePage.charts");
 
   // Prepare data for line chart (multi-map progression)
-  const lineChartData = stats.perMapBreakdown.map((map, index) => ({
-    name: `Map ${index + 1}`,
-    fullName: map.mapName,
+  const lineChartData = stats.perMapBreakdown.map((map) => ({
+    name: `${map.scrimName} - ${map.mapName}`,
+    fullName: `${map.scrimName} - ${map.mapName}`,
     elimsPer10: Number((map.stats.eliminationsPer10 ?? 0).toFixed(2)),
     deathsPer10: Number((map.stats.deathsPer10 ?? 0).toFixed(2)),
     damagePer10: Number(((map.stats.allDamagePer10 ?? 0) / 1000).toFixed(2)), // Scale for better visualization
@@ -94,11 +94,11 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
     viewMode === "two-map" && stats.perMapBreakdown.length === 2
       ? {
           map1: {
-            label: stats.perMapBreakdown[0].mapName,
+            label: `${stats.perMapBreakdown[0].scrimName} - ${stats.perMapBreakdown[0].mapName}`,
             color: "var(--chart-1)",
           },
           map2: {
-            label: stats.perMapBreakdown[1].mapName,
+            label: `${stats.perMapBreakdown[1].scrimName} - ${stats.perMapBreakdown[1].mapName}`,
             color: "var(--chart-2)",
           },
         }
@@ -106,26 +106,30 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
 
   // Prepare data for radar chart (performance profile)
   const radarChartData =
-    viewMode === "two-map" && stats.perMapBreakdown.length === 2
+    viewMode === "two-map" && stats.perMapBreakdown?.length === 2
       ? [
           {
             metric: t("elimsPer10Short"),
             map1: Number(
-              (stats.perMapBreakdown[0].stats.eliminationsPer10 ?? 0).toFixed(2)
+              (stats.perMapBreakdown[0]?.stats.eliminationsPer10 ?? 0).toFixed(
+                2
+              )
             ),
             map2: Number(
-              (stats.perMapBreakdown[1].stats.eliminationsPer10 ?? 0).toFixed(2)
+              (stats.perMapBreakdown[1]?.stats.eliminationsPer10 ?? 0).toFixed(
+                2
+              )
             ),
           },
           {
             metric: t("deathsPer10Short"),
             map1: Number(
-              (20 - (stats.perMapBreakdown[0].stats.deathsPer10 ?? 0)).toFixed(
+              (20 - (stats.perMapBreakdown[0]?.stats.deathsPer10 ?? 0)).toFixed(
                 2
               )
             ), // Invert for better visualization
             map2: Number(
-              (20 - (stats.perMapBreakdown[1].stats.deathsPer10 ?? 0)).toFixed(
+              (20 - (stats.perMapBreakdown[1]?.stats.deathsPer10 ?? 0)).toFixed(
                 2
               )
             ),
@@ -134,12 +138,12 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
             metric: t("damagePer10Short"),
             map1: Number(
               (
-                (stats.perMapBreakdown[0].stats.allDamagePer10 ?? 0) / 1000
+                (stats.perMapBreakdown[0]?.stats.allDamagePer10 ?? 0) / 1000
               ).toFixed(2)
             ),
             map2: Number(
               (
-                (stats.perMapBreakdown[1].stats.allDamagePer10 ?? 0) / 1000
+                (stats.perMapBreakdown[1]?.stats.allDamagePer10 ?? 0) / 1000
               ).toFixed(2)
             ),
           },
@@ -147,12 +151,12 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
             metric: t("healingPer10Short"),
             map1: Number(
               (
-                (stats.perMapBreakdown[0].stats.healingDealtPer10 ?? 0) / 1000
+                (stats.perMapBreakdown[0]?.stats.healingDealtPer10 ?? 0) / 1000
               ).toFixed(2)
             ),
             map2: Number(
               (
-                (stats.perMapBreakdown[1].stats.healingDealtPer10 ?? 0) / 1000
+                (stats.perMapBreakdown[1]?.stats.healingDealtPer10 ?? 0) / 1000
               ).toFixed(2)
             ),
           },
@@ -160,12 +164,12 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
             metric: t("mitigatedPer10Short"),
             map1: Number(
               (
-                (stats.perMapBreakdown[0].stats.damageBlockedPer10 ?? 0) / 1000
+                (stats.perMapBreakdown[0]?.stats.damageBlockedPer10 ?? 0) / 1000
               ).toFixed(2)
             ),
             map2: Number(
               (
-                (stats.perMapBreakdown[1].stats.damageBlockedPer10 ?? 0) / 1000
+                (stats.perMapBreakdown[1]?.stats.damageBlockedPer10 ?? 0) / 1000
               ).toFixed(2)
             ),
           },
@@ -173,39 +177,45 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
       : [
           {
             metric: t("elimsPer10Short"),
-            value: Number(stats.aggregated.eliminationsPer10.toFixed(2)),
+            value: Number(
+              (stats.aggregated?.eliminationsPer10 ?? 0).toFixed(2)
+            ),
           },
           {
             metric: t("deathsPer10Short"),
-            value: Number((20 - stats.aggregated.deathsPer10).toFixed(2)), // Invert
+            value: Number(
+              (20 - (stats.aggregated?.deathsPer10 ?? 0)).toFixed(2)
+            ), // Invert
           },
           {
             metric: t("damagePer10Short"),
-            value: Number((stats.aggregated.allDamagePer10 / 1000).toFixed(2)),
+            value: Number(
+              ((stats.aggregated?.allDamagePer10 ?? 0) / 1000).toFixed(2)
+            ),
           },
           {
             metric: t("healingPer10Short"),
             value: Number(
-              (stats.aggregated.healingDealtPer10 / 1000).toFixed(2)
+              ((stats.aggregated?.healingDealtPer10 ?? 0) / 1000).toFixed(2)
             ),
           },
           {
             metric: t("mitigatedPer10Short"),
             value: Number(
-              (stats.aggregated.damageBlockedPer10 / 1000).toFixed(2)
+              ((stats.aggregated?.damageBlockedPer10 ?? 0) / 1000).toFixed(2)
             ),
           },
         ];
 
   const radarChartConfig: ChartConfig =
-    viewMode === "two-map" && stats.perMapBreakdown.length === 2
+    viewMode === "two-map" && stats.perMapBreakdown?.length === 2
       ? {
           map1: {
-            label: stats.perMapBreakdown[0].mapName,
+            label: `${stats.perMapBreakdown[0].scrimName} - ${stats.perMapBreakdown[0].mapName}`,
             color: "var(--chart-1)",
           },
           map2: {
-            label: stats.perMapBreakdown[1].mapName,
+            label: `${stats.perMapBreakdown[1].scrimName} - ${stats.perMapBreakdown[1].mapName}`,
             color: "var(--chart-2)",
           },
         }
@@ -320,51 +330,56 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
       )}
 
       {/* Radar Chart - Performance Profile */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("performanceProfile")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ChartContainer
-            config={radarChartConfig}
-            className="h-[400px] w-full"
-          >
-            <RadarChart accessibilityLayer data={radarChartData}>
-              <PolarGrid />
-              <PolarAngleAxis dataKey="metric" />
-              <PolarRadiusAxis />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              {viewMode === "two-map" && stats.perMapBreakdown.length === 2 ? (
-                <>
-                  <Radar
-                    name={stats.perMapBreakdown[0].mapName}
-                    dataKey="map1"
-                    stroke="var(--color-map1)"
-                    fill="var(--color-map1)"
-                    fillOpacity={0.3}
-                  />
-                  <Radar
-                    name={stats.perMapBreakdown[1].mapName}
-                    dataKey="map2"
-                    stroke="var(--color-map2)"
-                    fill="var(--color-map2)"
-                    fillOpacity={0.3}
-                  />
-                  <ChartLegend content={<ChartLegendContent />} />
-                </>
-              ) : (
-                <Radar
-                  name={t("averagePerformance")}
-                  dataKey="value"
-                  stroke="var(--color-value)"
-                  fill="var(--color-value)"
-                  fillOpacity={0.5}
+      {radarChartData && radarChartData.length > 0 ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("performanceProfile")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer
+              config={radarChartConfig}
+              className="mx-auto aspect-square max-h-[400px]"
+            >
+              <RadarChart data={radarChartData}>
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent indicator="line" />}
                 />
-              )}
-            </RadarChart>
-          </ChartContainer>
-        </CardContent>
-      </Card>
+                <PolarAngleAxis dataKey="metric" />
+                <PolarGrid radialLines={false} />
+                <PolarRadiusAxis />
+                {viewMode === "two-map" &&
+                stats.perMapBreakdown?.length === 2 ? (
+                  <>
+                    <Radar
+                      dataKey="map1"
+                      fill="var(--color-map1)"
+                      fillOpacity={0}
+                      stroke="var(--color-map1)"
+                      strokeWidth={2}
+                    />
+                    <Radar
+                      dataKey="map2"
+                      fill="var(--color-map2)"
+                      fillOpacity={0}
+                      stroke="var(--color-map2)"
+                      strokeWidth={2}
+                    />
+                  </>
+                ) : (
+                  <Radar
+                    dataKey="value"
+                    fill="var(--color-value)"
+                    fillOpacity={0}
+                    stroke="var(--color-value)"
+                    strokeWidth={2}
+                  />
+                )}
+              </RadarChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+      ) : null}
 
       {/* Additional Stats Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
