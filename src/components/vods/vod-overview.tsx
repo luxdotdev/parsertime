@@ -29,8 +29,11 @@ export function VodOverview({ vod, mapId }: { vod: string; mapId: number }) {
   }
 
   const vodSource =
-    vodState.startsWith("https://www.youtube.com/watch?v=") ||
-    vodState.startsWith("https://youtu.be/")
+    vodState.startsWith("https://www.youtube.com/") ||
+    vodState.startsWith("https://youtu.be/") ||
+    vodState.startsWith("https://youtube.com/") ||
+    vodState.startsWith("https://www.youtube.com/embed/") ||
+    vodState.startsWith("https://youtube.com/embed/")
       ? "youtube"
       : vodState.startsWith("https://www.twitch.tv/videos/")
         ? "twitch"
@@ -48,7 +51,11 @@ export function VodOverview({ vod, mapId }: { vod: string; mapId: number }) {
               videoid={
                 vodState.startsWith("https://youtu.be/")
                   ? vodState.split("youtu.be/")[1].split("?")[0]
-                  : vodState.split("v=")[1]?.split("&")[0] || ""
+                  : vodState.includes("/embed/")
+                    ? vodState.split("/embed/")[1].split("?")[0]
+                    : vodState.includes("/live/")
+                      ? vodState.split("/live/")[1].split("?")[0]
+                      : vodState.split("v=")[1]?.split("&")[0] || ""
               }
               params={`controls=1&start=${vodState.split("t=")[1] ? vodState.split("t=")[1].split("s")[0] : 0}`}
               style="width:full; height:full; max-width:100%; max-height:100%; border:0;"
@@ -58,6 +65,7 @@ export function VodOverview({ vod, mapId }: { vod: string; mapId: number }) {
           {vodSource === "twitch" && (
             <iframe
               src={twitchSrc}
+              title="Twitch VOD"
               className="h-full w-full border-0"
               allowFullScreen
             />
