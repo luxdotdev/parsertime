@@ -30,15 +30,15 @@ type ComparisonStats = {
   aggregated: {
     eliminations: number;
     deaths: number;
-    damage: number;
-    healing: number;
-    mitigated: number;
+    allDamageDealt: number;
+    healingDealt: number;
+    damageBlocked: number;
     heroTimePlayed: number;
     eliminationsPer10: number;
     deathsPer10: number;
-    damagePer10: number;
-    healingPer10: number;
-    mitigatedPer10: number;
+    allDamagePer10: number;
+    healingDealtPer10: number;
+    damageBlockedPer10: number;
   };
   perMapBreakdown: {
     mapId: number;
