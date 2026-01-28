@@ -11,6 +11,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { ChartsView } from "./charts-view";
 import { ComparisonFilters } from "./comparison-filters";
+import { ConsistencyView } from "./consistency-view";
 import { DeltaView } from "./delta-view";
 import { EmptyState } from "./empty-state";
 import { SideBySideView } from "./side-by-side-view";
@@ -21,7 +22,7 @@ type ComparisonContentProps = {
   locale: string;
 };
 
-type ViewMode = "side-by-side" | "delta" | "trends" | "charts";
+type ViewMode = "side-by-side" | "delta" | "trends" | "charts" | "consistency";
 
 async function fetchComparisonStats(
   mapIds: number[],
@@ -87,9 +88,9 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
   // Determine available views based on map count
   const availableViews: ViewMode[] = useMemo(() => {
     return selectedMapIds.length === 2
-      ? ["side-by-side", "delta", "charts"]
+      ? ["side-by-side", "delta", "charts", "consistency"]
       : selectedMapIds.length >= 3
-        ? ["trends", "charts"]
+        ? ["trends", "charts", "consistency"]
         : [];
   }, [selectedMapIds.length]);
 
@@ -167,7 +168,7 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
           value={activeView}
           onValueChange={(v) => setActiveView(v as ViewMode)}
         >
-          <TabsList className="grid w-full max-w-md grid-cols-2 lg:grid-cols-4">
+          <TabsList className="grid w-full max-w-2xl grid-cols-3 lg:grid-cols-5">
             {availableViews.includes("side-by-side") && (
               <TabsTrigger value="side-by-side">
                 {t("views.sideBySide")}
@@ -181,6 +182,11 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
             )}
             {availableViews.includes("charts") && (
               <TabsTrigger value="charts">{t("views.charts")}</TabsTrigger>
+            )}
+            {availableViews.includes("consistency") && (
+              <TabsTrigger value="consistency">
+                {t("views.consistency")}
+              </TabsTrigger>
             )}
           </TabsList>
 
@@ -208,6 +214,12 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
                 stats={comparisonStats}
                 viewMode={selectedMapIds.length === 2 ? "two-map" : "multi-map"}
               />
+            </TabsContent>
+          )}
+
+          {availableViews.includes("consistency") && (
+            <TabsContent value="consistency">
+              <ConsistencyView stats={comparisonStats} />
             </TabsContent>
           )}
         </Tabs>
