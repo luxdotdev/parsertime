@@ -724,6 +724,9 @@
       "noData": {
         "title": "No Data Available",
         "description": "{player} did not participate in the selected maps."
+      },
+      "noTeamData": {
+        "description": "No team data available for the selected maps."
       }
     },
     "views": {
@@ -860,6 +863,39 @@
         "stdDev": "± Std Dev",
         "range": "Range",
         "variation": "Variation"
+      }
+    },
+    "comparisonMode": {
+      "label": "Comparison Mode",
+      "player": "Player",
+      "team": "Team",
+      "playerDescription": "Compare individual player performance across maps",
+      "teamDescription": "Compare your team vs enemy team across maps"
+    },
+    "teamComparison": {
+      "myTeam": "My Team",
+      "enemyTeam": "Enemy Team",
+      "players": "{count, plural, =1 {1 player} other {# players}}",
+      "comparingMaps": "{count, plural, =1 {Comparing 1 map} other {Comparing # maps}}",
+      "categories": {
+        "combat": "Combat Performance",
+        "damage": "Damage & Survivability",
+        "support": "Support & Defense",
+        "ultimate": "Ultimate Economy"
+      },
+      "stats": {
+        "eliminationsPer10": "Eliminations per 10",
+        "finalBlowsPer10": "Final Blows per 10",
+        "deathsPer10": "Deaths per 10",
+        "firstPickPercentage": "First Pick %",
+        "firstDeathPercentage": "First Death %",
+        "heroDamagePer10": "Hero Damage per 10",
+        "damageTakenPer10": "Damage Taken per 10",
+        "healingDealtPer10": "Healing Dealt per 10",
+        "damageBlockedPer10": "Damage Blocked per 10",
+        "ultimatesEarnedPer10": "Ultimates Earned per 10",
+        "averageUltChargeTime": "Avg Ult Charge Time",
+        "killsPerUltimate": "Kills per Ultimate"
       }
     }
   },
