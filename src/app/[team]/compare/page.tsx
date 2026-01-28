@@ -1,0 +1,68 @@
+import { ComparisonContent } from "@/components/compare/comparison-content";
+import { DashboardLayout } from "@/components/dashboard-layout";
+import { getUser } from "@/data/user-dto";
+import { auth } from "@/lib/auth";
+import prisma from "@/lib/prisma";
+import type { PagePropsWithLocale } from "@/types/next";
+import { $Enums } from "@prisma/client";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { notFound } from "next/navigation";
+
+export async function generateMetadata(
+  props: PagePropsWithLocale<"/[team]/compare">
+): Promise<Metadata> {
+  const params = await props.params;
+  const t = await getTranslations({
+    locale: params.locale,
+    namespace: "comparePage.metadata",
+  });
+
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
+
+export default async function ComparePage(
+  props: PagePropsWithLocale<"/[team]/compare">
+) {
+  const params = await props.params;
+  const session = await auth();
+
+  if (!session?.user?.email) {
+    notFound();
+  }
+
+  const user = await getUser(session.user.email);
+  if (!user) {
+    notFound();
+  }
+
+  // Extract team ID from team slug
+  const teamId = parseInt(params.team);
+  if (isNaN(teamId)) {
+    notFound();
+  }
+
+  // Verify user has access to this team
+  const team = await prisma.team.findUnique({
+    where: { id: teamId },
+    include: {
+      users: true,
+    },
+  });
+
+  if (
+    user.role !== $Enums.UserRole.ADMIN &&
+    (!team || !team.users.some((teamUser) => teamUser.id === user.id))
+  ) {
+    notFound();
+  }
+
+  return (
+    <DashboardLayout>
+      <ComparisonContent teamId={teamId} locale={params.locale} />
+    </DashboardLayout>
+  );
+}
