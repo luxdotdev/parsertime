@@ -58,34 +58,38 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
     },
   };
 
-  // Prepare data for bar chart (side-by-side comparison for 2 maps)
+  // Prepare data for bar chart (side-by-side comparison for 2 maps) - using per-10 values
   const barChartData =
     viewMode === "two-map" && stats.perMapBreakdown.length === 2
       ? [
           {
-            stat: t("eliminations"),
-            map1: stats.perMapBreakdown[0].stats.eliminations ?? 0,
-            map2: stats.perMapBreakdown[1].stats.eliminations ?? 0,
+            stat: t("elimsPer10"),
+            map1: stats.perMapBreakdown[0].stats.eliminationsPer10 ?? 0,
+            map2: stats.perMapBreakdown[1].stats.eliminationsPer10 ?? 0,
           },
           {
-            stat: t("deaths"),
-            map1: stats.perMapBreakdown[0].stats.deaths ?? 0,
-            map2: stats.perMapBreakdown[1].stats.deaths ?? 0,
+            stat: t("deathsPer10"),
+            map1: stats.perMapBreakdown[0].stats.deathsPer10 ?? 0,
+            map2: stats.perMapBreakdown[1].stats.deathsPer10 ?? 0,
           },
           {
-            stat: t("damage"),
-            map1: (stats.perMapBreakdown[0].stats.all_damage_dealt ?? 0) / 1000,
-            map2: (stats.perMapBreakdown[1].stats.all_damage_dealt ?? 0) / 1000,
+            stat: t("damagePer10K"),
+            map1: (stats.perMapBreakdown[0].stats.allDamagePer10 ?? 0) / 1000,
+            map2: (stats.perMapBreakdown[1].stats.allDamagePer10 ?? 0) / 1000,
           },
           {
-            stat: t("healing"),
-            map1: (stats.perMapBreakdown[0].stats.healing_dealt ?? 0) / 1000,
-            map2: (stats.perMapBreakdown[1].stats.healing_dealt ?? 0) / 1000,
+            stat: t("healingPer10K"),
+            map1:
+              (stats.perMapBreakdown[0].stats.healingDealtPer10 ?? 0) / 1000,
+            map2:
+              (stats.perMapBreakdown[1].stats.healingDealtPer10 ?? 0) / 1000,
           },
           {
-            stat: t("mitigated"),
-            map1: (stats.perMapBreakdown[0].stats.damage_blocked ?? 0) / 1000,
-            map2: (stats.perMapBreakdown[1].stats.damage_blocked ?? 0) / 1000,
+            stat: t("blockedPer10K"),
+            map1:
+              (stats.perMapBreakdown[0].stats.damageBlockedPer10 ?? 0) / 1000,
+            map2:
+              (stats.perMapBreakdown[1].stats.damageBlockedPer10 ?? 0) / 1000,
           },
         ]
       : [];
@@ -381,20 +385,20 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
         </Card>
       ) : null}
 
-      {/* Additional Stats Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {/* Impact Metrics Cards - Normalized Stats Only */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium">
-              {t("totalEliminations")}
+              {t("firstPickPercentage")}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold tabular-nums">
-              {stats.aggregated.eliminations.toLocaleString()}
+              {stats.aggregated.firstPickPercentage.toFixed(1)}%
             </div>
             <p className="text-muted-foreground text-xs">
-              {t("avgPer10")}: {stats.aggregated.eliminationsPer10.toFixed(2)}
+              {stats.aggregated.firstPicksPer10.toFixed(1)} {t("per10")}
             </p>
           </CardContent>
         </Card>
@@ -402,15 +406,15 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium">
-              {t("totalDeaths")}
+              {t("firstDeathPercentage")}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold tabular-nums">
-              {stats.aggregated.deaths.toLocaleString()}
+              {stats.aggregated.firstDeathPercentage.toFixed(1)}%
             </div>
             <p className="text-muted-foreground text-xs">
-              {t("avgPer10")}: {stats.aggregated.deathsPer10.toFixed(2)}
+              {stats.aggregated.firstDeathsPer10.toFixed(1)} {t("per10")}
             </p>
           </CardContent>
         </Card>
@@ -418,17 +422,76 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium">
-              {t("totalDamage")}
+              {t("killsPerUltimate")}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold tabular-nums">
-              {stats.aggregated.allDamageDealt.toLocaleString()}
+              {stats.aggregated.killsPerUltimate.toFixed(2)}
+            </div>
+            <p className="text-muted-foreground text-xs">{t("avgUltImpact")}</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium">
+              {t("soloKillsPer10")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold tabular-nums">
+              {stats.aggregated.soloKillsPer10.toFixed(1)}
             </div>
             <p className="text-muted-foreground text-xs">
-              {t("avgPer10")}:{" "}
-              {stats.aggregated.allDamagePer10.toLocaleString()}
+              {t("individualKills")}
             </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium">
+              {t("damageTakenPer10")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold tabular-nums">
+              {stats.aggregated.damageTakenPer10.toLocaleString()}
+            </div>
+            <p className="text-muted-foreground text-xs">
+              {t("damageReceived")}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium">
+              {t("healingReceivedPer10")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold tabular-nums">
+              {stats.aggregated.healingReceivedPer10.toLocaleString()}
+            </div>
+            <p className="text-muted-foreground text-xs">
+              {t("supportReceived")}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium">
+              {t("fightReversalPercentage")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold tabular-nums">
+              {stats.aggregated.fightReversalPercentage.toFixed(1)}%
+            </div>
+            <p className="text-muted-foreground text-xs">{t("clutchPlays")}</p>
           </CardContent>
         </Card>
       </div>
