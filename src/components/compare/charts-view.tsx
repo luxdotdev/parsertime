@@ -34,15 +34,15 @@ type ComparisonStats = {
   aggregated: {
     eliminations: number;
     deaths: number;
-    damage: number;
-    healing: number;
-    mitigated: number;
+    allDamageDealt: number;
+    healingDealt: number;
+    damageBlocked: number;
     heroTimePlayed: number;
     eliminationsPer10: number;
     deathsPer10: number;
-    damagePer10: number;
-    healingPer10: number;
-    mitigatedPer10: number;
+    allDamagePer10: number;
+    healingDealtPer10: number;
+    damageBlockedPer10: number;
   };
   perMapBreakdown: {
     mapId: number;
@@ -67,21 +67,21 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
     fullName: map.mapName,
     elimsPer10: Number((map.stats.eliminationsPer10 ?? 0).toFixed(2)),
     deathsPer10: Number((map.stats.deathsPer10 ?? 0).toFixed(2)),
-    damagePer10: Number(((map.stats.damagePer10 ?? 0) / 1000).toFixed(2)), // Scale for better visualization
+    damagePer10: Number(((map.stats.allDamagePer10 ?? 0) / 1000).toFixed(2)), // Scale for better visualization
   }));
 
   const lineChartConfig: ChartConfig = {
     elimsPer10: {
       label: t("elimsPer10"),
-      color: "hsl(var(--chart-1))",
+      color: "var(--chart-1)",
     },
     deathsPer10: {
       label: t("deathsPer10"),
-      color: "hsl(var(--chart-2))",
+      color: "var(--chart-2)",
     },
     damagePer10: {
       label: t("damagePer10K"),
-      color: "hsl(var(--chart-3))",
+      color: "var(--chart-3)",
     },
   };
 
@@ -101,18 +101,18 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
           },
           {
             stat: t("damage"),
-            map1: (stats.perMapBreakdown[0].stats.damage ?? 0) / 1000,
-            map2: (stats.perMapBreakdown[1].stats.damage ?? 0) / 1000,
+            map1: (stats.perMapBreakdown[0].stats.allDamageDealt ?? 0) / 1000,
+            map2: (stats.perMapBreakdown[1].stats.allDamageDealt ?? 0) / 1000,
           },
           {
             stat: t("healing"),
-            map1: (stats.perMapBreakdown[0].stats.healing ?? 0) / 1000,
-            map2: (stats.perMapBreakdown[1].stats.healing ?? 0) / 1000,
+            map1: (stats.perMapBreakdown[0].stats.healingDealt ?? 0) / 1000,
+            map2: (stats.perMapBreakdown[1].stats.healingDealt ?? 0) / 1000,
           },
           {
             stat: t("mitigated"),
-            map1: (stats.perMapBreakdown[0].stats.mitigated ?? 0) / 1000,
-            map2: (stats.perMapBreakdown[1].stats.mitigated ?? 0) / 1000,
+            map1: (stats.perMapBreakdown[0].stats.damageBlocked ?? 0) / 1000,
+            map2: (stats.perMapBreakdown[1].stats.damageBlocked ?? 0) / 1000,
           },
         ]
       : [];
@@ -122,11 +122,11 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
       ? {
           map1: {
             label: stats.perMapBreakdown[0].mapName,
-            color: "hsl(var(--chart-1))",
+            color: "var(--chart-1)",
           },
           map2: {
             label: stats.perMapBreakdown[1].mapName,
-            color: "hsl(var(--chart-2))",
+            color: "var(--chart-2)",
           },
         }
       : {};
@@ -161,12 +161,12 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
             metric: t("damagePer10Short"),
             map1: Number(
               (
-                (stats.perMapBreakdown[0].stats.damagePer10 ?? 0) / 1000
+                (stats.perMapBreakdown[0].stats.allDamagePer10 ?? 0) / 1000
               ).toFixed(2)
             ),
             map2: Number(
               (
-                (stats.perMapBreakdown[1].stats.damagePer10 ?? 0) / 1000
+                (stats.perMapBreakdown[1].stats.allDamagePer10 ?? 0) / 1000
               ).toFixed(2)
             ),
           },
@@ -174,12 +174,12 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
             metric: t("healingPer10Short"),
             map1: Number(
               (
-                (stats.perMapBreakdown[0].stats.healingPer10 ?? 0) / 1000
+                (stats.perMapBreakdown[0].stats.healingDealtPer10 ?? 0) / 1000
               ).toFixed(2)
             ),
             map2: Number(
               (
-                (stats.perMapBreakdown[1].stats.healingPer10 ?? 0) / 1000
+                (stats.perMapBreakdown[1].stats.healingDealtPer10 ?? 0) / 1000
               ).toFixed(2)
             ),
           },
@@ -187,12 +187,12 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
             metric: t("mitigatedPer10Short"),
             map1: Number(
               (
-                (stats.perMapBreakdown[0].stats.mitigatedPer10 ?? 0) / 1000
+                (stats.perMapBreakdown[0].stats.damageBlockedPer10 ?? 0) / 1000
               ).toFixed(2)
             ),
             map2: Number(
               (
-                (stats.perMapBreakdown[1].stats.mitigatedPer10 ?? 0) / 1000
+                (stats.perMapBreakdown[1].stats.damageBlockedPer10 ?? 0) / 1000
               ).toFixed(2)
             ),
           },
@@ -208,15 +208,19 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
           },
           {
             metric: t("damagePer10Short"),
-            value: Number((stats.aggregated.damagePer10 / 1000).toFixed(2)),
+            value: Number((stats.aggregated.allDamagePer10 / 1000).toFixed(2)),
           },
           {
             metric: t("healingPer10Short"),
-            value: Number((stats.aggregated.healingPer10 / 1000).toFixed(2)),
+            value: Number(
+              (stats.aggregated.healingDealtPer10 / 1000).toFixed(2)
+            ),
           },
           {
             metric: t("mitigatedPer10Short"),
-            value: Number((stats.aggregated.mitigatedPer10 / 1000).toFixed(2)),
+            value: Number(
+              (stats.aggregated.damageBlockedPer10 / 1000).toFixed(2)
+            ),
           },
         ];
 
@@ -225,17 +229,17 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
       ? {
           map1: {
             label: stats.perMapBreakdown[0].mapName,
-            color: "hsl(var(--chart-1))",
+            color: "var(--chart-1)",
           },
           map2: {
             label: stats.perMapBreakdown[1].mapName,
-            color: "hsl(var(--chart-2))",
+            color: "var(--chart-2)",
           },
         }
       : {
           value: {
             label: t("averagePerformance"),
-            color: "hsl(var(--chart-1))",
+            color: "var(--chart-1)",
           },
         };
 
@@ -431,10 +435,11 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold tabular-nums">
-              {stats.aggregated.damage.toLocaleString()}
+              {stats.aggregated.allDamageDealt.toLocaleString()}
             </div>
             <p className="text-muted-foreground text-xs">
-              {t("avgPer10")}: {stats.aggregated.damagePer10.toLocaleString()}
+              {t("avgPer10")}:{" "}
+              {stats.aggregated.allDamagePer10.toLocaleString()}
             </p>
           </CardContent>
         </Card>
