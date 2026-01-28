@@ -85,9 +85,9 @@ export type MapBreakdown = {
   stats: PlayerStat & {
     eliminationsPer10?: number;
     deathsPer10?: number;
-    damagePer10?: number;
-    healingPer10?: number;
-    mitigatedPer10?: number;
+    allDamagePer10?: number;
+    healingDealtPer10?: number;
+    damageBlockedPer10?: number;
   };
   calculatedStats: CalculatedStat[];
 };
@@ -641,15 +641,15 @@ async function getComparisonStatsFn(
         timePlayed
       ),
       deathsPer10: calculatePer10(aggregatedMapStats.deaths, timePlayed),
-      damagePer10: calculatePer10(
+      allDamagePer10: calculatePer10(
         aggregatedMapStats.all_damage_dealt,
         timePlayed
       ),
-      healingPer10: calculatePer10(
+      healingDealtPer10: calculatePer10(
         aggregatedMapStats.healing_dealt,
         timePlayed
       ),
-      mitigatedPer10: calculatePer10(
+      damageBlockedPer10: calculatePer10(
         aggregatedMapStats.damage_blocked,
         timePlayed
       ),
