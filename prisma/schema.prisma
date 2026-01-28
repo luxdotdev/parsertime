@@ -65,6 +65,7 @@ model User {
   appliedTitles    AppliedTitle[]
   seenOnboarding   Boolean           @default(false)
   comparisonGroups ComparisonGroup[]
+  mapGroups        MapGroup[]
 
   @@index([id, email])
 }
@@ -195,6 +196,7 @@ model Team {
   managers         TeamManager[]
   readonly         Boolean           @default(false)
   comparisonGroups ComparisonGroup[]
+  mapGroups        MapGroup[]
 }
 
 model TeamManager {
@@ -239,6 +241,23 @@ model ComparisonGroup {
   @@index([teamId])
   @@index([createdBy])
   @@index([teamId, playerName])
+}
+
+model MapGroup {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  teamId      Int
+  mapIds      Int[]
+  category    String?
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@index([teamId])
+  @@index([createdBy])
 }
 
 model Scrim {
