@@ -4,6 +4,7 @@ import {
   calculateMean,
   calculateStandardDeviation,
 } from "@/lib/distribution-utils";
+import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { removeDuplicateRows } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";
@@ -56,6 +57,20 @@ export type AggregatedStats = {
   damageTakenPer10: number;
   damageBlockedPer10: number;
   ultimatesEarnedPer10: number;
+  ultimatesUsedPer10: number;
+  soloKillsPer10: number;
+  objectiveKillsPer10: number;
+  defensiveAssistsPer10: number;
+  offensiveAssistsPer10: number;
+  environmentalKillsPer10: number;
+  environmentalDeathsPer10: number;
+  multikillsPer10: number;
+  barrierDamagePer10: number;
+  selfHealingPer10: number;
+  firstPicksPer10: number;
+  firstDeathsPer10: number;
+  mapMvpRate: number;
+  ajaxPer10: number;
   weaponAccuracy: number;
   criticalHitAccuracy: number;
   scopedAccuracy: number;
@@ -159,6 +174,23 @@ function aggregateCalculatedStats(
   };
 
   const counts: Record<string, number> = {};
+
+  // Log the stat types we're processing
+  const statTypeCounts: Record<string, number> = {};
+  stats.forEach((stat) => {
+    statTypeCounts[stat.stat] = (statTypeCounts[stat.stat] ?? 0) + 1;
+  });
+
+  Logger.info({
+    message: "[Comparison] aggregateCalculatedStats",
+    totalStats: stats.length,
+    statTypeCounts,
+    sampleStats: stats.slice(0, 3).map((s) => ({
+      stat: s.stat,
+      value: s.value,
+      hero: s.hero,
+    })),
+  });
 
   stats.forEach((stat) => {
     switch (stat.stat) {
@@ -490,6 +522,57 @@ function aggregatePlayerStats(
       totals.ultimatesEarned,
       totals.heroTimePlayed
     ),
+    ultimatesUsedPer10: calculatePer10(
+      totals.ultimatesUsed,
+      totals.heroTimePlayed
+    ),
+    soloKillsPer10: calculatePer10(totals.soloKills, totals.heroTimePlayed),
+    objectiveKillsPer10: calculatePer10(
+      totals.objectiveKills,
+      totals.heroTimePlayed
+    ),
+    defensiveAssistsPer10: calculatePer10(
+      totals.defensiveAssists,
+      totals.heroTimePlayed
+    ),
+    offensiveAssistsPer10: calculatePer10(
+      totals.offensiveAssists,
+      totals.heroTimePlayed
+    ),
+    environmentalKillsPer10: calculatePer10(
+      totals.environmentalKills,
+      totals.heroTimePlayed
+    ),
+    environmentalDeathsPer10: calculatePer10(
+      totals.environmentalDeaths,
+      totals.heroTimePlayed
+    ),
+    multikillsPer10: calculatePer10(totals.multikills, totals.heroTimePlayed),
+    barrierDamagePer10: calculatePer10(
+      totals.barrierDamageDealt,
+      totals.heroTimePlayed
+    ),
+    selfHealingPer10: calculatePer10(totals.selfHealing, totals.heroTimePlayed),
+    firstPicksPer10: calculatePer10(
+      calculatedAggregates.firstPickCount ?? 0,
+      totals.heroTimePlayed
+    ),
+    firstDeathsPer10: calculatePer10(
+      calculatedAggregates.firstDeathCount ?? 0,
+      totals.heroTimePlayed
+    ),
+    mapMvpRate:
+      perMapCalculatedStats && perMapCalculatedStats.length > 0
+        ? ((calculatedAggregates.mapMvpCount ?? 0) /
+            perMapCalculatedStats.length) *
+          100
+        : stats.length > 0
+          ? ((calculatedAggregates.mapMvpCount ?? 0) / stats.length) * 100
+          : 0,
+    ajaxPer10: calculatePer10(
+      calculatedAggregates.ajaxCount ?? 0,
+      totals.heroTimePlayed
+    ),
     weaponAccuracy: calculatePercentage(totals.shotsHit, totals.shotsFired),
     criticalHitAccuracy: calculatePercentage(
       totals.criticalHits,
@@ -578,9 +661,29 @@ function calculateTrends(
       invertImprovement: true,
     },
     {
+      name: "First Pick %",
+      early: earlyPerformance.firstPickPercentage,
+      late: latePerformance.firstPickPercentage,
+    },
+    {
       name: "MVP Score",
       early: earlyPerformance.mvpScore,
       late: latePerformance.mvpScore,
+    },
+    {
+      name: "Fight Reversal %",
+      early: earlyPerformance.fightReversalPercentage,
+      late: latePerformance.fightReversalPercentage,
+    },
+    {
+      name: "Fleta Deadlift %",
+      early: earlyPerformance.fletaDeadliftPercentage,
+      late: latePerformance.fletaDeadliftPercentage,
+    },
+    {
+      name: "Kills per Ultimate",
+      early: earlyPerformance.killsPerUltimate,
+      late: latePerformance.killsPerUltimate,
     },
   ];
 
@@ -685,9 +788,10 @@ async function getComparisonStatsFn(
     `
   );
 
-  // CalculatedStat.MapDataId stores actual MapData.id (as per schema)
+  // CalculatedStat.MapDataId likely stores Map.id (not MapData.id), same as PlayerStat
+  // This is confusing naming but matches the PlayerStat pattern
   const calculatedStatsWhere: Prisma.CalculatedStatWhereInput = {
-    MapDataId: { in: mapDataIds },
+    MapDataId: { in: mapIds }, // Use mapIds, not mapDataIds!
     playerName: { equals: playerName, mode: "insensitive" },
     ...(heroes && heroes.length > 0 ? { hero: { in: heroes } } : {}),
   };
@@ -696,22 +800,28 @@ async function getComparisonStatsFn(
     where: calculatedStatsWhere,
   });
 
-  // Map MapData IDs back to Map IDs for CalculatedStats
-  const mapDataIdToMapId = new Map<number, number>();
-  for (const map of maps) {
-    for (const mapData of map.mapData) {
-      mapDataIdToMapId.set(mapData.id, map.id);
-    }
-  }
+  Logger.info({
+    message: "[Comparison] Calculated Stats Query",
+    mapIds, // The Map IDs for reference
+    mapDataIds, // The MapData IDs used in query
+    playerName,
+    heroes,
+    calculatedStatsCount: calculatedStats.length,
+    sampleStats: calculatedStats.slice(0, 3).map((s) => ({
+      stat: s.stat,
+      value: s.value,
+      hero: s.hero,
+      MapDataId: s.MapDataId,
+    })),
+  });
 
-  const calculatedStatsByMapId: Record<number, CalculatedStat[]> = {};
+  // Organize calculated stats by their MapDataId value
+  const calculatedStatsByMapDataId: Record<number, CalculatedStat[]> = {};
   calculatedStats.forEach((stat) => {
-    const mapId = mapDataIdToMapId.get(stat.MapDataId);
-    if (!mapId) return;
-    if (!calculatedStatsByMapId[mapId]) {
-      calculatedStatsByMapId[mapId] = [];
+    if (!calculatedStatsByMapDataId[stat.MapDataId]) {
+      calculatedStatsByMapDataId[stat.MapDataId] = [];
     }
-    calculatedStatsByMapId[mapId].push(stat);
+    calculatedStatsByMapDataId[stat.MapDataId].push(stat);
   });
 
   // PlayerStat.MapDataId already contains Map.id, so use it directly
@@ -728,7 +838,13 @@ async function getComparisonStatsFn(
   const perMapBreakdown: MapBreakdown[] = [];
   for (const map of maps) {
     const mapStats = statsByMapId[map.id] || [];
-    const mapCalcStats = calculatedStatsByMapId[map.id] || [];
+
+    // CalculatedStat.MapDataId stores MapData.id, so we need to check all mapData for this map
+    const mapCalcStats: CalculatedStat[] = [];
+    for (const md of map.mapData) {
+      const mdStats = calculatedStatsByMapDataId[md.id] || [];
+      mapCalcStats.push(...mdStats);
+    }
 
     if (mapStats.length === 0) continue;
 
@@ -800,12 +916,34 @@ async function getComparisonStatsFn(
 
   perMapBreakdown.sort((a, b) => a.date.getTime() - b.date.getTime());
 
+  Logger.info({
+    message: "[Comparison] Before aggregation",
+    finalRoundStatsCount: finalRoundStats.length,
+    calculatedStatsCount: calculatedStats.length,
+    perMapBreakdownCount: perMapBreakdown.length,
+    sampleCalculatedStats: calculatedStats.slice(0, 5).map((s) => ({
+      stat: s.stat,
+      value: s.value,
+      hero: s.hero,
+      playerName: s.playerName,
+    })),
+  });
+
   const aggregated = aggregatePlayerStats(
     finalRoundStats,
     calculatedStats,
     perMapBreakdown.map((m) => m.stats),
     perMapBreakdown.map((m) => m.calculatedStats)
   );
+
+  Logger.info({
+    message: "[Comparison] After aggregation",
+    mvpScore: aggregated.mvpScore,
+    mapMvpCount: aggregated.mapMvpCount,
+    mapMvpRate: aggregated.mapMvpRate,
+    firstPickPercentage: aggregated.firstPickPercentage,
+    killsPerUltimate: aggregated.killsPerUltimate,
+  });
 
   const trends =
     perMapBreakdown.length >= 3
