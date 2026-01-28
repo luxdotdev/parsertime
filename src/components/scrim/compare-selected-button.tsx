@@ -1,6 +1,14 @@
 "use client";
 
+import { AddToMapGroupDialog } from "@/components/scrim/add-to-map-group-dialog";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   mapSelectionStore,
   selectHasSelections,
@@ -9,10 +17,11 @@ import {
   selectUniqueScrimCount,
 } from "@/stores/map-selection-store";
 import { useSelector } from "@xstate/store/react";
+import { ChevronDown, FolderPlus } from "lucide-react";
 import type { Route } from "next";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 type CompareSelectedButtonProps = {
   teamId: number;
@@ -21,6 +30,7 @@ type CompareSelectedButtonProps = {
 export function CompareSelectedButton({ teamId }: CompareSelectedButtonProps) {
   const t = useTranslations("scrimPage.compareButton");
   const router = useRouter();
+  const [isMapGroupDialogOpen, setIsMapGroupDialogOpen] = useState(false);
 
   // Memoize selector functions
   const hasSelectionsSelector = useCallback(
@@ -74,28 +84,60 @@ export function CompareSelectedButton({ teamId }: CompareSelectedButtonProps) {
     mapSelectionStore.send({ type: "clearAll" });
   }, []);
 
+  const handleAddToMapGroup = useCallback(() => {
+    setIsMapGroupDialogOpen(true);
+  }, []);
+
   if (!hasSelections) return null;
 
   return (
-    <div className="bg-card ring-foreground/10 fixed right-6 bottom-6 z-50 flex items-center gap-2 rounded-lg p-4 shadow-lg ring-1">
-      <div className="flex items-center gap-3">
-        <div className="flex flex-col">
-          <span className="text-sm font-medium">
-            {t("selected", { count: selectionCount })}
-          </span>
-          {uniqueScrimCount > 1 && (
-            <span className="text-muted-foreground text-xs">
-              {t("fromScrims", { count: uniqueScrimCount })}
+    <>
+      <AddToMapGroupDialog
+        open={isMapGroupDialogOpen}
+        onOpenChange={setIsMapGroupDialogOpen}
+        teamId={teamId}
+        mapIds={selectedMapIds}
+        mapName={`${selectionCount} selected map${selectionCount !== 1 ? "s" : ""}`}
+      />
+      <div className="bg-card ring-foreground/10 fixed right-6 bottom-6 z-50 flex items-center gap-2 rounded-lg p-4 shadow-lg ring-1">
+        <div className="flex items-center gap-3">
+          <div className="flex flex-col">
+            <span className="text-sm font-medium">
+              {t("selected", { count: selectionCount })}
             </span>
-          )}
+            {uniqueScrimCount > 1 && (
+              <span className="text-muted-foreground text-xs">
+                {t("fromScrims", { count: uniqueScrimCount })}
+              </span>
+            )}
+          </div>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm">
+                {t("compare")}
+                <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleCompare}>
+                {t("compareNow")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleAddToMapGroup}>
+                <FolderPlus className="mr-2 h-4 w-4" />
+                {t("addToMapGroup")}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={handleClear}
+                className="text-destructive"
+              >
+                {t("clear")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-        <Button onClick={handleCompare} size="sm">
-          {t("compare")}
-        </Button>
-        <Button onClick={handleClear} variant="outline" size="sm">
-          {t("clear")}
-        </Button>
       </div>
-    </div>
+    </>
   );
 }
