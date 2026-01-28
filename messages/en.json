@@ -727,7 +727,8 @@
         "description": "Select maps from the scrim page to start comparing player performance."
       },
       "noMapGroups": {
-        "description": "Select one or more map groups to start comparing player performance."
+        "title": "No Map Groups Selected",
+        "description": "Select one or more map groups below to start comparing player performance."
       },
       "noPlayer": {
         "title": "No Player Selected",
@@ -990,6 +991,21 @@
       "manageGroups": "Manage Groups",
       "groupsHint": "You can create and manage map groups from the map groups page",
       "individualMapsSelected": "{count, plural, =1 {1 map selected from scrim page} other {# maps selected from scrim page}}"
+    },
+    "mapGroupSelector": {
+      "title": "Select Map Groups to Compare",
+      "description": "Choose up to 2 map groups to compare performance. You can compare across different map types, playstyles, or time periods.",
+      "noGroups": {
+        "title": "No Map Groups Available",
+        "description": "Create map groups to organize and compare your team's performance",
+        "createButton": "Create Map Groups"
+      },
+      "hint": {
+        "selectGroups": "Select at least one map group to continue",
+        "selectOneMore": "Select one more group for comparison (optional)",
+        "readyToCompare": "Ready to compare selected groups"
+      },
+      "compareButton": "Compare"
     },
     "teamComparison": {
       "myTeam": "My Team",

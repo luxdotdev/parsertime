@@ -22,6 +22,7 @@ import { DeltaView } from "./delta-view";
 import { DetailedStatsView } from "./detailed-stats-view";
 import { EmptyState } from "./empty-state";
 import { ImpactMetricsView } from "./impact-metrics-view";
+import { MapGroupComparisonSelector } from "./map-group-comparison-selector";
 import { MapGroupSelector } from "./map-group-selector";
 import { SideBySideView } from "./side-by-side-view";
 import { TeamComparisonView } from "./team-comparison-view";
@@ -244,15 +245,26 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
           <p className="text-muted-foreground mt-2">{t("subtitle")}</p>
         </div>
 
-        <EmptyState
-          icon="MapPin"
-          title={t("emptyStates.noMaps.title")}
-          description={
-            mapSelectionMode === "groups"
-              ? t("emptyStates.noMapGroups.description")
-              : t("emptyStates.noMaps.description")
-          }
-        />
+        {mapSelectionMode === "groups" ? (
+          <EmptyState
+            icon="MapPin"
+            title={t("emptyStates.noMapGroups.title")}
+            description={t("emptyStates.noMapGroups.description")}
+          >
+            <MapGroupComparisonSelector
+              teamId={teamId}
+              onSelect={(groupIds) => {
+                setSelectedMapGroups(groupIds);
+              }}
+            />
+          </EmptyState>
+        ) : (
+          <EmptyState
+            icon="MapPin"
+            title={t("emptyStates.noMaps.title")}
+            description={t("emptyStates.noMaps.description")}
+          />
+        )}
       </div>
     );
   }
