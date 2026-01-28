@@ -2,6 +2,7 @@
 
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { ComparisonStats } from "@/data/comparison-dto";
 import type { HeroName } from "@/types/heroes";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
@@ -21,40 +22,6 @@ type ComparisonContentProps = {
 };
 
 type ViewMode = "side-by-side" | "delta" | "trends" | "charts";
-
-type ComparisonStats = {
-  playerName: string;
-  filteredHeroes: HeroName[];
-  mapCount: number;
-  mapIds: number[];
-  aggregated: {
-    eliminations: number;
-    deaths: number;
-    allDamageDealt: number;
-    healingDealt: number;
-    damageBlocked: number;
-    heroTimePlayed: number;
-    eliminationsPer10: number;
-    deathsPer10: number;
-    allDamagePer10: number;
-    healingDealtPer10: number;
-    damageBlockedPer10: number;
-  };
-  perMapBreakdown: {
-    mapId: number;
-    mapName: string;
-    date: Date;
-    heroes: HeroName[];
-    stats: Record<string, number>;
-  }[];
-  trends?: {
-    improvingMetrics: string[];
-    decliningMetrics: string[];
-    earlyPerformance?: Record<string, number>;
-    latePerformance?: Record<string, number>;
-  };
-  heroBreakdown?: Record<string, Record<string, number>>;
-};
 
 async function fetchComparisonStats(
   mapIds: number[],

@@ -9,7 +9,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import type { HeroName } from "@/types/heroes";
+import type { ComparisonStats } from "@/data/comparison-dto";
 import { useTranslations } from "next-intl";
 import {
   Bar,
@@ -25,33 +25,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-
-type ComparisonStats = {
-  playerName: string;
-  filteredHeroes: HeroName[];
-  mapCount: number;
-  mapIds: number[];
-  aggregated: {
-    eliminations: number;
-    deaths: number;
-    allDamageDealt: number;
-    healingDealt: number;
-    damageBlocked: number;
-    heroTimePlayed: number;
-    eliminationsPer10: number;
-    deathsPer10: number;
-    allDamagePer10: number;
-    healingDealtPer10: number;
-    damageBlockedPer10: number;
-  };
-  perMapBreakdown: {
-    mapId: number;
-    mapName: string;
-    date: Date;
-    heroes: HeroName[];
-    stats: Record<string, number>;
-  }[];
-};
 
 type ChartsViewProps = {
   stats: ComparisonStats;
@@ -101,18 +74,18 @@ export function ChartsView({ stats, viewMode }: ChartsViewProps) {
           },
           {
             stat: t("damage"),
-            map1: (stats.perMapBreakdown[0].stats.allDamageDealt ?? 0) / 1000,
-            map2: (stats.perMapBreakdown[1].stats.allDamageDealt ?? 0) / 1000,
+            map1: (stats.perMapBreakdown[0].stats.all_damage_dealt ?? 0) / 1000,
+            map2: (stats.perMapBreakdown[1].stats.all_damage_dealt ?? 0) / 1000,
           },
           {
             stat: t("healing"),
-            map1: (stats.perMapBreakdown[0].stats.healingDealt ?? 0) / 1000,
-            map2: (stats.perMapBreakdown[1].stats.healingDealt ?? 0) / 1000,
+            map1: (stats.perMapBreakdown[0].stats.healing_dealt ?? 0) / 1000,
+            map2: (stats.perMapBreakdown[1].stats.healing_dealt ?? 0) / 1000,
           },
           {
             stat: t("mitigated"),
-            map1: (stats.perMapBreakdown[0].stats.damageBlocked ?? 0) / 1000,
-            map2: (stats.perMapBreakdown[1].stats.damageBlocked ?? 0) / 1000,
+            map1: (stats.perMapBreakdown[0].stats.damage_blocked ?? 0) / 1000,
+            map2: (stats.perMapBreakdown[1].stats.damage_blocked ?? 0) / 1000,
           },
         ]
       : [];

@@ -2,8 +2,8 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { ComparisonStats } from "@/data/comparison-dto";
 import { cn } from "@/lib/utils";
-import type { HeroName } from "@/types/heroes";
 import {
   AlertTriangle,
   Minus,
@@ -12,39 +12,6 @@ import {
   Trophy,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-
-type ComparisonStats = {
-  playerName: string;
-  filteredHeroes: HeroName[];
-  mapCount: number;
-  mapIds: number[];
-  aggregated: {
-    eliminations: number;
-    deaths: number;
-    damage: number;
-    healing: number;
-    mitigated: number;
-    heroTimePlayed: number;
-    eliminationsPer10: number;
-    deathsPer10: number;
-    damagePer10: number;
-    healingPer10: number;
-    mitigatedPer10: number;
-  };
-  perMapBreakdown: {
-    mapId: number;
-    mapName: string;
-    date: Date;
-    heroes: HeroName[];
-    stats: Record<string, number>;
-  }[];
-  trends?: {
-    improvingMetrics: string[];
-    decliningMetrics: string[];
-    earlyPerformance?: Record<string, number>;
-    latePerformance?: Record<string, number>;
-  };
-};
 
 type TrendsViewProps = {
   stats: ComparisonStats;
@@ -86,7 +53,7 @@ export function TrendsView({ stats }: TrendsViewProps) {
 
   const avgDamagePer10 =
     stats.perMapBreakdown.reduce(
-      (sum, map) => sum + (map.stats.damagePer10 ?? 0),
+      (sum, map) => sum + (map.stats.allDamagePer10 ?? 0),
       0
     ) / stats.perMapBreakdown.length;
 
@@ -298,7 +265,7 @@ export function TrendsView({ stats }: TrendsViewProps) {
                     {t("damagePer10")}
                   </p>
                   <p className="text-xl font-bold tabular-nums">
-                    {(bestMap.stats.damagePer10 ?? 0).toLocaleString()}
+                    {(bestMap.stats.allDamagePer10 ?? 0).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -346,7 +313,7 @@ export function TrendsView({ stats }: TrendsViewProps) {
                     {t("damagePer10")}
                   </p>
                   <p className="text-xl font-bold tabular-nums">
-                    {(worstMap.stats.damagePer10 ?? 0).toLocaleString()}
+                    {(worstMap.stats.allDamagePer10 ?? 0).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -400,7 +367,7 @@ export function TrendsView({ stats }: TrendsViewProps) {
                       {t("damage")}
                     </p>
                     <p className="font-semibold tabular-nums">
-                      {(map.stats.damagePer10 ?? 0).toLocaleString()}
+                      {(map.stats.allDamagePer10 ?? 0).toLocaleString()}
                     </p>
                   </div>
                 </div>

@@ -2,37 +2,10 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { ComparisonStats } from "@/data/comparison-dto";
 import { cn } from "@/lib/utils";
-import type { HeroName } from "@/types/heroes";
 import { ArrowDown, ArrowUp, TrendingDown, TrendingUp } from "lucide-react";
 import { useTranslations } from "next-intl";
-
-type ComparisonStats = {
-  playerName: string;
-  filteredHeroes: HeroName[];
-  mapCount: number;
-  mapIds: number[];
-  aggregated: {
-    eliminations: number;
-    deaths: number;
-    damage: number;
-    healing: number;
-    mitigated: number;
-    heroTimePlayed: number;
-    eliminationsPer10: number;
-    deathsPer10: number;
-    damagePer10: number;
-    healingPer10: number;
-    mitigatedPer10: number;
-  };
-  perMapBreakdown: {
-    mapId: number;
-    mapName: string;
-    date: Date;
-    heroes: HeroName[];
-    stats: Record<string, number>;
-  }[];
-};
 
 type DeltaViewProps = {
   stats: ComparisonStats;
@@ -112,20 +85,20 @@ export function DeltaView({ stats }: DeltaViewProps) {
     },
     {
       label: t("stats.damage"),
-      oldValue: map1.stats.damage ?? 0,
-      newValue: map2.stats.damage ?? 0,
+      oldValue: map1.stats.all_damage_dealt ?? 0,
+      newValue: map2.stats.all_damage_dealt ?? 0,
       format: "number",
     },
     {
       label: t("stats.healing"),
-      oldValue: map1.stats.healing ?? 0,
-      newValue: map2.stats.healing ?? 0,
+      oldValue: map1.stats.healing_dealt ?? 0,
+      newValue: map2.stats.healing_dealt ?? 0,
       format: "number",
     },
     {
       label: t("stats.mitigated"),
-      oldValue: map1.stats.mitigated ?? 0,
-      newValue: map2.stats.mitigated ?? 0,
+      oldValue: map1.stats.damage_blocked ?? 0,
+      newValue: map2.stats.damage_blocked ?? 0,
       format: "number",
     },
     {
@@ -143,20 +116,20 @@ export function DeltaView({ stats }: DeltaViewProps) {
     },
     {
       label: t("stats.damagePer10"),
-      oldValue: map1.stats.damagePer10 ?? 0,
-      newValue: map2.stats.damagePer10 ?? 0,
+      oldValue: map1.stats.allDamagePer10 ?? 0,
+      newValue: map2.stats.allDamagePer10 ?? 0,
       format: "per10",
     },
     {
       label: t("stats.healingPer10"),
-      oldValue: map1.stats.healingPer10 ?? 0,
-      newValue: map2.stats.healingPer10 ?? 0,
+      oldValue: map1.stats.healingDealtPer10 ?? 0,
+      newValue: map2.stats.healingDealtPer10 ?? 0,
       format: "per10",
     },
     {
       label: t("stats.mitigatedPer10"),
-      oldValue: map1.stats.mitigatedPer10 ?? 0,
-      newValue: map2.stats.mitigatedPer10 ?? 0,
+      oldValue: map1.stats.damageBlockedPer10 ?? 0,
+      newValue: map2.stats.damageBlockedPer10 ?? 0,
       format: "per10",
     },
   ];
