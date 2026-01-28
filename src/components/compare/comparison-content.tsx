@@ -16,7 +16,9 @@ import { ChartsView } from "./charts-view";
 import { ComparisonFilters } from "./comparison-filters";
 import { ConsistencyView } from "./consistency-view";
 import { DeltaView } from "./delta-view";
+import { DetailedStatsView } from "./detailed-stats-view";
 import { EmptyState } from "./empty-state";
+import { ImpactMetricsView } from "./impact-metrics-view";
 import { SideBySideView } from "./side-by-side-view";
 import { TeamComparisonView } from "./team-comparison-view";
 import { TrendsView } from "./trends-view";
@@ -26,7 +28,14 @@ type ComparisonContentProps = {
   locale: string;
 };
 
-type ViewMode = "side-by-side" | "delta" | "trends" | "charts" | "consistency";
+type ViewMode =
+  | "side-by-side"
+  | "delta"
+  | "trends"
+  | "charts"
+  | "consistency"
+  | "detailed-stats"
+  | "impact-metrics";
 type ComparisonMode = "player" | "team";
 
 async function fetchComparisonStats(
@@ -146,11 +155,25 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
     }
 
     // Player comparison views
-    return selectedMapIds.length === 2
-      ? ["side-by-side", "delta", "charts", "consistency"]
-      : selectedMapIds.length >= 3
-        ? ["trends", "charts", "consistency"]
-        : [];
+    if (selectedMapIds.length === 2) {
+      return [
+        "side-by-side",
+        "delta",
+        "charts",
+        "consistency",
+        "detailed-stats",
+        "impact-metrics",
+      ];
+    } else if (selectedMapIds.length >= 3) {
+      return [
+        "trends",
+        "charts",
+        "consistency",
+        "detailed-stats",
+        "impact-metrics",
+      ];
+    }
+    return [];
   }, [selectedMapIds.length, comparisonMode]);
 
   // Auto-switch view when map selection or comparison mode changes
@@ -286,7 +309,7 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
           value={activeView}
           onValueChange={(v) => setActiveView(v as ViewMode)}
         >
-          <TabsList className="grid w-full max-w-2xl grid-cols-3 lg:grid-cols-5">
+          <TabsList className="grid w-full max-w-4xl grid-cols-3 lg:grid-cols-7">
             {availableViews.includes("side-by-side") && (
               <TabsTrigger value="side-by-side">
                 {t("views.sideBySide")}
@@ -304,6 +327,16 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
             {availableViews.includes("consistency") && (
               <TabsTrigger value="consistency">
                 {t("views.consistency")}
+              </TabsTrigger>
+            )}
+            {availableViews.includes("detailed-stats") && (
+              <TabsTrigger value="detailed-stats">
+                {t("views.detailedStats")}
+              </TabsTrigger>
+            )}
+            {availableViews.includes("impact-metrics") && (
+              <TabsTrigger value="impact-metrics">
+                {t("views.impactMetrics")}
               </TabsTrigger>
             )}
           </TabsList>
@@ -338,6 +371,18 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
           {availableViews.includes("consistency") && (
             <TabsContent value="consistency">
               <ConsistencyView stats={comparisonStats!} />
+            </TabsContent>
+          )}
+
+          {availableViews.includes("detailed-stats") && (
+            <TabsContent value="detailed-stats">
+              <DetailedStatsView stats={[comparisonStats!]} />
+            </TabsContent>
+          )}
+
+          {availableViews.includes("impact-metrics") && (
+            <TabsContent value="impact-metrics">
+              <ImpactMetricsView stats={[comparisonStats!]} />
             </TabsContent>
           )}
         </Tabs>
