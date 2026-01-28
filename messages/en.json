@@ -684,6 +684,23 @@
       },
       "code": "Replay code: {replayCode}"
     },
+    "mapCard": {
+      "altText": "The loading screen art for {map}.",
+      "selected": "Selected",
+      "copiedCode": "Copied replay code!",
+      "contextMenu": {
+        "title": "Map Actions",
+        "selectForComparison": "Select for comparison",
+        "viewDetails": "View Map Details",
+        "copyCode": "Copy Replay Code"
+      }
+    },
+    "compareButton": {
+      "selected": "{count, plural, =1 {1 map selected} other {# maps selected}}",
+      "fromScrims": "{count, plural, =1 {from 1 scrim} other {from # scrims}}",
+      "compare": "Compare Selected",
+      "clear": "Clear"
+    },
     "viewStats": "View team stats"
   },
   "mapPage": {
