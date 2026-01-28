@@ -82,7 +82,13 @@ export type MapBreakdown = {
   date: Date;
   replayCode: string | null;
   heroes: HeroName[];
-  stats: PlayerStat;
+  stats: PlayerStat & {
+    eliminationsPer10?: number;
+    deathsPer10?: number;
+    damagePer10?: number;
+    healingPer10?: number;
+    mitigatedPer10?: number;
+  };
   calculatedStats: CalculatedStat[];
 };
 
@@ -524,6 +530,8 @@ async function getComparisonStatsFn(
     throw new Error("No map data found for the provided map IDs");
   }
 
+  // NOTE: PlayerStat.MapDataId actually stores Map.id, not MapData.id
+  // This is confusing but confirmed by getTeamPlayersFn
   const finalRoundStats = removeDuplicateRows(
     await prisma.$queryRaw<PlayerStat[]>`
       WITH maxTime AS (
@@ -533,7 +541,7 @@ async function getComparisonStatsFn(
         FROM
             "PlayerStat"
         WHERE
-            "MapDataId" IN (${Prisma.join(mapDataIds)})
+            "MapDataId" IN (${Prisma.join(mapIds)})
         GROUP BY
             "MapDataId"
       )
@@ -543,12 +551,13 @@ async function getComparisonStatsFn(
           "PlayerStat" ps
           INNER JOIN maxTime m ON ps."match_time" = m.max_time AND ps."MapDataId" = m."MapDataId"
       WHERE
-          ps."MapDataId" IN (${Prisma.join(mapDataIds)})
+          ps."MapDataId" IN (${Prisma.join(mapIds)})
           AND ps."player_name" ILIKE ${playerName}
           ${heroes && heroes.length > 0 ? Prisma.sql`AND ps."player_hero" IN (${Prisma.join(heroes)})` : Prisma.empty}
     `
   );
 
+  // CalculatedStat.MapDataId stores actual MapData.id (as per schema)
   const calculatedStatsWhere: Prisma.CalculatedStatWhereInput = {
     MapDataId: { in: mapDataIds },
     playerName: { equals: playerName, mode: "insensitive" },
@@ -559,49 +568,106 @@ async function getComparisonStatsFn(
     where: calculatedStatsWhere,
   });
 
-  const calculatedStatsByMapDataId: Record<number, CalculatedStat[]> = {};
-  calculatedStats.forEach((stat) => {
-    if (!calculatedStatsByMapDataId[stat.MapDataId]) {
-      calculatedStatsByMapDataId[stat.MapDataId] = [];
+  // Map MapData IDs back to Map IDs for CalculatedStats
+  const mapDataIdToMapId = new Map<number, number>();
+  for (const map of maps) {
+    for (const mapData of map.mapData) {
+      mapDataIdToMapId.set(mapData.id, map.id);
     }
-    calculatedStatsByMapDataId[stat.MapDataId].push(stat);
+  }
+
+  const calculatedStatsByMapId: Record<number, CalculatedStat[]> = {};
+  calculatedStats.forEach((stat) => {
+    const mapId = mapDataIdToMapId.get(stat.MapDataId);
+    if (!mapId) return;
+    if (!calculatedStatsByMapId[mapId]) {
+      calculatedStatsByMapId[mapId] = [];
+    }
+    calculatedStatsByMapId[mapId].push(stat);
   });
 
-  const statsByMapDataId: Record<number, PlayerStat[]> = {};
+  // PlayerStat.MapDataId already contains Map.id, so use it directly
+  const statsByMapId: Record<number, PlayerStat[]> = {};
   finalRoundStats.forEach((stat) => {
-    if (!statsByMapDataId[stat.MapDataId!]) {
-      statsByMapDataId[stat.MapDataId!] = [];
+    if (!stat.MapDataId) return;
+    const mapId = stat.MapDataId; // Already the Map ID
+    if (!statsByMapId[mapId]) {
+      statsByMapId[mapId] = [];
     }
-    statsByMapDataId[stat.MapDataId!].push(stat);
+    statsByMapId[mapId].push(stat);
   });
 
   const perMapBreakdown: MapBreakdown[] = [];
   for (const map of maps) {
-    for (const mapData of map.mapData) {
-      const mapStats = statsByMapDataId[mapData.id] || [];
-      const mapCalcStats = calculatedStatsByMapDataId[mapData.id] || [];
+    const mapStats = statsByMapId[map.id] || [];
+    const mapCalcStats = calculatedStatsByMapId[map.id] || [];
 
-      if (mapStats.length === 0) continue;
+    if (mapStats.length === 0) continue;
 
-      const matchStart = mapData.match_start[0];
-      const heroesPlayed = Array.from(
-        new Set(mapStats.map((s) => s.player_hero))
-      );
+    // Use the first mapData for metadata (map name, type, etc.)
+    const firstMapData = map.mapData[0];
+    const matchStart = firstMapData?.match_start[0];
+    const heroesPlayed = Array.from(
+      new Set(mapStats.map((s) => s.player_hero))
+    );
 
-      perMapBreakdown.push({
-        mapId: map.id,
-        mapDataId: mapData.id,
-        mapName: matchStart?.map_name || map.name,
-        mapType: matchStart?.map_type || ("Control" as MapType),
-        scrimId: map.scrimId ?? 0,
-        scrimName: map.Scrim?.name ?? "Unknown",
-        date: map.Scrim?.date ?? map.createdAt,
-        replayCode: map.replayCode,
-        heroes: heroesPlayed as HeroName[],
-        stats: mapStats[0],
-        calculatedStats: mapCalcStats,
-      });
-    }
+    // Aggregate stats across all heroes played on this map
+    const aggregatedMapStats = mapStats.reduce(
+      (acc, stat) => ({
+        eliminations: acc.eliminations + stat.eliminations,
+        deaths: acc.deaths + stat.deaths,
+        all_damage_dealt: acc.all_damage_dealt + stat.all_damage_dealt,
+        healing_dealt: acc.healing_dealt + stat.healing_dealt,
+        damage_blocked: acc.damage_blocked + stat.damage_blocked,
+        hero_time_played: acc.hero_time_played + stat.hero_time_played,
+      }),
+      {
+        eliminations: 0,
+        deaths: 0,
+        all_damage_dealt: 0,
+        healing_dealt: 0,
+        damage_blocked: 0,
+        hero_time_played: 0,
+      }
+    );
+
+    // Calculate per-10 stats for this map
+    const timePlayed = aggregatedMapStats.hero_time_played || 0;
+    const statsWithPer10 = {
+      ...mapStats[0], // Use first stat for non-aggregated fields
+      ...aggregatedMapStats,
+      eliminationsPer10: calculatePer10(
+        aggregatedMapStats.eliminations,
+        timePlayed
+      ),
+      deathsPer10: calculatePer10(aggregatedMapStats.deaths, timePlayed),
+      damagePer10: calculatePer10(
+        aggregatedMapStats.all_damage_dealt,
+        timePlayed
+      ),
+      healingPer10: calculatePer10(
+        aggregatedMapStats.healing_dealt,
+        timePlayed
+      ),
+      mitigatedPer10: calculatePer10(
+        aggregatedMapStats.damage_blocked,
+        timePlayed
+      ),
+    };
+
+    perMapBreakdown.push({
+      mapId: map.id,
+      mapDataId: firstMapData?.id ?? 0,
+      mapName: matchStart?.map_name || map.name,
+      mapType: matchStart?.map_type || ("Control" as MapType),
+      scrimId: map.scrimId ?? 0,
+      scrimName: map.Scrim?.name ?? "Unknown",
+      date: map.Scrim?.date ?? map.createdAt,
+      replayCode: map.replayCode,
+      heroes: heroesPlayed as HeroName[],
+      stats: statsWithPer10,
+      calculatedStats: mapCalcStats,
+    });
   }
 
   perMapBreakdown.sort((a, b) => a.date.getTime() - b.date.getTime());
