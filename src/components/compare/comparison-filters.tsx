@@ -4,6 +4,7 @@ import { HeroFilter } from "@/components/stats/player/hero-filter";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import type { HeroName } from "@/types/heroes";
 import { RotateCcw, X } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -57,13 +58,13 @@ export function ComparisonFilters({
         </div>
       </CardHeader>
       <CardContent className="pt-4">
-        <div className="grid gap-4 lg:grid-cols-[2fr_3fr]">
+        <div className="grid gap-4 lg:grid-cols-2">
           {/* Player Selector */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">
+            <Label className="text-sm leading-none font-medium">
               {t("playerLabel")}
               <span className="text-destructive ml-1">*</span>
-            </label>
+            </Label>
             <PlayerSelector
               teamId={teamId}
               mapIds={mapIds}
@@ -74,7 +75,9 @@ export function ComparisonFilters({
 
           {/* Hero Filter */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">{t("heroesLabel")}</label>
+            <Label className="text-sm leading-none font-medium">
+              {t("heroesLabel")}
+            </Label>
             <HeroFilter
               selectedHeroes={selectedHeroes}
               onSelectionChange={onHeroesChange}
