@@ -703,6 +703,138 @@
     },
     "viewStats": "View team stats"
   },
+  "comparePage": {
+    "metadata": {
+      "title": "Compare Maps | Parsertime",
+      "description": "Compare player performance across multiple maps"
+    },
+    "title": "Compare Maps",
+    "subtitle": "Analyze player performance across selected maps",
+    "comparingMaps": "{count, plural, =1 {Comparing 1 map} other {Comparing # maps}}",
+    "loading": "Loading comparison data...",
+    "emptyStates": {
+      "noMaps": {
+        "title": "No Maps Selected",
+        "description": "Select maps from the scrim page to start comparing player performance."
+      },
+      "noPlayer": {
+        "title": "No Player Selected",
+        "description": "Select a player to start comparing their performance across maps."
+      },
+      "noData": {
+        "title": "No Data Available",
+        "description": "{player} did not participate in the selected maps."
+      }
+    },
+    "views": {
+      "sideBySide": "Side by Side",
+      "delta": "Delta",
+      "trends": "Trends",
+      "charts": "Charts"
+    },
+    "filters": {
+      "title": "Comparison Filters",
+      "resetAll": "Reset All",
+      "playerLabel": "Player",
+      "heroesLabel": "Heroes",
+      "player": "Player",
+      "heroesCount": "{count, plural, =1 {1 hero} other {# heroes}}"
+    },
+    "playerSelector": {
+      "placeholder": "Select player...",
+      "search": "Search players...",
+      "noPlayerFound": "No player found.",
+      "loading": "Loading...",
+      "mapCount": "{count, plural, =1 {1 map} other {# maps}}"
+    },
+    "sideBySide": {
+      "requiresTwoMaps": "Side-by-side comparison requires exactly 2 maps.",
+      "statComparison": "Stat Comparison",
+      "stats": {
+        "eliminations": "Eliminations",
+        "deaths": "Deaths",
+        "damage": "Damage",
+        "healing": "Healing",
+        "mitigated": "Damage Mitigated",
+        "eliminationsPer10": "Eliminations per 10",
+        "deathsPer10": "Deaths per 10",
+        "damagePer10": "Damage per 10",
+        "healingPer10": "Healing per 10",
+        "mitigatedPer10": "Mitigated per 10"
+      }
+    },
+    "delta": {
+      "requiresTwoMaps": "Delta view requires exactly 2 maps.",
+      "from": "From",
+      "to": "To",
+      "previous": "Previous",
+      "significant": "Significant",
+      "summary": "Summary of Significant Changes",
+      "noSignificantChanges": "No significant changes detected (threshold: ±10%)",
+      "stats": {
+        "eliminations": "Eliminations",
+        "deaths": "Deaths",
+        "damage": "Damage",
+        "healing": "Healing",
+        "mitigated": "Damage Mitigated",
+        "eliminationsPer10": "Eliminations per 10",
+        "deathsPer10": "Deaths per 10",
+        "damagePer10": "Damage per 10",
+        "healingPer10": "Healing per 10",
+        "mitigatedPer10": "Mitigated per 10"
+      }
+    },
+    "trends": {
+      "requiresThreePlus": "Trends view requires 3 or more maps.",
+      "aggregateSummary": "Aggregate Summary",
+      "totalMaps": "Total Maps",
+      "avgElimsPer10": "Avg Elims/10",
+      "avgDeathsPer10": "Avg Deaths/10",
+      "avgDamagePer10": "Avg Damage/10",
+      "performanceProgression": "Performance Progression",
+      "firstHalf": "First Half",
+      "secondHalf": "Second Half",
+      "maps": "Maps",
+      "improvement": "Improvement",
+      "improvementDesc": "Performance increased in the second half of maps.",
+      "decline": "Decline",
+      "declineDesc": "Performance decreased in the second half of maps.",
+      "stable": "Stable",
+      "stableDesc": "Performance remained consistent across all maps.",
+      "bestPerformance": "Best Performance",
+      "needsImprovement": "Needs Improvement",
+      "elimsPer10": "Elims/10",
+      "deathsPer10": "Deaths/10",
+      "damagePer10": "Damage/10",
+      "perMapBreakdown": "Per-Map Breakdown",
+      "elims": "Elims/10",
+      "deaths": "Deaths/10",
+      "damage": "Damage/10"
+    },
+    "charts": {
+      "performanceProgression": "Performance Progression",
+      "statComparison": "Stat Comparison",
+      "performanceProfile": "Performance Profile",
+      "totalEliminations": "Total Eliminations",
+      "totalDeaths": "Total Deaths",
+      "totalDamage": "Total Damage",
+      "avgPer10": "Avg per 10",
+      "eliminations": "Eliminations",
+      "deaths": "Deaths",
+      "damage": "Damage (K)",
+      "healing": "Healing (K)",
+      "mitigated": "Mitigated (K)",
+      "elimsPer10": "Elims/10",
+      "deathsPer10": "Deaths/10",
+      "damagePer10K": "Damage/10 (K)",
+      "elimsPer10Short": "Elims",
+      "deathsPer10Short": "Deaths",
+      "damagePer10Short": "Damage",
+      "healingPer10Short": "Healing",
+      "mitigatedPer10Short": "Mitigated",
+      "averagePerformance": "Average Performance"
+    }
+  },
   "mapPage": {
     "mapMetadata": {
       "title": "{mapName} Overview | Parsertime",
