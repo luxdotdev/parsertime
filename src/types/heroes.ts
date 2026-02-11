@@ -2,6 +2,11 @@ export type Hero = Support | Tank | DPS;
 
 export type HeroName = Hero["name"];
 
+export type Anran = {
+  name: "Anran";
+  image: "anran.png";
+};
+
 export type Ana = {
   name: "Ana";
   image: "ana.png";
@@ -32,6 +37,11 @@ export type Cassidy = {
   image: "cassidy.png";
 };
 
+export type Domina = {
+  name: "Domina";
+  image: "domina.png";
+};
+
 export type Doomfist = {
   name: "Doomfist";
   image: "doomfist.png";
@@ -45,6 +55,11 @@ export type Dva = {
 export type Echo = {
   name: "Echo";
   image: "echo.png";
+};
+
+export type Emre = {
+  name: "Emre";
+  image: "emre.png";
 };
 
 export type Freja = {
@@ -70,6 +85,11 @@ export type Hazard = {
 export type Illari = {
   name: "Illari";
   image: "illari.png";
+};
+
+export type JetpackCat = {
+  name: "Jetpack Cat";
+  image: "jetpackcat.png";
 };
 
 export type JunkerQueen = {
@@ -115,6 +135,11 @@ export type Mei = {
 export type Mercy = {
   name: "Mercy";
   image: "mercy.png";
+};
+
+export type Mizuki = {
+  name: "Mizuki";
+  image: "mizuki.png";
 };
 
 export type Moira = {
@@ -229,6 +254,7 @@ export type Zenyatta = {
 
 export type Tank =
   | Dva
+  | Domina
   | Doomfist
   | Hazard
   | JunkerQueen
@@ -242,10 +268,12 @@ export type Tank =
   | WreckingBall
   | Zarya;
 export type DPS =
+  | Anran
   | Ashe
   | Bastion
   | Cassidy
   | Echo
+  | Emre
   | Freja
   | Genji
   | Hanzo
@@ -267,31 +295,37 @@ export type Support =
   | Baptiste
   | Brigitte
   | Illari
+  | JetpackCat
   | Juno
   | Kiriko
   | Lifeweaver
   | Lucio
   | Mercy
+  | Mizuki
   | Moira
   | Wuyang
   | Zenyatta;
 
 export const heroRoleMapping: Record<HeroName, "Tank" | "Damage" | "Support"> =
   {
+    Anran: "Damage",
     Ana: "Support",
     Ashe: "Damage",
     Baptiste: "Support",
     Bastion: "Damage",
     Brigitte: "Support",
     Cassidy: "Damage",
+    Domina: "Tank",
     Doomfist: "Tank",
     "D.Va": "Tank",
     Echo: "Damage",
+    Emre: "Damage",
     Freja: "Damage",
     Genji: "Damage",
     Hanzo: "Damage",
     Hazard: "Tank",
     Illari: "Support",
+    "Jetpack Cat": "Support",
     "Junker Queen": "Tank",
     Junkrat: "Damage",
     Juno: "Support",
@@ -301,6 +335,7 @@ export const heroRoleMapping: Record<HeroName, "Tank" | "Damage" | "Support"> =
     Mauga: "Tank",
     Mei: "Damage",
     Mercy: "Support",
+    Mizuki: "Support",
     Moira: "Support",
     Orisa: "Tank",
     Pharah: "Damage",
@@ -331,6 +366,7 @@ export const roleHeroMapping: Record<
 > = {
   Tank: [
     "D.Va",
+    "Domina",
     "Doomfist",
     "Hazard",
     "Junker Queen",
@@ -345,10 +381,12 @@ export const roleHeroMapping: Record<
     "Zarya",
   ],
   Damage: [
+    "Anran",
     "Ashe",
     "Bastion",
     "Cassidy",
     "Echo",
+    "Emre",
     "Freja",
     "Genji",
     "Hanzo",
@@ -371,11 +409,13 @@ export const roleHeroMapping: Record<
     "Baptiste",
     "Brigitte",
     "Illari",
+    "Jetpack Cat",
     "Juno",
     "Kiriko",
     "Lifeweaver",
     "Lúcio",
     "Mercy",
+    "Mizuki",
     "Moira",
     "Wuyang",
     "Zenyatta",
@@ -395,6 +435,7 @@ export const subroleHeroMapping: Record<
     "Ashe",
     "Bastion",
     "Cassidy",
+    "Emre",
     "Hanzo",
     "Freja",
     "Sojourn",
@@ -403,6 +444,7 @@ export const subroleHeroMapping: Record<
     "Widowmaker",
   ],
   FlexDamage: [
+    "Anran",
     "Echo",
     "Genji",
     "Hanzo",
@@ -418,6 +460,7 @@ export const subroleHeroMapping: Record<
     "Venture",
   ],
   GroundTank: [
+    "Domina",
     "Junker Queen",
     "Mauga",
     "Orisa",
@@ -433,11 +476,19 @@ export const subroleHeroMapping: Record<
     "Baptiste",
     "Illari",
     "Kiriko",
+    "Mizuki",
     "Moira",
     "Wuyang",
     "Zenyatta",
   ],
-  MainSupport: ["Brigitte", "Juno", "Lifeweaver", "Lúcio", "Mercy"],
+  MainSupport: [
+    "Brigitte",
+    "Juno",
+    "Lifeweaver",
+    "Lúcio",
+    "Mercy",
+    "Jetpack Cat",
+  ],
 };
 
 export const heroPriority = {
