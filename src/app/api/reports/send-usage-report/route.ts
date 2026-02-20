@@ -35,6 +35,8 @@ export async function GET(request: Request) {
     paidUsers,
     billingPlanGroups,
     oauthAccounts,
+    topUserScrimGroups,
+    topTeamScrimGroups,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { createdAt: { gte: weekStart } } }),
@@ -54,7 +56,55 @@ export async function GET(request: Request) {
     prisma.user.count({ where: { billingPlan: { not: "FREE" } } }),
     prisma.user.groupBy({ by: ["billingPlan"], _count: { id: true } }),
     prisma.account.groupBy({ by: ["provider"], _count: { userId: true } }),
+    prisma.scrim.groupBy({
+      by: ["creatorId"],
+      where: { createdAt: { gte: weekStart } },
+      _count: { id: true },
+      orderBy: { _count: { id: "desc" } },
+      take: 5,
+    }),
+    prisma.scrim.groupBy({
+      by: ["teamId"],
+      where: { createdAt: { gte: weekStart }, teamId: { not: null } },
+      _count: { id: true },
+      orderBy: { _count: { id: "desc" } },
+      take: 5,
+    }),
   ]);
+
+  const topUserIds = topUserScrimGroups.map((g) => g.creatorId);
+  const topTeamIds = topTeamScrimGroups
+    .map((g) => g.teamId)
+    .filter((id): id is number => id !== null);
+
+  const [topUserDetails, topTeamDetails] = await Promise.all([
+    prisma.user.findMany({
+      where: { id: { in: topUserIds } },
+      select: { id: true, name: true, email: true },
+    }),
+    prisma.team.findMany({
+      where: { id: { in: topTeamIds } },
+      select: { id: true, name: true },
+    }),
+  ]);
+
+  const topUsers = topUserScrimGroups.map((group) => {
+    const user = topUserDetails.find((u) => u.id === group.creatorId);
+    return {
+      name: user?.name ?? user?.email ?? "Unknown User",
+      scrimCount: group._count.id,
+    };
+  });
+
+  const topTeams = topTeamScrimGroups
+    .filter((g) => g.teamId !== null)
+    .map((group) => {
+      const team = topTeamDetails.find((t) => t.id === group.teamId);
+      return {
+        name: team?.name ?? `Team ${group.teamId}`,
+        scrimCount: group._count.id,
+      };
+    });
 
   const conversionRate = totalUsers > 0 ? (paidUsers / totalUsers) * 100 : 0;
 
@@ -125,6 +175,8 @@ export async function GET(request: Request) {
       conversionRate,
       signupMethods,
       billingPlans,
+      topUsers,
+      topTeams,
     })
   );
 
