@@ -90,7 +90,7 @@ function createService() {
 
           const {
             to,
-            from = "lux.dev <noreply@lux.dev>",
+            from = "noreply@lux.dev",
             subject,
             html,
             replyTo,
