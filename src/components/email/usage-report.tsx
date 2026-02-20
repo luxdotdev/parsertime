@@ -27,6 +27,16 @@ type BillingPlanStat = {
   percentage: number;
 };
 
+type TopUser = {
+  name: string;
+  scrimCount: number;
+};
+
+type TopTeam = {
+  name: string;
+  scrimCount: number;
+};
+
 type UsageReportEmailProps = {
   weekStart: string;
   weekEnd: string;
@@ -43,6 +53,8 @@ type UsageReportEmailProps = {
   conversionRate: number;
   signupMethods: SignupMethod[];
   billingPlans: BillingPlanStat[];
+  topUsers: TopUser[];
+  topTeams: TopTeam[];
 };
 
 type DeltaSentiment = "positive" | "negative" | "neutral";
@@ -120,6 +132,8 @@ export function UsageReportEmail({
   conversionRate,
   signupMethods,
   billingPlans,
+  topUsers,
+  topTeams,
 }: UsageReportEmailProps) {
   const userDelta = newUsersThisWeek - newUsersLastWeek;
   const previewText = `${newUsersThisWeek} new user${newUsersThisWeek !== 1 ? "s" : ""} this week${userDelta !== 0 ? `, ${userDelta > 0 ? "+" : ""}${userDelta} vs last week` : ""}. ${newScrimsThisWeek} scrim${newScrimsThisWeek !== 1 ? "s" : ""} created.`;
@@ -269,6 +283,68 @@ export function UsageReportEmail({
               </Row>
             ))}
 
+            {topUsers.length > 0 && (
+              <>
+                <Hr className="mx-0 my-[20px] w-full border border-solid border-[#eaeaea]" />
+
+                <SectionHeading>Most active users</SectionHeading>
+
+                {topUsers.map((user, index) => (
+                  <Row key={user.name} className="mb-[8px]">
+                    <Column className="w-[24px]">
+                      <Text className="m-0 text-[14px] leading-[22px] font-semibold text-gray-400">
+                        {index + 1}
+                      </Text>
+                    </Column>
+                    <Column>
+                      <Text className="m-0 text-[14px] leading-[22px] text-gray-700">
+                        {user.name}
+                      </Text>
+                    </Column>
+                    <Column className="text-right">
+                      <Text className="m-0 text-[14px] leading-[22px] font-semibold text-gray-900">
+                        {user.scrimCount}{" "}
+                        <span className="font-normal text-gray-400">
+                          scrim{user.scrimCount !== 1 ? "s" : ""}
+                        </span>
+                      </Text>
+                    </Column>
+                  </Row>
+                ))}
+              </>
+            )}
+
+            {topTeams.length > 0 && (
+              <>
+                <Hr className="mx-0 my-[20px] w-full border border-solid border-[#eaeaea]" />
+
+                <SectionHeading>Most active teams</SectionHeading>
+
+                {topTeams.map((team, index) => (
+                  <Row key={team.name} className="mb-[8px]">
+                    <Column className="w-[24px]">
+                      <Text className="m-0 text-[14px] leading-[22px] font-semibold text-gray-400">
+                        {index + 1}
+                      </Text>
+                    </Column>
+                    <Column>
+                      <Text className="m-0 text-[14px] leading-[22px] text-gray-700">
+                        {team.name}
+                      </Text>
+                    </Column>
+                    <Column className="text-right">
+                      <Text className="m-0 text-[14px] leading-[22px] font-semibold text-gray-900">
+                        {team.scrimCount}{" "}
+                        <span className="font-normal text-gray-400">
+                          scrim{team.scrimCount !== 1 ? "s" : ""}
+                        </span>
+                      </Text>
+                    </Column>
+                  </Row>
+                ))}
+              </>
+            )}
+
             <Hr className="mx-0 my-[26px] w-full border border-solid border-[#eaeaea]" />
 
             <Text className="text-[12px] leading-[24px] text-[#666666]">
@@ -319,6 +395,20 @@ UsageReportEmail.PreviewProps = {
     { plan: "FREE", count: 748, percentage: 89 },
     { plan: "BASIC", count: 72, percentage: 9 },
     { plan: "PREMIUM", count: 22, percentage: 2 },
+  ],
+  topUsers: [
+    { name: "Alice Kim", scrimCount: 14 },
+    { name: "Bob Chen", scrimCount: 11 },
+    { name: "Carol Wright", scrimCount: 9 },
+    { name: "David Park", scrimCount: 7 },
+    { name: "Eve Torres", scrimCount: 5 },
+  ],
+  topTeams: [
+    { name: "Neon Wolves", scrimCount: 22 },
+    { name: "Iron Lotus", scrimCount: 17 },
+    { name: "Storm Rising", scrimCount: 13 },
+    { name: "Cold Front", scrimCount: 9 },
+    { name: "Echo Squad", scrimCount: 6 },
   ],
 } satisfies UsageReportEmailProps;
 
