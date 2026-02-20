@@ -53,10 +53,7 @@ const deltaTextClass: Record<DeltaSentiment, string> = {
   neutral: "text-gray-500",
 };
 
-function getDeltaSentiment(
-  current: number,
-  previous: number
-): DeltaSentiment {
+function getDeltaSentiment(current: number, previous: number): DeltaSentiment {
   if (current > previous) return "positive";
   if (current < previous) return "negative";
   return "neutral";
@@ -82,10 +79,10 @@ function StatCard({
 }) {
   return (
     <div className="rounded border border-solid border-gray-200 bg-gray-50 p-[16px]">
-      <Text className="m-0 mb-[4px] text-[11px] font-semibold uppercase leading-[16px] tracking-wide text-gray-500">
+      <Text className="m-0 mb-[4px] text-[11px] leading-[16px] font-semibold tracking-wide text-gray-500 uppercase">
         {label}
       </Text>
-      <Text className="m-0 mb-[4px] text-[24px] font-bold leading-[32px] text-gray-900">
+      <Text className="m-0 mb-[4px] text-[24px] leading-[32px] font-bold text-gray-900">
         {value}
       </Text>
       {deltaLabel && sentiment && (
@@ -101,7 +98,7 @@ function StatCard({
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <Text className="m-0 mb-[12px] text-[13px] font-semibold uppercase leading-[20px] tracking-wide text-gray-700">
+    <Text className="m-0 mb-[12px] text-[13px] leading-[20px] font-semibold tracking-wide text-gray-700 uppercase">
       {children}
     </Text>
   );
@@ -148,7 +145,7 @@ export function UsageReportEmail({
               Weekly Usage Report
             </Heading>
 
-            <Text className="m-0 mb-[24px] mt-[-20px] text-center text-[14px] leading-[22px] text-gray-500">
+            <Text className="m-0 mt-[-20px] mb-[24px] text-center text-[14px] leading-[22px] text-gray-500">
               {weekStart} &ndash; {weekEnd}
             </Text>
 
@@ -240,7 +237,7 @@ export function UsageReportEmail({
                   </Text>
                 </Column>
                 <Column className="text-right">
-                  <Text className="m-0 text-[14px] font-semibold leading-[22px] text-gray-900">
+                  <Text className="m-0 text-[14px] leading-[22px] font-semibold text-gray-900">
                     {item.count.toLocaleString()}{" "}
                     <span className="font-normal text-gray-400">
                       ({item.percentage}%)
@@ -262,7 +259,7 @@ export function UsageReportEmail({
                   </Text>
                 </Column>
                 <Column className="text-right">
-                  <Text className="m-0 text-[14px] font-semibold leading-[22px] text-gray-900">
+                  <Text className="m-0 text-[14px] leading-[22px] font-semibold text-gray-900">
                     {item.count.toLocaleString()}{" "}
                     <span className="font-normal text-gray-400">
                       ({item.percentage}%)
