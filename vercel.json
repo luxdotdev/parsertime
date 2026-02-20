@@ -15,6 +15,10 @@
     {
       "path": "/api/user/award-titles",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/reports/send-usage-report",
+      "schedule": "0 1 * * 6"
     }
   ],
   "regions": ["iad1"]
