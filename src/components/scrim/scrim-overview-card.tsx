@@ -1,6 +1,12 @@
 import { PlayerPerformanceHoverChart } from "@/components/scrim/player-performance-hover-chart";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
   Table,
@@ -120,7 +126,7 @@ function InsightIcon({ type }: { type: ScrimInsight["type"] }) {
 
 function InsightChip({ insight }: { insight: ScrimInsight }) {
   return (
-    <div className="bg-muted/60 ring-border flex min-w-0 flex-1 items-start gap-2 rounded-lg p-3 ring-1">
+    <div className="bg-muted/60 border-border flex min-w-0 flex-1 items-start gap-2 rounded-lg border p-3">
       <span className="mt-0.5 shrink-0">
         <InsightIcon type={insight.type} />
       </span>
