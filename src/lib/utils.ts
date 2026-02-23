@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { ColorblindMode, type $Enums, type Kill } from "@prisma/client";
+import { ColorblindMode, type $Enums, type Kill, type MercyRez } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { useMessages, useTranslations } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
@@ -179,50 +179,22 @@ export function range(max: number) {
   return Array.from({ length: max }, (_, i) => i);
 }
 
-export async function groupKillsIntoFights(mapId: number) {
-  type Fight = {
-    kills: Kill[];
-    start: number;
-    end: number;
-  };
+export type Fight = {
+  kills: Kill[];
+  start: number;
+  end: number;
+};
 
-  const [killsByMapId, rezzesByMapId] = await Promise.all([
-    prisma.kill.findMany({ where: { MapDataId: mapId } }),
-    prisma.mercyRez.findMany({ where: { MapDataId: mapId } }),
-  ]);
+const FIGHT_GAP_SECONDS = 15;
 
-  if (killsByMapId.length === 0 && rezzesByMapId.length === 0) return [];
-
-  const events = [
-    ...killsByMapId,
-    ...rezzesByMapId.map((rez) => ({
-      id: rez.id,
-      scrimId: rez.scrimId,
-      event_type: "mercy_rez" as $Enums.EventType,
-      match_time: rez.match_time,
-      attacker_team: rez.resurrecter_team,
-      attacker_name: rez.resurrecter_player,
-      attacker_hero: rez.resurrecter_hero,
-      victim_team: rez.resurrectee_team,
-      victim_name: rez.resurrectee_player,
-      victim_hero: rez.resurrectee_hero,
-      event_ability: "Resurrect",
-      event_damage: 0,
-      is_critical_hit: "0",
-      is_environmental: "0",
-      MapDataId: rez.MapDataId,
-    })),
-  ];
-
-  // Sorting events by match_time to properly sequence kills and rezzes
-  events.sort((a, b) => a.match_time - b.match_time);
+export function groupEventsIntoFights(sortedEvents: Kill[]): Fight[] {
+  if (sortedEvents.length === 0) return [];
 
   const fights: Fight[] = [];
   let currentFight: Fight | null = null;
 
-  events.forEach((event) => {
-    if (!currentFight || event.match_time - currentFight.end > 15) {
-      // Start a new fight if no current fight or we're past the 15 second window
+  for (const event of sortedEvents) {
+    if (!currentFight || event.match_time - currentFight.end > FIGHT_GAP_SECONDS) {
       currentFight = {
         kills: [event],
         start: event.match_time,
@@ -230,13 +202,50 @@ export async function groupKillsIntoFights(mapId: number) {
       };
       fights.push(currentFight);
     } else {
-      // Otherwise, add the event to the current fight and update the end time
       currentFight.kills.push(event);
       currentFight.end = event.match_time;
     }
-  });
+  }
 
   return fights;
+}
+
+export function mercyRezToKillEvent(rez: MercyRez): Kill {
+  return {
+    id: rez.id,
+    scrimId: rez.scrimId,
+    event_type: "mercy_rez" as $Enums.EventType,
+    match_time: rez.match_time,
+    attacker_team: rez.resurrecter_team,
+    attacker_name: rez.resurrecter_player,
+    attacker_hero: rez.resurrecter_hero,
+    victim_team: rez.resurrectee_team,
+    victim_name: rez.resurrectee_player,
+    victim_hero: rez.resurrectee_hero,
+    event_ability: "Resurrect",
+    event_damage: 0,
+    is_critical_hit: "0",
+    is_environmental: "0",
+    MapDataId: rez.MapDataId,
+  };
+}
+
+export async function groupKillsIntoFights(mapId: number) {
+  const [killsByMapId, rezzesByMapId] = await Promise.all([
+    prisma.kill.findMany({ where: { MapDataId: mapId } }),
+    prisma.mercyRez.findMany({ where: { MapDataId: mapId } }),
+  ]);
+
+  if (killsByMapId.length === 0 && rezzesByMapId.length === 0) return [];
+
+  const events: Kill[] = [
+    ...killsByMapId,
+    ...rezzesByMapId.map(mercyRezToKillEvent),
+  ];
+
+  events.sort((a, b) => a.match_time - b.match_time);
+
+  return groupEventsIntoFights(events);
 }
 
 export async function groupPlayerKillsIntoFights(
