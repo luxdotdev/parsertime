@@ -37,7 +37,7 @@ const identify = dedupe(async (): Promise<Entities> => {
   };
 });
 
-export const mapComparison = flag({
+export const mapComparison = flag<boolean, Entities>({
   key: "map-comparison",
   adapter: vercelAdapter(),
   options: [
@@ -52,23 +52,5 @@ export const mapComparison = flag({
   ],
   defaultValue: false,
   description: "Enable or disable map comparison",
-  identify,
-});
-
-export const playerComparison = flag({
-  key: "player-comparison",
-  adapter: vercelAdapter(),
-  options: [
-    {
-      value: true,
-      label: "Enabled",
-    },
-    {
-      value: false,
-      label: "Disabled",
-    },
-  ],
-  defaultValue: false,
-  description: "Enable or disable player comparison",
   identify,
 });
