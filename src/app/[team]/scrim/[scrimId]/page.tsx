@@ -3,6 +3,7 @@ import { AddMapCard } from "@/components/map/add-map";
 import { ClientDate } from "@/components/scrim/client-date";
 import { CompareSelectedButton } from "@/components/scrim/compare-selected-button";
 import { MapCardWithSelection } from "@/components/scrim/map-card-with-selection";
+import { ScrimOverviewCard } from "@/components/scrim/scrim-overview-card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Link } from "@/components/ui/link";
 import {
@@ -13,7 +14,7 @@ import {
 import { getScrim } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import { mapComparison } from "@/lib/flags";
+import { mapComparison, overviewCard } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
@@ -110,7 +111,10 @@ export default async function ScrimDashboardPage(
     },
   })) ?? { guestMode: false };
 
-  const mapComparisonEnabled = await mapComparison();
+  const [mapComparisonEnabled, overviewCardEnabled] = await Promise.all([
+    mapComparison(),
+    overviewCard(),
+  ]);
 
   return (
     <DashboardLayout guestMode={visibility.guestMode}>
@@ -151,6 +155,11 @@ export default async function ScrimDashboardPage(
             <ClientDate date={scrim.date} />
           </h4>
         </div>
+
+        {/* Overview Card */}
+        {overviewCardEnabled && maps.length > 0 && (
+          <ScrimOverviewCard scrimId={id} teamId={teamId} />
+        )}
 
         {/* Maps Section */}
         <div className="space-y-4">
