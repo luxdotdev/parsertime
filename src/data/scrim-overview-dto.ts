@@ -1,21 +1,23 @@
 import "server-only";
 
 import type { TrendsAnalysis } from "@/data/comparison-dto";
-import {
-  aggregatePlayerStats,
-  calculateTrends,
-  type AggregatedStats,
-} from "@/data/comparison-dto";
+import { aggregatePlayerStats, calculateTrends } from "@/data/comparison-dto";
 import { getTeamRoster } from "@/data/team-shared-data";
 import prisma from "@/lib/prisma";
 import type { ValidStatColumn } from "@/lib/stat-percentiles";
-import { removeDuplicateRows } from "@/lib/utils";
+import {
+  groupEventsIntoFights,
+  mercyRezToKillEvent,
+  removeDuplicateRows,
+  type Fight,
+} from "@/lib/utils";
 import { calculateWinner } from "@/lib/winrate";
 import type { HeroName } from "@/types/heroes";
 import { heroRoleMapping } from "@/types/heroes";
 import {
   Prisma,
   type CalculatedStat,
+  type Kill,
   type MatchStart,
   type ObjectiveCaptured,
   type PlayerStat,
@@ -38,6 +40,8 @@ export type PlayerMapPerformance = {
   eliminationsPer10: number;
   heroDamagePer10: number;
   healingDealtPer10: number;
+  firstDeathRate: number;
+  teamFirstDeathRate: number;
 };
 
 export type PlayerScrimPerformance = {
@@ -55,6 +59,10 @@ export type PlayerScrimPerformance = {
   deathsPer10: number;
   heroDamagePer10: number;
   healingDealtPer10: number;
+  firstDeathCount: number;
+  firstDeathRate: number;
+  teamFirstDeathCount: number;
+  teamFirstDeathRate: number;
   perMapPerformance: PlayerMapPerformance[];
   zScores: Partial<Record<ValidStatColumn, number>>;
   outliers: ScrimOutlier[];
@@ -384,9 +392,7 @@ function erf(x: number): number {
   const t = 1 / (1 + p * absX);
   const y =
     1 -
-    ((((a5 * t + a4) * t + a3) * t + a2) * t + a1) *
-      t *
-      Math.exp(-absX * absX);
+    ((((a5 * t + a4) * t + a3) * t + a2) * t + a1) * t * Math.exp(-absX * absX);
   return sign * y;
 }
 
@@ -402,67 +408,153 @@ type StatDistributionBaseline = {
   total_players: number;
 };
 
-async function getStatDistributionBaselineForOverview(params: {
-  hero: HeroName;
-  stat: ValidStatColumn;
-  minMaps?: number;
-  minTimeSeconds?: number;
-  sampleLimit?: number;
-}): Promise<StatDistributionBaseline | null> {
-  const {
-    hero,
-    stat,
-    minMaps = 5,
-    minTimeSeconds = 300,
-    sampleLimit = 150,
-  } = params;
+type BatchedBaselineRow = {
+  hero: string;
+  avg_eliminations_per10: number | null;
+  std_eliminations_per10: number | null;
+  avg_deaths_per10: number | null;
+  std_deaths_per10: number | null;
+  avg_hero_damage_dealt_per10: number | null;
+  std_hero_damage_dealt_per10: number | null;
+  avg_healing_dealt_per10: number | null;
+  std_healing_dealt_per10: number | null;
+  avg_damage_blocked_per10: number | null;
+  std_damage_blocked_per10: number | null;
+  total_players: number;
+};
 
-  const result = await prisma.$queryRaw<StatDistributionBaseline[]>`
+const BASELINE_STAT_COLUMNS: ValidStatColumn[] = [
+  "eliminations",
+  "deaths",
+  "hero_damage_dealt",
+  "healing_dealt",
+  "damage_blocked",
+];
+
+async function getBatchedStatDistributionBaselines(
+  heroes: HeroName[],
+  minMaps = 5,
+  minTimeSeconds = 300,
+  sampleLimit = 150
+): Promise<Map<string, StatDistributionBaseline>> {
+  if (heroes.length === 0) return new Map();
+
+  const rows = await prisma.$queryRaw<BatchedBaselineRow[]>`
     WITH
       final_rows AS (
-        SELECT DISTINCT ON ("MapDataId", player_name)
+        SELECT DISTINCT ON ("MapDataId", player_name, player_hero)
           player_name,
-          ${Prisma.raw(stat)},
+          player_hero,
+          eliminations,
+          deaths,
+          hero_damage_dealt,
+          healing_dealt,
+          damage_blocked,
           hero_time_played
         FROM
           "PlayerStat"
         WHERE
-          player_hero = ${hero}
-          AND ${Prisma.raw(stat)} IS NOT NULL
+          player_hero IN (${Prisma.join(heroes)})
           AND hero_time_played >= 60
         ORDER BY
           "MapDataId",
           player_name,
+          player_hero,
           round_number DESC,
           id DESC
       ),
       per_player_totals AS (
         SELECT
+          player_hero,
           player_name,
           COUNT(*) AS maps,
-          (SUM(${Prisma.raw(stat)})::numeric / SUM(hero_time_played)) * 600.0 AS stat_per10
+          (SUM(eliminations)::numeric / SUM(hero_time_played)) * 600.0 AS elims_per10,
+          (SUM(deaths)::numeric / SUM(hero_time_played)) * 600.0 AS deaths_per10,
+          (SUM(hero_damage_dealt)::numeric / SUM(hero_time_played)) * 600.0 AS dmg_per10,
+          (SUM(healing_dealt)::numeric / SUM(hero_time_played)) * 600.0 AS heal_per10,
+          (SUM(damage_blocked)::numeric / SUM(hero_time_played)) * 600.0 AS block_per10
         FROM
           final_rows
         GROUP BY
-          player_name
+          player_name, player_hero
         HAVING
           COUNT(*) >= ${minMaps}
           AND SUM(hero_time_played) >= ${minTimeSeconds}
-        ORDER BY
-          maps DESC, player_name
-        LIMIT ${sampleLimit}
+      ),
+      ranked AS (
+        SELECT
+          *,
+          ROW_NUMBER() OVER (
+            PARTITION BY player_hero
+            ORDER BY maps DESC, player_name
+          ) AS rn
+        FROM
+          per_player_totals
+      ),
+      limited AS (
+        SELECT * FROM ranked WHERE rn <= ${sampleLimit}
       )
     SELECT
-      ${hero}::text AS hero,
-      ${stat}::text AS stat_name,
-      ROUND(AVG(stat_per10)::numeric, 2) AS hero_avg_per10,
-      ROUND(STDDEV_SAMP(stat_per10)::numeric, 2) AS hero_std_per10,
+      player_hero AS hero,
+      ROUND(AVG(elims_per10)::numeric, 2) AS avg_eliminations_per10,
+      ROUND(STDDEV_SAMP(elims_per10)::numeric, 2) AS std_eliminations_per10,
+      ROUND(AVG(deaths_per10)::numeric, 2) AS avg_deaths_per10,
+      ROUND(STDDEV_SAMP(deaths_per10)::numeric, 2) AS std_deaths_per10,
+      ROUND(AVG(dmg_per10)::numeric, 2) AS avg_hero_damage_dealt_per10,
+      ROUND(STDDEV_SAMP(dmg_per10)::numeric, 2) AS std_hero_damage_dealt_per10,
+      ROUND(AVG(heal_per10)::numeric, 2) AS avg_healing_dealt_per10,
+      ROUND(STDDEV_SAMP(heal_per10)::numeric, 2) AS std_healing_dealt_per10,
+      ROUND(AVG(block_per10)::numeric, 2) AS avg_damage_blocked_per10,
+      ROUND(STDDEV_SAMP(block_per10)::numeric, 2) AS std_damage_blocked_per10,
       COUNT(*)::int AS total_players
     FROM
-      per_player_totals
+      limited
+    GROUP BY
+      player_hero
   `;
 
-  return result[0] ?? null;
+  const statColumnMapping: Record<
+    string,
+    { avg: keyof BatchedBaselineRow; std: keyof BatchedBaselineRow }
+  > = {
+    eliminations: {
+      avg: "avg_eliminations_per10",
+      std: "std_eliminations_per10",
+    },
+    deaths: { avg: "avg_deaths_per10", std: "std_deaths_per10" },
+    hero_damage_dealt: {
+      avg: "avg_hero_damage_dealt_per10",
+      std: "std_hero_damage_dealt_per10",
+    },
+    healing_dealt: {
+      avg: "avg_healing_dealt_per10",
+      std: "std_healing_dealt_per10",
+    },
+    damage_blocked: {
+      avg: "avg_damage_blocked_per10",
+      std: "std_damage_blocked_per10",
+    },
+  };
+
+  const result = new Map<string, StatDistributionBaseline>();
+  for (const row of rows) {
+    for (const stat of BASELINE_STAT_COLUMNS) {
+      const mapping = statColumnMapping[stat];
+      const avg = Number(row[mapping.avg]);
+      const std = Number(row[mapping.std]);
+      if (Number.isNaN(avg) || Number.isNaN(std)) continue;
+
+      result.set(createBaselineKey(row.hero as HeroName, stat), {
+        hero: row.hero,
+        stat_name: stat,
+        hero_avg_per10: avg,
+        hero_std_per10: std,
+        total_players: row.total_players,
+      });
+    }
+  }
+
+  return result;
 }
 
 function calculateZScoreFromBaseline({
@@ -514,45 +606,58 @@ async function getScrimOverviewFn(
 
   if (scrimPlayers.length === 0) return emptyOverviewData();
 
-  const [finalRoundStats, calculatedStats, matchStarts, finalRounds, captures] =
-    await Promise.all([
-      prisma.$queryRaw<PlayerStat[]>`
-          WITH maxTime AS (
-            SELECT
-              MAX("match_time") AS max_time,
-              "MapDataId"
-            FROM
-              "PlayerStat"
-            WHERE
-              "MapDataId" IN (${Prisma.join(mapIds)})
-            GROUP BY
-              "MapDataId"
-          )
+  const [
+    finalRoundStats,
+    calculatedStats,
+    matchStarts,
+    finalRounds,
+    captures,
+    allKills,
+    allRezzes,
+  ] = await Promise.all([
+    prisma.$queryRaw<PlayerStat[]>`
+        WITH maxTime AS (
           SELECT
-            ps.*
+            MAX("match_time") AS max_time,
+            "MapDataId"
           FROM
-            "PlayerStat" ps
-            INNER JOIN maxTime m ON ps."match_time" = m.max_time AND ps."MapDataId" = m."MapDataId"
+            "PlayerStat"
           WHERE
-            ps."MapDataId" IN (${Prisma.join(mapIds)})
-            AND ps."player_name" IN (${Prisma.join(scrimPlayers)})
-        `
-      .then((rows) => removeDuplicateRows(rows)),
-      prisma.calculatedStat.findMany({
-        where: {
-          MapDataId: { in: mapIds },
-          playerName: { in: scrimPlayers },
-        },
-      }),
-      prisma.matchStart.findMany({ where: { MapDataId: { in: mapIds } } }),
-      prisma.roundEnd.findMany({
-        where: { MapDataId: { in: mapIds } },
-        orderBy: { round_number: "desc" },
-      }),
-      prisma.objectiveCaptured.findMany({
-        where: { MapDataId: { in: mapIds } },
-      }),
-    ]);
+            "MapDataId" IN (${Prisma.join(mapIds)})
+          GROUP BY
+            "MapDataId"
+        )
+        SELECT
+          ps.*
+        FROM
+          "PlayerStat" ps
+          INNER JOIN maxTime m ON ps."match_time" = m.max_time AND ps."MapDataId" = m."MapDataId"
+        WHERE
+          ps."MapDataId" IN (${Prisma.join(mapIds)})
+          AND ps."player_name" IN (${Prisma.join(scrimPlayers)})
+      `.then((rows) => removeDuplicateRows(rows)),
+    prisma.calculatedStat.findMany({
+      where: {
+        MapDataId: { in: mapIds },
+        playerName: { in: scrimPlayers },
+      },
+    }),
+    prisma.matchStart.findMany({ where: { MapDataId: { in: mapIds } } }),
+    prisma.roundEnd.findMany({
+      where: { MapDataId: { in: mapIds } },
+      orderBy: { round_number: "desc" },
+    }),
+    prisma.objectiveCaptured.findMany({
+      where: { MapDataId: { in: mapIds } },
+    }),
+    prisma.kill.findMany({
+      where: { MapDataId: { in: mapIds } },
+      orderBy: { match_time: "asc" },
+    }),
+    prisma.mercyRez.findMany({
+      where: { MapDataId: { in: mapIds } },
+    }),
+  ]);
 
   if (finalRoundStats.length === 0) return emptyOverviewData();
 
@@ -569,17 +674,87 @@ async function getScrimOverviewFn(
     }
   }
 
-  const capturesByMapAndTeam = new Map<number, Map<string, ObjectiveCaptured[]>>();
+  const capturesByMapAndTeam = new Map<
+    number,
+    Map<string, ObjectiveCaptured[]>
+  >();
   for (const capture of captures) {
     if (!capture.MapDataId) continue;
     if (!capturesByMapAndTeam.has(capture.MapDataId)) {
-      capturesByMapAndTeam.set(capture.MapDataId, new Map<string, ObjectiveCaptured[]>());
+      capturesByMapAndTeam.set(
+        capture.MapDataId,
+        new Map<string, ObjectiveCaptured[]>()
+      );
     }
     const mapCaptures = capturesByMapAndTeam.get(capture.MapDataId)!;
     if (!mapCaptures.has(capture.capturing_team)) {
       mapCaptures.set(capture.capturing_team, []);
     }
     mapCaptures.get(capture.capturing_team)!.push(capture);
+  }
+
+  const killsByMap = new Map<number, Kill[]>();
+  for (const kill of allKills) {
+    if (!kill.MapDataId) continue;
+    if (!killsByMap.has(kill.MapDataId)) {
+      killsByMap.set(kill.MapDataId, []);
+    }
+    killsByMap.get(kill.MapDataId)!.push(kill);
+  }
+  for (const rez of allRezzes) {
+    if (!rez.MapDataId) continue;
+    if (!killsByMap.has(rez.MapDataId)) {
+      killsByMap.set(rez.MapDataId, []);
+    }
+    killsByMap.get(rez.MapDataId)!.push(mercyRezToKillEvent(rez));
+  }
+
+  const fightsByMap = new Map<number, Fight[]>();
+  for (const [mapId, events] of killsByMap.entries()) {
+    events.sort((a, b) => a.match_time - b.match_time);
+    fightsByMap.set(mapId, groupEventsIntoFights(events));
+  }
+
+  type MapFirstDeathLookup = {
+    fightCount: number;
+    overallFirstDeaths: Map<string, number>;
+    teamFirstDeaths: Map<string, Map<string, number>>;
+  };
+  const firstDeathLookup = new Map<number, MapFirstDeathLookup>();
+  for (const [mapId, fights] of fightsByMap.entries()) {
+    const overallFirstDeaths = new Map<string, number>();
+    const teamFirstDeaths = new Map<string, Map<string, number>>();
+
+    for (const fight of fights) {
+      const overallVictim = fight.kills[0]?.victim_name;
+      if (overallVictim) {
+        overallFirstDeaths.set(
+          overallVictim,
+          (overallFirstDeaths.get(overallVictim) ?? 0) + 1
+        );
+      }
+
+      const teamsSeen = new Set<string>();
+      for (const kill of fight.kills) {
+        if (kill.event_type !== "kill" || teamsSeen.has(kill.victim_team))
+          continue;
+        teamsSeen.add(kill.victim_team);
+        if (!teamFirstDeaths.has(kill.victim_team)) {
+          teamFirstDeaths.set(kill.victim_team, new Map());
+        }
+        const playerCounts = teamFirstDeaths.get(kill.victim_team)!;
+        playerCounts.set(
+          kill.victim_name,
+          (playerCounts.get(kill.victim_name) ?? 0) + 1
+        );
+      }
+    }
+
+    firstDeathLookup.set(mapId, {
+      fightCount: fights.length,
+      overallFirstDeaths,
+      teamFirstDeaths,
+    });
   }
 
   const ourTeamNameByMap = getMapTeamNames(finalRoundStats);
@@ -643,154 +818,152 @@ async function getScrimOverviewFn(
 
   const basePlayers: PlayerScrimPerformance[] = [];
   for (const playerName of scrimPlayers) {
-      const playerRows = playerRowsMap.get(playerName) ?? [];
-      if (playerRows.length === 0) continue;
-      const playerCalcRows = playerCalculatedMap.get(playerName) ?? [];
+    const playerRows = playerRowsMap.get(playerName) ?? [];
+    if (playerRows.length === 0) continue;
+    const playerCalcRows = playerCalculatedMap.get(playerName) ?? [];
 
-      const rowsByMap = new Map<number, PlayerStat[]>();
-      for (const row of playerRows) {
-        if (!row.MapDataId) continue;
-        if (!rowsByMap.has(row.MapDataId)) {
-          rowsByMap.set(row.MapDataId, []);
-        }
-        rowsByMap.get(row.MapDataId)!.push(row);
+    const rowsByMap = new Map<number, PlayerStat[]>();
+    for (const row of playerRows) {
+      if (!row.MapDataId) continue;
+      if (!rowsByMap.has(row.MapDataId)) {
+        rowsByMap.set(row.MapDataId, []);
       }
-
-      const calcByMap = new Map<number, CalculatedStat[]>();
-      for (const row of playerCalcRows) {
-        if (!calcByMap.has(row.MapDataId)) {
-          calcByMap.set(row.MapDataId, []);
-        }
-        calcByMap.get(row.MapDataId)!.push(row);
-      }
-
-      const perMapStats: PlayerStat[] = [];
-      const perMapCalculatedStats: CalculatedStat[][] = [];
-      const perMapPerformance: PlayerMapPerformance[] = [];
-      for (let i = 0; i < mapIds.length; i++) {
-        const mapId = mapIds[i];
-        const rows = rowsByMap.get(mapId) ?? [];
-        if (rows.length === 0) continue;
-        const aggregatedRow = aggregateRowsToPlayerStat(rows);
-        if (!aggregatedRow) continue;
-        perMapStats.push(aggregatedRow);
-        perMapCalculatedStats.push(calcByMap.get(mapId) ?? []);
-
-        const time = aggregatedRow.hero_time_played;
-        perMapPerformance.push({
-          mapName: maps[i].name,
-          mapIndex: i,
-          kdRatio:
-            aggregatedRow.deaths > 0
-              ? aggregatedRow.eliminations / aggregatedRow.deaths
-              : aggregatedRow.eliminations,
-          eliminationsPer10:
-            time > 0 ? (aggregatedRow.eliminations / time) * 600 : 0,
-          heroDamagePer10:
-            time > 0 ? (aggregatedRow.hero_damage_dealt / time) * 600 : 0,
-          healingDealtPer10:
-            time > 0 ? (aggregatedRow.healing_dealt / time) * 600 : 0,
-        });
-      }
-
-      const aggregated = aggregatePlayerStats(
-        playerRows,
-        playerCalcRows,
-        perMapStats,
-        perMapCalculatedStats
-      );
-
-      const heroes = Array.from(
-        new Set(playerRows.map((row) => row.player_hero))
-      ) as HeroName[];
-      if (heroes.length === 0) continue;
-
-      const heroBreakdown: Record<string, AggregatedStats> = {};
-      for (const hero of heroes) {
-        const heroRows = playerRows.filter((row) => row.player_hero === hero);
-        const heroCalcRows = playerCalcRows.filter((row) => row.hero === hero);
-        heroBreakdown[hero] = aggregatePlayerStats(heroRows, heroCalcRows);
-      }
-
-      let primaryHero: HeroName = heroes[0] ?? "Ana";
-      let maxTime = -1;
-      for (const hero of heroes) {
-        const heroTime = heroBreakdown[hero]?.heroTimePlayed ?? 0;
-        if (heroTime > maxTime) {
-          maxTime = heroTime;
-          primaryHero = hero;
-        }
-      }
-
-      const trendData =
-        perMapStats.length >= 3
-          ? calculateTrends(perMapStats, perMapCalculatedStats)
-          : undefined;
-      const trend = determineTrend(trendData);
-
-      const kdRatio =
-        aggregated.deaths > 0
-          ? aggregated.eliminations / aggregated.deaths
-          : aggregated.eliminations;
-
-      basePlayers.push({
-        playerName,
-        primaryHero,
-        heroes,
-        mapsPlayed: perMapStats.length,
-        eliminations: aggregated.eliminations,
-        deaths: aggregated.deaths,
-        heroDamageDealt: aggregated.heroDamageDealt,
-        healingDealt: aggregated.healingDealt,
-        heroTimePlayed: aggregated.heroTimePlayed,
-        kdRatio,
-        eliminationsPer10: aggregated.eliminationsPer10,
-        deathsPer10: aggregated.deathsPer10,
-        heroDamagePer10: aggregated.heroDamagePer10,
-        healingDealtPer10: aggregated.healingDealtPer10,
-        perMapPerformance,
-        zScores: {},
-        outliers: [],
-        trend,
-        trendData,
-      } satisfies PlayerScrimPerformance);
-  }
-
-  const baselineKeys = new Set<string>();
-  for (const player of basePlayers) {
-    if (player.heroTimePlayed < 300) continue;
-    const comparisonStats = statsForHeroRole(
-      player.primaryHero,
-      player.heroDamageDealt,
-      player.healingDealt,
-      0,
-      player.deaths,
-      player.eliminations
-    );
-    for (const statDef of comparisonStats) {
-      baselineKeys.add(createBaselineKey(player.primaryHero, statDef.stat));
+      rowsByMap.get(row.MapDataId)!.push(row);
     }
-  }
 
-  const baselinePairs = await Promise.all(
-    Array.from(baselineKeys).map(async (key) => {
-      const [hero, stat] = key.split("::") as [HeroName, ValidStatColumn];
-      const baseline = await getStatDistributionBaselineForOverview({
-        hero,
-        stat,
-        minMaps: 5,
-        sampleLimit: 150,
+    const calcByMap = new Map<number, CalculatedStat[]>();
+    for (const row of playerCalcRows) {
+      if (!calcByMap.has(row.MapDataId)) {
+        calcByMap.set(row.MapDataId, []);
+      }
+      calcByMap.get(row.MapDataId)!.push(row);
+    }
+
+    const playerTeam = playerRows[0].player_team;
+
+    const perMapStats: PlayerStat[] = [];
+    const perMapCalculatedStats: CalculatedStat[][] = [];
+    const perMapPerformance: PlayerMapPerformance[] = [];
+    let totalFights = 0;
+    let totalFirstDeaths = 0;
+    let totalTeamFirstDeaths = 0;
+
+    for (let i = 0; i < mapIds.length; i++) {
+      const mapId = mapIds[i];
+      const rows = rowsByMap.get(mapId) ?? [];
+      if (rows.length === 0) continue;
+      const aggregatedRow = aggregateRowsToPlayerStat(rows);
+      if (!aggregatedRow) continue;
+      perMapStats.push(aggregatedRow);
+      perMapCalculatedStats.push(calcByMap.get(mapId) ?? []);
+
+      const fdLookup = firstDeathLookup.get(mapId);
+      const mapFightCount = fdLookup?.fightCount ?? 0;
+      const mapFirstDeaths = fdLookup?.overallFirstDeaths.get(playerName) ?? 0;
+      const mapTeamFirstDeaths =
+        fdLookup?.teamFirstDeaths.get(playerTeam)?.get(playerName) ?? 0;
+
+      totalFights += mapFightCount;
+      totalFirstDeaths += mapFirstDeaths;
+      totalTeamFirstDeaths += mapTeamFirstDeaths;
+
+      const time = aggregatedRow.hero_time_played;
+      perMapPerformance.push({
+        mapName: maps[i].name,
+        mapIndex: i,
+        kdRatio:
+          aggregatedRow.deaths > 0
+            ? aggregatedRow.eliminations / aggregatedRow.deaths
+            : aggregatedRow.eliminations,
+        eliminationsPer10:
+          time > 0 ? (aggregatedRow.eliminations / time) * 600 : 0,
+        heroDamagePer10:
+          time > 0 ? (aggregatedRow.hero_damage_dealt / time) * 600 : 0,
+        healingDealtPer10:
+          time > 0 ? (aggregatedRow.healing_dealt / time) * 600 : 0,
+        firstDeathRate:
+          mapFightCount > 0 ? (mapFirstDeaths / mapFightCount) * 100 : 0,
+        teamFirstDeathRate:
+          mapFightCount > 0 ? (mapTeamFirstDeaths / mapFightCount) * 100 : 0,
       });
-      return { key, baseline };
-    })
-  );
+    }
 
-  const baselineMap = new Map<string, StatDistributionBaseline>();
-  for (const entry of baselinePairs) {
-    if (entry.baseline) {
-      baselineMap.set(entry.key, entry.baseline);
+    const aggregated = aggregatePlayerStats(
+      playerRows,
+      playerCalcRows,
+      perMapStats,
+      perMapCalculatedStats
+    );
+
+    const heroTimeMap = new Map<string, number>();
+    for (const row of playerRows) {
+      heroTimeMap.set(
+        row.player_hero,
+        (heroTimeMap.get(row.player_hero) ?? 0) + row.hero_time_played
+      );
+    }
+    const heroes = Array.from(heroTimeMap.keys()) as HeroName[];
+    if (heroes.length === 0) continue;
+
+    let primaryHero: HeroName = heroes[0] ?? "Ana";
+    let maxTime = -1;
+    for (const [hero, time] of heroTimeMap.entries()) {
+      if (time > maxTime) {
+        maxTime = time;
+        primaryHero = hero as HeroName;
+      }
+    }
+
+    const trendData =
+      perMapStats.length >= 3
+        ? calculateTrends(perMapStats, perMapCalculatedStats)
+        : undefined;
+    const trend = determineTrend(trendData);
+
+    const kdRatio =
+      aggregated.deaths > 0
+        ? aggregated.eliminations / aggregated.deaths
+        : aggregated.eliminations;
+
+    basePlayers.push({
+      playerName,
+      primaryHero,
+      heroes,
+      mapsPlayed: perMapStats.length,
+      eliminations: aggregated.eliminations,
+      deaths: aggregated.deaths,
+      heroDamageDealt: aggregated.heroDamageDealt,
+      healingDealt: aggregated.healingDealt,
+      heroTimePlayed: aggregated.heroTimePlayed,
+      kdRatio,
+      eliminationsPer10: aggregated.eliminationsPer10,
+      deathsPer10: aggregated.deathsPer10,
+      heroDamagePer10: aggregated.heroDamagePer10,
+      healingDealtPer10: aggregated.healingDealtPer10,
+      firstDeathCount: totalFirstDeaths,
+      firstDeathRate:
+        totalFights > 0 ? (totalFirstDeaths / totalFights) * 100 : 0,
+      teamFirstDeathCount: totalTeamFirstDeaths,
+      teamFirstDeathRate:
+        totalFights > 0 ? (totalTeamFirstDeaths / totalFights) * 100 : 0,
+      perMapPerformance,
+      zScores: {},
+      outliers: [],
+      trend,
+      trendData,
+    } satisfies PlayerScrimPerformance);
+  }
+
+  const uniqueHeroes = new Set<HeroName>();
+  for (const player of basePlayers) {
+    if (player.heroTimePlayed >= 300) {
+      uniqueHeroes.add(player.primaryHero);
     }
   }
+
+  const baselineMap = await getBatchedStatDistributionBaselines(
+    Array.from(uniqueHeroes)
+  );
 
   const teamPlayers: PlayerScrimPerformance[] = basePlayers.map((player) => {
     if (player.heroTimePlayed < 300) return player;
