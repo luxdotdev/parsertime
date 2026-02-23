@@ -304,6 +304,21 @@ model HeroBan {
   @@index([MapDataId])
 }
 
+model MapBan {
+  id          Int      @id @default(autoincrement())
+  scrimId     Int
+  map         String
+  team        String
+  banPosition Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  MapData     MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId   Int
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
 model Note {
   id        Int      @id @default(autoincrement())
   content   String   @default("")
@@ -434,6 +449,7 @@ model MapData {
   ultimate_end         UltimateEnd[]
   ultimate_start       UltimateStart[]
   HeroBan              HeroBan[]
+  mapBans              MapBan[]
   Note                 Note[]
   calculatedStats      CalculatedStat[]
 
