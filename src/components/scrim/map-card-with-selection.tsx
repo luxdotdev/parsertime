@@ -37,12 +37,14 @@ type MapCardWithSelectionProps = {
   scrimId: number;
   teamId: number;
   locale: string;
+  mapComparisonEnabled: boolean;
 };
 
 function MapCardWithSelectionComponent({
   map,
   scrimId,
   teamId,
+  mapComparisonEnabled,
 }: MapCardWithSelectionProps) {
   const t = useTranslations("scrimPage.mapCard");
   const [isMapGroupDialogOpen, setIsMapGroupDialogOpen] = useState(false);
@@ -85,6 +87,50 @@ function MapCardWithSelectionComponent({
     setIsMapGroupDialogOpen(true);
   }, []);
 
+  const card = (
+    <Card
+      className={cn(
+        "relative h-48 max-w-md bg-cover transition-all duration-150",
+        "ring-foreground/10 shadow-xs ring-1",
+        "@media (hover: hover) hover:ring-primary/30 hover:shadow-md",
+        isSelected &&
+          "ring-primary border-primary border-l-4 shadow-lg ring-2"
+      )}
+      role="article"
+      aria-label={`${displayName} map card${isSelected ? ", selected for comparison" : ""}`}
+    >
+      <Link
+        href={`/${teamId}/scrim/${scrimId}/map/${map.id}` as Route}
+        prefetch={true}
+      >
+        <CardHeader>
+          <h3 className="z-10 text-3xl font-semibold tracking-tight text-white">
+            {displayName}
+          </h3>
+        </CardHeader>
+        <CardContent>
+          <Image
+            src={`/maps/${toKebabCase(map.name)}.webp`}
+            alt={t("altText", { map: displayName })}
+            fill
+            className="rounded-md object-cover brightness-[0.65] select-none"
+          />
+        </CardContent>
+      </Link>
+      <CardFooter className="flex items-center justify-end pt-12">
+        <div className="z-10 font-semibold tracking-tight text-white">
+          {map.replayCode && <ReplayCode replayCode={map.replayCode} />}
+        </div>
+      </CardFooter>
+
+      {isSelected && (
+        <Badge className="bg-primary text-primary-foreground pointer-events-none absolute top-3 right-3 z-20">
+          {t("selected")}
+        </Badge>
+      )}
+    </Card>
+  );
+
   return (
     <>
       <AddToMapGroupDialog
@@ -94,80 +140,40 @@ function MapCardWithSelectionComponent({
         mapIds={[map.id]}
         mapName={displayName}
       />
-      <ContextMenu>
-        <ContextMenuTrigger asChild>
-          <Card
-            className={cn(
-              "relative h-48 max-w-md bg-cover transition-all duration-150",
-              "ring-foreground/10 shadow-xs ring-1",
-              "@media (hover: hover) hover:ring-primary/30 hover:shadow-md",
-              isSelected &&
-                "ring-primary border-primary border-l-4 shadow-lg ring-2"
-            )}
-            role="article"
-            aria-label={`${displayName} map card${isSelected ? ", selected for comparison" : ""}`}
-          >
-            <Link
-              href={`/${teamId}/scrim/${scrimId}/map/${map.id}` as Route}
-              prefetch={true}
+      {mapComparisonEnabled ? (
+        <ContextMenu>
+          <ContextMenuTrigger asChild>{card}</ContextMenuTrigger>
+          <ContextMenuContent>
+            <ContextMenuLabel>{t("contextMenu.title")}</ContextMenuLabel>
+            <ContextMenuSeparator />
+            <ContextMenuCheckboxItem
+              checked={isSelected}
+              onCheckedChange={handleToggleSelection}
             >
-              <CardHeader>
-                <h3 className="z-10 text-3xl font-semibold tracking-tight text-white">
-                  {displayName}
-                </h3>
-              </CardHeader>
-              <CardContent>
-                <Image
-                  src={`/maps/${toKebabCase(map.name)}.webp`}
-                  alt={t("altText", { map: displayName })}
-                  fill
-                  className="rounded-md object-cover brightness-[0.65] select-none"
-                />
-              </CardContent>
-            </Link>
-            <CardFooter className="flex items-center justify-end pt-12">
-              <div className="z-10 font-semibold tracking-tight text-white">
-                {map.replayCode && <ReplayCode replayCode={map.replayCode} />}
-              </div>
-            </CardFooter>
-
-            {/* Selection indicator badge */}
-            {isSelected && (
-              <Badge className="bg-primary text-primary-foreground pointer-events-none absolute top-3 right-3 z-20">
-                {t("selected")}
-              </Badge>
-            )}
-          </Card>
-        </ContextMenuTrigger>
-
-        <ContextMenuContent>
-          <ContextMenuLabel>{t("contextMenu.title")}</ContextMenuLabel>
-          <ContextMenuSeparator />
-          <ContextMenuCheckboxItem
-            checked={isSelected}
-            onCheckedChange={handleToggleSelection}
-          >
-            {t("contextMenu.selectForComparison")}
-          </ContextMenuCheckboxItem>
-          <ContextMenuItem onSelect={handleAddToMapGroup}>
-            {t("contextMenu.addToMapGroup")}
-          </ContextMenuItem>
-          <ContextMenuSeparator />
-          <ContextMenuItem asChild>
-            <Link
-              href={`/${teamId}/scrim/${scrimId}/map/${map.id}` as Route}
-              className="cursor-pointer"
-            >
-              {t("contextMenu.viewDetails")}
-            </Link>
-          </ContextMenuItem>
-          {map.replayCode && (
-            <ContextMenuItem onSelect={handleCopyReplayCode}>
-              {t("contextMenu.copyCode")}
+              {t("contextMenu.selectForComparison")}
+            </ContextMenuCheckboxItem>
+            <ContextMenuItem onSelect={handleAddToMapGroup}>
+              {t("contextMenu.addToMapGroup")}
             </ContextMenuItem>
-          )}
-        </ContextMenuContent>
-      </ContextMenu>
+            <ContextMenuSeparator />
+            <ContextMenuItem asChild>
+              <Link
+                href={`/${teamId}/scrim/${scrimId}/map/${map.id}` as Route}
+                className="cursor-pointer"
+              >
+                {t("contextMenu.viewDetails")}
+              </Link>
+            </ContextMenuItem>
+            {map.replayCode && (
+              <ContextMenuItem onSelect={handleCopyReplayCode}>
+                {t("contextMenu.copyCode")}
+              </ContextMenuItem>
+            )}
+          </ContextMenuContent>
+        </ContextMenu>
+      ) : (
+        card
+      )}
     </>
   );
 }
@@ -179,5 +185,6 @@ export const MapCardWithSelection = memo(
     prev.map.id === next.map.id &&
     prev.scrimId === next.scrimId &&
     prev.teamId === next.teamId &&
-    prev.locale === next.locale
+    prev.locale === next.locale &&
+    prev.mapComparisonEnabled === next.mapComparisonEnabled
 );

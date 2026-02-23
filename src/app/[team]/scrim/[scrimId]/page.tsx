@@ -13,6 +13,7 @@ import {
 import { getScrim } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
+import { mapComparison } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
@@ -109,6 +110,8 @@ export default async function ScrimDashboardPage(
     },
   })) ?? { guestMode: false };
 
+  const mapComparisonEnabled = await mapComparison();
+
   return (
     <DashboardLayout guestMode={visibility.guestMode}>
       <div className="flex-1 space-y-6 p-8 pt-6">
@@ -166,6 +169,7 @@ export default async function ScrimDashboardPage(
                   scrimId={scrim.id}
                   teamId={teamId}
                   locale={params.locale}
+                  mapComparisonEnabled={mapComparisonEnabled}
                 />
               ))}
               {hasPerms && <AddMapCard />}
@@ -194,7 +198,7 @@ export default async function ScrimDashboardPage(
       </div>
 
       {/* Compare Selected Button */}
-      <CompareSelectedButton teamId={teamId} />
+      {mapComparisonEnabled && <CompareSelectedButton teamId={teamId} />}
     </DashboardLayout>
   );
 }
