@@ -30,9 +30,13 @@ type ChartDataPoint = {
   kd: number;
   elims: number;
   thirdStat: number;
+  firstDeath: number;
+  teamFirstDeath: number;
   rawKd: number;
   rawElims: number;
   rawThirdStat: number;
+  rawFirstDeath: number;
+  rawTeamFirstDeath: number;
 };
 
 type Props = {
@@ -48,6 +52,9 @@ function formatRawValue(
 ): string {
   if (dataKey === "kd") return point.rawKd.toFixed(2);
   if (dataKey === "elims") return point.rawElims.toFixed(1);
+  if (dataKey === "firstDeath") return `${point.rawFirstDeath.toFixed(1)}%`;
+  if (dataKey === "teamFirstDeath")
+    return `${point.rawTeamFirstDeath.toFixed(1)}%`;
   return Math.round(point.rawThirdStat).toLocaleString();
 }
 
@@ -97,17 +104,18 @@ export function PlayerPerformanceHoverChart({
   const isSupport = role === "Support";
   const thirdStatLabel = isSupport ? "Healing/10" : "Dmg/10";
 
+  const len = perMapPerformance.length;
   const avgKd =
-    perMapPerformance.reduce((sum, m) => sum + m.kdRatio, 0) /
-    perMapPerformance.length;
+    perMapPerformance.reduce((sum, m) => sum + m.kdRatio, 0) / len;
   const avgElims =
-    perMapPerformance.reduce((sum, m) => sum + m.eliminationsPer10, 0) /
-    perMapPerformance.length;
+    perMapPerformance.reduce((sum, m) => sum + m.eliminationsPer10, 0) / len;
   const avgThirdStat = isSupport
-    ? perMapPerformance.reduce((sum, m) => sum + m.healingDealtPer10, 0) /
-      perMapPerformance.length
-    : perMapPerformance.reduce((sum, m) => sum + m.heroDamagePer10, 0) /
-      perMapPerformance.length;
+    ? perMapPerformance.reduce((sum, m) => sum + m.healingDealtPer10, 0) / len
+    : perMapPerformance.reduce((sum, m) => sum + m.heroDamagePer10, 0) / len;
+  const avgFirstDeath =
+    perMapPerformance.reduce((sum, m) => sum + m.firstDeathRate, 0) / len;
+  const avgTeamFirstDeath =
+    perMapPerformance.reduce((sum, m) => sum + m.teamFirstDeathRate, 0) / len;
 
   const chartData = perMapPerformance.map((m) => ({
     map: m.mapName,
@@ -119,15 +127,25 @@ export function PlayerPerformanceHoverChart({
             avgThirdStat) *
           100
         : 0,
+    firstDeath:
+      avgFirstDeath > 0 ? (m.firstDeathRate / avgFirstDeath) * 100 : 0,
+    teamFirstDeath:
+      avgTeamFirstDeath > 0
+        ? (m.teamFirstDeathRate / avgTeamFirstDeath) * 100
+        : 0,
     rawKd: m.kdRatio,
     rawElims: m.eliminationsPer10,
     rawThirdStat: isSupport ? m.healingDealtPer10 : m.heroDamagePer10,
+    rawFirstDeath: m.firstDeathRate,
+    rawTeamFirstDeath: m.teamFirstDeathRate,
   }));
 
   const chartConfig = {
     kd: { label: "K/D", color: "#3b82f6" },
     elims: { label: "Elims/10", color: "#10b981" },
     thirdStat: { label: thirdStatLabel, color: "#f59e0b" },
+    firstDeath: { label: "1st Death %", color: "#f43f5e" },
+    teamFirstDeath: { label: "Team 1st Death %", color: "#8b5cf6" },
   } satisfies ChartConfig;
 
   return (
@@ -193,6 +211,30 @@ export function PlayerPerformanceHoverChart({
                 dot={{ r: 3 }}
                 activeDot={{ r: 4 }}
               />
+              {avgFirstDeath > 0 && (
+                <Line
+                  type="monotone"
+                  name="1st Death %"
+                  dataKey="firstDeath"
+                  stroke="var(--color-firstDeath)"
+                  strokeWidth={2}
+                  strokeDasharray="4 3"
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 4 }}
+                />
+              )}
+              {avgTeamFirstDeath > 0 && (
+                <Line
+                  type="monotone"
+                  name="Team 1st Death %"
+                  dataKey="teamFirstDeath"
+                  stroke="var(--color-teamFirstDeath)"
+                  strokeWidth={2}
+                  strokeDasharray="4 3"
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 4 }}
+                />
+              )}
             </LineChart>
           </ChartContainer>
           <div className="flex items-center justify-center gap-3">

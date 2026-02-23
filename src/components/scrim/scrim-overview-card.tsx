@@ -258,6 +258,12 @@ function PlayerRow({ player }: { player: PlayerScrimPerformance }) {
           ? format(Math.round(player.heroDamagePer10))
           : "—"}
       </TableCell>
+      <TableCell className="text-center text-sm tabular-nums">
+        {player.firstDeathRate.toFixed(1)}%
+      </TableCell>
+      <TableCell className="text-center text-sm tabular-nums">
+        {player.teamFirstDeathRate.toFixed(1)}%
+      </TableCell>
       <TableCell className="text-center">
         <TrendIndicator trend={player.trend} trendData={player.trendData} />
       </TableCell>
@@ -383,6 +389,10 @@ export async function ScrimOverviewCard({
                     <TableHead className="text-center">K/D</TableHead>
                     <TableHead className="text-center">Elims/10</TableHead>
                     <TableHead className="text-center">Dmg/10</TableHead>
+                    <TableHead className="text-center">1st Death %</TableHead>
+                    <TableHead className="text-center">
+                      Team 1st Death %
+                    </TableHead>
                     <TableHead className="text-center">Trend</TableHead>
                     <TableHead>Outliers</TableHead>
                   </TableRow>
