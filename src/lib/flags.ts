@@ -54,3 +54,21 @@ export const mapComparison = flag({
   description: "Enable or disable map comparison",
   identify,
 });
+
+export const playerComparison = flag({
+  key: "player-comparison",
+  adapter: vercelAdapter(),
+  options: [
+    {
+      value: true,
+      label: "Enabled",
+    },
+    {
+      value: false,
+      label: "Disabled",
+    },
+  ],
+  defaultValue: false,
+  description: "Enable or disable player comparison",
+  identify,
+});
