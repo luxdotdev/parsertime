@@ -403,7 +403,7 @@ function calculateVarianceMetrics(
   };
 }
 
-function aggregatePlayerStats(
+export function aggregatePlayerStats(
   stats: PlayerStat[],
   calculatedStats: CalculatedStat[],
   perMapStats?: PlayerStat[],
@@ -604,7 +604,7 @@ function aggregatePlayerStats(
   };
 }
 
-function calculateTrends(
+export function calculateTrends(
   perMapStats: PlayerStat[],
   perMapCalculatedStats: CalculatedStat[][]
 ): TrendsAnalysis {
