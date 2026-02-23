@@ -54,3 +54,21 @@ export const mapComparison = flag<boolean, Entities>({
   description: "Enable or disable map comparison",
   identify,
 });
+
+export const overviewCard = flag<boolean, Entities>({
+  key: "overview-card",
+  adapter: vercelAdapter(),
+  options: [
+    {
+      value: true,
+      label: "Enabled",
+    },
+    {
+      value: false,
+      label: "Disabled",
+    },
+  ],
+  defaultValue: false,
+  description: "Enable or disable an overview card for the scrim",
+  identify,
+});
