@@ -31,6 +31,15 @@ export type ScrimOutlier = {
   label: string;
 };
 
+export type PlayerMapPerformance = {
+  mapName: string;
+  mapIndex: number;
+  kdRatio: number;
+  eliminationsPer10: number;
+  heroDamagePer10: number;
+  healingDealtPer10: number;
+};
+
 export type PlayerScrimPerformance = {
   playerName: string;
   primaryHero: HeroName;
@@ -46,6 +55,7 @@ export type PlayerScrimPerformance = {
   deathsPer10: number;
   heroDamagePer10: number;
   healingDealtPer10: number;
+  perMapPerformance: PlayerMapPerformance[];
   zScores: Partial<Record<ValidStatColumn, number>>;
   outliers: ScrimOutlier[];
   trend: "improving" | "stable" | "declining";
@@ -656,13 +666,31 @@ async function getScrimOverviewFn(
 
       const perMapStats: PlayerStat[] = [];
       const perMapCalculatedStats: CalculatedStat[][] = [];
-      for (const mapId of mapIds) {
+      const perMapPerformance: PlayerMapPerformance[] = [];
+      for (let i = 0; i < mapIds.length; i++) {
+        const mapId = mapIds[i];
         const rows = rowsByMap.get(mapId) ?? [];
         if (rows.length === 0) continue;
         const aggregatedRow = aggregateRowsToPlayerStat(rows);
         if (!aggregatedRow) continue;
         perMapStats.push(aggregatedRow);
         perMapCalculatedStats.push(calcByMap.get(mapId) ?? []);
+
+        const time = aggregatedRow.hero_time_played;
+        perMapPerformance.push({
+          mapName: maps[i].name,
+          mapIndex: i,
+          kdRatio:
+            aggregatedRow.deaths > 0
+              ? aggregatedRow.eliminations / aggregatedRow.deaths
+              : aggregatedRow.eliminations,
+          eliminationsPer10:
+            time > 0 ? (aggregatedRow.eliminations / time) * 600 : 0,
+          heroDamagePer10:
+            time > 0 ? (aggregatedRow.hero_damage_dealt / time) * 600 : 0,
+          healingDealtPer10:
+            time > 0 ? (aggregatedRow.healing_dealt / time) * 600 : 0,
+        });
       }
 
       const aggregated = aggregatePlayerStats(
@@ -720,6 +748,7 @@ async function getScrimOverviewFn(
         deathsPer10: aggregated.deathsPer10,
         heroDamagePer10: aggregated.heroDamagePer10,
         healingDealtPer10: aggregated.healingDealtPer10,
+        perMapPerformance,
         zScores: {},
         outliers: [],
         trend,
