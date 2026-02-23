@@ -4,7 +4,6 @@ import {
   calculateMean,
   calculateStandardDeviation,
 } from "@/lib/distribution-utils";
-import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { removeDuplicateRows } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";
@@ -179,17 +178,6 @@ function aggregateCalculatedStats(
   const statTypeCounts: Record<string, number> = {};
   stats.forEach((stat) => {
     statTypeCounts[stat.stat] = (statTypeCounts[stat.stat] ?? 0) + 1;
-  });
-
-  Logger.info({
-    message: "[Comparison] aggregateCalculatedStats",
-    totalStats: stats.length,
-    statTypeCounts,
-    sampleStats: stats.slice(0, 3).map((s) => ({
-      stat: s.stat,
-      value: s.value,
-      hero: s.hero,
-    })),
   });
 
   stats.forEach((stat) => {
@@ -800,21 +788,6 @@ async function getComparisonStatsFn(
     where: calculatedStatsWhere,
   });
 
-  Logger.info({
-    message: "[Comparison] Calculated Stats Query",
-    mapIds, // The Map IDs for reference
-    mapDataIds, // The MapData IDs used in query
-    playerName,
-    heroes,
-    calculatedStatsCount: calculatedStats.length,
-    sampleStats: calculatedStats.slice(0, 3).map((s) => ({
-      stat: s.stat,
-      value: s.value,
-      hero: s.hero,
-      MapDataId: s.MapDataId,
-    })),
-  });
-
   // Organize calculated stats by their MapDataId value
   const calculatedStatsByMapDataId: Record<number, CalculatedStat[]> = {};
   calculatedStats.forEach((stat) => {
@@ -916,34 +889,12 @@ async function getComparisonStatsFn(
 
   perMapBreakdown.sort((a, b) => a.date.getTime() - b.date.getTime());
 
-  Logger.info({
-    message: "[Comparison] Before aggregation",
-    finalRoundStatsCount: finalRoundStats.length,
-    calculatedStatsCount: calculatedStats.length,
-    perMapBreakdownCount: perMapBreakdown.length,
-    sampleCalculatedStats: calculatedStats.slice(0, 5).map((s) => ({
-      stat: s.stat,
-      value: s.value,
-      hero: s.hero,
-      playerName: s.playerName,
-    })),
-  });
-
   const aggregated = aggregatePlayerStats(
     finalRoundStats,
     calculatedStats,
     perMapBreakdown.map((m) => m.stats),
     perMapBreakdown.map((m) => m.calculatedStats)
   );
-
-  Logger.info({
-    message: "[Comparison] After aggregation",
-    mvpScore: aggregated.mvpScore,
-    mapMvpCount: aggregated.mapMvpCount,
-    mapMvpRate: aggregated.mapMvpRate,
-    firstPickPercentage: aggregated.firstPickPercentage,
-    killsPerUltimate: aggregated.killsPerUltimate,
-  });
 
   const trends =
     perMapBreakdown.length >= 3
