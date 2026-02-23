@@ -309,6 +309,22 @@ type MultiStatComparisonResult = {
   comparisons: StatComparison[];
 };
 
+type StatDistributionBaselineParams = {
+  hero: string;
+  stat: ValidStatColumn;
+  minMaps?: number;
+  minTimeSeconds?: number;
+  sampleLimit?: number;
+};
+
+type StatDistributionBaseline = {
+  hero: string;
+  stat_name: string;
+  hero_avg_per10: number;
+  hero_std_per10: number;
+  total_players: number;
+};
+
 function buildMultiStatComparisonQuery({
   hero,
   stats,
@@ -438,7 +454,70 @@ export async function compareMultipleStatsToDistribution(
   };
 }
 
+function buildStatDistributionBaselineQuery({
+  hero,
+  stat,
+  minMaps = 10,
+  minTimeSeconds = 300,
+  sampleLimit = 150,
+}: StatDistributionBaselineParams): Prisma.Sql {
+  return Prisma.sql`
+    WITH
+      final_rows AS (
+        SELECT DISTINCT ON ("MapDataId", player_name)
+          player_name,
+          ${Prisma.raw(stat)},
+          hero_time_played
+        FROM
+          "PlayerStat"
+        WHERE
+          player_hero = ${hero}
+          AND ${Prisma.raw(stat)} IS NOT NULL
+          AND hero_time_played >= 60
+        ORDER BY
+          "MapDataId",
+          player_name,
+          round_number DESC,
+          id DESC
+      ),
+      per_player_totals AS (
+        SELECT
+          player_name,
+          COUNT(*) AS maps,
+          (SUM(${Prisma.raw(stat)})::numeric / SUM(hero_time_played)) * 600.0 AS stat_per10
+        FROM
+          final_rows
+        GROUP BY
+          player_name
+        HAVING
+          COUNT(*) >= ${minMaps}
+          AND SUM(hero_time_played) >= ${minTimeSeconds}
+        ORDER BY
+          maps DESC, player_name
+        LIMIT ${sampleLimit}
+      )
+    SELECT
+      ${hero}::text AS hero,
+      ${stat}::text AS stat_name,
+      ROUND(AVG(stat_per10)::numeric, 2) AS hero_avg_per10,
+      ROUND(STDDEV_SAMP(stat_per10)::numeric, 2) AS hero_std_per10,
+      COUNT(*)::int AS total_players
+    FROM
+      per_player_totals
+  `;
+}
+
+export async function getStatDistributionBaseline(
+  params: StatDistributionBaselineParams
+): Promise<StatDistributionBaseline | null> {
+  const query = buildStatDistributionBaselineQuery(params);
+  const result = await prisma.$queryRaw<StatDistributionBaseline[]>(query);
+  return result[0] ?? null;
+}
+
 export type {
+  StatDistributionBaseline,
+  StatDistributionBaselineParams,
   MultiStatComparisonParams,
   MultiStatComparisonResult,
   StatComparison,
