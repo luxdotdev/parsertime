@@ -1,5 +1,6 @@
+import { PlayerPerformanceHoverChart } from "@/components/scrim/player-performance-hover-chart";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
   Table,
@@ -24,6 +25,7 @@ import {
   ArrowDownIcon,
   ArrowUpIcon,
   ExclamationTriangleIcon,
+  InfoCircledIcon,
   LightningBoltIcon,
   MinusIcon,
   StarFilledIcon,
@@ -203,30 +205,44 @@ function OutlierBadge({
 
 function PlayerRow({ player }: { player: PlayerScrimPerformance }) {
   const topOutliers = player.outliers.slice(0, 2);
+  const hasChartData = player.perMapPerformance.length >= 2;
 
   return (
     <TableRow>
       <TableCell className="min-w-[140px]">
-        <div className="flex items-center gap-2">
-          <div className="bg-muted relative h-7 w-7 shrink-0 overflow-hidden rounded-full">
-            <Image
-              src={`/heroes/${toHero(player.primaryHero)}.png`}
-              alt={player.primaryHero}
-              fill
-              className="object-cover"
-              sizes="28px"
-            />
+        <PlayerPerformanceHoverChart
+          playerName={player.playerName}
+          primaryHero={player.primaryHero}
+          perMapPerformance={player.perMapPerformance}
+        >
+          <div
+            className={cn(
+              "flex items-center gap-2",
+              hasChartData && "cursor-pointer"
+            )}
+          >
+            <div className="bg-muted relative h-7 w-7 shrink-0 overflow-hidden rounded-full">
+              <Image
+                src={`/heroes/${toHero(player.primaryHero)}.png`}
+                alt={player.primaryHero}
+                fill
+                className="object-cover"
+                sizes="28px"
+              />
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium">
+                {player.playerName}
+              </p>
+              <p className="text-muted-foreground truncate text-xs">
+                {player.primaryHero}
+                {player.heroes.length > 1 && (
+                  <span> +{player.heroes.length - 1}</span>
+                )}
+              </p>
+            </div>
           </div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-medium">{player.playerName}</p>
-            <p className="text-muted-foreground truncate text-xs">
-              {player.primaryHero}
-              {player.heroes.length > 1 && (
-                <span> +{player.heroes.length - 1}</span>
-              )}
-            </p>
-          </div>
-        </div>
+        </PlayerPerformanceHoverChart>
       </TableCell>
       <TableCell className="text-center text-sm tabular-nums">
         {player.mapsPlayed}
@@ -381,6 +397,18 @@ export async function ScrimOverviewCard({
           </>
         )}
       </CardContent>
+      <CardFooter className="border-t">
+        <div className="flex items-center gap-1.5">
+          <InfoCircledIcon
+            className="text-muted-foreground h-3.5 w-3.5 shrink-0"
+            aria-hidden
+          />
+          <p className="text-muted-foreground text-xs">
+            Hover over a player&apos;s name to see their performance trend
+            across maps.
+          </p>
+        </div>
+      </CardFooter>
     </Card>
   );
 }
