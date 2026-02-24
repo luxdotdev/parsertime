@@ -271,6 +271,54 @@ function aggregateTeamStats(
       totals.ultimatesEarned,
       totals.heroTimePlayed
     ),
+    ultimatesUsedPer10: calculatePer10(
+      totals.ultimatesUsed,
+      totals.heroTimePlayed
+    ),
+    soloKillsPer10: calculatePer10(totals.soloKills, totals.heroTimePlayed),
+    objectiveKillsPer10: calculatePer10(
+      totals.objectiveKills,
+      totals.heroTimePlayed
+    ),
+    defensiveAssistsPer10: calculatePer10(
+      totals.defensiveAssists,
+      totals.heroTimePlayed
+    ),
+    offensiveAssistsPer10: calculatePer10(
+      totals.offensiveAssists,
+      totals.heroTimePlayed
+    ),
+    environmentalKillsPer10: calculatePer10(
+      totals.environmentalKills,
+      totals.heroTimePlayed
+    ),
+    environmentalDeathsPer10: calculatePer10(
+      totals.environmentalDeaths,
+      totals.heroTimePlayed
+    ),
+    multikillsPer10: calculatePer10(totals.multikills, totals.heroTimePlayed),
+    barrierDamagePer10: calculatePer10(
+      totals.barrierDamageDealt,
+      totals.heroTimePlayed
+    ),
+    selfHealingPer10: calculatePer10(totals.selfHealing, totals.heroTimePlayed),
+    firstPicksPer10: calculatePer10(
+      calculatedAggregates.firstPickCount ?? 0,
+      totals.heroTimePlayed
+    ),
+    firstDeathsPer10: calculatePer10(
+      calculatedAggregates.firstDeathCount ?? 0,
+      totals.heroTimePlayed
+    ),
+    mapMvpRate:
+      calculatedStats.length > 0
+        ? ((calculatedAggregates.mapMvpCount ?? 0) / calculatedStats.length) *
+          100
+        : 0,
+    ajaxPer10: calculatePer10(
+      calculatedAggregates.ajaxCount ?? 0,
+      totals.heroTimePlayed
+    ),
     weaponAccuracy: calculatePercentage(totals.shotsHit, totals.shotsFired),
     criticalHitAccuracy: calculatePercentage(
       totals.criticalHits,
