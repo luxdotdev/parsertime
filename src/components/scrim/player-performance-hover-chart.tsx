@@ -96,161 +96,165 @@ export function PlayerPerformanceHoverChart({
   perMapPerformance,
   children,
 }: Props) {
-  if (perMapPerformance.length < 2) {
+  try {
+    if (perMapPerformance.length < 2) {
+      return children;
+    }
+
+    const role = heroRoleMapping[primaryHero];
+    const isSupport = role === "Support";
+    const thirdStatLabel = isSupport ? "Healing/10" : "Dmg/10";
+
+    const len = perMapPerformance.length;
+    const avgKd = perMapPerformance.reduce((sum, m) => sum + m.kdRatio, 0) / len;
+    const avgElims =
+      perMapPerformance.reduce((sum, m) => sum + m.eliminationsPer10, 0) / len;
+    const avgThirdStat = isSupport
+      ? perMapPerformance.reduce((sum, m) => sum + m.healingDealtPer10, 0) / len
+      : perMapPerformance.reduce((sum, m) => sum + m.heroDamagePer10, 0) / len;
+    const avgFirstDeath =
+      perMapPerformance.reduce((sum, m) => sum + m.firstDeathRate, 0) / len;
+    const avgTeamFirstDeath =
+      perMapPerformance.reduce((sum, m) => sum + m.teamFirstDeathRate, 0) / len;
+
+    const chartData = perMapPerformance.map((m) => ({
+      map: m.mapName,
+      kd: avgKd > 0 ? (m.kdRatio / avgKd) * 100 : 0,
+      elims: avgElims > 0 ? (m.eliminationsPer10 / avgElims) * 100 : 0,
+      thirdStat:
+        avgThirdStat > 0
+          ? ((isSupport ? m.healingDealtPer10 : m.heroDamagePer10) /
+              avgThirdStat) *
+            100
+          : 0,
+      firstDeath:
+        avgFirstDeath > 0 ? (m.firstDeathRate / avgFirstDeath) * 100 : 0,
+      teamFirstDeath:
+        avgTeamFirstDeath > 0
+          ? (m.teamFirstDeathRate / avgTeamFirstDeath) * 100
+          : 0,
+      rawKd: m.kdRatio,
+      rawElims: m.eliminationsPer10,
+      rawThirdStat: isSupport ? m.healingDealtPer10 : m.heroDamagePer10,
+      rawFirstDeath: m.firstDeathRate,
+      rawTeamFirstDeath: m.teamFirstDeathRate,
+    }));
+
+    const chartConfig = {
+      kd: { label: "K/D", color: "#3b82f6" },
+      elims: { label: "Elims/10", color: "#10b981" },
+      thirdStat: { label: thirdStatLabel, color: "#f59e0b" },
+      firstDeath: { label: "1st Death %", color: "#f43f5e" },
+      teamFirstDeath: { label: "Team 1st Death %", color: "#8b5cf6" },
+    } satisfies ChartConfig;
+
+    return (
+      <HoverCard openDelay={300} closeDelay={100}>
+        <HoverCardTrigger asChild>{children}</HoverCardTrigger>
+        <HoverCardContent className="w-full p-4" side="right" align="start">
+          <div className="space-y-3">
+            <div>
+              <p className="text-sm font-medium">{playerName}</p>
+              <p className="text-muted-foreground text-xs">
+                Performance across maps (% of avg)
+              </p>
+            </div>
+            <ChartContainer config={chartConfig} className="h-[300px] w-full">
+              <LineChart
+                data={chartData}
+                margin={{ top: 8, right: 8, bottom: 0, left: 8 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis
+                  dataKey="map"
+                  tick={{ fontSize: 10 }}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  tick={{ fontSize: 10 }}
+                  tickLine={false}
+                  axisLine={false}
+                  domain={["dataMin - 10", "dataMax + 10"]}
+                  tickFormatter={(value: number) => `${Math.round(value)}%`}
+                />
+                <ReferenceLine
+                  y={100}
+                  stroke="var(--border)"
+                  strokeDasharray="4 4"
+                />
+                <Tooltip content={<PerformanceTooltip />} />
+                <Line
+                  type="monotone"
+                  name="K/D"
+                  dataKey="kd"
+                  stroke="var(--color-kd)"
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 4 }}
+                />
+                <Line
+                  type="monotone"
+                  name="Elims/10"
+                  dataKey="elims"
+                  stroke="var(--color-elims)"
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 4 }}
+                />
+                <Line
+                  type="monotone"
+                  name={thirdStatLabel}
+                  dataKey="thirdStat"
+                  stroke="var(--color-thirdStat)"
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 4 }}
+                />
+                {avgFirstDeath > 0 && (
+                  <Line
+                    type="monotone"
+                    name="1st Death %"
+                    dataKey="firstDeath"
+                    stroke="var(--color-firstDeath)"
+                    strokeWidth={2}
+                    strokeDasharray="4 3"
+                    dot={{ r: 3 }}
+                    activeDot={{ r: 4 }}
+                  />
+                )}
+                {avgTeamFirstDeath > 0 && (
+                  <Line
+                    type="monotone"
+                    name="Team 1st Death %"
+                    dataKey="teamFirstDeath"
+                    stroke="var(--color-teamFirstDeath)"
+                    strokeWidth={2}
+                    strokeDasharray="4 3"
+                    dot={{ r: 3 }}
+                    activeDot={{ r: 4 }}
+                  />
+                )}
+              </LineChart>
+            </ChartContainer>
+            <div className="flex items-center justify-center gap-3">
+              {Object.entries(chartConfig).map(([key, config]) => (
+                <div key={key} className="flex items-center gap-1">
+                  <div
+                    className="h-2 w-2 rounded-full"
+                    style={{ backgroundColor: config.color }}
+                  />
+                  <span className="text-muted-foreground text-[10px]">
+                    {String(config.label)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </HoverCardContent>
+      </HoverCard>
+    );
+  } catch {
     return children;
   }
-
-  const role = heroRoleMapping[primaryHero];
-  const isSupport = role === "Support";
-  const thirdStatLabel = isSupport ? "Healing/10" : "Dmg/10";
-
-  const len = perMapPerformance.length;
-  const avgKd = perMapPerformance.reduce((sum, m) => sum + m.kdRatio, 0) / len;
-  const avgElims =
-    perMapPerformance.reduce((sum, m) => sum + m.eliminationsPer10, 0) / len;
-  const avgThirdStat = isSupport
-    ? perMapPerformance.reduce((sum, m) => sum + m.healingDealtPer10, 0) / len
-    : perMapPerformance.reduce((sum, m) => sum + m.heroDamagePer10, 0) / len;
-  const avgFirstDeath =
-    perMapPerformance.reduce((sum, m) => sum + m.firstDeathRate, 0) / len;
-  const avgTeamFirstDeath =
-    perMapPerformance.reduce((sum, m) => sum + m.teamFirstDeathRate, 0) / len;
-
-  const chartData = perMapPerformance.map((m) => ({
-    map: m.mapName,
-    kd: avgKd > 0 ? (m.kdRatio / avgKd) * 100 : 0,
-    elims: avgElims > 0 ? (m.eliminationsPer10 / avgElims) * 100 : 0,
-    thirdStat:
-      avgThirdStat > 0
-        ? ((isSupport ? m.healingDealtPer10 : m.heroDamagePer10) /
-            avgThirdStat) *
-          100
-        : 0,
-    firstDeath:
-      avgFirstDeath > 0 ? (m.firstDeathRate / avgFirstDeath) * 100 : 0,
-    teamFirstDeath:
-      avgTeamFirstDeath > 0
-        ? (m.teamFirstDeathRate / avgTeamFirstDeath) * 100
-        : 0,
-    rawKd: m.kdRatio,
-    rawElims: m.eliminationsPer10,
-    rawThirdStat: isSupport ? m.healingDealtPer10 : m.heroDamagePer10,
-    rawFirstDeath: m.firstDeathRate,
-    rawTeamFirstDeath: m.teamFirstDeathRate,
-  }));
-
-  const chartConfig = {
-    kd: { label: "K/D", color: "#3b82f6" },
-    elims: { label: "Elims/10", color: "#10b981" },
-    thirdStat: { label: thirdStatLabel, color: "#f59e0b" },
-    firstDeath: { label: "1st Death %", color: "#f43f5e" },
-    teamFirstDeath: { label: "Team 1st Death %", color: "#8b5cf6" },
-  } satisfies ChartConfig;
-
-  return (
-    <HoverCard openDelay={300} closeDelay={100}>
-      <HoverCardTrigger asChild>{children}</HoverCardTrigger>
-      <HoverCardContent className="w-full p-4" side="right" align="start">
-        <div className="space-y-3">
-          <div>
-            <p className="text-sm font-medium">{playerName}</p>
-            <p className="text-muted-foreground text-xs">
-              Performance across maps (% of avg)
-            </p>
-          </div>
-          <ChartContainer config={chartConfig} className="h-[300px] w-full">
-            <LineChart
-              data={chartData}
-              margin={{ top: 8, right: 8, bottom: 0, left: 8 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis
-                dataKey="map"
-                tick={{ fontSize: 10 }}
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis
-                tick={{ fontSize: 10 }}
-                tickLine={false}
-                axisLine={false}
-                domain={["dataMin - 10", "dataMax + 10"]}
-                tickFormatter={(value: number) => `${Math.round(value)}%`}
-              />
-              <ReferenceLine
-                y={100}
-                stroke="var(--border)"
-                strokeDasharray="4 4"
-              />
-              <Tooltip content={<PerformanceTooltip />} />
-              <Line
-                type="monotone"
-                name="K/D"
-                dataKey="kd"
-                stroke="var(--color-kd)"
-                strokeWidth={2}
-                dot={{ r: 3 }}
-                activeDot={{ r: 4 }}
-              />
-              <Line
-                type="monotone"
-                name="Elims/10"
-                dataKey="elims"
-                stroke="var(--color-elims)"
-                strokeWidth={2}
-                dot={{ r: 3 }}
-                activeDot={{ r: 4 }}
-              />
-              <Line
-                type="monotone"
-                name={thirdStatLabel}
-                dataKey="thirdStat"
-                stroke="var(--color-thirdStat)"
-                strokeWidth={2}
-                dot={{ r: 3 }}
-                activeDot={{ r: 4 }}
-              />
-              {avgFirstDeath > 0 && (
-                <Line
-                  type="monotone"
-                  name="1st Death %"
-                  dataKey="firstDeath"
-                  stroke="var(--color-firstDeath)"
-                  strokeWidth={2}
-                  strokeDasharray="4 3"
-                  dot={{ r: 3 }}
-                  activeDot={{ r: 4 }}
-                />
-              )}
-              {avgTeamFirstDeath > 0 && (
-                <Line
-                  type="monotone"
-                  name="Team 1st Death %"
-                  dataKey="teamFirstDeath"
-                  stroke="var(--color-teamFirstDeath)"
-                  strokeWidth={2}
-                  strokeDasharray="4 3"
-                  dot={{ r: 3 }}
-                  activeDot={{ r: 4 }}
-                />
-              )}
-            </LineChart>
-          </ChartContainer>
-          <div className="flex items-center justify-center gap-3">
-            {Object.entries(chartConfig).map(([key, config]) => (
-              <div key={key} className="flex items-center gap-1">
-                <div
-                  className="h-2 w-2 rounded-full"
-                  style={{ backgroundColor: config.color }}
-                />
-                <span className="text-muted-foreground text-[10px]">
-                  {String(config.label)}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </HoverCardContent>
-    </HoverCard>
-  );
 }

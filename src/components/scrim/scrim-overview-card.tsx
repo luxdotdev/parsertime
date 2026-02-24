@@ -209,47 +209,81 @@ function OutlierBadge({
   );
 }
 
+function toDisplayText(value: unknown, fallback: string): string {
+  if (typeof value !== "string") return fallback;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : fallback;
+}
+
+function toSafeHeroImageSlug(heroName: string): string {
+  try {
+    const slug = toHero(heroName).trim();
+    return slug.length > 0 ? slug : "ana";
+  } catch {
+    return "ana";
+  }
+}
+
+function hasValidPerMapPerformance(
+  perMapPerformance: PlayerScrimPerformance["perMapPerformance"]
+): boolean {
+  return perMapPerformance.every(
+    (map) =>
+      Number.isFinite(map.kdRatio) &&
+      Number.isFinite(map.eliminationsPer10) &&
+      Number.isFinite(map.heroDamagePer10) &&
+      Number.isFinite(map.healingDealtPer10) &&
+      Number.isFinite(map.firstDeathRate) &&
+      Number.isFinite(map.teamFirstDeathRate)
+  );
+}
+
 function PlayerRow({ player }: { player: PlayerScrimPerformance }) {
   const topOutliers = player.outliers.slice(0, 2);
-  const hasChartData = player.perMapPerformance.length >= 2;
-  const playerDisplayName = player.playerName.trim() || "Unknown Player";
+  const heroCount = Array.isArray(player.heroes) ? player.heroes.length : 0;
+  const hasChartData =
+    player.perMapPerformance.length >= 2 &&
+    hasValidPerMapPerformance(player.perMapPerformance);
+  const playerDisplayName = toDisplayText(player.playerName, "Unknown Player");
+  const primaryHeroDisplay = toDisplayText(player.primaryHero, "Unknown Hero");
+  const heroImageSlug = toSafeHeroImageSlug(primaryHeroDisplay);
+  const playerIdentity = (
+    <div
+      className={cn("flex items-center gap-2", hasChartData && "cursor-pointer")}
+    >
+      <div className="bg-muted relative h-7 w-7 shrink-0 overflow-hidden rounded-full">
+        <Image
+          src={`/heroes/${heroImageSlug}.png`}
+          alt={primaryHeroDisplay}
+          fill
+          className="object-cover"
+          sizes="28px"
+        />
+      </div>
+      <div className="min-w-0">
+        <p className="truncate text-sm font-medium">{playerDisplayName}</p>
+        <p className="text-muted-foreground truncate text-xs">
+          {primaryHeroDisplay}
+          {heroCount > 1 && <span> +{heroCount - 1}</span>}
+        </p>
+      </div>
+    </div>
+  );
 
   return (
     <TableRow>
       <TableCell className="min-w-[140px]">
-        <PlayerPerformanceHoverChart
-          playerName={playerDisplayName}
-          primaryHero={player.primaryHero}
-          perMapPerformance={player.perMapPerformance}
-        >
-          <div
-            className={cn(
-              "flex items-center gap-2",
-              hasChartData && "cursor-pointer"
-            )}
+        {hasChartData ? (
+          <PlayerPerformanceHoverChart
+            playerName={playerDisplayName}
+            primaryHero={player.primaryHero}
+            perMapPerformance={player.perMapPerformance}
           >
-            <div className="bg-muted relative h-7 w-7 shrink-0 overflow-hidden rounded-full">
-              <Image
-                src={`/heroes/${toHero(player.primaryHero)}.png`}
-                alt={player.primaryHero}
-                fill
-                className="object-cover"
-                sizes="28px"
-              />
-            </div>
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium">
-                {playerDisplayName}
-              </p>
-              <p className="text-muted-foreground truncate text-xs">
-                {player.primaryHero}
-                {player.heroes.length > 1 && (
-                  <span> +{player.heroes.length - 1}</span>
-                )}
-              </p>
-            </div>
-          </div>
-        </PlayerPerformanceHoverChart>
+            {playerIdentity}
+          </PlayerPerformanceHoverChart>
+        ) : (
+          playerIdentity
+        )}
       </TableCell>
       <TableCell className="text-center text-sm tabular-nums">
         {player.mapsPlayed}
