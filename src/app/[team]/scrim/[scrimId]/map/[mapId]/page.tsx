@@ -20,6 +20,7 @@ import { VodOverview } from "@/components/vods/vod-overview";
 import { getMostPlayedHeroes } from "@/data/player-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
+import { scoutingTool } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import { getColorblindMode, translateMapName } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
@@ -80,32 +81,40 @@ export default async function MapDashboardPage(
 
   const { team1, team2 } = await getColorblindMode(user?.id ?? "");
 
-  const [mostPlayedHeroes, mapDetails, map, visibility, heroBans, noteContent] =
-    await Promise.all([
-      getMostPlayedHeroes(id),
-      prisma.matchStart.findFirst({
-        where: { MapDataId: id },
-        select: { map_name: true, team_1_name: true },
-      }),
-      prisma.map.findFirst({
-        where: { id },
-        select: { replayCode: true, vod: true },
-      }),
-      prisma.scrim.findFirst({
-        where: { id: parseInt(params.scrimId) },
-        select: { guestMode: true },
-      }),
-      prisma.heroBan.findMany({
-        where: { MapDataId: id },
-      }),
-      prisma.note.findFirst({
-        where: {
-          scrimId: parseInt(params.scrimId),
-          MapDataId: id,
-        },
-        select: { content: true },
-      }),
-    ]);
+  const [
+    mostPlayedHeroes,
+    mapDetails,
+    map,
+    visibility,
+    heroBans,
+    noteContent,
+    scoutingEnabled,
+  ] = await Promise.all([
+    getMostPlayedHeroes(id),
+    prisma.matchStart.findFirst({
+      where: { MapDataId: id },
+      select: { map_name: true, team_1_name: true },
+    }),
+    prisma.map.findFirst({
+      where: { id },
+      select: { replayCode: true, vod: true },
+    }),
+    prisma.scrim.findFirst({
+      where: { id: parseInt(params.scrimId) },
+      select: { guestMode: true },
+    }),
+    prisma.heroBan.findMany({
+      where: { MapDataId: id },
+    }),
+    prisma.note.findFirst({
+      where: {
+        scrimId: parseInt(params.scrimId),
+        MapDataId: id,
+      },
+      select: { content: true },
+    }),
+    scoutingTool(),
+  ]);
 
   const translatedMapName = await translateMapName(
     mapDetails?.map_name ?? "Map"
@@ -116,7 +125,10 @@ export default async function MapDashboardPage(
       <div className="border-b">
         <div className="hidden h-16 items-center px-4 md:flex">
           <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
-          <MainNav className="mx-6 hidden lg:block" />
+          <MainNav
+            className="mx-6 hidden lg:block"
+            scoutingEnabled={scoutingEnabled}
+          />
           <MobileNav className="block pl-2 lg:hidden" session={session} />
           <div className="ml-auto flex items-center space-x-4">
             <Search user={user} />
