@@ -378,7 +378,10 @@
       "playerStats": "Player Stats",
       "heroStats": "Hero Stats",
       "compareStats": "Compare Players",
-      "teamStats": "Team Stats"
+      "teamStats": "Team Stats",
+      "scouting": "Scouting",
+      "scoutPlayer": "Scout a player",
+      "scoutTeam": "Scout a team"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "Search team...",
