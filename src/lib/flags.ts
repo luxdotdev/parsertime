@@ -72,3 +72,21 @@ export const overviewCard = flag<boolean, Entities>({
   description: "Enable or disable an overview card for the scrim",
   identify,
 });
+
+export const scoutingTool = flag<boolean, Entities>({
+  key: "scouting-tool",
+  adapter: vercelAdapter(),
+  options: [
+    {
+      value: true,
+      label: "Enabled",
+    },
+    {
+      value: false,
+      label: "Disabled",
+    },
+  ],
+  defaultValue: false,
+  description: "Enable or disable the scouting tool",
+  identify,
+});
