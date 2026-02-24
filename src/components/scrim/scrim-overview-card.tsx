@@ -224,7 +224,7 @@ function PlayerRow({ player }: { player: PlayerScrimPerformance }) {
 
   return (
     <tr className="hover:bg-muted/50 border-b transition-colors">
-      <td className="p-2 align-middle whitespace-nowrap min-w-[140px]">
+      <td className="min-w-[140px] p-2 align-middle whitespace-nowrap">
         <PlayerPerformanceHoverChart
           playerName={playerDisplayName}
           primaryHero={player.primaryHero}
@@ -234,27 +234,27 @@ function PlayerRow({ player }: { player: PlayerScrimPerformance }) {
           perMapPerformance={player.perMapPerformance}
         />
       </td>
-      <td className="p-2 align-middle whitespace-nowrap text-center text-sm tabular-nums">
+      <td className="p-2 text-center align-middle text-sm whitespace-nowrap tabular-nums">
         {player.mapsPlayed}
       </td>
-      <td className="p-2 align-middle whitespace-nowrap text-center text-sm tabular-nums">
+      <td className="p-2 text-center align-middle text-sm whitespace-nowrap tabular-nums">
         {player.kdRatio.toFixed(2)}
       </td>
-      <td className="p-2 align-middle whitespace-nowrap text-center text-sm tabular-nums">
+      <td className="p-2 text-center align-middle text-sm whitespace-nowrap tabular-nums">
         {player.eliminationsPer10.toFixed(1)}
       </td>
-      <td className="p-2 align-middle whitespace-nowrap text-center text-sm tabular-nums">
+      <td className="p-2 text-center align-middle text-sm whitespace-nowrap tabular-nums">
         {player.heroDamagePer10 > 0
           ? format(Math.round(player.heroDamagePer10))
           : "—"}
       </td>
-      <td className="p-2 align-middle whitespace-nowrap text-center text-sm tabular-nums">
+      <td className="p-2 text-center align-middle text-sm whitespace-nowrap tabular-nums">
         {player.firstDeathRate.toFixed(1)}%
       </td>
-      <td className="p-2 align-middle whitespace-nowrap text-center text-sm tabular-nums">
+      <td className="p-2 text-center align-middle text-sm whitespace-nowrap tabular-nums">
         {player.teamFirstDeathRate.toFixed(1)}%
       </td>
-      <td className="p-2 align-middle whitespace-nowrap text-center">
+      <td className="p-2 text-center align-middle whitespace-nowrap">
         <TrendIndicator trend={player.trend} trendData={player.trendData} />
       </td>
       <td className="p-2 align-middle whitespace-nowrap">
@@ -378,25 +378,25 @@ export async function ScrimOverviewCard({
                       <th className="text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap">
                         Player
                       </th>
-                      <th className="text-foreground h-10 px-2 align-middle font-medium whitespace-nowrap text-center">
+                      <th className="text-foreground h-10 px-2 text-center align-middle font-medium whitespace-nowrap">
                         Maps
                       </th>
-                      <th className="text-foreground h-10 px-2 align-middle font-medium whitespace-nowrap text-center">
+                      <th className="text-foreground h-10 px-2 text-center align-middle font-medium whitespace-nowrap">
                         K/D
                       </th>
-                      <th className="text-foreground h-10 px-2 align-middle font-medium whitespace-nowrap text-center">
+                      <th className="text-foreground h-10 px-2 text-center align-middle font-medium whitespace-nowrap">
                         Elims/10
                       </th>
-                      <th className="text-foreground h-10 px-2 align-middle font-medium whitespace-nowrap text-center">
+                      <th className="text-foreground h-10 px-2 text-center align-middle font-medium whitespace-nowrap">
                         Dmg/10
                       </th>
-                      <th className="text-foreground h-10 px-2 align-middle font-medium whitespace-nowrap text-center">
+                      <th className="text-foreground h-10 px-2 text-center align-middle font-medium whitespace-nowrap">
                         1st Death %
                       </th>
-                      <th className="text-foreground h-10 px-2 align-middle font-medium whitespace-nowrap text-center">
-                      Team 1st Death %
+                      <th className="text-foreground h-10 px-2 text-center align-middle font-medium whitespace-nowrap">
+                        Team 1st Death %
                       </th>
-                      <th className="text-foreground h-10 px-2 align-middle font-medium whitespace-nowrap text-center">
+                      <th className="text-foreground h-10 px-2 text-center align-middle font-medium whitespace-nowrap">
                         Trend
                       </th>
                       <th className="text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap">
