@@ -9,7 +9,6 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
@@ -17,12 +16,11 @@ import { usePathname } from "next/navigation";
 export function MainNav({ className }: React.HTMLAttributes<HTMLElement>) {
   const pathname = usePathname();
   const t = useTranslations("dashboard.mainNav");
-  const isMobile = useIsMobile();
 
   return (
     <NavigationMenu
       className={cn("flex items-center", className)}
-      viewport={!isMobile}
+      viewport={false}
     >
       <NavigationMenuList className="flex-wrap space-x-2 lg:space-x-4">
         <NavigationMenuItem asChild>
@@ -135,6 +133,51 @@ export function MainNav({ className }: React.HTMLAttributes<HTMLElement>) {
           >
             {t("teams")}
           </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuTrigger
+            className={cn(
+              "text-muted-foreground hover:text-primary px-1 py-1 text-sm font-medium transition-colors",
+              pathname.startsWith("/scouting")
+                ? "text-primary"
+                : "text-muted-foreground"
+            )}
+          >
+            {t("scouting")}
+          </NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <ul className="grid w-[200px]">
+              <li>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/scouting"
+                    className={cn(
+                      "text-muted-foreground hover:text-primary px-1 py-1 text-sm font-medium transition-colors",
+                      /^\/scouting\/(?!player$|team$)[^\/]+$/.test(pathname) ||
+                        pathname === "/scouting"
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {t("scoutPlayer")}
+                  </Link>
+                </NavigationMenuLink>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/scouting/team"
+                    className={cn(
+                      "text-muted-foreground hover:text-primary px-1 py-1 text-sm font-medium transition-colors",
+                      pathname.startsWith("/scouting/team")
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {t("scoutTeam")}
+                  </Link>
+                </NavigationMenuLink>
+              </li>
+            </ul>
+          </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem asChild>
           <Link
