@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import type { ChartConfig } from "@/components/ui/chart";
 import { ChartContainer } from "@/components/ui/chart";
 import {
@@ -9,8 +8,11 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import type { PlayerMapPerformance } from "@/data/scrim-overview-dto";
+import { Logger } from "@/lib/logger";
 import type { HeroName } from "@/types/heroes";
 import { heroRoleMapping } from "@/types/heroes";
+import Image from "next/image";
+import * as React from "react";
 import {
   CartesianGrid,
   Line,
@@ -51,8 +53,10 @@ type ChartModel = {
 type Props = {
   playerName: string;
   primaryHero: HeroName;
+  heroLabel: string;
+  heroImageSlug: string;
+  heroCount: number;
   perMapPerformance: PlayerMapPerformance[];
-  children: React.ReactNode;
 };
 
 type ChartErrorBoundaryProps = {
@@ -161,10 +165,12 @@ function buildChartModel(
     elims: avgElims > 0 ? (m.eliminationsPer10 / avgElims) * 100 : 0,
     thirdStat:
       avgThirdStat > 0
-        ? ((isSupport ? m.healingDealtPer10 : m.heroDamagePer10) / avgThirdStat) *
+        ? ((isSupport ? m.healingDealtPer10 : m.heroDamagePer10) /
+            avgThirdStat) *
           100
         : 0,
-    firstDeath: avgFirstDeath > 0 ? (m.firstDeathRate / avgFirstDeath) * 100 : 0,
+    firstDeath:
+      avgFirstDeath > 0 ? (m.firstDeathRate / avgFirstDeath) * 100 : 0,
     teamFirstDeath:
       avgTeamFirstDeath > 0
         ? (m.teamFirstDeathRate / avgTeamFirstDeath) * 100
@@ -184,43 +190,72 @@ function buildChartModel(
     teamFirstDeath: { label: "Team 1st Death %", color: "#8b5cf6" },
   } satisfies ChartConfig;
 
-  return { thirdStatLabel, avgFirstDeath, avgTeamFirstDeath, chartData, chartConfig };
+  return {
+    thirdStatLabel,
+    avgFirstDeath,
+    avgTeamFirstDeath,
+    chartData,
+    chartConfig,
+  };
 }
 
 export function PlayerPerformanceHoverChart({
   playerName,
   primaryHero,
+  heroLabel,
+  heroImageSlug,
+  heroCount,
   perMapPerformance,
-  children,
 }: Props) {
+  const identity = (
+    <div className="flex items-center gap-2">
+      <div className="bg-muted relative h-7 w-7 shrink-0 overflow-hidden rounded-full">
+        <Image
+          src={`/heroes/${heroImageSlug}.png`}
+          alt={heroLabel}
+          fill
+          className="object-cover"
+          sizes="28px"
+        />
+      </div>
+      <div className="min-w-0">
+        <p className="truncate text-sm font-medium">{playerName}</p>
+        <p className="text-muted-foreground truncate text-xs">
+          {heroLabel}
+          {heroCount > 1 && <span> +{heroCount - 1}</span>}
+        </p>
+      </div>
+    </div>
+  );
+
   if (perMapPerformance.length < 2) {
-    return children;
+    return identity;
   }
+
   let model: ChartModel;
   try {
     model = buildChartModel(primaryHero, perMapPerformance);
   } catch (error) {
-    console.error("[scrim-overview] player hover chart model failed", {
+    Logger.error("[scrim-overview] player hover chart model failed", {
       playerName,
       primaryHero,
       perMapPerformance,
       error,
     });
-    return (
-      <HoverCard openDelay={300} closeDelay={100}>
-        <HoverCardTrigger asChild>{children}</HoverCardTrigger>
-        <HoverCardContent className="w-full p-4" side="right" align="start">
-          <p className="text-muted-foreground text-xs">
-            Performance chart unavailable for this player.
-          </p>
-        </HoverCardContent>
-      </HoverCard>
-    );
+    return identity;
   }
 
   return (
     <HoverCard openDelay={300} closeDelay={100}>
-      <HoverCardTrigger asChild>{children}</HoverCardTrigger>
+      <HoverCardTrigger asChild>
+        <button
+          type="button"
+          className="w-full cursor-pointer text-left"
+          aria-label={`Show ${playerName} performance trend chart`}
+        >
+          {identity}
+        </button>
+      </HoverCardTrigger>
       <HoverCardContent className="w-full p-4" side="right" align="start">
         <div className="space-y-3">
           <div>
@@ -236,7 +271,10 @@ export function PlayerPerformanceHoverChart({
               </p>
             }
           >
-            <ChartContainer config={model.chartConfig} className="h-[300px] w-full">
+            <ChartContainer
+              config={model.chartConfig}
+              className="h-[300px] w-full"
+            >
               <LineChart
                 data={model.chartData}
                 margin={{ top: 8, right: 8, bottom: 0, left: 8 }}
@@ -322,7 +360,7 @@ export function PlayerPerformanceHoverChart({
                     style={{ backgroundColor: config.color }}
                   />
                   <span className="text-muted-foreground text-[10px]">
-                    {String(config.label)}
+                    {typeof config.label === "string" ? config.label : ""}
                   </span>
                 </div>
               ))}

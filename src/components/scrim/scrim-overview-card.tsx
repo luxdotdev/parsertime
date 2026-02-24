@@ -9,14 +9,6 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -36,7 +28,6 @@ import {
   MinusIcon,
   StarFilledIcon,
 } from "@radix-ui/react-icons";
-import Image from "next/image";
 
 type ScrimOverviewCardProps = {
   scrimId: number;
@@ -224,91 +215,49 @@ function toSafeHeroImageSlug(heroName: string): string {
   }
 }
 
-function hasValidPerMapPerformance(
-  perMapPerformance: PlayerScrimPerformance["perMapPerformance"]
-): boolean {
-  return perMapPerformance.every(
-    (map) =>
-      Number.isFinite(map.kdRatio) &&
-      Number.isFinite(map.eliminationsPer10) &&
-      Number.isFinite(map.heroDamagePer10) &&
-      Number.isFinite(map.healingDealtPer10) &&
-      Number.isFinite(map.firstDeathRate) &&
-      Number.isFinite(map.teamFirstDeathRate)
-  );
-}
-
 function PlayerRow({ player }: { player: PlayerScrimPerformance }) {
   const topOutliers = player.outliers.slice(0, 2);
   const heroCount = Array.isArray(player.heroes) ? player.heroes.length : 0;
-  const hasChartData =
-    player.perMapPerformance.length >= 2 &&
-    hasValidPerMapPerformance(player.perMapPerformance);
   const playerDisplayName = toDisplayText(player.playerName, "Unknown Player");
   const primaryHeroDisplay = toDisplayText(player.primaryHero, "Unknown Hero");
   const heroImageSlug = toSafeHeroImageSlug(primaryHeroDisplay);
-  const playerIdentity = (
-    <div
-      className={cn("flex items-center gap-2", hasChartData && "cursor-pointer")}
-    >
-      <div className="bg-muted relative h-7 w-7 shrink-0 overflow-hidden rounded-full">
-        <Image
-          src={`/heroes/${heroImageSlug}.png`}
-          alt={primaryHeroDisplay}
-          fill
-          className="object-cover"
-          sizes="28px"
-        />
-      </div>
-      <div className="min-w-0">
-        <p className="truncate text-sm font-medium">{playerDisplayName}</p>
-        <p className="text-muted-foreground truncate text-xs">
-          {primaryHeroDisplay}
-          {heroCount > 1 && <span> +{heroCount - 1}</span>}
-        </p>
-      </div>
-    </div>
-  );
 
   return (
-    <TableRow>
-      <TableCell className="min-w-[140px]">
-        {hasChartData ? (
-          <PlayerPerformanceHoverChart
-            playerName={playerDisplayName}
-            primaryHero={player.primaryHero}
-            perMapPerformance={player.perMapPerformance}
-          >
-            {playerIdentity}
-          </PlayerPerformanceHoverChart>
-        ) : (
-          playerIdentity
-        )}
-      </TableCell>
-      <TableCell className="text-center text-sm tabular-nums">
+    <tr className="hover:bg-muted/50 border-b transition-colors">
+      <td className="p-2 align-middle whitespace-nowrap min-w-[140px]">
+        <PlayerPerformanceHoverChart
+          playerName={playerDisplayName}
+          primaryHero={player.primaryHero}
+          heroLabel={primaryHeroDisplay}
+          heroImageSlug={heroImageSlug}
+          heroCount={heroCount}
+          perMapPerformance={player.perMapPerformance}
+        />
+      </td>
+      <td className="p-2 align-middle whitespace-nowrap text-center text-sm tabular-nums">
         {player.mapsPlayed}
-      </TableCell>
-      <TableCell className="text-center text-sm tabular-nums">
+      </td>
+      <td className="p-2 align-middle whitespace-nowrap text-center text-sm tabular-nums">
         {player.kdRatio.toFixed(2)}
-      </TableCell>
-      <TableCell className="text-center text-sm tabular-nums">
+      </td>
+      <td className="p-2 align-middle whitespace-nowrap text-center text-sm tabular-nums">
         {player.eliminationsPer10.toFixed(1)}
-      </TableCell>
-      <TableCell className="text-center text-sm tabular-nums">
+      </td>
+      <td className="p-2 align-middle whitespace-nowrap text-center text-sm tabular-nums">
         {player.heroDamagePer10 > 0
           ? format(Math.round(player.heroDamagePer10))
           : "—"}
-      </TableCell>
-      <TableCell className="text-center text-sm tabular-nums">
+      </td>
+      <td className="p-2 align-middle whitespace-nowrap text-center text-sm tabular-nums">
         {player.firstDeathRate.toFixed(1)}%
-      </TableCell>
-      <TableCell className="text-center text-sm tabular-nums">
+      </td>
+      <td className="p-2 align-middle whitespace-nowrap text-center text-sm tabular-nums">
         {player.teamFirstDeathRate.toFixed(1)}%
-      </TableCell>
-      <TableCell className="text-center">
+      </td>
+      <td className="p-2 align-middle whitespace-nowrap text-center">
         <TrendIndicator trend={player.trend} trendData={player.trendData} />
-      </TableCell>
-      <TableCell>
+      </td>
+      <td className="p-2 align-middle whitespace-nowrap">
         <div className="flex flex-wrap gap-1">
           {topOutliers.length > 0 ? (
             topOutliers.map((outlier) => (
@@ -318,8 +267,8 @@ function PlayerRow({ player }: { player: PlayerScrimPerformance }) {
             <span className="text-muted-foreground text-xs">—</span>
           )}
         </div>
-      </TableCell>
-    </TableRow>
+      </td>
+    </tr>
   );
 }
 
@@ -422,28 +371,46 @@ export async function ScrimOverviewCard({
               <h4 className="text-muted-foreground mb-3 text-xs font-medium tracking-wide uppercase">
                 Player Performance
               </h4>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Player</TableHead>
-                    <TableHead className="text-center">Maps</TableHead>
-                    <TableHead className="text-center">K/D</TableHead>
-                    <TableHead className="text-center">Elims/10</TableHead>
-                    <TableHead className="text-center">Dmg/10</TableHead>
-                    <TableHead className="text-center">1st Death %</TableHead>
-                    <TableHead className="text-center">
+              <div className="relative w-full overflow-x-auto">
+                <table className="w-full caption-bottom text-sm">
+                  <thead className="[&_tr]:border-b">
+                    <tr className="hover:bg-muted/50 border-b transition-colors">
+                      <th className="text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap">
+                        Player
+                      </th>
+                      <th className="text-foreground h-10 px-2 align-middle font-medium whitespace-nowrap text-center">
+                        Maps
+                      </th>
+                      <th className="text-foreground h-10 px-2 align-middle font-medium whitespace-nowrap text-center">
+                        K/D
+                      </th>
+                      <th className="text-foreground h-10 px-2 align-middle font-medium whitespace-nowrap text-center">
+                        Elims/10
+                      </th>
+                      <th className="text-foreground h-10 px-2 align-middle font-medium whitespace-nowrap text-center">
+                        Dmg/10
+                      </th>
+                      <th className="text-foreground h-10 px-2 align-middle font-medium whitespace-nowrap text-center">
+                        1st Death %
+                      </th>
+                      <th className="text-foreground h-10 px-2 align-middle font-medium whitespace-nowrap text-center">
                       Team 1st Death %
-                    </TableHead>
-                    <TableHead className="text-center">Trend</TableHead>
-                    <TableHead>Outliers</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {teamPlayers.map((player) => (
-                    <PlayerRow key={player.playerKey} player={player} />
-                  ))}
-                </TableBody>
-              </Table>
+                      </th>
+                      <th className="text-foreground h-10 px-2 align-middle font-medium whitespace-nowrap text-center">
+                        Trend
+                      </th>
+                      <th className="text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap">
+                        Outliers
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="[&_tr:last-child]:border-0">
+                    {teamPlayers.map((player) => (
+                      <PlayerRow key={player.playerKey} player={player} />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </section>
           </>
         )}
