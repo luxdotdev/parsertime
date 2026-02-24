@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import type { ChartConfig } from "@/components/ui/chart";
 import { ChartContainer } from "@/components/ui/chart";
 import {
@@ -39,12 +40,56 @@ type ChartDataPoint = {
   rawTeamFirstDeath: number;
 };
 
+type ChartModel = {
+  thirdStatLabel: string;
+  avgFirstDeath: number;
+  avgTeamFirstDeath: number;
+  chartData: ChartDataPoint[];
+  chartConfig: ChartConfig;
+};
+
 type Props = {
   playerName: string;
   primaryHero: HeroName;
   perMapPerformance: PlayerMapPerformance[];
   children: React.ReactNode;
 };
+
+type ChartErrorBoundaryProps = {
+  fallback: React.ReactNode;
+  children: React.ReactNode;
+};
+
+type ChartErrorBoundaryState = {
+  hasError: boolean;
+};
+
+class ChartErrorBoundary extends React.Component<
+  ChartErrorBoundaryProps,
+  ChartErrorBoundaryState
+> {
+  public constructor(props: ChartErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  public static getDerivedStateFromError(): ChartErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  public componentDidUpdate(prevProps: ChartErrorBoundaryProps): void {
+    if (prevProps.children !== this.props.children && this.state.hasError) {
+      this.setState({ hasError: false });
+    }
+  }
+
+  public render(): React.ReactNode {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
 
 function formatRawValue(
   dataKey: string | number | undefined,
@@ -90,78 +135,110 @@ function PerformanceTooltip({
   );
 }
 
+function buildChartModel(
+  primaryHero: HeroName,
+  perMapPerformance: PlayerMapPerformance[]
+): ChartModel {
+  const role = heroRoleMapping[primaryHero];
+  const isSupport = role === "Support";
+  const thirdStatLabel = isSupport ? "Healing/10" : "Dmg/10";
+
+  const len = perMapPerformance.length;
+  const avgKd = perMapPerformance.reduce((sum, m) => sum + m.kdRatio, 0) / len;
+  const avgElims =
+    perMapPerformance.reduce((sum, m) => sum + m.eliminationsPer10, 0) / len;
+  const avgThirdStat = isSupport
+    ? perMapPerformance.reduce((sum, m) => sum + m.healingDealtPer10, 0) / len
+    : perMapPerformance.reduce((sum, m) => sum + m.heroDamagePer10, 0) / len;
+  const avgFirstDeath =
+    perMapPerformance.reduce((sum, m) => sum + m.firstDeathRate, 0) / len;
+  const avgTeamFirstDeath =
+    perMapPerformance.reduce((sum, m) => sum + m.teamFirstDeathRate, 0) / len;
+
+  const chartData = perMapPerformance.map((m) => ({
+    map: m.mapName,
+    kd: avgKd > 0 ? (m.kdRatio / avgKd) * 100 : 0,
+    elims: avgElims > 0 ? (m.eliminationsPer10 / avgElims) * 100 : 0,
+    thirdStat:
+      avgThirdStat > 0
+        ? ((isSupport ? m.healingDealtPer10 : m.heroDamagePer10) / avgThirdStat) *
+          100
+        : 0,
+    firstDeath: avgFirstDeath > 0 ? (m.firstDeathRate / avgFirstDeath) * 100 : 0,
+    teamFirstDeath:
+      avgTeamFirstDeath > 0
+        ? (m.teamFirstDeathRate / avgTeamFirstDeath) * 100
+        : 0,
+    rawKd: m.kdRatio,
+    rawElims: m.eliminationsPer10,
+    rawThirdStat: isSupport ? m.healingDealtPer10 : m.heroDamagePer10,
+    rawFirstDeath: m.firstDeathRate,
+    rawTeamFirstDeath: m.teamFirstDeathRate,
+  }));
+
+  const chartConfig = {
+    kd: { label: "K/D", color: "#3b82f6" },
+    elims: { label: "Elims/10", color: "#10b981" },
+    thirdStat: { label: thirdStatLabel, color: "#f59e0b" },
+    firstDeath: { label: "1st Death %", color: "#f43f5e" },
+    teamFirstDeath: { label: "Team 1st Death %", color: "#8b5cf6" },
+  } satisfies ChartConfig;
+
+  return { thirdStatLabel, avgFirstDeath, avgTeamFirstDeath, chartData, chartConfig };
+}
+
 export function PlayerPerformanceHoverChart({
   playerName,
   primaryHero,
   perMapPerformance,
   children,
 }: Props) {
+  if (perMapPerformance.length < 2) {
+    return children;
+  }
+  let model: ChartModel;
   try {
-    if (perMapPerformance.length < 2) {
-      return children;
-    }
-
-    const role = heroRoleMapping[primaryHero];
-    const isSupport = role === "Support";
-    const thirdStatLabel = isSupport ? "Healing/10" : "Dmg/10";
-
-    const len = perMapPerformance.length;
-    const avgKd = perMapPerformance.reduce((sum, m) => sum + m.kdRatio, 0) / len;
-    const avgElims =
-      perMapPerformance.reduce((sum, m) => sum + m.eliminationsPer10, 0) / len;
-    const avgThirdStat = isSupport
-      ? perMapPerformance.reduce((sum, m) => sum + m.healingDealtPer10, 0) / len
-      : perMapPerformance.reduce((sum, m) => sum + m.heroDamagePer10, 0) / len;
-    const avgFirstDeath =
-      perMapPerformance.reduce((sum, m) => sum + m.firstDeathRate, 0) / len;
-    const avgTeamFirstDeath =
-      perMapPerformance.reduce((sum, m) => sum + m.teamFirstDeathRate, 0) / len;
-
-    const chartData = perMapPerformance.map((m) => ({
-      map: m.mapName,
-      kd: avgKd > 0 ? (m.kdRatio / avgKd) * 100 : 0,
-      elims: avgElims > 0 ? (m.eliminationsPer10 / avgElims) * 100 : 0,
-      thirdStat:
-        avgThirdStat > 0
-          ? ((isSupport ? m.healingDealtPer10 : m.heroDamagePer10) /
-              avgThirdStat) *
-            100
-          : 0,
-      firstDeath:
-        avgFirstDeath > 0 ? (m.firstDeathRate / avgFirstDeath) * 100 : 0,
-      teamFirstDeath:
-        avgTeamFirstDeath > 0
-          ? (m.teamFirstDeathRate / avgTeamFirstDeath) * 100
-          : 0,
-      rawKd: m.kdRatio,
-      rawElims: m.eliminationsPer10,
-      rawThirdStat: isSupport ? m.healingDealtPer10 : m.heroDamagePer10,
-      rawFirstDeath: m.firstDeathRate,
-      rawTeamFirstDeath: m.teamFirstDeathRate,
-    }));
-
-    const chartConfig = {
-      kd: { label: "K/D", color: "#3b82f6" },
-      elims: { label: "Elims/10", color: "#10b981" },
-      thirdStat: { label: thirdStatLabel, color: "#f59e0b" },
-      firstDeath: { label: "1st Death %", color: "#f43f5e" },
-      teamFirstDeath: { label: "Team 1st Death %", color: "#8b5cf6" },
-    } satisfies ChartConfig;
-
+    model = buildChartModel(primaryHero, perMapPerformance);
+  } catch (error) {
+    console.error("[scrim-overview] player hover chart model failed", {
+      playerName,
+      primaryHero,
+      perMapPerformance,
+      error,
+    });
     return (
       <HoverCard openDelay={300} closeDelay={100}>
         <HoverCardTrigger asChild>{children}</HoverCardTrigger>
         <HoverCardContent className="w-full p-4" side="right" align="start">
-          <div className="space-y-3">
-            <div>
-              <p className="text-sm font-medium">{playerName}</p>
+          <p className="text-muted-foreground text-xs">
+            Performance chart unavailable for this player.
+          </p>
+        </HoverCardContent>
+      </HoverCard>
+    );
+  }
+
+  return (
+    <HoverCard openDelay={300} closeDelay={100}>
+      <HoverCardTrigger asChild>{children}</HoverCardTrigger>
+      <HoverCardContent className="w-full p-4" side="right" align="start">
+        <div className="space-y-3">
+          <div>
+            <p className="text-sm font-medium">{playerName}</p>
+            <p className="text-muted-foreground text-xs">
+              Performance across maps (% of avg)
+            </p>
+          </div>
+          <ChartErrorBoundary
+            fallback={
               <p className="text-muted-foreground text-xs">
-                Performance across maps (% of avg)
+                Performance chart unavailable for this player.
               </p>
-            </div>
-            <ChartContainer config={chartConfig} className="h-[300px] w-full">
+            }
+          >
+            <ChartContainer config={model.chartConfig} className="h-[300px] w-full">
               <LineChart
-                data={chartData}
+                data={model.chartData}
                 margin={{ top: 8, right: 8, bottom: 0, left: 8 }}
               >
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -204,14 +281,14 @@ export function PlayerPerformanceHoverChart({
                 />
                 <Line
                   type="monotone"
-                  name={thirdStatLabel}
+                  name={model.thirdStatLabel}
                   dataKey="thirdStat"
                   stroke="var(--color-thirdStat)"
                   strokeWidth={2}
                   dot={{ r: 3 }}
                   activeDot={{ r: 4 }}
                 />
-                {avgFirstDeath > 0 && (
+                {model.avgFirstDeath > 0 && (
                   <Line
                     type="monotone"
                     name="1st Death %"
@@ -223,7 +300,7 @@ export function PlayerPerformanceHoverChart({
                     activeDot={{ r: 4 }}
                   />
                 )}
-                {avgTeamFirstDeath > 0 && (
+                {model.avgTeamFirstDeath > 0 && (
                   <Line
                     type="monotone"
                     name="Team 1st Death %"
@@ -238,7 +315,7 @@ export function PlayerPerformanceHoverChart({
               </LineChart>
             </ChartContainer>
             <div className="flex items-center justify-center gap-3">
-              {Object.entries(chartConfig).map(([key, config]) => (
+              {Object.entries(model.chartConfig).map(([key, config]) => (
                 <div key={key} className="flex items-center gap-1">
                   <div
                     className="h-2 w-2 rounded-full"
@@ -250,11 +327,9 @@ export function PlayerPerformanceHoverChart({
                 </div>
               ))}
             </div>
-          </div>
-        </HoverCardContent>
-      </HoverCard>
-    );
-  } catch {
-    return children;
-  }
+          </ChartErrorBoundary>
+        </div>
+      </HoverCardContent>
+    </HoverCard>
+  );
 }
