@@ -689,7 +689,355 @@
       },
       "code": "Replay code: {replayCode}"
     },
+    "mapCard": {
+      "altText": "The loading screen art for {map}.",
+      "selected": "Selected",
+      "copiedCode": "Copied replay code!",
+      "contextMenu": {
+        "title": "Map Actions",
+        "selectForComparison": "Select for comparison",
+        "addToMapGroup": "Add to map group",
+        "viewDetails": "View Map Details",
+        "copyCode": "Copy Replay Code"
+      }
+    },
+    "compareButton": {
+      "selected": "{count, plural, =1 {1 map selected} other {# maps selected}}",
+      "fromScrims": "{count, plural, =1 {from 1 scrim} other {from # scrims}}",
+      "compare": "Compare Selected",
+      "compareNow": "Compare Now",
+      "addToMapGroup": "Add to Map Group",
+      "clear": "Clear"
+    },
     "viewStats": "View team stats"
+  },
+  "mapGroupsPage": {
+    "metadata": {
+      "title": "Map Groups | Parsertime",
+      "description": "Create and manage custom map groups for analysis"
+    }
+  },
+  "comparePage": {
+    "metadata": {
+      "title": "Compare Maps | Parsertime",
+      "description": "Compare player performance across multiple maps"
+    },
+    "title": "Compare Maps",
+    "subtitle": "Analyze player performance across selected maps",
+    "comparingMaps": "{count, plural, =1 {Comparing 1 map} other {Comparing # maps}}",
+    "loading": "Loading comparison data...",
+    "emptyStates": {
+      "noMaps": {
+        "title": "No Maps Selected",
+        "description": "Select maps from the scrim page to start comparing player performance."
+      },
+      "noMapGroups": {
+        "title": "No Map Groups Selected",
+        "description": "Select one or more map groups below to start comparing player performance."
+      },
+      "noPlayer": {
+        "title": "No Player Selected",
+        "description": "Select a player to start comparing their performance across maps."
+      },
+      "noData": {
+        "title": "No Data Available",
+        "description": "{player} did not participate in the selected maps."
+      },
+      "noTeamData": {
+        "description": "No team data available for the selected maps."
+      }
+    },
+    "detailedStats": {
+      "title": "Detailed Statistics",
+      "subtitle": "All metrics normalized per 10 minutes or as percentages for fair comparison",
+      "exportCsv": "Export CSV",
+      "statName": "Stat",
+      "maps": "maps",
+      "priority": "Priority",
+      "note": "Note: All statistics are normalized (per 10 minutes, percentages, or averages) to enable fair comparison across different playtimes.",
+      "categories": {
+        "all": "All Stats",
+        "combat": "Combat",
+        "damage": "Damage",
+        "support": "Support",
+        "defense": "Defense",
+        "assists": "Assists",
+        "ultimate": "Ultimate",
+        "impact": "Impact",
+        "consistency": "Consistency"
+      },
+      "stats": {
+        "eliminationsPer10": "Eliminations per 10",
+        "finalBlowsPer10": "Final Blows per 10",
+        "soloKillsPer10": "Solo Kills per 10",
+        "deathsPer10": "Deaths per 10",
+        "kdRatio": "K/D Ratio",
+        "allDamagePer10": "All Damage per 10",
+        "heroDamagePer10": "Hero Damage per 10",
+        "barrierDamagePer10": "Barrier Damage per 10",
+        "healingDealtPer10": "Healing Dealt per 10",
+        "healingReceivedPer10": "Healing Received per 10",
+        "selfHealingPer10": "Self Healing per 10",
+        "damageTakenPer10": "Damage Taken per 10",
+        "damageBlockedPer10": "Damage Blocked per 10",
+        "offensiveAssistsPer10": "Offensive Assists per 10",
+        "defensiveAssistsPer10": "Defensive Assists per 10",
+        "ultimatesEarnedPer10": "Ultimates Earned per 10",
+        "ultimatesUsedPer10": "Ultimates Used per 10",
+        "averageUltChargeTime": "Average Ult Charge Time",
+        "averageTimeToUseUlt": "Average Time to Use Ult",
+        "killsPerUltimate": "Kills per Ultimate",
+        "averageDroughtTime": "Average Drought Time",
+        "firstPickPercentage": "First Pick %",
+        "firstPicksPer10": "First Picks per 10",
+        "firstDeathPercentage": "First Death %",
+        "firstDeathsPer10": "First Deaths per 10",
+        "fletaDeadliftPercentage": "Fleta Deadlift %",
+        "mvpScore": "MVP Score",
+        "mapMvpRate": "Map MVP Rate",
+        "duelWinratePercentage": "Duel Winrate %",
+        "fightReversalPercentage": "Fight Reversal %",
+        "eliminationsPer10StdDev": "Eliminations Std Dev",
+        "deathsPer10StdDev": "Deaths Std Dev",
+        "allDamagePer10StdDev": "Damage Std Dev",
+        "consistencyScore": "Consistency Score"
+      }
+    },
+    "impactMetrics": {
+      "subtitle": "{count, plural, =1 {Analyzed across 1 map} other {Analyzed across # maps}}",
+      "consistency": "Consistency",
+      "keyStrengths": "Key Strengths",
+      "developmentAreas": "Areas to Consider",
+      "detailedMetrics": "Detailed Impact Metrics",
+      "stats": {
+        "mvpScore": "MVP Score",
+        "firstPickRate": "First Pick Rate",
+        "killsPerUlt": "Kills per Ult",
+        "firstPicks": "First Picks",
+        "firstDeaths": "First Deaths",
+        "duelWinrate": "Duel Winrate",
+        "fightReversal": "Fight Reversal",
+        "fletaDeadlift": "Team Impact",
+        "mapMvpRate": "Map MVP Rate"
+      }
+    },
+    "views": {
+      "sideBySide": "Side by Side",
+      "delta": "Delta",
+      "trends": "Trends",
+      "charts": "Charts",
+      "consistency": "Consistency",
+      "detailedStats": "Detailed Stats",
+      "impactMetrics": "Impact Metrics"
+    },
+    "filters": {
+      "title": "Comparison Filters",
+      "resetAll": "Reset All",
+      "playerLabel": "Player",
+      "heroesLabel": "Heroes",
+      "player": "Player",
+      "heroesCount": "{count, plural, =1 {1 hero} other {# heroes}}"
+    },
+    "playerSelector": {
+      "placeholder": "Select player...",
+      "search": "Search players...",
+      "noPlayerFound": "No player found.",
+      "loading": "Loading...",
+      "mapCount": "{count, plural, =1 {1 map} other {# maps}}"
+    },
+    "sideBySide": {
+      "requiresTwoMaps": "Side-by-side comparison requires exactly 2 maps.",
+      "statComparison": "Stat Comparison",
+      "stats": {
+        "eliminations": "Eliminations",
+        "deaths": "Deaths",
+        "damage": "Damage",
+        "healing": "Healing",
+        "mitigated": "Damage Mitigated",
+        "eliminationsPer10": "Eliminations per 10",
+        "deathsPer10": "Deaths per 10",
+        "damagePer10": "Damage per 10",
+        "healingPer10": "Healing per 10",
+        "mitigatedPer10": "Mitigated per 10"
+      }
+    },
+    "delta": {
+      "requiresTwoMaps": "Delta view requires exactly 2 maps.",
+      "from": "From",
+      "to": "To",
+      "previous": "Previous",
+      "significant": "Significant",
+      "summary": "Summary of Significant Changes",
+      "noSignificantChanges": "No significant changes detected (threshold: ±10%)",
+      "stats": {
+        "eliminations": "Eliminations",
+        "deaths": "Deaths",
+        "damage": "Damage",
+        "healing": "Healing",
+        "mitigated": "Damage Mitigated",
+        "eliminationsPer10": "Eliminations per 10",
+        "deathsPer10": "Deaths per 10",
+        "damagePer10": "Damage per 10",
+        "healingPer10": "Healing per 10",
+        "mitigatedPer10": "Mitigated per 10"
+      }
+    },
+    "trends": {
+      "requiresThreePlus": "Trends view requires 3 or more maps.",
+      "aggregateSummary": "Aggregate Summary",
+      "totalMaps": "Total Maps",
+      "avgElimsPer10": "Avg Elims/10",
+      "avgDeathsPer10": "Avg Deaths/10",
+      "avgDamagePer10": "Avg Damage/10",
+      "performanceProgression": "Performance Progression",
+      "firstHalf": "First Half",
+      "secondHalf": "Second Half",
+      "maps": "Maps",
+      "improvement": "Improvement",
+      "improvementDesc": "Performance increased in the second half of maps.",
+      "decline": "Decline",
+      "declineDesc": "Performance decreased in the second half of maps.",
+      "stable": "Stable",
+      "stableDesc": "Performance remained consistent across all maps.",
+      "bestPerformance": "Best Performance",
+      "needsImprovement": "Needs Improvement",
+      "elimsPer10": "Elims/10",
+      "deathsPer10": "Deaths/10",
+      "damagePer10": "Damage/10",
+      "perMapBreakdown": "Per-Map Breakdown",
+      "elims": "Elims/10",
+      "deaths": "Deaths/10",
+      "damage": "Damage/10"
+    },
+    "charts": {
+      "performanceProgression": "Performance Progression",
+      "statComparison": "Stat Comparison",
+      "performanceProfile": "Performance Profile",
+      "firstPickPercentage": "First Pick %",
+      "firstDeathPercentage": "First Death %",
+      "killsPerUltimate": "Kills per Ultimate",
+      "duelWinrate": "Duel Winrate",
+      "soloKillsPer10": "Solo Kills per 10",
+      "damageTakenPer10": "Damage Taken per 10",
+      "healingReceivedPer10": "Healing Received per 10",
+      "fightReversalPercentage": "Fight Reversal %",
+      "per10": "per 10",
+      "avgUltImpact": "Average ultimate impact",
+      "oneVsOneSuccess": "1v1 success rate",
+      "individualKills": "Individual eliminations",
+      "damageReceived": "Damage received",
+      "supportReceived": "Support received",
+      "clutchPlays": "Clutch performance",
+      "totalEliminations": "Total Eliminations",
+      "totalDeaths": "Total Deaths",
+      "totalDamage": "Total Damage",
+      "avgPer10": "Avg per 10",
+      "eliminations": "Eliminations",
+      "deaths": "Deaths",
+      "damage": "Damage (K)",
+      "healing": "Healing (K)",
+      "mitigated": "Mitigated (K)",
+      "healingPer10K": "Healing/10 (K)",
+      "blockedPer10K": "Blocked/10 (K)",
+      "elimsPer10": "Elims/10",
+      "deathsPer10": "Deaths/10",
+      "damagePer10K": "Damage/10 (K)",
+      "elimsPer10Short": "Elims",
+      "deathsPer10Short": "Deaths",
+      "damagePer10Short": "Damage",
+      "healingPer10Short": "Healing",
+      "mitigatedPer10Short": "Mitigated",
+      "averagePerformance": "Average Performance",
+      "errorRange": "Range",
+      "stdDev": "Std Dev"
+    },
+    "consistency": {
+      "title": "Performance Consistency",
+      "subtitle": "Measures how reliable performance is across different maps and contexts",
+      "consistencyScore": "Consistency Score",
+      "highlyConsistent": "Highly Consistent",
+      "consistent": "Consistent",
+      "moderatelyConsistent": "Moderately Consistent",
+      "variablePerformance": "Variable Performance",
+      "meanStdDev": "Mean ± Standard Deviation",
+      "performanceAcrossMaps": "Performance Across Maps",
+      "understanding": {
+        "title": "Understanding Consistency Metrics",
+        "stdDev": "Measures how spread out performance is. Lower values = more consistent.",
+        "cv": "Normalized measure of dispersion. Allows comparison across different scales.",
+        "score": "Overall reliability metric (0-100). Higher scores indicate dependable, steady performance."
+      },
+      "metrics": {
+        "eliminations": "Eliminations",
+        "deaths": "Deaths",
+        "damage": "Damage",
+        "healing": "Healing",
+        "mean": "Mean",
+        "stdDev": "± Std Dev",
+        "range": "Range",
+        "variation": "Variation"
+      }
+    },
+    "comparisonMode": {
+      "label": "Comparison Mode",
+      "player": "Player",
+      "team": "Team",
+      "playerDescription": "Compare individual player performance across maps",
+      "teamDescription": "Compare your team vs enemy team across maps"
+    },
+    "mapSelectionMode": {
+      "label": "Map Selection",
+      "individual": "Individual Maps",
+      "groups": "Map Groups",
+      "individualDescription": "Compare using individually selected maps",
+      "groupsDescription": "Compare using predefined map groups (e.g., Brawl Maps, Open Maps)",
+      "selectGroups": "Select Map Groups",
+      "selectGroupsPlaceholder": "Select map groups to compare...",
+      "manageGroups": "Manage Groups",
+      "groupsHint": "You can create and manage map groups from the map groups page",
+      "individualMapsSelected": "{count, plural, =1 {1 map selected from scrim page} other {# maps selected from scrim page}}"
+    },
+    "mapGroupSelector": {
+      "title": "Select Map Groups to Compare",
+      "description": "Choose up to 2 map groups to compare performance. You can compare across different map types, playstyles, or time periods.",
+      "noGroups": {
+        "title": "No Map Groups Available",
+        "description": "Create map groups to organize and compare your team's performance",
+        "createButton": "Create Map Groups"
+      },
+      "hint": {
+        "selectGroups": "Select at least one map group to continue",
+        "selectOneMore": "Select one more group for comparison (optional)",
+        "readyToCompare": "Ready to compare selected groups"
+      },
+      "compareButton": "Compare"
+    },
+    "teamComparison": {
+      "myTeam": "My Team",
+      "enemyTeam": "Enemy Team",
+      "players": "{count, plural, =1 {1 player} other {# players}}",
+      "comparingMaps": "{count, plural, =1 {Comparing 1 map} other {Comparing # maps}}",
+      "categories": {
+        "combat": "Combat Performance",
+        "damage": "Damage & Survivability",
+        "support": "Support & Defense",
+        "ultimate": "Ultimate Economy"
+      },
+      "stats": {
+        "eliminationsPer10": "Eliminations per 10",
+        "finalBlowsPer10": "Final Blows per 10",
+        "deathsPer10": "Deaths per 10",
+        "firstPickPercentage": "First Pick %",
+        "firstDeathPercentage": "First Death %",
+        "heroDamagePer10": "Hero Damage per 10",
+        "damageTakenPer10": "Damage Taken per 10",
+        "healingDealtPer10": "Healing Dealt per 10",
+        "damageBlockedPer10": "Damage Blocked per 10",
+        "ultimatesEarnedPer10": "Ultimates Earned per 10",
+        "averageUltChargeTime": "Avg Ult Charge Time",
+        "killsPerUltimate": "Kills per Ultimate"
+      }
+    }
   },
   "mapPage": {
     "mapMetadata": {
@@ -919,6 +1267,8 @@
         "deaths": "Deaths",
         "kd": "K/D",
         "kad": "KA/D",
+        "firstDeathRate": "1st Death %",
+        "teamFirstDeathRate": "Team 1st Death %",
         "heroDmgDealt": "Hero Damage Dealt",
         "dmgReceived": "Damage Received",
         "healingReceived": "Healing Received",
@@ -943,6 +1293,8 @@
         "deaths": "The number of deaths the player had.",
         "kd": "The player's kill/death ratio.",
         "kad": "The player's kill/assist/death ratio.",
+        "firstDeathRate": "Percentage of fights where the player was the first to die overall.",
+        "teamFirstDeathRate": "Percentage of fights where the player was the first on their team to die.",
         "heroDmgDealt": "The amount of hero damage the player dealt.",
         "dmgReceived": "The amount of damage the player received.",
         "healingReceived": "The amount of healing the player received.",

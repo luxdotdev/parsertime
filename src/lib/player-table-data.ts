@@ -22,6 +22,8 @@ export type PlayerData = {
   ultsCharged: number;
   ultsUsed: number;
   mostPlayedHero: HeroName;
+  firstDeathRate: number;
+  teamFirstDeathRate: number;
 };
 
 export function determineRole(heroName: HeroName) {
@@ -61,6 +63,8 @@ export function aggregatePlayerData(rows: PlayerStat[]): PlayerData[] {
       ultsUsed: 0,
       timePlayed: 0,
       mostPlayedHero: row.player_hero as HeroName,
+      firstDeathRate: 0,
+      teamFirstDeathRate: 0,
     };
 
     const currentMaxTime = playerMaxMatchTime.get(row.player_name) ?? 0;

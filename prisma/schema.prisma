@@ -42,28 +42,30 @@ model Session {
 }
 
 model User {
-  id             String         @id @default(cuid())
-  name           String?
-  email          String         @unique
-  emailVerified  DateTime?
-  image          String?
-  accounts       Account[]
-  sessions       Session[]
-  role           UserRole       @default(USER)
-  teamId         Int?
-  teams          Team[]
-  managedTeams   TeamManager[]
-  stripeId       String?        @unique
-  billingPlan    BillingPlan    @default(FREE)
-  Notification   Notification[]
-  AppSettings    AppSettings[]
-  titles         Title[]        @default([])
-  bannerImage    String?
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @default(now()) @updatedAt
-  battletag      String?
-  appliedTitles  AppliedTitle[]
-  seenOnboarding Boolean        @default(false)
+  id               String            @id @default(cuid())
+  name             String?
+  email            String            @unique
+  emailVerified    DateTime?
+  image            String?
+  accounts         Account[]
+  sessions         Session[]
+  role             UserRole          @default(USER)
+  teamId           Int?
+  teams            Team[]
+  managedTeams     TeamManager[]
+  stripeId         String?           @unique
+  billingPlan      BillingPlan       @default(FREE)
+  Notification     Notification[]
+  AppSettings      AppSettings[]
+  titles           Title[]           @default([])
+  bannerImage      String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @default(now()) @updatedAt
+  battletag        String?
+  appliedTitles    AppliedTitle[]
+  seenOnboarding   Boolean           @default(false)
+  comparisonGroups ComparisonGroup[]
+  mapGroups        MapGroup[]
 
   @@index([id, email])
 }
@@ -183,16 +185,18 @@ model AuditLog {
 }
 
 model Team {
-  id        Int           @id @default(autoincrement())
-  name      String
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-  image     String?
-  users     User[]
-  scrims    Scrim[]
-  ownerId   String
-  managers  TeamManager[]
-  readonly  Boolean       @default(false)
+  id               Int               @id @default(autoincrement())
+  name             String
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  image            String?
+  users            User[]
+  scrims           Scrim[]
+  ownerId          String
+  managers         TeamManager[]
+  readonly         Boolean           @default(false)
+  comparisonGroups ComparisonGroup[]
+  mapGroups        MapGroup[]
 }
 
 model TeamManager {
@@ -218,6 +222,42 @@ model TeamInviteToken {
   email   String
   token   String   @unique
   expires DateTime
+}
+
+model ComparisonGroup {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  teamId      Int
+  createdBy   String
+  playerName  String
+  heroes      String[] @default([])
+  mapIds      Int[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@index([teamId])
+  @@index([createdBy])
+  @@index([teamId, playerName])
+}
+
+model MapGroup {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  teamId      Int
+  mapIds      Int[]
+  category    String?
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@index([teamId])
+  @@index([createdBy])
 }
 
 model Scrim {
@@ -253,6 +293,21 @@ model HeroBan {
   id          Int      @id @default(autoincrement())
   scrimId     Int
   hero        String
+  team        String
+  banPosition Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  MapData     MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId   Int
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model MapBan {
+  id          Int      @id @default(autoincrement())
+  scrimId     Int
+  map         String
   team        String
   banPosition Int
   createdAt   DateTime @default(now())
@@ -394,6 +449,7 @@ model MapData {
   ultimate_end         UltimateEnd[]
   ultimate_start       UltimateStart[]
   HeroBan              HeroBan[]
+  mapBans              MapBan[]
   Note                 Note[]
   calculatedStats      CalculatedStat[]
 

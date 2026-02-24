@@ -139,6 +139,37 @@ export async function DefaultOverview({
       return acc;
     }, {});
 
+  const teamFirstDeathCounts = new Map<string, number>();
+  for (const fight of fights) {
+    const teamsSeen = new Set<string>();
+    for (const kill of fight.kills) {
+      if (kill.event_type !== "kill" || teamsSeen.has(kill.victim_team))
+        continue;
+      teamsSeen.add(kill.victim_team);
+      teamFirstDeathCounts.set(
+        kill.victim_name,
+        (teamFirstDeathCounts.get(kill.victim_name) ?? 0) + 1
+      );
+    }
+  }
+
+  const fightCount = fights.length;
+  const playerFirstDeathStats = new Map<
+    string,
+    { firstDeathRate: number; teamFirstDeathRate: number }
+  >();
+  const allPlayerNames = new Set(finalRoundStats.map((s) => s.player_name));
+  for (const name of allPlayerNames) {
+    playerFirstDeathStats.set(name, {
+      firstDeathRate:
+        fightCount > 0 ? ((firstDeaths[name] ?? 0) / fightCount) * 100 : 0,
+      teamFirstDeathRate:
+        fightCount > 0
+          ? ((teamFirstDeathCounts.get(name) ?? 0) / fightCount) * 100
+          : 0,
+    });
+  }
+
   const playerWithMostFirstDeaths =
     Object.keys(firstDeaths).length > 0
       ? Object.keys(firstDeaths).reduce((a, b) =>
@@ -309,6 +340,7 @@ export async function DefaultOverview({
               team1MVP={team1MVP}
               team2MVP={team2MVP}
               mvpScores={mvpScores}
+              firstDeathStats={playerFirstDeathStats}
             />
           </CardContent>
           <CardContent className="hidden md:flex">
@@ -320,6 +352,7 @@ export async function DefaultOverview({
                 team1MVP={team1MVP}
                 team2MVP={team2MVP}
                 mvpScores={mvpScores}
+                firstDeathStats={playerFirstDeathStats}
               />
             ) : (
               <Tabs
@@ -342,6 +375,7 @@ export async function DefaultOverview({
                     team1MVP={team1MVP}
                     team2MVP={team2MVP}
                     mvpScores={mvpScores}
+                    firstDeathStats={playerFirstDeathStats}
                   />
                 </TabsContent>
                 {range(numberOfRounds).map((round) => (
@@ -357,6 +391,7 @@ export async function DefaultOverview({
                       team1MVP={team1MVP}
                       team2MVP={team2MVP}
                       mvpScores={mvpScores}
+                      firstDeathStats={playerFirstDeathStats}
                       playerStats={removeDuplicateRows(playerStats)
                         .filter(
                           (stat) =>

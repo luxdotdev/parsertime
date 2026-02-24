@@ -47,6 +47,11 @@ import type { Route } from "next";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 
+export type FirstDeathStats = Map<
+  string,
+  { firstDeathRate: number; teamFirstDeathRate: number }
+>;
+
 export function OverviewTable({
   playerStats,
   team1Name,
@@ -54,6 +59,7 @@ export function OverviewTable({
   team1MVP,
   team2MVP,
   mvpScores,
+  firstDeathStats,
 }: {
   playerStats: PlayerStat[];
   team1Name: string;
@@ -61,6 +67,7 @@ export function OverviewTable({
   team1MVP: string;
   team2MVP: string;
   mvpScores?: MVPScoreResult[];
+  firstDeathStats?: FirstDeathStats;
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -71,10 +78,19 @@ export function OverviewTable({
   const [rowSelection, setRowSelection] = React.useState({});
   const pathname = usePathname();
 
-  const tableData = React.useMemo(
-    () => aggregatePlayerData(playerStats),
-    [playerStats]
-  );
+  const tableData = React.useMemo(() => {
+    const data = aggregatePlayerData(playerStats);
+    if (firstDeathStats) {
+      for (const player of data) {
+        const stats = firstDeathStats.get(player.playerName);
+        if (stats) {
+          player.firstDeathRate = round(stats.firstDeathRate);
+          player.teamFirstDeathRate = round(stats.teamFirstDeathRate);
+        }
+      }
+    }
+    return data;
+  }, [playerStats, firstDeathStats]);
 
   const { team1: team1Color, team2: team2Color } = useColorblindMode();
 
@@ -291,6 +307,39 @@ export function OverviewTable({
       enableColumnFilter: false,
     },
     {
+      accessorKey: "firstDeathRate",
+      header: ({ header }) => (
+        <OverviewTableHeader tooltip={tooltips.firstDeathRate} header={header}>
+          {t("header.firstDeathRate")}
+        </OverviewTableHeader>
+      ),
+      cell: ({ row }) => (
+        <div className={cn(GeistMono.className, "text-right capitalize")}>
+          {row.getValue<number>("firstDeathRate").toFixed(1)}%
+        </div>
+      ),
+      enableSorting: true,
+      enableColumnFilter: false,
+    },
+    {
+      accessorKey: "teamFirstDeathRate",
+      header: ({ header }) => (
+        <OverviewTableHeader
+          tooltip={tooltips.teamFirstDeathRate}
+          header={header}
+        >
+          {t("header.teamFirstDeathRate")}
+        </OverviewTableHeader>
+      ),
+      cell: ({ row }) => (
+        <div className={cn(GeistMono.className, "text-right capitalize")}>
+          {row.getValue<number>("teamFirstDeathRate").toFixed(1)}%
+        </div>
+      ),
+      enableSorting: true,
+      enableColumnFilter: false,
+    },
+    {
       accessorKey: "heroDmgDealt",
       header: ({ header }) => (
         <OverviewTableHeader tooltip={tooltips.heroDmgDealt} header={header}>
@@ -408,6 +457,8 @@ export function OverviewTable({
     deaths: t("tooltips.deaths"),
     kd: t("tooltips.kd"),
     kad: t("tooltips.kad"),
+    firstDeathRate: t("tooltips.firstDeathRate"),
+    teamFirstDeathRate: t("tooltips.teamFirstDeathRate"),
     heroDmgDealt: t("tooltips.heroDmgDealt"),
     dmgReceived: t("tooltips.dmgReceived"),
     healingReceived: t("tooltips.healingReceived"),
