@@ -309,10 +309,7 @@ export function OverviewTable({
     {
       accessorKey: "firstDeathRate",
       header: ({ header }) => (
-        <OverviewTableHeader
-          tooltip={tooltips.firstDeathRate}
-          header={header}
-        >
+        <OverviewTableHeader tooltip={tooltips.firstDeathRate} header={header}>
           {t("header.firstDeathRate")}
         </OverviewTableHeader>
       ),

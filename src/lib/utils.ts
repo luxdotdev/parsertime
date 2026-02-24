@@ -1,5 +1,10 @@
 import prisma from "@/lib/prisma";
-import { ColorblindMode, type $Enums, type Kill, type MercyRez } from "@prisma/client";
+import {
+  ColorblindMode,
+  type $Enums,
+  type Kill,
+  type MercyRez,
+} from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { useMessages, useTranslations } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
@@ -194,7 +199,10 @@ export function groupEventsIntoFights(sortedEvents: Kill[]): Fight[] {
   let currentFight: Fight | null = null;
 
   for (const event of sortedEvents) {
-    if (!currentFight || event.match_time - currentFight.end > FIGHT_GAP_SECONDS) {
+    if (
+      !currentFight ||
+      event.match_time - currentFight.end > FIGHT_GAP_SECONDS
+    ) {
       currentFight = {
         kills: [event],
         start: event.match_time,

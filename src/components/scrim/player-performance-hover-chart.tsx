@@ -105,8 +105,7 @@ export function PlayerPerformanceHoverChart({
   const thirdStatLabel = isSupport ? "Healing/10" : "Dmg/10";
 
   const len = perMapPerformance.length;
-  const avgKd =
-    perMapPerformance.reduce((sum, m) => sum + m.kdRatio, 0) / len;
+  const avgKd = perMapPerformance.reduce((sum, m) => sum + m.kdRatio, 0) / len;
   const avgElims =
     perMapPerformance.reduce((sum, m) => sum + m.eliminationsPer10, 0) / len;
   const avgThirdStat = isSupport

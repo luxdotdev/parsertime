@@ -158,9 +158,7 @@ export async function DefaultOverview({
     string,
     { firstDeathRate: number; teamFirstDeathRate: number }
   >();
-  const allPlayerNames = new Set(
-    finalRoundStats.map((s) => s.player_name)
-  );
+  const allPlayerNames = new Set(finalRoundStats.map((s) => s.player_name));
   for (const name of allPlayerNames) {
     playerFirstDeathStats.set(name, {
       firstDeathRate:
