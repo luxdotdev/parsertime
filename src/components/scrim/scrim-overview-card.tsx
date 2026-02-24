@@ -212,12 +212,13 @@ function OutlierBadge({
 function PlayerRow({ player }: { player: PlayerScrimPerformance }) {
   const topOutliers = player.outliers.slice(0, 2);
   const hasChartData = player.perMapPerformance.length >= 2;
+  const playerDisplayName = player.playerName.trim() || "Unknown Player";
 
   return (
     <TableRow>
       <TableCell className="min-w-[140px]">
         <PlayerPerformanceHoverChart
-          playerName={player.playerName}
+          playerName={playerDisplayName}
           primaryHero={player.primaryHero}
           perMapPerformance={player.perMapPerformance}
         >
@@ -238,7 +239,7 @@ function PlayerRow({ player }: { player: PlayerScrimPerformance }) {
             </div>
             <div className="min-w-0">
               <p className="truncate text-sm font-medium">
-                {player.playerName}
+                {playerDisplayName}
               </p>
               <p className="text-muted-foreground truncate text-xs">
                 {player.primaryHero}
@@ -405,7 +406,7 @@ export async function ScrimOverviewCard({
                 </TableHeader>
                 <TableBody>
                   {teamPlayers.map((player) => (
-                    <PlayerRow key={player.playerName} player={player} />
+                    <PlayerRow key={player.playerKey} player={player} />
                   ))}
                 </TableBody>
               </Table>
