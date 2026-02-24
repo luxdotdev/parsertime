@@ -13,7 +13,10 @@ import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 
-export function MainNav({ className }: React.HTMLAttributes<HTMLElement>) {
+export function MainNav({
+  scoutingEnabled,
+  className,
+}: React.HTMLAttributes<HTMLElement> & { scoutingEnabled: boolean }) {
   const pathname = usePathname();
   const t = useTranslations("dashboard.mainNav");
 
@@ -134,51 +137,54 @@ export function MainNav({ className }: React.HTMLAttributes<HTMLElement>) {
             {t("teams")}
           </Link>
         </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger
-            className={cn(
-              "text-muted-foreground hover:text-primary px-1 py-1 text-sm font-medium transition-colors",
-              pathname.startsWith("/scouting")
-                ? "text-primary"
-                : "text-muted-foreground"
-            )}
-          >
-            {t("scouting")}
-          </NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[200px]">
-              <li>
-                <NavigationMenuLink asChild>
-                  <Link
-                    href="/scouting"
-                    className={cn(
-                      "text-muted-foreground hover:text-primary px-1 py-1 text-sm font-medium transition-colors",
-                      /^\/scouting\/(?!player$|team$)[^\/]+$/.test(pathname) ||
-                        pathname === "/scouting"
-                        ? "text-primary"
-                        : "text-muted-foreground"
-                    )}
-                  >
-                    {t("scoutPlayer")}
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  <Link
-                    href="/scouting/team"
-                    className={cn(
-                      "text-muted-foreground hover:text-primary px-1 py-1 text-sm font-medium transition-colors",
-                      pathname.startsWith("/scouting/team")
-                        ? "text-primary"
-                        : "text-muted-foreground"
-                    )}
-                  >
-                    {t("scoutTeam")}
-                  </Link>
-                </NavigationMenuLink>
-              </li>
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
+        {scoutingEnabled && (
+          <NavigationMenuItem>
+            <NavigationMenuTrigger
+              className={cn(
+                "text-muted-foreground hover:text-primary px-1 py-1 text-sm font-medium transition-colors",
+                pathname.startsWith("/scouting")
+                  ? "text-primary"
+                  : "text-muted-foreground"
+              )}
+            >
+              {t("scouting")}
+            </NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid w-[200px]">
+                <li>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      href="/scouting"
+                      className={cn(
+                        "text-muted-foreground hover:text-primary px-1 py-1 text-sm font-medium transition-colors",
+                        /^\/scouting\/(?!player$|team$)[^\/]+$/.test(
+                          pathname
+                        ) || pathname === "/scouting"
+                          ? "text-primary"
+                          : "text-muted-foreground"
+                      )}
+                    >
+                      {t("scoutPlayer")}
+                    </Link>
+                  </NavigationMenuLink>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      href="/scouting/team"
+                      className={cn(
+                        "text-muted-foreground hover:text-primary px-1 py-1 text-sm font-medium transition-colors",
+                        pathname.startsWith("/scouting/team")
+                          ? "text-primary"
+                          : "text-muted-foreground"
+                      )}
+                    >
+                      {t("scoutTeam")}
+                    </Link>
+                  </NavigationMenuLink>
+                </li>
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+        )}
         <NavigationMenuItem asChild>
           <Link
             href="/settings"
