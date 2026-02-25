@@ -164,20 +164,20 @@ export function MainNav({
                           : "text-muted-foreground"
                       )}
                     >
-                      {t("scoutPlayer")}
+                      {t("scoutTeam")}
                     </Link>
                   </NavigationMenuLink>
                   <NavigationMenuLink asChild>
                     <Link
-                      href="/scouting/team"
+                      href="/scouting/player"
                       className={cn(
                         "text-muted-foreground hover:text-primary px-1 py-1 text-sm font-medium transition-colors",
-                        pathname.startsWith("/scouting/team")
+                        pathname.startsWith("/scouting/player")
                           ? "text-primary"
                           : "text-muted-foreground"
                       )}
                     >
-                      {t("scoutTeam")}
+                      {t("scoutPlayer")}
                     </Link>
                   </NavigationMenuLink>
                 </li>
