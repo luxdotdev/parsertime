@@ -10,10 +10,17 @@ import { z } from "zod";
 
 const heroNames = Object.keys(heroRoleMapping) as [string, ...string[]];
 
+const HeroAssignmentSchema = z.object({
+  team: z.enum(["team1", "team2"]),
+  heroName: z.enum(heroNames),
+  playerName: z.string().min(1),
+});
+
 const CompSchema = z.object({
   mapResultId: z.number().int().positive(),
   team1Comp: z.array(z.enum(heroNames)).length(5),
   team2Comp: z.array(z.enum(heroNames)).length(5),
+  heroAssignments: z.array(HeroAssignmentSchema).optional(),
 });
 
 function validateRoleConstraint(heroes: string[]): boolean {
@@ -76,12 +83,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { mapResultId, team1Comp, team2Comp } = body.data;
+    const { mapResultId, team1Comp, team2Comp, heroAssignments } = body.data;
 
     wideEvent.request_params = {
       map_result_id: mapResultId,
       team1_comp: team1Comp,
       team2_comp: team2Comp,
+      hero_assignment_count: heroAssignments?.length ?? 0,
     };
 
     if (!validateRoleConstraint(team1Comp)) {
@@ -129,9 +137,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    await prisma.scoutingMapResult.update({
-      where: { id: mapResultId },
-      data: { team1Comp, team2Comp },
+    await prisma.$transaction(async (tx) => {
+      await tx.scoutingMapResult.update({
+        where: { id: mapResultId },
+        data: { team1Comp, team2Comp },
+      });
+
+      if (heroAssignments && heroAssignments.length > 0) {
+        await tx.scoutingHeroAssignment.deleteMany({
+          where: { mapResultId },
+        });
+        await tx.scoutingHeroAssignment.createMany({
+          data: heroAssignments.map((a) => ({
+            mapResultId,
+            team: a.team,
+            heroName: a.heroName,
+            playerName: a.playerName,
+          })),
+        });
+      }
     });
 
     wideEvent.status_code = 200;
@@ -141,6 +165,7 @@ export async function POST(request: NextRequest) {
       match_id: mapResult.matchId,
       team1_hero_count: team1Comp.length,
       team2_hero_count: team2Comp.length,
+      hero_assignment_count: heroAssignments?.length ?? 0,
     };
 
     return NextResponse.json({ success: true });
