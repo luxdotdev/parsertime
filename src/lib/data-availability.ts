@@ -47,7 +47,7 @@ export async function resolveDataAvailability(
   opponentAbbr: string,
   userTeamId: number | null
 ): Promise<DataAvailabilityProfile> {
-  const [owcsMapsCount, scrimData] = await Promise.all([
+  const [owcsMapsCount, scrimData, userScrimMaps] = await Promise.all([
     prisma.scoutingMapResult.count({
       where: {
         match: {
@@ -65,6 +65,11 @@ export async function resolveDataAvailability(
           },
         })
       : Promise.resolve(null),
+    userTeamId
+      ? prisma.mapData.count({
+          where: { Map: { Scrim: { teamId: userTeamId } } },
+        })
+      : Promise.resolve(0),
   ]);
 
   const opponentScrimMaps = scrimData
@@ -74,13 +79,6 @@ export async function resolveDataAvailability(
         0
       )
     : 0;
-
-  let userScrimMaps = 0;
-  if (userTeamId) {
-    userScrimMaps = await prisma.mapData.count({
-      where: { Map: { Scrim: { teamId: userTeamId } } },
-    });
-  }
 
   const hasOwcs = owcsMapsCount > 0;
   const hasScrims = opponentScrimMaps > 0;
