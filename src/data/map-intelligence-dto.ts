@@ -6,11 +6,11 @@ import {
   SCRIM_CONFIDENCE_THRESHOLDS,
   type DataAvailabilityProfile,
 } from "@/lib/data-availability";
-import prisma from "@/lib/prisma";
 import {
   getTeamStrengthRatings,
   type TeamStrengthRating,
 } from "./opponent-strength-dto";
+import { getOpponentMatchData } from "./scouting-dto";
 import { getOpponentScrimMapResults } from "./scrim-opponent-dto";
 import { getTeamWinrates } from "./team-stats-dto";
 import type { MapType } from "@prisma/client";
@@ -90,11 +90,7 @@ type MapResultRow = {
 async function getOpponentMapResults(
   teamAbbr: string
 ): Promise<MapResultRow[]> {
-  const matches = await prisma.scoutingMatch.findMany({
-    where: { OR: [{ team1: teamAbbr }, { team2: teamAbbr }] },
-    include: { maps: true },
-    orderBy: { matchDate: "asc" },
-  });
+  const matches = await getOpponentMatchData(teamAbbr);
 
   const rows: MapResultRow[] = [];
   for (const match of matches) {
