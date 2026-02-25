@@ -26,11 +26,13 @@ import {
 type PlayerMatchupsProps = {
   playerIntelligence: PlayerIntelligence | null;
   hasUserTeamLink: boolean;
+  opponentName?: string;
 };
 
 export function PlayerMatchups({
   playerIntelligence,
   hasUserTeamLink,
+  opponentName,
 }: PlayerMatchupsProps) {
   if (!hasUserTeamLink || !playerIntelligence) {
     return (
@@ -42,11 +44,12 @@ export function PlayerMatchups({
           />
           <div>
             <p className="font-medium">
-              Select your team to unlock player analysis
+              Select your team to unlock roster readiness
             </p>
             <p className="text-muted-foreground mt-1 text-sm">
               Use the &ldquo;Scouting for&rdquo; picker above to select your
-              team and see player vulnerability profiles and hero depth analysis.
+              team. This tab cross-references your players&apos; hero depth with
+              this opponent&apos;s ban patterns to identify who is most at risk.
             </p>
           </div>
         </CardContent>
@@ -65,6 +68,18 @@ export function PlayerMatchups({
 
   return (
     <div className="space-y-4">
+      <Card className="bg-muted/30 border-dashed">
+        <CardContent className="py-3">
+          <p className="text-muted-foreground text-sm">
+            Showing <span className="text-foreground font-medium">your roster&apos;s</span> hero
+            depth and vulnerabilities when facing{" "}
+            <span className="text-foreground font-medium">{opponentName ?? "this opponent"}</span>.
+            Players with narrow hero pools whose primary heroes are frequently banned by this
+            opponent are flagged as at-risk.
+          </p>
+        </CardContent>
+      </Card>
+
       {topVulnerabilities.length > 0 && (
         <VulnerabilityOverview vulnerabilities={topVulnerabilities} />
       )}
@@ -93,10 +108,10 @@ function VulnerabilityOverview({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Vulnerability Overview</CardTitle>
+        <CardTitle>At-Risk Players</CardTitle>
         <CardDescription>
-          Highest-vulnerability player per role based on hero depth and opponent
-          ban targeting
+          Your players most vulnerable to this opponent&apos;s ban strategy,
+          ranked by hero pool depth and ban exposure
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -143,8 +158,11 @@ function RoleSection({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <User className="h-4 w-4" aria-hidden="true" />
-          {role}
+          Your {role} Players
         </CardTitle>
+        <CardDescription>
+          Hero depth and performance relative to your other {role.toLowerCase()} players
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {players.map((player) => (
@@ -215,12 +233,16 @@ function PlayerProfile({
           <VulnerabilityIcon riskLevel={vulnerability.riskLevel} />
           <div>
             <p className="font-medium">
-              Opponent ban exposure:{" "}
+              Ban exposure:{" "}
               <span className="uppercase">{vulnerability.riskLevel}</span>
             </p>
             <p className="text-muted-foreground">
-              Primary hero banned in{" "}
-              {Math.round(vulnerability.opponentBanRate)}% of opponent maps
+              This opponent bans {vulnerability.primaryHero} in{" "}
+              {Math.round(vulnerability.opponentBanRate)}% of their maps — if
+              forced off their main, z-score drops by{" "}
+              {player.primarySecondaryDelta !== null
+                ? `${Math.abs(player.primarySecondaryDelta).toFixed(1)}σ`
+                : "an unknown amount"}
             </p>
           </div>
         </div>

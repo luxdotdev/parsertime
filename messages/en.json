@@ -1501,7 +1501,7 @@
         "overview": "Overview",
         "heroBans": "Hero Bans",
         "maps": "Maps",
-        "players": "Players",
+        "players": "Roster Prep",
         "report": "Report",
         "recommendations": "Recommendations"
       },
@@ -1615,13 +1615,13 @@
       },
       "players": {
         "methodology": {
-          "title": "How we analyze player depth and vulnerability",
+          "title": "How roster readiness is assessed",
           "points": {
-            "0": "Z-scores measure how a player's per-10-minute stats on each hero compare to all other hero performances in the same role across your roster. A score of 0σ is average for that role, +1σ is one standard deviation above average, −1σ is one below.",
-            "1": "Scale: +1.5σ or higher is a standout performance, +0.5σ to +1.5σ is above average, −0.5σ to +0.5σ is typical, below −0.5σ is below average for the role.",
+            "0": "This tab shows YOUR roster's readiness against this specific opponent. It identifies which of your players are most at risk based on their hero depth and how this opponent's ban patterns target them.",
+            "1": "Z-scores measure how a player's per-10-minute stats on each hero compare to all hero performances in the same role across your roster. 0σ = role average, +1.5σ+ = standout, −0.5σ = below average.",
             "2": "Stats weighted by role — Tank: deaths (30% inverted), elims (20%), damage (20%). Damage: elims (30%), damage (30%), deaths (20% inverted). Support: healing (35%), deaths (25% inverted), damage (14%), elims (10%).",
-            "3": "Primary/secondary delta is the z-score gap between a player's best and second-best hero. A delta above 1.5σ means a significant drop-off when forced off their primary — they're a ban target.",
-            "4": "Vulnerability Index = hero depth delta × opponent ban rate. A score above 0.5 is critical (large drop-off + frequently banned), 0.25–0.5 is high, 0.1–0.25 is moderate, below 0.1 is low.",
+            "3": "Primary/secondary delta is the z-score gap between a player's best and second-best hero. A delta above 1.5σ means a significant drop-off when forced off their main — they become a ban target for this opponent.",
+            "4": "Vulnerability Index = hero depth delta × opponent ban rate. Scale: above 0.5 = critical (large drop-off + frequently banned), 0.25–0.5 = high, 0.1–0.25 = moderate, below 0.1 = low.",
             "5": "Heroes need at least 3 maps with 2+ minutes of play time to be included. Players need at least 5 total maps for a meaningful confidence rating."
           }
         }

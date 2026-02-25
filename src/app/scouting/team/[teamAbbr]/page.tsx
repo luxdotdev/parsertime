@@ -204,6 +204,7 @@ export default async function ScoutingTeamPage(
           <PlayerMatchups
             playerIntelligence={playerIntelligence}
             hasUserTeamLink={hasUserTeamLink}
+            opponentName={profile.team.fullName ?? profile.team.abbreviation}
           />
           <MethodologyCard translationKey="scoutingPage.team.players.methodology" />
         </TabsContent>
