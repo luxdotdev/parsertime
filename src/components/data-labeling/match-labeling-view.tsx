@@ -1,11 +1,16 @@
 "use client";
 
 import { HeroCompPicker } from "@/components/data-labeling/hero-comp-picker";
+import { PlayerAssignmentPanel } from "@/components/data-labeling/player-assignment-panel";
+import { autoSuggestAssignments } from "@/components/data-labeling/roster-role-utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { MatchForLabeling, MatchMapForLabeling } from "@/data/data-labeling-dto";
+import type {
+  MatchForLabeling,
+  MatchMapForLabeling,
+} from "@/data/data-labeling-dto";
 import { toHero } from "@/lib/utils";
 import { heroRoleMapping, type HeroName } from "@/types/heroes";
 import { YouTubeEmbed } from "@next/third-parties/google";
@@ -24,6 +29,8 @@ type MatchLabelingViewProps = {
 type MapCompState = {
   team1Comp: string[];
   team2Comp: string[];
+  team1Assignments: Record<string, string>;
+  team2Assignments: Record<string, string>;
   dirty: boolean;
   saving: boolean;
   saved: boolean;
@@ -79,9 +86,22 @@ export function MatchLabelingView({ match }: MatchLabelingViewProps) {
     () => {
       const states: Record<number, MapCompState> = {};
       for (const map of match.maps) {
+        const team1Existing: Record<string, string> = {};
+        const team2Existing: Record<string, string> = {};
+        for (const a of map.heroAssignments) {
+          if (a.team === "team1") team1Existing[a.heroName] = a.playerName;
+          else team2Existing[a.heroName] = a.playerName;
+        }
+
         states[map.id] = {
           team1Comp: map.team1Comp,
           team2Comp: map.team2Comp,
+          team1Assignments: Object.keys(team1Existing).length > 0
+            ? team1Existing
+            : autoSuggestAssignments(map.team1Comp, match.team1Roster, {}),
+          team2Assignments: Object.keys(team2Existing).length > 0
+            ? team2Existing
+            : autoSuggestAssignments(map.team2Comp, match.team2Roster, {}),
           dirty: false,
           saving: false,
           saved: map.team1Comp.length > 0 && map.team2Comp.length > 0,
@@ -93,11 +113,52 @@ export function MatchLabelingView({ match }: MatchLabelingViewProps) {
 
   const updateMapComp = useCallback(
     (mapId: number, team: "team1Comp" | "team2Comp", heroes: string[]) => {
+      setMapStates((prev) => {
+        const prevState = prev[mapId];
+        const assignmentKey =
+          team === "team1Comp" ? "team1Assignments" : "team2Assignments";
+        const roster =
+          team === "team1Comp" ? match.team1Roster : match.team2Roster;
+
+        const existingAssignments = prevState[assignmentKey];
+        const pruned: Record<string, string> = {};
+        for (const hero of heroes) {
+          if (existingAssignments[hero]) {
+            pruned[hero] = existingAssignments[hero];
+          }
+        }
+        const updatedAssignments = autoSuggestAssignments(
+          heroes,
+          roster,
+          pruned
+        );
+
+        return {
+          ...prev,
+          [mapId]: {
+            ...prevState,
+            [team]: heroes,
+            [assignmentKey]: updatedAssignments,
+            dirty: true,
+            saved: false,
+          },
+        };
+      });
+    },
+    [match.team1Roster, match.team2Roster]
+  );
+
+  const updateAssignments = useCallback(
+    (
+      mapId: number,
+      team: "team1Assignments" | "team2Assignments",
+      assignments: Record<string, string>
+    ) => {
       setMapStates((prev) => ({
         ...prev,
         [mapId]: {
           ...prev[mapId],
-          [team]: heroes,
+          [team]: assignments,
           dirty: true,
           saved: false,
         },
@@ -125,6 +186,23 @@ export function MatchLabelingView({ match }: MatchLabelingViewProps) {
       }));
 
       try {
+        const heroAssignments = [
+          ...Object.entries(state.team1Assignments).map(
+            ([heroName, playerName]) => ({
+              team: "team1" as const,
+              heroName,
+              playerName,
+            })
+          ),
+          ...Object.entries(state.team2Assignments).map(
+            ([heroName, playerName]) => ({
+              team: "team2" as const,
+              heroName,
+              playerName,
+            })
+          ),
+        ];
+
         const res = await fetch("/api/data-labeling/save-comp", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -132,6 +210,8 @@ export function MatchLabelingView({ match }: MatchLabelingViewProps) {
             mapResultId: mapId,
             team1Comp: state.team1Comp,
             team2Comp: state.team2Comp,
+            heroAssignments:
+              heroAssignments.length > 0 ? heroAssignments : undefined,
           }),
         });
 
@@ -262,6 +342,12 @@ export function MatchLabelingView({ match }: MatchLabelingViewProps) {
                   onTeam2Change={(heroes) =>
                     updateMapComp(map.id, "team2Comp", heroes)
                   }
+                  onTeam1AssignmentsChange={(assignments) =>
+                    updateAssignments(map.id, "team1Assignments", assignments)
+                  }
+                  onTeam2AssignmentsChange={(assignments) =>
+                    updateAssignments(map.id, "team2Assignments", assignments)
+                  }
                   onSave={() => saveMapComp(map.id)}
                 />
               </TabsContent>
@@ -279,6 +365,8 @@ type MapLabelingPanelProps = {
   state: MapCompState;
   onTeam1Change: (heroes: string[]) => void;
   onTeam2Change: (heroes: string[]) => void;
+  onTeam1AssignmentsChange: (assignments: Record<string, string>) => void;
+  onTeam2AssignmentsChange: (assignments: Record<string, string>) => void;
   onSave: () => void;
 };
 
@@ -288,6 +376,8 @@ function MapLabelingPanel({
   state,
   onTeam1Change,
   onTeam2Change,
+  onTeam1AssignmentsChange,
+  onTeam2AssignmentsChange,
   onSave,
 }: MapLabelingPanelProps) {
   const t = useTranslations("dataLabeling.labeling");
@@ -357,14 +447,36 @@ function MapLabelingPanel({
         selectedHeroes={state.team1Comp}
         onSelectionChange={onTeam1Change}
         bannedHeroes={allBans}
+        assignments={state.team1Assignments}
       />
+
+      {match.team1Roster.length > 0 && (
+        <PlayerAssignmentPanel
+          teamLabel={match.team1}
+          selectedHeroes={state.team1Comp}
+          roster={match.team1Roster}
+          assignments={state.team1Assignments}
+          onAssignmentsChange={onTeam1AssignmentsChange}
+        />
+      )}
 
       <HeroCompPicker
         teamLabel={match.team2}
         selectedHeroes={state.team2Comp}
         onSelectionChange={onTeam2Change}
         bannedHeroes={allBans}
+        assignments={state.team2Assignments}
       />
+
+      {match.team2Roster.length > 0 && (
+        <PlayerAssignmentPanel
+          teamLabel={match.team2}
+          selectedHeroes={state.team2Comp}
+          roster={match.team2Roster}
+          assignments={state.team2Assignments}
+          onAssignmentsChange={onTeam2AssignmentsChange}
+        />
+      )}
 
       <Button
         onClick={onSave}
