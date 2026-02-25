@@ -1,7 +1,7 @@
 import "server-only";
 
 import prisma from "@/lib/prisma";
-import type { MapType } from "@prisma/client";
+import type { MapType, RosterRole } from "@prisma/client";
 import { cache } from "react";
 
 export type UnlabeledMatchSummary = {
@@ -86,6 +86,18 @@ async function getUnlabeledMatchesFn(
 
 export const getUnlabeledMatches = cache(getUnlabeledMatchesFn);
 
+export type RosterPlayerForLabeling = {
+  id: number;
+  displayName: string;
+  role: RosterRole;
+};
+
+export type HeroAssignmentForLabeling = {
+  heroName: string;
+  playerName: string;
+  team: string;
+};
+
 export type MatchForLabeling = {
   id: number;
   team1: string;
@@ -98,6 +110,8 @@ export type MatchForLabeling = {
   tournament: string;
   vods: { url: string; platform: string }[];
   maps: MatchMapForLabeling[];
+  team1Roster: RosterPlayerForLabeling[];
+  team2Roster: RosterPlayerForLabeling[];
 };
 
 export type MatchMapForLabeling = {
@@ -116,7 +130,28 @@ export type MatchMapForLabeling = {
     hero: string;
     banOrder: number;
   }[];
+  heroAssignments: HeroAssignmentForLabeling[];
 };
+
+async function getRosterPlayers(
+  tournamentId: number,
+  teamFullName: string
+): Promise<RosterPlayerForLabeling[]> {
+  const roster = await prisma.scoutingRoster.findUnique({
+    where: {
+      tournamentId_teamName: { tournamentId, teamName: teamFullName },
+    },
+    include: {
+      players: {
+        where: { category: { in: ["player", "substitute"] } },
+        select: { id: true, displayName: true, role: true },
+        orderBy: { id: "asc" },
+      },
+    },
+  });
+
+  return roster?.players ?? [];
+}
 
 async function getMatchForLabelingFn(
   matchId: number
@@ -130,16 +165,24 @@ async function getMatchForLabelingFn(
             select: { id: true, team: true, hero: true, banOrder: true },
             orderBy: { banOrder: "asc" },
           },
+          heroAssignments: {
+            select: { heroName: true, playerName: true, team: true },
+          },
         },
         orderBy: { gameNumber: "asc" },
       },
-      tournament: { select: { title: true } },
+      tournament: { select: { title: true, id: true } },
     },
   });
 
   if (!match) return null;
 
   const vods = match.vods as { url: string; platform: string }[];
+
+  const [team1Roster, team2Roster] = await Promise.all([
+    getRosterPlayers(match.tournament.id, match.team1FullName),
+    getRosterPlayers(match.tournament.id, match.team2FullName),
+  ]);
 
   return {
     id: match.id,
@@ -152,6 +195,8 @@ async function getMatchForLabelingFn(
     matchDate: match.matchDate,
     tournament: match.tournament.title,
     vods,
+    team1Roster,
+    team2Roster,
     maps: match.maps.map((map) => ({
       id: map.id,
       gameNumber: map.gameNumber,
@@ -163,6 +208,7 @@ async function getMatchForLabelingFn(
       team1Comp: map.team1Comp,
       team2Comp: map.team2Comp,
       heroBans: map.heroBans,
+      heroAssignments: map.heroAssignments,
     })),
   };
 }
