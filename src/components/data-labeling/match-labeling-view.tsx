@@ -14,7 +14,7 @@ import type {
 import { toHero } from "@/lib/utils";
 import { heroRoleMapping, type HeroName } from "@/types/heroes";
 import { YouTubeEmbed } from "@next/third-parties/google";
-import { ArrowLeft, Check, Loader2 } from "lucide-react";
+import { ArrowLeft, Check, Loader2, RotateCcw } from "lucide-react";
 import type { Route } from "next";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -238,6 +238,24 @@ export function MatchLabelingView({ match }: MatchLabelingViewProps) {
     [mapStates, t]
   );
 
+  const resetMap = useCallback(
+    (mapId: number) => {
+      setMapStates((prev) => ({
+        ...prev,
+        [mapId]: {
+          ...prev[mapId],
+          team1Comp: [],
+          team2Comp: [],
+          team1Assignments: {},
+          team2Assignments: {},
+          dirty: false,
+          saved: false,
+        },
+      }));
+    },
+    []
+  );
+
   const vod = match.vods[0];
   const vodSource = vod ? getVodSource(vod.url) : null;
   const parentDomain = process.env.NEXT_PUBLIC_VERCEL_URL
@@ -303,6 +321,16 @@ export function MatchLabelingView({ match }: MatchLabelingViewProps) {
               </CardContent>
             </Card>
           )}
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">{t("instructions.title")}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm text-muted-foreground">
+              <p>{t("instructions.body")}</p>
+              <p>{t("instructions.swapNote")}</p>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="space-y-4">
@@ -349,6 +377,7 @@ export function MatchLabelingView({ match }: MatchLabelingViewProps) {
                     updateAssignments(map.id, "team2Assignments", assignments)
                   }
                   onSave={() => saveMapComp(map.id)}
+                  onReset={() => resetMap(map.id)}
                 />
               </TabsContent>
             ))}
@@ -368,6 +397,7 @@ type MapLabelingPanelProps = {
   onTeam1AssignmentsChange: (assignments: Record<string, string>) => void;
   onTeam2AssignmentsChange: (assignments: Record<string, string>) => void;
   onSave: () => void;
+  onReset: () => void;
 };
 
 function MapLabelingPanel({
@@ -379,6 +409,7 @@ function MapLabelingPanel({
   onTeam1AssignmentsChange,
   onTeam2AssignmentsChange,
   onSave,
+  onReset,
 }: MapLabelingPanelProps) {
   const t = useTranslations("dataLabeling.labeling");
 
@@ -388,6 +419,10 @@ function MapLabelingPanel({
     validateRoleConstraint(state.team1Comp) &&
     validateRoleConstraint(state.team2Comp) &&
     state.dirty &&
+    !state.saving;
+
+  const canReset =
+    (state.team1Comp.length > 0 || state.team2Comp.length > 0) &&
     !state.saving;
 
   return (
@@ -496,6 +531,16 @@ function MapLabelingPanel({
         ) : (
           t("save")
         )}
+      </Button>
+
+      <Button
+        variant="outline"
+        onClick={onReset}
+        disabled={!canReset}
+        className="w-full"
+      >
+        <RotateCcw className="mr-2 h-4 w-4" />
+        {t("reset")}
       </Button>
     </div>
   );

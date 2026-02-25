@@ -1641,6 +1641,7 @@
       "damage": "Damage",
       "support": "Support",
       "save": "Save",
+      "reset": "Reset",
       "saveAll": "Save All Maps",
       "saving": "Saving...",
       "saved": "Saved!",
@@ -1650,7 +1651,12 @@
       "heroBanned": "Banned",
       "playerAssignments": "{team} Player Assignments",
       "assignPlayer": "Assign player for {hero}",
-      "selectPlayer": "Select player..."
+      "selectPlayer": "Select player...",
+      "instructions": {
+        "title": "Reviewer Instructions",
+        "body": "Watch the VOD and use the panel on the right to record the hero composition for each map. For each hero, assign the player who was playing that hero at the start of the map.",
+        "swapNote": "Only capture the initial picks — mid-map hero swaps do not need to be recorded, as we are interested in each team's opening composition rather than matchup-driven substitutions."
+      }
     }
   },
   "statsPage": {
