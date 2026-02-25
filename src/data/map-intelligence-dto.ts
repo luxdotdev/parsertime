@@ -1,12 +1,17 @@
 import "server-only";
 
 import { assessConfidence, type ConfidenceMetadata } from "@/lib/confidence";
-import type { DataAvailabilityProfile } from "@/lib/data-availability";
+import {
+  hasScrimData,
+  SCRIM_CONFIDENCE_THRESHOLDS,
+  type DataAvailabilityProfile,
+} from "@/lib/data-availability";
 import prisma from "@/lib/prisma";
 import {
   getTeamStrengthRatings,
   type TeamStrengthRating,
 } from "./opponent-strength-dto";
+import { getOpponentScrimMapResults } from "./scrim-opponent-dto";
 import { getTeamWinrates } from "./team-stats-dto";
 import type { MapType } from "@prisma/client";
 import { cache } from "react";
@@ -29,6 +34,8 @@ export type StrengthWeightedMapWR = {
   played: number;
   won: number;
   confidence: ConfidenceMetadata;
+  strengthRatingAvailable: boolean;
+  sources?: { owcsMaps: number; scrimMaps: number };
 };
 
 export type MapPerformanceTrend = {
@@ -108,16 +115,23 @@ async function getOpponentMapResults(
   return rows;
 }
 
+type MapResultRowWithSource = MapResultRow & { source: "owcs" | "scrim" };
+
 function computeStrengthWeightedWRs(
-  rows: MapResultRow[],
+  rows: MapResultRowWithSource[],
   teamAbbr: string,
-  ratingsMap: Map<string, TeamStrengthRating>
+  ratingsMap: Map<string, TeamStrengthRating>,
+  includesScrimData: boolean
 ): StrengthWeightedMapWR[] {
+  const strengthRatingAvailable = ratingsMap.size > 0;
+
   const byMap = new Map<
     string,
     {
       mapType: MapType;
       results: { won: boolean; opponentRating: number; weight: number }[];
+      owcsMaps: number;
+      scrimMaps: number;
     }
   >();
 
@@ -131,14 +145,23 @@ function computeStrengthWeightedWRs(
 
     let entry = byMap.get(row.mapName);
     if (!entry) {
-      entry = { mapType: row.mapType, results: [] };
+      entry = { mapType: row.mapType, results: [], owcsMaps: 0, scrimMaps: 0 };
       byMap.set(row.mapName, entry);
     }
     entry.results.push({ won, opponentRating, weight });
+    if (row.source === "scrim") {
+      entry.scrimMaps++;
+    } else {
+      entry.owcsMaps++;
+    }
   }
 
+  const confidenceThresholds = includesScrimData
+    ? SCRIM_CONFIDENCE_THRESHOLDS
+    : undefined;
+
   return Array.from(byMap.entries())
-    .map(([mapName, { mapType, results }]) => {
+    .map(([mapName, { mapType, results, owcsMaps, scrimMaps }]) => {
       const played = results.length;
       const won = results.filter((r) => r.won).length;
       const rawWinRate = played > 0 ? (won / played) * 100 : 0;
@@ -146,28 +169,37 @@ function computeStrengthWeightedWRs(
       let weightedWinSum = 0;
       let weightedTotalSum = 0;
       for (const r of results) {
-        const ratingWeight = r.opponentRating / INITIAL_RATING;
+        const ratingWeight = strengthRatingAvailable
+          ? r.opponentRating / INITIAL_RATING
+          : 1;
         const combinedWeight = ratingWeight * r.weight;
         weightedWinSum += r.won ? combinedWeight : 0;
         weightedTotalSum += combinedWeight;
       }
       const strengthWeightedWinRate =
-        weightedTotalSum > 0 ? (weightedWinSum / weightedTotalSum) * 100 : 0;
+        weightedTotalSum > 0
+          ? (weightedWinSum / weightedTotalSum) * 100
+          : rawWinRate;
 
       return {
         mapName,
         mapType,
         rawWinRate,
-        strengthWeightedWinRate,
+        strengthWeightedWinRate: strengthRatingAvailable
+          ? strengthWeightedWinRate
+          : rawWinRate,
         played,
         won,
-        confidence: assessConfidence(played),
+        confidence: assessConfidence(played, confidenceThresholds),
+        strengthRatingAvailable,
+        sources:
+          includesScrimData ? { owcsMaps, scrimMaps } : undefined,
       };
     })
     .sort((a, b) => b.strengthWeightedWinRate - a.strengthWeightedWinRate);
 }
 
-function computeTrends(rows: MapResultRow[]): MapPerformanceTrend[] {
+function computeTrends(rows: MapResultRowWithSource[]): MapPerformanceTrend[] {
   const byMap = new Map<string, { won: boolean; date: Date }[]>();
 
   for (const row of rows) {
@@ -218,8 +250,9 @@ function computeTrends(rows: MapResultRow[]): MapPerformanceTrend[] {
 }
 
 function computeMapTypeDependencies(
-  rows: MapResultRow[],
-  ratingsMap: Map<string, TeamStrengthRating>
+  rows: MapResultRowWithSource[],
+  ratingsMap: Map<string, TeamStrengthRating>,
+  includesScrimData: boolean
 ): MapTypeDependency[] {
   const byType = new Map<
     MapType,
@@ -242,6 +275,11 @@ function computeMapTypeDependencies(
     entry.results.push({ won, opponentRating, weight });
   }
 
+  const strengthRatingAvailable = ratingsMap.size > 0;
+  const confidenceThresholds = includesScrimData
+    ? SCRIM_CONFIDENCE_THRESHOLDS
+    : undefined;
+
   return Array.from(byType.entries())
     .map(([mapType, { results }]) => {
       const played = results.length;
@@ -251,21 +289,27 @@ function computeMapTypeDependencies(
       let weightedWinSum = 0;
       let weightedTotalSum = 0;
       for (const r of results) {
-        const ratingWeight = r.opponentRating / INITIAL_RATING;
+        const ratingWeight = strengthRatingAvailable
+          ? r.opponentRating / INITIAL_RATING
+          : 1;
         const combinedWeight = ratingWeight * r.weight;
         weightedWinSum += r.won ? combinedWeight : 0;
         weightedTotalSum += combinedWeight;
       }
       const strengthWeightedWinRate =
-        weightedTotalSum > 0 ? (weightedWinSum / weightedTotalSum) * 100 : 0;
+        weightedTotalSum > 0
+          ? (weightedWinSum / weightedTotalSum) * 100
+          : winRate;
 
       return {
         mapType,
         played,
         won,
         winRate,
-        strengthWeightedWinRate,
-        confidence: assessConfidence(played),
+        strengthWeightedWinRate: strengthRatingAvailable
+          ? strengthWeightedWinRate
+          : winRate,
+        confidence: assessConfidence(played, confidenceThresholds),
       };
     })
     .sort((a, b) => b.winRate - a.winRate);
@@ -273,62 +317,96 @@ function computeMapTypeDependencies(
 
 function buildMatchupMatrix(
   opponentWRs: StrengthWeightedMapWR[],
-  userMapWinrates: Record<string, { totalWinrate: number; totalWins: number; totalLosses: number }>
+  userMapWinrates: Record<
+    string,
+    { totalWinrate: number; totalWins: number; totalLosses: number }
+  >
 ): MapMatchupEntry[] {
-  return opponentWRs.map((opp) => {
-    const userMap = userMapWinrates[opp.mapName];
-    const userPlayed = userMap
-      ? userMap.totalWins + userMap.totalLosses
-      : 0;
-    const userWinRate = userMap ? userMap.totalWinrate : null;
+  return opponentWRs
+    .map((opp) => {
+      const userMap = userMapWinrates[opp.mapName];
+      const userPlayed = userMap
+        ? userMap.totalWins + userMap.totalLosses
+        : 0;
+      const userWinRate = userMap ? userMap.totalWinrate : null;
 
-    const netAdvantage =
-      userWinRate !== null ? userWinRate - opp.strengthWeightedWinRate : null;
+      const netAdvantage =
+        userWinRate !== null
+          ? userWinRate - opp.strengthWeightedWinRate
+          : null;
 
-    return {
-      mapName: opp.mapName,
-      mapType: opp.mapType,
-      userWinRate,
-      userPlayed,
-      opponentWinRate: opp.rawWinRate,
-      opponentStrengthWeightedWR: opp.strengthWeightedWinRate,
-      opponentPlayed: opp.played,
-      netAdvantage,
-      userConfidence: assessConfidence(userPlayed),
-      opponentConfidence: opp.confidence,
-    };
-  }).sort((a, b) => {
-    if (a.netAdvantage === null && b.netAdvantage === null) return 0;
-    if (a.netAdvantage === null) return 1;
-    if (b.netAdvantage === null) return -1;
-    return b.netAdvantage - a.netAdvantage;
-  });
+      return {
+        mapName: opp.mapName,
+        mapType: opp.mapType,
+        userWinRate,
+        userPlayed,
+        opponentWinRate: opp.rawWinRate,
+        opponentStrengthWeightedWR: opp.strengthWeightedWinRate,
+        opponentPlayed: opp.played,
+        netAdvantage,
+        userConfidence: assessConfidence(userPlayed),
+        opponentConfidence: opp.confidence,
+      };
+    })
+    .sort((a, b) => {
+      if (a.netAdvantage === null && b.netAdvantage === null) return 0;
+      if (a.netAdvantage === null) return 1;
+      if (b.netAdvantage === null) return -1;
+      return b.netAdvantage - a.netAdvantage;
+    });
 }
 
 async function getMapIntelligenceFn(
   opponentAbbr: string,
   userTeamId: number | null,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _profile?: DataAvailabilityProfile
+  profile?: DataAvailabilityProfile
 ): Promise<MapIntelligence> {
-  const [rows, allRatings] = await Promise.all([
+  const [owcsRows, allRatings] = await Promise.all([
     getOpponentMapResults(opponentAbbr),
     getTeamStrengthRatings(),
   ]);
 
-  // Phase 3.5: When _profile indicates scrim data is available, merge
-  // scrim-derived map results from scrim-opponent-dto.ts here before
-  // computing analytics. The OWCS-only path below is unchanged.
+  const owcsRowsWithSource: MapResultRowWithSource[] = owcsRows.map((r) => ({
+    ...r,
+    source: "owcs" as const,
+  }));
+
+  let rows: MapResultRowWithSource[] = owcsRowsWithSource;
+  const includesScrimData =
+    !!profile && !!userTeamId && hasScrimData(profile);
+
+  if (includesScrimData && userTeamId !== null) {
+    const scrimResults = await getOpponentScrimMapResults(
+      userTeamId,
+      opponentAbbr
+    );
+    const scrimRows: MapResultRowWithSource[] = scrimResults.map((r) => ({
+      mapName: r.mapName,
+      mapType: r.mapType,
+      matchDate: r.scrimDate,
+      team1: "user",
+      team2: opponentAbbr,
+      teamSide: "team1" as const,
+      winner: r.opponentWon ? "team2" : "team1",
+      source: "scrim" as const,
+    }));
+    rows = [...owcsRowsWithSource, ...scrimRows];
+  }
 
   const ratingsMap = new Map(allRatings.map((r) => [r.teamAbbr, r]));
 
   const strengthWeightedWRs = computeStrengthWeightedWRs(
     rows,
     opponentAbbr,
-    ratingsMap
+    ratingsMap,
+    includesScrimData
   );
   const trends = computeTrends(rows);
-  const mapTypeDependencies = computeMapTypeDependencies(rows, ratingsMap);
+  const mapTypeDependencies = computeMapTypeDependencies(
+    rows,
+    ratingsMap,
+    includesScrimData
+  );
 
   let matchupMatrix: MapMatchupEntry[] = [];
   if (userTeamId !== null) {
