@@ -474,7 +474,8 @@
       "team": "Team: ",
       "noTeam": "Uncategorized",
       "creator": "Creator: ",
-      "noCreator": "Unknown"
+      "noCreator": "Unknown",
+      "viewScoutingReport": "View OWCS scouting report"
     },
     "scrimCreationForm": {
       "fileSize": {

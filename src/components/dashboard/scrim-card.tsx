@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
 import {
@@ -9,6 +10,7 @@ import {
 } from "@/components/ui/tooltip";
 import type { Scrim } from "@prisma/client";
 import { CalendarIcon, Pencil2Icon, PersonIcon } from "@radix-ui/react-icons";
+import { BadgeCheck } from "lucide-react";
 import type { Route } from "next";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -75,10 +77,42 @@ export function ScrimCard({ scrim, prefetch }: Props) {
           </div>
         </CardHeader>
         <CardContent className="relative">
-          <p className="text-md text-foreground font-normal">
-            <span className="text-muted-foreground">{t("team")}</span>
-            {scrim.team}
-          </p>
+          <div className="flex items-center gap-2">
+            <p className="text-md text-foreground font-normal">
+              <span className="text-muted-foreground">{t("team")}</span>
+              {scrim.team}
+            </p>
+            {scrim.opponentTeamAbbr && (
+              <>
+                <span className="text-muted-foreground/50" aria-hidden="true">
+                  |
+                </span>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href={
+                        `/scouting/team/${encodeURIComponent(scrim.opponentTeamAbbr)}` as Route
+                      }
+                      className="no-underline"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Badge
+                        variant="secondary"
+                        className="gap-1.5 text-xs font-medium"
+                      >
+                        <BadgeCheck
+                          className="h-3.5 w-3.5 text-amber-500"
+                          aria-hidden="true"
+                        />
+                        {scrim.opponentTeamAbbr}
+                      </Badge>
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>{t("viewScoutingReport")}</TooltipContent>
+                </Tooltip>
+              </>
+            )}
+          </div>
           <div className="absolute right-6 bottom-2 transition-opacity duration-200">
             <Image
               src={scrim.teamImage}
