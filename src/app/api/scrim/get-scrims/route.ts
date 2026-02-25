@@ -196,6 +196,7 @@ export async function GET(req: NextRequest) {
           `https://avatar.vercel.sh/${scrim.Team?.name}.png`,
         creator: creatorMap.get(scrim.creatorId) ?? "Unknown",
         hasPerms,
+        opponentTeamAbbr: scrim.opponentTeamAbbr,
       };
     });
 
