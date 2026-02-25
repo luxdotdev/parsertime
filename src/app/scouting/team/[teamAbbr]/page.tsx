@@ -6,6 +6,7 @@ import { ScoutingRecommendations } from "@/components/scouting/scouting-recommen
 import { TeamOverviewCards } from "@/components/scouting/team-overview-cards";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getScoutingTeamProfile } from "@/data/scouting-dto";
+import { scoutingTool } from "@/lib/flags";
 import { ArrowLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
@@ -14,6 +15,9 @@ import { notFound } from "next/navigation";
 export default async function ScoutingTeamPage(
   props: PageProps<"/scouting/team/[teamAbbr]">
 ) {
+  const scoutingEnabled = await scoutingTool();
+  if (!scoutingEnabled) notFound();
+
   const params = await props.params;
   const teamAbbr = decodeURIComponent(params.teamAbbr);
   const t = await getTranslations("scoutingPage.team");
@@ -51,7 +55,8 @@ export default async function ScoutingTeamPage(
               {overview.winRate.toFixed(1)}% {t("overview.winRate")}
             </span>
             <span>
-              {overview.weightedWinRate.toFixed(1)}% {t("overview.weightedWinRate")}
+              {overview.weightedWinRate.toFixed(1)}%{" "}
+              {t("overview.weightedWinRate")}
             </span>
             <FormStreak form={overview.recentForm} />
           </div>
@@ -85,9 +90,7 @@ export default async function ScoutingTeamPage(
         </TabsContent>
 
         <TabsContent value="recommendations" className="space-y-4">
-          <ScoutingRecommendations
-            recommendations={profile.recommendations}
-          />
+          <ScoutingRecommendations recommendations={profile.recommendations} />
           <MethodologyCard translationKey="scoutingPage.team.recommendations.methodology" />
         </TabsContent>
       </Tabs>

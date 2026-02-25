@@ -1,8 +1,13 @@
 import { TeamSearch } from "@/components/scouting/team-search";
 import { getScoutingTeams } from "@/data/scouting-dto";
+import { scoutingTool } from "@/lib/flags";
 import { getTranslations } from "next-intl/server";
+import { notFound } from "next/navigation";
 
 export default async function ScoutingPage() {
+  const scoutingEnabled = await scoutingTool();
+  if (!scoutingEnabled) notFound();
+
   const t = await getTranslations("scoutingPage");
   const teams = await getScoutingTeams();
 
