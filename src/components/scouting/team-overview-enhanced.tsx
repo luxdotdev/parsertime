@@ -14,6 +14,7 @@ import type { TeamStrengthRating } from "@/data/opponent-strength-dto";
 import { assessConfidence } from "@/lib/confidence";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { useMemo } from "react";
 import type { ScoutingMatchHistoryEntry } from "@/data/scouting-dto";
 
 type EnhancedOverviewProps = {
@@ -31,9 +32,13 @@ export function TeamOverviewEnhanced({
 }: EnhancedOverviewProps) {
   const t = useTranslations("scoutingPage.team.overview");
 
-  const winsAbove1500 = strengthRating
-    ? countWinsAboveRating(matchHistory, strengthRating, 1500)
-    : null;
+  const winsAbove1500 = useMemo(
+    () =>
+      strengthRating
+        ? countWinsAboveRating(matchHistory, strengthRating, 1500)
+        : null,
+    [matchHistory, strengthRating]
+  );
 
   return (
     <div className="space-y-4">
