@@ -1,6 +1,7 @@
 "use client";
 
 import { SortableBanItem } from "@/components/map/sortable-ban-item";
+import { OpponentSearchField } from "@/components/scrim/opponent-search-field";
 import {
   Accordion,
   AccordionContent,
@@ -19,14 +20,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
 import {
   Form,
   FormControl,
@@ -73,12 +66,7 @@ import {
 } from "@dnd-kit/sortable";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { HeroBan, Map, Scrim, Team } from "@prisma/client";
-import {
-  CalendarIcon,
-  CheckIcon,
-  ChevronDownIcon,
-  ReloadIcon,
-} from "@radix-ui/react-icons";
+import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
@@ -114,7 +102,6 @@ export function EditScrimForm({
   scoutingEnabled: boolean;
 }) {
   const [loading, setLoading] = useState(false);
-  const [opponentPickerOpen, setOpponentPickerOpen] = useState(false);
   const router = useRouter();
   const t = useTranslations("scrimPage.editScrim");
   const mapNames = useMapNames();
@@ -295,75 +282,11 @@ export function EditScrimForm({
                 <FormItem className="max-w-lg">
                   <FormLabel>Opponent (OWCS)</FormLabel>
                   <FormControl>
-                    <Popover
-                      open={opponentPickerOpen}
-                      onOpenChange={setOpponentPickerOpen}
-                    >
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          aria-expanded={opponentPickerOpen}
-                          aria-label="Select OWCS opponent"
-                          className="w-full justify-between"
-                        >
-                          {field.value
-                            ? (scoutingTeams.find(
-                                (st) => st.abbreviation === field.value
-                              )?.fullName ?? field.value)
-                            : "No opponent linked"}
-                          <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-0" align="start">
-                        <Command>
-                          <CommandInput placeholder="Search OWCS teams..." />
-                          <CommandList>
-                            <CommandEmpty>No teams found.</CommandEmpty>
-                            <CommandGroup>
-                              <CommandItem
-                                value=""
-                                onSelect={() => {
-                                  field.onChange(null);
-                                  setOpponentPickerOpen(false);
-                                }}
-                              >
-                                <CheckIcon
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    !field.value ? "opacity-100" : "opacity-0"
-                                  )}
-                                />
-                                No opponent linked
-                              </CommandItem>
-                              {scoutingTeams.map((st) => (
-                                <CommandItem
-                                  key={st.abbreviation}
-                                  value={`${st.abbreviation} ${st.fullName}`}
-                                  onSelect={() => {
-                                    field.onChange(st.abbreviation);
-                                    setOpponentPickerOpen(false);
-                                  }}
-                                >
-                                  <CheckIcon
-                                    className={cn(
-                                      "mr-2 h-4 w-4",
-                                      field.value === st.abbreviation
-                                        ? "opacity-100"
-                                        : "opacity-0"
-                                    )}
-                                  />
-                                  <span className="text-muted-foreground w-16 shrink-0 font-mono text-xs">
-                                    {st.abbreviation}
-                                  </span>
-                                  {st.fullName}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
+                    <OpponentSearchField
+                      options={scoutingTeams}
+                      value={field.value ?? null}
+                      onChange={field.onChange}
+                    />
                   </FormControl>
                   <FormDescription>
                     Link this scrim to an OWCS opponent to enable
