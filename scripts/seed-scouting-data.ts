@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 import prisma from "@/lib/prisma";
-import { type MapType } from "@prisma/client";
+import { type MapType, type RosterCategory, type RosterRole } from "@prisma/client";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 
@@ -44,11 +44,27 @@ interface MatchData {
   matchRoomUrl: string | null;
 }
 
+interface PersonData {
+  name: string;
+  displayName: string;
+  role: string;
+  country: string;
+  didNotPlay: boolean;
+}
+
+interface ParticipantData {
+  team: string;
+  players: PersonData[];
+  staff: PersonData[];
+  substitutes: PersonData[];
+}
+
 interface TournamentData {
   title: string;
   sourceUrl: string;
   mapPool: Record<string, string[]>;
   matches: MatchData[];
+  participants: ParticipantData[];
 }
 
 const VALID_MAP_TYPES: Set<string> = new Set([
@@ -96,6 +112,77 @@ function collectHeroBans(map: MapResultData): Array<{
     });
   }
   return bans;
+}
+
+const ROLE_MAP: Record<string, RosterRole> = {
+  DPS: "DPS",
+  Tank: "Tank",
+  Support: "Support",
+  Flex: "Flex",
+  Coach: "Coach",
+  "Head Coach": "HeadCoach",
+  "Assistant Coach": "AssistantCoach",
+  Manager: "Manager",
+  "Assistant Manager": "AssistantManager",
+  "Team Manager": "TeamManager",
+  Analyst: "Analyst",
+  "Performance Coach": "PerformanceCoach",
+  Substitute: "Substitute",
+};
+
+function toRosterRole(raw: string): RosterRole | null {
+  return ROLE_MAP[raw] ?? null;
+}
+
+function toRosterPlayerRows(people: PersonData[], category: RosterCategory) {
+  return people.flatMap((person) => {
+    const role = toRosterRole(person.role);
+    if (!role) {
+      console.log(
+        `    Skipping person "${person.name}" with unknown role "${person.role}"`
+      );
+      return [];
+    }
+    return [
+      {
+        name: person.name,
+        displayName: person.displayName,
+        role,
+        country: person.country,
+        didNotPlay: person.didNotPlay,
+        category,
+      },
+    ];
+  });
+}
+
+async function seedRosters(
+  tournamentId: number,
+  participants: ParticipantData[]
+) {
+  let rosterCount = 0;
+  let playerCount = 0;
+
+  for (const participant of participants) {
+    const allPlayers = [
+      ...toRosterPlayerRows(participant.players, "player"),
+      ...toRosterPlayerRows(participant.staff, "staff"),
+      ...toRosterPlayerRows(participant.substitutes, "substitute"),
+    ];
+
+    await prisma.scoutingRoster.create({
+      data: {
+        tournamentId,
+        teamName: participant.team,
+        players: { createMany: { data: allPlayers } },
+      },
+    });
+
+    rosterCount++;
+    playerCount += allPlayers.length;
+  }
+
+  return { rosterCount, playerCount };
 }
 
 async function seedMatch(tournamentId: number, match: MatchData) {
@@ -158,8 +245,31 @@ async function seedTournament(tournament: TournamentData) {
   });
 
   if (existing) {
+    const existingRosterCount = await prisma.scoutingRoster.count({
+      where: { tournamentId: existing.id },
+    });
+
+    if (existingRosterCount === 0 && (tournament.participants?.length ?? 0) > 0) {
+      console.log(`  Backfilling rosters for "${tournament.title}"...`);
+      const rosterResult = await seedRosters(
+        existing.id,
+        tournament.participants
+      );
+      console.log(
+        `  Backfilled ${rosterResult.rosterCount} rosters, ${rosterResult.playerCount} players`
+      );
+      return {
+        matches: 0,
+        maps: 0,
+        heroBans: 0,
+        rosters: rosterResult.rosterCount,
+        players: rosterResult.playerCount,
+        skipped: false,
+      };
+    }
+
     console.log(`  Skipping "${tournament.title}" (already exists)`);
-    return { matches: 0, maps: 0, heroBans: 0, skipped: true };
+    return { matches: 0, maps: 0, heroBans: 0, rosters: 0, players: 0, skipped: true };
   }
 
   const createdTournament = await prisma.scoutingTournament.create({
@@ -173,8 +283,17 @@ async function seedTournament(tournament: TournamentData) {
   let matchCount = 0;
   let mapCount = 0;
   let heroBanCount = 0;
+  let rosterCount = 0;
+  let playerCount = 0;
 
   try {
+    const rosterResult = await seedRosters(
+      createdTournament.id,
+      tournament.participants ?? []
+    );
+    rosterCount = rosterResult.rosterCount;
+    playerCount = rosterResult.playerCount;
+
     for (const match of tournament.matches) {
       const result = await seedMatch(createdTournament.id, match);
       matchCount++;
@@ -189,7 +308,14 @@ async function seedTournament(tournament: TournamentData) {
     throw error;
   }
 
-  return { matches: matchCount, maps: mapCount, heroBans: heroBanCount, skipped: false };
+  return {
+    matches: matchCount,
+    maps: mapCount,
+    heroBans: heroBanCount,
+    rosters: rosterCount,
+    players: playerCount,
+    skipped: false,
+  };
 }
 
 async function main() {
@@ -208,6 +334,8 @@ async function main() {
   let totalMatches = 0;
   let totalMaps = 0;
   let totalHeroBans = 0;
+  let totalRosters = 0;
+  let totalPlayers = 0;
   let inserted = 0;
   let skipped = 0;
 
@@ -224,8 +352,10 @@ async function main() {
         totalMatches += result.matches;
         totalMaps += result.maps;
         totalHeroBans += result.heroBans;
+        totalRosters += result.rosters;
+        totalPlayers += result.players;
         console.log(
-          `  Inserted ${result.matches} matches, ${result.maps} maps, ${result.heroBans} hero bans`
+          `  Inserted ${result.rosters} rosters, ${result.players} players, ${result.matches} matches, ${result.maps} maps, ${result.heroBans} hero bans`
         );
       }
     } catch (error) {
@@ -241,6 +371,8 @@ async function main() {
   console.log("=".repeat(50));
   console.log(`Tournaments inserted: ${inserted}`);
   console.log(`Tournaments skipped:  ${skipped}`);
+  console.log(`Total rosters:        ${totalRosters}`);
+  console.log(`Total players:        ${totalPlayers}`);
   console.log(`Total matches:        ${totalMatches}`);
   console.log(`Total map results:    ${totalMaps}`);
   console.log(`Total hero bans:      ${totalHeroBans}`);
@@ -251,13 +383,17 @@ async function main() {
     prisma.scoutingMatch.count(),
     prisma.scoutingMapResult.count(),
     prisma.scoutingHeroBan.count(),
+    prisma.scoutingRoster.count(),
+    prisma.scoutingRosterPlayer.count(),
   ]);
 
   console.log("\nDatabase totals:");
-  console.log(`  ScoutingTournament: ${dbCounts[0]}`);
-  console.log(`  ScoutingMatch:      ${dbCounts[1]}`);
-  console.log(`  ScoutingMapResult:  ${dbCounts[2]}`);
-  console.log(`  ScoutingHeroBan:    ${dbCounts[3]}`);
+  console.log(`  ScoutingTournament:    ${dbCounts[0]}`);
+  console.log(`  ScoutingMatch:         ${dbCounts[1]}`);
+  console.log(`  ScoutingMapResult:     ${dbCounts[2]}`);
+  console.log(`  ScoutingHeroBan:       ${dbCounts[3]}`);
+  console.log(`  ScoutingRoster:        ${dbCounts[4]}`);
+  console.log(`  ScoutingRosterPlayer:  ${dbCounts[5]}`);
 }
 
 main()
