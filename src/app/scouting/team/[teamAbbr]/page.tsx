@@ -1,6 +1,7 @@
 import { HeroBanChart } from "@/components/scouting/hero-ban-chart";
 import { MapPerformanceChart } from "@/components/scouting/map-performance-chart";
 import { MatchHistoryTable } from "@/components/scouting/match-history-table";
+import { MethodologyCard } from "@/components/scouting/methodology-card";
 import { ScoutingRecommendations } from "@/components/scouting/scouting-recommendations";
 import { TeamOverviewCards } from "@/components/scouting/team-overview-cards";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -70,20 +71,24 @@ export default async function ScoutingTeamPage(
         <TabsContent value="overview" className="space-y-4">
           <TeamOverviewCards overview={overview} />
           <MatchHistoryTable matches={profile.matchHistory} />
+          <MethodologyCard translationKey="scoutingPage.team.overview.methodology" />
         </TabsContent>
 
         <TabsContent value="heroBans" className="space-y-4">
           <HeroBanChart heroBans={profile.heroBans} />
+          <MethodologyCard translationKey="scoutingPage.team.heroBans.methodology" />
         </TabsContent>
 
         <TabsContent value="maps" className="space-y-4">
           <MapPerformanceChart mapAnalysis={profile.mapAnalysis} />
+          <MethodologyCard translationKey="scoutingPage.team.maps.methodology" />
         </TabsContent>
 
         <TabsContent value="recommendations" className="space-y-4">
           <ScoutingRecommendations
             recommendations={profile.recommendations}
           />
+          <MethodologyCard translationKey="scoutingPage.team.recommendations.methodology" />
         </TabsContent>
       </Tabs>
     </div>

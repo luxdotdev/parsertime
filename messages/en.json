@@ -1523,7 +1523,16 @@
         "noMatches": "No matches found for this team.",
         "previousPage": "Previous",
         "nextPage": "Next",
-        "pageInfo": "Page {current} of {total}"
+        "pageInfo": "Page {current} of {total}",
+        "methodology": {
+          "title": "How we calculate these stats",
+          "points": {
+            "0": "Win rate is calculated from all recorded OWCS matches for this team.",
+            "1": "Weighted win rate uses exponential decay with a 90-day half-life — a match from 90 days ago counts half as much as one from today.",
+            "2": "Recent form shows the last 10 match results in chronological order, most recent first.",
+            "3": "Match data is sourced from Liquipedia and covers the last year of OWCS tournaments."
+          }
+        }
       },
       "heroBans": {
         "bansAgainstTeam": "Bans Against Them",
@@ -1533,7 +1542,16 @@
         "hero": "Hero",
         "count": "Count",
         "weighted": "Weighted",
-        "noBans": "No hero ban data available."
+        "noBans": "No hero ban data available.",
+        "methodology": {
+          "title": "How we analyze hero bans",
+          "points": {
+            "0": "Each OWCS map may include one hero ban per team. We track which heroes are banned by and against this team across all maps.",
+            "1": "Weighted counts apply exponential decay (90-day half-life) so recent ban patterns are prioritized over older ones.",
+            "2": "Bans Against Them reveals what opponents perceive as this team's strengths — the heroes they don't want to face.",
+            "3": "Their Bans reveals what this team considers threatening — the heroes they choose to deny opponents."
+          }
+        }
       },
       "maps": {
         "byMapType": "Win Rate by Map Type",
@@ -1546,7 +1564,16 @@
         "won": "Won",
         "winRate": "Win Rate",
         "weightedWinRate": "Weighted WR",
-        "noMaps": "No map data available."
+        "noMaps": "No map data available.",
+        "methodology": {
+          "title": "How we measure map performance",
+          "points": {
+            "0": "Win rate per map and map type is computed from individual map results within each series, not just series wins.",
+            "1": "Weighted win rate applies exponential decay (90-day half-life) — recent map results matter more than older ones.",
+            "2": "Maps highlighted in green have a weighted win rate above 60%. Maps in red are below 40%.",
+            "3": "Map types aggregate all maps of that mode (e.g., all Control maps) into a single win rate."
+          }
+        }
       },
       "recommendations": {
         "title": "Strategic Recommendations",
@@ -1564,6 +1591,16 @@
           "high": "High confidence",
           "medium": "Medium confidence",
           "low": "Low confidence"
+        },
+        "methodology": {
+          "title": "How we generate recommendations",
+          "points": {
+            "0": "Heroes to Ban are the heroes most frequently banned against this team by their opponents — banning these denies their perceived strengths.",
+            "1": "Maps to Pick are maps where this team has the lowest recency-weighted win rate (minimum 3 games played). Picking these exploits their weaknesses.",
+            "2": "Maps to Avoid are maps where this team has the highest recency-weighted win rate. Avoid giving them home-field advantage.",
+            "3": "Confidence levels are based on sample size: High (10+ games), Medium (5-9 games), Low (under 5 games).",
+            "4": "All metrics use a 90-day half-life exponential decay, so recommendations reflect the current meta rather than outdated results."
+          }
         }
       },
       "empty": "No scouting data available for this team."
