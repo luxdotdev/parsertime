@@ -16,6 +16,7 @@ import type {
 } from "@/data/player-intelligence-dto";
 import { cn } from "@/lib/utils";
 import { AlertTriangle, CheckCircle2, Info, Shield, User } from "lucide-react";
+import { useMemo } from "react";
 
 type PlayerMatchupsProps = {
   playerIntelligence: PlayerIntelligence | null;
@@ -50,10 +51,15 @@ export function PlayerMatchups({
 
   const { playerDepths, vulnerabilities } = playerIntelligence;
 
-  const roleGroups = groupByRole(playerDepths);
-  const vulnByPlayer = new Map(vulnerabilities.map((v) => [v.playerName, v]));
-
-  const topVulnerabilities = getTopVulnerabilityPerRole(vulnerabilities);
+  const roleGroups = useMemo(() => groupByRole(playerDepths), [playerDepths]);
+  const vulnByPlayer = useMemo(
+    () => new Map(vulnerabilities.map((v) => [v.playerName, v])),
+    [vulnerabilities]
+  );
+  const topVulnerabilities = useMemo(
+    () => getTopVulnerabilityPerRole(vulnerabilities),
+    [vulnerabilities]
+  );
 
   return (
     <div className="space-y-4">
