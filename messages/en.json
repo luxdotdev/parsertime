@@ -1615,6 +1615,7 @@
       "description": "Label team compositions for OWCS tournament matches."
     },
     "matchList": {
+      "title": "Unlabeled Matches",
       "date": "Date",
       "teams": "Teams",
       "score": "Score",
