@@ -9,6 +9,7 @@ import prisma from "@/lib/prisma";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import { cache } from "react";
 import { getBaseTeamData } from "./team-shared-data";
+import { getOpponentMatchData } from "./scouting-dto";
 import { getOpponentScrimHeroBans } from "./scrim-opponent-dto";
 
 type HeroRole = "Tank" | "Damage" | "Support";
@@ -319,43 +320,53 @@ function computeSubstitutionRates(
     bans.add(ban.hero);
   }
 
+  const playerMapIds = new Map<string, Set<number>>();
+  const playerHeroMaps = new Map<string, Set<number>>();
+
+  for (const stat of allPlayerStats) {
+    if (!stat.MapDataId || stat.hero_time_played < MIN_HERO_TIME_SECONDS) {
+      continue;
+    }
+    if (!teamRosterSet.has(stat.player_name)) continue;
+
+    let mapIds = playerMapIds.get(stat.player_name);
+    if (!mapIds) {
+      mapIds = new Set();
+      playerMapIds.set(stat.player_name, mapIds);
+    }
+    mapIds.add(stat.MapDataId);
+
+    const heroKey = `${stat.player_name}\0${stat.player_hero}`;
+    let heroMapIds = playerHeroMaps.get(heroKey);
+    if (!heroMapIds) {
+      heroMapIds = new Set();
+      playerHeroMaps.set(heroKey, heroMapIds);
+    }
+    heroMapIds.add(stat.MapDataId);
+  }
+
   const results: HeroSubstitutionRate[] = [];
 
   for (const [playerName, heroes] of allPlayerHeroes) {
     if (!teamRosterSet.has(playerName) || heroes.length === 0) continue;
 
     const primaryHero = heroes[0].hero;
-    const playerMapIds = new Set<number>();
-    for (const stat of allPlayerStats) {
-      if (
-        stat.player_name === playerName &&
-        stat.MapDataId &&
-        stat.hero_time_played >= MIN_HERO_TIME_SECONDS
-      ) {
-        playerMapIds.add(stat.MapDataId);
-      }
-    }
+    const mapIds = playerMapIds.get(playerName) ?? new Set<number>();
+    const primaryHeroMapIds =
+      playerHeroMaps.get(`${playerName}\0${primaryHero}`) ?? new Set<number>();
 
-    const totalMaps = playerMapIds.size;
+    const totalMaps = mapIds.size;
     let mapsOnPrimary = 0;
     let mapsForced = 0;
 
-    for (const mapId of playerMapIds) {
-      const bans = bansByMap.get(mapId);
-      const primaryBanned = bans?.has(primaryHero) ?? false;
-
-      const playedPrimary = allPlayerStats.some(
-        (s) =>
-          s.player_name === playerName &&
-          s.MapDataId === mapId &&
-          s.player_hero === primaryHero &&
-          s.hero_time_played >= MIN_HERO_TIME_SECONDS
-      );
-
-      if (playedPrimary) {
+    for (const mapId of mapIds) {
+      if (primaryHeroMapIds.has(mapId)) {
         mapsOnPrimary++;
-      } else if (primaryBanned) {
-        mapsForced++;
+      } else {
+        const bans = bansByMap.get(mapId);
+        if (bans?.has(primaryHero)) {
+          mapsForced++;
+        }
       }
     }
 
@@ -368,7 +379,7 @@ function computeSubstitutionRates(
       mapsOnPrimary,
       mapsForced,
       substitutionRate,
-      performanceDelta: null, // Would require per-map WR computation — deferred to Phase 3 insight generation
+      performanceDelta: null,
     });
   }
 
@@ -485,10 +496,7 @@ async function getPlayerIntelligenceFn(
   let totalOpponentMaps = 0;
 
   if (opponentAbbr) {
-    const opponentMatches = await prisma.scoutingMatch.findMany({
-      where: { OR: [{ team1: opponentAbbr }, { team2: opponentAbbr }] },
-      include: { maps: { include: { heroBans: true } } },
-    });
+    const opponentMatches = await getOpponentMatchData(opponentAbbr);
 
     for (const match of opponentMatches) {
       const opponentSide = match.team1 === opponentAbbr ? "team2" : "team1";
