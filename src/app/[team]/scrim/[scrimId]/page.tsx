@@ -5,6 +5,7 @@ import { CompareSelectedButton } from "@/components/scrim/compare-selected-butto
 import { MapCardWithSelection } from "@/components/scrim/map-card-with-selection";
 import { ScrimOverviewCard } from "@/components/scrim/scrim-overview-card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Link } from "@/components/ui/link";
 import {
   Tooltip,
@@ -18,6 +19,7 @@ import { mapComparison, overviewCard } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
+import { BadgeCheck } from "lucide-react";
 import { ExclamationTriangleIcon, Pencil2Icon } from "@radix-ui/react-icons";
 import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
@@ -111,10 +113,29 @@ export default async function ScrimDashboardPage(
     },
   })) ?? { guestMode: false };
 
-  const [mapComparisonEnabled, overviewCardEnabled] = await Promise.all([
-    mapComparison(),
-    overviewCard(),
-  ]);
+  const [mapComparisonEnabled, overviewCardEnabled, opponentFullName] =
+    await Promise.all([
+      mapComparison(),
+      overviewCard(),
+      scrim.opponentTeamAbbr
+        ? prisma.scoutingMatch
+            .findFirst({
+              where: {
+                OR: [
+                  { team1: scrim.opponentTeamAbbr },
+                  { team2: scrim.opponentTeamAbbr },
+                ],
+              },
+              select: { team1: true, team1FullName: true, team2: true, team2FullName: true },
+            })
+            .then((m) => {
+              if (!m) return scrim.opponentTeamAbbr;
+              return m.team1 === scrim.opponentTeamAbbr
+                ? m.team1FullName
+                : m.team2FullName;
+            })
+        : Promise.resolve(null),
+    ]);
 
   return (
     <DashboardLayout guestMode={visibility.guestMode}>
@@ -151,9 +172,33 @@ export default async function ScrimDashboardPage(
               </span>
             </h2>
           </div>
-          <h4 className="mt-2 text-xl font-semibold tracking-tight">
-            <ClientDate date={scrim.date} />
-          </h4>
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <h4 className="text-xl font-semibold tracking-tight">
+              <ClientDate date={scrim.date} />
+            </h4>
+            {scrim.opponentTeamAbbr && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href={`/scouting/team/${encodeURIComponent(scrim.opponentTeamAbbr)}` as Route}
+                    className="no-underline"
+                  >
+                    <Badge
+                      variant="secondary"
+                      className="gap-1.5 text-xs font-medium"
+                    >
+                      <BadgeCheck
+                        className="h-3.5 w-3.5 text-amber-500"
+                        aria-hidden="true"
+                      />
+                      Opponent: {opponentFullName ?? scrim.opponentTeamAbbr}
+                    </Badge>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>View OWCS scouting report</TooltipContent>
+              </Tooltip>
+            )}
+          </div>
         </div>
 
         {/* Overview Card */}
