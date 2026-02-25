@@ -53,6 +53,14 @@ const VALID_MAP_TYPES: Set<string> = new Set([
   "Push",
 ]);
 
+const LIQUIPEDIA_SUFFIX = " (page does not exist)";
+
+function cleanTeamName(name: string): string {
+  return name.endsWith(LIQUIPEDIA_SUFFIX)
+    ? name.slice(0, -LIQUIPEDIA_SUFFIX.length)
+    : name;
+}
+
 function toMapType(raw: string): MapType | null {
   if (!VALID_MAP_TYPES.has(raw)) {
     return null;
@@ -92,14 +100,14 @@ async function seedMatch(tournamentId: number, match: MatchData) {
     data: {
       tournamentId,
       team1: match.team1,
-      team1FullName: match.team1FullName,
+      team1FullName: cleanTeamName(match.team1FullName),
       team2: match.team2,
-      team2FullName: match.team2FullName,
+      team2FullName: cleanTeamName(match.team2FullName),
       team1Score: match.team1Score,
       team2Score: match.team2Score,
       bestOf: match.bestOf,
       winner: match.winner,
-      winnerFullName: match.winnerFullName,
+      winnerFullName: cleanTeamName(match.winnerFullName),
       matchDate,
       mvp: match.mvp,
     },
