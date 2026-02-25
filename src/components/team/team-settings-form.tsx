@@ -3,6 +3,14 @@
 import { AvatarUpdateDialog } from "@/components/team/avatar-update-dialog";
 import { Button } from "@/components/ui/button";
 import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
   Form,
   FormControl,
   FormDescription,
@@ -12,16 +20,28 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import type { ScoutingTeam } from "@/data/scouting-dto";
 import { ClientOnly } from "@/lib/client-only";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Team } from "@prisma/client";
-import { ClipboardCopyIcon, ReloadIcon } from "@radix-ui/react-icons";
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  ClipboardCopyIcon,
+  ReloadIcon,
+} from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -30,11 +50,22 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-export function TeamSettingsForm({ team }: { team: Team }) {
+type TeamSettingsFormProps = {
+  team: Team;
+  scoutingTeams?: ScoutingTeam[];
+  scoutingEnabled: boolean;
+};
+
+export function TeamSettingsForm({
+  team,
+  scoutingTeams = [],
+  scoutingEnabled,
+}: TeamSettingsFormProps) {
   const t = useTranslations("teamPage");
 
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [scoutingPickerOpen, setScoutingPickerOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -49,6 +80,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
         message: t("name.maxMessage"),
       }),
     readonly: z.boolean().optional(),
+    scoutingTeamAbbr: z.string().nullable().optional(),
   });
 
   type ProfileFormValues = z.infer<typeof profileFormSchema>;
@@ -58,6 +90,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
     defaultValues: {
       name: team.name ?? "",
       readonly: team.readonly,
+      scoutingTeamAbbr: team.scoutingTeamAbbr ?? null,
     },
     mode: "onChange",
   });
@@ -67,6 +100,7 @@ export function TeamSettingsForm({ team }: { team: Team }) {
       name: data.name,
       readonly: data.readonly,
       teamId: team.id,
+      scoutingTeamAbbr: data.scoutingTeamAbbr ?? null,
     };
 
     setLoading(true);
@@ -194,6 +228,92 @@ export function TeamSettingsForm({ team }: { team: Team }) {
             <FormDescription>{t("avatar.description")}</FormDescription>
             <FormMessage />
           </FormItem>
+          {scoutingEnabled && scoutingTeams.length > 0 && (
+            <FormField
+              control={form.control}
+              name="scoutingTeamAbbr"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("scoutingLink.title")}</FormLabel>
+                  <FormControl>
+                    <Popover
+                      open={scoutingPickerOpen}
+                      onOpenChange={setScoutingPickerOpen}
+                    >
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={scoutingPickerOpen}
+                          aria-label={t("scoutingLink.title")}
+                          className="w-full max-w-lg justify-between"
+                        >
+                          {field.value
+                            ? (scoutingTeams.find(
+                                (st) => st.abbreviation === field.value
+                              )?.fullName ?? field.value)
+                            : t("scoutingLink.noTeam")}
+                          <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full max-w-lg p-0">
+                        <Command>
+                          <CommandInput placeholder="Search OWCS teams..." />
+                          <CommandList>
+                            <CommandEmpty>No teams found.</CommandEmpty>
+                            <CommandGroup>
+                              <CommandItem
+                                value=""
+                                onSelect={() => {
+                                  field.onChange(null);
+                                  setScoutingPickerOpen(false);
+                                }}
+                              >
+                                <CheckIcon
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    !field.value ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                                {t("scoutingLink.noTeam")}
+                              </CommandItem>
+                              {scoutingTeams.map((st) => (
+                                <CommandItem
+                                  key={st.abbreviation}
+                                  value={`${st.abbreviation} ${st.fullName}`}
+                                  onSelect={() => {
+                                    field.onChange(st.abbreviation);
+                                    setScoutingPickerOpen(false);
+                                  }}
+                                >
+                                  <CheckIcon
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      field.value === st.abbreviation
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                  <span className="text-muted-foreground w-16 shrink-0 font-mono text-xs">
+                                    {st.abbreviation}
+                                  </span>
+                                  {st.fullName}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </FormControl>
+                  <FormDescription>
+                    {t("scoutingLink.description")}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
           <FormField
             control={form.control}
             name="readonly"
