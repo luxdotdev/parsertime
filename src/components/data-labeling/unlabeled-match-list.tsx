@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -18,27 +19,36 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { UnlabeledMatchesResult } from "@/data/data-labeling-dto";
+import { useQuery } from "@tanstack/react-query";
 import type { Route } from "next";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useState } from "react";
 
-type UnlabeledMatchListProps = {
-  initialData: UnlabeledMatchesResult;
-};
-
 const PAGE_SIZE = 20;
 
-export function UnlabeledMatchList({ initialData }: UnlabeledMatchListProps) {
+export function UnlabeledMatchList() {
   const t = useTranslations("dataLabeling.matchList");
-  const [data] = useState(initialData);
   const [page, setPage] = useState(0);
 
-  const totalPages = Math.max(1, Math.ceil(data.totalCount / PAGE_SIZE));
-  const pageMatches = data.matches.slice(
-    page * PAGE_SIZE,
-    (page + 1) * PAGE_SIZE
-  );
+  const { data, isLoading, isError, error } = useQuery<UnlabeledMatchesResult>({
+    queryKey: ["unlabeled-matches", page],
+    queryFn: async () => {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        pageSize: PAGE_SIZE.toString(),
+      });
+
+      const res = await fetch(`/api/data-labeling/matches?${params}`);
+      if (!res.ok) throw new Error("Failed to fetch matches");
+
+      return res.json() as Promise<UnlabeledMatchesResult>;
+    },
+  });
+
+  const totalPages = data
+    ? Math.max(1, Math.ceil(data.totalCount / PAGE_SIZE))
+    : 1;
 
   function formatDate(date: Date) {
     return new Date(date).toLocaleDateString("en-US", {
@@ -48,18 +58,39 @@ export function UnlabeledMatchList({ initialData }: UnlabeledMatchListProps) {
     });
   }
 
+  if (isError) {
+    return (
+      <Card>
+        <CardContent className="flex items-center justify-center py-12">
+          <p className="text-muted-foreground">
+            Error loading matches: {error?.message}
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>{t("title", { defaultMessage: "Unlabeled Matches" })}</span>
-          <Badge variant="outline" className="tabular-nums">
-            {data.totalCount} matches
-          </Badge>
+          {data && (
+            <Badge variant="outline" className="tabular-nums">
+              {data.totalCount} matches
+            </Badge>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {data.matches.length > 0 ? (
+        {isLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 8 }).map((_, i) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <Skeleton key={`skeleton-${i}`} className="h-10 w-full" />
+            ))}
+          </div>
+        ) : data && data.matches.length > 0 ? (
           <Table>
             <TableHeader>
               <TableRow>
@@ -73,7 +104,7 @@ export function UnlabeledMatchList({ initialData }: UnlabeledMatchListProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {pageMatches.map((match) => (
+              {data.matches.map((match) => (
                 <TableRow key={match.id} className="group">
                   <TableCell className="tabular-nums">
                     {formatDate(match.matchDate)}
@@ -115,7 +146,7 @@ export function UnlabeledMatchList({ initialData }: UnlabeledMatchListProps) {
           </p>
         )}
       </CardContent>
-      {totalPages > 1 && (
+      {!isLoading && totalPages > 1 && (
         <CardFooter className="justify-between">
           <Button
             variant="outline"
