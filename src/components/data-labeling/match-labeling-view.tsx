@@ -19,7 +19,7 @@ import type { Route } from "next";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { toast } from "sonner";
 
 type MatchLabelingViewProps = {
@@ -75,6 +75,71 @@ function getVodSource(url: string) {
   if (url.startsWith("https://www.twitch.tv/videos/")) return "twitch";
   return null;
 }
+
+type VodPanelProps = {
+  vod: MatchForLabeling["vods"][number] | undefined;
+  vodSource: string | null;
+  parentDomain: string;
+};
+
+const VodPanel = memo(function VodPanel({
+  vod,
+  vodSource,
+  parentDomain,
+}: VodPanelProps) {
+  const t = useTranslations("dataLabeling.labeling");
+
+  return (
+    <div className="space-y-4">
+      {vod && vodSource === "youtube" && (
+        <Card className="overflow-hidden">
+          <CardContent className="p-0">
+            <div className="aspect-video">
+              <YouTubeEmbed
+                videoid={extractYouTubeId(vod.url)}
+                params={`controls=1&start=${extractStartTime(vod.url)}`}
+                style="width:100%; height:100%; max-width:100%; max-height:100%; border:0;"
+              />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {vod && vodSource === "twitch" && (
+        <Card className="overflow-hidden">
+          <CardContent className="p-0">
+            <div className="aspect-video">
+              <iframe
+                src={`https://player.twitch.tv/?video=${vod.url.split("/videos/")[1].split("?")[0]}&parent=${parentDomain}`}
+                title="Twitch VOD"
+                className="h-full w-full border-0"
+                allowFullScreen
+              />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {(!vod || !vodSource) && (
+        <Card>
+          <CardContent className="flex aspect-video items-center justify-center">
+            <span className="text-muted-foreground">No VOD available</span>
+          </CardContent>
+        </Card>
+      )}
+
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm">{t("instructions.title")}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm text-muted-foreground">
+          <p>{t("instructions.body")}</p>
+          <p>{t("instructions.swapNote")}</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+});
 
 export function MatchLabelingView({ match }: MatchLabelingViewProps) {
   const t = useTranslations("dataLabeling.labeling");
@@ -284,54 +349,7 @@ export function MatchLabelingView({ match }: MatchLabelingViewProps) {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_400px]">
-        <div className="space-y-4">
-          {vod && vodSource === "youtube" && (
-            <Card className="overflow-hidden">
-              <CardContent className="p-0">
-                <div className="aspect-video">
-                  <YouTubeEmbed
-                    videoid={extractYouTubeId(vod.url)}
-                    params={`controls=1&start=${extractStartTime(vod.url)}`}
-                    style="width:100%; height:100%; max-width:100%; max-height:100%; border:0;"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {vod && vodSource === "twitch" && (
-            <Card className="overflow-hidden">
-              <CardContent className="p-0">
-                <div className="aspect-video">
-                  <iframe
-                    src={`https://player.twitch.tv/?video=${vod.url.split("/videos/")[1].split("?")[0]}&parent=${parentDomain}`}
-                    title="Twitch VOD"
-                    className="h-full w-full border-0"
-                    allowFullScreen
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {(!vod || !vodSource) && (
-            <Card>
-              <CardContent className="flex aspect-video items-center justify-center">
-                <span className="text-muted-foreground">No VOD available</span>
-              </CardContent>
-            </Card>
-          )}
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm">{t("instructions.title")}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm text-muted-foreground">
-              <p>{t("instructions.body")}</p>
-              <p>{t("instructions.swapNote")}</p>
-            </CardContent>
-          </Card>
-        </div>
+        <VodPanel vod={vod} vodSource={vodSource} parentDomain={parentDomain} />
 
         <div className="space-y-4">
           <Tabs value={activeMap} onValueChange={setActiveMap}>
