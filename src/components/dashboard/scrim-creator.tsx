@@ -1,10 +1,18 @@
 "use client";
 
+import type { GetScoutingTeamsResponse } from "@/app/api/scouting/get-teams/route";
 import type { GetTeamsResponse } from "@/app/api/team/get-teams/route";
 import { SortableBanItem } from "@/components/map/sortable-ban-item";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import {
   Field,
   FieldDescription,
@@ -30,6 +38,7 @@ import { parseData } from "@/lib/parser";
 import { cn, detectFileCorruption } from "@/lib/utils";
 import { heroRoleMapping } from "@/types/heroes";
 import type { ParserData } from "@/types/parser";
+import { CheckIcon, ChevronDownIcon } from "@radix-ui/react-icons";
 import {
   closestCenter,
   DndContext,
@@ -73,6 +82,7 @@ export function ScrimCreationForm({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [hasCorruptedData, setHasCorruptedData] = useState(false);
+  const [opponentPickerOpen, setOpponentPickerOpen] = useState(false);
   const queryClient = useQueryClient();
   const t = useTranslations("dashboard.scrimCreationForm");
 
@@ -101,6 +111,7 @@ export function ScrimCreationForm({
       error: t("dateRequiredError"),
     }),
     map: z.any(),
+    opponentTeamAbbr: z.string().nullable().optional(),
     heroBans: z.array(
       z.object({
         hero: z.string().min(1, {
@@ -128,9 +139,22 @@ export function ScrimCreationForm({
     }));
   }
 
+  async function getScoutingTeams() {
+    const response = await fetch("/api/scouting/get-teams");
+    if (!response.ok) return [];
+    const data = (await response.json()) as GetScoutingTeamsResponse;
+    return data.teams;
+  }
+
   const { data: teams } = useQuery({
     queryKey: ["teams"],
     queryFn: getTeams,
+    staleTime: Infinity,
+  });
+
+  const { data: scoutingTeams = [] } = useQuery({
+    queryKey: ["scouting-teams"],
+    queryFn: getScoutingTeams,
     staleTime: Infinity,
   });
 
@@ -185,6 +209,7 @@ export function ScrimCreationForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       date: new Date(),
+      opponentTeamAbbr: null,
       heroBans: [],
     },
   });
@@ -264,6 +289,90 @@ export function ScrimCreationForm({
             </Field>
           )}
         />
+        {scoutingTeams.length > 0 && (
+          <Controller
+            control={form.control}
+            name="opponentTeamAbbr"
+            render={({ field }) => (
+              <Field>
+                <FieldLabel htmlFor={field.name}>Opponent (OWCS)</FieldLabel>
+                <Popover
+                  open={opponentPickerOpen}
+                  onOpenChange={setOpponentPickerOpen}
+                >
+                  <PopoverTrigger asChild>
+                    <Button
+                      id={field.name}
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={opponentPickerOpen}
+                      aria-label="Select OWCS opponent"
+                      className="w-[240px] justify-between pl-3 text-left font-normal"
+                    >
+                      {field.value
+                        ? (scoutingTeams.find(
+                            (t) => t.abbreviation === field.value
+                          )?.fullName ?? field.value)
+                        : "No opponent linked"}
+                      <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[280px] p-0" align="start">
+                    <Command>
+                      <CommandInput placeholder="Search OWCS teams..." />
+                      <CommandList>
+                        <CommandEmpty>No teams found.</CommandEmpty>
+                        <CommandGroup>
+                          <CommandItem
+                            value=""
+                            onSelect={() => {
+                              field.onChange(null);
+                              setOpponentPickerOpen(false);
+                            }}
+                          >
+                            <CheckIcon
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                !field.value ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            No opponent linked
+                          </CommandItem>
+                          {scoutingTeams.map((st) => (
+                            <CommandItem
+                              key={st.abbreviation}
+                              value={`${st.abbreviation} ${st.fullName}`}
+                              onSelect={() => {
+                                field.onChange(st.abbreviation);
+                                setOpponentPickerOpen(false);
+                              }}
+                            >
+                              <CheckIcon
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  field.value === st.abbreviation
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                )}
+                              />
+                              <span className="text-muted-foreground w-16 shrink-0 font-mono text-xs">
+                                {st.abbreviation}
+                              </span>
+                              {st.fullName}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+                <FieldDescription>
+                  Optional. Link to an OWCS team to enable scouting analytics.
+                </FieldDescription>
+              </Field>
+            )}
+          />
+        )}
         <Controller
           control={form.control}
           name="team"
