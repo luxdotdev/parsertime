@@ -159,31 +159,38 @@ function aggregatePlayerHeroes(
 }
 
 /**
- * Computes a simplified composite z-score for a player-hero combination.
- * Uses the same weighted stat approach as hero-rating.ts but at the
- * player level rather than the global leaderboard level. The z-score
- * represents relative performance within the team's own data.
+ * Computes a composite z-score for each player-hero combination by
+ * normalizing per-10 stats within the same **role** across all players.
+ *
+ * Grouping by role (not by hero) is critical: on a typical roster only
+ * one player plays each hero, so per-hero stddev would be 0 and every
+ * z-score would collapse to 0. Pooling all Tank hero-performances into
+ * one distribution, all Damage into another, and all Support into a
+ * third gives us enough data points for meaningful variance.
  */
 function computeIntraTeamZScores(
   allPlayerHeroes: Map<string, PlayerHeroAgg[]>
 ): Map<string, Map<string, number>> {
-  // Collect all per-10 stats grouped by hero across all players
-  const heroStats = new Map<
-    string,
-    { elims: number[]; deaths: number[]; damage: number[]; healing: number[] }
-  >();
+  type StatBucket = {
+    elims: number[];
+    deaths: number[];
+    damage: number[];
+    healing: number[];
+  };
+
+  const roleStats = new Map<HeroRole, StatBucket>();
 
   for (const [, heroes] of allPlayerHeroes) {
     for (const h of heroes) {
-      let stats = heroStats.get(h.hero);
-      if (!stats) {
-        stats = { elims: [], deaths: [], damage: [], healing: [] };
-        heroStats.set(h.hero, stats);
+      let bucket = roleStats.get(h.role);
+      if (!bucket) {
+        bucket = { elims: [], deaths: [], damage: [], healing: [] };
+        roleStats.set(h.role, bucket);
       }
-      stats.elims.push(h.elimsPer10);
-      stats.deaths.push(h.deathsPer10);
-      stats.damage.push(h.damagePer10);
-      stats.healing.push(h.healingPer10);
+      bucket.elims.push(h.elimsPer10);
+      bucket.deaths.push(h.deathsPer10);
+      bucket.damage.push(h.damagePer10);
+      bucket.healing.push(h.healingPer10);
     }
   }
 
@@ -199,20 +206,18 @@ function computeIntraTeamZScores(
     );
   }
 
-  // Compute z-scores per player per hero
   const zScores = new Map<string, Map<string, number>>();
 
   for (const [playerName, heroes] of allPlayerHeroes) {
     const playerZScores = new Map<string, number>();
     for (const h of heroes) {
-      const stats = heroStats.get(h.hero);
+      const stats = roleStats.get(h.role);
       if (!stats) continue;
 
-      const role = h.role;
       const weights =
-        role === "Tank"
+        h.role === "Tank"
           ? { elims: 0.2, deaths: -0.3, damage: 0.2, healing: 0 }
-          : role === "Support"
+          : h.role === "Support"
             ? { elims: 0.1, deaths: -0.25, damage: 0.14, healing: 0.35 }
             : { elims: 0.3, deaths: -0.2, damage: 0.3, healing: 0 };
 
