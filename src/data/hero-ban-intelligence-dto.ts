@@ -6,10 +6,10 @@ import {
   SCRIM_CONFIDENCE_THRESHOLDS,
   type DataAvailabilityProfile,
 } from "@/lib/data-availability";
-import prisma from "@/lib/prisma";
 import type { MapType } from "@prisma/client";
 import { cache } from "react";
 import { getBaseTeamData } from "./team-shared-data";
+import { getOpponentMatchData } from "./scouting-dto";
 import { getOpponentScrimHeroBans } from "./scrim-opponent-dto";
 
 export type HeroWinRateDelta = {
@@ -86,11 +86,7 @@ type MapWithBans = {
 };
 
 async function getOpponentMapBanData(teamAbbr: string): Promise<MapWithBans[]> {
-  const matches = await prisma.scoutingMatch.findMany({
-    where: { OR: [{ team1: teamAbbr }, { team2: teamAbbr }] },
-    include: { maps: { include: { heroBans: true } } },
-    orderBy: { matchDate: "asc" },
-  });
+  const matches = await getOpponentMatchData(teamAbbr);
 
   const results: MapWithBans[] = [];
   for (const match of matches) {
@@ -118,35 +114,38 @@ function computeWinRateDeltas(
   const confidenceThresholds = includesScrimData
     ? SCRIM_CONFIDENCE_THRESHOLDS
     : undefined;
-  const allBannedHeroes = new Set<string>();
+
+  const totalMaps = maps.length;
+  const totalWins = maps.filter((m) => m.won).length;
+
+  const bannedAccum = new Map<
+    string,
+    { bannedTotal: number; bannedWins: number }
+  >();
+
   for (const map of maps) {
     for (const ban of map.heroBans) {
-      allBannedHeroes.add(ban.hero);
+      let accum = bannedAccum.get(ban.hero);
+      if (!accum) {
+        accum = { bannedTotal: 0, bannedWins: 0 };
+        bannedAccum.set(ban.hero, accum);
+      }
+      accum.bannedTotal++;
+      if (map.won) accum.bannedWins++;
     }
   }
 
-  return Array.from(allBannedHeroes)
-    .map((hero) => {
-      let availableWins = 0;
-      let availableTotal = 0;
-      let bannedWins = 0;
-      let bannedTotal = 0;
-
-      for (const map of maps) {
-        const isBanned = map.heroBans.some((b) => b.hero === hero);
-        if (isBanned) {
-          bannedTotal++;
-          if (map.won) bannedWins++;
-        } else {
-          availableTotal++;
-          if (map.won) availableWins++;
-        }
-      }
+  return Array.from(bannedAccum.entries())
+    .map(([hero, accum]) => {
+      const availableTotal = totalMaps - accum.bannedTotal;
+      const availableWins = totalWins - accum.bannedWins;
 
       const winRateWhenAvailable =
         availableTotal > 0 ? (availableWins / availableTotal) * 100 : 0;
       const winRateWhenBanned =
-        bannedTotal > 0 ? (bannedWins / bannedTotal) * 100 : 0;
+        accum.bannedTotal > 0
+          ? (accum.bannedWins / accum.bannedTotal) * 100
+          : 0;
 
       return {
         hero,
@@ -154,12 +153,15 @@ function computeWinRateDeltas(
         winRateWhenBanned,
         delta: winRateWhenAvailable - winRateWhenBanned,
         mapsAvailable: availableTotal,
-        mapsBanned: bannedTotal,
+        mapsBanned: accum.bannedTotal,
         confidenceAvailable: assessConfidence(
           availableTotal,
           confidenceThresholds
         ),
-        confidenceBanned: assessConfidence(bannedTotal, confidenceThresholds),
+        confidenceBanned: assessConfidence(
+          accum.bannedTotal,
+          confidenceThresholds
+        ),
       };
     })
     .sort((a, b) => b.delta - a.delta);
