@@ -1,11 +1,16 @@
 import "server-only";
 
 import { assessConfidence, type ConfidenceMetadata } from "@/lib/confidence";
-import type { DataAvailabilityProfile } from "@/lib/data-availability";
+import {
+  hasScrimData,
+  SCRIM_CONFIDENCE_THRESHOLDS,
+  type DataAvailabilityProfile,
+} from "@/lib/data-availability";
 import prisma from "@/lib/prisma";
 import type { MapType } from "@prisma/client";
 import { cache } from "react";
 import { getBaseTeamData } from "./team-shared-data";
+import { getOpponentScrimHeroBans } from "./scrim-opponent-dto";
 
 export type HeroWinRateDelta = {
   hero: string;
@@ -77,6 +82,7 @@ type MapWithBans = {
   teamSide: "team1" | "team2";
   won: boolean;
   heroBans: { team: string; hero: string }[];
+  source: "owcs" | "scrim";
 };
 
 async function getOpponentMapBanData(
@@ -100,6 +106,7 @@ async function getOpponentMapBanData(
         teamSide,
         won: map.winner === teamSide,
         heroBans: map.heroBans.map((b) => ({ team: b.team, hero: b.hero })),
+        source: "owcs",
       });
     }
   }
@@ -107,8 +114,12 @@ async function getOpponentMapBanData(
 }
 
 function computeWinRateDeltas(
-  maps: MapWithBans[]
+  maps: MapWithBans[],
+  includesScrimData: boolean
 ): HeroWinRateDelta[] {
+  const confidenceThresholds = includesScrimData
+    ? SCRIM_CONFIDENCE_THRESHOLDS
+    : undefined;
   const allBannedHeroes = new Set<string>();
   for (const map of maps) {
     for (const ban of map.heroBans) {
@@ -146,8 +157,11 @@ function computeWinRateDeltas(
         delta: winRateWhenAvailable - winRateWhenBanned,
         mapsAvailable: availableTotal,
         mapsBanned: bannedTotal,
-        confidenceAvailable: assessConfidence(availableTotal),
-        confidenceBanned: assessConfidence(bannedTotal),
+        confidenceAvailable: assessConfidence(
+          availableTotal,
+          confidenceThresholds
+        ),
+        confidenceBanned: assessConfidence(bannedTotal, confidenceThresholds),
       };
     })
     .sort((a, b) => b.delta - a.delta);
@@ -155,8 +169,12 @@ function computeWinRateDeltas(
 
 function computeComfortCrutches(
   maps: MapWithBans[],
-  winRateDeltas: HeroWinRateDelta[]
+  winRateDeltas: HeroWinRateDelta[],
+  includesScrimData: boolean
 ): ComfortCrutch[] {
+  const confidenceThresholds = includesScrimData
+    ? SCRIM_CONFIDENCE_THRESHOLDS
+    : undefined;
   const totalMaps = maps.length;
 
   const banCounts = new Map<string, number>();
@@ -185,7 +203,7 @@ function computeComfortCrutches(
         banRate,
         winRateDelta,
         crutchScore,
-        confidence: assessConfidence(banFrequency),
+        confidence: assessConfidence(banFrequency, confidenceThresholds),
       };
     })
     .filter((c) => c.winRateDelta > 0)
@@ -325,8 +343,13 @@ async function computeHeroExposure(
 }
 
 function computeBanDisruptionRanking(
-  winRateDeltas: HeroWinRateDelta[]
+  winRateDeltas: HeroWinRateDelta[],
+  includesScrimData: boolean
 ): BanDisruptionEntry[] {
+  const confidenceThresholds = includesScrimData
+    ? SCRIM_CONFIDENCE_THRESHOLDS
+    : undefined;
+
   return winRateDeltas
     .filter((d) => d.mapsBanned >= 2)
     .map((d) => {
@@ -341,7 +364,7 @@ function computeBanDisruptionRanking(
         mapsAvailable: d.mapsAvailable,
         mapsBanned: d.mapsBanned,
         disruptionScore,
-        confidence: assessConfidence(d.mapsBanned),
+        confidence: assessConfidence(d.mapsBanned, confidenceThresholds),
       };
     })
     .sort((a, b) => b.disruptionScore - a.disruptionScore);
@@ -350,20 +373,44 @@ function computeBanDisruptionRanking(
 async function getHeroBanIntelligenceFn(
   opponentAbbr: string,
   userTeamId: number | null,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _profile?: DataAvailabilityProfile
+  profile?: DataAvailabilityProfile
 ): Promise<HeroBanIntelligence> {
-  const maps = await getOpponentMapBanData(opponentAbbr);
+  const owcsMaps = await getOpponentMapBanData(opponentAbbr);
 
-  // Phase 3.5: When _profile indicates scrim data is available, merge
-  // scrim-derived hero ban data from scrim-opponent-dto.ts here before
-  // computing analytics. The OWCS-only path below is unchanged.
+  const includesScrimData =
+    !!profile && !!userTeamId && hasScrimData(profile);
 
-  const winRateDeltas = computeWinRateDeltas(maps);
-  const comfortCrutches = computeComfortCrutches(maps, winRateDeltas);
+  let maps: MapWithBans[] = owcsMaps;
+
+  if (includesScrimData && userTeamId !== null) {
+    const scrimBans = await getOpponentScrimHeroBans(userTeamId, opponentAbbr);
+    const scrimMaps: MapWithBans[] = scrimBans.map((s) => ({
+      mapName: s.mapName,
+      mapType: s.mapType,
+      matchDate: s.scrimDate,
+      teamSide: "team2" as const,
+      won: !s.opponentWon,
+      heroBans: s.opponentBans.map((hero) => ({
+        team: "team2",
+        hero,
+      })),
+      source: "scrim" as const,
+    }));
+    maps = [...owcsMaps, ...scrimMaps];
+  }
+
+  const winRateDeltas = computeWinRateDeltas(maps, includesScrimData);
+  const comfortCrutches = computeComfortCrutches(
+    maps,
+    winRateDeltas,
+    includesScrimData
+  );
   const protectedHeroes = computeProtectedHeroes(maps);
   const banRateByMapType = computeBanRateByMapType(maps);
-  const banDisruptionRanking = computeBanDisruptionRanking(winRateDeltas);
+  const banDisruptionRanking = computeBanDisruptionRanking(
+    winRateDeltas,
+    includesScrimData
+  );
 
   let heroExposure: HeroExposure[] = [];
   if (userTeamId !== null) {
