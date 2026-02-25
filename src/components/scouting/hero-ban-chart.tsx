@@ -34,13 +34,11 @@ export function HeroBanChart({ heroBans }: HeroBanChartProps) {
       weighted: b.weightedCount,
     }));
 
-  const bansByData = heroBans.bansByTeam
-    .slice(0, MAX_BARS)
-    .map((b) => ({
-      hero: b.hero,
-      count: b.rawCount,
-      weighted: b.weightedCount,
-    }));
+  const bansByData = heroBans.bansByTeam.slice(0, MAX_BARS).map((b) => ({
+    hero: b.hero,
+    count: b.rawCount,
+    weighted: b.weightedCount,
+  }));
 
   const bansAgainstConfig: ChartConfig = {
     weighted: {
