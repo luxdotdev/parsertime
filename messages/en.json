@@ -1469,6 +1469,26 @@
       "bannedBy": "{hero} banned by {team}"
     }
   },
+  "scoutingPage": {
+    "title": "Scouting",
+    "subtitle": "Search for OWCS teams and analyze their tournament performance.",
+    "metadata": {
+      "title": "Scouting | Parsertime",
+      "description": "Scout OWCS teams — search by name, view match history, win rates, and tournament performance.",
+      "ogTitle": "Scouting | Parsertime",
+      "ogDescription": "Scout OWCS teams — search by name, view match history, win rates, and tournament performance.",
+      "ogImage": "Scouting"
+    },
+    "search": {
+      "label": "Search teams",
+      "placeholder": "Search for a team...",
+      "helperText": "Search for an OWCS team by name or abbreviation.",
+      "resultsLabel": "Team search results",
+      "matchCount": "{count, plural, one {# match} other {# matches}}",
+      "winRate": "WR",
+      "noResults": "No teams found."
+    }
+  },
   "statsPage": {
     "layoutMetadata": {
       "title": "Stats | Parsertime",
