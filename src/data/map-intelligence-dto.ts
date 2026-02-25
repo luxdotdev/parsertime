@@ -1,6 +1,7 @@
 import "server-only";
 
 import { assessConfidence, type ConfidenceMetadata } from "@/lib/confidence";
+import type { DataAvailabilityProfile } from "@/lib/data-availability";
 import prisma from "@/lib/prisma";
 import {
   getTeamStrengthRatings,
@@ -306,12 +307,18 @@ function buildMatchupMatrix(
 
 async function getMapIntelligenceFn(
   opponentAbbr: string,
-  userTeamId: number | null
+  userTeamId: number | null,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _profile?: DataAvailabilityProfile
 ): Promise<MapIntelligence> {
   const [rows, allRatings] = await Promise.all([
     getOpponentMapResults(opponentAbbr),
     getTeamStrengthRatings(),
   ]);
+
+  // Phase 3.5: When _profile indicates scrim data is available, merge
+  // scrim-derived map results from scrim-opponent-dto.ts here before
+  // computing analytics. The OWCS-only path below is unchanged.
 
   const ratingsMap = new Map(allRatings.map((r) => [r.teamAbbr, r]));
 
