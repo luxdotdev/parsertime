@@ -3,7 +3,12 @@ import {
   isSufficientConfidence,
   type ConfidenceMetadata,
 } from "@/lib/confidence";
-import type { DataAvailabilityProfile } from "@/lib/data-availability";
+import {
+  hasScrimData,
+  hasOwcsData,
+  SCRIM_CONFIDENCE_THRESHOLDS,
+  type DataAvailabilityProfile,
+} from "@/lib/data-availability";
 import type { HeroBanIntelligence } from "@/data/hero-ban-intelligence-dto";
 import type { MapIntelligence } from "@/data/map-intelligence-dto";
 import type { PlayerIntelligence } from "@/data/player-intelligence-dto";
@@ -63,6 +68,39 @@ const MAP_MATCHUP_THRESHOLD_PP = 15;
 const TREND_MIN_RECENT_MAPS = 3;
 const MAX_PRIMARY_INSIGHTS = 5;
 
+function resolveDataSource(
+  profile: DataAvailabilityProfile | undefined
+): InsightDataSource {
+  if (!profile) return "owcs";
+  const owcs = hasOwcsData(profile);
+  const scrim = hasScrimData(profile);
+  if (owcs && scrim) return "owcs+scrim";
+  if (scrim) return "scrim";
+  return "owcs";
+}
+
+function buildSourcePhrase(
+  profile: DataAvailabilityProfile | undefined,
+  count: number
+): string {
+  if (!profile) return `Based on ${count} competitive maps`;
+  const owcs = hasOwcsData(profile);
+  const scrim = hasScrimData(profile);
+  if (owcs && scrim) {
+    return `Based on ${profile.opponentOwcsMaps} competitive maps and ${profile.opponentScrimMaps} scrims`;
+  }
+  if (scrim) return `Based on ${count} scrims against this opponent`;
+  return `Based on ${count} competitive maps`;
+}
+
+function scrimConfidenceThresholds(
+  profile: DataAvailabilityProfile | undefined
+) {
+  return profile && hasScrimData(profile)
+    ? SCRIM_CONFIDENCE_THRESHOLDS
+    : undefined;
+}
+
 function confidenceBonus(level: ConfidenceMetadata["level"]): number {
   if (level === "high") return 20;
   if (level === "medium") return 10;
@@ -87,9 +125,11 @@ function weakerOf(
 }
 
 function generateMapMatchupInsights(
-  mapIntelligence: MapIntelligence
+  mapIntelligence: MapIntelligence,
+  profile: DataAvailabilityProfile | undefined
 ): Insight[] {
   const insights: Insight[] = [];
+  const dataSource = resolveDataSource(profile);
 
   const actionableEntries = mapIntelligence.matchupMatrix.filter(
     (entry) =>
@@ -108,17 +148,22 @@ function generateMapMatchupInsights(
       magnitudeScore + confidenceBonus(combined.level) + 10
     );
 
+    const sourcePhrase = buildSourcePhrase(profile, entry.opponentPlayed);
+
     if (advantage > 0) {
       insights.push({
         id: `map_advantage_${slugify(entry.mapName)}`,
         category: "map_advantage",
         priority,
         headline: `${entry.mapName} is your best matchup (+${Math.round(advantage)}pp)`,
-        detail: `Your team wins ${Math.round(entry.userWinRate!)}% on ${entry.mapName} versus their strength-weighted ${Math.round(entry.opponentStrengthWeightedWR)}% — a ${Math.round(advantage)}pp net edge.`,
+        detail: `Your team wins ${Math.round(entry.userWinRate!)}% on ${entry.mapName} versus their ${entry.opponentStrengthWeightedWR !== entry.opponentWinRate ? "strength-weighted " : ""}${Math.round(entry.opponentStrengthWeightedWR)}% — a ${Math.round(advantage)}pp net edge. ${sourcePhrase}.`,
         confidence: combined,
-        dataSource: "owcs",
+        dataSource,
         dataPoints: [
-          { label: "Your win rate", value: `${Math.round(entry.userWinRate!)}%` },
+          {
+            label: "Your win rate",
+            value: `${Math.round(entry.userWinRate!)}%`,
+          },
           {
             label: "Their win rate (weighted)",
             value: `${Math.round(entry.opponentStrengthWeightedWR)}%`,
@@ -134,11 +179,14 @@ function generateMapMatchupInsights(
         category: "map_vulnerability",
         priority,
         headline: `Avoid ${entry.mapName} — they have a ${Math.abs(Math.round(advantage))}pp edge`,
-        detail: `Your team wins ${Math.round(entry.userWinRate!)}% on ${entry.mapName} versus their strength-weighted ${Math.round(entry.opponentStrengthWeightedWR)}% — they hold a ${Math.abs(Math.round(advantage))}pp advantage.`,
+        detail: `Your team wins ${Math.round(entry.userWinRate!)}% on ${entry.mapName} versus their ${entry.opponentStrengthWeightedWR !== entry.opponentWinRate ? "strength-weighted " : ""}${Math.round(entry.opponentStrengthWeightedWR)}% — they hold a ${Math.abs(Math.round(advantage))}pp advantage. ${sourcePhrase}.`,
         confidence: combined,
-        dataSource: "owcs",
+        dataSource,
         dataPoints: [
-          { label: "Your win rate", value: `${Math.round(entry.userWinRate!)}%` },
+          {
+            label: "Your win rate",
+            value: `${Math.round(entry.userWinRate!)}%`,
+          },
           {
             label: "Their win rate (weighted)",
             value: `${Math.round(entry.opponentStrengthWeightedWR)}%`,
@@ -167,18 +215,22 @@ function generateMapMatchupInsights(
   return [...advantages, ...vulnerabilities];
 }
 
-function generateTrendInsights(mapIntelligence: MapIntelligence): Insight[] {
+function generateTrendInsights(
+  mapIntelligence: MapIntelligence,
+  profile: DataAvailabilityProfile | undefined
+): Insight[] {
   const insights: Insight[] = [];
+  const dataSource = resolveDataSource(profile);
+  const thresholds = scrimConfidenceThresholds(profile);
 
   for (const trend of mapIntelligence.trends) {
     if (trend.trend === "stable") continue;
     if (trend.recentPlayed < TREND_MIN_RECENT_MAPS) continue;
 
-    const recentConfidence = assessConfidence(trend.recentPlayed, {
-      low: 3,
-      medium: 5,
-      high: 8,
-    });
+    const recentConfidence = assessConfidence(
+      trend.recentPlayed,
+      thresholds ?? { low: 3, medium: 5, high: 8 }
+    );
     if (!isSufficientConfidence(recentConfidence)) continue;
 
     const magnitudeScore = Math.min((Math.abs(trend.delta) / 30) * 50, 50);
@@ -194,7 +246,7 @@ function generateTrendInsights(mapIntelligence: MapIntelligence): Insight[] {
         headline: `Opponent is on a ${trend.mapName} hot streak (+${Math.round(trend.delta)}pp recent)`,
         detail: `Their last ${trend.recentPlayed} maps on ${trend.mapName}: ${Math.round(trend.recentWinRate)}% WR, up from ${Math.round(trend.overallWinRate)}% overall — +${Math.round(trend.delta)}pp improvement in form.`,
         confidence: recentConfidence,
-        dataSource: "owcs",
+        dataSource,
         dataPoints: [
           {
             label: "Recent win rate",
@@ -223,7 +275,7 @@ function generateTrendInsights(mapIntelligence: MapIntelligence): Insight[] {
         headline: `${trend.mapName} is a soft spot — they're slipping (${Math.round(trend.delta)}pp)`,
         detail: `Their last ${trend.recentPlayed} maps on ${trend.mapName}: ${Math.round(trend.recentWinRate)}% WR, down from ${Math.round(trend.overallWinRate)}% overall — a ${Math.round(trend.delta)}pp decline in form.`,
         confidence: recentConfidence,
-        dataSource: "owcs",
+        dataSource,
         dataPoints: [
           {
             label: "Recent win rate",
@@ -240,7 +292,9 @@ function generateTrendInsights(mapIntelligence: MapIntelligence): Insight[] {
             unit: "maps",
           },
         ],
-        actionItems: [`Consider forcing ${trend.mapName} to exploit their declining form`],
+        actionItems: [
+          `Consider forcing ${trend.mapName} to exploit their declining form`,
+        ],
       });
     }
   }
@@ -249,9 +303,12 @@ function generateTrendInsights(mapIntelligence: MapIntelligence): Insight[] {
 }
 
 function generateBanStrategyInsights(
-  banIntelligence: HeroBanIntelligence
+  banIntelligence: HeroBanIntelligence,
+  profile: DataAvailabilityProfile | undefined
 ): Insight[] {
   const insights: Insight[] = [];
+  const dataSource = resolveDataSource(profile);
+  const thresholds = scrimConfidenceThresholds(profile);
 
   const topDisruption = banIntelligence.banDisruptionRanking
     .filter((d) => isSufficientConfidence(d.confidence))
@@ -270,7 +327,7 @@ function generateBanStrategyInsights(
       headline: `Ban ${disruption.hero} — they drop ${Math.round(disruption.winRateDelta)}pp without it`,
       detail: `${disruption.hero} has the highest disruption score: opponent wins ${Math.round(disruption.winRateDelta)}pp more when it's available versus when banned (${disruption.mapsAvailable} available, ${disruption.mapsBanned} banned).`,
       confidence: disruption.confidence,
-      dataSource: "owcs",
+      dataSource,
       dataPoints: [
         {
           label: "Win rate delta",
@@ -301,7 +358,10 @@ function generateBanStrategyInsights(
 
   for (const exposure of highExposure) {
     const magnitudeScore = Math.min((exposure.opponentBanRate / 50) * 50, 50);
-    const exposureConfidence = assessConfidence(exposure.opponentBanCount);
+    const exposureConfidence = assessConfidence(
+      exposure.opponentBanCount,
+      thresholds
+    );
     const priority = Math.round(
       magnitudeScore + confidenceBonus(exposureConfidence.level) + 10
     );
@@ -313,7 +373,7 @@ function generateBanStrategyInsights(
       headline: `${exposure.hero} is at high risk — opponent bans it ${Math.round(exposure.opponentBanRate)}% of the time`,
       detail: `Your team plays ${exposure.hero} ${Math.round(exposure.userPlayRate)}% of the time, but the opponent bans it in ${Math.round(exposure.opponentBanRate)}% of their maps. A strong alternative is essential.`,
       confidence: exposureConfidence,
-      dataSource: "owcs",
+      dataSource,
       dataPoints: [
         {
           label: "Your play rate",
@@ -340,13 +400,16 @@ function generateBanStrategyInsights(
 }
 
 function generatePlayerInsights(
-  playerIntelligence: PlayerIntelligence
+  playerIntelligence: PlayerIntelligence,
+  profile: DataAvailabilityProfile | undefined
 ): Insight[] {
   const insights: Insight[] = [];
+  const dataSource = resolveDataSource(profile);
+  const thresholds = scrimConfidenceThresholds(profile);
 
   if (playerIntelligence.bestPlayer) {
     const bp = playerIntelligence.bestPlayer;
-    const playerConfidence = assessConfidence(bp.mapsPlayed);
+    const playerConfidence = assessConfidence(bp.mapsPlayed, thresholds);
     const magnitudeScore = Math.min((bp.compositeZScore / 3) * 40, 40);
     const priority = Math.round(
       magnitudeScore +
@@ -366,7 +429,7 @@ function generatePlayerInsights(
       headline: `${bp.playerName} is your standout performer (+${bp.compositeZScore.toFixed(1)}σ on ${bp.primaryHero})`,
       detail: `${bp.playerName} leads the team with a +${bp.compositeZScore.toFixed(1)}σ composite score on ${bp.primaryHero} across ${bp.mapsPlayed} maps.${banContext}`,
       confidence: playerConfidence,
-      dataSource: "owcs",
+      dataSource,
       dataPoints: [
         {
           label: "Composite z-score",
@@ -384,7 +447,9 @@ function generatePlayerInsights(
             `Protect ${bp.playerName}'s hero pool in the veto`,
             `Prepare alternatives to ${bp.primaryHero}`,
           ]
-        : [`${bp.playerName} is your highest-impact player on ${bp.primaryHero}`],
+        : [
+            `${bp.playerName} is your highest-impact player on ${bp.primaryHero}`,
+          ],
     });
   }
 
@@ -393,7 +458,7 @@ function generatePlayerInsights(
     .slice(0, 2);
 
   for (const vuln of elevatedVulnerabilities) {
-    const vulnConfidence = assessConfidence(vuln.opponentBanCount);
+    const vulnConfidence = assessConfidence(vuln.opponentBanCount, thresholds);
     const magnitudeScore = Math.min(vuln.vulnerabilityIndex * 50, 50);
     const urgencyBonus = vuln.riskLevel === "critical" ? 20 : 10;
     const priority = Math.round(
@@ -407,7 +472,7 @@ function generatePlayerInsights(
       headline: `${vuln.playerName} is ${vuln.riskLevel === "critical" ? "critically" : "highly"} exposed on ${vuln.primaryHero}`,
       detail: `${vuln.playerName}'s primary hero (${vuln.primaryHero}) has a ${vuln.heroDepthDelta.toFixed(1)}σ performance drop to their secondary, and the opponent bans it in ${Math.round(vuln.opponentBanRate)}% of maps.`,
       confidence: vulnConfidence,
-      dataSource: "owcs",
+      dataSource,
       dataPoints: [
         { label: "Primary hero", value: vuln.primaryHero },
         {
@@ -473,28 +538,38 @@ export function generateInsights(params: InsightGenerationParams): InsightReport
     playerIntelligence,
     strengthRating,
     hasUserTeamLink,
+    dataAvailability,
   } = params;
 
   const allInsights: Insight[] = [];
 
   if (mapIntelligence) {
     if (hasUserTeamLink && mapIntelligence.matchupMatrix.length > 0) {
-      allInsights.push(...generateMapMatchupInsights(mapIntelligence));
+      allInsights.push(
+        ...generateMapMatchupInsights(mapIntelligence, dataAvailability)
+      );
     }
-    allInsights.push(...generateTrendInsights(mapIntelligence));
+    allInsights.push(...generateTrendInsights(mapIntelligence, dataAvailability));
   }
 
   if (banIntelligence) {
-    allInsights.push(...generateBanStrategyInsights(banIntelligence));
+    allInsights.push(
+      ...generateBanStrategyInsights(banIntelligence, dataAvailability)
+    );
   }
 
   if (playerIntelligence) {
-    allInsights.push(...generatePlayerInsights(playerIntelligence));
+    allInsights.push(
+      ...generatePlayerInsights(playerIntelligence, dataAvailability)
+    );
   }
 
   const deduplicated = deduplicateInsights(allInsights);
   const { primary, secondary } = prioritizeInsights(deduplicated);
-  const overallConfidence = computeOverallConfidence(deduplicated, strengthRating);
+  const overallConfidence = computeOverallConfidence(
+    deduplicated,
+    strengthRating
+  );
 
   return {
     primary,
