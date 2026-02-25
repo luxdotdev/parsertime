@@ -381,7 +381,8 @@
       "teamStats": "Team Stats",
       "scouting": "Scouting",
       "scoutPlayer": "Scout a player",
-      "scoutTeam": "Scout a team"
+      "scoutTeam": "Scout a team",
+      "dataLabeling": "Data Labeling"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "Search team...",
@@ -1604,6 +1605,48 @@
         }
       },
       "empty": "No scouting data available for this team."
+    }
+  },
+  "dataLabeling": {
+    "title": "Data Labeling",
+    "subtitle": "Label team compositions for OWCS tournament matches.",
+    "metadata": {
+      "title": "Data Labeling | Parsertime",
+      "description": "Label team compositions for OWCS tournament matches."
+    },
+    "matchList": {
+      "date": "Date",
+      "teams": "Teams",
+      "score": "Score",
+      "tournament": "Tournament",
+      "progress": "Progress",
+      "previousPage": "Previous",
+      "nextPage": "Next",
+      "pageInfo": "Page {current} of {total}",
+      "noMatches": "No unlabeled matches with VODs found.",
+      "vs": "vs"
+    },
+    "labeling": {
+      "backToList": "Back to matches",
+      "map": "Map {number}",
+      "mapTabs": "Maps",
+      "labeled": "Labeled",
+      "unlabeled": "Unlabeled",
+      "heroBans": "Hero Bans",
+      "noBans": "No bans for this map.",
+      "team1Comp": "{team} Composition",
+      "team2Comp": "{team} Composition",
+      "tank": "Tank",
+      "damage": "Damage",
+      "support": "Support",
+      "save": "Save",
+      "saveAll": "Save All Maps",
+      "saving": "Saving...",
+      "saved": "Saved!",
+      "saveSuccess": "Team compositions saved successfully.",
+      "saveError": "Failed to save team compositions.",
+      "roleConstraint": "Select 1 Tank, 2 Damage, 2 Support",
+      "heroBanned": "Banned"
     }
   },
   "statsPage": {
