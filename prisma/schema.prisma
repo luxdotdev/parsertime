@@ -185,18 +185,19 @@ model AuditLog {
 }
 
 model Team {
-  id               Int               @id @default(autoincrement())
-  name             String
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  image            String?
-  users            User[]
-  scrims           Scrim[]
-  ownerId          String
-  managers         TeamManager[]
-  readonly         Boolean           @default(false)
-  comparisonGroups ComparisonGroup[]
-  mapGroups        MapGroup[]
+  id                Int               @id @default(autoincrement())
+  name              String
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  image             String?
+  users             User[]
+  scrims            Scrim[]
+  ownerId           String
+  managers          TeamManager[]
+  readonly          Boolean           @default(false)
+  comparisonGroups  ComparisonGroup[]
+  mapGroups         MapGroup[]
+  scoutingTeamAbbr  String?
 }
 
 model TeamManager {
