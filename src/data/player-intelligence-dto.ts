@@ -1,11 +1,15 @@
 import "server-only";
 
 import { assessConfidence, type ConfidenceMetadata } from "@/lib/confidence";
-import type { DataAvailabilityProfile } from "@/lib/data-availability";
+import {
+  hasScrimData,
+  type DataAvailabilityProfile,
+} from "@/lib/data-availability";
 import prisma from "@/lib/prisma";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import { cache } from "react";
 import { getBaseTeamData } from "./team-shared-data";
+import { getOpponentScrimHeroBans } from "./scrim-opponent-dto";
 
 type HeroRole = "Tank" | "Damage" | "Support";
 
@@ -442,8 +446,7 @@ function findBestPlayer(
 async function getPlayerIntelligenceFn(
   userTeamId: number,
   opponentAbbr: string | null,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _profile?: DataAvailabilityProfile
+  profile?: DataAvailabilityProfile
 ): Promise<PlayerIntelligence> {
   const baseData = await getBaseTeamData(userTeamId);
   const { allPlayerStats, teamRoster, teamRosterSet } = baseData;
@@ -473,10 +476,6 @@ async function getPlayerIntelligenceFn(
     heroBans
   );
 
-  // Phase 3.5: When _profile indicates scrim data is available, supplement
-  // opponent ban data with scrim-derived player stats from scrim-opponent-dto.ts.
-  // The OWCS-only path below is unchanged when no profile is provided.
-
   const opponentBanCounts = new Map<string, number>();
   let totalOpponentMaps = 0;
 
@@ -497,6 +496,23 @@ async function getPlayerIntelligenceFn(
               (opponentBanCounts.get(ban.hero) ?? 0) + 1
             );
           }
+        }
+      }
+    }
+
+    const includesScrimData = !!profile && hasScrimData(profile);
+    if (includesScrimData) {
+      const scrimBans = await getOpponentScrimHeroBans(
+        userTeamId,
+        opponentAbbr
+      );
+      for (const scrimMap of scrimBans) {
+        totalOpponentMaps++;
+        for (const hero of scrimMap.opponentBans) {
+          opponentBanCounts.set(
+            hero,
+            (opponentBanCounts.get(hero) ?? 0) + 1
+          );
         }
       }
     }
