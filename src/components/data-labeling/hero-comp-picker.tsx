@@ -15,6 +15,7 @@ type HeroCompPickerProps = {
   selectedHeroes: string[];
   onSelectionChange: (heroes: string[]) => void;
   bannedHeroes: string[];
+  assignments?: Record<string, string>;
 };
 
 const ROLE_LIMITS: Record<string, number> = {
@@ -43,6 +44,7 @@ export function HeroCompPicker({
   selectedHeroes,
   onSelectionChange,
   bannedHeroes,
+  assignments,
 }: HeroCompPickerProps) {
   const t = useTranslations("dataLabeling.labeling");
   const roleCounts = countByRole(selectedHeroes);
@@ -91,27 +93,32 @@ export function HeroCompPicker({
       <div className="flex items-center gap-2">
         {slots.map(({ role, index }) => {
           const hero = getSlotHero(role, index);
+          const assignedPlayer = hero ? assignments?.[hero] : undefined;
           return (
-            <div
-              key={`${role}-${index}`}
-              className={cn(
-                "bg-muted flex h-12 w-12 items-center justify-center overflow-hidden rounded-md border",
-                hero && "border-primary"
-              )}
-            >
-              {hero ? (
-                <Image
-                  src={`/heroes/${toHero(hero)}.png`}
-                  alt={hero}
-                  width={48}
-                  height={48}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <span className="text-muted-foreground text-[10px]">
-                  {t(role.toLowerCase() as "tank" | "damage" | "support")}
-                </span>
-              )}
+            <div key={`${role}-${index}`} className="flex flex-col items-center gap-0.5">
+              <div
+                className={cn(
+                  "bg-muted flex h-12 w-12 items-center justify-center overflow-hidden rounded-md border",
+                  hero && "border-primary"
+                )}
+              >
+                {hero ? (
+                  <Image
+                    src={`/heroes/${toHero(hero)}.png`}
+                    alt={hero}
+                    width={48}
+                    height={48}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <span className="text-muted-foreground text-[10px]">
+                    {t(role.toLowerCase() as "tank" | "damage" | "support")}
+                  </span>
+                )}
+              </div>
+              <span className="text-muted-foreground w-12 truncate text-center text-[9px] leading-tight">
+                {assignedPlayer ?? "\u00A0"}
+              </span>
             </div>
           );
         })}
