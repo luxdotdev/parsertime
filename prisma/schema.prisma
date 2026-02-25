@@ -926,6 +926,8 @@ model ScoutingMatch {
   winnerFullName String
   matchDate      DateTime
   mvp            String?
+  vods           Json                @default("[]")
+  matchRoomUrl   String?
   maps           ScoutingMapResult[]
   tournament     ScoutingTournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   createdAt      DateTime            @default(now())
