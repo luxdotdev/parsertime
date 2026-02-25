@@ -21,6 +21,7 @@ export type CreateScrimRequestData = {
   date: string;
   map: ParserData;
   replayCode: string;
+  opponentTeamAbbr?: string | null;
   heroBans: {
     hero: string;
     team: string;
