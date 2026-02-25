@@ -3,6 +3,7 @@ import {
   isSufficientConfidence,
   type ConfidenceMetadata,
 } from "@/lib/confidence";
+import type { DataAvailabilityProfile } from "@/lib/data-availability";
 import type { HeroBanIntelligence } from "@/data/hero-ban-intelligence-dto";
 import type { MapIntelligence } from "@/data/map-intelligence-dto";
 import type { PlayerIntelligence } from "@/data/player-intelligence-dto";
@@ -16,6 +17,8 @@ export type InsightCategory =
   | "player_highlight"
   | "player_vulnerability"
   | "trend_alert";
+
+export type InsightDataSource = "owcs" | "scrim" | "owcs+scrim";
 
 export type DataPoint = {
   label: string;
@@ -31,6 +34,8 @@ export type Insight = {
   headline: string;
   detail: string;
   confidence: ConfidenceMetadata;
+  /** Provenance of the underlying data that generated this insight. */
+  dataSource: InsightDataSource;
   dataPoints: DataPoint[];
   actionItems: string[];
 };
@@ -49,6 +54,9 @@ export type InsightGenerationParams = {
   strengthRating: TeamStrengthRating | null;
   opponentAbbr: string;
   hasUserTeamLink: boolean;
+  /** Phase 3.5: When provided, insight generators adjust confidence thresholds
+   *  and natural-language phrasing based on which source powered the analytics. */
+  dataAvailability?: DataAvailabilityProfile;
 };
 
 const MAP_MATCHUP_THRESHOLD_PP = 15;
@@ -108,6 +116,7 @@ function generateMapMatchupInsights(
         headline: `${entry.mapName} is your best matchup (+${Math.round(advantage)}pp)`,
         detail: `Your team wins ${Math.round(entry.userWinRate!)}% on ${entry.mapName} versus their strength-weighted ${Math.round(entry.opponentStrengthWeightedWR)}% — a ${Math.round(advantage)}pp net edge.`,
         confidence: combined,
+        dataSource: "owcs",
         dataPoints: [
           { label: "Your win rate", value: `${Math.round(entry.userWinRate!)}%` },
           {
@@ -127,6 +136,7 @@ function generateMapMatchupInsights(
         headline: `Avoid ${entry.mapName} — they have a ${Math.abs(Math.round(advantage))}pp edge`,
         detail: `Your team wins ${Math.round(entry.userWinRate!)}% on ${entry.mapName} versus their strength-weighted ${Math.round(entry.opponentStrengthWeightedWR)}% — they hold a ${Math.abs(Math.round(advantage))}pp advantage.`,
         confidence: combined,
+        dataSource: "owcs",
         dataPoints: [
           { label: "Your win rate", value: `${Math.round(entry.userWinRate!)}%` },
           {
@@ -184,6 +194,7 @@ function generateTrendInsights(mapIntelligence: MapIntelligence): Insight[] {
         headline: `Opponent is on a ${trend.mapName} hot streak (+${Math.round(trend.delta)}pp recent)`,
         detail: `Their last ${trend.recentPlayed} maps on ${trend.mapName}: ${Math.round(trend.recentWinRate)}% WR, up from ${Math.round(trend.overallWinRate)}% overall — +${Math.round(trend.delta)}pp improvement in form.`,
         confidence: recentConfidence,
+        dataSource: "owcs",
         dataPoints: [
           {
             label: "Recent win rate",
@@ -212,6 +223,7 @@ function generateTrendInsights(mapIntelligence: MapIntelligence): Insight[] {
         headline: `${trend.mapName} is a soft spot — they're slipping (${Math.round(trend.delta)}pp)`,
         detail: `Their last ${trend.recentPlayed} maps on ${trend.mapName}: ${Math.round(trend.recentWinRate)}% WR, down from ${Math.round(trend.overallWinRate)}% overall — a ${Math.round(trend.delta)}pp decline in form.`,
         confidence: recentConfidence,
+        dataSource: "owcs",
         dataPoints: [
           {
             label: "Recent win rate",
@@ -258,6 +270,7 @@ function generateBanStrategyInsights(
       headline: `Ban ${disruption.hero} — they drop ${Math.round(disruption.winRateDelta)}pp without it`,
       detail: `${disruption.hero} has the highest disruption score: opponent wins ${Math.round(disruption.winRateDelta)}pp more when it's available versus when banned (${disruption.mapsAvailable} available, ${disruption.mapsBanned} banned).`,
       confidence: disruption.confidence,
+      dataSource: "owcs",
       dataPoints: [
         {
           label: "Win rate delta",
@@ -300,6 +313,7 @@ function generateBanStrategyInsights(
       headline: `${exposure.hero} is at high risk — opponent bans it ${Math.round(exposure.opponentBanRate)}% of the time`,
       detail: `Your team plays ${exposure.hero} ${Math.round(exposure.userPlayRate)}% of the time, but the opponent bans it in ${Math.round(exposure.opponentBanRate)}% of their maps. A strong alternative is essential.`,
       confidence: exposureConfidence,
+      dataSource: "owcs",
       dataPoints: [
         {
           label: "Your play rate",
@@ -352,6 +366,7 @@ function generatePlayerInsights(
       headline: `${bp.playerName} is your standout performer (+${bp.compositeZScore.toFixed(1)}σ on ${bp.primaryHero})`,
       detail: `${bp.playerName} leads the team with a +${bp.compositeZScore.toFixed(1)}σ composite score on ${bp.primaryHero} across ${bp.mapsPlayed} maps.${banContext}`,
       confidence: playerConfidence,
+      dataSource: "owcs",
       dataPoints: [
         {
           label: "Composite z-score",
@@ -392,6 +407,7 @@ function generatePlayerInsights(
       headline: `${vuln.playerName} is ${vuln.riskLevel === "critical" ? "critically" : "highly"} exposed on ${vuln.primaryHero}`,
       detail: `${vuln.playerName}'s primary hero (${vuln.primaryHero}) has a ${vuln.heroDepthDelta.toFixed(1)}σ performance drop to their secondary, and the opponent bans it in ${Math.round(vuln.opponentBanRate)}% of maps.`,
       confidence: vulnConfidence,
+      dataSource: "owcs",
       dataPoints: [
         { label: "Primary hero", value: vuln.primaryHero },
         {
