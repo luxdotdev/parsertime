@@ -1487,6 +1487,86 @@
       "matchCount": "{count, plural, one {# match} other {# matches}}",
       "winRate": "WR",
       "noResults": "No teams found."
+    },
+    "team": {
+      "metadata": {
+        "title": "{team} Scouting | Parsertime",
+        "description": "Scout {team} — view match history, hero bans, map performance, and strategic recommendations.",
+        "ogTitle": "{team} Scouting | Parsertime",
+        "ogDescription": "Scout {team} — view match history, hero bans, map performance, and strategic recommendations."
+      },
+      "backToSearch": "Back to search",
+      "tabs": {
+        "overview": "Overview",
+        "heroBans": "Hero Bans",
+        "maps": "Maps",
+        "recommendations": "Recommendations"
+      },
+      "overview": {
+        "record": "Record",
+        "winRate": "Win Rate",
+        "weightedWinRate": "Weighted WR",
+        "weightedWinRateTooltip": "Win rate weighted by recency — recent matches count more than older ones.",
+        "recentForm": "Recent Form",
+        "recentFormDescription": "Last 10 match results",
+        "matchHistory": "Match History",
+        "matchHistoryDescription": "All recorded matches, most recent first",
+        "date": "Date",
+        "opponent": "Opponent",
+        "score": "Score",
+        "result": "Result",
+        "tournament": "Tournament",
+        "win": "W",
+        "loss": "L",
+        "matchCount": "{count, plural, one {match} other {matches}}",
+        "allTime": "All-time win rate",
+        "noMatches": "No matches found for this team.",
+        "previousPage": "Previous",
+        "nextPage": "Next",
+        "pageInfo": "Page {current} of {total}"
+      },
+      "heroBans": {
+        "bansAgainstTeam": "Bans Against Them",
+        "bansAgainstDescription": "Heroes opponents ban when facing this team — reveals perceived strengths.",
+        "bansByTeam": "Their Bans",
+        "bansByDescription": "Heroes this team bans — reveals what they want to deny opponents.",
+        "hero": "Hero",
+        "count": "Count",
+        "weighted": "Weighted",
+        "noBans": "No hero ban data available."
+      },
+      "maps": {
+        "byMapType": "Win Rate by Map Type",
+        "byMapTypeDescription": "Performance breakdown by game mode",
+        "byMap": "Per-Map Performance",
+        "byMapDescription": "Win rate on individual maps",
+        "mapType": "Mode",
+        "map": "Map",
+        "played": "Played",
+        "won": "Won",
+        "winRate": "Win Rate",
+        "weightedWinRate": "Weighted WR",
+        "noMaps": "No map data available."
+      },
+      "recommendations": {
+        "title": "Strategic Recommendations",
+        "description": "Actionable insights based on recency-weighted analysis of this team's performance.",
+        "heroesToBan": "Heroes to Ban",
+        "heroesToBanDescription": "Heroes opponents most frequently ban against this team — these are their perceived strengths.",
+        "mapsToPick": "Maps to Pick",
+        "mapsToPickDescription": "Maps where this team has the lowest weighted win rate — exploit these weaknesses.",
+        "mapsToAvoid": "Maps to Avoid",
+        "mapsToAvoidDescription": "Maps where this team has the highest weighted win rate — stay away from their strengths.",
+        "weightedWinRate": "weighted WR",
+        "sampleSize": "{count, plural, one {# game} other {# games}}",
+        "noRecommendations": "Not enough data to generate recommendations.",
+        "confidence": {
+          "high": "High confidence",
+          "medium": "Medium confidence",
+          "low": "Low confidence"
+        }
+      },
+      "empty": "No scouting data available for this team."
     }
   },
   "statsPage": {
