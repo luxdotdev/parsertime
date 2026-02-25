@@ -60,7 +60,7 @@ type ScrimPlayerStatRow = {
  * opponent-side analytics. Returns structured collections ready for
  * per-MapData resolution.
  */
-async function fetchTaggedScrimData(
+async function fetchTaggedScrimDataFn(
   userTeamId: number,
   opponentAbbr: string
 ): Promise<{
@@ -265,6 +265,8 @@ async function fetchTaggedScrimData(
     fullPlayerStatsByMapDataId,
   };
 }
+
+const fetchTaggedScrimData = cache(fetchTaggedScrimDataFn);
 
 /**
  * Determines the opponent's team string for a given MapData record.
