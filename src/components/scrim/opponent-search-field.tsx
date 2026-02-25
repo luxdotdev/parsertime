@@ -195,7 +195,7 @@ export function OpponentSearchField({
           role="listbox"
           aria-label="OWCS teams"
           className={cn(
-            "border-input bg-background absolute left-0 right-0 z-50",
+            "border-input bg-background absolute right-0 left-0 z-50",
             "overflow-y-auto rounded-b-md border border-t-0 shadow-md",
             "max-h-52",
             "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-100"

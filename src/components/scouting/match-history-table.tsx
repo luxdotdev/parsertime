@@ -33,10 +33,7 @@ export function MatchHistoryTable({ matches }: MatchHistoryTableProps) {
   const [page, setPage] = useState(0);
 
   const totalPages = Math.max(1, Math.ceil(matches.length / PAGE_SIZE));
-  const pageMatches = matches.slice(
-    page * PAGE_SIZE,
-    (page + 1) * PAGE_SIZE
-  );
+  const pageMatches = matches.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   function formatDate(date: Date) {
     return new Date(date).toLocaleDateString("en-US", {

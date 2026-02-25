@@ -123,7 +123,7 @@ export function InsightCard({ insight, index = 0 }: InsightCardProps) {
                   key={dp.label}
                   className="bg-muted/50 rounded-md px-2.5 py-1.5"
                 >
-                  <p className="text-muted-foreground text-[10px] uppercase tracking-wide">
+                  <p className="text-muted-foreground text-[10px] tracking-wide uppercase">
                     {dp.label}
                   </p>
                   <p className="text-sm font-medium tabular-nums">

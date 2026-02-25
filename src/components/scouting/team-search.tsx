@@ -53,14 +53,16 @@ export function TeamSearch({ teams }: TeamSearchProps) {
     switch (e.key) {
       case "ArrowDown": {
         e.preventDefault();
-        const nextIndex = activeIndex < results.length - 1 ? activeIndex + 1 : 0;
+        const nextIndex =
+          activeIndex < results.length - 1 ? activeIndex + 1 : 0;
         setActiveIndex(nextIndex);
         scrollActiveIntoView(nextIndex);
         break;
       }
       case "ArrowUp": {
         e.preventDefault();
-        const prevIndex = activeIndex > 0 ? activeIndex - 1 : results.length - 1;
+        const prevIndex =
+          activeIndex > 0 ? activeIndex - 1 : results.length - 1;
         setActiveIndex(prevIndex);
         scrollActiveIntoView(prevIndex);
         break;
@@ -128,7 +130,7 @@ export function TeamSearch({ teams }: TeamSearchProps) {
           className={cn(
             "border-input bg-background text-foreground placeholder:text-muted-foreground",
             "h-14 w-full rounded-xl border py-2 pr-4 pl-12 text-lg shadow-sm",
-            "outline-none transition-shadow duration-150",
+            "transition-shadow duration-150 outline-none",
             "focus:ring-ring/50 focus:border-ring focus:ring-[3px]",
             showResults && results.length > 0 && "rounded-b-none border-b-0"
           )}
@@ -173,9 +175,7 @@ export function TeamSearch({ teams }: TeamSearchProps) {
                   </span>
                 </div>
                 <div className="text-muted-foreground flex shrink-0 items-center gap-3 text-sm tabular-nums">
-                  <span>
-                    {t("matchCount", { count: team.matchCount })}
-                  </span>
+                  <span>{t("matchCount", { count: team.matchCount })}</span>
                   <span className="font-medium">
                     {formatWinRate(team)} {t("winRate")}
                   </span>

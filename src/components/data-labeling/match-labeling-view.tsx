@@ -53,10 +53,8 @@ function validateRoleConstraint(heroes: string[]): boolean {
 function extractYouTubeId(url: string): string {
   if (url.startsWith("https://youtu.be/"))
     return url.split("youtu.be/")[1].split("?")[0];
-  if (url.includes("/embed/"))
-    return url.split("/embed/")[1].split("?")[0];
-  if (url.includes("/live/"))
-    return url.split("/live/")[1].split("?")[0];
+  if (url.includes("/embed/")) return url.split("/embed/")[1].split("?")[0];
+  if (url.includes("/live/")) return url.split("/live/")[1].split("?")[0];
   return url.split("v=")[1]?.split("&")[0] || "";
 }
 
@@ -132,7 +130,7 @@ const VodPanel = memo(function VodPanel({
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">{t("instructions.title")}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm text-muted-foreground">
+        <CardContent className="text-muted-foreground space-y-2 text-sm">
           <p>{t("instructions.body")}</p>
           <p>{t("instructions.swapNote")}</p>
         </CardContent>
@@ -161,12 +159,14 @@ export function MatchLabelingView({ match }: MatchLabelingViewProps) {
         states[map.id] = {
           team1Comp: map.team1Comp,
           team2Comp: map.team2Comp,
-          team1Assignments: Object.keys(team1Existing).length > 0
-            ? team1Existing
-            : autoSuggestAssignments(map.team1Comp, match.team1Roster, {}),
-          team2Assignments: Object.keys(team2Existing).length > 0
-            ? team2Existing
-            : autoSuggestAssignments(map.team2Comp, match.team2Roster, {}),
+          team1Assignments:
+            Object.keys(team1Existing).length > 0
+              ? team1Existing
+              : autoSuggestAssignments(map.team1Comp, match.team1Roster, {}),
+          team2Assignments:
+            Object.keys(team2Existing).length > 0
+              ? team2Existing
+              : autoSuggestAssignments(map.team2Comp, match.team2Roster, {}),
           dirty: false,
           saving: false,
           saved: map.team1Comp.length > 0 && map.team2Comp.length > 0,
@@ -295,31 +295,26 @@ export function MatchLabelingView({ match }: MatchLabelingViewProps) {
           ...prev,
           [mapId]: { ...prev[mapId], saving: false },
         }));
-        toast.error(
-          err instanceof Error ? err.message : t("saveError")
-        );
+        toast.error(err instanceof Error ? err.message : t("saveError"));
       }
     },
     [mapStates, t]
   );
 
-  const resetMap = useCallback(
-    (mapId: number) => {
-      setMapStates((prev) => ({
-        ...prev,
-        [mapId]: {
-          ...prev[mapId],
-          team1Comp: [],
-          team2Comp: [],
-          team1Assignments: {},
-          team2Assignments: {},
-          dirty: false,
-          saved: false,
-        },
-      }));
-    },
-    []
-  );
+  const resetMap = useCallback((mapId: number) => {
+    setMapStates((prev) => ({
+      ...prev,
+      [mapId]: {
+        ...prev[mapId],
+        team1Comp: [],
+        team2Comp: [],
+        team1Assignments: {},
+        team2Assignments: {},
+        dirty: false,
+        saved: false,
+      },
+    }));
+  }, []);
 
   const vod = match.vods[0];
   const vodSource = vod ? getVodSource(vod.url) : null;
@@ -440,8 +435,7 @@ function MapLabelingPanel({
     !state.saving;
 
   const canReset =
-    (state.team1Comp.length > 0 || state.team2Comp.length > 0) &&
-    !state.saving;
+    (state.team1Comp.length > 0 || state.team2Comp.length > 0) && !state.saving;
 
   return (
     <div className="space-y-4">
@@ -531,11 +525,7 @@ function MapLabelingPanel({
         />
       )}
 
-      <Button
-        onClick={onSave}
-        disabled={!canSave}
-        className="w-full"
-      >
+      <Button onClick={onSave} disabled={!canSave} className="w-full">
         {state.saving ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

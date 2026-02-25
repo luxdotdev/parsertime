@@ -111,9 +111,7 @@ function RecommendationCard({
                     <span className="text-sm font-medium">{item.name}</span>
                     <ConfidenceBadge sampleSize={item.sampleSize} />
                   </div>
-                  <p className="text-muted-foreground text-xs">
-                    {item.reason}
-                  </p>
+                  <p className="text-muted-foreground text-xs">{item.reason}</p>
                   {variant !== "ban" && (
                     <span
                       className={cn(
@@ -149,10 +147,9 @@ export function ConfidenceBadge({ sampleSize }: { sampleSize: number }) {
       variant={level === "high" ? "default" : "secondary"}
       className={cn(
         "text-[10px]",
-        level === "low" &&
-          "border border-dashed opacity-70",
+        level === "low" && "border border-dashed opacity-70",
         level === "insufficient" &&
-          "border border-dashed opacity-50 line-through"
+          "border border-dashed line-through opacity-50"
       )}
       title={label}
     >

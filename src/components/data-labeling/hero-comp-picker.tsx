@@ -95,7 +95,10 @@ export function HeroCompPicker({
           const hero = getSlotHero(role, index);
           const assignedPlayer = hero ? assignments?.[hero] : undefined;
           return (
-            <div key={`${role}-${index}`} className="flex flex-col items-center gap-0.5">
+            <div
+              key={`${role}-${index}`}
+              className="flex flex-col items-center gap-0.5"
+            >
               <div
                 className={cn(
                   "bg-muted flex h-12 w-12 items-center justify-center overflow-hidden rounded-md border",

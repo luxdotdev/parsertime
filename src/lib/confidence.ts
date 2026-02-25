@@ -36,9 +36,7 @@ export function assessConfidence(
 
   const noun = sampleSize === 1 ? "map" : "maps";
   const label =
-    sampleSize === 0
-      ? "No data available"
-      : `Based on ${sampleSize} ${noun}`;
+    sampleSize === 0 ? "No data available" : `Based on ${sampleSize} ${noun}`;
 
   return {
     level,
@@ -48,8 +46,6 @@ export function assessConfidence(
   };
 }
 
-export function isSufficientConfidence(
-  metadata: ConfidenceMetadata
-): boolean {
+export function isSufficientConfidence(metadata: ConfidenceMetadata): boolean {
   return metadata.level !== "insufficient";
 }

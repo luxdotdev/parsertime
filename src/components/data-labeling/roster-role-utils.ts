@@ -22,7 +22,9 @@ export function getEligiblePlayers(
   if (filtered.length === 0) return roster;
 
   if (currentPlayer && !filtered.some((p) => p.displayName === currentPlayer)) {
-    const currentRosterEntry = roster.find((p) => p.displayName === currentPlayer);
+    const currentRosterEntry = roster.find(
+      (p) => p.displayName === currentPlayer
+    );
     if (currentRosterEntry) return [...filtered, currentRosterEntry];
   }
 

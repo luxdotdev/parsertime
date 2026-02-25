@@ -531,7 +531,9 @@ export function prioritizeInsights(insights: Insight[]): {
   };
 }
 
-export function generateInsights(params: InsightGenerationParams): InsightReport {
+export function generateInsights(
+  params: InsightGenerationParams
+): InsightReport {
   const {
     mapIntelligence,
     banIntelligence,
@@ -549,7 +551,9 @@ export function generateInsights(params: InsightGenerationParams): InsightReport
         ...generateMapMatchupInsights(mapIntelligence, dataAvailability)
       );
     }
-    allInsights.push(...generateTrendInsights(mapIntelligence, dataAvailability));
+    allInsights.push(
+      ...generateTrendInsights(mapIntelligence, dataAvailability)
+    );
   }
 
   if (banIntelligence) {

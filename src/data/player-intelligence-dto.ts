@@ -514,10 +514,7 @@ async function getPlayerIntelligenceFn(
       for (const scrimMap of scrimBans) {
         totalOpponentMaps++;
         for (const hero of scrimMap.opponentBans) {
-          opponentBanCounts.set(
-            hero,
-            (opponentBanCounts.get(hero) ?? 0) + 1
-          );
+          opponentBanCounts.set(hero, (opponentBanCounts.get(hero) ?? 0) + 1);
         }
       }
     }

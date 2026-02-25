@@ -1,7 +1,11 @@
 #!/usr/bin/env bun
 
 import prisma from "@/lib/prisma";
-import { type MapType, type RosterCategory, type RosterRole } from "@prisma/client";
+import {
+  type MapType,
+  type RosterCategory,
+  type RosterRole,
+} from "@prisma/client";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 
@@ -212,7 +216,9 @@ async function seedMatch(tournamentId: number, match: MatchData) {
   for (const map of match.maps) {
     const mapType = toMapType(map.mapType);
     if (!mapType) {
-      console.log(`    Skipping map ${map.gameNumber} with unknown type "${map.mapType}"`);
+      console.log(
+        `    Skipping map ${map.gameNumber} with unknown type "${map.mapType}"`
+      );
       continue;
     }
 
@@ -249,7 +255,10 @@ async function seedTournament(tournament: TournamentData) {
       where: { tournamentId: existing.id },
     });
 
-    if (existingRosterCount === 0 && (tournament.participants?.length ?? 0) > 0) {
+    if (
+      existingRosterCount === 0 &&
+      (tournament.participants?.length ?? 0) > 0
+    ) {
       console.log(`  Backfilling rosters for "${tournament.title}"...`);
       const rosterResult = await seedRosters(
         existing.id,
@@ -269,7 +278,14 @@ async function seedTournament(tournament: TournamentData) {
     }
 
     console.log(`  Skipping "${tournament.title}" (already exists)`);
-    return { matches: 0, maps: 0, heroBans: 0, rosters: 0, players: 0, skipped: true };
+    return {
+      matches: 0,
+      maps: 0,
+      heroBans: 0,
+      rosters: 0,
+      players: 0,
+      skipped: true,
+    };
   }
 
   const createdTournament = await prisma.scoutingTournament.create({
@@ -301,7 +317,9 @@ async function seedTournament(tournament: TournamentData) {
       heroBanCount += result.heroBanCount;
     }
   } catch (error) {
-    console.error(`  Rolling back tournament "${tournament.title}" due to error`);
+    console.error(
+      `  Rolling back tournament "${tournament.title}" due to error`
+    );
     await prisma.scoutingTournament.delete({
       where: { id: createdTournament.id },
     });

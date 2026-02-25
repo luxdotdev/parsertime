@@ -128,5 +128,7 @@ export async function getTeamStrengthPercentile(
   const ratings = await getTeamStrengthRatings();
   const index = ratings.findIndex((r) => r.teamAbbr === teamAbbr);
   if (index === -1) return null;
-  return Math.round(((ratings.length - 1 - index) / (ratings.length - 1)) * 100);
+  return Math.round(
+    ((ratings.length - 1 - index) / (ratings.length - 1)) * 100
+  );
 }

@@ -30,7 +30,8 @@ export function TeamOverviewCards({ overview }: TeamOverviewCardsProps) {
               {overview.wins}W &ndash; {overview.losses}L
             </p>
             <p className="text-muted-foreground text-sm tabular-nums">
-              {overview.totalMatches} {t("matchCount", { count: overview.totalMatches })}
+              {overview.totalMatches}{" "}
+              {t("matchCount", { count: overview.totalMatches })}
             </p>
           </CardContent>
         </Card>
@@ -72,21 +73,23 @@ export function TeamOverviewCards({ overview }: TeamOverviewCardsProps) {
               role="list"
               aria-label={t("recentForm")}
             >
-              {recentFormWithKeys(overview.recentForm).map(({ key, result }) => (
-                <span
-                  key={key}
-                  role="listitem"
-                  aria-label={result === "win" ? t("win") : t("loss")}
-                  className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-md text-xs font-bold",
-                    result === "win"
-                      ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
-                      : "bg-red-500/15 text-red-600 dark:text-red-400"
-                  )}
-                >
-                  {result === "win" ? "W" : "L"}
-                </span>
-              ))}
+              {recentFormWithKeys(overview.recentForm).map(
+                ({ key, result }) => (
+                  <span
+                    key={key}
+                    role="listitem"
+                    aria-label={result === "win" ? t("win") : t("loss")}
+                    className={cn(
+                      "flex h-8 w-8 items-center justify-center rounded-md text-xs font-bold",
+                      result === "win"
+                        ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                        : "bg-red-500/15 text-red-600 dark:text-red-400"
+                    )}
+                  >
+                    {result === "win" ? "W" : "L"}
+                  </span>
+                )
+              )}
             </div>
           ) : (
             <p className="text-muted-foreground text-sm">{t("noMatches")}</p>

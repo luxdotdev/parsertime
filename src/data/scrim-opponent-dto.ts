@@ -4,12 +4,14 @@ import prisma from "@/lib/prisma";
 import { calculateWinner } from "@/lib/winrate";
 import { mapNameToMapTypeMapping } from "@/types/map";
 import { heroRoleMapping, type HeroName } from "@/types/heroes";
-import type { MapType, ObjectiveCaptured, RoundEnd, MatchStart } from "@prisma/client";
+import type {
+  MapType,
+  ObjectiveCaptured,
+  RoundEnd,
+  MatchStart,
+} from "@prisma/client";
 import { cache } from "react";
-import {
-  findTeamNameForMapInMemory,
-  getTeamRoster,
-} from "./team-shared-data";
+import { findTeamNameForMapInMemory, getTeamRoster } from "./team-shared-data";
 
 type HeroRole = "Tank" | "Damage" | "Support";
 
@@ -67,7 +69,10 @@ async function fetchTaggedScrimData(
   teamRosterSet: Set<string>;
   matchStartsByMapDataId: Map<number, MatchStart>;
   finalRoundsByMapDataId: Map<number, RoundEnd>;
-  capturesByTeam: Map<number, { team1: ObjectiveCaptured[]; team2: ObjectiveCaptured[] }>;
+  capturesByTeam: Map<
+    number,
+    { team1: ObjectiveCaptured[]; team2: ObjectiveCaptured[] }
+  >;
   heroBansByMapDataId: Map<number, { team: string; hero: string }[]>;
   fullPlayerStatsByMapDataId: Map<
     number,
@@ -452,8 +457,7 @@ async function getOpponentScrimPlayerStatsFn(
       if (stat.player_team !== opponentTeamString) continue;
 
       const key = `${stat.player_name}__${stat.player_hero}`;
-      const role =
-        heroRoleMapping[stat.player_hero as HeroName] ?? "Damage";
+      const role = heroRoleMapping[stat.player_hero as HeroName] ?? "Damage";
       const existing = aggregated.get(key);
       if (existing) {
         existing.timePlayed += stat.hero_time_played;
@@ -482,6 +486,4 @@ async function getOpponentScrimPlayerStatsFn(
   }));
 }
 
-export const getOpponentScrimPlayerStats = cache(
-  getOpponentScrimPlayerStatsFn
-);
+export const getOpponentScrimPlayerStats = cache(getOpponentScrimPlayerStatsFn);

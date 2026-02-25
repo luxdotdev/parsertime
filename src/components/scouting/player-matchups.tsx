@@ -15,13 +15,7 @@ import type {
   PlayerVulnerability,
 } from "@/data/player-intelligence-dto";
 import { cn } from "@/lib/utils";
-import {
-  AlertTriangle,
-  CheckCircle2,
-  Info,
-  Shield,
-  User,
-} from "lucide-react";
+import { AlertTriangle, CheckCircle2, Info, Shield, User } from "lucide-react";
 
 type PlayerMatchupsProps = {
   playerIntelligence: PlayerIntelligence | null;
@@ -38,10 +32,7 @@ export function PlayerMatchups({
     return (
       <Card className="border-dashed">
         <CardContent className="flex flex-col items-center gap-3 py-12 text-center">
-          <Info
-            className="text-muted-foreground h-8 w-8"
-            aria-hidden="true"
-          />
+          <Info className="text-muted-foreground h-8 w-8" aria-hidden="true" />
           <div>
             <p className="font-medium">
               Select your team to unlock roster readiness
@@ -60,9 +51,7 @@ export function PlayerMatchups({
   const { playerDepths, vulnerabilities } = playerIntelligence;
 
   const roleGroups = groupByRole(playerDepths);
-  const vulnByPlayer = new Map(
-    vulnerabilities.map((v) => [v.playerName, v])
-  );
+  const vulnByPlayer = new Map(vulnerabilities.map((v) => [v.playerName, v]));
 
   const topVulnerabilities = getTopVulnerabilityPerRole(vulnerabilities);
 
@@ -71,11 +60,16 @@ export function PlayerMatchups({
       <Card className="bg-muted/30 border-dashed">
         <CardContent className="py-3">
           <p className="text-muted-foreground text-sm">
-            Showing <span className="text-foreground font-medium">your roster&apos;s</span> hero
-            depth and vulnerabilities when facing{" "}
-            <span className="text-foreground font-medium">{opponentName ?? "this opponent"}</span>.
-            Players with narrow hero pools whose primary heroes are frequently banned by this
-            opponent are flagged as at-risk.
+            Showing{" "}
+            <span className="text-foreground font-medium">
+              your roster&apos;s
+            </span>{" "}
+            hero depth and vulnerabilities when facing{" "}
+            <span className="text-foreground font-medium">
+              {opponentName ?? "this opponent"}
+            </span>
+            . Players with narrow hero pools whose primary heroes are frequently
+            banned by this opponent are flagged as at-risk.
           </p>
         </CardContent>
       </Card>
@@ -132,8 +126,8 @@ function VulnerabilityOverview({
               <div>
                 <p className="text-sm font-medium">{v.playerName}</p>
                 <p className="text-muted-foreground text-xs">
-                  {v.role} · {v.primaryHero} ·{" "}
-                  {Math.round(v.opponentBanRate)}% ban rate
+                  {v.role} · {v.primaryHero} · {Math.round(v.opponentBanRate)}%
+                  ban rate
                 </p>
               </div>
             </div>
@@ -161,7 +155,8 @@ function RoleSection({
           Your {role} Players
         </CardTitle>
         <CardDescription>
-          Hero depth and performance relative to your other {role.toLowerCase()} players
+          Hero depth and performance relative to your other {role.toLowerCase()}{" "}
+          players
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -193,14 +188,10 @@ function PlayerProfile({
         <div>
           <p className="text-sm font-semibold">{player.playerName}</p>
           <p className="text-muted-foreground text-xs">
-            {primary?.hero ?? "Unknown"} ·{" "}
-            {secondary?.hero ?? "No secondary"}
+            {primary?.hero ?? "Unknown"} · {secondary?.hero ?? "No secondary"}
           </p>
         </div>
-        <ConfidenceIndicator
-          confidence={player.confidence}
-          size="sm"
-        />
+        <ConfidenceIndicator confidence={player.confidence} size="sm" />
       </div>
 
       <div className="mt-3 space-y-2">
@@ -268,10 +259,10 @@ function ZScoreBar({
 
   return (
     <div className="flex items-center gap-3">
-      <div className="flex w-24 items-center gap-1.5 shrink-0">
+      <div className="flex w-24 shrink-0 items-center gap-1.5">
         <span className="truncate text-xs">{hero}</span>
         {isPrimary && (
-          <Badge variant="outline" className="text-[9px] px-1 py-0">
+          <Badge variant="outline" className="px-1 py-0 text-[9px]">
             1st
           </Badge>
         )}
@@ -281,9 +272,7 @@ function ZScoreBar({
           className={cn(
             "absolute inset-y-0 left-0 rounded-sm transition-all",
             "motion-safe:animate-in motion-safe:slide-in-from-left-0",
-            isPrimary
-              ? "bg-chart-1"
-              : "bg-chart-2"
+            isPrimary ? "bg-chart-1" : "bg-chart-2"
           )}
           style={{ width: `${normalizedWidth * 100}%` }}
         />

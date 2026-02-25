@@ -85,9 +85,7 @@ type MapWithBans = {
   source: "owcs" | "scrim";
 };
 
-async function getOpponentMapBanData(
-  teamAbbr: string
-): Promise<MapWithBans[]> {
+async function getOpponentMapBanData(teamAbbr: string): Promise<MapWithBans[]> {
   const matches = await prisma.scoutingMatch.findMany({
     where: { OR: [{ team1: teamAbbr }, { team2: teamAbbr }] },
     include: { maps: { include: { heroBans: true } } },
@@ -227,8 +225,7 @@ function computeProtectedHeroes(maps: MapWithBans[]): ProtectedHero[] {
       hero,
       timesBannedByTeam,
       totalMaps,
-      banRate:
-        totalMaps > 0 ? (timesBannedByTeam / totalMaps) * 100 : 0,
+      banRate: totalMaps > 0 ? (timesBannedByTeam / totalMaps) * 100 : 0,
     }))
     .sort((a, b) => a.banRate - b.banRate)
     .filter((h) => h.banRate < 5);
@@ -260,8 +257,7 @@ function computeBanRateByMapType(maps: MapWithBans[]): BanRateByMapType[] {
         mapType,
         banCount,
         totalMapsOfType,
-        banRate:
-          totalMapsOfType > 0 ? (banCount / totalMapsOfType) * 100 : 0,
+        banRate: totalMapsOfType > 0 ? (banCount / totalMapsOfType) * 100 : 0,
       });
     }
   }
@@ -308,9 +304,7 @@ async function computeHeroExposure(
 
     const opponentBanCount = opponentBanCounts.get(hero) ?? 0;
     const opponentBanRate =
-      totalOpponentMaps > 0
-        ? (opponentBanCount / totalOpponentMaps) * 100
-        : 0;
+      totalOpponentMaps > 0 ? (opponentBanCount / totalOpponentMaps) * 100 : 0;
 
     const HIGH_BAN_THRESHOLD = 30;
     const MEDIUM_BAN_THRESHOLD = 15;
@@ -377,8 +371,7 @@ async function getHeroBanIntelligenceFn(
 ): Promise<HeroBanIntelligence> {
   const owcsMaps = await getOpponentMapBanData(opponentAbbr);
 
-  const includesScrimData =
-    !!profile && !!userTeamId && hasScrimData(profile);
+  const includesScrimData = !!profile && !!userTeamId && hasScrimData(profile);
 
   let maps: MapWithBans[] = owcsMaps;
 

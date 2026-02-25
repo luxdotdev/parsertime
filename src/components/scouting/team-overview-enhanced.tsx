@@ -10,9 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { ConfidenceIndicator } from "@/components/scouting/confidence-indicator";
 import type { MatchResult, ScoutingTeamOverview } from "@/data/scouting-dto";
-import type {
-  TeamStrengthRating,
-} from "@/data/opponent-strength-dto";
+import type { TeamStrengthRating } from "@/data/opponent-strength-dto";
 import { assessConfidence } from "@/lib/confidence";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
@@ -153,10 +151,7 @@ function StrengthRatingCard({
   const ratingConfidence = assessConfidence(rating.matchesRated);
 
   return (
-    <Card
-      size="sm"
-      className={cn(isProvisional && "border-dashed opacity-80")}
-    >
+    <Card size="sm" className={cn(isProvisional && "border-dashed opacity-80")}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           Strength Rating
@@ -261,10 +256,7 @@ function countWinsAboveRating(
 ): { wins: number; totalWins: number } {
   const ratingMap = new Map<string, number>();
   for (const entry of strengthRating.ratingHistory) {
-    ratingMap.set(
-      `${entry.date.toISOString().slice(0, 10)}`,
-      entry.rating
-    );
+    ratingMap.set(`${entry.date.toISOString().slice(0, 10)}`, entry.rating);
   }
 
   let wins = 0;

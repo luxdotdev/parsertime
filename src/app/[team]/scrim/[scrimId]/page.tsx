@@ -126,7 +126,12 @@ export default async function ScrimDashboardPage(
                   { team2: scrim.opponentTeamAbbr },
                 ],
               },
-              select: { team1: true, team1FullName: true, team2: true, team2FullName: true },
+              select: {
+                team1: true,
+                team1FullName: true,
+                team2: true,
+                team2FullName: true,
+              },
             })
             .then((m) => {
               if (!m) return scrim.opponentTeamAbbr;
@@ -180,7 +185,9 @@ export default async function ScrimDashboardPage(
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
-                    href={`/scouting/team/${encodeURIComponent(scrim.opponentTeamAbbr)}` as Route}
+                    href={
+                      `/scouting/team/${encodeURIComponent(scrim.opponentTeamAbbr)}` as Route
+                    }
                     className="no-underline"
                   >
                     <Badge

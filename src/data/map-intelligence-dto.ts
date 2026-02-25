@@ -137,8 +137,7 @@ function computeStrengthWeightedWRs(
 
   for (const row of rows) {
     const won = row.winner === row.teamSide;
-    const opponentAbbr =
-      row.teamSide === "team1" ? row.team2 : row.team1;
+    const opponentAbbr = row.teamSide === "team1" ? row.team2 : row.team1;
     const opponentRating =
       ratingsMap.get(opponentAbbr)?.rating ?? INITIAL_RATING;
     const weight = calculateWeight(row.matchDate);
@@ -192,8 +191,7 @@ function computeStrengthWeightedWRs(
         won,
         confidence: assessConfidence(played, confidenceThresholds),
         strengthRatingAvailable,
-        sources:
-          includesScrimData ? { owcsMaps, scrimMaps } : undefined,
+        sources: includesScrimData ? { owcsMaps, scrimMaps } : undefined,
       };
     })
     .sort((a, b) => b.strengthWeightedWinRate - a.strengthWeightedWinRate);
@@ -261,8 +259,7 @@ function computeMapTypeDependencies(
 
   for (const row of rows) {
     const won = row.winner === row.teamSide;
-    const opponentAbbr =
-      row.teamSide === "team1" ? row.team2 : row.team1;
+    const opponentAbbr = row.teamSide === "team1" ? row.team2 : row.team1;
     const opponentRating =
       ratingsMap.get(opponentAbbr)?.rating ?? INITIAL_RATING;
     const weight = calculateWeight(row.matchDate);
@@ -325,15 +322,11 @@ function buildMatchupMatrix(
   return opponentWRs
     .map((opp) => {
       const userMap = userMapWinrates[opp.mapName];
-      const userPlayed = userMap
-        ? userMap.totalWins + userMap.totalLosses
-        : 0;
+      const userPlayed = userMap ? userMap.totalWins + userMap.totalLosses : 0;
       const userWinRate = userMap ? userMap.totalWinrate : null;
 
       const netAdvantage =
-        userWinRate !== null
-          ? userWinRate - opp.strengthWeightedWinRate
-          : null;
+        userWinRate !== null ? userWinRate - opp.strengthWeightedWinRate : null;
 
       return {
         mapName: opp.mapName,
@@ -372,8 +365,7 @@ async function getMapIntelligenceFn(
   }));
 
   let rows: MapResultRowWithSource[] = owcsRowsWithSource;
-  const includesScrimData =
-    !!profile && !!userTeamId && hasScrimData(profile);
+  const includesScrimData = !!profile && !!userTeamId && hasScrimData(profile);
 
   if (includesScrimData && userTeamId !== null) {
     const scrimResults = await getOpponentScrimMapResults(

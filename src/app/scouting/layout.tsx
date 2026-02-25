@@ -29,8 +29,6 @@ export async function generateMetadata(
   };
 }
 
-export default function ScoutingLayout({
-  children,
-}: LayoutProps<"/scouting">) {
+export default function ScoutingLayout({ children }: LayoutProps<"/scouting">) {
   return <DashboardLayout>{children}</DashboardLayout>;
 }

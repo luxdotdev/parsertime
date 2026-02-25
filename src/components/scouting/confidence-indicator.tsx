@@ -38,8 +38,7 @@ export function ConfidenceIndicator({
         "gap-1",
         size === "sm" && "px-1.5 py-0 text-[10px]",
         confidence.level === "low" && "border border-dashed opacity-70",
-        confidence.level === "insufficient" &&
-          "border border-dashed opacity-50"
+        confidence.level === "insufficient" && "border border-dashed opacity-50"
       )}
       title={confidence.label}
     >

@@ -439,7 +439,11 @@ export function ScrimCreationForm({
             }
 
             return (
-              <Field data-invalid={fieldState.invalid} id="docs-demo-step7" className="col-span-2">
+              <Field
+                data-invalid={fieldState.invalid}
+                id="docs-demo-step7"
+                className="col-span-2"
+              >
                 <FieldLabel htmlFor={field.name}>
                   {t("heroBansName")}
                 </FieldLabel>

@@ -118,8 +118,7 @@ export function UnlabeledMatchList() {
                     </Link>
                   </TableCell>
                   <TableCell className="text-center tabular-nums">
-                    {match.team1Score ?? "?"} &ndash;{" "}
-                    {match.team2Score ?? "?"}
+                    {match.team1Score ?? "?"} &ndash; {match.team2Score ?? "?"}
                   </TableCell>
                   <TableCell className="text-muted-foreground hidden max-w-[200px] truncate sm:table-cell">
                     {match.tournament}
