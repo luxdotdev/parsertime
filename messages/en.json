@@ -1532,8 +1532,10 @@
           "points": {
             "0": "Win rate is calculated from all recorded OWCS matches for this team.",
             "1": "Weighted win rate uses exponential decay with a 90-day half-life — a match from 90 days ago counts half as much as one from today.",
-            "2": "Recent form shows the last 10 match results in chronological order, most recent first.",
-            "3": "Match data is sourced from Liquipedia and covers the last year of OWCS tournaments."
+            "2": "Recent form shows the last 10 match results in chronological order, most recent first. The sparkline shows the win/loss trajectory over those matches.",
+            "3": "Strength Rating is an Elo-style score centered at 1500. Beating higher-rated opponents raises it more than beating lower-rated ones. Below 5 matches the rating is marked as provisional.",
+            "4": "Record Quality counts how many wins came against teams rated above 1500 (the starting average), showing whether a strong record was earned against strong competition.",
+            "5": "Match data is sourced from Liquipedia and covers the last year of OWCS tournaments. When you select your team with the picker, your scrim data is also factored in."
           }
         }
       },
@@ -1551,8 +1553,10 @@
           "points": {
             "0": "Each OWCS map may include one hero ban per team. We track which heroes are banned by and against this team across all maps.",
             "1": "Weighted counts apply exponential decay (90-day half-life) so recent ban patterns are prioritized over older ones.",
-            "2": "Bans Against Them reveals what opponents perceive as this team's strengths — the heroes they don't want to face.",
-            "3": "Their Bans reveals what this team considers threatening — the heroes they choose to deny opponents."
+            "2": "Disruption Score measures how much banning a hero hurts the opponent. It combines the win-rate delta (their WR when the hero is available minus when it's banned) with sample reliability. A score above 10 is significant; above 20 is a high-impact ban target.",
+            "3": "Win-Rate Delta (pp) is in percentage points. For example, '−22pp when banned' means the opponent's win rate drops 22 percentage points when that hero is unavailable. Deltas above ±15pp are notable; above ±25pp are extreme.",
+            "4": "Their Ban Targets cross-references the opponent's ban history with your most-played heroes. Critical: they ban it 30%+ of maps and your team plays it 10%+ of the time. Watch: ban rate 15%+ and play rate 5%+. Safe: low overlap.",
+            "5": "Protected Heroes are heroes this team bans in fewer than 5% of their maps — these are composition staples they want available."
           }
         }
       },
@@ -1569,12 +1573,14 @@
         "weightedWinRate": "Weighted WR",
         "noMaps": "No map data available.",
         "methodology": {
-          "title": "How we measure map performance",
+          "title": "How we measure map performance and matchups",
           "points": {
-            "0": "Win rate per map and map type is computed from individual map results within each series, not just series wins.",
-            "1": "Weighted win rate applies exponential decay (90-day half-life) — recent map results matter more than older ones.",
-            "2": "Maps highlighted in green have a weighted win rate above 60%. Maps in red are below 40%.",
-            "3": "Map types aggregate all maps of that mode (e.g., all Control maps) into a single win rate."
+            "0": "Win rate per map is computed from individual map results within each series, not just series wins.",
+            "1": "Strength-weighted win rate adjusts for opponent quality using Elo ratings. A 60% WR against top-rated teams is worth more than 80% against bottom-rated teams. When no Elo data exists, raw WR is shown instead.",
+            "2": "Net advantage (pp) is the percentage-point gap between your map WR and the opponent's strength-weighted WR. Scale: ±10pp is a minor edge, ±20pp is a clear advantage, ±30pp+ is a dominant matchup. Only matchups with ≥15pp gap appear in the veto recommendation.",
+            "3": "Trend arrows compare the last 10 maps to the overall record for each map. A delta above +10pp is 'improving' (↑, shown in red — caution), below −10pp is 'declining' (↓, shown in green — opportunity), otherwise 'stable' (→).",
+            "4": "Confidence dots indicate sample size: filled green = 20+ maps (high), amber = 10–19 (medium), faded = 5–9 (low). Matchups where either side has fewer than 5 maps are hidden from the veto recommendation.",
+            "5": "When you select your team via the picker, your scrim map data is combined with the opponent's OWCS data. Both are decay-weighted identically; scrim data uses stricter confidence thresholds (30/15/7 maps instead of 20/10/5)."
           }
         }
       },
@@ -1607,16 +1613,30 @@
           }
         }
       },
+      "players": {
+        "methodology": {
+          "title": "How we analyze player depth and vulnerability",
+          "points": {
+            "0": "Z-scores measure how a player's per-10-minute stats on each hero compare to all other hero performances in the same role across your roster. A score of 0σ is average for that role, +1σ is one standard deviation above average, −1σ is one below.",
+            "1": "Scale: +1.5σ or higher is a standout performance, +0.5σ to +1.5σ is above average, −0.5σ to +0.5σ is typical, below −0.5σ is below average for the role.",
+            "2": "Stats weighted by role — Tank: deaths (30% inverted), elims (20%), damage (20%). Damage: elims (30%), damage (30%), deaths (20% inverted). Support: healing (35%), deaths (25% inverted), damage (14%), elims (10%).",
+            "3": "Primary/secondary delta is the z-score gap between a player's best and second-best hero. A delta above 1.5σ means a significant drop-off when forced off their primary — they're a ban target.",
+            "4": "Vulnerability Index = hero depth delta × opponent ban rate. A score above 0.5 is critical (large drop-off + frequently banned), 0.25–0.5 is high, 0.1–0.25 is moderate, below 0.1 is low.",
+            "5": "Heroes need at least 3 maps with 2+ minutes of play time to be included. Players need at least 5 total maps for a meaningful confidence rating."
+          }
+        }
+      },
       "report": {
         "methodology": {
           "title": "How the report is generated",
           "points": {
-            "0": "Insights are generated by cross-referencing your team's uploaded scrim data with the opponent's competitive OWCS match history.",
-            "1": "Map matchup insights compare your map win rates with the opponent's strength-weighted win rates to identify net advantages and disadvantages.",
-            "2": "Ban strategy insights analyze hero win-rate deltas (available vs. banned) to identify the highest-disruption ban targets.",
-            "3": "Player vulnerability insights combine hero depth z-scores with opponent ban targeting frequency to flag at-risk players.",
-            "4": "Insights are ranked by magnitude of advantage/risk, confidence level, and actionability. Only the top 5 are shown prominently.",
-            "5": "Confidence is based on sample size: High (20+ maps), Medium (10-19), Low (5-9). Scrim-only data uses higher thresholds to reflect lower signal strength."
+            "0": "Insights are generated by cross-referencing your team's uploaded scrim data with the opponent's competitive OWCS match history. Selecting your team with the picker enables the full cross-reference.",
+            "1": "Map matchup insights surface when the net advantage between your WR and the opponent's strength-weighted WR exceeds ±15pp. Scale: 15–25pp is a clear edge, 25–40pp is a major mismatch, 40pp+ is dominant.",
+            "2": "Ban disruption insights flag heroes where banning causes the opponent's win rate to drop significantly. A disruption score above 10 is notable; above 20 is a high-priority ban.",
+            "3": "Player vulnerability insights flag players whose primary hero is both significantly better than their secondary (>1.5σ delta) and frequently banned by the opponent (>15% ban rate).",
+            "4": "Each insight has a priority score (1–100) combining magnitude of advantage, confidence level, and actionability. Only the top 5 are featured; the rest appear in 'Additional Findings.'",
+            "5": "Confidence tiers — High: 20+ maps. Medium: 10–19. Low: 5–9. Insufficient (hidden): under 5. Scrim-only data uses stricter thresholds (30/15/7) since practice matches carry lower signal strength.",
+            "6": "Data source is shown on each insight card: 'Competitive' = OWCS matches only, 'Scrim' = your uploaded scrim data only, 'Competitive + Scrim' = both sources combined."
           }
         }
       },

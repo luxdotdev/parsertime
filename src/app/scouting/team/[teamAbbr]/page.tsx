@@ -205,6 +205,7 @@ export default async function ScoutingTeamPage(
             playerIntelligence={playerIntelligence}
             hasUserTeamLink={hasUserTeamLink}
           />
+          <MethodologyCard translationKey="scoutingPage.team.players.methodology" />
         </TabsContent>
 
         <TabsContent value="report" className="space-y-4">
