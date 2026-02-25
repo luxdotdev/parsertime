@@ -21,6 +21,11 @@ interface MapResultData {
   team2HeroBan: HeroBanData | null;
 }
 
+interface VodData {
+  url: string;
+  platform: string;
+}
+
 interface MatchData {
   team1: string;
   team1FullName: string;
@@ -35,6 +40,8 @@ interface MatchData {
   timestamp: number;
   maps: MapResultData[];
   mvp: string | null;
+  vods: VodData[];
+  matchRoomUrl: string | null;
 }
 
 interface TournamentData {
@@ -110,6 +117,8 @@ async function seedMatch(tournamentId: number, match: MatchData) {
       winnerFullName: cleanTeamName(match.winnerFullName),
       matchDate,
       mvp: match.mvp,
+      vods: match.vods ?? [],
+      matchRoomUrl: match.matchRoomUrl ?? null,
     },
   });
 
