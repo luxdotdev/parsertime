@@ -897,3 +897,72 @@ model UltimateStart {
   @@index([scrimId])
   @@index([MapDataId])
 }
+
+// ---------------------------------------------------------------------------
+// Scouting models — professional tournament data from Liquipedia
+// ---------------------------------------------------------------------------
+
+model ScoutingTournament {
+  id        Int             @id @default(autoincrement())
+  title     String          @unique
+  sourceUrl String
+  mapPool   Json
+  matches   ScoutingMatch[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+model ScoutingMatch {
+  id             Int                 @id @default(autoincrement())
+  tournamentId   Int
+  team1          String
+  team1FullName  String
+  team2          String
+  team2FullName  String
+  team1Score     Int?
+  team2Score     Int?
+  bestOf         Int
+  winner         String
+  winnerFullName String
+  matchDate      DateTime
+  mvp            String?
+  maps           ScoutingMapResult[]
+  tournament     ScoutingTournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  @@index([tournamentId])
+  @@index([team1, team2])
+}
+
+model ScoutingMapResult {
+  id         Int               @id @default(autoincrement())
+  matchId    Int
+  gameNumber Int
+  mapType    MapType
+  mapName    String
+  team1Score String
+  team2Score String
+  winner     String
+  heroBans   ScoutingHeroBan[]
+  match      ScoutingMatch     @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+
+  @@index([matchId])
+  @@index([mapName])
+}
+
+model ScoutingHeroBan {
+  id          Int               @id @default(autoincrement())
+  mapResultId Int
+  team        String
+  hero        String
+  banOrder    Int
+  mapResult   ScoutingMapResult @relation(fields: [mapResultId], references: [id], onDelete: Cascade)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([mapResultId])
+  @@index([hero])
+}
