@@ -16,6 +16,7 @@ import type {
 import { cn } from "@/lib/utils";
 import { ArrowDown, ArrowRight, ArrowUp, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useMemo } from "react";
 
 type MapVetoAdvisorProps = {
   mapIntelligence: MapIntelligence;
@@ -29,23 +30,30 @@ export function MapVetoAdvisor({
   const t = useTranslations("scoutingPage.team.maps");
   const { matchupMatrix, trends, strengthWeightedWRs } = mapIntelligence;
 
-  const matchupsWithData = matchupMatrix.filter((m) => m.netAdvantage !== null);
-  const sortedByAdvantage = [...matchupsWithData].sort(
-    (a, b) => (b.netAdvantage ?? 0) - (a.netAdvantage ?? 0)
-  );
+  const { sortedByAdvantage, topPicks, topBans } = useMemo(() => {
+    const withData = matchupMatrix.filter((m) => m.netAdvantage !== null);
+    const sorted = [...withData].sort(
+      (a, b) => (b.netAdvantage ?? 0) - (a.netAdvantage ?? 0)
+    );
+    return {
+      sortedByAdvantage: sorted,
+      topPicks: sorted.filter(
+        (m) => m.netAdvantage !== null && m.netAdvantage > 0
+      ),
+      topBans: sorted
+        .filter((m) => m.netAdvantage !== null && m.netAdvantage < 0)
+        .reverse(),
+    };
+  }, [matchupMatrix]);
 
-  const topPicks = sortedByAdvantage.filter(
-    (m) => m.netAdvantage !== null && m.netAdvantage > 0
+  const trendMap = useMemo(
+    () => new Map(trends.map((tr) => [tr.mapName, tr])),
+    [trends]
   );
-  const topBans = sortedByAdvantage
-    .filter((m) => m.netAdvantage !== null && m.netAdvantage < 0)
-    .reverse();
-
-  const trendMap = new Map(trends.map((tr) => [tr.mapName, tr]));
 
   return (
     <div className="space-y-4">
-      {hasUserTeamLink && matchupsWithData.length > 0 ? (
+      {hasUserTeamLink && sortedByAdvantage.length > 0 ? (
         <>
           <Card>
             <CardHeader>
