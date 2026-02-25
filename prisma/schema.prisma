@@ -946,6 +946,8 @@ model ScoutingMapResult {
   team1Score String
   team2Score String
   winner     String
+  team1Comp  String[]          @default([])
+  team2Comp  String[]          @default([])
   heroBans   ScoutingHeroBan[]
   match      ScoutingMatch     @relation(fields: [matchId], references: [id], onDelete: Cascade)
   createdAt  DateTime          @default(now())
