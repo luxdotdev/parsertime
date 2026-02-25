@@ -1591,7 +1591,8 @@
         "confidence": {
           "high": "High confidence",
           "medium": "Medium confidence",
-          "low": "Low confidence"
+          "low": "Low confidence",
+          "insufficient": "Insufficient data"
         },
         "methodology": {
           "title": "How we generate recommendations",
@@ -2221,6 +2222,13 @@
     "readonly": {
       "title": "Read-Only",
       "description": "If enabled, the team will be read-only. This means that players and managers cannot add scrims to the team."
+    },
+    "scoutingLink": {
+      "title": "OWCS Scouting Link",
+      "description": "Link this team to an OWCS team abbreviation to enable cross-referenced scouting reports. This connects your uploaded scrim data to opponent match history.",
+      "placeholder": "e.g. CORNELL, NYU, COLU",
+      "noTeam": "No team linked",
+      "linked": "Linked to {abbr}"
     },
     "update": {
       "title": "Update team profile",
