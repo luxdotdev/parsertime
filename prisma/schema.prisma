@@ -185,19 +185,19 @@ model AuditLog {
 }
 
 model Team {
-  id                Int               @id @default(autoincrement())
-  name              String
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  image             String?
-  users             User[]
-  scrims            Scrim[]
-  ownerId           String
-  managers          TeamManager[]
-  readonly          Boolean           @default(false)
-  comparisonGroups  ComparisonGroup[]
-  mapGroups         MapGroup[]
-  scoutingTeamAbbr  String?
+  id               Int               @id @default(autoincrement())
+  name             String
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  image            String?
+  users            User[]
+  scrims           Scrim[]
+  ownerId          String
+  managers         TeamManager[]
+  readonly         Boolean           @default(false)
+  comparisonGroups ComparisonGroup[]
+  mapGroups        MapGroup[]
+  scoutingTeamAbbr String?
 }
 
 model TeamManager {
@@ -262,16 +262,17 @@ model MapGroup {
 }
 
 model Scrim {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  date      DateTime
-  maps      Map[]
-  Team      Team?    @relation(fields: [teamId], references: [id])
-  teamId    Int?
-  creatorId String
-  guestMode Boolean  @default(false)
+  id               Int      @id @default(autoincrement())
+  name             String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  date             DateTime
+  maps             Map[]
+  Team             Team?    @relation(fields: [teamId], references: [id])
+  teamId           Int?
+  creatorId        String
+  guestMode        Boolean  @default(false)
+  opponentTeamAbbr String?
 
   @@index([teamId])
 }
