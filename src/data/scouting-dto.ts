@@ -1,7 +1,7 @@
 import "server-only";
 
 import prisma from "@/lib/prisma";
-import type { MapType } from "@prisma/client";
+import type { MapType, Prisma } from "@prisma/client";
 import { cache } from "react";
 
 export type ScoutingTeam = {
@@ -134,21 +134,35 @@ async function getScoutingTeamsFn(): Promise<ScoutingTeam[]> {
 
 export const getScoutingTeams = cache(getScoutingTeamsFn);
 
+const opponentMatchInclude = {
+  maps: { include: { heroBans: true } },
+  tournament: { select: { title: true } },
+} satisfies Prisma.ScoutingMatchInclude;
+
+export type OpponentMatchRow = Prisma.ScoutingMatchGetPayload<{
+  include: typeof opponentMatchInclude;
+}>;
+
+async function getOpponentMatchDataFn(
+  teamAbbr: string
+): Promise<OpponentMatchRow[]> {
+  return prisma.scoutingMatch.findMany({
+    where: { OR: [{ team1: teamAbbr }, { team2: teamAbbr }] },
+    include: opponentMatchInclude,
+    orderBy: { matchDate: "asc" },
+  });
+}
+
+export const getOpponentMatchData = cache(getOpponentMatchDataFn);
+
 async function getScoutingTeamProfileFn(
   teamAbbr: string
 ): Promise<ScoutingTeamProfile | null> {
-  const matches = await prisma.scoutingMatch.findMany({
-    where: {
-      OR: [{ team1: teamAbbr }, { team2: teamAbbr }],
-    },
-    include: {
-      maps: { include: { heroBans: true } },
-      tournament: { select: { title: true } },
-    },
-    orderBy: { matchDate: "desc" },
-  });
+  const matchesAsc = await getOpponentMatchData(teamAbbr);
 
-  if (matches.length === 0) return null;
+  if (matchesAsc.length === 0) return null;
+
+  const matches = [...matchesAsc].reverse();
 
   const firstMatch = matches[0];
   const fullName =
