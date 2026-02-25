@@ -20,6 +20,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
   Form,
   FormControl,
   FormDescription,
@@ -65,7 +73,12 @@ import {
 } from "@dnd-kit/sortable";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { HeroBan, Map, Scrim, Team } from "@prisma/client";
-import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
+import {
+  CalendarIcon,
+  CheckIcon,
+  ChevronDownIcon,
+  ReloadIcon,
+} from "@radix-ui/react-icons";
 import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
@@ -82,16 +95,26 @@ type MapWithHeroBans = Map & {
   team2Name: string;
 };
 
+type ScoutingTeamOption = {
+  abbreviation: string;
+  fullName: string;
+};
+
 export function EditScrimForm({
   scrim,
   teams,
   maps,
+  scoutingTeams = [],
+  scoutingEnabled,
 }: {
   scrim: Scrim;
   teams: Team[];
   maps: MapWithHeroBans[];
+  scoutingTeams?: ScoutingTeamOption[];
+  scoutingEnabled: boolean;
 }) {
   const [loading, setLoading] = useState(false);
+  const [opponentPickerOpen, setOpponentPickerOpen] = useState(false);
   const router = useRouter();
   const t = useTranslations("scrimPage.editScrim");
   const mapNames = useMapNames();
@@ -116,6 +139,7 @@ export function EditScrimForm({
     teamId: z.string(),
     date: z.date(),
     guestMode: z.boolean(),
+    opponentTeamAbbr: z.string().nullable().optional(),
     maps: z.array(
       z.object({
         id: z.number(),
@@ -146,6 +170,7 @@ export function EditScrimForm({
       teamId: (scrim.teamId ?? 0).toString(),
       date: scrim.date,
       guestMode: scrim.guestMode,
+      opponentTeamAbbr: scrim.opponentTeamAbbr ?? null,
       maps: maps.map((map) => ({
         id: map.id,
         replayCode: map.replayCode ?? "",
@@ -168,6 +193,7 @@ export function EditScrimForm({
       date: data.date.toISOString(),
       scrimId: scrim.id,
       guestMode: data.guestMode,
+      opponentTeamAbbr: data.opponentTeamAbbr ?? null,
       maps: data.maps.map((map, mapIndex) => ({
         id: map.id,
         // Replay code is trimmed and converted to uppercase
@@ -260,6 +286,94 @@ export function EditScrimForm({
               </FormItem>
             )}
           />
+
+          {scoutingEnabled && scoutingTeams.length > 0 && (
+            <FormField
+              control={form.control}
+              name="opponentTeamAbbr"
+              render={({ field }) => (
+                <FormItem className="max-w-lg">
+                  <FormLabel>Opponent (OWCS)</FormLabel>
+                  <FormControl>
+                    <Popover
+                      open={opponentPickerOpen}
+                      onOpenChange={setOpponentPickerOpen}
+                    >
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={opponentPickerOpen}
+                          aria-label="Select OWCS opponent"
+                          className="w-full justify-between"
+                        >
+                          {field.value
+                            ? (scoutingTeams.find(
+                                (st) => st.abbreviation === field.value
+                              )?.fullName ?? field.value)
+                            : "No opponent linked"}
+                          <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0" align="start">
+                        <Command>
+                          <CommandInput placeholder="Search OWCS teams..." />
+                          <CommandList>
+                            <CommandEmpty>No teams found.</CommandEmpty>
+                            <CommandGroup>
+                              <CommandItem
+                                value=""
+                                onSelect={() => {
+                                  field.onChange(null);
+                                  setOpponentPickerOpen(false);
+                                }}
+                              >
+                                <CheckIcon
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    !field.value ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                                No opponent linked
+                              </CommandItem>
+                              {scoutingTeams.map((st) => (
+                                <CommandItem
+                                  key={st.abbreviation}
+                                  value={`${st.abbreviation} ${st.fullName}`}
+                                  onSelect={() => {
+                                    field.onChange(st.abbreviation);
+                                    setOpponentPickerOpen(false);
+                                  }}
+                                >
+                                  <CheckIcon
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      field.value === st.abbreviation
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                  <span className="text-muted-foreground w-16 shrink-0 font-mono text-xs">
+                                    {st.abbreviation}
+                                  </span>
+                                  {st.fullName}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </FormControl>
+                  <FormDescription>
+                    Link this scrim to an OWCS opponent to enable
+                    cross-referenced scouting analytics.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
 
           <FormField
             control={form.control}
