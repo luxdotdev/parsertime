@@ -1,6 +1,7 @@
 import "server-only";
 
 import { assessConfidence, type ConfidenceMetadata } from "@/lib/confidence";
+import type { DataAvailabilityProfile } from "@/lib/data-availability";
 import prisma from "@/lib/prisma";
 import type { MapType } from "@prisma/client";
 import { cache } from "react";
@@ -348,9 +349,16 @@ function computeBanDisruptionRanking(
 
 async function getHeroBanIntelligenceFn(
   opponentAbbr: string,
-  userTeamId: number | null
+  userTeamId: number | null,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _profile?: DataAvailabilityProfile
 ): Promise<HeroBanIntelligence> {
   const maps = await getOpponentMapBanData(opponentAbbr);
+
+  // Phase 3.5: When _profile indicates scrim data is available, merge
+  // scrim-derived hero ban data from scrim-opponent-dto.ts here before
+  // computing analytics. The OWCS-only path below is unchanged.
+
   const winRateDeltas = computeWinRateDeltas(maps);
   const comfortCrutches = computeComfortCrutches(maps, winRateDeltas);
   const protectedHeroes = computeProtectedHeroes(maps);
