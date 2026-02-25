@@ -12,6 +12,7 @@ import type {
   ScoutingRecommendation,
   ScoutingRecommendations as ScoutingRecommendationsType,
 } from "@/data/scouting-dto";
+import { assessConfidence } from "@/lib/confidence";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
@@ -139,16 +140,21 @@ function RecommendationCard({
   );
 }
 
-function ConfidenceBadge({ sampleSize }: { sampleSize: number }) {
+export function ConfidenceBadge({ sampleSize }: { sampleSize: number }) {
   const t = useTranslations("scoutingPage.team.recommendations");
-
-  const level =
-    sampleSize >= 10 ? "high" : sampleSize >= 5 ? "medium" : "low";
+  const { level, label } = assessConfidence(sampleSize);
 
   return (
     <Badge
       variant={level === "high" ? "default" : "secondary"}
-      className="text-[10px]"
+      className={cn(
+        "text-[10px]",
+        level === "low" &&
+          "border border-dashed opacity-70",
+        level === "insufficient" &&
+          "border border-dashed opacity-50 line-through"
+      )}
+      title={label}
     >
       {t(`confidence.${level}`)}
     </Badge>
