@@ -1,6 +1,7 @@
 import "server-only";
 
 import { assessConfidence, type ConfidenceMetadata } from "@/lib/confidence";
+import type { DataAvailabilityProfile } from "@/lib/data-availability";
 import prisma from "@/lib/prisma";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import { cache } from "react";
@@ -440,7 +441,9 @@ function findBestPlayer(
 
 async function getPlayerIntelligenceFn(
   userTeamId: number,
-  opponentAbbr: string | null
+  opponentAbbr: string | null,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _profile?: DataAvailabilityProfile
 ): Promise<PlayerIntelligence> {
   const baseData = await getBaseTeamData(userTeamId);
   const { allPlayerStats, teamRoster, teamRosterSet } = baseData;
@@ -470,7 +473,10 @@ async function getPlayerIntelligenceFn(
     heroBans
   );
 
-  // Opponent ban data for vulnerability analysis
+  // Phase 3.5: When _profile indicates scrim data is available, supplement
+  // opponent ban data with scrim-derived player stats from scrim-opponent-dto.ts.
+  // The OWCS-only path below is unchanged when no profile is provided.
+
   const opponentBanCounts = new Map<string, number>();
   let totalOpponentMaps = 0;
 
