@@ -17,7 +17,6 @@ import {
   Field,
   FieldDescription,
   FieldError,
-  FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -268,12 +267,13 @@ export function ScrimCreationForm({
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
-      <FieldGroup>
+      <div className="grid grid-cols-2 gap-x-6 gap-y-5">
+        {/* Scrim Name — full width */}
         <Controller
           control={form.control}
           name="name"
           render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
+            <Field data-invalid={fieldState.invalid} className="col-span-2">
               <div id="docs-demo-step3">
                 <FieldLabel htmlFor={field.name}>{t("scrimName")}</FieldLabel>
                 <Input
@@ -289,6 +289,87 @@ export function ScrimCreationForm({
             </Field>
           )}
         />
+
+        {/* Team + Date — side by side */}
+        <Controller
+          control={form.control}
+          name="team"
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid} id="docs-demo-step4">
+              <FieldLabel htmlFor={field.name}>{t("teamName")}</FieldLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <SelectTrigger
+                  id={field.name}
+                  aria-invalid={fieldState.invalid}
+                  className="w-full pl-3 text-left font-normal"
+                >
+                  <SelectValue placeholder={t("teamPlaceholder")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">{t("teamIndividual")}</SelectItem>
+                  {teams ? (
+                    teams.map((team) => (
+                      <SelectItem key={team.value} value={team.value}>
+                        {team.label}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="1">{t("teamLoading")}</SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+              <FieldDescription>
+                {t.rich("teamDescription", {
+                  link: (chunks) => <Link href="/dashboard">{chunks}</Link>,
+                })}
+              </FieldDescription>
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          control={form.control}
+          name="date"
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid} id="docs-demo-step5">
+              <FieldLabel htmlFor={field.name}>{t("dateName")}</FieldLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    id={field.name}
+                    variant="outline"
+                    aria-invalid={fieldState.invalid}
+                    className={cn(
+                      "w-full pl-3 text-left font-normal",
+                      !field.value && "text-muted-foreground"
+                    )}
+                  >
+                    {field.value ? (
+                      format(field.value, "PPP")
+                    ) : (
+                      <span>{t("datePlaceholder")}</span>
+                    )}
+                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    disabled={(date: Date) =>
+                      date > new Date() || date < new Date("2016-01-01")
+                    }
+                  />
+                </PopoverContent>
+              </Popover>
+              <FieldDescription>{t("dateDescription")}</FieldDescription>
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+
+        {/* Opponent (OWCS) + Map upload — side by side */}
         {scoutingTeams.length > 0 && (
           <Controller
             control={form.control}
@@ -307,7 +388,7 @@ export function ScrimCreationForm({
                       role="combobox"
                       aria-expanded={opponentPickerOpen}
                       aria-label="Select OWCS opponent"
-                      className="w-[240px] justify-between pl-3 text-left font-normal"
+                      className="w-full justify-between pl-3 text-left font-normal"
                     >
                       {field.value
                         ? (scoutingTeams.find(
@@ -375,86 +456,13 @@ export function ScrimCreationForm({
         )}
         <Controller
           control={form.control}
-          name="team"
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid} id="docs-demo-step4">
-              <FieldLabel htmlFor={field.name}>{t("teamName")}</FieldLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger
-                  id={field.name}
-                  aria-invalid={fieldState.invalid}
-                  className="w-[240px] pl-3 text-left font-normal"
-                >
-                  <SelectValue placeholder={t("teamPlaceholder")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="0">{t("teamIndividual")}</SelectItem>
-                  {teams ? (
-                    teams.map((team) => (
-                      <SelectItem key={team.value} value={team.value}>
-                        {team.label}
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <SelectItem value="1">{t("teamLoading")}</SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
-              <FieldDescription>
-                {t.rich("teamDescription", {
-                  link: (chunks) => <Link href="/dashboard">{chunks}</Link>,
-                })}
-              </FieldDescription>
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
-        <Controller
-          control={form.control}
-          name="date"
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid} id="docs-demo-step5">
-              <FieldLabel htmlFor={field.name}>{t("dateName")}</FieldLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    id={field.name}
-                    variant="outline"
-                    aria-invalid={fieldState.invalid}
-                    className={cn(
-                      "w-[240px] pl-3 text-left font-normal",
-                      !field.value && "text-muted-foreground"
-                    )}
-                  >
-                    {field.value ? (
-                      format(field.value, "PPP")
-                    ) : (
-                      <span>{t("datePlaceholder")}</span>
-                    )}
-                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date: Date) =>
-                      date > new Date() || date < new Date("2016-01-01")
-                    }
-                  />
-                </PopoverContent>
-              </Popover>
-              <FieldDescription>{t("dateDescription")}</FieldDescription>
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
-        <Controller
-          control={form.control}
           name="map"
           render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid} id="docs-demo-step6">
+            <Field
+              data-invalid={fieldState.invalid}
+              id="docs-demo-step6"
+              className={scoutingTeams.length === 0 ? "col-span-2" : undefined}
+            >
               <FieldLabel htmlFor={field.name}>{t("mapName")}</FieldLabel>
               <Input
                 {...field}
@@ -464,7 +472,7 @@ export function ScrimCreationForm({
                   startTransition(async () => await handleFile(e));
                 }}
                 type="file"
-                className="w-64"
+                className="w-full"
                 accept=".xlsx, .txt"
               />
               <FieldDescription>{t("mapDescription")}</FieldDescription>
@@ -503,7 +511,7 @@ export function ScrimCreationForm({
             }
 
             return (
-              <Field data-invalid={fieldState.invalid} id="docs-demo-step7">
+              <Field data-invalid={fieldState.invalid} id="docs-demo-step7" className="col-span-2">
                 <FieldLabel htmlFor={field.name}>
                   {t("heroBansName")}
                 </FieldLabel>
@@ -583,7 +591,7 @@ export function ScrimCreationForm({
             );
           }}
         />
-        <div className="flex gap-2">
+        <div className="col-span-2 flex gap-2">
           <Button
             type="submit"
             id="docs-demo-step8"
@@ -607,7 +615,7 @@ export function ScrimCreationForm({
             {t("cancel")}
           </Button>
         </div>
-      </FieldGroup>
+      </div>
     </form>
   );
 }
