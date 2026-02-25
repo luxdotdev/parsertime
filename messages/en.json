@@ -1647,7 +1647,10 @@
       "saveSuccess": "Team compositions saved successfully.",
       "saveError": "Failed to save team compositions.",
       "roleConstraint": "Select 1 Tank, 2 Damage, 2 Support",
-      "heroBanned": "Banned"
+      "heroBanned": "Banned",
+      "playerAssignments": "{team} Player Assignments",
+      "assignPlayer": "Assign player for {hero}",
+      "selectPlayer": "Select player..."
     }
   },
   "statsPage": {
