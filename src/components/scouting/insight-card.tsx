@@ -1,12 +1,12 @@
 "use client";
 
+import { ConfidenceIndicator } from "@/components/scouting/confidence-indicator";
 import { Badge } from "@/components/ui/badge";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ConfidenceIndicator } from "@/components/scouting/confidence-indicator";
 import type { Insight } from "@/lib/insights";
 import { cn } from "@/lib/utils";
 import {
@@ -14,7 +14,6 @@ import {
   ChevronDown,
   Map,
   Shield,
-  Swords,
   Target,
   TrendingUp,
   User,
