@@ -1,18 +1,18 @@
+import type { HeroBanIntelligence } from "@/data/hero-ban-intelligence-dto";
+import type { MapIntelligence } from "@/data/map-intelligence-dto";
+import type { TeamStrengthRating } from "@/data/opponent-strength-dto";
+import type { PlayerIntelligence } from "@/data/player-intelligence-dto";
 import {
   assessConfidence,
   isSufficientConfidence,
   type ConfidenceMetadata,
 } from "@/lib/confidence";
 import {
-  hasScrimData,
   hasOwcsData,
+  hasScrimData,
   SCRIM_CONFIDENCE_THRESHOLDS,
   type DataAvailabilityProfile,
 } from "@/lib/data-availability";
-import type { HeroBanIntelligence } from "@/data/hero-ban-intelligence-dto";
-import type { MapIntelligence } from "@/data/map-intelligence-dto";
-import type { PlayerIntelligence } from "@/data/player-intelligence-dto";
-import type { TeamStrengthRating } from "@/data/opponent-strength-dto";
 
 export type InsightCategory =
   | "map_advantage"
@@ -87,9 +87,9 @@ function buildSourcePhrase(
   const owcs = hasOwcsData(profile);
   const scrim = hasScrimData(profile);
   if (owcs && scrim) {
-    return `Based on ${profile.opponentOwcsMaps} competitive maps and ${profile.opponentScrimMaps} scrims`;
+    return `Based on ${profile.opponentOwcsMaps} competitive maps and ${profile.opponentScrimMaps} scrim ${profile.opponentScrimMaps === 1 ? "map" : "maps"}`;
   }
-  if (scrim) return `Based on ${count} scrims against this opponent`;
+  if (scrim) return `Based on ${count} scrim ${count === 1 ? "map" : "maps"} against this opponent`;
   return `Based on ${count} competitive maps`;
 }
 
