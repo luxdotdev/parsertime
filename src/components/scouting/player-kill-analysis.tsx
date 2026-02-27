@@ -4,6 +4,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -98,6 +99,9 @@ export function PlayerKillAnalysis({
             </div>
           </div>
         </CardContent>
+        <CardFooter>
+          <p className="text-muted-foreground text-xs">{t("methodology")}</p>
+        </CardFooter>
       </Card>
     </section>
   );
