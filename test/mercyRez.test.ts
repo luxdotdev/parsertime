@@ -1,11 +1,15 @@
+import { vi } from "vitest";
+
+vi.mock("@/lib/prisma", async () => {
+  const actual = await import("@/lib/__mocks__/prisma");
+  return { default: actual.default };
+});
+
+import prismaMock from "@/lib/__mocks__/prisma";
 import { createMercyRezRows } from "@/lib/parser";
 import type { MercyRezTableRow, ParserData } from "@/types/parser";
-import { type MercyRez, PrismaClient } from "@prisma/client";
+import type { MercyRez } from "@prisma/client";
 import { expect, test } from "vitest";
-
-const prisma = new PrismaClient({
-  datasourceUrl: process.env.TEST_DB_URL,
-});
 
 test("should return the generated mercy rez row", async () => {
   const newMercyRezRow: MercyRezTableRow = [
@@ -23,7 +27,8 @@ test("should return the generated mercy rez row", async () => {
     mercy_rez: [newMercyRezRow],
   };
 
-  const expectedRow: Omit<MercyRez, "id"> = {
+  const expectedRow: MercyRez = {
+    id: 1,
     scrimId: 1,
     event_type: "mercy_rez",
     match_time: 100,
@@ -36,24 +41,34 @@ test("should return the generated mercy rez row", async () => {
     MapDataId: 100,
   };
 
-  const mercyRezRow = await createMercyRezRows(data as never, { id: 1 }, 100);
+  prismaMock.mercyRez.findMany.mockResolvedValue([expectedRow]);
 
-  // Destructure the id from the result and compare the rest of the properties
-  const { id, ...restOfMercyRezRow } = mercyRezRow[0];
+  const result = await createMercyRezRows(data as never, { id: 1 }, 100);
 
-  await prisma.mercyRez.deleteMany({
-    where: {
-      id,
-    },
+  expect(prismaMock.mercyRez.createMany).toHaveBeenCalledWith({
+    data: [
+      {
+        scrimId: 1,
+        match_time: 100,
+        resurrecter_team: "Team 1",
+        resurrecter_player: "Aspen",
+        resurrecter_hero: "Mercy",
+        resurrectee_team: "Team 1",
+        resurrectee_player: "lux",
+        resurrectee_hero: "Ana",
+        MapDataId: 100,
+      },
+    ],
   });
 
-  expect(restOfMercyRezRow).toEqual(expectedRow);
+  expect(result).toEqual([expectedRow]);
 });
 
 test("should return empty array", async () => {
   const data = {};
 
-  const mercyRezRow = await createMercyRezRows(data as never, { id: 1 }, 1);
+  const result = await createMercyRezRows(data as never, { id: 1 }, 1);
 
-  expect(mercyRezRow).toEqual([]);
+  expect(result).toEqual([]);
+  expect(prismaMock.mercyRez.createMany).not.toHaveBeenCalled();
 });

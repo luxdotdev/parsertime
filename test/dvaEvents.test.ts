@@ -1,19 +1,19 @@
+import { vi } from "vitest";
+
+vi.mock("@/lib/prisma", async () => {
+  const actual = await import("@/lib/__mocks__/prisma");
+  return { default: actual.default };
+});
+
+import prismaMock from "@/lib/__mocks__/prisma";
 import { createDvaRemechRows, createRemechChargedRows } from "@/lib/parser";
 import type {
   DvaRemechTableRow,
   ParserData,
   RemechChargedTableRow,
 } from "@/types/parser";
-import {
-  type DvaRemech,
-  PrismaClient,
-  type RemechCharged,
-} from "@prisma/client";
+import type { DvaRemech, RemechCharged } from "@prisma/client";
 import { expect, test } from "vitest";
-
-const prisma = new PrismaClient({
-  datasourceUrl: process.env.TEST_DB_URL,
-});
 
 test("should return the generated D.Va remech row", async () => {
   const newDvaRemechRow: DvaRemechTableRow = [
@@ -29,7 +29,8 @@ test("should return the generated D.Va remech row", async () => {
     dva_remech: [newDvaRemechRow],
   };
 
-  const expectedRow: Omit<DvaRemech, "id"> = {
+  const expectedRow: DvaRemech = {
+    id: 1,
     scrimId: 1,
     event_type: "dva_remech",
     match_time: 100,
@@ -40,26 +41,34 @@ test("should return the generated D.Va remech row", async () => {
     MapDataId: 100,
   };
 
-  const dvaRemechRow = await createDvaRemechRows(data as never, { id: 1 }, 100);
+  prismaMock.dvaRemech.findMany.mockResolvedValue([expectedRow]);
 
-  // Destructure the id from the result and compare the rest of the properties
-  const { id, ...restOfDvaRemechRow } = dvaRemechRow[0];
+  const result = await createDvaRemechRows(data as never, { id: 1 }, 100);
 
-  await prisma.dvaRemech.deleteMany({
-    where: {
-      id,
-    },
+  expect(prismaMock.dvaRemech.createMany).toHaveBeenCalledWith({
+    data: [
+      {
+        scrimId: 1,
+        match_time: 100,
+        player_team: "Team 1",
+        player_name: "lux",
+        player_hero: "D.Va",
+        ultimate_id: 1,
+        MapDataId: 100,
+      },
+    ],
   });
 
-  expect(restOfDvaRemechRow).toEqual(expectedRow);
+  expect(result).toEqual([expectedRow]);
 });
 
-test("should return empty array", async () => {
+test("should return empty array when no D.Va remech data", async () => {
   const data = {};
 
-  const dvaRemechRow = await createDvaRemechRows(data as never, { id: 1 }, 1);
+  const result = await createDvaRemechRows(data as never, { id: 1 }, 1);
 
-  expect(dvaRemechRow).toEqual([]);
+  expect(result).toEqual([]);
+  expect(prismaMock.dvaRemech.createMany).not.toHaveBeenCalled();
 });
 
 test("should return the generated remech charged row", async () => {
@@ -77,7 +86,8 @@ test("should return the generated remech charged row", async () => {
     remech_charged: [newRemechChargedRow],
   };
 
-  const expectedRow: Omit<RemechCharged, "id"> = {
+  const expectedRow: RemechCharged = {
+    id: 1,
     scrimId: 1,
     event_type: "remech_charged",
     match_time: 100,
@@ -89,32 +99,33 @@ test("should return the generated remech charged row", async () => {
     MapDataId: 100,
   };
 
-  const remechChargedRow = await createRemechChargedRows(
-    data as never,
-    { id: 1 },
-    100
-  );
+  prismaMock.remechCharged.findMany.mockResolvedValue([expectedRow]);
 
-  // Destructure the id from the result and compare the rest of the properties
-  const { id, ...restOfRemechChargedRow } = remechChargedRow[0];
+  const result = await createRemechChargedRows(data as never, { id: 1 }, 100);
 
-  await prisma.remechCharged.deleteMany({
-    where: {
-      id,
-    },
+  expect(prismaMock.remechCharged.createMany).toHaveBeenCalledWith({
+    data: [
+      {
+        scrimId: 1,
+        match_time: 100,
+        player_team: "Team 1",
+        player_name: "lux",
+        player_hero: "D.Va",
+        hero_duplicated: "0",
+        ultimate_id: 1,
+        MapDataId: 100,
+      },
+    ],
   });
 
-  expect(restOfRemechChargedRow).toEqual(expectedRow);
+  expect(result).toEqual([expectedRow]);
 });
 
-test("should return empty array", async () => {
+test("should return empty array when no remech charged data", async () => {
   const data = {};
 
-  const remechChargedRow = await createRemechChargedRows(
-    data as never,
-    { id: 1 },
-    1
-  );
+  const result = await createRemechChargedRows(data as never, { id: 1 }, 1);
 
-  expect(remechChargedRow).toEqual([]);
+  expect(result).toEqual([]);
+  expect(prismaMock.remechCharged.createMany).not.toHaveBeenCalled();
 });
