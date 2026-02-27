@@ -1,5 +1,7 @@
 "use client";
 
+import { ConfidenceIndicator } from "@/components/scouting/confidence-indicator";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -7,15 +9,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ConfidenceIndicator } from "@/components/scouting/confidence-indicator";
-import type { MatchResult, ScoutingTeamOverview } from "@/data/scouting-dto";
 import type { TeamStrengthRating } from "@/data/opponent-strength-dto";
+import type {
+  MatchResult,
+  ScoutingMatchHistoryEntry,
+  ScoutingTeamOverview,
+} from "@/data/scouting-dto";
 import { assessConfidence } from "@/lib/confidence";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
-import type { ScoutingMatchHistoryEntry } from "@/data/scouting-dto";
 
 type EnhancedOverviewProps = {
   overview: ScoutingTeamOverview;
@@ -81,7 +84,6 @@ export function TeamOverviewEnhanced({
           <StrengthRatingCard
             rating={strengthRating}
             percentile={strengthPercentile}
-            rawWinRate={overview.winRate}
           />
         ) : (
           <NoCompetitiveDataCard />
@@ -146,11 +148,9 @@ export function TeamOverviewEnhanced({
 function StrengthRatingCard({
   rating,
   percentile,
-  rawWinRate,
 }: {
   rating: TeamStrengthRating;
   percentile: number | null;
-  rawWinRate: number;
 }) {
   const isProvisional = rating.matchesRated < 5;
   const ratingConfidence = assessConfidence(rating.matchesRated);
