@@ -1,5 +1,7 @@
 "use client";
 
+import { ConfidenceIndicator } from "@/components/scouting/confidence-indicator";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -7,8 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ConfidenceIndicator } from "@/components/scouting/confidence-indicator";
 import type {
   PlayerHeroDepth,
   PlayerIntelligence,
@@ -17,6 +17,9 @@ import type {
 import { cn } from "@/lib/utils";
 import { AlertTriangle, CheckCircle2, Info, Shield, User } from "lucide-react";
 import { useMemo } from "react";
+
+const EMPTY_DEPTHS: PlayerHeroDepth[] = [];
+const EMPTY_VULNS: PlayerVulnerability[] = [];
 
 type PlayerMatchupsProps = {
   playerIntelligence: PlayerIntelligence | null;
@@ -29,6 +32,19 @@ export function PlayerMatchups({
   hasUserTeamLink,
   opponentName,
 }: PlayerMatchupsProps) {
+  const playerDepths = playerIntelligence?.playerDepths ?? EMPTY_DEPTHS;
+  const vulnerabilities = playerIntelligence?.vulnerabilities ?? EMPTY_VULNS;
+
+  const roleGroups = useMemo(() => groupByRole(playerDepths), [playerDepths]);
+  const vulnByPlayer = useMemo(
+    () => new Map(vulnerabilities.map((v) => [v.playerName, v])),
+    [vulnerabilities]
+  );
+  const topVulnerabilities = useMemo(
+    () => getTopVulnerabilityPerRole(vulnerabilities),
+    [vulnerabilities]
+  );
+
   if (!hasUserTeamLink || !playerIntelligence) {
     return (
       <Card className="border-dashed">
@@ -48,18 +64,6 @@ export function PlayerMatchups({
       </Card>
     );
   }
-
-  const { playerDepths, vulnerabilities } = playerIntelligence;
-
-  const roleGroups = useMemo(() => groupByRole(playerDepths), [playerDepths]);
-  const vulnByPlayer = useMemo(
-    () => new Map(vulnerabilities.map((v) => [v.playerName, v])),
-    [vulnerabilities]
-  );
-  const topVulnerabilities = useMemo(
-    () => getTopVulnerabilityPerRole(vulnerabilities),
-    [vulnerabilities]
-  );
 
   return (
     <div className="space-y-4">
