@@ -8,8 +8,11 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import type { PlayerMapPerformance } from "@/data/scrim-overview-dto";
+import { Logger } from "@/lib/logger";
 import type { HeroName } from "@/types/heroes";
 import { heroRoleMapping } from "@/types/heroes";
+import Image from "next/image";
+import * as React from "react";
 import {
   CartesianGrid,
   Line,
@@ -39,12 +42,58 @@ type ChartDataPoint = {
   rawTeamFirstDeath: number;
 };
 
+type ChartModel = {
+  thirdStatLabel: string;
+  avgFirstDeath: number;
+  avgTeamFirstDeath: number;
+  chartData: ChartDataPoint[];
+  chartConfig: ChartConfig;
+};
+
 type Props = {
   playerName: string;
   primaryHero: HeroName;
+  heroLabel: string;
+  heroImageSlug: string;
+  heroCount: number;
   perMapPerformance: PlayerMapPerformance[];
+};
+
+type ChartErrorBoundaryProps = {
+  fallback: React.ReactNode;
   children: React.ReactNode;
 };
+
+type ChartErrorBoundaryState = {
+  hasError: boolean;
+};
+
+class ChartErrorBoundary extends React.Component<
+  ChartErrorBoundaryProps,
+  ChartErrorBoundaryState
+> {
+  public constructor(props: ChartErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  public static getDerivedStateFromError(): ChartErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  public componentDidUpdate(prevProps: ChartErrorBoundaryProps): void {
+    if (prevProps.children !== this.props.children && this.state.hasError) {
+      this.setState({ hasError: false });
+    }
+  }
+
+  public render(): React.ReactNode {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
 
 function formatRawValue(
   dataKey: string | number | undefined,
@@ -90,16 +139,10 @@ function PerformanceTooltip({
   );
 }
 
-export function PlayerPerformanceHoverChart({
-  playerName,
-  primaryHero,
-  perMapPerformance,
-  children,
-}: Props) {
-  if (perMapPerformance.length < 2) {
-    return children;
-  }
-
+function buildChartModel(
+  primaryHero: HeroName,
+  perMapPerformance: PlayerMapPerformance[]
+): ChartModel {
   const role = heroRoleMapping[primaryHero];
   const isSupport = role === "Support";
   const thirdStatLabel = isSupport ? "Healing/10" : "Dmg/10";
@@ -147,9 +190,72 @@ export function PlayerPerformanceHoverChart({
     teamFirstDeath: { label: "Team 1st Death %", color: "#8b5cf6" },
   } satisfies ChartConfig;
 
+  return {
+    thirdStatLabel,
+    avgFirstDeath,
+    avgTeamFirstDeath,
+    chartData,
+    chartConfig,
+  };
+}
+
+export function PlayerPerformanceHoverChart({
+  playerName,
+  primaryHero,
+  heroLabel,
+  heroImageSlug,
+  heroCount,
+  perMapPerformance,
+}: Props) {
+  const identity = (
+    <div className="flex items-center gap-2">
+      <div className="bg-muted relative h-7 w-7 shrink-0 overflow-hidden rounded-full">
+        <Image
+          src={`/heroes/${heroImageSlug}.png`}
+          alt={heroLabel}
+          fill
+          className="object-cover"
+          sizes="28px"
+        />
+      </div>
+      <div className="min-w-0">
+        <p className="truncate text-sm font-medium">{playerName}</p>
+        <p className="text-muted-foreground truncate text-xs">
+          {heroLabel}
+          {heroCount > 1 && <span> +{heroCount - 1}</span>}
+        </p>
+      </div>
+    </div>
+  );
+
+  if (perMapPerformance.length < 2) {
+    return identity;
+  }
+
+  let model: ChartModel;
+  try {
+    model = buildChartModel(primaryHero, perMapPerformance);
+  } catch (error) {
+    Logger.error("[scrim-overview] player hover chart model failed", {
+      playerName,
+      primaryHero,
+      perMapPerformance,
+      error,
+    });
+    return identity;
+  }
+
   return (
     <HoverCard openDelay={300} closeDelay={100}>
-      <HoverCardTrigger asChild>{children}</HoverCardTrigger>
+      <HoverCardTrigger asChild>
+        <button
+          type="button"
+          className="w-full cursor-pointer text-left"
+          aria-label={`Show ${playerName} performance trend chart`}
+        >
+          {identity}
+        </button>
+      </HoverCardTrigger>
       <HoverCardContent className="w-full p-4" side="right" align="start">
         <div className="space-y-3">
           <div>
@@ -158,97 +264,108 @@ export function PlayerPerformanceHoverChart({
               Performance across maps (% of avg)
             </p>
           </div>
-          <ChartContainer config={chartConfig} className="h-[300px] w-full">
-            <LineChart
-              data={chartData}
-              margin={{ top: 8, right: 8, bottom: 0, left: 8 }}
+          <ChartErrorBoundary
+            fallback={
+              <p className="text-muted-foreground text-xs">
+                Performance chart unavailable for this player.
+              </p>
+            }
+          >
+            <ChartContainer
+              config={model.chartConfig}
+              className="h-[300px] w-full"
             >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis
-                dataKey="map"
-                tick={{ fontSize: 10 }}
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis
-                tick={{ fontSize: 10 }}
-                tickLine={false}
-                axisLine={false}
-                domain={["dataMin - 10", "dataMax + 10"]}
-                tickFormatter={(value: number) => `${Math.round(value)}%`}
-              />
-              <ReferenceLine
-                y={100}
-                stroke="var(--border)"
-                strokeDasharray="4 4"
-              />
-              <Tooltip content={<PerformanceTooltip />} />
-              <Line
-                type="monotone"
-                name="K/D"
-                dataKey="kd"
-                stroke="var(--color-kd)"
-                strokeWidth={2}
-                dot={{ r: 3 }}
-                activeDot={{ r: 4 }}
-              />
-              <Line
-                type="monotone"
-                name="Elims/10"
-                dataKey="elims"
-                stroke="var(--color-elims)"
-                strokeWidth={2}
-                dot={{ r: 3 }}
-                activeDot={{ r: 4 }}
-              />
-              <Line
-                type="monotone"
-                name={thirdStatLabel}
-                dataKey="thirdStat"
-                stroke="var(--color-thirdStat)"
-                strokeWidth={2}
-                dot={{ r: 3 }}
-                activeDot={{ r: 4 }}
-              />
-              {avgFirstDeath > 0 && (
+              <LineChart
+                data={model.chartData}
+                margin={{ top: 8, right: 8, bottom: 0, left: 8 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis
+                  dataKey="map"
+                  tick={{ fontSize: 10 }}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  tick={{ fontSize: 10 }}
+                  tickLine={false}
+                  axisLine={false}
+                  domain={["dataMin - 10", "dataMax + 10"]}
+                  tickFormatter={(value: number) => `${Math.round(value)}%`}
+                />
+                <ReferenceLine
+                  y={100}
+                  stroke="var(--border)"
+                  strokeDasharray="4 4"
+                />
+                <Tooltip content={<PerformanceTooltip />} />
                 <Line
                   type="monotone"
-                  name="1st Death %"
-                  dataKey="firstDeath"
-                  stroke="var(--color-firstDeath)"
+                  name="K/D"
+                  dataKey="kd"
+                  stroke="var(--color-kd)"
                   strokeWidth={2}
-                  strokeDasharray="4 3"
                   dot={{ r: 3 }}
                   activeDot={{ r: 4 }}
                 />
-              )}
-              {avgTeamFirstDeath > 0 && (
                 <Line
                   type="monotone"
-                  name="Team 1st Death %"
-                  dataKey="teamFirstDeath"
-                  stroke="var(--color-teamFirstDeath)"
+                  name="Elims/10"
+                  dataKey="elims"
+                  stroke="var(--color-elims)"
                   strokeWidth={2}
-                  strokeDasharray="4 3"
                   dot={{ r: 3 }}
                   activeDot={{ r: 4 }}
                 />
-              )}
-            </LineChart>
-          </ChartContainer>
-          <div className="flex items-center justify-center gap-3">
-            {Object.entries(chartConfig).map(([key, config]) => (
-              <div key={key} className="flex items-center gap-1">
-                <div
-                  className="h-2 w-2 rounded-full"
-                  style={{ backgroundColor: config.color }}
+                <Line
+                  type="monotone"
+                  name={model.thirdStatLabel}
+                  dataKey="thirdStat"
+                  stroke="var(--color-thirdStat)"
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 4 }}
                 />
-                <span className="text-muted-foreground text-[10px]">
-                  {String(config.label)}
-                </span>
-              </div>
-            ))}
-          </div>
+                {model.avgFirstDeath > 0 && (
+                  <Line
+                    type="monotone"
+                    name="1st Death %"
+                    dataKey="firstDeath"
+                    stroke="var(--color-firstDeath)"
+                    strokeWidth={2}
+                    strokeDasharray="4 3"
+                    dot={{ r: 3 }}
+                    activeDot={{ r: 4 }}
+                  />
+                )}
+                {model.avgTeamFirstDeath > 0 && (
+                  <Line
+                    type="monotone"
+                    name="Team 1st Death %"
+                    dataKey="teamFirstDeath"
+                    stroke="var(--color-teamFirstDeath)"
+                    strokeWidth={2}
+                    strokeDasharray="4 3"
+                    dot={{ r: 3 }}
+                    activeDot={{ r: 4 }}
+                  />
+                )}
+              </LineChart>
+            </ChartContainer>
+            <div className="flex items-center justify-center gap-3">
+              {Object.entries(model.chartConfig).map(([key, config]) => (
+                <div key={key} className="flex items-center gap-1">
+                  <div
+                    className="h-2 w-2 rounded-full"
+                    style={{ backgroundColor: config.color }}
+                  />
+                  <span className="text-muted-foreground text-[10px]">
+                    {typeof config.label === "string" ? config.label : ""}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </ChartErrorBoundary>
         </div>
       </HoverCardContent>
     </HoverCard>

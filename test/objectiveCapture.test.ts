@@ -1,11 +1,15 @@
-import type { ObjectiveCapturedTableRow, ParserData } from "@/types/parser";
-import { type ObjectiveCaptured, PrismaClient } from "@prisma/client";
-import { expect, test } from "vitest";
-import { createObjectiveCapturedRows } from "../src/lib/parser";
+import { vi } from "vitest";
 
-const prisma = new PrismaClient({
-  datasourceUrl: process.env.TEST_DB_URL,
+vi.mock("@/lib/prisma", async () => {
+  const actual = await import("@/lib/__mocks__/prisma");
+  return { default: actual.default };
 });
+
+import prismaMock from "@/lib/__mocks__/prisma";
+import { createObjectiveCapturedRows } from "@/lib/parser";
+import type { ObjectiveCapturedTableRow, ParserData } from "@/types/parser";
+import type { ObjectiveCaptured } from "@prisma/client";
+import { expect, test } from "vitest";
 
 test("should return the generated objective capture row", async () => {
   const newObjectiveCapturedRow: ObjectiveCapturedTableRow = [
@@ -23,7 +27,8 @@ test("should return the generated objective capture row", async () => {
     objective_captured: [newObjectiveCapturedRow],
   };
 
-  const expectedRow: Omit<ObjectiveCaptured, "id"> = {
+  const expectedRow: ObjectiveCaptured = {
+    id: 1,
     scrimId: 1,
     event_type: "objective_captured",
     match_time: 100,
@@ -36,32 +41,38 @@ test("should return the generated objective capture row", async () => {
     MapDataId: 100,
   };
 
-  const objCapturedRow = await createObjectiveCapturedRows(
+  prismaMock.objectiveCaptured.findMany.mockResolvedValue([expectedRow]);
+
+  const result = await createObjectiveCapturedRows(
     data as never,
     { id: 1 },
     100
   );
 
-  // Destructure the id from the result and compare the rest of the properties
-  const { id, ...restOfObjCapturedRow } = objCapturedRow[0];
-
-  await prisma.objectiveCaptured.deleteMany({
-    where: {
-      id,
-    },
+  expect(prismaMock.objectiveCaptured.createMany).toHaveBeenCalledWith({
+    data: [
+      {
+        scrimId: 1,
+        match_time: 100,
+        round_number: 1,
+        capturing_team: "Team 1",
+        objective_index: 1,
+        control_team_1_progress: 0.01,
+        control_team_2_progress: 0,
+        match_time_remaining: 0,
+        MapDataId: 100,
+      },
+    ],
   });
 
-  expect(restOfObjCapturedRow).toEqual(expectedRow);
+  expect(result).toEqual([expectedRow]);
 });
 
 test("should return empty array", async () => {
   const data = {};
 
-  const objCaptureRow = await createObjectiveCapturedRows(
-    data as never,
-    { id: 1 },
-    1
-  );
+  const result = await createObjectiveCapturedRows(data as never, { id: 1 }, 1);
 
-  expect(objCaptureRow).toEqual([]);
+  expect(result).toEqual([]);
+  expect(prismaMock.objectiveCaptured.createMany).not.toHaveBeenCalled();
 });

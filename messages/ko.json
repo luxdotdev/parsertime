@@ -424,7 +424,8 @@
       "team": "팀: ",
       "noTeam": "분류되지 않음",
       "creator": "생성자: ",
-      "noCreator": "알 수 없음"
+      "noCreator": "알 수 없음",
+      "viewScoutingReport": "OWCS 스카우팅 보고서 보기"
     },
     "scrimCreationForm": {
       "fileSize": {

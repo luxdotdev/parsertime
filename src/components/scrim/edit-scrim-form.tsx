@@ -1,6 +1,7 @@
 "use client";
 
 import { SortableBanItem } from "@/components/map/sortable-ban-item";
+import { OpponentSearchField } from "@/components/scrim/opponent-search-field";
 import {
   Accordion,
   AccordionContent,
@@ -82,14 +83,23 @@ type MapWithHeroBans = Map & {
   team2Name: string;
 };
 
+type ScoutingTeamOption = {
+  abbreviation: string;
+  fullName: string;
+};
+
 export function EditScrimForm({
   scrim,
   teams,
   maps,
+  scoutingTeams = [],
+  scoutingEnabled,
 }: {
   scrim: Scrim;
   teams: Team[];
   maps: MapWithHeroBans[];
+  scoutingTeams?: ScoutingTeamOption[];
+  scoutingEnabled: boolean;
 }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -116,6 +126,7 @@ export function EditScrimForm({
     teamId: z.string(),
     date: z.date(),
     guestMode: z.boolean(),
+    opponentTeamAbbr: z.string().nullable().optional(),
     maps: z.array(
       z.object({
         id: z.number(),
@@ -146,6 +157,7 @@ export function EditScrimForm({
       teamId: (scrim.teamId ?? 0).toString(),
       date: scrim.date,
       guestMode: scrim.guestMode,
+      opponentTeamAbbr: scrim.opponentTeamAbbr ?? null,
       maps: maps.map((map) => ({
         id: map.id,
         replayCode: map.replayCode ?? "",
@@ -168,6 +180,7 @@ export function EditScrimForm({
       date: data.date.toISOString(),
       scrimId: scrim.id,
       guestMode: data.guestMode,
+      opponentTeamAbbr: data.opponentTeamAbbr ?? null,
       maps: data.maps.map((map, mapIndex) => ({
         id: map.id,
         // Replay code is trimmed and converted to uppercase
@@ -260,6 +273,30 @@ export function EditScrimForm({
               </FormItem>
             )}
           />
+
+          {scoutingEnabled && scoutingTeams.length > 0 && (
+            <FormField
+              control={form.control}
+              name="opponentTeamAbbr"
+              render={({ field }) => (
+                <FormItem className="max-w-lg">
+                  <FormLabel>Opponent (OWCS)</FormLabel>
+                  <FormControl>
+                    <OpponentSearchField
+                      options={scoutingTeams}
+                      value={field.value ?? null}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Link this scrim to an OWCS opponent to enable
+                    cross-referenced scouting analytics.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
 
           <FormField
             control={form.control}

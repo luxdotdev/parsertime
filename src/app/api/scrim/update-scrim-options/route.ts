@@ -14,6 +14,7 @@ const UpdateScrimSchema = z.object({
   scrimId: z.number(),
   date: z.iso.datetime(),
   guestMode: z.boolean(),
+  opponentTeamAbbr: z.string().nullable().optional(),
   maps: z.array(
     z.object({
       id: z.number(),
@@ -66,6 +67,7 @@ export async function POST(req: NextRequest) {
       teamId: parseInt(body.data.teamId),
       date: new Date(body.data.date),
       guestMode: body.data.guestMode,
+      opponentTeamAbbr: body.data.opponentTeamAbbr ?? null,
     },
   });
 

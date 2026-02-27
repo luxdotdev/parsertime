@@ -424,7 +424,8 @@
       "team": "团队: ",
       "noTeam": "未分类",
       "creator": "创建者: ",
-      "noCreator": "未知"
+      "noCreator": "未知",
+      "viewScoutingReport": "查看OWCS侦察报告"
     },
     "scrimCreationForm": {
       "fileSize": {

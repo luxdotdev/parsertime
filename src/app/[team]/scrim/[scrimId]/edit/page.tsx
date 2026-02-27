@@ -2,9 +2,11 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import { DangerZone } from "@/components/scrim/danger-zone";
 import { EditScrimForm } from "@/components/scrim/edit-scrim-form";
 import { Link } from "@/components/ui/link";
+import { getScoutingTeams } from "@/data/scouting-dto";
 import { getScrim } from "@/data/scrim-dto";
 import { getTeamsWithPerms } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
+import { scoutingTool } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
@@ -21,7 +23,13 @@ export default async function EditScrimPage(
     return <div>{t("scrimNotFound")}</div>;
   }
 
-  const teamsWithPerms = await getTeamsWithPerms(session?.user?.email);
+  const [teamsWithPerms, scoutingTeamList, scoutingEnabled] = await Promise.all(
+    [
+      getTeamsWithPerms(session?.user?.email),
+      getScoutingTeams(),
+      scoutingTool(),
+    ]
+  );
 
   const maps = (
     await prisma.map.findMany({
@@ -74,6 +82,11 @@ export default async function EditScrimPage(
             scrim={scrim}
             teams={teamsWithPerms}
             maps={mapsWithHeroBans}
+            scoutingEnabled={scoutingEnabled}
+            scoutingTeams={scoutingTeamList.map((st) => ({
+              abbreviation: st.abbreviation,
+              fullName: st.fullName,
+            }))}
           />
           <div className="p-4" />
           <DangerZone scrim={scrim} />

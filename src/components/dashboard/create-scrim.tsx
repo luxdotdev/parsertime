@@ -27,7 +27,7 @@ export function CreateScrimButton() {
       <DialogTrigger asChild>
         <Button>{t("createScrim")}</Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{t("createScrim")}</DialogTitle>
           <DialogDescription></DialogDescription>

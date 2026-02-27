@@ -253,6 +253,7 @@ export async function createNewScrimFromParsedData(
       createdAt: new Date(),
       creatorId: userId.id,
       teamId,
+      opponentTeamAbbr: data.opponentTeamAbbr ?? null,
     },
   });
 

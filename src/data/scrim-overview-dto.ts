@@ -45,6 +45,7 @@ export type PlayerMapPerformance = {
 };
 
 export type PlayerScrimPerformance = {
+  playerKey: string;
   playerName: string;
   primaryHero: HeroName;
   heroes: HeroName[];
@@ -919,6 +920,10 @@ async function getScrimOverviewFn(
         ? calculateTrends(perMapStats, perMapCalculatedStats)
         : undefined;
     const trend = determineTrend(trendData);
+    const rowId = playerRows.reduce(
+      (lowest, row) => (row.id < lowest ? row.id : lowest),
+      playerRows[0].id
+    );
 
     const kdRatio =
       aggregated.deaths > 0
@@ -926,6 +931,7 @@ async function getScrimOverviewFn(
         : aggregated.eliminations;
 
     basePlayers.push({
+      playerKey: `${playerName}:${rowId}`,
       playerName,
       primaryHero,
       heroes,

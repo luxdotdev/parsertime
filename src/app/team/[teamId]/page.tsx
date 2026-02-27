@@ -10,8 +10,10 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { getScoutingTeams } from "@/data/scouting-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
+import { scoutingTool } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
@@ -63,7 +65,13 @@ export default async function Team(
 
   const teamId = parseInt(params.teamId);
 
-  const [teamData, teamMembersData, teamManagers] = await Promise.all([
+  const [
+    teamData,
+    teamMembersData,
+    teamManagers,
+    scoutingEnabled,
+    scoutingTeams,
+  ] = await Promise.all([
     prisma.team.findFirst({ where: { id: teamId } }),
     prisma.team.findFirst({
       where: { id: teamId },
@@ -87,6 +95,8 @@ export default async function Team(
       },
     }),
     prisma.teamManager.findMany({ where: { teamId } }),
+    scoutingTool(),
+    getScoutingTeams(),
   ]);
 
   const teamMembers = teamMembersData ?? { users: [] };
@@ -168,7 +178,11 @@ export default async function Team(
           </div>
         </TabsContent>
         <TabsContent value="settings" className="space-y-4">
-          <TeamSettingsForm team={teamData!} />
+          <TeamSettingsForm
+            team={teamData!}
+            scoutingTeams={scoutingTeams}
+            scoutingEnabled={scoutingEnabled}
+          />
           <div className="p-4" />
           <DangerZone team={teamData!} />
         </TabsContent>

@@ -11,6 +11,7 @@ import { PlayerSwitcher } from "@/components/map/player-switcher";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getMostPlayedHeroes } from "@/data/player-dto";
+import { scoutingTool } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import { toTitleCase, translateMapName } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
@@ -89,12 +90,14 @@ export default async function MapDashboardPage() {
     where: { MapDataId: id },
   });
 
+  const scoutingEnabled = await scoutingTool();
+
   return (
     <div className="flex-col md:flex">
       <div className="border-b">
         <div className="hidden h-16 items-center px-4 md:flex">
           <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
-          <MainNav className="mx-6" />
+          <MainNav className="mx-6" scoutingEnabled={scoutingEnabled} />
           <div className="ml-auto flex items-center space-x-4">
             <Search user={null} />
             <ModeToggle />

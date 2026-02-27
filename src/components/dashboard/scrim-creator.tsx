@@ -1,15 +1,15 @@
 "use client";
 
+import type { GetScoutingTeamsResponse } from "@/app/api/scouting/get-teams/route";
 import type { GetTeamsResponse } from "@/app/api/team/get-teams/route";
 import { SortableBanItem } from "@/components/map/sortable-ban-item";
+import { OpponentSearchField } from "@/components/scrim/opponent-search-field";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-
 import {
   Field,
   FieldDescription,
   FieldError,
-  FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -47,6 +47,7 @@ import {
 } from "@dnd-kit/sortable";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
+
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { track } from "@vercel/analytics";
 import { format } from "date-fns";
@@ -101,6 +102,7 @@ export function ScrimCreationForm({
       error: t("dateRequiredError"),
     }),
     map: z.any(),
+    opponentTeamAbbr: z.string().nullable().optional(),
     heroBans: z.array(
       z.object({
         hero: z.string().min(1, {
@@ -128,9 +130,22 @@ export function ScrimCreationForm({
     }));
   }
 
+  async function getScoutingTeams() {
+    const response = await fetch("/api/scouting/get-teams");
+    if (!response.ok) return [];
+    const data = (await response.json()) as GetScoutingTeamsResponse;
+    return data.teams;
+  }
+
   const { data: teams } = useQuery({
     queryKey: ["teams"],
     queryFn: getTeams,
+    staleTime: Infinity,
+  });
+
+  const { data: scoutingTeams = [] } = useQuery({
+    queryKey: ["scouting-teams"],
+    queryFn: getScoutingTeams,
     staleTime: Infinity,
   });
 
@@ -185,6 +200,7 @@ export function ScrimCreationForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       date: new Date(),
+      opponentTeamAbbr: null,
       heroBans: [],
     },
   });
@@ -243,12 +259,13 @@ export function ScrimCreationForm({
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
-      <FieldGroup>
+      <div className="grid grid-cols-2 gap-x-6 gap-y-5">
+        {/* Scrim Name — full width */}
         <Controller
           control={form.control}
           name="name"
           render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
+            <Field data-invalid={fieldState.invalid} className="col-span-2">
               <div id="docs-demo-step3">
                 <FieldLabel htmlFor={field.name}>{t("scrimName")}</FieldLabel>
                 <Input
@@ -264,6 +281,8 @@ export function ScrimCreationForm({
             </Field>
           )}
         />
+
+        {/* Team + Date — side by side */}
         <Controller
           control={form.control}
           name="team"
@@ -274,7 +293,7 @@ export function ScrimCreationForm({
                 <SelectTrigger
                   id={field.name}
                   aria-invalid={fieldState.invalid}
-                  className="w-[240px] pl-3 text-left font-normal"
+                  className="w-full pl-3 text-left font-normal"
                 >
                   <SelectValue placeholder={t("teamPlaceholder")} />
                 </SelectTrigger>
@@ -313,7 +332,7 @@ export function ScrimCreationForm({
                     variant="outline"
                     aria-invalid={fieldState.invalid}
                     className={cn(
-                      "w-[240px] pl-3 text-left font-normal",
+                      "w-full pl-3 text-left font-normal",
                       !field.value && "text-muted-foreground"
                     )}
                   >
@@ -341,11 +360,37 @@ export function ScrimCreationForm({
             </Field>
           )}
         />
+
+        {/* Opponent (OWCS) + Map upload — side by side */}
+        {scoutingTeams.length > 0 && (
+          <Controller
+            control={form.control}
+            name="opponentTeamAbbr"
+            render={({ field }) => (
+              <Field>
+                <FieldLabel htmlFor={field.name}>Opponent (OWCS)</FieldLabel>
+                <OpponentSearchField
+                  id={field.name}
+                  options={scoutingTeams}
+                  value={field.value ?? null}
+                  onChange={field.onChange}
+                />
+                <FieldDescription>
+                  Optional. Link to an OWCS team to enable scouting analytics.
+                </FieldDescription>
+              </Field>
+            )}
+          />
+        )}
         <Controller
           control={form.control}
           name="map"
           render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid} id="docs-demo-step6">
+            <Field
+              data-invalid={fieldState.invalid}
+              id="docs-demo-step6"
+              className={scoutingTeams.length === 0 ? "col-span-2" : undefined}
+            >
               <FieldLabel htmlFor={field.name}>{t("mapName")}</FieldLabel>
               <Input
                 {...field}
@@ -355,7 +400,7 @@ export function ScrimCreationForm({
                   startTransition(async () => await handleFile(e));
                 }}
                 type="file"
-                className="w-64"
+                className="w-full"
                 accept=".xlsx, .txt"
               />
               <FieldDescription>{t("mapDescription")}</FieldDescription>
@@ -394,7 +439,11 @@ export function ScrimCreationForm({
             }
 
             return (
-              <Field data-invalid={fieldState.invalid} id="docs-demo-step7">
+              <Field
+                data-invalid={fieldState.invalid}
+                id="docs-demo-step7"
+                className="col-span-2"
+              >
                 <FieldLabel htmlFor={field.name}>
                   {t("heroBansName")}
                 </FieldLabel>
@@ -474,7 +523,7 @@ export function ScrimCreationForm({
             );
           }}
         />
-        <div className="flex gap-2">
+        <div className="col-span-2 flex gap-2">
           <Button
             type="submit"
             id="docs-demo-step8"
@@ -498,7 +547,7 @@ export function ScrimCreationForm({
             {t("cancel")}
           </Button>
         </div>
-      </FieldGroup>
+      </div>
     </form>
   );
 }

@@ -378,7 +378,11 @@
       "playerStats": "Player Stats",
       "heroStats": "Hero Stats",
       "compareStats": "Compare Players",
-      "teamStats": "Team Stats"
+      "teamStats": "Team Stats",
+      "scouting": "Scouting",
+      "scoutPlayer": "Scout a player",
+      "scoutTeam": "Scout a team",
+      "dataLabeling": "Data Labeling"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "Search team...",
@@ -470,7 +474,8 @@
       "team": "Team: ",
       "noTeam": "Uncategorized",
       "creator": "Creator: ",
-      "noCreator": "Unknown"
+      "noCreator": "Unknown",
+      "viewScoutingReport": "View OWCS scouting report"
     },
     "scrimCreationForm": {
       "fileSize": {
@@ -1466,6 +1471,370 @@
       "bannedBy": "{hero} banned by {team}"
     }
   },
+  "scoutingPage": {
+    "title": "Scouting",
+    "subtitle": "Search for OWCS teams and analyze their tournament performance.",
+    "metadata": {
+      "title": "Scouting | Parsertime",
+      "description": "Scout OWCS teams — search by name, view match history, win rates, and tournament performance.",
+      "ogTitle": "Scouting | Parsertime",
+      "ogDescription": "Scout OWCS teams — search by name, view match history, win rates, and tournament performance.",
+      "ogImage": "Scouting"
+    },
+    "search": {
+      "label": "Search teams",
+      "placeholder": "Search for a team...",
+      "helperText": "Search for an OWCS team by name or abbreviation.",
+      "resultsLabel": "Team search results",
+      "matchCount": "{count, plural, one {# match} other {# matches}}",
+      "winRate": "WR",
+      "noResults": "No teams found."
+    },
+    "team": {
+      "metadata": {
+        "title": "{team} Scouting | Parsertime",
+        "description": "Scout {team} — view match history, hero bans, map performance, and strategic recommendations.",
+        "ogTitle": "{team} Scouting | Parsertime",
+        "ogDescription": "Scout {team} — view match history, hero bans, map performance, and strategic recommendations."
+      },
+      "backToSearch": "Back to search",
+      "tabs": {
+        "overview": "Overview",
+        "heroBans": "Hero Bans",
+        "maps": "Maps",
+        "players": "Roster Prep",
+        "report": "Report",
+        "recommendations": "Recommendations"
+      },
+      "overview": {
+        "record": "Record",
+        "winRate": "Win Rate",
+        "weightedWinRate": "Weighted WR",
+        "weightedWinRateTooltip": "Win rate weighted by recency — recent matches count more than older ones.",
+        "recentForm": "Recent Form",
+        "recentFormDescription": "Last 10 match results",
+        "matchHistory": "Match History",
+        "matchHistoryDescription": "All recorded matches, most recent first",
+        "date": "Date",
+        "opponent": "Opponent",
+        "score": "Score",
+        "result": "Result",
+        "tournament": "Tournament",
+        "win": "W",
+        "loss": "L",
+        "matchCount": "{count, plural, one {match} other {matches}}",
+        "allTime": "All-time win rate",
+        "noMatches": "No matches found for this team.",
+        "previousPage": "Previous",
+        "nextPage": "Next",
+        "pageInfo": "Page {current} of {total}",
+        "methodology": {
+          "title": "How we calculate these stats",
+          "points": {
+            "0": "Win rate is calculated from all recorded OWCS matches for this team.",
+            "1": "Weighted win rate uses exponential decay with a 90-day half-life — a match from 90 days ago counts half as much as one from today.",
+            "2": "Recent form shows the last 10 match results in chronological order, most recent first. The sparkline shows the win/loss trajectory over those matches.",
+            "3": "Strength Rating is an Elo-style score centered at 1500. Beating higher-rated opponents raises it more than beating lower-rated ones. Below 5 matches the rating is marked as provisional.",
+            "4": "Record Quality counts how many wins came against teams rated above 1500 (the starting average), showing whether a strong record was earned against strong competition.",
+            "5": "Match data is sourced from Liquipedia and covers the last year of OWCS tournaments. When you select your team with the picker, your scrim data is also factored in."
+          }
+        }
+      },
+      "heroBans": {
+        "bansAgainstTeam": "Bans Against Them",
+        "bansAgainstDescription": "Heroes opponents ban when facing this team — reveals perceived strengths.",
+        "bansByTeam": "Their Bans",
+        "bansByDescription": "Heroes this team bans — reveals what they want to deny opponents.",
+        "hero": "Hero",
+        "count": "Count",
+        "weighted": "Weighted",
+        "noBans": "No hero ban data available.",
+        "methodology": {
+          "title": "How we analyze hero bans",
+          "points": {
+            "0": "Each OWCS map may include one hero ban per team. We track which heroes are banned by and against this team across all maps.",
+            "1": "Weighted counts apply exponential decay (90-day half-life) so recent ban patterns are prioritized over older ones.",
+            "2": "Disruption Score measures how much banning a hero hurts the opponent. It combines the win-rate delta (their WR when the hero is available minus when it's banned) with sample reliability. A score above 10 is significant; above 20 is a high-impact ban target.",
+            "3": "Win-Rate Delta (pp) is in percentage points. For example, '−22pp when banned' means the opponent's win rate drops 22 percentage points when that hero is unavailable. Deltas above ±15pp are notable; above ±25pp are extreme.",
+            "4": "Their Ban Targets cross-references the opponent's ban history with your most-played heroes. Critical: they ban it 30%+ of maps and your team plays it 10%+ of the time. Watch: ban rate 15%+ and play rate 5%+. Safe: low overlap.",
+            "5": "Protected Heroes are heroes this team bans in fewer than 5% of their maps — these are composition staples they want available."
+          }
+        }
+      },
+      "maps": {
+        "byMapType": "Win Rate by Map Type",
+        "byMapTypeDescription": "Performance breakdown by game mode",
+        "byMap": "Per-Map Performance",
+        "byMapDescription": "Win rate on individual maps",
+        "mapType": "Mode",
+        "map": "Map",
+        "played": "Played",
+        "won": "Won",
+        "winRate": "Win Rate",
+        "weightedWinRate": "Weighted WR",
+        "noMaps": "No map data available.",
+        "methodology": {
+          "title": "How we measure map performance and matchups",
+          "points": {
+            "0": "Win rate per map is computed from individual map results within each series, not just series wins.",
+            "1": "Strength-weighted win rate adjusts for opponent quality using Elo ratings. A 60% WR against top-rated teams is worth more than 80% against bottom-rated teams. When no Elo data exists, raw WR is shown instead.",
+            "2": "Net advantage (pp) is the percentage-point gap between your map WR and the opponent's strength-weighted WR. Scale: ±10pp is a minor edge, ±20pp is a clear advantage, ±30pp+ is a dominant matchup. Only matchups with ≥15pp gap appear in the veto recommendation.",
+            "3": "Trend arrows compare the last 10 maps to the overall record for each map. A delta above +10pp is 'improving' (↑, shown in red — caution), below −10pp is 'declining' (↓, shown in green — opportunity), otherwise 'stable' (→).",
+            "4": "Confidence dots indicate sample size: filled green = 20+ maps (high), amber = 10–19 (medium), faded = 5–9 (low). Matchups where either side has fewer than 5 maps are hidden from the veto recommendation.",
+            "5": "When you select your team via the picker, your scrim map data is combined with the opponent's OWCS data. Both are decay-weighted identically; scrim data uses stricter confidence thresholds (30/15/7 maps instead of 20/10/5)."
+          }
+        }
+      },
+      "recommendations": {
+        "title": "Strategic Recommendations",
+        "description": "Actionable insights based on recency-weighted analysis of this team's performance.",
+        "heroesToBan": "Heroes to Ban",
+        "heroesToBanDescription": "Heroes opponents most frequently ban against this team — these are their perceived strengths.",
+        "mapsToPick": "Maps to Pick",
+        "mapsToPickDescription": "Maps where this team has the lowest weighted win rate — exploit these weaknesses.",
+        "mapsToAvoid": "Maps to Avoid",
+        "mapsToAvoidDescription": "Maps where this team has the highest weighted win rate — stay away from their strengths.",
+        "weightedWinRate": "weighted WR",
+        "sampleSize": "{count, plural, one {# game} other {# games}}",
+        "noRecommendations": "Not enough data to generate recommendations.",
+        "confidence": {
+          "high": "High confidence",
+          "medium": "Medium confidence",
+          "low": "Low confidence",
+          "insufficient": "Insufficient data"
+        },
+        "methodology": {
+          "title": "How we generate recommendations",
+          "points": {
+            "0": "Heroes to Ban are the heroes most frequently banned against this team by their opponents — banning these denies their perceived strengths.",
+            "1": "Maps to Pick are maps where this team has the lowest recency-weighted win rate (minimum 3 games played). Picking these exploits their weaknesses.",
+            "2": "Maps to Avoid are maps where this team has the highest recency-weighted win rate. Avoid giving them home-field advantage.",
+            "3": "Confidence levels are based on sample size: High (10+ games), Medium (5-9 games), Low (under 5 games).",
+            "4": "All metrics use a 90-day half-life exponential decay, so recommendations reflect the current meta rather than outdated results."
+          }
+        }
+      },
+      "players": {
+        "methodology": {
+          "title": "How roster readiness is assessed",
+          "points": {
+            "0": "This tab shows YOUR roster's readiness against this specific opponent. It identifies which of your players are most at risk based on their hero depth and how this opponent's ban patterns target them.",
+            "1": "Z-scores measure how a player's per-10-minute stats on each hero compare to all hero performances in the same role across your roster. 0σ = role average, +1.5σ+ = standout, −0.5σ = below average.",
+            "2": "Stats weighted by role — Tank: deaths (30% inverted), elims (20%), damage (20%). Damage: elims (30%), damage (30%), deaths (20% inverted). Support: healing (35%), deaths (25% inverted), damage (14%), elims (10%).",
+            "3": "Primary/secondary delta is the z-score gap between a player's best and second-best hero. A delta above 1.5σ means a significant drop-off when forced off their main — they become a ban target for this opponent.",
+            "4": "Vulnerability Index = hero depth delta × opponent ban rate. Scale: above 0.5 = critical (large drop-off + frequently banned), 0.25–0.5 = high, 0.1–0.25 = moderate, below 0.1 = low.",
+            "5": "Heroes need at least 3 maps with 2+ minutes of play time to be included. Players need at least 5 total maps for a meaningful confidence rating."
+          }
+        }
+      },
+      "report": {
+        "methodology": {
+          "title": "How the report is generated",
+          "points": {
+            "0": "Insights are generated by cross-referencing your team's uploaded scrim data with the opponent's competitive OWCS match history. Selecting your team with the picker enables the full cross-reference.",
+            "1": "Map matchup insights surface when the net advantage between your WR and the opponent's strength-weighted WR exceeds ±15pp. Scale: 15–25pp is a clear edge, 25–40pp is a major mismatch, 40pp+ is dominant.",
+            "2": "Ban disruption insights flag heroes where banning causes the opponent's win rate to drop significantly. A disruption score above 10 is notable; above 20 is a high-priority ban.",
+            "3": "Player vulnerability insights flag players whose primary hero is both significantly better than their secondary (>1.5σ delta) and frequently banned by the opponent (>15% ban rate).",
+            "4": "Each insight has a priority score (1–100) combining magnitude of advantage, confidence level, and actionability. Only the top 5 are featured; the rest appear in 'Additional Findings.'",
+            "5": "Confidence tiers — High: 20+ maps. Medium: 10–19. Low: 5–9. Insufficient (hidden): under 5. Scrim-only data uses stricter thresholds (30/15/7) since practice matches carry lower signal strength.",
+            "6": "Data source is shown on each insight card: 'Competitive' = OWCS matches only, 'Scrim' = your uploaded scrim data only, 'Competitive + Scrim' = both sources combined."
+          }
+        }
+      },
+      "empty": "No scouting data available for this team."
+    },
+    "player": {
+      "title": "Scout Player",
+      "subtitle": "Search for professional players and analyze their competitive history.",
+      "metadata": {
+        "title": "Scout Player | Parsertime",
+        "description": "Search for professional Overwatch players and view their competitive history, hero pool, and tournament performance.",
+        "ogTitle": "Scout Player | Parsertime",
+        "ogDescription": "Search for professional Overwatch players and view their competitive history, hero pool, and tournament performance.",
+        "ogImage": "Scout Player"
+      },
+      "search": {
+        "label": "Search players",
+        "placeholder": "Search for a player...",
+        "helperText": "Search for a professional player by name, team, or role.",
+        "resultsLabel": "Player search results",
+        "noResults": "No players found."
+      },
+      "profile": {
+        "metadata": {
+          "title": "{player} | Scout Player | Parsertime",
+          "description": "Scout {player} — view hero pool, tournament history, and competitive performance.",
+          "ogTitle": "{player} | Scout Player | Parsertime",
+          "ogDescription": "Scout {player} — view hero pool, tournament history, and competitive performance."
+        },
+        "backToSearch": "Back to search",
+        "liquipediaProfile": "View on Liquipedia",
+        "careerWinnings": "Career Winnings",
+        "signatureHeroes": "Signature Heroes",
+        "tournamentAppearances": "Tournament Appearances",
+        "competitiveMaps": "Competitive Maps",
+        "tournaments": "{count, plural, one {# tournament} other {# tournaments}}",
+        "maps": "{count, plural, one {# map} other {# maps}}",
+        "heroPool": "Hero Pool",
+        "knownFor": "Known For",
+        "knownForSource": "From Liquipedia",
+        "observedInCompetition": "Observed In Competition",
+        "heroMaps": "{count, plural, one {# map} other {# maps}}",
+        "noHeroData": "No competitive hero data available yet.",
+        "tournamentHistory": "Tournament History",
+        "team": "Team",
+        "role": "Role",
+        "record": "Record",
+        "winRate": "Win Rate",
+        "noTournamentData": "No tournament data available yet.",
+        "matchDetails": "Match Details",
+        "opponent": "Opponent",
+        "score": "Score",
+        "result": "Result",
+        "heroes": "Heroes",
+        "win": "W",
+        "loss": "L"
+      },
+      "analytics": {
+        "scrimOverview": {
+          "title": "Scrim Performance",
+          "description": "Key metrics from Parsertime scrim data.",
+          "mvpScore": "MVP Score",
+          "kdRatio": "K/D Ratio",
+          "firstPickRate": "First Pick Rate",
+          "firstDeathRate": "First Death Rate",
+          "fightReversalRate": "Fight Reversal %",
+          "killsPerUltimate": "Kills / Ult",
+          "consistencyScore": "Consistency",
+          "mapsPlayed": "Maps Played",
+          "firstPicks": "{count} first picks",
+          "firstDeaths": "{count} first deaths",
+          "outOf100": "/ 100",
+          "methodology": {
+            "mvpScore": "Points-based score comparing per-10 stats against global hero averages. Each stat contributes up to ±10 points weighted by importance (4 pts per standard deviation). Range is typically −100 to +100.",
+            "kdRatio": "Total eliminations divided by total deaths across all recorded scrims. Eliminations include both final blows and assists.",
+            "firstPickRate": "Percentage of team fights where this player scored the opening kill. Measured per-map and averaged across all maps.",
+            "firstDeathRate": "Percentage of team fights where this player was the first to die. A high rate may indicate aggressive positioning or being targeted.",
+            "fightReversalRate": "Percentage of fights won by this player's team after losing 2 or more players first. Indicates clutch potential.",
+            "killsPerUltimate": "Average number of eliminations achieved per ultimate ability used. Higher values suggest efficient ultimate usage.",
+            "consistencyScore": "Scored 0–100 based on how stable per-10 stats are across maps. Calculated as the inverse of the average coefficient of variation for eliminations, deaths, damage, and healing. Above 75 is highly consistent.",
+            "mapsPlayed": "Total number of scrim maps recorded in Parsertime for this player. Serves as the sample size for all scrim-based metrics."
+          }
+        },
+        "performanceRadar": {
+          "title": "Performance Profile",
+          "description": "Z-scores vs global hero averages across all Parsertime players.",
+          "aboveAverage": "Above Average",
+          "belowAverage": "Below Average",
+          "noData": "No scrim data available for radar chart.",
+          "methodology": "Each axis shows how many standard deviations (σ) this player's per-10 stat is from the global average for their hero. Calculated using baselines from all Parsertime players on the same hero, across at least 3 maps of data."
+        },
+        "heroZScores": {
+          "title": "Hero Performance",
+          "description": "Composite z-scores per hero compared to global baselines.",
+          "primary": "Primary",
+          "maps": "{count, plural, one {# map} other {# maps}}",
+          "delta": "Delta",
+          "significantDropOff": "Significant drop-off",
+          "noData": "No hero performance data available.",
+          "methodology": "Composite z-score is the weighted average of per-stat z-scores (eliminations, deaths, damage, healing, blocked) for each hero. Individual stat z-scores compare this player's per-10 rate to the global mean and standard deviation for that hero. The delta shows the gap between primary and secondary hero proficiency."
+        },
+        "mapWinrates": {
+          "title": "Map Performance",
+          "description": "Win rates from competitive matches.",
+          "byMapType": "By Map Type",
+          "byMap": "By Map",
+          "competitive": "Competitive",
+          "scrims": "Scrims",
+          "played": "Played",
+          "won": "Won",
+          "noData": "No competitive map data available.",
+          "methodologyMapType": "Win rate by map type is calculated from all competitive match results where this player's team participated. Percentages are wins ÷ total maps played for each game mode (Control, Escort, Hybrid, Push, Flashpoint).",
+          "methodologyByMap": "Individual map win rates are calculated from competitive match results. Borders are color-coded: green for ≥60% win rate, red for ≤40%, and neutral otherwise."
+        },
+        "killAnalysis": {
+          "title": "Combat Patterns",
+          "description": "Kill and death analysis from scrim data.",
+          "topTargets": "Top Targets",
+          "topThreats": "Top Threats",
+          "killMethods": "Kill Methods",
+          "roleDistribution": "Role Distribution",
+          "kills": "{count, plural, one {# kill} other {# kills}}",
+          "deaths": "{count, plural, one {# death} other {# deaths}}",
+          "methodology": "Kill and death data is sourced from Parsertime scrim logs. Top targets and threats show the 5 most-eliminated and most-died-to heroes by total count. Kill methods are grouped by ability type. Role distribution reflects the percentage of playtime on Tank, Damage, and Support based on hero time across all scrims."
+        },
+        "strengthsWeaknesses": {
+          "title": "Scouting Insights",
+          "description": "Auto-generated strengths and weaknesses from competitive and scrim data.",
+          "strengths": "Strengths",
+          "weaknesses": "Weaknesses",
+          "noStrengths": "Not enough data to identify strengths.",
+          "noWeaknesses": "No significant weaknesses identified.",
+          "methodology": "Insights are auto-generated by analyzing z-scores (hero performance vs global averages), competitive map win rates, first pick/death rates, consistency scores, and hero pool depth. Strengths trigger when metrics exceed positive thresholds; weaknesses trigger on negative thresholds. All data sources are combined to provide a holistic view."
+        },
+        "noScrimData": "This player doesn't have scrim data in Parsertime yet. Competitive analytics and tournament history are still available.",
+        "statLabels": {
+          "eliminations": "Eliminations",
+          "deaths": "Deaths",
+          "hero_damage_dealt": "Hero Damage",
+          "healing_dealt": "Healing",
+          "damage_blocked": "Damage Blocked"
+        }
+      }
+    }
+  },
+  "dataLabeling": {
+    "title": "Data Labeling",
+    "subtitle": "Label team compositions for OWCS tournament matches.",
+    "metadata": {
+      "title": "Data Labeling | Parsertime",
+      "description": "Label team compositions for OWCS tournament matches."
+    },
+    "matchList": {
+      "title": "Unlabeled Matches",
+      "date": "Date",
+      "teams": "Teams",
+      "score": "Score",
+      "tournament": "Tournament",
+      "progress": "Progress",
+      "previousPage": "Previous",
+      "nextPage": "Next",
+      "pageInfo": "Page {current} of {total}",
+      "noMatches": "No unlabeled matches with VODs found.",
+      "vs": "vs"
+    },
+    "labeling": {
+      "backToList": "Back to matches",
+      "map": "Map {number}",
+      "mapTabs": "Maps",
+      "labeled": "Labeled",
+      "unlabeled": "Unlabeled",
+      "heroBans": "Hero Bans",
+      "noBans": "No bans for this map.",
+      "team1Comp": "{team} Composition",
+      "team2Comp": "{team} Composition",
+      "tank": "Tank",
+      "damage": "Damage",
+      "support": "Support",
+      "save": "Save",
+      "reset": "Reset",
+      "saveAll": "Save All Maps",
+      "saving": "Saving...",
+      "saved": "Saved!",
+      "saveSuccess": "Team compositions saved successfully.",
+      "saveError": "Failed to save team compositions.",
+      "roleConstraint": "Select 1 Tank, 2 Damage, 2 Support",
+      "heroBanned": "Banned",
+      "playerAssignments": "{team} Player Assignments",
+      "assignPlayer": "Assign player for {hero}",
+      "selectPlayer": "Select player...",
+      "instructions": {
+        "title": "Reviewer Instructions",
+        "body": "Watch the VOD and use the panel on the right to record the hero composition for each map. For each hero, assign the player who was playing that hero at the start of the map.",
+        "swapNote": "Only capture the initial picks — mid-map hero swaps do not need to be recorded, as we are interested in each team's opening composition rather than matchup-driven substitutions."
+      }
+    }
+  },
   "statsPage": {
     "layoutMetadata": {
       "title": "Stats | Parsertime",
@@ -2028,6 +2397,13 @@
     "readonly": {
       "title": "Read-Only",
       "description": "If enabled, the team will be read-only. This means that players and managers cannot add scrims to the team."
+    },
+    "scoutingLink": {
+      "title": "OWCS Scouting Link",
+      "description": "Link this team to an OWCS team abbreviation to enable cross-referenced scouting reports. This connects your uploaded scrim data to opponent match history.",
+      "placeholder": "e.g. CORNELL, NYU, COLU",
+      "noTeam": "No team linked",
+      "linked": "Linked to {abbr}"
     },
     "update": {
       "title": "Update team profile",

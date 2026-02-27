@@ -11,6 +11,7 @@ import { ModeToggle } from "@/components/theme-switcher";
 import { UserNav } from "@/components/user-nav";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
+import { scoutingTool } from "@/lib/flags";
 
 export async function DashboardLayout({
   children,
@@ -22,13 +23,18 @@ export async function DashboardLayout({
   const session = await auth();
   const user = await getUser(session?.user?.email);
 
+  const scoutingEnabled = await scoutingTool();
+
   return (
     <TeamSwitcherProvider>
       <div className="min-h-[90vh] flex-col md:flex">
         <div className="border-b">
           <div className="hidden h-16 items-center px-4 md:flex">
             <TeamSwitcher session={session} />
-            <MainNav className="mx-6 hidden lg:block" />
+            <MainNav
+              scoutingEnabled={scoutingEnabled}
+              className="mx-6 hidden lg:block"
+            />
             <MobileNav className="block pl-2 lg:hidden" session={session} />
             <div className="ml-auto flex items-center space-x-4">
               <Search user={user} />

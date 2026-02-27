@@ -197,6 +197,7 @@ model Team {
   readonly         Boolean           @default(false)
   comparisonGroups ComparisonGroup[]
   mapGroups        MapGroup[]
+  scoutingTeamAbbr String?
 }
 
 model TeamManager {
@@ -261,16 +262,17 @@ model MapGroup {
 }
 
 model Scrim {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  date      DateTime
-  maps      Map[]
-  Team      Team?    @relation(fields: [teamId], references: [id])
-  teamId    Int?
-  creatorId String
-  guestMode Boolean  @default(false)
+  id               Int      @id @default(autoincrement())
+  name             String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  date             DateTime
+  maps             Map[]
+  Team             Team?    @relation(fields: [teamId], references: [id])
+  teamId           Int?
+  creatorId        String
+  guestMode        Boolean  @default(false)
+  opponentTeamAbbr String?
 
   @@index([teamId])
 }
@@ -896,4 +898,166 @@ model UltimateStart {
 
   @@index([scrimId])
   @@index([MapDataId])
+}
+
+// ---------------------------------------------------------------------------
+// Scouting models — professional tournament data from Liquipedia
+// ---------------------------------------------------------------------------
+
+model ScoutingTournament {
+  id        Int              @id @default(autoincrement())
+  title     String           @unique
+  sourceUrl String
+  mapPool   Json
+  matches   ScoutingMatch[]
+  rosters   ScoutingRoster[]
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
+model ScoutingMatch {
+  id             Int                 @id @default(autoincrement())
+  tournamentId   Int
+  team1          String
+  team1FullName  String
+  team2          String
+  team2FullName  String
+  team1Score     Int?
+  team2Score     Int?
+  bestOf         Int
+  winner         String
+  winnerFullName String
+  matchDate      DateTime
+  mvp            String?
+  vods           Json                @default("[]")
+  matchRoomUrl   String?
+  maps           ScoutingMapResult[]
+  tournament     ScoutingTournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  @@index([tournamentId])
+  @@index([team1, team2])
+}
+
+model ScoutingMapResult {
+  id              Int                      @id @default(autoincrement())
+  matchId         Int
+  gameNumber      Int
+  mapType         MapType
+  mapName         String
+  team1Score      String
+  team2Score      String
+  winner          String
+  team1Comp       String[]                 @default([])
+  team2Comp       String[]                 @default([])
+  heroBans        ScoutingHeroBan[]
+  heroAssignments ScoutingHeroAssignment[]
+  match           ScoutingMatch            @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
+
+  @@index([matchId])
+  @@index([mapName])
+}
+
+model ScoutingHeroBan {
+  id          Int               @id @default(autoincrement())
+  mapResultId Int
+  team        String
+  hero        String
+  banOrder    Int
+  mapResult   ScoutingMapResult @relation(fields: [mapResultId], references: [id], onDelete: Cascade)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([mapResultId])
+  @@index([hero])
+}
+
+model ScoutingHeroAssignment {
+  id          Int               @id @default(autoincrement())
+  mapResultId Int
+  team        String
+  heroName    String
+  playerName  String
+  mapResult   ScoutingMapResult @relation(fields: [mapResultId], references: [id], onDelete: Cascade)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@unique([mapResultId, team, heroName])
+  @@index([mapResultId])
+  @@index([playerName])
+}
+
+enum RosterCategory {
+  player
+  staff
+  substitute
+}
+
+enum RosterRole {
+  DPS
+  Tank
+  Support
+  Flex
+  Coach
+  HeadCoach
+  AssistantCoach
+  Manager
+  AssistantManager
+  TeamManager
+  Analyst
+  PerformanceCoach
+  Substitute
+}
+
+model ScoutingRoster {
+  id           Int                    @id @default(autoincrement())
+  tournamentId Int
+  teamName     String
+  tournament   ScoutingTournament     @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  players      ScoutingRosterPlayer[]
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+
+  @@unique([tournamentId, teamName])
+  @@index([tournamentId])
+  @@index([teamName])
+}
+
+model ScoutingRosterPlayer {
+  id          Int            @id @default(autoincrement())
+  rosterId    Int
+  name        String
+  displayName String
+  role        RosterRole
+  country     String
+  didNotPlay  Boolean        @default(false)
+  category    RosterCategory
+  roster      ScoutingRoster @relation(fields: [rosterId], references: [id], onDelete: Cascade)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([rosterId])
+  @@index([displayName])
+}
+
+model ScoutingPlayer {
+  id              Int      @id @default(autoincrement())
+  name            String
+  team            String
+  status          String
+  role            String
+  country         String
+  signatureHeroes String[]
+  winnings        Int      @default(0)
+  region          String
+  playerUrl       String   @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([name])
+  @@index([team])
+  @@index([region])
 }
