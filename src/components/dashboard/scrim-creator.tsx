@@ -26,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useFeatureFlags } from "@/components/feature-flags-provider";
 import { parseData } from "@/lib/parser";
 import { cn, detectFileCorruption } from "@/lib/utils";
 import { heroRoleMapping } from "@/types/heroes";
@@ -70,6 +71,7 @@ export function ScrimCreationForm({
 }: {
   setOpen: (open: boolean) => void;
 }) {
+  const { scoutingEnabled } = useFeatureFlags();
   const [mapData, setMapData] = useState<ParserData>();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -362,7 +364,7 @@ export function ScrimCreationForm({
         />
 
         {/* Opponent (OWCS) + Map upload — side by side */}
-        {scoutingTeams.length > 0 && (
+        {scoutingEnabled && scoutingTeams.length > 0 && (
           <Controller
             control={form.control}
             name="opponentTeamAbbr"
@@ -389,7 +391,11 @@ export function ScrimCreationForm({
             <Field
               data-invalid={fieldState.invalid}
               id="docs-demo-step6"
-              className={scoutingTeams.length === 0 ? "col-span-2" : undefined}
+              className={
+                !scoutingEnabled || scoutingTeams.length === 0
+                  ? "col-span-2"
+                  : undefined
+              }
             >
               <FieldLabel htmlFor={field.name}>{t("mapName")}</FieldLabel>
               <Input
