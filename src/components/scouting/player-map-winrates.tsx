@@ -5,6 +5,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -89,6 +90,9 @@ export function PlayerMapWinrates({
               </BarChart>
             </ChartContainer>
           </CardContent>
+          <CardFooter>
+            <p className="text-muted-foreground text-xs">{t("methodologyMapType")}</p>
+          </CardFooter>
         </Card>
       )}
 
@@ -104,6 +108,9 @@ export function PlayerMapWinrates({
               ))}
             </div>
           </CardContent>
+          <CardFooter>
+            <p className="text-muted-foreground text-xs">{t("methodologyByMap")}</p>
+          </CardFooter>
         </Card>
       )}
     </section>
