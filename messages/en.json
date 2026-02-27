@@ -1694,6 +1694,77 @@
         "heroes": "Heroes",
         "win": "W",
         "loss": "L"
+      },
+      "analytics": {
+        "scrimOverview": {
+          "title": "Scrim Performance",
+          "description": "Key metrics from Parsertime scrim data.",
+          "mvpScore": "MVP Score",
+          "kdRatio": "K/D Ratio",
+          "firstPickRate": "First Pick Rate",
+          "firstDeathRate": "First Death Rate",
+          "fightReversalRate": "Fight Reversal %",
+          "killsPerUltimate": "Kills / Ult",
+          "consistencyScore": "Consistency",
+          "mapsPlayed": "Maps Played",
+          "firstPicks": "{count} first picks",
+          "firstDeaths": "{count} first deaths",
+          "outOf100": "/ 100"
+        },
+        "performanceRadar": {
+          "title": "Performance Profile",
+          "description": "Z-scores vs global hero averages across all Parsertime players.",
+          "aboveAverage": "Above Average",
+          "belowAverage": "Below Average",
+          "noData": "No scrim data available for radar chart."
+        },
+        "heroZScores": {
+          "title": "Hero Performance",
+          "description": "Composite z-scores per hero compared to global baselines.",
+          "primary": "Primary",
+          "maps": "{count, plural, one {# map} other {# maps}}",
+          "delta": "Delta",
+          "significantDropOff": "Significant drop-off",
+          "noData": "No hero performance data available."
+        },
+        "mapWinrates": {
+          "title": "Map Performance",
+          "description": "Win rates from competitive matches.",
+          "byMapType": "By Map Type",
+          "byMap": "By Map",
+          "competitive": "Competitive",
+          "scrims": "Scrims",
+          "played": "Played",
+          "won": "Won",
+          "noData": "No competitive map data available."
+        },
+        "killAnalysis": {
+          "title": "Combat Patterns",
+          "description": "Kill and death analysis from scrim data.",
+          "topTargets": "Top Targets",
+          "topThreats": "Top Threats",
+          "killMethods": "Kill Methods",
+          "roleDistribution": "Role Distribution",
+          "kills": "{count, plural, one {# kill} other {# kills}}",
+          "deaths": "{count, plural, one {# death} other {# deaths}}"
+        },
+        "strengthsWeaknesses": {
+          "title": "Scouting Insights",
+          "description": "Auto-generated strengths and weaknesses from competitive and scrim data.",
+          "strengths": "Strengths",
+          "weaknesses": "Weaknesses",
+          "noStrengths": "Not enough data to identify strengths.",
+          "noWeaknesses": "No significant weaknesses identified.",
+          "methodology": "Insights are generated from z-score analysis, map win rates, and advanced combat metrics."
+        },
+        "noScrimData": "This player doesn't have scrim data in Parsertime yet. Competitive analytics and tournament history are still available.",
+        "statLabels": {
+          "eliminations": "Eliminations",
+          "deaths": "Deaths",
+          "hero_damage_dealt": "Hero Damage",
+          "healing_dealt": "Healing",
+          "damage_blocked": "Damage Blocked"
+        }
       }
     }
   },
