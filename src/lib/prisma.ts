@@ -1,17 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
 function prismaClientSingleton() {
-  if (process.env.NODE_ENV === "test") {
-    return new PrismaClient({
-      datasources: {
-        db: {
-          url: process.env.TEST_DB_URL,
-        },
-      },
-    });
-  }
-
-  // For other environments, return the default PrismaClient
   return new PrismaClient();
 }
 
