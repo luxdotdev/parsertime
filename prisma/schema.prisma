@@ -1042,3 +1042,22 @@ model ScoutingRosterPlayer {
   @@index([rosterId])
   @@index([displayName])
 }
+
+model ScoutingPlayer {
+  id              Int      @id @default(autoincrement())
+  name            String
+  team            String
+  status          String
+  role            String
+  country         String
+  signatureHeroes String[]
+  winnings        Int      @default(0)
+  region          String
+  playerUrl       String   @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([name])
+  @@index([team])
+  @@index([region])
+}
