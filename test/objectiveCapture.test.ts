@@ -71,11 +71,7 @@ test("should return the generated objective capture row", async () => {
 test("should return empty array", async () => {
   const data = {};
 
-  const result = await createObjectiveCapturedRows(
-    data as never,
-    { id: 1 },
-    1
-  );
+  const result = await createObjectiveCapturedRows(data as never, { id: 1 }, 1);
 
   expect(result).toEqual([]);
   expect(prismaMock.objectiveCaptured.createMany).not.toHaveBeenCalled();
