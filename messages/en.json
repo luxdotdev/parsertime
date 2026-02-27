@@ -1642,6 +1642,59 @@
         }
       },
       "empty": "No scouting data available for this team."
+    },
+    "player": {
+      "title": "Scout Player",
+      "subtitle": "Search for professional players and analyze their competitive history.",
+      "metadata": {
+        "title": "Scout Player | Parsertime",
+        "description": "Search for professional Overwatch players and view their competitive history, hero pool, and tournament performance.",
+        "ogTitle": "Scout Player | Parsertime",
+        "ogDescription": "Search for professional Overwatch players and view their competitive history, hero pool, and tournament performance.",
+        "ogImage": "Scout Player"
+      },
+      "search": {
+        "label": "Search players",
+        "placeholder": "Search for a player...",
+        "helperText": "Search for a professional player by name, team, or role.",
+        "resultsLabel": "Player search results",
+        "noResults": "No players found."
+      },
+      "profile": {
+        "metadata": {
+          "title": "{player} | Scout Player | Parsertime",
+          "description": "Scout {player} — view hero pool, tournament history, and competitive performance.",
+          "ogTitle": "{player} | Scout Player | Parsertime",
+          "ogDescription": "Scout {player} — view hero pool, tournament history, and competitive performance."
+        },
+        "backToSearch": "Back to search",
+        "liquipediaProfile": "View on Liquipedia",
+        "careerWinnings": "Career Winnings",
+        "signatureHeroes": "Signature Heroes",
+        "tournamentAppearances": "Tournament Appearances",
+        "competitiveMaps": "Competitive Maps",
+        "tournaments": "{count, plural, one {# tournament} other {# tournaments}}",
+        "maps": "{count, plural, one {# map} other {# maps}}",
+        "heroPool": "Hero Pool",
+        "knownFor": "Known For",
+        "knownForSource": "From Liquipedia",
+        "observedInCompetition": "Observed In Competition",
+        "heroMaps": "{count, plural, one {# map} other {# maps}}",
+        "noHeroData": "No competitive hero data available yet.",
+        "tournamentHistory": "Tournament History",
+        "team": "Team",
+        "role": "Role",
+        "record": "Record",
+        "winRate": "Win Rate",
+        "noTournamentData": "No tournament data available yet.",
+        "matchDetails": "Match Details",
+        "opponent": "Opponent",
+        "score": "Score",
+        "result": "Result",
+        "heroes": "Heroes",
+        "win": "W",
+        "loss": "L"
+      }
     }
   },
   "dataLabeling": {
