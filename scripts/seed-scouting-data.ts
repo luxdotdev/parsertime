@@ -6,6 +6,7 @@ import {
   type RosterCategory,
   type RosterRole,
 } from "@prisma/client";
+import { JsonValue } from "@prisma/client/runtime/library";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 
@@ -208,7 +209,7 @@ async function seedMatch(tournamentId: number, match: MatchData) {
       winnerFullName: cleanTeamName(match.winnerFullName),
       matchDate,
       mvp: match.mvp,
-      vods: match.vods ?? [],
+      vods: (match.vods as unknown as JsonValue[]) ?? [],
       matchRoomUrl: match.matchRoomUrl ?? null,
     },
   });
@@ -345,7 +346,7 @@ async function main() {
   console.log(`Reading data from ${dataPath}\n`);
 
   const raw = readFileSync(dataPath, "utf-8");
-  const tournaments: TournamentData[] = JSON.parse(raw);
+  const tournaments = JSON.parse(raw) as TournamentData[];
 
   console.log(`Found ${tournaments.length} tournaments to process\n`);
 

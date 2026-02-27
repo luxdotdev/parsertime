@@ -29,7 +29,7 @@ async function main() {
   console.log(`Reading data from ${dataPath}\n`);
 
   const raw = readFileSync(dataPath, "utf-8");
-  const players: PlayerData[] = JSON.parse(raw);
+  const players = JSON.parse(raw) as PlayerData[];
 
   console.log(`Found ${players.length} players to process\n`);
 
