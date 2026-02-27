@@ -3,7 +3,6 @@ import { z } from "zod";
 const envVariables = z.object({
   // Database connection strings
   DATABASE_URL: z.string(),
-  TEST_DB_URL: z.string(),
 
   // Vercel storage secrets
   BLOB_READ_WRITE_TOKEN: z.string(),

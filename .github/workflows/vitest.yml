@@ -5,9 +5,6 @@ name: Vitest
 
 on: [push]
 
-env:
-  TEST_DB_URL: ${{ secrets.TEST_DB_URL }}
-
 jobs:
   test:
     runs-on: ubuntu-latest
