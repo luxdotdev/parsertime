@@ -53,11 +53,7 @@ export function PlayerHeroZScores({ heroes }: PlayerHeroZScoresProps) {
         </CardHeader>
         <CardContent className="space-y-3">
           {heroes.map((hero, i) => (
-            <HeroZScoreRow
-              key={hero.hero}
-              hero={hero}
-              isPrimary={i === 0}
-            />
+            <HeroZScoreRow key={hero.hero} hero={hero} isPrimary={i === 0} />
           ))}
 
           {primarySecondaryDelta !== null && (
@@ -100,7 +96,7 @@ function HeroZScoreRow({
         )}
       >
         <CollapsibleTrigger asChild>
-          <button className="flex w-full min-h-[44px] items-center gap-3">
+          <button className="flex min-h-[44px] w-full items-center gap-3">
             <Image
               src={`/heroes/${toHero(hero.hero)}.png`}
               alt={hero.hero}
@@ -119,10 +115,7 @@ function HeroZScoreRow({
                 {t("maps", { count: hero.mapsPlayed })}
               </span>
             </div>
-            <ZScoreBar
-              zScore={hero.compositeZScore}
-              isPrimary={isPrimary}
-            />
+            <ZScoreBar zScore={hero.compositeZScore} isPrimary={isPrimary} />
             <span className="w-14 shrink-0 text-right text-xs font-medium tabular-nums">
               {hero.compositeZScore >= 0 ? "+" : ""}
               {hero.compositeZScore.toFixed(1)}σ

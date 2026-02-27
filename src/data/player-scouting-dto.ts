@@ -88,9 +88,7 @@ async function getScoutingPlayersFn(): Promise<ScoutingPlayerSummary[]> {
 
 export const getScoutingPlayers = cache(getScoutingPlayersFn);
 
-async function getPlayerProfileFn(
-  slug: string
-): Promise<PlayerProfile | null> {
+async function getPlayerProfileFn(slug: string): Promise<PlayerProfile | null> {
   const playerUrl = `https://liquipedia.net/overwatch/${slug}`;
 
   const player = await prisma.scoutingPlayer.findUnique({
@@ -157,9 +155,8 @@ async function getPlayerProfileFn(
     .map(([hero, mapIds]) => ({ hero, mapCount: mapIds.size }))
     .sort((a, b) => b.mapCount - a.mapCount);
 
-  const competitiveMapCount = new Set(
-    heroAssignments.map((a) => a.mapResultId)
-  ).size;
+  const competitiveMapCount = new Set(heroAssignments.map((a) => a.mapResultId))
+    .size;
 
   const tournamentMap = new Map<
     string,
@@ -292,9 +289,7 @@ async function getPlayerProfileFn(
       tournament.matchMap.set(matchKey, {
         date: match.matchDate,
         opponent: isTeam1 ? match.team2 : match.team1,
-        opponentFullName: isTeam1
-          ? match.team2FullName
-          : match.team1FullName,
+        opponentFullName: isTeam1 ? match.team2FullName : match.team1FullName,
         teamScore: isTeam1 ? match.team1Score : match.team2Score,
         opponentScore: isTeam1 ? match.team2Score : match.team1Score,
         result: won ? "win" : "loss",

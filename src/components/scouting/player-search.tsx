@@ -162,20 +162,14 @@ export function PlayerSearch({ players }: PlayerSearchProps) {
                 onClick={() => navigateToPlayer(player)}
               >
                 <div className="flex items-baseline gap-2 overflow-hidden">
-                  <span className="text-base font-semibold">
-                    {player.name}
-                  </span>
+                  <span className="text-base font-semibold">{player.name}</span>
                   <span className="text-muted-foreground truncate text-sm">
                     {player.team}
                   </span>
                 </div>
                 <div className="text-muted-foreground flex shrink-0 items-center gap-3 text-sm">
-                  {player.role && (
-                    <RoleBadge role={player.role} />
-                  )}
-                  {player.region && (
-                    <span>{player.region}</span>
-                  )}
+                  {player.role && <RoleBadge role={player.role} />}
+                  {player.region && <span>{player.region}</span>}
                 </div>
               </li>
             ))
@@ -208,10 +202,7 @@ function RoleBadge({ role }: { role: string }) {
 
   return (
     <span
-      className={cn(
-        "rounded-md px-1.5 py-0.5 text-xs font-medium",
-        colorClass
-      )}
+      className={cn("rounded-md px-1.5 py-0.5 text-xs font-medium", colorClass)}
     >
       {role}
     </span>

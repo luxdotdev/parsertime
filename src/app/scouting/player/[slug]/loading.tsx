@@ -95,7 +95,10 @@ export default function ScoutingPlayerLoading() {
         </CardHeader>
         <CardContent className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="flex items-center gap-3 rounded-lg border p-3">
+            <div
+              key={i}
+              className="flex items-center gap-3 rounded-lg border p-3"
+            >
               <Skeleton className="h-8 w-8 rounded" />
               <Skeleton className="h-4 w-20" />
               <Skeleton className="h-4 flex-1 rounded-sm" />

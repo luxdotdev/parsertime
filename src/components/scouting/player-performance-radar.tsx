@@ -48,7 +48,12 @@ const ROLE_COLORS: Record<string, string> = {
 function RadarTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
   if (active && payload?.length) {
     const data = payload[0];
-    const item = data.payload as { stat: string; value: number; per10: number; avgPer10: number };
+    const item = data.payload as {
+      stat: string;
+      value: number;
+      per10: number;
+      avgPer10: number;
+    };
     const zScore = item.value;
     return (
       <div className="bg-popover text-popover-foreground border-border z-50 overflow-hidden rounded-md border px-3 py-2 text-xs shadow-xl">
@@ -178,7 +183,11 @@ export function PlayerPerformanceRadar({
                   {selectedHero.compositeZScore.toFixed(2)}σ
                 </span>
                 <span className="text-muted-foreground ml-2 text-xs">
-                  ({selectedHero.compositeZScore > 0 ? t("aboveAverage") : t("belowAverage")})
+                  (
+                  {selectedHero.compositeZScore > 0
+                    ? t("aboveAverage")
+                    : t("belowAverage")}
+                  )
                 </span>
               </p>
             </div>

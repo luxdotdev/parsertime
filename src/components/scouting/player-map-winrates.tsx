@@ -15,9 +15,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import type {
-  CompetitiveMapWinrates,
-} from "@/data/player-scouting-analytics-dto";
+import type { CompetitiveMapWinrates } from "@/data/player-scouting-analytics-dto";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
@@ -91,7 +89,9 @@ export function PlayerMapWinrates({
             </ChartContainer>
           </CardContent>
           <CardFooter>
-            <p className="text-muted-foreground text-xs">{t("methodologyMapType")}</p>
+            <p className="text-muted-foreground text-xs">
+              {t("methodologyMapType")}
+            </p>
           </CardFooter>
         </Card>
       )}
@@ -109,7 +109,9 @@ export function PlayerMapWinrates({
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-muted-foreground text-xs">{t("methodologyByMap")}</p>
+            <p className="text-muted-foreground text-xs">
+              {t("methodologyByMap")}
+            </p>
           </CardFooter>
         </Card>
       )}
@@ -117,11 +119,7 @@ export function PlayerMapWinrates({
   );
 }
 
-function MapCard({
-  map,
-}: {
-  map: CompetitiveMapWinrates["byMap"][number];
-}) {
+function MapCard({ map }: { map: CompetitiveMapWinrates["byMap"][number] }) {
   const t = useTranslations("scoutingPage.player.analytics.mapWinrates");
   const wr = map.winRate;
 

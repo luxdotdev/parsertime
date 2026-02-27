@@ -89,7 +89,8 @@ function buildSourcePhrase(
   if (owcs && scrim) {
     return `Based on ${profile.opponentOwcsMaps} competitive maps and ${profile.opponentScrimMaps} scrim ${profile.opponentScrimMaps === 1 ? "map" : "maps"}`;
   }
-  if (scrim) return `Based on ${count} scrim ${count === 1 ? "map" : "maps"} against this opponent`;
+  if (scrim)
+    return `Based on ${count} scrim ${count === 1 ? "map" : "maps"} against this opponent`;
   return `Based on ${count} competitive maps`;
 }
 
