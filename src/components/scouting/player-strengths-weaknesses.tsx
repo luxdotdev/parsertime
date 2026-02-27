@@ -5,6 +5,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -100,11 +101,10 @@ export function PlayerStrengthsWeaknesses({
               )}
             </div>
           </div>
-
-          <p className="text-muted-foreground mt-6 border-t pt-4 text-xs">
-            {t("methodology")}
-          </p>
         </CardContent>
+        <CardFooter>
+          <p className="text-muted-foreground text-xs">{t("methodology")}</p>
+        </CardFooter>
       </Card>
     </section>
   );
