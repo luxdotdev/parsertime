@@ -1,12 +1,7 @@
+import { CollapsibleCard } from "@/components/scrim/collapsible-card-wrapper";
 import { PlayerPerformanceHoverChart } from "@/components/scrim/player-performance-hover-chart";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
@@ -428,8 +423,8 @@ export async function ScrimOverviewCard({
   );
 
   return (
-    <Card>
-      <CardHeader>
+    <CollapsibleCard
+      header={
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-1">
             <CardTitle className="text-base font-semibold">
@@ -448,9 +443,9 @@ export async function ScrimOverviewCard({
             </Badge>
           </div>
         </div>
-      </CardHeader>
-
-      <CardContent className="space-y-6">
+      }
+    >
+      <CardContent className="mb-4 space-y-6">
         {/* Summary stats row */}
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <StatSummaryCell
@@ -561,6 +556,6 @@ export async function ScrimOverviewCard({
           </p>
         </div>
       </CardFooter>
-    </Card>
+    </CollapsibleCard>
   );
 }
