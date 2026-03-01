@@ -15,35 +15,46 @@ const BASE_PADDING = 10;
 const MIN_BRACKET_HEIGHT = 36;
 const FILL_WIDTH = 20;
 const LABEL_OFFSET = 14;
-const LABEL_CONTENT_WIDTH = 120;
-const MIN_LABEL_GAP_PERCENT = 4.5;
+const LABEL_CONTENT_WIDTH = 90;
+const MIN_LABEL_GAP_PX = 52;
 
 function fade(color: string, percent: number): string {
   return `color-mix(in srgb, ${color} ${percent}%, transparent)`;
 }
 
-function spanLabelLeft(depth: number): number {
-  return BASE_PADDING + depth * LANE_WIDTH + LABEL_OFFSET;
+function spanLeft(depth: number, depthOffset: number): number {
+  return BASE_PADDING + (depthOffset + depth) * LANE_WIDTH;
+}
+
+function spanLabelLeft(depth: number, depthOffset: number): number {
+  return spanLeft(depth, depthOffset) + LABEL_OFFSET;
 }
 
 export function getGutterWidth(spans: UltimateSpan[]): number {
   if (spans.length === 0) return 0;
   const maxDepth = Math.max(0, ...spans.map((s) => s.depth));
-  return spanLabelLeft(maxDepth) + LABEL_CONTENT_WIDTH;
+  return spanLabelLeft(maxDepth, 0) + LABEL_CONTENT_WIDTH;
 }
 
 function computeLabelPositions(
   spans: UltimateSpan[],
   timeMin: number,
-  timeRange: number
+  timeRange: number,
+  spanPositions?: Map<number, { startPercent: number; endPercent: number }>,
+  containerHeight?: number
 ): Map<number, number> {
+  const minGapPercent = containerHeight
+    ? (MIN_LABEL_GAP_PX / containerHeight) * 100
+    : 4.5;
   const sorted = [...spans].sort((a, b) => a.startTime - b.startTime);
   const positions = new Map<number, number>();
   let prevTop = -Infinity;
 
   for (const span of sorted) {
-    const rawTop = ((span.startTime - timeMin) / timeRange) * 100;
-    const adjusted = Math.max(rawTop, prevTop + MIN_LABEL_GAP_PERCENT);
+    const rawTop =
+      spanPositions?.get(span.id)?.startPercent ??
+      ((span.startTime - timeMin) / timeRange) * 100;
+    const adjusted = Math.max(rawTop, prevTop + minGapPercent);
     positions.set(span.id, adjusted);
     prevTop = adjusted;
   }
@@ -60,23 +71,26 @@ function SpanTooltipContent({
 }) {
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="font-medium">
+      <span className="text-xs font-medium">
         {span.playerName} — {span.playerHero}
       </span>
+      <span className="text-xs opacity-80">
+        {t("tooltipTeam", { team: span.playerTeam })}
+      </span>
       {span.isInstant ? (
-        <span className="text-muted-foreground text-xs">
-          {t("instantUltAt", { time: toTimestamp(span.startTime) })}
+        <span className="text-xs opacity-80">
+          {t("tooltipTimestamp", { time: toTimestamp(span.startTime) })}
         </span>
       ) : (
         <>
-          <span className="text-muted-foreground text-xs">
+          <span className="text-xs opacity-80">
             {t("ultTime", {
               start: toTimestamp(span.startTime),
               end: toTimestamp(span.endTime),
             })}
           </span>
-          <span className="text-muted-foreground text-xs">
-            {t("ultDuration", { duration: span.duration.toFixed(1) })}
+          <span className="text-xs opacity-80">
+            {t("tooltipDuration", { duration: span.duration.toFixed(1) })}
           </span>
         </>
       )}
@@ -101,52 +115,65 @@ function SpanTooltipContent({
 
 type UltBracketGutterProps = {
   spans: UltimateSpan[];
-  fightStart: number;
-  fightEnd: number;
+  timeMin: number;
+  timeMax: number;
   team1: string;
   team1Color: string;
   team2Color: string;
   showLabels: boolean;
+  spanPositions?: Map<number, { startPercent: number; endPercent: number }>;
+  containerHeight?: number;
+  gutterWidth?: number;
 };
 
 export function UltBracketGutter({
   spans,
-  fightStart,
-  fightEnd,
+  timeMin,
+  timeMax,
   team1,
   team1Color,
   team2Color,
   showLabels,
+  spanPositions,
+  containerHeight,
+  gutterWidth,
 }: UltBracketGutterProps) {
   const t = useTranslations("mapPage.killfeedUlt");
-  const gutterWidth = getGutterWidth(spans);
-
-  const timeMin = Math.min(fightStart, ...spans.map((s) => s.startTime));
-  const timeMax = Math.max(fightEnd, ...spans.map((s) => s.endTime));
   const timeRange = timeMax - timeMin || 1;
 
   const labelPositions = showLabels
-    ? computeLabelPositions(spans, timeMin, timeRange)
+    ? computeLabelPositions(
+        spans,
+        timeMin,
+        timeRange,
+        spanPositions,
+        containerHeight
+      )
     : null;
 
+  const localMaxDepth = Math.max(0, ...spans.map((s) => s.depth));
+  const globalMaxDepth = gutterWidth
+    ? Math.round(
+        (gutterWidth - BASE_PADDING - LABEL_OFFSET - LABEL_CONTENT_WIDTH) /
+          LANE_WIDTH
+      )
+    : localMaxDepth;
+  const depthOffset = globalMaxDepth - localMaxDepth;
+
   return (
-    <div
-      className="relative hidden md:block"
-      style={{
-        width: gutterWidth,
-        minWidth: gutterWidth,
-        paddingTop: 16,
-        paddingBottom: 16,
-      }}
-    >
+    <div className="relative h-full">
       {spans.map((span) => {
         const color = span.playerTeam === team1 ? team1Color : team2Color;
-        const left = BASE_PADDING + span.depth * LANE_WIDTH;
+        const left = spanLeft(span.depth, depthOffset);
         const isDeath = span.diedDuringUlt;
-        const deathColor = "hsl(var(--destructive))";
 
-        const topPercent = ((span.startTime - timeMin) / timeRange) * 100;
-        const heightPercent = (span.duration / timeRange) * 100;
+        const override = spanPositions?.get(span.id);
+        const topPercent = override
+          ? override.startPercent
+          : ((span.startTime - timeMin) / timeRange) * 100;
+        const heightPercent = override
+          ? override.endPercent - override.startPercent
+          : (span.duration / timeRange) * 100;
 
         if (span.isInstant) {
           return (
@@ -234,7 +261,6 @@ export function UltBracketGutter({
                       backgroundColor: color,
                     }}
                   />
-
                   <div
                     className="absolute"
                     style={{
@@ -262,17 +288,18 @@ export function UltBracketGutter({
                 backgroundColor: color,
               }}
             />
-
-            <div
-              className="absolute"
-              style={{
-                left,
-                bottom: 0,
-                width: 8,
-                height: 2,
-                backgroundColor: isDeath ? deathColor : color,
-              }}
-            />
+            {!isDeath && (
+              <div
+                className="absolute"
+                style={{
+                  left,
+                  bottom: 0,
+                  width: 8,
+                  height: 2,
+                  backgroundColor: color,
+                }}
+              />
+            )}
 
             {isDeath && (
               <Tooltip>
@@ -315,7 +342,7 @@ export function UltBracketGutter({
               key={`label-${span.id}`}
               span={span}
               color={color}
-              left={spanLabelLeft(span.depth)}
+              left={spanLabelLeft(span.depth, depthOffset)}
               topPercent={adjustedTop}
               t={t}
             />
