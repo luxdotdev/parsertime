@@ -1338,6 +1338,29 @@
       },
       "exportCSV": "Export as CSV"
     },
+    "killfeedControls": {
+      "title": "Display Options",
+      "ariaLabel": "Killfeed display settings",
+      "ultBrackets": "Ult duration brackets",
+      "ultLabels": "Ult labels",
+      "ultStartEvents": "Ult start events",
+      "ultEndEvents": "Ult end events",
+      "ultKillHighlights": "Highlight ult kills"
+    },
+    "killfeedUlt": {
+      "ultStarted": "{player} activated Ultimate",
+      "ultEnded": "{player}'s ultimate ended ({duration}s)",
+      "ultEndedDeath": "{player} died, ending ultimate ({duration}s)",
+      "ultDuration": "Duration: {duration}s",
+      "ultTime": "{start} — {end}",
+      "ultKills": "{count, plural, one {# kill} other {# kills}} during ult",
+      "ultDeaths": "{count, plural, one {# death} other {# deaths}} during ult",
+      "diedDuringUlt": "{player} died during ultimate",
+      "ultLabel": "{player} ({hero}) used ultimate for {duration}s, {kills, plural, one {# kill} other {# kills}}",
+      "instantUlt": "{player} ({hero}) used instant ultimate",
+      "instantUltAt": "Instant ultimate at {time}",
+      "ultInstant": "{player}'s instant ultimate ({duration}s)"
+    },
     "charts": {
       "tooltip": "Looking for more information on charts? <link>Check out the documentation</link> to learn more.",
       "team1": "Team 1",

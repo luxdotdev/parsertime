@@ -866,6 +866,29 @@
       },
       "exportCSV": "导出为 CSV"
     },
+    "killfeedControls": {
+      "title": "显示选项",
+      "ariaLabel": "击杀记录显示设置",
+      "ultBrackets": "终极技能持续括号",
+      "ultLabels": "终极技能标签",
+      "ultStartEvents": "终极技能开始事件",
+      "ultEndEvents": "终极技能结束事件",
+      "ultKillHighlights": "终极技能击杀高亮"
+    },
+    "killfeedUlt": {
+      "ultStarted": "{player} 使用了终极技能",
+      "ultEnded": "{player} 的终极技能已结束 ({duration}秒)",
+      "ultEndedDeath": "{player} 死亡，终极技能结束 ({duration}秒)",
+      "ultDuration": "持续时间: {duration}秒",
+      "ultTime": "{start} — {end}",
+      "ultKills": "终极技能期间 {count} 次击杀",
+      "ultDeaths": "终极技能期间 {count} 次死亡",
+      "diedDuringUlt": "{player} 在终极技能期间死亡",
+      "ultLabel": "{player} ({hero}) 使用了终极技能 {duration}秒，{kills} 次击杀",
+      "instantUlt": "{player} ({hero}) 使用了瞬间终极技能",
+      "instantUltAt": "在 {time} 使用了瞬间终极技能",
+      "ultInstant": "{player} 的瞬间终极技能 ({duration}秒)"
+    },
     "charts": {
       "tooltip": "想了解更多关于图表的信息吗？<link>查看文档</link> 了解更多内容。",
       "team1": "队伍 1",

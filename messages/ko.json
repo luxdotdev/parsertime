@@ -866,6 +866,29 @@
       },
       "exportCSV": "CSV로 내보내기"
     },
+    "killfeedControls": {
+      "title": "표시 옵션",
+      "ariaLabel": "킬 피드 표시 설정",
+      "ultBrackets": "궁극기 지속 괄호",
+      "ultLabels": "궁극기 라벨",
+      "ultStartEvents": "궁극기 시작 이벤트",
+      "ultEndEvents": "궁극기 종료 이벤트",
+      "ultKillHighlights": "궁극기 처치 강조"
+    },
+    "killfeedUlt": {
+      "ultStarted": "{player}이(가) 궁극기를 사용했습니다",
+      "ultEnded": "{player}의 궁극기가 종료되었습니다 ({duration}초)",
+      "ultEndedDeath": "{player}이(가) 사망하여 궁극기가 종료되었습니다 ({duration}초)",
+      "ultDuration": "지속 시간: {duration}초",
+      "ultTime": "{start} — {end}",
+      "ultKills": "궁극기 중 {count}처치",
+      "ultDeaths": "궁극기 중 {count}사망",
+      "diedDuringUlt": "{player}이(가) 궁극기 중 사망했습니다",
+      "ultLabel": "{player} ({hero})이(가) {duration}초 동안 궁극기를 사용, {kills}처치",
+      "instantUlt": "{player} ({hero})이(가) 즉시 궁극기를 사용했습니다",
+      "instantUltAt": "{time}에 즉시 궁극기 사용",
+      "ultInstant": "{player}의 즉시 궁극기 ({duration}초)"
+    },
     "charts": {
       "tooltip": "차트에 대한 추가 정보를 찾고 계신가요? <link>문서를 확인하세요</link>에서 더 알아보세요.",
       "team1": "팀 1",
