@@ -26,6 +26,7 @@ export type FightUltimateData = {
 };
 
 export type KillfeedDisplayOptions = {
+  showTimeline: boolean;
   showUltBrackets: boolean;
   showUltLabels: boolean;
   showUltStartEvents: boolean;
@@ -40,6 +41,7 @@ export type KillfeedEvent =
   | { type: "ult_instant"; data: UltimateSpan };
 
 export const DEFAULT_KILLFEED_OPTIONS: KillfeedDisplayOptions = {
+  showTimeline: false,
   showUltBrackets: false,
   showUltLabels: false,
   showUltStartEvents: false,
