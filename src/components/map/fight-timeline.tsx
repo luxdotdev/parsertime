@@ -1,0 +1,783 @@
+"use client";
+
+import { UltBracketGutter } from "@/components/map/ult-gutter";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import type {
+  KillfeedDisplayOptions,
+  KillfeedEvent,
+  UltimateSpan,
+} from "@/data/killfeed-dto";
+import { getEventTime, isKillDuringUlt } from "@/data/killfeed-dto";
+import { cn, toHero, toKebabCase, toTimestamp } from "@/lib/utils";
+import type { Kill } from "@prisma/client";
+import { GeistMono } from "geist/font/mono";
+import type { useTranslations } from "next-intl";
+import Image from "next/image";
+
+type Fight = {
+  kills: Kill[];
+  start: number;
+  end: number;
+};
+
+const PIXELS_PER_SECOND = 30;
+const ROW_HEIGHT = 48;
+const TOP_PAD = 12;
+const BOTTOM_PAD = 12;
+const MIN_FIGHT_HEIGHT = 120;
+const AXIS_WIDTH = 100;
+const LEFT_LABEL_WIDTH = 100;
+const DIAMOND_SIZE = 6;
+const DIAMOND_SIZE_LARGE = 8;
+
+function computeEventPixels(
+  events: KillfeedEvent[],
+  fightStartPx: number,
+  fightStartTime: number
+): number[] {
+  const positions: number[] = [];
+  let prevTop = fightStartPx;
+  let prevTime = fightStartTime;
+
+  for (const event of events) {
+    const time = getEventTime(event);
+    const timeDelta = time - prevTime;
+    const gap = Math.max(ROW_HEIGHT, timeDelta * PIXELS_PER_SECOND);
+    const adjusted = prevTop + gap;
+    positions.push(adjusted);
+    prevTop = adjusted;
+    prevTime = time;
+  }
+
+  return positions;
+}
+
+type FightTimelineProps = {
+  fight: Fight;
+  fightIndex: number;
+  spans: UltimateSpan[];
+  events: KillfeedEvent[];
+  team1: string;
+  team2: string;
+  team1Color: string;
+  team2Color: string;
+  environmentalString: string;
+  options: KillfeedDisplayOptions;
+  gutterWidth: number;
+  t: ReturnType<typeof useTranslations>;
+  tUlt: ReturnType<typeof useTranslations>;
+};
+
+export function FightTimeline({
+  fight,
+  fightIndex,
+  spans,
+  events,
+  team1,
+  team2,
+  team1Color,
+  team2Color,
+  environmentalString,
+  options,
+  gutterWidth,
+  t,
+  tUlt,
+}: FightTimelineProps) {
+  const timeMin = fight.start;
+  const timeMax = Math.max(fight.end, ...spans.map((s) => s.endTime));
+
+  const fightStartPx = TOP_PAD;
+
+  const eventPositions = computeEventPixels(events, fightStartPx, fight.start);
+
+  const lastEventPx = eventPositions[eventPositions.length - 1] ?? fightStartPx;
+  const lastEventTime =
+    events.length > 0 ? getEventTime(events[events.length - 1]) : fight.start;
+  const MAX_END_GAP = ROW_HEIGHT * 2;
+  const endGap = Math.min(
+    MAX_END_GAP,
+    Math.max(ROW_HEIGHT, (fight.end - lastEventTime) * PIXELS_PER_SECOND)
+  );
+  const fightEndPx = lastEventPx + endGap;
+
+  const containerHeight = Math.max(MIN_FIGHT_HEIGHT, fightEndPx + BOTTOM_PAD);
+
+  function toPercent(px: number) {
+    return (px / containerHeight) * 100;
+  }
+  const fightStartPercent = toPercent(fightStartPx);
+  const fightEndPercent = toPercent(fightEndPx);
+
+  const spanPositions = new Map<
+    number,
+    { startPercent: number; endPercent: number }
+  >();
+  for (let idx = 0; idx < events.length; idx++) {
+    const event = events[idx];
+    const pct = toPercent(eventPositions[idx]);
+    if (event.type === "ult_start") {
+      const existing = spanPositions.get(event.data.id);
+      spanPositions.set(event.data.id, {
+        startPercent: pct,
+        endPercent: existing?.endPercent ?? pct,
+      });
+    } else if (event.type === "ult_end") {
+      const existing = spanPositions.get(event.data.id);
+      spanPositions.set(event.data.id, {
+        startPercent: existing?.startPercent ?? pct,
+        endPercent: pct,
+      });
+    } else if (event.type === "ult_instant") {
+      spanPositions.set(event.data.id, {
+        startPercent: pct,
+        endPercent: pct,
+      });
+    }
+  }
+
+  const fightWinner =
+    fight.kills.filter((k) => k.attacker_team === team1).length >
+    fight.kills.length / 2
+      ? team1
+      : team2;
+
+  return (
+    <div className="isolate flex" style={{ minHeight: containerHeight }}>
+      {/* Left labels column — fight start/end markers */}
+      <div className="relative shrink-0" style={{ width: LEFT_LABEL_WIDTH }}>
+        <div
+          className="absolute right-2 flex items-center"
+          style={{
+            top: `${fightStartPercent}%`,
+            transform: "translateY(-50%)",
+          }}
+        >
+          <span className="text-muted-foreground text-right text-xs font-medium whitespace-nowrap">
+            {t("fight", { num: fightIndex + 1 })} {t("start")}
+          </span>
+        </div>
+        <div
+          className="absolute right-2 flex items-center"
+          style={{ top: `${fightEndPercent}%`, transform: "translateY(-50%)" }}
+        >
+          <span className="text-muted-foreground text-right text-xs font-medium whitespace-nowrap">
+            {t("fight", { num: fightIndex + 1 })} {t("end")}
+          </span>
+        </div>
+      </div>
+
+      {/* Ult bracket gutter */}
+      <div
+        className="relative hidden shrink-0 md:block"
+        style={{ width: gutterWidth, minWidth: gutterWidth }}
+      >
+        {spans.length > 0 && (
+          <UltBracketGutter
+            spans={spans}
+            timeMin={timeMin}
+            timeMax={timeMax}
+            team1={team1}
+            team1Color={team1Color}
+            team2Color={team2Color}
+            showLabels={options.showUltLabels}
+            spanPositions={spanPositions}
+            containerHeight={containerHeight}
+            gutterWidth={gutterWidth}
+          />
+        )}
+      </div>
+
+      {/* Timeline axis */}
+      <div
+        className="relative shrink-0 overflow-visible"
+        style={{ width: AXIS_WIDTH }}
+      >
+        <div
+          className="bg-border pointer-events-none absolute left-1/2"
+          style={{
+            width: 1,
+            top: -24,
+            bottom: -24,
+            transform: "translateX(-50%)",
+          }}
+          aria-hidden="true"
+        />
+
+        {/* Fight start diamond */}
+        <TimelineDiamond
+          topPercent={fightStartPercent}
+          size={DIAMOND_SIZE_LARGE}
+          color="var(--foreground)"
+          label={`${t("fight", { num: fightIndex + 1 })} starts at ${toTimestamp(fight.start)}`}
+          timestamp={toTimestamp(fight.start)}
+          tooltipContent={
+            <FightStartTooltip
+              fightNum={fightIndex + 1}
+              timestamp={toTimestamp(fight.start)}
+              totalKills={fight.kills.length}
+              duration={fight.end - fight.start}
+              tUlt={tUlt}
+            />
+          }
+        />
+
+        {/* Event diamonds */}
+        {events.map((event, idx) => {
+          const topPercent = toPercent(eventPositions[idx]);
+          const time = getEventTime(event);
+          let color: string;
+          let label: string;
+          let tooltip: React.ReactNode;
+
+          if (event.type === "kill") {
+            const kill = event.data;
+            color = kill.attacker_team === team1 ? team1Color : team2Color;
+            label = `Kill at ${toTimestamp(time)}: ${kill.attacker_name} eliminated ${kill.victim_name}`;
+            tooltip = (
+              <KillTooltip
+                kill={kill}
+                environmentalString={environmentalString}
+                tUlt={tUlt}
+                t={t}
+              />
+            );
+          } else {
+            const span = event.data;
+            color = span.playerTeam === team1 ? team1Color : team2Color;
+            label = `${span.playerName} ultimate at ${toTimestamp(time)}`;
+            tooltip = <UltEventTooltip event={event} tUlt={tUlt} />;
+          }
+
+          return (
+            <TimelineDiamond
+              key={`diamond-${event.type}-${event.type === "kill" ? event.data.id : `${event.data.id}-${event.type}`}`}
+              topPercent={topPercent}
+              size={DIAMOND_SIZE}
+              color={color}
+              label={label}
+              timestamp={toTimestamp(time)}
+              showTimestamp
+              tooltipContent={tooltip}
+            />
+          );
+        })}
+
+        {/* Fight end diamond */}
+        <TimelineDiamond
+          topPercent={fightEndPercent}
+          size={DIAMOND_SIZE_LARGE}
+          color="var(--foreground)"
+          label={`${t("fight", { num: fightIndex + 1 })} ends at ${toTimestamp(fight.end)}, winner: ${fightWinner}`}
+          timestamp={toTimestamp(fight.end)}
+          tooltipContent={
+            <FightEndTooltip
+              fightNum={fightIndex + 1}
+              timestamp={toTimestamp(fight.end)}
+              duration={fight.end - fight.start}
+              winner={fightWinner}
+              tUlt={tUlt}
+            />
+          }
+        />
+      </div>
+
+      {/* Event detail rows */}
+      <div className="relative min-w-0 flex-1 pl-4">
+        {events.map((event, idx) => {
+          const topPercent = toPercent(eventPositions[idx]);
+
+          if (event.type === "kill") {
+            const kill = event.data;
+            const activeUlt = options.showUltKillHighlights
+              ? isKillDuringUlt(kill, spans)
+              : null;
+
+            return (
+              <KillEventRow
+                key={kill.id}
+                kill={kill}
+                topPercent={topPercent}
+                team1={team1}
+                team2={team2}
+                team1Color={team1Color}
+                team2Color={team2Color}
+                environmentalString={environmentalString}
+                activeUlt={activeUlt}
+                t={t}
+              />
+            );
+          }
+
+          return (
+            <UltEventRow
+              key={`ult-${event.type}-${event.data.id}`}
+              event={event}
+              topPercent={topPercent}
+              team1={team1}
+              team1Color={team1Color}
+              team2Color={team2Color}
+              tUlt={tUlt}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function TimelineDiamond({
+  topPercent,
+  size,
+  color,
+  label,
+  timestamp,
+  showTimestamp,
+  tooltipContent,
+}: {
+  topPercent: number;
+  size: number;
+  color: string;
+  label: string;
+  timestamp: string;
+  showTimestamp?: boolean;
+  tooltipContent?: React.ReactNode;
+}) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div
+          className="absolute left-1/2 cursor-default before:absolute before:inset-[-18px] before:content-['']"
+          style={{
+            top: `${topPercent}%`,
+            transform: "translate(-50%, -50%)",
+            width: size,
+            height: size,
+          }}
+          tabIndex={0}
+          aria-label={label}
+        >
+          <div
+            style={{
+              width: size,
+              height: size,
+              backgroundColor: color,
+              transform: "rotate(45deg)",
+              boxShadow: `0 0 0 1px var(--background), 0 0 3px 0 ${color}`,
+            }}
+          />
+          {showTimestamp && (
+            <span
+              className={cn(
+                "text-muted-foreground pointer-events-none absolute top-1/2 left-full -translate-y-1/2 pl-1.5 text-[9px] leading-none whitespace-nowrap tabular-nums",
+                GeistMono.className
+              )}
+            >
+              {timestamp}
+            </span>
+          )}
+        </div>
+      </TooltipTrigger>
+      <TooltipContent>{tooltipContent ?? timestamp}</TooltipContent>
+    </Tooltip>
+  );
+}
+
+function FightStartTooltip({
+  fightNum,
+  timestamp,
+  totalKills,
+  duration,
+  tUlt,
+}: {
+  fightNum: number;
+  timestamp: string;
+  totalKills: number;
+  duration: number;
+  tUlt: ReturnType<typeof useTranslations>;
+}) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      <span className="text-xs font-medium">
+        {tUlt("tooltipFightStart", { num: fightNum })}
+      </span>
+      <span className="text-xs opacity-80">
+        {tUlt("tooltipTimestamp", { time: timestamp })}
+      </span>
+      <span className="text-xs opacity-80">
+        {tUlt("tooltipDuration", { duration: duration.toFixed(1) })}
+      </span>
+      <span className="text-xs opacity-80">
+        {tUlt("tooltipTotalKills", { count: totalKills })}
+      </span>
+    </div>
+  );
+}
+
+function FightEndTooltip({
+  fightNum,
+  timestamp,
+  duration,
+  winner,
+  tUlt,
+}: {
+  fightNum: number;
+  timestamp: string;
+  duration: number;
+  winner: string;
+  tUlt: ReturnType<typeof useTranslations>;
+}) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      <span className="text-xs font-medium">
+        {tUlt("tooltipFightEnd", { num: fightNum })}
+      </span>
+      <span className="text-xs opacity-80">
+        {tUlt("tooltipTimestamp", { time: timestamp })}
+      </span>
+      <span className="text-xs opacity-80">
+        {tUlt("tooltipDuration", { duration: duration.toFixed(1) })}
+      </span>
+      <span className="text-xs opacity-80">
+        {tUlt("tooltipWinner", { team: winner })}
+      </span>
+    </div>
+  );
+}
+
+function KillTooltip({
+  kill,
+  environmentalString,
+  tUlt,
+  t,
+}: {
+  kill: Kill;
+  environmentalString: string;
+  tUlt: ReturnType<typeof useTranslations>;
+  t: ReturnType<typeof useTranslations>;
+}) {
+  const isSuicide = kill.attacker_name === kill.victim_name;
+  const abilityText = isSuicide
+    ? kill.is_environmental
+      ? environmentalString
+      : kill.event_ability === "0"
+        ? t("abilities.primary-fire")
+        : t(`abilities.${toKebabCase(kill.event_ability)}`)
+    : kill.event_ability === "0"
+      ? t("abilities.primary-fire")
+      : t(`abilities.${toKebabCase(kill.event_ability)}`);
+
+  return (
+    <div className="flex flex-col gap-0.5">
+      <span className="text-xs font-medium">
+        {tUlt("tooltipKill", {
+          attacker: kill.attacker_name,
+          victim: kill.victim_name,
+        })}
+      </span>
+      <span className="text-xs opacity-80">
+        {tUlt("tooltipTimestamp", { time: toTimestamp(kill.match_time) })}
+      </span>
+      <span className="text-xs opacity-80">
+        {tUlt("tooltipMethod", { method: abilityText })}
+      </span>
+      <span className="text-xs opacity-80">
+        {tUlt("tooltipTeam", { team: kill.attacker_team })}
+      </span>
+    </div>
+  );
+}
+
+function UltEventTooltip({
+  event,
+  tUlt,
+}: {
+  event: KillfeedEvent;
+  tUlt: ReturnType<typeof useTranslations>;
+}) {
+  if (event.type === "kill") return null;
+  const span = event.data;
+  const time = getEventTime(event);
+
+  return (
+    <div className="flex flex-col gap-0.5">
+      <span className="text-xs font-medium">
+        {event.type === "ult_start"
+          ? tUlt("tooltipUltActivated", {
+              player: span.playerName,
+              hero: span.playerHero,
+            })
+          : event.type === "ult_end"
+            ? tUlt("tooltipUltEnded", {
+                player: span.playerName,
+                hero: span.playerHero,
+              })
+            : tUlt("tooltipUltInstant", {
+                player: span.playerName,
+                hero: span.playerHero,
+              })}
+      </span>
+      <span className="text-xs opacity-80">
+        {tUlt("tooltipTimestamp", { time: toTimestamp(time) })}
+      </span>
+      <span className="text-xs opacity-80">
+        {tUlt("tooltipTeam", { team: span.playerTeam })}
+      </span>
+      {!span.isInstant && (
+        <span className="text-xs opacity-80">
+          {tUlt("tooltipDuration", { duration: span.duration.toFixed(1) })}
+        </span>
+      )}
+      {span.killsDuringUlt.length > 0 && (
+        <span className="text-xs">
+          {tUlt("ultKills", { count: span.killsDuringUlt.length })}
+        </span>
+      )}
+      {span.diedDuringUlt && (
+        <span className="text-destructive text-xs">
+          {tUlt("tooltipDiedDuringUlt")}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function KillEventRow({
+  kill,
+  topPercent,
+  team1,
+  team1Color,
+  team2Color,
+  environmentalString,
+  activeUlt,
+  t,
+}: {
+  kill: Kill;
+  topPercent: number;
+  team1: string;
+  team2: string;
+  team1Color: string;
+  team2Color: string;
+  environmentalString: string;
+  activeUlt: UltimateSpan | null;
+  t: ReturnType<typeof useTranslations>;
+}) {
+  const ultHighlightColor = activeUlt
+    ? activeUlt.playerTeam === team1
+      ? team1Color
+      : team2Color
+    : undefined;
+
+  const isSuicide = kill.attacker_name === kill.victim_name;
+
+  const abilityText = isSuicide
+    ? kill.is_environmental
+      ? environmentalString
+      : kill.event_ability === "0"
+        ? t("abilities.primary-fire")
+        : t(`abilities.${toKebabCase(kill.event_ability)}`)
+    : kill.event_ability === "0"
+      ? t("abilities.primary-fire")
+      : t(`abilities.${toKebabCase(kill.event_ability)}`);
+
+  return (
+    <div
+      className="absolute flex w-full items-center gap-3 pr-2"
+      style={{
+        top: `${topPercent}%`,
+        transform: "translateY(-50%)",
+        boxShadow: ultHighlightColor
+          ? `inset 2px 0 0 ${ultHighlightColor}`
+          : undefined,
+        paddingLeft: ultHighlightColor ? 6 : 0,
+      }}
+    >
+      <span
+        className={cn(
+          "text-muted-foreground shrink-0 text-xs tabular-nums",
+          GeistMono.className
+        )}
+        style={{ width: "4.5rem" }}
+      >
+        {toTimestamp(kill.match_time)}
+      </span>
+
+      <span className="flex shrink-0 items-center gap-1.5">
+        <Image
+          src={`/heroes/${toHero(kill.attacker_hero)}.png`}
+          alt=""
+          width={256}
+          height={256}
+          className="h-6 w-6 shrink-0 rounded"
+          style={{
+            border:
+              kill.attacker_team === team1
+                ? `2px solid ${team1Color}`
+                : `2px solid ${team2Color}`,
+            opacity: isSuicide ? 0 : 1,
+          }}
+        />
+        <span className={cn("w-24 truncate text-sm", isSuicide && "opacity-0")}>
+          {kill.attacker_name}
+        </span>
+      </span>
+
+      <span className="text-muted-foreground shrink-0 text-xs">&rarr;</span>
+
+      <span className="flex shrink-0 items-center gap-1.5">
+        <Image
+          src={`/heroes/${toHero(kill.victim_hero)}.png`}
+          alt=""
+          width={256}
+          height={256}
+          className="h-6 w-6 shrink-0 rounded"
+          style={{
+            border:
+              kill.victim_team === team1
+                ? `2px solid ${team1Color}`
+                : `2px solid ${team2Color}`,
+            opacity: isSuicide ? 0 : 1,
+          }}
+        />
+        <span className="w-24 truncate text-sm">{kill.victim_name}</span>
+      </span>
+
+      <span className="text-muted-foreground truncate text-xs">
+        {abilityText}
+      </span>
+    </div>
+  );
+}
+
+function UltEventRow({
+  event,
+  topPercent,
+  team1,
+  team1Color,
+  team2Color,
+  tUlt,
+}: {
+  event: KillfeedEvent;
+  topPercent: number;
+  team1: string;
+  team1Color: string;
+  team2Color: string;
+  tUlt: ReturnType<typeof useTranslations>;
+}) {
+  const span = event.data as UltimateSpan;
+  const color = span.playerTeam === team1 ? team1Color : team2Color;
+  const isDeath = span.diedDuringUlt;
+
+  let label: string;
+  if (event.type === "ult_start") {
+    label = tUlt("ultStarted", { player: span.playerName });
+  } else if (event.type === "ult_instant") {
+    label = isDeath
+      ? tUlt("ultEndedDeath", {
+          player: span.playerName,
+          duration: span.duration.toFixed(1),
+        })
+      : tUlt("ultInstant", {
+          player: span.playerName,
+          duration: span.duration.toFixed(1),
+        });
+  } else {
+    label = isDeath
+      ? tUlt("ultEndedDeath", {
+          player: span.playerName,
+          duration: span.duration.toFixed(1),
+        })
+      : tUlt("ultEnded", {
+          player: span.playerName,
+          duration: span.duration.toFixed(1),
+        });
+  }
+
+  return (
+    <div
+      className="absolute flex w-full items-center gap-3 pr-2"
+      style={{
+        top: `${topPercent}%`,
+        transform: "translateY(-50%)",
+      }}
+    >
+      <span
+        className={cn(
+          "text-muted-foreground shrink-0 text-xs tabular-nums",
+          GeistMono.className
+        )}
+        style={{ width: "4.5rem" }}
+      >
+        {toTimestamp(getEventTime(event))}
+      </span>
+
+      <span
+        className={cn(
+          "flex items-center gap-1.5 text-xs",
+          isDeath ? "text-destructive" : "text-muted-foreground"
+        )}
+      >
+        <Image
+          src={`/heroes/${toHero(span.playerHero)}.png`}
+          alt=""
+          width={64}
+          height={64}
+          className="h-5 w-5 shrink-0 rounded"
+          style={{
+            border: `1px solid ${isDeath ? "var(--destructive)" : color}`,
+          }}
+        />
+        <span style={isDeath ? undefined : { color }}>{label}</span>
+      </span>
+    </div>
+  );
+}
+
+export function FightSeparator({
+  gapSeconds,
+  gutterWidth,
+}: {
+  gapSeconds: number;
+  gutterWidth: number;
+}) {
+  const showElapsed = gapSeconds > 10;
+  const height = showElapsed ? 32 : 16;
+
+  const elapsedLabel =
+    gapSeconds >= 60
+      ? `${Math.floor(gapSeconds / 60)}m ${Math.round(gapSeconds % 60)}s`
+      : `${Math.round(gapSeconds)}s`;
+
+  return (
+    <div
+      className="relative"
+      style={{ height }}
+      role="separator"
+      aria-label={`${elapsedLabel} between fights`}
+    >
+      {showElapsed && (
+        <div
+          className="border-muted-foreground/50 absolute inset-y-0 flex items-center justify-center border"
+          style={{
+            left: LEFT_LABEL_WIDTH + gutterWidth + AXIS_WIDTH / 2,
+            right: 0,
+            backgroundImage:
+              "repeating-linear-gradient(135deg, color-mix(in oklch, var(--muted-foreground) 40%, transparent), color-mix(in oklch, var(--muted-foreground) 40%, transparent) 2px, transparent 2px, transparent 5px)",
+          }}
+        >
+          <span
+            className={cn(
+              "bg-background text-muted-foreground z-10 rounded-sm px-2.5 py-1 text-[10px] leading-none whitespace-nowrap",
+              GeistMono.className
+            )}
+          >
+            {elapsedLabel}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
