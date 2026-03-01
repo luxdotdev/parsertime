@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/tooltip";
 import type {
   PlayerScrimPerformance,
+  ScrimFightAnalysis,
   ScrimInsight,
 } from "@/data/scrim-overview-dto";
 import { getScrimOverview } from "@/data/scrim-overview-dto";
@@ -272,6 +273,129 @@ function PlayerRow({ player }: { player: PlayerScrimPerformance }) {
   );
 }
 
+function HighlightedPct({
+  value,
+  favorable,
+}: {
+  value: number;
+  favorable: boolean;
+}) {
+  return (
+    <span
+      className={cn(
+        "font-semibold tabular-nums",
+        favorable
+          ? "text-emerald-600 dark:text-emerald-400"
+          : "text-rose-600 dark:text-rose-400"
+      )}
+    >
+      {Math.round(value)}%
+    </span>
+  );
+}
+
+function FightAnalysisSection({ analysis }: { analysis: ScrimFightAnalysis }) {
+  if (analysis.totalFights === 0) return null;
+
+  const fightsLost = analysis.totalFights - analysis.fightsWon;
+
+  return (
+    <>
+      <Separator />
+      <section aria-label="Fight analysis">
+        <h4 className="text-muted-foreground mb-3 text-xs font-medium tracking-wide uppercase">
+          Fight Analysis
+        </h4>
+        <ul className="text-foreground space-y-2 text-sm leading-relaxed">
+          <li>
+            Overall fight win rate:{" "}
+            <HighlightedPct
+              value={analysis.fightWinrate}
+              favorable={analysis.fightWinrate >= 50}
+            />{" "}
+            <span className="text-muted-foreground">
+              ({analysis.fightsWon}W / {fightsLost}L across{" "}
+              {analysis.totalFights} fights)
+            </span>
+          </li>
+
+          <li>
+            Your team died first in{" "}
+            <HighlightedPct
+              value={analysis.teamFirstDeathRate}
+              favorable={analysis.teamFirstDeathRate < 50}
+            />{" "}
+            of fights.
+            {analysis.teamFirstDeathCount > 0 &&
+              analysis.firstPickCount > 0 && (
+                <>
+                  {" "}
+                  When you died first, you still won{" "}
+                  <HighlightedPct
+                    value={analysis.firstDeathWinrate}
+                    favorable={analysis.firstDeathWinrate >= 50}
+                  />{" "}
+                  of those fights vs{" "}
+                  <HighlightedPct
+                    value={analysis.firstPickWinrate}
+                    favorable={analysis.firstPickWinrate >= 50}
+                  />{" "}
+                  when you got first pick.
+                </>
+              )}
+          </li>
+
+          {analysis.firstPickCount > 0 && (
+            <li>
+              Your team got first pick in{" "}
+              <HighlightedPct
+                value={analysis.firstPickRate}
+                favorable={analysis.firstPickRate >= 50}
+              />{" "}
+              of fights, winning{" "}
+              <HighlightedPct
+                value={analysis.firstPickWinrate}
+                favorable={analysis.firstPickWinrate >= 50}
+              />{" "}
+              of them.
+            </li>
+          )}
+
+          {(analysis.firstUltCount > 0 ||
+            analysis.opponentFirstUltCount > 0) && (
+            <li>
+              {analysis.firstUltCount > 0 ? (
+                <>
+                  When your team used ults first, you won{" "}
+                  <HighlightedPct
+                    value={analysis.firstUltWinrate}
+                    favorable={analysis.firstUltWinrate >= 50}
+                  />{" "}
+                  of those fights.
+                </>
+              ) : null}
+              {analysis.firstUltCount > 0 && analysis.opponentFirstUltCount > 0
+                ? " "
+                : null}
+              {analysis.opponentFirstUltCount > 0 ? (
+                <>
+                  When the opponent used ults first, your win rate
+                  {analysis.firstUltCount > 0 ? " dropped to " : " was "}
+                  <HighlightedPct
+                    value={analysis.opponentFirstUltWinrate}
+                    favorable={analysis.opponentFirstUltWinrate >= 50}
+                  />
+                  .
+                </>
+              ) : null}
+            </li>
+          )}
+        </ul>
+      </section>
+    </>
+  );
+}
+
 export async function ScrimOverviewCard({
   scrimId,
   teamId,
@@ -282,8 +406,16 @@ export async function ScrimOverviewCard({
     return null;
   }
 
-  const { wins, losses, draws, mapCount, teamTotals, teamPlayers, insights } =
-    data;
+  const {
+    wins,
+    losses,
+    draws,
+    mapCount,
+    teamTotals,
+    teamPlayers,
+    insights,
+    fightAnalysis,
+  } = data;
 
   const winRate = mapCount > 0 ? Math.round((wins / mapCount) * 100) : 0;
   const kdDisplay = teamTotals.kdRatio.toFixed(2);
@@ -414,6 +546,8 @@ export async function ScrimOverviewCard({
             </section>
           </>
         )}
+
+        <FightAnalysisSection analysis={fightAnalysis} />
       </CardContent>
       <CardFooter className="border-t">
         <div className="flex items-center gap-1.5">
