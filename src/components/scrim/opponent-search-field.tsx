@@ -31,6 +31,7 @@ export function OpponentSearchField({
 
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const pendingSelectionRef = useRef(false);
   const listboxId = useId();
 
   const fuse = useMemo(
@@ -62,6 +63,7 @@ export function OpponentSearchField({
 
   const selectOption = useCallback(
     (option: OpponentOption) => {
+      pendingSelectionRef.current = true;
       onChange(option.abbreviation);
       setQuery(option.fullName);
       setIsFocused(false);
@@ -135,6 +137,10 @@ export function OpponentSearchField({
   function handleBlur(e: React.FocusEvent) {
     if (listRef.current?.contains(e.relatedTarget)) return;
     setIsFocused(false);
+    if (pendingSelectionRef.current) {
+      pendingSelectionRef.current = false;
+      return;
+    }
     if (!value) {
       setQuery("");
     } else {
