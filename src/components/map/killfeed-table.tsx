@@ -63,15 +63,16 @@ export function KillfeedTable({
 
   const anyUltFeature = options ? hasAnyUltFeature(options) : false;
 
-  const maxGutterWidth = fightUltSpans
-    ? Math.max(0, ...fightUltSpans.map((spans) => getGutterWidth(spans)))
-    : 0;
+  const maxGutterWidth =
+    fightUltSpans && options?.showUltBrackets
+      ? Math.max(0, ...fightUltSpans.map((spans) => getGutterWidth(spans)))
+      : 0;
 
   return (
     <>
       {fights.map((fight, i) => {
         const spans = fightUltSpans?.[i] ?? [];
-        const showTimeline = !!options?.showUltBrackets;
+        const showTimeline = !!options?.showTimeline;
 
         const events: KillfeedEvent[] =
           anyUltFeature && options
@@ -81,11 +82,17 @@ export function KillfeedTable({
         if (fight.kills.length === 0) return null;
 
         if (showTimeline) {
-          const timelineEvents = mergeKillfeedEvents(fight.kills, spans, {
-            ...options,
-            showUltStartEvents: true,
-            showUltEndEvents: true,
-          });
+          const timelineSpans = options.showUltBrackets ? spans : [];
+          const timelineEvents = options.showUltBrackets
+            ? mergeKillfeedEvents(fight.kills, spans, {
+                ...options,
+                showUltStartEvents: true,
+                showUltEndEvents: true,
+              })
+            : fight.kills.map((k) => ({
+                type: "kill" as const,
+                data: k,
+              }));
 
           const prevFight = i > 0 ? fights[i - 1] : null;
           const gapSeconds = prevFight ? fight.start - prevFight.end : 0;
@@ -101,7 +108,7 @@ export function KillfeedTable({
               <FightTimeline
                 fight={fight}
                 fightIndex={i}
-                spans={spans}
+                spans={timelineSpans}
                 events={timelineEvents}
                 team1={team1}
                 team2={team2}
