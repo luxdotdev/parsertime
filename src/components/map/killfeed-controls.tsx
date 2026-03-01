@@ -48,13 +48,16 @@ export function KillfeedControls({
         </PopoverHeader>
         <div className="flex flex-col gap-3">
           <fieldset>
-            <legend className="text-muted-foreground mb-2 text-[11px] font-medium uppercase tracking-wide">
+            <legend className="text-muted-foreground mb-2 text-[11px] font-medium tracking-wide uppercase">
               {t("viewMode")}
             </legend>
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex flex-col">
-                  <Label htmlFor="timeline-view" className="text-xs font-normal">
+                  <Label
+                    htmlFor="timeline-view"
+                    className="text-xs font-normal"
+                  >
                     {t("timelineView")}
                   </Label>
                   <span className="text-muted-foreground text-[10px] leading-tight">
@@ -73,7 +76,7 @@ export function KillfeedControls({
           <Separator />
 
           <fieldset disabled={ultOptionsDisabled} className="group">
-            <legend className="text-muted-foreground mb-2 text-[11px] font-medium uppercase tracking-wide group-disabled:opacity-50">
+            <legend className="text-muted-foreground mb-2 text-[11px] font-medium tracking-wide uppercase group-disabled:opacity-50">
               {t("ultSection")}
             </legend>
             <div className="flex flex-col gap-2 group-disabled:opacity-50">
@@ -99,7 +102,10 @@ export function KillfeedControls({
                 />
               </div>
               <div className="flex items-center justify-between gap-2">
-                <Label htmlFor="ult-start-events" className="text-xs font-normal">
+                <Label
+                  htmlFor="ult-start-events"
+                  className="text-xs font-normal"
+                >
                   {t("ultStartEvents")}
                 </Label>
                 <Switch
@@ -119,7 +125,10 @@ export function KillfeedControls({
                 />
               </div>
               <div className="flex items-center justify-between gap-2">
-                <Label htmlFor="ult-kill-highlights" className="text-xs font-normal">
+                <Label
+                  htmlFor="ult-kill-highlights"
+                  className="text-xs font-normal"
+                >
                   {t("ultKillHighlights")}
                 </Label>
                 <Switch
