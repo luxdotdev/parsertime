@@ -1258,10 +1258,24 @@
         "playerDeathDescription": "The player with the most first deaths was <span>{playerWithMostFirstDeaths}</span>, with <span>{firstDeaths}</span> first deaths out of {fights} fights.",
         "ajax": "<span>{player}</span> played Lúcio this map and Ajaxed <span>{ajaxes}</span> {ajaxes, plural, one {time} other {times}}.",
         "ultUsageComparison": "<span1>{team1Name}</span1> used <span1>{team1Count}</span1> ultimates vs <span2>{team2Name}</span2>'s <span2>{team2Count}</span2> ultimates.",
-        "ultRoleFirst": "<span>{teamName}</span> used {role} ults first in <pct>{percentage}</pct>% of fights.",
+        "ultRoleFirst": "<span>{teamName}</span> used {role} ultimates first in <pct>{percentage}</pct>% of fights.",
         "ultTopUser": "<span>{playerName}</span> ({hero}) used the most ultimates ({count}) on <span>{teamName}</span>.",
-        "ultAvgChargeTime": "<span1>{team1Name}</span1> charged ults in an average of <span1>{team1Time}</span1>s vs <span2>{team2Name}</span2>'s <span2>{team2Time}</span2>s.",
-        "ultAvgHoldTime": "<span1>{team1Name}</span1> held ults for an average of <span1>{team1Time}</span1>s vs <span2>{team2Name}</span2>'s <span2>{team2Time}</span2>s."
+        "ultAvgChargeTime": "<span1>{team1Name}</span1> charged ultimates in an average of <span1>{team1Time}</span1>s vs <span2>{team2Name}</span2>'s <span2>{team2Time}</span2>s.",
+        "ultAvgHoldTime": "<span1>{team1Name}</span1> held ultimates for an average of <span1>{team1Time}</span1>s vs <span2>{team2Name}</span2>'s <span2>{team2Time}</span2>s.",
+        "ultFightInitiator": "<span>{teamName}</span> initiated fights with ultimates in <pct>{percentage}</pct>% of ult-involved fights ({count} of {total}).",
+        "ultTopFightOpener": "The most common fight-opening ultimate was <span>{hero}</span>, used to start <b>{count}</b> {count, plural, one {fight} other {fights}}.",
+        "ultTopFightOpenerTeam": "<span>{teamName}</span>'s most common fight-opening ultimate: <span>{hero}</span> (<b>{count}</b> {count, plural, one {fight} other {fights}}).",
+        "ultSubroleTiming": "{subrole}: <b>{count}</b> {count, plural, one {ultimate} other {ultimates}} ({percentage}%) — {initiation} initiation, {midfight} midfight, {late} late",
+        "ultEfficiency": "Ultimate Efficiency: <b>{value}</b> fights won per ultimate used ({rating}).",
+        "ultEfficiencyExcellent": "Excellent",
+        "ultEfficiencyGood": "Good",
+        "ultEfficiencyAverage": "Average",
+        "ultEfficiencyPoor": "Poor",
+        "ultWonVsLost": "Used an average of <won>{wonAvg}</won> ultimates per won fight vs <lost>{lostAvg}</lost> per lost fight.",
+        "ultGoodDiscipline": "Good ultimate discipline — more ultimates used in wins than losses.",
+        "ultNeedsDiscipline": "Room for improvement — more ultimates used in losses than wins.",
+        "ultWasted": "<b>{count}</b> wasted {count, plural, one {ultimate} other {ultimates}} (<b>{percentage}</b>% of total) used in lost situations (3+ player disadvantage).",
+        "ultDryFights": "<b>{dryCount}</b> dry {dryCount, plural, one {fight} other {fights}} (no ultimates used) with a <b>{winrate}</b>% win rate, plus <b>{nonDryCount}</b> {nonDryCount, plural, one {fight} other {fights}} where ultimates were used (<b>{nonDryWinrate}</b>% WR)."
       }
     },
     "overviewTable": {

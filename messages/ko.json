@@ -789,7 +789,21 @@
         "ultRoleFirst": "<span>{teamName}</span>이(가) {role} 궁극기를 <pct>{percentage}</pct>%의 전투에서 먼저 사용했습니다.",
         "ultTopUser": "<span>{playerName}</span> ({hero})이(가) <span>{teamName}</span>에서 가장 많은 궁극기({count}회)를 사용했습니다.",
         "ultAvgChargeTime": "<span1>{team1Name}</span1>은(는) 평균 <span1>{team1Time}</span1>초에 궁극기를 충전했으며, <span2>{team2Name}</span2>은(는) <span2>{team2Time}</span2>초였습니다.",
-        "ultAvgHoldTime": "<span1>{team1Name}</span1>은(는) 평균 <span1>{team1Time}</span1>초 동안 궁극기를 보유했으며, <span2>{team2Name}</span2>은(는) <span2>{team2Time}</span2>초였습니다."
+        "ultAvgHoldTime": "<span1>{team1Name}</span1>은(는) 평균 <span1>{team1Time}</span1>초 동안 궁극기를 보유했으며, <span2>{team2Name}</span2>은(는) <span2>{team2Time}</span2>초였습니다.",
+        "ultFightInitiator": "<span>{teamName}</span>이(가) 궁극기가 사용된 전투 중 <pct>{percentage}</pct>%에서 궁극기로 전투를 개시했습니다 ({total}회 중 {count}회).",
+        "ultTopFightOpener": "가장 많이 전투를 개시한 궁극기는 <span>{hero}</span>이며, <b>{count}</b>회 전투를 시작했습니다.",
+        "ultTopFightOpenerTeam": "<span>{teamName}</span>의 가장 많은 전투 개시 궁극기: <span>{hero}</span> (<b>{count}</b>회 전투).",
+        "ultSubroleTiming": "{subrole}: <b>{count}</b>회 궁극기 ({percentage}%) — 개시 {initiation}, 중반 {midfight}, 후반 {late}",
+        "ultEfficiency": "궁극기 효율: 궁극기당 <b>{value}</b>회 승리 ({rating}).",
+        "ultEfficiencyExcellent": "우수",
+        "ultEfficiencyGood": "양호",
+        "ultEfficiencyAverage": "보통",
+        "ultEfficiencyPoor": "미흡",
+        "ultWonVsLost": "승리 전투당 평균 <won>{wonAvg}</won>회 vs 패배 전투당 평균 <lost>{lostAvg}</lost>회 궁극기 사용.",
+        "ultGoodDiscipline": "좋은 궁극기 운용 — 패배보다 승리 시 더 많은 궁극기 사용.",
+        "ultNeedsDiscipline": "개선 필요 — 승리보다 패배 시 더 많은 궁극기 사용.",
+        "ultWasted": "<b>{count}</b>회 낭비된 궁극기 (전체의 <b>{percentage}</b>%) — 불리한 상황(3명 이상 열세)에서 사용.",
+        "ultDryFights": "<b>{dryCount}</b>회 드라이 전투 (궁극기 미사용), 승률 <b>{winrate}</b>%. <b>{nonDryCount}</b>회 전투에서 궁극기 사용 (승률 <b>{nonDryWinrate}</b>%)."
       }
     },
     "overviewTable": {

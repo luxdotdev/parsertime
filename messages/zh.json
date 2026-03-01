@@ -789,7 +789,21 @@
         "ultRoleFirst": "<span>{teamName}</span> 在 <pct>{percentage}</pct>% 的战斗中率先使用了{role}终极技能。",
         "ultTopUser": "<span>{playerName}</span>（{hero}）在 <span>{teamName}</span> 中使用了最多的终极技能（{count}次）。",
         "ultAvgChargeTime": "<span1>{team1Name}</span1> 平均 <span1>{team1Time}</span1> 秒充满终极技能，而 <span2>{team2Name}</span2> 为 <span2>{team2Time}</span2> 秒。",
-        "ultAvgHoldTime": "<span1>{team1Name}</span1> 平均持有终极技能 <span1>{team1Time}</span1> 秒，而 <span2>{team2Name}</span2> 为 <span2>{team2Time}</span2> 秒。"
+        "ultAvgHoldTime": "<span1>{team1Name}</span1> 平均持有终极技能 <span1>{team1Time}</span1> 秒，而 <span2>{team2Name}</span2> 为 <span2>{team2Time}</span2> 秒。",
+        "ultFightInitiator": "<span>{teamName}</span> 在 <pct>{percentage}</pct>% 的涉及终极技能的战斗中率先使用终极技能发起战斗（{total}次中的{count}次）。",
+        "ultTopFightOpener": "最常用于发起战斗的终极技能是 <span>{hero}</span>，共发起了 <b>{count}</b> 场战斗。",
+        "ultTopFightOpenerTeam": "<span>{teamName}</span> 最常用于发起战斗的终极技能：<span>{hero}</span>（<b>{count}</b> 场战斗）。",
+        "ultSubroleTiming": "{subrole}：<b>{count}</b> 个终极技能（{percentage}%）— 发起 {initiation}，中期 {midfight}，后期 {late}",
+        "ultEfficiency": "终极技能效率：每个终极技能赢得 <b>{value}</b> 场战斗（{rating}）。",
+        "ultEfficiencyExcellent": "优秀",
+        "ultEfficiencyGood": "良好",
+        "ultEfficiencyAverage": "一般",
+        "ultEfficiencyPoor": "较差",
+        "ultWonVsLost": "每场胜利平均使用 <won>{wonAvg}</won> 个终极技能 vs 每场失败平均使用 <lost>{lostAvg}</lost> 个。",
+        "ultGoodDiscipline": "良好的终极技能运用——胜利时使用更多终极技能。",
+        "ultNeedsDiscipline": "有待改进——失败时使用更多终极技能。",
+        "ultWasted": "<b>{count}</b> 个浪费的终极技能（占总数 <b>{percentage}</b>%）——在劣势情况下（3名以上劣势）使用。",
+        "ultDryFights": "<b>{dryCount}</b> 场无终极技能战斗，胜率 <b>{winrate}</b>%。另有 <b>{nonDryCount}</b> 场战斗使用了终极技能（胜率 <b>{nonDryWinrate}</b>%）。"
       }
     },
     "overviewTable": {
