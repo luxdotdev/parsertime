@@ -96,6 +96,26 @@ export type ScrimTeamTotals = {
   kdRatio: number;
 };
 
+export type ScrimFightAnalysis = {
+  totalFights: number;
+  fightsWon: number;
+  fightWinrate: number;
+
+  teamFirstDeathCount: number;
+  teamFirstDeathRate: number;
+  firstDeathWinrate: number;
+
+  firstPickCount: number;
+  firstPickRate: number;
+  firstPickWinrate: number;
+
+  firstUltCount: number;
+  firstUltRate: number;
+  firstUltWinrate: number;
+  opponentFirstUltCount: number;
+  opponentFirstUltWinrate: number;
+};
+
 export type ScrimOverviewData = {
   mapCount: number;
   wins: number;
@@ -105,6 +125,7 @@ export type ScrimOverviewData = {
   teamPlayers: PlayerScrimPerformance[];
   insights: ScrimInsight[];
   teamTotals: ScrimTeamTotals;
+  fightAnalysis: ScrimFightAnalysis;
 };
 
 const STAT_LABELS: Record<ValidStatColumn, string> = {
@@ -259,6 +280,25 @@ function generateInsights(players: PlayerScrimPerformance[]): ScrimInsight[] {
   return insights.slice(0, 4);
 }
 
+function emptyFightAnalysis(): ScrimFightAnalysis {
+  return {
+    totalFights: 0,
+    fightsWon: 0,
+    fightWinrate: 0,
+    teamFirstDeathCount: 0,
+    teamFirstDeathRate: 0,
+    firstDeathWinrate: 0,
+    firstPickCount: 0,
+    firstPickRate: 0,
+    firstPickWinrate: 0,
+    firstUltCount: 0,
+    firstUltRate: 0,
+    firstUltWinrate: 0,
+    opponentFirstUltCount: 0,
+    opponentFirstUltWinrate: 0,
+  };
+}
+
 function emptyOverviewData(): ScrimOverviewData {
   return {
     mapCount: 0,
@@ -275,6 +315,7 @@ function emptyOverviewData(): ScrimOverviewData {
       healing: 0,
       kdRatio: 0,
     },
+    fightAnalysis: emptyFightAnalysis(),
   };
 }
 
@@ -576,6 +617,192 @@ function calculateZScoreFromBaseline({
   return zScore;
 }
 
+type ExtendedFightEvent = Kill & {
+  ultimate_id?: number;
+};
+
+type ExtendedFight = {
+  events: ExtendedFightEvent[];
+  start: number;
+  end: number;
+};
+
+const FIGHT_GAP_SECONDS = 15;
+
+function computeScrimFightAnalysis(
+  mapIds: number[],
+  killsByMap: Map<number, Kill[]>,
+  allUltimates: {
+    id: number;
+    scrimId: number;
+    match_time: number;
+    player_team: string;
+    player_name: string;
+    player_hero: string;
+    ultimate_id: number;
+    MapDataId: number | null;
+  }[],
+  ourTeamNameByMap: Map<number, string>
+): ScrimFightAnalysis {
+  const ultsByMap = new Map<number, typeof allUltimates>();
+  for (const ult of allUltimates) {
+    if (!ult.MapDataId) continue;
+    if (!ultsByMap.has(ult.MapDataId)) {
+      ultsByMap.set(ult.MapDataId, []);
+    }
+    ultsByMap.get(ult.MapDataId)!.push(ult);
+  }
+
+  let totalFights = 0;
+  let fightsWon = 0;
+  let teamFirstDeathCount = 0;
+  let firstDeathWins = 0;
+  let firstPickCount = 0;
+  let firstPickWins = 0;
+  let firstUltCount = 0;
+  let firstUltWins = 0;
+  let opponentFirstUltCount = 0;
+  let opponentFirstUltWins = 0;
+
+  for (const mapId of mapIds) {
+    const ourTeamName = ourTeamNameByMap.get(mapId);
+    if (!ourTeamName) continue;
+
+    const kills = killsByMap.get(mapId) ?? [];
+    const ults = ultsByMap.get(mapId) ?? [];
+
+    if (kills.length === 0 && ults.length === 0) continue;
+
+    const events: ExtendedFightEvent[] = [
+      ...kills,
+      ...ults.map((ult) => ({
+        id: ult.id,
+        scrimId: ult.scrimId,
+        event_type: "ultimate_start" as Kill["event_type"],
+        match_time: ult.match_time,
+        attacker_team: ult.player_team,
+        attacker_name: ult.player_name,
+        attacker_hero: ult.player_hero,
+        victim_team: "",
+        victim_name: "",
+        victim_hero: "",
+        event_ability: "Ultimate",
+        event_damage: 0,
+        is_critical_hit: "0",
+        is_environmental: "0",
+        MapDataId: ult.MapDataId,
+        ultimate_id: ult.ultimate_id,
+      })),
+    ];
+
+    events.sort((a, b) => a.match_time - b.match_time);
+
+    const fights: ExtendedFight[] = [];
+    let currentFight: ExtendedFight | null = null;
+
+    for (const event of events) {
+      if (
+        !currentFight ||
+        event.match_time - currentFight.end > FIGHT_GAP_SECONDS
+      ) {
+        currentFight = {
+          events: [event],
+          start: event.match_time,
+          end: event.match_time,
+        };
+        fights.push(currentFight);
+      } else {
+        currentFight.events.push(event);
+        currentFight.end = event.match_time;
+      }
+    }
+
+    for (const fight of fights) {
+      const sorted = [...fight.events].sort(
+        (a, b) => a.match_time - b.match_time
+      );
+
+      const killEvents = sorted.filter(
+        (e) => e.event_type === "kill" || e.event_type === "mercy_rez"
+      );
+      const ultEvents = sorted.filter((e) => e.event_type === "ultimate_start");
+
+      let ourKills = 0;
+      let enemyKills = 0;
+
+      for (const event of sorted) {
+        if (event.event_type === "mercy_rez") {
+          if (event.victim_team === ourTeamName) {
+            enemyKills = Math.max(0, enemyKills - 1);
+          } else {
+            ourKills = Math.max(0, ourKills - 1);
+          }
+        } else if (event.event_type === "kill") {
+          if (event.attacker_team === ourTeamName) {
+            ourKills++;
+          } else {
+            enemyKills++;
+          }
+        }
+      }
+
+      const won = ourKills > enemyKills;
+
+      totalFights++;
+      if (won) fightsWon++;
+
+      const firstKill = killEvents.find((k) => k.event_type === "kill");
+      if (firstKill) {
+        if (firstKill.attacker_team === ourTeamName) {
+          firstPickCount++;
+          if (won) firstPickWins++;
+        }
+        if (firstKill.victim_team === ourTeamName) {
+          teamFirstDeathCount++;
+          if (won) firstDeathWins++;
+        }
+      }
+
+      const firstUlt = ultEvents[0];
+      if (firstUlt) {
+        if (firstUlt.attacker_team === ourTeamName) {
+          firstUltCount++;
+          if (won) firstUltWins++;
+        } else {
+          opponentFirstUltCount++;
+          if (won) opponentFirstUltWins++;
+        }
+      }
+    }
+  }
+
+  return {
+    totalFights,
+    fightsWon,
+    fightWinrate: totalFights > 0 ? (fightsWon / totalFights) * 100 : 0,
+    teamFirstDeathCount,
+    teamFirstDeathRate:
+      totalFights > 0 ? (teamFirstDeathCount / totalFights) * 100 : 0,
+    firstDeathWinrate:
+      teamFirstDeathCount > 0
+        ? (firstDeathWins / teamFirstDeathCount) * 100
+        : 0,
+    firstPickCount,
+    firstPickRate: totalFights > 0 ? (firstPickCount / totalFights) * 100 : 0,
+    firstPickWinrate:
+      firstPickCount > 0 ? (firstPickWins / firstPickCount) * 100 : 0,
+    firstUltCount,
+    firstUltRate: totalFights > 0 ? (firstUltCount / totalFights) * 100 : 0,
+    firstUltWinrate:
+      firstUltCount > 0 ? (firstUltWins / firstUltCount) * 100 : 0,
+    opponentFirstUltCount,
+    opponentFirstUltWinrate:
+      opponentFirstUltCount > 0
+        ? (opponentFirstUltWins / opponentFirstUltCount) * 100
+        : 0,
+  };
+}
+
 async function getScrimOverviewFn(
   scrimId: number,
   teamId: number
@@ -615,6 +842,7 @@ async function getScrimOverviewFn(
     captures,
     allKills,
     allRezzes,
+    allUltimates,
   ] = await Promise.all([
     prisma.$queryRaw<PlayerStat[]>`
         WITH maxTime AS (
@@ -657,6 +885,10 @@ async function getScrimOverviewFn(
     }),
     prisma.mercyRez.findMany({
       where: { MapDataId: { in: mapIds } },
+    }),
+    prisma.ultimateStart.findMany({
+      where: { MapDataId: { in: mapIds } },
+      orderBy: { match_time: "asc" },
     }),
   ]);
 
@@ -759,6 +991,13 @@ async function getScrimOverviewFn(
   }
 
   const ourTeamNameByMap = getMapTeamNames(finalRoundStats);
+
+  const fightAnalysis = computeScrimFightAnalysis(
+    mapIds,
+    killsByMap,
+    allUltimates,
+    ourTeamNameByMap
+  );
 
   // Determine W/L/D for each map
   const mapResults: MapResult[] = [];
@@ -1053,6 +1292,7 @@ async function getScrimOverviewFn(
     teamPlayers,
     insights,
     teamTotals,
+    fightAnalysis,
   };
 }
 
