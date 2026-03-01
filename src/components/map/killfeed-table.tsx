@@ -1,6 +1,7 @@
 "use client";
 
-import { UltBracketGutter } from "@/components/map/ult-gutter";
+import { FightSeparator, FightTimeline } from "@/components/map/fight-timeline";
+import { getGutterWidth } from "@/components/map/ult-gutter";
 import {
   Table,
   TableBody,
@@ -62,11 +63,15 @@ export function KillfeedTable({
 
   const anyUltFeature = options ? hasAnyUltFeature(options) : false;
 
+  const maxGutterWidth = fightUltSpans
+    ? Math.max(0, ...fightUltSpans.map((spans) => getGutterWidth(spans)))
+    : 0;
+
   return (
     <>
       {fights.map((fight, i) => {
         const spans = fightUltSpans?.[i] ?? [];
-        const showBrackets = options?.showUltBrackets && spans.length > 0;
+        const showTimeline = !!options?.showUltBrackets;
 
         const events: KillfeedEvent[] =
           anyUltFeature && options
@@ -75,105 +80,179 @@ export function KillfeedTable({
 
         if (fight.kills.length === 0) return null;
 
-        return (
-          <div key={fight.start} className="flex items-stretch">
-            {showBrackets && (
-              <UltBracketGutter
+        if (showTimeline) {
+          const timelineEvents = mergeKillfeedEvents(fight.kills, spans, {
+            ...options,
+            showUltStartEvents: true,
+            showUltEndEvents: true,
+          });
+
+          const prevFight = i > 0 ? fights[i - 1] : null;
+          const gapSeconds = prevFight ? fight.start - prevFight.end : 0;
+
+          return (
+            <div key={fight.start}>
+              {i > 0 && (
+                <FightSeparator
+                  gapSeconds={gapSeconds}
+                  gutterWidth={maxGutterWidth}
+                />
+              )}
+              <FightTimeline
+                fight={fight}
+                fightIndex={i}
                 spans={spans}
-                fightStart={fight.start}
-                fightEnd={fight.end}
+                events={timelineEvents}
                 team1={team1}
+                team2={team2}
                 team1Color={team1Color}
                 team2Color={team2Color}
-                showLabels={options?.showUltLabels ?? false}
+                environmentalString={environmentalString}
+                options={options}
+                gutterWidth={maxGutterWidth}
+                t={t}
+                tUlt={tUlt}
               />
-            )}
-            <div className="min-w-0 flex-1 pl-4">
-              <Table>
-                <TableCaption>{t("fight", { num: i + 1 })}</TableCaption>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-20">{t("time")}</TableHead>
-                    <TableHead className="w-80">{t("kill")}</TableHead>
-                    <TableHead className="w-20">{t("method")}</TableHead>
-                    <TableHead className="w-20">{t("start")}</TableHead>
-                    <TableHead className="w-20">{t("end")}</TableHead>
-                    <TableHead className="w-20">{t("fightWinner")}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {events.map((event) => {
-                    if (event.type === "ult_start") {
-                      return (
-                        <UltStartRow
-                          key={`ult-start-${event.data.id}`}
-                          span={event.data}
-                          team1={team1}
-                          team1Color={team1Color}
-                          team2Color={team2Color}
-                          t={tUlt}
-                        />
-                      );
-                    }
-
-                    if (event.type === "ult_end") {
-                      return (
-                        <UltEndRow
-                          key={`ult-end-${event.data.id}`}
-                          span={event.data}
-                          team1={team1}
-                          team1Color={team1Color}
-                          team2Color={team2Color}
-                          t={tUlt}
-                        />
-                      );
-                    }
-
-                    if (event.type === "ult_instant") {
-                      return (
-                        <UltInstantRow
-                          key={`ult-instant-${event.data.id}`}
-                          span={event.data}
-                          team1={team1}
-                          team1Color={team1Color}
-                          team2Color={team2Color}
-                          t={tUlt}
-                        />
-                      );
-                    }
-
-                    const kill = event.data;
-                    const killIndex = fight.kills.indexOf(kill);
-                    const isFirstKill = killIndex === 0;
-                    const activeUlt = options?.showUltKillHighlights
-                      ? isKillDuringUlt(kill, spans)
-                      : null;
-
-                    return (
-                      <KillRow
-                        key={kill.id}
-                        kill={kill}
-                        fight={fight}
-                        isFirstKill={isFirstKill}
-                        team1={team1}
-                        team2={team2}
-                        team1Color={team1Color}
-                        team2Color={team2Color}
-                        environmentalString={environmentalString}
-                        activeUlt={activeUlt}
-                        t={t}
-                      />
-                    );
-                  })}
-                </TableBody>
-              </Table>
             </div>
-          </div>
+          );
+        }
+
+        return (
+          <StandardFight
+            key={fight.start}
+            fight={fight}
+            fightIndex={i}
+            events={events}
+            spans={spans}
+            team1={team1}
+            team2={team2}
+            team1Color={team1Color}
+            team2Color={team2Color}
+            environmentalString={environmentalString}
+            options={options}
+            t={t}
+            tUlt={tUlt}
+          />
         );
       })}
     </>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Standard table mode (brackets off) — unchanged from original
+// ---------------------------------------------------------------------------
+
+function StandardFight({
+  fight,
+  fightIndex,
+  events,
+  spans,
+  team1,
+  team2,
+  team1Color,
+  team2Color,
+  environmentalString,
+  options,
+  t,
+  tUlt,
+}: {
+  fight: Fight;
+  fightIndex: number;
+  events: KillfeedEvent[];
+  spans: UltimateSpan[];
+  team1: string;
+  team2: string;
+  team1Color: string;
+  team2Color: string;
+  environmentalString: string;
+  options?: KillfeedDisplayOptions;
+  t: ReturnType<typeof useTranslations>;
+  tUlt: ReturnType<typeof useTranslations>;
+}) {
+  return (
+    <Table>
+      <TableCaption>{t("fight", { num: fightIndex + 1 })}</TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-20">{t("time")}</TableHead>
+          <TableHead className="w-80">{t("kill")}</TableHead>
+          <TableHead className="w-20">{t("method")}</TableHead>
+          <TableHead className="w-20">{t("start")}</TableHead>
+          <TableHead className="w-20">{t("end")}</TableHead>
+          <TableHead className="w-20">{t("fightWinner")}</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {events.map((event) => {
+          if (event.type === "ult_start") {
+            return (
+              <UltStartRow
+                key={`ult-start-${event.data.id}`}
+                span={event.data}
+                team1={team1}
+                team1Color={team1Color}
+                team2Color={team2Color}
+                t={tUlt}
+              />
+            );
+          }
+          if (event.type === "ult_end") {
+            return (
+              <UltEndRow
+                key={`ult-end-${event.data.id}`}
+                span={event.data}
+                team1={team1}
+                team1Color={team1Color}
+                team2Color={team2Color}
+                t={tUlt}
+              />
+            );
+          }
+          if (event.type === "ult_instant") {
+            return (
+              <UltInstantRow
+                key={`ult-instant-${event.data.id}`}
+                span={event.data}
+                team1={team1}
+                team1Color={team1Color}
+                team2Color={team2Color}
+                t={tUlt}
+              />
+            );
+          }
+
+          const kill = event.data;
+          const killIndex = fight.kills.indexOf(kill);
+          const isFirstKill = killIndex === 0;
+          const activeUlt = options?.showUltKillHighlights
+            ? isKillDuringUlt(kill, spans)
+            : null;
+
+          return (
+            <KillRow
+              key={kill.id}
+              kill={kill}
+              fight={fight}
+              isFirstKill={isFirstKill}
+              team1={team1}
+              team2={team2}
+              team1Color={team1Color}
+              team2Color={team2Color}
+              environmentalString={environmentalString}
+              activeUlt={activeUlt}
+              t={t}
+            />
+          );
+        })}
+      </TableBody>
+    </Table>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Standard table row components
+// ---------------------------------------------------------------------------
 
 function KillRow({
   kill,
@@ -381,7 +460,7 @@ function UltEndRow({
             height={64}
             className="h-5 w-5 rounded"
             style={{
-              border: `1px solid ${isDeath ? "hsl(var(--destructive))" : color}`,
+              border: `1px solid ${isDeath ? "var(--destructive)" : color}`,
             }}
           />
           <span style={isDeath ? undefined : { color }}>
@@ -441,7 +520,7 @@ function UltInstantRow({
             height={64}
             className="h-5 w-5 rounded"
             style={{
-              border: `1px solid ${isDeath ? "hsl(var(--destructive))" : color}`,
+              border: `1px solid ${isDeath ? "var(--destructive)" : color}`,
             }}
           />
           <span style={isDeath ? undefined : { color }}>
