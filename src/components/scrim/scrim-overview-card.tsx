@@ -1,5 +1,7 @@
+import { UltTimingChart } from "@/components/charts/ult-timing-chart";
 import { CollapsibleCard } from "@/components/scrim/collapsible-card-wrapper";
 import { PlayerPerformanceHoverChart } from "@/components/scrim/player-performance-hover-chart";
+import { UltComparisonChart } from "@/components/scrim/ult-comparison-chart";
 import { Badge } from "@/components/ui/badge";
 import { CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -12,6 +14,7 @@ import type {
   PlayerScrimPerformance,
   ScrimFightAnalysis,
   ScrimInsight,
+  ScrimUltAnalysis,
 } from "@/data/scrim-overview-dto";
 import { getScrimOverview } from "@/data/scrim-overview-dto";
 import { cn, format, toHero } from "@/lib/utils";
@@ -361,7 +364,7 @@ function FightAnalysisSection({ analysis }: { analysis: ScrimFightAnalysis }) {
             <li>
               {analysis.firstUltCount > 0 ? (
                 <>
-                  When your team used ults first, you won{" "}
+                  When your team used ultimates first, you won{" "}
                   <HighlightedPct
                     value={analysis.firstUltWinrate}
                     favorable={analysis.firstUltWinrate >= 50}
@@ -374,7 +377,7 @@ function FightAnalysisSection({ analysis }: { analysis: ScrimFightAnalysis }) {
                 : null}
               {analysis.opponentFirstUltCount > 0 ? (
                 <>
-                  When the opponent used ults first, your win rate
+                  When the opponent used ultimates first, your win rate
                   {analysis.firstUltCount > 0 ? " dropped to " : " was "}
                   <HighlightedPct
                     value={analysis.opponentFirstUltWinrate}
@@ -386,6 +389,331 @@ function FightAnalysisSection({ analysis }: { analysis: ScrimFightAnalysis }) {
             </li>
           )}
         </ul>
+      </section>
+    </>
+  );
+}
+
+function UltAnalysisSection({
+  analysis,
+  teamNames,
+}: {
+  analysis: ScrimUltAnalysis;
+  teamNames: readonly [string, string];
+}) {
+  if (analysis.ourUltsUsed === 0 && analysis.opponentUltsUsed === 0) {
+    return null;
+  }
+
+  const hasComparisons = analysis.playerComparisons.length > 0;
+
+  const allOurTimings = analysis.ultsByRole.flatMap((r) => r.ourSubroleTimings);
+  const allOpponentTimings = analysis.ultsByRole.flatMap(
+    (r) => r.opponentSubroleTimings
+  );
+  const hasTimingData =
+    allOurTimings.length > 0 || allOpponentTimings.length > 0;
+  const hasCharts = hasComparisons || hasTimingData;
+
+  return (
+    <>
+      <Separator />
+      <section aria-label="Ultimate analysis">
+        <h4 className="text-muted-foreground mb-3 text-xs font-medium tracking-wide uppercase">
+          Ultimate Analysis
+        </h4>
+        <div
+          className={cn(
+            "gap-6",
+            hasCharts ? "grid grid-cols-1 lg:grid-cols-2" : ""
+          )}
+        >
+          <ul className="text-foreground space-y-2 text-sm leading-relaxed">
+            <li>
+              Your team used{" "}
+              <span className="font-semibold tabular-nums">
+                {analysis.ourUltsUsed}
+              </span>{" "}
+              ultimates vs opponent&apos;s{" "}
+              <span className="font-semibold tabular-nums">
+                {analysis.opponentUltsUsed}
+              </span>
+              .
+            </li>
+
+            {analysis.ultsByRole
+              .filter((r) => r.ourCount > 0 || r.opponentCount > 0)
+              .map((r) => {
+                const totalSubroleUlts = r.ourSubroleTimings.reduce(
+                  (sum, s) => sum + s.count,
+                  0
+                );
+                return (
+                  <li key={r.role}>
+                    {r.role} ultimates: your team used{" "}
+                    <span className="font-semibold tabular-nums">
+                      {r.ourCount}
+                    </span>{" "}
+                    vs opponent&apos;s{" "}
+                    <span className="font-semibold tabular-nums">
+                      {r.opponentCount}
+                    </span>
+                    .
+                    {r.ourFirstRate > 0 && (
+                      <>
+                        {" "}
+                        You used {r.role.toLowerCase()} ultimates first in{" "}
+                        <HighlightedPct
+                          value={r.ourFirstRate}
+                          favorable={r.ourFirstRate >= 50}
+                        />{" "}
+                        of fights.
+                      </>
+                    )}
+                    {r.ourSubroleTimings.length > 0 && (
+                      <ul className="text-muted-foreground mt-1 ml-4 space-y-0.5 text-xs">
+                        {r.ourSubroleTimings.map((sr) => (
+                          <li key={sr.subrole}>
+                            {sr.subrole}:{" "}
+                            <span className="text-foreground font-semibold tabular-nums">
+                              {sr.count}
+                            </span>{" "}
+                            {sr.count === 1 ? "ultimate" : "ultimates"} (
+                            {totalSubroleUlts > 0
+                              ? ((sr.count / totalSubroleUlts) * 100).toFixed(0)
+                              : 0}
+                            %) &mdash;{" "}
+                            <span className="text-green-500">
+                              {sr.initiation} initiation
+                            </span>
+                            ,{" "}
+                            <span className="text-yellow-500">
+                              {sr.midfight} midfight
+                            </span>
+                            ,{" "}
+                            <span className="text-red-500">{sr.late} late</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })}
+
+            {analysis.fightsWithUlts > 0 && (
+              <>
+                <li>
+                  Your team initiated fights with ultimates in{" "}
+                  <HighlightedPct
+                    value={
+                      (analysis.ourFightInitiations / analysis.fightsWithUlts) *
+                      100
+                    }
+                    favorable={
+                      analysis.ourFightInitiations >=
+                      analysis.opponentFightInitiations
+                    }
+                  />{" "}
+                  of ultimate-involved fights (
+                  <span className="font-semibold tabular-nums">
+                    {analysis.ourFightInitiations}
+                  </span>{" "}
+                  of{" "}
+                  <span className="font-semibold tabular-nums">
+                    {analysis.fightsWithUlts}
+                  </span>
+                  ).
+                </li>
+                {analysis.ourTopFightInitiator && (
+                  <li>
+                    Your most common fight-opening ultimate:{" "}
+                    <span className="font-semibold">
+                      {analysis.ourTopFightInitiator.hero}
+                    </span>{" "}
+                    (
+                    <span className="font-semibold tabular-nums">
+                      {analysis.ourTopFightInitiator.count}
+                    </span>{" "}
+                    {analysis.ourTopFightInitiator.count === 1
+                      ? "fight"
+                      : "fights"}
+                    ).
+                  </li>
+                )}
+                {analysis.opponentTopFightInitiator && (
+                  <li>
+                    Opponent&apos;s most common fight-opening ultimate:{" "}
+                    <span className="font-semibold">
+                      {analysis.opponentTopFightInitiator.hero}
+                    </span>{" "}
+                    (
+                    <span className="font-semibold tabular-nums">
+                      {analysis.opponentTopFightInitiator.count}
+                    </span>{" "}
+                    {analysis.opponentTopFightInitiator.count === 1
+                      ? "fight"
+                      : "fights"}
+                    ).
+                  </li>
+                )}
+              </>
+            )}
+
+            {analysis.topUltUser && (
+              <li>
+                Top ultimate user:{" "}
+                <span className="font-semibold">
+                  {analysis.topUltUser.playerName}
+                </span>{" "}
+                ({analysis.topUltUser.hero}) with{" "}
+                <span className="font-semibold tabular-nums">
+                  {analysis.topUltUser.count}
+                </span>{" "}
+                ultimates used.
+              </li>
+            )}
+
+            {(analysis.avgChargeTime > 0 || analysis.avgHoldTime > 0) && (
+              <li>
+                {analysis.avgChargeTime > 0 && (
+                  <>
+                    Your team charged ultimates in an average of{" "}
+                    <span className="font-semibold tabular-nums">
+                      {analysis.avgChargeTime.toFixed(1)}s
+                    </span>
+                  </>
+                )}
+                {analysis.avgChargeTime > 0 &&
+                  analysis.avgHoldTime > 0 &&
+                  " and "}
+                {analysis.avgHoldTime > 0 && (
+                  <>
+                    held them for an average of{" "}
+                    <span className="font-semibold tabular-nums">
+                      {analysis.avgHoldTime.toFixed(1)}s
+                    </span>{" "}
+                    before using
+                  </>
+                )}
+                .
+              </li>
+            )}
+
+            {analysis.ultEfficiency.totalUltsUsedInFights > 0 && (
+              <>
+                <li>
+                  Ultimate Efficiency:{" "}
+                  <span className="font-semibold tabular-nums">
+                    {analysis.ultEfficiency.ultimateEfficiency.toFixed(2)}
+                  </span>{" "}
+                  fights won per ultimate used (
+                  {analysis.ultEfficiency.ultimateEfficiency >= 0.4
+                    ? "Excellent"
+                    : analysis.ultEfficiency.ultimateEfficiency >= 0.25
+                      ? "Good"
+                      : analysis.ultEfficiency.ultimateEfficiency >= 0.15
+                        ? "Average"
+                        : "Poor"}
+                  ).
+                </li>
+                <li>
+                  Used an average of{" "}
+                  <span className="font-semibold text-green-600 tabular-nums dark:text-green-400">
+                    {analysis.ultEfficiency.avgUltsInWonFights.toFixed(1)}
+                  </span>{" "}
+                  ultimates per won fight vs{" "}
+                  <span className="font-semibold text-red-600 tabular-nums dark:text-red-400">
+                    {analysis.ultEfficiency.avgUltsInLostFights.toFixed(1)}
+                  </span>{" "}
+                  per lost fight.{" "}
+                  {analysis.ultEfficiency.avgUltsInWonFights >
+                  analysis.ultEfficiency.avgUltsInLostFights
+                    ? "Good ultimate discipline — more ultimates used in wins than losses."
+                    : "Room for improvement — more ultimates used in losses than wins."}
+                </li>
+                {analysis.ultEfficiency.wastedUltimates > 0 && (
+                  <li>
+                    <span className="font-semibold tabular-nums">
+                      {analysis.ultEfficiency.wastedUltimates}
+                    </span>{" "}
+                    wasted{" "}
+                    {analysis.ultEfficiency.wastedUltimates === 1
+                      ? "ultimate"
+                      : "ultimates"}{" "}
+                    (
+                    <span className="font-semibold tabular-nums">
+                      {(
+                        (analysis.ultEfficiency.wastedUltimates /
+                          analysis.ultEfficiency.totalUltsUsedInFights) *
+                        100
+                      ).toFixed(1)}
+                      %
+                    </span>{" "}
+                    of total) used in lost situations (3+ player disadvantage).
+                  </li>
+                )}
+                <li>
+                  <span className="font-semibold tabular-nums">
+                    {analysis.ultEfficiency.dryFights}
+                  </span>{" "}
+                  dry{" "}
+                  {analysis.ultEfficiency.dryFights === 1 ? "fight" : "fights"}{" "}
+                  (no ultimates used) with a{" "}
+                  <span className="font-semibold tabular-nums">
+                    {analysis.ultEfficiency.dryFightWinrate.toFixed(1)}%
+                  </span>{" "}
+                  win rate, plus{" "}
+                  <span className="font-semibold tabular-nums">
+                    {analysis.ultEfficiency.nonDryFights}
+                  </span>{" "}
+                  {analysis.ultEfficiency.nonDryFights === 1
+                    ? "fight"
+                    : "fights"}{" "}
+                  where ultimates were used (
+                  <span className="font-semibold tabular-nums">
+                    {analysis.ultEfficiency.nonDryFights > 0
+                      ? (
+                          (analysis.ultEfficiency.fightsWon /
+                            analysis.ultEfficiency.nonDryFights) *
+                          100
+                        ).toFixed(1)
+                      : "0.0"}
+                    %
+                  </span>{" "}
+                  WR).
+                </li>
+              </>
+            )}
+          </ul>
+
+          {hasCharts && (
+            <div className="space-y-6">
+              {hasComparisons && (
+                <div className="min-h-[300px]">
+                  <h5 className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
+                    Ultimate Usage by Subrole
+                  </h5>
+                  <UltComparisonChart
+                    comparisons={analysis.playerComparisons}
+                    teamNames={teamNames}
+                  />
+                </div>
+              )}
+              {hasTimingData && (
+                <div className="min-h-[300px]">
+                  <h5 className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
+                    Ultimate Timing Breakdown
+                  </h5>
+                  <UltTimingChart
+                    team1Timings={allOurTimings}
+                    team2Timings={allOpponentTimings}
+                    teamNames={teamNames}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </section>
     </>
   );
@@ -406,10 +734,13 @@ export async function ScrimOverviewCard({
     losses,
     draws,
     mapCount,
+    ourTeamName,
+    opponentTeamName,
     teamTotals,
     teamPlayers,
     insights,
     fightAnalysis,
+    ultAnalysis,
   } = data;
 
   const winRate = mapCount > 0 ? Math.round((wins / mapCount) * 100) : 0;
@@ -543,6 +874,13 @@ export async function ScrimOverviewCard({
         )}
 
         <FightAnalysisSection analysis={fightAnalysis} />
+        <UltAnalysisSection
+          analysis={ultAnalysis}
+          teamNames={[
+            ourTeamName || "Your Team",
+            opponentTeamName || "Opponent",
+          ]}
+        />
       </CardContent>
       <CardFooter className="border-t">
         <div className="flex items-center gap-1.5">
