@@ -496,3 +496,47 @@ export const heroPriority = {
   Tank: 2,
   Support: 3,
 };
+
+export type SubroleName = keyof typeof subroleHeroMapping;
+
+export type RoleName = "Tank" | "Damage" | "Support";
+
+export const SUBROLE_DISPLAY_NAMES: Record<SubroleName, string> = {
+  HitscanDamage: "Hitscan DPS",
+  FlexDamage: "Flex DPS",
+  GroundTank: "Ground Tank",
+  DiveTank: "Dive Tank",
+  FlexSupport: "Flex Support",
+  MainSupport: "Main Support",
+};
+
+export const SUBROLE_ORDER: SubroleName[] = [
+  "GroundTank",
+  "DiveTank",
+  "HitscanDamage",
+  "FlexDamage",
+  "FlexSupport",
+  "MainSupport",
+];
+
+export const ROLE_SUBROLES: Record<RoleName, SubroleName[]> = {
+  Tank: ["GroundTank", "DiveTank"],
+  Damage: ["HitscanDamage", "FlexDamage"],
+  Support: ["FlexSupport", "MainSupport"],
+};
+
+export function getHeroSubrole(
+  hero: string,
+  role: RoleName
+): SubroleName | null {
+  for (const subrole of ROLE_SUBROLES[role]) {
+    if ((subroleHeroMapping[subrole] as string[]).includes(hero)) {
+      return subrole;
+    }
+  }
+  return null;
+}
+
+export function getHeroRole(hero: string): RoleName {
+  return heroRoleMapping[hero as HeroName] ?? "Damage";
+}
