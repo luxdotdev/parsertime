@@ -12,8 +12,16 @@ import {
   type Fight,
 } from "@/lib/utils";
 import { calculateWinner } from "@/lib/winrate";
-import type { HeroName } from "@/types/heroes";
-import { heroRoleMapping } from "@/types/heroes";
+import type { HeroName, RoleName, SubroleName } from "@/types/heroes";
+import {
+  getHeroRole,
+  getHeroSubrole,
+  heroRoleMapping,
+  ROLE_SUBROLES,
+  SUBROLE_DISPLAY_NAMES,
+  SUBROLE_ORDER,
+  subroleHeroMapping,
+} from "@/types/heroes";
 import {
   Prisma,
   type CalculatedStat,
@@ -116,16 +124,82 @@ export type ScrimFightAnalysis = {
   opponentFirstUltWinrate: number;
 };
 
+export type SubroleUltTiming = {
+  subrole: string;
+  count: number;
+  initiation: number;
+  midfight: number;
+  late: number;
+};
+
+export type ScrimUltRoleBreakdown = {
+  role: "Tank" | "Damage" | "Support";
+  ourCount: number;
+  opponentCount: number;
+  ourFirstRate: number;
+  ourSubroleTimings: SubroleUltTiming[];
+  opponentSubroleTimings: SubroleUltTiming[];
+};
+
+export type PlayerUltComparison = {
+  subrole: string;
+  ourPlayerName: string;
+  ourHero: string;
+  ourUltCount: number;
+  opponentPlayerName: string;
+  opponentHero: string;
+  opponentUltCount: number;
+};
+
+export type FightInitiatingUlt = {
+  hero: string;
+  count: number;
+  isOurTeam: boolean;
+};
+
+export type UltEfficiency = {
+  ultimateEfficiency: number;
+  avgUltsInWonFights: number;
+  avgUltsInLostFights: number;
+  wastedUltimates: number;
+  totalUltsUsedInFights: number;
+  fightsWon: number;
+  fightsLost: number;
+  dryFights: number;
+  dryFightWins: number;
+  dryFightWinrate: number;
+  nonDryFights: number;
+};
+
+export type ScrimUltAnalysis = {
+  ourUltsUsed: number;
+  opponentUltsUsed: number;
+  ultsByRole: ScrimUltRoleBreakdown[];
+  topUltUser: { playerName: string; hero: string; count: number } | null;
+  avgChargeTime: number;
+  avgHoldTime: number;
+  playerComparisons: PlayerUltComparison[];
+  ourFightInitiations: number;
+  opponentFightInitiations: number;
+  fightsWithUlts: number;
+  ourTopFightInitiator: FightInitiatingUlt | null;
+  opponentTopFightInitiator: FightInitiatingUlt | null;
+  ultEfficiency: UltEfficiency;
+};
+
 export type ScrimOverviewData = {
   mapCount: number;
   wins: number;
   losses: number;
   draws: number;
+  ourTeamName: string;
+  opponentTeamName: string;
   mapResults: MapResult[];
   teamPlayers: PlayerScrimPerformance[];
   insights: ScrimInsight[];
   teamTotals: ScrimTeamTotals;
   fightAnalysis: ScrimFightAnalysis;
+  ultAnalysis: ScrimUltAnalysis;
 };
 
 const STAT_LABELS: Record<ValidStatColumn, string> = {
@@ -299,12 +373,44 @@ function emptyFightAnalysis(): ScrimFightAnalysis {
   };
 }
 
+function emptyUltAnalysis(): ScrimUltAnalysis {
+  return {
+    ourUltsUsed: 0,
+    opponentUltsUsed: 0,
+    ultsByRole: [],
+    topUltUser: null,
+    avgChargeTime: 0,
+    avgHoldTime: 0,
+    playerComparisons: [],
+    ourFightInitiations: 0,
+    opponentFightInitiations: 0,
+    fightsWithUlts: 0,
+    ourTopFightInitiator: null,
+    opponentTopFightInitiator: null,
+    ultEfficiency: {
+      ultimateEfficiency: 0,
+      avgUltsInWonFights: 0,
+      avgUltsInLostFights: 0,
+      wastedUltimates: 0,
+      totalUltsUsedInFights: 0,
+      fightsWon: 0,
+      fightsLost: 0,
+      dryFights: 0,
+      dryFightWins: 0,
+      dryFightWinrate: 0,
+      nonDryFights: 0,
+    },
+  };
+}
+
 function emptyOverviewData(): ScrimOverviewData {
   return {
     mapCount: 0,
     wins: 0,
     losses: 0,
     draws: 0,
+    ourTeamName: "",
+    opponentTeamName: "",
     mapResults: [],
     teamPlayers: [],
     insights: [],
@@ -316,6 +422,7 @@ function emptyOverviewData(): ScrimOverviewData {
       kdRatio: 0,
     },
     fightAnalysis: emptyFightAnalysis(),
+    ultAnalysis: emptyUltAnalysis(),
   };
 }
 
@@ -803,6 +910,515 @@ function computeScrimFightAnalysis(
   };
 }
 
+type UltStartRecord = {
+  player_team: string;
+  player_name: string;
+  player_hero: string;
+  match_time: number;
+  MapDataId: number | null;
+};
+
+function computeScrimUltAnalysis(
+  allUltimates: UltStartRecord[],
+  fightsByMap: Map<number, Fight[]>,
+  ourTeamNameByMap: Map<number, string>,
+  calculatedStats: CalculatedStat[],
+  scrimPlayers: string[]
+): ScrimUltAnalysis {
+  const roles: RoleName[] = ["Tank", "Damage", "Support"];
+
+  let ourUltsUsed = 0;
+  let opponentUltsUsed = 0;
+  const ourByRole: Record<RoleName, number> = {
+    Tank: 0,
+    Damage: 0,
+    Support: 0,
+  };
+  const oppByRole: Record<RoleName, number> = {
+    Tank: 0,
+    Damage: 0,
+    Support: 0,
+  };
+  const firstByRole: Record<
+    RoleName,
+    { ourFirst: number; oppFirst: number; total: number }
+  > = {
+    Tank: { ourFirst: 0, oppFirst: 0, total: 0 },
+    Damage: { ourFirst: 0, oppFirst: 0, total: 0 },
+    Support: { ourFirst: 0, oppFirst: 0, total: 0 },
+  };
+
+  type PlayerUltEntry = {
+    heroCountMap: Map<string, number>;
+    totalCount: number;
+  };
+  const ourPlayerUltCounts = new Map<string, PlayerUltEntry>();
+  const oppPlayerUltCounts = new Map<string, PlayerUltEntry>();
+
+  function trackPlayerUlt(
+    map: Map<string, PlayerUltEntry>,
+    playerName: string,
+    hero: string
+  ) {
+    let entry = map.get(playerName);
+    if (!entry) {
+      entry = { heroCountMap: new Map(), totalCount: 0 };
+      map.set(playerName, entry);
+    }
+    entry.totalCount++;
+    entry.heroCountMap.set(hero, (entry.heroCountMap.get(hero) ?? 0) + 1);
+  }
+
+  type SubroleTimingAccum = {
+    count: number;
+    initiation: number;
+    midfight: number;
+    late: number;
+  };
+
+  function createSubroleTimingMap() {
+    const map = new Map<string, Map<SubroleName, SubroleTimingAccum>>();
+    for (const role of roles) {
+      const inner = new Map<SubroleName, SubroleTimingAccum>();
+      for (const sr of ROLE_SUBROLES[role]) {
+        inner.set(sr, { count: 0, initiation: 0, midfight: 0, late: 0 });
+      }
+      map.set(role, inner);
+    }
+    return map;
+  }
+
+  const ourSubroleTimingByRole = createSubroleTimingMap();
+  const oppSubroleTimingByRole = createSubroleTimingMap();
+
+  const fightInitiatingUlts = new Map<
+    string,
+    { hero: string; count: number; ourCount: number; oppCount: number }
+  >();
+  let ourFightInitiations = 0;
+  let opponentFightInitiations = 0;
+  let fightsWithUlts = 0;
+
+  let effFightsWon = 0;
+  let effFightsLost = 0;
+  let ultsInWonFights = 0;
+  let ultsInLostFights = 0;
+  let totalWastedUlts = 0;
+  let totalOurUltsInFights = 0;
+  let dryFights = 0;
+  let dryFightWins = 0;
+
+  const ultsByMap = new Map<number, UltStartRecord[]>();
+  for (const ult of allUltimates) {
+    if (!ult.MapDataId) continue;
+    if (!ultsByMap.has(ult.MapDataId)) ultsByMap.set(ult.MapDataId, []);
+    ultsByMap.get(ult.MapDataId)!.push(ult);
+  }
+
+  for (const [mapId, ults] of ultsByMap) {
+    const ourTeamName = ourTeamNameByMap.get(mapId);
+    if (!ourTeamName) continue;
+
+    for (const ult of ults) {
+      const role = getHeroRole(ult.player_hero);
+      if (ult.player_team === ourTeamName) {
+        ourUltsUsed++;
+        ourByRole[role]++;
+        trackPlayerUlt(ourPlayerUltCounts, ult.player_name, ult.player_hero);
+      } else {
+        opponentUltsUsed++;
+        oppByRole[role]++;
+        trackPlayerUlt(oppPlayerUltCounts, ult.player_name, ult.player_hero);
+      }
+    }
+
+    const fights = fightsByMap.get(mapId) ?? [];
+    for (const fight of fights) {
+      const fightUlts = ults.filter(
+        (u) => u.match_time >= fight.start && u.match_time <= fight.end + 15
+      );
+
+      if (fightUlts.length > 0) {
+        const opener = fightUlts[0];
+        fightsWithUlts++;
+        const isOurs = opener.player_team === ourTeamName;
+        if (isOurs) ourFightInitiations++;
+        else opponentFightInitiations++;
+
+        const key = opener.player_hero;
+        const existing = fightInitiatingUlts.get(key);
+        if (existing) {
+          existing.count++;
+          if (isOurs) existing.ourCount++;
+          else existing.oppCount++;
+        } else {
+          fightInitiatingUlts.set(key, {
+            hero: opener.player_hero,
+            count: 1,
+            ourCount: isOurs ? 1 : 0,
+            oppCount: isOurs ? 0 : 1,
+          });
+        }
+      }
+
+      for (const role of roles) {
+        const first = fightUlts.find(
+          (u) => getHeroRole(u.player_hero) === role
+        );
+        if (!first) continue;
+        firstByRole[role].total++;
+        if (first.player_team === ourTeamName) firstByRole[role].ourFirst++;
+        else firstByRole[role].oppFirst++;
+      }
+
+      const fightDuration = fight.end + 15 - fight.start;
+      const thirdDuration = fightDuration / 3;
+      for (const ult of fightUlts) {
+        const role = getHeroRole(ult.player_hero);
+        const subrole = getHeroSubrole(ult.player_hero, role);
+        if (!subrole) continue;
+
+        const timingMap =
+          ult.player_team === ourTeamName
+            ? ourSubroleTimingByRole
+            : oppSubroleTimingByRole;
+        const accum = timingMap.get(role)?.get(subrole);
+        if (!accum) continue;
+        accum.count++;
+
+        const elapsed = ult.match_time - fight.start;
+        if (fightDuration <= 0 || elapsed < thirdDuration) {
+          accum.initiation++;
+        } else if (elapsed < thirdDuration * 2) {
+          accum.midfight++;
+        } else {
+          accum.late++;
+        }
+      }
+
+      const ourUltCount = fightUlts.filter(
+        (u) => u.player_team === ourTeamName
+      ).length;
+
+      let ourKills = 0;
+      let enemyKills = 0;
+      for (const k of fight.kills) {
+        if (k.event_type === "mercy_rez") {
+          if (k.victim_team === ourTeamName) {
+            enemyKills = Math.max(0, enemyKills - 1);
+          } else {
+            ourKills = Math.max(0, ourKills - 1);
+          }
+        } else if (k.event_type === "kill") {
+          if (k.attacker_team === ourTeamName) ourKills++;
+          else enemyKills++;
+        }
+      }
+      const won = ourKills > enemyKills;
+
+      if (ourUltCount === 0) {
+        dryFights++;
+        if (won) dryFightWins++;
+      } else {
+        totalOurUltsInFights += ourUltCount;
+        if (won) {
+          effFightsWon++;
+          ultsInWonFights += ourUltCount;
+        } else {
+          effFightsLost++;
+          ultsInLostFights += ourUltCount;
+        }
+
+        const sortedKills = [...fight.kills].sort(
+          (a, b) => a.match_time - b.match_time
+        );
+        for (const ult of fightUlts) {
+          if (ult.player_team !== ourTeamName) continue;
+          let runOur = 0;
+          let runEnemy = 0;
+          for (const k of sortedKills) {
+            if (k.match_time > ult.match_time) break;
+            if (k.event_type === "mercy_rez") {
+              if (k.victim_team === ourTeamName)
+                runEnemy = Math.max(0, runEnemy - 1);
+              else runOur = Math.max(0, runOur - 1);
+            } else if (k.event_type === "kill") {
+              if (k.attacker_team === ourTeamName) runOur++;
+              else runEnemy++;
+            }
+          }
+          if (runOur - runEnemy <= -3) totalWastedUlts++;
+        }
+      }
+    }
+  }
+
+  function extractTimings(
+    timingMap: Map<string, Map<SubroleName, SubroleTimingAccum>>,
+    role: RoleName
+  ): SubroleUltTiming[] {
+    const result: SubroleUltTiming[] = [];
+    const inner = timingMap.get(role)!;
+    for (const sr of ROLE_SUBROLES[role]) {
+      const accum = inner.get(sr)!;
+      if (accum.count > 0) {
+        result.push({
+          subrole: SUBROLE_DISPLAY_NAMES[sr],
+          count: accum.count,
+          initiation: accum.initiation,
+          midfight: accum.midfight,
+          late: accum.late,
+        });
+      }
+    }
+    return result;
+  }
+
+  const ultsByRole: ScrimUltRoleBreakdown[] = roles.map((role) => ({
+    role,
+    ourCount: ourByRole[role],
+    opponentCount: oppByRole[role],
+    ourFirstRate:
+      firstByRole[role].total > 0
+        ? (firstByRole[role].ourFirst / firstByRole[role].total) * 100
+        : 0,
+    ourSubroleTimings: extractTimings(ourSubroleTimingByRole, role),
+    opponentSubroleTimings: extractTimings(oppSubroleTimingByRole, role),
+  }));
+
+  let topUltUser: ScrimUltAnalysis["topUltUser"] = null;
+  for (const [name, entry] of ourPlayerUltCounts) {
+    if (!topUltUser || entry.totalCount > topUltUser.count) {
+      let bestHero = "";
+      let bestCount = 0;
+      for (const [hero, count] of entry.heroCountMap) {
+        if (count > bestCount) {
+          bestCount = count;
+          bestHero = hero;
+        }
+      }
+      topUltUser = {
+        playerName: name,
+        hero: bestHero,
+        count: entry.totalCount,
+      };
+    }
+  }
+
+  const scrimPlayerSet = new Set(scrimPlayers);
+  const chargeTimeValues: number[] = [];
+  const holdTimeValues: number[] = [];
+  for (const cs of calculatedStats) {
+    if (!scrimPlayerSet.has(cs.playerName) || cs.value <= 0) continue;
+    if (cs.stat === "AVERAGE_ULT_CHARGE_TIME") chargeTimeValues.push(cs.value);
+    else if (cs.stat === "AVERAGE_TIME_TO_USE_ULT")
+      holdTimeValues.push(cs.value);
+  }
+
+  const avgChargeTime =
+    chargeTimeValues.length > 0
+      ? chargeTimeValues.reduce((a, b) => a + b, 0) / chargeTimeValues.length
+      : 0;
+  const avgHoldTime =
+    holdTimeValues.length > 0
+      ? holdTimeValues.reduce((a, b) => a + b, 0) / holdTimeValues.length
+      : 0;
+
+  const playerComparisons = buildPlayerUltComparisons(
+    ourPlayerUltCounts,
+    oppPlayerUltCounts
+  );
+
+  let ourTopFightInitiator: FightInitiatingUlt | null = null;
+  let opponentTopFightInitiator: FightInitiatingUlt | null = null;
+  for (const entry of fightInitiatingUlts.values()) {
+    if (
+      entry.ourCount > 0 &&
+      (!ourTopFightInitiator || entry.ourCount > ourTopFightInitiator.count)
+    ) {
+      ourTopFightInitiator = {
+        hero: entry.hero,
+        count: entry.ourCount,
+        isOurTeam: true,
+      };
+    }
+    if (
+      entry.oppCount > 0 &&
+      (!opponentTopFightInitiator ||
+        entry.oppCount > opponentTopFightInitiator.count)
+    ) {
+      opponentTopFightInitiator = {
+        hero: entry.hero,
+        count: entry.oppCount,
+        isOurTeam: false,
+      };
+    }
+  }
+
+  const nonDryFights = effFightsWon + effFightsLost;
+  const ultEfficiency: UltEfficiency = {
+    ultimateEfficiency:
+      totalOurUltsInFights > 0 ? effFightsWon / totalOurUltsInFights : 0,
+    avgUltsInWonFights: effFightsWon > 0 ? ultsInWonFights / effFightsWon : 0,
+    avgUltsInLostFights:
+      effFightsLost > 0 ? ultsInLostFights / effFightsLost : 0,
+    wastedUltimates: totalWastedUlts,
+    totalUltsUsedInFights: totalOurUltsInFights,
+    fightsWon: effFightsWon,
+    fightsLost: nonDryFights - effFightsWon,
+    dryFights,
+    dryFightWins,
+    dryFightWinrate: dryFights > 0 ? (dryFightWins / dryFights) * 100 : 0,
+    nonDryFights,
+  };
+
+  return {
+    ourUltsUsed,
+    opponentUltsUsed,
+    ultsByRole,
+    topUltUser,
+    avgChargeTime,
+    avgHoldTime,
+    playerComparisons,
+    ourFightInitiations,
+    opponentFightInitiations,
+    fightsWithUlts,
+    ourTopFightInitiator,
+    opponentTopFightInitiator,
+    ultEfficiency,
+  };
+}
+
+function heroSubroles(hero: string): SubroleName[] {
+  const result: SubroleName[] = [];
+  for (const subrole of SUBROLE_ORDER) {
+    if ((subroleHeroMapping[subrole] as string[]).includes(hero)) {
+      result.push(subrole);
+    }
+  }
+  return result;
+}
+
+export type PlayerUltSummary = {
+  heroCountMap: Map<string, number>;
+  totalCount: number;
+};
+
+function primaryHeroForPlayer(entry: PlayerUltSummary): string {
+  let bestHero = "";
+  let bestCount = 0;
+  for (const [hero, count] of entry.heroCountMap) {
+    if (count > bestCount) {
+      bestCount = count;
+      bestHero = hero;
+    }
+  }
+  return bestHero;
+}
+
+type Candidate = {
+  playerName: string;
+  primaryHero: string;
+  possibleSubroles: SubroleName[];
+  ultCount: number;
+};
+
+/**
+ * Assigns each player to a unique subrole slot. Players whose hero fits
+ * fewer subroles are assigned first so they don't lose their only option
+ * to a more flexible player. This handles overlap (e.g. Tracer appearing
+ * in both HitscanDamage and FlexDamage).
+ */
+function assignPlayersToSubroles(
+  counts: Map<string, PlayerUltSummary>
+): Map<SubroleName, Candidate> {
+  const candidates: Candidate[] = [];
+  for (const [name, entry] of counts) {
+    const hero = primaryHeroForPlayer(entry);
+    const possible = heroSubroles(hero);
+    if (possible.length > 0) {
+      candidates.push({
+        playerName: name,
+        primaryHero: hero,
+        possibleSubroles: possible,
+        ultCount: entry.totalCount,
+      });
+    }
+  }
+
+  candidates.sort(
+    (a, b) =>
+      a.possibleSubroles.length - b.possibleSubroles.length ||
+      b.ultCount - a.ultCount
+  );
+
+  const assigned = new Map<SubroleName, Candidate>();
+  const usedPlayers = new Set<string>();
+
+  for (const candidate of candidates) {
+    if (usedPlayers.has(candidate.playerName)) continue;
+    for (const subrole of candidate.possibleSubroles) {
+      if (!assigned.has(subrole)) {
+        assigned.set(subrole, candidate);
+        usedPlayers.add(candidate.playerName);
+        break;
+      }
+    }
+  }
+
+  // Second pass: try to place any remaining unassigned players by checking
+  // if the current occupant of a slot could move to an alternative slot.
+  for (const candidate of candidates) {
+    if (usedPlayers.has(candidate.playerName)) continue;
+    for (const subrole of candidate.possibleSubroles) {
+      const occupant = assigned.get(subrole);
+      if (!occupant) {
+        assigned.set(subrole, candidate);
+        usedPlayers.add(candidate.playerName);
+        break;
+      }
+      const alternativeForOccupant = occupant.possibleSubroles.find(
+        (alt) => alt !== subrole && !assigned.has(alt)
+      );
+      if (alternativeForOccupant) {
+        assigned.set(alternativeForOccupant, occupant);
+        assigned.set(subrole, candidate);
+        usedPlayers.add(candidate.playerName);
+        break;
+      }
+    }
+  }
+
+  return assigned;
+}
+
+export function buildPlayerUltComparisons(
+  ourPlayerUltCounts: Map<string, PlayerUltSummary>,
+  oppPlayerUltCounts: Map<string, PlayerUltSummary>
+): PlayerUltComparison[] {
+  const ourBySubrole = assignPlayersToSubroles(ourPlayerUltCounts);
+  const oppBySubrole = assignPlayersToSubroles(oppPlayerUltCounts);
+
+  const comparisons: PlayerUltComparison[] = [];
+  for (const subrole of SUBROLE_ORDER) {
+    const ours = ourBySubrole.get(subrole);
+    const theirs = oppBySubrole.get(subrole);
+    if (!ours && !theirs) continue;
+
+    comparisons.push({
+      subrole: SUBROLE_DISPLAY_NAMES[subrole],
+      ourPlayerName: ours?.playerName ?? "",
+      ourHero: ours?.primaryHero ?? "",
+      ourUltCount: ours?.ultCount ?? 0,
+      opponentPlayerName: theirs?.playerName ?? "",
+      opponentHero: theirs?.primaryHero ?? "",
+      opponentUltCount: theirs?.ultCount ?? 0,
+    });
+  }
+
+  return comparisons;
+}
+
 async function getScrimOverviewFn(
   scrimId: number,
   teamId: number
@@ -997,6 +1613,14 @@ async function getScrimOverviewFn(
     killsByMap,
     allUltimates,
     ourTeamNameByMap
+  );
+
+  const ultAnalysis = computeScrimUltAnalysis(
+    allUltimates,
+    fightsByMap,
+    ourTeamNameByMap,
+    calculatedStats,
+    scrimPlayers
   );
 
   // Determine W/L/D for each map
@@ -1283,16 +1907,27 @@ async function getScrimOverviewFn(
 
   const insights = generateInsights(teamPlayers);
 
+  const firstMapId = mapIds[0];
+  const firstOurTeamName = ourTeamNameByMap.get(firstMapId) ?? "";
+  const firstMatchStart = matchStartByMapId.get(firstMapId);
+  const opponentTeamName =
+    firstMatchStart?.team_1_name === firstOurTeamName
+      ? (firstMatchStart?.team_2_name ?? "Opponent")
+      : (firstMatchStart?.team_1_name ?? "Opponent");
+
   return {
     mapCount: maps.length,
     wins,
     losses,
     draws,
+    ourTeamName: firstOurTeamName,
+    opponentTeamName,
     mapResults,
     teamPlayers,
     insights,
     teamTotals,
     fightAnalysis,
+    ultAnalysis,
   };
 }
 
