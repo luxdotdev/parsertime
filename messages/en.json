@@ -1341,11 +1341,15 @@
     "killfeedControls": {
       "title": "Display Options",
       "ariaLabel": "Killfeed display settings",
+      "viewMode": "View Mode",
+      "timelineView": "Event timeline",
+      "timelineViewDescription": "Time-proportional view of all map events",
+      "ultSection": "Ultimate Tracking",
       "ultBrackets": "Ult duration brackets",
-      "ultLabels": "Ult labels",
-      "ultStartEvents": "Ult start events",
+      "ultLabels": "Ult player labels",
+      "ultStartEvents": "Ult activation events",
       "ultEndEvents": "Ult end events",
-      "ultKillHighlights": "Highlight ult kills"
+      "ultKillHighlights": "Highlight kills during ults"
     },
     "killfeedUlt": {
       "ultStarted": "{player} activated Ultimate",
