@@ -1,5 +1,4 @@
-import { KillfeedExport } from "@/components/map/killfeed-export";
-import { KillfeedTable } from "@/components/map/killfeed-table";
+import { KillfeedWithTimeline } from "@/components/map/killfeed-with-timeline";
 import {
   Card,
   CardContent,
@@ -7,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getUltimateSpans } from "@/data/killfeed-dto";
 import prisma from "@/lib/prisma";
 import { groupKillsIntoFights, toTimestamp } from "@/lib/utils";
 import { getTranslations } from "next-intl/server";
@@ -20,13 +20,14 @@ export async function Killfeed({
   team1Color: string;
   team2Color: string;
 }) {
-  const [finalRound, playerTeams, fights] = await Promise.all([
+  const [finalRound, playerTeams, fights, ultimateData] = await Promise.all([
     prisma.roundEnd.findFirst({
       where: { MapDataId: id },
       orderBy: { round_number: "desc" },
     }),
     prisma.matchStart.findFirst({ where: { MapDataId: id } }),
     groupKillsIntoFights(id),
+    getUltimateSpans(id),
   ]);
 
   const t = await getTranslations("mapPage.killfeed");
@@ -195,23 +196,14 @@ export async function Killfeed({
         </Card>
       </div>
       <div className="hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-full">
-          <CardHeader>
-            <CardTitle>{t("title")}</CardTitle>
-          </CardHeader>
-          <CardContent className="pl-2">
-            <KillfeedTable
-              fights={fights}
-              team1={team1Name ?? "Team 1"}
-              team2={team2Name ?? "Team 2"}
-              team1Color={team1Color}
-              team2Color={team2Color}
-            />
-          </CardContent>
-          <CardFooter className="float-right">
-            <KillfeedExport fights={fights} />
-          </CardFooter>
-        </Card>
+        <KillfeedWithTimeline
+          fights={fights}
+          ultimateData={ultimateData}
+          team1={team1Name ?? "Team 1"}
+          team2={team2Name ?? "Team 2"}
+          team1Color={team1Color}
+          team2Color={team2Color}
+        />
       </div>
     </>
   );
