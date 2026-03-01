@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import {
   Collapsible,
   CollapsibleContent,
