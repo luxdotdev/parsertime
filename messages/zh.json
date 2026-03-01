@@ -784,7 +784,12 @@
         "ultKillsDescriptionTeam2": "<span>{team2Name}</span> 的终极技能发挥了最大作用，取得了 <span>{team2UltimateKills}</span> 次终极击杀。",
         "ultKillsDescriptionBoth": "双方队伍的终极技能发挥了相同作用，各自取得了 <span>{team1UltimateKills}</span> 次终极击杀。",
         "playerDeathDescription": "首杀次数最多的玩家是 <span>{playerWithMostFirstDeaths}</span>，在 {fights} 场战斗中率先阵亡了 <span>{firstDeaths}</span> 次。",
-        "ajax": "<span>{player}</span> 在这张地图上使用了卢西奥，并出现了 <span>{ajaxes}</span> 次亚克斯现象 {ajaxes, plural, one {次} other {次}}。"
+        "ajax": "<span>{player}</span> 在这张地图上使用了卢西奥，并出现了 <span>{ajaxes}</span> 次亚克斯现象 {ajaxes, plural, one {次} other {次}}。",
+        "ultUsageComparison": "<span1>{team1Name}</span1> 使用了 <span1>{team1Count}</span1> 个终极技能，而 <span2>{team2Name}</span2> 使用了 <span2>{team2Count}</span2> 个。",
+        "ultRoleFirst": "<span>{teamName}</span> 在 <pct>{percentage}</pct>% 的战斗中率先使用了{role}终极技能。",
+        "ultTopUser": "<span>{playerName}</span>（{hero}）在 <span>{teamName}</span> 中使用了最多的终极技能（{count}次）。",
+        "ultAvgChargeTime": "<span1>{team1Name}</span1> 平均 <span1>{team1Time}</span1> 秒充满终极技能，而 <span2>{team2Name}</span2> 为 <span2>{team2Time}</span2> 秒。",
+        "ultAvgHoldTime": "<span1>{team1Name}</span1> 平均持有终极技能 <span1>{team1Time}</span1> 秒，而 <span2>{team2Name}</span2> 为 <span2>{team2Time}</span2> 秒。"
       }
     },
     "overviewTable": {

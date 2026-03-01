@@ -784,7 +784,12 @@
         "ultKillsDescriptionTeam2": "<span>{team2Name}</span>이(가) 궁극기를 가장 효과적으로 활용하여 <span>{team2UltimateKills}</span>번의 궁극기 처치를 기록했습니다.",
         "ultKillsDescriptionBoth": "두 팀 모두 궁극기를 동일하게 활용하여 각각 <span>{team1UltimateKills}</span>번의 궁극기 처치를 기록했습니다.",
         "playerDeathDescription": "첫 사망을 가장 많이 기록한 플레이어는 <span>{playerWithMostFirstDeaths}</span>으로, {fights}번의 전투 중 <span>{firstDeaths}</span>번 첫 사망을 기록했습니다.",
-        "ajax": "<span>{player}</span>은(는) 이 맵에서 루시우를 플레이하며 <span>{ajaxes}</span> {ajaxes, plural, one {번} other {번}} Ajax를 기록했습니다."
+        "ajax": "<span>{player}</span>은(는) 이 맵에서 루시우를 플레이하며 <span>{ajaxes}</span> {ajaxes, plural, one {번} other {번}} Ajax를 기록했습니다.",
+        "ultUsageComparison": "<span1>{team1Name}</span1>은(는) <span1>{team1Count}</span1>개의 궁극기를 사용했으며, <span2>{team2Name}</span2>은(는) <span2>{team2Count}</span2>개를 사용했습니다.",
+        "ultRoleFirst": "<span>{teamName}</span>이(가) {role} 궁극기를 <pct>{percentage}</pct>%의 전투에서 먼저 사용했습니다.",
+        "ultTopUser": "<span>{playerName}</span> ({hero})이(가) <span>{teamName}</span>에서 가장 많은 궁극기({count}회)를 사용했습니다.",
+        "ultAvgChargeTime": "<span1>{team1Name}</span1>은(는) 평균 <span1>{team1Time}</span1>초에 궁극기를 충전했으며, <span2>{team2Name}</span2>은(는) <span2>{team2Time}</span2>초였습니다.",
+        "ultAvgHoldTime": "<span1>{team1Name}</span1>은(는) 평균 <span1>{team1Time}</span1>초 동안 궁극기를 보유했으며, <span2>{team2Name}</span2>은(는) <span2>{team2Time}</span2>초였습니다."
       }
     },
     "overviewTable": {
