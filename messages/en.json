@@ -1359,7 +1359,20 @@
       "ultLabel": "{player} ({hero}) used ultimate for {duration}s, {kills, plural, one {# kill} other {# kills}}",
       "instantUlt": "{player} ({hero}) used instant ultimate",
       "instantUltAt": "Instant ultimate at {time}",
-      "ultInstant": "{player}'s instant ultimate ({duration}s)"
+      "ultInstant": "{player}'s instant ultimate ({duration}s)",
+      "tooltipFightStart": "Fight {num} Start",
+      "tooltipFightEnd": "Fight {num} End",
+      "tooltipTimestamp": "Time: {time}",
+      "tooltipDuration": "Duration: {duration}s",
+      "tooltipWinner": "Winner: {team}",
+      "tooltipTotalKills": "{count, plural, one {# total kill} other {# total kills}}",
+      "tooltipKill": "{attacker} → {victim}",
+      "tooltipMethod": "Method: {method}",
+      "tooltipTeam": "Team: {team}",
+      "tooltipUltActivated": "{player} activated {hero} ultimate",
+      "tooltipUltEnded": "{player}'s {hero} ultimate ended",
+      "tooltipUltInstant": "{player} used instant {hero} ultimate",
+      "tooltipDiedDuringUlt": "Died during ultimate"
     },
     "charts": {
       "tooltip": "Looking for more information on charts? <link>Check out the documentation</link> to learn more.",
