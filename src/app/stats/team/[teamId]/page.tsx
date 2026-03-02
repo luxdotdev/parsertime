@@ -279,7 +279,7 @@ export default async function TeamStatsPage(
             <TeamRosterGrid roster={teamRoster} />
 
             {/* Recent Activity Calendar */}
-            <RecentActivityCalendar scrims={scrims} />
+            <RecentActivityCalendar scrims={scrims} dateRange={dateRange} />
           </div>
 
           {/* Two Column Layout: Top Maps + Strengths/Weaknesses */}
