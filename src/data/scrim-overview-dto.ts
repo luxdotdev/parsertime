@@ -173,7 +173,11 @@ export type UltEfficiency = {
   dryFights: number;
   dryFightWins: number;
   dryFightWinrate: number;
+  dryFightReversals: number;
+  dryFightReversalRate: number;
   nonDryFights: number;
+  nonDryFightReversals: number;
+  nonDryFightReversalRate: number;
 };
 
 export type ScrimUltAnalysis = {
@@ -429,7 +433,11 @@ function emptyUltAnalysis(): ScrimUltAnalysis {
       dryFights: 0,
       dryFightWins: 0,
       dryFightWinrate: 0,
+      dryFightReversals: 0,
+      dryFightReversalRate: 0,
       nonDryFights: 0,
+      nonDryFightReversals: 0,
+      nonDryFightReversalRate: 0,
     },
   };
 }
@@ -1062,6 +1070,8 @@ function computeScrimUltAnalysis(
   let totalOurUltsInFights = 0;
   let dryFights = 0;
   let dryFightWins = 0;
+  let dryFightReversals = 0;
+  let nonDryFightReversals = 0;
 
   const ultsByMap = new Map<number, UltStartRecord[]>();
   for (const ult of allUltimates) {
@@ -1183,6 +1193,7 @@ function computeScrimUltAnalysis(
 
       let ourKills = 0;
       let enemyKills = 0;
+      let wasDown2Plus = false;
       for (const k of fight.kills) {
         if (k.event_type === "mercy_rez") {
           if (k.victim_team === ourTeamName) {
@@ -1194,12 +1205,17 @@ function computeScrimUltAnalysis(
           if (k.attacker_team === ourTeamName) ourKills++;
           else enemyKills++;
         }
+        if (enemyKills - ourKills >= 2) {
+          wasDown2Plus = true;
+        }
       }
       const won = ourKills > enemyKills;
+      const isReversal = won && wasDown2Plus;
 
       if (ourUltCount === 0) {
         dryFights++;
         if (won) dryFightWins++;
+        if (isReversal) dryFightReversals++;
       } else {
         totalOurUltsInFights += ourUltCount;
         if (won) {
@@ -1209,6 +1225,7 @@ function computeScrimUltAnalysis(
           effFightsLost++;
           ultsInLostFights += ourUltCount;
         }
+        if (isReversal) nonDryFightReversals++;
 
         const sortedKills = [...fight.kills].sort(
           (a, b) => a.match_time - b.match_time
@@ -1350,7 +1367,13 @@ function computeScrimUltAnalysis(
     dryFights,
     dryFightWins,
     dryFightWinrate: dryFights > 0 ? (dryFightWins / dryFights) * 100 : 0,
+    dryFightReversals,
+    dryFightReversalRate:
+      dryFights > 0 ? (dryFightReversals / dryFights) * 100 : 0,
     nonDryFights,
+    nonDryFightReversals,
+    nonDryFightReversalRate:
+      nonDryFights > 0 ? (nonDryFightReversals / nonDryFights) * 100 : 0,
   };
 
   return {
