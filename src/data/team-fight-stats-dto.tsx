@@ -38,6 +38,12 @@ export type TeamFightStats = {
   totalUltsInNonDryFights: number;
   avgUltsPerNonDryFight: number;
 
+  // Fight reversals (won after being down 2+ kills)
+  dryFightReversals: number;
+  dryFightReversalRate: number;
+  nonDryFightReversals: number;
+  nonDryFightReversalRate: number;
+
   // Ultimate economy
   ultimateEfficiency: number; // fights won per ultimate used
   avgUltsInWonFights: number;
@@ -62,6 +68,7 @@ type FightAnalysis = {
   hadFirstDeath: boolean;
   usedFirstUlt: boolean;
   isDryFight: boolean;
+  isReversal: boolean;
   ultCount: number;
   wastedUlts: number; // ults used after fight was likely lost
 };
@@ -85,13 +92,13 @@ function analyzeFightOutcome(fight: Fight, ourTeamName: string): FightAnalysis {
   const ultCount = ourUlts.length;
   const isDryFight = ultCount === 0;
 
-  // Track kill differential over time to detect "already lost" scenarios
+  // Track kill differential over time to detect "already lost" and reversal scenarios
   let ourKills = 0;
   let enemyKills = 0;
   let wastedUlts = 0;
+  let wasDown2Plus = false;
 
   for (const event of sortedEvents) {
-    // Update kill counts
     if (event.event_type === "mercy_rez") {
       if (event.victim_team === ourTeamName) {
         enemyKills = Math.max(0, enemyKills - 1);
@@ -106,12 +113,14 @@ function analyzeFightOutcome(fight: Fight, ourTeamName: string): FightAnalysis {
       }
     }
 
-    // Check if we used an ultimate at this timestamp
+    if (enemyKills - ourKills >= 2) {
+      wasDown2Plus = true;
+    }
+
     if (
       event.event_type === "ultimate_start" &&
       event.attacker_team === ourTeamName
     ) {
-      // If we're down 3+ players, this ult is likely wasted
       const killDiff = ourKills - enemyKills;
       if (killDiff <= -3) {
         wastedUlts++;
@@ -119,8 +128,8 @@ function analyzeFightOutcome(fight: Fight, ourTeamName: string): FightAnalysis {
     }
   }
 
-  // Determine fight winner based on final kill differential
   const won = ourKills > enemyKills;
+  const isReversal = won && wasDown2Plus;
 
   // Find first pick (first kill event, excluding mercy rez for this check)
   const firstKill = kills.find((k) => k.event_type === "kill");
@@ -143,6 +152,7 @@ function analyzeFightOutcome(fight: Fight, ourTeamName: string): FightAnalysis {
     hadFirstDeath,
     usedFirstUlt,
     isDryFight,
+    isReversal,
     ultCount,
     wastedUlts,
   };
@@ -184,6 +194,10 @@ function processTeamFightStats(sharedData: ExtendedTeamData): TeamFightStats {
       dryFights: 0,
       dryFightWins: 0,
       dryFightWinrate: 0,
+      dryFightReversals: 0,
+      dryFightReversalRate: 0,
+      nonDryFightReversals: 0,
+      nonDryFightReversalRate: 0,
       nonDryFights: 0,
       totalUltsInNonDryFights: 0,
       avgUltsPerNonDryFight: 0,
@@ -250,6 +264,8 @@ function processTeamFightStats(sharedData: ExtendedTeamData): TeamFightStats {
   let firstUltWins = 0;
   let dryFights = 0;
   let dryFightWins = 0;
+  let dryFightReversals = 0;
+  let nonDryFightReversals = 0;
   let nonDryFights = 0;
   let totalUltsInNonDryFights = 0;
   let totalUltsUsed = 0;
@@ -362,9 +378,11 @@ function processTeamFightStats(sharedData: ExtendedTeamData): TeamFightStats {
       if (analysis.isDryFight) {
         dryFights++;
         if (analysis.won) dryFightWins++;
+        if (analysis.isReversal) dryFightReversals++;
       } else {
         nonDryFights++;
         totalUltsInNonDryFights += analysis.ultCount;
+        if (analysis.isReversal) nonDryFightReversals++;
       }
 
       // Track ultimate economy metrics
@@ -388,6 +406,10 @@ function processTeamFightStats(sharedData: ExtendedTeamData): TeamFightStats {
   const firstUltWinrate =
     firstUltFights > 0 ? (firstUltWins / firstUltFights) * 100 : 0;
   const dryFightWinrate = dryFights > 0 ? (dryFightWins / dryFights) * 100 : 0;
+  const dryFightReversalRate =
+    dryFights > 0 ? (dryFightReversals / dryFights) * 100 : 0;
+  const nonDryFightReversalRate =
+    nonDryFights > 0 ? (nonDryFightReversals / nonDryFights) * 100 : 0;
   const avgUltsPerNonDryFight =
     nonDryFights > 0 ? totalUltsInNonDryFights / nonDryFights : 0;
 
@@ -414,6 +436,10 @@ function processTeamFightStats(sharedData: ExtendedTeamData): TeamFightStats {
     dryFights,
     dryFightWins,
     dryFightWinrate,
+    dryFightReversals,
+    dryFightReversalRate,
+    nonDryFightReversals,
+    nonDryFightReversalRate,
     nonDryFights,
     totalUltsInNonDryFights,
     avgUltsPerNonDryFight,
