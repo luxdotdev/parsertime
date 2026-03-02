@@ -9,6 +9,11 @@ import { RecentFormCard } from "@/components/stats/team/recent-form-card";
 import { RoleBalanceRadar } from "@/components/stats/team/role-balance-radar";
 import { RolePerformanceCard } from "@/components/stats/team/role-performance-card";
 import { StrengthsWeaknessesCard } from "@/components/stats/team/strengths-weaknesses-card";
+import { SwapOverviewCard } from "@/components/stats/team/swap-overview-card";
+import { SwapPairsCard } from "@/components/stats/team/swap-pairs-card";
+import { SwapPlayerBreakdownCard } from "@/components/stats/team/swap-player-breakdown-card";
+import { SwapTimingCard } from "@/components/stats/team/swap-timing-card";
+import { SwapWinrateImpactCard } from "@/components/stats/team/swap-winrate-impact-card";
 import { TeamFightStatsCard } from "@/components/stats/team/team-fight-stats-card";
 import { TeamRangePicker } from "@/components/stats/team/team-range-picker";
 import { TeamRosterGrid } from "@/components/stats/team/team-roster-grid";
@@ -48,6 +53,7 @@ import {
   getTop5MapsByPlaytime,
   getTopMapsByPlaytime,
 } from "@/data/team-stats-dto";
+import { getTeamHeroSwapStats } from "@/data/team-hero-swap-dto";
 import { getTeamUltStats } from "@/data/team-ult-stats-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
@@ -182,6 +188,7 @@ export default async function TeamStatsPage(
     quickStats,
     playerMapPerformance,
     ultStats,
+    heroSwapStats,
   ] = await Promise.all([
     prisma.scrim.findMany({
       where: {
@@ -208,6 +215,7 @@ export default async function TeamStatsPage(
     getQuickWinsStats(teamId, dateRange),
     getPlayerMapPerformanceMatrix(teamId, dateRange),
     getTeamUltStats(teamId, dateRange),
+    getTeamHeroSwapStats(teamId, dateRange),
   ]);
 
   const heroPickrateRawData = await getHeroPickrateRawData(teamId, dateRange);
@@ -265,6 +273,7 @@ export default async function TeamStatsPage(
           <TabsTrigger value="heroes">Heroes</TabsTrigger>
           <TabsTrigger value="trends">Trends</TabsTrigger>
           <TabsTrigger value="maps">Maps</TabsTrigger>
+          <TabsTrigger value="swaps">Swaps</TabsTrigger>
           <TabsTrigger value="teamfights">Teamfights</TabsTrigger>
           <TabsTrigger value="ultimates">Ultimates</TabsTrigger>
         </TabsList>
@@ -340,6 +349,15 @@ export default async function TeamStatsPage(
             mapNames={mapNames}
           />
           <PlayerMapPerformanceCard data={playerMapPerformance} />
+        </TabsContent>
+
+        {/* Swaps Tab */}
+        <TabsContent value="swaps" className="space-y-4">
+          <SwapOverviewCard swapStats={heroSwapStats} />
+          <SwapTimingCard swapStats={heroSwapStats} />
+          <SwapWinrateImpactCard swapStats={heroSwapStats} />
+          <SwapPairsCard swapStats={heroSwapStats} />
+          <SwapPlayerBreakdownCard swapStats={heroSwapStats} />
         </TabsContent>
 
         {/* Teamfights Tab */}

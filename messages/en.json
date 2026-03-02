@@ -1275,7 +1275,10 @@
         "ultGoodDiscipline": "Good ultimate discipline — more ultimates used in wins than losses.",
         "ultNeedsDiscipline": "Room for improvement — more ultimates used in losses than wins.",
         "ultWasted": "<b>{count}</b> wasted {count, plural, one {ultimate} other {ultimates}} (<b>{percentage}</b>% of total) used in lost situations (3+ player disadvantage).",
-        "ultDryFights": "<b>{dryCount}</b> dry {dryCount, plural, one {fight} other {fights}} (no ultimates used) with a <b>{winrate}</b>% win rate, plus <b>{nonDryCount}</b> {nonDryCount, plural, one {fight} other {fights}} where ultimates were used (<b>{nonDryWinrate}</b>% WR)."
+        "ultDryFights": "<b>{dryCount}</b> dry {dryCount, plural, one {fight} other {fights}} (no ultimates used) with a <b>{winrate}</b>% win rate, plus <b>{nonDryCount}</b> {nonDryCount, plural, one {fight} other {fights}} where ultimates were used (<b>{nonDryWinrate}</b>% WR).",
+        "swapOverview": "<span1>{team1Name}</span1> made <b>{team1Count}</b> hero {team1Count, plural, one {swap} other {swaps}} vs <span2>{team2Name}</span2>'s <b>{team2Count}</b> hero {team2Count, plural, one {swap} other {swaps}}.",
+        "swapTopPairTeam": "<span>{teamName}</span>'s most common swap: <b>{fromHero}</b> → <b>{toHero}</b> (<n>{count}</n> {count, plural, one {time} other {times}}).",
+        "swapTopSwapperTeam": "<span>{teamName}</span>'s most active swapper: <b>{playerName}</b> with <n>{count}</n> {count, plural, one {swap} other {swaps}}."
       }
     },
     "overviewTable": {
@@ -3748,6 +3751,60 @@
         "mapsPlayed": "Maps",
         "ultsPerMap": "Ults/Map",
         "fightOpener": "Fight Opener"
+      }
+    },
+    "swapsTab": {
+      "overview": {
+        "title": "Hero Swap Overview",
+        "noData": "No hero swap data available yet.",
+        "description": "Aggregated across {maps} maps",
+        "totalSwaps": "Total Swaps",
+        "swapsPerMap": "{count} per map average",
+        "winrateDelta": "Win Rate Impact",
+        "winrateDeltaPositive": "+{delta}% when swapping",
+        "winrateDeltaNegative": "{delta}% when swapping",
+        "winrateDeltaNeutral": "No difference",
+        "noSwapWinrate": "No-Swap Win Rate",
+        "noSwapDetail": "{wins}W - {losses}L without swaps",
+        "swapWinrate": "Swap Win Rate",
+        "swapDetail": "{wins}W - {losses}L with swaps",
+        "avgTimeBeforeSwap": "Avg Time on Hero",
+        "avgTimeDetail": "Average time on hero before swapping"
+      },
+      "timing": {
+        "title": "Swap Timing Distribution",
+        "description": "When hero swaps occur during a match, as percentage of total match time",
+        "noData": "No swap timing data available.",
+        "swapCount": "{count} swaps",
+        "ofTotal": "{pct}% of all swaps"
+      },
+      "winrate": {
+        "title": "Win Rate by Swap Behavior",
+        "descriptionCount": "How win rate changes based on the number of swaps per map",
+        "descriptionTiming": "Win rate for maps containing early, mid, or late swaps",
+        "noData": "No swap win rate data available.",
+        "byCount": "By Swap Count",
+        "byTiming": "By Swap Timing",
+        "maps": "{count} maps",
+        "winrate": "{pct}%"
+      },
+      "pairs": {
+        "title": "Most Common Hero Swaps",
+        "description": "Top hero-to-hero swap transitions across all maps",
+        "noData": "No swap pair data available.",
+        "count": "{count} times"
+      },
+      "player": {
+        "title": "Player Swap Breakdown",
+        "description": "Individual player swap statistics and win rate impact",
+        "noData": "No player swap data available.",
+        "tableLabel": "Player swap statistics",
+        "player": "Player",
+        "swaps": "Swaps",
+        "mapsWithSwaps": "Maps w/ Swaps",
+        "winrateWith": "WR w/ Swaps",
+        "winrateWithout": "WR w/o Swaps",
+        "topPair": "Top Swap"
       }
     }
   }
