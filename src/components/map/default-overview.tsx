@@ -17,6 +17,7 @@ import {
   type PlayerUltSummary,
   type UltEfficiency,
 } from "@/data/scrim-overview-dto";
+import { filterUtilityRoundStartSwaps } from "@/data/team-hero-swap-dto";
 import { getAjaxes } from "@/lib/analytics";
 import { calculateMVPScoresForMap } from "@/lib/mvp-score";
 import prisma from "@/lib/prisma";
@@ -133,23 +134,42 @@ export async function DefaultOverview({
     (fight) => fight.kills[0].victim_team === matchDetails?.team_1_name
   ).length;
 
-  const [ultimateKills, ultimateStarts, ultCalcStats] = await Promise.all([
-    prisma.kill.findMany({
-      where: { MapDataId: id, event_ability: "Ultimate" },
-    }),
-    prisma.ultimateStart.findMany({
-      where: { MapDataId: id },
-      orderBy: { match_time: "asc" },
-    }),
-    prisma.calculatedStat.findMany({
-      where: {
-        MapDataId: id,
-        stat: {
-          in: ["AVERAGE_ULT_CHARGE_TIME", "AVERAGE_TIME_TO_USE_ULT"],
+  const [ultimateKills, ultimateStarts, ultCalcStats, heroSwaps, roundStarts] =
+    await Promise.all([
+      prisma.kill.findMany({
+        where: { MapDataId: id, event_ability: "Ultimate" },
+      }),
+      prisma.ultimateStart.findMany({
+        where: { MapDataId: id },
+        orderBy: { match_time: "asc" },
+      }),
+      prisma.calculatedStat.findMany({
+        where: {
+          MapDataId: id,
+          stat: {
+            in: ["AVERAGE_ULT_CHARGE_TIME", "AVERAGE_TIME_TO_USE_ULT"],
+          },
         },
-      },
-    }),
-  ]);
+      }),
+      prisma.heroSwap.findMany({
+        where: { MapDataId: id, match_time: { not: 0 } },
+        select: {
+          id: true,
+          match_time: true,
+          player_team: true,
+          player_name: true,
+          player_hero: true,
+          previous_hero: true,
+          hero_time_played: true,
+          MapDataId: true,
+        },
+        orderBy: { match_time: "asc" },
+      }),
+      prisma.roundStart.findMany({
+        where: { MapDataId: id },
+        select: { match_time: true, MapDataId: true },
+      }),
+    ]);
 
   const team1UltimateKills = ultimateKills.filter(
     (kill) => kill.attacker_team === matchDetails?.team_1_name
@@ -585,6 +605,55 @@ export async function DefaultOverview({
   const team1MVP = team1Players[0]?.playerName ?? "";
   const team2MVP = team2Players[0]?.playerName ?? "";
 
+  const roundStartTimes = roundStarts.map((rs) => rs.match_time);
+  const team1RawSwaps = heroSwaps.filter((s) => s.player_team === team1Name);
+  const team2RawSwaps = heroSwaps.filter((s) => s.player_team === team2Name);
+  const team1Swaps = filterUtilityRoundStartSwaps(
+    team1RawSwaps,
+    roundStartTimes
+  );
+  const team2Swaps = filterUtilityRoundStartSwaps(
+    team2RawSwaps,
+    roundStartTimes
+  );
+  const totalMapSwaps = team1Swaps.length + team2Swaps.length;
+
+  function findTopSwapper(swaps: typeof team1Swaps) {
+    const counts = new Map<string, number>();
+    for (const s of swaps) {
+      counts.set(s.player_name, (counts.get(s.player_name) ?? 0) + 1);
+    }
+    let best: { name: string; count: number } | null = null;
+    for (const [name, count] of counts) {
+      if (!best || count > best.count) best = { name, count };
+    }
+    return best;
+  }
+
+  function findTopSwapPair(swaps: typeof team1Swaps) {
+    const counts = new Map<
+      string,
+      { from: string; to: string; count: number }
+    >();
+    for (const s of swaps) {
+      const key = `${s.previous_hero}->${s.player_hero}`;
+      const existing = counts.get(key);
+      if (existing) existing.count++;
+      else
+        counts.set(key, { from: s.previous_hero, to: s.player_hero, count: 1 });
+    }
+    let best: { from: string; to: string; count: number } | null = null;
+    for (const entry of counts.values()) {
+      if (!best || entry.count > best.count) best = entry;
+    }
+    return best;
+  }
+
+  const team1TopSwapper = findTopSwapper(team1Swaps);
+  const team2TopSwapper = findTopSwapper(team2Swaps);
+  const team1TopPair = findTopSwapPair(team1Swaps);
+  const team2TopPair = findTopSwapPair(team2Swaps);
+
   return (
     <>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -825,7 +894,7 @@ export async function DefaultOverview({
                   : ""
               )}
             >
-              <ul className="list-outside list-disc pl-4">
+              <ul className="list-outside list-disc space-y-1 pl-4">
                 <li>
                   {t.rich("analysis.deathDescriptionTeam1", {
                     span1: (chunks) => (
@@ -1300,6 +1369,112 @@ export async function DefaultOverview({
                         })}
                       </li>
                     )
+                )}
+
+                {totalMapSwaps > 0 && (
+                  <>
+                    <li>
+                      {t.rich("analysis.swapOverview", {
+                        span1: (chunks) => (
+                          <span style={{ color: team1 }}>{chunks}</span>
+                        ),
+                        span2: (chunks) => (
+                          <span style={{ color: team2 }}>{chunks}</span>
+                        ),
+                        b: (chunks) => (
+                          <span className="font-semibold tabular-nums">
+                            {chunks}
+                          </span>
+                        ),
+                        team1Name,
+                        team1Count: team1Swaps.length,
+                        team2Name,
+                        team2Count: team2Swaps.length,
+                      })}
+                    </li>
+                    {team1TopPair && (
+                      <li>
+                        {t.rich("analysis.swapTopPairTeam", {
+                          span: (chunks) => (
+                            <span style={{ color: team1 }}>{chunks}</span>
+                          ),
+                          b: (chunks) => (
+                            <span className="font-semibold">{chunks}</span>
+                          ),
+                          n: (chunks) => (
+                            <span className="font-semibold tabular-nums">
+                              {chunks}
+                            </span>
+                          ),
+                          teamName: team1Name,
+                          fromHero: team1TopPair.from,
+                          toHero: team1TopPair.to,
+                          count: team1TopPair.count,
+                        })}
+                      </li>
+                    )}
+                    {team2TopPair && (
+                      <li>
+                        {t.rich("analysis.swapTopPairTeam", {
+                          span: (chunks) => (
+                            <span style={{ color: team2 }}>{chunks}</span>
+                          ),
+                          b: (chunks) => (
+                            <span className="font-semibold">{chunks}</span>
+                          ),
+                          n: (chunks) => (
+                            <span className="font-semibold tabular-nums">
+                              {chunks}
+                            </span>
+                          ),
+                          teamName: team2Name,
+                          fromHero: team2TopPair.from,
+                          toHero: team2TopPair.to,
+                          count: team2TopPair.count,
+                        })}
+                      </li>
+                    )}
+                    {team1TopSwapper && (
+                      <li>
+                        {t.rich("analysis.swapTopSwapperTeam", {
+                          span: (chunks) => (
+                            <span style={{ color: team1 }}>{chunks}</span>
+                          ),
+                          b: (chunks) => (
+                            <span className="font-semibold">{chunks}</span>
+                          ),
+                          n: (chunks) => (
+                            <span className="font-semibold tabular-nums">
+                              {chunks}
+                            </span>
+                          ),
+                          teamName: team1Name,
+                          playerName: team1TopSwapper.name,
+                          count: team1TopSwapper.count,
+                        })}
+                      </li>
+                    )}
+                    {team2TopSwapper && (
+                      <li>
+                        {t.rich("analysis.swapTopSwapperTeam", {
+                          span: (chunks) => (
+                            <span style={{ color: team2 }}>{chunks}</span>
+                          ),
+                          b: (chunks) => (
+                            <span className="font-semibold">{chunks}</span>
+                          ),
+                          n: (chunks) => (
+                            <span className="font-semibold tabular-nums">
+                              {chunks}
+                            </span>
+                          ),
+                          teamName: team2Name,
+                          playerName: team2TopSwapper.name,
+                          count: team2TopSwapper.count,
+                        })}
+                      </li>
+                    )}
+                  </>
                 )}
               </ul>
               {(playerComparisons.length > 0 ||
