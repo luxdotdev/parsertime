@@ -683,6 +683,29 @@ function UltAnalysisSection({
                   </span>{" "}
                   WR).
                 </li>
+                {(analysis.ultEfficiency.dryFights > 0 ||
+                  analysis.ultEfficiency.nonDryFights > 0) && (
+                  <li>
+                    Fight reversal rate (won after being down 2+ kills):{" "}
+                    <span className="font-semibold tabular-nums">
+                      {analysis.ultEfficiency.dryFightReversalRate.toFixed(1)}%
+                    </span>{" "}
+                    in dry fights vs{" "}
+                    <span className="font-semibold tabular-nums">
+                      {analysis.ultEfficiency.nonDryFightReversalRate.toFixed(
+                        1
+                      )}
+                      %
+                    </span>{" "}
+                    when ultimates were used.
+                    {analysis.ultEfficiency.dryFights > 0 &&
+                      analysis.ultEfficiency.nonDryFights > 0 &&
+                      (analysis.ultEfficiency.nonDryFightReversalRate >
+                      analysis.ultEfficiency.dryFightReversalRate
+                        ? " Ultimates are a key comeback tool for this team."
+                        : " This team can reverse fights through raw mechanics.")}
+                  </li>
+                )}
               </>
             )}
           </ul>
