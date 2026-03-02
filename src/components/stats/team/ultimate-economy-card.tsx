@@ -220,6 +220,54 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
                 </span>
               </div>
             </div>
+
+            {(fightStats.dryFights > 0 || fightStats.nonDryFights > 0) && (
+              <div className="mt-4 border-t pt-3">
+                <h4 className="mb-2 text-sm font-semibold">
+                  {t("fightReversals")}
+                </h4>
+                <div className="grid gap-3 text-sm md:grid-cols-2">
+                  {fightStats.dryFights > 0 && (
+                    <div>
+                      <span className="font-medium">
+                        {t("dryReversalRate", {
+                          rate: fightStats.dryFightReversalRate.toFixed(1),
+                          count: fightStats.dryFightReversals,
+                          total: fightStats.dryFights,
+                        })}
+                      </span>
+                    </div>
+                  )}
+                  {fightStats.nonDryFights > 0 && (
+                    <div>
+                      <span className="font-medium">
+                        {t("nonDryReversalRate", {
+                          rate: fightStats.nonDryFightReversalRate.toFixed(1),
+                          count: fightStats.nonDryFightReversals,
+                          total: fightStats.nonDryFights,
+                        })}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                {fightStats.dryFights > 0 && fightStats.nonDryFights > 0 && (
+                  <p className="text-muted-foreground mt-2 text-xs">
+                    {fightStats.nonDryFightReversalRate >
+                    fightStats.dryFightReversalRate
+                      ? t("reversalInsightUltReliant", {
+                          nonDryRate:
+                            fightStats.nonDryFightReversalRate.toFixed(1),
+                          dryRate: fightStats.dryFightReversalRate.toFixed(1),
+                        })
+                      : t("reversalInsightMechanical", {
+                          dryRate: fightStats.dryFightReversalRate.toFixed(1),
+                          nonDryRate:
+                            fightStats.nonDryFightReversalRate.toFixed(1),
+                        })}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </CardContent>
