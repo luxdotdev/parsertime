@@ -9,6 +9,7 @@ type Entities = {
     id: string;
     email: string;
     role: $Enums.UserRole;
+    billingPlan: $Enums.BillingPlan;
   };
   teams?: {
     idArray: string[];
@@ -28,6 +29,7 @@ const identify = dedupe(async (): Promise<Entities> => {
           id: user.id,
           email: user.email,
           role: user.role,
+          billingPlan: user.billingPlan,
         }
       : undefined,
     teams:
