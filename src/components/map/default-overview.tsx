@@ -12,6 +12,7 @@ import { CardIcon } from "@/components/ui/card-icon";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getFinalRoundStats } from "@/data/scrim-dto";
 import {
+  assignPlayersToSubroles,
   buildPlayerUltComparisons,
   type PlayerUltSummary,
   type UltEfficiency,
@@ -21,6 +22,7 @@ import { calculateMVPScoresForMap } from "@/lib/mvp-score";
 import prisma from "@/lib/prisma";
 import {
   cn,
+  groupEventsIntoFights,
   groupKillsIntoFights,
   range,
   removeDuplicateRows,
@@ -30,7 +32,6 @@ import {
 import { calculateWinner } from "@/lib/winrate";
 import {
   getHeroRole,
-  getHeroSubrole,
   heroPriority,
   heroRoleMapping,
   ROLE_SUBROLES,
@@ -39,7 +40,7 @@ import {
   type RoleName,
   type SubroleName,
 } from "@/types/heroes";
-import { $Enums } from "@prisma/client";
+import { $Enums, type Kill } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 
 export async function DefaultOverview({
@@ -164,6 +165,34 @@ export async function DefaultOverview({
   const team1Ults = ultimateStarts.filter((u) => u.player_team === team1Name);
   const team2Ults = ultimateStarts.filter((u) => u.player_team === team2Name);
 
+  // Build fights that include ult events in the event stream so fight windows
+  // expand to cover ultimates used outside kill-only activity. The original
+  // `fights` (kill-only) is kept for first-death analysis.
+  const mergedEvents: Kill[] = [
+    ...fights.flatMap((f) => f.kills),
+    ...ultimateStarts.map(
+      (ult): Kill => ({
+        id: ult.id,
+        scrimId: ult.scrimId,
+        event_type: "ultimate_start" as Kill["event_type"],
+        match_time: ult.match_time,
+        attacker_team: ult.player_team,
+        attacker_name: ult.player_name,
+        attacker_hero: ult.player_hero,
+        victim_team: "",
+        victim_name: "",
+        victim_hero: "",
+        event_ability: "Ultimate",
+        event_damage: 0,
+        is_critical_hit: "0",
+        is_environmental: "0",
+        MapDataId: ult.MapDataId,
+      })
+    ),
+  ];
+  mergedEvents.sort((a, b) => a.match_time - b.match_time);
+  const fightsWithUlts = groupEventsIntoFights(mergedEvents);
+
   const roles: RoleName[] = ["Tank", "Damage", "Support"];
 
   const firstUltByRolePerFight: Record<
@@ -179,7 +208,7 @@ export async function DefaultOverview({
   const team2FightInitiatingUlts = new Map<string, number>();
   let team1InitiatedWithUlt = 0;
   let team2InitiatedWithUlt = 0;
-  let fightsWithUlts = 0;
+  let fightsWithUltsCount = 0;
 
   type SubroleTimingAccum = {
     count: number;
@@ -209,14 +238,43 @@ export async function DefaultOverview({
     team2SubroleTimingByRole.set(role, inner2);
   }
 
-  for (const fight of fights) {
+  function buildPlayerUltSummary(ults: typeof ultimateStarts) {
+    const map = new Map<string, PlayerUltSummary>();
+    for (const u of ults) {
+      let entry = map.get(u.player_name);
+      if (!entry) {
+        entry = { heroCountMap: new Map(), totalCount: 0 };
+        map.set(u.player_name, entry);
+      }
+      entry.totalCount++;
+      entry.heroCountMap.set(
+        u.player_hero,
+        (entry.heroCountMap.get(u.player_hero) ?? 0) + 1
+      );
+    }
+    return map;
+  }
+
+  const team1UltSummary = buildPlayerUltSummary(team1Ults);
+  const team2UltSummary = buildPlayerUltSummary(team2Ults);
+
+  const team1PlayerSubrole = new Map<string, SubroleName>();
+  for (const [sr, candidate] of assignPlayersToSubroles(team1UltSummary)) {
+    team1PlayerSubrole.set(candidate.playerName, sr);
+  }
+  const team2PlayerSubrole = new Map<string, SubroleName>();
+  for (const [sr, candidate] of assignPlayersToSubroles(team2UltSummary)) {
+    team2PlayerSubrole.set(candidate.playerName, sr);
+  }
+
+  for (const fight of fightsWithUlts) {
     const fightUlts = ultimateStarts.filter(
       (u) => u.match_time >= fight.start && u.match_time <= fight.end + 15
     );
 
     if (fightUlts.length > 0) {
       const opener = fightUlts[0];
-      fightsWithUlts++;
+      fightsWithUltsCount++;
       if (opener.player_team === team1Name) team1InitiatedWithUlt++;
       else team2InitiatedWithUlt++;
 
@@ -244,14 +302,15 @@ export async function DefaultOverview({
     const fightDuration = fight.end + 15 - fight.start;
     const thirdDuration = fightDuration / 3;
     for (const ult of fightUlts) {
-      const role = getHeroRole(ult.player_hero);
-      const subrole = getHeroSubrole(ult.player_hero, role);
+      const isTeam1 = ult.player_team === team1Name;
+      const playerLookup = isTeam1 ? team1PlayerSubrole : team2PlayerSubrole;
+      const subrole = playerLookup.get(ult.player_name);
       if (!subrole) continue;
+      const role = getHeroRole(ult.player_hero);
 
-      const timingMap =
-        ult.player_team === team1Name
-          ? team1SubroleTimingByRole
-          : team2SubroleTimingByRole;
+      const timingMap = isTeam1
+        ? team1SubroleTimingByRole
+        : team2SubroleTimingByRole;
       const accum = timingMap.get(role)?.get(subrole);
       if (!accum) continue;
       accum.count++;
@@ -332,26 +391,9 @@ export async function DefaultOverview({
   const team1TopUlt = topUltUser(team1Ults);
   const team2TopUlt = topUltUser(team2Ults);
 
-  function buildPlayerUltSummary(ults: typeof ultimateStarts) {
-    const map = new Map<string, PlayerUltSummary>();
-    for (const u of ults) {
-      let entry = map.get(u.player_name);
-      if (!entry) {
-        entry = { heroCountMap: new Map(), totalCount: 0 };
-        map.set(u.player_name, entry);
-      }
-      entry.totalCount++;
-      entry.heroCountMap.set(
-        u.player_hero,
-        (entry.heroCountMap.get(u.player_hero) ?? 0) + 1
-      );
-    }
-    return map;
-  }
-
   const playerComparisons = buildPlayerUltComparisons(
-    buildPlayerUltSummary(team1Ults),
-    buildPlayerUltSummary(team2Ults)
+    team1UltSummary,
+    team2UltSummary
   );
 
   function teamAvgStat(stat: string, teamPlayers: string[]) {
@@ -398,7 +440,7 @@ export async function DefaultOverview({
     let dryCount = 0;
     let dryWins = 0;
 
-    for (const fight of fights) {
+    for (const fight of fightsWithUlts) {
       const fightUlts = ultimateStarts.filter(
         (u) =>
           u.player_team === teamName &&
@@ -1024,14 +1066,16 @@ export async function DefaultOverview({
                         </li>
                       );
                     })}
-                    {fightsWithUlts > 0 && (
+                    {fightsWithUltsCount > 0 && (
                       <>
                         <li>
                           {(() => {
                             const team1Rate =
-                              (team1InitiatedWithUlt / fightsWithUlts) * 100;
+                              (team1InitiatedWithUlt / fightsWithUltsCount) *
+                              100;
                             const team2Rate =
-                              (team2InitiatedWithUlt / fightsWithUlts) * 100;
+                              (team2InitiatedWithUlt / fightsWithUltsCount) *
+                              100;
                             const leader =
                               team1Rate >= team2Rate
                                 ? {
@@ -1067,7 +1111,7 @@ export async function DefaultOverview({
                               teamName: leader.name,
                               percentage: leader.pct.toFixed(1),
                               count: leader.count,
-                              total: fightsWithUlts,
+                              total: fightsWithUltsCount,
                             });
                           })()}
                         </li>
