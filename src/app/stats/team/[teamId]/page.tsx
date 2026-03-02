@@ -13,6 +13,9 @@ import { TeamFightStatsCard } from "@/components/stats/team/team-fight-stats-car
 import { TeamRosterGrid } from "@/components/stats/team/team-roster-grid";
 import { TopMapsCard } from "@/components/stats/team/top-maps-card";
 import { UltimateEconomyCard } from "@/components/stats/team/ultimate-economy-card";
+import { UltPlayerRankingsCard } from "@/components/stats/team/ult-player-rankings-card";
+import { UltRoleBreakdownCard } from "@/components/stats/team/ult-role-breakdown-card";
+import { UltUsageOverviewCard } from "@/components/stats/team/ult-usage-overview-card";
 import { WinLossStreaksCard } from "@/components/stats/team/win-loss-streaks-card";
 import { WinProbabilityInsights } from "@/components/stats/team/win-probability-insights";
 import { WinrateOverTimeChart } from "@/components/stats/team/winrate-over-time-chart";
@@ -22,6 +25,7 @@ import {
   getPlayerMapPerformanceMatrix,
 } from "@/data/team-analytics-dto";
 import { getTeamFightStats } from "@/data/team-fight-stats-dto";
+import { getTeamUltStats } from "@/data/team-ult-stats-dto";
 import {
   getHeroPoolAnalysis,
   getHeroPoolRawData,
@@ -97,6 +101,7 @@ export default async function TeamStatsPage(
     mapModePerformance,
     quickStats,
     playerMapPerformance,
+    ultStats,
     timeframe1,
     timeframe2,
     timeframe3,
@@ -122,6 +127,7 @@ export default async function TeamStatsPage(
     getMapModePerformance(teamId),
     getQuickWinsStats(teamId),
     getPlayerMapPerformanceMatrix(teamId),
+    getTeamUltStats(teamId),
     new Permission("stats-timeframe-1").check(),
     new Permission("stats-timeframe-2").check(),
     new Permission("stats-timeframe-3").check(),
@@ -242,6 +248,7 @@ export default async function TeamStatsPage(
           <TabsTrigger value="trends">Trends</TabsTrigger>
           <TabsTrigger value="maps">Maps</TabsTrigger>
           <TabsTrigger value="teamfights">Teamfights</TabsTrigger>
+          <TabsTrigger value="ultimates">Ultimates</TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
@@ -325,6 +332,13 @@ export default async function TeamStatsPage(
           <TeamFightStatsCard fightStats={fightStats} />
           <UltimateEconomyCard fightStats={fightStats} />
           <WinProbabilityInsights fightStats={fightStats} />
+        </TabsContent>
+
+        {/* Ultimates Tab */}
+        <TabsContent value="ultimates" className="space-y-4">
+          <UltUsageOverviewCard ultStats={ultStats} />
+          <UltRoleBreakdownCard ultStats={ultStats} />
+          <UltPlayerRankingsCard ultStats={ultStats} />
         </TabsContent>
       </Tabs>
     </div>

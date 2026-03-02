@@ -3695,6 +3695,47 @@
       "50PercentLine": "50% Line",
       "winrate": "Winrate: <span>{winrate}%</span>",
       "winsAndLosses": "{wins}W - {losses}L"
+    },
+    "ultimatesTab": {
+      "overview": {
+        "title": "Ultimate Usage Overview",
+        "noData": "No ultimate usage data available yet.",
+        "description": "Aggregated across {maps} maps",
+        "totalUltsUsed": "Total Ultimates Used",
+        "ultsPerMap": "{count} per map average",
+        "avgChargeTime": "Avg Charge Time",
+        "chargeTimeFast": "Fast charge speed",
+        "chargeTimeAverage": "Average charge speed",
+        "chargeTimeSlow": "Slow — consider building ult faster",
+        "avgHoldTime": "Avg Hold Time",
+        "holdTimeGood": "Good discipline — using ults quickly",
+        "holdTimeAverage": "Average hold time",
+        "holdTimeSlow": "Holding too long — use ults sooner",
+        "fightInitiation": "Fight Initiation Rate",
+        "fightInitiationDetail": "{count} of {total} ult fights",
+        "topOpenersLabel": "Top fight opener: <span>{top}</span> ({count} fights) — click to expand"
+      },
+      "roleBreakdown": {
+        "title": "Ultimate Usage by Role",
+        "noData": "No ultimate usage data available yet.",
+        "description": "How ultimates are distributed across roles and when they are used in fights",
+        "percentage": "{value}% of total",
+        "timingTitle": "Ultimate Timing Distribution",
+        "timingDescription": "When ultimates are used within fights: initiation (first third), midfight (middle third), or late (final third)",
+        "yourTeam": "Your Team"
+      },
+      "playerRankings": {
+        "title": "Player Ultimate Rankings",
+        "noData": "No player data available yet.",
+        "description": "Individual player ultimate usage across all scrims",
+        "tableLabel": "Player ultimate rankings",
+        "player": "Player",
+        "hero": "Primary Hero",
+        "totalUlts": "Total Ults",
+        "mapsPlayed": "Maps",
+        "ultsPerMap": "Ults/Map",
+        "fightOpener": "Fight Opener"
+      }
     }
   }
 }
