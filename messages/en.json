@@ -3412,6 +3412,19 @@
       "ogDescription": "Stats for {teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
       "ogImage": "{teamName} Stats"
     },
+    "rangePicker": {
+      "selectTimeframe": "Select timeframe",
+      "lastWeek": "Last Week",
+      "last2Weeks": "Last 2 Weeks",
+      "lastMonth": "Last Month",
+      "last3Months": "Last 3 Months",
+      "last6Months": "Last 6 Months",
+      "lastYear": "Last Year",
+      "allTime": "All Time",
+      "customRange": "Custom Range",
+      "upgrade": "Upgrade to view more timeframes",
+      "pickDateRange": "Pick a date range"
+    },
     "roleBalanceRadar": {
       "title": "Role Balance",
       "noData": "Not enough data to analyze role balance yet.",

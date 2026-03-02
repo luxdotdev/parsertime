@@ -2162,5 +2162,20 @@
     "delete-error": "알림 삭제 실패",
     "notification-created": "알림 생성 성공",
     "create-notification-error": "알림 생성 실패"
+  },
+  "teamStatsPage": {
+    "rangePicker": {
+      "selectTimeframe": "기간 선택",
+      "lastWeek": "지난주",
+      "last2Weeks": "지난 2주",
+      "lastMonth": "지난 달",
+      "last3Months": "지난 3개월",
+      "last6Months": "지난 6개월",
+      "lastYear": "지난 1년",
+      "allTime": "전체 기간",
+      "customRange": "사용자 지정",
+      "upgrade": "더 많은 기간을 보려면 업그레이드하세요",
+      "pickDateRange": "날짜 범위 선택"
+    }
   }
 }

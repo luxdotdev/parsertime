@@ -2165,5 +2165,20 @@
     "delete-error": "删除通知失败",
     "notification-created": "通知创建成功",
     "create-notification-error": "创建通知失败"
+  },
+  "teamStatsPage": {
+    "rangePicker": {
+      "selectTimeframe": "选择时间范围",
+      "lastWeek": "过去一周",
+      "last2Weeks": "过去两周",
+      "lastMonth": "过去一个月",
+      "last3Months": "过去三个月",
+      "last6Months": "过去六个月",
+      "lastYear": "过去一年",
+      "allTime": "所有时间",
+      "customRange": "自定义范围",
+      "upgrade": "升级以查看更多时间范围",
+      "pickDateRange": "选择日期范围"
+    }
   }
 }
