@@ -10,12 +10,13 @@ import { RoleBalanceRadar } from "@/components/stats/team/role-balance-radar";
 import { RolePerformanceCard } from "@/components/stats/team/role-performance-card";
 import { StrengthsWeaknessesCard } from "@/components/stats/team/strengths-weaknesses-card";
 import { TeamFightStatsCard } from "@/components/stats/team/team-fight-stats-card";
+import { TeamRangePicker } from "@/components/stats/team/team-range-picker";
 import { TeamRosterGrid } from "@/components/stats/team/team-roster-grid";
 import { TopMapsCard } from "@/components/stats/team/top-maps-card";
-import { UltimateEconomyCard } from "@/components/stats/team/ultimate-economy-card";
 import { UltPlayerRankingsCard } from "@/components/stats/team/ult-player-rankings-card";
 import { UltRoleBreakdownCard } from "@/components/stats/team/ult-role-breakdown-card";
 import { UltUsageOverviewCard } from "@/components/stats/team/ult-usage-overview-card";
+import { UltimateEconomyCard } from "@/components/stats/team/ultimate-economy-card";
 import { WinLossStreaksCard } from "@/components/stats/team/win-loss-streaks-card";
 import { WinProbabilityInsights } from "@/components/stats/team/win-probability-insights";
 import { WinrateOverTimeChart } from "@/components/stats/team/winrate-over-time-chart";
@@ -25,11 +26,7 @@ import {
   getPlayerMapPerformanceMatrix,
 } from "@/data/team-analytics-dto";
 import { getTeamFightStats } from "@/data/team-fight-stats-dto";
-import { getTeamUltStats } from "@/data/team-ult-stats-dto";
-import {
-  getHeroPoolAnalysis,
-  getHeroPoolRawData,
-} from "@/data/team-hero-pool-dto";
+import { getHeroPoolAnalysis } from "@/data/team-hero-pool-dto";
 import { getMapModePerformance } from "@/data/team-map-mode-stats-dto";
 import {
   getRecentForm,
@@ -42,6 +39,7 @@ import {
   getRoleBalanceAnalysis,
   getRolePerformanceStats,
 } from "@/data/team-role-stats-dto";
+import type { TeamDateRange } from "@/data/team-shared-data";
 import {
   getBestMapByWinrate,
   getBlindSpotMap,
@@ -50,25 +48,82 @@ import {
   getTop5MapsByPlaytime,
   getTopMapsByPlaytime,
 } from "@/data/team-stats-dto";
+import { getTeamUltStats } from "@/data/team-ult-stats-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { calculateHeroPickrateMatrix } from "@/lib/hero-pickrate-utils";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
+import { isValidTimeframe, type Timeframe } from "@/lib/timeframe";
 import { getMapNames } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
+import { addMonths, addWeeks, addYears } from "date-fns";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
+function computeDateRange(
+  timeframe: Timeframe,
+  customFrom?: string,
+  customTo?: string
+): TeamDateRange | undefined {
+  const now = new Date();
+
+  switch (timeframe) {
+    case "one-week":
+      return { from: addWeeks(now, -1), to: now };
+    case "two-weeks":
+      return { from: addWeeks(now, -2), to: now };
+    case "one-month":
+      return { from: addMonths(now, -1), to: now };
+    case "three-months":
+      return { from: addMonths(now, -3), to: now };
+    case "six-months":
+      return { from: addMonths(now, -6), to: now };
+    case "one-year":
+      return { from: addYears(now, -1), to: now };
+    case "all-time":
+      return undefined;
+    case "custom": {
+      if (customFrom && customTo) {
+        const from = new Date(customFrom);
+        const to = new Date(customTo);
+        if (!isNaN(from.getTime()) && !isNaN(to.getTime())) {
+          return { from, to };
+        }
+      }
+      return { from: addWeeks(now, -1), to: now };
+    }
+  }
+}
+
+function clampTimeframe(
+  requested: Timeframe,
+  permissions: Record<string, boolean>
+): Timeframe {
+  const tier3Only: Timeframe[] = ["one-year", "all-time", "custom"];
+  const tier2Only: Timeframe[] = ["three-months", "six-months"];
+
+  if (tier3Only.includes(requested) && !permissions["stats-timeframe-3"]) {
+    return permissions["stats-timeframe-2"] ? "six-months" : "one-month";
+  }
+  if (tier2Only.includes(requested) && !permissions["stats-timeframe-2"]) {
+    return "one-month";
+  }
+  return requested;
+}
+
 export default async function TeamStatsPage(
-  props: PagePropsWithLocale<"/stats/team/[teamId]">
+  props: PagePropsWithLocale<"/stats/team/[teamId]"> & {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  }
 ) {
   const session = await auth();
   const user = await getUser(session?.user.email);
   if (!user) notFound();
 
   const params = await props.params;
+  const searchParams = await props.searchParams;
   const teamId = parseInt(params.teamId);
 
   const team = await prisma.team.findFirst({
@@ -77,9 +132,34 @@ export default async function TeamStatsPage(
   });
   if (!team) notFound();
 
-  // If the user is not a member of the team and is not an admin, do not show the page
   const userIsMember = team.users.some((teamUser) => teamUser.id === user.id);
   if (!userIsMember && user.role !== $Enums.UserRole.ADMIN) notFound();
+
+  const [timeframe1, timeframe2, timeframe3] = await Promise.all([
+    new Permission("stats-timeframe-1").check(),
+    new Permission("stats-timeframe-2").check(),
+    new Permission("stats-timeframe-3").check(),
+  ]);
+
+  const permissions = {
+    "stats-timeframe-1": timeframe1,
+    "stats-timeframe-2": timeframe2,
+    "stats-timeframe-3": timeframe3,
+  };
+
+  const rawTimeframe =
+    typeof searchParams.timeframe === "string" ? searchParams.timeframe : null;
+  const requestedTimeframe: Timeframe = isValidTimeframe(rawTimeframe)
+    ? rawTimeframe
+    : "one-week";
+  const effectiveTimeframe = clampTimeframe(requestedTimeframe, permissions);
+
+  const customFrom =
+    typeof searchParams.from === "string" ? searchParams.from : undefined;
+  const customTo =
+    typeof searchParams.to === "string" ? searchParams.to : undefined;
+
+  const dateRange = computeDateRange(effectiveTimeframe, customFrom, customTo);
 
   const [
     scrims,
@@ -102,102 +182,42 @@ export default async function TeamStatsPage(
     quickStats,
     playerMapPerformance,
     ultStats,
-    timeframe1,
-    timeframe2,
-    timeframe3,
   ] = await Promise.all([
     prisma.scrim.findMany({
-      where: { teamId },
+      where: {
+        teamId,
+        ...(dateRange && { date: { gte: dateRange.from, lte: dateRange.to } }),
+      },
     }),
     getTeamRoster(teamId),
-    getTeamWinrates(teamId),
-    getTop5MapsByPlaytime(teamId),
-    getTopMapsByPlaytime(teamId),
-    getBestMapByWinrate(teamId),
-    getBlindSpotMap(teamId),
-    getTeamFightStats(teamId),
+    getTeamWinrates(teamId, dateRange),
+    getTop5MapsByPlaytime(teamId, dateRange),
+    getTopMapsByPlaytime(teamId, dateRange),
+    getBestMapByWinrate(teamId, dateRange),
+    getBlindSpotMap(teamId, dateRange),
+    getTeamFightStats(teamId, dateRange),
     getMapNames(),
-    getRolePerformanceStats(teamId),
-    getRoleBalanceAnalysis(teamId),
-    getBestRoleTrios(teamId),
-    getWinrateOverTime(teamId, "week"),
-    getWinrateOverTime(teamId, "month"),
-    getRecentForm(teamId),
-    getStreakInfo(teamId),
-    getMapModePerformance(teamId),
-    getQuickWinsStats(teamId),
-    getPlayerMapPerformanceMatrix(teamId),
-    getTeamUltStats(teamId),
-    new Permission("stats-timeframe-1").check(),
-    new Permission("stats-timeframe-2").check(),
-    new Permission("stats-timeframe-3").check(),
+    getRolePerformanceStats(teamId, dateRange),
+    getRoleBalanceAnalysis(teamId, dateRange),
+    getBestRoleTrios(teamId, dateRange),
+    getWinrateOverTime(teamId, "week", dateRange),
+    getWinrateOverTime(teamId, "month", dateRange),
+    getRecentForm(teamId, dateRange),
+    getStreakInfo(teamId, dateRange),
+    getMapModePerformance(teamId, dateRange),
+    getQuickWinsStats(teamId, dateRange),
+    getPlayerMapPerformanceMatrix(teamId, dateRange),
+    getTeamUltStats(teamId, dateRange),
   ]);
 
-  // Determine the maximum permitted timeframe based on permissions
-  const permitted = timeframe3
-    ? "all-time"
-    : timeframe2
-      ? "six-months"
-      : "one-month";
-
-  // Calculate date limits based on permitted timeframe
-  let dateFrom: Date | undefined;
-  const dateTo = new Date();
-
-  if (permitted !== "all-time") {
-    dateFrom = new Date();
-    if (permitted === "one-month") {
-      dateFrom.setMonth(dateFrom.getMonth() - 1);
-    } else if (permitted === "six-months") {
-      dateFrom.setMonth(dateFrom.getMonth() - 6);
-    }
-  }
-
-  // Fetch hero data with date restrictions
-  const heroPoolRawData = await getHeroPoolRawData(teamId);
-
-  // Filter raw data client-side for the permitted timeframe
-  let filteredHeroPoolRawData = heroPoolRawData;
-  if (dateFrom) {
-    filteredHeroPoolRawData = {
-      ...heroPoolRawData,
-      mapDataRecords: heroPoolRawData.mapDataRecords.filter(
-        (record) => record.scrimDate >= dateFrom && record.scrimDate <= dateTo
-      ),
-    };
-  }
-
-  // Fetch pickrate data with the same restrictions
-  const heroPickrateRawData = await getHeroPickrateRawData(teamId);
-
-  // Filter pickrate raw data for the permitted timeframe
-  let filteredPickrateRawData = heroPickrateRawData;
-  if (dateFrom) {
-    filteredPickrateRawData = {
-      ...heroPickrateRawData,
-      mapDataRecords: heroPickrateRawData.mapDataRecords.filter(
-        (record) => record.scrimDate >= dateFrom && record.scrimDate <= dateTo
-      ),
-    };
-  }
-
-  // Calculate initial data for one-week view (default)
-  const oneWeekAgo = new Date();
-  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-
-  const oneWeekPickrateRawData = {
-    ...heroPickrateRawData,
-    mapDataRecords: heroPickrateRawData.mapDataRecords.filter(
-      (record) => record.scrimDate >= oneWeekAgo && record.scrimDate <= dateTo
-    ),
-  };
-
-  const initialHeroPool = await getHeroPoolAnalysis(teamId, oneWeekAgo, dateTo);
-  const initialHeroPickrateMatrix = calculateHeroPickrateMatrix(
-    oneWeekPickrateRawData
+  const heroPickrateRawData = await getHeroPickrateRawData(teamId, dateRange);
+  const heroPool = await getHeroPoolAnalysis(
+    teamId,
+    dateRange?.from,
+    dateRange?.to
   );
+  const heroPickrateMatrix = calculateHeroPickrateMatrix(heroPickrateRawData);
 
-  // Convert playtime array to Record for gallery
   const mapPlaytimes: Record<string, number> = {};
   allMapsPlaytime.forEach((map) => {
     mapPlaytimes[map.name] = map.playtime;
@@ -205,38 +225,36 @@ export default async function TeamStatsPage(
 
   const totalGames = winrates.overallWins + winrates.overallLosses;
 
-  // Build permissions object for timeframe restrictions
-  const permissions = {
-    "stats-timeframe-1": timeframe1,
-    "stats-timeframe-2": timeframe2,
-    "stats-timeframe-3": timeframe3,
-  };
-
   return (
     <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
-      {/* Header Section */}
-      <div className="mb-6 flex items-center gap-4">
-        <Image
-          src={team.image ?? `https://avatar.vercel.sh/${team.name}.png`}
-          alt={team.name}
-          width={100}
-          height={100}
-          className="border-muted rounded-full border-2"
-        />
-        <div className="flex flex-col space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight">{team.name}</h1>
-          {totalGames > 0 && (
-            <div className="flex items-center gap-4 text-sm">
-              <span className="text-muted-foreground">
-                Overall Record: {winrates.overallWins}W -{" "}
-                {winrates.overallLosses}L
-              </span>
-              <span className="font-semibold">
-                {winrates.overallWinrate.toFixed(1)}% Win Rate
-              </span>
-            </div>
-          )}
+      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center gap-4">
+          <Image
+            src={team.image ?? `https://avatar.vercel.sh/${team.name}.png`}
+            alt={team.name}
+            width={100}
+            height={100}
+            className="border-muted rounded-full border-2"
+          />
+          <div className="flex flex-col space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight">{team.name}</h1>
+            {totalGames > 0 && (
+              <div className="flex items-center gap-4 text-sm">
+                <span className="text-muted-foreground">
+                  Overall Record: {winrates.overallWins}W -{" "}
+                  {winrates.overallLosses}L
+                </span>
+                <span className="font-semibold">
+                  {winrates.overallWinrate.toFixed(1)}% Win Rate
+                </span>
+              </div>
+            )}
+          </div>
         </div>
+        <TeamRangePicker
+          permissions={permissions}
+          defaultTimeframe={effectiveTimeframe}
+        />
       </div>
 
       {/* Tabbed Content */}
@@ -296,11 +314,8 @@ export default async function TeamStatsPage(
         {/* Heroes Tab */}
         <TabsContent value="heroes" className="space-y-4">
           <HeroPoolContainer
-            rawData={filteredHeroPoolRawData}
-            initialData={initialHeroPool}
-            heatmapRawData={filteredPickrateRawData}
-            heatmapInitialData={initialHeroPickrateMatrix}
-            permissions={permissions}
+            initialData={heroPool}
+            heatmapInitialData={heroPickrateMatrix}
           />
         </TabsContent>
 
