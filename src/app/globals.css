@@ -127,6 +127,35 @@
   --color-team-2-protanopia: var(--team-2-protanopia);
 }
 
+@keyframes collapsible-down {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--radix-collapsible-content-height);
+    opacity: 1;
+  }
+}
+
+@keyframes collapsible-up {
+  from {
+    height: var(--radix-collapsible-content-height);
+    opacity: 1;
+  }
+  to {
+    height: 0;
+    opacity: 0;
+  }
+}
+
+@theme inline {
+  --animate-collapsible-down: collapsible-down 200ms
+    cubic-bezier(0.215, 0.61, 0.355, 1);
+  --animate-collapsible-up: collapsible-up 150ms
+    cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
