@@ -97,6 +97,31 @@ export function WinProbabilityInsights({
     },
   ];
 
+  const higherReversalRate = Math.max(
+    fightStats.dryFightReversalRate,
+    fightStats.nonDryFightReversalRate
+  );
+  if (fightStats.dryFights > 0 || fightStats.nonDryFights > 0) {
+    insights.push({
+      title: t("fightReversalComparison"),
+      value: `${fightStats.dryFightReversalRate.toFixed(1)}% / ${fightStats.nonDryFightReversalRate.toFixed(1)}%`,
+      description: t("fightReversalComparisonDescription", {
+        dryRate: fightStats.dryFightReversalRate.toFixed(1),
+        nonDryRate: fightStats.nonDryFightReversalRate.toFixed(1),
+      }),
+      impact:
+        higherReversalRate > 15
+          ? "high-positive"
+          : higherReversalRate < 5
+            ? "negative"
+            : "moderate",
+      detail: t("fightReversalComparisonDetail", {
+        dryReversals: fightStats.dryFightReversals,
+        nonDryReversals: fightStats.nonDryFightReversals,
+      }),
+    });
+  }
+
   function getImpactColor(impact: string): string {
     if (impact === "high-positive")
       return "border-green-500 bg-green-50 dark:bg-green-950/30";
