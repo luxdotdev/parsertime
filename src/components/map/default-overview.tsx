@@ -459,6 +459,8 @@ export async function DefaultOverview({
     let totalUlts = 0;
     let dryCount = 0;
     let dryWins = 0;
+    let dryReversals = 0;
+    let nonDryReversals = 0;
 
     for (const fight of fightsWithUlts) {
       const fightUlts = ultimateStarts.filter(
@@ -471,6 +473,7 @@ export async function DefaultOverview({
 
       let ourKills = 0;
       let enemyKills = 0;
+      let wasDown2Plus = false;
       for (const k of fight.kills) {
         if (k.event_type === "mercy_rez") {
           if (k.victim_team === teamName)
@@ -480,12 +483,17 @@ export async function DefaultOverview({
           if (k.attacker_team === teamName) ourKills++;
           else enemyKills++;
         }
+        if (enemyKills - ourKills >= 2) {
+          wasDown2Plus = true;
+        }
       }
       const won = ourKills > enemyKills;
+      const isReversal = won && wasDown2Plus;
 
       if (ultCount === 0) {
         dryCount++;
         if (won) dryWins++;
+        if (isReversal) dryReversals++;
       } else {
         totalUlts += ultCount;
         if (won) {
@@ -495,6 +503,7 @@ export async function DefaultOverview({
           fightsLost++;
           ultsInLost += ultCount;
         }
+        if (isReversal) nonDryReversals++;
 
         const sortedKills = [...fight.kills].sort(
           (a, b) => a.match_time - b.match_time
@@ -530,7 +539,12 @@ export async function DefaultOverview({
       dryFights: dryCount,
       dryFightWins: dryWins,
       dryFightWinrate: dryCount > 0 ? (dryWins / dryCount) * 100 : 0,
+      dryFightReversals: dryReversals,
+      dryFightReversalRate: dryCount > 0 ? (dryReversals / dryCount) * 100 : 0,
       nonDryFights: nonDry,
+      nonDryFightReversals: nonDryReversals,
+      nonDryFightReversalRate:
+        nonDry > 0 ? (nonDryReversals / nonDry) * 100 : 0,
     };
   }
 
@@ -1367,6 +1381,17 @@ export async function DefaultOverview({
                                 ).toFixed(1)
                               : "0.0",
                         })}
+                        {(eff.dryFights > 0 || eff.nonDryFights > 0) && " "}
+                        {(eff.dryFights > 0 || eff.nonDryFights > 0) &&
+                          t.rich("analysis.ultReversalRate", {
+                            b: (chunks) => (
+                              <span className="font-semibold tabular-nums">
+                                {chunks}
+                              </span>
+                            ),
+                            dryRate: eff.dryFightReversalRate.toFixed(1),
+                            nonDryRate: eff.nonDryFightReversalRate.toFixed(1),
+                          })}
                       </li>
                     )
                 )}
