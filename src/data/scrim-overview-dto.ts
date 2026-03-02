@@ -15,7 +15,6 @@ import { calculateWinner } from "@/lib/winrate";
 import type { HeroName, RoleName, SubroleName } from "@/types/heroes";
 import {
   getHeroRole,
-  getHeroSubrole,
   heroRoleMapping,
   ROLE_SUBROLES,
   SUBROLE_DISPLAY_NAMES,
@@ -1015,6 +1014,33 @@ function computeScrimUltAnalysis(
     ultsByMap.get(ult.MapDataId)!.push(ult);
   }
 
+  // Pre-compute player ult counts for subrole assignment
+  for (const [mapId, ults] of ultsByMap) {
+    const ourTeamName = ourTeamNameByMap.get(mapId);
+    if (!ourTeamName) continue;
+    for (const ult of ults) {
+      if (ult.player_team === ourTeamName) {
+        trackPlayerUlt(ourPlayerUltCounts, ult.player_name, ult.player_hero);
+      } else {
+        trackPlayerUlt(oppPlayerUltCounts, ult.player_name, ult.player_hero);
+      }
+    }
+  }
+
+  // Build player-name → subrole lookup from the same assignment algorithm
+  // used by the comparison chart, so both charts agree on subrole placement
+  const ourSubroleAssignment = assignPlayersToSubroles(ourPlayerUltCounts);
+  const oppSubroleAssignment = assignPlayersToSubroles(oppPlayerUltCounts);
+
+  const ourPlayerSubrole = new Map<string, SubroleName>();
+  for (const [sr, candidate] of ourSubroleAssignment) {
+    ourPlayerSubrole.set(candidate.playerName, sr);
+  }
+  const oppPlayerSubrole = new Map<string, SubroleName>();
+  for (const [sr, candidate] of oppSubroleAssignment) {
+    oppPlayerSubrole.set(candidate.playerName, sr);
+  }
+
   for (const [mapId, ults] of ultsByMap) {
     const ourTeamName = ourTeamNameByMap.get(mapId);
     if (!ourTeamName) continue;
@@ -1024,11 +1050,9 @@ function computeScrimUltAnalysis(
       if (ult.player_team === ourTeamName) {
         ourUltsUsed++;
         ourByRole[role]++;
-        trackPlayerUlt(ourPlayerUltCounts, ult.player_name, ult.player_hero);
       } else {
         opponentUltsUsed++;
         oppByRole[role]++;
-        trackPlayerUlt(oppPlayerUltCounts, ult.player_name, ult.player_hero);
       }
     }
 
@@ -1074,14 +1098,15 @@ function computeScrimUltAnalysis(
       const fightDuration = fight.end + 15 - fight.start;
       const thirdDuration = fightDuration / 3;
       for (const ult of fightUlts) {
-        const role = getHeroRole(ult.player_hero);
-        const subrole = getHeroSubrole(ult.player_hero, role);
+        const isOurUlt = ult.player_team === ourTeamName;
+        const playerLookup = isOurUlt ? ourPlayerSubrole : oppPlayerSubrole;
+        const subrole = playerLookup.get(ult.player_name);
         if (!subrole) continue;
+        const role = getHeroRole(ult.player_hero);
 
-        const timingMap =
-          ult.player_team === ourTeamName
-            ? ourSubroleTimingByRole
-            : oppSubroleTimingByRole;
+        const timingMap = isOurUlt
+          ? ourSubroleTimingByRole
+          : oppSubroleTimingByRole;
         const accum = timingMap.get(role)?.get(subrole);
         if (!accum) continue;
         accum.count++;
@@ -1316,7 +1341,7 @@ function primaryHeroForPlayer(entry: PlayerUltSummary): string {
   return bestHero;
 }
 
-type Candidate = {
+export type SubroleCandidate = {
   playerName: string;
   primaryHero: string;
   possibleSubroles: SubroleName[];
@@ -1329,10 +1354,10 @@ type Candidate = {
  * to a more flexible player. This handles overlap (e.g. Tracer appearing
  * in both HitscanDamage and FlexDamage).
  */
-function assignPlayersToSubroles(
+export function assignPlayersToSubroles(
   counts: Map<string, PlayerUltSummary>
-): Map<SubroleName, Candidate> {
-  const candidates: Candidate[] = [];
+): Map<SubroleName, SubroleCandidate> {
+  const candidates: SubroleCandidate[] = [];
   for (const [name, entry] of counts) {
     const hero = primaryHeroForPlayer(entry);
     const possible = heroSubroles(hero);
@@ -1352,7 +1377,7 @@ function assignPlayersToSubroles(
       b.ultCount - a.ultCount
   );
 
-  const assigned = new Map<SubroleName, Candidate>();
+  const assigned = new Map<SubroleName, SubroleCandidate>();
   const usedPlayers = new Set<string>();
 
   for (const candidate of candidates) {
@@ -1564,6 +1589,39 @@ async function getScrimOverviewFn(
     fightsByMap.set(mapId, groupEventsIntoFights(events));
   }
 
+  // Build a separate fight map that includes ults in the event stream,
+  // so fight windows expand to cover ultimates used outside kill activity.
+  // This ensures the timing chart counts all ults, not just those near kills.
+  const fightsByMapWithUlts = new Map<number, Fight[]>();
+  for (const mapId of mapIds) {
+    const kills = killsByMap.get(mapId) ?? [];
+    const mapUlts = allUltimates.filter((u) => u.MapDataId === mapId);
+    const merged: Kill[] = [
+      ...kills,
+      ...mapUlts.map(
+        (ult): Kill => ({
+          id: ult.id,
+          scrimId: ult.scrimId,
+          event_type: "ultimate_start" as Kill["event_type"],
+          match_time: ult.match_time,
+          attacker_team: ult.player_team,
+          attacker_name: ult.player_name,
+          attacker_hero: ult.player_hero,
+          victim_team: "",
+          victim_name: "",
+          victim_hero: "",
+          event_ability: "Ultimate",
+          event_damage: 0,
+          is_critical_hit: "0",
+          is_environmental: "0",
+          MapDataId: ult.MapDataId,
+        })
+      ),
+    ];
+    merged.sort((a, b) => a.match_time - b.match_time);
+    fightsByMapWithUlts.set(mapId, groupEventsIntoFights(merged));
+  }
+
   type MapFirstDeathLookup = {
     fightCount: number;
     overallFirstDeaths: Map<string, number>;
@@ -1617,7 +1675,7 @@ async function getScrimOverviewFn(
 
   const ultAnalysis = computeScrimUltAnalysis(
     allUltimates,
-    fightsByMap,
+    fightsByMapWithUlts,
     ourTeamNameByMap,
     calculatedStats,
     scrimPlayers
