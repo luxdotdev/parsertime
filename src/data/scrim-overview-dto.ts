@@ -2,6 +2,12 @@ import "server-only";
 
 import type { TrendsAnalysis } from "@/data/comparison-dto";
 import { aggregatePlayerStats, calculateTrends } from "@/data/comparison-dto";
+import {
+  filterUtilityRoundStartSwaps,
+  type SwapRecord,
+  type SwapTimingOutcome,
+  type SwapWinrateBucket,
+} from "@/data/team-hero-swap-dto";
 import { getTeamRoster } from "@/data/team-shared-data";
 import prisma from "@/lib/prisma";
 import type { ValidStatColumn } from "@/lib/stat-percentiles";
@@ -186,6 +192,31 @@ export type ScrimUltAnalysis = {
   ultEfficiency: UltEfficiency;
 };
 
+export type ScrimSwapAnalysis = {
+  ourSwaps: number;
+  opponentSwaps: number;
+  ourSwapsPerMap: number;
+  opponentSwapsPerMap: number;
+  mapsWithOurSwaps: number;
+  mapsWithoutOurSwaps: number;
+  noSwapWinrate: number;
+  noSwapWins: number;
+  noSwapLosses: number;
+  swapWinrate: number;
+  swapWins: number;
+  swapLosses: number;
+  avgHeroTimeBeforeSwap: number;
+  ourTopSwap: { from: string; to: string; count: number } | null;
+  opponentTopSwap: { from: string; to: string; count: number } | null;
+  topSwapper: {
+    playerName: string;
+    count: number;
+    mapsCount: number;
+  } | null;
+  winrateBySwapCount: SwapWinrateBucket[];
+  timingOutcomes: SwapTimingOutcome[];
+};
+
 export type ScrimOverviewData = {
   mapCount: number;
   wins: number;
@@ -199,6 +230,7 @@ export type ScrimOverviewData = {
   teamTotals: ScrimTeamTotals;
   fightAnalysis: ScrimFightAnalysis;
   ultAnalysis: ScrimUltAnalysis;
+  swapAnalysis: ScrimSwapAnalysis;
 };
 
 const STAT_LABELS: Record<ValidStatColumn, string> = {
@@ -402,6 +434,29 @@ function emptyUltAnalysis(): ScrimUltAnalysis {
   };
 }
 
+function emptySwapAnalysis(): ScrimSwapAnalysis {
+  return {
+    ourSwaps: 0,
+    opponentSwaps: 0,
+    ourSwapsPerMap: 0,
+    opponentSwapsPerMap: 0,
+    mapsWithOurSwaps: 0,
+    mapsWithoutOurSwaps: 0,
+    noSwapWinrate: 0,
+    noSwapWins: 0,
+    noSwapLosses: 0,
+    swapWinrate: 0,
+    swapWins: 0,
+    swapLosses: 0,
+    avgHeroTimeBeforeSwap: 0,
+    ourTopSwap: null,
+    opponentTopSwap: null,
+    topSwapper: null,
+    winrateBySwapCount: [],
+    timingOutcomes: [],
+  };
+}
+
 function emptyOverviewData(): ScrimOverviewData {
   return {
     mapCount: 0,
@@ -422,6 +477,7 @@ function emptyOverviewData(): ScrimOverviewData {
     },
     fightAnalysis: emptyFightAnalysis(),
     ultAnalysis: emptyUltAnalysis(),
+    swapAnalysis: emptySwapAnalysis(),
   };
 }
 
@@ -1444,6 +1500,257 @@ export function buildPlayerUltComparisons(
   return comparisons;
 }
 
+function computeScrimSwapAnalysis(
+  allHeroSwaps: SwapRecord[],
+  allRoundStarts: { match_time: number; MapDataId: number | null }[],
+  allMatchEnds: { match_time: number; MapDataId: number | null }[],
+  mapIds: number[],
+  ourTeamNameByMap: Map<number, string>,
+  mapResults: MapResult[]
+): ScrimSwapAnalysis {
+  if (allHeroSwaps.length === 0) return emptySwapAnalysis();
+
+  const roundStartsByMap = new Map<number, number[]>();
+  for (const rs of allRoundStarts) {
+    if (!rs.MapDataId) continue;
+    const existing = roundStartsByMap.get(rs.MapDataId) ?? [];
+    existing.push(rs.match_time);
+    roundStartsByMap.set(rs.MapDataId, existing);
+  }
+
+  const ourSwapsByMap = new Map<number, SwapRecord[]>();
+  const opponentSwapsByMap = new Map<number, SwapRecord[]>();
+
+  for (const swap of allHeroSwaps) {
+    if (!swap.MapDataId) continue;
+    const ourTeam = ourTeamNameByMap.get(swap.MapDataId);
+    if (!ourTeam) continue;
+
+    if (swap.player_team === ourTeam) {
+      const existing = ourSwapsByMap.get(swap.MapDataId) ?? [];
+      existing.push(swap);
+      ourSwapsByMap.set(swap.MapDataId, existing);
+    } else {
+      const existing = opponentSwapsByMap.get(swap.MapDataId) ?? [];
+      existing.push(swap);
+      opponentSwapsByMap.set(swap.MapDataId, existing);
+    }
+  }
+
+  const filteredOurByMap = new Map<number, SwapRecord[]>();
+  for (const [mapId, swaps] of ourSwapsByMap) {
+    const rsTimesForMap = roundStartsByMap.get(mapId) ?? [];
+    const filtered = filterUtilityRoundStartSwaps(swaps, rsTimesForMap);
+    if (filtered.length > 0) filteredOurByMap.set(mapId, filtered);
+  }
+
+  const filteredOppByMap = new Map<number, SwapRecord[]>();
+  for (const [mapId, swaps] of opponentSwapsByMap) {
+    const rsTimesForMap = roundStartsByMap.get(mapId) ?? [];
+    const filtered = filterUtilityRoundStartSwaps(swaps, rsTimesForMap);
+    if (filtered.length > 0) filteredOppByMap.set(mapId, filtered);
+  }
+
+  const allOurSwaps: SwapRecord[] = [];
+  for (const swaps of filteredOurByMap.values()) allOurSwaps.push(...swaps);
+  const allOppSwaps: SwapRecord[] = [];
+  for (const swaps of filteredOppByMap.values()) allOppSwaps.push(...swaps);
+
+  const mapCount = mapIds.length;
+  const ourSwaps = allOurSwaps.length;
+  const opponentSwaps = allOppSwaps.length;
+  const mapsWithOurSwaps = filteredOurByMap.size;
+  const mapsWithoutOurSwaps = mapCount - mapsWithOurSwaps;
+
+  const mapResultLookup = new Map<number, MapResult>();
+  for (const mr of mapResults) mapResultLookup.set(mr.mapId, mr);
+
+  let noSwapWins = 0;
+  let noSwapLosses = 0;
+  let swapWins = 0;
+  let swapLosses = 0;
+
+  for (const mapId of mapIds) {
+    const result = mapResultLookup.get(mapId);
+    if (!result || result.winner === "draw") continue;
+    const hasSwaps = filteredOurByMap.has(mapId);
+    const isWin = result.winner === "our_team";
+
+    if (hasSwaps) {
+      if (isWin) swapWins++;
+      else swapLosses++;
+    } else {
+      if (isWin) noSwapWins++;
+      else noSwapLosses++;
+    }
+  }
+
+  const noSwapTotal = noSwapWins + noSwapLosses;
+  const swapTotal = swapWins + swapLosses;
+
+  let totalHeroTimeBeforeSwap = 0;
+  for (const swap of allOurSwaps)
+    totalHeroTimeBeforeSwap += swap.hero_time_played;
+
+  function findTopSwap(swaps: SwapRecord[]) {
+    const counts = new Map<
+      string,
+      { from: string; to: string; count: number }
+    >();
+    for (const swap of swaps) {
+      const key = `${swap.previous_hero}->${swap.player_hero}`;
+      const existing = counts.get(key);
+      if (existing) existing.count++;
+      else
+        counts.set(key, {
+          from: swap.previous_hero,
+          to: swap.player_hero,
+          count: 1,
+        });
+    }
+    let best: { from: string; to: string; count: number } | null = null;
+    for (const entry of counts.values()) {
+      if (!best || entry.count > best.count) best = entry;
+    }
+    return best;
+  }
+
+  const playerSwapCounts = new Map<
+    string,
+    { count: number; maps: Set<number> }
+  >();
+  for (const swap of allOurSwaps) {
+    if (!swap.MapDataId) continue;
+    const entry = playerSwapCounts.get(swap.player_name) ?? {
+      count: 0,
+      maps: new Set(),
+    };
+    entry.count++;
+    entry.maps.add(swap.MapDataId);
+    playerSwapCounts.set(swap.player_name, entry);
+  }
+
+  let topSwapper: ScrimSwapAnalysis["topSwapper"] = null;
+  for (const [playerName, entry] of playerSwapCounts) {
+    if (!topSwapper || entry.count > topSwapper.count) {
+      topSwapper = {
+        playerName,
+        count: entry.count,
+        mapsCount: entry.maps.size,
+      };
+    }
+  }
+
+  const swapCountByMap = new Map<number, number>();
+  for (const mapId of mapIds) {
+    swapCountByMap.set(mapId, filteredOurByMap.get(mapId)?.length ?? 0);
+  }
+
+  const countBuckets: { label: string; min: number; max: number }[] = [
+    { label: "0 swaps", min: 0, max: 0 },
+    { label: "1 swap", min: 1, max: 1 },
+    { label: "2 swaps", min: 2, max: 2 },
+    { label: "3+ swaps", min: 3, max: Infinity },
+  ];
+
+  const winrateBySwapCount: SwapWinrateBucket[] = countBuckets.map((bucket) => {
+    let wins = 0;
+    let losses = 0;
+
+    for (const mapId of mapIds) {
+      const result = mapResultLookup.get(mapId);
+      if (!result || result.winner === "draw") continue;
+      const count = swapCountByMap.get(mapId) ?? 0;
+      if (count >= bucket.min && count <= bucket.max) {
+        if (result.winner === "our_team") wins++;
+        else losses++;
+      }
+    }
+
+    const total = wins + losses;
+    return {
+      label: bucket.label,
+      wins,
+      losses,
+      winrate: total > 0 ? (wins / total) * 100 : 0,
+      totalMaps: total,
+    };
+  });
+
+  const matchEndTimeMap = new Map<number, number>();
+  for (const me of allMatchEnds) {
+    if (me.MapDataId) {
+      const existing = matchEndTimeMap.get(me.MapDataId);
+      if (!existing || me.match_time > existing) {
+        matchEndTimeMap.set(me.MapDataId, me.match_time);
+      }
+    }
+  }
+
+  const timingLabels = ["Early (0-33%)", "Mid (33-66%)", "Late (66-100%)"];
+  const timingMapSets: { wins: Set<number>; losses: Set<number> }[] = [
+    { wins: new Set(), losses: new Set() },
+    { wins: new Set(), losses: new Set() },
+    { wins: new Set(), losses: new Set() },
+  ];
+
+  for (const swap of allOurSwaps) {
+    if (!swap.MapDataId) continue;
+    const totalTime = matchEndTimeMap.get(swap.MapDataId);
+    if (!totalTime || totalTime <= 0) continue;
+
+    const pct = (swap.match_time / totalTime) * 100;
+    let timingIndex: number;
+    if (pct < 33.33) timingIndex = 0;
+    else if (pct < 66.67) timingIndex = 1;
+    else timingIndex = 2;
+
+    const result = mapResultLookup.get(swap.MapDataId);
+    if (!result || result.winner === "draw") continue;
+
+    if (result.winner === "our_team") {
+      timingMapSets[timingIndex].wins.add(swap.MapDataId);
+    } else {
+      timingMapSets[timingIndex].losses.add(swap.MapDataId);
+    }
+  }
+
+  const timingOutcomes: SwapTimingOutcome[] = timingLabels.map((label, i) => {
+    const wins = timingMapSets[i].wins.size;
+    const losses = timingMapSets[i].losses.size;
+    const total = wins + losses;
+    return {
+      label,
+      wins,
+      losses,
+      winrate: total > 0 ? (wins / total) * 100 : 0,
+      totalMaps: total,
+    };
+  });
+
+  return {
+    ourSwaps,
+    opponentSwaps,
+    ourSwapsPerMap: mapCount > 0 ? ourSwaps / mapCount : 0,
+    opponentSwapsPerMap: mapCount > 0 ? opponentSwaps / mapCount : 0,
+    mapsWithOurSwaps,
+    mapsWithoutOurSwaps,
+    noSwapWinrate: noSwapTotal > 0 ? (noSwapWins / noSwapTotal) * 100 : 0,
+    noSwapWins,
+    noSwapLosses,
+    swapWinrate: swapTotal > 0 ? (swapWins / swapTotal) * 100 : 0,
+    swapWins,
+    swapLosses,
+    avgHeroTimeBeforeSwap:
+      ourSwaps > 0 ? totalHeroTimeBeforeSwap / ourSwaps : 0,
+    ourTopSwap: findTopSwap(allOurSwaps),
+    opponentTopSwap: findTopSwap(allOppSwaps),
+    topSwapper,
+    winrateBySwapCount,
+    timingOutcomes,
+  };
+}
+
 async function getScrimOverviewFn(
   scrimId: number,
   teamId: number
@@ -1484,6 +1791,9 @@ async function getScrimOverviewFn(
     allKills,
     allRezzes,
     allUltimates,
+    allHeroSwaps,
+    allRoundStarts,
+    allMatchEnds,
   ] = await Promise.all([
     prisma.$queryRaw<PlayerStat[]>`
         WITH maxTime AS (
@@ -1530,6 +1840,31 @@ async function getScrimOverviewFn(
     prisma.ultimateStart.findMany({
       where: { MapDataId: { in: mapIds } },
       orderBy: { match_time: "asc" },
+    }),
+    prisma.heroSwap.findMany({
+      where: {
+        MapDataId: { in: mapIds },
+        match_time: { not: 0 },
+      },
+      select: {
+        id: true,
+        match_time: true,
+        player_team: true,
+        player_name: true,
+        player_hero: true,
+        previous_hero: true,
+        hero_time_played: true,
+        MapDataId: true,
+      },
+      orderBy: { match_time: "asc" },
+    }),
+    prisma.roundStart.findMany({
+      where: { MapDataId: { in: mapIds } },
+      select: { match_time: true, MapDataId: true },
+    }),
+    prisma.matchEnd.findMany({
+      where: { MapDataId: { in: mapIds } },
+      select: { match_time: true, MapDataId: true },
     }),
   ]);
 
@@ -1973,6 +2308,15 @@ async function getScrimOverviewFn(
       ? (firstMatchStart?.team_2_name ?? "Opponent")
       : (firstMatchStart?.team_1_name ?? "Opponent");
 
+  const swapAnalysis = computeScrimSwapAnalysis(
+    allHeroSwaps as SwapRecord[],
+    allRoundStarts,
+    allMatchEnds,
+    mapIds,
+    ourTeamNameByMap,
+    mapResults
+  );
+
   return {
     mapCount: maps.length,
     wins,
@@ -1986,6 +2330,7 @@ async function getScrimOverviewFn(
     teamTotals,
     fightAnalysis,
     ultAnalysis,
+    swapAnalysis,
   };
 }
 
