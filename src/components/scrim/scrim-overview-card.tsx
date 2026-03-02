@@ -14,6 +14,7 @@ import type {
   PlayerScrimPerformance,
   ScrimFightAnalysis,
   ScrimInsight,
+  ScrimSwapAnalysis,
   ScrimUltAnalysis,
 } from "@/data/scrim-overview-dto";
 import { getScrimOverview } from "@/data/scrim-overview-dto";
@@ -719,6 +720,197 @@ function UltAnalysisSection({
   );
 }
 
+function HeroSwapAnalysisSection({
+  analysis,
+}: {
+  analysis: ScrimSwapAnalysis;
+}) {
+  if (analysis.ourSwaps === 0 && analysis.opponentSwaps === 0) return null;
+
+  const winrateDelta = analysis.swapWinrate - analysis.noSwapWinrate;
+  const swapTotal = analysis.swapWins + analysis.swapLosses;
+  const noSwapTotal = analysis.noSwapWins + analysis.noSwapLosses;
+  const countBucketsWithData = analysis.winrateBySwapCount.filter(
+    (b) => b.totalMaps > 0
+  );
+  const timingBucketsWithData = analysis.timingOutcomes.filter(
+    (b) => b.totalMaps > 0
+  );
+
+  return (
+    <>
+      <Separator />
+      <section aria-label="Hero swap analysis">
+        <h4 className="text-muted-foreground mb-3 text-xs font-medium tracking-wide uppercase">
+          Hero Swap Analysis
+        </h4>
+        <ul className="text-foreground space-y-2 text-sm leading-relaxed">
+          <li>
+            Your team made{" "}
+            <span className="font-semibold tabular-nums">
+              {analysis.ourSwaps}
+            </span>{" "}
+            hero swaps across all maps (
+            <span className="font-semibold tabular-nums">
+              {analysis.ourSwapsPerMap.toFixed(1)}
+            </span>{" "}
+            per map) vs opponent&apos;s{" "}
+            <span className="font-semibold tabular-nums">
+              {analysis.opponentSwaps}
+            </span>{" "}
+            (
+            <span className="font-semibold tabular-nums">
+              {analysis.opponentSwapsPerMap.toFixed(1)}
+            </span>{" "}
+            per map).
+          </li>
+
+          {swapTotal > 0 && noSwapTotal > 0 && (
+            <li>
+              Win rate on maps with swaps:{" "}
+              <HighlightedPct
+                value={analysis.swapWinrate}
+                favorable={analysis.swapWinrate >= 50}
+              />{" "}
+              <span className="text-muted-foreground">
+                ({analysis.swapWins}W / {analysis.swapLosses}L)
+              </span>{" "}
+              vs{" "}
+              <HighlightedPct
+                value={analysis.noSwapWinrate}
+                favorable={analysis.noSwapWinrate >= 50}
+              />{" "}
+              without swaps{" "}
+              <span className="text-muted-foreground">
+                ({analysis.noSwapWins}W / {analysis.noSwapLosses}L)
+              </span>
+              .
+              {Math.abs(winrateDelta) >= 5 && (
+                <>
+                  {" "}
+                  That&apos;s a{" "}
+                  <span
+                    className={cn(
+                      "font-semibold tabular-nums",
+                      winrateDelta > 0
+                        ? "text-emerald-600 dark:text-emerald-400"
+                        : "text-rose-600 dark:text-rose-400"
+                    )}
+                  >
+                    {winrateDelta > 0 ? "+" : ""}
+                    {winrateDelta.toFixed(0)}%
+                  </span>{" "}
+                  difference when swapping.
+                </>
+              )}
+            </li>
+          )}
+
+          {analysis.avgHeroTimeBeforeSwap > 0 && (
+            <li>
+              Average time on a hero before swapping:{" "}
+              <span className="font-semibold tabular-nums">
+                {analysis.avgHeroTimeBeforeSwap.toFixed(0)}s
+              </span>
+              .
+            </li>
+          )}
+
+          {analysis.ourTopSwap && (
+            <li>
+              Your most common swap:{" "}
+              <span className="font-semibold">{analysis.ourTopSwap.from}</span>{" "}
+              &rarr;{" "}
+              <span className="font-semibold">{analysis.ourTopSwap.to}</span> (
+              <span className="font-semibold tabular-nums">
+                {analysis.ourTopSwap.count}
+              </span>{" "}
+              {analysis.ourTopSwap.count === 1 ? "time" : "times"}).
+            </li>
+          )}
+
+          {analysis.opponentTopSwap && (
+            <li>
+              Opponent&apos;s most common swap:{" "}
+              <span className="font-semibold">
+                {analysis.opponentTopSwap.from}
+              </span>{" "}
+              &rarr;{" "}
+              <span className="font-semibold">
+                {analysis.opponentTopSwap.to}
+              </span>{" "}
+              (
+              <span className="font-semibold tabular-nums">
+                {analysis.opponentTopSwap.count}
+              </span>{" "}
+              {analysis.opponentTopSwap.count === 1 ? "time" : "times"}).
+            </li>
+          )}
+
+          {analysis.topSwapper && (
+            <li>
+              Most active swapper:{" "}
+              <span className="font-semibold">
+                {analysis.topSwapper.playerName}
+              </span>{" "}
+              with{" "}
+              <span className="font-semibold tabular-nums">
+                {analysis.topSwapper.count}
+              </span>{" "}
+              swaps across{" "}
+              <span className="font-semibold tabular-nums">
+                {analysis.topSwapper.mapsCount}
+              </span>{" "}
+              {analysis.topSwapper.mapsCount === 1 ? "map" : "maps"}.
+            </li>
+          )}
+
+          {countBucketsWithData.length > 0 && (
+            <li>
+              Win rate by swap count:{" "}
+              {countBucketsWithData.map((bucket, i) => (
+                <span key={bucket.label}>
+                  {i > 0 && ", "}
+                  {bucket.label}:{" "}
+                  <HighlightedPct
+                    value={bucket.winrate}
+                    favorable={bucket.winrate >= 50}
+                  />{" "}
+                  <span className="text-muted-foreground">
+                    ({bucket.wins}W-{bucket.losses}L)
+                  </span>
+                </span>
+              ))}
+              .
+            </li>
+          )}
+
+          {timingBucketsWithData.length > 0 && (
+            <li>
+              Win rate by swap timing:{" "}
+              {timingBucketsWithData.map((bucket, i) => (
+                <span key={bucket.label}>
+                  {i > 0 && ", "}
+                  {bucket.label}:{" "}
+                  <HighlightedPct
+                    value={bucket.winrate}
+                    favorable={bucket.winrate >= 50}
+                  />{" "}
+                  <span className="text-muted-foreground">
+                    ({bucket.totalMaps}{" "}
+                    {bucket.totalMaps === 1 ? "map" : "maps"})
+                  </span>
+                </span>
+              ))}
+              .
+            </li>
+          )}
+        </ul>
+      </section>
+    </>
+  );
+}
+
 export async function ScrimOverviewCard({
   scrimId,
   teamId,
@@ -741,6 +933,7 @@ export async function ScrimOverviewCard({
     insights,
     fightAnalysis,
     ultAnalysis,
+    swapAnalysis,
   } = data;
 
   const winRate = mapCount > 0 ? Math.round((wins / mapCount) * 100) : 0;
@@ -874,6 +1067,7 @@ export async function ScrimOverviewCard({
         )}
 
         <FightAnalysisSection analysis={fightAnalysis} />
+        <HeroSwapAnalysisSection analysis={swapAnalysis} />
         <UltAnalysisSection
           analysis={ultAnalysis}
           teamNames={[
