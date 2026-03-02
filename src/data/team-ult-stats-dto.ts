@@ -16,7 +16,7 @@ import {
   assignPlayersToSubroles,
   type PlayerUltSummary,
 } from "./scrim-overview-dto";
-import type { ExtendedTeamData } from "./team-shared-data";
+import type { ExtendedTeamData, TeamDateRange } from "./team-shared-data";
 import {
   findTeamNameForMapInMemory,
   getExtendedTeamData,
@@ -141,8 +141,11 @@ function extractTimings(
   return result;
 }
 
-async function getTeamUltStatsUncached(teamId: number): Promise<TeamUltStats> {
-  const sharedData = await getExtendedTeamData(teamId);
+async function getTeamUltStatsUncached(
+  teamId: number,
+  dateRange?: TeamDateRange
+): Promise<TeamUltStats> {
+  const sharedData = await getExtendedTeamData(teamId, { dateRange });
 
   if (sharedData.mapDataIds.length === 0) {
     return emptyTeamUltStats();

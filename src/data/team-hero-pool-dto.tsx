@@ -8,7 +8,7 @@ import { mapNameToMapTypeMapping } from "@/types/map";
 import type { MatchStart, ObjectiveCaptured, RoundEnd } from "@prisma/client";
 import { $Enums } from "@prisma/client";
 import { cache } from "react";
-import type { BaseTeamData } from "./team-shared-data";
+import type { BaseTeamData, TeamDateRange } from "./team-shared-data";
 import {
   buildCapturesMaps,
   buildFinalRoundMap,
@@ -441,14 +441,17 @@ export async function getHeroPoolAnalysisWithDateRange(
 }
 
 async function getHeroPoolRawDataUncached(
-  teamId: number
+  teamId: number,
+  dateRange?: TeamDateRange
 ): Promise<HeroPoolRawData> {
-  // Fetch with date info for raw data
+  const scrimWhereClause: Record<string, unknown> = { Team: { id: teamId } };
+  if (dateRange) {
+    scrimWhereClause.date = { gte: dateRange.from, lte: dateRange.to };
+  }
+
   const allMapDataRecords = await prisma.map.findMany({
     where: {
-      Scrim: {
-        Team: { id: teamId },
-      },
+      Scrim: scrimWhereClause,
     },
     select: {
       id: true,

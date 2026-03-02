@@ -60,6 +60,11 @@ export type ExtendedTeamData = BaseTeamData & {
   allUltimates: UltimateStart[];
 };
 
+export type TeamDateRange = {
+  from: Date;
+  to: Date;
+};
+
 /**
  * Options for fetching base team data
  */
@@ -67,6 +72,7 @@ export type BaseTeamDataOptions = {
   excludePush?: boolean;
   excludeClash?: boolean;
   includeDateInfo?: boolean;
+  dateRange?: TeamDateRange;
 };
 
 /**
@@ -292,15 +298,21 @@ async function getBaseTeamDataUncached(
     excludePush = false,
     excludeClash = false,
     includeDateInfo = false,
+    dateRange,
   } = options;
 
   // Fetch team roster first
   const teamRoster = await getTeamRoster(teamId);
   const teamRosterSet = new Set(teamRoster);
 
+  const scrimWhereClause: Record<string, unknown> = { Team: { id: teamId } };
+  if (dateRange) {
+    scrimWhereClause.date = { gte: dateRange.from, lte: dateRange.to };
+  }
+
   // Fetch all map data records
   const allMapDataRecords = await prisma.map.findMany({
-    where: { Scrim: { Team: { id: teamId } } },
+    where: { Scrim: scrimWhereClause },
     select: {
       id: true,
       name: true,

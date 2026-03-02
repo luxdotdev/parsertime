@@ -5,7 +5,7 @@ import { calculateWinner } from "@/lib/winrate";
 import { mapNameToMapTypeMapping } from "@/types/map";
 import { $Enums } from "@prisma/client";
 import { cache } from "react";
-import type { BaseTeamData } from "./team-shared-data";
+import type { BaseTeamData, TeamDateRange } from "./team-shared-data";
 import {
   buildCapturesMaps,
   buildFinalRoundMap,
@@ -44,9 +44,10 @@ export type MapModePerformance = {
 };
 
 async function getMapModePerformanceUncached(
-  teamId: number
+  teamId: number,
+  dateRange?: TeamDateRange
 ): Promise<MapModePerformance> {
-  const sharedData = await getBaseTeamData(teamId);
+  const sharedData = await getBaseTeamData(teamId, { dateRange });
   return await processMapModePerformance(sharedData);
 }
 

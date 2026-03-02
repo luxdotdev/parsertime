@@ -7,7 +7,7 @@ import type { HeroName } from "@/types/heroes";
 import { mapNameToMapTypeMapping } from "@/types/map";
 import { $Enums } from "@prisma/client";
 import { cache } from "react";
-import type { BaseTeamData } from "./team-shared-data";
+import type { BaseTeamData, TeamDateRange } from "./team-shared-data";
 import {
   buildCapturesMaps,
   buildFinalRoundMap,
@@ -68,11 +68,13 @@ export type PlayerMapPerformanceMatrix = {
 
 // Deprecated - use getBaseTeamData from team-shared-data instead
 async function getSharedAnalyticsDataUncached(
-  teamId: number
+  teamId: number,
+  dateRange?: TeamDateRange
 ): Promise<BaseTeamData | null> {
   const sharedData = await getBaseTeamData(teamId, {
     excludePush: true,
     excludeClash: true,
+    dateRange,
   });
 
   if (sharedData.mapDataRecords.length === 0) {
@@ -344,9 +346,10 @@ async function getHeroPickrateMatrixWithDateRange(
 }
 
 async function getPlayerMapPerformanceMatrixUncached(
-  teamId: number
+  teamId: number,
+  dateRange?: TeamDateRange
 ): Promise<PlayerMapPerformanceMatrix> {
-  const sharedData = await getSharedAnalyticsData(teamId);
+  const sharedData = await getSharedAnalyticsData(teamId, dateRange);
 
   if (!sharedData) {
     return {
@@ -479,7 +482,8 @@ export const getPlayerMapPerformanceMatrix = cache(
 );
 
 async function getHeroPickrateRawDataUncached(
-  teamId: number
+  teamId: number,
+  dateRange?: TeamDateRange
 ): Promise<HeroPickrateRawData> {
   const teamRoster = await getTeamRoster(teamId);
 
@@ -491,8 +495,13 @@ async function getHeroPickrateRawDataUncached(
     };
   }
 
+  const scrimWhereClause: Record<string, unknown> = { Team: { id: teamId } };
+  if (dateRange) {
+    scrimWhereClause.date = { gte: dateRange.from, lte: dateRange.to };
+  }
+
   const allMapDataRecords = await prisma.map.findMany({
-    where: { Scrim: { Team: { id: teamId } } },
+    where: { Scrim: scrimWhereClause },
     select: {
       id: true,
       name: true,

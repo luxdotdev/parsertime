@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { calculateWinner } from "@/lib/winrate";
 import type { PlayerStat } from "@prisma/client";
 import { cache } from "react";
-import type { BaseTeamData } from "./team-shared-data";
+import type { BaseTeamData, TeamDateRange } from "./team-shared-data";
 import {
   buildCapturesMaps,
   buildFinalRoundMap,
@@ -134,8 +134,14 @@ type TeamWinrates = {
   byMap: Record<string, MapWinrate>;
 };
 
-async function getTeamWinratesUncached(teamId: number): Promise<TeamWinrates> {
-  const sharedData = await getBaseTeamData(teamId, { excludePush: true });
+async function getTeamWinratesUncached(
+  teamId: number,
+  dateRange?: TeamDateRange
+): Promise<TeamWinrates> {
+  const sharedData = await getBaseTeamData(teamId, {
+    excludePush: true,
+    dateRange,
+  });
   return processTeamWinrates(sharedData);
 }
 
@@ -326,10 +332,20 @@ function processTeamWinrates(sharedData: BaseTeamData): TeamWinrates {
 
 export const getTeamWinrates = cache(getTeamWinratesUncached);
 
-async function getTopMapsByPlaytimeFn(teamId: number) {
+async function getTopMapsByPlaytimeFn(
+  teamId: number,
+  dateRange?: TeamDateRange
+) {
   // Get all Maps for the team (MapDataId in event tables actually stores Map.id)
+  const scrimWhereClause: Record<string, unknown> = {
+    Team: { id: teamId },
+  };
+  if (dateRange) {
+    scrimWhereClause.date = { gte: dateRange.from, lte: dateRange.to };
+  }
+
   const maps = await prisma.map.findMany({
-    where: { Scrim: { Team: { id: teamId } } },
+    where: { Scrim: scrimWhereClause },
     select: {
       id: true,
       name: true,
@@ -385,17 +401,23 @@ async function getTopMapsByPlaytimeFn(teamId: number) {
 
 export const getTopMapsByPlaytime = cache(getTopMapsByPlaytimeFn);
 
-async function getTop5MapsByPlaytimeFn(teamId: number) {
-  const top5Maps = await getTopMapsByPlaytime(teamId);
+async function getTop5MapsByPlaytimeFn(
+  teamId: number,
+  dateRange?: TeamDateRange
+) {
+  const top5Maps = await getTopMapsByPlaytime(teamId, dateRange);
   return top5Maps.slice(0, 5);
 }
 
 export const getTop5MapsByPlaytime = cache(getTop5MapsByPlaytimeFn);
 
-async function getBestMapByWinrateFn(teamId: number) {
+async function getBestMapByWinrateFn(
+  teamId: number,
+  dateRange?: TeamDateRange
+) {
   const [winrates, top5Maps] = await Promise.all([
-    getTeamWinrates(teamId),
-    getTopMapsByPlaytime(teamId),
+    getTeamWinrates(teamId, dateRange),
+    getTopMapsByPlaytime(teamId, dateRange),
   ]);
 
   const mapsWithStats = Object.keys(winrates.byMap).map((map) => ({
@@ -417,10 +439,10 @@ export const getBestMapByWinrate = cache(getBestMapByWinrateFn);
 /**
  * Finds the map with the lowest winrate, then breaks ties by playtime.
  */
-async function getBlindSpotMapFn(teamId: number) {
+async function getBlindSpotMapFn(teamId: number, dateRange?: TeamDateRange) {
   const [winrates, topMaps] = await Promise.all([
-    getTeamWinrates(teamId),
-    getTopMapsByPlaytime(teamId),
+    getTeamWinrates(teamId, dateRange),
+    getTopMapsByPlaytime(teamId, dateRange),
   ]);
 
   const mapsWithStats = Object.keys(winrates.byMap).map((map) => ({

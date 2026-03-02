@@ -4,7 +4,7 @@ import { calculateWinner } from "@/lib/winrate";
 import type { Kill } from "@prisma/client";
 import { cache } from "react";
 import { getTeamFightStats } from "./team-fight-stats-dto";
-import type { ExtendedTeamData } from "./team-shared-data";
+import type { ExtendedTeamData, TeamDateRange } from "./team-shared-data";
 import {
   buildCapturesMaps,
   buildFinalRoundMap,
@@ -86,14 +86,16 @@ function analyzeFightOutcome(
 }
 
 async function getQuickWinsStatsUncached(
-  teamId: number
+  teamId: number,
+  dateRange?: TeamDateRange
 ): Promise<QuickWinsStats> {
   const [fightStats, sharedData] = await Promise.all([
-    getTeamFightStats(teamId),
+    getTeamFightStats(teamId, dateRange),
     getExtendedTeamData(teamId, {
       excludePush: true,
       excludeClash: true,
       includeDateInfo: true,
+      dateRange,
     }),
   ]);
 

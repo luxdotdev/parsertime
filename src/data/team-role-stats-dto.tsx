@@ -5,7 +5,7 @@ import { calculateWinner } from "@/lib/winrate";
 import type { HeroName } from "@/types/heroes";
 import { getTranslations } from "next-intl/server";
 import { cache } from "react";
-import type { BaseTeamData } from "./team-shared-data";
+import type { BaseTeamData, TeamDateRange } from "./team-shared-data";
 import {
   buildCapturesMaps,
   buildFinalRoundMap,
@@ -61,9 +61,10 @@ export type RoleTrio = {
 };
 
 async function getRolePerformanceStatsUncached(
-  teamId: number
+  teamId: number,
+  dateRange?: TeamDateRange
 ): Promise<RolePerformanceStats> {
-  const sharedData = await getBaseTeamData(teamId);
+  const sharedData = await getBaseTeamData(teamId, { dateRange });
   return processRolePerformanceStats(sharedData);
 }
 
@@ -228,10 +229,11 @@ function createEmptyRoleStats(): RolePerformanceStats {
 export const getRolePerformanceStats = cache(getRolePerformanceStatsUncached);
 
 async function getRoleBalanceAnalysisUncached(
-  teamId: number
+  teamId: number,
+  dateRange?: TeamDateRange
 ): Promise<RoleBalanceAnalysis> {
   const t = await getTranslations("teamStatsPage.roleBalanceRadar");
-  const roleStats = await getRolePerformanceStats(teamId);
+  const roleStats = await getRolePerformanceStats(teamId, dateRange);
 
   const roles: ("Tank" | "Damage" | "Support")[] = [
     "Tank",
@@ -313,8 +315,11 @@ async function getRoleBalanceAnalysisUncached(
 
 export const getRoleBalanceAnalysis = cache(getRoleBalanceAnalysisUncached);
 
-async function getBestRoleTriosUncached(teamId: number): Promise<RoleTrio[]> {
-  const sharedData = await getBaseTeamData(teamId);
+async function getBestRoleTriosUncached(
+  teamId: number,
+  dateRange?: TeamDateRange
+): Promise<RoleTrio[]> {
+  const sharedData = await getBaseTeamData(teamId, { dateRange });
   return processBestRoleTrios(sharedData);
 }
 
@@ -461,9 +466,10 @@ export type RoleWinrateByMap = {
 };
 
 async function getRoleWinratesByMapUncached(
-  teamId: number
+  teamId: number,
+  dateRange?: TeamDateRange
 ): Promise<RoleWinrateByMap[]> {
-  const sharedData = await getBaseTeamData(teamId);
+  const sharedData = await getBaseTeamData(teamId, { dateRange });
   return processRoleWinratesByMap(sharedData);
 }
 

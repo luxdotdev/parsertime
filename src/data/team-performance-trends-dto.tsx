@@ -5,7 +5,7 @@ import { calculateWinner } from "@/lib/winrate";
 import { mapNameToMapTypeMapping } from "@/types/map";
 import { $Enums } from "@prisma/client";
 import { cache } from "react";
-import type { BaseTeamData } from "./team-shared-data";
+import type { BaseTeamData, TeamDateRange } from "./team-shared-data";
 import {
   buildCapturesMaps,
   buildFinalRoundMap,
@@ -65,11 +65,16 @@ type ProcessedMatchResult = {
 };
 
 async function getTeamMatchResultsUncached(
-  teamId: number
+  teamId: number,
+  dateRange?: TeamDateRange
 ): Promise<ProcessedMatchResult[]> {
-  // Get shared data with Scrim info for date sorting
+  const scrimWhereClause: Record<string, unknown> = { Team: { id: teamId } };
+  if (dateRange) {
+    scrimWhereClause.date = { gte: dateRange.from, lte: dateRange.to };
+  }
+
   const allMapDataRecords = await prisma.map.findMany({
-    where: { Scrim: { Team: { id: teamId } } },
+    where: { Scrim: scrimWhereClause },
     select: {
       id: true,
       name: true,
@@ -101,7 +106,10 @@ async function getTeamMatchResultsUncached(
     return [];
   }
 
-  const sharedData = await getBaseTeamData(teamId, { excludePush: true });
+  const sharedData = await getBaseTeamData(teamId, {
+    excludePush: true,
+    dateRange,
+  });
   return processTeamMatchResults(sharedData, mapDataRecords);
 }
 
@@ -175,9 +183,10 @@ const getTeamMatchResults = cache(getTeamMatchResultsUncached);
 
 async function getWinrateOverTimeUncached(
   teamId: number,
-  groupBy: "week" | "month" = "week"
+  groupBy: "week" | "month" = "week",
+  dateRange?: TeamDateRange
 ): Promise<WinrateDataPoint[]> {
-  const matchResults = await getTeamMatchResults(teamId);
+  const matchResults = await getTeamMatchResults(teamId, dateRange);
 
   if (matchResults.length === 0) {
     return [];
@@ -260,8 +269,11 @@ async function getWinrateOverTimeUncached(
 
 export const getWinrateOverTime = cache(getWinrateOverTimeUncached);
 
-async function getRecentFormUncached(teamId: number): Promise<RecentForm> {
-  const matchResults = await getTeamMatchResults(teamId);
+async function getRecentFormUncached(
+  teamId: number,
+  dateRange?: TeamDateRange
+): Promise<RecentForm> {
+  const matchResults = await getTeamMatchResults(teamId, dateRange);
 
   if (matchResults.length === 0) {
     return {
@@ -306,8 +318,11 @@ async function getRecentFormUncached(teamId: number): Promise<RecentForm> {
 
 export const getRecentForm = cache(getRecentFormUncached);
 
-async function getStreakInfoUncached(teamId: number): Promise<StreakInfo> {
-  const matchResults = await getTeamMatchResults(teamId);
+async function getStreakInfoUncached(
+  teamId: number,
+  dateRange?: TeamDateRange
+): Promise<StreakInfo> {
+  const matchResults = await getTeamMatchResults(teamId, dateRange);
 
   if (matchResults.length === 0) {
     return {

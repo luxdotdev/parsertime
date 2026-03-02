@@ -2,7 +2,7 @@ import "server-only";
 
 import type { Kill } from "@prisma/client";
 import { cache } from "react";
-import type { ExtendedTeamData } from "./team-shared-data";
+import type { ExtendedTeamData, TeamDateRange } from "./team-shared-data";
 import {
   findTeamNameForMapInMemory,
   getExtendedTeamData,
@@ -149,9 +149,10 @@ function analyzeFightOutcome(fight: Fight, ourTeamName: string): FightAnalysis {
 }
 
 async function getTeamFightStatsUncached(
-  teamId: number
+  teamId: number,
+  dateRange?: TeamDateRange
 ): Promise<TeamFightStats> {
-  const sharedData = await getExtendedTeamData(teamId);
+  const sharedData = await getExtendedTeamData(teamId, { dateRange });
   return processTeamFightStats(sharedData);
 }
 
