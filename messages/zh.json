@@ -803,7 +803,8 @@
         "ultGoodDiscipline": "良好的终极技能运用——胜利时使用更多终极技能。",
         "ultNeedsDiscipline": "有待改进——失败时使用更多终极技能。",
         "ultWasted": "<b>{count}</b> 个浪费的终极技能（占总数 <b>{percentage}</b>%）——在劣势情况下（3名以上劣势）使用。",
-        "ultDryFights": "<b>{dryCount}</b> 场无终极技能战斗，胜率 <b>{winrate}</b>%。另有 <b>{nonDryCount}</b> 场战斗使用了终极技能（胜率 <b>{nonDryWinrate}</b>%）。"
+        "ultDryFights": "<b>{dryCount}</b> 场无终极技能战斗，胜率 <b>{winrate}</b>%。另有 <b>{nonDryCount}</b> 场战斗使用了终极技能（胜率 <b>{nonDryWinrate}</b>%）。",
+        "ultReversalRate": "战斗逆转率（落后2人以上后获胜）：无终极技能时 <b>{dryRate}</b>% vs 使用终极技能时 <b>{nonDryRate}</b>%。"
       }
     },
     "overviewTable": {

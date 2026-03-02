@@ -1276,6 +1276,7 @@
         "ultNeedsDiscipline": "Room for improvement — more ultimates used in losses than wins.",
         "ultWasted": "<b>{count}</b> wasted {count, plural, one {ultimate} other {ultimates}} (<b>{percentage}</b>% of total) used in lost situations (3+ player disadvantage).",
         "ultDryFights": "<b>{dryCount}</b> dry {dryCount, plural, one {fight} other {fights}} (no ultimates used) with a <b>{winrate}</b>% win rate, plus <b>{nonDryCount}</b> {nonDryCount, plural, one {fight} other {fights}} where ultimates were used (<b>{nonDryWinrate}</b>% WR).",
+        "ultReversalRate": "Fight reversal rate (won after being down 2+ kills): <b>{dryRate}</b>% in dry fights vs <b>{nonDryRate}</b>% when ultimates were used.",
         "swapOverview": "<span1>{team1Name}</span1> made <b>{team1Count}</b> hero {team1Count, plural, one {swap} other {swaps}} vs <span2>{team2Name}</span2>'s <b>{team2Count}</b> hero {team2Count, plural, one {swap} other {swaps}}.",
         "swapTopPairTeam": "<span>{teamName}</span>'s most common swap: <b>{fromHero}</b> → <b>{toHero}</b> (<n>{count}</n> {count, plural, one {time} other {times}}).",
         "swapTopSwapperTeam": "<span>{teamName}</span>'s most active swapper: <b>{playerName}</b> with <n>{count}</n> {count, plural, one {swap} other {swaps}}."
@@ -3659,7 +3660,12 @@
       "dryFights": "Dry Fights:",
       "dryFightWinrate": "{count} dry fights ({winrate}% WR)",
       "nonDryFights": "Non-Dry Fights:",
-      "nonDryFightsCount": "{count} non-dry fights ({ults} ults avg)"
+      "nonDryFightsCount": "{count} non-dry fights ({ults} ults avg)",
+      "fightReversals": "Fight Reversals",
+      "dryReversalRate": "Dry: {rate}% ({count} of {total})",
+      "nonDryReversalRate": "With ults: {rate}% ({count} of {total})",
+      "reversalInsightUltReliant": "Your team reverses fights more often when using ultimates ({nonDryRate}%) than without ({dryRate}%), suggesting ult-dependent comebacks.",
+      "reversalInsightMechanical": "Your team reverses fights more often without ultimates ({dryRate}%) than with them ({nonDryRate}%), showing strong mechanical comeback ability."
     },
     "winLossStreaksCard": {
       "title": "Win/Loss Streaks",
@@ -3692,6 +3698,9 @@
       "dryFightSuccess": "Dry Fight Success",
       "dryFightSuccessDescription": "Winning {winrate}% of fights without using ultimates",
       "dryFightCount": "{wins}W / {fights} dry fights",
+      "fightReversalComparison": "Fight Reversal: Dry vs Ult",
+      "fightReversalComparisonDescription": "Reversal rate is {dryRate}% in dry fights vs {nonDryRate}% when ultimates are used",
+      "fightReversalComparisonDetail": "{dryReversals} dry / {nonDryReversals} ult reversals",
       "strongAdvantage": "Strong Advantage",
       "needsImprovement": "Needs Improvement",
       "average": "Average",

@@ -32,6 +32,7 @@ import {
 } from "@/data/team-analytics-dto";
 import { getTeamFightStats } from "@/data/team-fight-stats-dto";
 import { getHeroPoolAnalysis } from "@/data/team-hero-pool-dto";
+import { getTeamHeroSwapStats } from "@/data/team-hero-swap-dto";
 import { getMapModePerformance } from "@/data/team-map-mode-stats-dto";
 import {
   getRecentForm,
@@ -53,7 +54,6 @@ import {
   getTop5MapsByPlaytime,
   getTopMapsByPlaytime,
 } from "@/data/team-stats-dto";
-import { getTeamHeroSwapStats } from "@/data/team-hero-swap-dto";
 import { getTeamUltStats } from "@/data/team-ult-stats-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
@@ -363,13 +363,13 @@ export default async function TeamStatsPage(
         {/* Teamfights Tab */}
         <TabsContent value="teamfights" className="space-y-4">
           <TeamFightStatsCard fightStats={fightStats} />
-          <UltimateEconomyCard fightStats={fightStats} />
           <WinProbabilityInsights fightStats={fightStats} />
         </TabsContent>
 
         {/* Ultimates Tab */}
         <TabsContent value="ultimates" className="space-y-4">
           <UltUsageOverviewCard ultStats={ultStats} />
+          <UltimateEconomyCard fightStats={fightStats} />
           <UltRoleBreakdownCard ultStats={ultStats} />
           <UltPlayerRankingsCard ultStats={ultStats} />
         </TabsContent>

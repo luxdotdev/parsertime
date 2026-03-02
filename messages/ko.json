@@ -803,7 +803,8 @@
         "ultGoodDiscipline": "좋은 궁극기 운용 — 패배보다 승리 시 더 많은 궁극기 사용.",
         "ultNeedsDiscipline": "개선 필요 — 승리보다 패배 시 더 많은 궁극기 사용.",
         "ultWasted": "<b>{count}</b>회 낭비된 궁극기 (전체의 <b>{percentage}</b>%) — 불리한 상황(3명 이상 열세)에서 사용.",
-        "ultDryFights": "<b>{dryCount}</b>회 드라이 전투 (궁극기 미사용), 승률 <b>{winrate}</b>%. <b>{nonDryCount}</b>회 전투에서 궁극기 사용 (승률 <b>{nonDryWinrate}</b>%)."
+        "ultDryFights": "<b>{dryCount}</b>회 드라이 전투 (궁극기 미사용), 승률 <b>{winrate}</b>%. <b>{nonDryCount}</b>회 전투에서 궁극기 사용 (승률 <b>{nonDryWinrate}</b>%).",
+        "ultReversalRate": "전투 역전 비율 (2명 이상 열세 후 승리): 드라이 전투 <b>{dryRate}</b>% vs 궁극기 사용 시 <b>{nonDryRate}</b>%."
       }
     },
     "overviewTable": {
