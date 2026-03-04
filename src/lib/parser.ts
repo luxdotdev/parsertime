@@ -15,6 +15,89 @@ const XLSX_FILE =
 
 const TXT_FILE = "text/plain";
 
+const TEAM_NAME_FIELDS: Record<string, number[]> = {
+  defensive_assist: [2],
+  dva_remech: [2],
+  echo_duplicate_end: [2],
+  echo_duplicate_start: [2],
+  hero_spawn: [2],
+  hero_swap: [2],
+  kill: [2, 5],
+  match_start: [4, 5],
+  objective_captured: [3],
+  offensive_assist: [2],
+  payload_progress: [3],
+  player_stat: [3],
+  point_progress: [3],
+  remech_charged: [2],
+  ultimate_charged: [2],
+  ultimate_end: [2],
+  ultimate_start: [2],
+  round_end: [3],
+  round_start: [3],
+};
+
+const TEAM_POSITIONAL_SWAP_FIELDS: Record<string, [number, number][]> = {
+  match_start: [[4, 5]],
+  match_end: [[3, 4]],
+  objective_captured: [[5, 6]],
+  round_end: [
+    [4, 5],
+    [7, 8],
+  ],
+  round_start: [[4, 5]],
+};
+
+export function normalizeTeamData(
+  data: ParserData,
+  newTeam1Name: string,
+  newTeam2Name: string | null,
+  userIsOriginalTeam2: boolean
+): ParserData {
+  const origTeam1 = String(data.match_start[0][4]);
+  const origTeam2 = String(data.match_start[0][5]);
+
+  const result = structuredClone(data);
+
+  if (userIsOriginalTeam2) {
+    for (const [eventType, swapPairs] of Object.entries(
+      TEAM_POSITIONAL_SWAP_FIELDS
+    )) {
+      const events = result[eventType as keyof ParserData] as
+        | unknown[][]
+        | undefined;
+      if (!events) continue;
+      for (const row of events) {
+        for (const [i, j] of swapPairs) {
+          [row[i], row[j]] = [row[j], row[i]];
+        }
+      }
+    }
+  }
+
+  const nameToReplace1 = userIsOriginalTeam2 ? origTeam2 : origTeam1;
+  const nameToReplace2 = userIsOriginalTeam2 ? origTeam1 : origTeam2;
+
+  for (const [eventType, indices] of Object.entries(TEAM_NAME_FIELDS)) {
+    const events = result[eventType as keyof ParserData] as
+      | unknown[][]
+      | undefined;
+    if (!events) continue;
+    for (const row of events) {
+      for (const idx of indices) {
+        const val = String(row[idx]);
+        if (val === nameToReplace1) {
+          row[idx] = newTeam1Name;
+        } else if (newTeam2Name !== null && val === nameToReplace2) {
+          row[idx] = newTeam2Name;
+        }
+      }
+    }
+  }
+
+  return result;
+}
+
 /**
  * Parses a file and returns a JSON object with the data
  *
@@ -113,29 +196,7 @@ export async function parseDataFromTXT(file: File) {
   }
 
   function isTeamNameField(eventType: string, index: number): boolean {
-    const teamNameFields: Record<string, number[]> = {
-      // player_team, attacker_team, victim_team, capturing_team
-      defensive_assist: [2],
-      dva_remech: [2],
-      echo_duplicate_end: [2],
-      echo_duplicate_start: [2],
-      hero_spawn: [2],
-      hero_swap: [2],
-      kill: [2, 5],
-      match_start: [4, 5],
-      objective_captured: [3],
-      offensive_assist: [2],
-      payload_progress: [3],
-      player_stat: [3],
-      point_progress: [3],
-      remech_charged: [2],
-      ultimate_charged: [2],
-      ultimate_end: [2],
-      ultimate_start: [2],
-      round_end: [3],
-      round_start: [3],
-    };
-    return teamNameFields[eventType]?.includes(index) || false;
+    return TEAM_NAME_FIELDS[eventType]?.includes(index) || false;
   }
 
   const categorizedData: Record<string, string[][]> = {};
@@ -254,6 +315,9 @@ export async function createNewScrimFromParsedData(
       creatorId: userId.id,
       teamId,
       opponentTeamAbbr: data.opponentTeamAbbr ?? null,
+      autoAssignTeamNames: data.autoAssignTeamNames ?? false,
+      team1Name: data.team1Name ?? null,
+      team2Name: data.team2Name ?? null,
     },
   });
 
