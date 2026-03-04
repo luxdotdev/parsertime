@@ -262,17 +262,20 @@ model MapGroup {
 }
 
 model Scrim {
-  id               Int      @id @default(autoincrement())
-  name             String
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  date             DateTime
-  maps             Map[]
-  Team             Team?    @relation(fields: [teamId], references: [id])
-  teamId           Int?
-  creatorId        String
-  guestMode        Boolean  @default(false)
-  opponentTeamAbbr String?
+  id                  Int      @id @default(autoincrement())
+  name                String
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  date                DateTime
+  maps                Map[]
+  Team                Team?    @relation(fields: [teamId], references: [id])
+  teamId              Int?
+  creatorId           String
+  guestMode           Boolean  @default(false)
+  opponentTeamAbbr    String?
+  autoAssignTeamNames Boolean  @default(false)
+  team1Name           String?
+  team2Name           String?
 
   @@index([teamId])
 }
