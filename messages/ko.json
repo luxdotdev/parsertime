@@ -469,7 +469,10 @@
       "mapName": "첫 번째 맵",
       "mapDescription": "스크림의 첫 번째 맵을 업로드하세요. .xlsx 및 .txt 파일만 허용되며, 최대 파일 크기는 1MB입니다. 스크림 생성 후 더 많은 맵을 추가할 수 있습니다.",
       "submit": "제출",
-      "submitting": "제출 중..."
+      "submitting": "제출 중...",
+      "autoAssignTeamNames": "Auto-assign team names",
+      "autoAssignTeamNamesDescription": "Automatically rename teams and normalize team positions so your team is always Team 1.",
+      "autoAssignDisabledDescription": "Select a team to enable auto-assign."
     }
   },
   "updateModal": {

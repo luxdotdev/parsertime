@@ -542,7 +542,10 @@
       "selectHero": "Select hero",
       "heroBanRequiredError": "A hero to ban is required.",
       "banPositionRequiredError": "A ban order is required.",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "autoAssignTeamNames": "Auto-assign team names",
+      "autoAssignTeamNamesDescription": "Automatically rename teams and normalize team positions so your team is always Team 1.",
+      "autoAssignDisabledDescription": "Select a team to enable auto-assign."
     }
   },
   "updateModal": {

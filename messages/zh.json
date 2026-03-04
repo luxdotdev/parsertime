@@ -469,7 +469,10 @@
       "mapName": "第一张地图",
       "mapDescription": "请上传第一张比赛地图文件。支持 .xlsx 和 .txt 文件，文件大小不得超过 1MB。比赛创建后可以添加更多地图。",
       "submit": "提交",
-      "submitting": "提交中..."
+      "submitting": "提交中...",
+      "autoAssignTeamNames": "Auto-assign team names",
+      "autoAssignTeamNamesDescription": "Automatically rename teams and normalize team positions so your team is always Team 1.",
+      "autoAssignDisabledDescription": "Select a team to enable auto-assign."
     }
   },
   "updateModal": {
