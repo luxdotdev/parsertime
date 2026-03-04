@@ -2,6 +2,8 @@ import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import { createNewMap } from "@/lib/parser";
+import prisma from "@/lib/prisma";
+import { normalizeMapForScrim } from "@/lib/team-normalization";
 import type { ParserData } from "@/types/parser";
 import { track } from "@vercel/analytics/server";
 import { unauthorized } from "next/navigation";
@@ -29,10 +31,32 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    const scrimId = parseInt(id);
+    let mapData = data.map;
+
+    const scrim = await prisma.scrim.findUnique({
+      where: { id: scrimId },
+      select: {
+        autoAssignTeamNames: true,
+        team1Name: true,
+        team2Name: true,
+        teamId: true,
+      },
+    });
+
+    if (scrim?.autoAssignTeamNames && scrim.teamId && scrim.team1Name) {
+      mapData = await normalizeMapForScrim(
+        mapData,
+        scrim.teamId,
+        scrim.team1Name,
+        scrim.team2Name
+      );
+    }
+
     await createNewMap(
       {
-        map: data.map,
-        scrimId: parseInt(id),
+        map: mapData,
+        scrimId,
         heroBans: data.heroBans,
       },
       session
