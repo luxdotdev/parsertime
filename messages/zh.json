@@ -884,7 +884,8 @@
         "melee": "近战",
         "resurrect": "复活"
       },
-      "exportCSV": "导出为 CSV"
+      "exportCSV": "导出为 CSV",
+      "teamWins": "{team} 获胜"
     },
     "killfeedControls": {
       "title": "显示选项",

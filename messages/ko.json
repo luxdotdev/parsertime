@@ -884,7 +884,8 @@
         "melee": "근접 공격",
         "resurrect": "부활"
       },
-      "exportCSV": "CSV로 내보내기"
+      "exportCSV": "CSV로 내보내기",
+      "teamWins": "{team} 승리"
     },
     "killfeedControls": {
       "title": "표시 옵션",

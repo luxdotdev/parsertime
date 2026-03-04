@@ -161,11 +161,17 @@ export function FightTimeline({
           </span>
         </div>
         <div
-          className="absolute right-2 flex items-center"
+          className="absolute right-2 flex flex-col items-end"
           style={{ top: `${fightEndPercent}%`, transform: "translateY(-50%)" }}
         >
           <span className="text-muted-foreground text-right text-xs font-medium whitespace-nowrap">
             {t("fight", { num: fightIndex + 1 })} {t("end")}
+          </span>
+          <span
+            className="text-right text-[10px] whitespace-nowrap"
+            style={{ color: fightWinner === team1 ? team1Color : team2Color }}
+          >
+            {t("teamWins", { team: fightWinner })}
           </span>
         </div>
       </div>

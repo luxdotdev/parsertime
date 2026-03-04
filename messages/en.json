@@ -1359,7 +1359,8 @@
         "melee": "Melee",
         "resurrect": "Resurrect"
       },
-      "exportCSV": "Export as CSV"
+      "exportCSV": "Export as CSV",
+      "teamWins": "{team} Wins"
     },
     "killfeedControls": {
       "title": "Display Options",
