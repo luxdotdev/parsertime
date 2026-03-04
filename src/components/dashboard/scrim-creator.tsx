@@ -2,6 +2,7 @@
 
 import type { GetScoutingTeamsResponse } from "@/app/api/scouting/get-teams/route";
 import type { GetTeamsResponse } from "@/app/api/team/get-teams/route";
+import { useFeatureFlags } from "@/components/feature-flags-provider";
 import { SortableBanItem } from "@/components/map/sortable-ban-item";
 import { OpponentSearchField } from "@/components/scrim/opponent-search-field";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Link } from "@/components/ui/link";
 import {
   Popover,
@@ -26,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useFeatureFlags } from "@/components/feature-flags-provider";
+import { Switch } from "@/components/ui/switch";
 import { parseData } from "@/lib/parser";
 import { cn, detectFileCorruption } from "@/lib/utils";
 import { heroRoleMapping } from "@/types/heroes";
@@ -54,7 +56,7 @@ import { track } from "@vercel/analytics";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { startTransition, useState } from "react";
+import { startTransition, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -155,7 +157,7 @@ export function ScrimCreationForm({
     e.preventDefault();
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
-      if (file.size > MAX_FILE_SIZE) {
+      if (file.size > MAX_FILE_SIZE && !scoutingEnabled) {
         toast.error(t("fileSize.title"), {
           duration: 5000,
           description: t("fileSize.description"),
@@ -207,6 +209,16 @@ export function ScrimCreationForm({
     },
   });
 
+  const [autoAssignTeamNames, setAutoAssignTeamNames] = useState(false);
+  const selectedTeam = form.watch("team");
+  const isIndividual = selectedTeam === "0";
+
+  useEffect(() => {
+    if (isIndividual) {
+      setAutoAssignTeamNames(false);
+    }
+  }, [isIndividual]);
+
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setLoading(true);
     toast.error(t("creatingScrim.title"), {
@@ -215,11 +227,27 @@ export function ScrimCreationForm({
     });
 
     data.map = mapData;
-    data.name = data.name.trim(); // Remove leading/trailing whitespace
+    data.name = data.name.trim();
+
+    const resolvedTeam1Name =
+      autoAssignTeamNames && !isIndividual
+        ? (teams?.find((t) => t.value === data.team)?.label ?? null)
+        : null;
+
+    const resolvedTeam2Name =
+      autoAssignTeamNames && data.opponentTeamAbbr
+        ? (scoutingTeams.find((t) => t.abbreviation === data.opponentTeamAbbr)
+            ?.fullName ?? null)
+        : null;
 
     const res = await fetch("/api/scrim/create-scrim", {
       method: "POST",
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        ...data,
+        autoAssignTeamNames,
+        team1Name: resolvedTeam1Name,
+        team2Name: resolvedTeam2Name,
+      }),
     });
 
     if (res.ok) {
@@ -362,6 +390,34 @@ export function ScrimCreationForm({
             </Field>
           )}
         />
+
+        {/* Auto-assign team names — full width */}
+        <Field className="col-span-2">
+          <div className="flex items-center gap-3">
+            <Switch
+              id="auto-assign-team-names"
+              checked={autoAssignTeamNames}
+              onCheckedChange={setAutoAssignTeamNames}
+              disabled={isIndividual || !selectedTeam}
+              aria-label={t("autoAssignTeamNames")}
+            />
+            <Label
+              htmlFor="auto-assign-team-names"
+              className={
+                isIndividual || !selectedTeam
+                  ? "text-muted-foreground"
+                  : undefined
+              }
+            >
+              {t("autoAssignTeamNames")}
+            </Label>
+          </div>
+          <FieldDescription>
+            {isIndividual || !selectedTeam
+              ? t("autoAssignDisabledDescription")
+              : t("autoAssignTeamNamesDescription")}
+          </FieldDescription>
+        </Field>
 
         {/* Opponent (OWCS) + Map upload — side by side */}
         {scoutingEnabled && scoutingTeams.length > 0 && (
