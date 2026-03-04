@@ -80,7 +80,10 @@ export async function POST(req: NextRequest) {
   await Promise.all([
     prisma.scrim.delete({ where: { id: scrimId } }),
     prisma.map.deleteMany({ where: { scrimId } }),
+    prisma.note.deleteMany({ where: { scrimId } }),
+    prisma.calculatedStat.deleteMany({ where: { scrimId } }),
     prisma.mapData.deleteMany({ where: { scrimId } }),
+    prisma.heroBan.deleteMany({ where: { scrimId } }),
     prisma.defensiveAssist.deleteMany({ where: { scrimId } }),
     prisma.dvaRemech.deleteMany({ where: { scrimId } }),
     prisma.echoDuplicateEnd.deleteMany({ where: { scrimId } }),
