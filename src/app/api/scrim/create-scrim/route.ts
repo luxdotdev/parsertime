@@ -3,6 +3,7 @@ import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import { createNewScrimFromParsedData } from "@/lib/parser";
+import { normalizeMapForScrim } from "@/lib/team-normalization";
 import {
   newSuspiciousActivityWebhookConstructor,
   sendDiscordWebhook,
@@ -22,6 +23,9 @@ export type CreateScrimRequestData = {
   map: ParserData;
   replayCode: string;
   opponentTeamAbbr?: string | null;
+  autoAssignTeamNames?: boolean;
+  team1Name?: string | null;
+  team2Name?: string | null;
   heroBans: {
     hero: string;
     team: string;
@@ -92,6 +96,17 @@ export async function POST(request: NextRequest) {
   }
 
   Logger.log("Creating new scrim for user: ", session.user?.email);
+
+  const teamId = parseInt(data.team) === 0 ? null : parseInt(data.team);
+
+  if (data.autoAssignTeamNames && teamId && data.team1Name) {
+    data.map = await normalizeMapForScrim(
+      data.map,
+      teamId,
+      data.team1Name,
+      data.team2Name ?? null
+    );
+  }
 
   await createNewScrimFromParsedData(data, session);
 
