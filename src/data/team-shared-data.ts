@@ -7,6 +7,8 @@ import type {
   MatchStart,
   MercyRez,
   ObjectiveCaptured,
+  PayloadProgress,
+  PointProgress,
   RoundEnd,
   UltimateStart,
 } from "@prisma/client";
@@ -49,6 +51,8 @@ export type BaseTeamData = {
   matchStarts: MatchStart[];
   finalRounds: RoundEnd[];
   captures: ObjectiveCaptured[];
+  payloadProgresses: PayloadProgress[];
+  pointProgresses: PointProgress[];
 };
 
 /**
@@ -185,6 +189,42 @@ export function buildCapturesMaps(
   }
 
   return { team1CapturesMap, team2CapturesMap };
+}
+
+export function buildProgressMaps<T extends {
+  MapDataId: number | null;
+  capturing_team: string;
+}>(
+  progressRows: T[],
+  matchStartMap: Map<number, MatchStart>
+): {
+  team1ProgressMap: Map<number, T[]>;
+  team2ProgressMap: Map<number, T[]>;
+} {
+  const team1ProgressMap = new Map<number, T[]>();
+  const team2ProgressMap = new Map<number, T[]>();
+
+  for (const progressRow of progressRows) {
+    const mapDataId = progressRow.MapDataId;
+    if (!mapDataId) continue;
+
+    const match = matchStartMap.get(mapDataId);
+    if (!match) continue;
+
+    if (progressRow.capturing_team === match.team_1_name) {
+      if (!team1ProgressMap.has(mapDataId)) {
+        team1ProgressMap.set(mapDataId, []);
+      }
+      team1ProgressMap.get(mapDataId)!.push(progressRow);
+    } else if (progressRow.capturing_team === match.team_2_name) {
+      if (!team2ProgressMap.has(mapDataId)) {
+        team2ProgressMap.set(mapDataId, []);
+      }
+      team2ProgressMap.get(mapDataId)!.push(progressRow);
+    }
+  }
+
+  return { team1ProgressMap, team2ProgressMap };
 }
 
 /**
@@ -365,11 +405,20 @@ async function getBaseTeamDataUncached(
       matchStarts: [],
       finalRounds: [],
       captures: [],
+      payloadProgresses: [],
+      pointProgresses: [],
     };
   }
 
   // Fetch all common data in parallel
-  const [allPlayerStats, matchStarts, finalRounds, captures] =
+  const [
+    allPlayerStats,
+    matchStarts,
+    finalRounds,
+    captures,
+    payloadProgresses,
+    pointProgresses,
+  ] =
     await Promise.all([
       prisma.playerStat.findMany({
         where: { MapDataId: { in: mapDataIds } },
@@ -401,6 +450,23 @@ async function getBaseTeamDataUncached(
       }),
       prisma.objectiveCaptured.findMany({
         where: { MapDataId: { in: mapDataIds } },
+        orderBy: [{ round_number: "asc" }, { match_time: "asc" }],
+      }),
+      prisma.payloadProgress.findMany({
+        where: { MapDataId: { in: mapDataIds } },
+        orderBy: [
+          { round_number: "asc" },
+          { objective_index: "asc" },
+          { match_time: "asc" },
+        ],
+      }),
+      prisma.pointProgress.findMany({
+        where: { MapDataId: { in: mapDataIds } },
+        orderBy: [
+          { round_number: "asc" },
+          { objective_index: "asc" },
+          { match_time: "asc" },
+        ],
       }),
     ]);
 
@@ -414,6 +480,8 @@ async function getBaseTeamDataUncached(
     matchStarts,
     finalRounds,
     captures,
+    payloadProgresses,
+    pointProgresses,
   };
 }
 
