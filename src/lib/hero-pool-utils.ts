@@ -64,8 +64,15 @@ export function calculateHeroPoolAnalysis(
   dateFrom?: Date,
   dateTo?: Date
 ): HeroPoolAnalysis {
-  const { teamRoster, allPlayerStats, matchStarts, finalRounds, captures } =
-    rawData;
+  const {
+    teamRoster,
+    allPlayerStats,
+    matchStarts,
+    finalRounds,
+    captures,
+    payloadProgresses,
+    pointProgresses,
+  } = rawData;
   const teamRosterSet = new Set(teamRoster);
 
   if (teamRoster.length === 0 || rawData.mapDataRecords.length === 0) {
@@ -107,6 +114,10 @@ export function calculateHeroPoolAnalysis(
 
   const team1CapturesMap = new Map<number, typeof captures>();
   const team2CapturesMap = new Map<number, typeof captures>();
+  const team1PayloadProgressMap = new Map<number, typeof payloadProgresses>();
+  const team2PayloadProgressMap = new Map<number, typeof payloadProgresses>();
+  const team1PointProgressMap = new Map<number, typeof pointProgresses>();
+  const team2PointProgressMap = new Map<number, typeof pointProgresses>();
 
   for (const capture of captures) {
     const mapDataId = capture.MapDataId;
@@ -125,6 +136,46 @@ export function calculateHeroPoolAnalysis(
         team2CapturesMap.set(mapDataId, []);
       }
       team2CapturesMap.get(mapDataId)!.push(capture);
+    }
+  }
+
+  for (const progressRow of payloadProgresses) {
+    const mapDataId = progressRow.MapDataId;
+    if (!mapDataId || !mapDataIds.has(mapDataId)) continue;
+
+    const match = matchStartMap.get(mapDataId);
+    if (!match) continue;
+
+    if (progressRow.capturing_team === match.team_1_name) {
+      if (!team1PayloadProgressMap.has(mapDataId)) {
+        team1PayloadProgressMap.set(mapDataId, []);
+      }
+      team1PayloadProgressMap.get(mapDataId)!.push(progressRow);
+    } else if (progressRow.capturing_team === match.team_2_name) {
+      if (!team2PayloadProgressMap.has(mapDataId)) {
+        team2PayloadProgressMap.set(mapDataId, []);
+      }
+      team2PayloadProgressMap.get(mapDataId)!.push(progressRow);
+    }
+  }
+
+  for (const progressRow of pointProgresses) {
+    const mapDataId = progressRow.MapDataId;
+    if (!mapDataId || !mapDataIds.has(mapDataId)) continue;
+
+    const match = matchStartMap.get(mapDataId);
+    if (!match) continue;
+
+    if (progressRow.capturing_team === match.team_1_name) {
+      if (!team1PointProgressMap.has(mapDataId)) {
+        team1PointProgressMap.set(mapDataId, []);
+      }
+      team1PointProgressMap.get(mapDataId)!.push(progressRow);
+    } else if (progressRow.capturing_team === match.team_2_name) {
+      if (!team2PointProgressMap.has(mapDataId)) {
+        team2PointProgressMap.set(mapDataId, []);
+      }
+      team2PointProgressMap.get(mapDataId)!.push(progressRow);
     }
   }
 
@@ -167,6 +218,10 @@ export function calculateHeroPoolAnalysis(
       finalRound,
       team1Captures: team1CapturesMap.get(mapDataId) ?? [],
       team2Captures: team2CapturesMap.get(mapDataId) ?? [],
+      team1PayloadProgress: team1PayloadProgressMap.get(mapDataId) ?? [],
+      team2PayloadProgress: team2PayloadProgressMap.get(mapDataId) ?? [],
+      team1PointProgress: team1PointProgressMap.get(mapDataId) ?? [],
+      team2PointProgress: team2PointProgressMap.get(mapDataId) ?? [],
     });
 
     const isWin = winner === teamName;
