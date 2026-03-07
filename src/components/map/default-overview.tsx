@@ -30,7 +30,7 @@ import {
   round,
   toTimestamp,
 } from "@/lib/utils";
-import { calculateWinner } from "@/lib/winrate";
+import { calculatePayloadMapScore, calculateWinner } from "@/lib/winrate";
 import {
   getHeroRole,
   heroPriority,
@@ -65,24 +65,81 @@ export async function DefaultOverview({
       groupKillsIntoFights(id),
     ]);
 
-  const [team1Captures, team2Captures] = await Promise.all([
+  const [
+    team1Captures,
+    team2Captures,
+    team1PayloadProgress,
+    team2PayloadProgress,
+    team1PointProgress,
+    team2PointProgress,
+  ] = await Promise.all([
     prisma.objectiveCaptured.findMany({
       where: {
         MapDataId: id,
         capturing_team: matchDetails?.team_1_name ?? "Team 1",
       },
+      orderBy: [{ round_number: "asc" }, { match_time: "asc" }],
     }),
     prisma.objectiveCaptured.findMany({
       where: {
         MapDataId: id,
         capturing_team: matchDetails?.team_2_name ?? "Team 2",
       },
+      orderBy: [{ round_number: "asc" }, { match_time: "asc" }],
+    }),
+    prisma.payloadProgress.findMany({
+      where: {
+        MapDataId: id,
+        capturing_team: matchDetails?.team_1_name ?? "Team 1",
+      },
+      orderBy: [
+        { round_number: "asc" },
+        { objective_index: "asc" },
+        { match_time: "asc" },
+      ],
+    }),
+    prisma.payloadProgress.findMany({
+      where: {
+        MapDataId: id,
+        capturing_team: matchDetails?.team_2_name ?? "Team 2",
+      },
+      orderBy: [
+        { round_number: "asc" },
+        { objective_index: "asc" },
+        { match_time: "asc" },
+      ],
+    }),
+    prisma.pointProgress.findMany({
+      where: {
+        MapDataId: id,
+        capturing_team: matchDetails?.team_1_name ?? "Team 1",
+      },
+      orderBy: [
+        { round_number: "asc" },
+        { objective_index: "asc" },
+        { match_time: "asc" },
+      ],
+    }),
+    prisma.pointProgress.findMany({
+      where: {
+        MapDataId: id,
+        capturing_team: matchDetails?.team_2_name ?? "Team 2",
+      },
+      orderBy: [
+        { round_number: "asc" },
+        { objective_index: "asc" },
+        { match_time: "asc" },
+      ],
     }),
   ]);
 
   const t = await getTranslations("mapPage.overview");
 
   const mapType = matchDetails ? matchDetails.map_type : $Enums.MapType.Control;
+  const payloadMapScore = calculatePayloadMapScore({
+    team1Captures,
+    team2Captures,
+  });
 
   const team1Damage = finalRoundStats
     .filter((player) => player.player_team === matchDetails?.team_1_name)
@@ -105,13 +162,11 @@ export async function DefaultOverview({
       case $Enums.MapType.Control:
         return `${finalRound?.team_1_score} - ${finalRound?.team_2_score}`;
       case $Enums.MapType.Escort:
-        // account for game setting score to 3 to ensure map completion
-        return `${team1Captures.length} - ${team2Captures.length}`;
+        return `${payloadMapScore.team1} - ${payloadMapScore.team2}`;
       case $Enums.MapType.Flashpoint:
         return `${finalRound?.team_1_score} - ${finalRound?.team_2_score}`;
       case $Enums.MapType.Hybrid:
-        // account for game setting score to 3 to ensure map completion
-        return `${team1Captures.length} - ${team2Captures.length}`;
+        return `${payloadMapScore.team1} - ${payloadMapScore.team2}`;
       case $Enums.MapType.Push:
         return "N/A";
       default:
@@ -124,6 +179,10 @@ export async function DefaultOverview({
     finalRound,
     team1Captures,
     team2Captures,
+    team1PayloadProgress,
+    team2PayloadProgress,
+    team1PointProgress,
+    team2PointProgress,
   });
 
   const numberOfRounds =
