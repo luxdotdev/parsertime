@@ -7,6 +7,8 @@ import { heroRoleMapping, type HeroName } from "@/types/heroes";
 import type {
   MapType,
   ObjectiveCaptured,
+  PayloadProgress,
+  PointProgress,
   RoundEnd,
   MatchStart,
 } from "@prisma/client";
@@ -73,6 +75,14 @@ async function fetchTaggedScrimDataFn(
     number,
     { team1: ObjectiveCaptured[]; team2: ObjectiveCaptured[] }
   >;
+  payloadProgressByTeam: Map<
+    number,
+    { team1: PayloadProgress[]; team2: PayloadProgress[] }
+  >;
+  pointProgressByTeam: Map<
+    number,
+    { team1: PointProgress[]; team2: PointProgress[] }
+  >;
   heroBansByMapDataId: Map<number, { team: string; hero: string }[]>;
   fullPlayerStatsByMapDataId: Map<
     number,
@@ -111,6 +121,8 @@ async function fetchTaggedScrimDataFn(
       matchStartsByMapDataId: new Map(),
       finalRoundsByMapDataId: new Map(),
       capturesByTeam: new Map(),
+      payloadProgressByTeam: new Map(),
+      pointProgressByTeam: new Map(),
       heroBansByMapDataId: new Map(),
       fullPlayerStatsByMapDataId: new Map(),
     };
@@ -144,12 +156,22 @@ async function fetchTaggedScrimDataFn(
       matchStartsByMapDataId: new Map(),
       finalRoundsByMapDataId: new Map(),
       capturesByTeam: new Map(),
+      payloadProgressByTeam: new Map(),
+      pointProgressByTeam: new Map(),
       heroBansByMapDataId: new Map(),
       fullPlayerStatsByMapDataId: new Map(),
     };
   }
 
-  const [allPlayerStatsFull, matchStarts, roundEnds, captures, heroBans] =
+  const [
+    allPlayerStatsFull,
+    matchStarts,
+    roundEnds,
+    captures,
+    payloadProgressRows,
+    pointProgressRows,
+    heroBans,
+  ] =
     await Promise.all([
       prisma.playerStat.findMany({
         where: { MapDataId: { in: allMapDataIds } },
@@ -172,6 +194,23 @@ async function fetchTaggedScrimDataFn(
       }),
       prisma.objectiveCaptured.findMany({
         where: { MapDataId: { in: allMapDataIds } },
+        orderBy: [{ round_number: "asc" }, { match_time: "asc" }],
+      }),
+      prisma.payloadProgress.findMany({
+        where: { MapDataId: { in: allMapDataIds } },
+        orderBy: [
+          { round_number: "asc" },
+          { objective_index: "asc" },
+          { match_time: "asc" },
+        ],
+      }),
+      prisma.pointProgress.findMany({
+        where: { MapDataId: { in: allMapDataIds } },
+        orderBy: [
+          { round_number: "asc" },
+          { objective_index: "asc" },
+          { match_time: "asc" },
+        ],
       }),
       prisma.heroBan.findMany({
         where: { MapDataId: { in: allMapDataIds } },
@@ -219,6 +258,46 @@ async function fetchTaggedScrimDataFn(
     }
   }
 
+  const payloadProgressByTeam = new Map<
+    number,
+    { team1: PayloadProgress[]; team2: PayloadProgress[] }
+  >();
+  for (const progressRow of payloadProgressRows) {
+    if (!progressRow.MapDataId) continue;
+    const ms = matchStartsByMapDataId.get(progressRow.MapDataId);
+    if (!ms) continue;
+    let entry = payloadProgressByTeam.get(progressRow.MapDataId);
+    if (!entry) {
+      entry = { team1: [], team2: [] };
+      payloadProgressByTeam.set(progressRow.MapDataId, entry);
+    }
+    if (progressRow.capturing_team === ms.team_1_name) {
+      entry.team1.push(progressRow);
+    } else if (progressRow.capturing_team === ms.team_2_name) {
+      entry.team2.push(progressRow);
+    }
+  }
+
+  const pointProgressByTeam = new Map<
+    number,
+    { team1: PointProgress[]; team2: PointProgress[] }
+  >();
+  for (const progressRow of pointProgressRows) {
+    if (!progressRow.MapDataId) continue;
+    const ms = matchStartsByMapDataId.get(progressRow.MapDataId);
+    if (!ms) continue;
+    let entry = pointProgressByTeam.get(progressRow.MapDataId);
+    if (!entry) {
+      entry = { team1: [], team2: [] };
+      pointProgressByTeam.set(progressRow.MapDataId, entry);
+    }
+    if (progressRow.capturing_team === ms.team_1_name) {
+      entry.team1.push(progressRow);
+    } else if (progressRow.capturing_team === ms.team_2_name) {
+      entry.team2.push(progressRow);
+    }
+  }
+
   const heroBansByMapDataId = new Map<
     number,
     { team: string; hero: string }[]
@@ -261,6 +340,8 @@ async function fetchTaggedScrimDataFn(
     matchStartsByMapDataId,
     finalRoundsByMapDataId,
     capturesByTeam,
+    payloadProgressByTeam,
+    pointProgressByTeam,
     heroBansByMapDataId,
     fullPlayerStatsByMapDataId,
   };
@@ -304,6 +385,8 @@ async function getOpponentScrimMapResultsFn(
     matchStartsByMapDataId,
     finalRoundsByMapDataId,
     capturesByTeam,
+    payloadProgressByTeam,
+    pointProgressByTeam,
   } = data;
 
   const results: ScrimMapResult[] = [];
@@ -319,11 +402,17 @@ async function getOpponentScrimMapResultsFn(
 
     const finalRound = finalRoundsByMapDataId.get(row.id) ?? null;
     const captureEntry = capturesByTeam.get(row.id);
+    const payloadProgressEntry = payloadProgressByTeam.get(row.id);
+    const pointProgressEntry = pointProgressByTeam.get(row.id);
     const winner = calculateWinner({
       matchDetails: matchStart,
       finalRound,
       team1Captures: captureEntry?.team1 ?? [],
       team2Captures: captureEntry?.team2 ?? [],
+      team1PayloadProgress: payloadProgressEntry?.team1 ?? [],
+      team2PayloadProgress: payloadProgressEntry?.team2 ?? [],
+      team1PointProgress: pointProgressEntry?.team1 ?? [],
+      team2PointProgress: pointProgressEntry?.team2 ?? [],
     });
 
     if (winner === "N/A") continue;
@@ -357,6 +446,8 @@ async function getOpponentScrimHeroBansFn(
     matchStartsByMapDataId,
     finalRoundsByMapDataId,
     capturesByTeam,
+    payloadProgressByTeam,
+    pointProgressByTeam,
     heroBansByMapDataId,
   } = data;
 
@@ -381,11 +472,17 @@ async function getOpponentScrimHeroBansFn(
 
     const finalRound = finalRoundsByMapDataId.get(row.id) ?? null;
     const captureEntry = capturesByTeam.get(row.id);
+    const payloadProgressEntry = payloadProgressByTeam.get(row.id);
+    const pointProgressEntry = pointProgressByTeam.get(row.id);
     const winner = calculateWinner({
       matchDetails: matchStart,
       finalRound,
       team1Captures: captureEntry?.team1 ?? [],
       team2Captures: captureEntry?.team2 ?? [],
+      team1PayloadProgress: payloadProgressEntry?.team1 ?? [],
+      team2PayloadProgress: payloadProgressEntry?.team2 ?? [],
+      team1PointProgress: pointProgressEntry?.team1 ?? [],
+      team2PointProgress: pointProgressEntry?.team2 ?? [],
     });
 
     if (winner === "N/A") continue;

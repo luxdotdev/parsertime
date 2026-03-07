@@ -9,6 +9,7 @@ import {
   buildCapturesMaps,
   buildFinalRoundMap,
   buildMatchStartMap,
+  buildProgressMaps,
   findTeamNameForMapInMemory,
   getExtendedTeamData,
 } from "./team-shared-data";
@@ -113,6 +114,8 @@ function processQuickWinsStats(
     matchStarts,
     finalRounds,
     captures,
+    payloadProgresses,
+    pointProgresses,
     allKills,
     allRezzes,
     allUltimates,
@@ -144,6 +147,14 @@ function processQuickWinsStats(
     captures,
     matchStartMap
   );
+  const {
+    team1ProgressMap: team1PayloadProgressMap,
+    team2ProgressMap: team2PayloadProgressMap,
+  } = buildProgressMaps(payloadProgresses, matchStartMap);
+  const {
+    team1ProgressMap: team1PointProgressMap,
+    team2ProgressMap: team2PointProgressMap,
+  } = buildProgressMaps(pointProgresses, matchStartMap);
 
   // Calculate match results
   type MatchResult = {
@@ -181,6 +192,10 @@ function processQuickWinsStats(
       finalRound,
       team1Captures: team1CapturesMap.get(mapDataId) ?? [],
       team2Captures: team2CapturesMap.get(mapDataId) ?? [],
+      team1PayloadProgress: team1PayloadProgressMap.get(mapDataId) ?? [],
+      team2PayloadProgress: team2PayloadProgressMap.get(mapDataId) ?? [],
+      team1PointProgress: team1PointProgressMap.get(mapDataId) ?? [],
+      team2PointProgress: team2PointProgressMap.get(mapDataId) ?? [],
     });
 
     const isWin = winner === teamName;

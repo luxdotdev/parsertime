@@ -1811,6 +1811,8 @@ async function getScrimOverviewFn(
     matchStarts,
     finalRounds,
     captures,
+    payloadProgressRows,
+    pointProgressRows,
     allKills,
     allRezzes,
     allUltimates,
@@ -1852,6 +1854,23 @@ async function getScrimOverviewFn(
     }),
     prisma.objectiveCaptured.findMany({
       where: { MapDataId: { in: mapIds } },
+      orderBy: [{ round_number: "asc" }, { match_time: "asc" }],
+    }),
+    prisma.payloadProgress.findMany({
+      where: { MapDataId: { in: mapIds } },
+      orderBy: [
+        { round_number: "asc" },
+        { objective_index: "asc" },
+        { match_time: "asc" },
+      ],
+    }),
+    prisma.pointProgress.findMany({
+      where: { MapDataId: { in: mapIds } },
+      orderBy: [
+        { round_number: "asc" },
+        { objective_index: "asc" },
+        { match_time: "asc" },
+      ],
     }),
     prisma.kill.findMany({
       where: { MapDataId: { in: mapIds } },
@@ -1923,6 +1942,44 @@ async function getScrimOverviewFn(
       mapCaptures.set(capture.capturing_team, []);
     }
     mapCaptures.get(capture.capturing_team)!.push(capture);
+  }
+
+  const payloadProgressByMapAndTeam = new Map<
+    number,
+    Map<string, typeof payloadProgressRows>
+  >();
+  for (const progressRow of payloadProgressRows) {
+    if (!progressRow.MapDataId) continue;
+    if (!payloadProgressByMapAndTeam.has(progressRow.MapDataId)) {
+      payloadProgressByMapAndTeam.set(
+        progressRow.MapDataId,
+        new Map<string, typeof payloadProgressRows>()
+      );
+    }
+    const mapProgressRows = payloadProgressByMapAndTeam.get(progressRow.MapDataId)!;
+    if (!mapProgressRows.has(progressRow.capturing_team)) {
+      mapProgressRows.set(progressRow.capturing_team, []);
+    }
+    mapProgressRows.get(progressRow.capturing_team)!.push(progressRow);
+  }
+
+  const pointProgressByMapAndTeam = new Map<
+    number,
+    Map<string, typeof pointProgressRows>
+  >();
+  for (const progressRow of pointProgressRows) {
+    if (!progressRow.MapDataId) continue;
+    if (!pointProgressByMapAndTeam.has(progressRow.MapDataId)) {
+      pointProgressByMapAndTeam.set(
+        progressRow.MapDataId,
+        new Map<string, typeof pointProgressRows>()
+      );
+    }
+    const mapProgressRows = pointProgressByMapAndTeam.get(progressRow.MapDataId)!;
+    if (!mapProgressRows.has(progressRow.capturing_team)) {
+      mapProgressRows.set(progressRow.capturing_team, []);
+    }
+    mapProgressRows.get(progressRow.capturing_team)!.push(progressRow);
   }
 
   const killsByMap = new Map<number, Kill[]>();
@@ -2055,12 +2112,30 @@ async function getScrimOverviewFn(
     const team2Caps = matchStart?.team_2_name
       ? (mapCaptures?.get(matchStart.team_2_name) ?? [])
       : [];
+    const mapPayloadProgress = payloadProgressByMapAndTeam.get(map.id);
+    const team1PayloadProgress = matchStart?.team_1_name
+      ? (mapPayloadProgress?.get(matchStart.team_1_name) ?? [])
+      : [];
+    const team2PayloadProgress = matchStart?.team_2_name
+      ? (mapPayloadProgress?.get(matchStart.team_2_name) ?? [])
+      : [];
+    const mapPointProgress = pointProgressByMapAndTeam.get(map.id);
+    const team1PointProgress = matchStart?.team_1_name
+      ? (mapPointProgress?.get(matchStart.team_1_name) ?? [])
+      : [];
+    const team2PointProgress = matchStart?.team_2_name
+      ? (mapPointProgress?.get(matchStart.team_2_name) ?? [])
+      : [];
 
     const winnerName = calculateWinner({
       matchDetails: matchStart,
       finalRound,
       team1Captures: team1Caps,
       team2Captures: team2Caps,
+      team1PayloadProgress,
+      team2PayloadProgress,
+      team1PointProgress,
+      team2PointProgress,
     });
 
     const ourTeamName = ourTeamNameByMap.get(map.id) ?? null;

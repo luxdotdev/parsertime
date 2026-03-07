@@ -5,7 +5,13 @@ import prisma from "@/lib/prisma";
 import { calculateWinner } from "@/lib/winrate";
 import type { HeroName } from "@/types/heroes";
 import { mapNameToMapTypeMapping } from "@/types/map";
-import type { MatchStart, ObjectiveCaptured, RoundEnd } from "@prisma/client";
+import type {
+  MatchStart,
+  ObjectiveCaptured,
+  PayloadProgress,
+  PointProgress,
+  RoundEnd,
+} from "@prisma/client";
 import { $Enums } from "@prisma/client";
 import { cache } from "react";
 import type { BaseTeamData, TeamDateRange } from "./team-shared-data";
@@ -13,6 +19,7 @@ import {
   buildCapturesMaps,
   buildFinalRoundMap,
   buildMatchStartMap,
+  buildProgressMaps,
   findTeamNameForMapInMemory,
   getBaseTeamData,
   getTeamRoster,
@@ -84,6 +91,8 @@ export type HeroPoolRawData = {
   matchStarts: MatchStart[];
   finalRounds: RoundEnd[];
   captures: ObjectiveCaptured[];
+  payloadProgresses: PayloadProgress[];
+  pointProgresses: PointProgress[];
 };
 
 async function getHeroPoolAnalysisUncached(
@@ -151,7 +160,14 @@ async function getHeroPoolAnalysisWithCustomDateRange(
 
   const mapDataIds = mapDataRecords.map((md) => md.id);
 
-  const [allPlayerStats, matchStarts, finalRounds, captures] =
+  const [
+    allPlayerStats,
+    matchStarts,
+    finalRounds,
+    captures,
+    payloadProgresses,
+    pointProgresses,
+  ] =
     await Promise.all([
       prisma.playerStat.findMany({
         where: { MapDataId: { in: mapDataIds } },
@@ -183,6 +199,23 @@ async function getHeroPoolAnalysisWithCustomDateRange(
       }),
       prisma.objectiveCaptured.findMany({
         where: { MapDataId: { in: mapDataIds } },
+        orderBy: [{ round_number: "asc" }, { match_time: "asc" }],
+      }),
+      prisma.payloadProgress.findMany({
+        where: { MapDataId: { in: mapDataIds } },
+        orderBy: [
+          { round_number: "asc" },
+          { objective_index: "asc" },
+          { match_time: "asc" },
+        ],
+      }),
+      prisma.pointProgress.findMany({
+        where: { MapDataId: { in: mapDataIds } },
+        orderBy: [
+          { round_number: "asc" },
+          { objective_index: "asc" },
+          { match_time: "asc" },
+        ],
       }),
     ]);
 
@@ -196,6 +229,8 @@ async function getHeroPoolAnalysisWithCustomDateRange(
     matchStarts,
     finalRounds,
     captures,
+    payloadProgresses,
+    pointProgresses,
   };
 
   return processHeroPoolAnalysis(baseData);
@@ -209,6 +244,8 @@ function processHeroPoolAnalysis(sharedData: BaseTeamData): HeroPoolAnalysis {
     matchStarts,
     finalRounds,
     captures,
+    payloadProgresses,
+    pointProgresses,
   } = sharedData;
 
   if (mapDataRecords.length === 0) {
@@ -221,6 +258,14 @@ function processHeroPoolAnalysis(sharedData: BaseTeamData): HeroPoolAnalysis {
     captures,
     matchStartMap
   );
+  const {
+    team1ProgressMap: team1PayloadProgressMap,
+    team2ProgressMap: team2PayloadProgressMap,
+  } = buildProgressMaps(payloadProgresses, matchStartMap);
+  const {
+    team1ProgressMap: team1PointProgressMap,
+    team2ProgressMap: team2PointProgressMap,
+  } = buildProgressMaps(pointProgresses, matchStartMap);
 
   type HeroData = {
     playtime: number;
@@ -261,6 +306,10 @@ function processHeroPoolAnalysis(sharedData: BaseTeamData): HeroPoolAnalysis {
       finalRound,
       team1Captures: team1CapturesMap.get(mapDataId) ?? [],
       team2Captures: team2CapturesMap.get(mapDataId) ?? [],
+      team1PayloadProgress: team1PayloadProgressMap.get(mapDataId) ?? [],
+      team2PayloadProgress: team2PayloadProgressMap.get(mapDataId) ?? [],
+      team1PointProgress: team1PointProgressMap.get(mapDataId) ?? [],
+      team2PointProgress: team2PointProgressMap.get(mapDataId) ?? [],
     });
 
     const isWin = winner === teamName;
@@ -474,6 +523,8 @@ async function getHeroPoolRawDataUncached(
       matchStarts: [],
       finalRounds: [],
       captures: [],
+      payloadProgresses: [],
+      pointProgresses: [],
     };
   }
 
@@ -503,12 +554,21 @@ async function getHeroPoolRawDataUncached(
       matchStarts: [],
       finalRounds: [],
       captures: [],
+      payloadProgresses: [],
+      pointProgresses: [],
     };
   }
 
   const mapDataIds = mapDataRecords.map((md) => md.id);
 
-  const [allPlayerStats, matchStarts, finalRounds, captures] =
+  const [
+    allPlayerStats,
+    matchStarts,
+    finalRounds,
+    captures,
+    payloadProgresses,
+    pointProgresses,
+  ] =
     await Promise.all([
       prisma.playerStat.findMany({
         where: { MapDataId: { in: mapDataIds } },
@@ -531,6 +591,23 @@ async function getHeroPoolRawDataUncached(
       }),
       prisma.objectiveCaptured.findMany({
         where: { MapDataId: { in: mapDataIds } },
+        orderBy: [{ round_number: "asc" }, { match_time: "asc" }],
+      }),
+      prisma.payloadProgress.findMany({
+        where: { MapDataId: { in: mapDataIds } },
+        orderBy: [
+          { round_number: "asc" },
+          { objective_index: "asc" },
+          { match_time: "asc" },
+        ],
+      }),
+      prisma.pointProgress.findMany({
+        where: { MapDataId: { in: mapDataIds } },
+        orderBy: [
+          { round_number: "asc" },
+          { objective_index: "asc" },
+          { match_time: "asc" },
+        ],
       }),
     ]);
 
@@ -541,6 +618,8 @@ async function getHeroPoolRawDataUncached(
     matchStarts,
     finalRounds,
     captures,
+    payloadProgresses,
+    pointProgresses,
   };
 }
 

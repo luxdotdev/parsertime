@@ -10,6 +10,7 @@ import {
   buildCapturesMaps,
   buildFinalRoundMap,
   buildMatchStartMap,
+  buildProgressMaps,
   findTeamNameForMapInMemory,
   getBaseTeamData,
 } from "./team-shared-data";
@@ -125,8 +126,15 @@ function processTeamMatchResults(
     } | null;
   }[]
 ): ProcessedMatchResult[] {
-  const { teamRosterSet, allPlayerStats, matchStarts, finalRounds, captures } =
-    sharedData;
+  const {
+    teamRosterSet,
+    allPlayerStats,
+    matchStarts,
+    finalRounds,
+    captures,
+    payloadProgresses,
+    pointProgresses,
+  } = sharedData;
 
   const finalRoundMap = buildFinalRoundMap(finalRounds);
   const matchStartMap = buildMatchStartMap(matchStarts);
@@ -134,6 +142,14 @@ function processTeamMatchResults(
     captures,
     matchStartMap
   );
+  const {
+    team1ProgressMap: team1PayloadProgressMap,
+    team2ProgressMap: team2PayloadProgressMap,
+  } = buildProgressMaps(payloadProgresses, matchStartMap);
+  const {
+    team1ProgressMap: team1PointProgressMap,
+    team2ProgressMap: team2PointProgressMap,
+  } = buildProgressMaps(pointProgresses, matchStartMap);
 
   const matchResults: ProcessedMatchResult[] = [];
 
@@ -163,6 +179,10 @@ function processTeamMatchResults(
       finalRound,
       team1Captures: team1CapturesMap.get(mapDataId) ?? [],
       team2Captures: team2CapturesMap.get(mapDataId) ?? [],
+      team1PayloadProgress: team1PayloadProgressMap.get(mapDataId) ?? [],
+      team2PayloadProgress: team2PayloadProgressMap.get(mapDataId) ?? [],
+      team1PointProgress: team1PointProgressMap.get(mapDataId) ?? [],
+      team2PointProgress: team2PointProgressMap.get(mapDataId) ?? [],
     });
 
     const isWin = winner === teamName;

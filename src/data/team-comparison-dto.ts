@@ -386,6 +386,8 @@ async function getTeamComparisonStatsFn(
           match_start: true,
           round_end: true,
           objective_captured: true,
+          payload_progress: true,
+          point_progress: true,
         },
       },
     },
@@ -466,6 +468,20 @@ async function getTeamComparisonStatsFn(
     const team2Captures = allCaptures.filter(
       (c) => c.capturing_team === matchStart?.team_2_name
     );
+    const allPayloadProgress = firstMapData?.payload_progress ?? [];
+    const team1PayloadProgress = allPayloadProgress.filter(
+      (progress) => progress.capturing_team === matchStart?.team_1_name
+    );
+    const team2PayloadProgress = allPayloadProgress.filter(
+      (progress) => progress.capturing_team === matchStart?.team_2_name
+    );
+    const allPointProgress = firstMapData?.point_progress ?? [];
+    const team1PointProgress = allPointProgress.filter(
+      (progress) => progress.capturing_team === matchStart?.team_1_name
+    );
+    const team2PointProgress = allPointProgress.filter(
+      (progress) => progress.capturing_team === matchStart?.team_2_name
+    );
 
     // Determine enemy team name
     const enemyTeamName =
@@ -515,6 +531,10 @@ async function getTeamComparisonStatsFn(
       finalRound: finalRound ?? null,
       team1Captures,
       team2Captures,
+      team1PayloadProgress,
+      team2PayloadProgress,
+      team1PointProgress,
+      team2PointProgress,
     });
 
     const winner: TeamMapBreakdown["winner"] =

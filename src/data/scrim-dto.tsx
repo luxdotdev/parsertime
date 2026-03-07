@@ -4,12 +4,16 @@ import { calculateWinner } from "@/lib/winrate";
 import { type HeroName, heroPriority, heroRoleMapping } from "@/types/heroes";
 import {
   type MatchStart,
-  type ObjectiveCaptured,
   type PlayerStat,
   Prisma,
   type RoundEnd,
 } from "@prisma/client";
 import { cache } from "react";
+import {
+  buildCapturesMaps,
+  buildMatchStartMap,
+  buildProgressMaps,
+} from "./team-shared-data";
 
 async function getScrimFn(id: number) {
   return await prisma.scrim.findFirst({ where: { id } });
@@ -246,24 +250,47 @@ async function getAllMapWinratesForPlayerFn(scrimIds: number[], name: string) {
   });
   const mapDataIdArray = Array.from(mapDataIdSet);
 
-  const [matchStarts, allFinalRounds, captures, playerStats] =
-    await Promise.all([
-      prisma.matchStart.findMany({
-        where: { MapDataId: { in: mapDataIdArray } },
-      }),
-      prisma.roundEnd.findMany({
-        where: { MapDataId: { in: mapDataIdArray } },
-      }),
-      prisma.objectiveCaptured.findMany({
-        where: { MapDataId: { in: mapDataIdArray } },
-      }),
-      prisma.playerStat.findMany({
-        where: {
-          player_name: { equals: name, mode: "insensitive" },
-          MapDataId: { in: mapDataIdArray },
-        },
-      }),
-    ]);
+  const [
+    matchStarts,
+    allFinalRounds,
+    captures,
+    payloadProgresses,
+    pointProgresses,
+    playerStats,
+  ] = await Promise.all([
+    prisma.matchStart.findMany({
+      where: { MapDataId: { in: mapDataIdArray } },
+    }),
+    prisma.roundEnd.findMany({
+      where: { MapDataId: { in: mapDataIdArray } },
+    }),
+    prisma.objectiveCaptured.findMany({
+      where: { MapDataId: { in: mapDataIdArray } },
+      orderBy: [{ round_number: "asc" }, { match_time: "asc" }],
+    }),
+    prisma.payloadProgress.findMany({
+      where: { MapDataId: { in: mapDataIdArray } },
+      orderBy: [
+        { round_number: "asc" },
+        { objective_index: "asc" },
+        { match_time: "asc" },
+      ],
+    }),
+    prisma.pointProgress.findMany({
+      where: { MapDataId: { in: mapDataIdArray } },
+      orderBy: [
+        { round_number: "asc" },
+        { objective_index: "asc" },
+        { match_time: "asc" },
+      ],
+    }),
+    prisma.playerStat.findMany({
+      where: {
+        player_name: { equals: name, mode: "insensitive" },
+        MapDataId: { in: mapDataIdArray },
+      },
+    }),
+  ]);
 
   const finalRounds = allFinalRounds.reduce(
     (acc, round) => {
@@ -278,26 +305,19 @@ async function getAllMapWinratesForPlayerFn(scrimIds: number[], name: string) {
     {} as Record<number, RoundEnd>
   );
 
-  const team1CapturesMap = new Map<number, ObjectiveCaptured[]>();
-  const team2CapturesMap = new Map<number, ObjectiveCaptured[]>();
-  captures.forEach((capture) => {
-    const match = matchStarts.find(
-      (match) => match.MapDataId === capture.MapDataId
-    );
-    if (match) {
-      if (capture.capturing_team === match.team_1_name) {
-        if (!team1CapturesMap.has(capture.MapDataId!)) {
-          team1CapturesMap.set(capture.MapDataId!, []);
-        }
-        team1CapturesMap.get(capture.MapDataId!)!.push(capture);
-      } else if (capture.capturing_team === match.team_2_name) {
-        if (!team2CapturesMap.has(capture.MapDataId!)) {
-          team2CapturesMap.set(capture.MapDataId!, []);
-        }
-        team2CapturesMap.get(capture.MapDataId!)!.push(capture);
-      }
-    }
-  });
+  const matchStartMap = buildMatchStartMap(matchStarts);
+  const { team1CapturesMap, team2CapturesMap } = buildCapturesMaps(
+    captures,
+    matchStartMap
+  );
+  const {
+    team1ProgressMap: team1PayloadProgressMap,
+    team2ProgressMap: team2PayloadProgressMap,
+  } = buildProgressMaps(payloadProgresses, matchStartMap);
+  const {
+    team1ProgressMap: team1PointProgressMap,
+    team2ProgressMap: team2PointProgressMap,
+  } = buildProgressMaps(pointProgresses, matchStartMap);
 
   const wins: { map: string; wins: number; date: Date }[] = [];
 
@@ -315,6 +335,10 @@ async function getAllMapWinratesForPlayerFn(scrimIds: number[], name: string) {
       finalRound: finalRounds[mapId],
       team1Captures: team1CapturesMap.get(mapId) ?? [],
       team2Captures: team2CapturesMap.get(mapId) ?? [],
+      team1PayloadProgress: team1PayloadProgressMap.get(mapId) ?? [],
+      team2PayloadProgress: team2PayloadProgressMap.get(mapId) ?? [],
+      team1PointProgress: team1PointProgressMap.get(mapId) ?? [],
+      team2PointProgress: team2PointProgressMap.get(mapId) ?? [],
     });
 
     const playerTeam = playerStat?.player_team;

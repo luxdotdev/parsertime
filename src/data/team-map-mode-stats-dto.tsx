@@ -10,6 +10,7 @@ import {
   buildCapturesMaps,
   buildFinalRoundMap,
   buildMatchStartMap,
+  buildProgressMaps,
   findTeamNameForMapInMemory,
   getBaseTeamData,
 } from "./team-shared-data";
@@ -75,8 +76,15 @@ async function processMapModePerformanceWithMatchEnds(
   allMapDataRecords: BaseTeamData["mapDataRecords"],
   mapDataIds: number[]
 ): Promise<MapModePerformance> {
-  const { teamRosterSet, allPlayerStats, matchStarts, finalRounds, captures } =
-    sharedData;
+  const {
+    teamRosterSet,
+    allPlayerStats,
+    matchStarts,
+    finalRounds,
+    captures,
+    payloadProgresses,
+    pointProgresses,
+  } = sharedData;
 
   // Fetch match ends for playtime data
   const matchEnds = await prisma.matchEnd.findMany({
@@ -101,6 +109,14 @@ async function processMapModePerformanceWithMatchEnds(
     captures,
     matchStartMap
   );
+  const {
+    team1ProgressMap: team1PayloadProgressMap,
+    team2ProgressMap: team2PayloadProgressMap,
+  } = buildProgressMaps(payloadProgresses, matchStartMap);
+  const {
+    team1ProgressMap: team1PointProgressMap,
+    team2ProgressMap: team2PointProgressMap,
+  } = buildProgressMaps(pointProgresses, matchStartMap);
 
   type MapModeData = {
     wins: number;
@@ -168,6 +184,10 @@ async function processMapModePerformanceWithMatchEnds(
       finalRound,
       team1Captures: team1CapturesMap.get(mapDataId) ?? [],
       team2Captures: team2CapturesMap.get(mapDataId) ?? [],
+      team1PayloadProgress: team1PayloadProgressMap.get(mapDataId) ?? [],
+      team2PayloadProgress: team2PayloadProgressMap.get(mapDataId) ?? [],
+      team1PointProgress: team1PointProgressMap.get(mapDataId) ?? [],
+      team2PointProgress: team2PointProgressMap.get(mapDataId) ?? [],
     });
 
     const isWin = winner === teamName;
