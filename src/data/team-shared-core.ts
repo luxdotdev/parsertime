@@ -153,10 +153,12 @@ export function buildCapturesMaps(
   return { team1CapturesMap, team2CapturesMap };
 }
 
-export function buildProgressMaps<T extends {
-  MapDataId: number | null;
-  capturing_team: string;
-}>(
+export function buildProgressMaps<
+  T extends {
+    MapDataId: number | null;
+    capturing_team: string;
+  },
+>(
   progressRows: T[],
   matchStartMap: Map<number, MatchStart>
 ): {

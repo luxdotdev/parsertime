@@ -1956,7 +1956,9 @@ async function getScrimOverviewFn(
         new Map<string, typeof payloadProgressRows>()
       );
     }
-    const mapProgressRows = payloadProgressByMapAndTeam.get(progressRow.MapDataId)!;
+    const mapProgressRows = payloadProgressByMapAndTeam.get(
+      progressRow.MapDataId
+    )!;
     if (!mapProgressRows.has(progressRow.capturing_team)) {
       mapProgressRows.set(progressRow.capturing_team, []);
     }
@@ -1975,7 +1977,9 @@ async function getScrimOverviewFn(
         new Map<string, typeof pointProgressRows>()
       );
     }
-    const mapProgressRows = pointProgressByMapAndTeam.get(progressRow.MapDataId)!;
+    const mapProgressRows = pointProgressByMapAndTeam.get(
+      progressRow.MapDataId
+    )!;
     if (!mapProgressRows.has(progressRow.capturing_team)) {
       mapProgressRows.set(progressRow.capturing_team, []);
     }

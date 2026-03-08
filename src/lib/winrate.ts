@@ -103,7 +103,9 @@ function getFarthestPayloadProgress(
   return farthestProgress;
 }
 
-function getFarthestPointProgress(progressRows: PointProgress[]): ProgressSnapshot {
+function getFarthestPointProgress(
+  progressRows: PointProgress[]
+): ProgressSnapshot {
   let farthestProgress: ProgressSnapshot = {
     objectiveIndex: -1,
     progress: 0,
@@ -220,7 +222,10 @@ function getPayloadMapWinner({
     }
   }
 
-  const scoreWinner = getWinnerFromFinalRoundScore({ finalRound, matchDetails });
+  const scoreWinner = getWinnerFromFinalRoundScore({
+    finalRound,
+    matchDetails,
+  });
   if (scoreWinner) {
     return scoreWinner;
   }
