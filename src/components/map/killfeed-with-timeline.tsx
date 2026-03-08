@@ -15,7 +15,7 @@ import {
   type FightUltimateData,
   type KillfeedDisplayOptions,
 } from "@/data/killfeed-dto";
-import type { Kill } from "@prisma/client";
+import type { Kill, RoundEnd } from "@prisma/client";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 
@@ -28,6 +28,7 @@ type Fight = {
 type KillfeedWithTimelineProps = {
   fights: Fight[];
   ultimateData: FightUltimateData[];
+  roundEnds: RoundEnd[];
   team1: string;
   team2: string;
   team1Color: string;
@@ -39,6 +40,7 @@ const STORAGE_KEY = "parsertime:killfeed-options";
 export function KillfeedWithTimeline({
   fights,
   ultimateData,
+  roundEnds,
   team1,
   team2,
   team1Color,
@@ -90,6 +92,7 @@ export function KillfeedWithTimeline({
       <CardContent className="pl-2">
         <KillfeedTable
           fights={fights}
+          roundEnds={roundEnds}
           team1={team1}
           team2={team2}
           team1Color={team1Color}
