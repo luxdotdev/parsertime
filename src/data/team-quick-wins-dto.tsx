@@ -4,15 +4,15 @@ import { calculateWinner } from "@/lib/winrate";
 import type { Kill } from "@prisma/client";
 import { cache } from "react";
 import { getTeamFightStats } from "./team-fight-stats-dto";
-import type { ExtendedTeamData, TeamDateRange } from "./team-shared-data";
 import {
   buildCapturesMaps,
   buildFinalRoundMap,
   buildMatchStartMap,
   buildProgressMaps,
   findTeamNameForMapInMemory,
-  getExtendedTeamData,
-} from "./team-shared-data";
+} from "./team-shared-core";
+import type { ExtendedTeamData, TeamDateRange } from "./team-shared-core";
+import { getExtendedTeamData } from "./team-shared-data";
 
 export type QuickWinsStats = {
   last10GamesPerformance: {

@@ -5,15 +5,15 @@ import { calculateWinner } from "@/lib/winrate";
 import type { RoleName } from "@/types/heroes";
 import { getHeroRole } from "@/types/heroes";
 import { cache } from "react";
-import type { TeamDateRange } from "./team-shared-data";
+import type { TeamDateRange } from "./team-shared-core";
 import {
   buildCapturesMaps,
   buildFinalRoundMap,
   buildMatchStartMap,
   buildProgressMaps,
   findTeamNameForMapInMemory,
-  getBaseTeamData,
-} from "./team-shared-data";
+} from "./team-shared-core";
+import { getBaseTeamData } from "./team-shared-data";
 
 export type SwapTimingBucket = {
   bucket: string;

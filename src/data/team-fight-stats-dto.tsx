@@ -2,11 +2,9 @@ import "server-only";
 
 import type { Kill } from "@prisma/client";
 import { cache } from "react";
-import type { ExtendedTeamData, TeamDateRange } from "./team-shared-data";
-import {
-  findTeamNameForMapInMemory,
-  getExtendedTeamData,
-} from "./team-shared-data";
+import type { ExtendedTeamData, TeamDateRange } from "./team-shared-core";
+import { findTeamNameForMapInMemory } from "./team-shared-core";
+import { getExtendedTeamData } from "./team-shared-data";
 export type TeamFightStats = {
   totalFights: number;
   fightsWon: number;

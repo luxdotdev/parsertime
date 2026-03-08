@@ -45,7 +45,7 @@ import {
   getRoleBalanceAnalysis,
   getRolePerformanceStats,
 } from "@/data/team-role-stats-dto";
-import type { TeamDateRange } from "@/data/team-shared-data";
+import type { TeamDateRange } from "@/data/team-shared-core";
 import {
   getBestMapByWinrate,
   getBlindSpotMap,

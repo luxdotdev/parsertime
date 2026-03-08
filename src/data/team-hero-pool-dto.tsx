@@ -14,16 +14,15 @@ import type {
 } from "@prisma/client";
 import { $Enums } from "@prisma/client";
 import { cache } from "react";
-import type { BaseTeamData, TeamDateRange } from "./team-shared-data";
+import type { BaseTeamData, TeamDateRange } from "./team-shared-core";
 import {
   buildCapturesMaps,
   buildFinalRoundMap,
   buildMatchStartMap,
   buildProgressMaps,
   findTeamNameForMapInMemory,
-  getBaseTeamData,
-  getTeamRoster,
-} from "./team-shared-data";
+} from "./team-shared-core";
+import { getBaseTeamData, getTeamRoster } from "./team-shared-data";
 
 export type HeroPlaytime = {
   heroName: HeroName;
@@ -167,57 +166,56 @@ async function getHeroPoolAnalysisWithCustomDateRange(
     captures,
     payloadProgresses,
     pointProgresses,
-  ] =
-    await Promise.all([
-      prisma.playerStat.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-        select: {
-          player_name: true,
-          player_team: true,
-          player_hero: true,
-          hero_time_played: true,
-          MapDataId: true,
-          eliminations: true,
-          final_blows: true,
-          deaths: true,
-          offensive_assists: true,
-          hero_damage_dealt: true,
-          damage_taken: true,
-          healing_dealt: true,
-          ultimates_earned: true,
-          ultimates_used: true,
-        },
-      }),
-      prisma.matchStart.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-      }),
-      prisma.roundEnd.findMany({
-        where: {
-          MapDataId: { in: mapDataIds },
-        },
-        orderBy: { round_number: "desc" },
-      }),
-      prisma.objectiveCaptured.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-        orderBy: [{ round_number: "asc" }, { match_time: "asc" }],
-      }),
-      prisma.payloadProgress.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-        orderBy: [
-          { round_number: "asc" },
-          { objective_index: "asc" },
-          { match_time: "asc" },
-        ],
-      }),
-      prisma.pointProgress.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-        orderBy: [
-          { round_number: "asc" },
-          { objective_index: "asc" },
-          { match_time: "asc" },
-        ],
-      }),
-    ]);
+  ] = await Promise.all([
+    prisma.playerStat.findMany({
+      where: { MapDataId: { in: mapDataIds } },
+      select: {
+        player_name: true,
+        player_team: true,
+        player_hero: true,
+        hero_time_played: true,
+        MapDataId: true,
+        eliminations: true,
+        final_blows: true,
+        deaths: true,
+        offensive_assists: true,
+        hero_damage_dealt: true,
+        damage_taken: true,
+        healing_dealt: true,
+        ultimates_earned: true,
+        ultimates_used: true,
+      },
+    }),
+    prisma.matchStart.findMany({
+      where: { MapDataId: { in: mapDataIds } },
+    }),
+    prisma.roundEnd.findMany({
+      where: {
+        MapDataId: { in: mapDataIds },
+      },
+      orderBy: { round_number: "desc" },
+    }),
+    prisma.objectiveCaptured.findMany({
+      where: { MapDataId: { in: mapDataIds } },
+      orderBy: [{ round_number: "asc" }, { match_time: "asc" }],
+    }),
+    prisma.payloadProgress.findMany({
+      where: { MapDataId: { in: mapDataIds } },
+      orderBy: [
+        { round_number: "asc" },
+        { objective_index: "asc" },
+        { match_time: "asc" },
+      ],
+    }),
+    prisma.pointProgress.findMany({
+      where: { MapDataId: { in: mapDataIds } },
+      orderBy: [
+        { round_number: "asc" },
+        { objective_index: "asc" },
+        { match_time: "asc" },
+      ],
+    }),
+  ]);
 
   const baseData: BaseTeamData = {
     teamId,
@@ -568,48 +566,47 @@ async function getHeroPoolRawDataUncached(
     captures,
     payloadProgresses,
     pointProgresses,
-  ] =
-    await Promise.all([
-      prisma.playerStat.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-        select: {
-          player_name: true,
-          player_team: true,
-          player_hero: true,
-          hero_time_played: true,
-          MapDataId: true,
-        },
-      }),
-      prisma.matchStart.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-      }),
-      prisma.roundEnd.findMany({
-        where: {
-          MapDataId: { in: mapDataIds },
-        },
-        orderBy: { round_number: "desc" },
-      }),
-      prisma.objectiveCaptured.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-        orderBy: [{ round_number: "asc" }, { match_time: "asc" }],
-      }),
-      prisma.payloadProgress.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-        orderBy: [
-          { round_number: "asc" },
-          { objective_index: "asc" },
-          { match_time: "asc" },
-        ],
-      }),
-      prisma.pointProgress.findMany({
-        where: { MapDataId: { in: mapDataIds } },
-        orderBy: [
-          { round_number: "asc" },
-          { objective_index: "asc" },
-          { match_time: "asc" },
-        ],
-      }),
-    ]);
+  ] = await Promise.all([
+    prisma.playerStat.findMany({
+      where: { MapDataId: { in: mapDataIds } },
+      select: {
+        player_name: true,
+        player_team: true,
+        player_hero: true,
+        hero_time_played: true,
+        MapDataId: true,
+      },
+    }),
+    prisma.matchStart.findMany({
+      where: { MapDataId: { in: mapDataIds } },
+    }),
+    prisma.roundEnd.findMany({
+      where: {
+        MapDataId: { in: mapDataIds },
+      },
+      orderBy: { round_number: "desc" },
+    }),
+    prisma.objectiveCaptured.findMany({
+      where: { MapDataId: { in: mapDataIds } },
+      orderBy: [{ round_number: "asc" }, { match_time: "asc" }],
+    }),
+    prisma.payloadProgress.findMany({
+      where: { MapDataId: { in: mapDataIds } },
+      orderBy: [
+        { round_number: "asc" },
+        { objective_index: "asc" },
+        { match_time: "asc" },
+      ],
+    }),
+    prisma.pointProgress.findMany({
+      where: { MapDataId: { in: mapDataIds } },
+      orderBy: [
+        { round_number: "asc" },
+        { objective_index: "asc" },
+        { match_time: "asc" },
+      ],
+    }),
+  ]);
 
   return {
     teamRoster,

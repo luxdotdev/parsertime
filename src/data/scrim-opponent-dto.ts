@@ -2,18 +2,19 @@ import "server-only";
 
 import prisma from "@/lib/prisma";
 import { calculateWinner } from "@/lib/winrate";
-import { mapNameToMapTypeMapping } from "@/types/map";
 import { heroRoleMapping, type HeroName } from "@/types/heroes";
+import { mapNameToMapTypeMapping } from "@/types/map";
 import type {
   MapType,
+  MatchStart,
   ObjectiveCaptured,
   PayloadProgress,
   PointProgress,
   RoundEnd,
-  MatchStart,
 } from "@prisma/client";
 import { cache } from "react";
-import { findTeamNameForMapInMemory, getTeamRoster } from "./team-shared-data";
+import { findTeamNameForMapInMemory } from "./team-shared-core";
+import { getTeamRoster } from "./team-shared-data";
 
 type HeroRole = "Tank" | "Damage" | "Support";
 
@@ -171,52 +172,51 @@ async function fetchTaggedScrimDataFn(
     payloadProgressRows,
     pointProgressRows,
     heroBans,
-  ] =
-    await Promise.all([
-      prisma.playerStat.findMany({
-        where: { MapDataId: { in: allMapDataIds } },
-        select: {
-          player_name: true,
-          player_team: true,
-          player_hero: true,
-          hero_time_played: true,
-          eliminations: true,
-          deaths: true,
-          MapDataId: true,
-        },
-      }),
-      prisma.matchStart.findMany({
-        where: { MapDataId: { in: allMapDataIds } },
-      }),
-      prisma.roundEnd.findMany({
-        where: { MapDataId: { in: allMapDataIds } },
-        orderBy: { round_number: "desc" },
-      }),
-      prisma.objectiveCaptured.findMany({
-        where: { MapDataId: { in: allMapDataIds } },
-        orderBy: [{ round_number: "asc" }, { match_time: "asc" }],
-      }),
-      prisma.payloadProgress.findMany({
-        where: { MapDataId: { in: allMapDataIds } },
-        orderBy: [
-          { round_number: "asc" },
-          { objective_index: "asc" },
-          { match_time: "asc" },
-        ],
-      }),
-      prisma.pointProgress.findMany({
-        where: { MapDataId: { in: allMapDataIds } },
-        orderBy: [
-          { round_number: "asc" },
-          { objective_index: "asc" },
-          { match_time: "asc" },
-        ],
-      }),
-      prisma.heroBan.findMany({
-        where: { MapDataId: { in: allMapDataIds } },
-        select: { MapDataId: true, team: true, hero: true },
-      }),
-    ]);
+  ] = await Promise.all([
+    prisma.playerStat.findMany({
+      where: { MapDataId: { in: allMapDataIds } },
+      select: {
+        player_name: true,
+        player_team: true,
+        player_hero: true,
+        hero_time_played: true,
+        eliminations: true,
+        deaths: true,
+        MapDataId: true,
+      },
+    }),
+    prisma.matchStart.findMany({
+      where: { MapDataId: { in: allMapDataIds } },
+    }),
+    prisma.roundEnd.findMany({
+      where: { MapDataId: { in: allMapDataIds } },
+      orderBy: { round_number: "desc" },
+    }),
+    prisma.objectiveCaptured.findMany({
+      where: { MapDataId: { in: allMapDataIds } },
+      orderBy: [{ round_number: "asc" }, { match_time: "asc" }],
+    }),
+    prisma.payloadProgress.findMany({
+      where: { MapDataId: { in: allMapDataIds } },
+      orderBy: [
+        { round_number: "asc" },
+        { objective_index: "asc" },
+        { match_time: "asc" },
+      ],
+    }),
+    prisma.pointProgress.findMany({
+      where: { MapDataId: { in: allMapDataIds } },
+      orderBy: [
+        { round_number: "asc" },
+        { objective_index: "asc" },
+        { match_time: "asc" },
+      ],
+    }),
+    prisma.heroBan.findMany({
+      where: { MapDataId: { in: allMapDataIds } },
+      select: { MapDataId: true, team: true, hero: true },
+    }),
+  ]);
 
   const allPlayerStats: ScrimPlayerStatRow[] = allPlayerStatsFull.map((s) => ({
     player_name: s.player_name,

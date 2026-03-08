@@ -16,11 +16,9 @@ import {
   assignPlayersToSubroles,
   type PlayerUltSummary,
 } from "./scrim-overview-dto";
-import type { ExtendedTeamData, TeamDateRange } from "./team-shared-data";
-import {
-  findTeamNameForMapInMemory,
-  getExtendedTeamData,
-} from "./team-shared-data";
+import type { ExtendedTeamData, TeamDateRange } from "./team-shared-core";
+import { findTeamNameForMapInMemory } from "./team-shared-core";
+import { getExtendedTeamData } from "./team-shared-data";
 
 export type TeamUltRoleBreakdown = {
   role: RoleName;

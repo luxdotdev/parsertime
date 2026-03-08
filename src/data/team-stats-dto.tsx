@@ -4,15 +4,14 @@ import prisma from "@/lib/prisma";
 import { calculateWinner } from "@/lib/winrate";
 import type { PlayerStat } from "@prisma/client";
 import { cache } from "react";
-import type { BaseTeamData, TeamDateRange } from "./team-shared-data";
+import type { BaseTeamData, TeamDateRange } from "./team-shared-core";
 import {
   buildCapturesMaps,
   buildFinalRoundMap,
   buildMatchStartMap,
   buildProgressMaps,
-  getBaseTeamData,
-  getTeamRoster,
-} from "./team-shared-data";
+} from "./team-shared-core";
+import { getBaseTeamData, getTeamRoster } from "./team-shared-data";
 
 // Re-export getTeamRoster for backwards compatibility
 export { getTeamRoster };

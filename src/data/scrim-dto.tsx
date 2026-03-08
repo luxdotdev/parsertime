@@ -13,7 +13,7 @@ import {
   buildCapturesMaps,
   buildMatchStartMap,
   buildProgressMaps,
-} from "./team-shared-data";
+} from "./team-shared-core";
 
 async function getScrimFn(id: number) {
   return await prisma.scrim.findFirst({ where: { id } });

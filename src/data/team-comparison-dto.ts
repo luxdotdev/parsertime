@@ -11,7 +11,8 @@ import type { CalculatedStat, MapType, PlayerStat } from "@prisma/client";
 import { CalculatedStatType } from "@prisma/client";
 import { cache } from "react";
 import type { AggregatedStats } from "./comparison-dto";
-import { findTeamNameForMapInMemory, getTeamRoster } from "./team-shared-data";
+import { findTeamNameForMapInMemory } from "./team-shared-core";
+import { getTeamRoster } from "./team-shared-data";
 
 /**
  * Calculates per-10 value for a stat

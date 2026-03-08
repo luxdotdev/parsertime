@@ -7,16 +7,15 @@ import type { HeroName } from "@/types/heroes";
 import { mapNameToMapTypeMapping } from "@/types/map";
 import { $Enums } from "@prisma/client";
 import { cache } from "react";
-import type { BaseTeamData, TeamDateRange } from "./team-shared-data";
+import type { BaseTeamData, TeamDateRange } from "./team-shared-core";
 import {
   buildCapturesMaps,
   buildFinalRoundMap,
   buildMatchStartMap,
   buildProgressMaps,
   findTeamNameForMapInMemory,
-  getBaseTeamData,
-  getTeamRoster,
-} from "./team-shared-data";
+} from "./team-shared-core";
+import { getBaseTeamData, getTeamRoster } from "./team-shared-data";
 
 export type HeroPickrate = {
   heroName: HeroName;

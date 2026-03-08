@@ -5,15 +5,15 @@ import { calculateWinner } from "@/lib/winrate";
 import type { HeroName } from "@/types/heroes";
 import { getTranslations } from "next-intl/server";
 import { cache } from "react";
-import type { BaseTeamData, TeamDateRange } from "./team-shared-data";
+import type { BaseTeamData, TeamDateRange } from "./team-shared-core";
 import {
   buildCapturesMaps,
   buildFinalRoundMap,
   buildMatchStartMap,
   buildProgressMaps,
   findTeamNameForMapInMemory,
-  getBaseTeamData,
-} from "./team-shared-data";
+} from "./team-shared-core";
+import { getBaseTeamData } from "./team-shared-data";
 
 export type RoleStats = {
   role: "Tank" | "Damage" | "Support";
