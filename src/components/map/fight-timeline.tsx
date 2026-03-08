@@ -13,7 +13,7 @@ import type {
 } from "@/data/killfeed-dto";
 import { getEventTime, isKillDuringUlt } from "@/data/killfeed-dto";
 import { cn, toHero, toKebabCase, toTimestamp } from "@/lib/utils";
-import type { Kill } from "@prisma/client";
+import type { Kill, RoundEnd } from "@prisma/client";
 import { GeistMono } from "geist/font/mono";
 import type { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -56,11 +56,55 @@ function computeEventPixels(
   return positions;
 }
 
+function interpolateTimeToPx(
+  time: number,
+  events: KillfeedEvent[],
+  eventPositions: number[],
+  fightStartPx: number,
+  fightStartTime: number,
+  fightEndPx: number,
+  fightEndTime: number
+): number {
+  if (events.length === 0) {
+    if (fightEndTime === fightStartTime) return fightStartPx;
+    const fraction = (time - fightStartTime) / (fightEndTime - fightStartTime);
+    return fightStartPx + fraction * (fightEndPx - fightStartPx);
+  }
+
+  const firstEventTime = getEventTime(events[0]);
+  if (time <= firstEventTime) {
+    if (firstEventTime === fightStartTime) return eventPositions[0];
+    const fraction =
+      (time - fightStartTime) / (firstEventTime - fightStartTime);
+    return fightStartPx + fraction * (eventPositions[0] - fightStartPx);
+  }
+
+  for (let i = 0; i < events.length - 1; i++) {
+    const t1 = getEventTime(events[i]);
+    const t2 = getEventTime(events[i + 1]);
+    if (time >= t1 && time <= t2) {
+      if (t2 === t1) return eventPositions[i];
+      const fraction = (time - t1) / (t2 - t1);
+      return (
+        eventPositions[i] +
+        fraction * (eventPositions[i + 1] - eventPositions[i])
+      );
+    }
+  }
+
+  const lastEventTime = getEventTime(events[events.length - 1]);
+  const lastEventPx = eventPositions[eventPositions.length - 1];
+  if (fightEndTime === lastEventTime) return lastEventPx;
+  const fraction = (time - lastEventTime) / (fightEndTime - lastEventTime);
+  return lastEventPx + fraction * (fightEndPx - lastEventPx);
+}
+
 type FightTimelineProps = {
   fight: Fight;
   fightIndex: number;
   spans: UltimateSpan[];
   events: KillfeedEvent[];
+  roundEnds: RoundEnd[];
   team1: string;
   team2: string;
   team1Color: string;
@@ -77,6 +121,7 @@ export function FightTimeline({
   fightIndex,
   spans,
   events,
+  roundEnds,
   team1,
   team2,
   team1Color,
@@ -144,6 +189,19 @@ export function FightTimeline({
     fight.kills.length / 2
       ? team1
       : team2;
+
+  const roundEndPositions = roundEnds.map((re) => {
+    const px = interpolateTimeToPx(
+      re.match_time,
+      events,
+      eventPositions,
+      fightStartPx,
+      fight.start,
+      fightEndPx,
+      fight.end
+    );
+    return { roundEnd: re, percent: toPercent(px) };
+  });
 
   return (
     <div className="isolate flex" style={{ minHeight: containerHeight }}>
@@ -330,6 +388,16 @@ export function FightTimeline({
             />
           );
         })}
+        {roundEndPositions.map(({ roundEnd, percent }) => (
+          <RoundEndBar
+            key={`round-end-bar-${roundEnd.id}`}
+            topPercent={percent}
+            roundNumber={roundEnd.round_number}
+            teamColor={
+              roundEnd.capturing_team === team1 ? team1Color : team2Color
+            }
+          />
+        ))}
       </div>
     </div>
   );
@@ -547,6 +615,45 @@ function UltEventTooltip({
           {tUlt("tooltipDiedDuringUlt")}
         </span>
       )}
+    </div>
+  );
+}
+
+function RoundEndBar({
+  topPercent,
+  roundNumber,
+  teamColor,
+}: {
+  topPercent: number;
+  roundNumber: number;
+  teamColor: string;
+}) {
+  return (
+    <div
+      className="pointer-events-none absolute w-full"
+      style={{
+        top: `${topPercent}%`,
+        transform: "translateY(-50%)",
+      }}
+      aria-label={`Round ${roundNumber} ended`}
+    >
+      <div className="flex items-center gap-2">
+        <div
+          className="h-[3px] flex-1 rounded-full"
+          style={{
+            background: `linear-gradient(to right, ${teamColor}, color-mix(in oklch, ${teamColor} 30%, transparent))`,
+          }}
+        />
+        <span
+          className={cn(
+            "shrink-0 text-[9px] leading-none opacity-60",
+            GeistMono.className
+          )}
+          style={{ color: teamColor }}
+        >
+          R{roundNumber}
+        </span>
+      </div>
     </div>
   );
 }
@@ -784,6 +891,51 @@ export function FightSeparator({
           </span>
         </div>
       )}
+    </div>
+  );
+}
+
+export function RoundEndSeparator({
+  roundNumber,
+  capturingTeam,
+  teamColor,
+  gutterWidth,
+  t,
+}: {
+  roundNumber: number;
+  capturingTeam: string;
+  teamColor: string;
+  gutterWidth: number;
+  t: ReturnType<typeof useTranslations>;
+}) {
+  const label = t("roundEnded", { num: roundNumber, team: capturingTeam });
+
+  return (
+    <div
+      className="relative"
+      style={{ height: 32 }}
+      role="separator"
+      aria-label={label}
+    >
+      <div
+        className="absolute inset-y-0 flex items-center justify-center"
+        style={{
+          left: LEFT_LABEL_WIDTH + gutterWidth + AXIS_WIDTH / 2,
+          right: 0,
+          border: `1px solid color-mix(in oklch, ${teamColor} 50%, transparent)`,
+          backgroundImage: `repeating-linear-gradient(135deg, color-mix(in oklch, ${teamColor} 25%, transparent), color-mix(in oklch, ${teamColor} 25%, transparent) 2px, transparent 2px, transparent 5px)`,
+        }}
+      >
+        <span
+          className={cn(
+            "bg-background z-10 rounded-sm px-2.5 py-1 text-[10px] leading-none whitespace-nowrap",
+            GeistMono.className
+          )}
+          style={{ color: teamColor }}
+        >
+          {label}
+        </span>
+      </div>
     </div>
   );
 }
