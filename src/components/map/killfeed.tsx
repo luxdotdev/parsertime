@@ -8,7 +8,11 @@ import {
 } from "@/components/ui/card";
 import { getUltimateSpans } from "@/data/killfeed-dto";
 import prisma from "@/lib/prisma";
-import { groupKillsIntoFights, toTimestamp } from "@/lib/utils";
+import {
+  groupKillsIntoFights,
+  removeDuplicateRows,
+  toTimestamp,
+} from "@/lib/utils";
 import { getTranslations } from "next-intl/server";
 
 export async function Killfeed({
@@ -20,15 +24,18 @@ export async function Killfeed({
   team1Color: string;
   team2Color: string;
 }) {
-  const [finalRound, playerTeams, fights, ultimateData] = await Promise.all([
-    prisma.roundEnd.findFirst({
+  const [roundEndRows, playerTeams, fights, ultimateData] = await Promise.all([
+    prisma.roundEnd.findMany({
       where: { MapDataId: id },
-      orderBy: { round_number: "desc" },
+      orderBy: { match_time: "asc" },
     }),
     prisma.matchStart.findFirst({ where: { MapDataId: id } }),
     groupKillsIntoFights(id),
     getUltimateSpans(id),
   ]);
+
+  const roundEnds = removeDuplicateRows(roundEndRows);
+  const finalRound = roundEnds.at(-1) ?? null;
 
   const t = await getTranslations("mapPage.killfeed");
 
@@ -199,6 +206,7 @@ export async function Killfeed({
         <KillfeedWithTimeline
           fights={fights}
           ultimateData={ultimateData}
+          roundEnds={roundEnds}
           team1={team1Name ?? "Team 1"}
           team2={team2Name ?? "Team 2"}
           team1Color={team1Color}
