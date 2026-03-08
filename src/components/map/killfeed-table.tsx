@@ -1,6 +1,10 @@
 "use client";
 
-import { FightSeparator, FightTimeline } from "@/components/map/fight-timeline";
+import {
+  FightSeparator,
+  FightTimeline,
+  RoundEndSeparator,
+} from "@/components/map/fight-timeline";
 import { getGutterWidth } from "@/components/map/ult-gutter";
 import {
   Table,
@@ -22,7 +26,7 @@ import {
   mergeKillfeedEvents,
 } from "@/data/killfeed-dto";
 import { cn, toHero, toKebabCase, toTimestamp } from "@/lib/utils";
-import type { Kill } from "@prisma/client";
+import type { Kill, RoundEnd } from "@prisma/client";
 import { GeistMono } from "geist/font/mono";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -36,6 +40,7 @@ type Fight = {
 
 type KillfeedTableProps = {
   fights: Fight[];
+  roundEnds?: RoundEnd[];
   team1: string;
   team2: string;
   team1Color: string;
@@ -46,6 +51,7 @@ type KillfeedTableProps = {
 
 export function KillfeedTable({
   fights,
+  roundEnds = [],
   team1,
   team2,
   team1Color,
@@ -97,19 +103,44 @@ export function KillfeedTable({
           const prevFight = i > 0 ? fights[i - 1] : null;
           const gapSeconds = prevFight ? fight.start - prevFight.end : 0;
 
+          const gapStart = prevFight?.end ?? 0;
+          const gapEnd = fight.start;
+          const betweenRoundEnds = roundEnds.filter(
+            (re) => re.match_time > gapStart && re.match_time < gapEnd
+          );
+
+          const inFightRoundEnds = roundEnds.filter(
+            (re) => re.match_time >= fight.start && re.match_time <= fight.end
+          );
+
           return (
             <div key={fight.start}>
               {i > 0 && (
-                <FightSeparator
-                  gapSeconds={gapSeconds}
-                  gutterWidth={maxGutterWidth}
-                />
+                <>
+                  {betweenRoundEnds.map((re) => (
+                    <RoundEndSeparator
+                      key={`round-end-${re.id}`}
+                      roundNumber={re.round_number}
+                      capturingTeam={re.capturing_team}
+                      teamColor={
+                        re.capturing_team === team1 ? team1Color : team2Color
+                      }
+                      gutterWidth={maxGutterWidth}
+                      t={t}
+                    />
+                  ))}
+                  <FightSeparator
+                    gapSeconds={gapSeconds}
+                    gutterWidth={maxGutterWidth}
+                  />
+                </>
               )}
               <FightTimeline
                 fight={fight}
                 fightIndex={i}
                 spans={timelineSpans}
                 events={timelineEvents}
+                roundEnds={inFightRoundEnds}
                 team1={team1}
                 team2={team2}
                 team1Color={team1Color}
@@ -142,6 +173,20 @@ export function KillfeedTable({
           />
         );
       })}
+      {options?.showTimeline &&
+        fights.length > 0 &&
+        roundEnds
+          .filter((re) => re.match_time > fights[fights.length - 1].end)
+          .map((re) => (
+            <RoundEndSeparator
+              key={`round-end-trailing-${re.id}`}
+              roundNumber={re.round_number}
+              capturingTeam={re.capturing_team}
+              teamColor={re.capturing_team === team1 ? team1Color : team2Color}
+              gutterWidth={maxGutterWidth}
+              t={t}
+            />
+          ))}
     </>
   );
 }
