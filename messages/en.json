@@ -1363,7 +1363,8 @@
         "resurrect": "Resurrect"
       },
       "exportCSV": "Export as CSV",
-      "teamWins": "{team} Wins"
+      "teamWins": "{team} Wins",
+      "roundEnded": "Round {num} Ended — {team}"
     },
     "killfeedControls": {
       "title": "Display Options",

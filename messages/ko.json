@@ -888,7 +888,8 @@
         "resurrect": "부활"
       },
       "exportCSV": "CSV로 내보내기",
-      "teamWins": "{team} 승리"
+      "teamWins": "{team} 승리",
+      "roundEnded": "라운드 {num} 종료 — {team}"
     },
     "killfeedControls": {
       "title": "표시 옵션",

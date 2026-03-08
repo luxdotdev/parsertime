@@ -888,7 +888,8 @@
         "resurrect": "复活"
       },
       "exportCSV": "导出为 CSV",
-      "teamWins": "{team} 获胜"
+      "teamWins": "{team} 获胜",
+      "roundEnded": "第 {num} 回合结束 — {team}"
     },
     "killfeedControls": {
       "title": "显示选项",
