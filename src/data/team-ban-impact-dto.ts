@@ -31,13 +31,37 @@ export type TeamBanImpactAnalysis = {
   totalMapsAnalyzed: number;
 };
 
+export type OurBanImpact = {
+  hero: string;
+  totalBans: number;
+  banRate: number;
+  winRateWhenBanned: number;
+  winRateWhenNotBanned: number;
+  winRateDelta: number;
+  mapsPlayed: number;
+  mapsBanned: number;
+};
+
+export type TeamOurBanAnalysis = {
+  ourBanImpacts: OurBanImpact[];
+  mostBannedByUs: OurBanImpact[];
+  strongBans: OurBanImpact[];
+  totalMapsAnalyzed: number;
+};
+
 const MIN_BANS_FOR_SIGNIFICANCE = 3;
 const WEAK_POINT_DELTA_THRESHOLD = 0.15;
+const STRONG_BAN_DELTA_THRESHOLD = 0.1;
+
+export type CombinedBanAnalysis = {
+  received: TeamBanImpactAnalysis;
+  outgoing: TeamOurBanAnalysis;
+};
 
 async function getTeamBanImpactAnalysisUncached(
   teamId: number,
   dateRange?: TeamDateRange
-): Promise<TeamBanImpactAnalysis> {
+): Promise<CombinedBanAnalysis> {
   const sharedData = await getBaseTeamData(teamId, { dateRange });
 
   const {
@@ -81,6 +105,7 @@ async function getTeamBanImpactAnalysisUncached(
     teamName: string;
     isWin: boolean;
     bannedHeroes: Set<string>;
+    heroesBannedByUs: Set<string>;
   };
 
   const mapOutcomes: MapOutcome[] = [];
@@ -127,15 +152,25 @@ async function getTeamBanImpactAnalysisUncached(
     const isWin = winner === teamName;
     const mapBans = bansByMapId.get(mapDataId) ?? [];
 
-    // Collect heroes banned AGAINST the team (i.e. bans by the opponent)
+    // Bans AGAINST us (opponent bans our heroes)
     const bannedHeroes = new Set<string>();
+    // Bans BY us (we ban opponent heroes)
+    const heroesBannedByUs = new Set<string>();
     for (const ban of mapBans) {
       if (ban.team !== teamName) {
         bannedHeroes.add(ban.hero);
+      } else {
+        heroesBannedByUs.add(ban.hero);
       }
     }
 
-    mapOutcomes.push({ mapDataId, teamName, isWin, bannedHeroes });
+    mapOutcomes.push({
+      mapDataId,
+      teamName,
+      isWin,
+      bannedHeroes,
+      heroesBannedByUs,
+    });
   }
 
   if (mapOutcomes.length === 0) {
@@ -198,20 +233,98 @@ async function getTeamBanImpactAnalysisUncached(
     )
     .sort((a, b) => b.winRateDelta - a.winRateDelta);
 
-  return {
+  const received: TeamBanImpactAnalysis = {
     banImpacts,
     mostBanned,
     weakPoints,
     totalMapsAnalyzed: totalMaps,
   };
+
+  // --- Outgoing bans: heroes WE banned and how those maps went ---
+
+  const allHeroesBannedByUs = new Set<string>();
+  for (const outcome of mapOutcomes) {
+    for (const hero of outcome.heroesBannedByUs) {
+      allHeroesBannedByUs.add(hero);
+    }
+  }
+
+  const ourBanImpacts: OurBanImpact[] = [];
+
+  for (const hero of allHeroesBannedByUs) {
+    const mapsWhereBanned = mapOutcomes.filter((o) =>
+      o.heroesBannedByUs.has(hero)
+    );
+    const mapsWhereNotBanned = mapOutcomes.filter(
+      (o) => !o.heroesBannedByUs.has(hero)
+    );
+
+    const mapsBanned = mapsWhereBanned.length;
+    if (mapsBanned < MIN_BANS_FOR_SIGNIFICANCE) continue;
+
+    const winsWhenWeBanned = mapsWhereBanned.filter((o) => o.isWin).length;
+    const winsWhenWeDidNotBan = mapsWhereNotBanned.filter(
+      (o) => o.isWin
+    ).length;
+
+    const winRateWhenBanned =
+      mapsBanned > 0 ? winsWhenWeBanned / mapsBanned : 0;
+    const winRateWhenNotBanned =
+      mapsWhereNotBanned.length > 0
+        ? winsWhenWeDidNotBan / mapsWhereNotBanned.length
+        : overallWinRate;
+
+    // Positive delta means we win more often when we ban this hero
+    const winRateDelta = winRateWhenBanned - winRateWhenNotBanned;
+
+    ourBanImpacts.push({
+      hero,
+      totalBans: mapsBanned,
+      banRate: mapsBanned / totalMaps,
+      winRateWhenBanned,
+      winRateWhenNotBanned,
+      winRateDelta,
+      mapsPlayed: totalMaps,
+      mapsBanned,
+    });
+  }
+
+  ourBanImpacts.sort((a, b) => b.banRate - a.banRate);
+
+  const mostBannedByUs = ourBanImpacts.slice(0, 10);
+
+  const strongBans = ourBanImpacts
+    .filter(
+      (impact) =>
+        impact.winRateDelta >= STRONG_BAN_DELTA_THRESHOLD &&
+        impact.mapsBanned >= MIN_BANS_FOR_SIGNIFICANCE
+    )
+    .sort((a, b) => b.winRateDelta - a.winRateDelta);
+
+  const outgoing: TeamOurBanAnalysis = {
+    ourBanImpacts,
+    mostBannedByUs,
+    strongBans,
+    totalMapsAnalyzed: totalMaps,
+  };
+
+  return { received, outgoing };
 }
 
-function createEmptyAnalysis(): TeamBanImpactAnalysis {
+function createEmptyAnalysis(): CombinedBanAnalysis {
   return {
-    banImpacts: [],
-    mostBanned: [],
-    weakPoints: [],
-    totalMapsAnalyzed: 0,
+    received: {
+      banImpacts: [],
+      mostBanned: [],
+      weakPoints: [],
+      totalMapsAnalyzed: 0,
+    },
+    outgoing: {
+      ourBanImpacts: [],
+      mostBannedByUs: [],
+      strongBans: [],
+      totalMapsAnalyzed: 0,
+    },
   };
 }
 
