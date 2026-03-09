@@ -69,10 +69,10 @@ function buildTopInsight(
 
   for (const hero of scenario.enemyBansAgainstUs) {
     const delta = ctx.heroBanDeltas[hero];
-    if (delta !== undefined) {
+    if (delta !== undefined && delta > 0) {
       candidates.push({
-        label: `${hero} being banned against you hurts by ${Math.abs(delta * 100).toFixed(1)}%`,
-        value: Math.abs(delta),
+        label: `${hero} being banned against you hurts by ${(delta * 100).toFixed(1)}%`,
+        value: delta,
       });
     }
   }
@@ -126,7 +126,7 @@ export function computePrediction(
   for (const hero of scenario.enemyBansAgainstUs) {
     const delta = ctx.heroBanDeltas[hero];
     if (delta !== undefined) {
-      banImpact += delta;
+      banImpact -= delta;
       const samples = ctx.heroBanSampleSizes[hero] ?? 0;
       activeSampleSizes.push(samples);
       if (samples < MIN_SAMPLES_MEDIUM) {
