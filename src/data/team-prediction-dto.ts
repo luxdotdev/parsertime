@@ -53,7 +53,7 @@ async function getSimulatorContextUncached(
   const heroBanDeltas: Record<string, number> = {};
   const heroBanSampleSizes: Record<string, number> = {};
   for (const impact of banAnalysis.received.banImpacts) {
-    heroBanDeltas[impact.hero] = -impact.winRateDelta;
+    heroBanDeltas[impact.hero] = impact.winRateDelta;
     heroBanSampleSizes[impact.hero] = impact.mapsBanned;
   }
 
