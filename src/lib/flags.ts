@@ -110,3 +110,21 @@ export const dataLabeling = flag<boolean, Entities>({
   description: "Enable or disable the data labeling tool",
   identify,
 });
+
+export const simulationTool = flag<boolean, Entities>({
+  key: "simulation-tool",
+  adapter: vercelAdapter(),
+  options: [
+    {
+      value: true,
+      label: "Enabled",
+    },
+    {
+      value: false,
+      label: "Disabled",
+    },
+  ],
+  defaultValue: false,
+  description: "Enable or disable the win probability simulator.",
+  identify,
+});
