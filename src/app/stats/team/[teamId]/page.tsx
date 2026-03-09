@@ -1,6 +1,7 @@
 import { RecentActivityCalendar } from "@/components/profile/recent-activity-calendar";
 import { BestRoleTriosCard } from "@/components/stats/team/best-role-trios-card";
 import { HeroBanImpactCard } from "@/components/stats/team/hero-ban-impact-card";
+import { HeroOurBansCard } from "@/components/stats/team/hero-our-bans-card";
 import { HeroPoolContainer } from "@/components/stats/team/hero-pool-container";
 import { MapModePerformanceCard } from "@/components/stats/team/map-mode-performance-card";
 import { MapWinrateGallery } from "@/components/stats/team/map-winrate-gallery";
@@ -331,6 +332,7 @@ export default async function TeamStatsPage(
             heatmapInitialData={heroPickrateMatrix}
           />
           <HeroBanImpactCard analysis={banImpactAnalysis} />
+          <HeroOurBansCard outgoing={banImpactAnalysis.outgoing} />
         </TabsContent>
 
         {/* Trends Tab */}
