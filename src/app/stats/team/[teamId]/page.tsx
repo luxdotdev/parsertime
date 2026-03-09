@@ -10,6 +10,7 @@ import { QuickStatsCard } from "@/components/stats/team/quick-stats-card";
 import { RecentFormCard } from "@/components/stats/team/recent-form-card";
 import { RoleBalanceRadar } from "@/components/stats/team/role-balance-radar";
 import { RolePerformanceCard } from "@/components/stats/team/role-performance-card";
+import { SimulatorTab } from "@/components/stats/team/simulator-tab";
 import { StrengthsWeaknessesCard } from "@/components/stats/team/strengths-weaknesses-card";
 import { SwapOverviewCard } from "@/components/stats/team/swap-overview-card";
 import { SwapPairsCard } from "@/components/stats/team/swap-pairs-card";
@@ -42,6 +43,7 @@ import {
   getStreakInfo,
   getWinrateOverTime,
 } from "@/data/team-performance-trends-dto";
+import { getSimulatorContext } from "@/data/team-prediction-dto";
 import { getQuickWinsStats } from "@/data/team-quick-wins-dto";
 import {
   getBestRoleTrios,
@@ -60,6 +62,7 @@ import {
 import { getTeamUltStats } from "@/data/team-ult-stats-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
+import { simulationTool } from "@/lib/flags";
 import { calculateHeroPickrateMatrix } from "@/lib/hero-pickrate-utils";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
@@ -193,6 +196,8 @@ export default async function TeamStatsPage(
     ultStats,
     heroSwapStats,
     banImpactAnalysis,
+    simulatorContext,
+    simulationToolEnabled,
   ] = await Promise.all([
     prisma.scrim.findMany({
       where: {
@@ -221,6 +226,8 @@ export default async function TeamStatsPage(
     getTeamUltStats(teamId, dateRange),
     getTeamHeroSwapStats(teamId, dateRange),
     getTeamBanImpactAnalysis(teamId, dateRange),
+    getSimulatorContext(teamId, dateRange),
+    simulationTool(),
   ]);
 
   const heroPickrateRawData = await getHeroPickrateRawData(teamId, dateRange);
@@ -281,6 +288,9 @@ export default async function TeamStatsPage(
           <TabsTrigger value="swaps">Swaps</TabsTrigger>
           <TabsTrigger value="teamfights">Teamfights</TabsTrigger>
           <TabsTrigger value="ultimates">Ultimates</TabsTrigger>
+          {simulationToolEnabled && (
+            <TabsTrigger value="simulator">Simulator</TabsTrigger>
+          )}
         </TabsList>
 
         {/* Overview Tab */}
@@ -379,6 +389,11 @@ export default async function TeamStatsPage(
           <UltimateEconomyCard fightStats={fightStats} />
           <UltRoleBreakdownCard ultStats={ultStats} />
           <UltPlayerRankingsCard ultStats={ultStats} />
+        </TabsContent>
+
+        {/* Simulator Tab */}
+        <TabsContent value="simulator" className="space-y-4">
+          <SimulatorTab ctx={simulatorContext} />
         </TabsContent>
       </Tabs>
     </div>
