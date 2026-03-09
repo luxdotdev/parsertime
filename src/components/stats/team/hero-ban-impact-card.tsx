@@ -15,8 +15,8 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import type {
+  CombinedBanAnalysis,
   HeroBanImpact,
-  TeamBanImpactAnalysis,
 } from "@/data/team-ban-impact-dto";
 import { cn, toHero, useHeroNames } from "@/lib/utils";
 import { AlertTriangle, ShieldOff } from "lucide-react";
@@ -24,7 +24,7 @@ import Image from "next/image";
 import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts";
 
 type HeroBanImpactCardProps = {
-  analysis: TeamBanImpactAnalysis;
+  analysis: CombinedBanAnalysis;
 };
 
 const MAX_BARS = 10;
@@ -38,8 +38,9 @@ const banRateConfig: ChartConfig = {
 
 export function HeroBanImpactCard({ analysis }: HeroBanImpactCardProps) {
   const heroNames = useHeroNames();
+  const received = analysis.received;
 
-  if (analysis.totalMapsAnalyzed === 0 || analysis.mostBanned.length === 0) {
+  if (received.totalMapsAnalyzed === 0 || received.mostBanned.length === 0) {
     return (
       <Card>
         <CardHeader>
@@ -54,11 +55,11 @@ export function HeroBanImpactCard({ analysis }: HeroBanImpactCardProps) {
     );
   }
 
-  const chartData = analysis.mostBanned.slice(0, MAX_BARS).map((impact) => ({
+  const chartData = received.mostBanned.slice(0, MAX_BARS).map((impact) => ({
     hero: heroNames.get(toHero(impact.hero)) ?? impact.hero,
     rawHero: impact.hero,
     banRate: parseFloat((impact.banRate * 100).toFixed(1)),
-    isWeakPoint: analysis.weakPoints.some((wp) => wp.hero === impact.hero),
+    isWeakPoint: received.weakPoints.some((wp) => wp.hero === impact.hero),
     winRateDelta: impact.winRateDelta,
   }));
 
@@ -74,7 +75,7 @@ export function HeroBanImpactCard({ analysis }: HeroBanImpactCardProps) {
           </CardTitle>
           <CardDescription>
             Heroes most frequently banned against your team across{" "}
-            {analysis.totalMapsAnalyzed} maps. Red bars indicate ban weak points
+            {received.totalMapsAnalyzed} maps. Red bars indicate ban weak points
             where your win rate drops significantly.
           </CardDescription>
         </CardHeader>
@@ -159,7 +160,7 @@ export function HeroBanImpactCard({ analysis }: HeroBanImpactCardProps) {
       </Card>
 
       <WeakPointsSection
-        weakPoints={analysis.weakPoints}
+        weakPoints={received.weakPoints}
         heroNames={heroNames}
       />
     </div>
