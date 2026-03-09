@@ -1,5 +1,6 @@
 import withVercelToolbar from "@vercel/toolbar/plugins/next";
 import { withBotId } from "botid/next/config";
+import { NextConfig } from "next";
 import { withAxiom } from "next-axiom";
 import createNextIntlPlugin from "next-intl/plugin";
 
@@ -24,7 +25,7 @@ const cspHeader = `
     upgrade-insecure-requests;
 `;
 
-const nextConfig = {
+const nextConfig: NextConfig = {
   reactCompiler: true,
   typedRoutes: true,
   typescript: {
@@ -97,6 +98,5 @@ const nextConfig = {
 const withNextIntl = createNextIntlPlugin();
 
 export default withBotId(
-  // @ts-expect-error - broken types
   withNextIntl(withAxiom(withVercelToolbar()(nextConfig)))
 );
