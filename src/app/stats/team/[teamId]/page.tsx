@@ -1,5 +1,6 @@
 import { RecentActivityCalendar } from "@/components/profile/recent-activity-calendar";
 import { BestRoleTriosCard } from "@/components/stats/team/best-role-trios-card";
+import { HeroBanImpactCard } from "@/components/stats/team/hero-ban-impact-card";
 import { HeroPoolContainer } from "@/components/stats/team/hero-pool-container";
 import { MapModePerformanceCard } from "@/components/stats/team/map-mode-performance-card";
 import { MapWinrateGallery } from "@/components/stats/team/map-winrate-gallery";
@@ -30,6 +31,7 @@ import {
   getHeroPickrateRawData,
   getPlayerMapPerformanceMatrix,
 } from "@/data/team-analytics-dto";
+import { getTeamBanImpactAnalysis } from "@/data/team-ban-impact-dto";
 import { getTeamFightStats } from "@/data/team-fight-stats-dto";
 import { getHeroPoolAnalysis } from "@/data/team-hero-pool-dto";
 import { getTeamHeroSwapStats } from "@/data/team-hero-swap-dto";
@@ -189,6 +191,7 @@ export default async function TeamStatsPage(
     playerMapPerformance,
     ultStats,
     heroSwapStats,
+    banImpactAnalysis,
   ] = await Promise.all([
     prisma.scrim.findMany({
       where: {
@@ -216,6 +219,7 @@ export default async function TeamStatsPage(
     getPlayerMapPerformanceMatrix(teamId, dateRange),
     getTeamUltStats(teamId, dateRange),
     getTeamHeroSwapStats(teamId, dateRange),
+    getTeamBanImpactAnalysis(teamId, dateRange),
   ]);
 
   const heroPickrateRawData = await getHeroPickrateRawData(teamId, dateRange);
@@ -326,6 +330,7 @@ export default async function TeamStatsPage(
             initialData={heroPool}
             heatmapInitialData={heroPickrateMatrix}
           />
+          <HeroBanImpactCard analysis={banImpactAnalysis} />
         </TabsContent>
 
         {/* Trends Tab */}
