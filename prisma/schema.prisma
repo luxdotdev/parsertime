@@ -185,19 +185,52 @@ model AuditLog {
 }
 
 model Team {
-  id               Int               @id @default(autoincrement())
-  name             String
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  image            String?
-  users            User[]
-  scrims           Scrim[]
-  ownerId          String
-  managers         TeamManager[]
-  readonly         Boolean           @default(false)
-  comparisonGroups ComparisonGroup[]
-  mapGroups        MapGroup[]
-  scoutingTeamAbbr String?
+  id                   Int                      @id @default(autoincrement())
+  name                 String
+  createdAt            DateTime                 @default(now())
+  updatedAt            DateTime                 @updatedAt
+  image                String?
+  users                User[]
+  scrims               Scrim[]
+  ownerId              String
+  managers             TeamManager[]
+  readonly             Boolean                  @default(false)
+  comparisonGroups     ComparisonGroup[]
+  mapGroups            MapGroup[]
+  scoutingTeamAbbr     String?
+  webhookSubscriptions BotWebhookSubscription[]
+}
+
+model BotApiKey {
+  id                   String                   @id @default(cuid())
+  key                  String                   @unique
+  name                 String
+  guildId              String
+  createdAt            DateTime                 @default(now())
+  updatedAt            DateTime                 @updatedAt
+  revokedAt            DateTime?
+  createdBy            String
+  webhookSubscriptions BotWebhookSubscription[]
+
+  @@index([key])
+  @@index([guildId])
+}
+
+model BotWebhookSubscription {
+  id          String   @id @default(cuid())
+  botApiKeyId String
+  teamId      Int
+  webhookUrl  String
+  events      String[]
+  secret      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  botApiKey BotApiKey @relation(fields: [botApiKeyId], references: [id], onDelete: Cascade)
+  team      Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([botApiKeyId])
+  @@index([teamId])
 }
 
 model TeamManager {
