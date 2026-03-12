@@ -1,63 +1,57 @@
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { createHmac } from "crypto";
 
-export type BotEvent = {
-  type: "scrim.created";
-  timestamp: string;
-  teamId: number;
+export type ScrimNotification = {
+  event: "scrim.created";
   data: {
     scrimName: string;
     scrimId: number;
     createdBy: string;
+    teamId: number;
   };
 };
 
-function signPayload(payload: string, secret: string): string {
-  return createHmac("sha256", secret).update(payload).digest("hex");
-}
-
-export async function dispatchBotEvent(
+export async function sendScrimNotifications(
   teamId: number,
-  event: BotEvent
+  notification: ScrimNotification
 ): Promise<void> {
-  const subscriptions = await prisma.botWebhookSubscription.findMany({
+  const configs = await prisma.botNotificationConfig.findMany({
     where: {
-      teamId,
-      events: { has: event.type },
-    },
-    include: {
-      botApiKey: { select: { revokedAt: true } },
+      teamIds: { has: teamId },
     },
   });
 
-  const activeSubscriptions = subscriptions.filter(
-    (sub) => !sub.botApiKey.revokedAt
-  );
-
-  if (activeSubscriptions.length === 0) {
+  if (configs.length === 0) {
     return;
   }
 
-  const payload = JSON.stringify(event);
+  const botApiUrl = process.env.BOT_API_URL;
+  const botSecret = process.env.BOT_SECRET;
+
+  if (!botApiUrl || !botSecret) {
+    Logger.error("BOT_API_URL or BOT_SECRET not configured");
+    return;
+  }
 
   const results = await Promise.allSettled(
-    activeSubscriptions.map(async (sub) => {
-      const signature = signPayload(payload, sub.secret);
-
-      const response = await fetch(sub.webhookUrl, {
+    configs.map(async (config) => {
+      const response = await fetch(`${botApiUrl}/api/notifications/send`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Webhook-Signature": signature,
-          "X-Webhook-Event": event.type,
+          Authorization: `Bearer ${botSecret}`,
         },
-        body: payload,
+        body: JSON.stringify({
+          guildId: config.guildId,
+          channelId: config.channelId,
+          event: notification.event,
+          data: notification.data,
+        }),
       });
 
       if (!response.ok) {
         throw new Error(
-          `Webhook delivery failed: ${response.status} ${response.statusText}`
+          `Notification delivery failed: ${response.status} ${response.statusText}`
         );
       }
     })
@@ -65,9 +59,9 @@ export async function dispatchBotEvent(
 
   for (const result of results) {
     if (result.status === "rejected") {
-      Logger.error("Bot webhook delivery failed", {
+      Logger.error("Bot notification delivery failed", {
         teamId,
-        eventType: event.type,
+        event: notification.event,
         error: (result.reason as Error).message,
       });
     }
