@@ -1,5 +1,6 @@
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
+import { context, propagation } from "@opentelemetry/api";
 
 export type ScrimNotification = {
   event: "scrim.created";
@@ -35,11 +36,15 @@ export async function sendScrimNotifications(
 
   const results = await Promise.allSettled(
     configs.map(async (config) => {
+      const traceHeaders: Record<string, string> = {};
+      propagation.inject(context.active(), traceHeaders);
+
       const response = await fetch(`${botApiUrl}/api/notifications/send`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${botSecret}`,
+          ...traceHeaders,
         },
         body: JSON.stringify({
           guildId: config.guildId,

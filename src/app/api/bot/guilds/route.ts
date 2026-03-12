@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
+import { context, propagation } from "@opentelemetry/api";
 
 export async function GET() {
   const wideEvent: Record<string, unknown> = {
@@ -32,9 +33,13 @@ export async function GET() {
       );
     }
 
+    const traceHeaders: Record<string, string> = {};
+    propagation.inject(context.active(), traceHeaders);
+
     const response = await fetch(`${botApiUrl}/api/guilds`, {
       headers: {
         Authorization: `Bearer ${botSecret}`,
+        ...traceHeaders,
       },
     });
 
