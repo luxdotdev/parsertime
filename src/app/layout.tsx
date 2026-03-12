@@ -1,6 +1,7 @@
 import { CommandDialogMenu } from "@/components/command-menu";
 import { CommandMenuProvider } from "@/components/command-menu-provider";
 import { DevTools } from "@/components/devtools";
+import { FeatureFlagsProvider } from "@/components/feature-flags-provider";
 import { BetaBanner } from "@/components/home/beta-banner";
 import { AppSettingsProvider } from "@/components/settings/app-settings-provider";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -10,10 +11,12 @@ import { getUser } from "@/data/user-dto";
 import { register } from "@/instrumentation";
 import { auth } from "@/lib/auth";
 import { WebVitals } from "@/lib/axiom/client";
+import { resolveAllFlags, toFlagValues } from "@/lib/flags";
 import { QueryProvider } from "@/lib/query";
 import { cn } from "@/lib/utils";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { FlagValues } from "flags/react";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
@@ -68,6 +71,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     user = await getUser(session.user.email);
   }
 
+  const flags = await resolveAllFlags();
+
   return (
     <html lang={locale} className="h-full" suppressHydrationWarning>
       <body
@@ -88,9 +93,12 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
               <NextIntlClientProvider messages={messages}>
                 <CommandMenuProvider>
                   <AppSettingsProvider>
-                    <BetaBanner />
-                    {children}
-                    <CommandDialogMenu user={user} />
+                    <FeatureFlagsProvider flags={flags}>
+                      <FlagValues values={toFlagValues(flags)} />
+                      <BetaBanner />
+                      {children}
+                      <CommandDialogMenu user={user} />
+                    </FeatureFlagsProvider>
                   </AppSettingsProvider>
                 </CommandMenuProvider>
               </NextIntlClientProvider>
