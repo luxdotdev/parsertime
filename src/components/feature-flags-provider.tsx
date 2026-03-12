@@ -1,6 +1,6 @@
 "use client";
 
-import type { FeatureFlags } from "@/lib/flags";
+import type { FeatureFlags } from "@/lib/flags-helpers";
 import { createContext, use, useMemo } from "react";
 
 const defaultFlags: FeatureFlags = {

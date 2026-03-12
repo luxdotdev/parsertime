@@ -11,7 +11,7 @@ import { getUser } from "@/data/user-dto";
 import { register } from "@/instrumentation";
 import { auth } from "@/lib/auth";
 import { WebVitals } from "@/lib/axiom/client";
-import { resolveAllFlags, toFlagValues } from "@/lib/flags";
+import { resolveAllFlags, toFlagValues } from "@/lib/flags-helpers";
 import { QueryProvider } from "@/lib/query";
 import { cn } from "@/lib/utils";
 import { Analytics } from "@vercel/analytics/react";
