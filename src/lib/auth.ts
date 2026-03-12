@@ -137,7 +137,17 @@ export const config = {
       Logger.warn(`User not authorized for private access: ${user.email}`);
       return false;
     },
-    redirect({ baseUrl }) {
+    redirect({ url, baseUrl }) {
+      // Allow safe relative URLs (reject protocol-relative URLs like "//evil.com")
+      if (url.startsWith("/") && !url.startsWith("//"))
+        return `${baseUrl}${url}`;
+      // Allow URLs on the same origin
+      try {
+        if (new URL(url).origin === baseUrl) return url;
+      } catch {
+        // Invalid URL, fall through to default
+      }
+      // Default to dashboard
       return `${baseUrl}/dashboard`;
     },
   },
