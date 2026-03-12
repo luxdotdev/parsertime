@@ -964,6 +964,10 @@ async function getAvailableMapsForComparisonFn(params: {
         }
       : {};
 
+  // NOTE: The parser stores Map.id (not MapData.id) in PlayerStat.MapDataId.
+  // This is a historical quirk, so we must query PlayerStat directly using
+  // Map IDs rather than relying on Prisma's nested relation (which would
+  // use MapData.id and return incorrect results).
   const scrims = await prisma.scrim.findMany({
     where: {
       teamId,
@@ -975,20 +979,43 @@ async function getAvailableMapsForComparisonFn(params: {
           mapData: {
             include: {
               match_start: true,
-              player_stat: {
-                where: {
-                  player_name: { equals: playerName, mode: "insensitive" },
-                  ...(heroes && heroes.length > 0
-                    ? { player_hero: { in: heroes } }
-                    : {}),
-                },
-              },
             },
           },
         },
       },
     },
   });
+
+  // Collect all map IDs so we can query PlayerStat directly
+  const allMapIds = scrims.flatMap((s) => s.maps.map((m) => m.id));
+
+  // Query PlayerStat using Map IDs (stored in the MapDataId column)
+  const playerStats =
+    allMapIds.length > 0
+      ? await prisma.playerStat.findMany({
+          where: {
+            MapDataId: { in: allMapIds },
+            player_name: { equals: playerName, mode: "insensitive" },
+            ...(heroes && heroes.length > 0
+              ? { player_hero: { in: heroes } }
+              : {}),
+          },
+          select: {
+            MapDataId: true,
+            player_hero: true,
+          },
+        })
+      : [];
+
+  // Group player stats by their MapDataId (which is actually Map.id)
+  const statsByMapId: Record<number, { player_hero: string }[]> = {};
+  for (const stat of playerStats) {
+    if (!stat.MapDataId) continue;
+    if (!statsByMapId[stat.MapDataId]) {
+      statsByMapId[stat.MapDataId] = [];
+    }
+    statsByMapId[stat.MapDataId].push(stat);
+  }
 
   const availableMaps: {
     id: number;
@@ -1003,8 +1030,8 @@ async function getAvailableMapsForComparisonFn(params: {
 
   for (const scrim of scrims) {
     for (const map of scrim.maps) {
-      const playerStats = map.mapData.flatMap((md) => md.player_stat);
-      if (playerStats.length === 0) continue;
+      const mapPlayerStats = statsByMapId[map.id];
+      if (!mapPlayerStats || mapPlayerStats.length === 0) continue;
 
       const matchStart = map.mapData[0]?.match_start[0];
       if (!matchStart) continue;
@@ -1012,7 +1039,7 @@ async function getAvailableMapsForComparisonFn(params: {
       if (mapType && matchStart.map_type !== mapType) continue;
 
       const heroesPlayed = Array.from(
-        new Set(playerStats.map((s) => s.player_hero))
+        new Set(mapPlayerStats.map((s) => s.player_hero))
       ) as HeroName[];
 
       availableMaps.push({
@@ -1088,41 +1115,45 @@ async function getTeamPlayersFn(
     return players;
   }
 
+  // NOTE: PlayerStat.MapDataId stores Map.id (not MapData.id), so we must
+  // query PlayerStat directly rather than using Prisma's nested relation.
   const scrims = await prisma.scrim.findMany({
     where: { teamId },
     select: {
       maps: {
-        select: {
-          mapData: {
-            select: {
-              player_stat: {
-                select: {
-                  player_name: true,
-                },
-                distinct: ["player_name"],
-              },
-            },
-          },
-        },
+        select: { id: true },
       },
     },
   });
 
-  const playerMapCounts = new Map<string, number>();
+  const allMapIds = scrims.flatMap((s) => s.maps.map((m) => m.id));
 
-  for (const scrim of scrims) {
-    for (const map of scrim.maps) {
-      for (const mapData of map.mapData) {
-        for (const stat of mapData.player_stat) {
-          const currentCount = playerMapCounts.get(stat.player_name) ?? 0;
-          playerMapCounts.set(stat.player_name, currentCount + 1);
-        }
-      }
+  if (allMapIds.length === 0) {
+    return [];
+  }
+
+  const allPlayerStats = await prisma.playerStat.findMany({
+    where: { MapDataId: { in: allMapIds } },
+    select: {
+      player_name: true,
+      MapDataId: true,
+    },
+  });
+
+  const playerMapCounts = new Map<string, Set<number>>();
+
+  for (const stat of allPlayerStats) {
+    const mapId = stat.MapDataId;
+    if (!mapId) continue;
+
+    if (!playerMapCounts.has(stat.player_name)) {
+      playerMapCounts.set(stat.player_name, new Set());
     }
+    playerMapCounts.get(stat.player_name)!.add(mapId);
   }
 
   const players = Array.from(playerMapCounts.entries())
-    .map(([name, mapCount]) => ({ name, mapCount }))
+    .map(([name, mapSet]) => ({ name, mapCount: mapSet.size }))
     .sort((a, b) => a.name.localeCompare(b.name));
 
   return players;
