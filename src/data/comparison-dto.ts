@@ -749,8 +749,6 @@ async function getComparisonStatsFn(
     throw new Error("No map data found for the provided map IDs");
   }
 
-  // NOTE: PlayerStat.MapDataId actually stores Map.id, not MapData.id
-  // This is confusing but confirmed by getTeamPlayersFn
   const finalRoundStats = removeDuplicateRows(
     await prisma.$queryRaw<PlayerStat[]>`
       WITH maxTime AS (
@@ -760,7 +758,7 @@ async function getComparisonStatsFn(
         FROM
             "PlayerStat"
         WHERE
-            "MapDataId" IN (${Prisma.join(mapIds)})
+            "MapDataId" IN (${Prisma.join(mapDataIds)})
         GROUP BY
             "MapDataId"
       )
@@ -770,16 +768,14 @@ async function getComparisonStatsFn(
           "PlayerStat" ps
           INNER JOIN maxTime m ON ps."match_time" = m.max_time AND ps."MapDataId" = m."MapDataId"
       WHERE
-          ps."MapDataId" IN (${Prisma.join(mapIds)})
+          ps."MapDataId" IN (${Prisma.join(mapDataIds)})
           AND ps."player_name" ILIKE ${playerName}
           ${heroes && heroes.length > 0 ? Prisma.sql`AND ps."player_hero" IN (${Prisma.join(heroes)})` : Prisma.empty}
     `
   );
 
-  // CalculatedStat.MapDataId likely stores Map.id (not MapData.id), same as PlayerStat
-  // This is confusing naming but matches the PlayerStat pattern
   const calculatedStatsWhere: Prisma.CalculatedStatWhereInput = {
-    MapDataId: { in: mapIds }, // Use mapIds, not mapDataIds!
+    MapDataId: { in: mapDataIds },
     playerName: { equals: playerName, mode: "insensitive" },
     ...(heroes && heroes.length > 0 ? { hero: { in: heroes } } : {}),
   };
@@ -797,22 +793,26 @@ async function getComparisonStatsFn(
     calculatedStatsByMapDataId[stat.MapDataId].push(stat);
   });
 
-  // PlayerStat.MapDataId already contains Map.id, so use it directly
-  const statsByMapId: Record<number, PlayerStat[]> = {};
+  // Group PlayerStats by MapDataId (which stores MapData.id)
+  const statsByMapDataId: Record<number, PlayerStat[]> = {};
   finalRoundStats.forEach((stat) => {
     if (!stat.MapDataId) return;
-    const mapId = stat.MapDataId; // Already the Map ID
-    if (!statsByMapId[mapId]) {
-      statsByMapId[mapId] = [];
+    if (!statsByMapDataId[stat.MapDataId]) {
+      statsByMapDataId[stat.MapDataId] = [];
     }
-    statsByMapId[mapId].push(stat);
+    statsByMapDataId[stat.MapDataId].push(stat);
   });
 
   const perMapBreakdown: MapBreakdown[] = [];
   for (const map of maps) {
-    const mapStats = statsByMapId[map.id] || [];
+    // Collect PlayerStats from all MapData entries for this map
+    const mapStats: PlayerStat[] = [];
+    for (const md of map.mapData) {
+      const mdStats = statsByMapDataId[md.id] || [];
+      mapStats.push(...mdStats);
+    }
 
-    // CalculatedStat.MapDataId stores MapData.id, so we need to check all mapData for this map
+    // Collect CalculatedStats from all MapData entries for this map
     const mapCalcStats: CalculatedStat[] = [];
     for (const md of map.mapData) {
       const mdStats = calculatedStatsByMapDataId[md.id] || [];
@@ -964,10 +964,6 @@ async function getAvailableMapsForComparisonFn(params: {
         }
       : {};
 
-  // NOTE: The parser stores Map.id (not MapData.id) in PlayerStat.MapDataId.
-  // This is a historical quirk, so we must query PlayerStat directly using
-  // Map IDs rather than relying on Prisma's nested relation (which would
-  // use MapData.id and return incorrect results).
   const scrims = await prisma.scrim.findMany({
     where: {
       teamId,
@@ -979,43 +975,20 @@ async function getAvailableMapsForComparisonFn(params: {
           mapData: {
             include: {
               match_start: true,
+              player_stat: {
+                where: {
+                  player_name: { equals: playerName, mode: "insensitive" },
+                  ...(heroes && heroes.length > 0
+                    ? { player_hero: { in: heroes } }
+                    : {}),
+                },
+              },
             },
           },
         },
       },
     },
   });
-
-  // Collect all map IDs so we can query PlayerStat directly
-  const allMapIds = scrims.flatMap((s) => s.maps.map((m) => m.id));
-
-  // Query PlayerStat using Map IDs (stored in the MapDataId column)
-  const playerStats =
-    allMapIds.length > 0
-      ? await prisma.playerStat.findMany({
-          where: {
-            MapDataId: { in: allMapIds },
-            player_name: { equals: playerName, mode: "insensitive" },
-            ...(heroes && heroes.length > 0
-              ? { player_hero: { in: heroes } }
-              : {}),
-          },
-          select: {
-            MapDataId: true,
-            player_hero: true,
-          },
-        })
-      : [];
-
-  // Group player stats by their MapDataId (which is actually Map.id)
-  const statsByMapId: Record<number, { player_hero: string }[]> = {};
-  for (const stat of playerStats) {
-    if (!stat.MapDataId) continue;
-    if (!statsByMapId[stat.MapDataId]) {
-      statsByMapId[stat.MapDataId] = [];
-    }
-    statsByMapId[stat.MapDataId].push(stat);
-  }
 
   const availableMaps: {
     id: number;
@@ -1030,8 +1003,8 @@ async function getAvailableMapsForComparisonFn(params: {
 
   for (const scrim of scrims) {
     for (const map of scrim.maps) {
-      const mapPlayerStats = statsByMapId[map.id];
-      if (!mapPlayerStats || mapPlayerStats.length === 0) continue;
+      const playerStats = map.mapData.flatMap((md) => md.player_stat);
+      if (playerStats.length === 0) continue;
 
       const matchStart = map.mapData[0]?.match_start[0];
       if (!matchStart) continue;
@@ -1039,7 +1012,7 @@ async function getAvailableMapsForComparisonFn(params: {
       if (mapType && matchStart.map_type !== mapType) continue;
 
       const heroesPlayed = Array.from(
-        new Set(mapPlayerStats.map((s) => s.player_hero))
+        new Set(playerStats.map((s) => s.player_hero))
       ) as HeroName[];
 
       availableMaps.push({
@@ -1069,91 +1042,75 @@ async function getTeamPlayersFn(
   mapIds?: number[]
 ): Promise<{ name: string; mapCount: number }[]> {
   if (mapIds && mapIds.length > 0) {
-    // Verify the maps belong to this team and get their IDs
     const maps = await prisma.map.findMany({
       where: {
         id: { in: mapIds },
         Scrim: { teamId },
       },
-      select: { id: true },
-    });
-
-    const validMapIds = maps.map((m) => m.id);
-
-    if (validMapIds.length === 0) {
-      return [];
-    }
-
-    // NOTE: PlayerStat.MapDataId actually stores Map.id, not MapData.id
-    // This is confusing but confirmed by runtime data
-    const allPlayerStats = await prisma.playerStat.findMany({
-      where: { MapDataId: { in: validMapIds } },
       select: {
-        player_name: true,
-        MapDataId: true,
+        mapData: {
+          select: {
+            player_stat: {
+              select: { player_name: true },
+              distinct: ["player_name"],
+            },
+          },
+        },
       },
     });
 
-    // Count unique maps per player
-    const playerMapCounts = new Map<string, Set<number>>();
-
-    for (const stat of allPlayerStats) {
-      const mapId = stat.MapDataId;
-      if (!mapId) continue;
-
-      const playerName = stat.player_name;
-      if (!playerMapCounts.has(playerName)) {
-        playerMapCounts.set(playerName, new Set());
+    const playerMapCounts = new Map<string, number>();
+    for (const map of maps) {
+      for (const mapData of map.mapData) {
+        for (const stat of mapData.player_stat) {
+          const currentCount = playerMapCounts.get(stat.player_name) ?? 0;
+          playerMapCounts.set(stat.player_name, currentCount + 1);
+        }
       }
-      playerMapCounts.get(playerName)!.add(mapId);
     }
 
     const players = Array.from(playerMapCounts.entries())
-      .map(([name, mapSet]) => ({ name, mapCount: mapSet.size }))
+      .map(([name, mapCount]) => ({ name, mapCount }))
       .sort((a, b) => a.name.localeCompare(b.name));
 
     return players;
   }
 
-  // NOTE: PlayerStat.MapDataId stores Map.id (not MapData.id), so we must
-  // query PlayerStat directly rather than using Prisma's nested relation.
   const scrims = await prisma.scrim.findMany({
     where: { teamId },
     select: {
       maps: {
-        select: { id: true },
+        select: {
+          mapData: {
+            select: {
+              player_stat: {
+                select: {
+                  player_name: true,
+                },
+                distinct: ["player_name"],
+              },
+            },
+          },
+        },
       },
     },
   });
 
-  const allMapIds = scrims.flatMap((s) => s.maps.map((m) => m.id));
+  const playerMapCounts = new Map<string, number>();
 
-  if (allMapIds.length === 0) {
-    return [];
-  }
-
-  const allPlayerStats = await prisma.playerStat.findMany({
-    where: { MapDataId: { in: allMapIds } },
-    select: {
-      player_name: true,
-      MapDataId: true,
-    },
-  });
-
-  const playerMapCounts = new Map<string, Set<number>>();
-
-  for (const stat of allPlayerStats) {
-    const mapId = stat.MapDataId;
-    if (!mapId) continue;
-
-    if (!playerMapCounts.has(stat.player_name)) {
-      playerMapCounts.set(stat.player_name, new Set());
+  for (const scrim of scrims) {
+    for (const map of scrim.maps) {
+      for (const mapData of map.mapData) {
+        for (const stat of mapData.player_stat) {
+          const currentCount = playerMapCounts.get(stat.player_name) ?? 0;
+          playerMapCounts.set(stat.player_name, currentCount + 1);
+        }
+      }
     }
-    playerMapCounts.get(stat.player_name)!.add(mapId);
   }
 
   const players = Array.from(playerMapCounts.entries())
-    .map(([name, mapSet]) => ({ name, mapCount: mapSet.size }))
+    .map(([name, mapCount]) => ({ name, mapCount }))
     .sort((a, b) => a.name.localeCompare(b.name));
 
   return players;
