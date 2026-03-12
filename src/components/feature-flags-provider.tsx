@@ -1,23 +1,26 @@
 "use client";
 
+import type { FeatureFlags } from "@/lib/flags";
 import { createContext, use, useMemo } from "react";
 
-type FeatureFlags = {
-  scoutingEnabled: boolean;
+const defaultFlags: FeatureFlags = {
+  scoutingEnabled: false,
+  mapComparisonEnabled: false,
+  overviewCardEnabled: false,
+  dataLabelingEnabled: false,
+  simulationToolEnabled: false,
 };
 
-const FeatureFlagsContext = createContext<FeatureFlags>({
-  scoutingEnabled: false,
-});
+const FeatureFlagsContext = createContext<FeatureFlags>(defaultFlags);
 
 export function FeatureFlagsProvider({
   children,
-  scoutingEnabled,
+  flags,
 }: {
   children: React.ReactNode;
-  scoutingEnabled: boolean;
+  flags: FeatureFlags | null;
 }) {
-  const value = useMemo(() => ({ scoutingEnabled }), [scoutingEnabled]);
+  const value = useMemo(() => ({ ...(flags ?? defaultFlags) }), [flags]);
 
   return <FeatureFlagsContext value={value}>{children}</FeatureFlagsContext>;
 }
