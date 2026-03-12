@@ -152,6 +152,26 @@ export async function GET(request: NextRequest) {
         "bot.profile.available_maps_count": availableMaps.length,
         "bot.profile.map_ids": JSON.stringify(mapIds),
         "bot.profile.aggregated": JSON.stringify(stats.aggregated),
+        "bot.profile.available_maps": JSON.stringify(
+          availableMaps.map((m) => ({
+            id: m.id,
+            name: m.name,
+            scrimId: m.scrimId,
+            playerHeroes: m.playerHeroes,
+          }))
+        ),
+        "bot.profile.per_map_breakdown_count": stats.perMapBreakdown.length,
+        "bot.profile.per_map_breakdown": JSON.stringify(
+          stats.perMapBreakdown.map((m) => ({
+            mapId: m.mapId,
+            mapDataId: m.mapDataId,
+            mapName: m.mapName,
+            heroes: m.heroes,
+            heroTimePlayed: m.stats.hero_time_played,
+          }))
+        ),
+        "bot.profile.filtered_heroes": JSON.stringify(stats.filteredHeroes),
+        "bot.profile.hero_time_played": stats.aggregated.heroTimePlayed,
       });
     }
 
