@@ -1,4 +1,6 @@
 import { DiscordLoginButton } from "@/components/settings/discord-login-button";
+import { NotificationConfig } from "@/components/settings/notification-config";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
@@ -30,6 +32,11 @@ export default async function LinkedAccountSettingsPage() {
     (account) => account.provider === "discord"
   );
 
+  const teams = await prisma.team.findMany({
+    where: { users: { some: { id: user.id } } },
+    select: { id: true, name: true },
+  });
+
   return (
     <div className="space-y-6 lg:max-w-2xl">
       <div>
@@ -37,7 +44,19 @@ export default async function LinkedAccountSettingsPage() {
         <p className="text-muted-foreground text-sm">{t("description")}</p>
       </div>
       <Separator />
-      {discordAccount ? <p>{t("discord.linked")}</p> : <DiscordLoginButton />}
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("discord.title")}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {discordAccount ? (
+            <p>{t("discord.linked")}</p>
+          ) : (
+            <DiscordLoginButton />
+          )}
+        </CardContent>
+      </Card>
+      <NotificationConfig teams={teams} />
     </div>
   );
 }
