@@ -2,7 +2,7 @@ import { UserAuthForm } from "@/components/auth/user-auth-form";
 import { Link } from "@/components/ui/link";
 import { auth } from "@/lib/auth";
 import type { PagePropsWithLocale } from "@/types/next";
-import type { Metadata } from "next";
+import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { redirect } from "next/navigation";
@@ -40,11 +40,26 @@ export async function generateMetadata(
   };
 }
 
-export default async function AuthenticationPage() {
+function getSafeCallbackUrl(callbackUrl: string | undefined): string {
+  if (
+    callbackUrl &&
+    callbackUrl.startsWith("/") &&
+    !callbackUrl.startsWith("//")
+  ) {
+    return callbackUrl;
+  }
+  return "/dashboard";
+}
+
+export default async function AuthenticationPage(props: {
+  searchParams: Promise<{ callbackUrl?: string }>;
+}) {
   const session = await auth();
+  const searchParams = await props.searchParams;
+  const safeCallbackUrl = getSafeCallbackUrl(searchParams.callbackUrl);
 
   if (session) {
-    redirect("/dashboard");
+    redirect(safeCallbackUrl as Route);
   }
 
   const t = await getTranslations("signInPage");
@@ -67,7 +82,7 @@ export default async function AuthenticationPage() {
           </div>
           {t("parsertime")}
         </Link>
-        <UserAuthForm />
+        <UserAuthForm callbackUrl={safeCallbackUrl} />
       </div>
     </div>
   );
