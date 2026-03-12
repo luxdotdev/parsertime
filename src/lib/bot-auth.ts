@@ -1,38 +1,14 @@
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
 
-export type BotAuthResult = {
-  keyId: string;
-  guildId: string;
-  name: string;
-};
-
-export async function authenticateBotRequest(
-  request: Request
-): Promise<BotAuthResult | null> {
+export function authenticateBotSecret(request: Request): boolean {
   const authHeader = request.headers.get("Authorization");
   if (!authHeader?.startsWith("Bearer ")) {
-    return null;
+    return false;
   }
 
-  const key = authHeader.slice(7);
-  if (!key) {
-    return null;
-  }
-
-  const botApiKey = await prisma.botApiKey.findUnique({
-    where: { key },
-  });
-
-  if (!botApiKey || botApiKey.revokedAt) {
-    return null;
-  }
-
-  return {
-    keyId: botApiKey.id,
-    guildId: botApiKey.guildId,
-    name: botApiKey.name,
-  };
+  const token = authHeader.slice(7);
+  return token.length > 0 && token === process.env.BOT_SECRET;
 }
 
 export async function resolveDiscordUser(discordId: string) {
