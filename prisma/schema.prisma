@@ -64,8 +64,9 @@ model User {
   battletag        String?
   appliedTitles    AppliedTitle[]
   seenOnboarding   Boolean           @default(false)
-  comparisonGroups ComparisonGroup[]
-  mapGroups        MapGroup[]
+  comparisonGroups      ComparisonGroup[]
+  mapGroups             MapGroup[]
+  botNotificationConfigs BotNotificationConfig[]
 
   @@index([id, email])
 }
@@ -197,40 +198,22 @@ model Team {
   readonly             Boolean                  @default(false)
   comparisonGroups     ComparisonGroup[]
   mapGroups            MapGroup[]
-  scoutingTeamAbbr     String?
-  webhookSubscriptions BotWebhookSubscription[]
+  scoutingTeamAbbr String?
 }
 
-model BotApiKey {
-  id                   String                   @id @default(cuid())
-  key                  String                   @unique
-  name                 String
-  guildId              String
-  createdAt            DateTime                 @default(now())
-  updatedAt            DateTime                 @updatedAt
-  revokedAt            DateTime?
-  createdBy            String
-  webhookSubscriptions BotWebhookSubscription[]
+model BotNotificationConfig {
+  id        String   @id @default(cuid())
+  guildId   String
+  channelId String
+  teamIds   Int[]
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@index([key])
-  @@index([guildId])
-}
+  creator User @relation(fields: [createdBy], references: [id], onDelete: Cascade)
 
-model BotWebhookSubscription {
-  id          String   @id @default(cuid())
-  botApiKeyId String
-  teamId      Int
-  webhookUrl  String
-  events      String[]
-  secret      String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  botApiKey BotApiKey @relation(fields: [botApiKeyId], references: [id], onDelete: Cascade)
-  team      Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
-
-  @@index([botApiKeyId])
-  @@index([teamId])
+  @@unique([guildId, channelId])
+  @@index([createdBy])
 }
 
 model TeamManager {
