@@ -16,14 +16,6 @@ type Entities = {
   };
 };
 
-export type FeatureFlags = {
-  scoutingEnabled: boolean;
-  mapComparisonEnabled: boolean;
-  overviewCardEnabled: boolean;
-  dataLabelingEnabled: boolean;
-  simulationToolEnabled: boolean;
-};
-
 const identify = dedupe(async (): Promise<Entities> => {
   const session = await auth();
   if (!session) return { user: undefined, teams: undefined };
@@ -138,37 +130,3 @@ export const simulationTool = flag<boolean, Entities>({
   description: "Enable or disable the win probability simulator.",
   identify,
 });
-
-export async function resolveAllFlags(): Promise<FeatureFlags> {
-  const [
-    scoutingEnabled,
-    mapComparisonEnabled,
-    overviewCardEnabled,
-    dataLabelingEnabled,
-    simulationToolEnabled,
-  ] = await Promise.all([
-    scoutingTool(),
-    mapComparison(),
-    overviewCard(),
-    dataLabeling(),
-    simulationTool(),
-  ]);
-
-  return {
-    scoutingEnabled,
-    mapComparisonEnabled,
-    overviewCardEnabled,
-    dataLabelingEnabled,
-    simulationToolEnabled,
-  };
-}
-
-export function toFlagValues(flags: FeatureFlags): Record<string, boolean> {
-  return {
-    "scouting-tool": flags.scoutingEnabled,
-    "map-comparison": flags.mapComparisonEnabled,
-    "overview-card": flags.overviewCardEnabled,
-    "data-labeling": flags.dataLabelingEnabled,
-    "simulation-tool": flags.simulationToolEnabled,
-  };
-}
