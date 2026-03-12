@@ -11,7 +11,7 @@ export default async function TokenPage(
   const session = await auth();
   const token = params.token;
 
-  if (!session) redirect("/sign-in");
+  if (!session) redirect(`/sign-in?callbackUrl=/team/join/${token}`);
 
   try {
     const teamCreatedAt = new Date(atob(token));
