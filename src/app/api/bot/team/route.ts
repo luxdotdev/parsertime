@@ -1,6 +1,6 @@
 import { getTeamWinrates } from "@/data/team-stats-dto";
 import {
-  authenticateBotRequest,
+  authenticateBotSecret,
   resolveDiscordUser,
   verifyTeamAccess,
 } from "@/lib/bot-auth";
@@ -17,8 +17,7 @@ export async function GET(request: NextRequest) {
   const startTime = Date.now();
 
   try {
-    const botAuth = await authenticateBotRequest(request);
-    if (!botAuth) {
+    if (!authenticateBotSecret(request)) {
       wideEvent.outcome = "unauthorized";
       wideEvent.status_code = 401;
       return Response.json(
@@ -26,8 +25,6 @@ export async function GET(request: NextRequest) {
         { status: 401 }
       );
     }
-    wideEvent.bot_key_id = botAuth.keyId;
-    wideEvent.guild_id = botAuth.guildId;
 
     const discordId = request.headers.get("X-Discord-User-Id");
     if (!discordId) {

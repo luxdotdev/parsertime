@@ -1,4 +1,4 @@
-import { authenticateBotRequest } from "@/lib/bot-auth";
+import { authenticateBotSecret } from "@/lib/bot-auth";
 import { getCompositeSRLeaderboard } from "@/lib/hero-rating";
 import { Logger } from "@/lib/logger";
 import type { HeroName } from "@/types/heroes";
@@ -14,8 +14,7 @@ export async function GET(request: NextRequest) {
   const startTime = Date.now();
 
   try {
-    const botAuth = await authenticateBotRequest(request);
-    if (!botAuth) {
+    if (!authenticateBotSecret(request)) {
       wideEvent.outcome = "unauthorized";
       wideEvent.status_code = 401;
       return Response.json(
@@ -23,8 +22,6 @@ export async function GET(request: NextRequest) {
         { status: 401 }
       );
     }
-    wideEvent.bot_key_id = botAuth.keyId;
-    wideEvent.guild_id = botAuth.guildId;
 
     const { searchParams } = new URL(request.url);
     const hero = searchParams.get("hero");
