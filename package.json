@@ -87,7 +87,7 @@
     "@tiptap/starter-kit": "^3.6.6",
     "@upstash/ratelimit": "^2.0.6",
     "@upstash/redis": "^1.35.3",
-    "@vercel/analytics": "^1.5.0",
+    "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.0.0",
     "@vercel/edge-config": "^1.4.0",
     "@vercel/flags-core": "^1.0.1",
