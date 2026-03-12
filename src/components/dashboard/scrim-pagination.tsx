@@ -1,6 +1,6 @@
 "use client";
 
-import { AddScrimCard } from "@/components/dashboard/add-scrim-card";
+import { CreateScrimButton } from "@/components/dashboard/create-scrim";
 import { EmptyScrimList } from "@/components/dashboard/empty-scrim-list";
 import { ScrimCard } from "@/components/dashboard/scrim-card";
 import { ScrimCardSkeleton } from "@/components/dashboard/scrim-card-skeleton";
@@ -73,7 +73,7 @@ export function ScrimPagination({
 
   const { teamId } = use(TeamSwitcherContext);
 
-  const pageSize = 15;
+  const pageSize = 16;
 
   // Reset cursor stack when search, filter, or team changes
   const effectiveTeamId = isAdmin ? null : teamId;
@@ -267,58 +267,63 @@ export function ScrimPagination({
 
   return (
     <Card className="bg-background">
-      <span className="inline-flex gap-2 p-4">
-        <Select onValueChange={(v) => setFilter(v)}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder={t("filter.title")} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>{t("filter.select")}</SelectLabel>
-              <SelectItem value="date-desc">{t("filter.newToOld")}</SelectItem>
-              <SelectItem value="date-asc">{t("filter.oldToNew")}</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+      <div className="flex items-center justify-between p-4">
+        <span className="inline-flex gap-2">
+          <Select onValueChange={(v) => setFilter(v)}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder={t("filter.title")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>{t("filter.select")}</SelectLabel>
+                <SelectItem value="date-desc">
+                  {t("filter.newToOld")}
+                </SelectItem>
+                <SelectItem value="date-asc">{t("filter.oldToNew")}</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
 
-        <InputGroup className="md:w-[100px] lg:w-[260px]">
-          <InputGroupInput
-            type="search"
-            placeholder={t("filter.search")}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <InputGroupAddon>
-            <Search />
-          </InputGroupAddon>
-          <InputGroupAddon align="inline-end">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info />
-              </TooltipTrigger>
-              <TooltipContent>
-                {t.rich("filter.searchDescription", {
-                  code: (chunks) => (
-                    <code className="bg-muted-foreground/10 rounded-md px-1 py-0.5 font-mono">
-                      {chunks}
-                    </code>
-                  ),
-                  strong: (chunks) => (
-                    <span className="font-semibold">{chunks}</span>
-                  ),
-                })}
-              </TooltipContent>
-            </Tooltip>
-          </InputGroupAddon>
-        </InputGroup>
-      </span>
+          <InputGroup className="md:w-[100px] lg:w-[260px]">
+            <InputGroupInput
+              type="search"
+              placeholder={t("filter.search")}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <InputGroupAddon>
+              <Search />
+            </InputGroupAddon>
+            <InputGroupAddon align="inline-end">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info />
+                </TooltipTrigger>
+                <TooltipContent>
+                  {t.rich("filter.searchDescription", {
+                    code: (chunks) => (
+                      <code className="bg-muted-foreground/10 rounded-md px-1 py-0.5 font-mono">
+                        {chunks}
+                      </code>
+                    ),
+                    strong: (chunks) => (
+                      <span className="font-semibold">{chunks}</span>
+                    ),
+                  })}
+                </TooltipContent>
+              </Tooltip>
+            </InputGroupAddon>
+          </InputGroup>
+        </span>
+
+        <CreateScrimButton />
+      </div>
 
       <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {isLoading ? (
           <>
             {/* Show skeleton cards during loading */}
             {skeletonCards}
-            <AddScrimCard />
           </>
         ) : data && data.scrims.length > 0 ? (
           <>
@@ -329,7 +334,6 @@ export function ScrimPagination({
                 prefetch={firstFiveScrims.includes(scrim)}
               />
             ))}
-            <AddScrimCard />
           </>
         ) : (
           <>
@@ -342,7 +346,6 @@ export function ScrimPagination({
                 {t("filter.tryAdjustingFilters")}
               </p>
             </div>
-            <AddScrimCard />
           </>
         )}
 
