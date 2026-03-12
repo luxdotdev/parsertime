@@ -1,6 +1,7 @@
 import { getUser } from "@/data/user-dto";
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
+import { dispatchBotEvent } from "@/lib/bot-events";
 import { Logger } from "@/lib/logger";
 import { createNewScrimFromParsedData } from "@/lib/parser";
 import { normalizeMapForScrim } from "@/lib/team-normalization";
@@ -117,6 +118,19 @@ export async function POST(request: NextRequest) {
       target: `${data.name} (Team: ${data.team})`,
       details: `Scrim created: ${data.name}`,
     });
+
+    if (teamId) {
+      await dispatchBotEvent(teamId, {
+        type: "scrim.created",
+        timestamp: new Date().toISOString(),
+        teamId,
+        data: {
+          scrimName: data.name,
+          scrimId: 0, // Scrim ID not returned from parser
+          createdBy: session.user.email,
+        },
+      });
+    }
   });
 
   return new Response("OK", { status: 200 });
