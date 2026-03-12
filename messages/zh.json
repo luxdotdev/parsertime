@@ -299,7 +299,7 @@
       "settings": {
         "title": "设置",
         "profile": "个人资料",
-        "linkedAccounts": "关联账户"
+        "linkedAccounts": "Integrations"
       },
       "debugging": {
         "title": "调试",
@@ -1608,7 +1608,7 @@
     "description": "管理账户设置和偏好。",
     "sideNav": {
       "profile": "简介",
-      "linkedAccounts": "关联账户",
+      "linkedAccounts": "Integrations",
       "admin": "管理员"
     },
     "profile": {
@@ -1678,11 +1678,41 @@
       "update": "更新个人资料"
     },
     "linkedAccounts": {
-      "title": "关联账户",
-      "description": "管理链接账户的设置和偏好。",
+      "title": "Integrations",
+      "description": "Manage integrations, linked accounts, and API keys.",
       "discord": {
+        "title": "Discord Account",
         "linked": "您的 Discord 账户已成功链接。",
         "signIn": "使用 Discord 登录"
+      },
+      "notifications": {
+        "title": "对局通知",
+        "description": "配置接收对局通知的 Discord 频道。",
+        "addConfig": "添加配置",
+        "noConfigs": "暂无通知配置",
+        "noConfigsDescription": "添加配置以将对局通知发送到 Discord 频道。",
+        "server": "服务器",
+        "channel": "频道",
+        "teams": "队伍",
+        "delete": "删除",
+        "deleteConfirmTitle": "删除通知配置",
+        "deleteConfirmDescription": "确定要删除此通知配置吗？对局通知将不再发送到此频道。",
+        "deleteCancel": "取消",
+        "deleteConfirm": "删除",
+        "addDialog": {
+          "title": "添加通知配置",
+          "description": "选择接收对局通知的 Discord 服务器和频道。",
+          "selectServer": "选择服务器",
+          "selectChannel": "选择频道",
+          "selectTeams": "选择队伍",
+          "submit": "保存",
+          "saving": "保存中..."
+        },
+        "toast": {
+          "created": "通知配置创建成功。",
+          "deleted": "通知配置删除成功。",
+          "error": "出了点问题，请重试。"
+        }
       }
     },
     "admin": {

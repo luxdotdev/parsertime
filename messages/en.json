@@ -302,7 +302,7 @@
       "settings": {
         "title": "Settings",
         "profile": "Profile",
-        "linkedAccounts": "Linked Accounts"
+        "linkedAccounts": "Integrations"
       },
       "debugging": {
         "title": "Debugging",
@@ -2536,7 +2536,7 @@
     "description": "Manage your account settings and preferences.",
     "sideNav": {
       "profile": "Profile",
-      "linkedAccounts": "Linked Accounts",
+      "linkedAccounts": "Integrations",
       "admin": "Admin",
       "dashboard": "Dashboard",
       "analytics": "Analytics",
@@ -2652,11 +2652,41 @@
       }
     },
     "linkedAccounts": {
-      "title": "Linked Accounts",
-      "description": "Manage linked account settings and preferences.",
+      "title": "Integrations",
+      "description": "Manage integrations, linked accounts, and API keys.",
       "discord": {
+        "title": "Discord Account",
         "linked": "Your Discord account is successfully linked.",
         "signIn": "Sign In with Discord"
+      },
+      "notifications": {
+        "title": "Scrim Notifications",
+        "description": "Configure Discord channels to receive scrim notifications.",
+        "addConfig": "Add Configuration",
+        "noConfigs": "No notification configs yet",
+        "noConfigsDescription": "Add a configuration to send scrim notifications to a Discord channel.",
+        "server": "Server",
+        "channel": "Channel",
+        "teams": "Teams",
+        "delete": "Delete",
+        "deleteConfirmTitle": "Delete Notification Config",
+        "deleteConfirmDescription": "Are you sure you want to delete this notification configuration? Scrim notifications will no longer be sent to this channel.",
+        "deleteCancel": "Cancel",
+        "deleteConfirm": "Delete",
+        "addDialog": {
+          "title": "Add Notification Config",
+          "description": "Choose a Discord server and channel to receive scrim notifications.",
+          "selectServer": "Select server",
+          "selectChannel": "Select channel",
+          "selectTeams": "Select teams",
+          "submit": "Save",
+          "saving": "Saving..."
+        },
+        "toast": {
+          "created": "Notification config created successfully.",
+          "deleted": "Notification config deleted successfully.",
+          "error": "Something went wrong. Please try again."
+        }
       }
     },
     "admin": {
