@@ -25,8 +25,9 @@ import { z } from "zod";
 
 export function UserAuthForm({
   className,
+  callbackUrl,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: React.HTMLAttributes<HTMLDivElement> & { callbackUrl?: string }) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [email, setEmail] = React.useState("");
 
@@ -37,14 +38,14 @@ export function UserAuthForm({
     setIsLoading(true);
     track("Sign In", { location: "Auth form", method: "Email" });
     localStorage.setItem("lastSignedInUsing", "email");
-    await signIn("email", { email });
+    await signIn("email", { email, callbackUrl: callbackUrl ?? "/dashboard" });
   }
 
   async function handleProviderSignIn(provider: string) {
     setIsLoading(true);
     track("Sign In", { location: "Auth form", method: provider });
     localStorage.setItem("lastSignedInUsing", provider);
-    await signIn(provider);
+    await signIn(provider, { callbackUrl: callbackUrl ?? "/dashboard" });
   }
 
   const t = useTranslations("signInPage");
