@@ -9,6 +9,7 @@ import {
 } from "@/lib/bot-auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
+import { trace } from "@opentelemetry/api";
 import type { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -150,6 +151,21 @@ export async function GET(request: NextRequest) {
     wideEvent.map_count_p2 = stats2.mapCount;
     wideEvent.outcome = "success";
     wideEvent.status_code = 200;
+
+    const span = trace.getActiveSpan();
+    if (span) {
+      span.setAttributes({
+        "bot.compare.team_id": teamId,
+        "bot.compare.player1_name": stats1.playerName,
+        "bot.compare.player1_map_count": stats1.mapCount,
+        "bot.compare.player1_aggregated": JSON.stringify(stats1.aggregated),
+        "bot.compare.player1_map_ids": JSON.stringify(maps1.map((m) => m.id)),
+        "bot.compare.player2_name": stats2.playerName,
+        "bot.compare.player2_map_count": stats2.mapCount,
+        "bot.compare.player2_aggregated": JSON.stringify(stats2.aggregated),
+        "bot.compare.player2_map_ids": JSON.stringify(maps2.map((m) => m.id)),
+      });
+    }
 
     return Response.json({
       success: true,

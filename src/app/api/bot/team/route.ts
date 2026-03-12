@@ -6,6 +6,7 @@ import {
 } from "@/lib/bot-auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
+import { trace } from "@opentelemetry/api";
 import type { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -104,6 +105,20 @@ export async function GET(request: NextRequest) {
     wideEvent.winrate_count = Object.keys(winrates.byMap).length;
     wideEvent.outcome = "success";
     wideEvent.status_code = 200;
+
+    const span = trace.getActiveSpan();
+    if (span) {
+      span.setAttributes({
+        "bot.team.team_id": teamId,
+        "bot.team.team_name": team.name,
+        "bot.team.member_count": team._count.users,
+        "bot.team.overall_wins": winrates.overallWins,
+        "bot.team.overall_losses": winrates.overallLosses,
+        "bot.team.overall_winrate": winrates.overallWinrate,
+        "bot.team.map_count": Object.keys(winrates.byMap).length,
+        "bot.team.by_map": JSON.stringify(winrates.byMap),
+      });
+    }
 
     return Response.json({
       success: true,

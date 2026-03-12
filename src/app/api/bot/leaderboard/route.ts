@@ -3,6 +3,7 @@ import { getCompositeSRLeaderboard } from "@/lib/hero-rating";
 import { Logger } from "@/lib/logger";
 import type { HeroName } from "@/types/heroes";
 import { heroRoleMapping } from "@/types/heroes";
+import { trace } from "@opentelemetry/api";
 import type { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -58,6 +59,17 @@ export async function GET(request: NextRequest) {
     wideEvent.result_count = leaderboard.length;
     wideEvent.outcome = "success";
     wideEvent.status_code = 200;
+
+    const span = trace.getActiveSpan();
+    if (span) {
+      span.setAttributes({
+        "bot.leaderboard.hero": hero,
+        "bot.leaderboard.role": role,
+        "bot.leaderboard.limit": limit,
+        "bot.leaderboard.result_count": leaderboard.length,
+        "bot.leaderboard.entries": JSON.stringify(leaderboard),
+      });
+    }
 
     return Response.json({
       success: true,
