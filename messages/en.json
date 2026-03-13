@@ -92,30 +92,30 @@
   "landingPage": {
     "hero": {
       "latestUpdates": "Latest updates",
-      "title": "Revolutionize your scrim experience",
-      "description": "Using our platform, you can visualize your scrim data, track individual player performance, and more. Invite your players to your team and allow them to see their stats.",
+      "title": "The analytics engine for competitive Overwatch",
+      "description": "Track every stat, rate every player, and find what wins games. Parsertime turns raw scrim data into skill ratings, trend lines, and coaching insights — seconds after you upload.",
       "getStarted": "Get Started",
       "liveDemo": "Live demo",
       "accountDescription": "Already have an account?",
       "signIn": "Sign In"
     },
     "logoCloud": {
-      "title": "Used by a variety of teams for stat tracking"
+      "title": "Trusted by collegiate and professional teams"
     },
     "feature1": {
-      "subtitle": "Improve faster",
-      "title": "Everything you need to improve your team performance",
-      "description": "Streamline your improvement process with our platform. Gain insight into your players' and teams' strengths and weaknesses. See their biggest areas of improvement and adjust your coaching accordingly.",
+      "subtitle": "Built for competition",
+      "title": "See what the scoreboard doesn't show",
+      "description": "Parsertime captures the full picture — killfeeds, hero swaps, ultimate economy, and role-specific performance — so you can coach with data, not guesswork.",
       "learnMore": "Learn more"
     },
     "primaryFeatures": {
       "builtByCoaches": {
-        "name": "Built by coaches, for coaches",
-        "description": "Designed with collegiate and professional coaches in mind. Our platform is built to help you understand trends and patterns in your team's performance."
+        "name": "Scrim overview at a glance",
+        "description": "See map results, match time, first pick rates, and more on a single card."
       },
       "shareWithTeam": {
-        "name": "Share with your team",
-        "description": "Invite your players to your team and allow them to see their stats. Share your team's stats with your players and coaches. Keep everyone in the loop."
+        "name": "Your whole team, one place",
+        "description": "Invite players and coaches to a shared workspace where everyone sees the same data."
       },
       "advancedStatistics": {
         "name": "Advanced statistics",
@@ -130,20 +130,20 @@
     },
     "secondaryFeatures": {
       "dataCharts": {
-        "name": "Player and team data charts.",
-        "description": "Visualize your team's stats. See what can be improved and where your team is excelling. Understand your team's strengths and weaknesses."
+        "name": "Rich data visualizations",
+        "description": "Charts, tables, and breakdowns that surface the stats that matter most to your coaching."
       },
       "filterStats": {
-        "name": "Filter stats by time.",
-        "description": "See your team's stats over time. Filter by week, month, or year to see how your team is improving."
+        "name": "Track trends over time",
+        "description": "Filter by week, month, or season to see how your team is progressing and where to focus next."
       },
       "userProfiles": {
         "name": "User profiles.",
         "description": "See individual player stats and trends over time. Understand how your players are improving and where they need help."
       },
       "advancedSecurity": {
-        "name": "Advanced security.",
-        "description": "User accounts do not store passwords. Only users you invite to your team can see your team's scrims."
+        "name": "Private by default",
+        "description": "Passwordless login, team-scoped permissions, and zero data sharing. Your scrims stay yours."
       },
       "fastReliable": {
         "name": "Fast and reliable.",
@@ -155,9 +155,9 @@
       }
     },
     "stats": {
-      "subtitle": "Our track record",
-      "title": "Trusted by the best",
-      "description": "We're proud to work with top teams and coaches to create better experiences for everyone. Our platform is built to suit the needs of collegiate and professional teams.",
+      "subtitle": "By the numbers",
+      "title": "Backed by real data",
+      "description": "Parsertime processes thousands of scrims for teams competing at the highest level.",
       "statsTracked": "Stats tracked",
       "kills": "Kills tracked",
       "maps": "Maps uploaded",
@@ -170,11 +170,43 @@
       "role": "Manager for o7 Esports"
     },
     "cta": {
-      "subtitle": "Ready to get started?",
-      "title": "Start using our app today.",
-      "description": "Sign up and start using our platform today. We're excited to change the way you think about coaching.",
+      "subtitle": "Ready to level up?",
+      "title": "Start coaching with data today.",
+      "description": "Create a team, upload your first scrim, and see results in minutes. No credit card, no setup fee.",
       "getStarted": "Get started",
       "learnMore": "Learn more"
+    },
+    "howItWorks": {
+      "title": "Get started in",
+      "titleAccent": "minutes.",
+      "step1Title": "Create your team",
+      "step1Description": "Sign up and invite your players and coaches. Everyone gets access to the same dashboard — no setup required on their end.",
+      "step2Title": "Upload your scrims",
+      "step2Description": "Drop in your scrim data after each session. Our parser handles the heavy lifting and processes everything automatically.",
+      "step3Title": "See instant results",
+      "step3Description": "Charts, trends, and player ratings are available immediately. Identify what to work on before your next practice."
+    },
+    "csrSpotlight": {
+      "subtitle": "Custom Hero Skill Rating",
+      "title": "Know exactly where you stand",
+      "description": "Our proprietary CSR system rates every player on a 1–5000 scale using statistical Z-scores across role-specific metrics. See your tier badge, track your improvement, and compete on the leaderboard.",
+      "highlight1Label": "Per-hero ratings",
+      "highlight1Description": "Individual skill ratings for every hero you play, weighted by role-specific stats like eliminations, deaths, and healing.",
+      "highlight2Label": "Tier badges",
+      "highlight2Description": "From Bronze to Champion — see your rank at a glance with visually distinct tier badges.",
+      "highlight3Label": "Population distribution",
+      "highlight3Description": "Understand where you fall in the player population with bell curve distribution charts and percentile rankings."
+    },
+    "teamStatsSpotlight": {
+      "subtitle": "Team Analytics Dashboard",
+      "title": "Eight dimensions of team performance",
+      "description": "Dive deep into your team's performance with dedicated tabs for Overview, Performance, Heroes, Trends, Maps, Swaps, Teamfights, and Ultimates.",
+      "highlight1Label": "Rich visualizations",
+      "highlight1Description": "Radar charts, heatmaps, trend lines, and map galleries that make patterns obvious at a glance.",
+      "highlight2Label": "Role balance analysis",
+      "highlight2Description": "Compare Tank, Damage, and Support performance with normalized radar charts and find your team's strengths.",
+      "highlight3Label": "Winrate trends",
+      "highlight3Description": "Track your team's trajectory week over week with trend lines that show exactly what's working."
     },
     "footer": {
       "screenReader": "Footer",

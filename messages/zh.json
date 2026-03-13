@@ -174,6 +174,38 @@
       "getStarted": "立即开始",
       "learnMore": "了解更多"
     },
+    "howItWorks": {
+      "title": "Get started in",
+      "titleAccent": "minutes.",
+      "step1Title": "Create your team",
+      "step1Description": "Sign up and invite your players and coaches. Everyone gets access to the same dashboard — no setup required on their end.",
+      "step2Title": "Upload your scrims",
+      "step2Description": "Drop in your scrim data after each session. Our parser handles the heavy lifting and processes everything automatically.",
+      "step3Title": "See instant results",
+      "step3Description": "Charts, trends, and player ratings are available immediately. Identify what to work on before your next practice."
+    },
+    "csrSpotlight": {
+      "subtitle": "Custom Hero Skill Rating",
+      "title": "Know exactly where you stand",
+      "description": "Our proprietary CSR system rates every player on a 1–5000 scale using statistical Z-scores across role-specific metrics. See your tier badge, track your improvement, and compete on the leaderboard.",
+      "highlight1Label": "Per-hero ratings",
+      "highlight1Description": "Individual skill ratings for every hero you play, weighted by role-specific stats like eliminations, deaths, and healing.",
+      "highlight2Label": "Tier badges",
+      "highlight2Description": "From Bronze to Champion — see your rank at a glance with visually distinct tier badges.",
+      "highlight3Label": "Population distribution",
+      "highlight3Description": "Understand where you fall in the player population with bell curve distribution charts and percentile rankings."
+    },
+    "teamStatsSpotlight": {
+      "subtitle": "Team Analytics Dashboard",
+      "title": "Eight dimensions of team performance",
+      "description": "Dive deep into your team's performance with dedicated tabs for Overview, Performance, Heroes, Trends, Maps, Swaps, Teamfights, and Ultimates.",
+      "highlight1Label": "Rich visualizations",
+      "highlight1Description": "Radar charts, heatmaps, trend lines, and map galleries that make patterns obvious at a glance.",
+      "highlight2Label": "Role balance analysis",
+      "highlight2Description": "Compare Tank, Damage, and Support performance with normalized radar charts and find your team's strengths.",
+      "highlight3Label": "Winrate trends",
+      "highlight3Description": "Track your team's trajectory week over week with trend lines that show exactly what's working."
+    },
     "footer": {
       "screenReader": "页脚",
       "copyright": "lux.dev。保留所有权利。"
