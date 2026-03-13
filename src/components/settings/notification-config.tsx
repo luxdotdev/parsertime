@@ -45,32 +45,32 @@ import {
 } from "@/components/ui/table";
 import { Bell, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { startTransition, useEffect, useState } from "react";
+import { startTransition, useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-interface NotificationConfigData {
+type NotificationConfigData = {
   id: string;
   guildId: string;
   channelId: string;
   teamIds: number[];
   createdAt: string;
-}
+};
 
-interface Guild {
+type Guild = {
   id: string;
   name: string;
   icon: string | null;
-}
+};
 
-interface Channel {
+type Channel = {
   id: string;
   name: string;
   type: number;
-}
+};
 
-interface NotificationConfigProps {
+type NotificationConfigProps = {
   teams: { id: number; name: string }[];
-}
+};
 
 export function NotificationConfig({ teams }: NotificationConfigProps) {
   const t = useTranslations("settingsPage.linkedAccounts.notifications");
@@ -94,11 +94,7 @@ export function NotificationConfig({ teams }: NotificationConfigProps) {
   const [guildNames, setGuildNames] = useState<Record<string, string>>({});
   const [channelNames, setChannelNames] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    fetchConfigs();
-  }, []);
-
-  async function fetchConfigs() {
+  const fetchConfigs = useCallback(async () => {
     try {
       const res = await fetch("/api/bot/notifications");
       const data = (await res.json()) as {
@@ -113,7 +109,11 @@ export function NotificationConfig({ teams }: NotificationConfigProps) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [t]);
+
+  useEffect(() => {
+    void fetchConfigs();
+  }, [fetchConfigs]);
 
   async function fetchGuilds() {
     setLoadingGuilds(true);
@@ -169,12 +169,12 @@ export function NotificationConfig({ teams }: NotificationConfigProps) {
     setSelectedTeamIds([]);
     setChannels([]);
     setAddDialogOpen(true);
-    fetchGuilds();
+    void fetchGuilds();
   }
 
   function handleGuildChange(guildId: string) {
     setSelectedGuildId(guildId);
-    fetchChannels(guildId);
+    void fetchChannels(guildId);
   }
 
   function handleTeamToggle(teamId: number) {
