@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { TrackedCtaButton } from "@/components/home/tracked-cta-button";
 import prisma from "@/lib/prisma";
 import {
   CalendarDaysIcon,
@@ -298,9 +298,13 @@ export async function LandingPage() {
                 {t("hero.description")}
               </p>
               <div className="mt-10 flex items-center gap-x-6">
-                <Button asChild>
-                  <Link href="/sign-up">{t("hero.getStarted")}</Link>
-                </Button>
+                <TrackedCtaButton
+                  href="/sign-up"
+                  location="hero"
+                  variant="original"
+                >
+                  {t("hero.getStarted")}
+                </TrackedCtaButton>
                 <Link
                   href="/demo"
                   className="text-sm leading-6 font-semibold text-gray-900 dark:text-white"
@@ -626,9 +630,13 @@ export async function LandingPage() {
               {t("cta.description")}
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
-              <Button asChild>
-                <Link href="/sign-up">{t("cta.getStarted")}</Link>
-              </Button>
+              <TrackedCtaButton
+                href="/sign-up"
+                location="footer-cta"
+                variant="original"
+              >
+                {t("cta.getStarted")}
+              </TrackedCtaButton>
               <Link
                 href="/about"
                 className="text-sm leading-6 font-semibold text-gray-900 dark:text-white"
