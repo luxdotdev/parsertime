@@ -38,13 +38,13 @@ export function FeatureSpotlight({
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <p className="text-primary text-sm font-semibold uppercase tracking-wider">
+            <p className="text-primary text-sm font-semibold tracking-wider uppercase">
               {subtitle}
             </p>
-            <h2 className="mt-2 text-balance text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-white">
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-balance text-gray-900 sm:text-4xl dark:text-white">
               {title}
             </h2>
-            <p className="mt-6 text-balance text-lg leading-8 text-gray-600 dark:text-gray-400">
+            <p className="mt-6 text-lg leading-8 text-balance text-gray-600 dark:text-gray-400">
               {description}
             </p>
 
