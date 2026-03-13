@@ -22,7 +22,8 @@ export function AnimatedCounter({
   duration = 1.2,
 }: AnimatedCounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const inView = useInView(ref, { once: true });
+  const hasAnimated = useRef(false);
   const prefersReducedMotion = useReducedMotion();
   const motionValue = useMotionValue(0);
   const rounded = useTransform(motionValue, (v) =>
@@ -30,14 +31,15 @@ export function AnimatedCounter({
   );
 
   useEffect(() => {
-    if (!inView) return;
+    if (!inView || value === 0 || hasAnimated.current) return;
+
+    hasAnimated.current = true;
 
     if (prefersReducedMotion) {
       motionValue.set(value);
       return;
     }
 
-    motionValue.set(0);
     const controls = animate(motionValue, value, {
       duration,
       ease: [0.25, 0.46, 0.45, 0.94],
