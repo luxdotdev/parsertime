@@ -1,16 +1,75 @@
-import {
-  getAvailableMapsForComparison,
-  getComparisonStats,
-} from "@/data/comparison-dto";
-import {
-  authenticateBotSecret,
-  resolveDiscordUser,
-  verifyTeamAccess,
-} from "@/lib/bot-auth";
+import { aggregatePlayerStats } from "@/data/comparison-dto";
+import { authenticateBotSecret } from "@/lib/bot-auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
+import { removeDuplicateRows } from "@/lib/utils";
 import { trace } from "@opentelemetry/api";
+import { Prisma, type PlayerStat } from "@prisma/client";
 import type { NextRequest } from "next/server";
+
+async function getPlayerStats(playerName: string) {
+  const playerScrims = await prisma.playerStat.findMany({
+    where: { player_name: { equals: playerName, mode: "insensitive" } },
+    select: { scrimId: true },
+    distinct: ["scrimId"],
+  });
+
+  const scrimIds = playerScrims.map((s) => s.scrimId);
+  if (scrimIds.length === 0) return null;
+
+  const scrims = await prisma.scrim.findMany({
+    where: { id: { in: scrimIds } },
+    select: {
+      maps: {
+        select: {
+          mapData: { select: { id: true } },
+        },
+      },
+    },
+  });
+
+  const mapDataIds = scrims.flatMap((s) =>
+    s.maps.flatMap((m) => m.mapData.map((md) => md.id))
+  );
+
+  if (mapDataIds.length === 0) return null;
+
+  const finalRoundStats = removeDuplicateRows(
+    await prisma.$queryRaw<PlayerStat[]>`
+      WITH maxTime AS (
+        SELECT
+            MAX("match_time") AS max_time,
+            "MapDataId"
+        FROM
+            "PlayerStat"
+        WHERE
+            "MapDataId" IN (${Prisma.join(mapDataIds)})
+        GROUP BY
+            "MapDataId"
+      )
+      SELECT
+          ps.*
+      FROM
+          "PlayerStat" ps
+          INNER JOIN maxTime m ON ps."match_time" = m.max_time AND ps."MapDataId" = m."MapDataId"
+      WHERE
+          ps."MapDataId" IN (${Prisma.join(mapDataIds)})
+          AND ps."player_name" ILIKE ${playerName}
+    `
+  );
+
+  const calculatedStats = await prisma.calculatedStat.findMany({
+    where: {
+      MapDataId: { in: mapDataIds },
+      playerName: { equals: playerName, mode: "insensitive" },
+    },
+  });
+
+  const mapCount = new Set(finalRoundStats.map((s) => s.MapDataId)).size;
+  const aggregated = aggregatePlayerStats(finalRoundStats, calculatedStats);
+
+  return { playerName, mapCount, aggregated };
+}
 
 export async function GET(request: NextRequest) {
   const wideEvent: Record<string, unknown> = {
@@ -30,38 +89,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const discordId = request.headers.get("X-Discord-User-Id");
-    if (!discordId) {
-      wideEvent.outcome = "bad_request";
-      wideEvent.status_code = 400;
-      return Response.json(
-        { success: false, error: "X-Discord-User-Id header is required" },
-        { status: 400 }
-      );
-    }
-    wideEvent.discord_id = discordId;
-
-    const user = await resolveDiscordUser(discordId);
-    wideEvent.user_id = user?.id;
-    wideEvent.user_linked = !!user;
-
-    if (!user) {
-      wideEvent.outcome = "not_linked";
-      wideEvent.status_code = 403;
-      return Response.json(
-        {
-          success: false,
-          error:
-            "Link your Discord account at parsertime.app/settings to use this command",
-        },
-        { status: 403 }
-      );
-    }
-
     const { searchParams } = new URL(request.url);
     const player1 = searchParams.get("player1");
     const player2 = searchParams.get("player2");
-    const teamIdParam = searchParams.get("teamId");
 
     if (!player1 || !player2) {
       wideEvent.outcome = "bad_request";
@@ -77,75 +107,34 @@ export async function GET(request: NextRequest) {
     wideEvent.player1 = player1;
     wideEvent.player2 = player2;
 
-    let teamId: number;
-    if (teamIdParam) {
-      teamId = parseInt(teamIdParam, 10);
-    } else {
-      const userWithTeams = await prisma.user.findUnique({
-        where: { id: user.id },
-        select: { teams: { select: { id: true }, take: 1 } },
-      });
-      const firstTeam = userWithTeams?.teams[0];
-      if (!firstTeam) {
-        wideEvent.outcome = "no_team";
-        wideEvent.status_code = 404;
-        return Response.json(
-          { success: false, error: "You are not a member of any team" },
-          { status: 404 }
-        );
-      }
-      teamId = firstTeam.id;
-    }
-
-    const hasAccess = await verifyTeamAccess(user.id, teamId);
-    if (!hasAccess) {
-      wideEvent.outcome = "forbidden";
-      wideEvent.status_code = 403;
-      return Response.json(
-        { success: false, error: "You don't have access to this team" },
-        { status: 403 }
-      );
-    }
-
-    const [maps1, maps2] = await Promise.all([
-      getAvailableMapsForComparison({ teamId, playerName: player1 }),
-      getAvailableMapsForComparison({ teamId, playerName: player2 }),
-    ]);
-
-    if (maps1.length === 0) {
-      wideEvent.outcome = "no_data";
-      wideEvent.status_code = 404;
-      return Response.json(
-        {
-          success: false,
-          error: `No data found for player "${player1}" on this team`,
-        },
-        { status: 404 }
-      );
-    }
-
-    if (maps2.length === 0) {
-      wideEvent.outcome = "no_data";
-      wideEvent.status_code = 404;
-      return Response.json(
-        {
-          success: false,
-          error: `No data found for player "${player2}" on this team`,
-        },
-        { status: 404 }
-      );
-    }
-
     const [stats1, stats2] = await Promise.all([
-      getComparisonStats(
-        maps1.map((m) => m.id),
-        player1
-      ),
-      getComparisonStats(
-        maps2.map((m) => m.id),
-        player2
-      ),
+      getPlayerStats(player1),
+      getPlayerStats(player2),
     ]);
+
+    if (!stats1) {
+      wideEvent.outcome = "no_data";
+      wideEvent.status_code = 404;
+      return Response.json(
+        {
+          success: false,
+          error: `No data found for player "${player1}"`,
+        },
+        { status: 404 }
+      );
+    }
+
+    if (!stats2) {
+      wideEvent.outcome = "no_data";
+      wideEvent.status_code = 404;
+      return Response.json(
+        {
+          success: false,
+          error: `No data found for player "${player2}"`,
+        },
+        { status: 404 }
+      );
+    }
 
     wideEvent.map_count_p1 = stats1.mapCount;
     wideEvent.map_count_p2 = stats2.mapCount;
@@ -155,15 +144,12 @@ export async function GET(request: NextRequest) {
     const span = trace.getActiveSpan();
     if (span) {
       span.setAttributes({
-        "bot.compare.team_id": teamId,
         "bot.compare.player1_name": stats1.playerName,
         "bot.compare.player1_map_count": stats1.mapCount,
         "bot.compare.player1_aggregated": JSON.stringify(stats1.aggregated),
-        "bot.compare.player1_map_ids": JSON.stringify(maps1.map((m) => m.id)),
         "bot.compare.player2_name": stats2.playerName,
         "bot.compare.player2_map_count": stats2.mapCount,
         "bot.compare.player2_aggregated": JSON.stringify(stats2.aggregated),
-        "bot.compare.player2_map_ids": JSON.stringify(maps2.map((m) => m.id)),
       });
     }
 
