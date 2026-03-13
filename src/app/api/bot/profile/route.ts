@@ -1,14 +1,12 @@
 import {
-  getAvailableMapsForComparison,
-  getComparisonStats,
+  aggregatePlayerStats,
+  calculateTrends,
 } from "@/data/comparison-dto";
-import {
-  authenticateBotSecret,
-  resolveDiscordUser,
-  verifyTeamAccess,
-} from "@/lib/bot-auth";
+import { removeDuplicateRows } from "@/lib/utils";
+import { authenticateBotSecret } from "@/lib/bot-auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
+import { Prisma, type PlayerStat } from "@prisma/client";
 import { trace } from "@opentelemetry/api";
 import type { NextRequest } from "next/server";
 
@@ -30,37 +28,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const discordId = request.headers.get("X-Discord-User-Id");
-    if (!discordId) {
-      wideEvent.outcome = "bad_request";
-      wideEvent.status_code = 400;
-      return Response.json(
-        { success: false, error: "X-Discord-User-Id header is required" },
-        { status: 400 }
-      );
-    }
-    wideEvent.discord_id = discordId;
-
-    const user = await resolveDiscordUser(discordId);
-    wideEvent.user_id = user?.id;
-    wideEvent.user_linked = !!user;
-
-    if (!user) {
-      wideEvent.outcome = "not_linked";
-      wideEvent.status_code = 403;
-      return Response.json(
-        {
-          success: false,
-          error:
-            "Link your Discord account at parsertime.app/settings to use this command",
-        },
-        { status: 403 }
-      );
-    }
-
     const { searchParams } = new URL(request.url);
     const playerName = searchParams.get("playerName");
-    const teamIdParam = searchParams.get("teamId");
 
     if (!playerName) {
       wideEvent.outcome = "bad_request";
@@ -72,106 +41,136 @@ export async function GET(request: NextRequest) {
     }
     wideEvent.player_name = playerName;
 
-    let teamId: number;
-    if (teamIdParam) {
-      teamId = parseInt(teamIdParam, 10);
-    } else {
-      // Use the user's first team
-      const userWithTeams = await prisma.user.findUnique({
-        where: { id: user.id },
-        select: { teams: { select: { id: true }, take: 1 } },
-      });
-      const firstTeam = userWithTeams?.teams[0];
-      if (!firstTeam) {
-        wideEvent.outcome = "no_team";
-        wideEvent.status_code = 404;
-        return Response.json(
-          { success: false, error: "You are not a member of any team" },
-          { status: 404 }
-        );
-      }
-      teamId = firstTeam.id;
-    }
-
-    const hasAccess = await verifyTeamAccess(user.id, teamId);
-    if (!hasAccess) {
-      wideEvent.outcome = "forbidden";
-      wideEvent.status_code = 403;
-      return Response.json(
-        { success: false, error: "You don't have access to this team" },
-        { status: 403 }
-      );
-    }
-
-    const availableMaps = await getAvailableMapsForComparison({
-      teamId,
-      playerName,
+    // Find all scrims the player participated in (globally, no team restriction)
+    const playerScrims = await prisma.playerStat.findMany({
+      where: { player_name: { equals: playerName, mode: "insensitive" } },
+      select: { scrimId: true },
+      distinct: ["scrimId"],
     });
 
-    if (availableMaps.length === 0) {
+    const scrimIds = playerScrims.map((s) => s.scrimId);
+
+    if (scrimIds.length === 0) {
       wideEvent.outcome = "no_data";
       wideEvent.status_code = 404;
       return Response.json(
         {
           success: false,
-          error: `No data found for player "${playerName}" on this team`,
+          error: `No data found for player "${playerName}"`,
         },
         { status: 404 }
       );
     }
 
-    const mapIds = availableMaps.map((m) => m.id);
-    const stats = await getComparisonStats(mapIds, playerName);
+    // Get all MapData IDs from those scrims
+    const scrims = await prisma.scrim.findMany({
+      where: { id: { in: scrimIds } },
+      select: {
+        maps: {
+          select: {
+            mapData: { select: { id: true } },
+          },
+        },
+      },
+    });
 
-    const heroesPlayed = Array.from(
-      new Set(availableMaps.flatMap((m) => m.playerHeroes))
+    const mapDataIds = scrims.flatMap((s) =>
+      s.maps.flatMap((m) => m.mapData.map((md) => md.id))
     );
 
-    wideEvent.map_count = availableMaps.length;
+    // Get final-round stats for this player across all their maps
+    const finalRoundStats = removeDuplicateRows(
+      await prisma.$queryRaw<PlayerStat[]>`
+        WITH maxTime AS (
+          SELECT
+              MAX("match_time") AS max_time,
+              "MapDataId"
+          FROM
+              "PlayerStat"
+          WHERE
+              "MapDataId" IN (${Prisma.join(mapDataIds)})
+          GROUP BY
+              "MapDataId"
+        )
+        SELECT
+            ps.*
+        FROM
+            "PlayerStat" ps
+            INNER JOIN maxTime m ON ps."match_time" = m.max_time AND ps."MapDataId" = m."MapDataId"
+        WHERE
+            ps."MapDataId" IN (${Prisma.join(mapDataIds)})
+            AND ps."player_name" ILIKE ${playerName}
+      `
+    );
+
+    const calculatedStats = await prisma.calculatedStat.findMany({
+      where: {
+        MapDataId: { in: mapDataIds },
+        playerName: { equals: playerName, mode: "insensitive" },
+      },
+    });
+
+    // Group stats per map for trends
+    const statsByMapDataId: Record<number, PlayerStat[]> = {};
+    for (const stat of finalRoundStats) {
+      if (!stat.MapDataId) continue;
+      if (!statsByMapDataId[stat.MapDataId]) {
+        statsByMapDataId[stat.MapDataId] = [];
+      }
+      statsByMapDataId[stat.MapDataId].push(stat);
+    }
+
+    const calcStatsByMapDataId: Record<number, typeof calculatedStats> = {};
+    for (const stat of calculatedStats) {
+      if (!calcStatsByMapDataId[stat.MapDataId]) {
+        calcStatsByMapDataId[stat.MapDataId] = [];
+      }
+      calcStatsByMapDataId[stat.MapDataId].push(stat);
+    }
+
+    const perMapPlayerStats = Object.values(statsByMapDataId).map(
+      (stats) => stats[0]
+    );
+    const perMapCalcStats = Object.keys(statsByMapDataId).map(
+      (mdId) => calcStatsByMapDataId[Number(mdId)] || []
+    );
+
+    const mapCount = Object.keys(statsByMapDataId).length;
+    const heroesPlayed = Array.from(
+      new Set(finalRoundStats.map((s) => s.player_hero))
+    );
+
+    const aggregated = aggregatePlayerStats(
+      finalRoundStats,
+      calculatedStats,
+      perMapPlayerStats,
+      perMapCalcStats
+    );
+    const trends = calculateTrends(perMapPlayerStats, perMapCalcStats);
+
+    wideEvent.map_count = mapCount;
     wideEvent.heroes_played = heroesPlayed.length;
     wideEvent.outcome = "success";
     wideEvent.status_code = 200;
 
     const responseData = {
-      playerName: stats.playerName,
-      teamId,
-      mapCount: stats.mapCount,
+      playerName,
+      mapCount,
       heroesPlayed,
-      aggregated: stats.aggregated,
-      trends: stats.trends,
+      aggregated,
+      trends,
     };
 
-    // Annotate the active span with response data for debugging
     const span = trace.getActiveSpan();
     if (span) {
       span.setAttributes({
-        "bot.profile.player_name": stats.playerName,
-        "bot.profile.team_id": teamId,
-        "bot.profile.map_count": stats.mapCount,
+        "bot.profile.player_name": playerName,
+        "bot.profile.map_count": mapCount,
         "bot.profile.heroes_played": heroesPlayed.join(", "),
-        "bot.profile.available_maps_count": availableMaps.length,
-        "bot.profile.map_ids": JSON.stringify(mapIds),
-        "bot.profile.aggregated": JSON.stringify(stats.aggregated),
-        "bot.profile.available_maps": JSON.stringify(
-          availableMaps.map((m) => ({
-            id: m.id,
-            name: m.name,
-            scrimId: m.scrimId,
-            playerHeroes: m.playerHeroes,
-          }))
-        ),
-        "bot.profile.per_map_breakdown_count": stats.perMapBreakdown.length,
-        "bot.profile.per_map_breakdown": JSON.stringify(
-          stats.perMapBreakdown.map((m) => ({
-            mapId: m.mapId,
-            mapDataId: m.mapDataId,
-            mapName: m.mapName,
-            heroes: m.heroes,
-            heroTimePlayed: m.stats.hero_time_played,
-          }))
-        ),
-        "bot.profile.filtered_heroes": JSON.stringify(stats.filteredHeroes),
-        "bot.profile.hero_time_played": stats.aggregated.heroTimePlayed,
+        "bot.profile.scrim_count": scrimIds.length,
+        "bot.profile.map_data_ids_count": mapDataIds.length,
+        "bot.profile.final_round_stats_count": finalRoundStats.length,
+        "bot.profile.aggregated": JSON.stringify(aggregated),
       });
     }
 
