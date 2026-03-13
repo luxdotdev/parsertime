@@ -1,7 +1,4 @@
-import {
-  aggregatePlayerStats,
-  calculateTrends,
-} from "@/data/comparison-dto";
+import { aggregatePlayerStats, calculateTrends } from "@/data/comparison-dto";
 import { removeDuplicateRows } from "@/lib/utils";
 import { authenticateBotSecret } from "@/lib/bot-auth";
 import { Logger } from "@/lib/logger";
