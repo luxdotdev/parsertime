@@ -43,3 +43,5 @@ next-env.d.ts
 
 # CI
 /reports
+
+.claude/settings.local.json
