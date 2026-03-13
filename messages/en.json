@@ -2659,6 +2659,11 @@
         "linked": "Your Discord account is successfully linked.",
         "signIn": "Sign In with Discord"
       },
+      "bot": {
+        "title": "Discord Bot",
+        "description": "Add the Parsertime bot to your Discord server to access stats and receive scrim notifications.",
+        "invite": "Invite Bot to Server"
+      },
       "notifications": {
         "title": "Scrim Notifications",
         "description": "Configure Discord channels to receive scrim notifications.",

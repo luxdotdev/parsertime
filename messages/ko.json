@@ -1682,6 +1682,11 @@
         "linked": "디스코드 계정이 성공적으로 연결되었습니다.",
         "signIn": "디스코드로 로그인"
       },
+      "bot": {
+        "title": "Discord 봇",
+        "description": "Parsertime 봇을 Discord 서버에 추가하여 통계를 확인하고 스크림 알림을 받으세요.",
+        "invite": "서버에 봇 초대하기"
+      },
       "notifications": {
         "title": "스크림 알림",
         "description": "스크림 알림을 받을 Discord 채널을 설정하세요.",

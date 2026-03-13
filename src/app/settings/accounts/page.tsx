@@ -1,6 +1,13 @@
 import { DiscordLoginButton } from "@/components/settings/discord-login-button";
 import { NotificationConfig } from "@/components/settings/notification-config";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
@@ -54,6 +61,23 @@ export default async function LinkedAccountSettingsPage() {
           ) : (
             <DiscordLoginButton />
           )}
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("bot.title")}</CardTitle>
+          <CardDescription>{t("bot.description")}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button asChild>
+            <a
+              href="https://discord.com/oauth2/authorize?client_id=1172094422440214529"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t("bot.invite")}
+            </a>
+          </Button>
         </CardContent>
       </Card>
       <NotificationConfig teams={teams} />

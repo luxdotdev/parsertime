@@ -1685,6 +1685,11 @@
         "linked": "您的 Discord 账户已成功链接。",
         "signIn": "使用 Discord 登录"
       },
+      "bot": {
+        "title": "Discord 机器人",
+        "description": "将 Parsertime 机器人添加到你的 Discord 服务器，查看数据统计并接收对局通知。",
+        "invite": "邀请机器人到服务器"
+      },
       "notifications": {
         "title": "对局通知",
         "description": "配置接收对局通知的 Discord 频道。",
