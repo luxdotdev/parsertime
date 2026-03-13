@@ -1,6 +1,9 @@
 export function GET() {
+  const expires = new Date();
+  expires.setFullYear(expires.getFullYear() + 1);
+
   const body = `Contact: mailto:help@parsertime.app
-Expires: 2027-03-13T00:00:00.000Z
+Expires: ${expires.toISOString()}
 Preferred-Languages: en
 Canonical: https://parsertime.app/.well-known/security.txt
 `;
