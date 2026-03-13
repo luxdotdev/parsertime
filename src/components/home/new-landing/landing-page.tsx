@@ -44,17 +44,22 @@ function roundCount(count: number): { value: number; suffix: string } {
 
 const getLandingPageStats = unstable_cache(
   async () => {
+    const results = await Promise.allSettled([
+      prisma.playerStat.count(),
+      prisma.calculatedStat.count(),
+      prisma.kill.count(),
+      prisma.map.count(),
+    ]);
+
     const [playerStatCount, calculatedStatCount, killCount, mapCount] =
-      await Promise.all([
-        prisma.playerStat.count(),
-        prisma.calculatedStat.count(),
-        prisma.kill.count(),
-        prisma.map.count(),
-      ]);
+      results.map((r) => (r.status === "fulfilled" ? r.value : 0));
+
+    // Use known floor values if a query fails, so the landing page
+    // never shows "0+" for a stat that clearly isn't zero.
     return {
-      statsCount: playerStatCount + calculatedStatCount,
-      killCount,
-      mapCount,
+      statsCount: Math.max(playerStatCount + calculatedStatCount, 800_000),
+      killCount: Math.max(killCount, 450_000),
+      mapCount: Math.max(mapCount, 6_000),
     };
   },
   ["landing-page-stats"],
