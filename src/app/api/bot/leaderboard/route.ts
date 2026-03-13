@@ -37,7 +37,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    if (!(hero in heroRoleMapping)) {
+    const heroLower = hero.toLowerCase();
+    const resolvedHero = (Object.keys(heroRoleMapping) as HeroName[]).find(
+      (h) => h.toLowerCase() === heroLower
+    );
+
+    if (!resolvedHero) {
       wideEvent.outcome = "bad_request";
       wideEvent.status_code = 400;
       return Response.json(
@@ -46,15 +51,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    wideEvent.hero = hero;
+    wideEvent.hero = resolvedHero;
     wideEvent.limit = limit;
 
     const leaderboard = await getCompositeSRLeaderboard({
-      hero: hero as HeroName,
+      hero: resolvedHero,
       limit,
     });
 
-    const role = heroRoleMapping[hero as HeroName];
+    const role = heroRoleMapping[resolvedHero];
 
     wideEvent.result_count = leaderboard.length;
     wideEvent.outcome = "success";
@@ -63,7 +68,7 @@ export async function GET(request: NextRequest) {
     const span = trace.getActiveSpan();
     if (span) {
       span.setAttributes({
-        "bot.leaderboard.hero": hero,
+        "bot.leaderboard.hero": resolvedHero,
         "bot.leaderboard.role": role,
         "bot.leaderboard.limit": limit,
         "bot.leaderboard.result_count": leaderboard.length,
@@ -73,7 +78,7 @@ export async function GET(request: NextRequest) {
 
     return Response.json({
       success: true,
-      data: { hero, role, leaderboard },
+      data: { hero: resolvedHero, role, leaderboard },
     });
   } catch (error) {
     wideEvent.outcome = "error";
