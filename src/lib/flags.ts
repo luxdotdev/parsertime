@@ -130,3 +130,15 @@ export const simulationTool = flag<boolean, Entities>({
   description: "Enable or disable the win probability simulator.",
   identify,
 });
+
+export const newLandingPage = flag<boolean, Entities>({
+  key: "new-landing-page",
+  adapter: vercelAdapter(),
+  options: [
+    { value: true, label: "Enabled" },
+    { value: false, label: "Disabled" },
+  ],
+  defaultValue: false,
+  description: "Show the redesigned landing page",
+  identify,
+});
