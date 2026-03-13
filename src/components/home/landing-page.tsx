@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import prisma from "@/lib/prisma";
 import {
   CalendarDaysIcon,
   ChartBarIcon,
@@ -17,11 +18,51 @@ import {
 import { get } from "@vercel/edge-config";
 import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
+import { unstable_cache } from "next/cache";
 import Image from "next/image";
 import Link from "next/link";
 import type { SVGProps } from "react";
 
 type IconProps = Omit<SVGProps<SVGSVGElement>, "fill" | "viewbox">;
+
+/**
+ * Rounds a count down to a "nice" number for display.
+ * e.g. 142,350 -> "140,000+", 2,743 -> "2,500+", 218,000 -> "200,000+"
+ */
+function formatRoundedCount(count: number): string {
+  if (count >= 100_000) {
+    const rounded = Math.floor(count / 10_000) * 10_000;
+    return `${rounded.toLocaleString("en-US")}+`;
+  }
+  if (count >= 10_000) {
+    const rounded = Math.floor(count / 5_000) * 5_000;
+    return `${rounded.toLocaleString("en-US")}+`;
+  }
+  if (count >= 1_000) {
+    const rounded = Math.floor(count / 500) * 500;
+    return `${rounded.toLocaleString("en-US")}+`;
+  }
+  return `${count.toLocaleString("en-US")}+`;
+}
+
+const getLandingPageStats = unstable_cache(
+  async () => {
+    const [playerStatCount, calculatedStatCount, killCount, mapCount] =
+      await Promise.all([
+        prisma.playerStat.count(),
+        prisma.calculatedStat.count(),
+        prisma.kill.count(),
+        prisma.map.count(),
+      ]);
+    return {
+      statsCount: playerStatCount + calculatedStatCount,
+      killCount,
+      mapCount,
+    };
+  },
+  ["landing-page-stats"],
+  { revalidate: 3600 }
+);
 
 type FooterNavigation = {
   social: {
@@ -68,17 +109,27 @@ const footerNavigation: FooterNavigation = {
 };
 
 export async function LandingPage() {
-  const stats =
-    await get<[{ id: string; name: string; value: string }]>(
-      "landingPageStats"
-    );
+  const [{ statsCount, killCount, mapCount }, latestUpdates, t] =
+    await Promise.all([
+      getLandingPageStats(),
+      get<{ title: string; url: Route }>("latestUpdates"),
+      getTranslations("landingPage"),
+    ]);
 
-  const latestUpdates = await get<{
-    title: string;
-    url: Route;
-  }>("latestUpdates");
-
-  const t = await getTranslations("landingPage");
+  const stats = [
+    {
+      id: "stats",
+      name: t("stats.statsTracked"),
+      value: formatRoundedCount(statsCount),
+    },
+    {
+      id: "kills",
+      name: t("stats.kills"),
+      value: formatRoundedCount(killCount),
+    },
+    { id: "maps", name: t("stats.maps"), value: formatRoundedCount(mapCount) },
+    { id: "uptime", name: t("stats.uptime"), value: "99.99%" },
+  ];
 
   type PrimaryFeature = {
     name: string;
@@ -448,7 +499,7 @@ export async function LandingPage() {
             </p>
           </div>
           <dl className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-10 text-gray-900 sm:mt-20 sm:grid-cols-2 sm:gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-4 dark:text-white">
-            {stats!.map((stat) => (
+            {stats.map((stat) => (
               <div
                 key={stat.id}
                 className="flex flex-col gap-y-3 border-l border-gray-900/10 pl-6 dark:border-white/10"

@@ -157,7 +157,11 @@
     "stats": {
       "subtitle": "Our track record",
       "title": "Trusted by the best",
-      "description": "We're proud to work with top teams and coaches to create better experiences for everyone. Our platform is built to suit the needs of collegiate and professional teams."
+      "description": "We're proud to work with top teams and coaches to create better experiences for everyone. Our platform is built to suit the needs of collegiate and professional teams.",
+      "statsTracked": "Stats tracked",
+      "kills": "Kills tracked",
+      "maps": "Maps uploaded",
+      "uptime": "Uptime guarantee"
     },
     "testimonial": {
       "starRating": "5 out of 5 stars",
