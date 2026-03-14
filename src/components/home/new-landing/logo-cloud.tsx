@@ -16,6 +16,7 @@ const logos = [
   { src: "/teams/fiu.svg", alt: "Florida International University" },
   { src: "/teams/gsu.svg", alt: "Georgia State University" },
   { src: "/teams/vlln.png", alt: "VLLN" },
+  { src: "/teams/briar-cliff.png", alt: "Briar Cliff University" },
 ];
 
 function LogoMarquee() {
