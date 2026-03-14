@@ -1249,7 +1249,8 @@
         "footer": "지난 {scrimData}개의 스크림 동안 <span>{percentageChange}</span> 변화 추세",
         "avg": "평균:",
         "max": "| 최대:",
-        "min": "| 최소:"
+        "min": "| 최소:",
+        "trend": "추세"
       },
       "avgHeroDmgDealtPer10": {
         "title": "10분당 평균 가한 영웅 피해 (스크림별)",
@@ -2260,6 +2261,63 @@
       "customRange": "사용자 지정",
       "upgrade": "더 많은 기간을 보려면 업그레이드하세요",
       "pickDateRange": "날짜 범위 선택"
+    }
+  },
+  "targets": {
+    "title": "선수 목표",
+    "premiumRequired": "선수 목표는 프리미엄 플랜이 필요합니다.",
+    "upgradePrompt": "업그레이드하여 선수들의 측정 가능한 개선 목표를 설정하세요.",
+    "viewPricing": "가격 보기",
+    "noTargets": "아직 코치가 설정한 목표가 없습니다.",
+    "noTeamMembers": "팀원을 찾을 수 없습니다.",
+    "setTarget": "목표 설정",
+    "editTarget": "목표 수정",
+    "createTarget": "목표 생성",
+    "updateTarget": "목표 업데이트",
+    "deleteTarget": "목표 삭제",
+    "saving": "저장 중...",
+    "back": "뒤로",
+    "targetProgress": "목표 진행도",
+    "onTrack": "순조로움",
+    "inProgress": "진행 중",
+    "behind": "뒤처짐",
+    "progress": "진행도",
+    "baseline": "기준값",
+    "target": "목표",
+    "targetAchieved": "목표 달성!",
+    "coachNote": "코치 메모",
+    "form": {
+      "title": "{playerName}의 목표 설정",
+      "editTitle": "{playerName}의 목표 수정",
+      "description": "이 선수의 측정 가능한 개선 목표를 설정하세요.",
+      "stat": "스탯",
+      "direction": "방향",
+      "increase": "증가",
+      "decrease": "감소",
+      "targetPercent": "목표 퍼센트 (%)",
+      "scrimWindow": "스크림 범위",
+      "last5": "최근 5 스크림",
+      "last10": "최근 10 스크림",
+      "last15": "최근 15 스크림",
+      "last20": "최근 20 스크림",
+      "note": "코치 메모 (선택사항)",
+      "notePlaceholder": "이 목표에 대한 메모나 맥락..."
+    },
+    "stats": {
+      "eliminations": "처치/10분",
+      "deaths": "사망/10분",
+      "hero_damage_dealt": "영웅 피해량/10분",
+      "damage_taken": "받은 피해량/10분",
+      "damage_blocked": "막은 피해량/10분",
+      "final_blows": "결정타/10분",
+      "healing_dealt": "치유량/10분",
+      "ultimates_earned": "궁극기 획득/10분"
+    },
+    "narrative": {
+      "changed": "{stat}이(가) 최근 {window} 스크림에서 {percent}% {direction}했습니다.",
+      "progressToward": "목표 {targetDirection}{targetPercent}%까지 {percent}% 달성했습니다.",
+      "increased": "증가",
+      "decreased": "감소"
     }
   }
 }

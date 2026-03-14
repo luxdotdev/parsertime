@@ -2138,7 +2138,8 @@
         "footer": "Trending by <span>{percentageChange}</span> in the last {scrimData} scrims",
         "avg": "Average:",
         "max": "| Max:",
-        "min": "| Min:"
+        "min": "| Min:",
+        "trend": "Trend"
       },
       "avgHeroDmgDealtPer10": {
         "title": "Average Hero Damage Dealt per 10 (per scrim)",
@@ -3898,6 +3899,63 @@
         "winrateWithout": "WR w/o Swaps",
         "topPair": "Top Swap"
       }
+    }
+  },
+  "targets": {
+    "title": "Player Targets",
+    "premiumRequired": "Player targets require a Premium plan.",
+    "upgradePrompt": "Upgrade to set measurable improvement goals for your players.",
+    "viewPricing": "View Pricing",
+    "noTargets": "No targets have been set by your coach yet.",
+    "noTeamMembers": "No team members found.",
+    "setTarget": "Set Target",
+    "editTarget": "Edit Target",
+    "createTarget": "Create Target",
+    "updateTarget": "Update Target",
+    "deleteTarget": "Delete Target",
+    "saving": "Saving...",
+    "back": "Back",
+    "targetProgress": "Target Progress",
+    "onTrack": "on track",
+    "inProgress": "in progress",
+    "behind": "behind",
+    "progress": "Progress",
+    "baseline": "Baseline",
+    "target": "Target",
+    "targetAchieved": "Target achieved!",
+    "coachNote": "Coach's note",
+    "form": {
+      "title": "Set Target for {playerName}",
+      "editTitle": "Edit Target for {playerName}",
+      "description": "Set a measurable improvement goal for this player.",
+      "stat": "Stat",
+      "direction": "Direction",
+      "increase": "Increase",
+      "decrease": "Decrease",
+      "targetPercent": "Target Percentage (%)",
+      "scrimWindow": "Scrim Window",
+      "last5": "Last 5 scrims",
+      "last10": "Last 10 scrims",
+      "last15": "Last 15 scrims",
+      "last20": "Last 20 scrims",
+      "note": "Coach Note (optional)",
+      "notePlaceholder": "Any notes or context for this target..."
+    },
+    "stats": {
+      "eliminations": "Eliminations/10",
+      "deaths": "Deaths/10",
+      "hero_damage_dealt": "Hero Damage/10",
+      "damage_taken": "Damage Taken/10",
+      "damage_blocked": "Damage Blocked/10",
+      "final_blows": "Final Blows/10",
+      "healing_dealt": "Healing Dealt/10",
+      "ultimates_earned": "Ults Earned/10"
+    },
+    "narrative": {
+      "changed": "Your {stat} has {direction} by {percent}% over the last {window} scrims.",
+      "progressToward": "You're {percent}% of the way to your target of {targetDirection}{targetPercent}%.",
+      "increased": "increased",
+      "decreased": "decreased"
     }
   }
 }

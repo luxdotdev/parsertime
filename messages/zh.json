@@ -1252,7 +1252,8 @@
         "footer": "在最近 {scrimData} 场训练赛中，趋势为 <span>{percentageChange}</span>",
         "avg": "平均值：",
         "max": "| 最大值：",
-        "min": "| 最小值："
+        "min": "| 最小值：",
+        "trend": "趋势线"
       },
       "avgHeroDmgDealtPer10": {
         "title": "每 10 分钟的平均英雄伤害（每场训练赛）",
@@ -2263,6 +2264,63 @@
       "customRange": "自定义范围",
       "upgrade": "升级以查看更多时间范围",
       "pickDateRange": "选择日期范围"
+    }
+  },
+  "targets": {
+    "title": "选手目标",
+    "premiumRequired": "选手目标需要高级计划。",
+    "upgradePrompt": "升级以为您的选手设定可衡量的改进目标。",
+    "viewPricing": "查看价格",
+    "noTargets": "教练尚未设定任何目标。",
+    "noTeamMembers": "未找到队员。",
+    "setTarget": "设定目标",
+    "editTarget": "编辑目标",
+    "createTarget": "创建目标",
+    "updateTarget": "更新目标",
+    "deleteTarget": "删除目标",
+    "saving": "保存中...",
+    "back": "返回",
+    "targetProgress": "目标进度",
+    "onTrack": "正常",
+    "inProgress": "进行中",
+    "behind": "落后",
+    "progress": "进度",
+    "baseline": "基准值",
+    "target": "目标",
+    "targetAchieved": "目标达成！",
+    "coachNote": "教练备注",
+    "form": {
+      "title": "为 {playerName} 设定目标",
+      "editTitle": "编辑 {playerName} 的目标",
+      "description": "为该选手设定可衡量的改进目标。",
+      "stat": "数据",
+      "direction": "方向",
+      "increase": "提高",
+      "decrease": "降低",
+      "targetPercent": "目标百分比 (%)",
+      "scrimWindow": "训练赛范围",
+      "last5": "最近5场训练赛",
+      "last10": "最近10场训练赛",
+      "last15": "最近15场训练赛",
+      "last20": "最近20场训练赛",
+      "note": "教练备注（可选）",
+      "notePlaceholder": "关于此目标的备注或背景..."
+    },
+    "stats": {
+      "eliminations": "击杀/10分钟",
+      "deaths": "死亡/10分钟",
+      "hero_damage_dealt": "英雄伤害/10分钟",
+      "damage_taken": "承受伤害/10分钟",
+      "damage_blocked": "格挡伤害/10分钟",
+      "final_blows": "最后一击/10分钟",
+      "healing_dealt": "治疗量/10分钟",
+      "ultimates_earned": "终极技能获取/10分钟"
+    },
+    "narrative": {
+      "changed": "您的{stat}在最近{window}场训练赛中{direction}了{percent}%。",
+      "progressToward": "您已达成目标{targetDirection}{targetPercent}%的{percent}%。",
+      "increased": "提高",
+      "decreased": "降低"
     }
   }
 }
