@@ -28,7 +28,10 @@ export function FeatureSpotlight({
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <section className="relative overflow-hidden py-24 sm:py-32">
+    <section
+      className="relative overflow-hidden py-24 sm:py-32"
+      aria-label={subtitle}
+    >
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto grid max-w-2xl grid-cols-1 items-center gap-12 lg:max-w-none lg:grid-cols-2">
           {/* Text column */}
@@ -74,7 +77,7 @@ export function FeatureSpotlight({
             initial={prefersReducedMotion ? false : { opacity: 0, y: 32 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.5 }}
           >
             <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white/50 p-2 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
               <Image
