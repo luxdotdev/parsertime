@@ -92,10 +92,11 @@
   "landingPage": {
     "hero": {
       "latestUpdates": "Latest updates",
-      "title": "The analytics engine for competitive Overwatch",
-      "description": "Track every stat, rate every player, and find what wins games. Parsertime turns raw scrim data into skill ratings, trend lines, and coaching insights — seconds after you upload.",
+      "title": "Every stat the scoreboard doesn't show you",
+      "description": "Parsertime turns raw scrim data into skill ratings, trend lines, and the insights that change how you coach.",
       "getStarted": "Get Started",
-      "liveDemo": "Live demo",
+      "liveDemo": "See a live demo",
+      "freeNote": "No credit card required",
       "accountDescription": "Already have an account?",
       "signIn": "Sign In"
     },
@@ -170,11 +171,11 @@
       "role": "Manager for o7 Esports"
     },
     "cta": {
-      "subtitle": "Ready to level up?",
+      "subtitle": "Your scrims hold the answers.",
       "title": "Start coaching with data today.",
-      "description": "Create a team, upload your first scrim, and see results in minutes. No credit card, no setup fee.",
-      "getStarted": "Get started",
-      "learnMore": "Learn more"
+      "description": "Create a team, upload your first scrim, and see results in minutes. Free to get started — no credit card required.",
+      "getStarted": "Start coaching with data",
+      "learnMore": "See how it works"
     },
     "howItWorks": {
       "title": "Get started in",
@@ -208,16 +209,23 @@
       "highlight3Label": "Winrate trends",
       "highlight3Description": "Track your team's trajectory week over week with trend lines that show exactly what's working."
     },
+    "featureBento": {
+      "dataDecisions": "Data that drives decisions",
+      "everyMetric": "Every metric, one card",
+      "noSpreadsheets": "No more spreadsheets",
+      "spotChanges": "Spot what's changing",
+      "yourData": "Your data, your team"
+    },
     "footer": {
       "screenReader": "Footer",
       "copyright": "lux.dev. All rights reserved."
     }
   },
   "metadata": {
-    "title": "Parsertime",
-    "description": "Parsertime is a tool for analyzing Overwatch scrims.",
-    "ogTitle": "Parsertime",
-    "ogDescription": "Parsertime is a tool for analyzing Overwatch scrims."
+    "title": "Parsertime — Overwatch Scrim Analytics for Competitive Teams",
+    "description": "Turn Overwatch scrim data into skill ratings, trend lines, and coaching insights. Trusted by collegiate and professional teams. Free to start.",
+    "ogTitle": "Parsertime — Scrim Analytics That Win Games",
+    "ogDescription": "Upload scrims, get instant skill ratings and coaching insights. Used by 50+ collegiate and pro Overwatch teams."
   },
   "authError": {
     "title": "There was an error signing in",

@@ -94,6 +94,7 @@
       "description": "使用我们的平台，直观查看您的比赛数据，跟踪球员的个人表现等。邀请球员加入您的团队，并让他们查看自己的统计数据。",
       "getStarted": "立即开始",
       "liveDemo": "现场演示",
+      "freeNote": "No credit card required",
       "accountDescription": "已有账号？",
       "signIn": "登录"
     },
@@ -205,6 +206,13 @@
       "highlight2Description": "Compare Tank, Damage, and Support performance with normalized radar charts and find your team's strengths.",
       "highlight3Label": "Winrate trends",
       "highlight3Description": "Track your team's trajectory week over week with trend lines that show exactly what's working."
+    },
+    "featureBento": {
+      "dataDecisions": "Data that drives decisions",
+      "everyMetric": "Every metric, one card",
+      "noSpreadsheets": "No more spreadsheets",
+      "spotChanges": "Spot what's changing",
+      "yourData": "Your data, your team"
     },
     "footer": {
       "screenReader": "页脚",

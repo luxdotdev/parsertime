@@ -94,6 +94,7 @@
       "description": "이 플랫폼을 통해 스크림 데이터를 시각화하고, 개별 플레이어 성과를 추적하는 등 다양한 기능을 이용할 수 있습니다. 팀에 플레이어를 초대해 자신의 통계를 확인할 수 있도록 해보세요.",
       "getStarted": "시작하기",
       "liveDemo": "라이브 데모",
+      "freeNote": "No credit card required",
       "accountDescription": "이미 계정이 있으신가요?",
       "signIn": "로그인"
     },
@@ -205,6 +206,13 @@
       "highlight2Description": "Compare Tank, Damage, and Support performance with normalized radar charts and find your team's strengths.",
       "highlight3Label": "Winrate trends",
       "highlight3Description": "Track your team's trajectory week over week with trend lines that show exactly what's working."
+    },
+    "featureBento": {
+      "dataDecisions": "Data that drives decisions",
+      "everyMetric": "Every metric, one card",
+      "noSpreadsheets": "No more spreadsheets",
+      "spotChanges": "Spot what's changing",
+      "yourData": "Your data, your team"
     },
     "footer": {
       "screenReader": "푸터",
