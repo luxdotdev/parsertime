@@ -17,6 +17,7 @@ const logos = [
   { src: "/teams/gsu.svg", alt: "Georgia State University" },
   { src: "/teams/vlln.png", alt: "VLLN" },
   { src: "/teams/briar-cliff.png", alt: "Briar Cliff University" },
+  { src: "/teams/bowling-green.png", alt: "Bowling Green State University" },
 ];
 
 function LogoMarquee() {
