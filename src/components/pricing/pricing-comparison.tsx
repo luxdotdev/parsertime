@@ -23,6 +23,7 @@ type TierData = {
   href: Route;
   priceMonthly: string;
   mostPopular: boolean;
+  ctaLabel: string;
 };
 
 type PricingComparisonProps = {
@@ -35,8 +36,6 @@ type PricingComparisonProps = {
     priceComparison: string;
     price: string;
     month: string;
-    getStarted: string;
-    buyPlan: string;
     currentPlan: string;
     included: string;
     notIncluded: string;
@@ -110,9 +109,7 @@ export function PricingComparison({
                     href={isLoggedIn ? tier.href : "/sign-in"}
                     aria-describedby={`mobile-${tier.id}`}
                   >
-                    {tier.name === "Free"
-                      ? translations.getStarted
-                      : translations.buyPlan}
+                    {tier.ctaLabel}
                   </Link>
                 </Button>
               )}
@@ -228,9 +225,7 @@ export function PricingComparison({
                           asChild
                         >
                           <Link href={isLoggedIn ? tier.href : "/sign-in"}>
-                            {tier.name === "Free"
-                              ? translations.getStarted
-                              : translations.buyPlan}
+                            {tier.ctaLabel}
                           </Link>
                         </Button>
                       )}
