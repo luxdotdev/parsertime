@@ -1,27 +1,97 @@
-import { Badge } from "@/components/ui/badge";
+import { CtaSection } from "@/components/home/new-landing/cta-section";
+import { LogoCloud } from "@/components/home/new-landing/logo-cloud";
+import { Testimonial } from "@/components/home/new-landing/testimonial";
+import { TrackedLink } from "@/components/home/new-landing/tracked-link";
+import { TrackedSection } from "@/components/home/new-landing/tracked-section";
+import type { TierData } from "@/components/pricing/pricing-cards";
+import { PricingCards } from "@/components/pricing/pricing-cards";
+import type { SectionData } from "@/components/pricing/pricing-comparison";
+import { PricingComparison } from "@/components/pricing/pricing-comparison";
+import { PricingFaq } from "@/components/pricing/pricing-faq";
+import { PricingHero } from "@/components/pricing/pricing-hero";
+import { PricingStructuredData } from "@/components/pricing/pricing-structured-data";
 import { Link } from "@/components/ui/link";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { createCheckout, getCustomerPortalUrl } from "@/lib/stripe";
 import { toTitleCase } from "@/lib/utils";
-import { CheckIcon, MinusIcon } from "@heroicons/react/20/solid";
-import type { Route } from "next";
-import { getTranslations } from "next-intl/server";
-import Image from "next/image";
-import type React from "react";
-import { Fragment } from "react";
+import type { Metadata, Route } from "next";
+import { getLocale, getTranslations } from "next-intl/server";
+import { Instrument_Serif } from "next/font/google";
+import type { SVGProps } from "react";
 
-function classNames(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(" ");
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const t = await getTranslations({
+    locale,
+    namespace: "pricingPage.metadata",
+  });
+
+  return {
+    title: t("title"),
+    description: t("description"),
+    openGraph: {
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+      url: "https://parsertime.app/pricing",
+      type: "website",
+      siteName: "Parsertime",
+    },
+  };
 }
 
-function ComingSoonBadge({ children }: { children: React.ReactNode }) {
-  return (
-    <Badge className="ml-2 bg-sky-500 text-white hover:bg-sky-700">
-      {children}
-    </Badge>
-  );
-}
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap",
+  variable: "--font-instrument-serif",
+});
+
+type IconProps = Omit<SVGProps<SVGSVGElement>, "fill" | "viewbox">;
+
+type FooterNavigation = {
+  social: {
+    name: string;
+    href: Route;
+    icon: (props: IconProps) => React.ReactNode;
+  }[];
+};
+
+const footerNavigation: FooterNavigation = {
+  social: [
+    {
+      name: "X",
+      href: "https://twitter.com/luxdotdev",
+      icon: (props: IconProps) => (
+        <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
+          <path d="M13.6823 10.6218L20.2391 3H18.6854L12.9921 9.61788L8.44486 3H3.2002L10.0765 13.0074L3.2002 21H4.75404L10.7663 14.0113L15.5685 21H20.8131L13.6819 10.6218H13.6823ZM11.5541 13.0956L10.8574 12.0991L5.31391 4.16971H7.70053L12.1742 10.5689L12.8709 11.5655L18.6861 19.8835H16.2995L11.5541 13.096V13.0956Z" />
+        </svg>
+      ),
+    },
+    {
+      name: "Bluesky",
+      href: "https://bsky.app/profile/lux.dev",
+      icon: (props: IconProps) => (
+        <svg fill="currentColor" viewBox="-50 -50 430 390" {...props}>
+          <path d="M180 141.964C163.699 110.262 119.308 51.1817 78.0347 22.044C38.4971 -5.86834 23.414 -1.03207 13.526 3.43594C2.08093 8.60755 0 26.1785 0 36.5164C0 46.8542 5.66748 121.272 9.36416 133.694C21.5786 174.738 65.0603 188.607 105.104 184.156C107.151 183.852 109.227 183.572 111.329 183.312C109.267 183.642 107.19 183.924 105.104 184.156C46.4204 192.847 -5.69621 214.233 62.6582 290.33C137.848 368.18 165.705 273.637 180 225.702C194.295 273.637 210.76 364.771 295.995 290.33C360 225.702 313.58 192.85 254.896 184.158C252.81 183.926 250.733 183.645 248.671 183.315C250.773 183.574 252.849 183.855 254.896 184.158C294.94 188.61 338.421 174.74 350.636 133.697C354.333 121.275 360 46.8568 360 36.519C360 26.1811 357.919 8.61012 346.474 3.43851C336.586 -1.02949 321.503 -5.86576 281.965 22.0466C240.692 51.1843 196.301 110.262 180 141.964Z" />
+        </svg>
+      ),
+    },
+    {
+      name: "GitHub",
+      href: "https://github.com/lucasdoell",
+      icon: (props: IconProps) => (
+        <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
+          <path
+            fillRule="evenodd"
+            d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+            clipRule="evenodd"
+          />
+        </svg>
+      ),
+    },
+  ],
+};
 
 export default async function PricingPage() {
   const t = await getTranslations("pricingPage");
@@ -30,6 +100,7 @@ export default async function PricingPage() {
   const user = await getUser(session?.user?.email);
 
   const plan = toTitleCase(user?.billingPlan ?? "");
+  const isLoggedIn = !!session?.user;
 
   async function getLink(tier: string) {
     if (session) {
@@ -39,20 +110,10 @@ export default async function PricingPage() {
       }
       return await getCustomerPortalUrl(user!);
     }
-
     return "/dashboard";
   }
 
-  type Tier = {
-    name: string;
-    id: string;
-    href: Route;
-    priceMonthly: string;
-    description: string;
-    mostPopular: boolean;
-  };
-
-  const tiers: Tier[] = [
+  const tiers: TierData[] = [
     {
       name: t("tiers.free"),
       id: "tier-free",
@@ -60,6 +121,14 @@ export default async function PricingPage() {
       priceMonthly: t("tiers.freeMonthly"),
       description: t("tiers.freeDescription"),
       mostPopular: false,
+      highlights: [
+        t("features.scrims"),
+        t("features.joinTeams"),
+        t("features.data"),
+        t("features.createTeams.free"),
+        t("features.teamMembers.free"),
+        t("support.discord"),
+      ],
     },
     {
       name: t("tiers.basic"),
@@ -68,6 +137,16 @@ export default async function PricingPage() {
       priceMonthly: t("tiers.basicMonthly"),
       description: t("tiers.basicDescription"),
       mostPopular: true,
+      highlights: [
+        t("features.createTeams.basic"),
+        t("features.teamMembers.basic"),
+        t("mapStatistics.overviewCard"),
+        `${t("playerStatistics.last3Months")} – ${t(
+          "playerStatistics.last6Months"
+        )}`,
+        t("support.priority"),
+        t("support.devCheck"),
+      ],
     },
     {
       name: t("tiers.premium"),
@@ -76,10 +155,18 @@ export default async function PricingPage() {
       priceMonthly: t("tiers.premiumMonthly"),
       description: t("tiers.premiumDescription"),
       mostPopular: false,
+      highlights: [
+        t("features.createTeams.premium"),
+        t("features.teamMembers.premium"),
+        t("features.earlyAccess"),
+        `${t("playerStatistics.allTime")} & ${t("playerStatistics.custom")}`,
+        t("tools.simulator"),
+        t("support.custom"),
+      ],
     },
   ];
 
-  const sections = [
+  const sections: SectionData[] = [
     {
       name: t("features.title"),
       features: [
@@ -184,6 +271,11 @@ export default async function PricingPage() {
           comingSoon: false,
         },
         {
+          name: t("mapStatistics.overviewCard"),
+          tiers: { "tier-basic": true, "tier-premium": true },
+          comingSoon: false,
+        },
+        {
           name: t("mapStatistics.customTargets"),
           tiers: { "tier-premium": true },
           comingSoon: true,
@@ -248,6 +340,16 @@ export default async function PricingPage() {
       ],
     },
     {
+      name: t("tools.title"),
+      features: [
+        {
+          name: t("tools.simulator"),
+          tiers: { "tier-premium": true },
+          comingSoon: false,
+        },
+      ],
+    },
+    {
       name: t("support.title"),
       features: [
         {
@@ -293,7 +395,7 @@ export default async function PricingPage() {
         link: (chunks) => (
           <Link
             href="/settings"
-            className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
+            className="text-primary hover:text-primary/80 font-semibold"
             target="_blank"
           >
             {chunks}
@@ -311,7 +413,7 @@ export default async function PricingPage() {
         link: (chunks) => (
           <Link
             href="/contact"
-            className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
+            className="text-primary hover:text-primary/80 font-semibold"
             target="_blank"
           >
             {chunks}
@@ -321,404 +423,134 @@ export default async function PricingPage() {
     },
   ];
 
+  // Plain-text FAQs for structured data (no JSX)
+  const structuredFaqs = [
+    { question: t("faq.question1"), answer: t("faq.answer1") },
+    { question: t("faq.question2"), answer: t("faq.answer2") },
+    { question: t("faq.question3"), answer: t("faq.answer3Plain") },
+    { question: t("faq.question4"), answer: t("faq.answer4") },
+    { question: t("faq.question5"), answer: t("faq.answer5Plain") },
+  ];
+
   return (
-    <main className="bg-white dark:bg-black">
-      <div className="bg-white py-24 sm:py-32 dark:bg-black">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-4xl text-center">
-            <h2 className="text-base leading-7 font-semibold text-sky-600 dark:text-sky-400">
-              {t("pricing.title")}
-            </h2>
-            <p className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl dark:text-white">
-              {t("pricing.header")}
+    <div className={`${instrumentSerif.variable} bg-white dark:bg-black`}>
+      <PricingStructuredData faqs={structuredFaqs} />
+
+      <main>
+        <TrackedSection name="pricing-hero">
+          <PricingHero
+            title={t("pricing.header")}
+            subtitle={t("pricing.description")}
+          />
+        </TrackedSection>
+
+        <TrackedSection name="pricing-cards">
+          <PricingCards
+            tiers={tiers}
+            currentPlan={plan}
+            isLoggedIn={isLoggedIn}
+            translations={{
+              getStarted: t("pricing.getStarted"),
+              buyPlan: t("pricing.buyPlan"),
+              currentPlan: t("pricing.currentPlan"),
+              month: t("pricing.month"),
+              mostPopular: t("pricing.mostPopular"),
+            }}
+          />
+        </TrackedSection>
+
+        <TrackedSection name="pricing-comparison">
+          <PricingComparison
+            tiers={tiers}
+            sections={sections}
+            currentPlan={plan}
+            isLoggedIn={isLoggedIn}
+            comingSoonLabel={t("comingSoon")}
+            translations={{
+              priceComparison: t("pricing.priceComparison"),
+              price: t("pricing.price"),
+              month: t("pricing.month"),
+              getStarted: t("pricing.getStarted"),
+              buyPlan: t("pricing.buyPlan"),
+              currentPlan: t("pricing.currentPlan"),
+              included: t("pricing.included"),
+              notIncluded: t("pricing.notIncluded"),
+            }}
+          />
+        </TrackedSection>
+
+        <TrackedSection name="pricing-logos">
+          <LogoCloud title={t("logoCloud.title")} />
+        </TrackedSection>
+
+        <TrackedSection name="pricing-testimonial">
+          <Testimonial
+            starRating={t("testimonial.starRating")}
+            quote={t("testimonial.quote")}
+            author={t("testimonial.author")}
+            role={t("testimonial.role")}
+          />
+        </TrackedSection>
+
+        <TrackedSection name="pricing-faq">
+          <PricingFaq
+            title={t("faq.title")}
+            description={t.rich("faq.description", {
+              link: (chunks) => (
+                <Link
+                  href="/contact"
+                  className="text-primary hover:text-primary/80 font-semibold"
+                >
+                  {chunks}
+                </Link>
+              ),
+            })}
+            faqs={faqs}
+          />
+        </TrackedSection>
+
+        <TrackedSection name="pricing-cta">
+          <CtaSection
+            subtitle={t("cta.subtitle")}
+            title={t("cta.title")}
+            description={t("cta.description")}
+            getStarted={t("cta.getStarted")}
+            learnMore={t("cta.learnMore")}
+            isLoggedIn={isLoggedIn}
+            learnMoreHref="/about"
+          />
+        </TrackedSection>
+      </main>
+
+      {/* Minimal footer */}
+      <footer aria-labelledby="pricing-footer-heading" className="relative">
+        <h2 id="pricing-footer-heading" className="sr-only">
+          {t("footer.screenReader")}
+        </h2>
+        <div className="mx-auto max-w-7xl px-6 pt-4 pb-8 lg:px-8">
+          <div className="border-t border-gray-900/10 pt-8 md:flex md:items-center md:justify-between dark:border-white/10">
+            <div className="flex space-x-6 md:order-2">
+              {footerNavigation.social.map((item) => (
+                <TrackedLink
+                  key={item.name}
+                  href={item.href}
+                  target="_blank"
+                  event="social-click"
+                  properties={{ platform: item.name, page: "pricing" }}
+                  className="text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
+                >
+                  <span className="sr-only">{item.name}</span>
+                  <item.icon className="h-6 w-6" aria-hidden="true" />
+                </TrackedLink>
+              ))}
+            </div>
+            <p className="mt-8 text-xs leading-5 text-gray-400 md:order-1 md:mt-0">
+              &copy; 2024&ndash;{new Date().getFullYear()}{" "}
+              {t("footer.copyright")}
             </p>
           </div>
-          <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-gray-600 dark:text-gray-300">
-            {t("pricing.description")}
-          </p>
-
-          {/* xs to lg */}
-          <div className="mx-auto mt-12 max-w-md space-y-8 sm:mt-16 lg:hidden">
-            {tiers.map((tier) => (
-              <section
-                key={tier.id}
-                className={classNames(
-                  tier.mostPopular
-                    ? "rounded-xl bg-gray-400/5 ring-1 ring-gray-200 ring-inset dark:bg-white/5 dark:ring-white/10"
-                    : "",
-                  "p-8"
-                )}
-              >
-                <h3
-                  id={tier.id}
-                  className="text-sm leading-6 font-semibold text-gray-900 dark:text-white"
-                >
-                  {tier.name}
-                </h3>
-                <p className="mt-2 flex items-baseline gap-x-1">
-                  <span className="text-4xl font-bold text-gray-900 dark:text-white">
-                    {tier.priceMonthly}
-                  </span>
-                  <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">
-                    {t("pricing.month")}
-                  </span>
-                </p>
-                <Link
-                  href={session ? tier.href : "/sign-in"}
-                  aria-describedby={tier.id}
-                  className={classNames(
-                    tier.mostPopular
-                      ? "bg-sky-600 text-white hover:bg-sky-400 focus-visible:outline-sky-500 dark:bg-sky-500"
-                      : "text-sky-600 hover:bg-white/20 focus-visible:outline-white dark:bg-white/10 dark:text-white",
-                    "mt-8 block rounded-md px-3 py-2 text-center text-sm leading-6 font-semibold focus-visible:outline focus-visible:outline-offset-2"
-                  )}
-                >
-                  {tier.name === "Free"
-                    ? t("pricing.getStarted")
-                    : t("pricing.buyPlan")}
-                </Link>
-                <ul className="mt-10 space-y-4 text-sm leading-6 text-gray-900 dark:text-white">
-                  {sections.map((section) => (
-                    <li key={section.name}>
-                      <ul className="space-y-4">
-                        {section.features.map((feature) =>
-                          feature.tiers[
-                            tier.id as keyof typeof feature.tiers
-                          ] ? (
-                            <li key={feature.name} className="flex gap-x-3">
-                              <CheckIcon
-                                className="h-6 w-5 flex-none text-sky-600 dark:text-sky-400"
-                                aria-hidden="true"
-                              />
-                              <span>
-                                {feature.name}{" "}
-                                {typeof feature.tiers[
-                                  tier.id as keyof typeof feature.tiers
-                                ] === "string" ? (
-                                  <span className="text-sm leading-6 text-gray-500 dark:text-gray-400">
-                                    (
-                                    {
-                                      feature.tiers[
-                                        tier.id as keyof typeof feature.tiers
-                                      ]
-                                    }
-                                    )
-                                  </span>
-                                ) : null}
-                              </span>
-                            </li>
-                          ) : null
-                        )}
-                      </ul>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ))}
-          </div>
-
-          {/* lg+ */}
-          <div className="isolate mt-20 hidden lg:block">
-            <div className="relative -mx-8">
-              {tiers.some((tier) => tier.mostPopular) ? (
-                <div className="absolute inset-x-4 inset-y-0 -z-10 flex">
-                  <div
-                    className="flex w-1/4 px-4"
-                    aria-hidden="true"
-                    style={{
-                      marginLeft: `${
-                        (tiers.findIndex((tier) => tier.mostPopular) + 1) * 25
-                      }%`,
-                    }}
-                  >
-                    <div className="w-full rounded-t-xl border-x border-t border-gray-900/10 bg-gray-400/5 dark:border-white/10 dark:bg-white/5" />
-                  </div>
-                </div>
-              ) : null}
-              <table className="w-full table-fixed border-separate border-spacing-x-8 text-left">
-                <caption className="sr-only">
-                  {t("pricing.priceComparison")}
-                </caption>
-                <colgroup>
-                  <col className="w-1/4" />
-                  <col className="w-1/4" />
-                  <col className="w-1/4" />
-                  <col className="w-1/4" />
-                </colgroup>
-                <thead>
-                  <tr>
-                    <td />
-                    {tiers.map((tier) => (
-                      <th
-                        key={tier.id}
-                        scope="col"
-                        className="px-6 pt-6 xl:px-8 xl:pt-8"
-                      >
-                        <div className="text-sm leading-7 font-semibold text-gray-900 dark:text-white">
-                          {tier.name}
-                        </div>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <th scope="row">
-                      <span className="sr-only">{t("pricing.price")}</span>
-                    </th>
-                    {tiers.map((tier) => (
-                      <td key={tier.id} className="px-6 pt-2 xl:px-8">
-                        <div className="flex items-baseline gap-x-1 text-gray-900 dark:text-white">
-                          <span className="text-4xl font-bold">
-                            {tier.priceMonthly}
-                          </span>
-                          <span className="text-sm leading-6 font-semibold">
-                            {t("pricing.month")}
-                          </span>
-                        </div>
-                        {tier.name === plan ? (
-                          <Link
-                            href="/settings"
-                            className={classNames(
-                              tier.mostPopular
-                                ? "bg-sky-600 text-white hover:bg-sky-500 dark:bg-sky-500 dark:hover:bg-sky-400 dark:focus-visible:outline-sky-600"
-                                : "text-sky-600 ring-1 ring-sky-200 ring-inset hover:ring-sky-300 dark:bg-white/10 dark:ring-0 dark:hover:bg-white/20 dark:focus-visible:outline-white",
-                              "mt-8 block rounded-md px-3 py-2 text-center text-sm leading-6 font-semibold focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:text-white dark:focus-visible:ring-0"
-                            )}
-                          >
-                            {t("pricing.currentPlan")}
-                          </Link>
-                        ) : (
-                          <Link
-                            href={session ? tier.href : "/sign-in"}
-                            className={classNames(
-                              tier.mostPopular
-                                ? "bg-sky-600 text-white hover:bg-sky-500 dark:bg-sky-500 dark:hover:bg-sky-400 dark:focus-visible:outline-sky-600"
-                                : "text-sky-600 ring-1 ring-sky-200 ring-inset hover:ring-sky-300 dark:bg-white/10 dark:ring-0 dark:hover:bg-white/20 dark:focus-visible:outline-white",
-                              "mt-8 block rounded-md px-3 py-2 text-center text-sm leading-6 font-semibold focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:text-white dark:focus-visible:ring-0"
-                            )}
-                          >
-                            {tier.name === "Free"
-                              ? t("pricing.getStarted")
-                              : t("pricing.buyPlan")}
-                          </Link>
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-                  {sections.map((section, sectionIdx) => (
-                    <Fragment key={section.name}>
-                      <tr>
-                        <th
-                          scope="colgroup"
-                          colSpan={4}
-                          className={classNames(
-                            sectionIdx === 0 ? "pt-8" : "pt-16",
-                            "pb-4 text-sm leading-6 font-semibold text-gray-900 dark:text-white"
-                          )}
-                        >
-                          {section.name}
-                          <div className="absolute inset-x-8 mt-4 h-px bg-gray-900/10 dark:bg-white/10" />
-                        </th>
-                      </tr>
-                      {section.features.map((feature) => (
-                        <tr key={feature.name}>
-                          <th
-                            scope="row"
-                            className="py-4 text-sm leading-6 font-normal text-gray-900 dark:text-white"
-                          >
-                            {feature.name}{" "}
-                            {feature.comingSoon && (
-                              <ComingSoonBadge>
-                                {t("comingSoon")}
-                              </ComingSoonBadge>
-                            )}
-                            <div className="absolute inset-x-8 mt-4 h-px bg-gray-900/5 dark:bg-white/5" />
-                          </th>
-                          {tiers.map((tier) => (
-                            <td key={tier.id} className="px-6 py-4 xl:px-8">
-                              {typeof feature.tiers[
-                                tier.id as keyof typeof feature.tiers
-                              ] === "string" ? (
-                                <div className="text-center text-sm leading-6 text-gray-500 dark:text-gray-300">
-                                  {
-                                    feature.tiers[
-                                      tier.id as keyof typeof feature.tiers
-                                    ]
-                                  }
-                                </div>
-                              ) : (
-                                <>
-                                  {feature.tiers[
-                                    tier.id as keyof typeof feature.tiers
-                                  ] === true ? (
-                                    <CheckIcon
-                                      className="mx-auto h-5 w-5 text-sky-600 dark:text-sky-400"
-                                      aria-hidden="true"
-                                    />
-                                  ) : (
-                                    <MinusIcon
-                                      className="mx-auto h-5 w-5 text-gray-400 dark:text-gray-500"
-                                      aria-hidden="true"
-                                    />
-                                  )}
-
-                                  <span className="sr-only">
-                                    {feature.tiers[
-                                      tier.id as keyof typeof feature.tiers
-                                    ] === true
-                                      ? t("pricing.included")
-                                      : t("pricing.notIncluded")}{" "}
-                                    {tier.name}
-                                  </span>
-                                </>
-                              )}
-                            </td>
-                          ))}
-                        </tr>
-                      ))}
-                    </Fragment>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
         </div>
-      </div>
-
-      <div className="mx-auto mt-8 max-w-7xl px-6 sm:mt-16 lg:px-8">
-        <div className="mx-auto mt-10 grid max-w-lg grid-cols-4 items-center gap-x-8 gap-y-10 sm:max-w-xl sm:grid-cols-6 sm:gap-x-10 lg:mx-0 lg:max-w-none lg:grid-cols-5">
-          <Image
-            className="col-span-2 max-h-12 w-full object-contain invert lg:col-span-1 dark:invert-0"
-            src="/teams/stclair.svg"
-            alt="St. Clair College"
-            width={158}
-            height={48}
-          />
-          <Image
-            className="col-span-2 max-h-12 w-full object-contain invert lg:col-span-1 dark:invert-0"
-            src="/teams/cornell.svg"
-            alt="Cornell University"
-            width={158}
-            height={48}
-          />
-          <Image
-            className="col-span-2 max-h-12 w-full object-contain invert lg:col-span-1 dark:invert-0"
-            src="/teams/fiu.svg"
-            alt="Florida International University"
-            width={158}
-            height={48}
-          />
-          <Image
-            className="col-span-2 max-h-12 w-full object-contain invert lg:col-span-1 dark:invert-0"
-            src="/teams/gsu.svg"
-            alt="Georgia State University"
-            width={158}
-            height={48}
-          />
-          <Image
-            className="col-span-2 max-h-12 w-full object-contain invert lg:col-span-1 dark:invert-0"
-            src="/teams/vlln.png"
-            alt="VLLN"
-            width={158}
-            height={48}
-          />
-        </div>
-        <div className="mt-16 flex justify-center">
-          <p className="relative rounded-full bg-gray-50 px-4 py-1.5 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/5 ring-inset dark:bg-zinc-950 dark:text-gray-300 dark:ring-gray-50/5">
-            <span className="hidden md:inline">{t("caseStudy.title")}</span>
-            <Link
-              href="https://lux.dev/blog"
-              className="font-semibold text-sky-600 dark:text-sky-300"
-            >
-              <span className="absolute inset-0" aria-hidden="true" />{" "}
-              {t("caseStudy.description")}{" "}
-              <span aria-hidden="true">&rarr;</span>
-            </Link>
-          </p>
-        </div>
-      </div>
-
-      <section className="relative isolate overflow-hidden bg-white px-6 py-24 sm:py-32 lg:px-8 dark:bg-black">
-        <div className="mx-auto max-w-2xl lg:max-w-4xl">
-          <Image
-            className="mx-auto h-12 dark:invert"
-            src="/teams/o7.png"
-            alt=""
-            width={158}
-            height={48}
-          />
-          <figure className="mt-10">
-            <blockquote className="text-center text-xl leading-8 font-semibold text-gray-900 sm:text-2xl sm:leading-9 dark:text-white">
-              <p>{t("testimonial.quote")}</p>
-            </blockquote>
-            <figcaption className="mt-10">
-              <Image
-                className="mx-auto h-10 w-10 rounded-full"
-                src="/marketing/coy.png"
-                alt=""
-                width={48}
-                height={48}
-              />
-              <div className="mt-4 flex items-center justify-center space-x-3 text-base">
-                <div className="font-semibold text-gray-900 dark:text-white">
-                  {t("testimonial.author")}
-                </div>
-                <svg
-                  viewBox="0 0 2 2"
-                  width={3}
-                  height={3}
-                  aria-hidden="true"
-                  className="fill-gray-900 dark:fill-white"
-                >
-                  <circle cx={1} cy={1} r={1} />
-                </svg>
-                <div className="text-gray-600 dark:text-gray-300">
-                  {t("testimonial.role")}
-                </div>
-              </div>
-            </figcaption>
-          </figure>
-        </div>
-      </section>
-
-      <div className="bg-white dark:bg-black">
-        <div className="mx-auto max-w-7xl px-6 py-24 sm:pt-32 lg:px-8 lg:py-40">
-          <div className="lg:grid lg:grid-cols-12 lg:gap-8">
-            <div className="lg:col-span-5">
-              <h2 className="text-2xl leading-10 font-bold tracking-tight text-gray-900 dark:text-white">
-                {t("faq.title")}
-              </h2>
-              <p className="mt-4 text-base leading-7 text-gray-600 dark:text-gray-300">
-                {t.rich("faq.description", {
-                  link: (chunks) => (
-                    <Link
-                      href="/contact"
-                      className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
-                    >
-                      {chunks}
-                    </Link>
-                  ),
-                })}
-              </p>
-            </div>
-            <div className="mt-10 lg:col-span-7 lg:mt-0">
-              <dl className="space-y-10">
-                {faqs.map((faq) => (
-                  <div key={faq.question}>
-                    <dt className="text-base leading-7 font-semibold text-gray-900 dark:text-white">
-                      {faq.question}
-                    </dt>
-                    <dd className="mt-2 text-base leading-7 text-gray-600 dark:text-gray-300">
-                      {faq.answer}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
+      </footer>
+    </div>
   );
 }
