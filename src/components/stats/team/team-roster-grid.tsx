@@ -1,13 +1,21 @@
 import { PlayerHoverCard } from "@/components/player/hover-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
 import prisma from "@/lib/prisma";
+import { Target } from "lucide-react";
 import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
 
 type TeamRosterGridProps = {
   roster: string[];
+  teamId: number;
 };
 
 async function getPlayerData(playerName: string) {
@@ -28,7 +36,7 @@ async function getPlayerData(playerName: string) {
   return user;
 }
 
-export async function TeamRosterGrid({ roster }: TeamRosterGridProps) {
+export async function TeamRosterGrid({ roster, teamId }: TeamRosterGridProps) {
   const t = await getTranslations("teamStatsPage.teamRosterGrid");
 
   if (roster.length === 0) {
@@ -59,6 +67,15 @@ export async function TeamRosterGrid({ roster }: TeamRosterGridProps) {
     <Card>
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
+        <CardAction>
+          <Link
+            href={`/team/${teamId}/targets` as Route}
+            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
+          >
+            <Target className="h-4 w-4" />
+            Player Targets
+          </Link>
+        </CardAction>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
