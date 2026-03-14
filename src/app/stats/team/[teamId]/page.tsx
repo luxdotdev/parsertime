@@ -300,7 +300,7 @@ export default async function TeamStatsPage(
 
           <div className="grid gap-4 md:grid-cols-2">
             {/* Team Roster */}
-            <TeamRosterGrid roster={teamRoster} />
+            <TeamRosterGrid roster={teamRoster} teamId={teamId} />
 
             {/* Recent Activity Calendar */}
             <RecentActivityCalendar scrims={scrims} dateRange={dateRange} />
