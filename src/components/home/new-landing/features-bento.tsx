@@ -7,6 +7,13 @@ type FeaturesBentoProps = {
   subtitle: string;
   title: string;
   description: string;
+  bentoHeadings: {
+    dataDecisions: string;
+    everyMetric: string;
+    noSpreadsheets: string;
+    spotChanges: string;
+    yourData: string;
+  };
   features: {
     builtByCoaches: { name: string; description: string };
     shareWithTeam: { name: string; description: string };
@@ -21,6 +28,7 @@ export function FeaturesBento({
   subtitle,
   title,
   description,
+  bentoHeadings,
   features,
 }: FeaturesBentoProps) {
   const prefersReducedMotion = useReducedMotion();
@@ -28,6 +36,7 @@ export function FeaturesBento({
   return (
     <section
       id="features"
+      aria-labelledby="features-heading"
       className="mx-auto max-w-7xl px-6 py-32 sm:py-48 lg:px-8"
     >
       {/* Section header */}
@@ -42,6 +51,7 @@ export function FeaturesBento({
           {subtitle}
         </motion.p>
         <motion.h2
+          id="features-heading"
           className="mt-2 text-3xl font-bold tracking-tight text-balance text-gray-900 sm:text-4xl dark:text-white"
           initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -74,14 +84,14 @@ export function FeaturesBento({
           <div className="relative h-52 overflow-hidden bg-gray-50 dark:bg-white/[0.02]">
             <Image
               src="/new-killfeed.png"
-              alt="Killfeed visualization"
+              alt="Parsertime killfeed visualization showing match events"
               className="hidden object-cover object-top dark:block"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
             />
             <Image
               src="/new-killfeed-light.png"
-              alt="Killfeed visualization"
+              alt="Parsertime killfeed visualization showing match events"
               className="block object-cover object-top dark:hidden"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -93,7 +103,7 @@ export function FeaturesBento({
               {features.dataCharts.name}
             </p>
             <h3 className="mt-1 text-lg font-bold text-gray-900 dark:text-white">
-              Data that drives decisions
+              {bentoHeadings.dataDecisions}
             </h3>
             <p className="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-400">
               {features.dataCharts.description}
@@ -112,14 +122,14 @@ export function FeaturesBento({
           <div className="relative h-52 overflow-hidden bg-gray-50 dark:bg-white/[0.02]">
             <Image
               src="/scrim-overview-card.png"
-              alt="Scrim overview"
+              alt="Parsertime scrim overview card with match results"
               className="hidden object-cover object-top dark:block"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
             />
             <Image
               src="/scrim-overview-card-light.png"
-              alt="Scrim overview"
+              alt="Parsertime scrim overview card with match results"
               className="block object-cover object-top dark:hidden"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -131,7 +141,7 @@ export function FeaturesBento({
               {features.builtByCoaches.name}
             </p>
             <h3 className="mt-1 text-lg font-bold text-gray-900 dark:text-white">
-              Every metric, one card
+              {bentoHeadings.everyMetric}
             </h3>
             <p className="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-400">
               {features.builtByCoaches.description}
@@ -169,7 +179,7 @@ export function FeaturesBento({
               {features.shareWithTeam.name}
             </p>
             <h3 className="mt-1 text-lg font-bold text-gray-900 dark:text-white">
-              No more spreadsheets
+              {bentoHeadings.noSpreadsheets}
             </h3>
             <p className="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-400">
               {features.shareWithTeam.description}
@@ -207,7 +217,7 @@ export function FeaturesBento({
               {features.filterStats.name}
             </p>
             <h3 className="mt-1 text-lg font-bold text-gray-900 dark:text-white">
-              Spot what&apos;s changing
+              {bentoHeadings.spotChanges}
             </h3>
             <p className="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-400">
               {features.filterStats.description}
@@ -251,7 +261,7 @@ export function FeaturesBento({
               {features.advancedSecurity.name}
             </p>
             <h3 className="mt-1 text-lg font-bold text-gray-900 dark:text-white">
-              Your data, your team
+              {bentoHeadings.yourData}
             </h3>
             <p className="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-400">
               {features.advancedSecurity.description}
