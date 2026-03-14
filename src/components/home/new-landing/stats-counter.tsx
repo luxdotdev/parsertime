@@ -16,6 +16,7 @@ type StatsCounterProps = {
   title: string;
   description: string;
   stats: Stat[];
+  showChart?: boolean;
 };
 
 function GrowthChart() {
@@ -70,6 +71,7 @@ export function StatsCounter({
   title,
   description,
   stats,
+  showChart = true,
 }: StatsCounterProps) {
   const prefersReducedMotion = useReducedMotion();
 
@@ -141,7 +143,7 @@ export function StatsCounter({
       </div>
 
       {/* Growth chart */}
-      <GrowthChart />
+      {showChart && <GrowthChart />}
     </section>
   );
 }
