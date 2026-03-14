@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { track } from "@vercel/analytics";
 import { motion, useReducedMotion } from "framer-motion";
+import type { Route } from "next";
 import Link from "next/link";
 
 type CtaSectionProps = {
@@ -12,6 +13,7 @@ type CtaSectionProps = {
   getStarted: string;
   learnMore: string;
   isLoggedIn: boolean;
+  learnMoreHref?: string;
 };
 
 export function CtaSection({
@@ -21,6 +23,7 @@ export function CtaSection({
   getStarted,
   learnMore,
   isLoggedIn,
+  learnMoreHref = "/about",
 }: CtaSectionProps) {
   const prefersReducedMotion = useReducedMotion();
 
@@ -82,7 +85,7 @@ export function CtaSection({
             </Link>
           </Button>
           <Link
-            href="/about"
+            href={learnMoreHref as Route}
             className="text-sm leading-6 font-semibold text-gray-900 dark:text-white"
           >
             {learnMore} <span aria-hidden="true">→</span>
