@@ -101,7 +101,10 @@ export function LogoCloud({ title }: LogoCloudProps) {
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <section className="mx-auto max-w-7xl px-6 pt-32 sm:pt-48 lg:px-8">
+    <section
+      className="mx-auto max-w-7xl px-6 pt-32 sm:pt-48 lg:px-8"
+      aria-label="Teams using Parsertime"
+    >
       <motion.p
         className="mb-8 text-center text-lg font-semibold text-gray-900 dark:text-white"
         initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
