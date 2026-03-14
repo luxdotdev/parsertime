@@ -15,6 +15,7 @@ export type TierData = {
   description: string;
   mostPopular: boolean;
   highlights: string[];
+  ctaLabel: string;
 };
 
 type PricingCardsProps = {
@@ -22,8 +23,6 @@ type PricingCardsProps = {
   currentPlan: string;
   isLoggedIn: boolean;
   translations: {
-    getStarted: string;
-    buyPlan: string;
     currentPlan: string;
     month: string;
     mostPopular: string;
@@ -96,9 +95,7 @@ export function PricingCards({
                     asChild
                   >
                     <Link href={isLoggedIn ? tier.href : "/sign-in"}>
-                      {tier.name === "Free"
-                        ? translations.getStarted
-                        : translations.buyPlan}
+                      {tier.ctaLabel}
                     </Link>
                   </Button>
                 )}
