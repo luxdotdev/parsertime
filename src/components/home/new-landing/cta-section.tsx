@@ -25,7 +25,10 @@ export function CtaSection({
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <section className="relative isolate overflow-hidden py-32 sm:py-40">
+    <section
+      className="relative isolate overflow-hidden py-32 sm:py-40"
+      aria-label="Call to action"
+    >
       {/* Gradient background with soft edges */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-cyan-500/10 dark:from-indigo-500/20 dark:to-cyan-500/20" />
