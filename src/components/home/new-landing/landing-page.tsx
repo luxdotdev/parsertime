@@ -5,7 +5,6 @@ import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
 import { unstable_cache } from "next/cache";
 import { Instrument_Serif } from "next/font/google";
-import Link from "next/link";
 import type { SVGProps } from "react";
 import { CtaSection } from "./cta-section";
 import { FeatureSpotlight } from "./feature-spotlight";
@@ -14,7 +13,10 @@ import { Hero } from "./hero";
 import { HowItWorks } from "./how-it-works";
 import { LogoCloud } from "./logo-cloud";
 import { StatsCounter } from "./stats-counter";
+import { StructuredData } from "./structured-data";
 import { Testimonial } from "./testimonial";
+import { TrackedLink } from "./tracked-link";
+import { TrackedSection } from "./tracked-section";
 
 const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
@@ -49,10 +51,16 @@ const getLandingPageStats = unstable_cache(
       prisma.calculatedStat.count(),
       prisma.kill.count(),
       prisma.map.count(),
+      prisma.team.count(),
     ]);
 
-    const [playerStatCount, calculatedStatCount, killCount, mapCount] =
-      results.map((r) => (r.status === "fulfilled" ? r.value : 0));
+    const [
+      playerStatCount,
+      calculatedStatCount,
+      killCount,
+      mapCount,
+      teamCount,
+    ] = results.map((r) => (r.status === "fulfilled" ? r.value : 0));
 
     // Use known floor values if a query fails, so the landing page
     // never shows "0+" for a stat that clearly isn't zero.
@@ -60,6 +68,7 @@ const getLandingPageStats = unstable_cache(
       statsCount: Math.max(playerStatCount + calculatedStatCount, 800_000),
       killCount: Math.max(killCount, 450_000),
       mapCount: Math.max(mapCount, 6_000),
+      teamCount: Math.max(teamCount, 10),
     };
   },
   ["landing-page-stats"],
@@ -113,13 +122,17 @@ const footerNavigation: FooterNavigation = {
 };
 
 export async function NewLandingPage() {
-  const [{ statsCount, killCount, mapCount }, latestUpdates, t, session] =
-    await Promise.all([
-      getLandingPageStats(),
-      get<{ title: string; url: Route }>("latestUpdates"),
-      getTranslations("landingPage"),
-      auth(),
-    ]);
+  const [
+    { statsCount, killCount, mapCount, teamCount },
+    latestUpdates,
+    t,
+    session,
+  ] = await Promise.all([
+    getLandingPageStats(),
+    get<{ title: string; url: Route }>("latestUpdates"),
+    getTranslations("landingPage"),
+    auth(),
+  ]);
 
   const isLoggedIn = !!session?.user;
 
@@ -149,153 +162,190 @@ export async function NewLandingPage() {
 
   return (
     <div className={`${instrumentSerif.variable} bg-white dark:bg-black`}>
-      <main>
-        <Hero
-          title={t("hero.title")}
-          description={t("hero.description")}
-          getStarted={t("hero.getStarted")}
-          liveDemo={t("hero.liveDemo")}
-          latestUpdatesLabel={t("hero.latestUpdates")}
-          latestUpdatesTitle={latestUpdates!.title}
-          latestUpdatesUrl={latestUpdates!.url}
-          isLoggedIn={isLoggedIn}
-        />
+      <StructuredData teamCount={teamCount} />
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-gray-900 focus:shadow-lg"
+      >
+        Skip to content
+      </a>
+      <main id="main-content">
+        <TrackedSection name="hero">
+          <Hero
+            title={t("hero.title")}
+            description={t("hero.description")}
+            getStarted={t("hero.getStarted")}
+            liveDemo={t("hero.liveDemo")}
+            latestUpdatesLabel={t("hero.latestUpdates")}
+            latestUpdatesTitle={latestUpdates!.title}
+            latestUpdatesUrl={latestUpdates!.url}
+            teamCount={teamCount}
+            isLoggedIn={isLoggedIn}
+          />
+        </TrackedSection>
 
-        <LogoCloud title={t("logoCloud.title")} />
+        <TrackedSection name="logo-cloud">
+          <LogoCloud title={t("logoCloud.title")} />
+        </TrackedSection>
 
-        <FeaturesBento
-          subtitle={t("feature1.subtitle")}
-          title={t("feature1.title")}
-          description={t("feature1.description")}
-          features={{
-            builtByCoaches: {
-              name: t("primaryFeatures.builtByCoaches.name"),
-              description: t("primaryFeatures.builtByCoaches.description"),
-            },
-            shareWithTeam: {
-              name: t("primaryFeatures.shareWithTeam.name"),
-              description: t("primaryFeatures.shareWithTeam.description"),
-            },
-            dataCharts: {
-              name: t("secondaryFeatures.dataCharts.name"),
-              description: t("secondaryFeatures.dataCharts.description"),
-            },
-            filterStats: {
-              name: t("secondaryFeatures.filterStats.name"),
-              description: t("secondaryFeatures.filterStats.description"),
-            },
-            advancedSecurity: {
-              name: t("secondaryFeatures.advancedSecurity.name"),
-              description: t("secondaryFeatures.advancedSecurity.description"),
-            },
-            fullyCustomizable: {
-              name: t("secondaryFeatures.fullyCustomizable.name"),
-              description: t("secondaryFeatures.fullyCustomizable.description"),
-            },
-          }}
-        />
+        <TrackedSection name="features">
+          <FeaturesBento
+            subtitle={t("feature1.subtitle")}
+            title={t("feature1.title")}
+            description={t("feature1.description")}
+            bentoHeadings={{
+              dataDecisions: t("featureBento.dataDecisions"),
+              everyMetric: t("featureBento.everyMetric"),
+              noSpreadsheets: t("featureBento.noSpreadsheets"),
+              spotChanges: t("featureBento.spotChanges"),
+              yourData: t("featureBento.yourData"),
+            }}
+            features={{
+              builtByCoaches: {
+                name: t("primaryFeatures.builtByCoaches.name"),
+                description: t("primaryFeatures.builtByCoaches.description"),
+              },
+              shareWithTeam: {
+                name: t("primaryFeatures.shareWithTeam.name"),
+                description: t("primaryFeatures.shareWithTeam.description"),
+              },
+              dataCharts: {
+                name: t("secondaryFeatures.dataCharts.name"),
+                description: t("secondaryFeatures.dataCharts.description"),
+              },
+              filterStats: {
+                name: t("secondaryFeatures.filterStats.name"),
+                description: t("secondaryFeatures.filterStats.description"),
+              },
+              advancedSecurity: {
+                name: t("secondaryFeatures.advancedSecurity.name"),
+                description: t(
+                  "secondaryFeatures.advancedSecurity.description"
+                ),
+              },
+              fullyCustomizable: {
+                name: t("secondaryFeatures.fullyCustomizable.name"),
+                description: t(
+                  "secondaryFeatures.fullyCustomizable.description"
+                ),
+              },
+            }}
+          />
+        </TrackedSection>
 
-        <HowItWorks
-          title={t("howItWorks.title")}
-          titleAccent={t("howItWorks.titleAccent")}
-          steps={[
-            {
-              id: 1,
-              title: t("howItWorks.step1Title"),
-              description: t("howItWorks.step1Description"),
-              imageSrcDark: "/dashboard.png",
-              imageSrcLight: "/dashboard-light.png",
-              imageAlt: "Create a team",
-            },
-            {
-              id: 2,
-              title: t("howItWorks.step2Title"),
-              description: t("howItWorks.step2Description"),
-              imageSrcDark: "/create-scrim.png",
-              imageSrcLight: "/create-scrim-light.png",
-              imageAlt: "Upload scrims",
-            },
-            {
-              id: 3,
-              title: t("howItWorks.step3Title"),
-              description: t("howItWorks.step3Description"),
-              imageSrcDark: "/player-page.png",
-              imageSrcLight: "/player-page-light.png",
-              imageAlt: "See instant results",
-            },
-          ]}
-        />
+        <TrackedSection name="how-it-works">
+          <HowItWorks
+            title={t("howItWorks.title")}
+            titleAccent={t("howItWorks.titleAccent")}
+            steps={[
+              {
+                id: 1,
+                title: t("howItWorks.step1Title"),
+                description: t("howItWorks.step1Description"),
+                imageSrcDark: "/dashboard.png",
+                imageSrcLight: "/dashboard-light.png",
+                imageAlt: "Create a team",
+              },
+              {
+                id: 2,
+                title: t("howItWorks.step2Title"),
+                description: t("howItWorks.step2Description"),
+                imageSrcDark: "/create-scrim.png",
+                imageSrcLight: "/create-scrim-light.png",
+                imageAlt: "Upload scrims",
+              },
+              {
+                id: 3,
+                title: t("howItWorks.step3Title"),
+                description: t("howItWorks.step3Description"),
+                imageSrcDark: "/player-page.png",
+                imageSrcLight: "/player-page-light.png",
+                imageAlt: "See instant results",
+              },
+            ]}
+          />
+        </TrackedSection>
 
-        <StatsCounter
-          subtitle={t("stats.subtitle")}
-          title={t("stats.title")}
-          description={t("stats.description")}
-          stats={statsData}
-        />
+        <TrackedSection name="stats">
+          <StatsCounter
+            subtitle={t("stats.subtitle")}
+            title={t("stats.title")}
+            description={t("stats.description")}
+            stats={statsData}
+          />
+        </TrackedSection>
 
-        <FeatureSpotlight
-          subtitle={t("csrSpotlight.subtitle")}
-          title={t("csrSpotlight.title")}
-          description={t("csrSpotlight.description")}
-          highlights={[
-            {
-              label: t("csrSpotlight.highlight1Label"),
-              description: t("csrSpotlight.highlight1Description"),
-            },
-            {
-              label: t("csrSpotlight.highlight2Label"),
-              description: t("csrSpotlight.highlight2Description"),
-            },
-            {
-              label: t("csrSpotlight.highlight3Label"),
-              description: t("csrSpotlight.highlight3Description"),
-            },
-          ]}
-          imageSrcDark="/hero-sr.png"
-          imageSrcLight="/hero-sr-light.png"
-          imageAlt="Custom Hero Skill Rating screenshot"
-          imagePosition="right"
-        />
+        <TrackedSection name="csr-spotlight">
+          <FeatureSpotlight
+            subtitle={t("csrSpotlight.subtitle")}
+            title={t("csrSpotlight.title")}
+            description={t("csrSpotlight.description")}
+            highlights={[
+              {
+                label: t("csrSpotlight.highlight1Label"),
+                description: t("csrSpotlight.highlight1Description"),
+              },
+              {
+                label: t("csrSpotlight.highlight2Label"),
+                description: t("csrSpotlight.highlight2Description"),
+              },
+              {
+                label: t("csrSpotlight.highlight3Label"),
+                description: t("csrSpotlight.highlight3Description"),
+              },
+            ]}
+            imageSrcDark="/hero-sr.png"
+            imageSrcLight="/hero-sr-light.png"
+            imageAlt="Custom Hero Skill Rating screenshot"
+            imagePosition="right"
+          />
+        </TrackedSection>
 
-        <FeatureSpotlight
-          subtitle={t("teamStatsSpotlight.subtitle")}
-          title={t("teamStatsSpotlight.title")}
-          description={t("teamStatsSpotlight.description")}
-          highlights={[
-            {
-              label: t("teamStatsSpotlight.highlight1Label"),
-              description: t("teamStatsSpotlight.highlight1Description"),
-            },
-            {
-              label: t("teamStatsSpotlight.highlight2Label"),
-              description: t("teamStatsSpotlight.highlight2Description"),
-            },
-            {
-              label: t("teamStatsSpotlight.highlight3Label"),
-              description: t("teamStatsSpotlight.highlight3Description"),
-            },
-          ]}
-          imageSrcDark="/team-swaps.png"
-          imageSrcLight="/team-swaps-light.png"
-          imageAlt="Team Analytics Dashboard screenshot"
-          imagePosition="left"
-        />
+        <TrackedSection name="team-spotlight">
+          <FeatureSpotlight
+            subtitle={t("teamStatsSpotlight.subtitle")}
+            title={t("teamStatsSpotlight.title")}
+            description={t("teamStatsSpotlight.description")}
+            highlights={[
+              {
+                label: t("teamStatsSpotlight.highlight1Label"),
+                description: t("teamStatsSpotlight.highlight1Description"),
+              },
+              {
+                label: t("teamStatsSpotlight.highlight2Label"),
+                description: t("teamStatsSpotlight.highlight2Description"),
+              },
+              {
+                label: t("teamStatsSpotlight.highlight3Label"),
+                description: t("teamStatsSpotlight.highlight3Description"),
+              },
+            ]}
+            imageSrcDark="/team-swaps.png"
+            imageSrcLight="/team-swaps-light.png"
+            imageAlt="Team Analytics Dashboard screenshot"
+            imagePosition="left"
+          />
+        </TrackedSection>
 
-        <Testimonial
-          starRating={t("testimonial.starRating")}
-          quote={t("testimonial.quote")}
-          author={t("testimonial.author")}
-          role={t("testimonial.role")}
-        />
+        <TrackedSection name="testimonial">
+          <Testimonial
+            starRating={t("testimonial.starRating")}
+            quote={t("testimonial.quote")}
+            author={t("testimonial.author")}
+            role={t("testimonial.role")}
+          />
+        </TrackedSection>
 
-        <CtaSection
-          subtitle={t("cta.subtitle")}
-          title={t("cta.title")}
-          description={t("cta.description")}
-          getStarted={t("cta.getStarted")}
-          learnMore={t("cta.learnMore")}
-          isLoggedIn={isLoggedIn}
-        />
+        <TrackedSection name="cta">
+          <CtaSection
+            subtitle={t("cta.subtitle")}
+            title={t("cta.title")}
+            description={t("cta.description")}
+            getStarted={t("cta.getStarted")}
+            learnMore={t("cta.learnMore")}
+            isLoggedIn={isLoggedIn}
+          />
+        </TrackedSection>
       </main>
 
       {/* Footer - reused from original */}
@@ -307,15 +357,17 @@ export async function NewLandingPage() {
           <div className="border-t border-gray-900/10 pt-8 md:flex md:items-center md:justify-between dark:border-white/10">
             <div className="flex space-x-6 md:order-2">
               {footerNavigation.social.map((item) => (
-                <Link
+                <TrackedLink
                   key={item.name}
                   href={item.href}
                   target="_blank"
+                  event="social-click"
+                  properties={{ platform: item.name }}
                   className="text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
                 >
                   <span className="sr-only">{item.name}</span>
                   <item.icon className="h-6 w-6" aria-hidden="true" />
-                </Link>
+                </TrackedLink>
               ))}
             </div>
             <p className="mt-8 text-xs leading-5 text-gray-400 md:order-1 md:mt-0">
