@@ -67,6 +67,7 @@ model User {
   comparisonGroups      ComparisonGroup[]
   mapGroups             MapGroup[]
   botNotificationConfigs BotNotificationConfig[]
+  createdTargets        PlayerTarget[]
 
   @@index([id, email])
 }
@@ -198,6 +199,7 @@ model Team {
   readonly             Boolean                  @default(false)
   comparisonGroups     ComparisonGroup[]
   mapGroups            MapGroup[]
+  playerTargets        PlayerTarget[]
   scoutingTeamAbbr String?
 }
 
@@ -917,6 +919,26 @@ model UltimateStart {
 
   @@index([scrimId])
   @@index([MapDataId])
+}
+
+model PlayerTarget {
+  id              Int      @id @default(autoincrement())
+  teamId          Int
+  playerName      String
+  stat            String
+  targetDirection String
+  targetPercent   Float
+  baselineValue   Float
+  scrimWindow     Int      @default(10)
+  note            String?
+  createdBy       String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  team            Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  creator         User     @relation(fields: [createdBy], references: [id])
+
+  @@index([teamId, playerName])
+  @@index([createdBy])
 }
 
 // ---------------------------------------------------------------------------
