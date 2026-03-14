@@ -10,6 +10,7 @@ import {
   RangePicker,
   type Timeframe,
 } from "@/components/stats/player/range-picker";
+import { PlayerTargetsTab } from "@/components/targets/player-targets-tab";
 import { Link } from "@/components/ui/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -18,9 +19,18 @@ import {
   getAllMapWinratesForPlayer,
   getAllStatsForPlayer,
 } from "@/data/scrim-dto";
+import {
+  calculateTargetProgress,
+  getPlayerTargets,
+  getRecentScrimStats,
+  type TargetProgress,
+} from "@/data/targets-dto";
+import { getUser } from "@/data/user-dto";
+import { auth } from "@/lib/auth";
 import { getCompositeSRLeaderboard } from "@/lib/hero-rating";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
+import type { RoleName } from "@/lib/target-stats";
 import {
   cn,
   getHeroRatingBorderColor,
@@ -275,6 +285,54 @@ export default async function ProfilePage(
     ...allHeroesData.map((h) => h.total_time_played)
   );
 
+  // Targets tab: visible on own profile or for site admins
+  const session = await auth();
+  const sessionUser = await getUser(session?.user?.email);
+  const isOwnProfile =
+    user && session?.user?.email && session.user.email === user.email;
+  const isAdmin = sessionUser?.role === $Enums.UserRole.ADMIN;
+  const canViewTargets = isOwnProfile ?? isAdmin;
+
+  let targetProgress: TargetProgress[] = [];
+  let targetScrimStats: Awaited<ReturnType<typeof getRecentScrimStats>> = [];
+  let playerPrimaryRole: RoleName = "Damage";
+
+  if (canViewTargets) {
+    // Use the profile user's teamId, or fall back to looking up from their targets
+    let targetTeamId = user?.teamId ?? null;
+    if (!targetTeamId) {
+      const anyTarget = await prisma.playerTarget.findFirst({
+        where: { playerName: { equals: name, mode: "insensitive" } },
+        select: { teamId: true },
+      });
+      targetTeamId = anyTarget?.teamId ?? null;
+    }
+
+    if (targetTeamId) {
+      // Determine primary role
+      if (allHeroesData.length > 0) {
+        const topRole =
+          heroRoleMapping[allHeroesData[0].player_hero as HeroName];
+        if (topRole) playerPrimaryRole = topRole;
+      }
+
+      const targets = await getPlayerTargets(targetTeamId, name);
+      if (targets.length > 0) {
+        const maxWindow = Math.max(...targets.map((t) => t.scrimWindow));
+        targetScrimStats = await getRecentScrimStats(
+          name,
+          targetTeamId,
+          maxWindow
+        );
+        targetProgress = targets.map((target) => {
+          const windowStats = targetScrimStats.slice(-target.scrimWindow);
+          const progress = calculateTargetProgress(target, windowStats);
+          return { ...progress, target };
+        });
+      }
+    }
+  }
+
   return (
     <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
       <ProfileHeader player={playerData} />
@@ -284,6 +342,7 @@ export default async function ProfilePage(
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="progression">Progression</TabsTrigger>
           <TabsTrigger value="statistics">Statistics</TabsTrigger>
+          {canViewTargets && <TabsTrigger value="targets">Targets</TabsTrigger>}
           {user && <TabsTrigger value="achievements">Achievements</TabsTrigger>}
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
@@ -578,6 +637,15 @@ export default async function ProfilePage(
             deaths={deaths}
           />
         </TabsContent>
+        {canViewTargets && (
+          <TabsContent value="targets" className="space-y-4">
+            <PlayerTargetsTab
+              playerRole={playerPrimaryRole}
+              scrimStats={targetScrimStats}
+              progress={targetProgress}
+            />
+          </TabsContent>
+        )}
         <TabsContent value="achievements" className="space-y-4">
           <Achievements user={user!} />
         </TabsContent>
