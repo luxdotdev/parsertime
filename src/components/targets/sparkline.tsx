@@ -9,12 +9,7 @@ type Props = {
   height?: number;
 };
 
-export function Sparkline({
-  data,
-  trending,
-  width = 80,
-  height = 24,
-}: Props) {
+export function Sparkline({ data, trending, width = 80, height = 24 }: Props) {
   const chartData = data.map((value, index) => ({ value, index }));
   const color =
     trending === "toward"
