@@ -281,7 +281,7 @@ export default async function PricingPage() {
         {
           name: t("mapStatistics.customTargets"),
           tiers: { "tier-premium": true },
-          comingSoon: true,
+          comingSoon: false,
         },
       ],
     },
