@@ -121,6 +121,7 @@ export default async function PricingPage() {
       priceMonthly: t("tiers.freeMonthly"),
       description: t("tiers.freeDescription"),
       mostPopular: false,
+      ctaLabel: t("pricing.startFree"),
       highlights: [
         t("features.scrims"),
         t("features.joinTeams"),
@@ -137,6 +138,7 @@ export default async function PricingPage() {
       priceMonthly: t("tiers.basicMonthly"),
       description: t("tiers.basicDescription"),
       mostPopular: true,
+      ctaLabel: t("pricing.upgradeBasic"),
       highlights: [
         t("features.createTeams.basic"),
         t("features.teamMembers.basic"),
@@ -155,6 +157,7 @@ export default async function PricingPage() {
       priceMonthly: t("tiers.premiumMonthly"),
       description: t("tiers.premiumDescription"),
       mostPopular: false,
+      ctaLabel: t("pricing.upgradePremium"),
       highlights: [
         t("features.createTeams.premium"),
         t("features.teamMembers.premium"),
@@ -421,6 +424,10 @@ export default async function PricingPage() {
         ),
       }),
     },
+    {
+      question: t("faq.question6"),
+      answer: t("faq.answer6"),
+    },
   ];
 
   // Plain-text FAQs for structured data (no JSX)
@@ -430,6 +437,7 @@ export default async function PricingPage() {
     { question: t("faq.question3"), answer: t("faq.answer3Plain") },
     { question: t("faq.question4"), answer: t("faq.answer4") },
     { question: t("faq.question5"), answer: t("faq.answer5Plain") },
+    { question: t("faq.question6"), answer: t("faq.answer6") },
   ];
 
   return (
@@ -450,8 +458,6 @@ export default async function PricingPage() {
             currentPlan={plan}
             isLoggedIn={isLoggedIn}
             translations={{
-              getStarted: t("pricing.getStarted"),
-              buyPlan: t("pricing.buyPlan"),
               currentPlan: t("pricing.currentPlan"),
               month: t("pricing.month"),
               mostPopular: t("pricing.mostPopular"),
@@ -470,8 +476,6 @@ export default async function PricingPage() {
               priceComparison: t("pricing.priceComparison"),
               price: t("pricing.price"),
               month: t("pricing.month"),
-              getStarted: t("pricing.getStarted"),
-              buyPlan: t("pricing.buyPlan"),
               currentPlan: t("pricing.currentPlan"),
               included: t("pricing.included"),
               notIncluded: t("pricing.notIncluded"),
