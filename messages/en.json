@@ -3102,6 +3102,12 @@
     }
   },
   "pricingPage": {
+    "metadata": {
+      "title": "Pricing — Parsertime",
+      "description": "Plans for teams of all sizes. Start free with unlimited scrims, or upgrade for advanced analytics, extended stats history, and priority support.",
+      "ogTitle": "Pricing — Plans for Teams of All Sizes",
+      "ogDescription": "Parsertime offers Free, Basic, and Premium plans so your analytics grow with your team. No credit card required to start."
+    },
     "pricing": {
       "title": "Pricing",
       "header": "Plans for teams of all sizes",
@@ -3114,7 +3120,8 @@
       "priceComparison": "Pricing plan comparison",
       "price": "Price",
       "included": "Included in",
-      "notIncluded": "Not Included in"
+      "notIncluded": "Not Included in",
+      "mostPopular": "Most Popular"
     },
     "comingSoon": "Coming soon",
     "tiers": {
@@ -3154,7 +3161,8 @@
       "customCharts": "Custom Charts",
       "mapEvents": "Map Events",
       "playerComparison": "Player Comparison",
-      "customTargets": "Custom Targets"
+      "customTargets": "Custom Targets",
+      "overviewCard": "Overview Card"
     },
     "playerStatistics": {
       "title": "Player Statistics",
@@ -3174,11 +3182,30 @@
       "devCheck": "Monthly Developer Check-ins",
       "custom": "Custom Feature Requests"
     },
+    "tools": {
+      "title": "Tools",
+      "simulator": "Win Probability Simulator"
+    },
+    "logoCloud": {
+      "title": "Trusted by collegiate and professional teams"
+    },
+    "cta": {
+      "subtitle": "Ready to level up your coaching?",
+      "title": "Start analyzing your scrims today.",
+      "description": "Create a team, upload your first scrim, and see results in minutes. Free to get started — no credit card required.",
+      "getStarted": "Get started for free",
+      "learnMore": "Learn more"
+    },
+    "footer": {
+      "screenReader": "Footer",
+      "copyright": "lux.dev. All rights reserved."
+    },
     "caseStudy": {
       "title": "Learn how teams use Parsertime to improve their coaching strategy.",
       "description": "See our case study"
     },
     "testimonial": {
+      "starRating": "5 out of 5 stars",
       "quote": "“Parsertime is so impactful to the point where my players can be coached on things they actively need help with, like living more, or holding their ult longer and being patient.”",
       "author": "coy (@shy.coy)",
       "role": "Manager for o7 Esports"
@@ -3195,7 +3222,9 @@
       "question4": "Can I cancel my subscription at any time?",
       "answer4": "Yes, you can cancel your subscription at any time. Your subscription will remain active until the end of the billing period.",
       "question5": "What if I need higher limits than the Premium plan offers?",
-      "answer5": "If you need something special or require higher limits than the Premium plan offers, please reach out to our <link>support team</link> and we'll be happy to discuss a custom solution."
+      "answer5": "If you need something special or require higher limits than the Premium plan offers, please reach out to our <link>support team</link> and we'll be happy to discuss a custom solution.",
+      "answer3Plain": "You can manage your subscription in your account settings. If you have any issues, please reach out to our support team.",
+      "answer5Plain": "If you need something special or require higher limits than the Premium plan offers, please reach out to our support team and we'll be happy to discuss a custom solution."
     }
   },
   "privacyPage": {
