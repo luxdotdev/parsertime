@@ -76,6 +76,7 @@ export function StatsCounter({
   return (
     <section
       id="stats"
+      aria-labelledby="stats-heading"
       className="mx-auto max-w-7xl overflow-hidden px-6 py-32 sm:py-48 lg:px-8"
     >
       {/* Header — left-aligned */}
@@ -90,6 +91,7 @@ export function StatsCounter({
           {subtitle}
         </motion.p>
         <motion.h2
+          id="stats-heading"
           className="mt-2 text-3xl font-bold tracking-tight text-balance text-gray-900 sm:text-4xl dark:text-white"
           initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
