@@ -20,7 +20,10 @@ export function Testimonial({
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <section className="px-6 py-24 sm:py-32 lg:px-8">
+    <section
+      className="px-6 py-24 sm:py-32 lg:px-8"
+      aria-label="Customer testimonial"
+    >
       <motion.figure
         className="mx-auto max-w-2xl"
         initial={prefersReducedMotion ? false : { opacity: 0 }}
@@ -46,7 +49,7 @@ export function Testimonial({
           <Image
             className="h-12 w-12 rounded-full bg-gray-50 dark:bg-zinc-900"
             src="/marketing/coy.png"
-            alt=""
+            alt="Photo of coy, Manager for o7 Esports"
             width={48}
             height={48}
           />
