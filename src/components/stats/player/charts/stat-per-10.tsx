@@ -7,9 +7,9 @@ import { cn, format, round, toMins } from "@/lib/utils";
 import type { PlayerStat, Scrim } from "@prisma/client";
 import { TrendingDownIcon, TrendingUpIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import {
   CartesianGrid,
-  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -28,6 +28,43 @@ type Data = {
   pv: number;
   time: number;
 }[];
+
+type ChartPoint = {
+  name: string;
+  pv: number;
+  trend: number | null;
+};
+
+/**
+ * Computes a linear regression trend line over the data points.
+ * Returns the augmented array and the slope for coloring.
+ */
+function computeTrendLine(data: { name: string; pv: number }[]): {
+  data: ChartPoint[];
+  slope: number;
+} {
+  const n = data.length;
+  if (n < 2)
+    return { data: data.map((d) => ({ ...d, trend: null })), slope: 0 };
+
+  let sumX = 0;
+  let sumY = 0;
+  let sumXY = 0;
+  let sumX2 = 0;
+  for (let i = 0; i < n; i++) {
+    sumX += i;
+    sumY += data[i].pv;
+    sumXY += i * data[i].pv;
+    sumX2 += i * i;
+  }
+  const m = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+  const b = (sumY - m * sumX) / n;
+
+  return {
+    data: data.map((d, i) => ({ ...d, trend: m * i + b })),
+    slope: m,
+  };
+}
 
 function CustomTooltip({
   active,
@@ -80,6 +117,11 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
 }: Props<T>) {
   const t = useTranslations("statsPage.playerStats");
   const { team1 } = useColorblindMode();
+  const [focused, setFocused] = useState<string | null>(null);
+
+  function getOpacity(key: string) {
+    return focused === null || focused === key ? 1 : 0.15;
+  }
 
   // We want to merge the stat values when the date is the same
   // Then we want to get the value per 10 minutes
@@ -117,6 +159,17 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
     .filter((item) => !isNaN(item.pv))
     .filter((item) => isFinite(item.pv));
 
+  const { data: chartDataWithTrend, slope } = computeTrendLine(processedData);
+
+  const slopeIsPositive = slope > 0;
+  const trendIsGood = better === "higher" ? slopeIsPositive : !slopeIsPositive;
+  const trendLineColor =
+    slope === 0
+      ? "var(--color-muted-foreground)"
+      : trendIsGood
+        ? "var(--color-green-500)"
+        : "var(--color-red-500)";
+
   const avg =
     processedData.reduce((acc, curr) => acc + curr.pv, 0) /
     processedData.length;
@@ -133,7 +186,7 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
           <LineChart
             width={500}
             height={250}
-            data={processedData}
+            data={chartDataWithTrend}
             margin={{
               top: 5,
               right: 30,
@@ -145,16 +198,76 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip content={<CustomTooltip />} />
-            <Legend />
             <Line
               type="monotone"
               dataKey="pv"
               stroke={team1}
+              strokeOpacity={getOpacity("pv")}
               activeDot={{ r: 8 }}
+              dot={{
+                fillOpacity: getOpacity("pv"),
+                strokeOpacity: getOpacity("pv"),
+              }}
               name={t(`stats.${stat}` as never)}
             />
+            {chartDataWithTrend.length >= 2 && (
+              <Line
+                type="linear"
+                dataKey="trend"
+                stroke={trendLineColor}
+                strokeDasharray="6 3"
+                strokeWidth={1.5}
+                strokeOpacity={getOpacity("trend")}
+                dot={false}
+                activeDot={false}
+                name={t("statPer10.trend")}
+                connectNulls
+              />
+            )}
           </LineChart>
         </ResponsiveContainer>
+        <div className="flex flex-col items-center gap-0.5 pt-1">
+          <div className="flex items-center gap-3">
+            {[
+              { key: "pv", label: t(`stats.${stat}` as never), color: team1 },
+              ...(chartDataWithTrend.length >= 2
+                ? [
+                    {
+                      key: "trend",
+                      label: t("statPer10.trend"),
+                      color: trendLineColor,
+                    },
+                  ]
+                : []),
+            ].map((item) => (
+              <button
+                key={item.key}
+                type="button"
+                className="flex cursor-pointer items-center gap-1"
+                onClick={() =>
+                  setFocused((prev) => (prev === item.key ? null : item.key))
+                }
+              >
+                <div
+                  className="h-2 w-2 rounded-full transition-opacity"
+                  style={{
+                    backgroundColor: item.color,
+                    opacity: getOpacity(item.key),
+                  }}
+                />
+                <span
+                  className="text-muted-foreground text-[10px] transition-opacity"
+                  style={{ opacity: getOpacity(item.key) }}
+                >
+                  {typeof item.label === "string" ? item.label : ""}
+                </span>
+              </button>
+            ))}
+          </div>
+          <span className="text-muted-foreground/60 text-[9px]">
+            Click to isolate
+          </span>
+        </div>
       </CardContent>
       <CardFooter>
         <div className="space-y-1">
