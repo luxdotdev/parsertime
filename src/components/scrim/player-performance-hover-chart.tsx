@@ -228,6 +228,12 @@ export function PlayerPerformanceHoverChart({
     </div>
   );
 
+  const [focusedStat, setFocusedStat] = React.useState<string | null>(null);
+
+  function getOpacity(key: string) {
+    return focusedStat === null || focusedStat === key ? 1 : 0.15;
+  }
+
   if (perMapPerformance.length < 2) {
     return identity;
   }
@@ -261,7 +267,7 @@ export function PlayerPerformanceHoverChart({
           <div>
             <p className="text-sm font-medium">{playerName}</p>
             <p className="text-muted-foreground text-xs">
-              Performance across maps (% of avg)
+              Performance across maps (% of avg) &middot; Click a stat to focus
             </p>
           </div>
           <ChartErrorBoundary
@@ -305,7 +311,12 @@ export function PlayerPerformanceHoverChart({
                   dataKey="kd"
                   stroke="var(--color-kd)"
                   strokeWidth={2}
-                  dot={{ r: 3 }}
+                  strokeOpacity={getOpacity("kd")}
+                  dot={{
+                    r: 3,
+                    fillOpacity: getOpacity("kd"),
+                    strokeOpacity: getOpacity("kd"),
+                  }}
                   activeDot={{ r: 4 }}
                 />
                 <Line
@@ -314,7 +325,12 @@ export function PlayerPerformanceHoverChart({
                   dataKey="elims"
                   stroke="var(--color-elims)"
                   strokeWidth={2}
-                  dot={{ r: 3 }}
+                  strokeOpacity={getOpacity("elims")}
+                  dot={{
+                    r: 3,
+                    fillOpacity: getOpacity("elims"),
+                    strokeOpacity: getOpacity("elims"),
+                  }}
                   activeDot={{ r: 4 }}
                 />
                 <Line
@@ -323,7 +339,12 @@ export function PlayerPerformanceHoverChart({
                   dataKey="thirdStat"
                   stroke="var(--color-thirdStat)"
                   strokeWidth={2}
-                  dot={{ r: 3 }}
+                  strokeOpacity={getOpacity("thirdStat")}
+                  dot={{
+                    r: 3,
+                    fillOpacity: getOpacity("thirdStat"),
+                    strokeOpacity: getOpacity("thirdStat"),
+                  }}
                   activeDot={{ r: 4 }}
                 />
                 {model.avgFirstDeath > 0 && (
@@ -334,7 +355,12 @@ export function PlayerPerformanceHoverChart({
                     stroke="var(--color-firstDeath)"
                     strokeWidth={2}
                     strokeDasharray="4 3"
-                    dot={{ r: 3 }}
+                    strokeOpacity={getOpacity("firstDeath")}
+                    dot={{
+                      r: 3,
+                      fillOpacity: getOpacity("firstDeath"),
+                      strokeOpacity: getOpacity("firstDeath"),
+                    }}
                     activeDot={{ r: 4 }}
                   />
                 )}
@@ -346,7 +372,12 @@ export function PlayerPerformanceHoverChart({
                     stroke="var(--color-teamFirstDeath)"
                     strokeWidth={2}
                     strokeDasharray="4 3"
-                    dot={{ r: 3 }}
+                    strokeOpacity={getOpacity("teamFirstDeath")}
+                    dot={{
+                      r: 3,
+                      fillOpacity: getOpacity("teamFirstDeath"),
+                      strokeOpacity: getOpacity("teamFirstDeath"),
+                    }}
                     activeDot={{ r: 4 }}
                   />
                 )}
@@ -354,15 +385,28 @@ export function PlayerPerformanceHoverChart({
             </ChartContainer>
             <div className="flex items-center justify-center gap-3">
               {Object.entries(model.chartConfig).map(([key, config]) => (
-                <div key={key} className="flex items-center gap-1">
+                <button
+                  key={key}
+                  type="button"
+                  className="flex cursor-pointer items-center gap-1"
+                  onClick={() =>
+                    setFocusedStat((prev) => (prev === key ? null : key))
+                  }
+                >
                   <div
-                    className="h-2 w-2 rounded-full"
-                    style={{ backgroundColor: config.color }}
+                    className="h-2 w-2 rounded-full transition-opacity"
+                    style={{
+                      backgroundColor: config.color,
+                      opacity: getOpacity(key),
+                    }}
                   />
-                  <span className="text-muted-foreground text-[10px]">
+                  <span
+                    className="text-muted-foreground text-[10px] transition-opacity"
+                    style={{ opacity: getOpacity(key) }}
+                  >
                     {typeof config.label === "string" ? config.label : ""}
                   </span>
-                </div>
+                </button>
               ))}
             </div>
           </ChartErrorBoundary>
