@@ -1957,8 +1957,8 @@
   "pricingPage": {
     "pricing": {
       "title": "定价",
-      "header": "适合各种规模团队的计划",
-      "description": "随着您的团队壮大，Parsertime 也会随之成长。我们提供满足您需求的工具和功能。",
+      "header": "每场比赛都有故事 — 选择您的深度",
+      "description": "所有计划包含无限比赛和完整分析。当您需要更长的统计记录、更深入的工具或优先支持时再升级。",
       "$": "￥",
       "month": "/月",
       "currentPlan": "您当前的计划",
@@ -1968,25 +1968,28 @@
       "price": "价格",
       "included": "包含在",
       "notIncluded": "未包含在",
-      "mostPopular": "最受欢迎"
+      "mostPopular": "最受欢迎",
+      "startFree": "免费开始",
+      "upgradeBasic": "升级到基础",
+      "upgradePremium": "升级到高级"
     },
     "comingSoon": "即将推出",
     "tiers": {
       "free": "免费",
       "freeMonthly": "$0 USD",
-      "freeDescription": "适合想尝试 Parsertime 的用户。",
+      "freeDescription": "上传比赛，查看仪表板，追踪最多2个团队 — 永久免费。",
       "basic": "基础",
       "basicMonthly": "$10 USD",
-      "basicDescription": "适合准备与 Parsertime 一起成长的团队。",
+      "basicDescription": "为成长中的项目提供扩展统计记录和优先支持。",
       "premium": "高级",
       "premiumMonthly": "$15 USD",
-      "premiumDescription": "适合想将生产力提升到新水平的大型团队。"
+      "premiumDescription": "完整统计记录、胜率模拟器和自定义请求 — 为严肃的项目而设。"
     },
     "features": {
       "title": "功能",
-      "scrims": "个人比赛",
-      "joinTeams": "通过邀请加入团队",
-      "data": "数据分析",
+      "scrims": "无限比赛上传",
+      "joinTeams": "通过邀请加入任何团队",
+      "data": "完整分析仪表板",
       "createTeams": {
         "title": "创建团队",
         "free": "最多 2 个团队",
@@ -2043,21 +2046,23 @@
       "title": "常见问题解答",
       "description": "找不到您需要的答案？请联系我们的 <link>支持</link> 团队。",
       "question1": "你们为大学团队提供折扣吗？",
-      "answer1": "是的！请联系我们的支持团队，我们很乐意为您提供帮助。",
+      "answer1": "是的。联系我们的支持团队，我们会为您设置。",
       "question2": "你们为 Calling All Heroes 团队提供折扣吗？",
-      "answer2": "是的！我们希望尽可能多地支持 CAH 社区。请联系我们的支持团队，我们很乐意与您讨论解决方案。",
+      "answer2": "是的 — 我们希望支持 CAH 社区。联系我们的支持团队，我们会一起解决。",
       "question3": "我如何管理我的订阅？",
-      "answer3": "您可以在 <link>这里</link> 管理您的订阅。如果您有任何问题，请联系我们的支持团队。",
+      "answer3": "在<link>账户设置</link>中管理您的订阅。如果有任何问题，支持团队可以帮助。",
       "question4": "我可以随时取消我的订阅吗？",
-      "answer4": "是的，您可以随时取消订阅。您的订阅将在账单周期结束前保持有效。",
+      "answer4": "是的，随时可以取消。您将在账单周期结束前保持访问权限。",
       "question5": "如果我需要比高级计划提供的更高的限制怎么办？",
-      "answer5": "如果您有特殊需求或需要比高级计划提供的更高的限制，请联系我们的 <link>支持团队</link>，我们很乐意与您讨论自定义解决方案。",
-      "answer3Plain": "您可以在账户设置中管理您的订阅。如果您有任何问题，请联系我们的支持团队。",
-      "answer5Plain": "如果您有特殊需求或需要比高级计划提供的更高的限制，请联系我们的支持团队，我们很乐意与您讨论自定义解决方案。"
+      "answer5": "需要超过10个团队或20名成员？联系我们的<link>支持团队</link>，我们会为您制定自定义计划。",
+      "answer3Plain": "在账户设置中管理您的订阅。如果有任何问题，支持团队可以帮助。",
+      "answer5Plain": "需要超过10个团队或20名成员？联系我们的支持团队，我们会为您制定自定义计划。",
+      "question6": "如果我降级，我的数据会怎样？",
+      "answer6": "您的数据是安全的。如果您降级，您将失去对扩展统计时间范围的访问权限，但不会删除任何数据。再次升级，所有数据都还在。"
     },
     "metadata": {
       "title": "定价 — Parsertime",
-      "description": "适合各种规模团队的计划。免费开始，享受无限制比赛，或升级以获取高级分析、扩展的统计历史记录和优先支持。",
+      "description": "免费、基础($10/月)和高级($15/月)计划。所有计划无限比赛。无需信用卡即可开始。",
       "ogTitle": "定价 — 适合各种规模团队的计划",
       "ogDescription": "Parsertime 提供免费、基础和高级计划，让您的分析随团队一起成长。无需信用卡即可开始。"
     },
@@ -2069,11 +2074,11 @@
       "title": "受到大学和职业战队的信赖"
     },
     "cta": {
-      "subtitle": "准备好提升教练水平了吗？",
-      "title": "立即开始分析您的比赛。",
+      "subtitle": "您的比赛中藏有答案。",
+      "title": "从今天开始用数据指导教练。",
       "description": "创建团队，上传您的第一场比赛，几分钟内即可看到结果。免费开始 — 无需信用卡。",
-      "getStarted": "免费开始",
-      "learnMore": "了解更多"
+      "getStarted": "创建团队 — 免费",
+      "learnMore": "了解工作原理"
     },
     "footer": {
       "screenReader": "页脚",

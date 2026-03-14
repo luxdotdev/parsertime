@@ -2999,13 +2999,13 @@
   "aboutPage": {
     "hero": {
       "title": "Born from the scrim room",
-      "subtitle": "Parsertime started as an internal tool for one collegiate Overwatch team. Two years and hundreds of thousands of stats later, it\u2019s the analytics platform coaches actually want to open after practice."
+      "subtitle": "Parsertime started as an internal tool for one collegiate Overwatch team. Two years and hundreds of thousands of stats later, it’s the analytics platform coaches actually want to open after practice."
     },
     "story": {
       "title": "How it started",
-      "paragraph1": "In November 2023, the coaching staff at FIU Panthers had a problem: after every scrim, reviewing player stats meant copying numbers into spreadsheets, squinting at columns, and hoping someone didn\u2019t fat-finger a formula. There had to be a better way.",
-      "paragraph2": "Parsertime launched publicly in April 2024. Within hours, teams outside FIU were signing up. Feature requests poured in. A simple stat viewer grew into a full analytics suite\u2014skill ratings, trend lines, team dashboards, a Discord bot, and an open dataset used by the community for research.",
-      "paragraph3": "The goal hasn\u2019t changed since that first commit: make it effortless for coaches and players to turn raw scrim data into insight they can act on before the next practice."
+      "paragraph1": "In November 2023, the coaching staff at FIU Panthers had a problem: after every scrim, reviewing player stats meant copying numbers into spreadsheets, squinting at columns, and hoping someone didn’t fat-finger a formula. There had to be a better way.",
+      "paragraph2": "Parsertime launched publicly in April 2024. Within hours, teams outside FIU were signing up. Feature requests poured in. A simple stat viewer grew into a full analytics suite—skill ratings, trend lines, team dashboards, a Discord bot, and an open dataset used by the community for research.",
+      "paragraph3": "The goal hasn’t changed since that first commit: make it effortless for coaches and players to turn raw scrim data into insight they can act on before the next practice."
     },
     "timeline": {
       "title": "Milestones",
@@ -3021,24 +3021,24 @@
       },
       "milestone3": {
         "date": "June 2024",
-        "title": "v1.1 \u2014 Out of beta",
+        "title": "v1.1 — Out of beta",
         "description": "Player Stats, Hero Stats, and a Global Leaderboard ship. The beta label comes off. Paid plans go live via Stripe."
       },
       "milestone4": {
         "date": "December 2025",
-        "title": "v2.0 \u2014 Composite Skill Ratings",
-        "description": "The flagship CSR system launches: Z-score-based ratings on a 1\u20135,000 scale, hero-specific tiers, MVP scores, achievements, and a community leaderboard."
+        "title": "v2.0 — Composite Skill Ratings",
+        "description": "The flagship CSR system launches: Z-score-based ratings on a 1–5,000 scale, hero-specific tiers, MVP scores, achievements, and a community leaderboard."
       },
       "milestone5": {
         "date": "March 2026",
-        "title": "v2.1 \u2014 Discord bot & scouting",
+        "title": "v2.1 — Discord bot & scouting",
         "description": "A Discord bot, team performance simulator, player scouting analytics, and a redesigned landing page ship in the biggest update yet."
       }
     },
     "stats": {
       "subtitle": "By the numbers",
       "title": "The data speaks for itself",
-      "description": "Every number here is live from the database\u2014updated the moment a team uploads a scrim.",
+      "description": "Every number here is live from the database—updated the moment a team uploads a scrim.",
       "statsTracked": "Player stats tracked",
       "killsTracked": "Kills recorded",
       "mapsUploaded": "Maps uploaded",
@@ -3053,19 +3053,19 @@
       },
       "accessibility": {
         "name": "Accessibility",
-        "description": "First-time coaches and seasoned analysts should both feel at home. If it takes a tutorial to understand, it\u2019s too complicated."
+        "description": "First-time coaches and seasoned analysts should both feel at home. If it takes a tutorial to understand, it’s too complicated."
       },
       "community": {
         "name": "Community first",
-        "description": "Built by an Overwatch player, for Overwatch players. The community\u2019s feature requests shape the roadmap\u2014the Discord bot exists because it was the most-requested feature."
+        "description": "Built by an Overwatch player, for Overwatch players. The community’s feature requests shape the roadmap—the Discord bot exists because it was the most-requested feature."
       },
       "openSource": {
         "name": "Open source",
-        "description": "Every line of Parsertime\u2019s code is public. Browse it, fork it, open a PR\u2014the best tools are built in the open."
+        "description": "Every line of Parsertime’s code is public. Browse it, fork it, open a PR—the best tools are built in the open."
       },
       "improvement": {
         "name": "Continuous improvement",
-        "description": "Seven major releases in two years. If something can be better, it ships in the next update\u2014not the next quarter."
+        "description": "Seven major releases in two years. If something can be better, it ships in the next update—not the next quarter."
       },
       "reliable": {
         "name": "Reliable and performant",
@@ -3076,17 +3076,17 @@
       "label": "The Founder",
       "name": "Lucas Doell",
       "role": "Founder & Engineer",
-      "bio": "Lucas built Parsertime because he got tired of copying scrim stats into Google Sheets for FIU Panthers. What started as a side project turned into a full analytics platform\u2014and he still ships code, reviews community PRs, and argues about hero balance on Discord."
+      "bio": "Lucas built Parsertime because he got tired of copying scrim stats into Google Sheets for FIU Panthers. What started as a side project turned into a full analytics platform—and he still ships code, reviews community PRs, and argues about hero balance on Discord."
     },
     "openSource": {
       "title": "Open source from day one",
-      "description": "Parsertime\u2019s source code has been public since the first commit. Browse the codebase, report a bug, or submit a pull request\u2014contributions from the community make the platform better for everyone.",
+      "description": "Parsertime’s source code has been public since the first commit. Browse the codebase, report a bug, or submit a pull request—contributions from the community make the platform better for everyone.",
       "linkText": "View on GitHub"
     },
     "cta": {
       "subtitle": "Your scrims hold the answers.",
       "title": "Start coaching with data today.",
-      "description": "Create a team, upload your first scrim, and see results in minutes. Free to get started\u2014no credit card required.",
+      "description": "Create a team, upload your first scrim, and see results in minutes. Free to get started—no credit card required.",
       "getStarted": "Start coaching with data",
       "learnMore": "See pricing"
     },
@@ -3104,14 +3104,14 @@
   "pricingPage": {
     "metadata": {
       "title": "Pricing — Parsertime",
-      "description": "Plans for teams of all sizes. Start free with unlimited scrims, or upgrade for advanced analytics, extended stats history, and priority support.",
+      "description": "Free, Basic ($10/mo), and Premium ($15/mo) plans for competitive Overwatch teams. Unlimited scrims on every plan. No credit card to start.",
       "ogTitle": "Pricing — Plans for Teams of All Sizes",
       "ogDescription": "Parsertime offers Free, Basic, and Premium plans so your analytics grow with your team. No credit card required to start."
     },
     "pricing": {
       "title": "Pricing",
-      "header": "Plans for teams of all sizes",
-      "description": "As your team grows, Parsertime grows with you. We have the tools and features to meet your needs.",
+      "header": "Every scrim tells a story — pick how deep you go",
+      "description": "Every plan includes unlimited scrims and full analytics. Upgrade when you need longer stat history, deeper tools, or priority support.",
       "$": "$",
       "month": "/month",
       "currentPlan": "Your Current Plan",
@@ -3121,25 +3121,28 @@
       "price": "Price",
       "included": "Included in",
       "notIncluded": "Not Included in",
-      "mostPopular": "Most Popular"
+      "mostPopular": "Most Popular",
+      "startFree": "Start for free",
+      "upgradeBasic": "Upgrade to Basic",
+      "upgradePremium": "Upgrade to Premium"
     },
     "comingSoon": "Coming soon",
     "tiers": {
       "free": "Free",
       "freeMonthly": "$0",
-      "freeDescription": "For people who want to try out Parsertime.",
+      "freeDescription": "Upload scrims, see full dashboards, and track up to 2 teams — free forever.",
       "basic": "Basic",
       "basicMonthly": "$10",
-      "basicDescription": "For teams that are ready to grow with Parsertime.",
+      "basicDescription": "Extended stat history and priority support for growing programs.",
       "premium": "Premium",
       "premiumMonthly": "$15",
-      "premiumDescription": "For larger teams that want to take their productivity to the next level."
+      "premiumDescription": "Full stat history, win simulator, and custom requests for serious programs."
     },
     "features": {
       "title": "Features",
-      "scrims": "Individual Scrims",
-      "joinTeams": "Join Teams via Invite",
-      "data": "Data Analytics",
+      "scrims": "Unlimited scrim uploads",
+      "joinTeams": "Join any team via invite",
+      "data": "Full analytics dashboard",
       "createTeams": {
         "title": "Create Teams",
         "free": "Up to 2 teams",
@@ -3190,11 +3193,11 @@
       "title": "Trusted by collegiate and professional teams"
     },
     "cta": {
-      "subtitle": "Ready to level up your coaching?",
-      "title": "Start analyzing your scrims today.",
+      "subtitle": "Your scrims hold the answers.",
+      "title": "Start coaching with data today.",
       "description": "Create a team, upload your first scrim, and see results in minutes. Free to get started — no credit card required.",
-      "getStarted": "Get started for free",
-      "learnMore": "Learn more"
+      "getStarted": "Create your team — free",
+      "learnMore": "See how it works"
     },
     "footer": {
       "screenReader": "Footer",
@@ -3214,17 +3217,19 @@
       "title": "Frequently asked questions",
       "description": "Can't find the answer you're looking for? Reach out to our <link>support</link> team.",
       "question1": "Do you offer discounts for collegiate teams?",
-      "answer1": "Yes! Please reach out to our support team and we'll be happy to help.",
+      "answer1": "Yes. Reach out to our support team and we’ll set you up.",
       "question2": "Do you offer discounts for Calling All Heroes teams?",
-      "answer2": "Yes! We want to support the CAH community as much as possible. Please reach out to our support team and we'll be happy to discuss a solution.",
+      "answer2": "Yes — we want to support the CAH community. Contact our support team and we’ll work something out.",
       "question3": "How can I manage my subscription?",
-      "answer3": "You can manage your subscription <link>here</link>. If you have any issues, please reach out to our support team.",
+      "answer3": "Manage your subscription in your <link>account settings</link>. If anything looks off, our support team can help.",
       "question4": "Can I cancel my subscription at any time?",
-      "answer4": "Yes, you can cancel your subscription at any time. Your subscription will remain active until the end of the billing period.",
+      "answer4": "Yes, cancel anytime. You’ll keep access through the end of your billing period.",
       "question5": "What if I need higher limits than the Premium plan offers?",
-      "answer5": "If you need something special or require higher limits than the Premium plan offers, please reach out to our <link>support team</link> and we'll be happy to discuss a custom solution.",
-      "answer3Plain": "You can manage your subscription in your account settings. If you have any issues, please reach out to our support team.",
-      "answer5Plain": "If you need something special or require higher limits than the Premium plan offers, please reach out to our support team and we'll be happy to discuss a custom solution."
+      "answer5": "Need more than 10 teams or 20 members? Contact our <link>support team</link> and we’ll put together a custom plan.",
+      "answer3Plain": "Manage your subscription in your account settings. If anything looks off, our support team can help.",
+      "answer5Plain": "Need more than 10 teams or 20 members? Contact our support team and we’ll put together a custom plan.",
+      "question6": "What happens to my data if I downgrade?",
+      "answer6": "Your data stays safe. If you downgrade, you lose access to extended stat history timeframes, but nothing gets deleted. Upgrade again and it’s all still there."
     }
   },
   "privacyPage": {
