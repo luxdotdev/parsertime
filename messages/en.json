@@ -2997,143 +2997,108 @@
     }
   },
   "aboutPage": {
-    "stats": {
-      "startDev": {
-        "label": "Started development",
-        "value": "Nov 2023"
+    "hero": {
+      "title": "Born from the scrim room",
+      "subtitle": "Parsertime started as an internal tool for one collegiate Overwatch team. Two years and hundreds of thousands of stats later, it\u2019s the analytics platform coaches actually want to open after practice."
+    },
+    "story": {
+      "title": "How it started",
+      "paragraph1": "In November 2023, the coaching staff at FIU Panthers had a problem: after every scrim, reviewing player stats meant copying numbers into spreadsheets, squinting at columns, and hoping someone didn\u2019t fat-finger a formula. There had to be a better way.",
+      "paragraph2": "Parsertime launched publicly in April 2024. Within hours, teams outside FIU were signing up. Feature requests poured in. A simple stat viewer grew into a full analytics suite\u2014skill ratings, trend lines, team dashboards, a Discord bot, and an open dataset used by the community for research.",
+      "paragraph3": "The goal hasn\u2019t changed since that first commit: make it effortless for coaches and players to turn raw scrim data into insight they can act on before the next practice."
+    },
+    "timeline": {
+      "title": "Milestones",
+      "milestone1": {
+        "date": "November 2023",
+        "title": "First commit",
+        "description": "Development kicks off with a single goal: parse Overwatch scrim logs and display per-player stats without a spreadsheet in sight."
       },
-      "used": {
-        "label": "Used internally",
-        "value": "Jan 2024"
+      "milestone2": {
+        "date": "April 2024",
+        "title": "Public beta",
+        "description": "Parsertime opens to all teams. 160 visitors on launch day, with the first external teams signing up within hours."
       },
-      "scrimsUploaded": {
-        "label": "Scrims uploaded during beta",
-        "value": "50+"
+      "milestone3": {
+        "date": "June 2024",
+        "title": "v1.1 \u2014 Out of beta",
+        "description": "Player Stats, Hero Stats, and a Global Leaderboard ship. The beta label comes off. Paid plans go live via Stripe."
       },
-      "statsTracked": {
-        "label": "Player stats tracked during beta",
-        "value": "22,000+"
+      "milestone4": {
+        "date": "December 2025",
+        "title": "v2.0 \u2014 Composite Skill Ratings",
+        "description": "The flagship CSR system launches: Z-score-based ratings on a 1\u20135,000 scale, hero-specific tiers, MVP scores, achievements, and a community leaderboard."
+      },
+      "milestone5": {
+        "date": "March 2026",
+        "title": "v2.1 \u2014 Discord bot & scouting",
+        "description": "A Discord bot, team performance simulator, player scouting analytics, and a redesigned landing page ship in the biggest update yet."
       }
+    },
+    "stats": {
+      "subtitle": "By the numbers",
+      "title": "The data speaks for itself",
+      "description": "Every number here is live from the database\u2014updated the moment a team uploads a scrim.",
+      "statsTracked": "Player stats tracked",
+      "killsTracked": "Kills recorded",
+      "mapsUploaded": "Maps uploaded",
+      "uptime": "Uptime"
     },
     "values": {
+      "title": "What drives every commit",
+      "subtitle": "Six principles that shape the roadmap, the UI, and every line of code.",
       "convenience": {
-        "name": "Convenience.",
-        "description": "Make it easy to track stats and see trends over time. Easily diagnose issues with your players."
+        "name": "Convenience",
+        "description": "Upload a scrim, see results. No spreadsheets, no manual entry, no waiting. Answers should be seconds away, not hours."
       },
       "accessibility": {
-        "name": "Accessibility.",
-        "description": "We want to make it easy for any team to use Parsertime. We're always looking for ways to make the platform more accessible."
+        "name": "Accessibility",
+        "description": "First-time coaches and seasoned analysts should both feel at home. If it takes a tutorial to understand, it\u2019s too complicated."
       },
       "community": {
-        "name": "Community first.",
-        "description": "Built by Overwatch players, for Overwatch players. We're dedicated to serving the community."
+        "name": "Community first",
+        "description": "Built by an Overwatch player, for Overwatch players. The community\u2019s feature requests shape the roadmap\u2014the Discord bot exists because it was the most-requested feature."
       },
       "openSource": {
-        "name": "Open source.",
-        "description": "We believe that the best tools are built in the open. Contributions are welcome!"
+        "name": "Open source",
+        "description": "Every line of Parsertime\u2019s code is public. Browse it, fork it, open a PR\u2014the best tools are built in the open."
       },
       "improvement": {
-        "name": "Continuous improvement.",
-        "description": "We're always adding new features and improving the platform. We want to make the best app possible."
+        "name": "Continuous improvement",
+        "description": "Seven major releases in two years. If something can be better, it ships in the next update\u2014not the next quarter."
       },
       "reliable": {
-        "name": "Reliable and performant.",
-        "description": "Our platform is built to be fast and reliable. We want to make sure that it's always there for you."
+        "name": "Reliable and performant",
+        "description": "99.99% uptime and fast load times, because the five minutes after a scrim ends are when the data matters most."
       }
     },
-    "team": {
-      "lucas": {
-        "name": "Lucas Doell",
-        "role": "Founder, Head of Engineering"
-      },
-      "robin": {
-        "name": "Robin \"Zei\" Sidhu",
-        "role": "Head of Strategy"
-      },
-      "xavier": {
-        "name": "Xavier Park",
-        "role": "Head of Research"
-      },
-      "adrian": {
-        "name": "Adrian Soto",
-        "role": "Head of Support"
-      },
-      "daniel": {
-        "name": "Daniel Iturralde",
-        "role": "Technical Support Specialist"
-      },
-      "diego": {
-        "name": "Diego Sanchez del Rio",
-        "role": "Engineering Intern, Summer 2024"
-      },
-      "yai": {
-        "name": "Yailan Bordas",
-        "role": "Engineering Intern, Summer 2024"
-      },
-      "kenny": {
-        "name": "Kenny Miranda",
-        "role": "Engineering Intern, Summer 2024"
-      },
-      "notPictured": "Not pictured: <name>Devraj Ambala</name>, Engineering Intern, Summer 2024; <name>Karson Miller</name>, Engineering Intern, Summer 2024; and <name>Rose Thatch</name>, Engineering Intern, Summer 2024."
+    "founder": {
+      "label": "The Founder",
+      "name": "Lucas Doell",
+      "role": "Founder & Engineer",
+      "bio": "Lucas built Parsertime because he got tired of copying scrim stats into Google Sheets for FIU Panthers. What started as a side project turned into a full analytics platform\u2014and he still ships code, reviews community PRs, and argues about hero balance on Discord."
     },
-    "headerSection": {
-      "title": "We love Overwatch",
-      "description": "That's why we're building a better way to track your performance. See your team's stats, track your performance over time, and see how you evolve as a player and as a team."
+    "openSource": {
+      "title": "Open source from day one",
+      "description": "Parsertime\u2019s source code has been public since the first commit. Browse the codebase, report a bug, or submit a pull request\u2014contributions from the community make the platform better for everyone.",
+      "linkText": "View on GitHub"
     },
-    "contentSection": {
-      "description1": "Parsertime was originally created as an internal tool for FIU Panthers, a collegiate team. We wanted to be able to see our stats after scrims and see trends over time. We've since expanded to become a platform that any team can use. We're excited to see how teams use Parsertime to improve their performance.",
-      "description2": "We're a small team of passionate Overwatch players and coaches who are dedicated to building a platform that works for your team. We're always looking for feedback and feature requests. If you have any ideas, we'd love to hear them!",
-      "description3": "We know that teams are always looking for ways to improve. Our goal is to make it easy for you to see your stats and see trends week over week. Parsertime is currently used internally at FIU and new features are being added every week. We want to provide the best experience possible for Overwatch players and teams.",
-      "description4": "Parsertime is fully open source. We believe that the best tools are built in the open. If you'd like to contribute to Parsertime, we'd love to have you! We're always looking for contributors to help us build the best platform for Overwatch teams. You can find our GitHub repo <link>here</link>."
+    "cta": {
+      "subtitle": "Your scrims hold the answers.",
+      "title": "Start coaching with data today.",
+      "description": "Create a team, upload your first scrim, and see results in minutes. Free to get started\u2014no credit card required.",
+      "getStarted": "Start coaching with data",
+      "learnMore": "See pricing"
     },
-    "featureSection": {
-      "title": "Our features",
-      "description": "See how our platform can make a difference for your team."
-    },
-    "teamSection": {
-      "title": "Meet our team",
-      "description": "We're a small team of passionate Overwatch players and coaches who are dedicated to building a platform that works for your team."
-    },
-    "ctaSection": {
-      "title": "Boost your productivity.",
-      "subtitle": "Start using our app today.",
-      "description": "Give your team the tools they need to succeed. Sign up for Parsertime today.",
-      "signUp": "Sign Up",
-      "demo": "Try our demo",
-      "altText": "App screenshot"
-    },
-    "footerNav": {
-      "title": "Footer",
-      "description": "Building a better way to track your Overwatch performance.",
-      "solutions": {
-        "title": "Platform",
-        "dashboard": "Dashboard",
-        "signUp": "Sign Up",
-        "demo": "Demo"
-      },
-      "support": {
-        "title": "Support",
-        "pricing": "Pricing",
-        "doc": "Documentation",
-        "discord": "Discord",
-        "contact": "Contact"
-      },
-      "company": {
-        "title": "Company",
-        "about": "About",
-        "blog": "Blog",
-        "github": "GitHub"
-      },
-      "legal": {
-        "title": "Legal",
-        "policy": "Privacy Policy"
-      },
-      "socials": {
-        "twitter": "X",
-        "bluesky": "Bluesky",
-        "github": "GitHub"
-      },
+    "footer": {
+      "screenReader": "Footer",
       "copyright": "lux.dev. All rights reserved."
+    },
+    "metadata": {
+      "title": "About Parsertime — The Story Behind the Scrim Analytics Platform",
+      "description": "Parsertime started as an internal tool for one collegiate Overwatch team in 2023. Today it tracks hundreds of thousands of stats for competitive teams everywhere. Open source from day one.",
+      "ogTitle": "About Parsertime — Born from the Scrim Room",
+      "ogDescription": "From a side project at FIU Panthers to the analytics platform trusted by competitive Overwatch teams. Meet the founder and see the milestones."
     }
   },
   "pricingPage": {
