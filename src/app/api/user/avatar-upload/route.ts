@@ -51,18 +51,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const jsonResponse = await handleUpload({
       body,
       request,
-      onBeforeGenerateToken: async () =>
+      onBeforeGenerateToken: async () => {
         // pathname: string
         /* clientPayload?: string, */
-        {
-          // Generate a client token for the browser to upload the file
-          // ⚠️ Authenticate and authorize users before generating the token.
-          // Otherwise, you're allowing anonymous uploads.
-          const user = await prisma.user.findUnique({ where: { id: userId } });
-          if (!user) throw new Error("User not found");
+        // Generate a client token for the browser to upload the file
+        // ⚠️ Authenticate and authorize users before generating the token.
+        // Otherwise, you're allowing anonymous uploads.
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (!user) throw new Error("User not found");
 
-          return { tokenPayload: JSON.stringify({ userId: user.id }) };
-        },
+        return { tokenPayload: JSON.stringify({ userId: user.id }) };
+      },
       onUploadCompleted: async ({ blob, tokenPayload }) => {
         // Get notified of client upload completion
         // ⚠️ This will not work on `localhost` websites,
