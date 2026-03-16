@@ -18,6 +18,7 @@ const logos = [
   { src: "/teams/vlln.png", alt: "VLLN" },
   { src: "/teams/briar-cliff.png", alt: "Briar Cliff University" },
   { src: "/teams/bowling-green.png", alt: "Bowling Green State University" },
+  { src: "/teams/ets-esports.png", alt: "ETS Esports" },
 ];
 
 function LogoMarquee() {
