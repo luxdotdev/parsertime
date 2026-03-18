@@ -5,6 +5,7 @@ import {
   overviewCard,
   scoutingTool,
   simulationTool,
+  tempoChart,
   ultimateImpactTool,
 } from "@/lib/flags";
 
@@ -15,6 +16,7 @@ export type FeatureFlags = {
   dataLabelingEnabled: boolean;
   simulationToolEnabled: boolean;
   ultimateImpactToolEnabled: boolean;
+  tempoChartEnabled: boolean;
   newLandingPageEnabled: boolean;
 };
 
@@ -26,6 +28,7 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     dataLabelingEnabled,
     simulationToolEnabled,
     ultimateImpactToolEnabled,
+    tempoChartEnabled,
     newLandingPageEnabled,
   ] = await Promise.all([
     scoutingTool(),
@@ -34,6 +37,7 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     dataLabeling(),
     simulationTool(),
     ultimateImpactTool(),
+    tempoChart(),
     newLandingPage(),
   ]);
 
@@ -44,6 +48,7 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     dataLabelingEnabled,
     simulationToolEnabled,
     ultimateImpactToolEnabled,
+    tempoChartEnabled,
     newLandingPageEnabled,
   };
 }
@@ -56,6 +61,7 @@ export function toFlagValues(flags: FeatureFlags): Record<string, boolean> {
     "data-labeling": flags.dataLabelingEnabled,
     "simulation-tool": flags.simulationToolEnabled,
     "ultimate-impact-tool": flags.ultimateImpactToolEnabled,
+    "tempo-chart": flags.tempoChartEnabled,
     "new-landing-page": flags.newLandingPageEnabled,
   };
 }
