@@ -34,13 +34,14 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
 import type { Scrim } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { motion, useReducedMotion } from "framer-motion";
 import { ChevronLeftIcon, ChevronRightIcon, Info, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { use, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
+import { use, useEffect, useRef, useState } from "react";
 import { useDebounce } from "use-debounce";
 
 type ScrimWithDetails = Scrim & {
@@ -65,46 +66,83 @@ export function ScrimPagination({
   seenOnboarding?: boolean;
 }) {
   const prefersReducedMotion = useReducedMotion();
-  const [cursorStack, setCursorStack] = useState<(string | undefined)[]>([
-    undefined,
-  ]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [filter, setFilter] = useState("");
-  const [search, setSearch] = useState("");
-  const [debouncedSearch] = useDebounce(search, 300);
+  const pathname = usePathname();
   const t = useTranslations("dashboard");
-
   const { teamId } = use(TeamSwitcherContext);
 
+  // URL state via nuqs
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
+  const [sort, setSort] = useQueryState("sort", parseAsString.withDefault(""));
+  const [q, setQ] = useQueryState("q", parseAsString.withDefault(""));
+
+  // Local search input with debounce → syncs to URL
+  const [searchInput, setSearchInput] = useState(q);
+  const [debouncedSearch] = useDebounce(searchInput, 300);
+  const userTypedRef = useRef(false);
+
+  // Sync debounced search to URL (only when user typed, not on mount/back-forward)
+  useEffect(() => {
+    if (!userTypedRef.current) return;
+    userTypedRef.current = false;
+    void setQ(debouncedSearch || null);
+    void setPage(null); // Reset to page 1
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch]);
+
+  // Sync URL → local input (for back/forward navigation)
+  const prevQ = useRef(q);
+  useEffect(() => {
+    if (q !== prevQ.current) {
+      prevQ.current = q;
+      setSearchInput(q);
+    }
+  }, [q]);
+
+  // Reset to page 1 when team changes (skip initial mount)
+  const effectiveTeamId = isAdmin ? null : teamId;
+  const prevTeamId = useRef(effectiveTeamId);
+  useEffect(() => {
+    if (prevTeamId.current !== effectiveTeamId) {
+      prevTeamId.current = effectiveTeamId;
+      void setPage(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [effectiveTeamId]);
+
+  const currentPage = Math.max(1, page);
   const pageSize = 16;
 
-  // Reset cursor stack when search, filter, or team changes
-  const effectiveTeamId = isAdmin ? null : teamId;
-  useEffect(() => {
-    setCursorStack([undefined]);
-    setCurrentIndex(0);
-  }, [debouncedSearch, filter, effectiveTeamId]);
+  // Build URL for a given page number
+  function pageUrl(targetPage: number) {
+    const params = new URLSearchParams();
+    if (targetPage > 1) params.set("page", String(targetPage));
+    if (sort) params.set("sort", sort);
+    if (q) params.set("q", q);
+    const qs = params.toString();
+    return qs ? `${pathname}?${qs}` : pathname;
+  }
 
-  const currentCursor = cursorStack[currentIndex];
+  function handleFilterChange(value: string) {
+    void setSort(value || null);
+    void setPage(null); // Reset to page 1
+  }
+
+  function handlePageClick(targetPage: number, e: React.MouseEvent) {
+    e.preventDefault();
+    void setPage(targetPage === 1 ? null : targetPage);
+  }
 
   // Fetch scrims using React Query
   const { data, isLoading, isError, error } = useQuery<ScrimResponse, Error>({
     queryKey: isAdmin
-      ? ["admin-scrims", currentCursor, debouncedSearch, filter]
-      : ["scrims", currentCursor, debouncedSearch, filter, teamId],
+      ? ["admin-scrims", currentPage, debouncedSearch, sort]
+      : ["scrims", currentPage, debouncedSearch, sort, teamId],
     queryFn: async () => {
       const params = new URLSearchParams();
       params.set("limit", pageSize.toString());
 
-      if (currentCursor) {
-        if (currentCursor === "LAST_PAGE") {
-          params.set("lastPage", "true");
-        } else if (currentCursor.startsWith("PAGE_")) {
-          const pageNum = parseInt(currentCursor.replace("PAGE_", ""));
-          params.set("page", pageNum.toString());
-        } else {
-          params.set("cursor", currentCursor);
-        }
+      if (currentPage > 1) {
+        params.set("page", currentPage.toString());
       }
 
       if (isAdmin) {
@@ -115,8 +153,8 @@ export function ScrimPagination({
         params.set("search", debouncedSearch);
       }
 
-      if (filter) {
-        params.set("filter", filter);
+      if (sort) {
+        params.set("filter", sort);
       }
 
       if (teamId && !isAdmin) {
@@ -173,73 +211,14 @@ export function ScrimPagination({
   });
 
   const totalCount = data?.totalCount ?? 0;
-  const totalPages = Math.ceil(totalCount / pageSize);
-
-  // Determine current page based on cursor type
-  let currentPage: number;
-  if (currentCursor === "LAST_PAGE") {
-    currentPage = totalPages;
-  } else if (currentCursor?.startsWith("PAGE_")) {
-    currentPage = parseInt(currentCursor.replace("PAGE_", ""));
-  } else {
-    currentPage = currentIndex + 1;
-  }
-
-  const siblingCount = 1;
-  const boundaryCount = 1;
 
   const pagination = handlePagination({
     currentPage,
     totalCount,
-    siblingCount,
+    siblingCount: 1,
     pageSize,
-    boundaryCount,
+    boundaryCount: 1,
   });
-
-  function goToNextPage() {
-    if (data?.nextCursor) {
-      setCursorStack((prev) => {
-        const newStack = [...prev.slice(0, currentIndex + 1), data.nextCursor];
-        return newStack;
-      });
-      setCurrentIndex((prev) => prev + 1);
-    }
-  }
-
-  function goToPreviousPage() {
-    if (currentIndex > 0) {
-      // If we're on the last page (jumped via LAST_PAGE), go to second-to-last
-      if (currentCursor === "LAST_PAGE" && pagination.totalPages > 2) {
-        setCursorStack([undefined, `PAGE_${pagination.totalPages - 1}`]);
-        setCurrentIndex(1);
-      } else {
-        setCurrentIndex((prev) => prev - 1);
-      }
-    }
-  }
-
-  function canNavigateToPage(page: number): boolean {
-    if (page === currentPage) return true;
-    if (page === 1) return true;
-    if (page === pagination.totalPages) return true;
-    if (page === currentPage - 1 && currentIndex > 0) return true;
-    if (page === currentPage + 1 && data?.hasMore) return true;
-    return false;
-  }
-
-  function navigateToPage(page: number) {
-    if (page === 1) {
-      setCursorStack([undefined]);
-      setCurrentIndex(0);
-    } else if (page === pagination.totalPages) {
-      setCursorStack([undefined, "LAST_PAGE"]);
-      setCurrentIndex(1);
-    } else if (page === currentPage - 1) {
-      goToPreviousPage();
-    } else if (page === currentPage + 1) {
-      goToNextPage();
-    }
-  }
 
   // Generate skeleton cards array for consistent loading experience
   const skeletonCards = Array.from({ length: pageSize }, (_, index) => (
@@ -275,7 +254,7 @@ export function ScrimPagination({
     <Card className="bg-background">
       <div className="flex items-center justify-between p-4">
         <span className="inline-flex gap-2">
-          <Select onValueChange={(v) => setFilter(v)}>
+          <Select value={sort || undefined} onValueChange={handleFilterChange}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder={t("filter.title")} />
             </SelectTrigger>
@@ -297,8 +276,11 @@ export function ScrimPagination({
               aria-label={t("filter.search")}
               name="scrim-search"
               autoComplete="off"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              value={searchInput}
+              onChange={(e) => {
+                userTypedRef.current = true;
+                setSearchInput(e.target.value);
+              }}
             />
             <InputGroupAddon>
               <Search aria-hidden="true" />
@@ -387,17 +369,21 @@ export function ScrimPagination({
                   <>
                     <PaginationPrevious
                       className="hidden md:flex"
-                      onClick={goToPreviousPage}
+                      href={pageUrl(currentPage - 1)}
+                      onClick={(e) => handlePageClick(currentPage - 1, e)}
                     />
                     <PaginationItem className="md:hidden">
-                      <PaginationLink onClick={goToPreviousPage}>
+                      <PaginationLink
+                        href={pageUrl(currentPage - 1)}
+                        onClick={(e) => handlePageClick(currentPage - 1, e)}
+                      >
                         <ChevronLeftIcon className="h-4 w-4" />
                       </PaginationLink>
                     </PaginationItem>
                   </>
                 )}
-                {pagination.pages.map((page, index) => {
-                  if (page === "...") {
+                {pagination.pages.map((pageNum, index) => {
+                  if (pageNum === "...") {
                     return (
                       <PaginationEllipsis
                         // eslint-disable-next-line react/no-array-index-key
@@ -405,22 +391,15 @@ export function ScrimPagination({
                       />
                     );
                   }
-                  const canNavigate = canNavigateToPage(page);
                   return (
-                    <PaginationItem key={page}>
+                    <PaginationItem key={pageNum}>
                       <PaginationLink
-                        onClick={
-                          canNavigate ? () => navigateToPage(page) : undefined
-                        }
-                        isActive={currentPage === page}
-                        className={cn(
-                          "tabular-nums",
-                          !canNavigate &&
-                            currentPage !== page &&
-                            "cursor-not-allowed opacity-50"
-                        )}
+                        href={pageUrl(pageNum)}
+                        onClick={(e) => handlePageClick(pageNum, e)}
+                        isActive={currentPage === pageNum}
+                        className="tabular-nums"
                       >
-                        {page}
+                        {pageNum}
                       </PaginationLink>
                     </PaginationItem>
                   );
@@ -429,10 +408,14 @@ export function ScrimPagination({
                   <>
                     <PaginationNext
                       className="hidden md:flex"
-                      onClick={goToNextPage}
+                      href={pageUrl(currentPage + 1)}
+                      onClick={(e) => handlePageClick(currentPage + 1, e)}
                     />
                     <PaginationItem className="md:hidden">
-                      <PaginationLink onClick={goToNextPage}>
+                      <PaginationLink
+                        href={pageUrl(currentPage + 1)}
+                        onClick={(e) => handlePageClick(currentPage + 1, e)}
+                      >
                         <ChevronRightIcon className="h-4 w-4" />
                       </PaginationLink>
                     </PaginationItem>
