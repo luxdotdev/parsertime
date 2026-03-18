@@ -223,7 +223,7 @@ export function AddMapCard() {
 
   return (
     <ClientOnly>
-      <Form {...form} className="w-full p-2 md:w-1/3">
+      <Form {...form} className="w-full">
         <form onDragEnter={handleDrag}>
           <FormField
             control={form.control}
@@ -232,7 +232,7 @@ export function AddMapCard() {
               <FormItem>
                 <div
                   className={cn(
-                    "h-48 max-w-md rounded-2xl",
+                    "h-48 rounded-2xl",
                     dragActive && "border-green-500"
                   )}
                 >
@@ -244,7 +244,7 @@ export function AddMapCard() {
                         handleClick();
                       }
                     }}
-                    className="border-border flex cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed p-8 text-center"
+                    className="border-border flex h-full cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed p-8 text-center"
                     onDragEnter={handleDrag}
                     onDragLeave={handleDrag}
                     onDragOver={handleDrag}
