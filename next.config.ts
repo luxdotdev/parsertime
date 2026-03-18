@@ -33,6 +33,7 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     authInterrupts: true,
+    optimizePackageImports: ["@radix-ui/react-icons"],
   },
   images: {
     remotePatterns: [
