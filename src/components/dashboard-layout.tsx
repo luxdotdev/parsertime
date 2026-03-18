@@ -28,7 +28,7 @@ export async function DashboardLayout({
   return (
     <TeamSwitcherProvider>
       <div className="min-h-[90vh] flex-col md:flex">
-        <div className="border-b">
+        <div className="shadow-sm">
           <div className="hidden h-16 items-center px-4 md:flex">
             <TeamSwitcher session={session} />
             <MainNav
