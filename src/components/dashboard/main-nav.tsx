@@ -7,10 +7,21 @@ import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 
 const navLinkStyles =
-  "text-muted-foreground hover:text-primary px-1 py-1 text-sm font-medium transition-colors";
+  "text-muted-foreground hover:text-primary inline-flex min-h-11 items-center px-1.5 text-sm font-medium transition-colors";
 
 const dropdownItemStyles =
   "hover:bg-accent hover:text-accent-foreground flex w-full items-center rounded-sm px-2 py-1.5 text-sm transition-colors";
+
+const STATS_PLAYER_ROUTE = /^\/stats\/(?!hero$|team$|compare$)[^\/]+$/;
+const SCOUTING_TEAM_ROUTE = /^\/scouting\/(?!player$|team$)[^\/]+$/;
+
+function handleDropdownKeyDown(e: React.KeyboardEvent<HTMLLIElement>) {
+  if (e.key === "Escape") {
+    const trigger = e.currentTarget.querySelector("button");
+    trigger?.focus();
+    trigger?.blur();
+  }
+}
 
 export function MainNav({
   scoutingEnabled,
@@ -33,12 +44,13 @@ export function MainNav({
             {t("dashboard")}
           </Link>
         </li>
-        <li className="group relative">
+        <li className="group relative" onKeyDown={handleDropdownKeyDown}>
           <button
             type="button"
+            aria-haspopup="true"
             className={cn(
               navLinkStyles,
-              "inline-flex items-center gap-1",
+              "gap-1",
               pathname.startsWith("/stats") && "text-primary"
             )}
           >
@@ -49,12 +61,16 @@ export function MainNav({
             />
           </button>
           <div className="invisible absolute top-full left-0 z-50 pt-1 opacity-0 transition-[opacity,visibility] duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
-            <div className="bg-popover text-popover-foreground ring-foreground/10 w-[200px] rounded-md p-1 shadow-md ring-1">
+            <div
+              className="bg-popover text-popover-foreground ring-foreground/10 w-[200px] rounded-md p-1 shadow-md ring-1"
+              role="menu"
+            >
               <Link
                 href="/stats"
+                role="menuitem"
                 className={cn(
                   dropdownItemStyles,
-                  (/^\/stats\/(?!hero$|team$|compare$)[^\/]+$/.test(pathname) ||
+                  (STATS_PLAYER_ROUTE.test(pathname) ||
                     pathname === "/stats") &&
                     "text-primary"
                 )}
@@ -63,6 +79,7 @@ export function MainNav({
               </Link>
               <Link
                 href="/stats/hero"
+                role="menuitem"
                 className={cn(
                   dropdownItemStyles,
                   pathname.startsWith("/stats/hero") && "text-primary"
@@ -72,6 +89,7 @@ export function MainNav({
               </Link>
               <Link
                 href="/stats/team"
+                role="menuitem"
                 className={cn(
                   dropdownItemStyles,
                   pathname.startsWith("/stats/team") && "text-primary"
@@ -81,6 +99,7 @@ export function MainNav({
               </Link>
               <Link
                 href="/stats/compare"
+                role="menuitem"
                 className={cn(
                   dropdownItemStyles,
                   pathname === "/stats/compare" && "text-primary"
@@ -114,12 +133,13 @@ export function MainNav({
           </Link>
         </li>
         {scoutingEnabled && (
-          <li className="group relative">
+          <li className="group relative" onKeyDown={handleDropdownKeyDown}>
             <button
               type="button"
+              aria-haspopup="true"
               className={cn(
                 navLinkStyles,
-                "inline-flex items-center gap-1",
+                "gap-1",
                 pathname.startsWith("/scouting") && "text-primary"
               )}
             >
@@ -130,12 +150,16 @@ export function MainNav({
               />
             </button>
             <div className="invisible absolute top-full left-0 z-50 pt-1 opacity-0 transition-[opacity,visibility] duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
-              <div className="bg-popover text-popover-foreground ring-foreground/10 w-[200px] rounded-md p-1 shadow-md ring-1">
+              <div
+                className="bg-popover text-popover-foreground ring-foreground/10 w-[200px] rounded-md p-1 shadow-md ring-1"
+                role="menu"
+              >
                 <Link
                   href="/scouting"
+                  role="menuitem"
                   className={cn(
                     dropdownItemStyles,
-                    (/^\/scouting\/(?!player$|team$)[^\/]+$/.test(pathname) ||
+                    (SCOUTING_TEAM_ROUTE.test(pathname) ||
                       pathname === "/scouting") &&
                       "text-primary"
                   )}
@@ -144,6 +168,7 @@ export function MainNav({
                 </Link>
                 <Link
                   href="/scouting/player"
+                  role="menuitem"
                   className={cn(
                     dropdownItemStyles,
                     pathname.startsWith("/scouting/player") && "text-primary"
