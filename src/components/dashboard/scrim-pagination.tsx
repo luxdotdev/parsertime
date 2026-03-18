@@ -6,6 +6,7 @@ import { ScrimCard } from "@/components/dashboard/scrim-card";
 import { ScrimCardSkeleton } from "@/components/dashboard/scrim-card-skeleton";
 import { TeamSwitcherContext } from "@/components/team-switcher-provider";
 import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import {
   InputGroup,
   InputGroupAddon,
@@ -36,6 +37,7 @@ import {
 } from "@/components/ui/tooltip";
 import type { Scrim } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
+import { motion, useReducedMotion } from "framer-motion";
 import { ChevronLeftIcon, ChevronRightIcon, Info, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { use, useEffect, useState } from "react";
@@ -62,6 +64,7 @@ export function ScrimPagination({
   isAdmin?: boolean;
   seenOnboarding?: boolean;
 }) {
+  const prefersReducedMotion = useReducedMotion();
   const [cursorStack, setCursorStack] = useState<(string | undefined)[]>([
     undefined,
   ]);
@@ -327,25 +330,40 @@ export function ScrimPagination({
           </>
         ) : data && data.scrims.length > 0 ? (
           <>
-            {data.scrims.map((scrim) => (
-              <ScrimCard
+            {data.scrims.map((scrim, index) => (
+              <motion.div
                 key={scrim.id}
-                scrim={scrim}
-                prefetch={firstFiveScrims.includes(scrim)}
-              />
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.2,
+                  delay: Math.min(index * 0.05, 0.4),
+                  ease: [0, 0, 0.2, 1],
+                }}
+              >
+                <ScrimCard
+                  scrim={scrim}
+                  prefetch={firstFiveScrims.includes(scrim)}
+                />
+              </motion.div>
             ))}
           </>
         ) : (
           <>
             {/* Show "no results" message when search/filter returns empty but user has scrims */}
-            <div className="col-span-full flex flex-col items-center justify-center py-12">
+            <motion.div
+              className="col-span-full flex flex-col items-center justify-center py-12"
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, ease: [0, 0, 0.2, 1] }}
+            >
               <p className="text-muted-foreground text-lg font-medium">
                 {t("filter.noScrimsFound")}
               </p>
               <p className="text-muted-foreground text-sm">
                 {t("filter.tryAdjustingFilters")}
               </p>
-            </div>
+            </motion.div>
           </>
         )}
 
@@ -385,11 +403,12 @@ export function ScrimPagination({
                         }
                         isActive={currentPage === page}
                         href="#"
-                        className={
-                          !canNavigate && currentPage !== page
-                            ? "cursor-not-allowed opacity-50"
-                            : ""
-                        }
+                        className={cn(
+                          "tabular-nums",
+                          !canNavigate &&
+                            currentPage !== page &&
+                            "cursor-not-allowed opacity-50"
+                        )}
                       >
                         {page}
                       </PaginationLink>
