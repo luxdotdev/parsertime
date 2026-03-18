@@ -23,6 +23,7 @@ import { TeamRosterGrid } from "@/components/stats/team/team-roster-grid";
 import { TopMapsCard } from "@/components/stats/team/top-maps-card";
 import { UltPlayerRankingsCard } from "@/components/stats/team/ult-player-rankings-card";
 import { UltRoleBreakdownCard } from "@/components/stats/team/ult-role-breakdown-card";
+import { UltImpactAnalysisCard } from "@/components/stats/team/ult-impact-analysis-card";
 import { UltUsageOverviewCard } from "@/components/stats/team/ult-usage-overview-card";
 import { UltimateEconomyCard } from "@/components/stats/team/ultimate-economy-card";
 import { WinLossStreaksCard } from "@/components/stats/team/win-loss-streaks-card";
@@ -59,10 +60,11 @@ import {
   getTop5MapsByPlaytime,
   getTopMapsByPlaytime,
 } from "@/data/team-stats-dto";
+import { getTeamUltImpact } from "@/data/team-ult-impact-dto";
 import { getTeamUltStats } from "@/data/team-ult-stats-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import { simulationTool } from "@/lib/flags";
+import { simulationTool, ultimateImpactTool } from "@/lib/flags";
 import { calculateHeroPickrateMatrix } from "@/lib/hero-pickrate-utils";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
@@ -198,6 +200,8 @@ export default async function TeamStatsPage(
     banImpactAnalysis,
     simulatorContext,
     simulationToolEnabled,
+    ultImpactAnalysis,
+    ultimateImpactToolEnabled,
   ] = await Promise.all([
     prisma.scrim.findMany({
       where: {
@@ -228,6 +232,8 @@ export default async function TeamStatsPage(
     getTeamBanImpactAnalysis(teamId, dateRange),
     getSimulatorContext(teamId, dateRange),
     simulationTool(),
+    getTeamUltImpact(teamId, dateRange),
+    ultimateImpactTool(),
   ]);
 
   const heroPickrateRawData = await getHeroPickrateRawData(teamId, dateRange);
@@ -386,6 +392,9 @@ export default async function TeamStatsPage(
         {/* Ultimates Tab */}
         <TabsContent value="ultimates" className="space-y-4">
           <UltUsageOverviewCard ultStats={ultStats} />
+          {ultimateImpactToolEnabled && (
+            <UltImpactAnalysisCard analysis={ultImpactAnalysis} />
+          )}
           <UltimateEconomyCard fightStats={fightStats} />
           <UltRoleBreakdownCard ultStats={ultStats} />
           <UltPlayerRankingsCard ultStats={ultStats} />
