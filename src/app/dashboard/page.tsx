@@ -42,13 +42,14 @@ export async function generateMetadata(
 }
 
 export default async function DashboardPage() {
-  const session = await auth();
+  const [session, t] = await Promise.all([
+    auth(),
+    getTranslations("dashboard"),
+  ]);
 
   const userData = await getUser(session?.user?.email);
 
   const isAdmin = userData?.role === $Enums.UserRole.ADMIN;
-
-  const t = await getTranslations("dashboard");
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
@@ -65,14 +66,10 @@ export default async function DashboardPage() {
           </TabsList>
         )}
         <TabsContent value="overview" className="space-y-4">
-          <main>
-            <ScrimPagination seenOnboarding={userData?.seenOnboarding} />
-          </main>
+          <ScrimPagination seenOnboarding={userData?.seenOnboarding} />
         </TabsContent>
         <TabsContent value="admin" className="space-y-4">
-          <main>
-            <ScrimPagination isAdmin={true} seenOnboarding={true} />
-          </main>
+          <ScrimPagination isAdmin={true} seenOnboarding={true} />
         </TabsContent>
       </Tabs>
       <UpdateModalWrapper />
