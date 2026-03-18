@@ -1,6 +1,5 @@
-import { UltTimingChart } from "@/components/charts/ult-timing-chart";
+import { AnalysisCardAccordion as AnalysisCard } from "@/components/map/analysis/analysis-card-accordion";
 import { OverviewTable } from "@/components/map/overview-table";
-import { UltComparisonChart } from "@/components/scrim/ult-comparison-chart";
 import {
   Card,
   CardContent,
@@ -22,7 +21,6 @@ import { getAjaxes } from "@/lib/analytics";
 import { calculateMVPScoresForMap } from "@/lib/mvp-score";
 import prisma from "@/lib/prisma";
 import {
-  cn,
   groupEventsIntoFights,
   groupKillsIntoFights,
   range,
@@ -661,6 +659,20 @@ export async function DefaultOverview({
     (player) => player.player_hero === "Lúcio"
   );
 
+  const lucioAjaxes = (
+    await Promise.all(
+      lucioPlayers.map(async (player) => {
+        const count = await getAjaxes(id, player.player_name);
+        return {
+          playerName: player.player_name,
+          count,
+          teamColor:
+            player.player_team === matchDetails?.team_1_name ? team1 : team2,
+        };
+      })
+    )
+  ).filter((a) => a.count > 0);
+
   const mvpScores = await calculateMVPScoresForMap(id);
 
   const team1Players = mvpScores.filter(
@@ -689,7 +701,6 @@ export async function DefaultOverview({
     team2RawSwaps,
     roundStartTimes
   );
-  const totalMapSwaps = team1Swaps.length + team2Swaps.length;
 
   function findTopSwapper(swaps: typeof team1Swaps) {
     const counts = new Map<string, number>();
@@ -951,650 +962,85 @@ export async function DefaultOverview({
           </CardContent>
         </Card>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="col-span-full">
-          <CardHeader>
-            <CardTitle>{t("analysis.title")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div
-              className={cn(
-                "gap-6",
-                playerComparisons.length > 0 ||
-                  team1AllTimings.length > 0 ||
-                  team2AllTimings.length > 0
-                  ? "grid grid-cols-1 lg:grid-cols-2"
-                  : ""
-              )}
-            >
-              <ul className="list-outside list-disc space-y-1 pl-4">
-                <li>
-                  {t.rich("analysis.deathDescriptionTeam1", {
-                    span1: (chunks) => (
-                      <span style={{ color: team1 }}>{chunks}</span>
-                    ),
-                    team1Name: matchDetails?.team_1_name ?? "",
-                    team1FirstDeaths,
-                    span2: (chunks) => (
-                      <span
-                        className={cn(
-                          team1FirstDeaths / fights.length > 0.5
-                            ? "text-red-500"
-                            : "text-green-500",
-                          team1FirstDeaths / fights.length === 0.5 &&
-                            "text-purple-500"
-                        )}
-                      >
-                        {chunks}
-                      </span>
-                    ),
-                    percentage: (
-                      (team1FirstDeaths / fights.length) *
-                      100
-                    ).toFixed(2),
-                  })}{" "}
-                  {t.rich("analysis.deathDescriptionTeam2", {
-                    span1: (chunks) => (
-                      <span style={{ color: team2 }}>{chunks}</span>
-                    ),
-                    team2Name: matchDetails?.team_2_name ?? "",
-                    team2FirstDeaths: fights.length - team1FirstDeaths,
-                    span2: (chunks) => (
-                      <span
-                        className={cn(
-                          (fights.length - team1FirstDeaths) / fights.length >
-                            0.5
-                            ? "text-red-500"
-                            : "text-green-500",
-                          (fights.length - team1FirstDeaths) / fights.length ===
-                            0.5 && "text-purple-500"
-                        )}
-                      >
-                        {chunks}
-                      </span>
-                    ),
-                    percentage: (
-                      ((fights.length - team1FirstDeaths) / fights.length) *
-                      100
-                    ).toFixed(2),
-                  })}
-                </li>
-                <li>
-                  {team1UltimateKills > team2UltimateKills &&
-                    t.rich("analysis.ultKillsDescriptionTeam1", {
-                      span: (chunks) => (
-                        <span style={{ color: team1 }}>{chunks}</span>
-                      ),
-                      team1Name: matchDetails?.team_1_name ?? "",
-                      team1UltimateKills,
-                    })}
-
-                  {team1UltimateKills < team2UltimateKills &&
-                    t.rich("analysis.ultKillsDescriptionTeam2", {
-                      span: (chunks) => (
-                        <span style={{ color: team2 }}>{chunks}</span>
-                      ),
-                      team2Name: matchDetails?.team_2_name ?? "",
-                      team2UltimateKills,
-                    })}
-
-                  {team1UltimateKills === team2UltimateKills &&
-                    t.rich("analysis.ultKillsDescriptionBoth", {
-                      span: (chunks) => (
-                        <span className="text-purple-500">{chunks}</span>
-                      ),
-                      team1UltimateKills,
-                    })}
-                </li>
-                <li>
-                  {t.rich("analysis.playerDeathDescription", {
-                    span: (chunks) => (
-                      <span
-                        style={{
-                          color:
-                            finalRoundStats.find(
-                              (player) =>
-                                player.player_name === playerWithMostFirstDeaths
-                            )?.player_team === matchDetails?.team_1_name
-                              ? team1
-                              : team2,
-                        }}
-                      >
-                        {chunks}
-                      </span>
-                    ),
-                    playerWithMostFirstDeaths,
-                    firstDeaths: firstDeaths[playerWithMostFirstDeaths],
-                    fights: fights.length,
-                  })}
-                </li>
-                {lucioPlayers.length > 0 && (
-                  <>
-                    {lucioPlayers.map(async (player) => {
-                      const ajaxes = await getAjaxes(id, player.player_name);
-
-                      if (ajaxes === 0) return null;
-                      return (
-                        <li key={player.player_name}>
-                          {t.rich("analysis.ajax", {
-                            span: (chunks) => (
-                              <span
-                                style={{
-                                  color:
-                                    player.player_team ===
-                                    matchDetails?.team_1_name
-                                      ? team1
-                                      : team2,
-                                }}
-                              >
-                                {chunks}
-                              </span>
-                            ),
-                            player: player.player_name,
-                            ajaxes,
-                          })}
-                        </li>
-                      );
-                    })}
-                  </>
-                )}
-                {(team1Ults.length > 0 || team2Ults.length > 0) && (
-                  <>
-                    <li>
-                      {t.rich("analysis.ultUsageComparison", {
-                        span1: (chunks) => (
-                          <span style={{ color: team1 }}>{chunks}</span>
-                        ),
-                        team1Name,
-                        team1Count: team1Ults.length,
-                        span2: (chunks) => (
-                          <span style={{ color: team2 }}>{chunks}</span>
-                        ),
-                        team2Name,
-                        team2Count: team2Ults.length,
-                      })}
-                    </li>
-                    {roles.map((role) => {
-                      const data = firstUltByRolePerFight[role];
-                      if (data.total === 0) return null;
-                      const team1Rate = (data.team1First / data.total) * 100;
-                      const team2Rate = (data.team2First / data.total) * 100;
-                      const leader =
-                        team1Rate >= team2Rate
-                          ? { name: team1Name, color: team1, pct: team1Rate }
-                          : { name: team2Name, color: team2, pct: team2Rate };
-                      const t1Timings = buildSubroleTimings(
-                        team1SubroleTimingByRole,
-                        role
-                      );
-                      const t2Timings = buildSubroleTimings(
-                        team2SubroleTimingByRole,
-                        role
-                      );
-                      const allTimings = [
-                        ...t1Timings.map((s) => ({
-                          ...s,
-                          teamName: team1Name,
-                          color: team1,
-                        })),
-                        ...t2Timings.map((s) => ({
-                          ...s,
-                          teamName: team2Name,
-                          color: team2,
-                        })),
-                      ];
-                      const totalSubroleCount = allTimings.reduce(
-                        (sum, s) => sum + s.count,
-                        0
-                      );
-                      return (
-                        <li key={role}>
-                          {t.rich("analysis.ultRoleFirst", {
-                            span: (chunks) => (
-                              <span style={{ color: leader.color }}>
-                                {chunks}
-                              </span>
-                            ),
-                            pct: (chunks) => (
-                              <span
-                                className={cn(
-                                  leader.pct > 50
-                                    ? "text-green-500"
-                                    : "text-red-500",
-                                  leader.pct === 50 && "text-purple-500"
-                                )}
-                              >
-                                {chunks}
-                              </span>
-                            ),
-                            teamName: leader.name,
-                            role,
-                            percentage: leader.pct.toFixed(1),
-                          })}
-                          {allTimings.length > 0 && (
-                            <ul className="text-muted-foreground mt-1 ml-4 space-y-0.5 text-xs">
-                              {allTimings.map((sr) => (
-                                <li key={`${sr.teamName}-${sr.subrole}`}>
-                                  <span style={{ color: sr.color }}>
-                                    {sr.teamName}
-                                  </span>{" "}
-                                  {sr.subrole}:{" "}
-                                  <span className="text-foreground font-semibold tabular-nums">
-                                    {sr.count}
-                                  </span>{" "}
-                                  {sr.count === 1 ? "ultimate" : "ultimates"} (
-                                  {totalSubroleCount > 0
-                                    ? (
-                                        (sr.count / totalSubroleCount) *
-                                        100
-                                      ).toFixed(0)
-                                    : 0}
-                                  %) &mdash;{" "}
-                                  <span className="text-green-500">
-                                    {sr.initiation} initiation
-                                  </span>
-                                  ,{" "}
-                                  <span className="text-yellow-500">
-                                    {sr.midfight} midfight
-                                  </span>
-                                  ,{" "}
-                                  <span className="text-red-500">
-                                    {sr.late} late
-                                  </span>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </li>
-                      );
-                    })}
-                    {fightsWithUltsCount > 0 && (
-                      <>
-                        <li>
-                          {(() => {
-                            const team1Rate =
-                              (team1InitiatedWithUlt / fightsWithUltsCount) *
-                              100;
-                            const team2Rate =
-                              (team2InitiatedWithUlt / fightsWithUltsCount) *
-                              100;
-                            const leader =
-                              team1Rate >= team2Rate
-                                ? {
-                                    name: team1Name,
-                                    color: team1,
-                                    pct: team1Rate,
-                                    count: team1InitiatedWithUlt,
-                                  }
-                                : {
-                                    name: team2Name,
-                                    color: team2,
-                                    pct: team2Rate,
-                                    count: team2InitiatedWithUlt,
-                                  };
-                            return t.rich("analysis.ultFightInitiator", {
-                              span: (chunks) => (
-                                <span style={{ color: leader.color }}>
-                                  {chunks}
-                                </span>
-                              ),
-                              pct: (chunks) => (
-                                <span
-                                  className={cn(
-                                    leader.pct > 50
-                                      ? "text-green-500"
-                                      : "text-red-500",
-                                    leader.pct === 50 && "text-purple-500"
-                                  )}
-                                >
-                                  {chunks}
-                                </span>
-                              ),
-                              teamName: leader.name,
-                              percentage: leader.pct.toFixed(1),
-                              count: leader.count,
-                              total: fightsWithUltsCount,
-                            });
-                          })()}
-                        </li>
-                        {team1TopFightInitiator && (
-                          <li>
-                            {t.rich("analysis.ultTopFightOpenerTeam", {
-                              span: (chunks) => (
-                                <span className="font-semibold">{chunks}</span>
-                              ),
-                              b: (chunks) => (
-                                <span className="font-semibold tabular-nums">
-                                  {chunks}
-                                </span>
-                              ),
-                              teamName: team1Name,
-                              hero: team1TopFightInitiator.hero,
-                              count: team1TopFightInitiator.count,
-                            })}
-                          </li>
-                        )}
-                        {team2TopFightInitiator && (
-                          <li>
-                            {t.rich("analysis.ultTopFightOpenerTeam", {
-                              span: (chunks) => (
-                                <span className="font-semibold">{chunks}</span>
-                              ),
-                              b: (chunks) => (
-                                <span className="font-semibold tabular-nums">
-                                  {chunks}
-                                </span>
-                              ),
-                              teamName: team2Name,
-                              hero: team2TopFightInitiator.hero,
-                              count: team2TopFightInitiator.count,
-                            })}
-                          </li>
-                        )}
-                      </>
-                    )}
-                    {team1TopUlt && (
-                      <li>
-                        {t.rich("analysis.ultTopUser", {
-                          span: (chunks) => (
-                            <span style={{ color: team1 }}>{chunks}</span>
-                          ),
-                          playerName: team1TopUlt.name,
-                          hero: team1TopUlt.hero,
-                          count: team1TopUlt.count,
-                          teamName: team1Name,
-                        })}
-                      </li>
-                    )}
-                    {team2TopUlt && (
-                      <li>
-                        {t.rich("analysis.ultTopUser", {
-                          span: (chunks) => (
-                            <span style={{ color: team2 }}>{chunks}</span>
-                          ),
-                          playerName: team2TopUlt.name,
-                          hero: team2TopUlt.hero,
-                          count: team2TopUlt.count,
-                          teamName: team2Name,
-                        })}
-                      </li>
-                    )}
-                    {(team1AvgChargeTime > 0 || team2AvgChargeTime > 0) && (
-                      <li>
-                        {t.rich("analysis.ultAvgChargeTime", {
-                          span1: (chunks) => (
-                            <span style={{ color: team1 }}>{chunks}</span>
-                          ),
-                          span2: (chunks) => (
-                            <span style={{ color: team2 }}>{chunks}</span>
-                          ),
-                          team1Name,
-                          team2Name,
-                          team1Time: team1AvgChargeTime.toFixed(1),
-                          team2Time: team2AvgChargeTime.toFixed(1),
-                        })}
-                      </li>
-                    )}
-                    {(team1AvgHoldTime > 0 || team2AvgHoldTime > 0) && (
-                      <li>
-                        {t.rich("analysis.ultAvgHoldTime", {
-                          span1: (chunks) => (
-                            <span style={{ color: team1 }}>{chunks}</span>
-                          ),
-                          span2: (chunks) => (
-                            <span style={{ color: team2 }}>{chunks}</span>
-                          ),
-                          team1Name,
-                          team2Name,
-                          team1Time: team1AvgHoldTime.toFixed(1),
-                          team2Time: team2AvgHoldTime.toFixed(1),
-                        })}
-                      </li>
-                    )}
-                  </>
-                )}
-
-                {[
-                  {
-                    name: team1Name,
-                    color: team1,
-                    eff: team1UltEfficiency,
-                  },
-                  {
-                    name: team2Name,
-                    color: team2,
-                    eff: team2UltEfficiency,
-                  },
-                ].map(
-                  ({ name, color, eff }) =>
-                    eff.totalUltsUsedInFights > 0 && (
-                      <li key={`eff-${name}`}>
-                        <span style={{ color }} className="font-semibold">
-                          {name}
-                        </span>{" "}
-                        {t.rich("analysis.ultEfficiency", {
-                          b: (chunks) => (
-                            <span className="font-semibold tabular-nums">
-                              {chunks}
-                            </span>
-                          ),
-                          value: eff.ultimateEfficiency.toFixed(2),
-                          rating:
-                            eff.ultimateEfficiency >= 0.4
-                              ? t("analysis.ultEfficiencyExcellent")
-                              : eff.ultimateEfficiency >= 0.25
-                                ? t("analysis.ultEfficiencyGood")
-                                : eff.ultimateEfficiency >= 0.15
-                                  ? t("analysis.ultEfficiencyAverage")
-                                  : t("analysis.ultEfficiencyPoor"),
-                        })}{" "}
-                        {t.rich("analysis.ultWonVsLost", {
-                          won: (chunks) => (
-                            <span className="font-semibold text-green-600 tabular-nums dark:text-green-400">
-                              {chunks}
-                            </span>
-                          ),
-                          lost: (chunks) => (
-                            <span className="font-semibold text-red-600 tabular-nums dark:text-red-400">
-                              {chunks}
-                            </span>
-                          ),
-                          wonAvg: eff.avgUltsInWonFights.toFixed(1),
-                          lostAvg: eff.avgUltsInLostFights.toFixed(1),
-                        })}{" "}
-                        {eff.avgUltsInWonFights > eff.avgUltsInLostFights
-                          ? t("analysis.ultGoodDiscipline")
-                          : t("analysis.ultNeedsDiscipline")}
-                        {eff.wastedUltimates > 0 && (
-                          <>
-                            {" "}
-                            {t.rich("analysis.ultWasted", {
-                              b: (chunks) => (
-                                <span className="font-semibold tabular-nums">
-                                  {chunks}
-                                </span>
-                              ),
-                              count: eff.wastedUltimates,
-                              percentage: (
-                                (eff.wastedUltimates /
-                                  eff.totalUltsUsedInFights) *
-                                100
-                              ).toFixed(1),
-                            })}
-                          </>
-                        )}{" "}
-                        {t.rich("analysis.ultDryFights", {
-                          b: (chunks) => (
-                            <span className="font-semibold tabular-nums">
-                              {chunks}
-                            </span>
-                          ),
-                          dryCount: eff.dryFights,
-                          winrate: eff.dryFightWinrate.toFixed(1),
-                          nonDryCount: eff.nonDryFights,
-                          nonDryWinrate:
-                            eff.nonDryFights > 0
-                              ? (
-                                  (eff.fightsWon / eff.nonDryFights) *
-                                  100
-                                ).toFixed(1)
-                              : "0.0",
-                        })}
-                        {(eff.dryFights > 0 || eff.nonDryFights > 0) && " "}
-                        {(eff.dryFights > 0 || eff.nonDryFights > 0) &&
-                          t.rich("analysis.ultReversalRate", {
-                            b: (chunks) => (
-                              <span className="font-semibold tabular-nums">
-                                {chunks}
-                              </span>
-                            ),
-                            dryRate: eff.dryFightReversalRate.toFixed(1),
-                            nonDryRate: eff.nonDryFightReversalRate.toFixed(1),
-                          })}
-                      </li>
-                    )
-                )}
-
-                {totalMapSwaps > 0 && (
-                  <>
-                    <li>
-                      {t.rich("analysis.swapOverview", {
-                        span1: (chunks) => (
-                          <span style={{ color: team1 }}>{chunks}</span>
-                        ),
-                        span2: (chunks) => (
-                          <span style={{ color: team2 }}>{chunks}</span>
-                        ),
-                        b: (chunks) => (
-                          <span className="font-semibold tabular-nums">
-                            {chunks}
-                          </span>
-                        ),
-                        team1Name,
-                        team1Count: team1Swaps.length,
-                        team2Name,
-                        team2Count: team2Swaps.length,
-                      })}
-                    </li>
-                    {team1TopPair && (
-                      <li>
-                        {t.rich("analysis.swapTopPairTeam", {
-                          span: (chunks) => (
-                            <span style={{ color: team1 }}>{chunks}</span>
-                          ),
-                          b: (chunks) => (
-                            <span className="font-semibold">{chunks}</span>
-                          ),
-                          n: (chunks) => (
-                            <span className="font-semibold tabular-nums">
-                              {chunks}
-                            </span>
-                          ),
-                          teamName: team1Name,
-                          fromHero: team1TopPair.from,
-                          toHero: team1TopPair.to,
-                          count: team1TopPair.count,
-                        })}
-                      </li>
-                    )}
-                    {team2TopPair && (
-                      <li>
-                        {t.rich("analysis.swapTopPairTeam", {
-                          span: (chunks) => (
-                            <span style={{ color: team2 }}>{chunks}</span>
-                          ),
-                          b: (chunks) => (
-                            <span className="font-semibold">{chunks}</span>
-                          ),
-                          n: (chunks) => (
-                            <span className="font-semibold tabular-nums">
-                              {chunks}
-                            </span>
-                          ),
-                          teamName: team2Name,
-                          fromHero: team2TopPair.from,
-                          toHero: team2TopPair.to,
-                          count: team2TopPair.count,
-                        })}
-                      </li>
-                    )}
-                    {team1TopSwapper && (
-                      <li>
-                        {t.rich("analysis.swapTopSwapperTeam", {
-                          span: (chunks) => (
-                            <span style={{ color: team1 }}>{chunks}</span>
-                          ),
-                          b: (chunks) => (
-                            <span className="font-semibold">{chunks}</span>
-                          ),
-                          n: (chunks) => (
-                            <span className="font-semibold tabular-nums">
-                              {chunks}
-                            </span>
-                          ),
-                          teamName: team1Name,
-                          playerName: team1TopSwapper.name,
-                          count: team1TopSwapper.count,
-                        })}
-                      </li>
-                    )}
-                    {team2TopSwapper && (
-                      <li>
-                        {t.rich("analysis.swapTopSwapperTeam", {
-                          span: (chunks) => (
-                            <span style={{ color: team2 }}>{chunks}</span>
-                          ),
-                          b: (chunks) => (
-                            <span className="font-semibold">{chunks}</span>
-                          ),
-                          n: (chunks) => (
-                            <span className="font-semibold tabular-nums">
-                              {chunks}
-                            </span>
-                          ),
-                          teamName: team2Name,
-                          playerName: team2TopSwapper.name,
-                          count: team2TopSwapper.count,
-                        })}
-                      </li>
-                    )}
-                  </>
-                )}
-              </ul>
-              {(playerComparisons.length > 0 ||
-                team1AllTimings.length > 0 ||
-                team2AllTimings.length > 0) && (
-                <div className="space-y-6">
-                  {playerComparisons.length > 0 && (
-                    <div className="min-h-[300px]">
-                      <h4 className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                        Ultimate Usage by Subrole
-                      </h4>
-                      <UltComparisonChart
-                        comparisons={playerComparisons}
-                        teamNames={[team1Name, team2Name] as const}
-                      />
-                    </div>
-                  )}
-                  {(team1AllTimings.length > 0 ||
-                    team2AllTimings.length > 0) && (
-                    <div className="min-h-[300px]">
-                      <h4 className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                        Ultimate Timing Breakdown
-                      </h4>
-                      <UltTimingChart
-                        team1Timings={team1AllTimings}
-                        team2Timings={team2AllTimings}
-                        teamNames={[team1Name, team2Name] as const}
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <AnalysisCard
+        team1={{ name: team1Name, color: team1 }}
+        team2={{ name: team2Name, color: team2 }}
+        deaths={{
+          team1FirstDeaths,
+          totalFights: fights.length,
+          playerWithMostFirstDeaths,
+          playerFirstDeathCount: firstDeaths[playerWithMostFirstDeaths] ?? 0,
+          playerTeamColor:
+            finalRoundStats.find(
+              (player) => player.player_name === playerWithMostFirstDeaths
+            )?.player_team === matchDetails?.team_1_name
+              ? team1
+              : team2,
+          lucioAjaxes,
+          fightFirstDeaths: fights.map((fight, i) => {
+            const firstKill = fight.kills.find((k) => k.event_type === "kill");
+            const victim = firstKill ?? fight.kills[0];
+            return {
+              fightNumber: i + 1,
+              matchTime: victim.match_time,
+              victimName: victim.victim_name,
+              victimHero: victim.victim_hero,
+              victimTeam:
+                victim.victim_team === team1Name
+                  ? ("team1" as const)
+                  : ("team2" as const),
+            };
+          }),
+        }}
+        ultimates={{
+          team1Count: team1Ults.length,
+          team2Count: team2Ults.length,
+          team1Kills: team1UltimateKills,
+          team2Kills: team2UltimateKills,
+          firstUltByRole: firstUltByRolePerFight,
+          team1TopUlt,
+          team2TopUlt,
+          team1TopFightInitiator,
+          team2TopFightInitiator,
+          team1InitiatedWithUlt,
+          team2InitiatedWithUlt,
+          fightsWithUltsCount,
+          playerComparisons,
+        }}
+        timing={{
+          team1AllTimings,
+          team2AllTimings,
+        }}
+        efficiency={{
+          team1: team1UltEfficiency,
+          team2: team2UltEfficiency,
+          team1AvgChargeTime,
+          team2AvgChargeTime,
+          team1AvgHoldTime,
+          team2AvgHoldTime,
+        }}
+        swaps={{
+          team1Count: team1Swaps.length,
+          team2Count: team2Swaps.length,
+          team1TopPair,
+          team2TopPair,
+          team1TopSwapper,
+          team2TopSwapper,
+        }}
+        translations={{
+          title: t("analysis.title"),
+          tabFirstDeaths: t("analysis.tabFirstDeaths"),
+          tabUltimates: t("analysis.tabUltimates"),
+          tabTiming: t("analysis.tabTiming"),
+          tabEfficiency: t("analysis.tabEfficiency"),
+          tabSwaps: t("analysis.tabSwaps"),
+          footerDeaths: t("analysis.footerDeaths"),
+          footerUltimates: t("analysis.footerUltimates"),
+          footerTiming: t("analysis.footerTiming"),
+          footerEfficiency: t("analysis.footerEfficiency"),
+          footerSwaps: t("analysis.footerSwaps"),
+        }}
+      />
     </>
   );
 }
