@@ -20,13 +20,20 @@ export async function DashboardLayout({
   children: React.ReactNode;
   guestMode?: boolean;
 }) {
-  const session = await auth();
+  const [session, scoutingEnabled] = await Promise.all([
+    auth(),
+    scoutingTool(),
+  ]);
   const user = await getUser(session?.user?.email);
-
-  const scoutingEnabled = await scoutingTool();
 
   return (
     <TeamSwitcherProvider>
+      <a
+        href="#main-content"
+        className="focus:bg-background focus:text-foreground sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:shadow-lg"
+      >
+        Skip to content
+      </a>
       <div className="min-h-[90vh] flex-col md:flex">
         <div className="shadow-sm">
           <div className="hidden h-16 items-center px-4 md:flex">
@@ -66,7 +73,7 @@ export async function DashboardLayout({
             </div>
           </div>
         </div>
-        {children}
+        <main id="main-content">{children}</main>
       </div>
       <Footer />
     </TeamSwitcherProvider>
