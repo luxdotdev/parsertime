@@ -112,12 +112,13 @@ export function ScrimPagination({
   const currentPage = Math.max(1, page);
   const pageSize = 16;
 
-  // Build URL for a given page number
+  // Build URL for a given page number (preserves all current params)
   function pageUrl(targetPage: number) {
     const params = new URLSearchParams();
     if (targetPage > 1) params.set("page", String(targetPage));
     if (sort) params.set("sort", sort);
     if (q) params.set("q", q);
+    if (teamId) params.set("team", String(teamId));
     const qs = params.toString();
     return qs ? `${pathname}?${qs}` : pathname;
   }
