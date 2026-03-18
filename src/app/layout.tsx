@@ -21,6 +21,7 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { Geist, Geist_Mono } from "next/font/google";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -82,34 +83,36 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           "h-full antialiased"
         )}
       >
-        <QueryProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <TooltipProvider>
-              <NextIntlClientProvider messages={messages}>
-                <CommandMenuProvider>
-                  <AppSettingsProvider>
-                    <FeatureFlagsProvider flags={flags}>
-                      <FlagValues values={toFlagValues(flags)} />
-                      <BetaBanner />
-                      {children}
-                      <CommandDialogMenu user={user} />
-                    </FeatureFlagsProvider>
-                  </AppSettingsProvider>
-                </CommandMenuProvider>
-              </NextIntlClientProvider>
-            </TooltipProvider>
-            <Toaster />
-            <SpeedInsights />
-            <Analytics />
-            <DevTools />
-            <WebVitals />
-          </ThemeProvider>
-        </QueryProvider>
+        <NuqsAdapter>
+          <QueryProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <TooltipProvider>
+                <NextIntlClientProvider messages={messages}>
+                  <CommandMenuProvider>
+                    <AppSettingsProvider>
+                      <FeatureFlagsProvider flags={flags}>
+                        <FlagValues values={toFlagValues(flags)} />
+                        <BetaBanner />
+                        {children}
+                        <CommandDialogMenu user={user} />
+                      </FeatureFlagsProvider>
+                    </AppSettingsProvider>
+                  </CommandMenuProvider>
+                </NextIntlClientProvider>
+              </TooltipProvider>
+              <Toaster />
+              <SpeedInsights />
+              <Analytics />
+              <DevTools />
+              <WebVitals />
+            </ThemeProvider>
+          </QueryProvider>
+        </NuqsAdapter>
       </body>
     </html>
   );
