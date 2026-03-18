@@ -13,10 +13,12 @@ export async function MapEvents({
   id,
   team1Color,
   team2Color,
+  tempoChartEnabled,
 }: {
   id: number;
   team1Color: string;
   team2Color: string;
+  tempoChartEnabled: boolean;
 }) {
   const [events, ultimates] = await Promise.all([
     getMapEvents(id, team1Color, team2Color),
@@ -27,11 +29,13 @@ export async function MapEvents({
 
   return (
     <div className="space-y-4">
-      <TempoChartServer
-        id={id}
-        team1Color={team1Color}
-        team2Color={team2Color}
-      />
+      {tempoChartEnabled && (
+        <TempoChartServer
+          id={id}
+          team1Color={team1Color}
+          team2Color={team2Color}
+        />
+      )}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
         <Card className="col-span-3">
           <CardHeader>
