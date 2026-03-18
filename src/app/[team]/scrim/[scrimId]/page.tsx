@@ -213,6 +213,9 @@ export default async function ScrimDashboardPage(
           <ScrimOverviewCard scrimId={id} teamId={teamId} />
         )}
 
+        {/* Drop Zone (managers/owners only) */}
+        {hasPerms && <AddMapCard />}
+
         {/* Maps Section */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -233,27 +236,23 @@ export default async function ScrimDashboardPage(
                   mapComparisonEnabled={mapComparisonEnabled}
                 />
               ))}
-              {hasPerms && <AddMapCard />}
             </div>
           ) : (
-            <>
-              <Alert variant="destructive" className="max-w-xl">
-                <ExclamationTriangleIcon className="h-4 w-4" />
-                <AlertTitle>{t("noMaps.title")}</AlertTitle>
-                <AlertDescription>
-                  {t("noMaps.description")}
-                  <Link
-                    href="https://docs.parsertime.app"
-                    target="_blank"
-                    external
-                  >
-                    {t("noMaps.link")}
-                  </Link>
-                  .
-                </AlertDescription>
-              </Alert>
-              <div>{hasPerms && <AddMapCard />}</div>
-            </>
+            <Alert variant="destructive" className="max-w-xl">
+              <ExclamationTriangleIcon className="h-4 w-4" />
+              <AlertTitle>{t("noMaps.title")}</AlertTitle>
+              <AlertDescription>
+                {t("noMaps.description")}
+                <Link
+                  href="https://docs.parsertime.app"
+                  target="_blank"
+                  external
+                >
+                  {t("noMaps.link")}
+                </Link>
+                .
+              </AlertDescription>
+            </Alert>
           )}
         </div>
       </div>
