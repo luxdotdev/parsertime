@@ -6,7 +6,6 @@ import { ScrimCard } from "@/components/dashboard/scrim-card";
 import { ScrimCardSkeleton } from "@/components/dashboard/scrim-card-skeleton";
 import { TeamSwitcherContext } from "@/components/team-switcher-provider";
 import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import {
   InputGroup,
   InputGroupAddon,
@@ -35,6 +34,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import type { Scrim } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { motion, useReducedMotion } from "framer-motion";
@@ -250,7 +250,10 @@ export function ScrimPagination({
   if (isError) {
     return (
       <Card className="bg-background">
-        <div className="flex h-96 items-center justify-center">
+        <div
+          className="flex h-96 items-center justify-center"
+          aria-live="polite"
+        >
           <div className="text-center">
             <p className="text-muted-foreground">
               Error loading scrims: {error?.message}
@@ -291,16 +294,25 @@ export function ScrimPagination({
             <InputGroupInput
               type="search"
               placeholder={t("filter.search")}
+              aria-label={t("filter.search")}
+              name="scrim-search"
+              autoComplete="off"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
             <InputGroupAddon>
-              <Search />
+              <Search aria-hidden="true" />
             </InputGroupAddon>
             <InputGroupAddon align="inline-end">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Info />
+                  <button
+                    type="button"
+                    aria-label={t("filter.searchInfoLabel")}
+                    className="mr-1 inline-flex size-4 items-center justify-center"
+                  >
+                    <Info className="size-4" aria-hidden="true" />
+                  </button>
                 </TooltipTrigger>
                 <TooltipContent>
                   {t.rich("filter.searchDescription", {
@@ -376,10 +388,9 @@ export function ScrimPagination({
                     <PaginationPrevious
                       className="hidden md:flex"
                       onClick={goToPreviousPage}
-                      href="#"
                     />
                     <PaginationItem className="md:hidden">
-                      <PaginationLink onClick={goToPreviousPage} href="#">
+                      <PaginationLink onClick={goToPreviousPage}>
                         <ChevronLeftIcon className="h-4 w-4" />
                       </PaginationLink>
                     </PaginationItem>
@@ -402,7 +413,6 @@ export function ScrimPagination({
                           canNavigate ? () => navigateToPage(page) : undefined
                         }
                         isActive={currentPage === page}
-                        href="#"
                         className={cn(
                           "tabular-nums",
                           !canNavigate &&
@@ -420,10 +430,9 @@ export function ScrimPagination({
                     <PaginationNext
                       className="hidden md:flex"
                       onClick={goToNextPage}
-                      href="#"
                     />
                     <PaginationItem className="md:hidden">
-                      <PaginationLink onClick={goToNextPage} href="#">
+                      <PaginationLink onClick={goToNextPage}>
                         <ChevronRightIcon className="h-4 w-4" />
                       </PaginationLink>
                     </PaginationItem>
