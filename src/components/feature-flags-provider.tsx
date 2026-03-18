@@ -9,6 +9,7 @@ const defaultFlags: FeatureFlags = {
   overviewCardEnabled: false,
   dataLabelingEnabled: false,
   simulationToolEnabled: false,
+  ultimateImpactToolEnabled: false,
   newLandingPageEnabled: false,
 };
 
