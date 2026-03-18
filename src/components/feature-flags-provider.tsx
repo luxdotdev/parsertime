@@ -11,6 +11,7 @@ const defaultFlags: FeatureFlags = {
   simulationToolEnabled: false,
   ultimateImpactToolEnabled: false,
   newLandingPageEnabled: false,
+  tempoChartEnabled: false,
 };
 
 const FeatureFlagsContext = createContext<FeatureFlags>(defaultFlags);
