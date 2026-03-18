@@ -45,3 +45,6 @@ next-env.d.ts
 /reports
 
 .claude/settings.local.json
+
+# Superpowers brainstorm files
+.superpowers/
