@@ -21,13 +21,13 @@ export function CommandMenuProvider({
     function down(e: KeyboardEvent) {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setOpen(!open);
+        setOpen((prev) => !prev);
       }
     }
 
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
-  }, [open, setOpen]);
+  }, []);
 
   const value = React.useMemo(() => ({ open, setOpen }), [open, setOpen]);
 
