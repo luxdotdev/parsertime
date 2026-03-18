@@ -34,12 +34,12 @@ export function ScrimCard({ scrim, prefetch }: Props) {
       prefetch={prefetch}
       className="group block"
     >
-      <Card className="hover:border-primary/50 relative max-w-md overflow-hidden border-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg sm:h-48 md:h-64 xl:h-48">
-        <div className="from-primary/5 absolute inset-0 bg-gradient-to-br via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <Card className="[@media(hover:hover)_and_(pointer:fine)]:hover:border-primary/50 relative max-w-md overflow-hidden border-2 active:scale-[0.97] motion-safe:transition-[transform,box-shadow,border-color] motion-safe:duration-200 sm:h-48 md:h-64 xl:h-48 [@media(hover:hover)_and_(pointer:fine)]:hover:scale-[1.02] [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-lg">
+        <div className="from-primary/5 absolute inset-0 bg-gradient-to-br via-transparent to-transparent opacity-0 motion-safe:transition-opacity motion-safe:duration-300 [@media(hover:hover)_and_(pointer:fine)]:group-hover:opacity-100" />
 
         <CardHeader className="relative space-y-2 pb-3">
           <div className="flex items-start justify-between gap-3">
-            <h3 className="group-hover:text-primary line-clamp-2 text-lg leading-tight font-bold transition-colors duration-200">
+            <h3 className="[@media(hover:hover)_and_(pointer:fine)]:group-hover:text-primary line-clamp-2 text-lg leading-tight font-bold transition-colors duration-200">
               {scrim.name}
             </h3>
             {scrim.hasPerms && (
@@ -119,7 +119,7 @@ export function ScrimCard({ scrim, prefetch }: Props) {
               alt={scrim.team}
               width={32}
               height={32}
-              className="rounded-full object-cover"
+              className="ring-foreground/10 rounded-full object-cover ring-1"
             />
           </div>
         </CardContent>
