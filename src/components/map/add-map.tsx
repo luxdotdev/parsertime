@@ -10,7 +10,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@/components/ui/link";
@@ -34,15 +33,12 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
-import { Form, useForm } from "react-hook-form";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { z } from "zod";
 
 const XLSX =
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
@@ -62,6 +58,7 @@ export function AddMapCard() {
     { hero: string; team: string; banPosition: number }[]
   >([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations("scrimPage.addMap");
@@ -73,25 +70,20 @@ export function AddMapCard() {
     })
   );
 
-  const formSchema = z.object({
-    file: z
-      .instanceof(File)
-      .refine(
-        (file) => file !== null && file !== undefined,
-        t("fileMessage.required")
-      )
-      .refine(
-        (file) => file && file.size <= MAX_FILE_SIZE,
-        t("fileMessage.maxSize")
-      )
-      .refine(
-        (file) => file && ACCEPTED_FILE_TYPES.includes(file.type),
-        t("fileMessage.accepted")
-      )
-      .nullable(),
-  });
+  function validateFile(file: File): string | null {
+    if (file.size > MAX_FILE_SIZE) return t("fileMessage.maxSize");
+    if (!ACCEPTED_FILE_TYPES.includes(file.type))
+      return t("fileMessage.accepted");
+    return null;
+  }
 
   async function handleFile(file: File) {
+    const error = validateFile(file);
+    if (error) {
+      toast.error(error);
+      return;
+    }
+
     // Check for corrupted data before parsing
     const hasCorruptedData = await detectFileCorruption(file);
 
@@ -197,7 +189,6 @@ export function AddMapCard() {
     setDragActive(false);
 
     if (e.dataTransfer.files?.[0]) {
-      // at least one file has been selected so do something
       void handleFile(e.dataTransfer.files[0]);
     }
   }
@@ -205,85 +196,86 @@ export function AddMapCard() {
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
     if (e.target.files?.[0]) {
-      // at least one file has been selected so do something
       void handleFile(e.target.files[0]);
     }
   }
 
   function handleClick() {
-    document.getElementById("file")?.click();
+    fileInputRef.current?.click();
   }
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      file: null,
-    },
-  });
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = heroBans.findIndex(
+        (ban) => `ban-${ban.hero}-${ban.team}-${ban.banPosition}` === active.id
+      );
+      const newIndex = heroBans.findIndex(
+        (ban) => `ban-${ban.hero}-${ban.team}-${ban.banPosition}` === over.id
+      );
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const reorderedBans = arrayMove(heroBans, oldIndex, newIndex);
+        const updatedBans = reorderedBans.map((ban, i) => ({
+          ...ban,
+          banPosition: i + 1,
+        }));
+        setHeroBans(updatedBans);
+      }
+    }
+  }
 
   return (
     <ClientOnly>
-      <Form {...form} className="w-full">
-        <form onDragEnter={handleDrag}>
-          <FormField
-            control={form.control}
-            name="file"
-            render={() => (
-              <FormItem>
-                <div
-                  className={cn(
-                    "h-48 rounded-2xl",
-                    dragActive && "border-green-500"
-                  )}
+      <div
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            handleClick();
+          }
+        }}
+        className={cn(
+          "border-border flex cursor-pointer items-center gap-4 rounded-xl border-2 border-dashed px-5 py-6 transition-colors",
+          dragActive
+            ? "border-green-500 bg-green-500/5"
+            : "hover:border-muted-foreground/30 hover:bg-muted/30"
+        )}
+        onDragEnter={handleDrag}
+        onDragLeave={handleDrag}
+        onDragOver={handleDrag}
+        onDrop={handleDrop}
+        onClick={handleClick}
+      >
+        <div className="bg-muted rounded-full p-2.5">
+          <Upload className="text-muted-foreground h-4 w-4" />
+        </div>
+        <div>
+          <p className="text-foreground text-sm font-medium">{t("title")}</p>
+          <p className="text-muted-foreground text-xs">
+            {t.rich("description", {
+              here: (chunks) => (
+                <Label
+                  htmlFor="file"
+                  className="text-primary hover:text-primary/90 inline cursor-pointer font-medium"
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        handleClick();
-                      }
-                    }}
-                    className="border-border flex h-full cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed p-8 text-center"
-                    onDragEnter={handleDrag}
-                    onDragLeave={handleDrag}
-                    onDragOver={handleDrag}
-                    onDrop={handleDrop}
-                    onClick={handleClick}
-                  >
-                    <div className="bg-muted mb-2 rounded-full p-3">
-                      <Upload className="text-muted-foreground h-5 w-5" />
-                    </div>
-                    <p className="text-foreground text-sm font-medium">
-                      {t("title")}
-                    </p>
-                    <p className="text-muted-foreground mt-1 text-sm">
-                      {t.rich("description", {
-                        here: (chunks) => (
-                          <Label
-                            htmlFor="file"
-                            className="text-primary hover:text-primary/90 inline-block cursor-pointer font-medium"
-                            onClick={(e) => e.stopPropagation()} // Prevent triggering handleBoxClick
-                          >
-                            {chunks}
-                          </Label>
-                        ),
-                      })}
-                    </p>
-                    <Input
-                      type="file"
-                      id="file"
-                      className="hidden w-64"
-                      accept=".xlsx, .txt"
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-              </FormItem>
-            )}
-          />
-        </form>
-      </Form>
+                  {chunks}
+                </Label>
+              ),
+            })}
+          </p>
+        </div>
+        <Input
+          ref={fileInputRef}
+          type="file"
+          id="file"
+          className="hidden"
+          accept=".xlsx, .txt"
+          onChange={handleChange}
+        />
+      </div>
 
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
@@ -381,26 +373,4 @@ export function AddMapCard() {
       </Dialog>
     </ClientOnly>
   );
-
-  function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
-
-    if (over && active.id !== over.id) {
-      const oldIndex = heroBans.findIndex(
-        (ban) => `ban-${ban.hero}-${ban.team}-${ban.banPosition}` === active.id
-      );
-      const newIndex = heroBans.findIndex(
-        (ban) => `ban-${ban.hero}-${ban.team}-${ban.banPosition}` === over.id
-      );
-
-      if (oldIndex !== -1 && newIndex !== -1) {
-        const reorderedBans = arrayMove(heroBans, oldIndex, newIndex);
-        const updatedBans = reorderedBans.map((ban, i) => ({
-          ...ban,
-          banPosition: i + 1,
-        }));
-        setHeroBans(updatedBans);
-      }
-    }
-  }
 }
