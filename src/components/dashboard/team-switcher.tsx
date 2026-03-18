@@ -42,7 +42,7 @@ export function TeamSwitcher({
   session,
 }: TeamSwitcherProps & { session: Session | null }) {
   const [newTeamCreated, setNewTeamCreated] = React.useState(false);
-  const { setTeamId } = React.use(TeamSwitcherContext);
+  const { teamId, setTeamId } = React.use(TeamSwitcherContext);
   const t = useTranslations("dashboard.teamSwitcher");
 
   async function getTeams() {
@@ -92,7 +92,14 @@ export function TeamSwitcher({
 
   const [open, setOpen] = React.useState(false);
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false);
-  const [selectedTeam, setSelectedTeam] = React.useState(groups[0].teams![0]);
+
+  // Derive selected team from URL state (via context)
+  const individualTeam = groups[0].teams![0];
+  const allTeams = groups.flatMap((g) => g.teams ?? []);
+  const selectedTeam =
+    teamId !== undefined
+      ? (allTeams.find((t) => t.value === String(teamId)) ?? individualTeam)
+      : individualTeam;
 
   return (
     <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
@@ -133,7 +140,6 @@ export function TeamSwitcher({
                       <CommandItem
                         key={team.value}
                         onSelect={() => {
-                          setSelectedTeam(team);
                           setTeamId(
                             team.value === "individual"
                               ? undefined
