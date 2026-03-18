@@ -398,7 +398,8 @@
       "select": "选择筛选条件",
       "oldToNew": "从旧到新",
       "newToOld": "从新到旧",
-      "search": "搜索..."
+      "search": "搜索...",
+      "searchInfoLabel": "搜索帮助"
     },
     "pagination": {
       "previous": "上一页",

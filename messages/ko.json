@@ -398,7 +398,8 @@
       "select": "필터 선택",
       "oldToNew": "오래된 순",
       "newToOld": "최신 순",
-      "search": "검색..."
+      "search": "검색...",
+      "searchInfoLabel": "검색 도움말"
     },
     "pagination": {
       "previous": "이전",
