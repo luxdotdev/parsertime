@@ -90,7 +90,7 @@ function MapCardWithSelectionComponent({
   const card = (
     <Card
       className={cn(
-        "relative h-48 max-w-md bg-cover transition-all duration-150",
+        "relative aspect-video overflow-hidden transition-all duration-150",
         "ring-foreground/10 shadow-xs ring-1",
         "@media (hover: hover) hover:ring-primary/30 hover:shadow-md",
         isSelected && "ring-primary border-primary border-l-4 shadow-lg ring-2"
