@@ -1,5 +1,6 @@
 "use client";
 
+import { parseAsInteger, useQueryState } from "nuqs";
 import React, { createContext } from "react";
 
 export const TeamSwitcherContext = createContext({
@@ -15,10 +16,17 @@ export function TeamSwitcherProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [teamId, setTeamId] = React.useState<number | undefined>(undefined);
+  const [teamId, setTeamIdRaw] = useQueryState("team", parseAsInteger);
+
+  const setTeamId = React.useCallback(
+    (id: number | undefined) => {
+      void setTeamIdRaw(id ?? null);
+    },
+    [setTeamIdRaw]
+  );
 
   const value = React.useMemo(
-    () => ({ teamId, setTeamId }),
+    () => ({ teamId: teamId ?? undefined, setTeamId }),
     [teamId, setTeamId]
   );
 
