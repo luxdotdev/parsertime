@@ -228,7 +228,13 @@ function HeroCombobox({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-72 p-0" align="start">
-        <Command>
+        <Command
+          filter={(value, search) => {
+            const normalized = toHero(value);
+            const normalizedSearch = toHero(search);
+            return normalized.includes(normalizedSearch) ? 1 : 0;
+          }}
+        >
           <CommandInput placeholder="Search heroes…" />
           <CommandList>
             <CommandEmpty>No heroes found.</CommandEmpty>
