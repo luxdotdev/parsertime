@@ -131,6 +131,24 @@ export const simulationTool = flag<boolean, Entities>({
   identify,
 });
 
+export const ultimateImpactTool = flag<boolean, Entities>({
+  key: "ultimate-impact-tool",
+  adapter: vercelAdapter(),
+  options: [
+    {
+      value: true,
+      label: "Enabled",
+    },
+    {
+      value: false,
+      label: "Disabled",
+    },
+  ],
+  defaultValue: false,
+  description: "Enable or disable the ultimate impact analysis tool.",
+  identify,
+});
+
 export const newLandingPage = flag<boolean, Entities>({
   key: "new-landing-page",
   adapter: vercelAdapter(),
