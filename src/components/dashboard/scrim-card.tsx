@@ -62,7 +62,7 @@ export function ScrimCard({ scrim, prefetch }: Props) {
           <div className="flex flex-col gap-1 text-sm">
             <div className="text-muted-foreground flex items-center gap-2">
               <CalendarIcon className="h-3.5 w-3.5 shrink-0" />
-              <span className="font-medium">
+              <span className="font-medium" suppressHydrationWarning>
                 {scrim.date.toLocaleDateString(undefined, {
                   year: "numeric",
                   month: "short",
