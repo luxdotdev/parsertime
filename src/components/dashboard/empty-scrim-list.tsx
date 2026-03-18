@@ -54,7 +54,7 @@ export function EmptyScrimList({ isOnboarding }: { isOnboarding?: boolean }) {
           <div className="flex h-[36rem] flex-col items-center justify-center space-y-2">
             <div className="text-center">
               <div id="docs-demo-step1">
-                <h2 className="text-2xl font-bold tracking-tight text-black dark:text-white">
+                <h2 className="text-foreground text-2xl font-bold tracking-tight">
                   {t("title")}
                 </h2>
                 <p className="text-muted-foreground">
