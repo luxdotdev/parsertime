@@ -1011,6 +1011,18 @@
         "title": "使用的终极技能",
         "description": "列出了比赛中使用的所有终极技能及其使用时间。",
         "ultStart": "<span><img></img><color>{player}</color></span> 在第 {fight} 场战斗中使用了他们的终极技能。"
+      },
+      "tempo": {
+        "title": "比赛节奏",
+        "description": "击杀和终极技能在整场比赛中的流动情况。",
+        "combined": "综合",
+        "ultimates": "终极技能",
+        "kills": "击杀",
+        "adjustRange": "调整时间范围",
+        "snapToFights": "对齐战斗",
+        "fightLabel": "战斗 {number}",
+        "allFights": "所有战斗",
+        "noData": "数据不足，无法显示节奏。"
       }
     },
     "compare": {

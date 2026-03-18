@@ -1011,6 +1011,18 @@
         "title": "사용된 궁극기",
         "description": "경기 중 사용된 모든 궁극기와 발생 시간을 보여줍니다.",
         "ultStart": "<span><img></img><color>{player}</color></span>이(가) 전투 {fight} 중에 궁극기를 사용했습니다."
+      },
+      "tempo": {
+        "title": "경기 템포",
+        "description": "경기 전반에 걸친 처치와 궁극기의 흐름입니다.",
+        "combined": "통합",
+        "ultimates": "궁극기",
+        "kills": "처치",
+        "adjustRange": "시간 범위 조정",
+        "snapToFights": "전투에 맞추기",
+        "fightLabel": "전투 {number}",
+        "allFights": "모든 전투",
+        "noData": "템포를 표시할 데이터가 충분하지 않습니다."
       }
     },
     "compare": {

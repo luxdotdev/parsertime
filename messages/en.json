@@ -1503,6 +1503,18 @@
         "title": "Ultimates Used",
         "description": "A list of all ultimates used during the match and the times when they occurred.",
         "ultStart": "<span><img></img><color>{player}</color></span> used their ultimate during fight {fight}."
+      },
+      "tempo": {
+        "title": "Match Tempo",
+        "description": "How kills and ultimates flow throughout the match.",
+        "combined": "Combined",
+        "ultimates": "Ultimates",
+        "kills": "Kills",
+        "adjustRange": "Adjust time range",
+        "snapToFights": "Snap to fights",
+        "fightLabel": "Fight {number}",
+        "allFights": "All fights",
+        "noData": "Not enough data to display tempo."
       }
     },
     "compare": {
