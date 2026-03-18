@@ -149,6 +149,18 @@ export const ultimateImpactTool = flag<boolean, Entities>({
   identify,
 });
 
+export const tempoChart = flag<boolean, Entities>({
+  key: "tempo-chart",
+  adapter: vercelAdapter(),
+  options: [
+    { value: true, label: "Enabled" },
+    { value: false, label: "Disabled" },
+  ],
+  defaultValue: false,
+  description: "Show the match tempo chart on the Events tab",
+  identify,
+});
+
 export const newLandingPage = flag<boolean, Entities>({
   key: "new-landing-page",
   adapter: vercelAdapter(),
