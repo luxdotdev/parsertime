@@ -11,6 +11,7 @@ import { PlayerSwitcher } from "@/components/map/player-switcher";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getMostPlayedHeroes } from "@/data/player-dto";
+import { tempoChart } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import { toTitleCase, translateMapName } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
@@ -149,7 +150,12 @@ export default async function MapDashboardPage() {
             <MapCharts id={id} />
           </TabsContent>
           <TabsContent value="events" className="space-y-4">
-            <MapEvents id={id} team1Color={team1} team2Color={team2} />
+            <MapEvents
+              id={id}
+              team1Color={team1}
+              team2Color={team2}
+              tempoChartEnabled={await tempoChart()}
+            />
           </TabsContent>
           <TabsContent value="compare" className="space-y-4">
             <ComparePlayers id={id} />

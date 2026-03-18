@@ -20,7 +20,7 @@ import { VodOverview } from "@/components/vods/vod-overview";
 import { getMostPlayedHeroes } from "@/data/player-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import { scoutingTool } from "@/lib/flags";
+import { scoutingTool, tempoChart } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import { getColorblindMode, translateMapName } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
@@ -89,6 +89,7 @@ export default async function MapDashboardPage(
     heroBans,
     noteContent,
     scoutingEnabled,
+    tempoChartEnabled,
   ] = await Promise.all([
     getMostPlayedHeroes(id),
     prisma.matchStart.findFirst({
@@ -114,6 +115,7 @@ export default async function MapDashboardPage(
       select: { content: true },
     }),
     scoutingTool(),
+    tempoChart(),
   ]);
 
   const translatedMapName = await translateMapName(
@@ -209,7 +211,12 @@ export default async function MapDashboardPage(
             <MapCharts id={id} />
           </TabsContent>
           <TabsContent value="events" className="space-y-4">
-            <MapEvents id={id} team1Color={team1} team2Color={team2} />
+            <MapEvents
+              id={id}
+              team1Color={team1}
+              team2Color={team2}
+              tempoChartEnabled={tempoChartEnabled}
+            />
           </TabsContent>
           <TabsContent value="compare" className="space-y-4">
             <ComparePlayers id={id} />
