@@ -18,6 +18,7 @@ import type {
 import { toTimestamp } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
+import { EvalBar } from "./eval-bar";
 import { HeroPin } from "./hero-pin";
 import { KillDot } from "./kill-dot";
 import { TempoCurve } from "./tempo-curve";
@@ -194,6 +195,21 @@ export function TempoChart({
     activeSeries,
   ]);
 
+  const evalScores = useMemo(() => {
+    let t1Sum = 0;
+    let t2Sum = 0;
+    let count = 0;
+    for (const p of activeSeries) {
+      if (p.time >= visibleStart && p.time <= visibleEnd) {
+        t1Sum += p.team1;
+        t2Sum += p.team2;
+        count++;
+      }
+    }
+    if (count === 0) return { team1: 0, team2: 0 };
+    return { team1: t1Sum / count, team2: t2Sum / count };
+  }, [activeSeries, visibleStart, visibleEnd]);
+
   const visibleKillDots = useMemo(() => {
     if (!showKillDots) return [];
 
@@ -238,157 +254,169 @@ export function TempoChart({
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Chart */}
         <TooltipProvider>
-          <div
-            className="border-border/50 relative aspect-[5/2] w-full overflow-hidden rounded-lg border bg-zinc-50 dark:bg-zinc-900/50"
-            role="img"
-            aria-label={t("title")}
-          >
-            <svg
-              viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`}
-              preserveAspectRatio="xMidYMid meet"
-              className="h-full w-full"
+          <div className="flex gap-2">
+            {/* Eval bar */}
+            <EvalBar
+              team1Score={evalScores.team1}
+              team2Score={evalScores.team2}
+              team1Name={team1Name}
+              team2Name={team2Name}
+              team1Color={team1Color}
+              team2Color={team2Color}
+            />
+
+            {/* Chart */}
+            <div
+              className="border-border/50 relative aspect-[5/2] w-full overflow-hidden rounded-lg border bg-zinc-50 dark:bg-zinc-900/50"
+              role="img"
+              aria-label={t("title")}
             >
-              {/* Center dashed line */}
-              <line
-                x1={0}
-                y1={CENTER_Y}
-                x2={VIEW_WIDTH}
-                y2={CENTER_Y}
-                stroke="currentColor"
-                strokeWidth={0.5}
-                strokeDasharray="4,4"
-                className="text-muted-foreground/20"
-              />
-
-              {/* Fight boundary zones */}
-              {visibleFights.map((fb) => {
-                const x1 = Math.max(
-                  0,
-                  ((fb.start - visibleStart) / visibleDuration) * VIEW_WIDTH
-                );
-                const x2 = Math.min(
-                  VIEW_WIDTH,
-                  ((fb.end - visibleStart) / visibleDuration) * VIEW_WIDTH
-                );
-                const midX = (x1 + x2) / 2;
-                return (
-                  <g key={fb.fightNumber}>
-                    <line
-                      x1={x1}
-                      y1={0}
-                      x2={x1}
-                      y2={VIEW_HEIGHT}
-                      stroke="currentColor"
-                      strokeWidth={0.5}
-                      strokeDasharray="2,4"
-                      className="text-muted-foreground/10"
-                    />
-                    <line
-                      x1={x2}
-                      y1={0}
-                      x2={x2}
-                      y2={VIEW_HEIGHT}
-                      stroke="currentColor"
-                      strokeWidth={0.5}
-                      strokeDasharray="2,4"
-                      className="text-muted-foreground/10"
-                    />
-                    <text
-                      x={midX}
-                      y={12}
-                      textAnchor="middle"
-                      className="fill-muted-foreground/30 text-[10px]"
-                    >
-                      F{fb.fightNumber}
-                    </text>
-                  </g>
-                );
-              })}
-
-              {/* Team 1 curve (upward from center) */}
-              <TempoCurve
-                points={team1Points}
-                color={team1Color}
-                baselineY={CENTER_Y}
-              />
-
-              {/* Team 2 curve (downward from center) */}
-              <TempoCurve
-                points={team2Points}
-                color={team2Color}
-                baselineY={CENTER_Y}
-              />
-
-              {/* Hero pins (combined + ultimates tabs) */}
-              {visiblePins.map((pin) => (
-                <HeroPin
-                  key={`ult-${pin.playerName}-${pin.hero}-${pin.time}`}
-                  x={pin.x}
-                  y={pin.curveY}
-                  hero={pin.hero}
-                  playerName={pin.playerName}
-                  teamLabel={pin.team === "team1" ? team1Name : team2Name}
-                  color={pin.team === "team1" ? team1Color : team2Color}
-                  time={pin.time}
-                  id={`ult-${pin.playerName}-${pin.hero}-${pin.time}`}
-                  yOffset={pin.yOffset}
-                  curveY={pin.curveY}
+              <svg
+                viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`}
+                preserveAspectRatio="xMidYMid meet"
+                className="h-full w-full"
+              >
+                {/* Center dashed line */}
+                <line
+                  x1={0}
+                  y1={CENTER_Y}
+                  x2={VIEW_WIDTH}
+                  y2={CENTER_Y}
+                  stroke="currentColor"
+                  strokeWidth={0.5}
+                  strokeDasharray="4,4"
+                  className="text-muted-foreground/20"
                 />
-              ))}
 
-              {/* Kill dots (kills tab only) */}
-              {visibleKillDots.map((dot) => (
-                <KillDot
-                  key={`kill-${dot.playerName}-${dot.hero}-${dot.victimName}-${dot.time}`}
-                  x={dot.x}
-                  y={dot.y}
-                  attackerHero={dot.hero}
-                  attackerName={dot.playerName}
-                  victimHero={dot.victimHero}
-                  victimName={dot.victimName}
-                  teamLabel={dot.team === "team1" ? team1Name : team2Name}
-                  color={dot.team === "team1" ? team1Color : team2Color}
-                  time={dot.time}
+                {/* Fight boundary zones */}
+                {visibleFights.map((fb) => {
+                  const x1 = Math.max(
+                    0,
+                    ((fb.start - visibleStart) / visibleDuration) * VIEW_WIDTH
+                  );
+                  const x2 = Math.min(
+                    VIEW_WIDTH,
+                    ((fb.end - visibleStart) / visibleDuration) * VIEW_WIDTH
+                  );
+                  const midX = (x1 + x2) / 2;
+                  return (
+                    <g key={fb.fightNumber}>
+                      <line
+                        x1={x1}
+                        y1={0}
+                        x2={x1}
+                        y2={VIEW_HEIGHT}
+                        stroke="currentColor"
+                        strokeWidth={0.5}
+                        strokeDasharray="2,4"
+                        className="text-muted-foreground/10"
+                      />
+                      <line
+                        x1={x2}
+                        y1={0}
+                        x2={x2}
+                        y2={VIEW_HEIGHT}
+                        stroke="currentColor"
+                        strokeWidth={0.5}
+                        strokeDasharray="2,4"
+                        className="text-muted-foreground/10"
+                      />
+                      <text
+                        x={midX}
+                        y={12}
+                        textAnchor="middle"
+                        className="fill-muted-foreground/30 text-[10px]"
+                      >
+                        F{fb.fightNumber}
+                      </text>
+                    </g>
+                  );
+                })}
+
+                {/* Team 1 curve (upward from center) */}
+                <TempoCurve
+                  points={team1Points}
+                  color={team1Color}
+                  baselineY={CENTER_Y}
                 />
-              ))}
 
-              {/* Time labels */}
-              {timeLabels.map((tl) => (
+                {/* Team 2 curve (downward from center) */}
+                <TempoCurve
+                  points={team2Points}
+                  color={team2Color}
+                  baselineY={CENTER_Y}
+                />
+
+                {/* Hero pins (combined + ultimates tabs) */}
+                {visiblePins.map((pin) => (
+                  <HeroPin
+                    key={`ult-${pin.playerName}-${pin.hero}-${pin.time}`}
+                    x={pin.x}
+                    y={pin.curveY}
+                    hero={pin.hero}
+                    playerName={pin.playerName}
+                    teamLabel={pin.team === "team1" ? team1Name : team2Name}
+                    color={pin.team === "team1" ? team1Color : team2Color}
+                    time={pin.time}
+                    id={`ult-${pin.playerName}-${pin.hero}-${pin.time}`}
+                    yOffset={pin.yOffset}
+                    curveY={pin.curveY}
+                  />
+                ))}
+
+                {/* Kill dots (kills tab only) */}
+                {visibleKillDots.map((dot) => (
+                  <KillDot
+                    key={`kill-${dot.playerName}-${dot.hero}-${dot.victimName}-${dot.time}`}
+                    x={dot.x}
+                    y={dot.y}
+                    attackerHero={dot.hero}
+                    attackerName={dot.playerName}
+                    victimHero={dot.victimHero}
+                    victimName={dot.victimName}
+                    teamLabel={dot.team === "team1" ? team1Name : team2Name}
+                    color={dot.team === "team1" ? team1Color : team2Color}
+                    time={dot.time}
+                  />
+                ))}
+
+                {/* Time labels */}
+                {timeLabels.map((tl) => (
+                  <text
+                    key={tl.x}
+                    x={tl.x}
+                    y={VIEW_HEIGHT - 4}
+                    textAnchor={
+                      tl.x === 0
+                        ? "start"
+                        : tl.x === VIEW_WIDTH
+                          ? "end"
+                          : "middle"
+                    }
+                    className="fill-muted-foreground/50 font-mono text-[10px] tabular-nums"
+                  >
+                    {tl.label}
+                  </text>
+                ))}
+
+                {/* Team labels */}
                 <text
-                  key={tl.x}
-                  x={tl.x}
-                  y={VIEW_HEIGHT - 4}
-                  textAnchor={
-                    tl.x === 0
-                      ? "start"
-                      : tl.x === VIEW_WIDTH
-                        ? "end"
-                        : "middle"
-                  }
-                  className="fill-muted-foreground/50 font-mono text-[10px] tabular-nums"
+                  x={8}
+                  y={20}
+                  className="fill-muted-foreground text-[11px] font-medium"
                 >
-                  {tl.label}
+                  {team1Name}
                 </text>
-              ))}
-
-              {/* Team labels */}
-              <text
-                x={8}
-                y={20}
-                className="fill-muted-foreground text-[11px] font-medium"
-              >
-                {team1Name}
-              </text>
-              <text
-                x={8}
-                y={VIEW_HEIGHT - 16}
-                className="fill-muted-foreground text-[11px] font-medium"
-              >
-                {team2Name}
-              </text>
-            </svg>
+                <text
+                  x={8}
+                  y={VIEW_HEIGHT - 16}
+                  className="fill-muted-foreground text-[11px] font-medium"
+                >
+                  {team2Name}
+                </text>
+              </svg>
+            </div>
           </div>
         </TooltipProvider>
 
