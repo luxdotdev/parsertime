@@ -16,10 +16,14 @@ const XLSX_FILE =
 const TXT_FILE = "text/plain";
 
 const TEAM_NAME_FIELDS: Record<string, number[]> = {
+  ability_1_used: [2],
+  ability_2_used: [2],
+  damage: [2, 5],
   defensive_assist: [2],
   dva_remech: [2],
   echo_duplicate_end: [2],
   echo_duplicate_start: [2],
+  healing: [2, 5],
   hero_spawn: [2],
   hero_swap: [2],
   kill: [2, 5],
@@ -155,11 +159,12 @@ export async function parseDataFromTXT(file: File) {
   // Clean invalid lines
   const cleanedLines = cleanInvalidLines(lines);
 
-  // Indexes for the 'kill' event type to skip parsing
-  const killSkipIndexes = {
-    eventAbilityIndex: 8,
-    criticalHitIndex: 10,
-    environmentalIndex: 11,
+  // Indexes for event types with string fields that should skip numeric parsing
+  // Includes name/hero fields that can be "0" (e.g. health pack healing has no healer)
+  const stringFieldIndexes: Record<string, number[]> = {
+    kill: [3, 4, 6, 7, 8, 10, 11],
+    damage: [3, 4, 6, 7, 8, 10, 11],
+    healing: [3, 4, 6, 7, 8, 10],
   };
 
   // Function to check and convert a value to a number if applicable or replace empty strings with null
@@ -183,13 +188,8 @@ export async function parseDataFromTXT(file: File) {
     if (isTeamNameField(eventType, index)) {
       return value;
     }
-    if (
-      eventType === "kill" &&
-      (index === killSkipIndexes.eventAbilityIndex ||
-        index === killSkipIndexes.criticalHitIndex ||
-        index === killSkipIndexes.environmentalIndex)
-    ) {
-      return value; // Skip conversion for specific fields in 'kill' event
+    if (stringFieldIndexes[eventType]?.includes(index)) {
+      return value; // Skip conversion for string fields
     }
     const parsedValue = parseFloat(value);
     return isNaN(parsedValue) ? value : parsedValue;
@@ -399,10 +399,14 @@ export async function createNewScrimFromParsedData(
 
   try {
     await Promise.all([
+      createAbility1UsedRows(firstMap, scrim, map.id),
+      createAbility2UsedRows(firstMap, scrim, map.id),
+      createDamageRows(firstMap, scrim, map.id),
       createDefensiveAssistsRows(firstMap, scrim, map.id),
       createDvaRemechRows(firstMap, scrim, map.id),
       createEchoDuplicateEndRows(firstMap, scrim, map.id),
       createEchoDuplicateStartRows(firstMap, scrim, map.id),
+      createHealingRows(firstMap, scrim, map.id),
       createHeroSpawnRows(firstMap, scrim, map.id),
       createHeroSwapRows(firstMap, scrim, map.id),
       createKillRows(firstMap, scrim, map.id),
@@ -527,10 +531,14 @@ export async function createNewMap(data: CreateNewMapArgs, session: Session) {
 
   try {
     await Promise.all([
+      createAbility1UsedRows(data.map, { id: data.scrimId }, map.id),
+      createAbility2UsedRows(data.map, { id: data.scrimId }, map.id),
+      createDamageRows(data.map, { id: data.scrimId }, map.id),
       createDefensiveAssistsRows(data.map, { id: data.scrimId }, map.id),
       createDvaRemechRows(data.map, { id: data.scrimId }, map.id),
       createEchoDuplicateEndRows(data.map, { id: data.scrimId }, map.id),
       createEchoDuplicateStartRows(data.map, { id: data.scrimId }, map.id),
+      createHealingRows(data.map, { id: data.scrimId }, map.id),
       createHeroSpawnRows(data.map, { id: data.scrimId }, map.id),
       createHeroSwapRows(data.map, { id: data.scrimId }, map.id),
       createKillRows(data.map, { id: data.scrimId }, map.id),
@@ -1738,4 +1746,165 @@ export async function createUltimateStartRows(
   });
 
   return ultimateStartsByScrimId;
+}
+
+export async function createAbility1UsedRows(
+  data: ParserData,
+  scrim: { id: number },
+  mapId: number
+) {
+  if (
+    typeof data.ability_1_used === "undefined" ||
+    data.ability_1_used.length === 0 ||
+    !data.ability_1_used
+  ) {
+    Logger.log(
+      "No ability 1 used found for map: ",
+      mapId,
+      "scrim: ",
+      scrim.id
+    );
+    return [];
+  }
+
+  await prisma.ability1Used.createMany({
+    data: data.ability_1_used.map((ability) => ({
+      scrimId: scrim.id,
+      match_time: ability[1],
+      player_team: String(ability[2]),
+      player_name: ability[3],
+      player_hero: ability[4],
+      hero_duplicated: String(ability[5]),
+      MapDataId: mapId,
+    })),
+  });
+
+  const ability1UsedByScrimId = await prisma.ability1Used.findMany({
+    where: {
+      scrimId: scrim.id,
+    },
+  });
+
+  return ability1UsedByScrimId;
+}
+
+export async function createAbility2UsedRows(
+  data: ParserData,
+  scrim: { id: number },
+  mapId: number
+) {
+  if (
+    typeof data.ability_2_used === "undefined" ||
+    data.ability_2_used.length === 0 ||
+    !data.ability_2_used
+  ) {
+    Logger.log(
+      "No ability 2 used found for map: ",
+      mapId,
+      "scrim: ",
+      scrim.id
+    );
+    return [];
+  }
+
+  await prisma.ability2Used.createMany({
+    data: data.ability_2_used.map((ability) => ({
+      scrimId: scrim.id,
+      match_time: ability[1],
+      player_team: String(ability[2]),
+      player_name: ability[3],
+      player_hero: ability[4],
+      hero_duplicated: String(ability[5]),
+      MapDataId: mapId,
+    })),
+  });
+
+  const ability2UsedByScrimId = await prisma.ability2Used.findMany({
+    where: {
+      scrimId: scrim.id,
+    },
+  });
+
+  return ability2UsedByScrimId;
+}
+
+export async function createDamageRows(
+  data: ParserData,
+  scrim: { id: number },
+  mapId: number
+) {
+  if (
+    typeof data.damage === "undefined" ||
+    data.damage.length === 0 ||
+    !data.damage
+  ) {
+    Logger.log("No damage found for map: ", mapId, "scrim: ", scrim.id);
+    return [];
+  }
+
+  await prisma.damage.createMany({
+    data: data.damage.map((dmg) => ({
+      scrimId: scrim.id,
+      match_time: dmg[1],
+      attacker_team: String(dmg[2]),
+      attacker_name: dmg[3],
+      attacker_hero: dmg[4],
+      victim_team: String(dmg[5]),
+      victim_name: dmg[6],
+      victim_hero: dmg[7],
+      event_ability: dmg[8],
+      event_damage: dmg[9],
+      is_critical_hit: dmg[10],
+      is_environmental: String(dmg[11]),
+      MapDataId: mapId,
+    })),
+  });
+
+  const damageByScrimId = await prisma.damage.findMany({
+    where: {
+      scrimId: scrim.id,
+    },
+  });
+
+  return damageByScrimId;
+}
+
+export async function createHealingRows(
+  data: ParserData,
+  scrim: { id: number },
+  mapId: number
+) {
+  if (
+    typeof data.healing === "undefined" ||
+    data.healing.length === 0 ||
+    !data.healing
+  ) {
+    Logger.log("No healing found for map: ", mapId, "scrim: ", scrim.id);
+    return [];
+  }
+
+  await prisma.healing.createMany({
+    data: data.healing.map((heal) => ({
+      scrimId: scrim.id,
+      match_time: heal[1],
+      healer_team: String(heal[2]),
+      healer_name: heal[3],
+      healer_hero: heal[4],
+      healee_team: String(heal[5]),
+      healee_name: heal[6],
+      healee_hero: heal[7],
+      event_ability: heal[8],
+      event_healing: heal[9],
+      is_health_pack: heal[10],
+      MapDataId: mapId,
+    })),
+  });
+
+  const healingByScrimId = await prisma.healing.findMany({
+    where: {
+      scrimId: scrim.id,
+    },
+  });
+
+  return healingByScrimId;
 }

@@ -270,11 +270,62 @@ export type UltimateStartTableRow = [
   ultimate_id: number,
 ];
 
+export type Ability1UsedTableRow = [
+  event_type: "ability_1_used",
+  match_time: number,
+  player_team: PlayerTeam,
+  player_name: string,
+  player_hero: HeroName,
+  hero_duplicated: string,
+];
+
+export type Ability2UsedTableRow = [
+  event_type: "ability_2_used",
+  match_time: number,
+  player_team: PlayerTeam,
+  player_name: string,
+  player_hero: HeroName,
+  hero_duplicated: string,
+];
+
+export type DamageTableRow = [
+  event_type: "damage",
+  match_time: number,
+  attacker_team: PlayerTeam,
+  attacker_name: string,
+  attacker_hero: HeroName,
+  victim_team: PlayerTeam,
+  victim_name: string,
+  victim_hero: HeroName,
+  event_ability: EventAbility,
+  event_damage: number,
+  is_critical_hit: string,
+  is_environmental: string,
+];
+
+export type HealingTableRow = [
+  event_type: "healing",
+  match_time: number,
+  healer_team: PlayerTeam,
+  healer_name: string,
+  healer_hero: HeroName,
+  healee_team: PlayerTeam,
+  healee_name: string,
+  healee_hero: HeroName,
+  event_ability: EventAbility,
+  event_healing: number,
+  is_health_pack: string,
+];
+
 export type ParserData = {
+  ability_1_used?: Ability1UsedTableRow[];
+  ability_2_used?: Ability2UsedTableRow[];
+  damage?: DamageTableRow[];
   defensive_assist: DefensiveAssistTableRow[];
   dva_remech?: DvaRemechTableRow[];
   echo_duplicate_end?: EchoDuplicateEndTableRow[];
   echo_duplicate_start?: EchoDuplicateStartTableRow[];
+  healing?: HealingTableRow[];
   hero_spawn: HeroSpawnTableRow[];
   hero_swap: HeroSwapTableRow[];
   kill: KillTableRow[];
