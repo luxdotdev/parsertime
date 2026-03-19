@@ -12,10 +12,14 @@ import { z } from "zod";
  */
 
 const EventType = z.enum([
+  "ability_1_used",
+  "ability_2_used",
+  "damage",
   "defensive_assist",
   "dva_remech",
   "echo_duplicate_end",
   "echo_duplicate_start",
+  "healing",
   "hero_spawn",
   "hero_swap",
   "kill",
@@ -50,6 +54,88 @@ const Int = z.number().int();
 const Float = z.number();
 const String = z.string();
 const StringOrNumber = z.string().or(z.number());
+
+const Ability1UsedSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.enum.ability_1_used),
+  // Match Time
+  Float,
+  // Player Team
+  String,
+  // Player Name
+  String,
+  // Player Hero
+  String,
+  // Hero Duplicated
+  StringOrNumber,
+]);
+
+const Ability2UsedSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.enum.ability_2_used),
+  // Match Time
+  Float,
+  // Player Team
+  String,
+  // Player Name
+  String,
+  // Player Hero
+  String,
+  // Hero Duplicated
+  StringOrNumber,
+]);
+
+const DamageSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.enum.damage),
+  // Match Time
+  Float,
+  // Attacker Team
+  String,
+  // Attacker Name
+  String,
+  // Attacker Hero
+  String,
+  // Victim Team
+  String,
+  // Victim Name
+  String,
+  // Victim Hero
+  String,
+  // Event Ability
+  String,
+  // Event Damage
+  Float,
+  // Is Critical Hit
+  String,
+  // Is Environmental
+  String,
+]);
+
+const HealingSchema = z.tuple([
+  // Event Type
+  z.literal(EventType.enum.healing),
+  // Match Time
+  Float,
+  // Healer Team
+  String,
+  // Healer Name
+  String,
+  // Healer Hero
+  String,
+  // Healee Team
+  String,
+  // Healee Name
+  String,
+  // Healee Hero
+  String,
+  // Event Ability
+  String,
+  // Event Healing
+  Float,
+  // Is Health Pack
+  String,
+]);
 
 const MatchStartSchema = z.tuple([
   // Event Type
@@ -508,6 +594,9 @@ export const PlayerStatSchema = z.tuple([
  * View the source here: {@link https://parserti.me/schema}
  */
 export const ParserDataSchema = z.object({
+  ability_1_used: z.array(Ability1UsedSchema).optional(),
+  ability_2_used: z.array(Ability2UsedSchema).optional(),
+  damage: z.array(DamageSchema).optional(),
   match_start: z.array(MatchStartSchema).optional(),
   match_end: z.array(MatchEndSchema).optional(),
   round_start: z.array(RoundStartSchema).optional(),
@@ -525,6 +614,7 @@ export const ParserDataSchema = z.object({
   ultimate_start: z.array(UltimateStartSchema).optional(),
   ultimate_end: z.array(UltimateEndSchema).optional(),
   kill: z.array(KillSchema).optional(),
+  healing: z.array(HealingSchema).optional(),
   mercy_rez: z.array(MercyRezSchema).optional(),
   echo_duplicate_start: z.array(EchoDuplicateStartSchema).optional(),
   echo_duplicate_end: z.array(EchoDuplicateEndSchema).optional(),
