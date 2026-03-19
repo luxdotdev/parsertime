@@ -35,7 +35,7 @@ import { toast } from "sonner";
 type MapCardWithSelectionProps = {
   map: Map;
   scrimId: number;
-  teamId: number;
+  teamId: number | string;
   locale: string;
   mapComparisonEnabled: boolean;
 };
@@ -132,13 +132,15 @@ function MapCardWithSelectionComponent({
 
   return (
     <>
-      <AddToMapGroupDialog
-        open={isMapGroupDialogOpen}
-        onOpenChange={setIsMapGroupDialogOpen}
-        teamId={teamId}
-        mapIds={[map.id]}
-        mapName={displayName}
-      />
+      {typeof teamId === "number" && (
+        <AddToMapGroupDialog
+          open={isMapGroupDialogOpen}
+          onOpenChange={setIsMapGroupDialogOpen}
+          teamId={teamId}
+          mapIds={[map.id]}
+          mapName={displayName}
+        />
+      )}
       {mapComparisonEnabled ? (
         <ContextMenu>
           <ContextMenuTrigger asChild>{card}</ContextMenuTrigger>
