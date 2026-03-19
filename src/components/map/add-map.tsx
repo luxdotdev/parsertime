@@ -47,7 +47,7 @@ const TXT = "text/plain";
 
 const ACCEPTED_FILE_TYPES = [XLSX, TXT];
 
-const MAX_FILE_SIZE = 1000000; // 1MB in bytes
+const MAX_FILE_SIZE = 10000000; // 10MB in bytes
 
 export function AddMapCard() {
   const [dragActive, setDragActive] = useState(false);
