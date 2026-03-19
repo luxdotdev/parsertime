@@ -66,7 +66,7 @@ const ACCEPTED_FILE_TYPES = [
   "text/plain",
 ];
 
-const MAX_FILE_SIZE = 1000000; // 1MB in bytes
+const MAX_FILE_SIZE = 10000000; // 10MB in bytes
 
 export function ScrimCreationForm({
   setOpen,
