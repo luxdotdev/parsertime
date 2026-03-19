@@ -42,32 +42,32 @@ model Session {
 }
 
 model User {
-  id               String            @id @default(cuid())
-  name             String?
-  email            String            @unique
-  emailVerified    DateTime?
-  image            String?
-  accounts         Account[]
-  sessions         Session[]
-  role             UserRole          @default(USER)
-  teamId           Int?
-  teams            Team[]
-  managedTeams     TeamManager[]
-  stripeId         String?           @unique
-  billingPlan      BillingPlan       @default(FREE)
-  Notification     Notification[]
-  AppSettings      AppSettings[]
-  titles           Title[]           @default([])
-  bannerImage      String?
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @default(now()) @updatedAt
-  battletag        String?
-  appliedTitles    AppliedTitle[]
-  seenOnboarding   Boolean           @default(false)
-  comparisonGroups      ComparisonGroup[]
-  mapGroups             MapGroup[]
+  id                     String                  @id @default(cuid())
+  name                   String?
+  email                  String                  @unique
+  emailVerified          DateTime?
+  image                  String?
+  accounts               Account[]
+  sessions               Session[]
+  role                   UserRole                @default(USER)
+  teamId                 Int?
+  teams                  Team[]
+  managedTeams           TeamManager[]
+  stripeId               String?                 @unique
+  billingPlan            BillingPlan             @default(FREE)
+  Notification           Notification[]
+  AppSettings            AppSettings[]
+  titles                 Title[]                 @default([])
+  bannerImage            String?
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @default(now()) @updatedAt
+  battletag              String?
+  appliedTitles          AppliedTitle[]
+  seenOnboarding         Boolean                 @default(false)
+  comparisonGroups       ComparisonGroup[]
+  mapGroups              MapGroup[]
   botNotificationConfigs BotNotificationConfig[]
-  createdTargets        PlayerTarget[]
+  createdTargets         PlayerTarget[]
 
   @@index([id, email])
 }
@@ -187,19 +187,19 @@ model AuditLog {
 }
 
 model Team {
-  id                   Int                      @id @default(autoincrement())
-  name                 String
-  createdAt            DateTime                 @default(now())
-  updatedAt            DateTime                 @updatedAt
-  image                String?
-  users                User[]
-  scrims               Scrim[]
-  ownerId              String
-  managers             TeamManager[]
-  readonly             Boolean                  @default(false)
-  comparisonGroups     ComparisonGroup[]
-  mapGroups            MapGroup[]
-  playerTargets        PlayerTarget[]
+  id               Int               @id @default(autoincrement())
+  name             String
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  image            String?
+  users            User[]
+  scrims           Scrim[]
+  ownerId          String
+  managers         TeamManager[]
+  readonly         Boolean           @default(false)
+  comparisonGroups ComparisonGroup[]
+  mapGroups        MapGroup[]
+  playerTargets    PlayerTarget[]
   scoutingTeamAbbr String?
 }
 
@@ -431,6 +431,10 @@ enum EventType {
   ultimate_charged
   ultimate_end
   ultimate_start
+  ability_1_used
+  ability_2_used
+  damage
+  healing
 }
 
 enum MapType {
@@ -476,8 +480,12 @@ model MapData {
   Note                 Note[]
   calculatedStats      CalculatedStat[]
 
-  Map   Map? @relation(fields: [mapId], references: [id])
-  mapId Int?
+  Map           Map?           @relation(fields: [mapId], references: [id])
+  mapId         Int?
+  ability1Useds Ability1Used[]
+  ability2Useds Ability2Used[]
+  damages       Damage[]
+  healings      Healing[]
 
   @@index([scrimId])
   @@index([mapId])
@@ -913,6 +921,85 @@ model UltimateStart {
   player_hero     String
   hero_duplicated String
   ultimate_id     Int
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model Ability1Used {
+  id              Int       @id @default(autoincrement())
+  scrimId         Int
+  event_type      EventType @default(ability_1_used)
+  match_time      Float
+  player_team     String
+  player_name     String
+  player_hero     String
+  hero_duplicated String
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model Ability2Used {
+  id              Int       @id @default(autoincrement())
+  scrimId         Int
+  event_type      EventType @default(ability_2_used)
+  match_time      Float
+  player_team     String
+  player_name     String
+  player_hero     String
+  hero_duplicated String
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model Damage {
+  id               Int       @id @default(autoincrement())
+  scrimId          Int
+  event_type       EventType @default(damage)
+  match_time       Float
+  attacker_team    String
+  attacker_name    String
+  attacker_hero    String
+  victim_team      String
+  victim_name      String
+  victim_hero      String
+  event_ability    String
+  event_damage     Int
+  is_critical_hit  String
+  is_environmental String
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model Healing {
+  id             Int       @id @default(autoincrement())
+  scrimId        Int
+  event_type     EventType @default(healing)
+  match_time     Float
+  healer_team    String
+  healer_name    String
+  healer_hero    String
+  healee_team    String
+  healee_name    String
+  healee_hero    String
+  event_ability  String
+  event_healing  Int
+  is_health_pack String
 
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
