@@ -76,9 +76,9 @@ export default async function ScrimDashboardPage(
   const t = await getTranslations("scrimPage");
 
   const scrim = await getScrim(id);
-  if (!scrim?.teamId) notFound();
+  if (!scrim) notFound();
 
-  const teamId = scrim.teamId; // TypeScript knows it's not null after the check
+  const teamId = scrim.teamId;
 
   const maps = (
     await prisma.map.findMany({
@@ -90,13 +90,14 @@ export default async function ScrimDashboardPage(
 
   const user = await getUser(session?.user?.email);
 
-  const isManager =
-    (await prisma.teamManager.findFirst({
-      where: {
-        teamId,
-        userId: user?.id,
-      },
-    })) !== null && session !== null;
+  const isManager = teamId
+    ? (await prisma.teamManager.findFirst({
+        where: {
+          teamId,
+          userId: user?.id,
+        },
+      })) !== null && session !== null
+    : false;
 
   const hasPerms =
     user?.id === scrim?.creatorId ||
@@ -149,10 +150,14 @@ export default async function ScrimDashboardPage(
         <div>
           <h4 className="text-gray-600 dark:text-gray-400">
             <Link href="/dashboard">&larr; {t("back")}</Link>
-            {" | "}
-            <Link href={`/stats/team/${teamId}` as Route}>
-              {t("viewStats")} &rarr;
-            </Link>
+            {teamId && (
+              <>
+                {" | "}
+                <Link href={`/stats/team/${teamId}` as Route}>
+                  {t("viewStats")} &rarr;
+                </Link>
+              </>
+            )}
           </h4>
           <div className="mt-2 flex items-center justify-between">
             <h2 className="text-3xl leading-none font-bold tracking-tight">
@@ -209,7 +214,7 @@ export default async function ScrimDashboardPage(
         </div>
 
         {/* Overview Card */}
-        {overviewCardEnabled && maps.length > 0 && (
+        {overviewCardEnabled && maps.length > 0 && teamId && (
           <ScrimOverviewCard scrimId={id} teamId={teamId} />
         )}
 
@@ -231,7 +236,7 @@ export default async function ScrimDashboardPage(
                   key={map.id}
                   map={map}
                   scrimId={scrim.id}
-                  teamId={teamId}
+                  teamId={teamId ?? params.team}
                   locale={params.locale}
                   mapComparisonEnabled={mapComparisonEnabled}
                 />
@@ -258,7 +263,9 @@ export default async function ScrimDashboardPage(
       </div>
 
       {/* Compare Selected Button */}
-      {mapComparisonEnabled && <CompareSelectedButton teamId={teamId} />}
+      {mapComparisonEnabled && teamId && (
+        <CompareSelectedButton teamId={teamId} />
+      )}
     </DashboardLayout>
   );
 }
