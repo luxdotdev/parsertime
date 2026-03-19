@@ -1758,12 +1758,7 @@ export async function createAbility1UsedRows(
     data.ability_1_used.length === 0 ||
     !data.ability_1_used
   ) {
-    Logger.log(
-      "No ability 1 used found for map: ",
-      mapId,
-      "scrim: ",
-      scrim.id
-    );
+    Logger.log("No ability 1 used found for map: ", mapId, "scrim: ", scrim.id);
     return [];
   }
 
@@ -1798,12 +1793,7 @@ export async function createAbility2UsedRows(
     data.ability_2_used.length === 0 ||
     !data.ability_2_used
   ) {
-    Logger.log(
-      "No ability 2 used found for map: ",
-      mapId,
-      "scrim: ",
-      scrim.id
-    );
+    Logger.log("No ability 2 used found for map: ", mapId, "scrim: ", scrim.id);
     return [];
   }
 
