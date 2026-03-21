@@ -116,7 +116,7 @@ export function ChatInterface({
           void queryClient.invalidateQueries({
             queryKey: ["chat-conversations"],
           });
-          router.replace(`/dashboard/chat/${data.id}`);
+          router.replace(`/chat/${data.id}`);
         });
     } else {
       void fetch(`/api/chat/conversations/${conversationId}`, {
@@ -293,7 +293,11 @@ export function ChatInterface({
                           const toolName = part.type.slice(5);
                           const card = renderToolCard(toolName, toolPart);
                           if (card)
-                            return <div key={toolPart.toolCallId} className="w-full">{card}</div>;
+                            return (
+                              <div key={toolPart.toolCallId} className="w-full">
+                                {card}
+                              </div>
+                            );
 
                           return (
                             <Tool key={toolPart.toolCallId}>

@@ -477,7 +477,7 @@ export function buildTools(opts: {
         });
         return {
           reportId: report.id,
-          url: `/dashboard/reports/${report.id}`,
+          url: `/reports/${report.id}`,
           title: report.title,
         };
       },

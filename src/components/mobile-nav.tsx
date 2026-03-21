@@ -108,10 +108,7 @@ export function MobileNav({
                 )
             )}
             {aiChatEnabled && (
-              <MobileLink
-                href={"/dashboard/chat" as Route}
-                onOpenChange={setOpen}
-              >
+              <MobileLink href={"/chat" as Route} onOpenChange={setOpen}>
                 AI Chat
               </MobileLink>
             )}

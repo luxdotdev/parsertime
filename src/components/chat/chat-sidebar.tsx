@@ -39,14 +39,14 @@ export function ChatSidebar({ className }: { className?: string }) {
     },
     onSuccess: (_data, deletedId) => {
       void queryClient.invalidateQueries({ queryKey: ["chat-conversations"] });
-      if (pathname === `/dashboard/chat/${deletedId}`) {
-        router.push("/dashboard/chat");
+      if (pathname === `/chat/${deletedId}`) {
+        router.push("/chat");
       }
     },
   });
 
-  const activeId = pathname.startsWith("/dashboard/chat/")
-    ? pathname.split("/dashboard/chat/")[1]
+  const activeId = pathname.startsWith("/chat/")
+    ? pathname.split("/chat/")[1]
     : null;
 
   return (
@@ -63,7 +63,7 @@ export function ChatSidebar({ className }: { className?: string }) {
           className="size-8 active:scale-[0.96]"
           asChild
         >
-          <Link href="/dashboard/chat" aria-label="New chat">
+          <Link href="/chat" aria-label="New chat">
             <PlusIcon className="size-4" aria-hidden="true" />
           </Link>
         </Button>
@@ -80,7 +80,7 @@ export function ChatSidebar({ className }: { className?: string }) {
             )}
           >
             <Link
-              href={`/dashboard/chat/${conv.id}` as Route}
+              href={`/chat/${conv.id}` as Route}
               className="min-w-0 flex-1 truncate px-2.5 py-2"
             >
               {conv.title}

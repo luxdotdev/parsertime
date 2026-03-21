@@ -139,10 +139,10 @@ export function MainNav({
         {aiChatEnabled && (
           <li>
             <Link
-              href="/dashboard/chat"
+              href="/chat"
               className={cn(
                 navLinkStyles,
-                pathname === "/dashboard/chat" && "text-primary"
+                pathname === "/chat" && "text-primary"
               )}
             >
               {t("chat")}
