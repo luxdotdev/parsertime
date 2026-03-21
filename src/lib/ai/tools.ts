@@ -22,6 +22,103 @@ import {
   formatTeamWinrates,
 } from "./formatters";
 
+function per10(value: number, time: number) {
+  return time > 0 ? Math.round((value / time) * 600 * 10) / 10 : 0;
+}
+
+async function computeOpponentStats(scrimId: number, teamId: number) {
+  const scrim = await prisma.scrim.findFirst({
+    where: { id: scrimId, teamId },
+    include: {
+      maps: { select: { id: true, mapData: { select: { id: true } } } },
+    },
+  });
+  if (!scrim)
+    return { error: `Scrim ${scrimId} not found for team ${teamId}.` };
+
+  const mapDataIds = scrim.maps.flatMap((m) => m.mapData.map((md) => md.id));
+  if (mapDataIds.length === 0) return { error: "No map data found." };
+
+  const roster = await getTeamRoster(teamId);
+  const rosterSet = new Set(roster);
+
+  const allStats = await prisma.playerStat.findMany({
+    where: { MapDataId: { in: mapDataIds } },
+    select: {
+      player_name: true,
+      player_team: true,
+      player_hero: true,
+      eliminations: true,
+      final_blows: true,
+      deaths: true,
+      hero_damage_dealt: true,
+      healing_dealt: true,
+      hero_time_played: true,
+    },
+  });
+
+  const opponentStats = allStats.filter((s) => !rosterSet.has(s.player_name));
+
+  const playerMap = new Map<
+    string,
+    {
+      heroes: Set<string>;
+      eliminations: number;
+      finalBlows: number;
+      deaths: number;
+      heroDamage: number;
+      healing: number;
+      timePlayed: number;
+      team: string;
+    }
+  >();
+
+  for (const s of opponentStats) {
+    const existing = playerMap.get(s.player_name);
+    if (existing) {
+      existing.heroes.add(s.player_hero);
+      existing.eliminations += s.eliminations;
+      existing.finalBlows += s.final_blows;
+      existing.deaths += s.deaths;
+      existing.heroDamage += s.hero_damage_dealt;
+      existing.healing += s.healing_dealt;
+      existing.timePlayed += s.hero_time_played;
+    } else {
+      playerMap.set(s.player_name, {
+        heroes: new Set([s.player_hero]),
+        eliminations: s.eliminations,
+        finalBlows: s.final_blows,
+        deaths: s.deaths,
+        heroDamage: s.hero_damage_dealt,
+        healing: s.healing_dealt,
+        timePlayed: s.hero_time_played,
+        team: s.player_team,
+      });
+    }
+  }
+
+  const players = [...playerMap.entries()].map(([name, s]) => ({
+    playerName: name,
+    team: s.team,
+    heroes: [...s.heroes],
+    kdRatio:
+      s.deaths > 0
+        ? Math.round((s.eliminations / s.deaths) * 100) / 100
+        : s.eliminations,
+    eliminationsPer10: per10(s.eliminations, s.timePlayed),
+    finalBlowsPer10: per10(s.finalBlows, s.timePlayed),
+    deathsPer10: per10(s.deaths, s.timePlayed),
+    heroDamagePer10: per10(s.heroDamage, s.timePlayed),
+    healingPer10: per10(s.healing, s.timePlayed),
+  }));
+
+  return {
+    scrimId,
+    opponentTeam: players[0]?.team ?? "Unknown",
+    players,
+  };
+}
+
 export function buildTools(opts: {
   userId: string;
   allowedTeamIds: Set<number>;
@@ -171,103 +268,32 @@ export function buildTools(opts: {
       }),
       execute: async ({ scrimId, teamId }) => {
         assertTeamAccess(teamId);
-        const scrim = await prisma.scrim.findFirst({
-          where: { id: scrimId, teamId },
-          include: {
-            maps: { select: { id: true, mapData: { select: { id: true } } } },
-          },
-        });
-        if (!scrim) {
-          return { error: `Scrim ${scrimId} not found for team ${teamId}.` };
-        }
+        return computeOpponentStats(scrimId, teamId);
+      },
+    }),
 
-        const mapDataIds = scrim.maps.flatMap((m) =>
-          m.mapData.map((md) => md.id)
+    getBulkOpponentStats: tool({
+      description:
+        "Get opponent stats for multiple scrims at once. More efficient than calling getOpponentStats repeatedly. Returns per-scrim opponent player breakdowns. Use when analyzing opponent tendencies across a series.",
+      inputSchema: z.object({
+        scrimIds: z
+          .array(z.number())
+          .min(1)
+          .max(10)
+          .describe("Array of scrim IDs (max 10)."),
+        teamId: z
+          .number()
+          .describe("Your team ID (opponent stats are inferred from this)."),
+      }),
+      execute: async ({ scrimIds, teamId }) => {
+        assertTeamAccess(teamId);
+        const results = await Promise.all(
+          scrimIds.map((id) => computeOpponentStats(id, teamId))
         );
-        if (mapDataIds.length === 0) return { error: "No map data found." };
-
-        const roster = await getTeamRoster(teamId);
-        const rosterSet = new Set(roster);
-
-        const allStats = await prisma.playerStat.findMany({
-          where: { MapDataId: { in: mapDataIds } },
-          select: {
-            player_name: true,
-            player_team: true,
-            player_hero: true,
-            eliminations: true,
-            final_blows: true,
-            deaths: true,
-            hero_damage_dealt: true,
-            healing_dealt: true,
-            hero_time_played: true,
-          },
-        });
-
-        const opponentStats = allStats.filter(
-          (s) => !rosterSet.has(s.player_name)
-        );
-
-        const playerMap = new Map<
-          string,
-          {
-            heroes: Set<string>;
-            eliminations: number;
-            finalBlows: number;
-            deaths: number;
-            heroDamage: number;
-            healing: number;
-            timePlayed: number;
-            team: string;
-          }
-        >();
-
-        for (const s of opponentStats) {
-          const existing = playerMap.get(s.player_name);
-          if (existing) {
-            existing.heroes.add(s.player_hero);
-            existing.eliminations += s.eliminations;
-            existing.finalBlows += s.final_blows;
-            existing.deaths += s.deaths;
-            existing.heroDamage += s.hero_damage_dealt;
-            existing.healing += s.healing_dealt;
-            existing.timePlayed += s.hero_time_played;
-          } else {
-            playerMap.set(s.player_name, {
-              heroes: new Set([s.player_hero]),
-              eliminations: s.eliminations,
-              finalBlows: s.final_blows,
-              deaths: s.deaths,
-              heroDamage: s.hero_damage_dealt,
-              healing: s.healing_dealt,
-              timePlayed: s.hero_time_played,
-              team: s.player_team,
-            });
-          }
-        }
-
-        function per10(value: number, time: number) {
-          return time > 0 ? Math.round((value / time) * 600 * 10) / 10 : 0;
-        }
-
-        const players = [...playerMap.entries()].map(([name, s]) => ({
-          playerName: name,
-          team: s.team,
-          heroes: [...s.heroes],
-          kdRatio:
-            s.deaths > 0
-              ? Math.round((s.eliminations / s.deaths) * 100) / 100
-              : s.eliminations,
-          eliminationsPer10: per10(s.eliminations, s.timePlayed),
-          finalBlowsPer10: per10(s.finalBlows, s.timePlayed),
-          deathsPer10: per10(s.deaths, s.timePlayed),
-          heroDamagePer10: per10(s.heroDamage, s.timePlayed),
-          healingPer10: per10(s.healing, s.timePlayed),
-        }));
-
         return {
-          opponentTeam: players[0]?.team ?? "Unknown",
-          players,
+          analyzed: results.filter((r) => !("error" in r)).length,
+          requested: scrimIds.length,
+          scrims: results,
         };
       },
     }),
