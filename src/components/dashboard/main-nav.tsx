@@ -25,8 +25,12 @@ function handleDropdownKeyDown(e: React.KeyboardEvent<HTMLLIElement>) {
 
 export function MainNav({
   scoutingEnabled,
+  aiChatEnabled,
   className,
-}: React.HTMLAttributes<HTMLElement> & { scoutingEnabled: boolean }) {
+}: React.HTMLAttributes<HTMLElement> & {
+  scoutingEnabled: boolean;
+  aiChatEnabled?: boolean;
+}) {
   const pathname = usePathname();
   const t = useTranslations("dashboard.mainNav");
 
@@ -132,6 +136,19 @@ export function MainNav({
             {t("teams")}
           </Link>
         </li>
+        {aiChatEnabled && (
+          <li>
+            <Link
+              href="/dashboard/chat"
+              className={cn(
+                navLinkStyles,
+                pathname === "/dashboard/chat" && "text-primary"
+              )}
+            >
+              {t("chat")}
+            </Link>
+          </li>
+        )}
         {scoutingEnabled && (
           <li className="group relative" onKeyDown={handleDropdownKeyDown}>
             <button
