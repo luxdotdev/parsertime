@@ -12,6 +12,7 @@ const defaultFlags: FeatureFlags = {
   ultimateImpactToolEnabled: false,
   newLandingPageEnabled: false,
   tempoChartEnabled: false,
+  aiChatEnabled: false,
 };
 
 const FeatureFlagsContext = createContext<FeatureFlags>(defaultFlags);

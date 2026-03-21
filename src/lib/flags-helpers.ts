@@ -1,4 +1,5 @@
 import {
+  aiChat,
   dataLabeling,
   mapComparison,
   newLandingPage,
@@ -18,6 +19,7 @@ export type FeatureFlags = {
   ultimateImpactToolEnabled: boolean;
   tempoChartEnabled: boolean;
   newLandingPageEnabled: boolean;
+  aiChatEnabled: boolean;
 };
 
 export async function resolveAllFlags(): Promise<FeatureFlags> {
@@ -30,6 +32,7 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     ultimateImpactToolEnabled,
     tempoChartEnabled,
     newLandingPageEnabled,
+    aiChatEnabled,
   ] = await Promise.all([
     scoutingTool(),
     mapComparison(),
@@ -39,6 +42,7 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     ultimateImpactTool(),
     tempoChart(),
     newLandingPage(),
+    aiChat(),
   ]);
 
   return {
@@ -50,6 +54,7 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     ultimateImpactToolEnabled,
     tempoChartEnabled,
     newLandingPageEnabled,
+    aiChatEnabled,
   };
 }
 
@@ -63,5 +68,6 @@ export function toFlagValues(flags: FeatureFlags): Record<string, boolean> {
     "ultimate-impact-tool": flags.ultimateImpactToolEnabled,
     "tempo-chart": flags.tempoChartEnabled,
     "new-landing-page": flags.newLandingPageEnabled,
+    "ai-chat": flags.aiChatEnabled,
   };
 }
