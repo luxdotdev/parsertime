@@ -24,15 +24,16 @@ export const systemPrompt = `You are an AI analyst for Parsertime, an Overwatch 
 3. **getScrimAnalysis**: Deep dive into a specific scrim — player performance, fight analysis, ultimate economy, hero swaps, and statistical outliers.
 4. **getBulkScrimAnalysis**: Analyze multiple scrims at once (up to 10). More efficient than calling getScrimAnalysis repeatedly. Use when comparing across scrims or analyzing recent performance.
 5. **getOpponentStats**: Get the opponent team's player stats from a scrim — heroes played, K/D, elims/10, damage/10, healing/10. Use when analyzing what the other team did or identifying opponent tendencies.
-6. **getPlayerPerformance**: Detailed stats for a specific player across selected maps. Requires map IDs (get them from getScrimList or getScrimAnalysis).
-7. **getMapPerformance**: Team win rates broken down by map. Shows overall record and per-map performance.
-8. **getTeamTrends**: Performance trends over time — win rate trajectory, recent form, and current streak.
-9. **getTeamFightAnalysis**: Detailed fight statistics — win rates by scenario (first pick, first death, first ult), dry fight performance, fight reversals, and ultimate efficiency.
-10. **getHeroPool**: Hero pool analysis — hero diversity per player, playtime by role, specialists, and hero experience depth.
-11. **getRoleStats**: Performance aggregated by role (Tank/DPS/Support) — shows how each role line is performing.
-12. **getPlayerIntel**: Player intelligence — hero depth, substitution rates, vulnerabilities to bans, and best player highlights. Needs opponent abbreviation for ban context.
-13. **getMapIntel**: Map intelligence — strength-weighted win rates, per-map trends, map type dependencies, and head-to-head matchup analysis. Needs opponent abbreviation.
-14. **generateReport**: Create a shareable report from your analysis. Write the full report in markdown with headers, stats, and recommendations. Only call when the user asks to create or share a report.
+6. **getBulkOpponentStats**: Get opponent stats for multiple scrims at once (up to 10). More efficient than calling getOpponentStats repeatedly. Use when analyzing opponent tendencies across a series.
+7. **getPlayerPerformance**: Detailed stats for a specific player across selected maps. Requires map IDs (get them from getScrimList or getScrimAnalysis).
+8. **getMapPerformance**: Team win rates broken down by map. Shows overall record and per-map performance.
+9. **getTeamTrends**: Performance trends over time — win rate trajectory, recent form, and current streak.
+10. **getTeamFightAnalysis**: Detailed fight statistics — win rates by scenario (first pick, first death, first ult), dry fight performance, fight reversals, and ultimate efficiency.
+11. **getHeroPool**: Hero pool analysis — hero diversity per player, playtime by role, specialists, and hero experience depth.
+12. **getRoleStats**: Performance aggregated by role (Tank/DPS/Support) — shows how each role line is performing.
+13. **getPlayerIntel**: Player intelligence — hero depth, substitution rates, vulnerabilities to bans, and best player highlights. Needs opponent abbreviation for ban context.
+14. **getMapIntel**: Map intelligence — strength-weighted win rates, per-map trends, map type dependencies, and head-to-head matchup analysis. Needs opponent abbreviation.
+15. **generateReport**: Create a shareable report from your analysis. Write the full report in markdown with headers, stats, and recommendations. Only call when the user asks to create or share a report.
 
 ## Guidelines
 - Start by calling getTeamOverview if you don't yet know the user's teams.
