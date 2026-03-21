@@ -640,3 +640,66 @@ export function getHeroSubrole(
 export function getHeroRole(hero: string): RoleName {
   return heroRoleMapping[hero as HeroName] ?? "Damage";
 }
+
+export const allHeroes = [
+  Ana,
+  Anran,
+  Ashe,
+  Baptiste,
+  Bastion,
+  Brigitte,
+  Cassidy,
+  Domina,
+  Doomfist,
+  Dva,
+  Echo,
+  Emre,
+  Freja,
+  Genji,
+  Hanzo,
+  Hazard,
+  Illari,
+  JetpackCat,
+  JunkerQueen,
+  Junkrat,
+  Juno,
+  Kiriko,
+  Lifeweaver,
+  Lucio,
+  Mauga,
+  Mei,
+  Mercy,
+  Mizuki,
+  Moira,
+  Orisa,
+  Pharah,
+  Ramattra,
+  Reaper,
+  Reinhardt,
+  Roadhog,
+  Sigma,
+  Sojourn,
+  Soldier76,
+  Sombra,
+  Symmetra,
+  Torbjorn,
+  Tracer,
+  Vendetta,
+  Venture,
+  Widowmaker,
+  Winston,
+  WreckingBall,
+  Wuyang,
+  Zarya,
+  Zenyatta,
+] as const;
+
+export const heroAbilityMapping: Record<
+  HeroName,
+  { ability1Name: string; ability2Name: string }
+> = Object.fromEntries(
+  allHeroes.map((h) => [
+    h.name,
+    { ability1Name: h.ability1Name, ability2Name: h.ability2Name },
+  ])
+) as Record<HeroName, { ability1Name: string; ability2Name: string }>;
