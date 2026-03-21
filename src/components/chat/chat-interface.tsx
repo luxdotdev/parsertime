@@ -20,6 +20,13 @@ import {
   ToolInput,
   ToolOutput,
 } from "@/components/ai-elements/tool";
+import {
+  MapPerformanceCard,
+  PlayerPerformanceCard,
+  ScrimAnalysisCard,
+  TeamTrendsCard,
+  ToolLoading,
+} from "@/components/chat/tool-cards";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useChat } from "@ai-sdk/react";
@@ -283,6 +290,10 @@ export function ChatInterface({
                         if (part.type.startsWith("tool-")) {
                           const toolPart = part as ToolUIPart;
                           const toolName = part.type.slice(5);
+                          const card = renderToolCard(toolName, toolPart);
+                          if (card)
+                            return <div key={toolPart.toolCallId}>{card}</div>;
+
                           return (
                             <Tool key={toolPart.toolCallId}>
                               <ToolHeader
@@ -372,7 +383,7 @@ export function ChatInterface({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask about your team's performance\u2026"
+            placeholder="Ask about your team's performance…"
             disabled={isLoading}
             rows={1}
             className="resize-none pr-12 text-sm"
@@ -398,6 +409,67 @@ export function ChatInterface({
       </div>
     </div>
   );
+}
+
+function renderToolCard(toolName: string, part: ToolUIPart): React.ReactNode {
+  if (part.state === "input-available" || part.state === "input-streaming") {
+    return <ToolLoading toolName={formatToolName(toolName)} />;
+  }
+
+  if (part.state === "output-error") {
+    return null;
+  }
+
+  if (part.state !== "output-available" || !part.output) {
+    return null;
+  }
+
+  const output = part.output as Record<string, unknown>;
+
+  switch (toolName) {
+    case "getScrimAnalysis":
+      if (output.mapCount != null && !output.error)
+        return (
+          <ScrimAnalysisCard
+            {...(output as unknown as React.ComponentProps<
+              typeof ScrimAnalysisCard
+            >)}
+          />
+        );
+      break;
+    case "getMapPerformance":
+      if (output.byMap)
+        return (
+          <MapPerformanceCard
+            {...(output as unknown as React.ComponentProps<
+              typeof MapPerformanceCard
+            >)}
+          />
+        );
+      break;
+    case "getTeamTrends":
+      if (output.winrateOverTime)
+        return (
+          <TeamTrendsCard
+            {...(output as unknown as React.ComponentProps<
+              typeof TeamTrendsCard
+            >)}
+          />
+        );
+      break;
+    case "getPlayerPerformance":
+      if (output.playerName && !output.error)
+        return (
+          <PlayerPerformanceCard
+            {...(output as unknown as React.ComponentProps<
+              typeof PlayerPerformanceCard
+            >)}
+          />
+        );
+      break;
+  }
+
+  return null;
 }
 
 function formatToolName(name: string): string {
