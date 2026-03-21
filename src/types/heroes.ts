@@ -2,309 +2,409 @@ export type Hero = Support | Tank | DPS;
 
 export type HeroName = Hero["name"];
 
-export type Anran = {
-  name: "Anran";
-  image: "anran.png";
-};
+export const Anran = {
+  name: "Anran",
+  image: "anran.png",
+  ability1Name: "Inferno Rush",
+  ability2Name: "Dancing Blaze",
+} as const;
 
-export type Ana = {
-  name: "Ana";
-  image: "ana.png";
-};
+export const Ana = {
+  name: "Ana",
+  image: "ana.png",
+  ability1Name: "Sleep Dart",
+  ability2Name: "Biotic Grenade",
+} as const;
 
-export type Ashe = {
-  name: "Ashe";
-  image: "ashe.png";
-};
+export const Ashe = {
+  name: "Ashe",
+  image: "ashe.png",
+  ability1Name: "Coach Gun",
+  ability2Name: "Dynamite",
+} as const;
 
-export type Baptiste = {
-  name: "Baptiste";
-  image: "baptiste.png";
-};
+export const Baptiste = {
+  name: "Baptiste",
+  image: "baptiste.png",
+  ability1Name: "Regenerative Burst",
+  ability2Name: "Immortality Field",
+} as const;
 
-export type Bastion = {
-  name: "Bastion";
-  image: "bastion.png";
-};
+export const Bastion = {
+  name: "Bastion",
+  image: "bastion.png",
+  ability1Name: "Reconfigure",
+  ability2Name: "Self-Repair",
+} as const;
 
-export type Brigitte = {
-  name: "Brigitte";
-  image: "brigitte.png";
-};
+export const Brigitte = {
+  name: "Brigitte",
+  image: "brigitte.png",
+  ability1Name: "Whip Shot",
+  ability2Name: "Repair Pack",
+} as const;
 
-export type Cassidy = {
-  name: "Cassidy";
-  image: "cassidy.png";
-};
+export const Cassidy = {
+  name: "Cassidy",
+  image: "cassidy.png",
+  ability1Name: "Combat Roll",
+  ability2Name: "Flashbang",
+} as const;
 
-export type Domina = {
-  name: "Domina";
-  image: "domina.png";
-};
+export const Domina = {
+  name: "Domina",
+  image: "domina.png",
+  ability1Name: "Sonic Repulsors",
+  ability2Name: "Crystal Charge",
+} as const;
 
-export type Doomfist = {
-  name: "Doomfist";
-  image: "doomfist.png";
-};
+export const Doomfist = {
+  name: "Doomfist",
+  image: "doomfist.png",
+  ability1Name: "Seismic Slam",
+  ability2Name: "Power Block",
+} as const;
 
-export type Dva = {
-  name: "D.Va";
-  image: "dva.png";
-};
+export const Dva = {
+  name: "D.Va",
+  image: "dva.png",
+  ability1Name: "Boosters",
+  ability2Name: "Micro Missiles",
+} as const;
 
-export type Echo = {
-  name: "Echo";
-  image: "echo.png";
-};
+export const Echo = {
+  name: "Echo",
+  image: "echo.png",
+  ability1Name: "Flight",
+  ability2Name: "Focusing Beam",
+} as const;
 
-export type Emre = {
-  name: "Emre";
-  image: "emre.png";
-};
+export const Emre = {
+  name: "Emre",
+  image: "emre.png",
+  ability1Name: "Siphon Blaster",
+  ability2Name: "Cyber Frag",
+} as const;
 
-export type Freja = {
-  name: "Freja";
-  image: "freja.png";
-};
+export const Freja = {
+  name: "Freja",
+  image: "freja.png",
+  ability1Name: "Quick Dash",
+  ability2Name: "Updraft",
+} as const;
 
-export type Genji = {
-  name: "Genji";
-  image: "genji.png";
-};
+export const Genji = {
+  name: "Genji",
+  image: "genji.png",
+  ability1Name: "Swift Strike",
+  ability2Name: "Deflect",
+} as const;
 
-export type Hanzo = {
-  name: "Hanzo";
-  image: "hanzo.png";
-};
+export const Hanzo = {
+  name: "Hanzo",
+  image: "hanzo.png",
+  ability1Name: "Sonic Arrow",
+  ability2Name: "Storm Arrows",
+} as const;
 
-export type Hazard = {
-  name: "Hazard";
-  image: "hazard.png";
-};
+export const Hazard = {
+  name: "Hazard",
+  image: "hazard.png",
+  ability1Name: "Violent Leap",
+  ability2Name: "Jagged Wall",
+} as const;
 
-export type Illari = {
-  name: "Illari";
-  image: "illari.png";
-};
+export const Illari = {
+  name: "Illari",
+  image: "illari.png",
+  ability1Name: "Outburst",
+  ability2Name: "Healing Pylon",
+} as const;
 
-export type JetpackCat = {
-  name: "Jetpack Cat";
-  image: "jetpackcat.png";
-};
+export const JetpackCat = {
+  name: "Jetpack Cat",
+  image: "jetpackcat.png",
+  ability1Name: "Lifeline",
+  ability2Name: "Purr",
+} as const;
 
-export type JunkerQueen = {
-  name: "Junker Queen";
-  image: "junkerqueen.png";
-};
+export const JunkerQueen = {
+  name: "Junker Queen",
+  image: "junkerqueen.png",
+  ability1Name: "Commanding Shout",
+  ability2Name: "Carnage",
+} as const;
 
-export type Junkrat = {
-  name: "Junkrat";
-  image: "junkrat.png";
-};
+export const Junkrat = {
+  name: "Junkrat",
+  image: "junkrat.png",
+  ability1Name: "Concussion Mine",
+  ability2Name: "Steel Trap",
+} as const;
 
-export type Juno = {
-  name: "Juno";
-  image: "juno.png";
-};
+export const Juno = {
+  name: "Juno",
+  image: "juno.png",
+  ability1Name: "Glide Boost",
+  ability2Name: "Hyper Ring",
+} as const;
 
-export type Kiriko = {
-  name: "Kiriko";
-  image: "kiriko.png";
-};
+export const Kiriko = {
+  name: "Kiriko",
+  image: "kiriko.png",
+  ability1Name: "Swift Step",
+  ability2Name: "Protection Suzu",
+} as const;
 
-export type Lifeweaver = {
-  name: "Lifeweaver";
-  image: "lifeweaver.png";
-};
+export const Lifeweaver = {
+  name: "Lifeweaver",
+  image: "lifeweaver.png",
+  ability1Name: "Petal Platform",
+  ability2Name: "Life Grip",
+} as const;
 
-export type Lucio = {
-  name: "Lúcio";
-  image: "lucio.png";
-};
+export const Lucio = {
+  name: "Lúcio",
+  image: "lucio.png",
+  ability1Name: "Crossfade",
+  ability2Name: "Amp It Up",
+} as const;
 
-export type Mauga = {
-  name: "Mauga";
-  image: "mauga.png";
-};
+export const Mauga = {
+  name: "Mauga",
+  image: "mauga.png",
+  ability1Name: "Overrun",
+  ability2Name: "Cardiac Overdrive",
+} as const;
 
-export type Mei = {
-  name: "Mei";
-  image: "mei.png";
-};
+export const Mei = {
+  name: "Mei",
+  image: "mei.png",
+  ability1Name: "Cryo-Freeze",
+  ability2Name: "Ice Wall",
+} as const;
 
-export type Mercy = {
-  name: "Mercy";
-  image: "mercy.png";
-};
+export const Mercy = {
+  name: "Mercy",
+  image: "mercy.png",
+  ability1Name: "Guardian Angel",
+  ability2Name: "Resurrect",
+} as const;
 
-export type Mizuki = {
-  name: "Mizuki";
-  image: "mizuki.png";
-};
+export const Mizuki = {
+  name: "Mizuki",
+  image: "mizuki.png",
+  ability1Name: "Katashiro Return",
+  ability2Name: "Binding Chain",
+} as const;
 
-export type Moira = {
-  name: "Moira";
-  image: "moira.png";
-};
+export const Moira = {
+  name: "Moira",
+  image: "moira.png",
+  ability1Name: "Fade",
+  ability2Name: "Biotic Orb",
+} as const;
 
-export type Orisa = {
-  name: "Orisa";
-  image: "orisa.png";
-};
+export const Orisa = {
+  name: "Orisa",
+  image: "orisa.png",
+  ability1Name: "Fortify",
+  ability2Name: "Javelin Spin",
+} as const;
 
-export type Pharah = {
-  name: "Pharah";
-  image: "pharah.png";
-};
+export const Pharah = {
+  name: "Pharah",
+  image: "pharah.png",
+  ability1Name: "Jump Jet",
+  ability2Name: "Concussive Blast",
+} as const;
 
-export type Ramattra = {
-  name: "Ramattra";
-  image: "ramattra.png";
-};
+export const Ramattra = {
+  name: "Ramattra",
+  image: "ramattra.png",
+  ability1Name: "Nemesis Form",
+  ability2Name: "Ravenous Vortex",
+} as const;
 
-export type Reaper = {
-  name: "Reaper";
-  image: "reaper.png";
-};
+export const Reaper = {
+  name: "Reaper",
+  image: "reaper.png",
+  ability1Name: "Wraith Form",
+  ability2Name: "Shadow Step",
+} as const;
 
-export type Reinhardt = {
-  name: "Reinhardt";
-  image: "reinhardt.png";
-};
+export const Reinhardt = {
+  name: "Reinhardt",
+  image: "reinhardt.png",
+  ability1Name: "Charge",
+  ability2Name: "Firestrike",
+} as const;
 
-export type Roadhog = {
-  name: "Roadhog";
-  image: "roadhog.png";
-};
+export const Roadhog = {
+  name: "Roadhog",
+  image: "roadhog.png",
+  ability1Name: "Chain Hook",
+  ability2Name: "Take a Breather",
+} as const;
 
-export type Sigma = {
-  name: "Sigma";
-  image: "sigma.png";
-};
+export const Sigma = {
+  name: "Sigma",
+  image: "sigma.png",
+  ability1Name: "Kinetic Grasp",
+  ability2Name: "Accretion",
+} as const;
 
-export type Sojourn = {
-  name: "Sojourn";
-  image: "sojourn.png";
-};
+export const Sojourn = {
+  name: "Sojourn",
+  image: "sojourn.png",
+  ability1Name: "Power Slide",
+  ability2Name: "Disruptor Shot",
+} as const;
 
-export type Soldier76 = {
-  name: "Soldier: 76";
-  image: "soldier76.png";
-};
+export const Soldier76 = {
+  name: "Soldier: 76",
+  image: "soldier76.png",
+  ability1Name: "Sprint",
+  ability2Name: "Biotic Field",
+} as const;
 
-export type Sombra = {
-  name: "Sombra";
-  image: "sombra.png";
-};
+export const Sombra = {
+  name: "Sombra",
+  image: "sombra.png",
+  ability1Name: "Virus",
+  ability2Name: "Translocator",
+} as const;
 
-export type Symmetra = {
-  name: "Symmetra";
-  image: "symmetra.png";
-};
+export const Symmetra = {
+  name: "Symmetra",
+  image: "symmetra.png",
+  ability1Name: "Sentry Turret",
+  ability2Name: "Teleporter",
+} as const;
 
-export type Torbjorn = {
-  name: "Torbjörn";
-  image: "torbjorn.png";
-};
+export const Torbjorn = {
+  name: "Torbjörn",
+  image: "torbjorn.png",
+  ability1Name: "Deploy Turret",
+  ability2Name: "Overload",
+} as const;
 
-export type Tracer = {
-  name: "Tracer";
-  image: "tracer.png";
-};
+export const Tracer = {
+  name: "Tracer",
+  image: "tracer.png",
+  ability1Name: "Blink",
+  ability2Name: "Recall",
+} as const;
 
-export type Vendetta = {
-  name: "Vendetta";
-  image: "vendetta.png";
-};
+export const Vendetta = {
+  name: "Vendetta",
+  image: "vendetta.png",
+  ability1Name: "Whirlwind Dash",
+  ability2Name: "Soaring Slice",
+} as const;
 
-export type Venture = {
-  name: "Venture";
-  image: "venture.png";
-};
+export const Venture = {
+  name: "Venture",
+  image: "venture.png",
+  ability1Name: "Burrow",
+  ability2Name: "Smart Extender",
+} as const;
 
-export type Widowmaker = {
-  name: "Widowmaker";
-  image: "widowmaker.png";
-};
+export const Widowmaker = {
+  name: "Widowmaker",
+  image: "widowmaker.png",
+  ability1Name: "Grappling Hook",
+  ability2Name: "Venom Mine",
+} as const;
 
-export type Winston = {
-  name: "Winston";
-  image: "winston.png";
-};
+export const Winston = {
+  name: "Winston",
+  image: "winston.png",
+  ability1Name: "Jump Pack",
+  ability2Name: "Barrier Projector",
+} as const;
 
-export type WreckingBall = {
-  name: "Wrecking Ball";
-  image: "wreckingball.png";
-};
+export const WreckingBall = {
+  name: "Wrecking Ball",
+  image: "wreckingball.png",
+  ability1Name: "Roll",
+  ability2Name: "Adaptive Shield",
+} as const;
 
-export type Wuyang = {
-  name: "Wuyang";
-  image: "wuyang.png";
-};
+export const Wuyang = {
+  name: "Wuyang",
+  image: "wuyang.png",
+  ability1Name: "Rushing Torrent",
+  ability2Name: "Guardian Wave",
+} as const;
 
-export type Zarya = {
-  name: "Zarya";
-  image: "zarya.png";
-};
+export const Zarya = {
+  name: "Zarya",
+  image: "zarya.png",
+  ability1Name: "Particle Barrier",
+  ability2Name: "Projected Barrier",
+} as const;
 
-export type Zenyatta = {
-  name: "Zenyatta";
-  image: "zenyatta.png";
-};
+export const Zenyatta = {
+  name: "Zenyatta",
+  image: "zenyatta.png",
+  ability1Name: "Orb of Harmony",
+  ability2Name: "Orb of Discord",
+} as const;
 
 export type Tank =
-  | Dva
-  | Domina
-  | Doomfist
-  | Hazard
-  | JunkerQueen
-  | Mauga
-  | Orisa
-  | Ramattra
-  | Reinhardt
-  | Roadhog
-  | Sigma
-  | Winston
-  | WreckingBall
-  | Zarya;
+  | typeof Dva
+  | typeof Domina
+  | typeof Doomfist
+  | typeof Hazard
+  | typeof JunkerQueen
+  | typeof Mauga
+  | typeof Orisa
+  | typeof Ramattra
+  | typeof Reinhardt
+  | typeof Roadhog
+  | typeof Sigma
+  | typeof Winston
+  | typeof WreckingBall
+  | typeof Zarya;
 export type DPS =
-  | Anran
-  | Ashe
-  | Bastion
-  | Cassidy
-  | Echo
-  | Emre
-  | Freja
-  | Genji
-  | Hanzo
-  | Junkrat
-  | Mei
-  | Pharah
-  | Reaper
-  | Sojourn
-  | Soldier76
-  | Sombra
-  | Symmetra
-  | Torbjorn
-  | Tracer
-  | Vendetta
-  | Venture
-  | Widowmaker;
+  | typeof Anran
+  | typeof Ashe
+  | typeof Bastion
+  | typeof Cassidy
+  | typeof Echo
+  | typeof Emre
+  | typeof Freja
+  | typeof Genji
+  | typeof Hanzo
+  | typeof Junkrat
+  | typeof Mei
+  | typeof Pharah
+  | typeof Reaper
+  | typeof Sojourn
+  | typeof Soldier76
+  | typeof Sombra
+  | typeof Symmetra
+  | typeof Torbjorn
+  | typeof Tracer
+  | typeof Vendetta
+  | typeof Venture
+  | typeof Widowmaker;
 export type Support =
-  | Ana
-  | Baptiste
-  | Brigitte
-  | Illari
-  | JetpackCat
-  | Juno
-  | Kiriko
-  | Lifeweaver
-  | Lucio
-  | Mercy
-  | Mizuki
-  | Moira
-  | Wuyang
-  | Zenyatta;
+  | typeof Ana
+  | typeof Baptiste
+  | typeof Brigitte
+  | typeof Illari
+  | typeof JetpackCat
+  | typeof Juno
+  | typeof Kiriko
+  | typeof Lifeweaver
+  | typeof Lucio
+  | typeof Mercy
+  | typeof Mizuki
+  | typeof Moira
+  | typeof Wuyang
+  | typeof Zenyatta;
 
 export const heroRoleMapping: Record<HeroName, "Tank" | "Damage" | "Support"> =
   {
