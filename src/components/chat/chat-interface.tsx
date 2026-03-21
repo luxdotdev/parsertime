@@ -293,7 +293,7 @@ export function ChatInterface({
                           const toolName = part.type.slice(5);
                           const card = renderToolCard(toolName, toolPart);
                           if (card)
-                            return <div key={toolPart.toolCallId}>{card}</div>;
+                            return <div key={toolPart.toolCallId} className="w-full">{card}</div>;
 
                           return (
                             <Tool key={toolPart.toolCallId}>
