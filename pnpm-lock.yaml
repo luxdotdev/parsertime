@@ -13,6 +13,9 @@ importers:
 
   .:
     dependencies:
+      '@ai-sdk/react':
+        specifier: ^3.0.136
+        version: 3.0.136(react@19.2.3)(zod@4.1.9)
       '@auth/prisma-adapter':
         specifier: 1.0.5
         version: 1.0.5(@prisma/client@6.16.2(prisma@6.16.2(typescript@5.9.2))(typescript@5.9.2))
@@ -542,6 +545,12 @@ packages:
   '@ai-sdk/provider@3.0.8':
     resolution: {integrity: sha512-oGMAgGoQdBXbZqNG0Ze56CHjDZ1IDYOwGYxYjO5KLSlz5HiNQ9udIXsPZ61VWaHGZ5XW/jyjmr6t2xz2jGVwbQ==}
     engines: {node: '>=18'}
+
+  '@ai-sdk/react@3.0.136':
+    resolution: {integrity: sha512-9+KEgtLeOJZCqAW0s7HqiuXs17d6iZ4QKE4z1Bl1QR6V+gjtsq4Dp+Al8mcx76XkaB1vjtGjDg8lLtbJ4X+OEw==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      react: ^18 || ~19.0.1 || ~19.1.2 || ^19.2.1
 
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
@@ -7105,6 +7114,11 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
+  swr@2.4.1:
+    resolution: {integrity: sha512-2CC6CiKQtEwaEeNiqWTAw9PGykW8SR5zZX8MZk6TeAvEAnVS7Visz8WzphqgtQ8v2xz/4Q5K+j+SeMaKXeeQIA==}
+    peerDependencies:
+      react: ^16.11.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
   tabbable@6.2.0:
     resolution: {integrity: sha512-Cat63mxsVJlzYvN51JmVXIgNoUokrIaT2zLclCXjRd8boZ0004U4KCs/sToJ75C6sdlByWxpYnb5Boif1VSFew==}
 
@@ -7366,6 +7380,11 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
+  use-sync-external-store@1.6.0:
+    resolution: {integrity: sha512-Pp6GSwGP/NrPIrxVFAIkOQeyw8lFenOHijQWkUTrDvrF4ALqylP2C/KCkeS9dpUM3KvYRQhna5vt7IL95+ZQ9w==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
   uuid@11.1.0:
     resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
     hasBin: true
@@ -7606,6 +7625,16 @@ snapshots:
   '@ai-sdk/provider@3.0.8':
     dependencies:
       json-schema: 0.4.0
+
+  '@ai-sdk/react@3.0.136(react@19.2.3)(zod@4.1.9)':
+    dependencies:
+      '@ai-sdk/provider-utils': 4.0.21(zod@4.1.9)
+      ai: 6.0.134(zod@4.1.9)
+      react: 19.2.3
+      swr: 2.4.1(react@19.2.3)
+      throttleit: 2.1.0
+    transitivePeerDependencies:
+      - zod
 
   '@alloc/quick-lru@5.2.0': {}
 
@@ -12160,7 +12189,7 @@ snapshots:
 
   effect@3.16.12:
     dependencies:
-      '@standard-schema/spec': 1.0.0
+      '@standard-schema/spec': 1.1.0
       fast-check: 3.23.2
 
   effect@3.17.13:
@@ -15175,6 +15204,12 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
+  swr@2.4.1(react@19.2.3):
+    dependencies:
+      dequal: 2.0.3
+      react: 19.2.3
+      use-sync-external-store: 1.6.0(react@19.2.3)
+
   tabbable@6.2.0: {}
 
   tailwind-merge@3.3.1: {}
@@ -15465,6 +15500,10 @@ snapshots:
       react: 19.2.3
 
   use-sync-external-store@1.5.0(react@19.2.3):
+    dependencies:
+      react: 19.2.3
+
+  use-sync-external-store@1.6.0(react@19.2.3):
     dependencies:
       react: 19.2.3
 
