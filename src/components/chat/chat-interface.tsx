@@ -23,6 +23,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useChat } from "@ai-sdk/react";
+import { useQueryClient } from "@tanstack/react-query";
 import type { ToolUIPart, UIMessage } from "ai";
 import { DefaultChatTransport } from "ai";
 import {
@@ -35,7 +36,6 @@ import {
   SquareIcon,
   XIcon,
 } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import {
   type KeyboardEvent,
@@ -198,7 +198,10 @@ export function ChatInterface({
             <ConversationEmptyState>
               <div className="flex flex-col items-center gap-6">
                 <div className="flex flex-col items-center gap-2">
-                  <BotMessageSquareIcon className="text-muted-foreground size-8" />
+                  <BotMessageSquareIcon
+                    className="text-muted-foreground size-8"
+                    aria-hidden="true"
+                  />
                   <h3 className="text-base font-medium text-balance">
                     Parsertime AI
                   </h3>
@@ -321,10 +324,10 @@ export function ChatInterface({
                           >
                             <span className="relative grid size-3.5 place-items-center">
                               <ClipboardIcon
-                                className={`col-start-1 row-start-1 size-3.5 transition-all duration-200 ${copiedId === message.id ? "scale-50 opacity-0" : "scale-100 opacity-100"}`}
+                                className={`col-start-1 row-start-1 size-3.5 transition-[scale,opacity] duration-200 ${copiedId === message.id ? "scale-50 opacity-0" : "scale-100 opacity-100"}`}
                               />
                               <CheckIcon
-                                className={`col-start-1 row-start-1 size-3.5 transition-all duration-200 ${copiedId === message.id ? "scale-100 opacity-100" : "scale-50 opacity-0"}`}
+                                className={`col-start-1 row-start-1 size-3.5 transition-[scale,opacity] duration-200 ${copiedId === message.id ? "scale-100 opacity-100" : "scale-50 opacity-0"}`}
                               />
                             </span>
                           </MessageAction>
@@ -369,7 +372,7 @@ export function ChatInterface({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask about your team's performance..."
+            placeholder="Ask about your team's performance\u2026"
             disabled={isLoading}
             rows={1}
             className="resize-none pr-12 text-sm"
@@ -384,10 +387,10 @@ export function ChatInterface({
           >
             <span className="relative grid size-4 place-items-center">
               <CornerDownLeftIcon
-                className={`col-start-1 row-start-1 size-4 transition-all duration-150 ${isLoading ? "scale-50 opacity-0" : "scale-100 opacity-100"}`}
+                className={`col-start-1 row-start-1 size-4 transition-[scale,opacity] duration-150 ${isLoading ? "scale-50 opacity-0" : "scale-100 opacity-100"}`}
               />
               <SquareIcon
-                className={`col-start-1 row-start-1 size-4 transition-all duration-150 ${isLoading ? "scale-100 opacity-100" : "scale-50 opacity-0"}`}
+                className={`col-start-1 row-start-1 size-4 transition-[scale,opacity] duration-150 ${isLoading ? "scale-100 opacity-100" : "scale-50 opacity-0"}`}
               />
             </span>
           </Button>
