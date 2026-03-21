@@ -13,6 +13,7 @@ import { getRolePerformanceStats } from "@/data/team-role-stats-dto";
 import { getTeamRoster } from "@/data/team-shared-data";
 import { getTeamWinrates } from "@/data/team-stats-dto";
 import prisma from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 import type { HeroName } from "@/types/heroes";
 import { tool } from "ai";
 import { z } from "zod";
@@ -166,7 +167,7 @@ export function buildTools(opts: {
 
     getScrimList: tool({
       description:
-        "List recent scrims for a team. Returns scrim IDs, names, dates, and map info. Use the scrim IDs with getScrimAnalysis for detailed analysis.",
+        "List scrims for a team with optional search, date filtering, and pagination. Returns scrim IDs, names, dates, and map info. Use scrim IDs with getScrimAnalysis for detailed analysis. Use 'cursor' from a previous response to paginate through results.",
       inputSchema: z.object({
         teamId: z.number().describe("The team ID to list scrims for."),
         limit: z
@@ -175,22 +176,67 @@ export function buildTools(opts: {
           .max(20)
           .default(10)
           .describe("Number of scrims to return (default 10, max 20)."),
+        search: z
+          .string()
+          .optional()
+          .describe(
+            "Search by scrim name (case-insensitive). E.g., 'vs Entropy' or 'playoffs'."
+          ),
+        after: z
+          .string()
+          .optional()
+          .describe(
+            "Only return scrims after this date (ISO format, e.g., '2025-03-01')."
+          ),
+        before: z
+          .string()
+          .optional()
+          .describe(
+            "Only return scrims before this date (ISO format, e.g., '2025-03-15')."
+          ),
+        cursor: z
+          .number()
+          .optional()
+          .describe(
+            "Cursor for pagination — pass the 'nextCursor' value from a previous response to get the next page."
+          ),
       }),
-      execute: async ({ teamId, limit }) => {
+      execute: async ({ teamId, limit, search, after, before, cursor }) => {
         assertTeamAccess(teamId);
+
+        const where: Prisma.ScrimWhereInput = { teamId };
+        if (search) {
+          where.name = { contains: search, mode: "insensitive" };
+        }
+        if (after || before) {
+          where.date = {
+            ...(after ? { gte: new Date(after) } : {}),
+            ...(before ? { lte: new Date(before) } : {}),
+          };
+        }
+
         const scrims = await prisma.scrim.findMany({
-          where: { teamId },
+          where,
           orderBy: { date: "desc" },
           take: limit,
+          ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
           include: {
             maps: {
               select: { id: true, name: true },
             },
           },
         });
+
+        const totalCount = await prisma.scrim.count({ where });
+        const nextCursor =
+          scrims.length === limit ? scrims[scrims.length - 1]?.id : undefined;
+
         return {
           scrims: scrims.map(formatScrimListEntry),
-          total: scrims.length,
+          returned: scrims.length,
+          totalCount,
+          nextCursor,
+          hasMore: nextCursor !== undefined,
         };
       },
     }),

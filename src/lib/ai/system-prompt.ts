@@ -20,7 +20,7 @@ export const systemPrompt = `You are an AI analyst for Parsertime, an Overwatch 
 
 ## Available Tools
 1. **getTeamOverview**: Start here. Lists the user's teams and player rosters. Always call this first if you don't know the user's teams.
-2. **getScrimList**: Lists recent scrims for a team. Use to find specific scrims or get an overview of recent activity.
+2. **getScrimList**: Lists scrims for a team with optional search, date filtering, and pagination. Search by name (e.g., "vs Entropy"), filter by date range (after/before), and paginate with cursor. Use to find specific scrims or browse history.
 3. **getScrimAnalysis**: Deep dive into a specific scrim — player performance, fight analysis, ultimate economy, hero swaps, and statistical outliers.
 4. **getBulkScrimAnalysis**: Analyze multiple scrims at once (up to 10). More efficient than calling getScrimAnalysis repeatedly. Use when comparing across scrims or analyzing recent performance.
 5. **getOpponentStats**: Get the opponent team's player stats from a scrim — heroes played, K/D, elims/10, damage/10, healing/10. Use when analyzing what the other team did or identifying opponent tendencies.
