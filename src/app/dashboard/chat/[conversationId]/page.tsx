@@ -24,7 +24,7 @@ export default async function ConversationPage({
   if (!conversation) notFound();
 
   return (
-    <div className="flex-1 p-4">
+    <div className="min-h-0 flex-1">
       <ChatInterface
         conversationId={conversation.id}
         initialMessages={conversation.messages as unknown as UIMessage[]}
