@@ -69,6 +69,7 @@ model User {
   botNotificationConfigs BotNotificationConfig[]
   createdTargets         PlayerTarget[]
   chatConversations      ChatConversation[]
+  chatReports            ChatReport[]
 
   @@index([id, email])
 }
@@ -1198,6 +1199,17 @@ model ChatConversation {
   messages  Json     @default("[]")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model ChatReport {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
