@@ -2,7 +2,24 @@ import { MessageResponse } from "@/components/ai-elements/message";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const report = await prisma.chatReport.findUnique({
+    where: { id },
+    select: { title: true },
+  });
+
+  return {
+    title: report ? `${report.title} | Parsertime` : "Report | Parsertime",
+  };
+}
 
 export default async function ReportPage({
   params,
