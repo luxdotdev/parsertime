@@ -23,6 +23,7 @@ import { TeamRosterGrid } from "@/components/stats/team/team-roster-grid";
 import { TopMapsCard } from "@/components/stats/team/top-maps-card";
 import { UltPlayerRankingsCard } from "@/components/stats/team/ult-player-rankings-card";
 import { UltRoleBreakdownCard } from "@/components/stats/team/ult-role-breakdown-card";
+import { AbilityImpactAnalysisCard } from "@/components/stats/team/ability-impact-analysis-card";
 import { UltImpactAnalysisCard } from "@/components/stats/team/ult-impact-analysis-card";
 import { UltUsageOverviewCard } from "@/components/stats/team/ult-usage-overview-card";
 import { UltimateEconomyCard } from "@/components/stats/team/ultimate-economy-card";
@@ -60,6 +61,7 @@ import {
   getTop5MapsByPlaytime,
   getTopMapsByPlaytime,
 } from "@/data/team-stats-dto";
+import { getTeamAbilityImpact } from "@/data/team-ability-impact-dto";
 import { getTeamUltImpact } from "@/data/team-ult-impact-dto";
 import { getTeamUltStats } from "@/data/team-ult-stats-dto";
 import { getUser } from "@/data/user-dto";
@@ -202,6 +204,7 @@ export default async function TeamStatsPage(
     simulationToolEnabled,
     ultImpactAnalysis,
     ultimateImpactToolEnabled,
+    abilityImpactAnalysis,
   ] = await Promise.all([
     prisma.scrim.findMany({
       where: {
@@ -234,6 +237,7 @@ export default async function TeamStatsPage(
     simulationTool(),
     getTeamUltImpact(teamId, dateRange),
     ultimateImpactTool(),
+    getTeamAbilityImpact(teamId, dateRange),
   ]);
 
   const heroPickrateRawData = await getHeroPickrateRawData(teamId, dateRange);
@@ -387,6 +391,7 @@ export default async function TeamStatsPage(
         <TabsContent value="teamfights" className="space-y-4">
           <TeamFightStatsCard fightStats={fightStats} />
           <WinProbabilityInsights fightStats={fightStats} />
+          <AbilityImpactAnalysisCard analysis={abilityImpactAnalysis} />
         </TabsContent>
 
         {/* Ultimates Tab */}
