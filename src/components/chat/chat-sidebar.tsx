@@ -64,7 +64,7 @@ export function ChatSidebar({ className }: { className?: string }) {
           asChild
         >
           <Link href="/dashboard/chat" aria-label="New chat">
-            <PlusIcon className="size-4" />
+            <PlusIcon className="size-4" aria-hidden="true" />
           </Link>
         </Button>
       </div>
@@ -92,7 +92,7 @@ export function ChatSidebar({ className }: { className?: string }) {
               onClick={() => deleteMutation.mutate(conv.id)}
               aria-label={`Delete conversation: ${conv.title}`}
             >
-              <Trash2Icon className="size-3.5" />
+              <Trash2Icon className="size-3.5" aria-hidden="true" />
             </Button>
           </div>
         ))}
