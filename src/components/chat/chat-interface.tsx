@@ -35,7 +35,15 @@ import {
   SquareIcon,
   XIcon,
 } from "lucide-react";
-import { type KeyboardEvent, useCallback, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import {
+  type KeyboardEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 const SUGGESTIONS = [
   "How did my team perform in our last scrim?",
@@ -46,15 +54,72 @@ const SUGGESTIONS = [
 
 const transport = new DefaultChatTransport({ api: "/api/chat" });
 
-export function ChatInterface() {
+type ChatInterfaceProps = {
+  conversationId?: string;
+  initialMessages?: UIMessage[];
+};
+
+export function ChatInterface({
+  conversationId: initialConversationId,
+  initialMessages,
+}: ChatInterfaceProps) {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [conversationId, setConversationId] = useState(initialConversationId);
+  const prevStatusRef = useRef<string | null>(null);
+
   const { messages, sendMessage, setMessages, regenerate, status, stop } =
-    useChat({ transport });
+    useChat({
+      transport,
+      messages: initialMessages,
+    });
   const [input, setInput] = useState("");
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const isLoading = status === "streaming" || status === "submitted";
+
+  useEffect(() => {
+    const wasLoading =
+      prevStatusRef.current === "streaming" ||
+      prevStatusRef.current === "submitted";
+    prevStatusRef.current = status;
+
+    if (!wasLoading || status !== "ready" || messages.length === 0) return;
+
+    const firstUserText = messages
+      .find((m) => m.role === "user")
+      ?.parts.find((p) => p.type === "text");
+    const title =
+      firstUserText && "text" in firstUserText
+        ? firstUserText.text.slice(0, 100)
+        : "New conversation";
+
+    if (!conversationId) {
+      void fetch("/api/chat/conversations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, messages }),
+      })
+        .then((res) => res.json() as Promise<{ id: string }>)
+        .then((data) => {
+          setConversationId(data.id);
+          void queryClient.invalidateQueries({
+            queryKey: ["chat-conversations"],
+          });
+          router.replace(`/dashboard/chat/${data.id}`);
+        });
+    } else {
+      void fetch(`/api/chat/conversations/${conversationId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, messages }),
+      }).then(() =>
+        queryClient.invalidateQueries({ queryKey: ["chat-conversations"] })
+      );
+    }
+  }, [status, messages, conversationId, queryClient, router]);
 
   function handleSubmit(text: string) {
     const trimmed = text.trim();
@@ -126,7 +191,7 @@ export function ChatInterface() {
   );
 
   return (
-    <div className="flex h-[calc(100vh-12rem)] flex-col">
+    <div className="flex h-full flex-col">
       <Conversation className="flex-1">
         <ConversationContent>
           {messages.length === 0 ? (
@@ -134,8 +199,10 @@ export function ChatInterface() {
               <div className="flex flex-col items-center gap-6">
                 <div className="flex flex-col items-center gap-2">
                   <BotMessageSquareIcon className="text-muted-foreground size-8" />
-                  <h3 className="text-base font-medium">Parsertime AI</h3>
-                  <p className="text-muted-foreground max-w-sm text-center text-sm">
+                  <h3 className="text-base font-medium text-balance">
+                    Parsertime AI
+                  </h3>
+                  <p className="text-muted-foreground max-w-sm text-center text-sm text-pretty">
                     Ask questions about your team&apos;s scrim data, player
                     performance, map win rates, and more.
                   </p>
@@ -146,7 +213,7 @@ export function ChatInterface() {
                       key={s}
                       variant="outline"
                       size="sm"
-                      className="h-auto cursor-pointer justify-start px-3 py-2 text-left text-xs whitespace-normal"
+                      className="h-auto cursor-pointer justify-start px-3 py-2.5 text-left text-xs whitespace-normal active:scale-[0.98]"
                       onClick={() => handleSubmit(s)}
                     >
                       {s}
@@ -174,6 +241,7 @@ export function ChatInterface() {
                           size="sm"
                           variant="ghost"
                           onClick={handleEditCancel}
+                          className="active:scale-[0.96]"
                         >
                           <XIcon className="mr-1 size-3" />
                           Cancel
@@ -182,6 +250,7 @@ export function ChatInterface() {
                           size="sm"
                           onClick={handleEditSubmit}
                           disabled={!editText.trim()}
+                          className="active:scale-[0.96]"
                         >
                           Resend
                         </Button>
@@ -243,18 +312,21 @@ export function ChatInterface() {
 
                     {!isLoading && (
                       <MessageActions
-                        className={`opacity-0 transition-opacity group-hover:opacity-100 ${message.role === "user" ? "ml-auto" : ""}`}
+                        className={`transition-opacity duration-150 ${message.role === "user" ? "ml-auto" : ""} opacity-0 group-hover:opacity-100`}
                       >
                         {message.role === "assistant" && (
                           <MessageAction
                             tooltip="Copy"
                             onClick={() => handleCopy(message)}
                           >
-                            {copiedId === message.id ? (
-                              <CheckIcon className="size-3.5" />
-                            ) : (
-                              <ClipboardIcon className="size-3.5" />
-                            )}
+                            <span className="relative grid size-3.5 place-items-center">
+                              <ClipboardIcon
+                                className={`col-start-1 row-start-1 size-3.5 transition-all duration-200 ${copiedId === message.id ? "scale-50 opacity-0" : "scale-100 opacity-100"}`}
+                              />
+                              <CheckIcon
+                                className={`col-start-1 row-start-1 size-3.5 transition-all duration-200 ${copiedId === message.id ? "scale-100 opacity-100" : "scale-50 opacity-0"}`}
+                              />
+                            </span>
                           </MessageAction>
                         )}
                         {message.role === "assistant" &&
@@ -285,7 +357,7 @@ export function ChatInterface() {
         <ConversationScrollButton />
       </Conversation>
 
-      <div className="border-t px-4 py-3">
+      <div className="px-4 py-3 shadow-[0_-1px_3px_rgba(0,0,0,0.05)]">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -306,15 +378,18 @@ export function ChatInterface() {
             type={isLoading ? "button" : "submit"}
             size="icon"
             variant="ghost"
-            className="absolute right-1.5 bottom-1.5 size-7"
+            className="absolute right-1.5 bottom-1.5 size-8 active:scale-[0.96]"
             onClick={isLoading ? stop : undefined}
-            aria-label={isLoading ? "Stop" : "Send"}
+            aria-label={isLoading ? "Stop generating" : "Send message"}
           >
-            {isLoading ? (
-              <SquareIcon className="size-4" />
-            ) : (
-              <CornerDownLeftIcon className="size-4" />
-            )}
+            <span className="relative grid size-4 place-items-center">
+              <CornerDownLeftIcon
+                className={`col-start-1 row-start-1 size-4 transition-all duration-150 ${isLoading ? "scale-50 opacity-0" : "scale-100 opacity-100"}`}
+              />
+              <SquareIcon
+                className={`col-start-1 row-start-1 size-4 transition-all duration-150 ${isLoading ? "scale-100 opacity-100" : "scale-50 opacity-0"}`}
+              />
+            </span>
           </Button>
         </form>
       </div>
