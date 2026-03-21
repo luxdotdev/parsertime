@@ -23,10 +23,11 @@ import {
 } from "./formatters";
 
 export function buildTools(opts: {
+  userId: string;
   allowedTeamIds: Set<number>;
   userTeams: { id: number; name: string; image: string | null }[];
 }) {
-  const { allowedTeamIds, userTeams } = opts;
+  const { userId, allowedTeamIds, userTeams } = opts;
 
   function assertTeamAccess(teamId: number) {
     if (!allowedTeamIds.has(teamId)) {
@@ -452,6 +453,33 @@ export function buildTools(opts: {
         if (teamId) assertTeamAccess(teamId);
         const data = await getMapIntelligence(opponentAbbr, teamId);
         return data;
+      },
+    }),
+
+    generateReport: tool({
+      description:
+        "Create a shareable report from the analysis you've done. Write the report content in markdown with clear sections, stats, and insights. Every claim must be backed by specific numbers from the data. The report will be saved and a shareable URL returned. Only call this when the user explicitly asks to create or share a report.",
+      inputSchema: z.object({
+        title: z
+          .string()
+          .describe(
+            "Report title (e.g., 'DSG vs Entropy Scrim Analysis - March 13')"
+          ),
+        content: z
+          .string()
+          .describe(
+            "The full report content in markdown. Every insight must cite specific stats (e.g., '62.5% fight win rate', '3.2 K/D'). Include headers, data tables, key findings backed by numbers, and actionable recommendations."
+          ),
+      }),
+      execute: async ({ title, content }) => {
+        const report = await prisma.chatReport.create({
+          data: { userId, title, content },
+        });
+        return {
+          reportId: report.id,
+          url: `/dashboard/reports/${report.id}`,
+          title: report.title,
+        };
       },
     }),
   };
