@@ -23,6 +23,7 @@ import {
 import {
   MapPerformanceCard,
   PlayerPerformanceCard,
+  ReportCard,
   ScrimAnalysisCard,
   TeamTrendsCard,
   ToolLoading,
@@ -464,6 +465,14 @@ function renderToolCard(toolName: string, part: ToolUIPart): React.ReactNode {
             {...(output as unknown as React.ComponentProps<
               typeof PlayerPerformanceCard
             >)}
+          />
+        );
+      break;
+    case "generateReport":
+      if (output.url)
+        return (
+          <ReportCard
+            {...(output as unknown as React.ComponentProps<typeof ReportCard>)}
           />
         );
       break;
