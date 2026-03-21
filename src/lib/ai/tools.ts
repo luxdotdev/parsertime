@@ -1,10 +1,16 @@
 import { getComparisonStats } from "@/data/comparison-dto";
+import { getMapIntelligence } from "@/data/map-intelligence-dto";
+import { getPlayerIntelligence } from "@/data/player-intelligence-dto";
 import { getScrimOverview } from "@/data/scrim-overview-dto";
+import { getTeamFightStats } from "@/data/team-fight-stats-dto";
+import { getHeroPoolAnalysis } from "@/data/team-hero-pool-dto";
 import {
   getRecentForm,
   getStreakInfo,
   getWinrateOverTime,
 } from "@/data/team-performance-trends-dto";
+import { getRolePerformanceStats } from "@/data/team-role-stats-dto";
+import { getTeamRoster } from "@/data/team-shared-data";
 import { getTeamWinrates } from "@/data/team-stats-dto";
 import prisma from "@/lib/prisma";
 import type { HeroName } from "@/types/heroes";
@@ -115,6 +121,156 @@ export function buildTools(opts: {
       },
     }),
 
+    getBulkScrimAnalysis: tool({
+      description:
+        "Get analysis for multiple scrims at once. More efficient than calling getScrimAnalysis repeatedly. Returns an array of scrim analyses with the same data as getScrimAnalysis. Use when comparing across scrims or analyzing a range of recent games.",
+      inputSchema: z.object({
+        scrimIds: z
+          .array(z.number())
+          .min(1)
+          .max(10)
+          .describe("Array of scrim IDs to analyze (max 10)."),
+        teamId: z
+          .number()
+          .describe(
+            "The team ID (used to determine which side is 'our team')."
+          ),
+      }),
+      execute: async ({ scrimIds, teamId }) => {
+        assertTeamAccess(teamId);
+        const scrims = await prisma.scrim.findMany({
+          where: { id: { in: scrimIds }, teamId },
+          select: { id: true, name: true },
+        });
+        const validIds = new Set(scrims.map((s) => s.id));
+        const results = await Promise.all(
+          scrimIds
+            .filter((id) => validIds.has(id))
+            .map(async (scrimId) => {
+              const data = await getScrimOverview(scrimId, teamId);
+              return { scrimId, ...formatScrimOverview(data) };
+            })
+        );
+        return {
+          analyzed: results.length,
+          requested: scrimIds.length,
+          scrims: results,
+        };
+      },
+    }),
+
+    getOpponentStats: tool({
+      description:
+        "Get the opponent team's player stats from a scrim. Shows each opponent player's heroes, K/D, eliminations, damage, and healing per 10 minutes. Use when analyzing what the other team did or identifying opponent tendencies.",
+      inputSchema: z.object({
+        scrimId: z.number().describe("The scrim ID."),
+        teamId: z
+          .number()
+          .describe("Your team ID (opponent stats are inferred from this)."),
+      }),
+      execute: async ({ scrimId, teamId }) => {
+        assertTeamAccess(teamId);
+        const scrim = await prisma.scrim.findFirst({
+          where: { id: scrimId, teamId },
+          include: {
+            maps: { select: { id: true, mapData: { select: { id: true } } } },
+          },
+        });
+        if (!scrim) {
+          return { error: `Scrim ${scrimId} not found for team ${teamId}.` };
+        }
+
+        const mapDataIds = scrim.maps.flatMap((m) =>
+          m.mapData.map((md) => md.id)
+        );
+        if (mapDataIds.length === 0) return { error: "No map data found." };
+
+        const roster = await getTeamRoster(teamId);
+        const rosterSet = new Set(roster);
+
+        const allStats = await prisma.playerStat.findMany({
+          where: { MapDataId: { in: mapDataIds } },
+          select: {
+            player_name: true,
+            player_team: true,
+            player_hero: true,
+            eliminations: true,
+            final_blows: true,
+            deaths: true,
+            hero_damage_dealt: true,
+            healing_dealt: true,
+            hero_time_played: true,
+          },
+        });
+
+        const opponentStats = allStats.filter(
+          (s) => !rosterSet.has(s.player_name)
+        );
+
+        const playerMap = new Map<
+          string,
+          {
+            heroes: Set<string>;
+            eliminations: number;
+            finalBlows: number;
+            deaths: number;
+            heroDamage: number;
+            healing: number;
+            timePlayed: number;
+            team: string;
+          }
+        >();
+
+        for (const s of opponentStats) {
+          const existing = playerMap.get(s.player_name);
+          if (existing) {
+            existing.heroes.add(s.player_hero);
+            existing.eliminations += s.eliminations;
+            existing.finalBlows += s.final_blows;
+            existing.deaths += s.deaths;
+            existing.heroDamage += s.hero_damage_dealt;
+            existing.healing += s.healing_dealt;
+            existing.timePlayed += s.hero_time_played;
+          } else {
+            playerMap.set(s.player_name, {
+              heroes: new Set([s.player_hero]),
+              eliminations: s.eliminations,
+              finalBlows: s.final_blows,
+              deaths: s.deaths,
+              heroDamage: s.hero_damage_dealt,
+              healing: s.healing_dealt,
+              timePlayed: s.hero_time_played,
+              team: s.player_team,
+            });
+          }
+        }
+
+        function per10(value: number, time: number) {
+          return time > 0 ? Math.round((value / time) * 600 * 10) / 10 : 0;
+        }
+
+        const players = [...playerMap.entries()].map(([name, s]) => ({
+          playerName: name,
+          team: s.team,
+          heroes: [...s.heroes],
+          kdRatio:
+            s.deaths > 0
+              ? Math.round((s.eliminations / s.deaths) * 100) / 100
+              : s.eliminations,
+          eliminationsPer10: per10(s.eliminations, s.timePlayed),
+          finalBlowsPer10: per10(s.finalBlows, s.timePlayed),
+          deathsPer10: per10(s.deaths, s.timePlayed),
+          heroDamagePer10: per10(s.heroDamage, s.timePlayed),
+          healingPer10: per10(s.healing, s.timePlayed),
+        }));
+
+        return {
+          opponentTeam: players[0]?.team ?? "Unknown",
+          players,
+        };
+      },
+    }),
+
     getPlayerPerformance: tool({
       description:
         "Get detailed performance stats for a specific player across selected maps. Requires map IDs (get from getScrimList or getScrimAnalysis). Optionally filter by specific heroes.",
@@ -217,6 +373,85 @@ export function buildTools(opts: {
             },
           },
         };
+      },
+    }),
+
+    getTeamFightAnalysis: tool({
+      description:
+        "Get detailed fight statistics for a team — win rates when getting first pick vs first death, first ult advantage, dry fight performance, fight reversals, and ultimate efficiency. Great for understanding what makes the team win or lose fights.",
+      inputSchema: z.object({
+        teamId: z.number().describe("The team ID."),
+      }),
+      execute: async ({ teamId }) => {
+        assertTeamAccess(teamId);
+        const data = await getTeamFightStats(teamId);
+        return data;
+      },
+    }),
+
+    getHeroPool: tool({
+      description:
+        "Get the team's hero pool analysis — hero diversity per player, playtime distribution by role, hero specialists, and which heroes each player is most experienced on. Useful for understanding team flexibility and identifying one-tricks.",
+      inputSchema: z.object({
+        teamId: z.number().describe("The team ID."),
+      }),
+      execute: async ({ teamId }) => {
+        assertTeamAccess(teamId);
+        const data = await getHeroPoolAnalysis(teamId);
+        return data;
+      },
+    }),
+
+    getRoleStats: tool({
+      description:
+        "Get performance stats aggregated by role (Tank, DPS, Support) — eliminations, deaths, damage, healing, and ultimate usage per role. Shows how each role line is performing relative to expectations.",
+      inputSchema: z.object({
+        teamId: z.number().describe("The team ID."),
+      }),
+      execute: async ({ teamId }) => {
+        assertTeamAccess(teamId);
+        const data = await getRolePerformanceStats(teamId);
+        return data;
+      },
+    }),
+
+    getPlayerIntel: tool({
+      description:
+        "Get player intelligence — hero depth analysis (how deep each player's hero pool is), substitution rates (how often players are forced off their primary hero), vulnerabilities (which players are most targetable by bans), and best player highlights. Requires an opponent abbreviation for ban analysis context (pass null if unknown).",
+      inputSchema: z.object({
+        teamId: z.number().describe("The team ID."),
+        opponentAbbr: z
+          .string()
+          .nullable()
+          .describe(
+            "Opponent team abbreviation for ban context (e.g., 'DSG'). Pass null if unknown."
+          ),
+      }),
+      execute: async ({ teamId, opponentAbbr }) => {
+        assertTeamAccess(teamId);
+        const data = await getPlayerIntelligence(teamId, opponentAbbr);
+        return data;
+      },
+    }),
+
+    getMapIntel: tool({
+      description:
+        "Get map intelligence — strength-weighted win rates (adjusted for opponent quality), performance trends per map, map type dependencies (Control vs Escort vs Hybrid etc.), and head-to-head matchup analysis. Requires an opponent abbreviation for matchup comparison.",
+      inputSchema: z.object({
+        opponentAbbr: z
+          .string()
+          .describe("Opponent team abbreviation (e.g., 'DSG')."),
+        teamId: z
+          .number()
+          .nullable()
+          .describe(
+            "Your team ID for matchup comparison. Pass null for opponent-only analysis."
+          ),
+      }),
+      execute: async ({ opponentAbbr, teamId }) => {
+        if (teamId) assertTeamAccess(teamId);
+        const data = await getMapIntelligence(opponentAbbr, teamId);
+        return data;
       },
     }),
   };
