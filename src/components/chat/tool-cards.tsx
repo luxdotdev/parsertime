@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -11,6 +12,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import {
+  ExternalLinkIcon,
+  FileTextIcon,
   MinusIcon,
   TrendingDownIcon,
   TrendingUpIcon,
@@ -18,17 +21,33 @@ import {
 } from "lucide-react";
 
 export function ToolLoading({ toolName }: { toolName: string }) {
+  const isReport = toolName.toLowerCase().includes("report");
+
   return (
     <Card className="w-full max-w-lg">
       <CardHeader className="pb-3">
-        <CardDescription className="text-xs tracking-wide uppercase">
-          {toolName}
-        </CardDescription>
-        <Skeleton className="h-5 w-40" />
+        <div className="flex items-center gap-2">
+          {isReport && (
+            <FileTextIcon
+              className="text-muted-foreground size-4 animate-pulse"
+              aria-hidden="true"
+            />
+          )}
+          <CardDescription className="text-xs tracking-wide uppercase">
+            {isReport ? "Writing report\u2026" : toolName}
+          </CardDescription>
+        </div>
+        <Skeleton className="h-5 w-48" />
       </CardHeader>
       <CardContent className="space-y-2">
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-4 w-3/4" />
+        {isReport && (
+          <>
+            <Skeleton className="h-4 w-5/6" />
+            <Skeleton className="h-4 w-2/3" />
+          </>
+        )}
         <Skeleton className="h-4 w-1/2" />
       </CardContent>
     </Card>
@@ -394,6 +413,43 @@ export function PlayerPerformanceCard({
             </span>
           </div>
         )}
+      </CardContent>
+    </Card>
+  );
+}
+
+export function ReportCard({
+  title,
+  url,
+}: {
+  title: string;
+  url: string;
+  reportId: string;
+}) {
+  return (
+    <Card className="w-full max-w-lg">
+      <CardHeader className="pb-2">
+        <div className="flex items-center gap-2">
+          <FileTextIcon
+            className="text-muted-foreground size-4"
+            aria-hidden="true"
+          />
+          <CardTitle className="text-sm">Report Created</CardTitle>
+        </div>
+        <CardDescription className="text-xs">{title}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Button
+          size="sm"
+          variant="secondary"
+          className="active:scale-[0.96]"
+          asChild
+        >
+          <a href={url}>
+            View Report
+            <ExternalLinkIcon className="ml-1.5 size-3" aria-hidden="true" />
+          </a>
+        </Button>
       </CardContent>
     </Card>
   );
