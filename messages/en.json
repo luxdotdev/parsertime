@@ -427,7 +427,8 @@
       "scouting": "Scouting",
       "scoutPlayer": "Scout a player",
       "scoutTeam": "Scout a team",
-      "dataLabeling": "Data Labeling"
+      "dataLabeling": "Data Labeling",
+      "chat": "AI Chat"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "Search team...",
