@@ -25,9 +25,11 @@ const mainNav: { title: string; href: Route }[] = [
 
 export function MobileNav({
   session,
+  aiChatEnabled,
   className,
 }: {
   session: Session | null;
+  aiChatEnabled?: boolean;
   className?: string;
 }) {
   const [open, setOpen] = React.useState(false);
@@ -104,6 +106,14 @@ export function MobileNav({
                     {item.title}
                   </MobileLink>
                 )
+            )}
+            {aiChatEnabled && (
+              <MobileLink
+                href={"/dashboard/chat" as Route}
+                onOpenChange={setOpen}
+              >
+                AI Chat
+              </MobileLink>
             )}
           </div>
         </ScrollArea>
