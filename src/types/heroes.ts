@@ -2,354 +2,774 @@ export type Hero = Support | Tank | DPS;
 
 export type HeroName = Hero["name"];
 
+export type AbilityImpact =
+  | "negligible"
+  | "low"
+  | "medium"
+  | "high"
+  | "critical";
+
 export const Anran = {
   name: "Anran",
   image: "anran.png",
-  ability1Name: "Inferno Rush",
-  ability2Name: "Dancing Blaze",
+  ability1: {
+    name: "Inferno Rush",
+    tags: ["movement", "burning", "initiation"],
+    impact: "low",
+  },
+  ability2: {
+    name: "Dancing Blaze",
+    tags: ["movement", "sustain", "burning", "areaOfEffect", "lifesteal"],
+    impact: "low",
+  },
 } as const;
 
 export const Ana = {
   name: "Ana",
   image: "ana.png",
-  ability1Name: "Sleep Dart",
-  ability2Name: "Biotic Grenade",
+  ability1: {
+    name: "Sleep Dart",
+    tags: ["crowdControl", "sleep", "cleansable"],
+    impact: "critical",
+  },
+  ability2: {
+    name: "Biotic Grenade",
+    tags: [
+      "antiHeal",
+      "healing",
+      "sustain",
+      "areaOfEffect",
+      "cleansable",
+    ],
+    impact: "critical",
+  },
 } as const;
 
 export const Ashe = {
   name: "Ashe",
   image: "ashe.png",
-  ability1Name: "Coach Gun",
-  ability2Name: "Dynamite",
+  ability1: {
+    name: "Coach Gun",
+    tags: ["movement", "knockback"],
+    impact: "low",
+  },
+  ability2: {
+    name: "Dynamite",
+    tags: ["damage", "burning", "areaOfEffect", "cleansable"],
+    impact: "medium",
+  },
 } as const;
 
 export const Baptiste = {
   name: "Baptiste",
   image: "baptiste.png",
-  ability1Name: "Regenerative Burst",
-  ability2Name: "Immortality Field",
+  ability1: {
+    name: "Regenerative Burst",
+    tags: ["healing", "sustain", "areaOfEffect", "tempo"],
+    impact: "medium",
+  },
+  ability2: {
+    name: "Immortality Field",
+    tags: [
+      "healing",
+      "sustain",
+      "areaOfEffect",
+      "immortality",
+      "tempo",
+      "reactive",
+    ],
+    impact: "critical",
+  },
 } as const;
 
 export const Bastion = {
   name: "Bastion",
   image: "bastion.png",
-  ability1Name: "Reconfigure",
-  ability2Name: "Self-Repair",
+  ability1: {
+    name: "Reconfigure",
+    tags: ["damage", "tempo", "initiation"],
+    impact: "high",
+  },
+  ability2: {
+    name: "Self-Repair",
+    tags: ["sustain"],
+    impact: "negligible",
+  },
 } as const;
 
 export const Brigitte = {
   name: "Brigitte",
   image: "brigitte.png",
-  ability1Name: "Whip Shot",
-  ability2Name: "Repair Pack",
+  ability1: {
+    name: "Whip Shot",
+    tags: ["damage", "knockback", "crowdControl"],
+    impact: "medium",
+  },
+  ability2: {
+    name: "Repair Pack",
+    tags: ["healing"],
+    impact: "medium",
+  },
 } as const;
 
 export const Cassidy = {
   name: "Cassidy",
   image: "cassidy.png",
-  ability1Name: "Combat Roll",
-  ability2Name: "Flashbang",
+  ability1: {
+    name: "Combat Roll",
+    tags: ["movement"],
+    impact: "low",
+  },
+  ability2: {
+    name: "Flashbang",
+    tags: ["areaOfEffect", "crowdControl", "hinder"],
+    impact: "medium",
+  },
 } as const;
 
 export const Domina = {
   name: "Domina",
   image: "domina.png",
-  ability1Name: "Sonic Repulsors",
-  ability2Name: "Crystal Charge",
+  ability1: {
+    name: "Sonic Repulsors",
+    tags: ["damage", "knockback", "crowdControl", "hinder"],
+    impact: "low",
+  },
+  ability2: {
+    name: "Crystal Charge",
+    tags: ["damage"],
+    impact: "low",
+  },
 } as const;
 
 export const Doomfist = {
   name: "Doomfist",
   image: "doomfist.png",
-  ability1Name: "Seismic Slam",
-  ability2Name: "Power Block",
+  ability1: {
+    name: "Seismic Slam",
+    tags: ["damage", "movement", "initiation"],
+    impact: "low",
+  },
+  ability2: {
+    name: "Power Block",
+    tags: ["sustain", "tempo"],
+    impact: "low",
+  },
 } as const;
 
 export const Dva = {
   name: "D.Va",
   image: "dva.png",
-  ability1Name: "Boosters",
-  ability2Name: "Micro Missiles",
+  ability1: {
+    name: "Boosters",
+    tags: ["movement", "initiation", "tempo"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Micro Missiles",
+    tags: ["damage", "areaOfEffect"],
+    impact: "medium",
+  },
 } as const;
 
 export const Echo = {
   name: "Echo",
   image: "echo.png",
-  ability1Name: "Flight",
-  ability2Name: "Focusing Beam",
+  ability1: {
+    name: "Flight",
+    tags: ["movement"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Focusing Beam",
+    tags: ["damage"],
+    impact: "low",
+  },
 } as const;
 
 export const Emre = {
   name: "Emre",
   image: "emre.png",
-  ability1Name: "Siphon Blaster",
-  ability2Name: "Cyber Frag",
+  ability1: {
+    name: "Siphon Blaster",
+    tags: ["damage", "sustain"],
+    impact: "low",
+  },
+  ability2: {
+    name: "Cyber Frag",
+    tags: ["damage", "areaOfEffect"],
+    impact: "low",
+  },
 } as const;
 
 export const Freja = {
   name: "Freja",
   image: "freja.png",
-  ability1Name: "Quick Dash",
-  ability2Name: "Updraft",
+  ability1: {
+    name: "Quick Dash",
+    tags: ["movement"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Updraft",
+    tags: ["movement"],
+    impact: "negligible",
+  },
 } as const;
 
 export const Genji = {
   name: "Genji",
   image: "genji.png",
-  ability1Name: "Swift Strike",
-  ability2Name: "Deflect",
+  ability1: {
+    name: "Swift Strike",
+    tags: ["damage", "movement"],
+    impact: "low",
+  },
+  ability2: {
+    name: "Deflect",
+    tags: ["sustain"],
+    impact: "negligible",
+  },
 } as const;
 
 export const Hanzo = {
   name: "Hanzo",
   image: "hanzo.png",
-  ability1Name: "Sonic Arrow",
-  ability2Name: "Storm Arrows",
+  ability1: {
+    name: "Sonic Arrow",
+    tags: ["damage"],
+    impact: "low",
+  },
+  ability2: {
+    name: "Storm Arrows",
+    tags: ["damage"],
+    impact: "low",
+  },
 } as const;
 
 export const Hazard = {
   name: "Hazard",
   image: "hazard.png",
-  ability1Name: "Violent Leap",
-  ability2Name: "Jagged Wall",
+  ability1: {
+    name: "Violent Leap",
+    tags: ["damage", "movement", "initiation"],
+    impact: "low",
+  },
+  ability2: {
+    name: "Jagged Wall",
+    tags: ["damage", "deployable"],
+    impact: "low",
+  },
 } as const;
 
 export const Illari = {
   name: "Illari",
   image: "illari.png",
-  ability1Name: "Outburst",
-  ability2Name: "Healing Pylon",
+  ability1: {
+    name: "Outburst",
+    tags: ["damage", "movement"],
+    impact: "low",
+  },
+  ability2: {
+    name: "Healing Pylon",
+    tags: ["healing", "sustain", "deployable"],
+    impact: "high",
+  },
 } as const;
 
 export const JetpackCat = {
   name: "Jetpack Cat",
   image: "jetpackcat.png",
-  ability1Name: "Lifeline",
-  ability2Name: "Purr",
+  ability1: {
+    name: "Lifeline",
+    tags: ["movement"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Purr",
+    tags: ["damage", "areaOfEffect"],
+    impact: "low",
+  },
 } as const;
 
 export const JunkerQueen = {
   name: "Junker Queen",
   image: "junkerqueen.png",
-  ability1Name: "Commanding Shout",
-  ability2Name: "Carnage",
+  ability1: {
+    name: "Commanding Shout",
+    tags: ["sustain", "movement", "speedBoost", "initiation", "tempo"],
+    impact: "high",
+  },
+  ability2: {
+    name: "Carnage",
+    tags: ["damage", "lifesteal"],
+    impact: "low",
+  },
 } as const;
 
 export const Junkrat = {
   name: "Junkrat",
   image: "junkrat.png",
-  ability1Name: "Concussion Mine",
-  ability2Name: "Steel Trap",
+  ability1: {
+    name: "Concussion Mine",
+    tags: ["damage", "movement"],
+    impact: "low",
+  },
+  ability2: {
+    name: "Steel Trap",
+    tags: ["damage", "deployable", "hinder"],
+    impact: "low",
+  },
 } as const;
 
 export const Juno = {
   name: "Juno",
   image: "juno.png",
-  ability1Name: "Glide Boost",
-  ability2Name: "Hyper Ring",
+  ability1: {
+    name: "Glide Boost",
+    tags: ["movement"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Hyper Ring",
+    tags: ["speedBoost", "initiation"],
+    impact: "critical",
+  },
 } as const;
 
 export const Kiriko = {
   name: "Kiriko",
   image: "kiriko.png",
-  ability1Name: "Swift Step",
-  ability2Name: "Protection Suzu",
+  ability1: {
+    name: "Swift Step",
+    tags: ["movement", "immortality"],
+    impact: "high",
+  },
+  ability2: {
+    name: "Protection Suzu",
+    tags: ["healing", "cleanse", "immortality", "tempo", "reactive"],
+    impact: "critical",
+  },
 } as const;
 
 export const Lifeweaver = {
   name: "Lifeweaver",
   image: "lifeweaver.png",
-  ability1Name: "Petal Platform",
-  ability2Name: "Life Grip",
+  ability1: {
+    name: "Petal Platform",
+    tags: ["deployable"],
+    impact: "low",
+  },
+  ability2: {
+    name: "Life Grip",
+    tags: ["healing", "sustain", "cleanse", "reactive"],
+    impact: "high",
+  },
 } as const;
 
 export const Lucio = {
   name: "Lúcio",
   image: "lucio.png",
-  ability1Name: "Crossfade",
-  ability2Name: "Amp It Up",
+  ability1: {
+    name: "Crossfade",
+    tags: ["movement", "speedBoost", "healing"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Amp It Up",
+    tags: ["speedBoost", "healing", "initiation", "tempo"],
+    impact: "critical",
+  },
 } as const;
 
 export const Mauga = {
   name: "Mauga",
   image: "mauga.png",
-  ability1Name: "Overrun",
-  ability2Name: "Cardiac Overdrive",
+  ability1: {
+    name: "Overrun",
+    tags: ["damage", "movement", "initiation"],
+    impact: "high",
+  },
+  ability2: {
+    name: "Cardiac Overdrive",
+    tags: ["areaOfEffect", "lifesteal", "sustain", "tempo"],
+    impact: "critical",
+  },
 } as const;
 
 export const Mei = {
   name: "Mei",
   image: "mei.png",
-  ability1Name: "Cryo-Freeze",
-  ability2Name: "Ice Wall",
+  ability1: {
+    name: "Cryo-Freeze",
+    tags: ["sustain", "healing"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Ice Wall",
+    tags: ["crowdControl", "deployable"],
+    impact: "high",
+  },
 } as const;
 
 export const Mercy = {
   name: "Mercy",
   image: "mercy.png",
-  ability1Name: "Guardian Angel",
-  ability2Name: "Resurrect",
+  ability1: {
+    name: "Guardian Angel",
+    tags: ["movement"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Resurrect",
+    tags: ["healing", "resurrect"],
+    impact: "critical",
+  },
 } as const;
 
 export const Mizuki = {
   name: "Mizuki",
   image: "mizuki.png",
-  ability1Name: "Katashiro Return",
-  ability2Name: "Binding Chain",
+  ability1: {
+    name: "Katashiro Return",
+    tags: ["movement"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Binding Chain",
+    tags: ["crowdControl", "hinder"],
+    impact: "high",
+  },
 } as const;
 
 export const Moira = {
   name: "Moira",
   image: "moira.png",
-  ability1Name: "Fade",
-  ability2Name: "Biotic Orb",
+  ability1: {
+    name: "Fade",
+    tags: ["movement"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Biotic Orb",
+    tags: ["healing", "sustain", "damage"],
+    impact: "low",
+  },
 } as const;
 
 export const Orisa = {
   name: "Orisa",
   image: "orisa.png",
-  ability1Name: "Fortify",
-  ability2Name: "Javelin Spin",
+  ability1: {
+    name: "Fortify",
+    tags: ["sustain"],
+    impact: "medium",
+  },
+  ability2: {
+    name: "Javelin Spin",
+    tags: ["sustain"],
+    impact: "low",
+  },
 } as const;
 
 export const Pharah = {
   name: "Pharah",
   image: "pharah.png",
-  ability1Name: "Jump Jet",
-  ability2Name: "Concussive Blast",
+  ability1: {
+    name: "Jump Jet",
+    tags: ["movement"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Concussive Blast",
+    tags: ["damage", "areaOfEffect"],
+    impact: "low",
+  },
 } as const;
 
 export const Ramattra = {
   name: "Ramattra",
   image: "ramattra.png",
-  ability1Name: "Nemesis Form",
-  ability2Name: "Ravenous Vortex",
+  ability1: {
+    name: "Nemesis Form",
+    tags: ["damage", "sustain", "tempo"],
+    impact: "high",
+  },
+  ability2: {
+    name: "Ravenous Vortex",
+    tags: ["damage", "areaOfEffect", "sustain", "crowdControl"],
+    impact: "low",
+  },
 } as const;
 
 export const Reaper = {
   name: "Reaper",
   image: "reaper.png",
-  ability1Name: "Wraith Form",
-  ability2Name: "Shadow Step",
+  ability1: {
+    name: "Wraith Form",
+    tags: ["movement", "sustain"],
+    impact: "low",
+  },
+  ability2: {
+    name: "Shadow Step",
+    tags: ["movement"],
+    impact: "negligible",
+  },
 } as const;
 
 export const Reinhardt = {
   name: "Reinhardt",
   image: "reinhardt.png",
-  ability1Name: "Charge",
-  ability2Name: "Firestrike",
+  ability1: {
+    name: "Charge",
+    tags: ["movement", "damage"],
+    impact: "medium",
+  },
+  ability2: {
+    name: "Firestrike",
+    tags: ["damage", "areaOfEffect"],
+    impact: "low",
+  },
 } as const;
 
 export const Roadhog = {
   name: "Roadhog",
   image: "roadhog.png",
-  ability1Name: "Chain Hook",
-  ability2Name: "Take a Breather",
+  ability1: {
+    name: "Chain Hook",
+    tags: ["damage", "hinder", "crowdControl"],
+    impact: "high",
+  },
+  ability2: {
+    name: "Take a Breather",
+    tags: ["sustain"],
+    impact: "negligible",
+  },
 } as const;
 
 export const Sigma = {
   name: "Sigma",
   image: "sigma.png",
-  ability1Name: "Kinetic Grasp",
-  ability2Name: "Accretion",
+  ability1: {
+    name: "Kinetic Grasp",
+    tags: ["sustain"],
+    impact: "low",
+  },
+  ability2: {
+    name: "Accretion",
+    tags: ["damage", "areaOfEffect", "hinder", "crowdControl"],
+    impact: "medium",
+  },
 } as const;
 
 export const Sojourn = {
   name: "Sojourn",
   image: "sojourn.png",
-  ability1Name: "Power Slide",
-  ability2Name: "Disruptor Shot",
+  ability1: {
+    name: "Power Slide",
+    tags: ["movement"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Disruptor Shot",
+    tags: ["damage", "areaOfEffect"],
+    impact: "low",
+  },
 } as const;
 
 export const Soldier76 = {
   name: "Soldier: 76",
   image: "soldier76.png",
-  ability1Name: "Sprint",
-  ability2Name: "Biotic Field",
+  ability1: {
+    name: "Sprint",
+    tags: ["movement"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Biotic Field",
+    tags: ["healing", "sustain", "deployable"],
+    impact: "negligible",
+  },
 } as const;
 
 export const Sombra = {
   name: "Sombra",
   image: "sombra.png",
-  ability1Name: "Virus",
-  ability2Name: "Translocator",
+  ability1: {
+    name: "Virus",
+    tags: ["damage"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Translocator",
+    tags: ["movement"],
+    impact: "negligible",
+  },
 } as const;
 
 export const Symmetra = {
   name: "Symmetra",
   image: "symmetra.png",
-  ability1Name: "Sentry Turret",
-  ability2Name: "Teleporter",
+  ability1: {
+    name: "Sentry Turret",
+    tags: ["damage", "deployable"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Teleporter",
+    tags: ["movement", "tempo", "initiation"],
+    impact: "critical",
+  },
 } as const;
 
 export const Torbjorn = {
   name: "Torbjörn",
   image: "torbjorn.png",
-  ability1Name: "Deploy Turret",
-  ability2Name: "Overload",
+  ability1: {
+    name: "Deploy Turret",
+    tags: ["damage", "deployable"],
+    impact: "low",
+  },
+  ability2: {
+    name: "Overload",
+    tags: ["sustain", "areaOfEffect"],
+    impact: "low",
+  },
 } as const;
 
 export const Tracer = {
   name: "Tracer",
   image: "tracer.png",
-  ability1Name: "Blink",
-  ability2Name: "Recall",
+  ability1: {
+    name: "Blink",
+    tags: ["movement"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Recall",
+    tags: ["movement", "sustain"],
+    impact: "medium",
+  },
 } as const;
 
 export const Vendetta = {
   name: "Vendetta",
   image: "vendetta.png",
-  ability1Name: "Whirlwind Dash",
-  ability2Name: "Soaring Slice",
+  ability1: {
+    name: "Whirlwind Dash",
+    tags: ["movement", "damage"],
+    impact: "medium",
+  },
+  ability2: {
+    name: "Soaring Slice",
+    tags: ["damage", "movement", "initiation"],
+    impact: "medium",
+  },
 } as const;
 
 export const Venture = {
   name: "Venture",
   image: "venture.png",
-  ability1Name: "Burrow",
-  ability2Name: "Smart Extender",
+  ability1: {
+    name: "Burrow",
+    tags: ["movement"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Smart Extender",
+    tags: ["damage", "movement"],
+    impact: "low",
+  },
 } as const;
 
 export const Widowmaker = {
   name: "Widowmaker",
   image: "widowmaker.png",
-  ability1Name: "Grappling Hook",
-  ability2Name: "Venom Mine",
+  ability1: {
+    name: "Grappling Hook",
+    tags: ["movement"],
+    impact: "low",
+  },
+  ability2: {
+    name: "Venom Mine",
+    tags: ["damage", "areaOfEffect"],
+    impact: "low",
+  },
 } as const;
 
 export const Winston = {
   name: "Winston",
   image: "winston.png",
-  ability1Name: "Jump Pack",
-  ability2Name: "Barrier Projector",
+  ability1: {
+    name: "Jump Pack",
+    tags: ["movement", "initiation"],
+    impact: "medium",
+  },
+  ability2: {
+    name: "Barrier Projector",
+    tags: ["damage", "sustain", "deployable", "tempo"],
+    impact: "high",
+  },
 } as const;
 
 export const WreckingBall = {
   name: "Wrecking Ball",
   image: "wreckingball.png",
-  ability1Name: "Roll",
-  ability2Name: "Adaptive Shield",
+  ability1: {
+    name: "Roll",
+    tags: ["movement"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Adaptive Shield",
+    tags: ["sustain"],
+    impact: "medium",
+  },
 } as const;
 
 export const Wuyang = {
   name: "Wuyang",
   image: "wuyang.png",
-  ability1Name: "Rushing Torrent",
-  ability2Name: "Guardian Wave",
+  ability1: {
+    name: "Rushing Torrent",
+    tags: ["movement"],
+    impact: "low",
+  },
+  ability2: {
+    name: "Guardian Wave",
+    tags: ["damage", "sustain", "knockback"],
+    impact: "low",
+  },
 } as const;
 
 export const Zarya = {
   name: "Zarya",
   image: "zarya.png",
-  ability1Name: "Particle Barrier",
-  ability2Name: "Projected Barrier",
+  ability1: {
+    name: "Particle Barrier",
+    tags: ["sustain", "deployable", "tempo"],
+    impact: "critical",
+  },
+  ability2: {
+    name: "Projected Barrier",
+    tags: ["sustain", "deployable", "tempo"],
+    impact: "critical",
+  },
 } as const;
 
 export const Zenyatta = {
   name: "Zenyatta",
   image: "zenyatta.png",
-  ability1Name: "Orb of Harmony",
-  ability2Name: "Orb of Discord",
+  ability1: {
+    name: "Orb of Harmony",
+    tags: ["sustain", "healing"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Orb of Discord",
+    tags: ["damage"],
+    impact: "low",
+  },
 } as const;
 
 export type Tank =
@@ -700,6 +1120,6 @@ export const heroAbilityMapping: Record<
 > = Object.fromEntries(
   allHeroes.map((h) => [
     h.name,
-    { ability1Name: h.ability1Name, ability2Name: h.ability2Name },
+    { ability1Name: h.ability1.name, ability2Name: h.ability2.name },
   ])
 ) as Record<HeroName, { ability1Name: string; ability2Name: string }>;
