@@ -3,6 +3,7 @@
 import { Link } from "@/components/ui/link";
 import { cn } from "@/lib/utils";
 import { ChevronDownIcon } from "lucide-react";
+import type { Route } from "next";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 
@@ -137,16 +138,51 @@ export function MainNav({
           </Link>
         </li>
         {aiChatEnabled && (
-          <li>
-            <Link
-              href="/chat"
+          <li className="group relative" onKeyDown={handleDropdownKeyDown}>
+            <button
+              type="button"
+              aria-haspopup="true"
               className={cn(
                 navLinkStyles,
-                pathname === "/chat" && "text-primary"
+                "gap-1",
+                (pathname.startsWith("/chat") ||
+                  pathname.startsWith("/reports")) &&
+                  "text-primary"
               )}
             >
               {t("chat")}
-            </Link>
+              <ChevronDownIcon
+                className="size-3 transition-transform duration-200 group-focus-within:rotate-180 group-hover:rotate-180"
+                aria-hidden="true"
+              />
+            </button>
+            <div className="invisible absolute top-full left-0 z-50 pt-1 opacity-0 transition-[opacity,visibility] duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+              <div
+                className="bg-popover text-popover-foreground ring-foreground/10 w-[200px] rounded-md p-1 shadow-md ring-1"
+                role="menu"
+              >
+                <Link
+                  href="/chat"
+                  role="menuitem"
+                  className={cn(
+                    dropdownItemStyles,
+                    pathname === "/chat" && "text-primary"
+                  )}
+                >
+                  {t("chatNew")}
+                </Link>
+                <Link
+                  href={"/reports" as Route}
+                  role="menuitem"
+                  className={cn(
+                    dropdownItemStyles,
+                    pathname.startsWith("/reports") && "text-primary"
+                  )}
+                >
+                  {t("chatReports")}
+                </Link>
+              </div>
+            </div>
           </li>
         )}
         {scoutingEnabled && (

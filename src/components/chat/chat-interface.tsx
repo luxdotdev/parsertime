@@ -35,12 +35,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import type { ToolUIPart, UIMessage } from "ai";
 import { DefaultChatTransport } from "ai";
 import {
-  BotMessageSquareIcon,
   CheckIcon,
   ClipboardIcon,
   CornerDownLeftIcon,
   PencilIcon,
   RefreshCwIcon,
+  SparklesIcon,
   SquareIcon,
   XIcon,
 } from "lucide-react";
@@ -206,16 +206,16 @@ export function ChatInterface({
             <ConversationEmptyState>
               <div className="flex flex-col items-center gap-6">
                 <div className="flex flex-col items-center gap-2">
-                  <BotMessageSquareIcon
-                    className="text-muted-foreground size-8"
+                  <SparklesIcon
+                    className="text-primary size-8"
                     aria-hidden="true"
                   />
                   <h3 className="text-base font-medium text-balance">
-                    Parsertime AI
+                    Analyst
                   </h3>
                   <p className="text-muted-foreground max-w-sm text-center text-sm text-pretty">
-                    Ask questions about your team&apos;s scrim data, player
-                    performance, map win rates, and more.
+                    Your AI-powered scrim analyst. Ask about team performance,
+                    fight breakdowns, ability impact, and more.
                   </p>
                 </div>
                 <div className="grid w-full max-w-lg grid-cols-1 gap-2 sm:grid-cols-2">

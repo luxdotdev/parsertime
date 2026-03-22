@@ -109,7 +109,7 @@ export function MobileNav({
             )}
             {aiChatEnabled && (
               <MobileLink href={"/chat" as Route} onOpenChange={setOpen}>
-                AI Chat
+                Analyst
               </MobileLink>
             )}
           </div>
