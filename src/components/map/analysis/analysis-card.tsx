@@ -20,6 +20,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { MapAbilityTimingAnalysis } from "@/data/scrim-ability-timing-dto";
 import { ArrowRightLeft, Crosshair, Gauge, Skull, Zap } from "lucide-react";
 import { useState } from "react";
 
@@ -31,6 +32,7 @@ export type AnalysisCardProps = {
   timing: TimingData;
   efficiency: EfficiencyData;
   swaps: SwapsData;
+  abilityTiming?: MapAbilityTimingAnalysis;
   translations: {
     title: string;
     tabFirstDeaths: string;
@@ -43,6 +45,8 @@ export type AnalysisCardProps = {
     footerTiming: string;
     footerEfficiency: string;
     footerSwaps: string;
+    tabAbilityTiming?: string;
+    footerAbilityTiming?: string;
   };
 };
 
