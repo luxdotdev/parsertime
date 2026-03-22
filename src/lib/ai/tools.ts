@@ -2,6 +2,7 @@ import { getComparisonStats } from "@/data/comparison-dto";
 import { getMapIntelligence } from "@/data/map-intelligence-dto";
 import { getPlayerIntelligence } from "@/data/player-intelligence-dto";
 import { getScrimOverview } from "@/data/scrim-overview-dto";
+import { getTeamAbilityImpact } from "@/data/team-ability-impact-dto";
 import { getTeamFightStats } from "@/data/team-fight-stats-dto";
 import { getHeroPoolAnalysis } from "@/data/team-hero-pool-dto";
 import {
@@ -525,6 +526,107 @@ export function buildTools(opts: {
         if (teamId) assertTeamAccess(teamId);
         const data = await getMapIntelligence(opponentAbbr, teamId);
         return data;
+      },
+    }),
+
+    getAbilityImpact: tool({
+      description:
+        "Get ability usage impact analysis for a team — shows how using specific hero abilities (e.g., Symmetra Teleporter, Kiriko Protection Suzu, Lúcio Amp It Up) affects fight win rates. Returns per-ability data with 'used vs not used' win rate comparisons and fight counts. Filter to specific heroes or get all available data. Great for answering questions like 'How does using Sym TP affect our winrates?' or 'Which abilities have the biggest impact on fights?'",
+      inputSchema: z.object({
+        teamId: z.number().describe("The team ID."),
+        heroes: z
+          .array(z.string())
+          .optional()
+          .describe(
+            "Optional list of hero names to filter to (e.g., ['Symmetra', 'Kiriko']). If omitted, returns all heroes with ability data."
+          ),
+      }),
+      execute: async ({ teamId, heroes }) => {
+        assertTeamAccess(teamId);
+        const data = await getTeamAbilityImpact(teamId);
+
+        if (!data || Object.keys(data.byHero).length === 0) {
+          return { error: "No ability impact data available for this team." };
+        }
+
+        const heroEntries = heroes
+          ? Object.entries(data.byHero).filter(([name]) =>
+              heroes.some((h) => h.toLowerCase() === name.toLowerCase())
+            )
+          : Object.entries(data.byHero);
+
+        if (heroEntries.length === 0) {
+          return {
+            error: `No ability data found for the specified heroes. Available heroes: ${data.availableHeroes.join(", ")}`,
+          };
+        }
+
+        const formatted = heroEntries.map(([heroName, impact]) => ({
+          hero: heroName,
+          ability1: {
+            name: impact.ability1.abilityName,
+            totalFights: impact.ability1.totalFightsAnalyzed,
+            usedByUs: {
+              fights: impact.ability1.scenarios.usedByUs.fights,
+              winrate:
+                Math.round(impact.ability1.scenarios.usedByUs.winrate * 10) /
+                10,
+            },
+            notUsedByUs: {
+              fights: impact.ability1.scenarios.notUsedByUs.fights,
+              winrate:
+                Math.round(impact.ability1.scenarios.notUsedByUs.winrate * 10) /
+                10,
+            },
+            usedByEnemy: {
+              fights: impact.ability1.scenarios.usedByEnemy.fights,
+              winrate:
+                Math.round(impact.ability1.scenarios.usedByEnemy.winrate * 10) /
+                10,
+            },
+            notUsedByEnemy: {
+              fights: impact.ability1.scenarios.notUsedByEnemy.fights,
+              winrate:
+                Math.round(
+                  impact.ability1.scenarios.notUsedByEnemy.winrate * 10
+                ) / 10,
+            },
+          },
+          ability2: {
+            name: impact.ability2.abilityName,
+            totalFights: impact.ability2.totalFightsAnalyzed,
+            usedByUs: {
+              fights: impact.ability2.scenarios.usedByUs.fights,
+              winrate:
+                Math.round(impact.ability2.scenarios.usedByUs.winrate * 10) /
+                10,
+            },
+            notUsedByUs: {
+              fights: impact.ability2.scenarios.notUsedByUs.fights,
+              winrate:
+                Math.round(impact.ability2.scenarios.notUsedByUs.winrate * 10) /
+                10,
+            },
+            usedByEnemy: {
+              fights: impact.ability2.scenarios.usedByEnemy.fights,
+              winrate:
+                Math.round(impact.ability2.scenarios.usedByEnemy.winrate * 10) /
+                10,
+            },
+            notUsedByEnemy: {
+              fights: impact.ability2.scenarios.notUsedByEnemy.fights,
+              winrate:
+                Math.round(
+                  impact.ability2.scenarios.notUsedByEnemy.winrate * 10
+                ) / 10,
+            },
+          },
+        }));
+
+        return {
+          heroes: formatted,
+          availableHeroes: data.availableHeroes,
+        };
       },
     }),
 
