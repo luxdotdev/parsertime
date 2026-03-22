@@ -3,9 +3,9 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AI Chat | Parsertime",
+  title: "Analyst | Parsertime",
   description:
-    "Chat with AI to analyze your Overwatch scrim data, player performance, and team trends.",
+    "Your AI analyst for Overwatch scrim data, player performance, and team trends.",
 };
 
 export default function ChatLayout({
