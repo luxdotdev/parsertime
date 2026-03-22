@@ -410,3 +410,83 @@ async function getScrimAbilityTimingFn(
 }
 
 export const getScrimAbilityTiming = cache(getScrimAbilityTimingFn);
+
+export type MapAbilityTimingAnalysis = {
+  team1: AbilityTimingAnalysis;
+  team2: AbilityTimingAnalysis;
+};
+
+async function getMapAbilityTimingFn(
+  mapId: number,
+  team1Name: string,
+  team2Name: string
+): Promise<MapAbilityTimingAnalysis> {
+  const empty: MapAbilityTimingAnalysis = {
+    team1: { rows: [], outliers: [] },
+    team2: { rows: [], outliers: [] },
+  };
+
+  const [allKills, allRezzes, allAbility1, allAbility2] = await Promise.all([
+    prisma.kill.findMany({
+      where: { MapDataId: mapId },
+      orderBy: { match_time: "asc" },
+    }),
+    prisma.mercyRez.findMany({
+      where: { MapDataId: mapId },
+      orderBy: { match_time: "asc" },
+    }),
+    prisma.ability1Used.findMany({
+      where: { MapDataId: mapId },
+      select: {
+        match_time: true,
+        player_team: true,
+        player_hero: true,
+        MapDataId: true,
+      },
+      orderBy: { match_time: "asc" },
+    }),
+    prisma.ability2Used.findMany({
+      where: { MapDataId: mapId },
+      select: {
+        match_time: true,
+        player_team: true,
+        player_hero: true,
+        MapDataId: true,
+      },
+      orderBy: { match_time: "asc" },
+    }),
+  ]);
+
+  if (allAbility1.length === 0 && allAbility2.length === 0) {
+    return empty;
+  }
+
+  const dedupedKills = removeDuplicateRows(allKills);
+  const killEvents = [
+    ...dedupedKills,
+    ...allRezzes.map(mercyRezToKillEvent),
+  ].sort((a, b) => a.match_time - b.match_time);
+
+  const fights = groupEventsIntoFights(killEvents);
+
+  if (fights.length === 0) return empty;
+
+  // Note: fight outcomes are relative to the team passed as "ourTeamName",
+  // so team2's analysis naturally inverts win/loss.
+  const team1Analysis = processAbilityTimingAnalysis(
+    fights,
+    allAbility1,
+    allAbility2,
+    team1Name
+  );
+  const team2Analysis = processAbilityTimingAnalysis(
+    fights,
+    allAbility1,
+    allAbility2,
+    team2Name
+  );
+
+  return { team1: team1Analysis, team2: team2Analysis };
+}
+
+export const getMapAbilityTiming = cache(getMapAbilityTimingFn);
