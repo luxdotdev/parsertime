@@ -411,6 +411,191 @@ async function getScrimAbilityTimingFn(
 
 export const getScrimAbilityTiming = cache(getScrimAbilityTimingFn);
 
+// ---------------------------------------------------------------------------
+// Per-fight timeline (for AI analyst tool)
+// ---------------------------------------------------------------------------
+
+export type FightAbilityEvent = {
+  time: number;
+  hero: string;
+  ability: string;
+  abilitySlot: 1 | 2;
+  team: "ours" | "enemy";
+  phase: FightPhase;
+};
+
+export type FightKillEvent = {
+  time: number;
+  attacker: string;
+  attackerHero: string;
+  victim: string;
+  victimHero: string;
+  attackerSide: "ours" | "enemy";
+};
+
+export type FightTimeline = {
+  fightNumber: number;
+  startTime: number;
+  endTime: number;
+  duration: number;
+  outcome: "win" | "loss";
+  kills: FightKillEvent[];
+  abilityUses: FightAbilityEvent[];
+};
+
+export type ScrimFightTimelines = {
+  fights: FightTimeline[];
+  ourTeamName: string;
+};
+
+async function getScrimFightTimelinesFn(
+  scrimId: number,
+  teamId: number
+): Promise<ScrimFightTimelines> {
+  const maps = await prisma.map.findMany({
+    where: { scrimId },
+    orderBy: { id: "asc" },
+    select: { id: true },
+  });
+
+  if (maps.length === 0) return { fights: [], ourTeamName: "" };
+
+  const mapIds = maps.map((m) => m.id);
+
+  const [teamRosterArr, allKills, allRezzes, allAbility1, allAbility2] =
+    await Promise.all([
+      getTeamRoster(teamId),
+      prisma.kill.findMany({
+        where: { MapDataId: { in: mapIds } },
+        orderBy: { match_time: "asc" },
+      }),
+      prisma.mercyRez.findMany({
+        where: { MapDataId: { in: mapIds } },
+        orderBy: { match_time: "asc" },
+      }),
+      prisma.ability1Used.findMany({
+        where: { MapDataId: { in: mapIds } },
+        select: {
+          match_time: true,
+          player_team: true,
+          player_hero: true,
+          player_name: true,
+          MapDataId: true,
+        },
+        orderBy: { match_time: "asc" },
+      }),
+      prisma.ability2Used.findMany({
+        where: { MapDataId: { in: mapIds } },
+        select: {
+          match_time: true,
+          player_team: true,
+          player_hero: true,
+          player_name: true,
+          MapDataId: true,
+        },
+        orderBy: { match_time: "asc" },
+      }),
+    ]);
+
+  const teamRoster = new Set(teamRosterArr);
+
+  const dedupedKills = removeDuplicateRows(allKills);
+  const killEvents = [
+    ...dedupedKills,
+    ...allRezzes.map(mercyRezToKillEvent),
+  ].sort((a, b) => a.match_time - b.match_time);
+
+  const fights = groupEventsIntoFights(killEvents);
+
+  if (fights.length === 0) return { fights: [], ourTeamName: "" };
+
+  let ourTeamName = "";
+  for (const kill of dedupedKills) {
+    if (teamRoster.has(kill.attacker_name)) {
+      ourTeamName = kill.attacker_team;
+      break;
+    }
+    if (kill.victim_name && teamRoster.has(kill.victim_name)) {
+      ourTeamName = kill.victim_team;
+      break;
+    }
+  }
+
+  if (!ourTeamName) return { fights: [], ourTeamName: "" };
+
+  const timelines: FightTimeline[] = fights.map((fight, idx) => {
+    const outcome = determineFightOutcome(fight, ourTeamName);
+
+    const kills: FightKillEvent[] = fight.kills
+      .filter((k) => k.event_type === "kill")
+      .map((k) => ({
+        time: Math.round(k.match_time * 10) / 10,
+        attacker: k.attacker_name,
+        attackerHero: k.attacker_hero,
+        victim: k.victim_name,
+        victimHero: k.victim_hero,
+        attackerSide:
+          k.attacker_team === ourTeamName
+            ? ("ours" as const)
+            : ("enemy" as const),
+      }));
+
+    // Find ability uses within fight window
+    const windowStart = fight.start - PRE_FIGHT_BUFFER;
+    const windowEnd = fight.end + CLEANUP_BUFFER;
+
+    function mapAbilityEvents(
+      events: {
+        match_time: number;
+        player_team: string;
+        player_hero: string;
+        player_name: string;
+        MapDataId: number | null;
+      }[],
+      slot: 1 | 2
+    ): FightAbilityEvent[] {
+      return events
+        .filter((e) => e.match_time >= windowStart && e.match_time <= windowEnd)
+        .map((e) => {
+          const heroDef = heroAbilityLookup.get(e.player_hero);
+          const abilityDef = slot === 1 ? heroDef?.ability1 : heroDef?.ability2;
+          const phase = classifyPhase(e.match_time, fight);
+
+          return {
+            time: Math.round(e.match_time * 10) / 10,
+            hero: e.player_hero,
+            ability: abilityDef?.name ?? `ability${slot}`,
+            abilitySlot: slot,
+            team:
+              e.player_team === ourTeamName
+                ? ("ours" as const)
+                : ("enemy" as const),
+            phase: phase ?? ("mid" as FightPhase),
+          };
+        });
+    }
+
+    const abilityUses = [
+      ...mapAbilityEvents(allAbility1, 1),
+      ...mapAbilityEvents(allAbility2, 2),
+    ].sort((a, b) => a.time - b.time);
+
+    return {
+      fightNumber: idx + 1,
+      startTime: Math.round(fight.start * 10) / 10,
+      endTime: Math.round(fight.end * 10) / 10,
+      duration: Math.round((fight.end - fight.start) * 10) / 10,
+      outcome,
+      kills,
+      abilityUses,
+    };
+  });
+
+  return { fights: timelines, ourTeamName };
+}
+
+export const getScrimFightTimelines = cache(getScrimFightTimelinesFn);
+
 export type MapAbilityTimingAnalysis = {
   team1: AbilityTimingAnalysis;
   team2: AbilityTimingAnalysis;
