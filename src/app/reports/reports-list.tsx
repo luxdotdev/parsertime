@@ -1,14 +1,23 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
 import { cn } from "@/lib/utils";
 import type { ChatReport } from "@prisma/client";
 import { CalendarIcon } from "@radix-ui/react-icons";
-import { FileText, MessageSquareText, Search } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  FileText,
+  MessageSquareText,
+  Search,
+} from "lucide-react";
 import type { Route } from "next";
 import { useMemo, useState } from "react";
+
+const PAGE_SIZE = 12;
 
 type ReportWithUser = ChatReport & { user: { name: string | null } };
 
@@ -81,6 +90,7 @@ function ReportCard({ report }: { report: ReportWithUser }) {
 
 export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
   const filtered = useMemo(() => {
     if (!search.trim()) return reports;
@@ -90,6 +100,14 @@ export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
         r.title.toLowerCase().includes(q) || r.content.toLowerCase().includes(q)
     );
   }, [reports, search]);
+
+  // Reset to page 1 when search changes
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const paged = filtered.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
 
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
@@ -119,7 +137,10 @@ export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
               type="text"
               placeholder="Search reports…"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
               className={cn(
                 "border-input bg-background placeholder:text-muted-foreground h-9 w-full rounded-md border py-2 pr-3 pl-9 text-sm",
                 "focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none"
@@ -157,11 +178,43 @@ export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((report) => (
-            <ReportCard key={report.id} report={report} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {paged.map((report) => (
+              <ReportCard key={report.id} report={report} />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between pt-2">
+              <p className="text-muted-foreground text-sm tabular-nums">
+                Page {currentPage} of {totalPages}
+              </p>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={currentPage <= 1}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft className="size-4" />
+                  <span className="hidden sm:inline">Previous</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={currentPage >= totalPages}
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  aria-label="Next page"
+                >
+                  <span className="hidden sm:inline">Next</span>
+                  <ChevronRight className="size-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
