@@ -12,6 +12,7 @@ import {
   ScrimSwapsSection,
   ScrimUltimatesSection,
 } from "@/components/scrim/scrim-overview-sections";
+import { ScrimAbilityTimingSection } from "@/components/scrim/scrim-ability-timing-section";
 import {
   Accordion,
   AccordionContent,
@@ -22,6 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { ScrimOverviewData } from "@/data/scrim-overview-dto";
 import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import {
+  Activity,
   ArrowRightLeft,
   ChevronsDownUp,
   ChevronsUpDown,
@@ -31,17 +33,22 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-const ALL_SECTIONS = ["players", "fights", "ultimates", "swaps"];
+const BASE_SECTIONS = ["players", "fights", "ultimates", "swaps"];
 
 export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
+  const hasAbilityData = data.abilityTimingAnalysis.rows.length > 0;
+  const allSections = hasAbilityData
+    ? ["players", "fights", "abilities", "ultimates", "swaps"]
+    : BASE_SECTIONS;
+
   const [activeTab, setActiveTab] = useState("visualizations");
   const [openSections, setOpenSections] = useState<string[]>(["players"]);
   const { team1: team1Color, team2: team2Color } = useColorblindMode();
 
-  const allExpanded = openSections.length === ALL_SECTIONS.length;
+  const allExpanded = openSections.length === allSections.length;
 
   function toggleAll() {
-    setOpenSections(allExpanded ? [] : [...ALL_SECTIONS]);
+    setOpenSections(allExpanded ? [] : [...allSections]);
   }
 
   const team1 = {
@@ -124,6 +131,25 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
               />
             </AccordionContent>
           </AccordionItem>
+
+          {data.abilityTimingAnalysis.rows.length > 0 && (
+            <AccordionItem value="abilities">
+              <AccordionTrigger>
+                <span className="flex items-center gap-2">
+                  <Activity
+                    className="text-muted-foreground size-4"
+                    aria-hidden="true"
+                  />
+                  Ability Timing
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="h-auto">
+                <ScrimAbilityTimingSection
+                  analysis={data.abilityTimingAnalysis}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          )}
 
           <AccordionItem value="ultimates">
             <AccordionTrigger>
