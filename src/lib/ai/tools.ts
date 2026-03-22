@@ -730,9 +730,10 @@ export function buildTools(opts: {
           };
         }
 
-        const fights = fightNumbers
-          ? data.fights.filter((f) => fightNumbers.includes(f.fightNumber))
-          : data.fights;
+        const fights =
+          fightNumbers && fightNumbers.length > 0
+            ? data.fights.filter((f) => fightNumbers.includes(f.fightNumber))
+            : data.fights;
 
         return {
           ourTeamName: data.ourTeamName,
