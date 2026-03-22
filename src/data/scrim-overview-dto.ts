@@ -18,6 +18,8 @@ import {
   type Fight,
 } from "@/lib/utils";
 import { calculateWinner } from "@/lib/winrate";
+import type { AbilityTimingAnalysis } from "@/data/scrim-ability-timing-dto";
+import { getScrimAbilityTiming } from "@/data/scrim-ability-timing-dto";
 import type { HeroName, RoleName, SubroleName } from "@/types/heroes";
 import {
   getHeroRole,
@@ -235,6 +237,7 @@ export type ScrimOverviewData = {
   fightAnalysis: ScrimFightAnalysis;
   ultAnalysis: ScrimUltAnalysis;
   swapAnalysis: ScrimSwapAnalysis;
+  abilityTimingAnalysis: AbilityTimingAnalysis;
 };
 
 const STAT_LABELS: Record<ValidStatColumn, string> = {
@@ -486,6 +489,7 @@ function emptyOverviewData(): ScrimOverviewData {
     fightAnalysis: emptyFightAnalysis(),
     ultAnalysis: emptyUltAnalysis(),
     swapAnalysis: emptySwapAnalysis(),
+    abilityTimingAnalysis: { rows: [], outliers: [] },
   };
 }
 
@@ -2419,6 +2423,8 @@ async function getScrimOverviewFn(
     mapResults
   );
 
+  const abilityTimingAnalysis = await getScrimAbilityTiming(scrimId, teamId);
+
   return {
     mapCount: maps.length,
     wins,
@@ -2433,6 +2439,7 @@ async function getScrimOverviewFn(
     fightAnalysis,
     ultAnalysis,
     swapAnalysis,
+    abilityTimingAnalysis,
   };
 }
 
