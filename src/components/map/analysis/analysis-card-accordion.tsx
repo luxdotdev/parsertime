@@ -8,6 +8,7 @@ import {
   UltimatesSection,
 } from "@/components/map/analysis/analysis-sections";
 import type { AnalysisCardProps } from "@/components/map/analysis/analysis-card";
+import { MapAbilityTimingSection } from "@/components/map/analysis/map-ability-timing-section";
 import {
   Accordion,
   AccordionContent,
@@ -22,6 +23,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  Activity,
   ArrowRightLeft,
   ChevronsDownUp,
   ChevronsUpDown,
@@ -32,7 +34,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-const ALL_SECTIONS = ["deaths", "ultimates", "timing", "efficiency", "swaps"];
+const BASE_SECTIONS = ["deaths", "ultimates", "timing", "efficiency", "swaps"];
 
 export function AnalysisCardAccordion({
   team1,
@@ -42,13 +44,22 @@ export function AnalysisCardAccordion({
   timing,
   efficiency,
   swaps,
+  abilityTiming,
   translations: t,
 }: AnalysisCardProps) {
+  const hasAbilityData =
+    abilityTiming &&
+    (abilityTiming.team1.rows.length > 0 ||
+      abilityTiming.team2.rows.length > 0);
+  const allSections = hasAbilityData
+    ? [...BASE_SECTIONS, "abilities"]
+    : BASE_SECTIONS;
+
   const [openSections, setOpenSections] = useState<string[]>(["deaths"]);
-  const allExpanded = openSections.length === ALL_SECTIONS.length;
+  const allExpanded = openSections.length === allSections.length;
 
   function toggleAll() {
-    setOpenSections(allExpanded ? [] : [...ALL_SECTIONS]);
+    setOpenSections(allExpanded ? [] : [...allSections]);
   }
 
   return (
@@ -178,6 +189,32 @@ export function AnalysisCardAccordion({
               </p>
             </AccordionContent>
           </AccordionItem>
+
+          {hasAbilityData && abilityTiming && (
+            <AccordionItem value="abilities">
+              <AccordionTrigger>
+                <span className="flex items-center gap-2">
+                  <Activity
+                    className="text-muted-foreground size-4"
+                    aria-hidden="true"
+                  />
+                  {t.tabAbilityTiming ?? "Ability Timing"}
+                </span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <MapAbilityTimingSection
+                  analysis={abilityTiming}
+                  team1={team1}
+                  team2={team2}
+                />
+                {t.footerAbilityTiming && (
+                  <p className="text-muted-foreground mt-3 text-xs text-pretty">
+                    {t.footerAbilityTiming}
+                  </p>
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          )}
         </Accordion>
       </CardContent>
     </Card>
