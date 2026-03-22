@@ -34,13 +34,7 @@ export const Ana = {
   },
   ability2: {
     name: "Biotic Grenade",
-    tags: [
-      "antiHeal",
-      "healing",
-      "sustain",
-      "areaOfEffect",
-      "cleansable",
-    ],
+    tags: ["antiHeal", "healing", "sustain", "areaOfEffect", "cleansable"],
     impact: "critical",
   },
 } as const;
