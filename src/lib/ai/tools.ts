@@ -2,6 +2,7 @@ import { getComparisonStats } from "@/data/comparison-dto";
 import { getMapIntelligence } from "@/data/map-intelligence-dto";
 import { getPlayerIntelligence } from "@/data/player-intelligence-dto";
 import { getScrimOverview } from "@/data/scrim-overview-dto";
+import { getScrimAbilityTiming } from "@/data/scrim-ability-timing-dto";
 import { getTeamAbilityImpact } from "@/data/team-ability-impact-dto";
 import { getTeamFightStats } from "@/data/team-fight-stats-dto";
 import { getHeroPoolAnalysis } from "@/data/team-hero-pool-dto";
@@ -526,6 +527,69 @@ export function buildTools(opts: {
         if (teamId) assertTeamAccess(teamId);
         const data = await getMapIntelligence(opponentAbbr, teamId);
         return data;
+      },
+    }),
+
+    getScrimAbilityTiming: tool({
+      description:
+        "Get ability timing impact analysis for a specific scrim — shows when high-impact abilities (rated 'high' or 'critical') were used relative to fight phases (pre-fight, early, mid, late, cleanup) and how that timing correlates with fight win rates. Also surfaces outliers where timing significantly affected outcomes. Use when asked about ability timing in a specific scrim (e.g., 'Were we using Suzu too early in fights last scrim?', 'How did our Sym TP timing look in scrim 42?').",
+      inputSchema: z.object({
+        scrimId: z.number().describe("The scrim ID to analyze."),
+        teamId: z
+          .number()
+          .describe(
+            "The team ID (used to determine which side is 'our team')."
+          ),
+      }),
+      execute: async ({ scrimId, teamId }) => {
+        assertTeamAccess(teamId);
+        const scrim = await prisma.scrim.findFirst({
+          where: { id: scrimId, teamId },
+        });
+        if (!scrim) return { error: `Scrim ${scrimId} not found.` };
+
+        const data = await getScrimAbilityTiming(scrimId, teamId);
+
+        if (data.rows.length === 0) {
+          return {
+            error:
+              "No high-impact ability timing data available for this scrim. Ability usage may not have been collected.",
+          };
+        }
+
+        const rows = data.rows.map((row) => ({
+          hero: row.heroName,
+          ability: row.abilityName,
+          impact: row.impactRating,
+          totalFights: row.totalFights,
+          overallWinrate: Math.round(row.overallWinrate * 10) / 10,
+          phases: Object.fromEntries(
+            Object.entries(row.phases).map(([phase, stats]) => [
+              phase,
+              {
+                fights: stats.fights,
+                winrate:
+                  stats.fights >= 3
+                    ? Math.round(stats.winrate * 10) / 10
+                    : null,
+              },
+            ])
+          ),
+        }));
+
+        const outliers = data.outliers.map((o) => ({
+          hero: o.heroName,
+          ability: o.abilityName,
+          phase: o.phase,
+          phaseWinrate: Math.round(o.phaseWinrate * 10) / 10,
+          overallWinrate: Math.round(o.overallWinrate * 10) / 10,
+          deviation: Math.round(o.deviation * 10) / 10,
+          bestPhase: o.bestPhase,
+          bestPhaseWinrate: Math.round(o.bestPhaseWinrate * 10) / 10,
+          type: o.type,
+        }));
+
+        return { rows, outliers };
       },
     }),
 
