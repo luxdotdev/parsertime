@@ -1,8 +1,11 @@
 import { getComparisonStats } from "@/data/comparison-dto";
 import { getMapIntelligence } from "@/data/map-intelligence-dto";
 import { getPlayerIntelligence } from "@/data/player-intelligence-dto";
+import {
+  getScrimAbilityTiming,
+  getScrimFightTimelines,
+} from "@/data/scrim-ability-timing-dto";
 import { getScrimOverview } from "@/data/scrim-overview-dto";
-import { getScrimAbilityTiming } from "@/data/scrim-ability-timing-dto";
 import { getTeamAbilityImpact } from "@/data/team-ability-impact-dto";
 import { getTeamFightStats } from "@/data/team-fight-stats-dto";
 import { getHeroPoolAnalysis } from "@/data/team-hero-pool-dto";
@@ -15,8 +18,9 @@ import { getRolePerformanceStats } from "@/data/team-role-stats-dto";
 import { getTeamRoster } from "@/data/team-shared-data";
 import { getTeamWinrates } from "@/data/team-stats-dto";
 import prisma from "@/lib/prisma";
-import type { Prisma } from "@prisma/client";
 import type { HeroName } from "@/types/heroes";
+import { allHeroes } from "@/types/heroes";
+import type { Prisma } from "@prisma/client";
 import { tool } from "ai";
 import { z } from "zod";
 import {
@@ -691,6 +695,97 @@ export function buildTools(opts: {
           heroes: formatted,
           availableHeroes: data.availableHeroes,
         };
+      },
+    }),
+
+    getScrimFightTimelines: tool({
+      description:
+        "Get per-fight timeline data for a specific scrim — each fight's start/end time, duration, outcome, kill events (who killed whom and when), and ability uses with exact match timestamps. Use this when you need to reason about specific fights: whether an ability was on cooldown when a player died, the sequence of events in a lost fight, or why a specific fight was won or lost. Call getHeroInfo alongside this to know ability cooldowns.",
+      inputSchema: z.object({
+        scrimId: z.number().describe("The scrim ID to analyze."),
+        teamId: z
+          .number()
+          .describe(
+            "The team ID (used to determine which side is 'our team')."
+          ),
+        fightNumbers: z
+          .array(z.number())
+          .optional()
+          .describe(
+            "Optional list of specific fight numbers to return (1-indexed). If omitted, returns all fights. Use to focus on specific fights of interest."
+          ),
+      }),
+      execute: async ({ scrimId, teamId, fightNumbers }) => {
+        assertTeamAccess(teamId);
+        const scrim = await prisma.scrim.findFirst({
+          where: { id: scrimId, teamId },
+        });
+        if (!scrim) return { error: `Scrim ${scrimId} not found.` };
+
+        const data = await getScrimFightTimelines(scrimId, teamId);
+
+        if (data.fights.length === 0) {
+          return {
+            error: "No fight timeline data available for this scrim.",
+          };
+        }
+
+        const fights = fightNumbers
+          ? data.fights.filter((f) => fightNumbers.includes(f.fightNumber))
+          : data.fights;
+
+        return {
+          ourTeamName: data.ourTeamName,
+          totalFights: data.fights.length,
+          fights,
+        };
+      },
+    }),
+
+    getHeroInfo: tool({
+      description:
+        "Get detailed hero ability information — descriptions, cooldowns, tags, and impact ratings. Use this to understand what abilities do and how long their cooldowns are. Essential context when analyzing ability timing data from getScrimAbilityTiming or getAbilityImpact. Call this for the relevant heroes before interpreting ability timing results.",
+      inputSchema: z.object({
+        heroes: z
+          .array(z.string())
+          .describe(
+            "List of hero names to look up (e.g., ['Kiriko', 'Ana', 'Junker Queen']). Use exact hero names."
+          ),
+      }),
+      execute: ({ heroes }) => {
+        const results = heroes
+          .map((name) => {
+            const hero = allHeroes.find(
+              (h) => h.name.toLowerCase() === name.toLowerCase()
+            );
+            if (!hero) return null;
+            return {
+              name: hero.name,
+              ability1: {
+                name: hero.ability1.name,
+                description: hero.ability1.description,
+                cooldown: hero.ability1.cooldown,
+                tags: [...hero.ability1.tags],
+                impact: hero.ability1.impact,
+              },
+              ability2: {
+                name: hero.ability2.name,
+                description: hero.ability2.description,
+                cooldown: hero.ability2.cooldown,
+                tags: [...hero.ability2.tags],
+                impact: hero.ability2.impact,
+              },
+            };
+          })
+          .filter(Boolean);
+
+        if (results.length === 0) {
+          return {
+            error: `No heroes found matching: ${heroes.join(", ")}. Use exact hero names (e.g., "D.Va", "Lúcio", "Soldier: 76").`,
+          };
+        }
+
+        return { heroes: results };
       },
     }),
 
