@@ -1,5 +1,6 @@
 import { AnalysisCardAccordion as AnalysisCard } from "@/components/map/analysis/analysis-card-accordion";
 import { OverviewTable } from "@/components/map/overview-table";
+import { getMapAbilityTiming } from "@/data/scrim-ability-timing-dto";
 import {
   Card,
   CardContent,
@@ -238,6 +239,12 @@ export async function DefaultOverview({
 
   const team1Name = matchDetails?.team_1_name ?? "Team 1";
   const team2Name = matchDetails?.team_2_name ?? "Team 2";
+
+  const abilityTimingAnalysis = await getMapAbilityTiming(
+    id,
+    team1Name,
+    team2Name
+  );
 
   const team1Ults = ultimateStarts.filter((u) => u.player_team === team1Name);
   const team2Ults = ultimateStarts.filter((u) => u.player_team === team2Name);
@@ -1027,6 +1034,7 @@ export async function DefaultOverview({
           team1TopSwapper,
           team2TopSwapper,
         }}
+        abilityTiming={abilityTimingAnalysis}
         translations={{
           title: t("analysis.title"),
           tabFirstDeaths: t("analysis.tabFirstDeaths"),
