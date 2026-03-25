@@ -18,7 +18,7 @@ import { Layer } from "effect";
 
 export const onRequestError = createOnRequestError(logger);
 
-const otlpConfig = {
+const OTLP_CONFIG = {
   url: `https://api.axiom.co/v1/traces`,
   headers: {
     Authorization: `Bearer ${process.env.AXIOM_OTEL_TOKEN}`,
@@ -29,13 +29,15 @@ const otlpConfig = {
   ConstructorParameters<typeof OTLPTraceExporter>[0]
 >;
 
+const SERVICE_NAME = "parsertime";
+
 export function register() {
-  const otlpTraceExporter = new OTLPTraceExporter(otlpConfig);
+  const otlpTraceExporter = new OTLPTraceExporter(OTLP_CONFIG);
 
   const provider = new NodeTracerProvider({
     resource: resourceFromAttributes(
       {
-        [ATTR_SERVICE_NAME]: "parsertime",
+        [ATTR_SERVICE_NAME]: SERVICE_NAME,
       },
       {
         // Use the latest schema version
@@ -59,11 +61,11 @@ export function register() {
 }
 
 export const EffectTracingLive = NodeSdk.layer(() => ({
-  resource: { serviceName: "parsertime" },
+  resource: { serviceName: SERVICE_NAME },
   spanProcessor:
     process.env.NODE_ENV === "production"
-      ? new BatchSpanProcessor(new OTLPTraceExporter(otlpConfig))
-      : new SimpleSpanProcessor(new OTLPTraceExporter(otlpConfig)),
+      ? new BatchSpanProcessor(new OTLPTraceExporter(OTLP_CONFIG))
+      : new SimpleSpanProcessor(new OTLPTraceExporter(OTLP_CONFIG)),
 }));
 
 /**
