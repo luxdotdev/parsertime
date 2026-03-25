@@ -22,6 +22,7 @@ export function register() {
       Authorization: `Bearer ${process.env.AXIOM_OTEL_TOKEN}`,
       "X-Axiom-Dataset": `${process.env.AXIOM_OTEL_DATASET}`,
     },
+    timeoutMillis: 10000,
   });
 
   const provider = new NodeTracerProvider({
