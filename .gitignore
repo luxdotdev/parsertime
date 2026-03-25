@@ -48,3 +48,5 @@ next-env.d.ts
 
 # Superpowers brainstorm files
 .superpowers/
+# next-agents-md
+.next-docs/
