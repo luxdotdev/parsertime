@@ -1,6 +1,11 @@
 import { getUser } from "@/data/user-dto";
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
+import {
+  rateLimitHitCounter,
+  teamCreatedCounter,
+  teamQuotaHitCounter,
+} from "@/lib/axiom/metrics";
 import { Logger } from "@/lib/logger";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
@@ -28,6 +33,7 @@ export async function POST(request: NextRequest) {
   const { success } = await ratelimit.limit(identifier);
 
   if (!success) {
+    rateLimitHitCounter.add(1, { endpoint: "team.create" });
     Logger.warn(`Rate limit exceeded for creating a team: ${identifier}`);
     return new Response("Rate limit exceeded", { status: 429 });
   }
@@ -44,44 +50,20 @@ export async function POST(request: NextRequest) {
     where: { ownerId: userId.id },
   });
 
-  switch (userId.billingPlan) {
-    case "FREE":
-      if (
-        numberOfTeams >= TEAM_CREATION_LIMIT[userId.billingPlan] &&
-        userId.role !== "ADMIN"
-      ) {
-        return new Response(
-          "You have hit the limit of teams that your account can create.  Please upgrade your plan or contact support.",
-          { status: 403 }
-        );
-      }
-      break;
-    case "BASIC":
-      if (
-        numberOfTeams >= TEAM_CREATION_LIMIT[userId.billingPlan] &&
-        userId.role !== "ADMIN"
-      ) {
-        return new Response(
-          "You have hit the limit of teams that your account can create.  Please upgrade your plan or contact support.",
-          { status: 403 }
-        );
-      }
-      break;
-    case "PREMIUM":
-      if (
-        numberOfTeams >= TEAM_CREATION_LIMIT[userId.billingPlan] &&
-        userId.role !== "ADMIN"
-      ) {
-        return new Response(
-          "You have hit the limit of teams that your account can create.  Please upgrade your plan or contact support.",
-          { status: 403 }
-        );
-      }
-      break;
-    default:
-      if (userId.role !== "ADMIN")
-        return new Response("Unauthorized", { status: 401 });
-      break;
+  const planLimit =
+    TEAM_CREATION_LIMIT[userId.billingPlan as keyof typeof TEAM_CREATION_LIMIT];
+
+  if (planLimit !== undefined) {
+    if (numberOfTeams >= planLimit && userId.role !== "ADMIN") {
+      teamQuotaHitCounter.add(1, { plan: userId.billingPlan });
+      return new Response(
+        "You have hit the limit of teams that your account can create.  Please upgrade your plan or contact support.",
+        { status: 403 }
+      );
+    }
+  } else {
+    if (userId.role !== "ADMIN")
+      return new Response("Unauthorized", { status: 401 });
   }
 
   const req = TeamCreationRequestSchema.safeParse(await request.json());
@@ -118,6 +100,8 @@ export async function POST(request: NextRequest) {
     where: { id: userId.id ?? "" },
     data: { teams: { connect: [{ id: team.id }] } },
   });
+
+  teamCreatedCounter.add(1, { plan: userId.billingPlan });
 
   after(async () => {
     await auditLog.createAuditLog({
