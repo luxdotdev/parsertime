@@ -1,3 +1,8 @@
+import {
+  cronDeletedItemsCounter,
+  cronJobCounter,
+  cronJobDuration,
+} from "@/lib/axiom/metrics";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { del, list } from "@vercel/blob";
@@ -7,6 +12,9 @@ const VALID_IMAGE_URL_HOSTS = {
 };
 
 export async function DELETE() {
+  const start = performance.now();
+  cronJobCounter.add(1, { job: "delete-unused-blobs" });
+
   const usersWithImages = await prisma.user.findMany({
     where: { OR: [{ image: { not: null } }, { bannerImage: { not: null } }] },
     select: { image: true, bannerImage: true },
@@ -43,6 +51,12 @@ export async function DELETE() {
     await del(url);
   }
 
+  cronDeletedItemsCounter.add(filteredBlobs.length, {
+    job: "delete-unused-blobs",
+  });
+  cronJobDuration.record(performance.now() - start, {
+    job: "delete-unused-blobs",
+  });
   Logger.info(`Deleted ${filteredBlobs.length} unused blobs`);
 
   return new Response("OK", { status: 200 });
