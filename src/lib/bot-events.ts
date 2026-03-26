@@ -1,3 +1,4 @@
+import { botNotificationCounter } from "@/lib/axiom/metrics";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { context, propagation } from "@opentelemetry/api";
@@ -64,10 +65,19 @@ export async function sendScrimNotifications(
 
   for (const result of results) {
     if (result.status === "rejected") {
+      botNotificationCounter.add(1, {
+        event: notification.event,
+        status: "failed",
+      });
       Logger.error("Bot notification delivery failed", {
         teamId,
         event: notification.event,
         error: (result.reason as Error).message,
+      });
+    } else {
+      botNotificationCounter.add(1, {
+        event: notification.event,
+        status: "delivered",
       });
     }
   }
