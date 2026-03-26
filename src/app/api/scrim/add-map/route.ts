@@ -1,5 +1,6 @@
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
+import { mapAddedCounter, scrimParsingDuration } from "@/lib/axiom/metrics";
 import { Logger } from "@/lib/logger";
 import { createNewMap } from "@/lib/parser";
 import prisma from "@/lib/prisma";
@@ -53,6 +54,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const parseStart = performance.now();
     await createNewMap(
       {
         map: mapData,
@@ -61,6 +63,8 @@ export async function POST(req: NextRequest) {
       },
       session
     );
+    scrimParsingDuration.record(performance.now() - parseStart);
+    mapAddedCounter.add(1);
 
     after(async () => {
       await Promise.all([
