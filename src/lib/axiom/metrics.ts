@@ -106,7 +106,33 @@ export const apiErrorCounter = lazyCounter(
   "API errors by route and status code"
 );
 
+// --- HTTP ---
+export const httpRequestCounter = lazyCounter(
+  "http.requests",
+  "Total HTTP requests"
+);
+export const httpErrorCounter = lazyCounter(
+  "http.errors",
+  "HTTP responses with 4xx/5xx status"
+);
+
+// --- Database ---
+export const dbQueryCounter = lazyCounter(
+  "db.queries",
+  "Total database queries"
+);
+
 // --- Histograms ---
+export const httpRequestDuration = lazyHistogram(
+  "http.request_duration_ms",
+  "HTTP request latency",
+  "ms"
+);
+export const dbQueryDuration = lazyHistogram(
+  "db.query_duration_ms",
+  "Database query latency",
+  "ms"
+);
 export const scrimParsingDuration = lazyHistogram(
   "scrims.parse_duration_ms",
   "Time to parse and store scrim data",
