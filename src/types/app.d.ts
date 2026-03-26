@@ -36,6 +36,12 @@ const envVariables = z.object({
   DEV_TOKEN: z.string(),
   DISCORD_WEBHOOK_URL: z.string(),
   BUG_REPORT_WEBHOOK_URL: z.string(),
+
+  // Axiom keys
+  AXIOM_OTEL_TOKEN: z.string(),
+  AXIOM_OTEL_DATASET: z.string(),
+  AXIOM_METRICS_TOKEN: z.string(),
+  AXIOM_METRICS_DATASET: z.string(),
 });
 
 envVariables.parse(process.env);
