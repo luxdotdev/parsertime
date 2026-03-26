@@ -1,5 +1,10 @@
 import MagicLinkEmail from "@/components/email/magic-link";
 import UserOnboardingEmail from "@/components/email/onboarding";
+import {
+  authNewUserCounter,
+  authSignInCounter,
+  rateLimitHitCounter,
+} from "@/lib/axiom/metrics";
 import { getScrim, getUserViewableScrims } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
 import { email } from "@/lib/email";
@@ -163,6 +168,7 @@ export const config = {
       const { success } = await ratelimit.limit(identifier);
 
       if (!success) {
+        rateLimitHitCounter.add(1, { endpoint: "auth.signin" });
         Logger.warn(`Rate limit exceeded for sign in attempt: ${identifier}`);
 
         // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -185,7 +191,10 @@ export const config = {
         throw new Error("Rate limit exceeded");
       }
 
+      authSignInCounter.add(1);
+
       if (isNewUser) {
+        authNewUserCounter.add(1);
         // Log new user signups
         Logger.info(`New user signed up: ${user.email}`);
 
