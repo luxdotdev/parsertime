@@ -1,3 +1,4 @@
+import { stripeWebhookCounter } from "@/lib/axiom/metrics";
 import { handleSubscriptionEvent } from "@/lib/billing-plans";
 import { Logger } from "@/lib/logger";
 import { stripe } from "@/lib/stripe";
@@ -34,6 +35,8 @@ export async function POST(req: Request) {
     }
     return new Response(`Unknown error`, { status: 400 });
   }
+
+  stripeWebhookCounter.add(1, { event_type: event.type });
 
   if (relevantEvents.has(event.type)) {
     try {
