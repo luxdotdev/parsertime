@@ -85,7 +85,7 @@ export function register() {
     readers: [
       new PeriodicExportingMetricReader({
         exporter: metricExporter,
-        exportIntervalMillis: 30_000,
+        exportIntervalMillis: 10_000,
       }),
     ],
   });
