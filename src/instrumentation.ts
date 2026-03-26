@@ -7,6 +7,7 @@ import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-proto";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { resourceFromAttributes } from "@opentelemetry/resources";
 import {
+  AggregationTemporality,
   MeterProvider,
   PeriodicExportingMetricReader,
 } from "@opentelemetry/sdk-metrics";
@@ -75,6 +76,7 @@ export function register() {
       Authorization: `Bearer ${process.env.AXIOM_METRICS_TOKEN}`,
       "X-Axiom-Metrics-Dataset": process.env.AXIOM_METRICS_DATASET,
     },
+    temporalityPreference: AggregationTemporality.DELTA,
   });
 
   const meterProvider = new MeterProvider({
