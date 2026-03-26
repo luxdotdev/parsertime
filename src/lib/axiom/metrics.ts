@@ -1,114 +1,134 @@
+import type { Counter, Histogram, Meter } from "@opentelemetry/api";
 import { metrics } from "@opentelemetry/api";
 
-const meter = metrics.getMeter("parsertime");
+// Lazy initialization — the meter must be obtained after register()
+// in instrumentation.ts has called setGlobalMeterProvider().
+// Module-level getMeter() returns a NoopMeter since the provider isn't set yet.
+let _meter: Meter | null = null;
+function getMeter() {
+  _meter ??= metrics.getMeter("parsertime");
+  return _meter;
+}
+
+function lazyCounter(name: string, description: string) {
+  let _counter: Counter | null = null;
+  return {
+    add(value: number, attributes?: Record<string, string>) {
+      _counter ??= getMeter().createCounter(name, { description });
+      _counter.add(value, attributes);
+    },
+  };
+}
+
+function lazyHistogram(name: string, description: string, unit: string) {
+  let _histogram: Histogram | null = null;
+  return {
+    record(value: number, attributes?: Record<string, string>) {
+      _histogram ??= _histogram = getMeter().createHistogram(name, {
+        description,
+        unit,
+      });
+      _histogram.record(value, attributes);
+    },
+  };
+}
 
 // --- Core funnel ---
-export const authSignInCounter = meter.createCounter("auth.signins", {
-  description: "Successful sign-ins",
-});
-
-export const authNewUserCounter = meter.createCounter("auth.new_users", {
-  description: "New user registrations",
-});
-
-export const teamCreatedCounter = meter.createCounter("teams.created", {
-  description: "Total teams created",
-});
-
-export const teamQuotaHitCounter = meter.createCounter("teams.quota_hits", {
-  description: "Team creation blocked by billing plan quota",
-});
-
-export const scrimCreatedCounter = meter.createCounter("scrims.created", {
-  description: "Total scrims created",
-});
-
-export const mapAddedCounter = meter.createCounter("scrims.maps_added", {
-  description: "Total maps added to scrims",
-});
-
-export const mapRemovedCounter = meter.createCounter("scrims.maps_removed", {
-  description: "Total maps removed from scrims",
-});
+export const authSignInCounter = lazyCounter(
+  "auth.signins",
+  "Successful sign-ins"
+);
+export const authNewUserCounter = lazyCounter(
+  "auth.new_users",
+  "New user registrations"
+);
+export const teamCreatedCounter = lazyCounter(
+  "teams.created",
+  "Total teams created"
+);
+export const teamQuotaHitCounter = lazyCounter(
+  "teams.quota_hits",
+  "Team creation blocked by billing plan quota"
+);
+export const scrimCreatedCounter = lazyCounter(
+  "scrims.created",
+  "Total scrims created"
+);
+export const mapAddedCounter = lazyCounter(
+  "scrims.maps_added",
+  "Total maps added to scrims"
+);
+export const mapRemovedCounter = lazyCounter(
+  "scrims.maps_removed",
+  "Total maps removed from scrims"
+);
 
 // --- AI chat ---
-export const chatRequestCounter = meter.createCounter("ai.chat.requests", {
-  description: "Total AI chat requests",
-});
-
-export const chatTokensCounter = meter.createCounter("ai.chat.tokens", {
-  description: "Total AI tokens consumed",
-});
-
-export const chatToolCallCounter = meter.createCounter("ai.chat.tool_calls", {
-  description: "Total AI tool calls executed",
-});
+export const chatRequestCounter = lazyCounter(
+  "ai.chat.requests",
+  "Total AI chat requests"
+);
+export const chatTokensCounter = lazyCounter(
+  "ai.chat.tokens",
+  "Total AI tokens consumed"
+);
+export const chatToolCallCounter = lazyCounter(
+  "ai.chat.tool_calls",
+  "Total AI tool calls executed"
+);
 
 // --- Billing ---
-export const stripeWebhookCounter = meter.createCounter("stripe.webhooks", {
-  description: "Stripe webhook events received",
-});
+export const stripeWebhookCounter = lazyCounter(
+  "stripe.webhooks",
+  "Stripe webhook events received"
+);
 
 // --- Bot notifications ---
-export const botNotificationCounter = meter.createCounter("bot.notifications", {
-  description: "Bot notification delivery attempts",
-});
+export const botNotificationCounter = lazyCounter(
+  "bot.notifications",
+  "Bot notification delivery attempts"
+);
 
 // --- Cron jobs ---
-export const cronJobCounter = meter.createCounter("cron.runs", {
-  description: "Cron job executions",
-});
-
-export const cronDeletedItemsCounter = meter.createCounter(
+export const cronJobCounter = lazyCounter("cron.runs", "Cron job executions");
+export const cronDeletedItemsCounter = lazyCounter(
   "cron.deleted_items",
-  {
-    description: "Items deleted by cron jobs",
-  }
+  "Items deleted by cron jobs"
 );
 
 // --- Reliability ---
-export const rateLimitHitCounter = meter.createCounter("ratelimit.hits", {
-  description: "Rate limit rejections",
-});
-
-export const apiErrorCounter = meter.createCounter("api.errors", {
-  description: "API errors by route and status code",
-});
+export const rateLimitHitCounter = lazyCounter(
+  "ratelimit.hits",
+  "Rate limit rejections"
+);
+export const apiErrorCounter = lazyCounter(
+  "api.errors",
+  "API errors by route and status code"
+);
 
 // --- Histograms ---
-export const scrimParsingDuration = meter.createHistogram(
+export const scrimParsingDuration = lazyHistogram(
   "scrims.parse_duration_ms",
-  {
-    description: "Time to parse and store scrim data",
-    unit: "ms",
-  }
+  "Time to parse and store scrim data",
+  "ms"
 );
-
-export const mapDeletionDuration = meter.createHistogram(
+export const mapDeletionDuration = lazyHistogram(
   "scrims.map_deletion_duration_ms",
-  {
-    description: "Time to cascade-delete a map and all related data",
-    unit: "ms",
-  }
+  "Time to cascade-delete a map and all related data",
+  "ms"
 );
-
-export const chatResponseDuration = meter.createHistogram(
+export const chatResponseDuration = lazyHistogram(
   "ai.chat.duration_ms",
-  {
-    description: "End-to-end AI chat response time",
-    unit: "ms",
-  }
+  "End-to-end AI chat response time",
+  "ms"
 );
-
-export const chatToolCallDuration = meter.createHistogram(
+export const chatToolCallDuration = lazyHistogram(
   "ai.chat.tool_call_duration_ms",
-  {
-    description: "Individual AI tool call latency",
-    unit: "ms",
-  }
+  "Individual AI tool call latency",
+  "ms"
 );
-
-export const cronJobDuration = meter.createHistogram("cron.duration_ms", {
-  description: "Cron job execution time",
-  unit: "ms",
-});
+export const cronJobDuration = lazyHistogram(
+  "cron.duration_ms",
+  "Cron job execution time",
+  "ms"
+);
