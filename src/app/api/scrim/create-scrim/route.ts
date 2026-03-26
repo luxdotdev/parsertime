@@ -1,6 +1,7 @@
 import { getUser } from "@/data/user-dto";
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
+import { setRequestContext } from "@/lib/axiom/baggage";
 import {
   rateLimitHitCounter,
   scrimCreatedCounter,
@@ -103,6 +104,14 @@ export async function POST(request: NextRequest) {
   }
 
   Logger.log("Creating new scrim for user: ", session.user?.email);
+
+  const user = await getUser(session.user.email);
+  if (user) {
+    setRequestContext({
+      user_id: user.id,
+      billing_plan: user.billingPlan,
+    });
+  }
 
   const teamId = parseInt(data.team) === 0 ? null : parseInt(data.team);
 
