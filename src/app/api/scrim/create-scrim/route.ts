@@ -1,6 +1,11 @@
 import { getUser } from "@/data/user-dto";
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
+import {
+  rateLimitHitCounter,
+  scrimCreatedCounter,
+  scrimParsingDuration,
+} from "@/lib/axiom/metrics";
 import { sendScrimNotifications } from "@/lib/bot-events";
 import { Logger } from "@/lib/logger";
 import { createNewScrimFromParsedData } from "@/lib/parser";
@@ -54,6 +59,7 @@ export async function POST(request: NextRequest) {
   const { success } = await ratelimit.limit(identifier);
 
   if (!success) {
+    rateLimitHitCounter.add(1, { endpoint: "scrim.create" });
     Logger.warn(`Rate limit exceeded for scrim creation: ${identifier}`);
 
     const ua = userAgent(request);
@@ -109,7 +115,10 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const parseStart = performance.now();
   await createNewScrimFromParsedData(data, session);
+  scrimParsingDuration.record(performance.now() - parseStart);
+  scrimCreatedCounter.add(1);
 
   after(async () => {
     await auditLog.createAuditLog({
