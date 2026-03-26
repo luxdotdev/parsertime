@@ -2,14 +2,23 @@ import { logger } from "@/lib/axiom/server";
 import { EffectLoggerLive } from "@/lib/effect-logger";
 import { createOnRequestError } from "@axiomhq/nextjs";
 import { NodeSdk } from "@effect/opentelemetry";
+import { metrics } from "@opentelemetry/api";
+import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-proto";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { resourceFromAttributes } from "@opentelemetry/resources";
+import {
+  MeterProvider,
+  PeriodicExportingMetricReader,
+} from "@opentelemetry/sdk-metrics";
 import {
   BatchSpanProcessor,
   NodeTracerProvider,
   SimpleSpanProcessor,
 } from "@opentelemetry/sdk-trace-node";
-import { ATTR_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
+import {
+  ATTR_SERVICE_NAME,
+  ATTR_SERVICE_VERSION,
+} from "@opentelemetry/semantic-conventions";
 import {
   PrismaInstrumentation,
   registerInstrumentations,
@@ -38,6 +47,7 @@ export function register() {
     resource: resourceFromAttributes(
       {
         [ATTR_SERVICE_NAME]: SERVICE_NAME,
+        [ATTR_SERVICE_VERSION]: process.env.VERCEL_GIT_COMMIT_SHA,
       },
       {
         // Use the latest schema version
@@ -58,6 +68,29 @@ export function register() {
   });
 
   provider.register();
+
+  const metricExporter = new OTLPMetricExporter({
+    url: "https://api.axiom.co/v1/metrics",
+    headers: {
+      Authorization: `Bearer ${process.env.AXIOM_METRICS_TOKEN}`,
+      "X-Axiom-Metrics-Dataset": process.env.AXIOM_METRICS_DATASET,
+    },
+  });
+
+  const meterProvider = new MeterProvider({
+    resource: resourceFromAttributes({
+      [ATTR_SERVICE_NAME]: SERVICE_NAME,
+      [ATTR_SERVICE_VERSION]: process.env.VERCEL_GIT_COMMIT_SHA,
+    }),
+    readers: [
+      new PeriodicExportingMetricReader({
+        exporter: metricExporter,
+        exportIntervalMillis: 30_000,
+      }),
+    ],
+  });
+
+  metrics.setGlobalMeterProvider(meterProvider);
 }
 
 export const EffectTracingLive = NodeSdk.layer(() => ({
