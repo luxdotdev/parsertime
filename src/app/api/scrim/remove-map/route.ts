@@ -2,6 +2,7 @@ import { getScrim } from "@/data/scrim-dto";
 import { getUser } from "@/data/user-dto";
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
+import { mapDeletionDuration, mapRemovedCounter } from "@/lib/axiom/metrics";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
@@ -64,6 +65,7 @@ export async function POST(req: NextRequest) {
 
   const mapId = parseInt(id);
 
+  const deleteStart = performance.now();
   await Promise.all([
     prisma.map.delete({ where: { id: mapId } }),
     prisma.mapData.deleteMany({ where: { mapId } }),
@@ -92,6 +94,8 @@ export async function POST(req: NextRequest) {
     prisma.ultimateStart.deleteMany({ where: { MapDataId: mapId } }),
     prisma.heroBan.deleteMany({ where: { MapDataId: mapId } }),
   ]);
+  mapDeletionDuration.record(performance.now() - deleteStart);
+  mapRemovedCounter.add(1);
 
   after(async () => {
     await auditLog.createAuditLog({
