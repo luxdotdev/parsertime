@@ -3,6 +3,8 @@ import { systemPrompt } from "@/lib/ai/system-prompt";
 import { chatTelemetry } from "@/lib/ai/telemetry";
 import { buildTools } from "@/lib/ai/tools";
 import { auth } from "@/lib/auth";
+import { flagsToBaggage, setRequestContext } from "@/lib/axiom/baggage";
+import { resolveAllFlags, toFlagValues } from "@/lib/flags-helpers";
 import prisma from "@/lib/prisma";
 import { Ratelimit } from "@upstash/ratelimit";
 import { kv } from "@vercel/kv";
@@ -50,6 +52,14 @@ export async function POST(req: Request) {
 
   const userTeams = user?.teams ?? [];
   const allowedTeamIds = new Set(userTeams.map((t) => t.id));
+
+  const flags = await resolveAllFlags();
+  setRequestContext({
+    user_id: userData.id,
+    billing_plan: userData.billingPlan,
+    team_ids: userTeams.map((t) => String(t.id)).join(","),
+    flags: flagsToBaggage(toFlagValues(flags)),
+  });
 
   const tools = buildTools({ userId: userData.id, allowedTeamIds, userTeams });
 
