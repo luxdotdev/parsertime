@@ -1,3 +1,10 @@
+import {
+  chatRequestCounter,
+  chatResponseDuration,
+  chatTokensCounter,
+  chatToolCallCounter,
+  chatToolCallDuration,
+} from "@/lib/axiom/metrics";
 import { Logger } from "@/lib/logger";
 import type { TelemetryIntegration } from "ai";
 
@@ -24,6 +31,16 @@ export function chatTelemetry(userId: string): TelemetryIntegration {
         success: event.success,
         ...(event.success ? {} : { error: String(event.error) }),
       });
+
+      chatToolCallCounter.add(1, {
+        tool_name: event.toolCall.toolName,
+        success: String(event.success),
+        model,
+      });
+      chatToolCallDuration.record(event.durationMs, {
+        tool_name: event.toolCall.toolName,
+        model,
+      });
     },
 
     onStepFinish() {
@@ -31,11 +48,13 @@ export function chatTelemetry(userId: string): TelemetryIntegration {
     },
 
     onFinish(event) {
+      const durationMs = Date.now() - startTime;
+
       Logger.info({
         event: "ai.chat",
         userId,
         model,
-        durationMs: Date.now() - startTime,
+        durationMs,
         steps: stepCount,
         inputTokens: event.totalUsage.inputTokens,
         outputTokens: event.totalUsage.outputTokens,
@@ -45,6 +64,17 @@ export function chatTelemetry(userId: string): TelemetryIntegration {
         toolCalls,
         hasError: toolCalls.some((t) => !t.success),
       });
+
+      chatRequestCounter.add(1, { model, finish_reason: event.finishReason });
+      chatTokensCounter.add(event.totalUsage.inputTokens ?? 0, {
+        type: "input",
+        model,
+      });
+      chatTokensCounter.add(event.totalUsage.outputTokens ?? 0, {
+        type: "output",
+        model,
+      });
+      chatResponseDuration.record(durationMs, { model });
     },
   };
 }
