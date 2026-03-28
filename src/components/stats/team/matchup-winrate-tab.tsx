@@ -322,6 +322,7 @@ function HeroMultiSelect({
             key={`empty-${selected.length + i}`}
             available={available}
             excluded={[...excluded, ...selected]}
+            selected={selected}
             heroNames={heroNames}
             onSelect={(hero) => onAdd(hero as HeroName)}
             emptySlotClass={emptySlotClass}
@@ -374,9 +375,16 @@ function HeroSlot({ hero, heroNames, onRemove }: HeroSlotProps) {
 
 // --- Hero Picker Slot (empty, opens popover) ---
 
+const ROLE_LIMITS: Record<string, number> = {
+  Tank: 1,
+  Damage: 2,
+  Support: 2,
+};
+
 type HeroPickerSlotProps = {
   available: HeroName[];
   excluded: string[];
+  selected: HeroName[];
   heroNames: Map<string, string>;
   onSelect: (hero: string) => void;
   emptySlotClass: string;
@@ -385,12 +393,25 @@ type HeroPickerSlotProps = {
 function HeroPickerSlot({
   available,
   excluded,
+  selected,
   heroNames,
   onSelect,
   emptySlotClass,
 }: HeroPickerSlotProps) {
   const excludedSet = new Set(excluded);
   const pickable = available.filter((h) => !excludedSet.has(h));
+
+  const selectedRoleCounts: Record<string, number> = {
+    Tank: 0,
+    Damage: 0,
+    Support: 0,
+  };
+  for (const hero of selected) {
+    const role = determineRole(hero);
+    if (role in selectedRoleCounts) {
+      selectedRoleCounts[role]++;
+    }
+  }
 
   const byRole: Record<string, HeroName[]> = {
     Tank: [],
@@ -403,6 +424,22 @@ function HeroPickerSlot({
       byRole[role].push(hero);
     }
   }
+
+  const roleFull: Record<string, boolean> = {
+    Tank: selectedRoleCounts.Tank >= ROLE_LIMITS.Tank,
+    Damage: selectedRoleCounts.Damage >= ROLE_LIMITS.Damage,
+    Support: selectedRoleCounts.Support >= ROLE_LIMITS.Support,
+  };
+
+  const allRoles: ("Tank" | "Damage" | "Support")[] = [
+    "Tank",
+    "Damage",
+    "Support",
+  ];
+  const roleOrder = allRoles.sort((a, b) => {
+    if (roleFull[a] === roleFull[b]) return 0;
+    return roleFull[a] ? 1 : -1;
+  });
 
   return (
     <Popover>
@@ -426,12 +463,18 @@ function HeroPickerSlot({
       >
         <ScrollArea className="h-72">
           <div className="space-y-3 pr-2">
-            {(["Tank", "Damage", "Support"] as const).map((role) => {
+            {roleOrder.map((role) => {
               if (byRole[role].length === 0) return null;
+              const isFull = roleFull[role];
               return (
-                <div key={role}>
+                <div key={role} className={isFull ? "opacity-40" : ""}>
                   <p className="text-muted-foreground mb-1.5 text-xs font-semibold tracking-wide uppercase">
                     {role}
+                    {isFull && (
+                      <span className="ml-1 text-[10px] font-normal normal-case">
+                        (full)
+                      </span>
+                    )}
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {byRole[role].map((hero) => {
@@ -442,9 +485,21 @@ function HeroPickerSlot({
                           <TooltipTrigger asChild>
                             <button
                               type="button"
-                              aria-label={`Select ${displayName}`}
-                              onClick={() => onSelect(hero)}
-                              className="group focus-visible:ring-ring relative h-9 w-9 overflow-hidden rounded transition-all duration-150 ease-out hover:scale-110 hover:shadow-md focus-visible:ring-2 focus-visible:outline-none"
+                              aria-label={
+                                isFull
+                                  ? `${displayName} (${role} slot full)`
+                                  : `Select ${displayName}`
+                              }
+                              onClick={() => {
+                                if (!isFull) onSelect(hero);
+                              }}
+                              disabled={isFull}
+                              className={cn(
+                                "group focus-visible:ring-ring relative h-9 w-9 overflow-hidden rounded transition-all duration-150 ease-out focus-visible:ring-2 focus-visible:outline-none",
+                                isFull
+                                  ? "cursor-not-allowed grayscale"
+                                  : "hover:scale-110 hover:shadow-md"
+                              )}
                             >
                               <Image
                                 src={`/heroes/${slug}.png`}
@@ -456,7 +511,9 @@ function HeroPickerSlot({
                             </button>
                           </TooltipTrigger>
                           <TooltipContent side="bottom">
-                            {displayName}
+                            {isFull
+                              ? `${displayName} — ${role} slot full`
+                              : displayName}
                           </TooltipContent>
                         </Tooltip>
                       );
