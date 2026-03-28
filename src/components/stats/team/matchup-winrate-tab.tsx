@@ -852,7 +852,7 @@ function MatchupResultsTable({ maps, heroNames }: MatchupResultsTableProps) {
       </CardHeader>
       <CardContent>
         {maps.length > 0 ? (
-          <ScrollArea className="max-h-[420px]">
+          <ScrollArea className="h-[420px]">
             <table className="w-full text-sm" role="table">
               <thead>
                 <tr className="text-muted-foreground border-b text-left text-xs">
