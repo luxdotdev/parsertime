@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getTeamBanImpactAnalysis } from "@/data/team-ban-impact-dto";
+import { getEnemyHeroAnalysis } from "@/data/team-enemy-hero-dto";
 import { getHeroPoolAnalysis } from "@/data/team-hero-pool-dto";
 import { getMapModePerformance } from "@/data/team-map-mode-stats-dto";
 import { getBestRoleTrios, type RoleTrio } from "@/data/team-role-stats-dto";
@@ -25,6 +26,8 @@ export type SimulatorContext = {
   roleTrioWinrates: RoleTrio[];
   heroPoolWinrates: Record<string, number>;
   heroPoolSampleSizes: Record<string, number>;
+  enemyHeroWinrates: Record<string, number>;
+  enemyHeroSampleSizes: Record<string, number>;
   availableHeroes: HeroName[];
   availableMaps: string[];
 };
@@ -38,13 +41,14 @@ async function getSimulatorContextUncached(
   teamId: number,
   dateRange?: TeamDateRange
 ): Promise<SimulatorContext> {
-  const [winrates, banAnalysis, heroPool, mapModePerf, roleTrios] =
+  const [winrates, banAnalysis, heroPool, mapModePerf, roleTrios, enemyHeroes] =
     await Promise.all([
       getTeamWinrates(teamId, dateRange),
       getTeamBanImpactAnalysis(teamId, dateRange),
       getHeroPoolAnalysis(teamId, dateRange?.from, dateRange?.to),
       getMapModePerformance(teamId, dateRange),
       getBestRoleTrios(teamId, dateRange),
+      getEnemyHeroAnalysis(teamId, dateRange),
     ]);
 
   const totalGames = winrates.overallWins + winrates.overallLosses;
@@ -98,6 +102,13 @@ async function getSimulatorContextUncached(
     heroPoolSampleSizes[hero.heroName] = hero.gamesPlayed;
   }
 
+  const enemyHeroWinrates: Record<string, number> = {};
+  const enemyHeroSampleSizes: Record<string, number> = {};
+  for (const hero of enemyHeroes.winrateVsHero) {
+    enemyHeroWinrates[hero.heroName] = hero.winrate / 100;
+    enemyHeroSampleSizes[hero.heroName] = hero.gamesPlayed;
+  }
+
   const allHeroes: HeroName[] = [
     ...roleHeroMapping.Tank,
     ...roleHeroMapping.Damage,
@@ -117,6 +128,8 @@ async function getSimulatorContextUncached(
     roleTrioWinrates: roleTrios,
     heroPoolWinrates,
     heroPoolSampleSizes,
+    enemyHeroWinrates,
+    enemyHeroSampleSizes,
     availableHeroes: allHeroes,
     availableMaps,
   };
