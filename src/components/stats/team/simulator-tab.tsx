@@ -297,11 +297,7 @@ function ScenarioPanel({
             dispatch({ type: "REMOVE_ENEMY_COMP_HERO", hero })
           }
           available={ctx.availableHeroes}
-          excluded={[
-            ...scenario.enemyBansAgainstUs,
-            ...scenario.ourBans,
-            ...scenario.ourComposition,
-          ]}
+          excluded={[...scenario.enemyBansAgainstUs, ...scenario.ourBans]}
           heroNames={heroNames}
           colorClass="border-red-500/20 bg-red-500/5"
         />
