@@ -7,6 +7,7 @@ export type PredictionScenario = {
   ourBans: string[];
   selectedMap: string | null;
   ourComposition: string[];
+  enemyComposition: string[];
 };
 
 export type PredictionBreakdown = {
@@ -15,6 +16,7 @@ export type PredictionBreakdown = {
   ourBanImpact: number;
   mapImpact: number;
   compositionImpact: number;
+  enemyCompositionImpact: number;
 };
 
 export type PredictionResult = {
@@ -105,6 +107,14 @@ function buildTopInsight(
     const delta = breakdown.compositionImpact;
     candidates.push({
       label: `Your composition ${delta >= 0 ? "boosts" : "reduces"} your odds by ${delta >= 0 ? "+" : ""}${(delta * 100).toFixed(1)}%`,
+      value: Math.abs(delta),
+    });
+  }
+
+  if (breakdown.enemyCompositionImpact !== 0) {
+    const delta = breakdown.enemyCompositionImpact;
+    candidates.push({
+      label: `The enemy composition ${delta >= 0 ? "favors" : "challenges"} you by ${delta >= 0 ? "+" : ""}${(delta * 100).toFixed(1)}%`,
       value: Math.abs(delta),
     });
   }
@@ -226,8 +236,36 @@ export function computePrediction(
     }
   }
 
+  let enemyCompositionImpact = 0;
+  if (scenario.enemyComposition.length > 0) {
+    let heroImpactSum = 0;
+    let heroCount = 0;
+    for (const hero of scenario.enemyComposition) {
+      const winrateVsHero = ctx.enemyHeroWinrates[hero];
+      if (winrateVsHero !== undefined) {
+        heroImpactSum += winrateVsHero - ctx.baseWinrate;
+        heroCount++;
+        activeSampleSizes.push(ctx.enemyHeroSampleSizes[hero] ?? 0);
+        const samples = ctx.enemyHeroSampleSizes[hero] ?? 0;
+        if (samples < MIN_SAMPLES_MEDIUM) {
+          warnings.push(
+            `Only ${samples} game${samples === 1 ? "" : "s"} against enemy ${hero} — impact estimate may be unreliable`
+          );
+        }
+      }
+    }
+    if (heroCount > 0) {
+      enemyCompositionImpact = heroImpactSum / heroCount;
+    }
+  }
+
   const raw =
-    ctx.baseWinrate + banImpact + ourBanImpact + mapImpact + compositionImpact;
+    ctx.baseWinrate +
+    banImpact +
+    ourBanImpact +
+    mapImpact +
+    compositionImpact +
+    enemyCompositionImpact;
   const estimatedWinrate = clamp(raw, 0, 1);
 
   const confidence = getConfidence(activeSampleSizes, ctx.totalGames);
@@ -238,6 +276,7 @@ export function computePrediction(
     ourBanImpact,
     mapImpact,
     compositionImpact,
+    enemyCompositionImpact,
   };
 
   const topInsight = buildTopInsight(breakdown, scenario, ctx);
