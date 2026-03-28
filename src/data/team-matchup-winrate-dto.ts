@@ -153,28 +153,28 @@ function buildHeroEntries(
     MapDataId: number | null;
   }[]
 ): MapHeroEntry[] {
-  // Deduplicate by hero name, keeping the entry with the most playtime
-  const heroMap = new Map<string, { playerName: string; timePlayed: number }>();
+  // Group by player, pick each player's most-played hero
+  const playerMap = new Map<string, { heroName: string; timePlayed: number }>();
 
   for (const stat of playerStats) {
-    const existing = heroMap.get(stat.player_hero);
+    const existing = playerMap.get(stat.player_name);
     if (!existing || stat.hero_time_played > existing.timePlayed) {
-      heroMap.set(stat.player_hero, {
-        playerName: stat.player_name,
+      playerMap.set(stat.player_name, {
+        heroName: stat.player_hero,
         timePlayed: stat.hero_time_played,
       });
     }
   }
 
   const entries: MapHeroEntry[] = [];
-  for (const [heroName, data] of heroMap.entries()) {
-    const role = determineRole(heroName as HeroName);
+  for (const [playerName, data] of playerMap.entries()) {
+    const role = determineRole(data.heroName as HeroName);
     if (role !== "Tank" && role !== "Damage" && role !== "Support") continue;
 
     entries.push({
-      heroName: heroName as HeroName,
+      heroName: data.heroName as HeroName,
       role,
-      playerName: data.playerName,
+      playerName,
       timePlayed: data.timePlayed,
     });
   }
@@ -187,7 +187,8 @@ function buildHeroEntries(
       a.heroName.localeCompare(b.heroName)
   );
 
-  return entries;
+  // Cap at 5 (1 tank + 2 dps + 2 support)
+  return entries.slice(0, 5);
 }
 
 export const getMatchupWinrateData = cache(getMatchupWinrateDataUncached);
