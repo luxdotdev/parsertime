@@ -5,6 +5,7 @@ import { HeroOurBansCard } from "@/components/stats/team/hero-our-bans-card";
 import { HeroPoolContainer } from "@/components/stats/team/hero-pool-container";
 import { MapModePerformanceCard } from "@/components/stats/team/map-mode-performance-card";
 import { MapWinrateGallery } from "@/components/stats/team/map-winrate-gallery";
+import { MatchupWinrateTab } from "@/components/stats/team/matchup-winrate-tab";
 import { PlayerMapPerformanceCard } from "@/components/stats/team/player-map-performance-card";
 import { QuickStatsCard } from "@/components/stats/team/quick-stats-card";
 import { RecentFormCard } from "@/components/stats/team/recent-form-card";
@@ -36,6 +37,7 @@ import {
   getPlayerMapPerformanceMatrix,
 } from "@/data/team-analytics-dto";
 import { getTeamBanImpactAnalysis } from "@/data/team-ban-impact-dto";
+import { getMatchupWinrateData } from "@/data/team-matchup-winrate-dto";
 import { getTeamFightStats } from "@/data/team-fight-stats-dto";
 import { getHeroPoolAnalysis } from "@/data/team-hero-pool-dto";
 import { getTeamHeroSwapStats } from "@/data/team-hero-swap-dto";
@@ -205,6 +207,7 @@ export default async function TeamStatsPage(
     ultImpactAnalysis,
     ultimateImpactToolEnabled,
     abilityImpactAnalysis,
+    matchupWinrateData,
   ] = await Promise.all([
     prisma.scrim.findMany({
       where: {
@@ -238,6 +241,7 @@ export default async function TeamStatsPage(
     getTeamUltImpact(teamId, dateRange),
     ultimateImpactTool(),
     getTeamAbilityImpact(teamId, dateRange),
+    getMatchupWinrateData(teamId, dateRange),
   ]);
 
   const heroPickrateRawData = await getHeroPickrateRawData(teamId, dateRange);
@@ -298,6 +302,7 @@ export default async function TeamStatsPage(
           <TabsTrigger value="swaps">Swaps</TabsTrigger>
           <TabsTrigger value="teamfights">Teamfights</TabsTrigger>
           <TabsTrigger value="ultimates">Ultimates</TabsTrigger>
+          <TabsTrigger value="winrates">Winrates</TabsTrigger>
           {simulationToolEnabled && (
             <TabsTrigger value="simulator">Simulator</TabsTrigger>
           )}
@@ -403,6 +408,11 @@ export default async function TeamStatsPage(
           <UltimateEconomyCard fightStats={fightStats} />
           <UltRoleBreakdownCard ultStats={ultStats} />
           <UltPlayerRankingsCard ultStats={ultStats} />
+        </TabsContent>
+
+        {/* Winrates Tab */}
+        <TabsContent value="winrates" className="space-y-4">
+          <MatchupWinrateTab data={matchupWinrateData} />
         </TabsContent>
 
         {/* Simulator Tab */}
