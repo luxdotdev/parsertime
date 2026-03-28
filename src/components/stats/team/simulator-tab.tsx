@@ -63,6 +63,7 @@ const EMPTY_SCENARIO: PredictionScenario = {
   ourBans: [],
   selectedMap: null,
   ourComposition: [],
+  enemyComposition: [],
 };
 
 type ScenarioAction =
@@ -73,6 +74,8 @@ type ScenarioAction =
   | { type: "SET_MAP"; map: string | null }
   | { type: "ADD_COMP_HERO"; hero: string }
   | { type: "REMOVE_COMP_HERO"; hero: string }
+  | { type: "ADD_ENEMY_COMP_HERO"; hero: string }
+  | { type: "REMOVE_ENEMY_COMP_HERO"; hero: string }
   | { type: "RESET" };
 
 function scenarioReducer(
@@ -117,6 +120,20 @@ function scenarioReducer(
         ...state,
         ourComposition: state.ourComposition.filter((h) => h !== action.hero),
       };
+    case "ADD_ENEMY_COMP_HERO":
+      if (state.enemyComposition.length >= 5) return state;
+      if (state.enemyComposition.includes(action.hero)) return state;
+      return {
+        ...state,
+        enemyComposition: [...state.enemyComposition, action.hero],
+      };
+    case "REMOVE_ENEMY_COMP_HERO":
+      return {
+        ...state,
+        enemyComposition: state.enemyComposition.filter(
+          (h) => h !== action.hero
+        ),
+      };
     case "RESET":
       return { ...EMPTY_SCENARIO };
   }
@@ -136,7 +153,8 @@ export function SimulatorTab({ ctx }: SimulatorTabProps) {
     scenario.enemyBansAgainstUs.length > 0 ||
     scenario.ourBans.length > 0 ||
     scenario.selectedMap !== null ||
-    scenario.ourComposition.length > 0;
+    scenario.ourComposition.length > 0 ||
+    scenario.enemyComposition.length > 0;
 
   if (ctx.totalGames === 0) {
     return (
@@ -267,6 +285,26 @@ function ScenarioPanel({
           excluded={[...scenario.enemyBansAgainstUs, ...scenario.ourBans]}
           heroNames={heroNames}
         />
+
+        <Separator />
+
+        <CompositionSection
+          label="Enemy composition"
+          description="Select up to 5 heroes for the enemy team"
+          selected={scenario.enemyComposition}
+          onAdd={(hero) => dispatch({ type: "ADD_ENEMY_COMP_HERO", hero })}
+          onRemove={(hero) =>
+            dispatch({ type: "REMOVE_ENEMY_COMP_HERO", hero })
+          }
+          available={ctx.availableHeroes}
+          excluded={[
+            ...scenario.enemyBansAgainstUs,
+            ...scenario.ourBans,
+            ...scenario.ourComposition,
+          ]}
+          heroNames={heroNames}
+          colorClass="border-red-500/20 bg-red-500/5"
+        />
       </CardContent>
     </Card>
   );
@@ -345,6 +383,7 @@ type CompositionSectionProps = {
   available: HeroName[];
   excluded: string[];
   heroNames: Map<string, string>;
+  colorClass?: string;
 };
 
 function CompositionSection({
@@ -356,6 +395,7 @@ function CompositionSection({
   available,
   excluded,
   heroNames,
+  colorClass,
 }: CompositionSectionProps) {
   const emptySlots = 5 - selected.length;
 
@@ -368,7 +408,9 @@ function CompositionSection({
         </span>
       </div>
       <p className="text-muted-foreground text-xs">{description}</p>
-      <div className="flex flex-wrap gap-2 rounded-md border p-2">
+      <div
+        className={cn("flex flex-wrap gap-2 rounded-md border p-2", colorClass)}
+      >
         {selected.map((hero) => (
           <HeroSlot
             key={hero}
@@ -818,6 +860,16 @@ function BreakdownChart({ result, hasInput }: BreakdownChartProps) {
         breakdown.compositionImpact > 0.005 ? (
           <TrendingUp className="h-3.5 w-3.5 text-green-500" />
         ) : breakdown.compositionImpact < -0.005 ? (
+          <TrendingDown className="h-3.5 w-3.5 text-red-500" />
+        ) : null,
+    },
+    {
+      label: "Enemy comp",
+      value: breakdown.enemyCompositionImpact,
+      icon:
+        breakdown.enemyCompositionImpact > 0.005 ? (
+          <TrendingUp className="h-3.5 w-3.5 text-green-500" />
+        ) : breakdown.enemyCompositionImpact < -0.005 ? (
           <TrendingDown className="h-3.5 w-3.5 text-red-500" />
         ) : null,
     },
