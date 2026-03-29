@@ -88,11 +88,28 @@ export function register() {
       new PeriodicExportingMetricReader({
         exporter: metricExporter,
         exportIntervalMillis: 10_000,
+        exportTimeoutMillis: 5_000,
       }),
     ],
   });
 
   metrics.setGlobalMeterProvider(meterProvider);
+
+  // In serverless environments, instances can be shut down before the
+  // PeriodicExportingMetricReader's next export tick fires. Neither the
+  // OTel SDK nor Next.js registers SIGTERM handlers to flush providers,
+  // so pending metrics and spans are silently dropped.
+  // Force-flush both providers on SIGTERM to ensure nothing is lost.
+  process.on("SIGTERM", async () => {
+    await Promise.allSettled([
+      provider.forceFlush(),
+      meterProvider.forceFlush(),
+    ]);
+    await Promise.allSettled([
+      provider.shutdown(),
+      meterProvider.shutdown(),
+    ]);
+  });
 }
 
 export const EffectTracingLive = NodeSdk.layer(() => ({
