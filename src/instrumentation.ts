@@ -105,10 +105,7 @@ export function register() {
       provider.forceFlush(),
       meterProvider.forceFlush(),
     ]);
-    await Promise.allSettled([
-      provider.shutdown(),
-      meterProvider.shutdown(),
-    ]);
+    await Promise.allSettled([provider.shutdown(), meterProvider.shutdown()]);
   });
 }
 
