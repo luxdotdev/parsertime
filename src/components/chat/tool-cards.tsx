@@ -34,7 +34,7 @@ export function ToolLoading({ toolName }: { toolName: string }) {
             />
           )}
           <CardDescription className="text-xs tracking-wide uppercase">
-            {isReport ? "Writing report\u2026" : toolName}
+            {isReport ? "Writing report…" : toolName}
           </CardDescription>
         </div>
         <Skeleton className="h-5 w-48" />
