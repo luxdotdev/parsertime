@@ -428,6 +428,8 @@
       "scoutPlayer": "Scout a player",
       "scoutTeam": "Scout a team",
       "dataLabeling": "Data Labeling",
+      "dataTools": "Data Tools",
+      "mapCalibration": "Map Calibration",
       "chat": "Analyst",
       "chatNew": "New Conversation",
       "chatReports": "Reports"
