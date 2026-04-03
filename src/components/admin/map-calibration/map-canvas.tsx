@@ -141,10 +141,10 @@ export function MapCanvas({
 
     if (transform && showGrid) {
       const corners = [
-        imageToWorld(0, 0, transform, imageHeight),
-        imageToWorld(imageWidth, 0, transform, imageHeight),
-        imageToWorld(0, imageHeight, transform, imageHeight),
-        imageToWorld(imageWidth, imageHeight, transform, imageHeight),
+        imageToWorld(0, 0, transform),
+        imageToWorld(imageWidth, 0, transform),
+        imageToWorld(0, imageHeight, transform),
+        imageToWorld(imageWidth, imageHeight, transform),
       ];
       const worldMinX = Math.min(...corners.map((c) => c.x));
       const worldMaxX = Math.max(...corners.map((c) => c.x));
@@ -169,16 +169,8 @@ export function MapCanvas({
       ctx.lineWidth = 1;
 
       for (let wx = startX; wx <= worldMaxX; wx += gridStep) {
-        const top = worldToImage(
-          { x: wx, y: worldMaxY },
-          transform,
-          imageHeight
-        );
-        const bot = worldToImage(
-          { x: wx, y: worldMinY },
-          transform,
-          imageHeight
-        );
+        const top = worldToImage({ x: wx, y: worldMaxY }, transform);
+        const bot = worldToImage({ x: wx, y: worldMinY }, transform);
         const sTop = imgToScreen(top.u, top.v);
         const sBot = imgToScreen(bot.u, bot.v);
         ctx.beginPath();
@@ -188,16 +180,8 @@ export function MapCanvas({
       }
 
       for (let wy = startY; wy <= worldMaxY; wy += gridStep) {
-        const left = worldToImage(
-          { x: worldMinX, y: wy },
-          transform,
-          imageHeight
-        );
-        const right = worldToImage(
-          { x: worldMaxX, y: wy },
-          transform,
-          imageHeight
-        );
+        const left = worldToImage({ x: worldMinX, y: wy }, transform);
+        const right = worldToImage({ x: worldMaxX, y: wy }, transform);
         const sLeft = imgToScreen(left.u, left.v);
         const sRight = imgToScreen(right.u, right.v);
         ctx.beginPath();
@@ -210,20 +194,20 @@ export function MapCanvas({
       ctx.strokeStyle = "rgba(59, 130, 246, 0.8)";
       ctx.lineWidth = 2;
       const sAxL = imgToScreen(
-        ...toUV(worldToImage({ x: worldMinX, y: 0 }, transform, imageHeight))
+        ...toUV(worldToImage({ x: worldMinX, y: 0 }, transform))
       );
       const sAxR = imgToScreen(
-        ...toUV(worldToImage({ x: worldMaxX, y: 0 }, transform, imageHeight))
+        ...toUV(worldToImage({ x: worldMaxX, y: 0 }, transform))
       );
       ctx.beginPath();
       ctx.moveTo(sAxL.x, sAxL.y);
       ctx.lineTo(sAxR.x, sAxR.y);
       ctx.stroke();
       const sAyT = imgToScreen(
-        ...toUV(worldToImage({ x: 0, y: worldMaxY }, transform, imageHeight))
+        ...toUV(worldToImage({ x: 0, y: worldMaxY }, transform))
       );
       const sAyB = imgToScreen(
-        ...toUV(worldToImage({ x: 0, y: worldMinY }, transform, imageHeight))
+        ...toUV(worldToImage({ x: 0, y: worldMinY }, transform))
       );
       ctx.beginPath();
       ctx.moveTo(sAyT.x, sAyT.y);
@@ -231,7 +215,7 @@ export function MapCanvas({
       ctx.stroke();
 
       // Origin dot + label
-      const origin = worldToImage({ x: 0, y: 0 }, transform, imageHeight);
+      const origin = worldToImage({ x: 0, y: 0 }, transform);
       const sOrigin = imgToScreen(origin.u, origin.v);
       ctx.fillStyle = "rgba(59, 130, 246, 0.9)";
       ctx.beginPath();
@@ -282,11 +266,7 @@ export function MapCanvas({
 
     if (transform && testPoints.length > 0) {
       for (const tp of testPoints) {
-        const imgPos = worldToImage(
-          { x: tp.worldX, y: tp.worldY },
-          transform,
-          imageHeight
-        );
+        const imgPos = worldToImage({ x: tp.worldX, y: tp.worldY }, transform);
         const screen = imgToScreen(imgPos.u, imgPos.v);
 
         // Diamond marker

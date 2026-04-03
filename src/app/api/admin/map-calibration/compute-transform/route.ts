@@ -45,26 +45,21 @@ export async function POST(req: Request) {
     wideEvent.map_name = calibration.mapName;
     wideEvent.anchor_count = calibration.anchors.length;
 
-    if (calibration.anchors.length < 2) {
+    if (calibration.anchors.length < 3) {
       wideEvent.status_code = 400;
       wideEvent.outcome = "insufficient_anchors";
       return NextResponse.json(
-        { error: "At least 2 anchor points are required" },
+        { error: "At least 3 anchor points are required" },
         { status: 400 }
       );
     }
 
     const { transform, residualError } = computeMapTransform(
-      calibration.anchors,
-      calibration.imageHeight
+      calibration.anchors
     );
 
     wideEvent.status_code = 200;
     wideEvent.outcome = "success";
-    wideEvent.transform = {
-      scale: transform.scale,
-      rotation_deg: (transform.rotation * 180) / Math.PI,
-    };
     wideEvent.residual_error_px = residualError;
 
     return NextResponse.json({ transform, residualError });

@@ -31,10 +31,12 @@ type CalibrationWithAnchors = {
   imageUrl: string;
   imageWidth: number;
   imageHeight: number;
-  originX: number | null;
-  originY: number | null;
-  scale: number | null;
-  rotation: number | null;
+  affineA: number | null;
+  affineB: number | null;
+  affineC: number | null;
+  affineD: number | null;
+  affineTx: number | null;
+  affineTy: number | null;
   anchors: CalibrationAnchor[];
 };
 
@@ -64,23 +66,20 @@ export function CalibrationEditor({
   } | null>(null);
   const [computedTransform, setComputedTransform] =
     useState<MapTransform | null>(
-      initialCalibration?.scale != null &&
-        initialCalibration?.rotation != null &&
-        initialCalibration?.originX != null &&
-        initialCalibration?.originY != null
+      initialCalibration?.affineA != null
         ? {
-            origin: {
-              x: initialCalibration.originX,
-              y: initialCalibration.originY,
-            },
-            scale: initialCalibration.scale,
-            rotation: initialCalibration.rotation,
+            a: initialCalibration.affineA,
+            b: initialCalibration.affineB!,
+            c: initialCalibration.affineC!,
+            d: initialCalibration.affineD!,
+            tx: initialCalibration.affineTx!,
+            ty: initialCalibration.affineTy!,
           }
         : null
     );
   const [residualError, setResidualError] = useState<number | null>(null);
   const [transformSaved, setTransformSaved] = useState(
-    initialCalibration?.scale != null
+    initialCalibration?.affineA != null
   );
   const [testPoints, setTestPoints] = useState<TestPoint[]>([]);
   const [computing, setComputing] = useState(false);
@@ -208,10 +207,12 @@ export function CalibrationEditor({
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          originX: computedTransform.origin.x,
-          originY: computedTransform.origin.y,
-          scale: computedTransform.scale,
-          rotation: computedTransform.rotation,
+          affineA: computedTransform.a,
+          affineB: computedTransform.b,
+          affineC: computedTransform.c,
+          affineD: computedTransform.d,
+          affineTx: computedTransform.tx,
+          affineTy: computedTransform.ty,
         }),
       });
 
@@ -304,7 +305,7 @@ export function CalibrationEditor({
           <div className="flex gap-2">
             <Button
               onClick={handleComputeTransform}
-              disabled={calibration.anchors.length < 2 || computing}
+              disabled={calibration.anchors.length < 3 || computing}
               size="sm"
               className="flex-1"
             >
@@ -324,10 +325,10 @@ export function CalibrationEditor({
             ) : null}
           </div>
 
-          {calibration.anchors.length < 2 ? (
+          {calibration.anchors.length < 3 ? (
             <p className="text-muted-foreground text-xs">
-              Place at least 2 anchor points to compute a transform. 3+ is
-              recommended for better accuracy.
+              Place at least 3 anchor points to compute a transform. More points
+              improve accuracy.
             </p>
           ) : null}
 
@@ -335,6 +336,7 @@ export function CalibrationEditor({
             <TransformDisplay
               transform={computedTransform}
               residualError={residualError}
+              imageWidth={calibration.imageWidth}
               saved={transformSaved}
             />
           ) : null}

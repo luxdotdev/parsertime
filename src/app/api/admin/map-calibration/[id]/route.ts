@@ -74,10 +74,12 @@ export async function PUT(req: Request, props: Params) {
       auth(),
       props.params,
       req.json() as Promise<{
-        originX?: number | null;
-        originY?: number | null;
-        scale?: number | null;
-        rotation?: number | null;
+        affineA?: number | null;
+        affineB?: number | null;
+        affineC?: number | null;
+        affineD?: number | null;
+        affineTx?: number | null;
+        affineTy?: number | null;
         imageUrl?: string;
         imageWidth?: number;
         imageHeight?: number;
@@ -100,10 +102,7 @@ export async function PUT(req: Request, props: Params) {
       body.imageHeight !== undefined;
 
     const isTransformUpdate =
-      body.originX !== undefined ||
-      body.originY !== undefined ||
-      body.scale !== undefined ||
-      body.rotation !== undefined;
+      body.affineA !== undefined || body.affineTx !== undefined;
 
     wideEvent.update_type = imageChanged
       ? "image_replace"
@@ -120,10 +119,12 @@ export async function PUT(req: Request, props: Params) {
           where: { id: numericId },
           data: {
             ...body,
-            originX: null,
-            originY: null,
-            scale: null,
-            rotation: null,
+            affineA: null,
+            affineB: null,
+            affineC: null,
+            affineD: null,
+            affineTx: null,
+            affineTy: null,
           },
           include: { anchors: true },
         });

@@ -34,10 +34,12 @@ export default async function MapCalibrationEditorPage({
       imageUrl: true,
       imageWidth: true,
       imageHeight: true,
-      originX: true,
-      originY: true,
-      scale: true,
-      rotation: true,
+      affineA: true,
+      affineB: true,
+      affineC: true,
+      affineD: true,
+      affineTx: true,
+      affineTy: true,
       anchors: {
         orderBy: { id: "asc" },
         select: {

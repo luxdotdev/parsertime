@@ -80,7 +80,7 @@ function getCalibrationStatus(
   if (!calibration) {
     return { label: "No image", variant: "outline" };
   }
-  if (calibration.scale !== null && calibration.rotation !== null) {
+  if (calibration.affineA !== null) {
     return { label: "Calibrated", variant: "default" };
   }
   if (calibration.anchors.length > 0) {
@@ -128,7 +128,7 @@ export function MapCalibrationList({
                   <p className="text-muted-foreground text-xs">
                     {calibration.anchors.length} anchor
                     {calibration.anchors.length === 1 ? "" : "s"}
-                    {calibration.scale !== null && " · transform saved"}
+                    {calibration.affineA !== null && " · transform saved"}
                   </p>
                 </CardContent>
               ) : null}
