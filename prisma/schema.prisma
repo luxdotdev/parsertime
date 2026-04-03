@@ -609,6 +609,12 @@ model Kill {
   event_damage     Int
   is_critical_hit  String
   is_environmental String
+  attacker_x       Float?
+  attacker_y       Float?
+  attacker_z       Float?
+  victim_x         Float?
+  victim_y         Float?
+  victim_z         Float?
 
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
@@ -905,6 +911,9 @@ model UltimateEnd {
   player_hero     String
   hero_duplicated String
   ultimate_id     Int
+  player_x        Float?
+  player_y        Float?
+  player_z        Float?
 
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
@@ -923,6 +932,9 @@ model UltimateStart {
   player_hero     String
   hero_duplicated String
   ultimate_id     Int
+  player_x        Float?
+  player_y        Float?
+  player_z        Float?
 
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
@@ -940,6 +952,9 @@ model Ability1Used {
   player_name     String
   player_hero     String
   hero_duplicated String
+  player_x        Float?
+  player_y        Float?
+  player_z        Float?
 
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
@@ -957,6 +972,9 @@ model Ability2Used {
   player_name     String
   player_hero     String
   hero_duplicated String
+  player_x        Float?
+  player_y        Float?
+  player_z        Float?
 
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
@@ -980,6 +998,12 @@ model Damage {
   event_damage     Int
   is_critical_hit  String
   is_environmental String
+  attacker_x       Float?
+  attacker_y       Float?
+  attacker_z       Float?
+  victim_x         Float?
+  victim_y         Float?
+  victim_z         Float?
 
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
@@ -1002,6 +1026,12 @@ model Healing {
   event_ability  String
   event_healing  Int
   is_health_pack String
+  healer_x       Float?
+  healer_y       Float?
+  healer_z       Float?
+  healee_x       Float?
+  healee_y       Float?
+  healee_z       Float?
 
   MapData   MapData? @relation(fields: [MapDataId], references: [id])
   MapDataId Int?
