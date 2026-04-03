@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import { useState } from "react";
 
 type AnchorDialogProps = {
@@ -34,6 +35,7 @@ export function AnchorDialog({
   imageV,
   onSubmit,
 }: AnchorDialogProps) {
+  const { team1, team2 } = useColorblindMode();
   const [worldX, setWorldX] = useState("");
   const [worldY, setWorldY] = useState("");
   const [label, setLabel] = useState("");
@@ -65,7 +67,23 @@ export function AnchorDialog({
           <DialogTitle>Add Anchor Point</DialogTitle>
           <DialogDescription>
             Image position: ({imageU}, {imageV}). Enter the corresponding
-            in-game world coordinates.
+            in-game world coordinates. Overwatch uses (
+            <span className="font-semibold" style={{ color: team1 }}>
+              X
+            </span>
+            , <span>Y</span>,{" "}
+            <span className="font-semibold" style={{ color: team2 }}>
+              Z
+            </span>
+            ) where Y is vertical — enter only{" "}
+            <span className="font-semibold" style={{ color: team1 }}>
+              X
+            </span>{" "}
+            and{" "}
+            <span className="font-semibold" style={{ color: team2 }}>
+              Z
+            </span>
+            .
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -85,7 +103,7 @@ export function AnchorDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="worldY">World Y</Label>
+              <Label htmlFor="worldY">World Z</Label>
               <Input
                 id="worldY"
                 name="worldY"

@@ -112,9 +112,11 @@ export function MapCalibrationList({
       return true;
     });
     return matches.sort((a, b) => {
-      const aCal = calibrationMap.get(a.name)?.affineA !== null &&
+      const aCal =
+        calibrationMap.get(a.name)?.affineA !== null &&
         calibrationMap.get(a.name)?.affineA !== undefined;
-      const bCal = calibrationMap.get(b.name)?.affineA !== null &&
+      const bCal =
+        calibrationMap.get(b.name)?.affineA !== null &&
         calibrationMap.get(b.name)?.affineA !== undefined;
       if (aCal === bCal) return 0;
       return aCal ? 1 : -1;

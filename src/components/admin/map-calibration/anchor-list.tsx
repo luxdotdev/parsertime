@@ -40,7 +40,7 @@ export function AnchorList({ anchors, onDelete }: AnchorListProps) {
         <TableRow>
           <TableHead className="w-8">#</TableHead>
           <TableHead>Label</TableHead>
-          <TableHead>World (X, Y)</TableHead>
+          <TableHead>World (X, Z)</TableHead>
           <TableHead>Image (U, V)</TableHead>
           <TableHead className="w-12" />
         </TableRow>

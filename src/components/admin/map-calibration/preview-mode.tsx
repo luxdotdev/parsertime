@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import { useState } from "react";
 
 type TestPoint = {
@@ -24,6 +25,7 @@ export function PreviewMode({
   pointCount,
   disabled,
 }: PreviewModeProps) {
+  const { team1, team2 } = useColorblindMode();
   const [worldX, setWorldX] = useState("");
   const [worldY, setWorldY] = useState("");
   const [label, setLabel] = useState("");
@@ -45,7 +47,23 @@ export function PreviewMode({
       <h4 className="text-sm font-medium">Preview Test Points</h4>
       <p className="text-muted-foreground text-xs">
         Enter world coordinates to verify they project to the expected map
-        position.
+        position. From Overwatch&apos;s (
+        <span className="font-semibold" style={{ color: team1 }}>
+          X
+        </span>
+        , Y,{" "}
+        <span className="font-semibold" style={{ color: team2 }}>
+          Z
+        </span>
+        ), use only{" "}
+        <span className="font-semibold" style={{ color: team1 }}>
+          X
+        </span>{" "}
+        and{" "}
+        <span className="font-semibold" style={{ color: team2 }}>
+          Z
+        </span>
+        .
       </p>
       <form onSubmit={handleAdd} className="space-y-2">
         <div className="grid grid-cols-3 gap-2">
@@ -67,7 +85,7 @@ export function PreviewMode({
           </div>
           <div>
             <Label className="text-xs" htmlFor="previewY">
-              World Y
+              World Z
             </Label>
             <Input
               id="previewY"
