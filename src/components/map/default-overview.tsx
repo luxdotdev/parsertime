@@ -28,6 +28,7 @@ import {
   removeDuplicateRows,
   round,
   toTimestamp,
+  ultimateStartToKillEvent,
 } from "@/lib/utils";
 import { calculatePayloadMapScore, calculateWinner } from "@/lib/winrate";
 import {
@@ -254,25 +255,7 @@ export async function DefaultOverview({
   // `fights` (kill-only) is kept for first-death analysis.
   const mergedEvents: Kill[] = [
     ...fights.flatMap((f) => f.kills),
-    ...ultimateStarts.map(
-      (ult): Kill => ({
-        id: ult.id,
-        scrimId: ult.scrimId,
-        event_type: "ultimate_start" as Kill["event_type"],
-        match_time: ult.match_time,
-        attacker_team: ult.player_team,
-        attacker_name: ult.player_name,
-        attacker_hero: ult.player_hero,
-        victim_team: "",
-        victim_name: "",
-        victim_hero: "",
-        event_ability: "Ultimate",
-        event_damage: 0,
-        is_critical_hit: "0",
-        is_environmental: "0",
-        MapDataId: ult.MapDataId,
-      })
-    ),
+    ...ultimateStarts.map(ultimateStartToKillEvent),
   ];
   mergedEvents.sort((a, b) => a.match_time - b.match_time);
   const fightsWithUlts = groupEventsIntoFights(mergedEvents);

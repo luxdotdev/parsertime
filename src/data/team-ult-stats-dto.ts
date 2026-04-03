@@ -2,7 +2,11 @@ import "server-only";
 
 import prisma from "@/lib/prisma";
 import type { Fight } from "@/lib/utils";
-import { groupEventsIntoFights, mercyRezToKillEvent } from "@/lib/utils";
+import {
+  groupEventsIntoFights,
+  mercyRezToKillEvent,
+  ultimateStartToKillEvent,
+} from "@/lib/utils";
 import type { RoleName, SubroleName } from "@/types/heroes";
 import {
   getHeroRole,
@@ -305,23 +309,7 @@ function processTeamUltStats(
     // Build combined event array for fight grouping
     const fightEvents: Kill[] = [
       ...mapKills,
-      ...mapUlts.map((ult) => ({
-        id: ult.MapDataId ?? 0,
-        scrimId: 0,
-        event_type: "ultimate_start" as Kill["event_type"],
-        match_time: ult.match_time,
-        attacker_team: ult.player_team,
-        attacker_name: ult.player_name,
-        attacker_hero: ult.player_hero,
-        victim_team: "",
-        victim_name: "",
-        victim_hero: "",
-        event_ability: "Ultimate",
-        event_damage: 0,
-        is_critical_hit: "0",
-        is_environmental: "0",
-        MapDataId: ult.MapDataId,
-      })),
+      ...mapUlts.map(ultimateStartToKillEvent),
     ];
 
     fightEvents.sort((a, b) => a.match_time - b.match_time);

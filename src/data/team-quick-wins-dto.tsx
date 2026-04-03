@@ -1,5 +1,9 @@
 import "server-only";
 
+import {
+  mercyRezToKillEvent,
+  ultimateStartToKillEvent,
+} from "@/lib/utils";
 import { calculateWinner } from "@/lib/winrate";
 import type { Kill } from "@prisma/client";
 import { cache } from "react";
@@ -332,39 +336,9 @@ function processQuickWinsStats(
 
     const events: FightEvent[] = [
       ...kills,
-      ...rezzes.map((rez) => ({
-        id: rez.id,
-        scrimId: rez.scrimId,
-        event_type: "mercy_rez" as const,
-        match_time: rez.match_time,
-        attacker_team: rez.resurrecter_team,
-        attacker_name: rez.resurrecter_player,
-        attacker_hero: rez.resurrecter_hero,
-        victim_team: rez.resurrectee_team,
-        victim_name: rez.resurrectee_player,
-        victim_hero: rez.resurrectee_hero,
-        event_ability: "Resurrect",
-        event_damage: 0,
-        is_critical_hit: "0",
-        is_environmental: "0",
-        MapDataId: rez.MapDataId,
-      })),
+      ...rezzes.map((rez) => mercyRezToKillEvent(rez)),
       ...ults.map((ult) => ({
-        id: ult.id,
-        scrimId: ult.scrimId,
-        event_type: "ultimate_start" as const,
-        match_time: ult.match_time,
-        attacker_team: ult.player_team,
-        attacker_name: ult.player_name,
-        attacker_hero: ult.player_hero,
-        victim_team: "",
-        victim_name: "",
-        victim_hero: "",
-        event_ability: "Ultimate",
-        event_damage: 0,
-        is_critical_hit: "0",
-        is_environmental: "0",
-        MapDataId: ult.MapDataId,
+        ...ultimateStartToKillEvent(ult),
         ultimate_id: ult.ultimate_id,
       })),
     ];

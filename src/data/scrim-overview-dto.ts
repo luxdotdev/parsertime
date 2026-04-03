@@ -15,6 +15,7 @@ import {
   groupEventsIntoFights,
   mercyRezToKillEvent,
   removeDuplicateRows,
+  ultimateStartToKillEvent,
   type Fight,
 } from "@/lib/utils";
 import { calculateWinner } from "@/lib/winrate";
@@ -850,21 +851,7 @@ function computeScrimFightAnalysis(
     const events: ExtendedFightEvent[] = [
       ...kills,
       ...ults.map((ult) => ({
-        id: ult.id,
-        scrimId: ult.scrimId,
-        event_type: "ultimate_start" as Kill["event_type"],
-        match_time: ult.match_time,
-        attacker_team: ult.player_team,
-        attacker_name: ult.player_name,
-        attacker_hero: ult.player_hero,
-        victim_team: "",
-        victim_name: "",
-        victim_hero: "",
-        event_ability: "Ultimate",
-        event_damage: 0,
-        is_critical_hit: "0",
-        is_environmental: "0",
-        MapDataId: ult.MapDataId,
+        ...ultimateStartToKillEvent(ult),
         ultimate_id: ult.ultimate_id,
       })),
     ];
@@ -2021,25 +2008,7 @@ async function getScrimOverviewFn(
     const mapUlts = allUltimates.filter((u) => u.MapDataId === mapId);
     const merged: Kill[] = [
       ...kills,
-      ...mapUlts.map(
-        (ult): Kill => ({
-          id: ult.id,
-          scrimId: ult.scrimId,
-          event_type: "ultimate_start" as Kill["event_type"],
-          match_time: ult.match_time,
-          attacker_team: ult.player_team,
-          attacker_name: ult.player_name,
-          attacker_hero: ult.player_hero,
-          victim_team: "",
-          victim_name: "",
-          victim_hero: "",
-          event_ability: "Ultimate",
-          event_damage: 0,
-          is_critical_hit: "0",
-          is_environmental: "0",
-          MapDataId: ult.MapDataId,
-        })
-      ),
+      ...mapUlts.map(ultimateStartToKillEvent),
     ];
     merged.sort((a, b) => a.match_time - b.match_time);
     fightsByMapWithUlts.set(mapId, groupEventsIntoFights(merged));
