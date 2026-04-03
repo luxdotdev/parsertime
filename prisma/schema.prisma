@@ -1221,10 +1221,12 @@ model MapCalibration {
   imageUrl    String
   imageWidth  Int
   imageHeight Int
-  originX     Float?
-  originY     Float?
-  scale       Float?
-  rotation    Float?
+  affineA     Float?
+  affineB     Float?
+  affineC     Float?
+  affineD     Float?
+  affineTx    Float?
+  affineTy    Float?
   createdBy   String
   createdAt   DateTime               @default(now())
   updatedAt   DateTime               @updatedAt
