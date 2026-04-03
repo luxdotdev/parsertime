@@ -106,12 +106,20 @@ export function MapCalibrationList({
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return CALIBRATION_MAPS.filter(({ name, type }) => {
+    const matches = CALIBRATION_MAPS.filter(({ name, type }) => {
       if (typeFilter.length > 0 && !typeFilter.includes(type)) return false;
       if (q && !name.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [search, typeFilter]);
+    return matches.sort((a, b) => {
+      const aCal = calibrationMap.get(a.name)?.affineA !== null &&
+        calibrationMap.get(a.name)?.affineA !== undefined;
+      const bCal = calibrationMap.get(b.name)?.affineA !== null &&
+        calibrationMap.get(b.name)?.affineA !== undefined;
+      if (aCal === bCal) return 0;
+      return aCal ? 1 : -1;
+    });
+  }, [search, typeFilter, calibrationMap]);
 
   return (
     <div className="space-y-4">
