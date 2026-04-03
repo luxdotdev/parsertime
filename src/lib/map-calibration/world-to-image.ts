@@ -1,55 +1,36 @@
 import type { MapTransform, Vec2 } from "./types";
 
 /**
- * Convert a world-space position to image-space pixel coordinates.
+ * Convert a world-space position to image-space pixel coordinates
+ * using the affine transform coefficients.
  *
- * Pipeline: translate → rotate → scale → flip Y
+ *   u = a * wx + b * wy + tx
+ *   v = c * wx + d * wy + ty
  */
 export function worldToImage(
   pos: Vec2,
-  transform: MapTransform,
-  imageHeight: number
+  t: MapTransform
 ): { u: number; v: number } {
-  // Translate
-  const x = pos.x - transform.origin.x;
-  const y = pos.y - transform.origin.y;
-
-  // Rotate
-  const cos = Math.cos(transform.rotation);
-  const sin = Math.sin(transform.rotation);
-  const rx = x * cos - y * sin;
-  const ry = x * sin + y * cos;
-
-  // Scale + flip Y
   return {
-    u: rx * transform.scale,
-    v: imageHeight - ry * transform.scale,
+    u: t.a * pos.x + t.b * pos.y + t.tx,
+    v: t.c * pos.x + t.d * pos.y + t.ty,
   };
 }
 
 /**
- * Inverse of worldToImage: convert image-space pixel coordinates back
- * to world-space. Used for determining what world region the image covers.
+ * Inverse of worldToImage: convert image-space pixel coordinates
+ * back to world-space.
+ *
+ * Solves the 2x2 system:
+ *   | a  b | |wx|   | u - tx |
+ *   | c  d | |wy| = | v - ty |
  */
-export function imageToWorld(
-  u: number,
-  v: number,
-  transform: MapTransform,
-  imageHeight: number
-): Vec2 {
-  // Undo scale + flip Y
-  const sx = u / transform.scale;
-  const sy = (imageHeight - v) / transform.scale;
-
-  // Undo rotation (transpose of rotation matrix)
-  const cos = Math.cos(transform.rotation);
-  const sin = Math.sin(transform.rotation);
-  const x = cos * sx + sin * sy;
-  const y = -sin * sx + cos * sy;
-
-  // Undo translation
+export function imageToWorld(u: number, v: number, t: MapTransform): Vec2 {
+  const det = t.a * t.d - t.b * t.c;
+  const ru = u - t.tx;
+  const rv = v - t.ty;
   return {
-    x: x + transform.origin.x,
-    y: y + transform.origin.y,
+    x: (t.d * ru - t.b * rv) / det,
+    y: (-t.c * ru + t.a * rv) / det,
   };
 }
