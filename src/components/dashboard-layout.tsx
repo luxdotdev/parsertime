@@ -11,7 +11,7 @@ import { ModeToggle } from "@/components/theme-switcher";
 import { UserNav } from "@/components/user-nav";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import { aiChat, scoutingTool } from "@/lib/flags";
+import { aiChat, dataLabeling, scoutingTool } from "@/lib/flags";
 
 export async function DashboardLayout({
   children,
@@ -20,11 +20,8 @@ export async function DashboardLayout({
   children: React.ReactNode;
   guestMode?: boolean;
 }) {
-  const [session, scoutingEnabled, aiChatEnabled] = await Promise.all([
-    auth(),
-    scoutingTool(),
-    aiChat(),
-  ]);
+  const [session, scoutingEnabled, aiChatEnabled, dataToolsEnabled] =
+    await Promise.all([auth(), scoutingTool(), aiChat(), dataLabeling()]);
   const user = await getUser(session?.user?.email);
 
   return (
@@ -42,12 +39,14 @@ export async function DashboardLayout({
             <MainNav
               scoutingEnabled={scoutingEnabled}
               aiChatEnabled={aiChatEnabled}
+              dataToolsEnabled={dataToolsEnabled}
               className="mx-6 hidden lg:block"
             />
             <MobileNav
               className="block pl-2 lg:hidden"
               session={session}
               aiChatEnabled={aiChatEnabled}
+              dataToolsEnabled={dataToolsEnabled}
             />
             <div className="ml-auto flex items-center space-x-4">
               <Search user={user} />
@@ -64,7 +63,11 @@ export async function DashboardLayout({
             </div>
           </div>
           <div className="flex h-16 items-center px-4 md:hidden">
-            <MobileNav session={session} aiChatEnabled={aiChatEnabled} />
+            <MobileNav
+              session={session}
+              aiChatEnabled={aiChatEnabled}
+              dataToolsEnabled={dataToolsEnabled}
+            />
             <div className="ml-auto flex items-center space-x-4">
               <ModeToggle />
               <LocaleSwitcher />

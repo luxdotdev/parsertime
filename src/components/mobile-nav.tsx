@@ -26,10 +26,12 @@ const mainNav: { title: string; href: Route }[] = [
 export function MobileNav({
   session,
   aiChatEnabled,
+  dataToolsEnabled,
   className,
 }: {
   session: Session | null;
   aiChatEnabled?: boolean;
+  dataToolsEnabled?: boolean;
   className?: string;
 }) {
   const [open, setOpen] = React.useState(false);
@@ -111,6 +113,19 @@ export function MobileNav({
               <MobileLink href={"/chat" as Route} onOpenChange={setOpen}>
                 Analyst
               </MobileLink>
+            )}
+            {dataToolsEnabled && (
+              <>
+                <MobileLink href="/data-labeling" onOpenChange={setOpen}>
+                  Data Labeling
+                </MobileLink>
+                <MobileLink
+                  href={"/map-calibration" as Route}
+                  onOpenChange={setOpen}
+                >
+                  Map Calibration
+                </MobileLink>
+              </>
             )}
           </div>
         </ScrollArea>

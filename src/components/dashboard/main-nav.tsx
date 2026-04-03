@@ -27,10 +27,12 @@ function handleDropdownKeyDown(e: React.KeyboardEvent<HTMLLIElement>) {
 export function MainNav({
   scoutingEnabled,
   aiChatEnabled,
+  dataToolsEnabled,
   className,
 }: React.HTMLAttributes<HTMLElement> & {
   scoutingEnabled: boolean;
   aiChatEnabled?: boolean;
+  dataToolsEnabled?: boolean;
 }) {
   const pathname = usePathname();
   const t = useTranslations("dashboard.mainNav");
@@ -228,6 +230,54 @@ export function MainNav({
                   )}
                 >
                   {t("scoutPlayer")}
+                </Link>
+              </div>
+            </div>
+          </li>
+        )}
+        {dataToolsEnabled && (
+          <li className="group relative" onKeyDown={handleDropdownKeyDown}>
+            <button
+              type="button"
+              aria-haspopup="true"
+              className={cn(
+                navLinkStyles,
+                "gap-1",
+                (pathname.startsWith("/data-labeling") ||
+                  pathname.startsWith("/map-calibration")) &&
+                  "text-primary"
+              )}
+            >
+              {t("dataTools")}
+              <ChevronDownIcon
+                className="size-3 transition-transform duration-200 group-focus-within:rotate-180 group-hover:rotate-180"
+                aria-hidden="true"
+              />
+            </button>
+            <div className="invisible absolute top-full left-0 z-50 pt-1 opacity-0 transition-[opacity,visibility] duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+              <div
+                className="bg-popover text-popover-foreground ring-foreground/10 w-[200px] rounded-md p-1 shadow-md ring-1"
+                role="menu"
+              >
+                <Link
+                  href="/data-labeling"
+                  role="menuitem"
+                  className={cn(
+                    dropdownItemStyles,
+                    pathname.startsWith("/data-labeling") && "text-primary"
+                  )}
+                >
+                  {t("dataLabeling")}
+                </Link>
+                <Link
+                  href={"/map-calibration" as Route}
+                  role="menuitem"
+                  className={cn(
+                    dropdownItemStyles,
+                    pathname.startsWith("/map-calibration") && "text-primary"
+                  )}
+                >
+                  {t("mapCalibration")}
                 </Link>
               </div>
             </div>
