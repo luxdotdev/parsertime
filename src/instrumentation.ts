@@ -1,6 +1,6 @@
 import { logger } from "@/lib/axiom/server";
-import { EffectLoggerLive } from "@/lib/effect-logger";
 import { createOnRequestError } from "@axiomhq/nextjs";
+import { DevTools } from "@effect/experimental";
 import { NodeSdk } from "@effect/opentelemetry";
 import { metrics } from "@opentelemetry/api";
 import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-proto";
@@ -24,7 +24,8 @@ import {
   PrismaInstrumentation,
   registerInstrumentations,
 } from "@prisma/instrumentation";
-import { Layer } from "effect";
+import { Layer, Logger } from "effect";
+import { version } from "../package.json";
 
 export const onRequestError = createOnRequestError(logger);
 
@@ -32,32 +33,51 @@ const OTLP_CONFIG = {
   url: `https://api.axiom.co/v1/traces`,
   headers: {
     Authorization: `Bearer ${process.env.AXIOM_OTEL_TOKEN}`,
-    "X-Axiom-Dataset": `${process.env.AXIOM_OTEL_DATASET}`,
+    "X-Axiom-Dataset": process.env.AXIOM_OTEL_DATASET,
   },
-  timeoutMillis: 10000,
+  timeoutMillis: 10_000,
 } as const satisfies NonNullable<
   ConstructorParameters<typeof OTLPTraceExporter>[0]
 >;
 
+const METRIC_EXPORTER_CONFIG = {
+  url: "https://api.axiom.co/v1/metrics",
+  headers: {
+    Authorization: `Bearer ${process.env.AXIOM_METRICS_TOKEN}`,
+    "X-Axiom-Metrics-Dataset": process.env.AXIOM_METRICS_DATASET,
+  },
+  temporalityPreference: AggregationTemporality.DELTA,
+  timeoutMillis: 10_000,
+} as const satisfies NonNullable<
+  ConstructorParameters<typeof OTLPMetricExporter>[0]
+>;
+
 const SERVICE_NAME = "parsertime";
+const ATTR_DEPLOYMENT_ENVIRONMENT_NAME = "deployment.environment.name";
+const SERVICE_VERSION = process.env.VERCEL_GIT_COMMIT_SHA ?? version
+const ENVIRONMENT = process.env.NODE_ENV ?? "development";
+const IS_PROD = ENVIRONMENT === "production";
+
+const RESOURCE = resourceFromAttributes(
+  {
+    [ATTR_SERVICE_NAME]: SERVICE_NAME,
+    [ATTR_SERVICE_VERSION]: SERVICE_VERSION,
+    [ATTR_DEPLOYMENT_ENVIRONMENT_NAME]: ENVIRONMENT,
+  },
+  {
+    // Use the latest schema version
+    // Info: https://opentelemetry.io/docs/specs/semconv/
+    schemaUrl: "https://opentelemetry.io/schemas/1.37.0",
+  }
+);
 
 export function register() {
   const otlpTraceExporter = new OTLPTraceExporter(OTLP_CONFIG);
 
   const provider = new NodeTracerProvider({
-    resource: resourceFromAttributes(
-      {
-        [ATTR_SERVICE_NAME]: SERVICE_NAME,
-        [ATTR_SERVICE_VERSION]: process.env.VERCEL_GIT_COMMIT_SHA,
-      },
-      {
-        // Use the latest schema version
-        // Info: https://opentelemetry.io/docs/specs/semconv/
-        schemaUrl: "https://opentelemetry.io/schemas/1.37.0",
-      }
-    ),
+    resource: RESOURCE,
     spanProcessors: [
-      process.env.NODE_ENV === "production"
+      IS_PROD
         ? new BatchSpanProcessor(otlpTraceExporter)
         : new SimpleSpanProcessor(otlpTraceExporter),
     ],
@@ -70,23 +90,11 @@ export function register() {
 
   provider.register();
 
-  const metricExporter = new OTLPMetricExporter({
-    url: "https://api.axiom.co/v1/metrics",
-    headers: {
-      Authorization: `Bearer ${process.env.AXIOM_METRICS_TOKEN}`,
-      "X-Axiom-Metrics-Dataset": process.env.AXIOM_METRICS_DATASET,
-    },
-    temporalityPreference: AggregationTemporality.DELTA,
-  });
-
   const meterProvider = new MeterProvider({
-    resource: resourceFromAttributes({
-      [ATTR_SERVICE_NAME]: SERVICE_NAME,
-      [ATTR_SERVICE_VERSION]: process.env.VERCEL_GIT_COMMIT_SHA,
-    }),
+    resource: RESOURCE,
     readers: [
       new PeriodicExportingMetricReader({
-        exporter: metricExporter,
+        exporter: new OTLPMetricExporter(METRIC_EXPORTER_CONFIG),
         exportIntervalMillis: 10_000,
         exportTimeoutMillis: 5_000,
       }),
@@ -100,7 +108,9 @@ export function register() {
   // OTel SDK nor Next.js registers SIGTERM handlers to flush providers,
   // so pending metrics and spans are silently dropped.
   // Force-flush both providers on SIGTERM to ensure nothing is lost.
-  process.on("SIGTERM", async () => {
+  // globalThis avoids Turbopack's static "process.on" Edge Runtime warning
+  // when this module is analyzed via layout.tsx imports.
+  globalThis.process?.on("SIGTERM", async () => {
     await Promise.allSettled([
       provider.forceFlush(),
       meterProvider.forceFlush(),
@@ -109,22 +119,29 @@ export function register() {
   });
 }
 
-export const EffectTracingLive = NodeSdk.layer(() => ({
-  resource: { serviceName: SERVICE_NAME },
-  spanProcessor:
-    process.env.NODE_ENV === "production"
-      ? new BatchSpanProcessor(new OTLPTraceExporter(OTLP_CONFIG))
-      : new SimpleSpanProcessor(new OTLPTraceExporter(OTLP_CONFIG)),
+const EffectTracingLive = NodeSdk.layer(() => ({
+  resource: {
+    serviceName: SERVICE_NAME,
+    serviceVersion: SERVICE_VERSION,
+    attributes: {
+      [ATTR_DEPLOYMENT_ENVIRONMENT_NAME]: ENVIRONMENT,
+    },
+  },
+  spanProcessor: IS_PROD
+    ? new BatchSpanProcessor(new OTLPTraceExporter(OTLP_CONFIG))
+    : new SimpleSpanProcessor(new OTLPTraceExporter(OTLP_CONFIG)),
+  metricReader: new PeriodicExportingMetricReader({
+    exporter: new OTLPMetricExporter(METRIC_EXPORTER_CONFIG),
+    exportIntervalMillis: 10_000,
+    exportTimeoutMillis: 5_000,
+  }),
+  shutdownTimeout: "2 seconds",
 }));
 
-/**
- * Combined observability layer that includes both OpenTelemetry tracing
- * and environment-appropriate logging (pretty in dev, structured in prod).
- *
- * Use this layer in all Effect services and API routes to ensure
- * consistent observability across the application.
- */
+const DevToolsLive = IS_PROD ? Layer.empty : DevTools.layer();
+
 export const EffectObservabilityLive = Layer.mergeAll(
+  DevToolsLive,
   EffectTracingLive,
-  EffectLoggerLive
+  IS_PROD ? Logger.structured : Logger.pretty
 );
