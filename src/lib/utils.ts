@@ -4,6 +4,7 @@ import {
   type $Enums,
   type Kill,
   type MercyRez,
+  type UltimateStart,
 } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { useMessages, useTranslations } from "next-intl";
@@ -234,7 +235,45 @@ export function mercyRezToKillEvent(rez: MercyRez): Kill {
     event_damage: 0,
     is_critical_hit: "0",
     is_environmental: "0",
+    attacker_x: null,
+    attacker_y: null,
+    attacker_z: null,
+    victim_x: null,
+    victim_y: null,
+    victim_z: null,
     MapDataId: rez.MapDataId,
+  };
+}
+
+export function ultimateStartToKillEvent(
+  ult: Pick<
+    UltimateStart,
+    "player_team" | "player_name" | "player_hero" | "match_time" | "MapDataId"
+  > &
+    Partial<UltimateStart>
+): Kill {
+  return {
+    id: ult.id ?? 0,
+    scrimId: ult.scrimId ?? 0,
+    event_type: "ultimate_start" as Kill["event_type"],
+    match_time: ult.match_time,
+    attacker_team: ult.player_team,
+    attacker_name: ult.player_name,
+    attacker_hero: ult.player_hero,
+    victim_team: "",
+    victim_name: "",
+    victim_hero: "",
+    event_ability: "Ultimate",
+    event_damage: 0,
+    is_critical_hit: "0",
+    is_environmental: "0",
+    attacker_x: ult.player_x ?? null,
+    attacker_y: ult.player_y ?? null,
+    attacker_z: ult.player_z ?? null,
+    victim_x: null,
+    victim_y: null,
+    victim_z: null,
+    MapDataId: ult.MapDataId,
   };
 }
 
@@ -275,23 +314,7 @@ export async function groupPlayerKillsIntoFights(
 
   const events = [
     ...killsByMapId,
-    ...rezzesByMapId.map((rez) => ({
-      id: rez.id,
-      scrimId: rez.scrimId,
-      event_type: "mercy_rez" as $Enums.EventType,
-      match_time: rez.match_time,
-      attacker_team: rez.resurrecter_team,
-      attacker_name: rez.resurrecter_player,
-      attacker_hero: rez.resurrecter_hero,
-      victim_team: rez.resurrectee_team,
-      victim_name: rez.resurrectee_player,
-      victim_hero: rez.resurrectee_hero,
-      event_ability: "Resurrect",
-      event_damage: 0,
-      is_critical_hit: "0",
-      is_environmental: "0",
-      MapDataId: rez.MapDataId,
-    })),
+    ...rezzesByMapId.map((rez) => mercyRezToKillEvent(rez)),
   ];
 
   // Sorting events by match_time
