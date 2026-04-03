@@ -19,7 +19,13 @@ type CalibrationWithAnchors = MapCalibration & {
   anchors: MapCalibrationAnchor[];
 };
 
-const MAP_TYPES = ["Control", "Escort", "Flashpoint", "Hybrid", "Push"] as const;
+const MAP_TYPES = [
+  "Control",
+  "Escort",
+  "Flashpoint",
+  "Hybrid",
+  "Push",
+] as const;
 
 /**
  * The canonical set of maps that need calibration images.
@@ -146,14 +152,12 @@ export function MapCalibrationList({
             return (
               <Link
                 key={name}
-                href={
-                  `/map-calibration/${encodeURIComponent(name)}` as Route
-                }
+                href={`/map-calibration/${encodeURIComponent(name)}` as Route}
               >
                 <Card className="hover:bg-muted/50 h-full transition-colors">
                   <CardHeader className="pb-2">
                     <div className="flex items-start justify-between gap-2">
-                      <CardTitle className="text-pretty text-base">
+                      <CardTitle className="text-base text-pretty">
                         {name}
                       </CardTitle>
                       <Badge variant={status.variant}>{status.label}</Badge>
