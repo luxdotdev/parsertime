@@ -145,13 +145,54 @@ function cleanInvalidLines(lines: string[][]): string[][] {
     });
 }
 
+/**
+ * Splits a line on commas, but preserves commas inside parenthesized
+ * coordinate tuples like `(59.73, 267.58, 340.44)`.
+ */
+export function splitLinePreservingCoords(line: string): string[] {
+  const fields: string[] = [];
+  let current = "";
+  let depth = 0;
+  for (const ch of line) {
+    if (ch === "(") depth++;
+    if (ch === ")") depth--;
+    if (ch === "," && depth === 0) {
+      fields.push(current);
+      current = "";
+    } else {
+      current += ch;
+    }
+  }
+  fields.push(current);
+  return fields;
+}
+
+/**
+ * Parses a coordinate string like `(59.73, 267.58, 340.44)` into x, y, z.
+ * Returns null if the value is not a valid coordinate string.
+ */
+export function parseCoordinate(
+  value: unknown
+): { x: number; y: number; z: number } | null {
+  if (!value || typeof value !== "string") return null;
+  const match = value.trim().match(/^\(([^,]+),\s*([^,]+),\s*([^)]+)\)$/);
+  if (!match) return null;
+  const x = parseFloat(match[1]);
+  const y = parseFloat(match[2]);
+  const z = parseFloat(match[3]);
+  if (isNaN(x) || isNaN(y) || isNaN(z)) return null;
+  return { x, y, z };
+}
+
 export async function parseDataFromTXT(file: File) {
   const fileContent =
     process.env.NODE_ENV !== "test"
       ? await file?.text()
       : (file as unknown as string); // cast to string because we're in test mode
 
-  const lines = fileContent.split("\n").map((line) => line.split(","));
+  const lines = fileContent
+    .split("\n")
+    .map((line) => splitLinePreservingCoords(line));
 
   // remove first element of each array
   lines.forEach((line) => line.shift());
@@ -1080,21 +1121,32 @@ export async function createKillRows(
   }
 
   await prisma.kill.createMany({
-    data: data.kill.map((kill) => ({
-      scrimId: scrim.id,
-      match_time: kill[1],
-      attacker_team: String(kill[2]),
-      attacker_name: kill[3],
-      attacker_hero: kill[4],
-      victim_team: String(kill[5]),
-      victim_name: kill[6],
-      victim_hero: kill[7],
-      event_ability: kill[8],
-      event_damage: kill[9],
-      is_critical_hit: kill[10],
-      is_environmental: String(kill[11]),
-      MapDataId: mapId,
-    })),
+    data: data.kill.map((kill) => {
+      const row = kill as unknown as unknown[];
+      const pos1 = parseCoordinate(row[row.length - 2]);
+      const pos2 = parseCoordinate(row[row.length - 1]);
+      return {
+        scrimId: scrim.id,
+        match_time: kill[1],
+        attacker_team: String(kill[2]),
+        attacker_name: kill[3],
+        attacker_hero: kill[4],
+        victim_team: String(kill[5]),
+        victim_name: kill[6],
+        victim_hero: kill[7],
+        event_ability: kill[8],
+        event_damage: kill[9],
+        is_critical_hit: kill[10],
+        is_environmental: String(kill[11]),
+        attacker_x: pos1?.x ?? null,
+        attacker_y: pos1?.y ?? null,
+        attacker_z: pos1?.z ?? null,
+        victim_x: pos2?.x ?? null,
+        victim_y: pos2?.y ?? null,
+        victim_z: pos2?.z ?? null,
+        MapDataId: mapId,
+      };
+    }),
   });
 
   const killsByScrimId = await prisma.kill.findMany({
@@ -1686,16 +1738,23 @@ export async function createUltimateEndRows(
   }
 
   await prisma.ultimateEnd.createMany({
-    data: data.ultimate_end.map((end) => ({
-      scrimId: scrim.id,
-      match_time: end[1],
-      player_team: String(end[2]),
-      player_name: end[3],
-      player_hero: end[4] ?? "",
-      hero_duplicated: String(end[5]),
-      ultimate_id: end[6],
-      MapDataId: mapId,
-    })),
+    data: data.ultimate_end.map((end) => {
+      const row = end as unknown as unknown[];
+      const pos = parseCoordinate(row[row.length - 1]);
+      return {
+        scrimId: scrim.id,
+        match_time: end[1],
+        player_team: String(end[2]),
+        player_name: end[3],
+        player_hero: end[4] ?? "",
+        hero_duplicated: String(end[5]),
+        ultimate_id: end[6],
+        player_x: pos?.x ?? null,
+        player_y: pos?.y ?? null,
+        player_z: pos?.z ?? null,
+        MapDataId: mapId,
+      };
+    }),
   });
 
   const ultimateEndsByScrimId = await prisma.ultimateEnd.findMany({
@@ -1727,16 +1786,23 @@ export async function createUltimateStartRows(
   }
 
   await prisma.ultimateStart.createMany({
-    data: data.ultimate_start.map((start) => ({
-      scrimId: scrim.id,
-      match_time: start[1],
-      player_team: String(start[2]),
-      player_name: start[3],
-      player_hero: start[4],
-      hero_duplicated: String(start[5]),
-      ultimate_id: start[6],
-      MapDataId: mapId,
-    })),
+    data: data.ultimate_start.map((start) => {
+      const row = start as unknown as unknown[];
+      const pos = parseCoordinate(row[row.length - 1]);
+      return {
+        scrimId: scrim.id,
+        match_time: start[1],
+        player_team: String(start[2]),
+        player_name: start[3],
+        player_hero: start[4],
+        hero_duplicated: String(start[5]),
+        ultimate_id: start[6],
+        player_x: pos?.x ?? null,
+        player_y: pos?.y ?? null,
+        player_z: pos?.z ?? null,
+        MapDataId: mapId,
+      };
+    }),
   });
 
   const ultimateStartsByScrimId = await prisma.ultimateStart.findMany({
@@ -1763,15 +1829,22 @@ export async function createAbility1UsedRows(
   }
 
   await prisma.ability1Used.createMany({
-    data: data.ability_1_used.map((ability) => ({
-      scrimId: scrim.id,
-      match_time: ability[1],
-      player_team: String(ability[2]),
-      player_name: ability[3],
-      player_hero: ability[4],
-      hero_duplicated: String(ability[5]),
-      MapDataId: mapId,
-    })),
+    data: data.ability_1_used.map((ability) => {
+      const row = ability as unknown as unknown[];
+      const pos = parseCoordinate(row[row.length - 1]);
+      return {
+        scrimId: scrim.id,
+        match_time: ability[1],
+        player_team: String(ability[2]),
+        player_name: ability[3],
+        player_hero: ability[4],
+        hero_duplicated: String(ability[5]),
+        player_x: pos?.x ?? null,
+        player_y: pos?.y ?? null,
+        player_z: pos?.z ?? null,
+        MapDataId: mapId,
+      };
+    }),
   });
 
   const ability1UsedByScrimId = await prisma.ability1Used.findMany({
@@ -1798,15 +1871,22 @@ export async function createAbility2UsedRows(
   }
 
   await prisma.ability2Used.createMany({
-    data: data.ability_2_used.map((ability) => ({
-      scrimId: scrim.id,
-      match_time: ability[1],
-      player_team: String(ability[2]),
-      player_name: ability[3],
-      player_hero: ability[4],
-      hero_duplicated: String(ability[5]),
-      MapDataId: mapId,
-    })),
+    data: data.ability_2_used.map((ability) => {
+      const row = ability as unknown as unknown[];
+      const pos = parseCoordinate(row[row.length - 1]);
+      return {
+        scrimId: scrim.id,
+        match_time: ability[1],
+        player_team: String(ability[2]),
+        player_name: ability[3],
+        player_hero: ability[4],
+        hero_duplicated: String(ability[5]),
+        player_x: pos?.x ?? null,
+        player_y: pos?.y ?? null,
+        player_z: pos?.z ?? null,
+        MapDataId: mapId,
+      };
+    }),
   });
 
   const ability2UsedByScrimId = await prisma.ability2Used.findMany({
@@ -1833,21 +1913,32 @@ export async function createDamageRows(
   }
 
   await prisma.damage.createMany({
-    data: data.damage.map((dmg) => ({
-      scrimId: scrim.id,
-      match_time: dmg[1],
-      attacker_team: String(dmg[2]),
-      attacker_name: dmg[3],
-      attacker_hero: dmg[4],
-      victim_team: String(dmg[5]),
-      victim_name: dmg[6],
-      victim_hero: dmg[7],
-      event_ability: dmg[8],
-      event_damage: dmg[9],
-      is_critical_hit: dmg[10],
-      is_environmental: String(dmg[11]),
-      MapDataId: mapId,
-    })),
+    data: data.damage.map((dmg) => {
+      const row = dmg as unknown as unknown[];
+      const pos1 = parseCoordinate(row[row.length - 2]);
+      const pos2 = parseCoordinate(row[row.length - 1]);
+      return {
+        scrimId: scrim.id,
+        match_time: dmg[1],
+        attacker_team: String(dmg[2]),
+        attacker_name: dmg[3],
+        attacker_hero: dmg[4],
+        victim_team: String(dmg[5]),
+        victim_name: dmg[6],
+        victim_hero: dmg[7],
+        event_ability: dmg[8],
+        event_damage: dmg[9],
+        is_critical_hit: dmg[10],
+        is_environmental: String(dmg[11]),
+        attacker_x: pos1?.x ?? null,
+        attacker_y: pos1?.y ?? null,
+        attacker_z: pos1?.z ?? null,
+        victim_x: pos2?.x ?? null,
+        victim_y: pos2?.y ?? null,
+        victim_z: pos2?.z ?? null,
+        MapDataId: mapId,
+      };
+    }),
   });
 
   const damageByScrimId = await prisma.damage.findMany({
@@ -1874,20 +1965,31 @@ export async function createHealingRows(
   }
 
   await prisma.healing.createMany({
-    data: data.healing.map((heal) => ({
-      scrimId: scrim.id,
-      match_time: heal[1],
-      healer_team: String(heal[2]),
-      healer_name: heal[3],
-      healer_hero: heal[4],
-      healee_team: String(heal[5]),
-      healee_name: heal[6],
-      healee_hero: heal[7],
-      event_ability: heal[8],
-      event_healing: heal[9],
-      is_health_pack: heal[10],
-      MapDataId: mapId,
-    })),
+    data: data.healing.map((heal) => {
+      const row = heal as unknown as unknown[];
+      const pos1 = parseCoordinate(row[row.length - 2]);
+      const pos2 = parseCoordinate(row[row.length - 1]);
+      return {
+        scrimId: scrim.id,
+        match_time: heal[1],
+        healer_team: String(heal[2]),
+        healer_name: heal[3],
+        healer_hero: heal[4],
+        healee_team: String(heal[5]),
+        healee_name: heal[6],
+        healee_hero: heal[7],
+        event_ability: heal[8],
+        event_healing: heal[9],
+        is_health_pack: heal[10],
+        healer_x: pos1?.x ?? null,
+        healer_y: pos1?.y ?? null,
+        healer_z: pos1?.z ?? null,
+        healee_x: pos2?.x ?? null,
+        healee_y: pos2?.y ?? null,
+        healee_z: pos2?.z ?? null,
+        MapDataId: mapId,
+      };
+    }),
   });
 
   const healingByScrimId = await prisma.healing.findMany({
