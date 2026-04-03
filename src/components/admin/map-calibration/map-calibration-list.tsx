@@ -75,9 +75,9 @@ const CALIBRATION_MAPS: { name: string; type: string }[] = [
 
 function getCalibrationStatus(
   calibration: CalibrationWithAnchors | undefined
-): { label: string; variant: "default" | "secondary" | "outline" } {
+): { label: string; variant: "default" | "secondary" | "destructive" } {
   if (!calibration) {
-    return { label: "No image", variant: "outline" };
+    return { label: "No image", variant: "destructive" };
   }
   if (calibration.affineA !== null) {
     return { label: "Calibrated", variant: "default" };
