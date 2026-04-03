@@ -1,9 +1,9 @@
-import { parseDataFromTXT } from "@/lib/parser";
+import { parseCoordinate, parseDataFromTXT } from "@/lib/parser";
 import type { ParserData } from "@/types/parser";
 import type { $Enums } from "@prisma/client";
 import { fail } from "assert";
 import * as fs from "fs";
-import { expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
 import * as XLSX from "xlsx";
 
 test("should be equivalent to control data", async () => {
@@ -154,6 +154,106 @@ test("should pass without errors", async () => {
   expect(workbook2.round_end).toEqual(workbook1.round_end);
 
   // expect(workbook2).toEqual(workbook1);
+});
+
+/**
+ * Tests for parsing log files with player coordinates.
+ */
+describe("coordinate log parsing", () => {
+  test("should parse a log file with coordinates without errors", async () => {
+    const file = fs.readFileSync(
+      "./test/samples/Log-2026-04-02-17-21-48.txt",
+      "utf8"
+    );
+
+    // @ts-expect-error - cannot pass File type in node
+    const result = await parseDataFromTXT(file);
+
+    expect(result).toBeDefined();
+    expect(result.kill.length).toBeGreaterThan(0);
+    expect(result.damage).toBeDefined();
+    expect(result.damage!.length).toBeGreaterThan(0);
+    expect(result.healing).toBeDefined();
+    expect(result.healing!.length).toBeGreaterThan(0);
+    expect(result.ability_1_used).toBeDefined();
+    expect(result.ability_1_used!.length).toBeGreaterThan(0);
+    expect(result.ability_2_used).toBeDefined();
+    expect(result.ability_2_used!.length).toBeGreaterThan(0);
+    expect(result.ultimate_end).toBeDefined();
+    expect(result.ultimate_end!.length).toBeGreaterThan(0);
+    expect(result.ultimate_start).toBeDefined();
+    expect(result.ultimate_start!.length).toBeGreaterThan(0);
+  });
+
+  test("should preserve coordinate tuples as single elements", async () => {
+    const file = fs.readFileSync(
+      "./test/samples/Log-2026-04-02-17-21-48.txt",
+      "utf8"
+    );
+
+    // @ts-expect-error - cannot pass File type in node
+    const result = await parseDataFromTXT(file);
+
+    // Kill rows in the new format have 15 elements (13 base + 2 coords)
+    const firstKill = result.kill[0] as unknown as unknown[];
+    expect(firstKill.length).toBeGreaterThanOrEqual(14);
+
+    // Last two elements should be parseable coordinate strings
+    const pos1 = parseCoordinate(firstKill[firstKill.length - 2]);
+    const pos2 = parseCoordinate(firstKill[firstKill.length - 1]);
+    expect(pos1).not.toBeNull();
+    expect(pos2).not.toBeNull();
+    expect(pos1).toHaveProperty("x");
+    expect(pos1).toHaveProperty("y");
+    expect(pos1).toHaveProperty("z");
+  });
+
+  test("should keep standard kill fields at correct indices", async () => {
+    const file = fs.readFileSync(
+      "./test/samples/Log-2026-04-02-17-21-48.txt",
+      "utf8"
+    );
+
+    // @ts-expect-error - cannot pass File type in node
+    const result = await parseDataFromTXT(file);
+
+    const firstKill = result.kill[0];
+    expect(firstKill[0]).toBe("kill");
+    expect(typeof firstKill[1]).toBe("number"); // match_time
+    expect(typeof firstKill[2]).toBe("string"); // attacker_team
+  });
+
+  test("should preserve ability coordinate as single element", async () => {
+    const file = fs.readFileSync(
+      "./test/samples/Log-2026-04-02-17-21-48.txt",
+      "utf8"
+    );
+
+    // @ts-expect-error - cannot pass File type in node
+    const result = await parseDataFromTXT(file);
+
+    // Ability rows have 7 elements (6 base + 1 coord)
+    const firstAbility = result.ability_1_used![0] as unknown as unknown[];
+    const pos = parseCoordinate(firstAbility[firstAbility.length - 1]);
+    expect(pos).not.toBeNull();
+    expect(typeof pos!.x).toBe("number");
+    expect(typeof pos!.y).toBe("number");
+    expect(typeof pos!.z).toBe("number");
+  });
+
+  test("should preserve ultimate_end coordinate", async () => {
+    const file = fs.readFileSync(
+      "./test/samples/Log-2026-04-02-17-21-48.txt",
+      "utf8"
+    );
+
+    // @ts-expect-error - cannot pass File type in node
+    const result = await parseDataFromTXT(file);
+
+    const firstUltEnd = result.ultimate_end![0] as unknown as unknown[];
+    const pos = parseCoordinate(firstUltEnd[firstUltEnd.length - 1]);
+    expect(pos).not.toBeNull();
+  });
 });
 
 function local_parseDataFromXLSX(fileName: string) {
