@@ -1,27 +1,22 @@
 import { CalibrationEditor } from "@/components/admin/map-calibration/calibration-editor";
-import { NoAuthCard } from "@/components/auth/no-auth";
-import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
+import { dataLabeling } from "@/lib/flags";
 import prisma from "@/lib/prisma";
-import { $Enums } from "@prisma/client";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 export default async function MapCalibrationEditorPage({
   params,
 }: {
   params: Promise<{ mapName: string }>;
 }) {
-  const [session, { mapName }] = await Promise.all([auth(), params]);
+  const [enabled, session, { mapName }] = await Promise.all([
+    dataLabeling(),
+    auth(),
+    params,
+  ]);
+  if (!enabled) notFound();
   if (!session?.user) {
     redirect("/sign-in");
-  }
-
-  const user = await getUser(session.user.email);
-  if (!user) {
-    redirect("/sign-up");
-  }
-  if (user.role !== $Enums.UserRole.ADMIN) {
-    return NoAuthCard();
   }
 
   const decodedMapName = decodeURIComponent(mapName);

@@ -2,7 +2,7 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { $Enums } from "@prisma/client";
+import { dataLabeling } from "@/lib/flags";
 import { forbidden, unauthorized } from "next/navigation";
 import { NextResponse } from "next/server";
 
@@ -37,7 +37,9 @@ export async function PUT(req: Request, props: Params) {
 
     const user = await getUser(session.user.email);
     if (!user) unauthorized();
-    if (user.role !== $Enums.UserRole.ADMIN) forbidden();
+
+    const enabled = await dataLabeling();
+    if (!enabled) forbidden();
 
     wideEvent.user = { id: user.id, email: user.email };
 
@@ -97,7 +99,9 @@ export async function DELETE(_req: Request, props: Params) {
 
     const user = await getUser(session.user.email);
     if (!user) unauthorized();
-    if (user.role !== $Enums.UserRole.ADMIN) forbidden();
+
+    const enabled = await dataLabeling();
+    if (!enabled) forbidden();
 
     wideEvent.user = { id: user.id, email: user.email };
 

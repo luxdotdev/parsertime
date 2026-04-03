@@ -1,23 +1,16 @@
 import { MapCalibrationList } from "@/components/admin/map-calibration/map-calibration-list";
-import { NoAuthCard } from "@/components/auth/no-auth";
-import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
+import { dataLabeling } from "@/lib/flags";
 import prisma from "@/lib/prisma";
-import { $Enums } from "@prisma/client";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 export default async function MapCalibrationPage() {
+  const enabled = await dataLabeling();
+  if (!enabled) notFound();
+
   const session = await auth();
   if (!session?.user) {
     redirect("/sign-in");
-  }
-
-  const user = await getUser(session.user.email);
-  if (!user) {
-    redirect("/sign-up");
-  }
-  if (user.role !== $Enums.UserRole.ADMIN) {
-    return NoAuthCard();
   }
 
   const calibrations = await prisma.mapCalibration.findMany({
