@@ -1,22 +1,38 @@
-import { Data } from "effect";
+import { Schema as S } from "effect";
 
-export class ValidationError extends Data.TaggedError("ValidationError")<{
-  readonly field: string;
-  readonly message: string;
-}> {}
+export class ValidationError extends S.TaggedError<ValidationError>()(
+  "ValidationError",
+  {
+    field: S.String,
+    message: S.String,
+  }
+) {}
 
-export class ConfigurationError extends Data.TaggedError("ConfigurationError")<{
-  readonly field: string;
-  readonly message: string;
-}> {}
+export class ConfigurationError extends S.TaggedError<ConfigurationError>()(
+  "ConfigurationError",
+  {
+    field: S.String,
+    message: S.String,
+  }
+) {}
 
-export class RateLimitError extends Data.TaggedError("RateLimitError")<{
-  readonly identifier: string;
-  readonly message: string;
-}> {}
+export class RateLimitError extends S.TaggedError<RateLimitError>()(
+  "RateLimitError",
+  {
+    identifier: S.String,
+    message: S.String,
+  }
+) {}
 
-export class EmailSendError extends Data.TaggedError("EmailSendError")<{
-  readonly cause: unknown;
-  readonly recipient: string;
-  readonly operation: string;
-}> {}
+export class EmailSendError extends S.TaggedError<EmailSendError>()(
+  "EmailSendError",
+  {
+    cause: S.optional(S.Defect),
+    recipient: S.String,
+    operation: S.String,
+  }
+) {
+  get message(): string {
+    return `Failed to ${this.operation} for ${this.recipient}`;
+  }
+}

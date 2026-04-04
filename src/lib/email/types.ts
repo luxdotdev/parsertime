@@ -1,27 +1,25 @@
-import { Schema } from "effect";
+import { Schema as S } from "effect";
 
-// Email Schema Definitions (exported for potential reuse)
-export const EmailAddress = Schema.String.pipe(
-  Schema.nonEmptyString({ message: () => "Email address cannot be empty" }),
-  Schema.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, {
+export const EmailAddress = S.String.pipe(
+  S.nonEmptyString({ message: () => "Email address cannot be empty" }),
+  S.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, {
     message: () => "Must be a valid email address",
   })
 );
 
-export const NonEmptyString = Schema.String.pipe(
-  Schema.nonEmptyString({ message: () => "Cannot be empty" })
+export const NonEmptyString = S.String.pipe(
+  S.nonEmptyString({ message: () => "Cannot be empty" })
 );
 
-export const OptionalEmailArray = Schema.optional(
-  Schema.Array(EmailAddress).pipe(
-    Schema.maxItems(10, { message: () => "Cannot exceed 10 recipients" })
+export const OptionalEmailArray = S.optional(
+  S.Array(EmailAddress).pipe(
+    S.maxItems(10, { message: () => "Cannot exceed 10 recipients" })
   )
 );
 
-// Email Arguments Schema
-export const EmailArgsSchema = Schema.Struct({
+export const EmailArgsSchema = S.Struct({
   to: EmailAddress,
-  from: Schema.optional(EmailAddress),
+  from: S.optional(EmailAddress),
   subject: NonEmptyString,
   html: NonEmptyString,
   replyTo: OptionalEmailArray,
@@ -29,4 +27,4 @@ export const EmailArgsSchema = Schema.Struct({
   bccAddresses: OptionalEmailArray,
 });
 
-export type EmailArgs = Schema.Schema.Type<typeof EmailArgsSchema>;
+export type EmailArgs = S.Schema.Type<typeof EmailArgsSchema>;

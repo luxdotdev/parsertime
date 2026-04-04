@@ -1,3 +1,4 @@
+import { EffectObservabilityLive } from "@/instrumentation";
 import type { SendEmailResponse } from "@aws-sdk/client-ses";
 import {
   SendEmailCommand,
@@ -7,207 +8,248 @@ import {
 import { Ratelimit } from "@upstash/ratelimit";
 import { kv } from "@vercel/kv";
 import {
+  Config,
   Context,
   Effect,
   Layer,
   ManagedRuntime,
+  Metric,
+  Schema as S,
   Schedule,
-  Schema,
 } from "effect";
-import {
-  ConfigurationError,
-  EmailSendError,
-  RateLimitError,
-  ValidationError,
-} from "./errors";
+import { EmailSendError, RateLimitError, ValidationError } from "./errors";
+import { emailErrorTotal, emailSendDuration, emailSentTotal } from "./metrics";
 import { type EmailArgs, EmailArgsSchema } from "./types";
 
-// Service interface
-export type Service = {
-  sendEmail(
-    args: EmailArgs
-  ): Effect.Effect<
-    SendEmailResponse,
-    ValidationError | ConfigurationError | RateLimitError | EmailSendError
-  >;
+export type AwsConfig = {
+  readonly region: string;
+  readonly accessKeyId: string;
+  readonly secretAccessKey: string;
 };
 
-export class EmailService extends Context.Tag("EmailService")<
-  EmailService,
-  Service
->() {}
+export class AwsConfigService extends Context.Tag(
+  "@app/email/AwsConfigService"
+)<AwsConfigService, AwsConfig>() {}
 
-// Rate limiter configuration
+export const AwsConfigLive = Layer.effect(
+  AwsConfigService,
+  Effect.gen(function* () {
+    const region = yield* Config.string("AWS_SES_REGION").pipe(
+      Config.withDefault("us-east-1")
+    );
+    const accessKeyId = yield* Config.string("AWS_ACCESS_KEY_ID");
+    const secretAccessKey = yield* Config.string("AWS_SECRET_ACCESS_KEY");
+
+    return { region, accessKeyId, secretAccessKey } satisfies AwsConfig;
+  })
+);
+
 const ratelimit = new Ratelimit({
   redis: kv,
   limiter: Ratelimit.slidingWindow(10, "1 m"),
   analytics: true,
 });
 
-// Service implementation
-function createService() {
-  return Effect.gen(function* () {
-    // Validate environment configuration
-    const awsAccessKeyId = process.env.AWS_ACCESS_KEY_ID;
-    const awsSecretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-    const awsRegion = process.env.AWS_SES_REGION ?? "us-east-1";
+export type EmailServiceInterface = {
+  readonly sendEmail: (
+    args: EmailArgs
+  ) => Effect.Effect<
+    SendEmailResponse,
+    ValidationError | RateLimitError | EmailSendError
+  >;
+};
 
-    if (!awsAccessKeyId || !awsSecretAccessKey) {
-      return yield* new ConfigurationError({
-        field: "aws_credentials",
-        message:
-          "Missing AWS credentials. Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables.",
-      });
-    }
+export class EmailService extends Context.Tag("@app/email/EmailService")<
+  EmailService,
+  EmailServiceInterface
+>() {}
 
-    // Initialize SES client
-    const sesClient = new SES({
-      region: awsRegion,
-      credentials: {
-        accessKeyId: awsAccessKeyId,
-        secretAccessKey: awsSecretAccessKey,
-      },
-    });
+function isTransientError(
+  error: ValidationError | RateLimitError | EmailSendError
+): boolean {
+  if (error._tag !== "EmailSendError") return false;
 
-    const service: Service = {
-      sendEmail: (args: EmailArgs) =>
-        Effect.gen(function* () {
-          // Validate input using Effect Schema
-          const validatedArgs = yield* Schema.decodeUnknown(EmailArgsSchema)(
-            args
-          ).pipe(
-            Effect.mapError(
-              (parseError) =>
-                new ValidationError({
-                  field: "email_args",
-                  message: `Invalid email arguments: ${parseError.message}`,
-                })
-            ),
-            Effect.withSpan("email.validate-args", {
-              attributes: { to: args.to, subject: args.subject },
-            })
-          );
+  const cause = error.cause;
+  if (!cause || typeof cause !== "object") return false;
 
-          const {
-            to,
-            from = "noreply@lux.dev",
-            subject,
-            html,
-            replyTo,
-            ccAddresses,
-            bccAddresses,
-          } = validatedArgs;
+  const fault = "$fault" in cause ? cause.$fault : undefined;
+  const name = "name" in cause ? String(cause.name) : "";
 
-          // Rate limiting
-          const rateLimitResult = yield* Effect.tryPromise({
-            try: () => ratelimit.limit(to),
-            catch: (error) =>
-              new RateLimitError({
-                identifier: to,
-                message: `Rate limit error: ${String(error)}`,
-              }),
-          }).pipe(
-            Effect.withSpan("email.rate-limit-check", {
-              attributes: { to },
-            })
-          );
+  return fault === "server" || name === "TooManyRequestsException";
+}
 
-          if (!rateLimitResult.success) {
-            return yield* new RateLimitError({
-              identifier: to,
-              message: `Rate limit exceeded. Try again after ${new Date(rateLimitResult.reset).toISOString()}`,
-            });
-          }
+export const make: Effect.Effect<
+  EmailServiceInterface,
+  never,
+  AwsConfigService
+> = Effect.gen(function* () {
+  const config = yield* AwsConfigService;
 
-          // Build SES email parameters
-          const emailParams: SendEmailRequest = {
-            Source: `lux.dev <${from}>`,
-            Destination: {
-              ToAddresses: [to],
-              CcAddresses: ccAddresses ? [...ccAddresses] : undefined,
-              BccAddresses: bccAddresses ? [...bccAddresses] : undefined,
-            },
-            Message: {
-              Subject: { Data: subject },
-              Body: { Html: { Data: html } },
-            },
-            ReplyToAddresses: replyTo ? [...replyTo] : undefined,
-          };
+  const sesClient = new SES({
+    region: config.region,
+    credentials: {
+      accessKeyId: config.accessKeyId,
+      secretAccessKey: config.secretAccessKey,
+    },
+  });
 
-          // Send email via SES with retry logic
-          const result = yield* Effect.tryPromise({
-            try: () => sesClient.send(new SendEmailCommand(emailParams)),
-            catch: (error) =>
-              new EmailSendError({
-                recipient: to,
-                operation: `send email with subject: ${subject}`,
-                cause: error,
-              }),
-          }).pipe(
-            Effect.retry(
-              Schedule.exponential(1000).pipe(
-                Schedule.compose(Schedule.recurs(2))
-              )
-            ),
-            Effect.withSpan("email.send", {
-              attributes: {
-                to,
-                from,
-                subject,
-                hasReplyTo: !!replyTo,
-                ccCount: ccAddresses?.length ?? 0,
-                bccCount: bccAddresses?.length ?? 0,
-              },
-            }),
-            Effect.tapBoth({
-              onFailure: (error) =>
-                Effect.logError(
-                  `Failed to send email to ${to}: ${error._tag} - ${error.message}`
-                ),
-              onSuccess: (response) =>
-                Effect.logInfo(
-                  `Email sent successfully to ${to}. MessageId: ${response.MessageId}`
-                ),
-            })
-          );
+  return {
+    sendEmail: (args: EmailArgs) => {
+      const startTime = Date.now();
+      const wideEvent: Record<string, unknown> = {
+        to: args.to,
+        subject: args.subject,
+      };
 
-          return result;
-        }).pipe(
-          Effect.withSpan("email.sendEmail", {
+      return Effect.gen(function* () {
+        const validatedArgs = yield* S.decodeUnknown(EmailArgsSchema)(
+          args
+        ).pipe(
+          Effect.mapError(
+            (parseError) =>
+              new ValidationError({
+                field: "email_args",
+                message: `Invalid email arguments: ${parseError.message}`,
+              })
+          ),
+          Effect.withSpan("email.validate-args", {
             attributes: { to: args.to, subject: args.subject },
           })
+        );
+
+        const {
+          to,
+          from = "noreply@lux.dev",
+          subject,
+          html,
+          replyTo,
+          ccAddresses,
+          bccAddresses,
+        } = validatedArgs;
+
+        wideEvent.from = from;
+        wideEvent.has_reply_to = !!replyTo;
+        wideEvent.cc_count = ccAddresses?.length ?? 0;
+        wideEvent.bcc_count = bccAddresses?.length ?? 0;
+
+        const rateLimitResult = yield* Effect.tryPromise({
+          try: () => ratelimit.limit(to),
+          catch: (error) =>
+            new RateLimitError({
+              identifier: to,
+              message: `Rate limit error: ${String(error)}`,
+            }),
+        }).pipe(
+          Effect.withSpan("email.rate-limit-check", {
+            attributes: { to },
+          })
+        );
+
+        if (!rateLimitResult.success) {
+          return yield* new RateLimitError({
+            identifier: to,
+            message: `Rate limit exceeded. Try again after ${new Date(rateLimitResult.reset).toISOString()}`,
+          });
+        }
+
+        wideEvent.rate_limit_remaining = rateLimitResult.remaining;
+
+        const emailParams: SendEmailRequest = {
+          Source: `lux.dev <${from}>`,
+          Destination: {
+            ToAddresses: [to],
+            CcAddresses: ccAddresses ? [...ccAddresses] : undefined,
+            BccAddresses: bccAddresses ? [...bccAddresses] : undefined,
+          },
+          Message: {
+            Subject: { Data: subject },
+            Body: { Html: { Data: html } },
+          },
+          ReplyToAddresses: replyTo ? [...replyTo] : undefined,
+        };
+
+        const result = yield* Effect.tryPromise({
+          try: () => sesClient.send(new SendEmailCommand(emailParams)),
+          catch: (error) =>
+            new EmailSendError({
+              recipient: to,
+              operation: `send email with subject: ${subject}`,
+              cause: error,
+            }),
+        }).pipe(
+          Effect.retry({
+            schedule: Schedule.exponential(1000).pipe(
+              Schedule.jittered,
+              Schedule.compose(Schedule.recurs(2))
+            ),
+            while: isTransientError,
+          }),
+          Effect.withSpan("email.send", {
+            attributes: {
+              to,
+              from,
+              subject,
+              hasReplyTo: !!replyTo,
+              ccCount: ccAddresses?.length ?? 0,
+              bccCount: bccAddresses?.length ?? 0,
+            },
+          })
+        );
+
+        wideEvent.message_id = result.MessageId;
+        wideEvent.outcome = "success";
+
+        yield* Metric.increment(emailSentTotal);
+
+        return result;
+      }).pipe(
+        Effect.tapError((error) =>
+          Effect.sync(() => {
+            wideEvent.outcome = "error";
+            wideEvent.error_tag = error._tag;
+            wideEvent.error_message = error.message;
+          }).pipe(Effect.andThen(Metric.increment(emailErrorTotal)))
         ),
-    };
+        Effect.ensuring(
+          Effect.suspend(() => {
+            const durationMs = Date.now() - startTime;
+            wideEvent.duration_ms = durationMs;
+            wideEvent.outcome ??= "interrupted";
+            const log =
+              wideEvent.outcome === "error"
+                ? Effect.logError("email.sendEmail")
+                : Effect.logInfo("email.sendEmail");
+            return log.pipe(
+              Effect.annotateLogs(wideEvent),
+              Effect.andThen(emailSendDuration(Effect.succeed(durationMs)))
+            );
+          })
+        ),
+        Effect.withSpan("email.sendEmail", {
+          attributes: { to: args.to, subject: args.subject },
+        })
+      );
+    },
+  } satisfies EmailServiceInterface;
+});
 
-    return service;
-  });
+export const EmailServiceLive = Layer.effect(EmailService, make).pipe(
+  Layer.provide(AwsConfigLive),
+  Layer.provide(EffectObservabilityLive)
+);
+
+export function sendEmail(
+  args: EmailArgs
+): Effect.Effect<
+  SendEmailResponse,
+  ValidationError | RateLimitError | EmailSendError,
+  EmailService
+> {
+  return Effect.flatMap(EmailService, (service) => service.sendEmail(args));
 }
 
-// Production Layer
-export const layerFromConfig = Layer.effect(EmailService, createService());
+export const emailRuntime = ManagedRuntime.make(EmailServiceLive);
 
-// Layer composition for easy use
-export function layer() {
-  return layerFromConfig;
-}
-
-// Runtime for Promise-based usage
-export const emailRuntime = ManagedRuntime.make(layer());
-
-/**
- * Email service instance that provides a simplified API for sending emails.
- *
- * This service handles all the complexity of Effect-based email operations,
- * rate limiting, validation, and AWS SES integration behind a clean Promise-based API.
- *
- * Features:
- * - Rate limiting (10 emails per minute per recipient)
- * - Input validation using Effect Schema
- * - AWS SES integration
- * - Comprehensive error handling
- * - Automatic retry logic with exponential backoff
- * - Structured logging and observability
- */
 export const email = {
   sendEmail: (args: EmailArgs) =>
     emailRuntime.runPromise(
@@ -215,10 +257,8 @@ export const email = {
     ),
 } as const;
 
-// Re-export types for consumers
 export type { EmailArgs };
 
-// Re-export error types for API routes
 export {
   ConfigurationError,
   EmailSendError,
@@ -226,5 +266,4 @@ export {
   ValidationError,
 } from "./errors";
 
-// Re-export schemas for advanced users
 export { EmailArgsSchema } from "./types";
