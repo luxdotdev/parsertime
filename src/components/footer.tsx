@@ -11,9 +11,11 @@ import {
   positionalData,
   scoutingTool,
 } from "@/lib/flags";
+import prisma from "@/lib/prisma";
 import { get } from "@vercel/edge-config";
 import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
+import { unstable_cache } from "next/cache";
 import Image from "next/image";
 
 type FooterLink = {
@@ -179,15 +181,18 @@ export async function Footer() {
     aiChat(),
     dataLabeling(),
     positionalData(),
-    fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"}/api/health`,
-      {
-        next: { revalidate: 60 },
-      }
-    )
-      .then((r) => r.json() as Promise<{ status: string }>)
-      .then((d) => d.status)
-      .catch(() => "unknown"),
+    unstable_cache(
+      async () => {
+        try {
+          await prisma.$queryRaw`SELECT 1`;
+          return "healthy" as const;
+        } catch {
+          return "degraded" as const;
+        }
+      },
+      ["health-check"],
+      { revalidate: 60 }
+    )(),
   ]);
 
   const columns: FooterColumn[] = [
