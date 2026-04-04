@@ -38,6 +38,8 @@ type CalibrationWithAnchors = {
   affineTx: number | null;
   affineTy: number | null;
   anchors: CalibrationAnchor[];
+  displayImageKey: string | null;
+  imagePresignedUrl?: string;
 };
 
 type CalibrationEditorProps = {
@@ -99,20 +101,30 @@ export function CalibrationEditor({
     setAnchorDialogOpen(true);
   }, []);
 
-  async function handleImageUpload(url: string, width: number, height: number) {
+  async function handleImageUpload(
+    imageKey: string,
+    displayImageKey: string,
+    width: number,
+    height: number
+  ) {
     const res = await fetch("/api/admin/map-calibration", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         mapName,
-        imageUrl: url,
+        imageUrl: imageKey,
         imageWidth: width,
         imageHeight: height,
+        displayImageKey,
       }),
     });
     if (res.ok) {
-      const data = (await res.json()) as CalibrationWithAnchors;
-      setCalibration(data);
+      const created = (await res.json()) as { id: number };
+      const getRes = await fetch(`/api/admin/map-calibration/${created.id}`);
+      if (getRes.ok) {
+        const data = (await getRes.json()) as CalibrationWithAnchors;
+        setCalibration(data);
+      }
     } else {
       toast.error("Failed to create calibration record.");
     }
@@ -250,27 +262,38 @@ export function CalibrationEditor({
       <Header mapName={mapName}>
         <MapImageUpload
           mapName={mapName}
-          onUploadComplete={async (url, width, height) => {
+          onUploadComplete={async (
+            imageKey,
+            displayImageKey,
+            width,
+            height
+          ) => {
             const res = await fetch(
               `/api/admin/map-calibration/${calibration.id}`,
               {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                  imageUrl: url,
+                  imageUrl: imageKey,
                   imageWidth: width,
                   imageHeight: height,
+                  displayImageKey,
                 }),
               }
             );
             if (res.ok) {
-              const updated = (await res.json()) as CalibrationWithAnchors;
-              setCalibration(updated);
-              setComputedTransform(null);
-              setResidualError(null);
-              setTransformSaved(false);
-              setTestPoints([]);
-              toast.success("Image replaced. Anchors cleared.");
+              const getRes = await fetch(
+                `/api/admin/map-calibration/${calibration.id}`
+              );
+              if (getRes.ok) {
+                const updated = (await getRes.json()) as CalibrationWithAnchors;
+                setCalibration(updated);
+                setComputedTransform(null);
+                setResidualError(null);
+                setTransformSaved(false);
+                setTestPoints([]);
+                toast.success("Image replaced. Anchors cleared.");
+              }
             } else {
               toast.error("Failed to replace image.");
             }
@@ -281,7 +304,7 @@ export function CalibrationEditor({
       <div className="flex min-h-0 flex-1 gap-4">
         <div className="min-w-0 flex-1">
           <MapCanvas
-            imageUrl={calibration.imageUrl}
+            imageUrl={calibration.imagePresignedUrl ?? calibration.imageUrl}
             imageWidth={calibration.imageWidth}
             imageHeight={calibration.imageHeight}
             anchors={calibration.anchors}

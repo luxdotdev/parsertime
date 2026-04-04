@@ -9,13 +9,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { upload } from "@vercel/blob/client";
 import { Upload } from "lucide-react";
 import { useRef, useState } from "react";
+import { toast } from "sonner";
 
 type MapImageUploadProps = {
   mapName: string;
-  onUploadComplete: (url: string, width: number, height: number) => void;
+  onUploadComplete: (
+    imageKey: string,
+    displayImageKey: string,
+    width: number,
+    height: number
+  ) => void;
 };
 
 export function MapImageUpload({
@@ -29,18 +34,33 @@ export function MapImageUpload({
   async function handleUpload(file: File) {
     setUploading(true);
     try {
-      const dimensions = await getImageDimensions(file);
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("mapName", mapName);
 
-      const slug = mapName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-      const blob = await upload(`map-images/${slug}.png`, file, {
-        access: "public",
-        handleUploadUrl: "/api/admin/map-calibration/upload",
+      const res = await fetch("/api/admin/map-calibration/upload", {
+        method: "POST",
+        body: formData,
       });
 
-      onUploadComplete(blob.url, dimensions.width, dimensions.height);
+      if (!res.ok) throw new Error("Upload failed");
+
+      const data = (await res.json()) as {
+        imageKey: string;
+        displayImageKey: string;
+        imageWidth: number;
+        imageHeight: number;
+      };
+
+      onUploadComplete(
+        data.imageKey,
+        data.displayImageKey,
+        data.imageWidth,
+        data.imageHeight
+      );
       setOpen(false);
     } catch {
-      // handled — uploading state resets
+      toast.error("Failed to upload image.");
     } finally {
       setUploading(false);
     }
@@ -85,18 +105,4 @@ export function MapImageUpload({
       </DialogContent>
     </Dialog>
   );
-}
-
-function getImageDimensions(
-  file: File
-): Promise<{ width: number; height: number }> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => {
-      resolve({ width: img.naturalWidth, height: img.naturalHeight });
-      URL.revokeObjectURL(img.src);
-    };
-    img.onerror = reject;
-    img.src = URL.createObjectURL(file);
-  });
 }
