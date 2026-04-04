@@ -56,6 +56,7 @@ const CALIBRATION_MAPS: { name: string; type: string }[] = [
   { name: "Nepal: Sanctum", type: "Control" },
   { name: "Nepal: Shrine", type: "Control" },
   { name: "Nepal: Village", type: "Control" },
+  { name: "New Junk City", type: "Flashpoint" },
   { name: "New Queen Street", type: "Push" },
   { name: "Numbani", type: "Hybrid" },
   { name: "Oasis: City Center", type: "Control" },
