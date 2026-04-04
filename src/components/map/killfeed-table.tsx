@@ -5,7 +5,14 @@ import {
   FightTimeline,
   RoundEndSeparator,
 } from "@/components/map/fight-timeline";
+import { KillPositionCard } from "@/components/positional/kill-position-card";
+import { useKillCalibration } from "@/components/positional/use-kill-calibration";
 import { getGutterWidth } from "@/components/map/ult-gutter";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import {
   Table,
   TableBody,
@@ -15,6 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { SerializedCalibrationData } from "@/data/killfeed-calibration-dto";
 import type {
   KillfeedDisplayOptions,
   KillfeedEvent,
@@ -47,6 +55,7 @@ type KillfeedTableProps = {
   team2Color: string;
   fightUltSpans?: UltimateSpan[][];
   options?: KillfeedDisplayOptions;
+  calibrationData?: SerializedCalibrationData;
 };
 
 export function KillfeedTable({
@@ -58,6 +67,7 @@ export function KillfeedTable({
   team2Color,
   fightUltSpans,
   options,
+  calibrationData,
 }: KillfeedTableProps) {
   const pathname = usePathname();
   const teamId = pathname.split("/")[1];
@@ -170,6 +180,7 @@ export function KillfeedTable({
             options={options}
             t={t}
             tUlt={tUlt}
+            calibrationData={calibrationData}
           />
         );
       })}
@@ -208,6 +219,7 @@ function StandardFight({
   options,
   t,
   tUlt,
+  calibrationData,
 }: {
   fight: Fight;
   fightIndex: number;
@@ -221,6 +233,7 @@ function StandardFight({
   options?: KillfeedDisplayOptions;
   t: ReturnType<typeof useTranslations>;
   tUlt: ReturnType<typeof useTranslations>;
+  calibrationData?: SerializedCalibrationData;
 }) {
   return (
     <Table>
@@ -294,6 +307,7 @@ function StandardFight({
               environmentalString={environmentalString}
               activeUlt={activeUlt}
               t={t}
+              calibrationData={calibrationData}
             />
           );
         })}
@@ -317,6 +331,7 @@ function KillRow({
   environmentalString,
   activeUlt,
   t,
+  calibrationData,
 }: {
   kill: Kill;
   fight: Fight;
@@ -328,12 +343,78 @@ function KillRow({
   environmentalString: string;
   activeUlt: UltimateSpan | null;
   t: ReturnType<typeof useTranslations>;
+  calibrationData?: SerializedCalibrationData;
 }) {
   const ultHighlightColor = activeUlt
     ? activeUlt.playerTeam === team1
       ? team1Color
       : team2Color
     : undefined;
+
+  const calibration = useKillCalibration(
+    kill.match_time,
+    calibrationData ?? null
+  );
+  const hasCoords =
+    calibration && kill.attacker_x != null && kill.victim_x != null;
+
+  const abilityName =
+    kill.attacker_name === kill.victim_name
+      ? kill.is_environmental
+        ? environmentalString
+        : kill.event_ability === "0"
+          ? t("abilities.primary-fire")
+          : t(`abilities.${toKebabCase(kill.event_ability)}`)
+      : kill.event_ability === "0"
+        ? t("abilities.primary-fire")
+        : t(`abilities.${toKebabCase(kill.event_ability)}`);
+
+  const killContent = (
+    <span className="flex items-center space-x-2">
+      <div className="pr-2">
+        <Image
+          src={`/heroes/${toHero(kill.attacker_hero)}.png`}
+          alt=""
+          width={256}
+          height={256}
+          className="h-8 w-8 rounded border-2"
+          style={{
+            border:
+              kill.attacker_team === team1
+                ? `2px solid ${team1Color}`
+                : `2px solid ${team2Color}`,
+            opacity: kill.attacker_name === kill.victim_name ? 0 : 1,
+          }}
+        />
+      </div>
+      <div
+        className={cn(
+          "w-32",
+          kill.attacker_name === kill.victim_name ? "opacity-0" : ""
+        )}
+      >
+        {kill.attacker_name}
+      </div>
+      <div className="pr-16">&rarr;</div>
+      <div className="pr-2">
+        <Image
+          src={`/heroes/${toHero(kill.victim_hero)}.png`}
+          alt=""
+          width={256}
+          height={256}
+          className="h-8 w-8 rounded border-2"
+          style={{
+            border:
+              kill.victim_team === team1
+                ? `2px solid ${team1Color}`
+                : `2px solid ${team2Color}`,
+            opacity: kill.attacker_name === kill.victim_name ? 0 : 1,
+          }}
+        />
+      </div>
+      <div className="w-32">{kill.victim_name}</div>
+    </span>
+  );
 
   return (
     <TableRow
@@ -350,62 +431,33 @@ function KillRow({
         </span>
       </TableCell>
       <TableCell>
-        <span className="flex items-center space-x-2">
-          <div className="pr-2">
-            <Image
-              src={`/heroes/${toHero(kill.attacker_hero)}.png`}
-              alt=""
-              width={256}
-              height={256}
-              className="h-8 w-8 rounded border-2"
-              style={{
-                border:
-                  kill.attacker_team === team1
-                    ? `2px solid ${team1Color}`
-                    : `2px solid ${team2Color}`,
-                opacity: kill.attacker_name === kill.victim_name ? 0 : 1,
-              }}
-            />
-          </div>
-          <div
-            className={cn(
-              "w-32",
-              kill.attacker_name === kill.victim_name ? "opacity-0" : ""
-            )}
-          >
-            {kill.attacker_name}
-          </div>
-          <div className="pr-16">&rarr;</div>
-          <div className="pr-2">
-            <Image
-              src={`/heroes/${toHero(kill.victim_hero)}.png`}
-              alt=""
-              width={256}
-              height={256}
-              className="h-8 w-8 rounded border-2"
-              style={{
-                border:
-                  kill.victim_team === team1
-                    ? `2px solid ${team1Color}`
-                    : `2px solid ${team2Color}`,
-                opacity: kill.attacker_name === kill.victim_name ? 0 : 1,
-              }}
-            />
-          </div>
-          <div className="w-32">{kill.victim_name}</div>
-        </span>
+        {hasCoords ? (
+          <HoverCard openDelay={200} closeDelay={100}>
+            <HoverCardTrigger asChild>
+              <button
+                type="button"
+                className="-my-2 cursor-pointer py-2 text-left"
+              >
+                {killContent}
+              </button>
+            </HoverCardTrigger>
+            <HoverCardContent side="right" align="start" className="w-auto p-0">
+              <KillPositionCard
+                kill={kill}
+                fightKills={fight.kills}
+                calibration={calibration}
+                team1={team1}
+                team1Color={team1Color}
+                team2Color={team2Color}
+                abilityName={abilityName}
+              />
+            </HoverCardContent>
+          </HoverCard>
+        ) : (
+          killContent
+        )}
       </TableCell>
-      <TableCell>
-        {kill.attacker_name === kill.victim_name
-          ? kill.is_environmental
-            ? environmentalString
-            : kill.event_ability === "0"
-              ? t("abilities.primary-fire")
-              : t(`abilities.${toKebabCase(kill.event_ability)}`)
-          : kill.event_ability === "0"
-            ? t("abilities.primary-fire")
-            : t(`abilities.${toKebabCase(kill.event_ability)}`)}
-      </TableCell>
+      <TableCell>{abilityName}</TableCell>
       {isFirstKill ? (
         <>
           <TableCell>{toTimestamp(fight.start)}</TableCell>
