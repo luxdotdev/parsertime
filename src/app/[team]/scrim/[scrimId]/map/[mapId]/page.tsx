@@ -5,6 +5,7 @@ import { GuestNav } from "@/components/guest-nav";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ComparePlayers } from "@/components/map/compare-players";
 import { DefaultOverview } from "@/components/map/default-overview";
+import { HeatmapTab } from "@/components/map/heatmap/heatmap-tab";
 import { HeroBans } from "@/components/map/hero-bans";
 import { Killfeed } from "@/components/map/killfeed";
 import { MapEvents } from "@/components/map/map-events";
@@ -20,7 +21,7 @@ import { VodOverview } from "@/components/vods/vod-overview";
 import { getMostPlayedHeroes } from "@/data/player-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import { scoutingTool, tempoChart } from "@/lib/flags";
+import { positionalData, scoutingTool, tempoChart } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import { getColorblindMode, translateMapName } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
@@ -90,6 +91,7 @@ export default async function MapDashboardPage(
     noteContent,
     scoutingEnabled,
     tempoChartEnabled,
+    positionalDataEnabled,
   ] = await Promise.all([
     getMostPlayedHeroes(id),
     prisma.matchStart.findFirst({
@@ -116,6 +118,7 @@ export default async function MapDashboardPage(
     }),
     scoutingTool(),
     tempoChart(),
+    positionalData(),
   ]);
 
   const translatedMapName = await translateMapName(
@@ -194,6 +197,9 @@ export default async function MapDashboardPage(
               {t("tabs.killfeed")}
             </TabsTrigger>
             <TabsTrigger value="charts">{t("tabs.charts")}</TabsTrigger>
+            {positionalDataEnabled && (
+              <TabsTrigger value="heatmap">{t("tabs.heatmap")}</TabsTrigger>
+            )}
             <TabsTrigger value="events" className="hidden md:flex">
               {t("tabs.events")}
             </TabsTrigger>
@@ -210,6 +216,11 @@ export default async function MapDashboardPage(
           <TabsContent value="charts" className="space-y-4">
             <MapCharts id={id} />
           </TabsContent>
+          {positionalDataEnabled && (
+            <TabsContent value="heatmap" className="space-y-4">
+              <HeatmapTab id={id} />
+            </TabsContent>
+          )}
           <TabsContent value="events" className="space-y-4">
             <MapEvents
               id={id}
