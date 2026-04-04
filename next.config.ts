@@ -10,12 +10,12 @@ const cspHeader = `
       process.env.NODE_ENV === "production" ? "" : `'unsafe-eval' localhost:*`
     };
     style-src 'self' https://vercel.live https://vercel.com 'unsafe-inline' cdn.jsdelivr.net;
-    connect-src 'self' https://vercel.live https://vercel.com *.vercel-storage.com *.pusher.com *.pusherapp.com wss://ws-us3.pusher.com https://api.axiom.co ${
+    connect-src 'self' https://vercel.live https://vercel.com *.vercel-storage.com *.r2.cloudflarestorage.com *.pusher.com *.pusherapp.com wss://ws-us3.pusher.com https://api.axiom.co ${
       process.env.NODE_ENV === "production"
         ? ""
         : `localhost:* ws://localhost:*`
     };
-    img-src 'self' https://vercel.live https://vercel.com https://avatar.vercel.sh *.pusher.com/ https://lh3.googleusercontent.com https://cdn.discordapp.com https://avatars.githubusercontent.com *.vercel-storage.com blob: data:;
+    img-src 'self' https://vercel.live https://vercel.com https://avatar.vercel.sh *.pusher.com/ https://lh3.googleusercontent.com https://cdn.discordapp.com https://avatars.githubusercontent.com *.vercel-storage.com *.r2.cloudflarestorage.com blob: data:;
     frame-src 'self' https://vercel.live https://vercel.com https://www.youtube.com https://youtu.be/ https://www.youtube-nocookie.com https://player.twitch.tv;
     font-src 'self' https://vercel.live https://assets.vercel.com;
     object-src 'none';
