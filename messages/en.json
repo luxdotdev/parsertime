@@ -1269,7 +1269,17 @@
       "events": "Events",
       "compare": "Compare",
       "notes": "Notes",
-      "vod": "VOD"
+      "vod": "VOD",
+      "heatmap": "Heatmap"
+    },
+    "heatmap": {
+      "noCalibration": "No map calibration available. The heatmap requires a calibrated orthographic map image.",
+      "noCoordinates": "No coordinate data available for this map.",
+      "categories": {
+        "damage": "Damage",
+        "healing": "Healing",
+        "kills": "Kills"
+      }
     },
     "vod": {
       "title": "VOD",

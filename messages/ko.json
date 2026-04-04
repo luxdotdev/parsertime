@@ -810,7 +810,17 @@
       "kills": "킬",
       "charts": "차트",
       "events": "이벤트",
-      "compare": "비교"
+      "compare": "비교",
+      "heatmap": "히트맵"
+    },
+    "heatmap": {
+      "noCalibration": "맵 캘리브레이션이 없습니다. 히트맵은 캘리브레이션된 정사영 맵 이미지가 필요합니다.",
+      "noCoordinates": "이 맵에 좌표 데이터가 없습니다.",
+      "categories": {
+        "damage": "피해",
+        "healing": "치유",
+        "kills": "킬"
+      }
     },
     "overview": {
       "matchTime": "총 경기 시간",
