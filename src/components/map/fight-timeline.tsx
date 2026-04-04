@@ -1,11 +1,19 @@
 "use client";
 
 import { UltBracketGutter } from "@/components/map/ult-gutter";
+import { KillPositionCard } from "@/components/positional/kill-position-card";
+import { useKillCalibration } from "@/components/positional/use-kill-calibration";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import type { SerializedCalibrationData } from "@/data/killfeed-calibration-dto";
 import type {
   KillfeedDisplayOptions,
   KillfeedEvent,
@@ -114,6 +122,7 @@ type FightTimelineProps = {
   gutterWidth: number;
   t: ReturnType<typeof useTranslations>;
   tUlt: ReturnType<typeof useTranslations>;
+  calibrationData?: SerializedCalibrationData;
 };
 
 export function FightTimeline({
@@ -131,6 +140,7 @@ export function FightTimeline({
   gutterWidth,
   t,
   tUlt,
+  calibrationData,
 }: FightTimelineProps) {
   const timeMin = fight.start;
   const timeMax = Math.max(fight.end, ...spans.map((s) => s.endTime));
@@ -364,6 +374,7 @@ export function FightTimeline({
               <KillEventRow
                 key={kill.id}
                 kill={kill}
+                fight={fight}
                 topPercent={topPercent}
                 team1={team1}
                 team2={team2}
@@ -372,6 +383,7 @@ export function FightTimeline({
                 environmentalString={environmentalString}
                 activeUlt={activeUlt}
                 t={t}
+                calibrationData={calibrationData}
               />
             );
           }
@@ -660,15 +672,19 @@ function RoundEndBar({
 
 function KillEventRow({
   kill,
+  fight,
   topPercent,
   team1,
+  team2,
   team1Color,
   team2Color,
   environmentalString,
   activeUlt,
   t,
+  calibrationData,
 }: {
   kill: Kill;
+  fight: Fight;
   topPercent: number;
   team1: string;
   team2: string;
@@ -677,6 +693,7 @@ function KillEventRow({
   environmentalString: string;
   activeUlt: UltimateSpan | null;
   t: ReturnType<typeof useTranslations>;
+  calibrationData?: SerializedCalibrationData;
 }) {
   const ultHighlightColor = activeUlt
     ? activeUlt.playerTeam === team1
@@ -696,18 +713,15 @@ function KillEventRow({
       ? t("abilities.primary-fire")
       : t(`abilities.${toKebabCase(kill.event_ability)}`);
 
-  return (
-    <div
-      className="absolute flex w-full items-center gap-3 pr-2"
-      style={{
-        top: `${topPercent}%`,
-        transform: "translateY(-50%)",
-        boxShadow: ultHighlightColor
-          ? `inset 2px 0 0 ${ultHighlightColor}`
-          : undefined,
-        paddingLeft: ultHighlightColor ? 6 : 0,
-      }}
-    >
+  const calibration = useKillCalibration(
+    kill.match_time,
+    calibrationData ?? null
+  );
+  const hasCoords =
+    calibration && kill.attacker_x != null && kill.victim_x != null;
+
+  const rowContent = (
+    <div className="flex w-full items-center gap-3 pr-2">
       <span
         className={cn(
           "text-muted-foreground shrink-0 text-xs tabular-nums",
@@ -761,6 +775,46 @@ function KillEventRow({
       <span className="text-muted-foreground truncate text-xs">
         {abilityText}
       </span>
+    </div>
+  );
+
+  return (
+    <div
+      className="absolute w-full"
+      style={{
+        top: `${topPercent}%`,
+        transform: "translateY(-50%)",
+        boxShadow: ultHighlightColor
+          ? `inset 2px 0 0 ${ultHighlightColor}`
+          : undefined,
+        paddingLeft: ultHighlightColor ? 6 : 0,
+      }}
+    >
+      {hasCoords ? (
+        <HoverCard openDelay={200} closeDelay={100}>
+          <HoverCardTrigger asChild>
+            <button
+              type="button"
+              className="-my-2 cursor-pointer py-2 text-left"
+            >
+              {rowContent}
+            </button>
+          </HoverCardTrigger>
+          <HoverCardContent side="right" align="start" className="w-auto p-0">
+            <KillPositionCard
+              kill={kill}
+              fightKills={fight.kills}
+              calibration={calibration}
+              team1={team1}
+              team1Color={team1Color}
+              team2Color={team2Color}
+              abilityName={abilityText}
+            />
+          </HoverCardContent>
+        </HoverCard>
+      ) : (
+        rowContent
+      )}
     </div>
   );
 }

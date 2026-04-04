@@ -160,6 +160,7 @@ export function KillfeedTable({
                 gutterWidth={maxGutterWidth}
                 t={t}
                 tUlt={tUlt}
+                calibrationData={calibrationData}
               />
             </div>
           );
