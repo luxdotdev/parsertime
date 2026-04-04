@@ -54,7 +54,7 @@ const METRIC_EXPORTER_CONFIG = {
 
 const SERVICE_NAME = "parsertime";
 const ATTR_DEPLOYMENT_ENVIRONMENT_NAME = "deployment.environment.name";
-const SERVICE_VERSION = process.env.VERCEL_GIT_COMMIT_SHA ?? version
+const SERVICE_VERSION = process.env.VERCEL_GIT_COMMIT_SHA ?? version;
 const ENVIRONMENT = process.env.NODE_ENV ?? "development";
 const IS_PROD = ENVIRONMENT === "production";
 

@@ -1,9 +1,6 @@
 import "server-only";
 
-import {
-  mercyRezToKillEvent,
-  ultimateStartToKillEvent,
-} from "@/lib/utils";
+import { mercyRezToKillEvent, ultimateStartToKillEvent } from "@/lib/utils";
 import type { Kill } from "@prisma/client";
 import { cache } from "react";
 import type { ExtendedTeamData, TeamDateRange } from "./team-shared-core";

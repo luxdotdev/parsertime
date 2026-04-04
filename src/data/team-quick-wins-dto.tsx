@@ -1,9 +1,6 @@
 import "server-only";
 
-import {
-  mercyRezToKillEvent,
-  ultimateStartToKillEvent,
-} from "@/lib/utils";
+import { mercyRezToKillEvent, ultimateStartToKillEvent } from "@/lib/utils";
 import { calculateWinner } from "@/lib/winrate";
 import type { Kill } from "@prisma/client";
 import { cache } from "react";

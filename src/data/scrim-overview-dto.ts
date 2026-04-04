@@ -2006,10 +2006,7 @@ async function getScrimOverviewFn(
   for (const mapId of mapIds) {
     const kills = killsByMap.get(mapId) ?? [];
     const mapUlts = allUltimates.filter((u) => u.MapDataId === mapId);
-    const merged: Kill[] = [
-      ...kills,
-      ...mapUlts.map(ultimateStartToKillEvent),
-    ];
+    const merged: Kill[] = [...kills, ...mapUlts.map(ultimateStartToKillEvent)];
     merged.sort((a, b) => a.match_time - b.match_time);
     fightsByMapWithUlts.set(mapId, groupEventsIntoFights(merged));
   }
