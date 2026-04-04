@@ -30,6 +30,12 @@ const envVariables = z.object({
   AWS_SECRET_ACCESS_KEY: z.string(),
   AWS_SES_REGION: z.string(),
 
+  // Cloudflare R2
+  CLOUDFLARE_R2_ACCOUNT_ID: z.string(),
+  CLOUDFLARE_R2_ACCESS_KEY_ID: z.string(),
+  CLOUDFLARE_R2_SECRET_ACCESS_KEY: z.string(),
+  CLOUDFLARE_R2_BUCKET_NAME: z.string(),
+
   // Misc
   NEXTAUTH_SECRET: z.string(),
   NEXTAUTH_URL: z.string(),
