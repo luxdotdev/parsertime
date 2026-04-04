@@ -75,6 +75,7 @@ export async function POST(req: Request) {
       imageUrl: string;
       imageWidth: number;
       imageHeight: number;
+      displayImageKey?: string;
     };
 
     wideEvent.map_name = body.mapName;
@@ -90,6 +91,7 @@ export async function POST(req: Request) {
         imageWidth: body.imageWidth,
         imageHeight: body.imageHeight,
         createdBy: user.id,
+        displayImageKey: body.displayImageKey ?? null,
       },
       include: { anchors: true },
     });

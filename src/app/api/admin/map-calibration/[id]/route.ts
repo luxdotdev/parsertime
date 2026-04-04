@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { dataLabeling } from "@/lib/flags";
+import { r2 } from "@/lib/r2";
 import { forbidden, unauthorized } from "next/navigation";
 import { NextResponse } from "next/server";
 
@@ -43,12 +44,20 @@ export async function GET(_req: Request, props: Params) {
       );
     }
 
+    const imagePresignedUrl = await r2.getPresignedUrl({
+      key: calibration.imageUrl,
+      expiresIn: 3600,
+    });
+
     wideEvent.status_code = 200;
     wideEvent.outcome = "success";
     wideEvent.map_name = calibration.mapName;
     wideEvent.anchor_count = calibration.anchors.length;
 
-    return NextResponse.json(calibration);
+    return NextResponse.json({
+      ...calibration,
+      imagePresignedUrl,
+    });
   } catch (error) {
     wideEvent.status_code = 500;
     wideEvent.outcome = "error";
@@ -85,6 +94,7 @@ export async function PUT(req: Request, props: Params) {
         imageUrl?: string;
         imageWidth?: number;
         imageHeight?: number;
+        displayImageKey?: string;
       }>,
     ]);
     if (!session) unauthorized();
@@ -188,9 +198,23 @@ export async function DELETE(_req: Request, props: Params) {
     wideEvent.user = { id: user.id, email: user.email };
     wideEvent.calibration_id = parseInt(id, 10);
 
+    const calibration = await prisma.mapCalibration.findUnique({
+      where: { id: parseInt(id, 10) },
+      select: { imageUrl: true, displayImageKey: true },
+    });
+
     await prisma.mapCalibration.delete({
       where: { id: parseInt(id, 10) },
     });
+
+    if (calibration) {
+      void Promise.allSettled([
+        r2.delete(calibration.imageUrl),
+        calibration.displayImageKey
+          ? r2.delete(calibration.displayImageKey)
+          : Promise.resolve(),
+      ]);
+    }
 
     wideEvent.status_code = 204;
     wideEvent.outcome = "success";
