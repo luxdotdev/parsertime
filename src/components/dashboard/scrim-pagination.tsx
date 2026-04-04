@@ -253,7 +253,7 @@ export function ScrimPagination({
 
   return (
     <Card className="bg-background">
-      <div className="flex items-center justify-between p-4">
+      <div className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
         <span className="inline-flex gap-2">
           <Select value={sort || undefined} onValueChange={handleFilterChange}>
             <SelectTrigger className="w-[180px]">
