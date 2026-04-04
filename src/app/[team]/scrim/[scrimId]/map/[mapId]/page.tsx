@@ -21,7 +21,13 @@ import { VodOverview } from "@/components/vods/vod-overview";
 import { getMostPlayedHeroes } from "@/data/player-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import { positionalData, scoutingTool, tempoChart } from "@/lib/flags";
+import {
+  aiChat,
+  dataLabeling,
+  positionalData,
+  scoutingTool,
+  tempoChart,
+} from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import { getColorblindMode, translateMapName } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
@@ -92,6 +98,8 @@ export default async function MapDashboardPage(
     scoutingEnabled,
     tempoChartEnabled,
     positionalDataEnabled,
+    aiChatEnabled,
+    dataToolsEnabled,
   ] = await Promise.all([
     getMostPlayedHeroes(id),
     prisma.matchStart.findFirst({
@@ -119,6 +127,8 @@ export default async function MapDashboardPage(
     scoutingTool(),
     tempoChart(),
     positionalData(),
+    aiChat(),
+    dataLabeling(),
   ]);
 
   const translatedMapName = await translateMapName(
@@ -133,8 +143,15 @@ export default async function MapDashboardPage(
           <MainNav
             className="mx-6 hidden lg:block"
             scoutingEnabled={scoutingEnabled}
+            aiChatEnabled={aiChatEnabled}
+            dataToolsEnabled={dataToolsEnabled}
           />
-          <MobileNav className="block pl-2 lg:hidden" session={session} />
+          <MobileNav
+            className="block pl-2 lg:hidden"
+            session={session}
+            aiChatEnabled={aiChatEnabled}
+            dataToolsEnabled={dataToolsEnabled}
+          />
           <div className="ml-auto flex items-center space-x-4">
             <Search user={user} />
             <ModeToggle />
@@ -150,7 +167,11 @@ export default async function MapDashboardPage(
           </div>
         </div>
         <div className="flex h-16 items-center px-4 md:hidden">
-          <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
+          <MobileNav
+            session={session}
+            aiChatEnabled={aiChatEnabled}
+            dataToolsEnabled={dataToolsEnabled}
+          />
           <div className="ml-auto flex items-center space-x-4">
             <ModeToggle />
             <LocaleSwitcher />

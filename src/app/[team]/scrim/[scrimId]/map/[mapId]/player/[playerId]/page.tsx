@@ -14,7 +14,7 @@ import { UserNav } from "@/components/user-nav";
 import { getMostPlayedHeroes } from "@/data/player-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import { scoutingTool } from "@/lib/flags";
+import { aiChat, dataLabeling, scoutingTool } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import { toTitleCase } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
@@ -86,7 +86,11 @@ export default async function PlayerDashboardPage(
     },
   })) ?? { guestMode: false };
 
-  const scoutingEnabled = await scoutingTool();
+  const [scoutingEnabled, aiChatEnabled, dataToolsEnabled] = await Promise.all([
+    scoutingTool(),
+    aiChat(),
+    dataLabeling(),
+  ]);
 
   return (
     <div className="flex-col md:flex">
@@ -96,8 +100,15 @@ export default async function PlayerDashboardPage(
           <MainNav
             className="mx-6 hidden lg:block"
             scoutingEnabled={scoutingEnabled}
+            aiChatEnabled={aiChatEnabled}
+            dataToolsEnabled={dataToolsEnabled}
           />
-          <MobileNav className="block pl-2 lg:hidden" session={session} />
+          <MobileNav
+            className="block pl-2 lg:hidden"
+            session={session}
+            aiChatEnabled={aiChatEnabled}
+            dataToolsEnabled={dataToolsEnabled}
+          />
           <div className="ml-auto flex items-center space-x-4">
             <Search user={user} />
             <ModeToggle />
@@ -113,7 +124,11 @@ export default async function PlayerDashboardPage(
           </div>
         </div>
         <div className="flex h-16 items-center px-4 md:hidden">
-          <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
+          <MobileNav
+            session={session}
+            aiChatEnabled={aiChatEnabled}
+            dataToolsEnabled={dataToolsEnabled}
+          />
           <div className="ml-auto flex items-center space-x-4">
             <ModeToggle />
             <LocaleSwitcher />
