@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import type { SerializedCalibrationData } from "@/data/killfeed-calibration-dto";
 import {
   DEFAULT_KILLFEED_OPTIONS,
   type FightUltimateData,
@@ -33,6 +34,7 @@ type KillfeedWithTimelineProps = {
   team2: string;
   team1Color: string;
   team2Color: string;
+  calibrationData?: SerializedCalibrationData;
 };
 
 const STORAGE_KEY = "parsertime:killfeed-options";
@@ -45,6 +47,7 @@ export function KillfeedWithTimeline({
   team2,
   team1Color,
   team2Color,
+  calibrationData,
 }: KillfeedWithTimelineProps) {
   const t = useTranslations("mapPage.killfeed");
   const [options, setOptions] = useState<KillfeedDisplayOptions>(
@@ -99,6 +102,7 @@ export function KillfeedWithTimeline({
           team2Color={team2Color}
           fightUltSpans={fightUltSpans}
           options={options}
+          calibrationData={calibrationData}
         />
       </CardContent>
       <CardFooter className="float-right">

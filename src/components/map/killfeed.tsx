@@ -7,6 +7,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getUltimateSpans } from "@/data/killfeed-dto";
+import {
+  getKillfeedCalibration,
+  serializeCalibrationData,
+} from "@/data/killfeed-calibration-dto";
+import { positionalData } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import {
   groupKillsIntoFights,
@@ -24,15 +29,21 @@ export async function Killfeed({
   team1Color: string;
   team2Color: string;
 }) {
-  const [roundEndRows, playerTeams, fights, ultimateData] = await Promise.all([
-    prisma.roundEnd.findMany({
-      where: { MapDataId: id },
-      orderBy: { match_time: "asc" },
-    }),
-    prisma.matchStart.findFirst({ where: { MapDataId: id } }),
-    groupKillsIntoFights(id),
-    getUltimateSpans(id),
-  ]);
+  const [roundEndRows, playerTeams, fights, ultimateData, positionalEnabled] =
+    await Promise.all([
+      prisma.roundEnd.findMany({
+        where: { MapDataId: id },
+        orderBy: { match_time: "asc" },
+      }),
+      prisma.matchStart.findFirst({ where: { MapDataId: id } }),
+      groupKillsIntoFights(id),
+      getUltimateSpans(id),
+      positionalData(),
+    ]);
+
+  const calibrationData = positionalEnabled
+    ? serializeCalibrationData(await getKillfeedCalibration(id))
+    : null;
 
   const roundEnds = removeDuplicateRows(roundEndRows);
   const finalRound = roundEnds.at(-1) ?? null;
@@ -211,6 +222,7 @@ export async function Killfeed({
           team2={team2Name ?? "Team 2"}
           team1Color={team1Color}
           team2Color={team2Color}
+          calibrationData={calibrationData}
         />
       </div>
     </>
