@@ -13,6 +13,7 @@ const defaultFlags: FeatureFlags = {
   newLandingPageEnabled: false,
   tempoChartEnabled: false,
   aiChatEnabled: false,
+  positionalDataEnabled: false,
 };
 
 const FeatureFlagsContext = createContext<FeatureFlags>(defaultFlags);

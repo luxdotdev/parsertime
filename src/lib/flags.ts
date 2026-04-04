@@ -161,6 +161,18 @@ export const tempoChart = flag<boolean, Entities>({
   identify,
 });
 
+export const positionalData = flag<boolean, Entities>({
+  key: "positional-data",
+  adapter: vercelAdapter(),
+  options: [
+    { value: true, label: "Enabled" },
+    { value: false, label: "Disabled" },
+  ],
+  defaultValue: false,
+  description: "Show the Heatmap tab on map detail pages",
+  identify,
+});
+
 export const newLandingPage = flag<boolean, Entities>({
   key: "new-landing-page",
   adapter: vercelAdapter(),
