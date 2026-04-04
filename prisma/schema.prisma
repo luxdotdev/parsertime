@@ -1250,8 +1250,9 @@ model MapCalibration {
   mapName     String                 @unique
   imageUrl    String
   imageWidth  Int
-  imageHeight Int
-  affineA     Float?
+  imageHeight     Int
+  displayImageKey String?
+  affineA         Float?
   affineB     Float?
   affineC     Float?
   affineD     Float?
