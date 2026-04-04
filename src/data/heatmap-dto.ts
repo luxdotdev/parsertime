@@ -3,10 +3,10 @@ import {
   getControlSubMapNames,
   isControlMap,
 } from "@/lib/map-calibration/control-map-index";
+import { loadCalibration } from "@/lib/map-calibration/load-calibration";
 import type { MapTransform } from "@/lib/map-calibration/types";
 import { worldToImage } from "@/lib/map-calibration/world-to-image";
 import prisma from "@/lib/prisma";
-import { r2 } from "@/lib/r2";
 import { $Enums } from "@prisma/client";
 
 type Point = { u: number; v: number };
@@ -89,51 +89,6 @@ function convertPoints(events: TimedCoord[], transform: MapTransform): Point[] {
   return result;
 }
 
-async function loadCalibration(calibrationMapName: string) {
-  const calibration = await prisma.mapCalibration.findUnique({
-    where: { mapName: calibrationMapName },
-    select: {
-      imageUrl: true,
-      displayImageKey: true,
-      imageWidth: true,
-      imageHeight: true,
-      affineA: true,
-      affineB: true,
-      affineC: true,
-      affineD: true,
-      affineTx: true,
-      affineTy: true,
-    },
-  });
-
-  if (
-    calibration?.affineA == null ||
-    calibration.affineB == null ||
-    calibration.affineC == null ||
-    calibration.affineD == null ||
-    calibration.affineTx == null ||
-    calibration.affineTy == null
-  ) {
-    return null;
-  }
-
-  const transform: MapTransform = {
-    a: calibration.affineA,
-    b: calibration.affineB,
-    c: calibration.affineC,
-    d: calibration.affineD,
-    tx: calibration.affineTx,
-    ty: calibration.affineTy,
-  };
-
-  const imagePresignedUrl = await r2.getPresignedUrl({
-    key: calibration.displayImageKey ?? calibration.imageUrl,
-    expiresIn: 3600,
-  });
-
-  return { calibration, transform, imagePresignedUrl };
-}
-
 function buildSubMap(
   calibrationMapName: string,
   cal: NonNullable<Awaited<ReturnType<typeof loadCalibration>>>,
@@ -147,8 +102,8 @@ function buildSubMap(
     subMapName: displayName,
     calibrationMapName,
     imagePresignedUrl: cal.imagePresignedUrl,
-    imageWidth: cal.calibration.imageWidth,
-    imageHeight: cal.calibration.imageHeight,
+    imageWidth: cal.imageWidth,
+    imageHeight: cal.imageHeight,
     damagePoints: convertPoints(events.damage, cal.transform),
     healingPoints: convertPoints(events.healing, cal.transform),
     killPoints: convertPoints(events.kills, cal.transform),
