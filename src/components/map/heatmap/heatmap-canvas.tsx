@@ -275,14 +275,18 @@ export function HeatmapCanvas({
     function handler(e: WheelEvent) {
       e.preventDefault();
       const factor = e.deltaY > 0 ? 0.9 : 1.1;
-      setView((v) => ({
-        ...v,
-        zoom: Math.max(0.01, Math.min(10, v.zoom * factor)),
-      }));
+      const minZoom = canvasSize.height / imageHeight;
+      setView((v) => {
+        const newZoom = Math.max(minZoom, Math.min(10, v.zoom * factor));
+        if (newZoom <= minZoom) {
+          return { offsetX: 0, offsetY: 0, zoom: newZoom };
+        }
+        return { ...v, zoom: newZoom };
+      });
     }
     canvas.addEventListener("wheel", handler, { passive: false });
     return () => canvas.removeEventListener("wheel", handler);
-  }, []);
+  }, [canvasSize.height, imageHeight]);
 
   const categories: { key: HeatmapCategory; label: string; count: number }[] = [
     { key: "damage", label: labels.damage, count: damagePoints.length },
