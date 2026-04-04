@@ -37,21 +37,10 @@ export async function DELETE() {
     url.includes(VALID_IMAGE_URL_HOSTS.vercel_blob)
   );
 
-  const calibrationsWithImages = await prisma.mapCalibration.findMany({
-    select: { imageUrl: true },
-  });
-  const calibrationBlobs = calibrationsWithImages
-    .map((c) => c.imageUrl)
-    .filter((url) => url.includes(VALID_IMAGE_URL_HOSTS.vercel_blob));
-
   // Get all blobs
   const { blobs } = await list();
 
-  const activeBlobs = new Set([
-    ...userBlobs,
-    ...teamBlobs,
-    ...calibrationBlobs,
-  ]);
+  const activeBlobs = new Set([...userBlobs, ...teamBlobs]);
   const filteredBlobs = blobs
     .filter((blob) => !activeBlobs.has(blob.url))
     .map((blob) => blob.url);
