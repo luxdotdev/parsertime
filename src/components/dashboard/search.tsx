@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { User } from "@prisma/client";
 import type { DialogProps } from "@radix-ui/react-dialog";
+import { SearchIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { use } from "react";
 
@@ -16,13 +17,13 @@ export function Search({ ...props }: DialogProps & { user: User | null }) {
     <Button
       variant="outline"
       className={cn(
-        "bg-background text-muted-foreground relative h-9 w-full justify-start rounded-[0.5rem] text-sm font-normal shadow-none sm:pr-12 md:w-40 lg:w-64"
+        "bg-background text-muted-foreground h-9 w-9 justify-center rounded-[0.5rem] p-0 text-sm font-normal shadow-none xl:relative xl:w-40 xl:justify-start xl:px-3 xl:pr-12 2xl:w-64"
       )}
       onClick={() => setOpen(true)}
-      {...props}
     >
-      <span className="inline-flex">{t("search")}</span>
-      <kbd className="bg-muted pointer-events-none absolute top-[0.45rem] right-[0.3rem] hidden h-5 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100 select-none sm:flex">
+      <SearchIcon className="size-4 shrink-0 xl:hidden" />
+      <span className="sr-only xl:not-sr-only">{t("search")}</span>
+      <kbd className="bg-muted pointer-events-none absolute top-[0.45rem] right-[0.3rem] hidden h-5 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100 select-none xl:flex">
         <span className="text-xs">⌘</span>K
       </kbd>
     </Button>
