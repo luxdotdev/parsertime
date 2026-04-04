@@ -23,9 +23,9 @@ export function WorkshopCodePill({ code }: { code: string }) {
     <button
       type="button"
       onClick={handleCopy}
-      className="inline-flex items-center gap-2 rounded-full border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:border-zinc-600 hover:bg-zinc-700 hover:text-white"
+      className="border-border bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors"
     >
-      <span className="text-zinc-500">{t("workshopCode")}</span>
+      <span className="text-muted-foreground">{t("workshopCode")}</span>
       <span className="font-mono font-semibold tracking-wider">{code}</span>
       {copied ? (
         <CheckIcon className="size-3 text-green-400" />
