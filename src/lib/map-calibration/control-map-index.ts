@@ -14,9 +14,9 @@ const CONTROL_OBJECTIVE_MAP: Record<string, string[]> = {
   Busan: ["Busan: Downtown", "Busan: Meka Base", "Busan: Sanctuary"],
   Ilios: ["Ilios: Lighthouse", "Ilios: Ruins", "Ilios: Well"],
   "Lijiang Tower": [
-    "Lijiang Tower: Control Center",
-    "Lijiang Tower: Garden",
     "Lijiang Tower: Night Market",
+    "Lijiang Tower: Garden",
+    "Lijiang Tower: Control Center",
   ],
   Nepal: ["Nepal: Sanctum", "Nepal: Shrine", "Nepal: Village"],
   Oasis: ["Oasis: City Center", "Oasis: Gardens", "Oasis: University"],
