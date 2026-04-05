@@ -30,16 +30,19 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     wideEvent.user = { id: user.id, email: user.email };
 
-    const formData = await request.formData();
-    const file = formData.get("file");
-    const mapName = formData.get("mapName");
+    const body = (await request.json()) as {
+      rawKey?: string;
+      mapName?: string;
+    };
 
-    if (!file || !(file instanceof File)) {
+    const { rawKey, mapName } = body;
+
+    if (!rawKey || typeof rawKey !== "string" || rawKey.trim() === "") {
       wideEvent.status_code = 400;
       wideEvent.outcome = "error";
-      wideEvent.error = { message: "Missing or invalid file field" };
+      wideEvent.error = { message: "Missing or invalid rawKey field" };
       return NextResponse.json(
-        { error: "Missing or invalid file field" },
+        { error: "Missing or invalid rawKey field" },
         { status: 400 }
       );
     }
@@ -55,10 +58,10 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     wideEvent.map_name = mapName;
-    wideEvent.file_name = file.name;
-    wideEvent.file_size = file.size;
+    wideEvent.raw_key = rawKey;
 
-    const buffer = Buffer.from(await file.arrayBuffer());
+    const buffer = await r2.download(rawKey);
+    wideEvent.file_size = buffer.length;
 
     const metadata = await sharp(buffer).metadata();
     const imageWidth = metadata.width;
@@ -99,6 +102,8 @@ export async function POST(request: Request): Promise<NextResponse> {
       body: displayBuffer,
       contentType: "image/png",
     });
+
+    await r2.delete(rawKey);
 
     wideEvent.status_code = 200;
     wideEvent.outcome = "success";

@@ -29,23 +29,53 @@ export function MapImageUpload({
 }: MapImageUploadProps) {
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [status, setStatus] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   async function handleUpload(file: File) {
     setUploading(true);
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("mapName", mapName);
+      setStatus("Requesting upload URL…");
+      const presignRes = await fetch(
+        "/api/admin/map-calibration/upload/presign",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            mapName,
+            contentType: file.type || "application/octet-stream",
+          }),
+        }
+      );
 
-      const res = await fetch("/api/admin/map-calibration/upload", {
-        method: "POST",
-        body: formData,
+      if (!presignRes.ok) throw new Error("Failed to get upload URL");
+
+      const { uploadUrl, rawKey } = (await presignRes.json()) as {
+        uploadUrl: string;
+        rawKey: string;
+      };
+
+      setStatus("Uploading image to storage\u2026");
+      const uploadRes = await fetch(uploadUrl, {
+        method: "PUT",
+        body: file,
+        headers: {
+          "Content-Type": file.type || "application/octet-stream",
+        },
       });
 
-      if (!res.ok) throw new Error("Upload failed");
+      if (!uploadRes.ok) throw new Error("Failed to upload image to storage");
 
-      const data = (await res.json()) as {
+      setStatus("Processing image\u2026");
+      const processRes = await fetch("/api/admin/map-calibration/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rawKey, mapName }),
+      });
+
+      if (!processRes.ok) throw new Error("Failed to process image");
+
+      const data = (await processRes.json()) as {
         imageKey: string;
         displayImageKey: string;
         imageWidth: number;
@@ -63,6 +93,7 @@ export function MapImageUpload({
       toast.error("Failed to upload image.");
     } finally {
       setUploading(false);
+      setStatus("");
     }
   }
 
@@ -98,7 +129,7 @@ export function MapImageUpload({
           />
           {uploading ? (
             <p className="text-muted-foreground text-sm" aria-live="polite">
-              Uploading&#x2026; This may take a moment for large images.
+              {status || "Uploading…"} This may take a moment for large images.
             </p>
           ) : null}
         </div>
