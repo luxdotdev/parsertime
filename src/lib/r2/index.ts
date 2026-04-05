@@ -19,6 +19,7 @@ import {
 import {
   ConfigurationError,
   DeleteError,
+  DownloadError,
   PresignError,
   UploadError,
   ValidationError,
@@ -26,12 +27,17 @@ import {
 import {
   deleteErrorTotal,
   deleteSuccessTotal,
+  downloadDuration,
+  downloadErrorTotal,
+  downloadSuccessTotal,
   presignDuration,
   uploadDuration,
   uploadErrorTotal,
   uploadSuccessTotal,
 } from "./metrics";
 import {
+  type PresignedUploadUrlArgs,
+  PresignedUploadUrlArgsSchema,
   type PresignedUrlArgs,
   PresignedUrlArgsSchema,
   type UploadArgs,
@@ -74,9 +80,13 @@ export type R2ServiceInterface = {
   readonly upload: (
     args: UploadArgs
   ) => Effect.Effect<UploadResponse, ValidationError | UploadError>;
+  readonly download: (key: string) => Effect.Effect<Buffer, DownloadError>;
   readonly delete: (key: string) => Effect.Effect<void, DeleteError>;
   readonly getPresignedUrl: (
     args: PresignedUrlArgs
+  ) => Effect.Effect<string, ValidationError | PresignError>;
+  readonly getPresignedUploadUrl: (
+    args: PresignedUploadUrlArgs
   ) => Effect.Effect<string, ValidationError | PresignError>;
 };
 
@@ -188,6 +198,77 @@ export const make: Effect.Effect<R2ServiceInterface, never, R2ConfigService> =
           ),
           Effect.withSpan("r2.upload", {
             attributes: { key: args.key, bucket: config.bucketName },
+          })
+        );
+      },
+
+      download: (key: string) => {
+        const startTime = Date.now();
+        const wideEvent: Record<string, unknown> = {
+          key,
+          bucket: config.bucketName,
+        };
+
+        return Effect.gen(function* () {
+          const response = yield* Effect.tryPromise({
+            try: () =>
+              s3Client.send(
+                new GetObjectCommand({
+                  Bucket: config.bucketName,
+                  Key: key,
+                })
+              ),
+            catch: (error) => new DownloadError({ key, cause: error }),
+          }).pipe(
+            Effect.withSpan("r2.getObject", {
+              attributes: { key, bucket: config.bucketName },
+            })
+          );
+
+          if (!response.Body) {
+            return yield* Effect.fail(
+              new DownloadError({
+                key,
+                cause: new Error("Empty response body"),
+              })
+            );
+          }
+
+          const bytes = yield* Effect.tryPromise({
+            try: () => response.Body!.transformToByteArray(),
+            catch: (error) => new DownloadError({ key, cause: error }),
+          });
+
+          const buf = Buffer.from(bytes);
+          wideEvent.body_size = buf.length;
+          wideEvent.outcome = "success";
+          yield* Metric.increment(downloadSuccessTotal);
+          return buf;
+        }).pipe(
+          Effect.tapError((error) =>
+            Effect.sync(() => {
+              wideEvent.outcome = "error";
+              wideEvent.error_tag = error._tag;
+              wideEvent.error_message = error.message;
+            }).pipe(Effect.andThen(Metric.increment(downloadErrorTotal)))
+          ),
+          Effect.ensuring(
+            Effect.suspend(() => {
+              const durationMs = Date.now() - startTime;
+              wideEvent.duration_ms = durationMs;
+              wideEvent.outcome ??= "interrupted";
+              const log =
+                wideEvent.outcome === "error"
+                  ? Effect.logError("r2.download")
+                  : Effect.logInfo("r2.download");
+              return log.pipe(
+                Effect.annotateLogs(wideEvent),
+                Effect.andThen(downloadDuration(Effect.succeed(durationMs)))
+              );
+            })
+          ),
+          Effect.withSpan("r2.download", {
+            attributes: { key, bucket: config.bucketName },
           })
         );
       },
@@ -305,6 +386,64 @@ export const make: Effect.Effect<R2ServiceInterface, never, R2ConfigService> =
           })
         );
       },
+      getPresignedUploadUrl: (args: PresignedUploadUrlArgs) => {
+        const startTime = Date.now();
+
+        return Effect.gen(function* () {
+          const validatedArgs = yield* S.decodeUnknown(
+            PresignedUploadUrlArgsSchema
+          )(args).pipe(
+            Effect.mapError(
+              (parseError) =>
+                new ValidationError({
+                  field: "presigned_upload_url_args",
+                  message: `Invalid presigned upload URL arguments: ${parseError.message}`,
+                })
+            ),
+            Effect.withSpan("r2.validate-presign-upload-args", {
+              attributes: { key: args.key },
+            })
+          );
+
+          const url = yield* Effect.tryPromise({
+            try: () =>
+              getSignedUrl(
+                s3Client,
+                new PutObjectCommand({
+                  Bucket: config.bucketName,
+                  Key: validatedArgs.key,
+                  ContentType: validatedArgs.contentType,
+                }),
+                { expiresIn: validatedArgs.expiresIn ?? 3600 }
+              ),
+            catch: (error) =>
+              new PresignError({
+                key: validatedArgs.key,
+                cause: error,
+              }),
+          }).pipe(
+            Effect.withSpan("r2.getSignedUploadUrl", {
+              attributes: {
+                key: validatedArgs.key,
+                bucket: config.bucketName,
+                expiresIn: validatedArgs.expiresIn ?? 3600,
+              },
+            })
+          );
+
+          return url;
+        }).pipe(
+          Effect.ensuring(
+            Effect.suspend(() => {
+              const durationMs = Date.now() - startTime;
+              return presignDuration(Effect.succeed(durationMs));
+            })
+          ),
+          Effect.withSpan("r2.getPresignedUploadUrl", {
+            attributes: { key: args.key },
+          })
+        );
+      },
     } satisfies R2ServiceInterface;
   });
 
@@ -320,6 +459,10 @@ export const r2 = {
     r2Runtime.runPromise(
       R2Service.pipe(Effect.flatMap((svc) => svc.upload(args)))
     ),
+  download: (key: string) =>
+    r2Runtime.runPromise(
+      R2Service.pipe(Effect.flatMap((svc) => svc.download(key)))
+    ),
   delete: (key: string) =>
     r2Runtime.runPromise(
       R2Service.pipe(Effect.flatMap((svc) => svc.delete(key)))
@@ -328,16 +471,30 @@ export const r2 = {
     r2Runtime.runPromise(
       R2Service.pipe(Effect.flatMap((svc) => svc.getPresignedUrl(args)))
     ),
+  getPresignedUploadUrl: (args: PresignedUploadUrlArgs) =>
+    r2Runtime.runPromise(
+      R2Service.pipe(Effect.flatMap((svc) => svc.getPresignedUploadUrl(args)))
+    ),
 } as const;
 
-export type { PresignedUrlArgs, UploadArgs, UploadResponse };
+export type {
+  PresignedUploadUrlArgs,
+  PresignedUrlArgs,
+  UploadArgs,
+  UploadResponse,
+};
 
 export {
   ConfigurationError,
   DeleteError,
+  DownloadError,
   PresignError,
   UploadError,
   ValidationError,
 } from "./errors";
 
-export { PresignedUrlArgsSchema, UploadArgsSchema } from "./types";
+export {
+  PresignedUploadUrlArgsSchema,
+  PresignedUrlArgsSchema,
+  UploadArgsSchema,
+} from "./types";

@@ -46,3 +46,15 @@ export class PresignError extends S.TaggedError<PresignError>()(
     return `Failed to generate presigned URL for key ${this.key}`;
   }
 }
+
+export class DownloadError extends S.TaggedError<DownloadError>()(
+  "DownloadError",
+  {
+    cause: S.optional(S.Defect),
+    key: S.String,
+  }
+) {
+  get message(): string {
+    return `Failed to download key ${this.key}`;
+  }
+}

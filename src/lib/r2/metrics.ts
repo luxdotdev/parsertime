@@ -31,3 +31,19 @@ export const presignDuration = Metric.histogram(
   MetricBoundaries.exponential({ start: 1, factor: 2, count: 10 }),
   "Distribution of presigned URL generation duration in milliseconds"
 );
+
+export const downloadSuccessTotal = Metric.counter("r2.download.success", {
+  description: "Total R2 downloads completed successfully",
+  incremental: true,
+});
+
+export const downloadErrorTotal = Metric.counter("r2.download.error", {
+  description: "Total R2 download failures",
+  incremental: true,
+});
+
+export const downloadDuration = Metric.histogram(
+  "r2.download.duration_ms",
+  MetricBoundaries.exponential({ start: 50, factor: 2, count: 10 }),
+  "Distribution of R2 download duration in milliseconds"
+);

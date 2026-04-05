@@ -22,3 +22,13 @@ export const PresignedUrlArgsSchema = S.Struct({
 });
 
 export type PresignedUrlArgs = S.Schema.Type<typeof PresignedUrlArgsSchema>;
+
+export const PresignedUploadUrlArgsSchema = S.Struct({
+  key: NonEmptyString,
+  contentType: S.optional(S.String),
+  expiresIn: S.optional(S.Number.pipe(S.positive())),
+});
+
+export type PresignedUploadUrlArgs = S.Schema.Type<
+  typeof PresignedUploadUrlArgsSchema
+>;
