@@ -245,12 +245,13 @@ export async function Footer() {
                 <span>&bull;</span>
                 <span className="flex items-center gap-1.5">
                   <span
-                    className={`inline-block h-2 w-2 rounded-full ${healthStatus === "healthy"
-                      ? "bg-green-500"
-                      : healthStatus === "degraded"
-                        ? "bg-yellow-500"
-                        : "bg-muted-foreground"
-                      }`}
+                    className={`inline-block h-2 w-2 rounded-full ${
+                      healthStatus === "healthy"
+                        ? "bg-green-500"
+                        : healthStatus === "degraded"
+                          ? "bg-yellow-500"
+                          : "bg-muted-foreground"
+                    }`}
                   />
                   {healthStatus === "healthy"
                     ? t("healthOk")

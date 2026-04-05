@@ -189,7 +189,12 @@ export async function getHeatmapData(mapDataId: number): Promise<HeatmapData> {
     matchStart.map_type === $Enums.MapType.Control &&
     isControlMap(matchStart.map_name)
   ) {
-    return getControlHeatmapData(matchStart.map_name, mapDataId, events, matchStart.team_1_name);
+    return getControlHeatmapData(
+      matchStart.map_name,
+      mapDataId,
+      events,
+      matchStart.team_1_name
+    );
   }
 
   const cal = await loadCalibration(matchStart.map_name);
@@ -197,7 +202,12 @@ export async function getHeatmapData(mapDataId: number): Promise<HeatmapData> {
 
   return {
     type: "single",
-    subMap: buildSubMap(matchStart.map_name, cal, events, matchStart.team_1_name),
+    subMap: buildSubMap(
+      matchStart.map_name,
+      cal,
+      events,
+      matchStart.team_1_name
+    ),
   };
 }
 

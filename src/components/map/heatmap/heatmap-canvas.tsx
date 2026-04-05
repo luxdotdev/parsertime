@@ -199,7 +199,10 @@ export function HeatmapCanvas({
   }, [activeCategories, damagePoints, healingPoints, killPoints]);
 
   const heatmapData = useMemo(
-    () => (killsOnly ? null : buildHeatmapImageData(activePoints, imageWidth, imageHeight)),
+    () =>
+      killsOnly
+        ? null
+        : buildHeatmapImageData(activePoints, imageWidth, imageHeight),
     [activePoints, imageWidth, imageHeight, killsOnly]
   );
 
@@ -271,7 +274,18 @@ export function HeatmapCanvas({
     }
 
     ctx.restore();
-  }, [canvasSize, view, imageLoaded, imageWidth, imageHeight, heatmapBitmap, killsOnly, killPoints, team1, team2]);
+  }, [
+    canvasSize,
+    view,
+    imageLoaded,
+    imageWidth,
+    imageHeight,
+    heatmapBitmap,
+    killsOnly,
+    killPoints,
+    team1,
+    team2,
+  ]);
 
   useEffect(() => {
     requestAnimationFrame(render);
