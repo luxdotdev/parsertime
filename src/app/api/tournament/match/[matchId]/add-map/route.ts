@@ -1,6 +1,6 @@
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
-import { getNextMatch } from "@/lib/bracket";
+import { advanceMatch } from "@/lib/tournament-advancement";
 import { Logger } from "@/lib/logger";
 import { createNewMap } from "@/lib/parser";
 import prisma from "@/lib/prisma";
@@ -235,54 +235,29 @@ async function updateMatchScores(matchId: number) {
     },
   });
 
-  // If match is decided, advance winner to next round
   if (isDecided && winnerId) {
-    const totalRounds = await prisma.tournamentRound.count({
-      where: { tournamentId: match.tournamentId },
-    });
+    const loserId =
+      winnerId === match.team1Id ? match.team2Id : match.team1Id;
 
-    const next = getNextMatch(
-      match.round.roundNumber,
-      match.bracketPosition,
-      totalRounds
-    );
-
-    if (next) {
-      const nextRound = await prisma.tournamentRound.findUnique({
-        where: {
-          tournamentId_roundNumber: {
-            tournamentId: match.tournamentId,
-            roundNumber: next.roundNumber,
-          },
+    await advanceMatch(
+      {
+        id: match.id,
+        tournamentId: match.tournamentId,
+        bracketPosition: match.bracketPosition,
+        team1Id: match.team1Id,
+        team2Id: match.team2Id,
+        round: {
+          roundNumber: match.round.roundNumber,
+          bracket: match.round.bracket,
         },
-      });
-
-      if (nextRound) {
-        const nextMatch = await prisma.tournamentMatch.findFirst({
-          where: {
-            tournamentId: match.tournamentId,
-            roundId: nextRound.id,
-            bracketPosition: next.bracketPosition,
-          },
-        });
-
-        if (nextMatch) {
-          await prisma.tournamentMatch.update({
-            where: { id: nextMatch.id },
-            data: {
-              [next.slot === "team1" ? "team1Id" : "team2Id"]: winnerId,
-            },
-          });
-        }
-      }
-    }
-
-    // Check if tournament is complete (final match decided)
-    if (match.round.roundNumber === totalRounds) {
-      await prisma.tournament.update({
-        where: { id: match.tournamentId },
-        data: { status: "COMPLETED" },
-      });
-    }
+        tournament: {
+          format: match.tournament.format,
+          bestOf: match.tournament.bestOf,
+          grandFinalReset: match.tournament.grandFinalReset,
+        },
+      },
+      winnerId,
+      loserId
+    );
   }
 }
