@@ -6,6 +6,7 @@ import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ComparePlayers } from "@/components/map/compare-players";
 import { DefaultOverview } from "@/components/map/default-overview";
 import { HeatmapTab } from "@/components/map/heatmap/heatmap-tab";
+import { ReplayTab } from "@/components/map/replay/replay-tab";
 import { HeroBans } from "@/components/map/hero-bans";
 import { Killfeed } from "@/components/map/killfeed";
 import { MapEvents } from "@/components/map/map-events";
@@ -221,6 +222,9 @@ export default async function MapDashboardPage(
             {positionalDataEnabled && (
               <TabsTrigger value="heatmap">{t("tabs.heatmap")}</TabsTrigger>
             )}
+            {positionalDataEnabled && (
+              <TabsTrigger value="replay">{t("tabs.replay")}</TabsTrigger>
+            )}
             <TabsTrigger value="events" className="hidden md:flex">
               {t("tabs.events")}
             </TabsTrigger>
@@ -240,6 +244,11 @@ export default async function MapDashboardPage(
           {positionalDataEnabled && (
             <TabsContent value="heatmap" className="space-y-4">
               <HeatmapTab id={id} />
+            </TabsContent>
+          )}
+          {positionalDataEnabled && (
+            <TabsContent value="replay" className="space-y-4">
+              <ReplayTab id={id} />
             </TabsContent>
           )}
           <TabsContent value="events" className="space-y-4">
