@@ -811,7 +811,12 @@
       "charts": "图表",
       "events": "事件",
       "compare": "对比",
-      "heatmap": "热力图"
+      "heatmap": "热力图",
+      "replay": "回放"
+    },
+    "replay": {
+      "noCalibration": "没有可用的地图校准数据。回放查看器需要已校准的正射地图图片。",
+      "noCoordinates": "此地图没有坐标数据。"
     },
     "heatmap": {
       "noCalibration": "没有可用的地图校准数据。热力图需要已校准的正射地图图片。",

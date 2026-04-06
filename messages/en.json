@@ -1270,7 +1270,12 @@
       "compare": "Compare",
       "notes": "Notes",
       "vod": "VOD",
-      "heatmap": "Heatmap"
+      "heatmap": "Heatmap",
+      "replay": "Replay"
+    },
+    "replay": {
+      "noCalibration": "No map calibration available. The replay viewer requires a calibrated orthographic map image.",
+      "noCoordinates": "No coordinate data available for this map."
     },
     "heatmap": {
       "noCalibration": "No map calibration available. The heatmap requires a calibrated orthographic map image.",
