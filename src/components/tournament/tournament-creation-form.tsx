@@ -54,10 +54,11 @@ const formSchema = z.object({
   format: z.enum([
     "SINGLE_ELIMINATION",
     "DOUBLE_ELIMINATION",
-    "ROUND_ROBIN",
+    "ROUND_ROBIN_SE",
     "SWISS",
   ]),
   bestOf: z.number().int().min(1).max(9),
+  advancingTeams: z.number().int().min(2).optional(),
   teams: z.array(teamEntrySchema).min(2, "At least 2 teams required"),
 });
 
@@ -139,6 +140,7 @@ export function TournamentCreationForm({
       name: "",
       format: "SINGLE_ELIMINATION",
       bestOf: 3,
+      advancingTeams: undefined,
       teams: [],
     },
   });
@@ -189,6 +191,7 @@ export function TournamentCreationForm({
           name: data.name,
           format: data.format,
           bestOf: data.bestOf,
+          advancingTeams: data.advancingTeams,
           teams: data.teams.map((t, i) => ({
             name: t.name,
             teamId: t.teamId,
@@ -249,8 +252,8 @@ export function TournamentCreationForm({
                   <SelectItem value="DOUBLE_ELIMINATION">
                     Double Elimination
                   </SelectItem>
-                  <SelectItem value="ROUND_ROBIN" disabled>
-                    Round Robin (coming soon)
+                  <SelectItem value="ROUND_ROBIN_SE">
+                    Round Robin → Single Elim
                   </SelectItem>
                   <SelectItem value="SWISS" disabled>
                     Swiss (coming soon)
@@ -286,6 +289,32 @@ export function TournamentCreationForm({
           />
         </Field>
       </div>
+
+      {selectedFormat === "ROUND_ROBIN_SE" && (
+        <Field>
+          <FieldLabel>Teams Advancing to Playoffs</FieldLabel>
+          <FieldDescription>
+            Leave empty for all teams to advance
+          </FieldDescription>
+          <Controller
+            control={control}
+            name="advancingTeams"
+            render={({ field }) => (
+              <Input
+                type="number"
+                min={2}
+                placeholder="All"
+                value={field.value ?? ""}
+                onChange={(e) =>
+                  field.onChange(
+                    e.target.value ? Number(e.target.value) : undefined
+                  )
+                }
+              />
+            )}
+          />
+        </Field>
+      )}
 
       <Field>
         <FieldLabel>Teams</FieldLabel>

@@ -1,3 +1,7 @@
+import {
+  calculateRRStandings,
+  type TeamStanding,
+} from "@/lib/tournaments/round-robin";
 import prisma from "@/lib/prisma";
 import { cache } from "react";
 
@@ -95,7 +99,9 @@ async function getTournamentBracketFn(tournamentId: number) {
           team1: { select: { id: true, name: true, seed: true } },
           team2: { select: { id: true, name: true, seed: true } },
           winner: { select: { id: true, name: true } },
-          round: { select: { roundNumber: true, roundName: true, bracket: true } },
+          round: {
+            select: { roundNumber: true, roundName: true, bracket: true },
+          },
         },
         orderBy: [{ roundId: "asc" }, { bracketPosition: "asc" }],
       },
@@ -104,3 +110,9 @@ async function getTournamentBracketFn(tournamentId: number) {
 }
 
 export const getTournamentBracket = cache(getTournamentBracketFn);
+
+async function getRRStandingsFn(tournamentId: number): Promise<TeamStanding[]> {
+  return calculateRRStandings(tournamentId);
+}
+
+export const getRRStandings = cache(getRRStandingsFn);
