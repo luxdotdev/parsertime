@@ -246,8 +246,8 @@ export function TournamentCreationForm({
                   <SelectItem value="SINGLE_ELIMINATION">
                     Single Elimination
                   </SelectItem>
-                  <SelectItem value="DOUBLE_ELIMINATION" disabled>
-                    Double Elimination (coming soon)
+                  <SelectItem value="DOUBLE_ELIMINATION">
+                    Double Elimination
                   </SelectItem>
                   <SelectItem value="ROUND_ROBIN" disabled>
                     Round Robin (coming soon)

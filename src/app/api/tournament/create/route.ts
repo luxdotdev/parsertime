@@ -2,6 +2,7 @@ import { getUser } from "@/data/user-dto";
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import {
+  generateDoubleEliminationBracket,
   generateSingleEliminationBracket,
   getByeWinner,
   getNextMatch,
@@ -76,9 +77,9 @@ export async function POST(request: NextRequest) {
 
   const { name, format, bestOf, teams } = parsed.data;
 
-  if (format !== TournamentFormat.SINGLE_ELIMINATION) {
+  if (format !== TournamentFormat.SINGLE_ELIMINATION && format !== TournamentFormat.DOUBLE_ELIMINATION) {
     return Response.json(
-      { error: "Only single elimination is currently supported" },
+      { error: "Only single and double elimination are currently supported" },
       { status: 400 }
     );
   }
@@ -89,7 +90,9 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const bracket = generateSingleEliminationBracket(teams.length);
+    const bracket = format === TournamentFormat.DOUBLE_ELIMINATION
+      ? generateDoubleEliminationBracket(teams.length)
+      : generateSingleEliminationBracket(teams.length);
 
     const tournament = await prisma.$transaction(async (tx) => {
       // Create tournament
@@ -131,23 +134,25 @@ export async function POST(request: NextRequest) {
               tournamentId: t.id,
               roundNumber: round.roundNumber,
               roundName: round.roundName,
+              bracket: round.bracket,
             },
           })
         )
       );
 
-      // Build roundNumber → roundId lookup
-      const roundNumberToId = new Map<number, number>();
+      // Build composite roundKey → roundId lookup (round numbers are not unique across brackets)
+      const roundKey = (bracket: string, roundNumber: number) => `${bracket}-${roundNumber}`;
+      const roundLookup = new Map<string, number>();
       for (const r of rounds) {
-        roundNumberToId.set(r.roundNumber, r.id);
+        roundLookup.set(roundKey(r.bracket, r.roundNumber), r.id);
       }
 
       // Create a synthetic scrim for each match (needed for map data pipeline)
       // and create tournament matches
-      const totalRounds = bracket.rounds.length;
+      const wbRoundCount = bracket.rounds.filter(r => r.bracket === "WINNERS").length;
 
       for (const matchSpec of bracket.matches) {
-        const roundId = roundNumberToId.get(matchSpec.roundNumber)!;
+        const roundId = roundLookup.get(roundKey(matchSpec.bracket, matchSpec.roundNumber))!;
 
         const team1Id = matchSpec.team1Seed
           ? (seedToTeamId.get(matchSpec.team1Seed) ?? null)
@@ -157,9 +162,12 @@ export async function POST(request: NextRequest) {
           : null;
 
         // Create synthetic scrim for map data pipeline
+        const roundSpec = bracket.rounds.find(
+          (r) => r.roundNumber === matchSpec.roundNumber && r.bracket === matchSpec.bracket
+        );
         const scrim = await tx.scrim.create({
           data: {
-            name: `[Tournament] ${name} - ${bracket.rounds.find((r) => r.roundNumber === matchSpec.roundNumber)?.roundName} Match ${matchSpec.bracketPosition + 1}`,
+            name: `[Tournament] ${name} - ${roundSpec?.roundName} Match ${matchSpec.bracketPosition + 1}`,
             date: new Date(),
             creatorId: user.id,
             autoAssignTeamNames: false,
@@ -180,7 +188,7 @@ export async function POST(request: NextRequest) {
 
       // Handle bye matches: auto-advance teams with byes
       const firstRoundMatches = bracket.matches.filter(
-        (m) => m.roundNumber === 1
+        (m) => m.roundNumber === 1 && m.bracket === "WINNERS"
       );
 
       for (const matchSpec of firstRoundMatches) {
@@ -194,7 +202,7 @@ export async function POST(request: NextRequest) {
         const match = await tx.tournamentMatch.findFirst({
           where: {
             tournamentId: t.id,
-            roundId: roundNumberToId.get(1)!,
+            roundId: roundLookup.get(roundKey("WINNERS", 1))!,
             bracketPosition: matchSpec.bracketPosition,
           },
         });
@@ -211,12 +219,12 @@ export async function POST(request: NextRequest) {
         });
 
         // Advance to next round
-        const next = getNextMatch(1, matchSpec.bracketPosition, totalRounds);
+        const next = getNextMatch(1, matchSpec.bracketPosition, wbRoundCount);
         if (next) {
           const nextMatch = await tx.tournamentMatch.findFirst({
             where: {
               tournamentId: t.id,
-              roundId: roundNumberToId.get(next.roundNumber)!,
+              roundId: roundLookup.get(roundKey("WINNERS", next.roundNumber))!,
               bracketPosition: next.bracketPosition,
             },
           });
