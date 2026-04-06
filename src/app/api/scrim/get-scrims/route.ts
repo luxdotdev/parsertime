@@ -31,7 +31,10 @@ export async function GET(req: NextRequest) {
       userData.role === $Enums.UserRole.MANAGER;
 
     // Build where clause for database filtering
-    const whereClause: Prisma.ScrimWhereInput = {};
+    // Exclude synthetic scrims created for tournament matches
+    const whereClause: Prisma.ScrimWhereInput = {
+      tournamentMatch: null,
+    };
 
     // Filter by team if teamId is provided
     if (teamId) {

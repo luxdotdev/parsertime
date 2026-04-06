@@ -11,7 +11,11 @@ export async function DELETE() {
   cronJobCounter.add(1, { job: "delete-empty-scrims" });
 
   const scrimsWithoutMaps = await prisma.scrim.findMany({
-    where: { maps: { none: {} } },
+    where: {
+      maps: { none: {} },
+      // Skip synthetic scrims created for tournament matches
+      tournamentMatch: null,
+    },
     select: { id: true },
   });
 
