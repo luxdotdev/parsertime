@@ -31,7 +31,7 @@ import {
 } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import { getColorblindMode, translateMapName } from "@/lib/utils";
-import type { PagePropsWithLocale } from "@/types/next";
+import type { PagePropsWithLocale, SearchParams } from "@/types/next";
 import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
@@ -79,13 +79,21 @@ export async function generateMetadata(
 }
 
 export default async function MapDashboardPage(
-  props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]">
+  props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]"> & {
+    searchParams: SearchParams;
+  }
 ) {
   const params = await props.params;
+  const searchParams = await props.searchParams;
   const id = parseInt(params.mapId);
   const session = await auth();
   const user = await getUser(session?.user?.email);
   const t = await getTranslations("mapPage");
+
+  // Tournament context for back navigation
+  const fromTournament = searchParams.from === "tournament";
+  const tournamentId = searchParams.tournamentId as string | undefined;
+  const matchId = searchParams.matchId as string | undefined;
 
   const { team1, team2 } = await getColorblindMode(user?.id ?? "");
 
@@ -190,7 +198,13 @@ export default async function MapDashboardPage(
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div>
           <h4 className="text-gray-600 dark:text-gray-400">
-            <Link href={`/${params.team}/scrim/${params.scrimId}` as Route}>
+            <Link
+              href={
+                (fromTournament && tournamentId && matchId
+                  ? `/tournaments/${tournamentId}/match/${matchId}`
+                  : `/${params.team}/scrim/${params.scrimId}`) as Route
+              }
+            >
               &larr; {t("back")}
             </Link>
           </h4>

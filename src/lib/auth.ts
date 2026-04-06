@@ -275,10 +275,44 @@ export async function isAuthedToViewScrim(id: number) {
     return true;
   }
 
+  // Check if this is a tournament synthetic scrim — allow access if the user
+  // is the tournament creator or a member of a participating team
+  const tournamentMatch = await prisma.tournamentMatch.findFirst({
+    where: { scrimId: id },
+    select: {
+      tournament: {
+        select: {
+          creatorId: true,
+          teams: { select: { teamId: true } },
+        },
+      },
+    },
+  });
+
+  if (tournamentMatch) {
+    if (tournamentMatch.tournament.creatorId === user.id) return true;
+
+    const participatingTeamIds = tournamentMatch.tournament.teams
+      .map((t) => t.teamId)
+      .filter((id): id is number => id !== null);
+
+    if (participatingTeamIds.length > 0) {
+      const userTeams = await prisma.team.findMany({
+        where: {
+          id: { in: participatingTeamIds },
+          users: { some: { id: user.id } },
+        },
+        select: { id: true },
+      });
+      if (userTeams.length > 0) return true;
+    }
+  }
+
   // Return false if the user fails all checks:
   // - not an admin
   // - not in the list of viewable scrims
   // - scrim is not in guest mode
+  // - not a tournament participant/creator
   return false;
 }
 
