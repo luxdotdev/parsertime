@@ -11,7 +11,7 @@ import { ModeToggle } from "@/components/theme-switcher";
 import { UserNav } from "@/components/user-nav";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import { aiChat, dataLabeling, scoutingTool } from "@/lib/flags";
+import { aiChat, dataLabeling, scoutingTool, tournament } from "@/lib/flags";
 
 export async function DashboardLayout({
   children,
@@ -20,8 +20,19 @@ export async function DashboardLayout({
   children: React.ReactNode;
   guestMode?: boolean;
 }) {
-  const [session, scoutingEnabled, aiChatEnabled, dataToolsEnabled] =
-    await Promise.all([auth(), scoutingTool(), aiChat(), dataLabeling()]);
+  const [
+    session,
+    scoutingEnabled,
+    aiChatEnabled,
+    dataToolsEnabled,
+    tournamentEnabled,
+  ] = await Promise.all([
+    auth(),
+    scoutingTool(),
+    aiChat(),
+    dataLabeling(),
+    tournament(),
+  ]);
   const user = await getUser(session?.user?.email);
 
   return (
@@ -40,6 +51,7 @@ export async function DashboardLayout({
               scoutingEnabled={scoutingEnabled}
               aiChatEnabled={aiChatEnabled}
               dataToolsEnabled={dataToolsEnabled}
+              tournamentEnabled={tournamentEnabled}
               className="mx-6 hidden lg:block"
             />
             <MobileNav

@@ -412,7 +412,8 @@
       "teams": "팀",
       "settings": "설정",
       "contact": "문의하기",
-      "docs": "문서"
+      "docs": "문서",
+      "tournaments": "토너먼트"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "팀 검색...",

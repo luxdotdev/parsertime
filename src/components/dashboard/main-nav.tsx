@@ -28,11 +28,13 @@ export function MainNav({
   scoutingEnabled,
   aiChatEnabled,
   dataToolsEnabled,
+  tournamentEnabled,
   className,
 }: React.HTMLAttributes<HTMLElement> & {
   scoutingEnabled: boolean;
   aiChatEnabled?: boolean;
   dataToolsEnabled?: boolean;
+  tournamentEnabled?: boolean;
 }) {
   const pathname = usePathname();
   const t = useTranslations("dashboard.mainNav");
@@ -139,6 +141,19 @@ export function MainNav({
             {t("teams")}
           </Link>
         </li>
+        {tournamentEnabled && (
+          <li>
+            <Link
+              href={"/tournaments" as Route}
+              className={cn(
+                navLinkStyles,
+                pathname.startsWith("/tournaments") && "text-primary"
+              )}
+            >
+              {t("tournaments")}
+            </Link>
+          </li>
+        )}
         {aiChatEnabled && (
           <li className="group relative" onKeyDown={handleDropdownKeyDown}>
             <button

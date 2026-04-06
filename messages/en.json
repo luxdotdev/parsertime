@@ -432,7 +432,8 @@
       "mapCalibration": "Map Calibration",
       "chat": "Analyst",
       "chatNew": "New Conversation",
-      "chatReports": "Reports"
+      "chatReports": "Reports",
+      "tournaments": "Tournaments"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "Search team...",

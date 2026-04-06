@@ -412,7 +412,8 @@
       "teams": "团队",
       "settings": "设置",
       "contact": "联系我们",
-      "docs": "文档"
+      "docs": "文档",
+      "tournaments": "锦标赛"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "搜索团队...",
