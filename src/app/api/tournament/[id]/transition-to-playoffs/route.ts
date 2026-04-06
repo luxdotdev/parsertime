@@ -10,26 +10,40 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.email) {
-    Logger.warn("Unauthorized request to transition to playoffs");
-    unauthorized();
-  }
-
-  const { id: idStr } = await params;
-  const id = parseInt(idStr);
-  if (isNaN(id)) {
-    return Response.json({ error: "Invalid tournament ID" }, { status: 400 });
-  }
+  const startTime = Date.now();
+  const event: Record<string, unknown> = {
+    route: "tournament.transitionToPlayoffs",
+    method: "POST",
+  };
 
   try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      event.outcome = "unauthorized";
+      unauthorized();
+    }
+    event.userEmail = session.user.email;
+
+    const { id: idStr } = await params;
+    const id = parseInt(idStr);
+    event.tournamentId = id;
+    if (isNaN(id)) {
+      event.outcome = "invalid_id";
+      event.statusCode = 400;
+      return Response.json({ error: "Invalid tournament ID" }, { status: 400 });
+    }
+
     const tournament = await prisma.tournament.findUnique({ where: { id } });
 
     if (!tournament) {
+      event.outcome = "not_found";
+      event.statusCode = 404;
       return Response.json({ error: "Tournament not found" }, { status: 404 });
     }
 
     if (tournament.format !== "ROUND_ROBIN_SE") {
+      event.outcome = "wrong_format";
+      event.statusCode = 400;
       return Response.json(
         { error: "Tournament is not a round robin format" },
         { status: 400 }
@@ -45,6 +59,8 @@ export async function POST(
       user?.role !== "ADMIN" &&
       user?.role !== "MANAGER"
     ) {
+      event.outcome = "forbidden";
+      event.statusCode = 403;
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -59,7 +75,12 @@ export async function POST(
       },
     });
 
+    event.totalRRMatches = totalRR;
+    event.completedRRMatches = completedRR;
+
     if (completedRR < totalRR) {
+      event.outcome = "incomplete_matches";
+      event.statusCode = 400;
       return Response.json(
         {
           error: `${totalRR - completedRR} round robin matches still incomplete`,
@@ -79,12 +100,19 @@ export async function POST(
       });
     });
 
+    event.outcome = "success";
+    event.statusCode = 200;
     return Response.json({ success: true });
   } catch (e) {
-    Logger.error("Error transitioning to playoffs", e);
+    event.outcome = "error";
+    event.statusCode = 500;
+    event.error = e instanceof Error ? e.message : String(e);
     return Response.json(
       { error: "Failed to transition to playoffs" },
       { status: 500 }
     );
+  } finally {
+    event.durationMs = Date.now() - startTime;
+    (event.outcome === "error" ? Logger.error : Logger.info)(event);
   }
 }

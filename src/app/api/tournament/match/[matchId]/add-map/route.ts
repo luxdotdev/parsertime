@@ -19,24 +19,37 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ matchId: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.email) {
-    Logger.warn("Unauthorized request to add tournament map");
-    unauthorized();
-  }
-
-  const { matchId: matchIdStr } = await params;
-  const matchId = parseInt(matchIdStr);
-  if (isNaN(matchId)) {
-    return Response.json({ error: "Invalid match ID" }, { status: 400 });
-  }
-
-  const data = (await req.json()) as AddTournamentMapRequest;
-  if (!data.map) {
-    return Response.json({ error: "Invalid map data" }, { status: 400 });
-  }
+  const startTime = Date.now();
+  const event: Record<string, unknown> = {
+    route: "tournament.match.addMap",
+    method: "POST",
+  };
 
   try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      event.outcome = "unauthorized";
+      unauthorized();
+    }
+    event.userEmail = session.user.email;
+
+    const { matchId: matchIdStr } = await params;
+    const matchId = parseInt(matchIdStr);
+    event.matchId = matchId;
+    if (isNaN(matchId)) {
+      event.outcome = "invalid_id";
+      event.statusCode = 400;
+      return Response.json({ error: "Invalid match ID" }, { status: 400 });
+    }
+
+    const data = (await req.json()) as AddTournamentMapRequest;
+    event.gameNumber = data.gameNumber;
+    if (!data.map) {
+      event.outcome = "invalid_map_data";
+      event.statusCode = 400;
+      return Response.json({ error: "Invalid map data" }, { status: 400 });
+    }
+
     const match = await prisma.tournamentMatch.findUnique({
       where: { id: matchId },
       include: {
@@ -49,8 +62,12 @@ export async function POST(
     });
 
     if (!match) {
+      event.outcome = "not_found";
+      event.statusCode = 404;
       return Response.json({ error: "Match not found" }, { status: 404 });
     }
+
+    event.tournamentId = match.tournamentId;
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
@@ -61,10 +78,14 @@ export async function POST(
       user?.role !== "ADMIN" &&
       user?.role !== "MANAGER"
     ) {
+      event.outcome = "forbidden";
+      event.statusCode = 403;
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
     if (!match.scrimId) {
+      event.outcome = "no_scrim";
+      event.statusCode = 500;
       return Response.json(
         { error: "Match has no associated scrim for map storage" },
         { status: 500 }
@@ -98,6 +119,8 @@ export async function POST(
     });
 
     if (!newMap) {
+      event.outcome = "map_creation_failed";
+      event.statusCode = 500;
       return Response.json({ error: "Failed to create map" }, { status: 500 });
     }
 
@@ -165,6 +188,9 @@ export async function POST(
       }
     }
 
+    event.winner = winner ?? "auto";
+    event.needsManualWinner = winner === null;
+
     after(async () => {
       await auditLog.createAuditLog({
         userEmail: session.user.email,
@@ -174,6 +200,8 @@ export async function POST(
       });
     });
 
+    event.outcome = "success";
+    event.statusCode = 200;
     return Response.json({
       mapId: newMap.id,
       tournamentMapId: tournamentMap.id,
@@ -181,8 +209,13 @@ export async function POST(
       needsManualWinner: winner === null,
     });
   } catch (e) {
-    Logger.error("Error adding tournament map", e);
+    event.outcome = "error";
+    event.statusCode = 500;
+    event.error = e instanceof Error ? e.message : String(e);
     return Response.json({ error: "Failed to add map" }, { status: 500 });
+  } finally {
+    event.durationMs = Date.now() - startTime;
+    (event.outcome === "error" ? Logger.error : Logger.info)(event);
   }
 }
 

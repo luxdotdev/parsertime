@@ -18,33 +18,47 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.email) {
-    Logger.warn("Unauthorized request to update tournament");
-    unauthorized();
-  }
-
-  const { id: idStr } = await params;
-  const id = parseInt(idStr);
-  if (isNaN(id)) {
-    return Response.json({ error: "Invalid tournament ID" }, { status: 400 });
-  }
-
-  const body = await req.json();
-  const parsed = updateTournamentSchema.safeParse(body);
-  if (!parsed.success) {
-    return Response.json(
-      { error: "Invalid request", details: parsed.error.flatten() },
-      { status: 400 }
-    );
-  }
+  const startTime = Date.now();
+  const event: Record<string, unknown> = {
+    route: "tournament.update",
+    method: "PATCH",
+  };
 
   try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      event.outcome = "unauthorized";
+      unauthorized();
+    }
+    event.userEmail = session.user.email;
+
+    const { id: idStr } = await params;
+    const id = parseInt(idStr);
+    event.tournamentId = id;
+    if (isNaN(id)) {
+      event.outcome = "invalid_id";
+      event.statusCode = 400;
+      return Response.json({ error: "Invalid tournament ID" }, { status: 400 });
+    }
+
+    const body = await req.json();
+    const parsed = updateTournamentSchema.safeParse(body);
+    if (!parsed.success) {
+      event.outcome = "validation_error";
+      event.statusCode = 400;
+      return Response.json(
+        { error: "Invalid request", details: parsed.error.flatten() },
+        { status: 400 }
+      );
+    }
+
     const tournament = await prisma.tournament.findUnique({
       where: { id },
     });
 
     if (!tournament) {
+      event.outcome = "not_found";
+      event.statusCode = 404;
       return Response.json({ error: "Tournament not found" }, { status: 404 });
     }
 
@@ -57,11 +71,15 @@ export async function PATCH(
       user?.role !== "ADMIN" &&
       user?.role !== "MANAGER"
     ) {
+      event.outcome = "forbidden";
+      event.statusCode = 403;
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const { status, name, startDate, endDate } = parsed.data;
     if (status) {
+      event.statusChange = `${tournament.status} -> ${status}`;
+
       const validTransitions: Record<TournamentStatus, TournamentStatus[]> = {
         DRAFT: ["ACTIVE", "CANCELLED"],
         ACTIVE: ["COMPLETED", "CANCELLED"],
@@ -70,6 +88,8 @@ export async function PATCH(
       };
 
       if (!validTransitions[tournament.status].includes(status)) {
+        event.outcome = "invalid_transition";
+        event.statusCode = 400;
         return Response.json(
           {
             error: `Cannot transition from ${tournament.status} to ${status}`,
@@ -106,13 +126,20 @@ export async function PATCH(
       });
     });
 
+    event.outcome = "success";
+    event.statusCode = 200;
     return Response.json(updated);
   } catch (e) {
-    Logger.error("Error updating tournament", e);
+    event.outcome = "error";
+    event.statusCode = 500;
+    event.error = e instanceof Error ? e.message : String(e);
     return Response.json(
       { error: "Failed to update tournament" },
       { status: 500 }
     );
+  } finally {
+    event.durationMs = Date.now() - startTime;
+    (event.outcome === "error" ? Logger.error : Logger.info)(event);
   }
 }
 
@@ -120,24 +147,36 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.email) {
-    Logger.warn("Unauthorized request to delete tournament");
-    unauthorized();
-  }
-
-  const { id: idStr } = await params;
-  const id = parseInt(idStr);
-  if (isNaN(id)) {
-    return Response.json({ error: "Invalid tournament ID" }, { status: 400 });
-  }
+  const startTime = Date.now();
+  const event: Record<string, unknown> = {
+    route: "tournament.delete",
+    method: "DELETE",
+  };
 
   try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      event.outcome = "unauthorized";
+      unauthorized();
+    }
+    event.userEmail = session.user.email;
+
+    const { id: idStr } = await params;
+    const id = parseInt(idStr);
+    event.tournamentId = id;
+    if (isNaN(id)) {
+      event.outcome = "invalid_id";
+      event.statusCode = 400;
+      return Response.json({ error: "Invalid tournament ID" }, { status: 400 });
+    }
+
     const tournament = await prisma.tournament.findUnique({
       where: { id },
     });
 
     if (!tournament) {
+      event.outcome = "not_found";
+      event.statusCode = 404;
       return Response.json({ error: "Tournament not found" }, { status: 404 });
     }
 
@@ -150,8 +189,13 @@ export async function DELETE(
       user?.role !== "ADMIN" &&
       user?.role !== "MANAGER"
     ) {
+      event.outcome = "forbidden";
+      event.statusCode = 403;
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }
+
+    event.action = "cancel";
+    event.statusChange = `${tournament.status} -> CANCELLED`;
 
     await prisma.tournament.update({
       where: { id },
@@ -167,12 +211,19 @@ export async function DELETE(
       });
     });
 
+    event.outcome = "success";
+    event.statusCode = 200;
     return Response.json({ success: true });
   } catch (e) {
-    Logger.error("Error deleting tournament", e);
+    event.outcome = "error";
+    event.statusCode = 500;
+    event.error = e instanceof Error ? e.message : String(e);
     return Response.json(
       { error: "Failed to delete tournament" },
       { status: 500 }
     );
+  } finally {
+    event.durationMs = Date.now() - startTime;
+    (event.outcome === "error" ? Logger.error : Logger.info)(event);
   }
 }

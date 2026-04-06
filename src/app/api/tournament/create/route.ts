@@ -47,56 +47,75 @@ export type CreateTournamentRequestData = z.infer<
 >;
 
 export async function POST(request: NextRequest) {
-  const session = await auth();
-  if (!session) {
-    Logger.warn("Unauthorized request to create tournament");
-    unauthorized();
-  }
-
-  const ratelimit = new Ratelimit({
-    redis: kv,
-    limiter: Ratelimit.slidingWindow(5, "1 m"),
-    analytics: true,
-  });
-
-  const identifier = ipAddress(request) ?? "127.0.0.1";
-  const { success } = await ratelimit.limit(identifier);
-
-  if (!success) {
-    Logger.warn(`Rate limit exceeded for tournament creation: ${identifier}`);
-    return new Response("Rate limit exceeded", { status: 429 });
-  }
-
-  const body = await request.json();
-  const parsed = createTournamentSchema.safeParse(body);
-
-  if (!parsed.success) {
-    return Response.json(
-      { error: "Invalid request", details: parsed.error.flatten() },
-      { status: 400 }
-    );
-  }
-
-  const { name, format, bestOf, teams } = parsed.data;
-
-  const supportedFormats = [
-    TournamentFormat.SINGLE_ELIMINATION,
-    TournamentFormat.DOUBLE_ELIMINATION,
-    TournamentFormat.ROUND_ROBIN_SE,
-  ];
-  if (!supportedFormats.includes(format)) {
-    return Response.json(
-      { error: "Unsupported tournament format" },
-      { status: 400 }
-    );
-  }
-
-  const user = await getUser(session.user.email);
-  if (!user) {
-    return Response.json({ error: "User not found" }, { status: 404 });
-  }
+  const startTime = Date.now();
+  const event: Record<string, unknown> = {
+    route: "tournament.create",
+    method: "POST",
+  };
 
   try {
+    const session = await auth();
+    if (!session) {
+      event.outcome = "unauthorized";
+      unauthorized();
+    }
+    event.userEmail = session.user.email;
+
+    const ratelimit = new Ratelimit({
+      redis: kv,
+      limiter: Ratelimit.slidingWindow(5, "1 m"),
+      analytics: true,
+    });
+
+    const identifier = ipAddress(request) ?? "127.0.0.1";
+    const { success } = await ratelimit.limit(identifier);
+
+    if (!success) {
+      event.outcome = "rate_limited";
+      event.statusCode = 429;
+      event.ip = identifier;
+      return new Response("Rate limit exceeded", { status: 429 });
+    }
+
+    const body = await request.json();
+    const parsed = createTournamentSchema.safeParse(body);
+
+    if (!parsed.success) {
+      event.outcome = "validation_error";
+      event.statusCode = 400;
+      return Response.json(
+        { error: "Invalid request", details: parsed.error.flatten() },
+        { status: 400 }
+      );
+    }
+
+    const { name, format, bestOf, teams } = parsed.data;
+    event.format = format;
+    event.teamCount = teams.length;
+    event.bestOf = bestOf;
+    event.advancingTeams = parsed.data.advancingTeams ?? null;
+
+    const supportedFormats = [
+      TournamentFormat.SINGLE_ELIMINATION,
+      TournamentFormat.DOUBLE_ELIMINATION,
+      TournamentFormat.ROUND_ROBIN_SE,
+    ];
+    if (!supportedFormats.includes(format)) {
+      event.outcome = "unsupported_format";
+      event.statusCode = 400;
+      return Response.json(
+        { error: "Unsupported tournament format" },
+        { status: 400 }
+      );
+    }
+
+    const user = await getUser(session.user.email);
+    if (!user) {
+      event.outcome = "user_not_found";
+      event.statusCode = 404;
+      return Response.json({ error: "User not found" }, { status: 404 });
+    }
+
     const bracket =
       format === TournamentFormat.DOUBLE_ELIMINATION
         ? generateDoubleEliminationBracket(teams.length)
@@ -256,6 +275,8 @@ export async function POST(request: NextRequest) {
       return t;
     });
 
+    event.tournamentId = tournament.id;
+
     after(async () => {
       await auditLog.createAuditLog({
         userEmail: session.user.email,
@@ -265,12 +286,19 @@ export async function POST(request: NextRequest) {
       });
     });
 
+    event.outcome = "success";
+    event.statusCode = 201;
     return Response.json({ id: tournament.id }, { status: 201 });
   } catch (error) {
-    Logger.error("Failed to create tournament", error);
+    event.outcome = "error";
+    event.statusCode = 500;
+    event.error = error instanceof Error ? error.message : String(error);
     return Response.json(
       { error: "Failed to create tournament" },
       { status: 500 }
     );
+  } finally {
+    event.durationMs = Date.now() - startTime;
+    (event.outcome === "error" ? Logger.error : Logger.info)(event);
   }
 }

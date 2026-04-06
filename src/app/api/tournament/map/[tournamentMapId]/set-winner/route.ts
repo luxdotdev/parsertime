@@ -15,28 +15,42 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ tournamentMapId: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.email) {
-    Logger.warn("Unauthorized request to set tournament map winner");
-    unauthorized();
-  }
-
-  const { tournamentMapId: idStr } = await params;
-  const tournamentMapId = parseInt(idStr);
-  if (isNaN(tournamentMapId)) {
-    return Response.json(
-      { error: "Invalid tournament map ID" },
-      { status: 400 }
-    );
-  }
-
-  const body = await req.json();
-  const parsed = setWinnerSchema.safeParse(body);
-  if (!parsed.success) {
-    return Response.json({ error: "Invalid request body" }, { status: 400 });
-  }
+  const startTime = Date.now();
+  const event: Record<string, unknown> = {
+    route: "tournament.map.setWinner",
+    method: "POST",
+  };
 
   try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      event.outcome = "unauthorized";
+      unauthorized();
+    }
+    event.userEmail = session.user.email;
+
+    const { tournamentMapId: idStr } = await params;
+    const tournamentMapId = parseInt(idStr);
+    event.tournamentMapId = tournamentMapId;
+    if (isNaN(tournamentMapId)) {
+      event.outcome = "invalid_id";
+      event.statusCode = 400;
+      return Response.json(
+        { error: "Invalid tournament map ID" },
+        { status: 400 }
+      );
+    }
+
+    const body = await req.json();
+    const parsed = setWinnerSchema.safeParse(body);
+    if (!parsed.success) {
+      event.outcome = "validation_error";
+      event.statusCode = 400;
+      return Response.json({ error: "Invalid request body" }, { status: 400 });
+    }
+
+    event.winner = parsed.data.winner;
+
     const tournamentMap = await prisma.tournamentMap.findUnique({
       where: { id: tournamentMapId },
       include: {
@@ -53,6 +67,8 @@ export async function POST(
     });
 
     if (!tournamentMap) {
+      event.outcome = "not_found";
+      event.statusCode = 404;
       return Response.json(
         { error: "Tournament map not found" },
         { status: 404 }
@@ -60,6 +76,7 @@ export async function POST(
     }
 
     const match = tournamentMap.match;
+    event.matchId = match.id;
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
@@ -70,6 +87,8 @@ export async function POST(
       user?.role !== "ADMIN" &&
       user?.role !== "MANAGER"
     ) {
+      event.outcome = "forbidden";
+      event.statusCode = 403;
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -101,6 +120,8 @@ export async function POST(
         : team2Wins >= winsNeeded
           ? match.team2Id
           : null;
+
+    event.matchDecided = isDecided;
 
     await prisma.tournamentMatch.update({
       where: { id: match.id },
@@ -147,9 +168,16 @@ export async function POST(
       });
     });
 
+    event.outcome = "success";
+    event.statusCode = 200;
     return Response.json({ success: true });
   } catch (e) {
-    Logger.error("Error setting tournament map winner", e);
+    event.outcome = "error";
+    event.statusCode = 500;
+    event.error = e instanceof Error ? e.message : String(e);
     return Response.json({ error: "Failed to set winner" }, { status: 500 });
+  } finally {
+    event.durationMs = Date.now() - startTime;
+    (event.outcome === "error" ? Logger.error : Logger.info)(event);
   }
 }
