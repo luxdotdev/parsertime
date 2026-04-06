@@ -1,4 +1,5 @@
-import { getAdvancement, getNextMatch } from "@/lib/bracket";
+import { getAdvancement, getNextMatch } from "@/lib/tournaments/bracket";
+import { transitionToPlayoffs } from "@/lib/tournaments/round-robin";
 import prisma from "@/lib/prisma";
 import type { BracketSide } from "@prisma/client";
 
@@ -25,6 +26,29 @@ export async function advanceMatch(
   loserId: number | null
 ) {
   const isDE = match.tournament.format === "DOUBLE_ELIMINATION";
+
+  if (match.round.bracket === "ROUND_ROBIN") {
+    const totalRRMatches = await prisma.tournamentMatch.count({
+      where: {
+        tournamentId: match.tournamentId,
+        round: { bracket: "ROUND_ROBIN" },
+      },
+    });
+
+    const completedRRMatches = await prisma.tournamentMatch.count({
+      where: {
+        tournamentId: match.tournamentId,
+        round: { bracket: "ROUND_ROBIN" },
+        status: "COMPLETED",
+      },
+    });
+
+    if (completedRRMatches >= totalRRMatches) {
+      await transitionToPlayoffs(match.tournamentId);
+    }
+
+    return;
+  }
 
   if (!isDE) {
     const totalRounds = await prisma.tournamentRound.count({

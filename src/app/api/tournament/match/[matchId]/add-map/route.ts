@@ -1,6 +1,6 @@
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
-import { advanceMatch } from "@/lib/tournament-advancement";
+import { advanceMatch } from "@/lib/tournaments/advancement";
 import { Logger } from "@/lib/logger";
 import { createNewMap } from "@/lib/parser";
 import prisma from "@/lib/prisma";
@@ -236,8 +236,7 @@ async function updateMatchScores(matchId: number) {
   });
 
   if (isDecided && winnerId) {
-    const loserId =
-      winnerId === match.team1Id ? match.team2Id : match.team1Id;
+    const loserId = winnerId === match.team1Id ? match.team2Id : match.team1Id;
 
     await advanceMatch(
       {

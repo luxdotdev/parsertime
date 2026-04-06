@@ -25,6 +25,11 @@ export type DoubleEliminationBracketSpec = BracketSpec & {
   lbRoundCount: number;
 };
 
+export type RoundRobinSEBracketSpec = BracketSpec & {
+  rrRoundCount: number;
+  playoffTeamCount: number;
+};
+
 export type AdvancementTarget = {
   roundNumber: number;
   bracketPosition: number;
@@ -373,6 +378,7 @@ export function getAdvancement(
         lbRoundCount
       );
     case "GRAND_FINAL":
+    case "ROUND_ROBIN":
       return { winner: null, loser: null };
   }
 }
@@ -413,7 +419,8 @@ function getWBAdvancement(
   let loser: AdvancementTarget | null;
 
   // Reverse positions to avoid rematches
-  const matchCountInRound = Math.pow(2, wbRoundCount) / Math.pow(2, roundNumber);
+  const matchCountInRound =
+    Math.pow(2, wbRoundCount) / Math.pow(2, roundNumber);
   const reversedPosition = matchCountInRound - 1 - bracketPosition;
 
   if (roundNumber === 1) {
@@ -493,4 +500,101 @@ function getLBAdvancement(
   }
 
   return { winner, loser };
+}
+
+function generateRoundRobinSchedule(teamCount: number): [number, number][][] {
+  const rounds: [number, number][][] = [];
+  const teams = Array.from({ length: teamCount }, (_, i) => i);
+  const hasGhost = teamCount % 2 !== 0;
+  if (hasGhost) teams.push(-1);
+  const n = teams.length;
+  const roundCount = n - 1;
+
+  for (let round = 0; round < roundCount; round++) {
+    const matches: [number, number][] = [];
+    for (let i = 0; i < n / 2; i++) {
+      const home = teams[i];
+      const away = teams[n - 1 - i];
+      if (home !== -1 && away !== -1) {
+        matches.push([home, away]);
+      }
+    }
+    rounds.push(matches);
+    const last = teams.pop()!;
+    teams.splice(1, 0, last);
+  }
+  return rounds;
+}
+
+/**
+ * Generate a Round Robin + Single Elimination bracket.
+ * RR phase: every team plays every other team once.
+ * SE playoff phase: top N teams advance to a single elimination bracket.
+ */
+export function generateRoundRobinSEBracket(
+  teamCount: number,
+  advancingTeams?: number
+): RoundRobinSEBracketSpec {
+  if (teamCount < 3) {
+    throw new Error("Need at least 3 teams for a round robin bracket");
+  }
+
+  const playoffTeamCount = advancingTeams ?? teamCount;
+  if (playoffTeamCount < 2 || playoffTeamCount > teamCount) {
+    throw new Error(
+      `advancingTeams must be between 2 and ${teamCount}, got ${playoffTeamCount}`
+    );
+  }
+
+  const rrSchedule = generateRoundRobinSchedule(teamCount);
+  const rrRoundCount = rrSchedule.length;
+
+  const rounds: RoundSpec[] = [];
+  const matches: MatchSpec[] = [];
+
+  for (let r = 0; r < rrRoundCount; r++) {
+    const roundMatches = rrSchedule[r];
+    rounds.push({
+      roundNumber: r + 1,
+      roundName: `RR Round ${r + 1}`,
+      matchCount: roundMatches.length,
+      bracket: "ROUND_ROBIN" as BracketSide,
+    });
+
+    for (let m = 0; m < roundMatches.length; m++) {
+      const [teamIdx1, teamIdx2] = roundMatches[m];
+      matches.push({
+        roundNumber: r + 1,
+        bracketPosition: m,
+        team1Seed: teamIdx1 + 1,
+        team2Seed: teamIdx2 + 1,
+        bracket: "ROUND_ROBIN" as BracketSide,
+      });
+    }
+  }
+
+  const playoffSlots = nextPowerOf2(playoffTeamCount);
+  const playoffRounds = Math.log2(playoffSlots);
+
+  for (let r = 1; r <= playoffRounds; r++) {
+    const matchCount = playoffSlots / Math.pow(2, r);
+    rounds.push({
+      roundNumber: r,
+      roundName: getRoundName(r, playoffRounds),
+      matchCount,
+      bracket: "WINNERS" as BracketSide,
+    });
+
+    for (let m = 0; m < matchCount; m++) {
+      matches.push({
+        roundNumber: r,
+        bracketPosition: m,
+        team1Seed: null,
+        team2Seed: null,
+        bracket: "WINNERS" as BracketSide,
+      });
+    }
+  }
+
+  return { rounds, matches, rrRoundCount, playoffTeamCount };
 }

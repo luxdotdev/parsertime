@@ -30,7 +30,7 @@ export function DoubleBracketView({ rounds }: { rounds: RoundData[] }) {
       <div>
         <div className="mb-2 flex items-center gap-2">
           <div className="h-3 w-1 rounded-full bg-emerald-500" />
-          <span className="text-sm font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
+          <span className="text-sm font-semibold tracking-wide text-emerald-600 uppercase dark:text-emerald-400">
             Winners Bracket
           </span>
         </div>
@@ -42,7 +42,7 @@ export function DoubleBracketView({ rounds }: { rounds: RoundData[] }) {
       <div>
         <div className="mb-2 flex items-center gap-2">
           <div className="h-3 w-1 rounded-full bg-rose-500" />
-          <span className="text-sm font-semibold uppercase tracking-wide text-rose-600 dark:text-rose-400">
+          <span className="text-sm font-semibold tracking-wide text-rose-600 uppercase dark:text-rose-400">
             Losers Bracket
           </span>
         </div>
@@ -54,7 +54,7 @@ export function DoubleBracketView({ rounds }: { rounds: RoundData[] }) {
       <div>
         <div className="mb-2 flex items-center gap-2">
           <div className="h-3 w-1 rounded-full bg-purple-500" />
-          <span className="text-sm font-semibold uppercase tracking-wide text-purple-600 dark:text-purple-400">
+          <span className="text-sm font-semibold tracking-wide text-purple-600 uppercase dark:text-purple-400">
             Grand Final
           </span>
         </div>

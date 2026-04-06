@@ -1,6 +1,6 @@
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
-import { advanceMatch } from "@/lib/tournament-advancement";
+import { advanceMatch } from "@/lib/tournaments/advancement";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { unauthorized } from "next/navigation";

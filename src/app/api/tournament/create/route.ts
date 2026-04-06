@@ -3,10 +3,11 @@ import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import {
   generateDoubleEliminationBracket,
+  generateRoundRobinSEBracket,
   generateSingleEliminationBracket,
   getByeWinner,
   getNextMatch,
-} from "@/lib/bracket";
+} from "@/lib/tournaments/bracket";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { TournamentFormat } from "@prisma/client";
@@ -28,6 +29,7 @@ const createTournamentSchema = z.object({
     .refine((n) => n % 2 === 1, {
       message: "Best-of must be an odd number",
     }),
+  advancingTeams: z.number().int().min(2).optional(),
   teams: z
     .array(
       z.object({
@@ -77,9 +79,14 @@ export async function POST(request: NextRequest) {
 
   const { name, format, bestOf, teams } = parsed.data;
 
-  if (format !== TournamentFormat.SINGLE_ELIMINATION && format !== TournamentFormat.DOUBLE_ELIMINATION) {
+  const supportedFormats = [
+    TournamentFormat.SINGLE_ELIMINATION,
+    TournamentFormat.DOUBLE_ELIMINATION,
+    TournamentFormat.ROUND_ROBIN_SE,
+  ];
+  if (!supportedFormats.includes(format)) {
     return Response.json(
-      { error: "Only single and double elimination are currently supported" },
+      { error: "Unsupported tournament format" },
       { status: 400 }
     );
   }
@@ -90,9 +97,15 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const bracket = format === TournamentFormat.DOUBLE_ELIMINATION
-      ? generateDoubleEliminationBracket(teams.length)
-      : generateSingleEliminationBracket(teams.length);
+    const bracket =
+      format === TournamentFormat.DOUBLE_ELIMINATION
+        ? generateDoubleEliminationBracket(teams.length)
+        : format === TournamentFormat.ROUND_ROBIN_SE
+          ? generateRoundRobinSEBracket(
+              teams.length,
+              parsed.data.advancingTeams
+            )
+          : generateSingleEliminationBracket(teams.length);
 
     const tournament = await prisma.$transaction(async (tx) => {
       // Create tournament
@@ -101,6 +114,7 @@ export async function POST(request: NextRequest) {
           name,
           format,
           bestOf,
+          advancingTeams: parsed.data.advancingTeams ?? null,
           teamSlots: teams.length,
           creatorId: user.id,
         },
@@ -141,7 +155,8 @@ export async function POST(request: NextRequest) {
       );
 
       // Build composite roundKey → roundId lookup (round numbers are not unique across brackets)
-      const roundKey = (bracket: string, roundNumber: number) => `${bracket}-${roundNumber}`;
+      const roundKey = (bracket: string, roundNumber: number) =>
+        `${bracket}-${roundNumber}`;
       const roundLookup = new Map<string, number>();
       for (const r of rounds) {
         roundLookup.set(roundKey(r.bracket, r.roundNumber), r.id);
@@ -149,10 +164,14 @@ export async function POST(request: NextRequest) {
 
       // Create a synthetic scrim for each match (needed for map data pipeline)
       // and create tournament matches
-      const wbRoundCount = bracket.rounds.filter(r => r.bracket === "WINNERS").length;
+      const wbRoundCount = bracket.rounds.filter(
+        (r) => r.bracket === "WINNERS"
+      ).length;
 
       for (const matchSpec of bracket.matches) {
-        const roundId = roundLookup.get(roundKey(matchSpec.bracket, matchSpec.roundNumber))!;
+        const roundId = roundLookup.get(
+          roundKey(matchSpec.bracket, matchSpec.roundNumber)
+        )!;
 
         const team1Id = matchSpec.team1Seed
           ? (seedToTeamId.get(matchSpec.team1Seed) ?? null)
@@ -163,7 +182,9 @@ export async function POST(request: NextRequest) {
 
         // Create synthetic scrim for map data pipeline
         const roundSpec = bracket.rounds.find(
-          (r) => r.roundNumber === matchSpec.roundNumber && r.bracket === matchSpec.bracket
+          (r) =>
+            r.roundNumber === matchSpec.roundNumber &&
+            r.bracket === matchSpec.bracket
         );
         const scrim = await tx.scrim.create({
           data: {
@@ -187,55 +208,60 @@ export async function POST(request: NextRequest) {
       }
 
       // Handle bye matches: auto-advance teams with byes
-      const firstRoundMatches = bracket.matches.filter(
-        (m) => m.roundNumber === 1 && m.bracket === "WINNERS"
-      );
+      // Skip for RR_SE — RR has no byes and SE playoff byes are handled by transitionToPlayoffs
+      if (format !== TournamentFormat.ROUND_ROBIN_SE) {
+        const firstRoundMatches = bracket.matches.filter(
+          (m) => m.roundNumber === 1 && m.bracket === "WINNERS"
+        );
 
-      for (const matchSpec of firstRoundMatches) {
-        const byeWinnerSeed = getByeWinner(matchSpec);
-        if (byeWinnerSeed === null) continue;
+        for (const matchSpec of firstRoundMatches) {
+          const byeWinnerSeed = getByeWinner(matchSpec);
+          if (byeWinnerSeed === null) continue;
 
-        const byeWinnerId = seedToTeamId.get(byeWinnerSeed);
-        if (!byeWinnerId) continue;
+          const byeWinnerId = seedToTeamId.get(byeWinnerSeed);
+          if (!byeWinnerId) continue;
 
-        // Find the match we just created
-        const match = await tx.tournamentMatch.findFirst({
-          where: {
-            tournamentId: t.id,
-            roundId: roundLookup.get(roundKey("WINNERS", 1))!,
-            bracketPosition: matchSpec.bracketPosition,
-          },
-        });
-
-        if (!match) continue;
-
-        // Mark as completed with bye winner
-        await tx.tournamentMatch.update({
-          where: { id: match.id },
-          data: {
-            winnerId: byeWinnerId,
-            status: "COMPLETED",
-          },
-        });
-
-        // Advance to next round
-        const next = getNextMatch(1, matchSpec.bracketPosition, wbRoundCount);
-        if (next) {
-          const nextMatch = await tx.tournamentMatch.findFirst({
+          // Find the match we just created
+          const match = await tx.tournamentMatch.findFirst({
             where: {
               tournamentId: t.id,
-              roundId: roundLookup.get(roundKey("WINNERS", next.roundNumber))!,
-              bracketPosition: next.bracketPosition,
+              roundId: roundLookup.get(roundKey("WINNERS", 1))!,
+              bracketPosition: matchSpec.bracketPosition,
             },
           });
 
-          if (nextMatch) {
-            await tx.tournamentMatch.update({
-              where: { id: nextMatch.id },
-              data: {
-                [next.slot === "team1" ? "team1Id" : "team2Id"]: byeWinnerId,
+          if (!match) continue;
+
+          // Mark as completed with bye winner
+          await tx.tournamentMatch.update({
+            where: { id: match.id },
+            data: {
+              winnerId: byeWinnerId,
+              status: "COMPLETED",
+            },
+          });
+
+          // Advance to next round
+          const next = getNextMatch(1, matchSpec.bracketPosition, wbRoundCount);
+          if (next) {
+            const nextMatch = await tx.tournamentMatch.findFirst({
+              where: {
+                tournamentId: t.id,
+                roundId: roundLookup.get(
+                  roundKey("WINNERS", next.roundNumber)
+                )!,
+                bracketPosition: next.bracketPosition,
               },
             });
+
+            if (nextMatch) {
+              await tx.tournamentMatch.update({
+                where: { id: nextMatch.id },
+                data: {
+                  [next.slot === "team1" ? "team1Id" : "team2Id"]: byeWinnerId,
+                },
+              });
+            }
           }
         }
       }
