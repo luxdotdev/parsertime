@@ -188,3 +188,21 @@
     padding: 0;
   }
 }
+
+.bracket-grid {
+  background-image: radial-gradient(
+    circle,
+    oklch(0.7 0 0 / 0.3) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
+}
+
+:is(.dark *) .bracket-grid {
+  background-image: radial-gradient(
+    circle,
+    oklch(0.4 0 0 / 0.4) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
+}
