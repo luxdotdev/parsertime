@@ -26,6 +26,7 @@ const formatLabels: Record<TournamentFormat, string> = {
   SINGLE_ELIMINATION: "Single Elim",
   DOUBLE_ELIMINATION: "Double Elim",
   ROUND_ROBIN: "Round Robin",
+  ROUND_ROBIN_SE: "RR → Single Elim",
   SWISS: "Swiss",
 };
 

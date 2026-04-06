@@ -2,10 +2,13 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import { BracketView } from "@/components/tournament/bracket/bracket-view";
 import { DoubleBracketView } from "@/components/tournament/bracket/double-bracket-view";
 import type { BracketMatchData } from "@/components/tournament/bracket/bracket-match-card";
+import { RoundRobinSEView } from "@/components/tournament/round-robin/round-robin-se-view";
 import { TournamentActions } from "@/components/tournament/tournament-actions";
 import { Badge } from "@/components/ui/badge";
-import { getTournamentBracket } from "@/data/tournament-dto";
+import { getRRStandings, getTournamentBracket } from "@/data/tournament-dto";
+import { auth } from "@/lib/auth";
 import { tournament } from "@/lib/flags";
+import prisma from "@/lib/prisma";
 import { ArrowLeft } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
@@ -24,10 +27,34 @@ export default async function TournamentDetailPage(props: {
   const data = await getTournamentBracket(id);
   if (!data) notFound();
 
+  let rrStandings: Awaited<ReturnType<typeof getRRStandings>> = [];
+  let canManage = false;
+
+  if (data.format === "ROUND_ROBIN_SE") {
+    rrStandings = await getRRStandings(id);
+
+    const session = await auth();
+    if (session?.user?.email) {
+      const user = await prisma.user.findUnique({
+        where: { email: session.user.email },
+        select: { id: true, role: true },
+      });
+      canManage =
+        user?.id === data.creatorId ||
+        user?.role === "ADMIN" ||
+        user?.role === "MANAGER";
+    }
+  }
+
   // Group matches by round
   const roundMap = new Map<
     string,
-    { roundName: string; bracket: string; roundNumber: number; matches: BracketMatchData[] }
+    {
+      roundName: string;
+      bracket: string;
+      roundNumber: number;
+      matches: BracketMatchData[];
+    }
   >();
 
   for (const round of data.rounds) {
@@ -64,7 +91,49 @@ export default async function TournamentDetailPage(props: {
 
   const rounds = Array.from(roundMap.values()).map((entry) => ({
     ...entry,
-    matches: entry.matches.sort((a, b) => a.bracketPosition - b.bracketPosition),
+    matches: entry.matches.sort(
+      (a, b) => a.bracketPosition - b.bracketPosition
+    ),
+  }));
+
+  const rrRounds = rounds
+    .filter((r) => r.bracket === "ROUND_ROBIN")
+    .map((r) => ({
+      roundName: r.roundName,
+      matches: r.matches.map((m) => ({
+        id: m.id,
+        tournamentId: data.id,
+        status: m.status,
+        team1Name: m.team1?.name ?? "TBD",
+        team2Name: m.team2?.name ?? "TBD",
+        team1Score: m.team1Score,
+        team2Score: m.team2Score,
+        winnerId: m.winnerId,
+        team1Id: m.team1?.id ?? null,
+        team2Id: m.team2?.id ?? null,
+      })),
+    }));
+
+  const playoffRounds = rounds.filter((r) => r.bracket === "WINNERS");
+
+  const allRRComplete =
+    rrRounds.length > 0 &&
+    rrRounds.every((r) => r.matches.every((m) => m.status === "COMPLETED"));
+
+  const playoffsSeeded = playoffRounds.some((r) =>
+    r.matches.some((m) => m.team1 !== null || m.team2 !== null)
+  );
+
+  const advancingCount = data.advancingTeams ?? data.teams.length;
+
+  const serializedStandings = rrStandings.map((s) => ({
+    teamId: s.teamId,
+    teamName: s.teamName,
+    matchesWon: s.matchesWon,
+    matchesLost: s.matchesLost,
+    mapsWon: s.mapsWon,
+    mapsLost: s.mapsLost,
+    mapDifferential: s.mapDifferential,
   }));
 
   const statusVariants: Record<
@@ -110,7 +179,18 @@ export default async function TournamentDetailPage(props: {
         </div>
 
         <div className="flex-1 rounded-lg border p-6">
-          {data.format === "DOUBLE_ELIMINATION" ? (
+          {data.format === "ROUND_ROBIN_SE" ? (
+            <RoundRobinSEView
+              tournamentId={data.id}
+              standings={serializedStandings}
+              advancingCount={advancingCount}
+              rrRounds={rrRounds}
+              playoffRounds={playoffRounds}
+              allRRComplete={allRRComplete}
+              playoffsSeeded={playoffsSeeded}
+              canManage={canManage}
+            />
+          ) : data.format === "DOUBLE_ELIMINATION" ? (
             <DoubleBracketView rounds={rounds} />
           ) : (
             <BracketView rounds={rounds} />
