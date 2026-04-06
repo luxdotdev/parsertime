@@ -85,7 +85,6 @@ export async function calculateRRStandings(
     }
   }
 
-  // Also include teams that haven't played yet
   const allTeams = await prisma.tournamentTeam.findMany({
     where: { tournamentId },
   });

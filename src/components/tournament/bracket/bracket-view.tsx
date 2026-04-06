@@ -89,7 +89,6 @@ export function BracketView({ rounds }: { rounds: RoundData[] }) {
   }, [rounds]);
 
   useEffect(() => {
-    // Calculate after layout settles
     const frame = requestAnimationFrame(() => {
       calculateConnectors();
     });
@@ -113,7 +112,6 @@ export function BracketView({ rounds }: { rounds: RoundData[] }) {
       ref={containerRef}
       className="bracket-grid relative flex min-h-[60vh] items-stretch gap-8"
     >
-      {/* SVG connector overlay */}
       <svg className="pointer-events-none absolute inset-0 size-full">
         {connectors.map(({ d, key }) => (
           <path

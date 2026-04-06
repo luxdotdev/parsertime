@@ -48,7 +48,6 @@ export async function PATCH(
       return Response.json({ error: "Tournament not found" }, { status: 404 });
     }
 
-    // Check permissions: tournament creator or admin
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
       select: { id: true, role: true },
@@ -61,7 +60,6 @@ export async function PATCH(
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Validate status transitions
     const { status, name, startDate, endDate } = parsed.data;
     if (status) {
       const validTransitions: Record<TournamentStatus, TournamentStatus[]> = {
@@ -155,7 +153,6 @@ export async function DELETE(
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Soft delete: set to CANCELLED
     await prisma.tournament.update({
       where: { id },
       data: { status: "CANCELLED" },

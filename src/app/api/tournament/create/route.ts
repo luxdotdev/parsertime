@@ -108,7 +108,6 @@ export async function POST(request: NextRequest) {
           : generateSingleEliminationBracket(teams.length);
 
     const tournament = await prisma.$transaction(async (tx) => {
-      // Create tournament
       const t = await tx.tournament.create({
         data: {
           name,
@@ -120,7 +119,6 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // Create tournament teams
       const tournamentTeams = await Promise.all(
         teams.map((team) =>
           tx.tournamentTeam.create({
@@ -134,13 +132,11 @@ export async function POST(request: NextRequest) {
         )
       );
 
-      // Build seed → tournamentTeamId lookup
       const seedToTeamId = new Map<number, number>();
       for (const tt of tournamentTeams) {
         seedToTeamId.set(tt.seed, tt.id);
       }
 
-      // Create rounds
       const rounds = await Promise.all(
         bracket.rounds.map((round) =>
           tx.tournamentRound.create({
@@ -154,7 +150,6 @@ export async function POST(request: NextRequest) {
         )
       );
 
-      // Build composite roundKey → roundId lookup (round numbers are not unique across brackets)
       const roundKey = (bracket: string, roundNumber: number) =>
         `${bracket}-${roundNumber}`;
       const roundLookup = new Map<string, number>();
@@ -162,8 +157,6 @@ export async function POST(request: NextRequest) {
         roundLookup.set(roundKey(r.bracket, r.roundNumber), r.id);
       }
 
-      // Create a synthetic scrim for each match (needed for map data pipeline)
-      // and create tournament matches
       const wbRoundCount = bracket.rounds.filter(
         (r) => r.bracket === "WINNERS"
       ).length;
@@ -180,7 +173,6 @@ export async function POST(request: NextRequest) {
           ? (seedToTeamId.get(matchSpec.team2Seed) ?? null)
           : null;
 
-        // Create synthetic scrim for map data pipeline
         const roundSpec = bracket.rounds.find(
           (r) =>
             r.roundNumber === matchSpec.roundNumber &&
@@ -207,8 +199,6 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      // Handle bye matches: auto-advance teams with byes
-      // Skip for RR_SE — RR has no byes and SE playoff byes are handled by transitionToPlayoffs
       if (format !== TournamentFormat.ROUND_ROBIN_SE) {
         const firstRoundMatches = bracket.matches.filter(
           (m) => m.roundNumber === 1 && m.bracket === "WINNERS"
@@ -221,7 +211,6 @@ export async function POST(request: NextRequest) {
           const byeWinnerId = seedToTeamId.get(byeWinnerSeed);
           if (!byeWinnerId) continue;
 
-          // Find the match we just created
           const match = await tx.tournamentMatch.findFirst({
             where: {
               tournamentId: t.id,
@@ -232,7 +221,6 @@ export async function POST(request: NextRequest) {
 
           if (!match) continue;
 
-          // Mark as completed with bye winner
           await tx.tournamentMatch.update({
             where: { id: match.id },
             data: {
@@ -241,7 +229,6 @@ export async function POST(request: NextRequest) {
             },
           });
 
-          // Advance to next round
           const next = getNextMatch(1, matchSpec.bracketPosition, wbRoundCount);
           if (next) {
             const nextMatch = await tx.tournamentMatch.findFirst({

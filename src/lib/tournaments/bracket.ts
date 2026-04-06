@@ -56,9 +56,6 @@ export function getRoundName(roundNumber: number, totalRounds: number): string {
   }
 }
 
-/**
- * Get the display name for a winners bracket round.
- */
 export function getWBRoundName(
   roundNumber: number,
   totalWBRounds: number
@@ -76,10 +73,6 @@ export function getWBRoundName(
   }
 }
 
-/**
- * Generate a single-elimination bracket for the given number of teams.
- * Handles byes for non-power-of-2 team counts by giving higher seeds byes.
- */
 export function generateSingleEliminationBracket(
   teamCount: number
 ): BracketSpec {
@@ -102,7 +95,6 @@ export function generateSingleEliminationBracket(
     });
   }
 
-  // Build first round with seeding (1 vs N, 2 vs N-1, etc.)
   const firstRoundMatchCount = totalSlots / 2;
   const seedPairings = generateSeededPairings(totalSlots);
 
@@ -122,7 +114,6 @@ export function generateSingleEliminationBracket(
     });
   }
 
-  // Later rounds have no seeded teams (filled by advancement)
   for (let r = 2; r <= totalRounds; r++) {
     const matchCount = totalSlots / Math.pow(2, r);
     for (let i = 0; i < matchCount; i++) {
@@ -139,11 +130,6 @@ export function generateSingleEliminationBracket(
   return { rounds, matches };
 }
 
-/**
- * Generate a double-elimination bracket for the given number of teams.
- * Includes winners bracket, losers bracket, and grand final.
- * Minimum 4 teams required.
- */
 export function generateDoubleEliminationBracket(
   teamCount: number
 ): DoubleEliminationBracketSpec {
@@ -158,7 +144,6 @@ export function generateDoubleEliminationBracket(
   const rounds: RoundSpec[] = [];
   const matches: MatchSpec[] = [];
 
-  // Winners Bracket rounds
   for (let r = 1; r <= wbRoundCount; r++) {
     const matchCount = totalSlots / Math.pow(2, r);
     rounds.push({
@@ -169,7 +154,6 @@ export function generateDoubleEliminationBracket(
     });
   }
 
-  // Winners Bracket matches - first round with seeding
   const firstRoundMatchCount = totalSlots / 2;
   const seedPairings = generateSeededPairings(totalSlots);
 
@@ -187,7 +171,6 @@ export function generateDoubleEliminationBracket(
     });
   }
 
-  // Winners Bracket - later rounds (no seeded teams)
   for (let r = 2; r <= wbRoundCount; r++) {
     const matchCount = totalSlots / Math.pow(2, r);
     for (let i = 0; i < matchCount; i++) {
@@ -201,7 +184,6 @@ export function generateDoubleEliminationBracket(
     }
   }
 
-  // Losers Bracket rounds and matches
   for (let lbR = 1; lbR <= lbRoundCount; lbR++) {
     const matchCount = getLBRoundMatchCount(lbR, wbRoundCount);
     const isOdd = lbR % 2 === 1;
@@ -231,7 +213,6 @@ export function generateDoubleEliminationBracket(
     }
   }
 
-  // Grand Final: 1 round, 1 match
   rounds.push({
     roundNumber: 1,
     roundName: "Grand Final",
@@ -250,37 +231,23 @@ export function generateDoubleEliminationBracket(
   return { rounds, matches, wbRoundCount, lbRoundCount };
 }
 
-/**
- * Calculate the number of matches in a given losers bracket round.
- * Odd LB rounds are "internal" (halve after), even are "dropdown" (keep count).
- * LB R1 starts with totalSlots / 4 matches.
- */
 export function getLBRoundMatchCount(
   lbRound: number,
   wbRoundCount: number
 ): number {
   const totalSlots = Math.pow(2, wbRoundCount);
-  // LB R1 starts with totalSlots / 4 matches
   let count = totalSlots / 4;
 
   for (let r = 2; r <= lbRound; r++) {
     if (r % 2 === 1) {
-      // Odd (internal): halve the match count
       count = count / 2;
     }
-    // Even (dropdown): keep the same count
   }
 
   return count;
 }
 
-/**
- * Generate standard seeded pairings for a bracket (1 vs N, 2 vs N-1, etc.)
- * arranged so the bracket unfolds correctly (top seeds on opposite sides).
- * Returns an array of [seed1, seed2] tuples in match order.
- */
 function generateSeededPairings(totalSlots: number): [number, number][] {
-  // Standard bracket ordering: recursively split so 1 and 2 are on opposite sides
   const order = bracketOrder(totalSlots);
   const pairings: [number, number][] = [];
   for (let i = 0; i < order.length; i += 2) {
@@ -289,11 +256,6 @@ function generateSeededPairings(totalSlots: number): [number, number][] {
   return pairings;
 }
 
-/**
- * Generate standard bracket seed ordering.
- * For a bracket of size N, produces the seed order such that
- * 1 vs N are on opposite ends, 2 vs N-1 on opposite ends, etc.
- */
 function bracketOrder(n: number): number[] {
   if (n === 1) return [1];
 
@@ -314,11 +276,6 @@ function nextPowerOf2(n: number): number {
   return p;
 }
 
-/**
- * Determine which match in the next round a winner advances to.
- * Returns { roundNumber, bracketPosition } of the next match,
- * and whether the winner fills the team1 or team2 slot.
- */
 export function getNextMatch(
   roundNumber: number,
   bracketPosition: number,
@@ -337,10 +294,6 @@ export function getNextMatch(
   };
 }
 
-/**
- * Given a bye match (one team present, one null), return the seed that
- * auto-advances. Returns null if not a bye match.
- */
 export function getByeWinner(match: MatchSpec): number | null {
   if (match.team1Seed !== null && match.team2Seed === null) {
     return match.team1Seed;
@@ -351,10 +304,6 @@ export function getByeWinner(match: MatchSpec): number | null {
   return null;
 }
 
-/**
- * Get advancement targets for a match in a double elimination bracket.
- * Returns where the winner and loser of the match should go.
- */
 export function getAdvancement(
   bracket: BracketSide,
   roundNumber: number,
@@ -383,22 +332,15 @@ export function getAdvancement(
   }
 }
 
-/**
- * Get advancement for a winners bracket match.
- * Winner advances within WB (or to Grand Final from WB Final).
- * Loser drops to the losers bracket.
- */
 function getWBAdvancement(
   roundNumber: number,
   bracketPosition: number,
   wbRoundCount: number,
   lbRoundCount: number
 ): Advancement {
-  // Winner advancement
   let winner: AdvancementTarget | null;
 
   if (roundNumber === wbRoundCount) {
-    // WB Final winner goes to Grand Final as team1
     winner = {
       roundNumber: 1,
       bracketPosition: 0,
@@ -406,7 +348,6 @@ function getWBAdvancement(
       slot: "team1",
     };
   } else {
-    // Advance within WB (same as single elim)
     winner = {
       roundNumber: roundNumber + 1,
       bracketPosition: Math.floor(bracketPosition / 2),
@@ -415,16 +356,13 @@ function getWBAdvancement(
     };
   }
 
-  // Loser drops to LB
   let loser: AdvancementTarget | null;
 
-  // Reverse positions to avoid rematches
   const matchCountInRound =
     Math.pow(2, wbRoundCount) / Math.pow(2, roundNumber);
   const reversedPosition = matchCountInRound - 1 - bracketPosition;
 
   if (roundNumber === 1) {
-    // WB R1 losers go to LB R1 as team1, positions reversed
     loser = {
       roundNumber: 1,
       bracketPosition: reversedPosition,
@@ -432,7 +370,6 @@ function getWBAdvancement(
       slot: "team1",
     };
   } else if (roundNumber === wbRoundCount) {
-    // WB Final loser goes to LB Final as team2
     loser = {
       roundNumber: lbRoundCount,
       bracketPosition: 0,
@@ -440,7 +377,6 @@ function getWBAdvancement(
       slot: "team2",
     };
   } else {
-    // WB R2+ losers go to LB even round 2*(R-1) as team2, positions reversed
     const lbTargetRound = 2 * (roundNumber - 1);
     loser = {
       roundNumber: lbTargetRound,
@@ -453,24 +389,17 @@ function getWBAdvancement(
   return { winner, loser };
 }
 
-/**
- * Get advancement for a losers bracket match.
- * Winner advances within LB (or to Grand Final from LB Final).
- * Loser is eliminated.
- */
 function getLBAdvancement(
   roundNumber: number,
   bracketPosition: number,
   wbRoundCount: number,
   lbRoundCount: number
 ): Advancement {
-  // Losers in LB are always eliminated
   const loser: AdvancementTarget | null = null;
 
   let winner: AdvancementTarget | null;
 
   if (roundNumber === lbRoundCount) {
-    // LB Final winner goes to Grand Final as team2
     winner = {
       roundNumber: 1,
       bracketPosition: 0,
@@ -481,7 +410,6 @@ function getLBAdvancement(
     const isOddRound = roundNumber % 2 === 1;
 
     if (isOddRound) {
-      // Internal (odd) round: halve position, team1 slot
       winner = {
         roundNumber: roundNumber + 1,
         bracketPosition: Math.floor(bracketPosition / 2),
@@ -489,7 +417,6 @@ function getLBAdvancement(
         slot: "team1",
       };
     } else {
-      // Dropdown (even) round: keep position, team1 slot
       winner = {
         roundNumber: roundNumber + 1,
         bracketPosition: bracketPosition,
@@ -526,11 +453,6 @@ function generateRoundRobinSchedule(teamCount: number): [number, number][][] {
   return rounds;
 }
 
-/**
- * Generate a Round Robin + Single Elimination bracket.
- * RR phase: every team plays every other team once.
- * SE playoff phase: top N teams advance to a single elimination bracket.
- */
 export function generateRoundRobinSEBracket(
   teamCount: number,
   advancingTeams?: number

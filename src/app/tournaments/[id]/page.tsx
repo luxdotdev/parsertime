@@ -46,7 +46,6 @@ export default async function TournamentDetailPage(props: {
     }
   }
 
-  // Group matches by round
   const roundMap = new Map<
     string,
     {

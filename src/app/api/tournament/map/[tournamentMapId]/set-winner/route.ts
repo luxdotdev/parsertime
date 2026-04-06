@@ -61,7 +61,6 @@ export async function POST(
 
     const match = tournamentMap.match;
 
-    // Check permissions
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
       select: { id: true, role: true },
@@ -74,13 +73,11 @@ export async function POST(
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Set the winner override
     await prisma.tournamentMap.update({
       where: { id: tournamentMapId },
       data: { winnerOverride: parsed.data.winner },
     });
 
-    // Recalculate match scores
     const allMaps = await prisma.tournamentMap.findMany({
       where: { matchId: match.id },
     });

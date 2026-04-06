@@ -52,7 +52,6 @@ export async function POST(
       return Response.json({ error: "Match not found" }, { status: 404 });
     }
 
-    // Check permissions: tournament creator or admin
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
       select: { id: true, role: true },
@@ -72,7 +71,6 @@ export async function POST(
       );
     }
 
-    // Create the map via existing pipeline
     await createNewMap(
       {
         map: data.map,
@@ -82,7 +80,6 @@ export async function POST(
       session
     );
 
-    // Find the newly created map (latest map in this scrim)
     const newMap = await prisma.map.findFirst({
       where: { scrimId: match.scrimId },
       orderBy: { createdAt: "desc" },
@@ -104,7 +101,6 @@ export async function POST(
       return Response.json({ error: "Failed to create map" }, { status: 500 });
     }
 
-    // Create TournamentMap record
     const tournamentMap = await prisma.tournamentMap.create({
       data: {
         matchId: match.id,
@@ -113,7 +109,6 @@ export async function POST(
       },
     });
 
-    // Try to auto-determine winner
     const mapData = newMap.mapData[0];
     let winner: string | null = null;
 
@@ -166,7 +161,6 @@ export async function POST(
           data: { winnerOverride: winner },
         });
 
-        // Update match scores and check for match completion
         await updateMatchScores(match.id);
       }
     }

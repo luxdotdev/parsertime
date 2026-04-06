@@ -35,7 +35,6 @@ export default async function TournamentMatchPage(props: {
   const team1Image = match.team1?.team?.image ?? null;
   const team2Image = match.team2?.team?.image ?? null;
 
-  // Check if the current user can upload maps
   const session = await auth();
   let canUpload = false;
   if (session?.user?.email) {
@@ -54,7 +53,6 @@ export default async function TournamentMatchPage(props: {
   return (
     <DashboardLayout>
       <div className="flex-1 space-y-6 p-4 pt-6 md:p-8">
-        {/* Header */}
         <div className="flex items-center gap-4">
           <Link
             href={`/tournaments/${tournamentId}` as Route}
@@ -85,9 +83,7 @@ export default async function TournamentMatchPage(props: {
           </div>
         </div>
 
-        {/* FACEIT-style 3-column layout */}
         <div className="grid gap-6 md:grid-cols-[1fr_2fr_1fr]">
-          {/* Team 1 Panel (Left) */}
           <div className="flex items-center justify-center rounded-lg border p-4">
             <TeamPanel
               name={team1Name}
@@ -98,7 +94,6 @@ export default async function TournamentMatchPage(props: {
             />
           </div>
 
-          {/* Maps + Bans Center Panel */}
           <div className="space-y-4">
             <MatchMapsPanel
               tournamentId={tournamentId}
@@ -119,7 +114,6 @@ export default async function TournamentMatchPage(props: {
             )}
           </div>
 
-          {/* Team 2 Panel (Right) */}
           <div className="flex items-center justify-center rounded-lg border p-4">
             <TeamPanel
               name={team2Name}

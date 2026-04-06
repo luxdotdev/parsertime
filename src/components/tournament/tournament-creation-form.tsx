@@ -354,7 +354,6 @@ export function TournamentCreationForm({
           )}
         </div>
 
-        {/* Add existing team */}
         {teamsData?.teams && teamsData.teams.length > 0 && (
           <div className="pt-2">
             <Select
@@ -377,7 +376,6 @@ export function TournamentCreationForm({
           </div>
         )}
 
-        {/* Add custom team */}
         <div className="flex gap-2 pt-2">
           <Input
             placeholder="Custom team name..."

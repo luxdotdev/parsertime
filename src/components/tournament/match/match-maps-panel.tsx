@@ -64,9 +64,6 @@ export function MatchMapsPanel({
             const team1Won = winner === team1Name;
             const team2Won = winner === team2Name;
 
-            // Link to the map detail page via the synthetic scrim.
-            // The [team] segment is not validated against the scrim — auth
-            // is handled by isAuthedToViewScrim which checks tournament access.
             const mapDetailHref =
               tournamentMap.map && scrimId
                 ? `/_/scrim/${scrimId}/map/${tournamentMap.map.id}?from=tournament&tournamentId=${tournamentId}&matchId=${matchId}`

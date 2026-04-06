@@ -185,14 +185,14 @@ async function placeTeamInMatch(
   tournamentId: number,
   roundNumber: number,
   bracketPosition: number,
-  bracket: BracketSide | string,
+  bracket: BracketSide,
   slot: "team1" | "team2",
   teamId: number
 ) {
   const round = await prisma.tournamentRound.findFirst({
     where: {
       tournamentId,
-      bracket: bracket as BracketSide,
+      bracket,
       roundNumber,
     },
   });
