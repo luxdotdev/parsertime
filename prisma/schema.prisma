@@ -174,6 +174,10 @@ enum AuditLogAction {
   USER_NAME_UPDATED
   USER_BATTLETAG_UPDATED
   BUG_REPORT_SUBMITTED
+  TOURNAMENT_CREATED
+  TOURNAMENT_UPDATED
+  TOURNAMENT_DELETED
+  TOURNAMENT_MATCH_UPDATED
 }
 
 model AuditLog {
@@ -203,6 +207,7 @@ model Team {
   mapGroups        MapGroup[]
   playerTargets    PlayerTarget[]
   scoutingTeamAbbr String?
+  tournamentTeams  TournamentTeam[]
 }
 
 model BotNotificationConfig {
@@ -282,34 +287,36 @@ model MapGroup {
 }
 
 model Scrim {
-  id                  Int      @id @default(autoincrement())
+  id                  Int              @id @default(autoincrement())
   name                String
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
   date                DateTime
   maps                Map[]
-  Team                Team?    @relation(fields: [teamId], references: [id])
+  Team                Team?            @relation(fields: [teamId], references: [id])
   teamId              Int?
   creatorId           String
-  guestMode           Boolean  @default(false)
+  guestMode           Boolean          @default(false)
   opponentTeamAbbr    String?
-  autoAssignTeamNames Boolean  @default(false)
+  autoAssignTeamNames Boolean          @default(false)
   team1Name           String?
   team2Name           String?
+  tournamentMatch     TournamentMatch?
 
   @@index([teamId])
 }
 
 model Map {
-  id         Int       @id @default(autoincrement())
-  name       String
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  mapData    MapData[]
-  Scrim      Scrim?    @relation(fields: [scrimId], references: [id])
-  vod        String?
-  scrimId    Int?
-  replayCode String?
+  id              Int              @id @default(autoincrement())
+  name            String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  mapData         MapData[]
+  Scrim           Scrim?           @relation(fields: [scrimId], references: [id])
+  vod             String?
+  scrimId         Int?
+  replayCode      String?
+  tournamentMaps  TournamentMap[]
 
   @@index([scrimId])
 }
@@ -446,6 +453,26 @@ enum MapType {
   Flashpoint
   Hybrid
   Push
+}
+
+enum TournamentFormat {
+  SINGLE_ELIMINATION
+  DOUBLE_ELIMINATION
+  ROUND_ROBIN
+  SWISS
+}
+
+enum TournamentStatus {
+  DRAFT
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum TournamentMatchStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
 }
 
 model MapData {
@@ -1277,4 +1304,103 @@ model MapCalibrationAnchor {
   calibration   MapCalibration @relation(fields: [calibrationId], references: [id], onDelete: Cascade)
 
   @@index([calibrationId])
+}
+
+// Tournament Models
+
+model Tournament {
+  id        Int              @id @default(autoincrement())
+  name      String
+  format    TournamentFormat
+  bestOf    Int              @default(3)
+  teamSlots Int              @default(8)
+  status    TournamentStatus @default(DRAFT)
+  startDate DateTime?
+  endDate   DateTime?
+  creatorId String
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  teams     TournamentTeam[]
+  rounds    TournamentRound[]
+  matches   TournamentMatch[]
+
+  @@index([creatorId])
+}
+
+model TournamentTeam {
+  id             Int               @id @default(autoincrement())
+  tournamentId   Int
+  teamId         Int?
+  name           String
+  seed           Int
+  eliminated     Boolean           @default(false)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  tournament     Tournament        @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  team           Team?             @relation(fields: [teamId], references: [id])
+  matchesAsTeam1 TournamentMatch[] @relation("MatchTeam1")
+  matchesAsTeam2 TournamentMatch[] @relation("MatchTeam2")
+  matchesWon     TournamentMatch[] @relation("MatchWinner")
+
+  @@unique([tournamentId, seed])
+  @@index([tournamentId])
+  @@index([teamId])
+}
+
+model TournamentRound {
+  id           Int               @id @default(autoincrement())
+  tournamentId Int
+  roundNumber  Int
+  roundName    String
+  bestOf       Int?
+  tournament   Tournament        @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  matches      TournamentMatch[]
+
+  @@unique([tournamentId, roundNumber])
+  @@index([tournamentId])
+}
+
+model TournamentMatch {
+  id              Int                   @id @default(autoincrement())
+  tournamentId    Int
+  roundId         Int
+  bracketPosition Int
+  team1Id         Int?
+  team2Id         Int?
+  winnerId        Int?
+  team1Score      Int                   @default(0)
+  team2Score      Int                   @default(0)
+  status          TournamentMatchStatus @default(UPCOMING)
+  scheduledAt     DateTime?
+  scrimId         Int?                  @unique
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  tournament      Tournament            @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  round           TournamentRound       @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  team1           TournamentTeam?       @relation("MatchTeam1", fields: [team1Id], references: [id])
+  team2           TournamentTeam?       @relation("MatchTeam2", fields: [team2Id], references: [id])
+  winner          TournamentTeam?       @relation("MatchWinner", fields: [winnerId], references: [id])
+  scrim           Scrim?                @relation(fields: [scrimId], references: [id])
+  maps            TournamentMap[]
+
+  @@index([tournamentId])
+  @@index([roundId])
+  @@index([team1Id])
+  @@index([team2Id])
+}
+
+model TournamentMap {
+  id             Int             @id @default(autoincrement())
+  matchId        Int
+  gameNumber     Int
+  mapId          Int?
+  winnerOverride String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  match          TournamentMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  map            Map?            @relation(fields: [mapId], references: [id])
+
+  @@unique([matchId, gameNumber])
+  @@index([matchId])
+  @@index([mapId])
 }
