@@ -196,3 +196,15 @@ export const aiChat = flag<boolean, Entities>({
   description: "Enable or disable the AI chat feature",
   identify,
 });
+
+export const tournament = flag<boolean, Entities>({
+  key: "tournament",
+  adapter: vercelAdapter(),
+  options: [
+    { value: true, label: "Enabled" },
+    { value: false, label: "Disabled" },
+  ],
+  defaultValue: false,
+  description: "Enable or disable the tournaments feature",
+  identify,
+});

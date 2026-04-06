@@ -8,6 +8,7 @@ import {
   scoutingTool,
   simulationTool,
   tempoChart,
+  tournament,
   ultimateImpactTool,
 } from "@/lib/flags";
 
@@ -22,6 +23,7 @@ export type FeatureFlags = {
   newLandingPageEnabled: boolean;
   aiChatEnabled: boolean;
   positionalDataEnabled: boolean;
+  tournamentEnabled: boolean;
 };
 
 export async function resolveAllFlags(): Promise<FeatureFlags> {
@@ -36,6 +38,7 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     newLandingPageEnabled,
     aiChatEnabled,
     positionalDataEnabled,
+    tournamentEnabled,
   ] = await Promise.all([
     scoutingTool(),
     mapComparison(),
@@ -47,6 +50,7 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     newLandingPage(),
     aiChat(),
     positionalData(),
+    tournament(),
   ]);
 
   return {
@@ -60,6 +64,7 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     newLandingPageEnabled,
     aiChatEnabled,
     positionalDataEnabled,
+    tournamentEnabled,
   };
 }
 
@@ -75,5 +80,6 @@ export function toFlagValues(flags: FeatureFlags): Record<string, boolean> {
     "new-landing-page": flags.newLandingPageEnabled,
     "ai-chat": flags.aiChatEnabled,
     "positional-data": flags.positionalDataEnabled,
+    tournament: flags.tournamentEnabled,
   };
 }

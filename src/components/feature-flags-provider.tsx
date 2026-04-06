@@ -14,6 +14,7 @@ const defaultFlags: FeatureFlags = {
   tempoChartEnabled: false,
   aiChatEnabled: false,
   positionalDataEnabled: false,
+  tournamentEnabled: false,
 };
 
 const FeatureFlagsContext = createContext<FeatureFlags>(defaultFlags);
