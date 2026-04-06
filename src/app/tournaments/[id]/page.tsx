@@ -1,5 +1,6 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { BracketView } from "@/components/tournament/bracket/bracket-view";
+import { DoubleBracketView } from "@/components/tournament/bracket/double-bracket-view";
 import type { BracketMatchData } from "@/components/tournament/bracket/bracket-match-card";
 import { TournamentActions } from "@/components/tournament/tournament-actions";
 import { Badge } from "@/components/ui/badge";
@@ -25,19 +26,23 @@ export default async function TournamentDetailPage(props: {
 
   // Group matches by round
   const roundMap = new Map<
-    number,
-    { roundName: string; matches: BracketMatchData[] }
+    string,
+    { roundName: string; bracket: string; roundNumber: number; matches: BracketMatchData[] }
   >();
 
   for (const round of data.rounds) {
-    roundMap.set(round.roundNumber, {
+    const key = `${round.bracket}-${round.roundNumber}`;
+    roundMap.set(key, {
       roundName: round.roundName,
+      bracket: round.bracket,
+      roundNumber: round.roundNumber,
       matches: [],
     });
   }
 
   for (const match of data.matches) {
-    const roundEntry = roundMap.get(match.round.roundNumber);
+    const key = `${match.round.bracket}-${match.round.roundNumber}`;
+    const roundEntry = roundMap.get(key);
     if (!roundEntry) continue;
 
     roundEntry.matches.push({
@@ -46,18 +51,10 @@ export default async function TournamentDetailPage(props: {
       bracketPosition: match.bracketPosition,
       status: match.status,
       team1: match.team1
-        ? {
-            id: match.team1.id,
-            name: match.team1.name,
-            seed: match.team1.seed,
-          }
+        ? { id: match.team1.id, name: match.team1.name, seed: match.team1.seed }
         : null,
       team2: match.team2
-        ? {
-            id: match.team2.id,
-            name: match.team2.name,
-            seed: match.team2.seed,
-          }
+        ? { id: match.team2.id, name: match.team2.name, seed: match.team2.seed }
         : null,
       team1Score: match.team1Score,
       team2Score: match.team2Score,
@@ -65,13 +62,10 @@ export default async function TournamentDetailPage(props: {
     });
   }
 
-  const rounds = Array.from(roundMap.entries())
-    .sort(([a], [b]) => a - b)
-    .map(([roundNumber, { roundName, matches }]) => ({
-      roundNumber,
-      roundName,
-      matches: matches.sort((a, b) => a.bracketPosition - b.bracketPosition),
-    }));
+  const rounds = Array.from(roundMap.values()).map((entry) => ({
+    ...entry,
+    matches: entry.matches.sort((a, b) => a.bracketPosition - b.bracketPosition),
+  }));
 
   const statusVariants: Record<
     string,
@@ -116,7 +110,11 @@ export default async function TournamentDetailPage(props: {
         </div>
 
         <div className="flex-1 rounded-lg border p-6">
-          <BracketView rounds={rounds} />
+          {data.format === "DOUBLE_ELIMINATION" ? (
+            <DoubleBracketView rounds={rounds} />
+          ) : (
+            <BracketView rounds={rounds} />
+          )}
         </div>
       </div>
     </DashboardLayout>
