@@ -475,6 +475,12 @@ enum TournamentMatchStatus {
   COMPLETED
 }
 
+enum BracketSide {
+  WINNERS
+  LOSERS
+  GRAND_FINAL
+}
+
 model MapData {
   id                   Int                  @id @default(autoincrement())
   scrimId              Int
@@ -1316,7 +1322,8 @@ model Tournament {
   teamSlots Int              @default(8)
   status    TournamentStatus @default(DRAFT)
   startDate DateTime?
-  endDate   DateTime?
+  endDate             DateTime?
+  grandFinalReset     Boolean          @default(true)
   creatorId String
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
@@ -1353,10 +1360,11 @@ model TournamentRound {
   roundNumber  Int
   roundName    String
   bestOf       Int?
+  bracket      BracketSide       @default(WINNERS)
   tournament   Tournament        @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   matches      TournamentMatch[]
 
-  @@unique([tournamentId, roundNumber])
+  @@unique([tournamentId, bracket, roundNumber])
   @@index([tournamentId])
 }
 
