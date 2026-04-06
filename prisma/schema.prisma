@@ -459,6 +459,7 @@ enum TournamentFormat {
   SINGLE_ELIMINATION
   DOUBLE_ELIMINATION
   ROUND_ROBIN
+  ROUND_ROBIN_SE
   SWISS
 }
 
@@ -479,6 +480,7 @@ enum BracketSide {
   WINNERS
   LOSERS
   GRAND_FINAL
+  ROUND_ROBIN
 }
 
 model MapData {
@@ -1324,6 +1326,7 @@ model Tournament {
   startDate DateTime?
   endDate             DateTime?
   grandFinalReset     Boolean          @default(true)
+  advancingTeams      Int?
   creatorId String
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
