@@ -108,7 +108,7 @@
     "@vercel/kv": "^3.0.0",
     "@vercel/speed-insights": "^1.2.0",
     "@vercel/toolbar": "^0.1.41",
-    "@xstate/store": "^3.9.2",
+    "@xstate/store": "^3.17.1",
     "@xyflow/react": "^12.10.1",
     "ai": "^6.0.134",
     "ansi-to-react": "^6.2.6",
