@@ -55,9 +55,10 @@ export function AnalysisCardAccordion({
     abilityTiming &&
     (abilityTiming.team1.rows.length > 0 ||
       abilityTiming.team2.rows.length > 0);
+  const hasRotationData = rotationDeaths !== undefined;
   const allSections = [
     ...BASE_SECTIONS,
-    "rotationDeaths",
+    ...(hasRotationData ? ["rotationDeaths"] : []),
     ...(hasAbilityData ? ["abilities"] : []),
   ];
 
@@ -196,30 +197,32 @@ export function AnalysisCardAccordion({
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="rotationDeaths">
-            <AccordionTrigger>
-              <span className="flex items-center gap-2">
-                <Route
-                  className="text-muted-foreground size-4"
-                  aria-hidden="true"
+          {hasRotationData && (
+            <AccordionItem value="rotationDeaths">
+              <AccordionTrigger>
+                <span className="flex items-center gap-2">
+                  <Route
+                    className="text-muted-foreground size-4"
+                    aria-hidden="true"
+                  />
+                  {t.tabRotationDeaths ?? "Rotation Deaths"}
+                </span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <RotationDeathsSection
+                  team1={team1}
+                  team2={team2}
+                  rotationDeaths={rotationDeaths ?? null}
+                  calibrationData={calibrationData}
                 />
-                {t.tabRotationDeaths ?? "Rotation Deaths"}
-              </span>
-            </AccordionTrigger>
-            <AccordionContent>
-              <RotationDeathsSection
-                team1={team1}
-                team2={team2}
-                rotationDeaths={rotationDeaths ?? null}
-                calibrationData={calibrationData}
-              />
-              {t.footerRotationDeaths && (
-                <p className="text-muted-foreground mt-3 text-xs text-pretty">
-                  {t.footerRotationDeaths}
-                </p>
-              )}
-            </AccordionContent>
-          </AccordionItem>
+                {t.footerRotationDeaths && (
+                  <p className="text-muted-foreground mt-3 text-xs text-pretty">
+                    {t.footerRotationDeaths}
+                  </p>
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          )}
 
           {hasAbilityData && abilityTiming && (
             <AccordionItem value="abilities">

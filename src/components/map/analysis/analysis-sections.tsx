@@ -8,6 +8,7 @@ import {
   type FightFirstDeath,
 } from "@/components/map/analysis/first-death-timeline";
 import { HeadToHeadBar } from "@/components/map/analysis/head-to-head-bar";
+import { useGoToReplay } from "@/components/map/map-tabs";
 import { KillPositionCard } from "@/components/positional/kill-position-card";
 import { useKillCalibration } from "@/components/positional/use-kill-calibration";
 import { UltComparisonChart } from "@/components/scrim/ult-comparison-chart";
@@ -623,6 +624,7 @@ function RotationDeathRow({
 }) {
   const { kill, fightKills, killDistance } = event;
   const t = useTranslations("mapPage.killfeedTable");
+  const goToReplay = useGoToReplay();
 
   const calibration = useKillCalibration(
     kill.match_time,
@@ -643,9 +645,23 @@ function RotationDeathRow({
 
   const rowContent = (
     <div className="bg-muted/30 hover:bg-muted/60 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors">
-      <span className="text-muted-foreground w-14 shrink-0 text-xs tabular-nums">
-        {toTimestamp(kill.match_time)}
-      </span>
+      {calibrationData ? (
+        <button
+          type="button"
+          className="text-muted-foreground hover:text-foreground w-14 shrink-0 cursor-pointer text-xs tabular-nums underline-offset-2 hover:underline"
+          title="View in Replay"
+          onClick={(e) => {
+            e.stopPropagation();
+            goToReplay(kill.match_time);
+          }}
+        >
+          {toTimestamp(kill.match_time)}
+        </button>
+      ) : (
+        <span className="text-muted-foreground w-14 shrink-0 text-xs tabular-nums">
+          {toTimestamp(kill.match_time)}
+        </span>
+      )}
 
       <span className="flex items-center gap-1.5">
         <Image

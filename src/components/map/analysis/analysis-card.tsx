@@ -77,6 +77,7 @@ export function AnalysisCard({
   translations: t,
 }: AnalysisCardProps) {
   const [activeTab, setActiveTab] = useState("deaths");
+  const hasRotationData = rotationDeaths !== undefined;
 
   const footerText: Record<string, string> = {
     deaths: t.footerDeaths,
@@ -84,7 +85,7 @@ export function AnalysisCard({
     timing: t.footerTiming,
     efficiency: t.footerEfficiency,
     swaps: t.footerSwaps,
-    ...(t.footerRotationDeaths
+    ...(hasRotationData && t.footerRotationDeaths
       ? { rotationDeaths: t.footerRotationDeaths }
       : {}),
   };
@@ -122,13 +123,15 @@ export function AnalysisCard({
               <span className="hidden sm:inline">{t.tabSwaps}</span>
               <span className="sm:hidden">Swaps</span>
             </TabsTrigger>
-            <TabsTrigger value="rotationDeaths" className="gap-1.5">
-              <Route className="size-3.5" />
-              <span className="hidden sm:inline">
-                {t.tabRotationDeaths ?? "Rotation Deaths"}
-              </span>
-              <span className="sm:hidden">Rotation</span>
-            </TabsTrigger>
+            {hasRotationData && (
+              <TabsTrigger value="rotationDeaths" className="gap-1.5">
+                <Route className="size-3.5" />
+                <span className="hidden sm:inline">
+                  {t.tabRotationDeaths ?? "Rotation Deaths"}
+                </span>
+                <span className="sm:hidden">Rotation</span>
+              </TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent
@@ -174,17 +177,19 @@ export function AnalysisCard({
             <SwapsSection team1={team1} team2={team2} swaps={swaps} />
           </TabsContent>
 
-          <TabsContent
-            value="rotationDeaths"
-            className="animate-in fade-in-0 data-[state=inactive]:animate-out data-[state=inactive]:fade-out-0 min-h-[180px] motion-reduce:animate-none"
-          >
-            <RotationDeathsSection
-              team1={team1}
-              team2={team2}
-              rotationDeaths={rotationDeaths ?? null}
-              calibrationData={calibrationData}
-            />
-          </TabsContent>
+          {hasRotationData && (
+            <TabsContent
+              value="rotationDeaths"
+              className="animate-in fade-in-0 data-[state=inactive]:animate-out data-[state=inactive]:fade-out-0 min-h-[180px] motion-reduce:animate-none"
+            >
+              <RotationDeathsSection
+                team1={team1}
+                team2={team2}
+                rotationDeaths={rotationDeaths ?? null}
+                calibrationData={calibrationData}
+              />
+            </TabsContent>
+          )}
         </Tabs>
       </CardContent>
       <CardFooter>
