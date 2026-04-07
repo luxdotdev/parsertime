@@ -92,7 +92,10 @@ export function PlayerSelector({
           <CommandEmpty>
             {isLoading ? t("loading") : t("noPlayerFound")}
           </CommandEmpty>
-          <CommandGroup id="player-selector-listbox" className="max-h-[300px] overflow-y-auto">
+          <CommandGroup
+            id="player-selector-listbox"
+            className="max-h-[300px] overflow-y-auto"
+          >
             {players?.map((player) => (
               <CommandItem
                 key={player.name}

@@ -268,7 +268,12 @@ export function TournamentAddMapCard({
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="game-number-trigger" className="text-sm font-medium">Game Number</label>
+              <label
+                htmlFor="game-number-trigger"
+                className="text-sm font-medium"
+              >
+                Game Number
+              </label>
               <Select value={gameNumber} onValueChange={setGameNumber}>
                 <SelectTrigger id="game-number-trigger" className="mt-1 w-32">
                   <SelectValue />

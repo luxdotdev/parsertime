@@ -178,7 +178,10 @@ export async function POST(
     return Response.json({ error: "Failed to set winner" }, { status: 500 });
   } finally {
     event.durationMs = Date.now() - startTime;
-    const logFn = event.outcome === "error" ? (e: Record<string, unknown>) => Logger.error(e) : (e: Record<string, unknown>) => Logger.info(e);
+    const logFn =
+      event.outcome === "error"
+        ? (e: Record<string, unknown>) => Logger.error(e)
+        : (e: Record<string, unknown>) => Logger.info(e);
     logFn(event);
   }
 }

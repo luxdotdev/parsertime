@@ -1,10 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [
-    "nextjs",
-    "typescript",
-    "react"
-  ],
+  "plugins": ["nextjs", "typescript", "react"],
   "categories": {
     "correctness": "off"
   },
@@ -86,20 +82,14 @@
   },
   "overrides": [
     {
-      "files": [
-        "**/*.{js,jsx,mjs,ts,tsx,mts,cts}"
-      ],
+      "files": ["**/*.{js,jsx,mjs,ts,tsx,mts,cts}"],
       "rules": {
         "import/no-anonymous-default-export": "warn",
         "jsx-a11y/alt-text": [
           "warn",
           {
-            "elements": [
-              "img"
-            ],
-            "img": [
-              "Image"
-            ]
+            "elements": ["img"],
+            "img": ["Image"]
           }
         ],
         "jsx-a11y/aria-props": "warn",
@@ -119,22 +109,14 @@
         "sampleRate": "readonly",
         "WorkletGlobalScope": "readonly"
       },
-      "plugins": [
-        "import",
-        "jsx-a11y"
-      ],
+      "plugins": ["import", "jsx-a11y"],
       "env": {
         "browser": true,
         "node": true
       }
     },
     {
-      "files": [
-        "**/*.ts",
-        "**/*.tsx",
-        "**/*.mts",
-        "**/*.cts"
-      ],
+      "files": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
       "rules": {
         "constructor-super": "off",
         "no-class-assign": "off",
@@ -157,18 +139,13 @@
       }
     },
     {
-      "files": [
-        "**/*.{ts,tsx,js,jsx}"
-      ],
+      "files": ["**/*.{ts,tsx,js,jsx}"],
       "rules": {
         "no-console": "error",
         "no-constant-binary-expression": "error",
         "prefer-template": "warn",
         "no-else-return": "warn",
-        "func-style": [
-          "error",
-          "declaration"
-        ],
+        "func-style": ["error", "declaration"],
         "react/jsx-curly-brace-presence": "warn",
         "react/jsx-no-useless-fragment": "warn",
         "react/no-array-index-key": "error",
@@ -176,9 +153,7 @@
       }
     },
     {
-      "files": [
-        "src/**/*.{ts,tsx}"
-      ],
+      "files": ["src/**/*.{ts,tsx}"],
       "rules": {
         "constructor-super": "off",
         "no-class-assign": "off",
@@ -245,10 +220,7 @@
             "arrayLiteralTypeAssertions": "allow-as-parameter"
           }
         ],
-        "typescript/consistent-type-definitions": [
-          "error",
-          "type"
-        ],
+        "typescript/consistent-type-definitions": ["error", "type"],
         "typescript/no-confusing-non-null-assertion": "error",
         "typescript/no-inferrable-types": "error",
         "typescript/non-nullable-type-assertion-style": "error",
@@ -273,7 +245,7 @@
           }
         ],
         "typescript/no-import-type-side-effects": "warn"
-      },
+      }
     }
   ]
 }

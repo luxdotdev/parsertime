@@ -113,7 +113,10 @@ export async function POST(
     );
   } finally {
     event.durationMs = Date.now() - startTime;
-    const logFn = event.outcome === "error" ? (e: Record<string, unknown>) => Logger.error(e) : (e: Record<string, unknown>) => Logger.info(e);
+    const logFn =
+      event.outcome === "error"
+        ? (e: Record<string, unknown>) => Logger.error(e)
+        : (e: Record<string, unknown>) => Logger.info(e);
     logFn(event);
   }
 }
