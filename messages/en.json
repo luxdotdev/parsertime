@@ -433,7 +433,9 @@
       "chat": "Analyst",
       "chatNew": "New Conversation",
       "chatReports": "Reports",
-      "tournaments": "Tournaments"
+      "tournaments": "Tournaments",
+      "coaching": "Coaching",
+      "coachingCanvas": "Canvas"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "Search team...",
@@ -1942,6 +1944,44 @@
           "damage_blocked": "Damage Blocked"
         }
       }
+    }
+  },
+  "coaching": {
+    "title": "Coaching Canvas",
+    "subtitle": "Annotate maps with hero placements, drawings, and strategy notes.",
+    "metadata": {
+      "title": "Coaching Canvas | Parsertime",
+      "description": "Annotate maps with hero placements and strategy drawings."
+    },
+    "sidebar": {
+      "team1": "Team 1",
+      "team2": "Team 2",
+      "tank": "Tank",
+      "damage": "Damage",
+      "support": "Support"
+    },
+    "toolbar": {
+      "select": "Select",
+      "pen": "Pen",
+      "arrow": "Arrow",
+      "eraser": "Eraser",
+      "undo": "Undo",
+      "redo": "Redo",
+      "reset": "Reset",
+      "strokeWidth": "Stroke width",
+      "team1Color": "Team 1 color",
+      "team2Color": "Team 2 color"
+    },
+    "mapSelector": {
+      "placeholder": "Select a map",
+      "subMapPlaceholder": "Select a point",
+      "label": "Map"
+    },
+    "reset": {
+      "title": "Reset canvas?",
+      "description": "This will clear all hero placements and drawings. This action cannot be undone.",
+      "confirm": "Reset",
+      "cancel": "Cancel"
     }
   },
   "dataLabeling": {
@@ -3463,7 +3503,9 @@
     "newChat": "New Chat",
     "reports": "Reports",
     "dataLabeling": "Data Labeling",
-    "mapCalibration": "Map Calibration"
+    "mapCalibration": "Map Calibration",
+    "coachingTitle": "Coaching",
+    "coachingCanvas": "Canvas"
   },
   "demoPage": {
     "metadata": {
