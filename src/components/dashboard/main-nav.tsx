@@ -13,8 +13,8 @@ const navLinkStyles =
 const dropdownItemStyles =
   "hover:bg-accent hover:text-accent-foreground flex w-full items-center rounded-sm px-2 py-1.5 text-sm transition-colors";
 
-const STATS_PLAYER_ROUTE = /^\/stats\/(?!hero$|team$|compare$)[^\/]+$/;
-const SCOUTING_TEAM_ROUTE = /^\/scouting\/(?!player$|team$)[^\/]+$/;
+const STATS_PLAYER_ROUTE = /^\/stats\/(?!hero$|team$|compare$)[^/]+$/;
+const SCOUTING_TEAM_ROUTE = /^\/scouting\/(?!player$|team$)[^/]+$/;
 
 function handleDropdownKeyDown(e: React.KeyboardEvent<HTMLLIElement>) {
   if (e.key === "Escape") {

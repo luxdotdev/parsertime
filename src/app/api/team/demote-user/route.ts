@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   const authToken = req.headers.get("Authorization");
   const devTokenAuthed = authToken === process.env.DEV_TOKEN;
 
-  if (!session || !session.user || !session.user.email) {
+  if (!session?.user?.email) {
     if (!devTokenAuthed) unauthorized();
     Logger.log("Authorized with dev token");
   }

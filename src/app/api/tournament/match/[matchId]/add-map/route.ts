@@ -231,7 +231,7 @@ async function updateMatchScores(matchId: number) {
     },
   });
 
-  if (!match || !match.team1 || !match.team2) return;
+  if (!match?.team1 || !match.team2) return;
 
   let team1Wins = 0;
   let team2Wins = 0;

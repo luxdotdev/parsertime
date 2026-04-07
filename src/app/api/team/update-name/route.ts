@@ -23,7 +23,7 @@ const TeamNameUpdateSchema = z.object({
 
 export async function POST(req: NextRequest) {
   const session = await auth();
-  if (!session || !session.user || !session.user.email) {
+  if (!session?.user?.email) {
     unauthorized();
   }
 

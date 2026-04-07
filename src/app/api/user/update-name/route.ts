@@ -20,7 +20,7 @@ const UpdateNameSchema = z.object({
 
 export async function POST(req: NextRequest) {
   const session = await auth();
-  if (!session || !session.user || !session.user.email) unauthorized();
+  if (!session?.user?.email) unauthorized();
 
   const body = UpdateNameSchema.safeParse(await req.json());
   if (!body.success) {

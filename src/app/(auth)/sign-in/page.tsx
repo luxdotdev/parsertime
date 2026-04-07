@@ -42,8 +42,7 @@ export async function generateMetadata(
 
 function getSafeCallbackUrl(callbackUrl: string | undefined): string {
   if (
-    callbackUrl &&
-    callbackUrl.startsWith("/") &&
+    callbackUrl?.startsWith("/") &&
     !callbackUrl.startsWith("//")
   ) {
     return callbackUrl;

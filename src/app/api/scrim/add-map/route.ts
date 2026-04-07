@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
 
   const data = (await req.json()) as AddMapRequestData;
 
-  if (!session || !session.user || !session.user.email) {
+  if (!session?.user?.email) {
     Logger.warn("Unauthorized request to add map");
     unauthorized();
   }

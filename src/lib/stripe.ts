@@ -21,7 +21,7 @@ export async function createCheckout(
       ? "https://parsertime.app"
       : "http://localhost:3000";
 
-  if (!session || !session.user || !session.user.email) {
+  if (!session?.user?.email) {
     throw new Error("Unauthorized");
   }
 

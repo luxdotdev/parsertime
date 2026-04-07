@@ -1,4 +1,4 @@
-import { BracketSide } from "@prisma/client";
+import { type BracketSide } from "@prisma/client";
 
 export type RoundSpec = {
   roundNumber: number;
