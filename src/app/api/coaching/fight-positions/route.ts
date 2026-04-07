@@ -120,10 +120,7 @@ export async function GET(request: Request) {
     }),
   ]);
 
-  const latest = new Map<
-    string,
-    { pos: PlayerPosition; time: number }
-  >();
+  const latest = new Map<string, { pos: PlayerPosition; time: number }>();
 
   function track(
     name: string,
@@ -145,22 +142,78 @@ export async function GET(request: Request) {
   }
 
   for (const k of kills) {
-    track(k.attacker_name, k.attacker_team, k.attacker_hero, k.attacker_x, k.attacker_z, k.match_time);
-    track(k.victim_name, k.victim_team, k.victim_hero, k.victim_x, k.victim_z, k.match_time);
+    track(
+      k.attacker_name,
+      k.attacker_team,
+      k.attacker_hero,
+      k.attacker_x,
+      k.attacker_z,
+      k.match_time
+    );
+    track(
+      k.victim_name,
+      k.victim_team,
+      k.victim_hero,
+      k.victim_x,
+      k.victim_z,
+      k.match_time
+    );
   }
   for (const d of damage) {
-    track(d.attacker_name, d.attacker_team, d.attacker_hero, d.attacker_x, d.attacker_z, d.match_time);
-    track(d.victim_name, d.victim_team, d.victim_hero, d.victim_x, d.victim_z, d.match_time);
+    track(
+      d.attacker_name,
+      d.attacker_team,
+      d.attacker_hero,
+      d.attacker_x,
+      d.attacker_z,
+      d.match_time
+    );
+    track(
+      d.victim_name,
+      d.victim_team,
+      d.victim_hero,
+      d.victim_x,
+      d.victim_z,
+      d.match_time
+    );
   }
   for (const h of healing) {
-    track(h.healer_name, h.healer_team, h.healer_hero, h.healer_x, h.healer_z, h.match_time);
-    track(h.healee_name, h.healee_team, h.healee_hero, h.healee_x, h.healee_z, h.match_time);
+    track(
+      h.healer_name,
+      h.healer_team,
+      h.healer_hero,
+      h.healer_x,
+      h.healer_z,
+      h.match_time
+    );
+    track(
+      h.healee_name,
+      h.healee_team,
+      h.healee_hero,
+      h.healee_x,
+      h.healee_z,
+      h.match_time
+    );
   }
   for (const a of ability1) {
-    track(a.player_name, a.player_team, a.player_hero, a.player_x, a.player_z, a.match_time);
+    track(
+      a.player_name,
+      a.player_team,
+      a.player_hero,
+      a.player_x,
+      a.player_z,
+      a.match_time
+    );
   }
   for (const a of ability2) {
-    track(a.player_name, a.player_team, a.player_hero, a.player_x, a.player_z, a.match_time);
+    track(
+      a.player_name,
+      a.player_team,
+      a.player_hero,
+      a.player_x,
+      a.player_z,
+      a.match_time
+    );
   }
 
   const players: PlayerPosition[] = Array.from(latest.values()).map(

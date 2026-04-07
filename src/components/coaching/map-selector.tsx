@@ -93,9 +93,7 @@ export function MapSelector() {
   }
 
   function handleSubMapSelect(subMapName: string) {
-    const parentMap = maps.find(
-      (m) => toKebabCase(m) === selectedMap
-    );
+    const parentMap = maps.find((m) => toKebabCase(m) === selectedMap);
     if (!parentMap) return;
     void loadAndSelectMap(parentMap, subMapName, subMapName);
   }
@@ -104,16 +102,14 @@ export function MapSelector() {
     ? maps.find((m) => toKebabCase(m) === selectedMap)
     : null;
 
-  const controlSubMaps = currentParentName && isControlMap(currentParentName)
-    ? getControlSubMapNames(currentParentName)
-    : [];
+  const controlSubMaps =
+    currentParentName && isControlMap(currentParentName)
+      ? getControlSubMapNames(currentParentName)
+      : [];
 
   return (
     <div className="flex items-center gap-2">
-      <Select
-        value={currentParentName ?? ""}
-        onValueChange={handleMapSelect}
-      >
+      <Select value={currentParentName ?? ""} onValueChange={handleMapSelect}>
         <SelectTrigger className="w-[280px]">
           <SelectValue placeholder={t("placeholder")} />
         </SelectTrigger>

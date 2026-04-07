@@ -341,11 +341,12 @@ export function CanvasRenderer({ onCanvasClick }: CanvasRendererProps) {
       const factor = e.deltaY > 0 ? 0.9 : 1.1;
       const ctx = coachingCanvasStore.getSnapshot().context;
       const minZoom =
-        ctx.mapImageHeight > 0
-          ? canvasSize.height / ctx.mapImageHeight
-          : 0.1;
+        ctx.mapImageHeight > 0 ? canvasSize.height / ctx.mapImageHeight : 0.1;
       const currentView = ctx.view;
-      const newZoom = Math.max(minZoom, Math.min(10, currentView.zoom * factor));
+      const newZoom = Math.max(
+        minZoom,
+        Math.min(10, currentView.zoom * factor)
+      );
       if (newZoom <= minZoom) {
         coachingCanvasStore.send({
           type: "setView",

@@ -31,7 +31,11 @@ type PlayerPosition = {
 function getCalibrationForFight(
   fightStart: number,
   calibrationData: NonNullable<SerializedCalibrationData>
-): { calibration: LoadedCalibration; calibrationName: string; subMap: string | null } | null {
+): {
+  calibration: LoadedCalibration;
+  calibrationName: string;
+  subMap: string | null;
+} | null {
   const { calibrations, mapName, mapType, roundStarts } = calibrationData;
 
   if (mapType === "Control" && roundStarts.length > 0) {
@@ -44,7 +48,11 @@ function getCalibrationForFight(
     }
     const subMapName = getControlSubMapName(mapName, objectiveIndex);
     if (subMapName && calibrations[subMapName]) {
-      return { calibration: calibrations[subMapName], calibrationName: subMapName, subMap: subMapName };
+      return {
+        calibration: calibrations[subMapName],
+        calibrationName: subMapName,
+        subMap: subMapName,
+      };
     }
     return null;
   }
