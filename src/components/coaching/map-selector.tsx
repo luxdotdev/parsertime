@@ -1,5 +1,19 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -12,15 +26,18 @@ import {
   getControlSubMapNames,
   isControlMap,
 } from "@/lib/map-calibration/control-map-index";
-import { toKebabCase, useMapNames } from "@/lib/utils";
+import { cn, toKebabCase, useMapNames } from "@/lib/utils";
 import { coachingCanvasStore } from "@/stores/coaching-canvas-store";
 import { mapNameToMapTypeMapping } from "@/types/map";
 import { useSelector } from "@xstate/store/react";
+import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import { useState } from "react";
 
 const EXCLUDED_MAPS = new Set([
   "Blizzard World (Winter)",
+  "Circuit royal",
   "Eichenwalde (Halloween)",
   "Hollywood (Halloween)",
   "King's Row (Winter)",
@@ -76,12 +93,14 @@ export function MapSelector() {
     coachingCanvasStore,
     (s) => s.context.selectedSubMap
   );
+  const [open, setOpen] = useState(false);
 
   const maps = Object.keys(mapNameToMapTypeMapping).filter(
     (name) => !EXCLUDED_MAPS.has(name)
   );
 
   function handleMapSelect(mapName: string) {
+    setOpen(false);
     if (isControlMap(mapName)) {
       const subMaps = getControlSubMapNames(mapName);
       if (subMaps.length > 0) {
@@ -107,33 +126,79 @@ export function MapSelector() {
       ? getControlSubMapNames(currentParentName)
       : [];
 
+  const selectedKebab = currentParentName
+    ? toKebabCase(currentParentName)
+    : null;
+  const selectedDisplayName = selectedKebab
+    ? (mapNames.get(selectedKebab) ?? currentParentName)
+    : null;
+
   return (
     <div className="flex items-center gap-2">
-      <Select value={currentParentName ?? ""} onValueChange={handleMapSelect}>
-        <SelectTrigger className="w-[280px]">
-          <SelectValue placeholder={t("placeholder")} />
-        </SelectTrigger>
-        <SelectContent>
-          {maps.map((mapName) => {
-            const kebab = toKebabCase(mapName);
-            const displayName = mapNames.get(kebab) ?? mapName;
-            return (
-              <SelectItem key={mapName} value={mapName}>
-                <div className="flex items-center gap-2">
-                  <Image
-                    src={`/maps/${kebab}.webp`}
-                    alt={displayName}
-                    width={40}
-                    height={23}
-                    className="rounded-sm object-cover"
-                  />
-                  <span>{displayName}</span>
-                </div>
-              </SelectItem>
-            );
-          })}
-        </SelectContent>
-      </Select>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-[280px] justify-between"
+          >
+            {selectedDisplayName ? (
+              <div className="flex items-center gap-2">
+                <Image
+                  src={`/maps/${selectedKebab}.webp`}
+                  alt={selectedDisplayName}
+                  width={40}
+                  height={23}
+                  className="rounded-sm object-cover"
+                />
+                <span>{selectedDisplayName}</span>
+              </div>
+            ) : (
+              t("placeholder")
+            )}
+            <ChevronsUpDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[280px] p-0" align="start">
+          <Command>
+            <CommandInput placeholder={t("search")} />
+            <CommandList>
+              <CommandEmpty>{t("noResults")}</CommandEmpty>
+              <CommandGroup>
+                {maps.map((mapName) => {
+                  const kebab = toKebabCase(mapName);
+                  const displayName = mapNames.get(kebab) ?? mapName;
+                  return (
+                    <CommandItem
+                      key={mapName}
+                      value={displayName}
+                      onSelect={() => handleMapSelect(mapName)}
+                    >
+                      <CheckIcon
+                        className={cn(
+                          "mr-2 size-4",
+                          currentParentName === mapName
+                            ? "opacity-100"
+                            : "opacity-0"
+                        )}
+                      />
+                      <Image
+                        src={`/maps/${kebab}.webp`}
+                        alt={displayName}
+                        width={40}
+                        height={23}
+                        className="rounded-sm object-cover"
+                      />
+                      <span>{displayName}</span>
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
 
       {controlSubMaps.length > 0 && (
         <Select

@@ -1975,6 +1975,8 @@
     },
     "mapSelector": {
       "placeholder": "Select a map",
+      "search": "Search maps...",
+      "noResults": "No map found.",
       "subMapPlaceholder": "Select a point",
       "label": "Map"
     },
