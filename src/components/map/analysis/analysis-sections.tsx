@@ -15,7 +15,19 @@ import {
   FirstDeathTimeline,
   type FightFirstDeath,
 } from "@/components/map/analysis/first-death-timeline";
-import { Crosshair, Skull, Zap } from "lucide-react";
+import { KillPositionCard } from "@/components/positional/kill-position-card";
+import { useKillCalibration } from "@/components/positional/use-kill-calibration";
+import type { SerializedCalibrationData } from "@/data/killfeed-calibration-dto";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { toHero, toKebabCase, toTimestamp } from "@/lib/utils";
+import type { Kill } from "@prisma/client";
+import { Crosshair, Route, Skull, Zap } from "lucide-react";
+import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 type TeamPair = {
   team1: { name: string; color: string };
@@ -414,4 +426,294 @@ export function SwapsSection({
       </div>
     </div>
   );
+}
+
+// ---------------------------------------------------------------------------
+// Rotation Deaths
+// ---------------------------------------------------------------------------
+
+export type RotationDeathNearbyPlayer = {
+  playerName: string;
+  playerTeam: string;
+  hero: string;
+  x: number;
+  z: number;
+};
+
+export type RotationDeathEvent = {
+  kill: Kill;
+  fightIndex: number;
+  fightKills: Kill[];
+  preFightDamageCount: number;
+  killDistance: number | null;
+  nearbyPlayers?: RotationDeathNearbyPlayer[];
+};
+
+export type RotationDeathsData = {
+  team1Count: number;
+  team2Count: number;
+  totalFights: number;
+  events: RotationDeathEvent[];
+  playerBreakdown: {
+    playerName: string;
+    playerTeam: string;
+    rotationDeathCount: number;
+    totalDeaths: number;
+    rotationDeathRate: number;
+  }[];
+} | null;
+
+export function RotationDeathsSection({
+  team1,
+  team2,
+  rotationDeaths,
+  calibrationData,
+}: TeamPair & {
+  rotationDeaths: RotationDeathsData;
+  calibrationData?: SerializedCalibrationData;
+}) {
+  if (!rotationDeaths)
+    return (
+      <p className="text-muted-foreground text-sm text-pretty">
+        No coordinate data available for rotation death analysis on this map.
+      </p>
+    );
+
+  const { team1Count, team2Count, events, playerBreakdown } = rotationDeaths;
+
+  if (events.length === 0)
+    return (
+      <p className="text-muted-foreground text-sm text-pretty">
+        No rotation deaths detected on this map.
+      </p>
+    );
+
+  // Find player with most rotation deaths
+  const sorted = [...playerBreakdown]
+    .filter((p) => p.rotationDeathCount > 0)
+    .sort((a, b) => b.rotationDeathCount - a.rotationDeathCount);
+  const topPlayer = sorted[0];
+
+  // Aggregate "died to" heroes across all rotation deaths
+  const diedToMap = new Map<string, number>();
+  for (const e of events) {
+    const hero = e.kill.attacker_hero;
+    diedToMap.set(hero, (diedToMap.get(hero) ?? 0) + 1);
+  }
+  const topKiller = [...diedToMap.entries()].sort((a, b) => b[1] - a[1])[0];
+
+  return (
+    <div className="space-y-4">
+      <HeadToHeadBar
+        label="Rotation Deaths"
+        team1Value={team1Count}
+        team2Value={team2Count}
+        team1Name={team1.name}
+        team2Name={team2.name}
+        team1Color={team1.color}
+        team2Color={team2.color}
+        unit="deaths"
+      />
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        {topPlayer && (
+          <Callout icon={<Route className="size-4" />}>
+            Most picked on rotation:{" "}
+            <span
+              className="font-semibold"
+              style={{
+                color:
+                  topPlayer.playerTeam === team1.name
+                    ? team1.color
+                    : team2.color,
+              }}
+            >
+              {topPlayer.playerName}
+            </span>{" "}
+            <span className="tabular-nums">
+              ({topPlayer.rotationDeathCount} of {topPlayer.totalDeaths} deaths,{" "}
+              {(topPlayer.rotationDeathRate * 100).toFixed(0)}%)
+            </span>
+          </Callout>
+        )}
+        {topKiller && (
+          <Callout icon={<Crosshair className="size-4" />}>
+            Most rotation picks with:{" "}
+            <span className="font-semibold">{topKiller[0]}</span>{" "}
+            <span className="tabular-nums">
+              ({topKiller[1]} {topKiller[1] === 1 ? "kill" : "kills"})
+            </span>
+          </Callout>
+        )}
+      </div>
+
+      {/* Per-player breakdown table */}
+      {sorted.length > 0 && (
+        <div className="overflow-hidden rounded-lg border border-black/[0.06] shadow-[0_1px_2px_0_rgba(0,0,0,0.03)] dark:border-white/[0.06] dark:shadow-[0_1px_2px_0_rgba(0,0,0,0.2)]">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-muted/50">
+                <th className="text-muted-foreground px-3 py-2 text-left text-xs font-medium">
+                  Player
+                </th>
+                <th className="text-muted-foreground px-3 py-2 text-right text-xs font-medium">
+                  Rotation Deaths
+                </th>
+                <th className="text-muted-foreground px-3 py-2 text-right text-xs font-medium">
+                  Total Deaths
+                </th>
+                <th className="text-muted-foreground px-3 py-2 text-right text-xs font-medium">
+                  Rate
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {sorted.map((p) => (
+                <tr key={`${p.playerName}::${p.playerTeam}`}>
+                  <td
+                    className="px-3 py-2 font-medium"
+                    style={{
+                      color:
+                        p.playerTeam === team1.name ? team1.color : team2.color,
+                    }}
+                  >
+                    {p.playerName}
+                  </td>
+                  <td className="px-3 py-2 text-right tabular-nums">
+                    {p.rotationDeathCount}
+                  </td>
+                  <td className="text-muted-foreground px-3 py-2 text-right tabular-nums">
+                    {p.totalDeaths}
+                  </td>
+                  <td className="px-3 py-2 text-right tabular-nums">
+                    {(p.rotationDeathRate * 100).toFixed(0)}%
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Individual rotation death events */}
+      <div>
+        <h4 className="text-muted-foreground mb-2 text-xs font-medium tracking-wider uppercase">
+          Rotation Death Events ({events.length})
+        </h4>
+        <div className="space-y-1">
+          {events.map((e) => (
+            <RotationDeathRow
+              key={`${e.kill.id}-${e.kill.match_time}`}
+              event={e}
+              team1={team1}
+              team2={team2}
+              calibrationData={calibrationData}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RotationDeathRow({
+  event,
+  team1,
+  team2,
+  calibrationData,
+}: {
+  event: RotationDeathEvent;
+  team1: { name: string; color: string };
+  team2: { name: string; color: string };
+  calibrationData?: SerializedCalibrationData;
+}) {
+  const { kill, fightKills, killDistance } = event;
+  const t = useTranslations("mapPage.killfeedTable");
+
+  const calibration = useKillCalibration(
+    kill.match_time,
+    calibrationData ?? null
+  );
+  const hasCoords =
+    calibration && kill.attacker_x != null && kill.victim_x != null;
+
+  const attackerColor =
+    kill.attacker_team === team1.name ? team1.color : team2.color;
+  const victimColor =
+    kill.victim_team === team1.name ? team1.color : team2.color;
+
+  const abilityName =
+    kill.event_ability === "0"
+      ? t("abilities.primary-fire")
+      : t(`abilities.${toKebabCase(kill.event_ability)}`);
+
+  const rowContent = (
+    <div className="bg-muted/30 hover:bg-muted/60 flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors">
+      <span className="text-muted-foreground w-14 shrink-0 text-xs tabular-nums">
+        {toTimestamp(kill.match_time)}
+      </span>
+
+      <span className="flex items-center gap-1.5">
+        <Image
+          src={`/heroes/${toHero(kill.attacker_hero)}.png`}
+          alt=""
+          width={64}
+          height={64}
+          className="size-6 rounded-full"
+          style={{ border: `2px solid ${attackerColor}` }}
+        />
+        <span className="font-medium" style={{ color: attackerColor }}>
+          {kill.attacker_name}
+        </span>
+      </span>
+
+      <span className="text-muted-foreground text-xs">{abilityName}</span>
+
+      <span className="flex items-center gap-1.5">
+        <Image
+          src={`/heroes/${toHero(kill.victim_hero)}.png`}
+          alt=""
+          width={64}
+          height={64}
+          className="size-6 rounded-full grayscale"
+          style={{ border: `2px solid ${victimColor}` }}
+        />
+        <span className="font-medium" style={{ color: victimColor }}>
+          {kill.victim_name}
+        </span>
+      </span>
+
+      {killDistance != null && (
+        <span className="text-muted-foreground ml-auto text-xs tabular-nums">
+          {killDistance.toFixed(0)}m
+        </span>
+      )}
+    </div>
+  );
+
+  if (hasCoords) {
+    return (
+      <HoverCard openDelay={200} closeDelay={100}>
+        <HoverCardTrigger asChild>
+          <button type="button" className="w-full cursor-pointer text-left">
+            {rowContent}
+          </button>
+        </HoverCardTrigger>
+        <HoverCardContent side="top" align="center" className="w-auto p-0">
+          <KillPositionCard
+            kill={kill}
+            fightKills={fightKills}
+            calibration={calibration}
+            team1={team1.name}
+            team1Color={team1.color}
+            team2Color={team2.color}
+            abilityName={abilityName}
+            nearbyPlayers={event.nearbyPlayers}
+          />
+        </HoverCardContent>
+      </HoverCard>
+    );
+  }
+
+  return rowContent;
 }
