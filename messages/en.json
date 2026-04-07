@@ -1430,6 +1430,7 @@
       "limitTest": "Limit Testing",
       "environment": "Environmental",
       "fight": "Fight {num}",
+      "importToCanvas": "Import to Canvas",
       "time": "Time",
       "kill": "Kill",
       "method": "Method",

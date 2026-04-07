@@ -278,6 +278,28 @@ if (typeof window !== "undefined") {
   });
 }
 
+export function flushCanvasToLocalStorage() {
+  try {
+    const ctx = coachingCanvasStore.getSnapshot().context;
+    const persisted: PersistedState = {
+      version: STORAGE_VERSION,
+      selectedMap: ctx.selectedMap,
+      selectedSubMap: ctx.selectedSubMap,
+      mapTransform: ctx.mapTransform,
+      mapImageWidth: ctx.mapImageWidth,
+      mapImageHeight: ctx.mapImageHeight,
+      heroes: ctx.heroes,
+      drawings: ctx.drawings,
+      activeTool: ctx.activeTool,
+      strokeColor: ctx.strokeColor,
+      strokeWidth: ctx.strokeWidth,
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(persisted));
+  } catch {
+    // Ignore storage errors
+  }
+}
+
 function distToSegment(p: Point, a: Point, b: Point): number {
   const dx = b.x - a.x;
   const dy = b.y - a.y;

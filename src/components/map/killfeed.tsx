@@ -11,7 +11,7 @@ import {
   getKillfeedCalibration,
   serializeCalibrationData,
 } from "@/data/killfeed-calibration-dto";
-import { positionalData } from "@/lib/flags";
+import { coachingCanvas, positionalData } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import {
   groupKillsIntoFights,
@@ -29,17 +29,24 @@ export async function Killfeed({
   team1Color: string;
   team2Color: string;
 }) {
-  const [roundEndRows, playerTeams, fights, ultimateData, positionalEnabled] =
-    await Promise.all([
-      prisma.roundEnd.findMany({
-        where: { MapDataId: id },
-        orderBy: { match_time: "asc" },
-      }),
-      prisma.matchStart.findFirst({ where: { MapDataId: id } }),
-      groupKillsIntoFights(id),
-      getUltimateSpans(id),
-      positionalData(),
-    ]);
+  const [
+    roundEndRows,
+    playerTeams,
+    fights,
+    ultimateData,
+    positionalEnabled,
+    canvasEnabled,
+  ] = await Promise.all([
+    prisma.roundEnd.findMany({
+      where: { MapDataId: id },
+      orderBy: { match_time: "asc" },
+    }),
+    prisma.matchStart.findFirst({ where: { MapDataId: id } }),
+    groupKillsIntoFights(id),
+    getUltimateSpans(id),
+    positionalData(),
+    coachingCanvas(),
+  ]);
 
   const calibrationData = positionalEnabled
     ? serializeCalibrationData(await getKillfeedCalibration(id))
@@ -223,6 +230,8 @@ export async function Killfeed({
           team1Color={team1Color}
           team2Color={team2Color}
           calibrationData={calibrationData}
+          canvasImportEnabled={canvasEnabled && positionalEnabled}
+          mapDataId={id}
         />
       </div>
     </>

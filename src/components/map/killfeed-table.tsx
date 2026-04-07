@@ -40,6 +40,7 @@ import { GeistMono } from "geist/font/mono";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { ImportToCanvasLink } from "@/components/map/import-to-canvas-link";
 
 type Fight = {
   kills: Kill[];
@@ -57,6 +58,8 @@ type KillfeedTableProps = {
   fightUltSpans?: UltimateSpan[][];
   options?: KillfeedDisplayOptions;
   calibrationData?: SerializedCalibrationData;
+  canvasImportEnabled?: boolean;
+  mapDataId?: number;
 };
 
 export function KillfeedTable({
@@ -69,6 +72,8 @@ export function KillfeedTable({
   fightUltSpans,
   options,
   calibrationData,
+  canvasImportEnabled,
+  mapDataId,
 }: KillfeedTableProps) {
   const pathname = usePathname();
   const teamId = pathname.split("/")[1];
@@ -183,6 +188,8 @@ export function KillfeedTable({
             t={t}
             tUlt={tUlt}
             calibrationData={calibrationData}
+            canvasImportEnabled={canvasImportEnabled}
+            mapDataId={mapDataId}
           />
         );
       })}
@@ -222,6 +229,8 @@ function StandardFight({
   t,
   tUlt,
   calibrationData,
+  canvasImportEnabled,
+  mapDataId,
 }: {
   fight: Fight;
   fightIndex: number;
@@ -236,10 +245,25 @@ function StandardFight({
   t: ReturnType<typeof useTranslations>;
   tUlt: ReturnType<typeof useTranslations>;
   calibrationData?: SerializedCalibrationData;
+  canvasImportEnabled?: boolean;
+  mapDataId?: number;
 }) {
   return (
     <Table>
-      <TableCaption>{t("fight", { num: fightIndex + 1 })}</TableCaption>
+      <TableCaption>
+        <span className="flex items-center justify-center gap-4">
+          <span>{t("fight", { num: fightIndex + 1 })}</span>
+          {canvasImportEnabled && mapDataId != null && calibrationData && (
+            <ImportToCanvasLink
+              fight={fight}
+              calibrationData={calibrationData}
+              mapDataId={mapDataId}
+              team1={team1}
+              t={t}
+            />
+          )}
+        </span>
+      </TableCaption>
       <TableHeader>
         <TableRow>
           <TableHead className="w-20">{t("time")}</TableHead>

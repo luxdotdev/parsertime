@@ -945,6 +945,7 @@
       "limitTest": "极限测试",
       "environment": "环境击杀",
       "fight": "战斗 {num}",
+      "importToCanvas": "导入到画布",
       "time": "时间",
       "kill": "击杀",
       "method": "方式",

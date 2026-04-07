@@ -945,6 +945,7 @@
       "limitTest": "제한 테스트",
       "environment": "환경적",
       "fight": "전투 {num}",
+      "importToCanvas": "캔버스로 가져오기",
       "time": "시간",
       "kill": "처치",
       "method": "방법",

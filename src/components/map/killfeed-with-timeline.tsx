@@ -35,6 +35,8 @@ type KillfeedWithTimelineProps = {
   team1Color: string;
   team2Color: string;
   calibrationData?: SerializedCalibrationData;
+  canvasImportEnabled?: boolean;
+  mapDataId?: number;
 };
 
 const STORAGE_KEY = "parsertime:killfeed-options";
@@ -48,6 +50,8 @@ export function KillfeedWithTimeline({
   team1Color,
   team2Color,
   calibrationData,
+  canvasImportEnabled,
+  mapDataId,
 }: KillfeedWithTimelineProps) {
   const t = useTranslations("mapPage.killfeed");
   const [options, setOptions] = useState<KillfeedDisplayOptions>(
@@ -103,6 +107,8 @@ export function KillfeedWithTimeline({
           fightUltSpans={fightUltSpans}
           options={options}
           calibrationData={calibrationData}
+          canvasImportEnabled={canvasImportEnabled}
+          mapDataId={mapDataId}
         />
       </CardContent>
       <CardFooter className="float-right">
