@@ -1303,7 +1303,10 @@
     },
     "tiptap": {
       "placeholder": "Write, format, and highlight your text below.",
-      "notes": "Notes"
+      "notes": "Notes",
+      "save": "Save",
+      "saving": "Saving...",
+      "unsavedChanges": "Unsaved changes"
     },
     "overview": {
       "matchTime": "Total Match Time",

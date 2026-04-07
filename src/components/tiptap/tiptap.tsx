@@ -1,6 +1,7 @@
 "use client";
 
 import { MenuBar } from "@/components/tiptap/menu-bar";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -15,10 +16,9 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
-import { useDebouncedCallback } from "use-debounce";
+import { useEffect, useRef, useState } from "react";
 
-async function fetchNotes(mapDataId: number, scrimId: number, content: string) {
+async function saveNotes(mapDataId: number, scrimId: number, content: string) {
   const response = await fetch("/api/scrim/edit-note", {
     method: "POST",
     headers: {
@@ -27,7 +27,7 @@ async function fetchNotes(mapDataId: number, scrimId: number, content: string) {
     body: JSON.stringify({ mapDataId, scrimId, content }),
   });
   if (!response.ok) {
-    throw new Error("Failed to fetch notes");
+    throw new Error("Failed to save notes");
   }
 
   const data = noteDataSchema.parse(await response.json());
@@ -44,9 +44,9 @@ export function TipTap({ noteContent }: { noteContent: string }) {
   const scrimId = Number(pathSegments[3]);
   const mapDataId = Number(pathSegments[5]);
 
-  const debouncedFetchNotes = useDebouncedCallback((content: string) => {
-    void fetchNotes(mapDataId, scrimId, content);
-  }, 1000);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const savedContentRef = useRef(noteContent);
 
   const editor = useEditor({
     content: noteContent,
@@ -79,13 +79,26 @@ export function TipTap({ noteContent }: { noteContent: string }) {
     },
     immediatelyRender: false,
     onUpdate: ({ editor }) => {
-      void debouncedFetchNotes(editor.getHTML());
+      setHasUnsavedChanges(editor.getHTML() !== savedContentRef.current);
     },
   });
 
   useEffect(() => {
+    savedContentRef.current = noteContent;
     editor?.commands.setContent(noteContent);
   }, [noteContent, editor]);
+
+  async function handleSave() {
+    if (!editor) return;
+    setIsSaving(true);
+    try {
+      await saveNotes(mapDataId, scrimId, editor.getHTML());
+      savedContentRef.current = editor.getHTML();
+      setHasUnsavedChanges(false);
+    } finally {
+      setIsSaving(false);
+    }
+  }
 
   return (
     <Card className="border-muted shadow-md">
@@ -98,7 +111,14 @@ export function TipTap({ noteContent }: { noteContent: string }) {
       <CardContent className="max-w-full">
         <EditorContent editor={editor} />
       </CardContent>
-      <CardFooter />
+      <CardFooter className="justify-end gap-2">
+        {hasUnsavedChanges && (
+          <p className="text-muted-foreground text-sm">{t("unsavedChanges")}</p>
+        )}
+        <Button onClick={handleSave} disabled={!hasUnsavedChanges || isSaving}>
+          {isSaving ? t("saving") : t("save")}
+        </Button>
+      </CardFooter>
     </Card>
   );
 }
