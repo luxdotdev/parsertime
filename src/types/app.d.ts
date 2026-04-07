@@ -54,7 +54,7 @@ envVariables.parse(process.env);
 
 declare global {
   namespace NodeJS {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+    // oxlint-disable-next-line @typescript-eslint/consistent-type-definitions
     interface ProcessEnv extends z.infer<typeof envVariables> {}
   }
 }

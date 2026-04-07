@@ -215,7 +215,7 @@ async function processMapModePerformanceWithMatchEnds(
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions
   const byMode: Record<$Enums.MapType, MapModeStats> = {} as Record<
     $Enums.MapType,
     MapModeStats

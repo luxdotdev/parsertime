@@ -14,6 +14,6 @@ export default async function TeamLayout(props: LayoutProps<"/team/[teamId]">) {
   }
 
   // Must be wrapped in an element due to Next.js Server Component typing
-  // eslint-disable-next-line react/jsx-no-useless-fragment
+  // oxlint-disable-next-line react/jsx-no-useless-fragment
   return <>{children}</>;
 }

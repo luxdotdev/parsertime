@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
+/* oxlint-disable @typescript-eslint/prefer-nullish-coalescing */
 "use client";
 
 import { DownloadAuditLogs } from "@/components/admin/download-audit-logs";

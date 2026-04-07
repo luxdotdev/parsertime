@@ -115,7 +115,7 @@ export function AppSettingsProvider({
         colorblindMode: mode,
       });
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -123,7 +123,7 @@ export function AppSettingsProvider({
     async (data: UpdateAppSettingsRequest): Promise<void> => {
       await updateMutation.mutateAsync(data);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -140,7 +140,7 @@ export function AppSettingsProvider({
       updateAppSettings: updateAppSettingsWrapper,
       refetch,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
     [appSettings, isLoading, error, refetch]
   );
 

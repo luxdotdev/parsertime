@@ -35,7 +35,7 @@ export function Testimonial({
         <div className="text-primary flex gap-x-1">
           {Array.from({ length: 5 }).map((_, i) => (
             <StarIcon
-              // eslint-disable-next-line react/no-array-index-key
+              // oxlint-disable-next-line react/no-array-index-key
               key={`star-${i}`}
               className="h-5 w-5 flex-none"
               aria-hidden="true"

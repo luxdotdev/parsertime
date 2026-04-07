@@ -52,7 +52,7 @@ function LogoMarquee() {
         >
           {[...logos, ...logos].map((logo, idx) => (
             <div
-              // eslint-disable-next-line react/no-array-index-key
+              // oxlint-disable-next-line react/no-array-index-key
               key={`logo-1-${idx}`}
               className="flex h-12 w-32 items-center justify-center opacity-60 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0"
             >
@@ -74,7 +74,7 @@ function LogoMarquee() {
         >
           {[...logos, ...logos].map((logo, idx) => (
             <div
-              // eslint-disable-next-line react/no-array-index-key
+              // oxlint-disable-next-line react/no-array-index-key
               key={`logo-2-${idx}`}
               className="flex h-12 w-32 items-center justify-center opacity-60 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0"
             >

@@ -4,7 +4,7 @@ import React, { createContext } from "react";
 
 export const CommandMenuContext = createContext({
   open: false,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // oxlint-disable-next-line @typescript-eslint/no-unused-vars
   setOpen: (open: boolean) => {
     // empty
   },

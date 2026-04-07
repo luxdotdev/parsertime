@@ -190,7 +190,7 @@ export function ReplayMap({
     >
       {/* Map image */}
       {imageLoaded && (
-        // eslint-disable-next-line @next/next/no-img-element
+        // oxlint-disable-next-line @next/next/no-img-element
         <img
           src={imagePresignedUrl}
           alt="Map"

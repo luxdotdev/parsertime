@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/require-await */
-/* eslint-disable @next/next/no-img-element */
+/* oxlint-disable @typescript-eslint/require-await */
+/* oxlint-disable @next/next/no-img-element */
 
 import { Logger } from "@/lib/logger";
 import { ImageResponse } from "next/og";

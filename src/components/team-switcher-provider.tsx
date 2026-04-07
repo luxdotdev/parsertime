@@ -5,7 +5,7 @@ import React, { createContext } from "react";
 
 export const TeamSwitcherContext = createContext({
   teamId: undefined as number | undefined,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // oxlint-disable-next-line @typescript-eslint/no-unused-vars
   setTeamId: (teamId: number | undefined) => {
     // empty function
   },

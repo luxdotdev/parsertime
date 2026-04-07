@@ -1,4 +1,4 @@
-/* eslint-disable react/jsx-no-useless-fragment */
+/* oxlint-disable react/jsx-no-useless-fragment */
 "use client";
 
 import { scan } from "react-scan";

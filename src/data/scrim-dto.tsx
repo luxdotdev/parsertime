@@ -327,7 +327,7 @@ async function getAllMapWinratesForPlayerFn(scrimIds: number[], name: string) {
 
     const matchDetails: MatchStart =
       matchStarts.find((match) => match.MapDataId === mapId) ??
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions
       ({} as MatchStart);
 
     const winner = calculateWinner({

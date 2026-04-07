@@ -24,7 +24,7 @@ export default async function ScrimLoading() {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, index) => (
               <Skeleton
-                // eslint-disable-next-line react/no-array-index-key -- Skeleton elements are not unique
+                // oxlint-disable-next-line react/no-array-index-key -- Skeleton elements are not unique
                 key={index}
                 className="aspect-video rounded-xl"
               />

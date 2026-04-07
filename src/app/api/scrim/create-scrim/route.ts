@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
 
     const user = await getUser(session.user.email);
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions
     const fallbackUser = {
       name: "Unknown",
       email: "unknown",

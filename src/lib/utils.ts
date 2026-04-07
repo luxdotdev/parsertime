@@ -162,7 +162,7 @@ export function removeDuplicateRows<T extends { id: number }>(rows: T[]): T[] {
   const uniqueSet = new Set<string>();
   return rows.filter((row) => {
     // Destructure the row to separate `id` from the rest of the properties
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // oxlint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, ...rest } = row;
 
     const uniqueString = JSON.stringify(rest);

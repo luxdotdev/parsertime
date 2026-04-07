@@ -39,7 +39,7 @@ type CustomTooltipProps = {
   config?: ChartConfig;
 };
 
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any */
+/* oxlint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any */
 function CustomLineChartTooltip({
   active,
   payload,
@@ -98,7 +98,7 @@ function CustomLineChartTooltip({
     </div>
   );
 }
-/* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any */
+/* oxlint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any */
 
 export function ChartsView({ stats, viewMode }: ChartsViewProps) {
   const t = useTranslations("comparePage.charts");

@@ -283,7 +283,7 @@ export async function parseDataFromTXT(file: File) {
 
   const sheetName = workbook.SheetNames as $Enums.EventType[];
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions
   const result = {} as ParserData;
 
   // for each sheet, convert to json and add it to the result object.
@@ -312,7 +312,7 @@ export async function parseDataFromXLSX(file: File) {
   const workbook = XLSX.read(data, { type: "binary" });
   const sheetName = workbook.SheetNames as $Enums.EventType[];
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions
   const result = {} as ParserData;
 
   // for each sheet, convert to json and add it to the result object.

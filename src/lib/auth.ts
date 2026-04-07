@@ -171,7 +171,7 @@ export const config = {
         rateLimitHitCounter.add(1, { endpoint: "auth.signin" });
         Logger.warn(`Rate limit exceeded for sign in attempt: ${identifier}`);
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions
         const userObj = {
           name: user.name ?? "Unknown",
           email: user.email ?? "unknown",

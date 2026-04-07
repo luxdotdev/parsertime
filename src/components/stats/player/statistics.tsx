@@ -253,7 +253,7 @@ export function Statistics({
             </TableHeader>
             <tbody>
               {top3MostPlayedHeroesArray.map(([hero, games], idx) => (
-                // eslint-disable-next-line react/no-array-index-key
+                // oxlint-disable-next-line react/no-array-index-key
                 <TableRow key={`${hero}-${games}-${idx}`}>
                   <TableCell>
                     <svg
@@ -311,7 +311,7 @@ export function Statistics({
               ))}
               {top3Length < 3 &&
                 Array.from({ length: 3 - top3Length }).map((_, idx) => (
-                  // eslint-disable-next-line react/no-array-index-key
+                  // oxlint-disable-next-line react/no-array-index-key
                   <TableRow key={idx}>
                     <TableCell>-</TableCell>
                     <TableCell>{t("mostPlayed.noData")}</TableCell>
@@ -440,7 +440,7 @@ export function Statistics({
               {top3FinalBlows.length < 3 &&
                 Array.from({ length: 3 - top3FinalBlows.length }).map(
                   (_, idx) => (
-                    // eslint-disable-next-line react/no-array-index-key
+                    // oxlint-disable-next-line react/no-array-index-key
                     <TableRow key={idx}>
                       <TableCell>-</TableCell>
                       <TableCell>{t("bestPerformance.noData")}</TableCell>
@@ -581,7 +581,7 @@ export function Statistics({
             </TableHeader>
             <tbody>
               {top3MostDiedToHeroesArray.map(([hero, deaths], idx) => (
-                // eslint-disable-next-line react/no-array-index-key
+                // oxlint-disable-next-line react/no-array-index-key
                 <TableRow key={`${hero}-${deaths}-${idx}`}>
                   <TableCell>
                     <svg
@@ -639,7 +639,7 @@ export function Statistics({
               ))}
               {top3MostDiedToHeroesLength < 3 &&
                 Array.from({ length: 3 - top3Length }).map((_, idx) => (
-                  // eslint-disable-next-line react/no-array-index-key
+                  // oxlint-disable-next-line react/no-array-index-key
                   <TableRow key={idx}>
                     <TableCell>-</TableCell>
                     <TableCell>{t("heroesDiedToMost.noData")}</TableCell>
@@ -694,7 +694,7 @@ export function Statistics({
             </TableHeader>
             <tbody>
               {top3MostKilledHeroesArray.map(([hero, elims], idx) => (
-                // eslint-disable-next-line react/no-array-index-key
+                // oxlint-disable-next-line react/no-array-index-key
                 <TableRow key={`${hero}-${elims}-${idx}`}>
                   <TableCell>
                     <svg
@@ -752,7 +752,7 @@ export function Statistics({
               ))}
               {top3MostKilledHeroesLength < 3 &&
                 Array.from({ length: 3 - top3Length }).map((_, idx) => (
-                  // eslint-disable-next-line react/no-array-index-key
+                  // oxlint-disable-next-line react/no-array-index-key
                   <TableRow key={idx}>
                     <TableCell>-</TableCell>
                     <TableCell>{t("heroesElimMost.noData")}</TableCell>

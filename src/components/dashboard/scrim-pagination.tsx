@@ -86,7 +86,7 @@ export function ScrimPagination({
     userTypedRef.current = false;
     void setQ(debouncedSearch || null);
     void setPage(null); // Reset to page 1
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch]);
 
   // Sync URL → local input (for back/forward navigation)
@@ -106,7 +106,7 @@ export function ScrimPagination({
       prevTeamId.current = effectiveTeamId;
       void setPage(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [effectiveTeamId]);
 
   const currentPage = Math.max(1, page);
@@ -387,7 +387,7 @@ export function ScrimPagination({
                   if (pageNum === "...") {
                     return (
                       <PaginationEllipsis
-                        // eslint-disable-next-line react/no-array-index-key
+                        // oxlint-disable-next-line react/no-array-index-key
                         key={`ellipsis-${index}`}
                       />
                     );

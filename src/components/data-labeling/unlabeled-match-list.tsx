@@ -86,7 +86,7 @@ export function UnlabeledMatchList() {
         {isLoading ? (
           <div className="space-y-3">
             {Array.from({ length: 8 }).map((_, i) => (
-              // eslint-disable-next-line react/no-array-index-key
+              // oxlint-disable-next-line react/no-array-index-key
               <Skeleton key={`skeleton-${i}`} className="h-10 w-full" />
             ))}
           </div>
