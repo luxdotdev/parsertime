@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { TournamentMatchStatus } from "@prisma/client";
 import type { Route } from "next";

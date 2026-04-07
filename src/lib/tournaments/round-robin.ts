@@ -1,6 +1,5 @@
 import prisma from "@/lib/prisma";
 import { getNextMatch } from "@/lib/tournaments/bracket";
-import type { BracketSide } from "@prisma/client";
 
 export type TeamStanding = {
   teamId: number;
@@ -40,7 +39,7 @@ export async function calculateRRStandings(
     }
   >();
 
-  const ensureTeam = (teamId: number, teamName: string) => {
+  function ensureTeam(teamId: number, teamName: string) {
     if (!standingsMap.has(teamId)) {
       standingsMap.set(teamId, {
         teamName,
@@ -51,7 +50,7 @@ export async function calculateRRStandings(
         headToHead: new Map(),
       });
     }
-  };
+  }
 
   for (const match of completedMatches) {
     if (!match.team1Id || !match.team2Id || !match.winnerId) continue;

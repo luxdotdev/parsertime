@@ -215,7 +215,8 @@ export async function POST(
     return Response.json({ error: "Failed to add map" }, { status: 500 });
   } finally {
     event.durationMs = Date.now() - startTime;
-    (event.outcome === "error" ? Logger.error : Logger.info)(event);
+    const logFn = event.outcome === "error" ? (e: Record<string, unknown>) => Logger.error(e) : (e: Record<string, unknown>) => Logger.info(e);
+    logFn(event);
   }
 }
 

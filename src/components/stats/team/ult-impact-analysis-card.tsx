@@ -202,6 +202,7 @@ function HeroCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          aria-controls="ult-hero-combobox-listbox"
           aria-label="Select a hero"
           className="w-full justify-between font-normal md:w-72"
         >
@@ -236,7 +237,7 @@ function HeroCombobox({
           }}
         >
           <CommandInput placeholder="Search heroes…" />
-          <CommandList>
+          <CommandList id="ult-hero-combobox-listbox">
             <CommandEmpty>No heroes found.</CommandEmpty>
             {ROLE_ORDER.map((role) => {
               const heroes = byRole[role];

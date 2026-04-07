@@ -287,7 +287,9 @@ export function ReplayViewer({
     <div
       ref={containerRef}
       className="space-y-3 outline-none"
+      // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus required for keyboard playback controls
       tabIndex={0}
+      role="application"
       onKeyDown={handleKeyDown}
     >
       {/* Player list */}

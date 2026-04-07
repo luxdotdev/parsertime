@@ -165,6 +165,12 @@ export function TeamSearch({ teams }: TeamSearchProps) {
                 )}
                 onMouseEnter={() => setActiveIndex(index)}
                 onClick={() => navigateToTeam(team)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    navigateToTeam(team);
+                  }
+                }}
               >
                 <div className="flex items-baseline gap-2 overflow-hidden">
                   <span className="text-base font-semibold">

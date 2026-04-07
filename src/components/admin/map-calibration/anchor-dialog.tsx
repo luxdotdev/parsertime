@@ -99,6 +99,7 @@ export function AnchorDialog({
                 value={worldX}
                 onChange={(e) => setWorldX(e.target.value)}
                 placeholder="e.g. 42.5"
+                // oxlint-disable-next-line jsx-a11y/no-autofocus -- intentional focus management in dialog
                 autoFocus
               />
             </div>

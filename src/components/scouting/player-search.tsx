@@ -160,6 +160,12 @@ export function PlayerSearch({ players }: PlayerSearchProps) {
                 )}
                 onMouseEnter={() => setActiveIndex(index)}
                 onClick={() => navigateToPlayer(player)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    navigateToPlayer(player);
+                  }
+                }}
               >
                 <div className="flex items-baseline gap-2 overflow-hidden">
                   <span className="text-base font-semibold">{player.name}</span>

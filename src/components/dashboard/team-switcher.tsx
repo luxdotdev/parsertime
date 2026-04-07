@@ -109,6 +109,7 @@ export function TeamSwitcher({
             variant="outline"
             role="combobox"
             aria-expanded={open}
+            aria-controls="team-switcher-listbox"
             aria-label="Select a team"
             className={cn("w-[200px] justify-between", className)}
           >
@@ -128,7 +129,7 @@ export function TeamSwitcher({
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
           <Command>
-            <CommandList>
+            <CommandList id="team-switcher-listbox">
               <CommandInput placeholder={t("searchTeamPlaceholder")} />
               <CommandEmpty>{t("noTeamFound")}</CommandEmpty>
               {groups.map((group) => (

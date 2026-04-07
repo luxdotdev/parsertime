@@ -110,6 +110,7 @@ export function MapGroupSelector({
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          aria-controls="map-group-selector-listbox"
           className="h-auto min-h-10 w-full justify-between"
         >
           <div className="flex min-w-0 flex-1 items-center gap-2">
@@ -152,7 +153,7 @@ export function MapGroupSelector({
       <PopoverContent className="w-[400px] p-0" align="start">
         <Command>
           <CommandInput placeholder="Search map groups..." />
-          <CommandList>
+          <CommandList id="map-group-selector-listbox">
             <CommandEmpty>
               {isLoading ? (
                 <div className="flex items-center justify-center py-6">

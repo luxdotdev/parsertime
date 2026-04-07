@@ -169,8 +169,9 @@ export async function POST(request: NextRequest) {
         )
       );
 
-      const roundKey = (bracket: string, roundNumber: number) =>
-        `${bracket}-${roundNumber}`;
+      function roundKey(bracket: string, roundNumber: number) {
+        return `${bracket}-${roundNumber}`;
+      }
       const roundLookup = new Map<string, number>();
       for (const r of rounds) {
         roundLookup.set(roundKey(r.bracket, r.roundNumber), r.id);
@@ -299,6 +300,10 @@ export async function POST(request: NextRequest) {
     );
   } finally {
     event.durationMs = Date.now() - startTime;
-    (event.outcome === "error" ? Logger.error : Logger.info)(event);
+    if (event.outcome === "error") {
+      Logger.error(event);
+    } else {
+      Logger.info(event);
+    }
   }
 }

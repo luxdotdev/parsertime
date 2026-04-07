@@ -128,6 +128,7 @@ export function PlayerSwitcher({
             variant="outline"
             role="combobox"
             aria-expanded={open}
+            aria-controls="player-switcher-listbox"
             aria-label={t("select")}
             className={cn("w-[200px] justify-between", className)}
           >
@@ -144,7 +145,7 @@ export function PlayerSwitcher({
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
           <Command>
-            <CommandList>
+            <CommandList id="player-switcher-listbox">
               <CommandInput placeholder={t("search")} />
               <CommandEmpty>{t("noPlayerFound")}</CommandEmpty>
               {teams.map((group) => (

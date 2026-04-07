@@ -437,17 +437,10 @@ export function ProfileForm({
                     aria-label={t("banner.ariaLabel")}
                   />
                   <AspectRatio ratio={3 / 1}>
-                    <div
-                      role="button"
-                      tabIndex={0}
+                    <button
+                      type="button"
                       className="hover:border-primary relative h-full w-full cursor-pointer overflow-hidden rounded-lg border-2 border-dashed transition-colors"
                       onClick={handleBannerClick}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          handleBannerClick();
-                        }
-                      }}
                     >
                       {user.bannerImage ? (
                         <Image
@@ -463,7 +456,7 @@ export function ProfileForm({
                           </span>
                         </div>
                       )}
-                    </div>
+                    </button>
                   </AspectRatio>
                   <BannerUpdateDialog
                     user={user}

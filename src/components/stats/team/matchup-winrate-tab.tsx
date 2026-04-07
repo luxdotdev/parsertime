@@ -318,8 +318,8 @@ function HeroMultiSelect({
           />
         ))}
         {Array.from({ length: emptySlots }).map((_, i) => (
-          <HeroPickerSlot
-            key={`empty-${selected.length + i}`}
+          // oxlint-disable-next-line react/no-array-index-key -- empty placeholder slots have no unique data
+          <HeroPickerSlot key={`empty-${selected.length + i}`}
             available={available}
             excluded={[...excluded, ...selected]}
             selected={selected}

@@ -245,6 +245,7 @@ export function ChatInterface({
                         onKeyDown={handleEditKeyDown}
                         rows={2}
                         className="resize-none text-sm"
+                        // oxlint-disable-next-line jsx-a11y/no-autofocus -- intentional focus management for edit mode
                         autoFocus
                       />
                       <div className="flex justify-end gap-1">

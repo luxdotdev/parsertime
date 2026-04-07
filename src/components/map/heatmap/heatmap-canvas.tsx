@@ -92,8 +92,8 @@ function buildHeatmapImageData(
   }
 
   let maxDensity = 0;
-  for (let i = 0; i < density.length; i++) {
-    if (density[i] > maxDensity) maxDensity = density[i];
+  for (const d of density) {
+    if (d > maxDensity) maxDensity = d;
   }
   if (maxDensity === 0) return null;
 
@@ -212,7 +212,7 @@ export function HeatmapCanvas({
     if (!heatmapData) return;
 
     let cancelled = false;
-    createImageBitmap(heatmapData).then((bmp) => {
+    void createImageBitmap(heatmapData).then((bmp) => {
       if (!cancelled) setHeatmapBitmap(bmp);
     });
     return () => {
@@ -247,10 +247,11 @@ export function HeatmapCanvas({
 
     if (killsOnly) {
       const styles = getComputedStyle(canvas);
-      const resolveColor = (c: string) =>
-        c.startsWith("var(")
+      function resolveColor(c: string) {
+        return c.startsWith("var(")
           ? styles.getPropertyValue(c.slice(4, -1)).trim()
           : c;
+      }
       const t1Color = resolveColor(team1);
       const t2Color = resolveColor(team2);
       const dotRadius = Math.max(12, 6 / view.zoom);

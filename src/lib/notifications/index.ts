@@ -50,7 +50,7 @@ export class NotificationService extends Context.Tag("NotificationService")<
 
 // Service implementation
 function createService(config: { prisma: typeof prisma }) {
-  return Effect.gen(function* () {
+  return Effect.sync(() => {
     const { prisma } = config;
 
     const service: Service = {

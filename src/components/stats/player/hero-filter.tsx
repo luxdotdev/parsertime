@@ -159,6 +159,7 @@ export function HeroFilter({
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          aria-controls="hero-filter-listbox"
           className="h-auto min-h-9 w-[280px] justify-between px-3 py-1.5"
         >
           <div className="flex-1 overflow-hidden text-left">
@@ -168,7 +169,7 @@ export function HeroFilter({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[600px] p-0" align="start">
-        <div className="flex flex-col gap-3 p-4">
+        <div id="hero-filter-listbox" className="flex flex-col gap-3 p-4">
           <div className="space-y-2">
             <Label className="text-xs font-semibold">{t("quickSelect")}</Label>
             <div className="grid grid-cols-4 gap-2">
@@ -301,8 +302,17 @@ export function HeroFilter({
                       return (
                         <div
                           key={hero}
+                          role="option"
+                          aria-selected={isChecked}
                           className="hover:bg-accent flex cursor-pointer items-center space-x-2 rounded-sm p-2"
                           onClick={() => toggleHero(hero)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              toggleHero(hero);
+                            }
+                          }}
+                          tabIndex={0}
                         >
                           <Checkbox
                             checked={isChecked}

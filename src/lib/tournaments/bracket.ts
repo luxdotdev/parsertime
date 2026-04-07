@@ -1,4 +1,4 @@
-import { type BracketSide } from "@prisma/client";
+import type { BracketSide } from "@prisma/client";
 
 export type RoundSpec = {
   roundNumber: number;
@@ -82,8 +82,6 @@ export function generateSingleEliminationBracket(
 
   const totalSlots = nextPowerOf2(teamCount);
   const totalRounds = Math.log2(totalSlots);
-  const byeCount = totalSlots - teamCount;
-
   const rounds: RoundSpec[] = [];
   for (let r = 1; r <= totalRounds; r++) {
     const matchCount = totalSlots / Math.pow(2, r);
@@ -186,8 +184,6 @@ export function generateDoubleEliminationBracket(
 
   for (let lbR = 1; lbR <= lbRoundCount; lbR++) {
     const matchCount = getLBRoundMatchCount(lbR, wbRoundCount);
-    const isOdd = lbR % 2 === 1;
-
     let roundName: string;
     if (lbR === lbRoundCount) {
       roundName = "LB Final";

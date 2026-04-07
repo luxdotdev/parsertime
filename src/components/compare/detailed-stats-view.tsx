@@ -577,17 +577,18 @@ export function DetailedStatsView({ stats }: DetailedStatsViewProps) {
                           </div>
                         </div>
                       </TableCell>
-                      {values.map((value, playerIndex) => {
+                      {stats.map((player) => {
+                        const value = player.aggregated[stat.key];
                         const isMax = value === maxValue && values.length > 1;
                         const isMin = value === minValue && values.length > 1;
                         const trend = getTrendForMetric(
                           stat.key,
-                          stats[playerIndex].trends
+                          player.trends
                         );
 
                         return (
                           <TableCell
-                            key={`${stat.key}-${stats[playerIndex].playerName}`}
+                            key={`${stat.key}-${player.playerName}`}
                             className={`text-center font-mono text-lg tabular-nums ${
                               isMax
                                 ? "bg-emerald-50 font-bold text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400"

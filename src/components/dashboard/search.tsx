@@ -9,7 +9,7 @@ import { SearchIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { use } from "react";
 
-export function Search({ ...props }: DialogProps & { user: User | null }) {
+export function Search(_: DialogProps & { user: User | null }) {
   const { setOpen } = use(CommandMenuContext);
   const t = useTranslations("dashboard");
 

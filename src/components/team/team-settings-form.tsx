@@ -245,6 +245,7 @@ export function TeamSettingsForm({
                           variant="outline"
                           role="combobox"
                           aria-expanded={scoutingPickerOpen}
+                          aria-controls="scouting-team-listbox"
                           aria-label={t("scoutingLink.title")}
                           className="w-full max-w-lg justify-between"
                         >
@@ -259,7 +260,7 @@ export function TeamSettingsForm({
                       <PopoverContent className="w-full max-w-lg p-0">
                         <Command>
                           <CommandInput placeholder="Search OWCS teams..." />
-                          <CommandList>
+                          <CommandList id="scouting-team-listbox">
                             <CommandEmpty>No teams found.</CommandEmpty>
                             <CommandGroup>
                               <CommandItem

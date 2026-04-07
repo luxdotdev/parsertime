@@ -100,7 +100,6 @@ export function LeaderboardTable({
                   onClick={() => onPlayerSelect(row)}
                   onKeyDown={(e) => handleRowKeyDown(e, row)}
                   tabIndex={0}
-                  role="button"
                   aria-label={`View detailed stats for ${row.player_name}`}
                   aria-pressed={isSelected}
                 >

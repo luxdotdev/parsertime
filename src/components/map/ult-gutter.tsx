@@ -195,6 +195,7 @@ export function UltBracketGutter({
                       alignItems: "center",
                       justifyContent: "center",
                     }}
+                    // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus required for tooltip access
                     tabIndex={0}
                     role="img"
                     aria-label={t("instantUlt", {
@@ -242,6 +243,7 @@ export function UltBracketGutter({
                     bottom: 0,
                     width: 2 + FILL_WIDTH,
                   }}
+                  // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus required for tooltip access
                   tabIndex={0}
                   role="img"
                   aria-label={t("ultLabel", {
@@ -313,6 +315,7 @@ export function UltBracketGutter({
                       lineHeight: 1,
                       transform: "translate(-50%, 50%)",
                     }}
+                    // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus required for tooltip access
                     tabIndex={0}
                     role="img"
                     aria-label={t("diedDuringUlt", {
@@ -376,6 +379,7 @@ function GutterLabel({
             transform: "translateY(-50%)",
             whiteSpace: "nowrap",
           }}
+          // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus required for tooltip access
           tabIndex={0}
           role="img"
           aria-label={

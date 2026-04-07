@@ -179,17 +179,10 @@ function NotificationItem({
         !notification.read && "bg-muted/30"
       )}
     >
-      <div
-        className="flex cursor-pointer flex-col gap-2"
+      <button
+        type="button"
+        className="flex w-full cursor-pointer flex-col gap-2 text-left"
         onClick={handleNotificationClick}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            handleNotificationClick();
-          }
-        }}
-        tabIndex={0}
-        role="button"
       >
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
@@ -241,7 +234,7 @@ function NotificationItem({
         <div className="text-muted-foreground text-xs">
           {formatDistanceToNow(notification.createdAt, { addSuffix: true })}
         </div>
-      </div>
+      </button>
     </div>
   );
 }

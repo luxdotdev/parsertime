@@ -74,6 +74,7 @@ export function PlayerSelector({
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          aria-controls="player-selector-listbox"
           className="h-auto min-h-9 w-full justify-between px-3 py-1.5"
         >
           <div className="flex items-center gap-2">
@@ -91,7 +92,7 @@ export function PlayerSelector({
           <CommandEmpty>
             {isLoading ? t("loading") : t("noPlayerFound")}
           </CommandEmpty>
-          <CommandGroup className="max-h-[300px] overflow-y-auto">
+          <CommandGroup id="player-selector-listbox" className="max-h-[300px] overflow-y-auto">
             {players?.map((player) => (
               <CommandItem
                 key={player.name}

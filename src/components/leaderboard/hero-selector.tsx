@@ -42,6 +42,7 @@ export function HeroSelector({ currentHero }: { currentHero?: HeroName }) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          aria-controls="hero-selector-listbox"
           className="w-[200px] justify-between"
         >
           {currentHero
@@ -53,7 +54,7 @@ export function HeroSelector({ currentHero }: { currentHero?: HeroName }) {
       <PopoverContent className="w-[200px] p-0">
         <Command>
           <CommandInput placeholder="Search hero..." />
-          <CommandList>
+          <CommandList id="hero-selector-listbox">
             <CommandEmpty>No hero found.</CommandEmpty>
             {(
               Object.keys(roleHeroMapping) as (keyof typeof roleHeroMapping)[]

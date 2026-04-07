@@ -228,16 +228,10 @@ export function AddMapCard() {
 
   return (
     <ClientOnly>
-      <div
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            handleClick();
-          }
-        }}
+      <button
+        type="button"
         className={cn(
-          "border-border flex cursor-pointer items-center gap-4 rounded-xl border-2 border-dashed px-5 py-6 transition-colors",
+          "border-border flex w-full cursor-pointer items-center gap-4 rounded-xl border-2 border-dashed px-5 py-6 text-left transition-colors",
           dragActive
             ? "border-green-500 bg-green-500/5"
             : "hover:border-muted-foreground/30 hover:bg-muted/30"
@@ -275,7 +269,7 @@ export function AddMapCard() {
           accept=".xlsx, .txt"
           onChange={handleChange}
         />
-      </div>
+      </button>
 
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">

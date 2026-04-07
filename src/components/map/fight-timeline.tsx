@@ -377,7 +377,6 @@ export function FightTimeline({
                 fight={fight}
                 topPercent={topPercent}
                 team1={team1}
-                team2={team2}
                 team1Color={team1Color}
                 team2Color={team2Color}
                 environmentalString={environmentalString}
@@ -443,7 +442,9 @@ function TimelineDiamond({
             width: size,
             height: size,
           }}
+          // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus required for tooltip access
           tabIndex={0}
+          role="img"
           aria-label={label}
         >
           <div
@@ -675,7 +676,6 @@ function KillEventRow({
   fight,
   topPercent,
   team1,
-  team2,
   team1Color,
   team2Color,
   environmentalString,
@@ -687,7 +687,6 @@ function KillEventRow({
   fight: Fight;
   topPercent: number;
   team1: string;
-  team2: string;
   team1Color: string;
   team2Color: string;
   environmentalString: string;

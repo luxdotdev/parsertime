@@ -356,8 +356,8 @@ function BanSection({
           />
         ))}
         {Array.from({ length: emptySlots }).map((_, i) => (
-          <HeroPickerSlot
-            key={`empty-slot-${selected.length + i}`}
+          // oxlint-disable-next-line react/no-array-index-key -- empty placeholder slots have no unique data
+          <HeroPickerSlot key={`empty-slot-${selected.length + i}`}
             available={available}
             excluded={[...excluded, ...selected]}
             heroNames={heroNames}
@@ -416,8 +416,8 @@ function CompositionSection({
           />
         ))}
         {Array.from({ length: emptySlots }).map((_, i) => (
-          <HeroPickerSlot
-            key={`empty-slot-${selected.length + i}`}
+          // oxlint-disable-next-line react/no-array-index-key -- empty placeholder slots have no unique data
+          <HeroPickerSlot key={`empty-slot-${selected.length + i}`}
             available={available}
             excluded={[...excluded, ...selected]}
             heroNames={heroNames}
@@ -624,6 +624,7 @@ function MapCombobox({
             variant="outline"
             role="combobox"
             aria-expanded={open}
+            aria-controls="map-combobox-listbox"
             aria-label="Select a map"
             className="w-full justify-between font-normal"
           >
@@ -634,7 +635,7 @@ function MapCombobox({
         <PopoverContent className="w-72 p-0" align="start">
           <Command>
             <CommandInput placeholder="Search maps…" />
-            <CommandList>
+            <CommandList id="map-combobox-listbox">
               <CommandEmpty>No maps found.</CommandEmpty>
               <CommandItem
                 value="none"

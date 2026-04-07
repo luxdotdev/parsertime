@@ -241,9 +241,9 @@ function MapGroupForm({
       </div>
 
       <div className="space-y-2">
-        <Label>
+        <span className="text-sm font-medium">
           Select Maps<span className="text-destructive ml-1">*</span>
-        </Label>
+        </span>
         <div className="max-h-[300px] overflow-y-auto rounded-lg border">
           {availableMaps.length === 0 ? (
             <div className="text-muted-foreground p-4 text-center text-sm">
@@ -254,6 +254,7 @@ function MapGroupForm({
               {availableMaps.map((map) => (
                 <label
                   key={map.id}
+                  aria-label={map.name}
                   className="hover:bg-muted/50 flex cursor-pointer items-center gap-3 p-3 transition-colors"
                 >
                   <input
