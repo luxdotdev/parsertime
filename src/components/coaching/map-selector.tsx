@@ -28,7 +28,8 @@ import {
 } from "@/lib/map-calibration/control-map-index";
 import { cn, toKebabCase, useMapNames } from "@/lib/utils";
 import { coachingCanvasStore } from "@/stores/coaching-canvas-store";
-import { mapNameToMapTypeMapping } from "@/types/map";
+import { mapNameToMapTypeMapping, type MapName } from "@/types/map";
+import { $Enums } from "@prisma/client";
 import { useSelector } from "@xstate/store/react";
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -95,8 +96,10 @@ export function MapSelector() {
   );
   const [open, setOpen] = useState(false);
 
-  const maps = Object.keys(mapNameToMapTypeMapping).filter(
-    (name) => !EXCLUDED_MAPS.has(name)
+  const maps = (Object.keys(mapNameToMapTypeMapping) as MapName[]).filter(
+    (name) =>
+      !EXCLUDED_MAPS.has(name) &&
+      mapNameToMapTypeMapping[name] !== $Enums.MapType.Clash
   );
 
   function handleMapSelect(mapName: string) {
