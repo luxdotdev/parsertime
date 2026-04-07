@@ -20,6 +20,7 @@ import type {
   UltimateSpan,
 } from "@/data/killfeed-dto";
 import { getEventTime, isKillDuringUlt } from "@/data/killfeed-dto";
+import { useGoToReplay } from "@/components/map/map-tabs";
 import { cn, toHero, toKebabCase, toTimestamp } from "@/lib/utils";
 import type { Kill, RoundEnd } from "@prisma/client";
 import { GeistMono } from "geist/font/mono";
@@ -396,6 +397,7 @@ export function FightTimeline({
               team1Color={team1Color}
               team2Color={team2Color}
               tUlt={tUlt}
+              replayEnabled={!!calibrationData}
             />
           );
         })}
@@ -694,6 +696,7 @@ function KillEventRow({
   t: ReturnType<typeof useTranslations>;
   calibrationData?: SerializedCalibrationData;
 }) {
+  const goToReplay = useGoToReplay();
   const ultHighlightColor = activeUlt
     ? activeUlt.playerTeam === team1
       ? team1Color
@@ -721,15 +724,33 @@ function KillEventRow({
 
   const rowContent = (
     <div className="flex w-full items-center gap-3 pr-2">
-      <span
-        className={cn(
-          "text-muted-foreground shrink-0 text-xs tabular-nums",
-          GeistMono.className
-        )}
-        style={{ width: "4.5rem" }}
-      >
-        {toTimestamp(kill.match_time)}
-      </span>
+      {calibrationData ? (
+        <button
+          type="button"
+          className={cn(
+            "text-muted-foreground hover:text-foreground shrink-0 cursor-pointer text-xs tabular-nums underline-offset-2 hover:underline",
+            GeistMono.className
+          )}
+          style={{ width: "4.5rem" }}
+          title="View in Replay"
+          onClick={(e) => {
+            e.stopPropagation();
+            goToReplay(kill.match_time);
+          }}
+        >
+          {toTimestamp(kill.match_time)}
+        </button>
+      ) : (
+        <span
+          className={cn(
+            "text-muted-foreground shrink-0 text-xs tabular-nums",
+            GeistMono.className
+          )}
+          style={{ width: "4.5rem" }}
+        >
+          {toTimestamp(kill.match_time)}
+        </span>
+      )}
 
       <span className="flex shrink-0 items-center gap-1.5">
         <Image
@@ -825,6 +846,7 @@ function UltEventRow({
   team1Color,
   team2Color,
   tUlt,
+  replayEnabled,
 }: {
   event: KillfeedEvent;
   topPercent: number;
@@ -832,7 +854,9 @@ function UltEventRow({
   team1Color: string;
   team2Color: string;
   tUlt: ReturnType<typeof useTranslations>;
+  replayEnabled: boolean;
 }) {
+  const goToReplay = useGoToReplay();
   const span = event.data as UltimateSpan;
   const color = span.playerTeam === team1 ? team1Color : team2Color;
   const isDeath = span.diedDuringUlt;
@@ -870,15 +894,30 @@ function UltEventRow({
         transform: "translateY(-50%)",
       }}
     >
-      <span
-        className={cn(
-          "text-muted-foreground shrink-0 text-xs tabular-nums",
-          GeistMono.className
-        )}
-        style={{ width: "4.5rem" }}
-      >
-        {toTimestamp(getEventTime(event))}
-      </span>
+      {replayEnabled ? (
+        <button
+          type="button"
+          className={cn(
+            "text-muted-foreground hover:text-foreground shrink-0 cursor-pointer text-xs tabular-nums underline-offset-2 hover:underline",
+            GeistMono.className
+          )}
+          style={{ width: "4.5rem" }}
+          title="View in Replay"
+          onClick={() => goToReplay(getEventTime(event))}
+        >
+          {toTimestamp(getEventTime(event))}
+        </button>
+      ) : (
+        <span
+          className={cn(
+            "text-muted-foreground shrink-0 text-xs tabular-nums",
+            GeistMono.className
+          )}
+          style={{ width: "4.5rem" }}
+        >
+          {toTimestamp(getEventTime(event))}
+        </span>
+      )}
 
       <span
         className={cn(

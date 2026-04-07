@@ -33,6 +33,7 @@ import {
   isKillDuringUlt,
   mergeKillfeedEvents,
 } from "@/data/killfeed-dto";
+import { useGoToReplay } from "@/components/map/map-tabs";
 import { cn, toHero, toKebabCase, toTimestamp } from "@/lib/utils";
 import type { Kill, RoundEnd } from "@prisma/client";
 import { GeistMono } from "geist/font/mono";
@@ -346,6 +347,7 @@ function KillRow({
   t: ReturnType<typeof useTranslations>;
   calibrationData?: SerializedCalibrationData;
 }) {
+  const goToReplay = useGoToReplay();
   const ultHighlightColor = activeUlt
     ? activeUlt.playerTeam === team1
       ? team1Color
@@ -426,10 +428,24 @@ function KillRow({
       }
     >
       <TableCell className={GeistMono.className}>
-        {kill.match_time.toFixed(2)}{" "}
-        <span className="text-muted-foreground text-sm">
-          ({toTimestamp(kill.match_time)})
-        </span>
+        {calibrationData ? (
+          <button
+            type="button"
+            className="hover:text-foreground text-muted-foreground cursor-pointer underline-offset-2 hover:underline"
+            title="View in Replay"
+            onClick={() => goToReplay(kill.match_time)}
+          >
+            {kill.match_time.toFixed(2)}{" "}
+            <span className="text-sm">({toTimestamp(kill.match_time)})</span>
+          </button>
+        ) : (
+          <>
+            {kill.match_time.toFixed(2)}{" "}
+            <span className="text-muted-foreground text-sm">
+              ({toTimestamp(kill.match_time)})
+            </span>
+          </>
+        )}
       </TableCell>
       <TableCell>
         {hasCoords ? (
