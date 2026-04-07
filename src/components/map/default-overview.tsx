@@ -1,5 +1,10 @@
 import { AnalysisCardAccordion as AnalysisCard } from "@/components/map/analysis/analysis-card-accordion";
 import { OverviewTable } from "@/components/map/overview-table";
+import {
+  getKillfeedCalibration,
+  serializeCalibrationData,
+} from "@/data/killfeed-calibration-dto";
+import { getRotationDeathAnalysis } from "@/data/rotation-death-dto";
 import { getMapAbilityTiming } from "@/data/scrim-ability-timing-dto";
 import {
   Card,
@@ -241,11 +246,12 @@ export async function DefaultOverview({
   const team1Name = matchDetails?.team_1_name ?? "Team 1";
   const team2Name = matchDetails?.team_2_name ?? "Team 2";
 
-  const abilityTimingAnalysis = await getMapAbilityTiming(
-    id,
-    team1Name,
-    team2Name
-  );
+  const [abilityTimingAnalysis, rotationDeathAnalysis, killfeedCalibration] =
+    await Promise.all([
+      getMapAbilityTiming(id, team1Name, team2Name),
+      getRotationDeathAnalysis(id),
+      getKillfeedCalibration(id),
+    ]);
 
   const team1Ults = ultimateStarts.filter((u) => u.player_team === team1Name);
   const team2Ults = ultimateStarts.filter((u) => u.player_team === team2Name);
@@ -1017,6 +1023,29 @@ export async function DefaultOverview({
           team1TopSwapper,
           team2TopSwapper,
         }}
+        rotationDeaths={
+          rotationDeathAnalysis
+            ? {
+                team1Count: rotationDeathAnalysis.rotationDeaths.filter(
+                  (r) => r.kill.victim_team === team1Name
+                ).length,
+                team2Count: rotationDeathAnalysis.rotationDeaths.filter(
+                  (r) => r.kill.victim_team === team2Name
+                ).length,
+                totalFights: rotationDeathAnalysis.totalFights,
+                events: rotationDeathAnalysis.rotationDeaths.map((r) => ({
+                  kill: r.kill,
+                  fightIndex: r.fightIndex,
+                  fightKills: fights[r.fightIndex]?.kills ?? [r.kill],
+                  preFightDamageCount: r.preFightDamageCount,
+                  killDistance: r.killDistance,
+                  nearbyPlayers: r.nearbyPlayers,
+                })),
+                playerBreakdown: rotationDeathAnalysis.playerSummaries,
+              }
+            : null
+        }
+        calibrationData={serializeCalibrationData(killfeedCalibration)}
         abilityTiming={abilityTimingAnalysis}
         translations={{
           title: t("analysis.title"),
@@ -1025,11 +1054,13 @@ export async function DefaultOverview({
           tabTiming: t("analysis.tabTiming"),
           tabEfficiency: t("analysis.tabEfficiency"),
           tabSwaps: t("analysis.tabSwaps"),
+          tabRotationDeaths: t("analysis.tabRotationDeaths"),
           footerDeaths: t("analysis.footerDeaths"),
           footerUltimates: t("analysis.footerUltimates"),
           footerTiming: t("analysis.footerTiming"),
           footerEfficiency: t("analysis.footerEfficiency"),
           footerSwaps: t("analysis.footerSwaps"),
+          footerRotationDeaths: t("analysis.footerRotationDeaths"),
         }}
       />
     </>

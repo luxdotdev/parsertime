@@ -3,27 +3,27 @@
 import { UltTimingChart } from "@/components/charts/ult-timing-chart";
 import { Callout } from "@/components/map/analysis/callout";
 import { EfficiencyScorecard } from "@/components/map/analysis/efficiency-scorecard";
-import { HeadToHeadBar } from "@/components/map/analysis/head-to-head-bar";
-import { UltComparisonChart } from "@/components/scrim/ult-comparison-chart";
-import type {
-  PlayerUltComparison,
-  SubroleUltTiming,
-  UltEfficiency,
-} from "@/data/scrim-overview-dto";
-import type { RoleName } from "@/types/heroes";
 import {
   FirstDeathTimeline,
   type FightFirstDeath,
 } from "@/components/map/analysis/first-death-timeline";
+import { HeadToHeadBar } from "@/components/map/analysis/head-to-head-bar";
 import { KillPositionCard } from "@/components/positional/kill-position-card";
 import { useKillCalibration } from "@/components/positional/use-kill-calibration";
-import type { SerializedCalibrationData } from "@/data/killfeed-calibration-dto";
+import { UltComparisonChart } from "@/components/scrim/ult-comparison-chart";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import type { SerializedCalibrationData } from "@/data/killfeed-calibration-dto";
+import type {
+  PlayerUltComparison,
+  SubroleUltTiming,
+  UltEfficiency,
+} from "@/data/scrim-overview-dto";
 import { toHero, toKebabCase, toTimestamp } from "@/lib/utils";
+import type { RoleName } from "@/types/heroes";
 import type { Kill } from "@prisma/client";
 import { Crosshair, Route, Skull, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -428,10 +428,6 @@ export function SwapsSection({
   );
 }
 
-// ---------------------------------------------------------------------------
-// Rotation Deaths
-// ---------------------------------------------------------------------------
-
 export type RotationDeathNearbyPlayer = {
   playerName: string;
   playerTeam: string;
@@ -488,13 +484,11 @@ export function RotationDeathsSection({
       </p>
     );
 
-  // Find player with most rotation deaths
   const sorted = [...playerBreakdown]
     .filter((p) => p.rotationDeathCount > 0)
     .sort((a, b) => b.rotationDeathCount - a.rotationDeathCount);
   const topPlayer = sorted[0];
 
-  // Aggregate "died to" heroes across all rotation deaths
   const diedToMap = new Map<string, number>();
   for (const e of events) {
     const hero = e.kill.attacker_hero;

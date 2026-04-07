@@ -3,15 +3,18 @@
 import {
   DeathsSection,
   EfficiencySection,
+  RotationDeathsSection,
   SwapsSection,
   TimingSection,
   UltimatesSection,
   type DeathsData,
   type EfficiencyData,
+  type RotationDeathsData,
   type SwapsData,
   type TimingData,
   type UltimatesData,
 } from "@/components/map/analysis/analysis-sections";
+import type { SerializedCalibrationData } from "@/data/killfeed-calibration-dto";
 import {
   Card,
   CardContent,
@@ -21,7 +24,14 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { MapAbilityTimingAnalysis } from "@/data/scrim-ability-timing-dto";
-import { ArrowRightLeft, Crosshair, Gauge, Skull, Zap } from "lucide-react";
+import {
+  ArrowRightLeft,
+  Crosshair,
+  Gauge,
+  Route,
+  Skull,
+  Zap,
+} from "lucide-react";
 import { useState } from "react";
 
 export type AnalysisCardProps = {
@@ -32,6 +42,8 @@ export type AnalysisCardProps = {
   timing: TimingData;
   efficiency: EfficiencyData;
   swaps: SwapsData;
+  rotationDeaths?: RotationDeathsData;
+  calibrationData?: SerializedCalibrationData;
   abilityTiming?: MapAbilityTimingAnalysis;
   translations: {
     title: string;
@@ -40,11 +52,13 @@ export type AnalysisCardProps = {
     tabTiming: string;
     tabEfficiency: string;
     tabSwaps: string;
+    tabRotationDeaths?: string;
     footerDeaths: string;
     footerUltimates: string;
     footerTiming: string;
     footerEfficiency: string;
     footerSwaps: string;
+    footerRotationDeaths?: string;
     tabAbilityTiming?: string;
     footerAbilityTiming?: string;
   };
@@ -58,6 +72,8 @@ export function AnalysisCard({
   timing,
   efficiency,
   swaps,
+  rotationDeaths,
+  calibrationData,
   translations: t,
 }: AnalysisCardProps) {
   const [activeTab, setActiveTab] = useState("deaths");
@@ -68,6 +84,9 @@ export function AnalysisCard({
     timing: t.footerTiming,
     efficiency: t.footerEfficiency,
     swaps: t.footerSwaps,
+    ...(t.footerRotationDeaths
+      ? { rotationDeaths: t.footerRotationDeaths }
+      : {}),
   };
 
   return (
@@ -102,6 +121,13 @@ export function AnalysisCard({
               <ArrowRightLeft className="size-3.5" />
               <span className="hidden sm:inline">{t.tabSwaps}</span>
               <span className="sm:hidden">Swaps</span>
+            </TabsTrigger>
+            <TabsTrigger value="rotationDeaths" className="gap-1.5">
+              <Route className="size-3.5" />
+              <span className="hidden sm:inline">
+                {t.tabRotationDeaths ?? "Rotation Deaths"}
+              </span>
+              <span className="sm:hidden">Rotation</span>
             </TabsTrigger>
           </TabsList>
 
@@ -146,6 +172,18 @@ export function AnalysisCard({
             className="animate-in fade-in-0 data-[state=inactive]:animate-out data-[state=inactive]:fade-out-0 min-h-[180px] motion-reduce:animate-none"
           >
             <SwapsSection team1={team1} team2={team2} swaps={swaps} />
+          </TabsContent>
+
+          <TabsContent
+            value="rotationDeaths"
+            className="animate-in fade-in-0 data-[state=inactive]:animate-out data-[state=inactive]:fade-out-0 min-h-[180px] motion-reduce:animate-none"
+          >
+            <RotationDeathsSection
+              team1={team1}
+              team2={team2}
+              rotationDeaths={rotationDeaths ?? null}
+              calibrationData={calibrationData}
+            />
           </TabsContent>
         </Tabs>
       </CardContent>

@@ -3,6 +3,7 @@
 import {
   DeathsSection,
   EfficiencySection,
+  RotationDeathsSection,
   SwapsSection,
   TimingSection,
   UltimatesSection,
@@ -29,6 +30,7 @@ import {
   ChevronsUpDown,
   Crosshair,
   Gauge,
+  Route,
   Skull,
   Zap,
 } from "lucide-react";
@@ -44,6 +46,8 @@ export function AnalysisCardAccordion({
   timing,
   efficiency,
   swaps,
+  rotationDeaths,
+  calibrationData,
   abilityTiming,
   translations: t,
 }: AnalysisCardProps) {
@@ -51,9 +55,11 @@ export function AnalysisCardAccordion({
     abilityTiming &&
     (abilityTiming.team1.rows.length > 0 ||
       abilityTiming.team2.rows.length > 0);
-  const allSections = hasAbilityData
-    ? [...BASE_SECTIONS, "abilities"]
-    : BASE_SECTIONS;
+  const allSections = [
+    ...BASE_SECTIONS,
+    "rotationDeaths",
+    ...(hasAbilityData ? ["abilities"] : []),
+  ];
 
   const [openSections, setOpenSections] = useState<string[]>(["deaths"]);
   const allExpanded = openSections.length === allSections.length;
@@ -187,6 +193,31 @@ export function AnalysisCardAccordion({
               <p className="text-muted-foreground mt-3 text-xs text-pretty">
                 {t.footerSwaps}
               </p>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="rotationDeaths">
+            <AccordionTrigger>
+              <span className="flex items-center gap-2">
+                <Route
+                  className="text-muted-foreground size-4"
+                  aria-hidden="true"
+                />
+                {t.tabRotationDeaths ?? "Rotation Deaths"}
+              </span>
+            </AccordionTrigger>
+            <AccordionContent>
+              <RotationDeathsSection
+                team1={team1}
+                team2={team2}
+                rotationDeaths={rotationDeaths ?? null}
+                calibrationData={calibrationData}
+              />
+              {t.footerRotationDeaths && (
+                <p className="text-muted-foreground mt-3 text-xs text-pretty">
+                  {t.footerRotationDeaths}
+                </p>
+              )}
             </AccordionContent>
           </AccordionItem>
 
