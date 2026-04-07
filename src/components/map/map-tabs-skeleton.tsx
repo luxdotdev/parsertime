@@ -35,9 +35,7 @@ export async function MapTabsSkeleton() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {t("score")}
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">{t("score")}</CardTitle>
             <CardIcon>
               <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
               <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />

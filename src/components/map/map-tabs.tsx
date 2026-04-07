@@ -24,19 +24,11 @@ export function MapTabs({ tabs }: MapTabsProps) {
   );
 
   return (
-    <Tabs
-      value={tab}
-      onValueChange={setTab}
-      className="space-y-4"
-    >
+    <Tabs value={tab} onValueChange={setTab} className="space-y-4">
       <TabsList>
         {tabs.map((t) =>
           t.hidden ? null : (
-            <TabsTrigger
-              key={t.value}
-              value={t.value}
-              className={t.className}
-            >
+            <TabsTrigger key={t.value} value={t.value} className={t.className}>
               {t.shortLabel ? (
                 <>
                   <span className="hidden md:inline">{t.label}</span>
