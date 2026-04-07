@@ -15,6 +15,7 @@ const defaultFlags: FeatureFlags = {
   aiChatEnabled: false,
   positionalDataEnabled: false,
   tournamentEnabled: false,
+  coachingCanvasEnabled: false,
 };
 
 const FeatureFlagsContext = createContext<FeatureFlags>(defaultFlags);

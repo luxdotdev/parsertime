@@ -1,5 +1,6 @@
 import {
   aiChat,
+  coachingCanvas,
   dataLabeling,
   mapComparison,
   newLandingPage,
@@ -24,6 +25,7 @@ export type FeatureFlags = {
   aiChatEnabled: boolean;
   positionalDataEnabled: boolean;
   tournamentEnabled: boolean;
+  coachingCanvasEnabled: boolean;
 };
 
 export async function resolveAllFlags(): Promise<FeatureFlags> {
@@ -39,6 +41,7 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     aiChatEnabled,
     positionalDataEnabled,
     tournamentEnabled,
+    coachingCanvasEnabled,
   ] = await Promise.all([
     scoutingTool(),
     mapComparison(),
@@ -51,6 +54,7 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     aiChat(),
     positionalData(),
     tournament(),
+    coachingCanvas(),
   ]);
 
   return {
@@ -65,6 +69,7 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     aiChatEnabled,
     positionalDataEnabled,
     tournamentEnabled,
+    coachingCanvasEnabled,
   };
 }
 
@@ -81,5 +86,6 @@ export function toFlagValues(flags: FeatureFlags): Record<string, boolean> {
     "ai-chat": flags.aiChatEnabled,
     "positional-data": flags.positionalDataEnabled,
     tournament: flags.tournamentEnabled,
+    "coaching-canvas": flags.coachingCanvasEnabled,
   };
 }
