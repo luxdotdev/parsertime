@@ -17,6 +17,7 @@ import {
   type DeathWindow,
 } from "@/lib/replay/build-player-timeline";
 import { useColorblindMode } from "@/hooks/use-colorblind-mode";
+import { useReplayTimeParam } from "@/components/map/map-tabs";
 import { createReplayStore } from "@/stores/replay-store";
 import { useSelector } from "@xstate/store/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -123,7 +124,16 @@ export function ReplayViewer({
       ? positionSamples[positionSamples.length - 1].t
       : 0;
 
+  const [replayTime, setReplayTime] = useReplayTimeParam();
   const [store] = useState(() => createReplayStore(minTime, maxTime));
+
+  useEffect(() => {
+    if (replayTime != null) {
+      store.send({ type: "seek", time: replayTime });
+      store.send({ type: "pause" });
+      void setReplayTime(null);
+    }
+  }, [replayTime, store, setReplayTime]);
 
   useEffect(() => {
     for (const cal of Object.values(calibration.calibrations)) {
