@@ -356,9 +356,8 @@ function BanSection({
           />
         ))}
         {Array.from({ length: emptySlots }).map((_, i) => (
-          // oxlint-disable-next-line react/no-array-index-key -- empty placeholder slots have no unique data
           <HeroPickerSlot
-            key={`empty-slot-${selected.length + i}`}
+            key={`empty-slot-${selected.length + i}`} // oxlint-disable-line react/no-array-index-key
             available={available}
             excluded={[...excluded, ...selected]}
             heroNames={heroNames}
@@ -417,9 +416,8 @@ function CompositionSection({
           />
         ))}
         {Array.from({ length: emptySlots }).map((_, i) => (
-          // oxlint-disable-next-line react/no-array-index-key -- empty placeholder slots have no unique data
           <HeroPickerSlot
-            key={`empty-slot-${selected.length + i}`}
+            key={`empty-slot-${selected.length + i}`} // oxlint-disable-line react/no-array-index-key
             available={available}
             excluded={[...excluded, ...selected]}
             heroNames={heroNames}
