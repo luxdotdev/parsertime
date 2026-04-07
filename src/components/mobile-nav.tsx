@@ -27,11 +27,13 @@ export function MobileNav({
   session,
   aiChatEnabled,
   dataToolsEnabled,
+  coachingCanvasEnabled,
   className,
 }: {
   session: Session | null;
   aiChatEnabled?: boolean;
   dataToolsEnabled?: boolean;
+  coachingCanvasEnabled?: boolean;
   className?: string;
 }) {
   const [open, setOpen] = React.useState(false);
@@ -126,6 +128,14 @@ export function MobileNav({
                   Map Calibration
                 </MobileLink>
               </>
+            )}
+            {coachingCanvasEnabled && (
+              <MobileLink
+                href={"/coaching/canvas" as Route}
+                onOpenChange={setOpen}
+              >
+                Coaching Canvas
+              </MobileLink>
             )}
           </div>
         </ScrollArea>

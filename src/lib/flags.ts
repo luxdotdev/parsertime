@@ -208,3 +208,15 @@ export const tournament = flag<boolean, Entities>({
   description: "Enable or disable the tournaments feature",
   identify,
 });
+
+export const coachingCanvas = flag<boolean, Entities>({
+  key: "coaching-canvas",
+  adapter: vercelAdapter(),
+  options: [
+    { value: true, label: "Enabled" },
+    { value: false, label: "Disabled" },
+  ],
+  defaultValue: false,
+  description: "Enable or disable the coaching canvas tool",
+  identify,
+});

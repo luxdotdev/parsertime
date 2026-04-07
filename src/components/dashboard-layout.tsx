@@ -11,7 +11,13 @@ import { ModeToggle } from "@/components/theme-switcher";
 import { UserNav } from "@/components/user-nav";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
-import { aiChat, dataLabeling, scoutingTool, tournament } from "@/lib/flags";
+import {
+  aiChat,
+  coachingCanvas,
+  dataLabeling,
+  scoutingTool,
+  tournament,
+} from "@/lib/flags";
 
 export async function DashboardLayout({
   children,
@@ -26,12 +32,14 @@ export async function DashboardLayout({
     aiChatEnabled,
     dataToolsEnabled,
     tournamentEnabled,
+    coachingCanvasEnabled,
   ] = await Promise.all([
     auth(),
     scoutingTool(),
     aiChat(),
     dataLabeling(),
     tournament(),
+    coachingCanvas(),
   ]);
   const user = await getUser(session?.user?.email);
 
@@ -52,6 +60,7 @@ export async function DashboardLayout({
               aiChatEnabled={aiChatEnabled}
               dataToolsEnabled={dataToolsEnabled}
               tournamentEnabled={tournamentEnabled}
+              coachingCanvasEnabled={coachingCanvasEnabled}
               className="mx-6 hidden lg:block"
             />
             <MobileNav
@@ -59,6 +68,7 @@ export async function DashboardLayout({
               session={session}
               aiChatEnabled={aiChatEnabled}
               dataToolsEnabled={dataToolsEnabled}
+              coachingCanvasEnabled={coachingCanvasEnabled}
             />
             <div className="ml-auto flex items-center space-x-4">
               <Search user={user} />
@@ -79,6 +89,7 @@ export async function DashboardLayout({
               session={session}
               aiChatEnabled={aiChatEnabled}
               dataToolsEnabled={dataToolsEnabled}
+              coachingCanvasEnabled={coachingCanvasEnabled}
             />
             <div className="ml-auto flex items-center space-x-4">
               <ModeToggle />

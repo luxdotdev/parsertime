@@ -7,6 +7,7 @@ import {
 import { WorkshopCodePill } from "@/components/workshop-code-pill";
 import {
   aiChat,
+  coachingCanvas,
   dataLabeling,
   positionalData,
   scoutingTool,
@@ -132,6 +133,11 @@ const DATA_TOOLS_LINKS: FooterColumn = {
   ],
 };
 
+const COACHING_LINKS: FooterColumn = {
+  titleKey: "coachingTitle",
+  links: [{ labelKey: "coachingCanvas", href: "/coaching/canvas" }],
+};
+
 function FooterColumn({
   column,
   t,
@@ -172,6 +178,7 @@ export async function Footer() {
     scoutingEnabled,
     aiChatEnabled,
     dataToolsEnabled,
+    coachingCanvasEnabled,
     positionalDataEnabled,
     healthStatus,
   ] = await Promise.all([
@@ -180,6 +187,7 @@ export async function Footer() {
     scoutingTool(),
     aiChat(),
     dataLabeling(),
+    coachingCanvas(),
     positionalData(),
     unstable_cache(
       async () => {
@@ -204,6 +212,7 @@ export async function Footer() {
     ...(scoutingEnabled ? [SCOUTING_LINKS] : []),
     ...(aiChatEnabled ? [ANALYST_LINKS] : []),
     ...(dataToolsEnabled ? [DATA_TOOLS_LINKS] : []),
+    ...(coachingCanvasEnabled ? [COACHING_LINKS] : []),
   ];
 
   return (

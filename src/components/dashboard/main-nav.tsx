@@ -29,12 +29,14 @@ export function MainNav({
   aiChatEnabled,
   dataToolsEnabled,
   tournamentEnabled,
+  coachingCanvasEnabled,
   className,
 }: React.HTMLAttributes<HTMLElement> & {
   scoutingEnabled: boolean;
   aiChatEnabled?: boolean;
   dataToolsEnabled?: boolean;
   tournamentEnabled?: boolean;
+  coachingCanvasEnabled?: boolean;
 }) {
   const pathname = usePathname();
   const t = useTranslations("dashboard.mainNav");
@@ -293,6 +295,42 @@ export function MainNav({
                   )}
                 >
                   {t("mapCalibration")}
+                </Link>
+              </div>
+            </div>
+          </li>
+        )}
+        {coachingCanvasEnabled && (
+          <li className="group relative" onKeyDown={handleDropdownKeyDown}>
+            <button
+              type="button"
+              aria-haspopup="true"
+              className={cn(
+                navLinkStyles,
+                "gap-1",
+                pathname.startsWith("/coaching") && "text-primary"
+              )}
+            >
+              {t("coaching")}
+              <ChevronDownIcon
+                className="size-3 transition-transform duration-200 group-focus-within:rotate-180 group-hover:rotate-180"
+                aria-hidden="true"
+              />
+            </button>
+            <div className="invisible absolute top-full left-0 z-50 pt-1 opacity-0 transition-[opacity,visibility] duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+              <div
+                className="bg-popover text-popover-foreground ring-foreground/10 w-[200px] rounded-md p-1 shadow-md ring-1"
+                role="menu"
+              >
+                <Link
+                  href={"/coaching/canvas" as Route}
+                  role="menuitem"
+                  className={cn(
+                    dropdownItemStyles,
+                    pathname.startsWith("/coaching/canvas") && "text-primary"
+                  )}
+                >
+                  {t("coachingCanvas")}
                 </Link>
               </div>
             </div>
