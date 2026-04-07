@@ -1,5 +1,4 @@
 import { SupporterHeart } from "@/components/profile/supporter-heart";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -37,20 +36,18 @@ export function ProfileHeader({ player, className }: ProfileHeaderProps) {
       )}
     >
       {/* Banner Section */}
-      <AspectRatio ratio={21 / 3}>
-        <div className="relative h-full w-full bg-gradient-to-r from-blue-600 to-purple-600">
-          {player.bannerImage && (
-            <Image
-              src={player.bannerImage}
-              alt={`${player.name} banner`}
-              fill
-              className="object-cover"
-              priority
-            />
-          )}
-          <div className="absolute inset-0 bg-black/20" />
-        </div>
-      </AspectRatio>
+      <div className="relative aspect-[3/1] max-h-[300px] w-full overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600">
+        {player.bannerImage && (
+          <Image
+            src={player.bannerImage}
+            alt={`${player.name} banner`}
+            fill
+            className="object-cover"
+            priority
+          />
+        )}
+        <div className="absolute inset-0 bg-black/20" />
+      </div>
 
       {/* User Info Bar */}
       <div className="relative px-8 pb-6">
@@ -58,7 +55,7 @@ export function ProfileHeader({ player, className }: ProfileHeaderProps) {
           {/* Avatar Section */}
           <div className="relative">
             <div className="border-background bg-background rounded-full border-4 p-1">
-              <Avatar className="border-muted h-32 w-32 rounded-full border-2">
+              <Avatar className="border-muted h-36 w-36 rounded-full border-2">
                 <AvatarImage
                   src={player.image ?? undefined}
                   alt={player.name}

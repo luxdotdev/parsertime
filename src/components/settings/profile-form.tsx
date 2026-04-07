@@ -436,7 +436,7 @@ export function ProfileForm({
                     accept="image/*"
                     aria-label={t("banner.ariaLabel")}
                   />
-                  <AspectRatio ratio={21 / 3}>
+                  <AspectRatio ratio={3 / 1}>
                     <div
                       role="button"
                       tabIndex={0}

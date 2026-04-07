@@ -168,7 +168,7 @@ export function BannerUpdateDialog({
             image={imageUrl}
             crop={crop}
             zoom={zoom}
-            aspect={21 / 3}
+            aspect={3 / 1}
             onCropChange={setCrop}
             onZoomChange={setZoom}
             onCropComplete={onCropComplete}

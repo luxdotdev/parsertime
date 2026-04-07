@@ -2,7 +2,6 @@
 
 import { HeroRating } from "@/components/profile/hero-rating";
 import { SupporterHeart } from "@/components/profile/supporter-heart";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   HoverCard,
@@ -86,35 +85,39 @@ export function PlayerHoverCard({
   return (
     <HoverCard>
       <HoverCardTrigger asChild>{children}</HoverCardTrigger>
-      <HoverCardContent className="w-80 overflow-hidden p-0">
-        {/* Banner */}
-        <AspectRatio ratio={21 / 3}>
-          <div className="relative h-20 w-full bg-gradient-to-r from-blue-600 to-purple-600">
-            {playerData.bannerImage && (
-              <Image
-                src={playerData.bannerImage}
-                alt={`${playerData.name} banner`}
-                fill
-                className="object-cover"
-                priority
-              />
-            )}
-            <div className="absolute inset-0 bg-black/20" />
+      <HoverCardContent className="w-80 p-0">
+        {/* Banner + Avatar wrapper */}
+        <div className="relative">
+          <div className="aspect-[3/1] w-full rounded-t-md bg-gradient-to-r from-blue-600 to-purple-600">
+            <div className="relative h-full w-full overflow-hidden rounded-t-md">
+              {playerData.bannerImage && (
+                <Image
+                  src={playerData.bannerImage}
+                  alt={`${playerData.name} banner`}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              )}
+              <div className="absolute inset-0 bg-black/20" />
+            </div>
           </div>
-        </AspectRatio>
+          {/* Avatar absolutely positioned to straddle the banner edge */}
+          <Avatar className="border-background absolute -bottom-8 left-4 h-16 w-16 border-4 shadow-sm">
+            <AvatarImage
+              src={playerData.image ?? undefined}
+              alt={playerData.name}
+            />
+            <AvatarFallback className="text-xl font-bold">
+              {playerData.name.slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+        </div>
 
         <div className="px-4 pb-4">
-          <div className="-mt-0 mb-4 flex items-end gap-3">
-            <Avatar className="border-background h-20 w-20 border-4 shadow-sm">
-              <AvatarImage
-                src={playerData.image ?? undefined}
-                alt={playerData.name}
-              />
-              <AvatarFallback className="text-xl font-bold">
-                {playerData.name.slice(0, 2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div className="mt-6 mb-1">
+          {/* Name row — padded to clear the avatar */}
+          <div className="mb-4 flex items-end gap-3 pt-2 pl-[72px]">
+            <div className="mb-1">
               <h4 className="flex items-center gap-1 text-lg leading-none font-bold">
                 {playerData.name}{" "}
                 <SupporterHeart
@@ -127,7 +130,7 @@ export function PlayerHoverCard({
                   {t(playerData.title)}
                 </p>
               ) : (
-                <div className="h-4 w-4" aria-hidden="true" /> // Empty space for the title
+                <div className="h-4 w-4" aria-hidden="true" />
               )}
             </div>
           </div>

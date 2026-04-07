@@ -45,7 +45,7 @@ export function TeamMemberCard({
   return (
     <Card className="gap-0 overflow-hidden p-0 pb-4">
       {/* Banner */}
-      <AspectRatio ratio={21 / 3}>
+      <AspectRatio ratio={3 / 1}>
         <div className="relative h-full w-full rounded-t-xl bg-gradient-to-r from-blue-600 to-purple-600">
           {user.bannerImage && (
             <Image
