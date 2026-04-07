@@ -7,6 +7,14 @@ import type { Kill } from "@prisma/client";
 import { Skull } from "lucide-react";
 import Image from "next/image";
 
+export type NearbyPlayerMarker = {
+  playerName: string;
+  playerTeam: string;
+  hero: string;
+  x: number;
+  z: number;
+};
+
 type KillPositionCardProps = {
   kill: Kill;
   fightKills: Kill[];
@@ -15,6 +23,7 @@ type KillPositionCardProps = {
   team1Color: string;
   team2Color: string;
   abilityName: string;
+  nearbyPlayers?: NearbyPlayerMarker[];
 };
 
 function getTeamColor(
@@ -51,6 +60,7 @@ export function KillPositionCard({
   team1Color,
   team2Color,
   abilityName,
+  nearbyPlayers,
 }: KillPositionCardProps) {
   const hasAttackerCoords = kill.attacker_x != null && kill.attacker_z != null;
   const hasVictimCoords = kill.victim_x != null && kill.victim_z != null;
@@ -81,6 +91,28 @@ export function KillPositionCard({
     if (ck.victim_x != null && ck.victim_z != null) {
       const pos = worldToImage({ x: ck.victim_x, y: ck.victim_z }, transform);
       contextPositions.push({ kill: ck, pos });
+      allPoints.push(pos);
+    }
+  }
+
+  const nearbyPositions: {
+    player: NearbyPlayerMarker;
+    pos: { u: number; v: number };
+  }[] = [];
+
+  if (nearbyPlayers) {
+    const shownPlayers = new Set<string>();
+    shownPlayers.add(kill.attacker_name);
+    shownPlayers.add(kill.victim_name);
+    for (const ck of contextKills) {
+      shownPlayers.add(ck.attacker_name);
+      shownPlayers.add(ck.victim_name);
+    }
+
+    for (const np of nearbyPlayers) {
+      if (shownPlayers.has(np.playerName)) continue;
+      const pos = worldToImage({ x: np.x, y: np.z }, transform);
+      nearbyPositions.push({ player: np, pos });
       allPoints.push(pos);
     }
   }
@@ -182,6 +214,41 @@ export function KillPositionCard({
           backgroundRepeat: "no-repeat",
         }}
       >
+        {/* Nearby players at lower opacity */}
+        {nearbyPositions.map(({ player, pos }) => {
+          const cp = toCard(pos.u, pos.v);
+          const npColor = getTeamColor(
+            player.playerTeam,
+            team1,
+            team1Color,
+            team2Color
+          );
+
+          return (
+            <div
+              key={`${player.playerName}::${player.playerTeam}`}
+              className="absolute flex items-center justify-center overflow-hidden rounded-full"
+              style={{
+                left: cp.x - CONTEXT_MARKER_SIZE / 2,
+                top: cp.y - CONTEXT_MARKER_SIZE / 2,
+                width: CONTEXT_MARKER_SIZE,
+                height: CONTEXT_MARKER_SIZE,
+                border: `2px solid ${npColor}`,
+                opacity: 0.3,
+                backgroundColor: "rgba(0,0,0,0.5)",
+              }}
+            >
+              <Image
+                src={`/heroes/${toHero(player.hero)}.png`}
+                alt=""
+                width={64}
+                height={64}
+                className="h-full w-full rounded-full"
+              />
+            </div>
+          );
+        })}
+
         {/* Context kills at lower opacity */}
         {contextPositions.map(({ kill: ck, pos }) => {
           const cp = toCard(pos.u, pos.v);
