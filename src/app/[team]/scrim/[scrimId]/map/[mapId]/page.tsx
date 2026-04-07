@@ -10,13 +10,15 @@ import { ReplayTab } from "@/components/map/replay/replay-tab";
 import { HeroBans } from "@/components/map/hero-bans";
 import { Killfeed } from "@/components/map/killfeed";
 import { MapEvents } from "@/components/map/map-events";
+import { MapTabs } from "@/components/map/map-tabs";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
 import { MobileNav } from "@/components/mobile-nav";
 import { Notifications } from "@/components/notifications";
 import { ReplayCode } from "@/components/scrim/replay-code";
 import { ModeToggle } from "@/components/theme-switcher";
 import { TipTap } from "@/components/tiptap/tiptap";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MapTabsSkeleton } from "@/components/map/map-tabs-skeleton";
+import { Suspense } from "react";
 import { UserNav } from "@/components/user-nav";
 import { VodOverview } from "@/components/vods/vod-overview";
 import { getMostPlayedHeroes } from "@/data/player-dto";
@@ -223,68 +225,81 @@ export default async function MapDashboardPage(
             <ReplayCode replayCode={map?.replayCode ?? ""} subtitle={true} />
           )}
         </div>
-        <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="overview">{t("tabs.overview")}</TabsTrigger>
-            <TabsTrigger value="killfeed" className="hidden md:flex">
-              {t("tabs.killfeed")}
-            </TabsTrigger>
-            <TabsTrigger value="killfeed" className="flex md:hidden">
-              {t("tabs.killfeed")}
-            </TabsTrigger>
-            <TabsTrigger value="charts">{t("tabs.charts")}</TabsTrigger>
-            {positionalDataEnabled && (
-              <TabsTrigger value="heatmap">{t("tabs.heatmap")}</TabsTrigger>
-            )}
-            {positionalDataEnabled && (
-              <TabsTrigger value="replay">{t("tabs.replay")}</TabsTrigger>
-            )}
-            <TabsTrigger value="events" className="hidden md:flex">
-              {t("tabs.events")}
-            </TabsTrigger>
-            <TabsTrigger value="compare">{t("tabs.compare")}</TabsTrigger>
-            <TabsTrigger value="notes">{t("tabs.notes")}</TabsTrigger>
-            <TabsTrigger value="vods">{t("tabs.vod")}</TabsTrigger>
-          </TabsList>
-          <TabsContent value="overview" className="space-y-4">
-            <DefaultOverview id={id} team1Color={team1} team2Color={team2} />
-          </TabsContent>
-          <TabsContent value="killfeed" className="space-y-4">
-            <Killfeed id={id} team1Color={team1} team2Color={team2} />
-          </TabsContent>
-          <TabsContent value="charts" className="space-y-4">
-            <MapCharts id={id} />
-          </TabsContent>
-          {positionalDataEnabled && (
-            <TabsContent value="heatmap" className="space-y-4">
-              <HeatmapTab id={id} />
-            </TabsContent>
-          )}
-          {positionalDataEnabled && (
-            <TabsContent value="replay" className="space-y-4">
-              <ReplayTab id={id} />
-            </TabsContent>
-          )}
-          <TabsContent value="events" className="space-y-4">
-            <MapEvents
-              id={id}
-              team1Color={team1}
-              team2Color={team2}
-              tempoChartEnabled={tempoChartEnabled}
-            />
-          </TabsContent>
-          <TabsContent value="compare" className="space-y-4">
-            <ComparePlayers id={id} />
-          </TabsContent>
-          <TabsContent value="vods" className="space-y-4">
-            <VodOverview vod={map?.vod ?? ""} mapId={id} />
-          </TabsContent>
-          <TabsContent value="notes" className="space-y-4">
-            <div className="mx-auto py-8">
-              <TipTap noteContent={noteContent?.content ?? ""} />
-            </div>
-          </TabsContent>
-        </Tabs>
+        <Suspense fallback={<MapTabsSkeleton />}>
+          <MapTabs
+            tabs={[
+              {
+                value: "overview",
+                label: t("tabs.overview"),
+                content: (
+                  <DefaultOverview
+                    id={id}
+                    team1Color={team1}
+                    team2Color={team2}
+                  />
+                ),
+              },
+              {
+                value: "killfeed",
+                label: t("tabs.killfeed"),
+                content: (
+                  <Killfeed id={id} team1Color={team1} team2Color={team2} />
+                ),
+              },
+              {
+                value: "charts",
+                label: t("tabs.charts"),
+                content: <MapCharts id={id} />,
+              },
+              ...(positionalDataEnabled
+                ? [
+                    {
+                      value: "heatmap",
+                      label: t("tabs.heatmap"),
+                      content: <HeatmapTab id={id} />,
+                    },
+                    {
+                      value: "replay",
+                      label: t("tabs.replay"),
+                      content: <ReplayTab id={id} />,
+                    },
+                  ]
+                : []),
+              {
+                value: "events",
+                label: t("tabs.events"),
+                className: "hidden md:flex",
+                content: (
+                  <MapEvents
+                    id={id}
+                    team1Color={team1}
+                    team2Color={team2}
+                    tempoChartEnabled={tempoChartEnabled}
+                  />
+                ),
+              },
+              {
+                value: "compare",
+                label: t("tabs.compare"),
+                content: <ComparePlayers id={id} />,
+              },
+              {
+                value: "notes",
+                label: t("tabs.notes"),
+                content: (
+                  <div className="mx-auto py-8">
+                    <TipTap noteContent={noteContent?.content ?? ""} />
+                  </div>
+                ),
+              },
+              {
+                value: "vods",
+                label: t("tabs.vod"),
+                content: <VodOverview vod={map?.vod ?? ""} mapId={id} />,
+              },
+            ]}
+          />
+        </Suspense>
       </div>
     </div>
   );
