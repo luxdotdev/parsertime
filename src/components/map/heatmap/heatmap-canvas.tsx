@@ -427,6 +427,7 @@ export function HeatmapCanvas({
           role="img"
           style={{ width: canvasSize.width, height: canvasSize.height }}
           className={`active:cursor-grabbing ${hoveredKill ? "cursor-pointer" : "cursor-grab"}`}
+          onContextMenu={(e) => e.preventDefault()}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
