@@ -851,6 +851,8 @@
         "footerUltimates": "终极技能使用通过游戏内终极技能激活事件追踪。\"先使用终极技能\"指在每场战斗中先激活该角色终极技能的队伍。战斗开场终极技能是战斗窗口中首个使用的终极技能。",
         "footerTiming": "终极技能时机将每个终极技能分为起手（战斗前三分之一）、中期（中间三分之一）和后期（最后三分之一）。玩家根据使用最多的英雄分配到子角色。",
         "footerEfficiency": "效率评级 = 每个终极技能赢得的战斗数。浪费的终极技能是在团队已落后3人以上时使用的。干燥战斗是没有使用终极技能的战斗。逆转是在落后2次以上击杀后赢得的战斗。",
+        "tabRotationDeaths": "轮转阵亡",
+        "footerRotationDeaths": "轮转阵亡是指在双方队伍交战之前发生的击杀——通常是在队伍转移位置时玩家被击杀。通过检测战斗中的第一次击杀是否发生在两队中心距离超过50米时来判断。",
         "footerSwaps": "英雄更换通过游戏内英雄变更事件追踪。回合开始的工具性更换（如为速度提升切换卢西奥）已被过滤，只显示回合中的策略性更换。",
         "deathDescriptionTeam1": "<span1>{team1Name}</span1> 在 {team1FirstDeaths} 场战斗中率先阵亡，占比为 <span2>{percentage}</span2>%。",
         "deathDescriptionTeam2": "<span1>{team2Name}</span1> 在 {team2FirstDeaths} 场战斗中率先阵亡，占比为 <span2>{percentage}</span2>%。",

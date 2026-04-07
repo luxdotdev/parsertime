@@ -1328,6 +1328,8 @@
         "footerUltimates": "Ultimate usage is tracked from in-game ultimate activation events. \"Used ult first\" means which team activated an ultimate of that role first in each fight. Fight-opening ultimates are the first ultimate used in a fight window.",
         "footerTiming": "Ult timing categorizes each ultimate as initiation (first third of fight), midfight (middle third), or late (final third). Players are assigned to subroles based on their most-played heroes.",
         "footerEfficiency": "Efficiency rating = fights won per ultimate used. Wasted ultimates are those used when the team was already down 3+ players. Dry fights are fights where no ultimates were used. Reversals are fights won after being down 2+ kills.",
+        "tabRotationDeaths": "Rotation Deaths",
+        "footerRotationDeaths": "Rotation deaths are kills that occur before teams engage — typically when a player is picked off while the team is moving between positions. Detected by checking if the first kill in a fight happens while team centroids are more than 50 meters apart.",
         "footerSwaps": "Hero swaps are tracked from in-game hero change events. Round-start utility swaps (e.g. swapping to Lúcio for speed boost) are filtered out to show only mid-round strategic swaps.",
         "deathDescriptionTeam1": "<span1>{team1Name}</span1> had a first death in {team1FirstDeaths} fights, which is a percentage of <span2>{percentage}</span2>%.",
         "deathDescriptionTeam2": "<span1>{team2Name}</span1> had a first death in {team2FirstDeaths} fights, which is a percentage of <span2>{percentage}</span2>%.",
