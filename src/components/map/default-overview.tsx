@@ -6,6 +6,7 @@ import {
 } from "@/data/killfeed-calibration-dto";
 import { getRotationDeathAnalysis } from "@/data/rotation-death-dto";
 import { getMapAbilityTiming } from "@/data/scrim-ability-timing-dto";
+import { positionalData } from "@/lib/flags";
 import {
   Card,
   CardContent,
@@ -246,11 +247,13 @@ export async function DefaultOverview({
   const team1Name = matchDetails?.team_1_name ?? "Team 1";
   const team2Name = matchDetails?.team_2_name ?? "Team 2";
 
+  const positionalEnabled = await positionalData();
+
   const [abilityTimingAnalysis, rotationDeathAnalysis, killfeedCalibration] =
     await Promise.all([
       getMapAbilityTiming(id, team1Name, team2Name),
-      getRotationDeathAnalysis(id),
-      getKillfeedCalibration(id),
+      positionalEnabled ? getRotationDeathAnalysis(id) : null,
+      positionalEnabled ? getKillfeedCalibration(id) : null,
     ]);
 
   const team1Ults = ultimateStarts.filter((u) => u.player_team === team1Name);
