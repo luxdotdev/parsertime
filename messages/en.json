@@ -3506,7 +3506,10 @@
     "dataLabeling": "Data Labeling",
     "mapCalibration": "Map Calibration",
     "coachingTitle": "Coaching",
-    "coachingCanvas": "Canvas"
+    "coachingCanvas": "Canvas",
+    "tournamentsTitle": "Tournaments",
+    "viewTournaments": "View Tournaments",
+    "createTournament": "Create Tournament"
   },
   "demoPage": {
     "metadata": {

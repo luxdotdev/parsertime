@@ -2297,7 +2297,10 @@
     "newChat": "新对话",
     "reports": "报告",
     "dataLabeling": "数据标注",
-    "mapCalibration": "地图校准"
+    "mapCalibration": "地图校准",
+    "tournamentsTitle": "锦标赛",
+    "viewTournaments": "查看锦标赛",
+    "createTournament": "创建锦标赛"
   },
   "demoPage": {
     "metadata": {

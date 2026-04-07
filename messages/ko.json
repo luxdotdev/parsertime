@@ -2294,7 +2294,10 @@
     "newChat": "새 채팅",
     "reports": "보고서",
     "dataLabeling": "데이터 라벨링",
-    "mapCalibration": "맵 캘리브레이션"
+    "mapCalibration": "맵 캘리브레이션",
+    "tournamentsTitle": "토너먼트",
+    "viewTournaments": "토너먼트 보기",
+    "createTournament": "토너먼트 만들기"
   },
   "demoPage": {
     "metadata": {

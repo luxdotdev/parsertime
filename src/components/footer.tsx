@@ -11,6 +11,7 @@ import {
   dataLabeling,
   positionalData,
   scoutingTool,
+  tournament,
 } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import { get } from "@vercel/edge-config";
@@ -138,6 +139,14 @@ const COACHING_LINKS: FooterColumn = {
   links: [{ labelKey: "coachingCanvas", href: "/coaching/canvas" }],
 };
 
+const TOURNAMENT_LINKS: FooterColumn = {
+  titleKey: "tournamentsTitle",
+  links: [
+    { labelKey: "viewTournaments", href: "/tournaments" },
+    { labelKey: "createTournament", href: "/tournaments/create" },
+  ],
+};
+
 function FooterColumn({
   column,
   t,
@@ -179,6 +188,7 @@ export async function Footer() {
     aiChatEnabled,
     dataToolsEnabled,
     coachingCanvasEnabled,
+    tournamentEnabled,
     positionalDataEnabled,
     healthStatus,
   ] = await Promise.all([
@@ -188,6 +198,7 @@ export async function Footer() {
     aiChat(),
     dataLabeling(),
     coachingCanvas(),
+    tournament(),
     positionalData(),
     unstable_cache(
       async () => {
@@ -213,6 +224,7 @@ export async function Footer() {
     ...(aiChatEnabled ? [ANALYST_LINKS] : []),
     ...(dataToolsEnabled ? [DATA_TOOLS_LINKS] : []),
     ...(coachingCanvasEnabled ? [COACHING_LINKS] : []),
+    ...(tournamentEnabled ? [TOURNAMENT_LINKS] : []),
   ];
 
   return (
