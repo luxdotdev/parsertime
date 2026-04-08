@@ -403,7 +403,7 @@ async function getTeamComparisonStatsFn(
   // Fetch all player stats
   const allPlayerStats = await prisma.playerStat.findMany({
     where: {
-      MapDataId: { in: mapIds },
+      MapDataId: { in: mapDataIds },
       ...(heroes && heroes.length > 0 ? { player_hero: { in: heroes } } : {}),
     },
   });
@@ -434,15 +434,17 @@ async function getTeamComparisonStatsFn(
   const perMapBreakdown: TeamMapBreakdown[] = [];
 
   for (const map of maps) {
+    const mapMdIds = new Set(map.mapData.map((md) => md.id));
     const mapPlayerStats = allPlayerStats.filter(
-      (stat) => stat.MapDataId === map.id
+      (stat) => stat.MapDataId !== null && mapMdIds.has(stat.MapDataId)
     );
 
     if (mapPlayerStats.length === 0) continue;
 
-    // Find team name for this map
+    // Find team name for this map using mapData ID
+    const firstMdId = map.mapData[0]?.id ?? map.id;
     const myTeamName = findTeamNameForMapInMemory(
-      map.id,
+      firstMdId,
       mapPlayerStats,
       teamRosterSet
     );
@@ -503,7 +505,7 @@ async function getTeamComparisonStatsFn(
 
     // Separate calculated stats
     const mapCalculatedStats = allCalculatedStats.filter(
-      (stat) => mapDataIdToMapId.get(stat.MapDataId) === map.id
+      (stat) => mapMdIds.has(stat.MapDataId)
     );
 
     const myTeamMapCalculatedStats = mapCalculatedStats.filter((stat) =>

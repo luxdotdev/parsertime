@@ -12,7 +12,7 @@ import { groupKillsIntoFights, removeDuplicateRows, round } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import prisma from "./prisma";
 
-export async function calculateStats(mapId: number, playerName: string) {
+export async function calculateStats(mapDataId: number, playerName: string) {
   const [
     playerStats,
     fights,
@@ -27,21 +27,21 @@ export async function calculateStats(mapId: number, playerName: string) {
     playerMvpScore,
     mapMVP,
   ] = await Promise.all([
-    getPlayerFinalStats(mapId, playerName),
-    groupKillsIntoFights(mapId),
+    getPlayerFinalStats(mapDataId, playerName),
+    groupKillsIntoFights(mapDataId),
     prisma.roundEnd.findFirst({
-      where: { MapDataId: mapId },
+      where: { MapDataId: mapDataId },
       orderBy: { round_number: "desc" },
     }),
-    getPlayerFinalStats(mapId, playerName),
-    getAverageUltChargeTime(mapId, playerName),
-    getAverageTimeToUseUlt(mapId, playerName),
-    getKillsPerUltimate(mapId, playerName),
-    calculateDroughtTime(mapId, playerName),
-    getDuelWinrates(mapId, playerName),
-    getAjaxes(mapId, playerName),
-    calculateMVPScore({ mapId, playerName }),
-    getMVPForMap(mapId),
+    getPlayerFinalStats(mapDataId, playerName),
+    getAverageUltChargeTime(mapDataId, playerName),
+    getAverageTimeToUseUlt(mapDataId, playerName),
+    getKillsPerUltimate(mapDataId, playerName),
+    calculateDroughtTime(mapDataId, playerName),
+    getDuelWinrates(mapDataId, playerName),
+    getAjaxes(mapDataId, playerName),
+    calculateMVPScore({ mapId: mapDataId, playerName }),
+    getMVPForMap(mapDataId),
   ]);
 
   const mostPlayedHero = playerStats.sort(
@@ -71,7 +71,7 @@ export async function calculateStats(mapId: number, playerName: string) {
   const teamFinalBlows = removeDuplicateRows(
     await prisma.playerStat.findMany({
       where: {
-        MapDataId: mapId,
+        MapDataId: mapDataId,
         player_team: team,
         round_number: finalRound?.round_number,
       },

@@ -1772,18 +1772,20 @@ async function getScrimOverviewFn(
   const maps = await prisma.map.findMany({
     where: { scrimId },
     orderBy: { id: "asc" },
-    select: { id: true, name: true },
+    select: { id: true, name: true, mapData: { select: { id: true } } },
   });
 
   if (maps.length === 0) return emptyOverviewData();
 
-  const mapIds = maps.map((m) => m.id);
+  const mapDataIds = maps.flatMap((m) => m.mapData.map((md) => md.id));
+
+  if (mapDataIds.length === 0) return emptyOverviewData();
 
   // Get team roster and unique players in this scrim in parallel
   const [teamRoster, scrimPlayerNames] = await Promise.all([
     getTeamRoster(teamId),
     prisma.playerStat.findMany({
-      where: { MapDataId: { in: mapIds } },
+      where: { MapDataId: { in: mapDataIds } },
       select: { player_name: true },
       distinct: ["player_name"],
     }),
@@ -1819,7 +1821,7 @@ async function getScrimOverviewFn(
           FROM
             "PlayerStat"
           WHERE
-            "MapDataId" IN (${Prisma.join(mapIds)})
+            "MapDataId" IN (${Prisma.join(mapDataIds)})
           GROUP BY
             "MapDataId"
         )
@@ -1829,26 +1831,26 @@ async function getScrimOverviewFn(
           "PlayerStat" ps
           INNER JOIN maxTime m ON ps."match_time" = m.max_time AND ps."MapDataId" = m."MapDataId"
         WHERE
-          ps."MapDataId" IN (${Prisma.join(mapIds)})
+          ps."MapDataId" IN (${Prisma.join(mapDataIds)})
           AND ps."player_name" IN (${Prisma.join(scrimPlayers)})
       `.then((rows) => removeDuplicateRows(rows)),
     prisma.calculatedStat.findMany({
       where: {
-        MapDataId: { in: mapIds },
+        MapDataId: { in: mapDataIds },
         playerName: { in: scrimPlayers },
       },
     }),
-    prisma.matchStart.findMany({ where: { MapDataId: { in: mapIds } } }),
+    prisma.matchStart.findMany({ where: { MapDataId: { in: mapDataIds } } }),
     prisma.roundEnd.findMany({
-      where: { MapDataId: { in: mapIds } },
+      where: { MapDataId: { in: mapDataIds } },
       orderBy: { round_number: "desc" },
     }),
     prisma.objectiveCaptured.findMany({
-      where: { MapDataId: { in: mapIds } },
+      where: { MapDataId: { in: mapDataIds } },
       orderBy: [{ round_number: "asc" }, { match_time: "asc" }],
     }),
     prisma.payloadProgress.findMany({
-      where: { MapDataId: { in: mapIds } },
+      where: { MapDataId: { in: mapDataIds } },
       orderBy: [
         { round_number: "asc" },
         { objective_index: "asc" },
@@ -1856,7 +1858,7 @@ async function getScrimOverviewFn(
       ],
     }),
     prisma.pointProgress.findMany({
-      where: { MapDataId: { in: mapIds } },
+      where: { MapDataId: { in: mapDataIds } },
       orderBy: [
         { round_number: "asc" },
         { objective_index: "asc" },
@@ -1864,19 +1866,19 @@ async function getScrimOverviewFn(
       ],
     }),
     prisma.kill.findMany({
-      where: { MapDataId: { in: mapIds } },
+      where: { MapDataId: { in: mapDataIds } },
       orderBy: { match_time: "asc" },
     }),
     prisma.mercyRez.findMany({
-      where: { MapDataId: { in: mapIds } },
+      where: { MapDataId: { in: mapDataIds } },
     }),
     prisma.ultimateStart.findMany({
-      where: { MapDataId: { in: mapIds } },
+      where: { MapDataId: { in: mapDataIds } },
       orderBy: { match_time: "asc" },
     }),
     prisma.heroSwap.findMany({
       where: {
-        MapDataId: { in: mapIds },
+        MapDataId: { in: mapDataIds },
         match_time: { not: 0 },
       },
       select: {
@@ -1892,11 +1894,11 @@ async function getScrimOverviewFn(
       orderBy: { match_time: "asc" },
     }),
     prisma.roundStart.findMany({
-      where: { MapDataId: { in: mapIds } },
+      where: { MapDataId: { in: mapDataIds } },
       select: { match_time: true, MapDataId: true },
     }),
     prisma.matchEnd.findMany({
-      where: { MapDataId: { in: mapIds } },
+      where: { MapDataId: { in: mapDataIds } },
       select: { match_time: true, MapDataId: true },
     }),
   ]);
@@ -2002,13 +2004,21 @@ async function getScrimOverviewFn(
   // Build a separate fight map that includes ults in the event stream,
   // so fight windows expand to cover ultimates used outside kill activity.
   // This ensures the timing chart counts all ults, not just those near kills.
+  // Build a map from Map.id to MapData.id for lookups
+  const mapIdToMapDataId = new Map<number, number>();
+  for (const map of maps) {
+    if (map.mapData[0]) {
+      mapIdToMapDataId.set(map.id, map.mapData[0].id);
+    }
+  }
+
   const fightsByMapWithUlts = new Map<number, Fight[]>();
-  for (const mapId of mapIds) {
-    const kills = killsByMap.get(mapId) ?? [];
-    const mapUlts = allUltimates.filter((u) => u.MapDataId === mapId);
+  for (const mdId of mapDataIds) {
+    const kills = killsByMap.get(mdId) ?? [];
+    const mapUlts = allUltimates.filter((u) => u.MapDataId === mdId);
     const merged: Kill[] = [...kills, ...mapUlts.map(ultimateStartToKillEvent)];
     merged.sort((a, b) => a.match_time - b.match_time);
-    fightsByMapWithUlts.set(mapId, groupEventsIntoFights(merged));
+    fightsByMapWithUlts.set(mdId, groupEventsIntoFights(merged));
   }
 
   type MapFirstDeathLookup = {
@@ -2056,7 +2066,7 @@ async function getScrimOverviewFn(
   const ourTeamNameByMap = getMapTeamNames(finalRoundStats);
 
   const fightAnalysis = computeScrimFightAnalysis(
-    mapIds,
+    mapDataIds,
     killsByMap,
     allUltimates,
     ourTeamNameByMap
@@ -2077,23 +2087,28 @@ async function getScrimOverviewFn(
   let draws = 0;
 
   for (const map of maps) {
-    const matchStart = matchStartByMapId.get(map.id) ?? null;
-    const finalRound = finalRoundByMapId.get(map.id) ?? null;
-    const mapCaptures = capturesByMapAndTeam.get(map.id);
+    const mdId = mapIdToMapDataId.get(map.id);
+    const matchStart = mdId ? (matchStartByMapId.get(mdId) ?? null) : null;
+    const finalRound = mdId ? (finalRoundByMapId.get(mdId) ?? null) : null;
+    const mapCaptures = mdId ? capturesByMapAndTeam.get(mdId) : undefined;
     const team1Caps = matchStart?.team_1_name
       ? (mapCaptures?.get(matchStart.team_1_name) ?? [])
       : [];
     const team2Caps = matchStart?.team_2_name
       ? (mapCaptures?.get(matchStart.team_2_name) ?? [])
       : [];
-    const mapPayloadProgress = payloadProgressByMapAndTeam.get(map.id);
+    const mapPayloadProgress = mdId
+      ? payloadProgressByMapAndTeam.get(mdId)
+      : undefined;
     const team1PayloadProgress = matchStart?.team_1_name
       ? (mapPayloadProgress?.get(matchStart.team_1_name) ?? [])
       : [];
     const team2PayloadProgress = matchStart?.team_2_name
       ? (mapPayloadProgress?.get(matchStart.team_2_name) ?? [])
       : [];
-    const mapPointProgress = pointProgressByMapAndTeam.get(map.id);
+    const mapPointProgress = mdId
+      ? pointProgressByMapAndTeam.get(mdId)
+      : undefined;
     const team1PointProgress = matchStart?.team_1_name
       ? (mapPointProgress?.get(matchStart.team_1_name) ?? [])
       : [];
@@ -2112,7 +2127,9 @@ async function getScrimOverviewFn(
       team2PointProgress,
     });
 
-    const ourTeamName = ourTeamNameByMap.get(map.id) ?? null;
+    const ourTeamName = mdId
+      ? (ourTeamNameByMap.get(mdId) ?? null)
+      : null;
     let winner: MapResult["winner"];
 
     if (winnerName === "N/A" || !ourTeamName) {
@@ -2177,16 +2194,17 @@ async function getScrimOverviewFn(
     let totalFirstDeaths = 0;
     let totalTeamFirstDeaths = 0;
 
-    for (let i = 0; i < mapIds.length; i++) {
-      const mapId = mapIds[i];
-      const rows = rowsByMap.get(mapId) ?? [];
+    for (let i = 0; i < maps.length; i++) {
+      const mdId = mapIdToMapDataId.get(maps[i].id);
+      if (!mdId) continue;
+      const rows = rowsByMap.get(mdId) ?? [];
       if (rows.length === 0) continue;
       const aggregatedRow = aggregateRowsToPlayerStat(rows);
       if (!aggregatedRow) continue;
       perMapStats.push(aggregatedRow);
-      perMapCalculatedStats.push(calcByMap.get(mapId) ?? []);
+      perMapCalculatedStats.push(calcByMap.get(mdId) ?? []);
 
-      const fdLookup = firstDeathLookup.get(mapId);
+      const fdLookup = firstDeathLookup.get(mdId);
       const mapFightCount = fdLookup?.fightCount ?? 0;
       const mapFirstDeaths = fdLookup?.overallFirstDeaths.get(playerName) ?? 0;
       const mapTeamFirstDeaths =
@@ -2372,9 +2390,9 @@ async function getScrimOverviewFn(
 
   const insights = generateInsights(teamPlayers);
 
-  const firstMapId = mapIds[0];
-  const firstOurTeamName = ourTeamNameByMap.get(firstMapId) ?? "";
-  const firstMatchStart = matchStartByMapId.get(firstMapId);
+  const firstMapDataId = mapDataIds[0];
+  const firstOurTeamName = ourTeamNameByMap.get(firstMapDataId) ?? "";
+  const firstMatchStart = matchStartByMapId.get(firstMapDataId);
   const opponentTeamName =
     firstMatchStart?.team_1_name === firstOurTeamName
       ? (firstMatchStart?.team_2_name ?? "Opponent")
@@ -2384,7 +2402,7 @@ async function getScrimOverviewFn(
     allHeroSwaps as SwapRecord[],
     allRoundStarts,
     allMatchEnds,
-    mapIds,
+    mapDataIds,
     ourTeamNameByMap,
     mapResults
   );

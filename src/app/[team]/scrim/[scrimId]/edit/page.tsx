@@ -7,6 +7,7 @@ import { getScrim } from "@/data/scrim-dto";
 import { getTeamsWithPerms } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { scoutingTool } from "@/lib/flags";
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
@@ -41,20 +42,22 @@ export default async function EditScrimPage(
 
   const [heroBansByMap, teamNamesByMap] = await Promise.all([
     Promise.all(
-      maps.map((map) =>
-        prisma.heroBan.findMany({
-          where: { MapDataId: map.id },
+      maps.map(async (map) => {
+        const mapDataId = await resolveMapDataId(map.id);
+        return prisma.heroBan.findMany({
+          where: { MapDataId: mapDataId },
           orderBy: { banPosition: "asc" },
-        })
-      )
+        });
+      })
     ),
     Promise.all(
-      maps.map((map) =>
-        prisma.matchStart.findFirst({
-          where: { MapDataId: map.id },
+      maps.map(async (map) => {
+        const mapDataId = await resolveMapDataId(map.id);
+        return prisma.matchStart.findFirst({
+          where: { MapDataId: mapDataId },
           select: { team_1_name: true, team_2_name: true },
-        })
-      )
+        });
+      })
     ),
   ]);
 

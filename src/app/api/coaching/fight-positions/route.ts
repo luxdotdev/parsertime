@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -28,7 +29,7 @@ export async function GET(request: Request) {
     );
   }
 
-  const id = parseInt(mapDataId);
+  const id = await resolveMapDataId(parseInt(mapDataId));
   const fightStart = parseFloat(start);
   const fightEnd = parseFloat(end);
 

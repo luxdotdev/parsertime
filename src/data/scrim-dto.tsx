@@ -1,3 +1,4 @@
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { removeDuplicateRows } from "@/lib/utils";
 import { calculateWinner } from "@/lib/winrate";
@@ -47,6 +48,7 @@ export const getUserViewableScrims = cache(getUserViewableScrimsFn);
  *    effectively returning statistics for players at the final match time of the specified scrim.
  */
 async function getFinalRoundStatsFn(id: number) {
+  const mapDataId = await resolveMapDataId(id);
   return removeDuplicateRows(
     await prisma.$queryRaw<PlayerStat[]>`
         WITH maxTime AS (
@@ -55,7 +57,7 @@ async function getFinalRoundStatsFn(id: number) {
           FROM
               "PlayerStat"
           WHERE
-              "MapDataId" = ${id}
+              "MapDataId" = ${mapDataId}
         )
         SELECT
             ps.*
@@ -63,7 +65,7 @@ async function getFinalRoundStatsFn(id: number) {
             "PlayerStat" ps
             INNER JOIN maxTime m ON ps."match_time" = m.max_time
         WHERE
-            ps."MapDataId" = ${id}`
+            ps."MapDataId" = ${mapDataId}`
   )
     .sort((a, b) => a.player_name.localeCompare(b.player_name))
     .sort(
@@ -84,6 +86,7 @@ async function getFinalRoundStatsFn(id: number) {
 export const getFinalRoundStats = cache(getFinalRoundStatsFn);
 
 async function getFinalRoundStatsForPlayerFn(id: number, playerName: string) {
+  const mapDataId = await resolveMapDataId(id);
   return removeDuplicateRows(
     await prisma.$queryRaw<PlayerStat[]>`
       WITH maxTime AS (
@@ -92,7 +95,7 @@ async function getFinalRoundStatsForPlayerFn(id: number, playerName: string) {
         FROM
             "PlayerStat"
         WHERE
-            "MapDataId" = ${id}
+            "MapDataId" = ${mapDataId}
       )
       SELECT
           ps.*
@@ -100,7 +103,7 @@ async function getFinalRoundStatsForPlayerFn(id: number, playerName: string) {
           "PlayerStat" ps
           INNER JOIN maxTime m ON ps."match_time" = m.max_time
       WHERE
-          ps."MapDataId" = ${id}
+          ps."MapDataId" = ${mapDataId}
           AND ps."player_name" = ${playerName}`
   );
 }
@@ -118,15 +121,15 @@ export const getPlayerFinalStats = cache(getFinalRoundStatsForPlayerFn);
 async function getAllStatsForPlayerFn(scrimIds: number[], name: string) {
   if (scrimIds.length === 0) return [];
 
-  const mapDataIds = await prisma.scrim.findMany({
+  const scrims = await prisma.scrim.findMany({
     where: { id: { in: scrimIds } },
-    select: { maps: true },
+    select: { maps: { select: { mapData: { select: { id: true } } } } },
   });
 
   const mapDataIdSet = new Set<number>();
-  mapDataIds.forEach((scrim) => {
+  scrims.forEach((scrim) => {
     scrim.maps.forEach((map) => {
-      mapDataIdSet.add(map.id);
+      map.mapData.forEach((md) => mapDataIdSet.add(md.id));
     });
   });
 
@@ -167,15 +170,15 @@ async function getAllStatsForPlayerFn(scrimIds: number[], name: string) {
 export const getAllStatsForPlayer = cache(getAllStatsForPlayerFn);
 
 async function getAllKillsForPlayerFn(scrimIds: number[], name: string) {
-  const mapDataIds = await prisma.scrim.findMany({
+  const scrims = await prisma.scrim.findMany({
     where: { id: { in: scrimIds } },
-    select: { maps: true },
+    select: { maps: { select: { mapData: { select: { id: true } } } } },
   });
 
   const mapDataIdSet = new Set<number>();
-  mapDataIds.forEach((scrim) => {
+  scrims.forEach((scrim) => {
     scrim.maps.forEach((map) => {
-      mapDataIdSet.add(map.id);
+      map.mapData.forEach((md) => mapDataIdSet.add(md.id));
     });
   });
 
@@ -200,15 +203,15 @@ async function getAllKillsForPlayerFn(scrimIds: number[], name: string) {
 export const getAllKillsForPlayer = cache(getAllKillsForPlayerFn);
 
 async function getAllDeathsForPlayerFn(scrimIds: number[], name: string) {
-  const mapDataIds = await prisma.scrim.findMany({
+  const scrims = await prisma.scrim.findMany({
     where: { id: { in: scrimIds } },
-    select: { maps: true },
+    select: { maps: { select: { mapData: { select: { id: true } } } } },
   });
 
   const mapDataIdSet = new Set<number>();
-  mapDataIds.forEach((scrim) => {
+  scrims.forEach((scrim) => {
     scrim.maps.forEach((map) => {
-      mapDataIdSet.add(map.id);
+      map.mapData.forEach((md) => mapDataIdSet.add(md.id));
     });
   });
 
@@ -235,17 +238,23 @@ export const getAllDeathsForPlayer = cache(getAllDeathsForPlayerFn);
 export type Winrate = { map: string; wins: number; date: Date }[];
 
 async function getAllMapWinratesForPlayerFn(scrimIds: number[], name: string) {
-  const mapDataIds = await prisma.scrim.findMany({
+  const scrims = await prisma.scrim.findMany({
     where: { id: { in: scrimIds } },
-    select: { maps: true, date: true, id: true },
+    select: {
+      maps: { select: { mapData: { select: { id: true } } } },
+      date: true,
+      id: true,
+    },
   });
 
   const mapDataIdSet = new Set<number>();
   const mapIdToDateMap = new Map<number, Date>();
-  mapDataIds.forEach((scrim) => {
+  scrims.forEach((scrim) => {
     scrim.maps.forEach((map) => {
-      mapDataIdSet.add(map.id);
-      mapIdToDateMap.set(map.id, scrim.date);
+      map.mapData.forEach((md) => {
+        mapDataIdSet.add(md.id);
+        mapIdToDateMap.set(md.id, scrim.date);
+      });
     });
   });
   const mapDataIdArray = Array.from(mapDataIdSet);

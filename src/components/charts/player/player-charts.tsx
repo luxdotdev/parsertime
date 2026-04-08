@@ -12,6 +12,7 @@ import {
   type Stat,
   sumStatByRound,
 } from "@/lib/player-charts";
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import { getTranslations } from "next-intl/server";
@@ -23,13 +24,14 @@ type Props = {
 
 export async function PlayerCharts({ id, playerName }: Props) {
   const t = await getTranslations("mapPage.player.charts");
+  const mapDataId = await resolveMapDataId(id);
 
   async function getStatByRound<T extends keyof Omit<Stat, NonMappableStat>>(
     stat: T
   ): Promise<({ round_number: number } & Record<T, number>)[]> {
     const playerStatByRound = (await prisma.playerStat.findMany({
       where: {
-        MapDataId: id,
+        MapDataId: mapDataId,
         player_name: playerName,
       },
       select: {
@@ -44,7 +46,7 @@ export async function PlayerCharts({ id, playerName }: Props) {
 
   const teams = await prisma.matchStart.findFirst({
     where: {
-      MapDataId: id,
+      MapDataId: mapDataId,
     },
     select: {
       team_1_name: true,
@@ -56,7 +58,7 @@ export async function PlayerCharts({ id, playerName }: Props) {
 
   const playerTeamName = await prisma.playerStat.findFirst({
     where: {
-      MapDataId: id,
+      MapDataId: mapDataId,
       player_name: playerName,
     },
     select: {

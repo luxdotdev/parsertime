@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getTeamRoster } from "@/data/team-shared-data";
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import {
   groupEventsIntoFights,
@@ -335,12 +336,12 @@ async function getScrimAbilityTimingFn(
   const maps = await prisma.map.findMany({
     where: { scrimId },
     orderBy: { id: "asc" },
-    select: { id: true },
+    select: { id: true, mapData: { select: { id: true } } },
   });
 
   if (maps.length === 0) return { rows: [], outliers: [] };
 
-  const mapIds = maps.map((m) => m.id);
+  const mapIds = maps.flatMap((m) => m.mapData.map((md) => md.id));
 
   const [teamRosterArr, allKills, allRezzes, allAbility1, allAbility2] =
     await Promise.all([
@@ -455,12 +456,12 @@ async function getScrimFightTimelinesFn(
   const maps = await prisma.map.findMany({
     where: { scrimId },
     orderBy: { id: "asc" },
-    select: { id: true },
+    select: { id: true, mapData: { select: { id: true } } },
   });
 
   if (maps.length === 0) return { fights: [], ourTeamName: "" };
 
-  const mapIds = maps.map((m) => m.id);
+  const mapIds = maps.flatMap((m) => m.mapData.map((md) => md.id));
 
   const [teamRosterArr, allKills, allRezzes, allAbility1, allAbility2] =
     await Promise.all([
@@ -611,17 +612,19 @@ async function getMapAbilityTimingFn(
     team2: { rows: [], outliers: [] },
   };
 
+  const mapDataId = await resolveMapDataId(mapId);
+
   const [allKills, allRezzes, allAbility1, allAbility2] = await Promise.all([
     prisma.kill.findMany({
-      where: { MapDataId: mapId },
+      where: { MapDataId: mapDataId },
       orderBy: { match_time: "asc" },
     }),
     prisma.mercyRez.findMany({
-      where: { MapDataId: mapId },
+      where: { MapDataId: mapDataId },
       orderBy: { match_time: "asc" },
     }),
     prisma.ability1Used.findMany({
-      where: { MapDataId: mapId },
+      where: { MapDataId: mapDataId },
       select: {
         match_time: true,
         player_team: true,
@@ -631,7 +634,7 @@ async function getMapAbilityTimingFn(
       orderBy: { match_time: "asc" },
     }),
     prisma.ability2Used.findMany({
-      where: { MapDataId: mapId },
+      where: { MapDataId: mapDataId },
       select: {
         match_time: true,
         player_team: true,

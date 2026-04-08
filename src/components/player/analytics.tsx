@@ -18,6 +18,7 @@ import {
 } from "@/lib/analytics";
 import { auth } from "@/lib/auth";
 import { calculateMVPScoresForMap } from "@/lib/mvp-score";
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import {
   getColorblindMode,
@@ -37,6 +38,7 @@ export async function PlayerAnalytics({
   playerName: string;
 }) {
   const t = await getTranslations("mapPage.player.analytics");
+  const mapDataId = await resolveMapDataId(id);
 
   const [
     averageTimeToUltimate,
@@ -55,18 +57,18 @@ export async function PlayerAnalytics({
     getAverageTimeToUseUlt(id, playerName),
     calculateDroughtTime(id, playerName),
     getDuelWinrates(id, playerName),
-    prisma.matchStart.findFirst({ where: { MapDataId: id } }),
+    prisma.matchStart.findFirst({ where: { MapDataId: mapDataId } }),
     groupPlayerKillsIntoFights(id, playerName),
     prisma.playerStat.findMany({
-      where: { MapDataId: id, player_name: playerName },
+      where: { MapDataId: mapDataId, player_name: playerName },
       select: { id: true, round_number: true, damage_taken: true },
     }),
     prisma.playerStat.findMany({
-      where: { MapDataId: id, player_name: playerName },
+      where: { MapDataId: mapDataId, player_name: playerName },
       select: { id: true, round_number: true, healing_received: true },
     }),
     prisma.playerStat.findMany({
-      where: { MapDataId: id, player_name: playerName },
+      where: { MapDataId: mapDataId, player_name: playerName },
       select: { id: true, round_number: true, hero_damage_dealt: true },
     }),
     auth(),

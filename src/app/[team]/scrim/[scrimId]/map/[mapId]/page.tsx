@@ -31,6 +31,7 @@ import {
   scoutingTool,
   tempoChart,
 } from "@/lib/flags";
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { getColorblindMode, translateMapName } from "@/lib/utils";
 import type { PagePropsWithLocale, SearchParams } from "@/types/next";
@@ -43,6 +44,7 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const params = await props.params;
   const mapId = decodeURIComponent(params.mapId);
+  const metadataMapDataId = await resolveMapDataId(parseInt(mapId));
   const t = await getTranslations({
     locale: params.locale,
     namespace: "mapPage.mapMetadata",
@@ -50,7 +52,7 @@ export async function generateMetadata(
 
   const mapName = await prisma.matchStart.findFirst({
     where: {
-      MapDataId: parseInt(mapId),
+      MapDataId: metadataMapDataId,
     },
     select: {
       map_name: true,
@@ -88,6 +90,7 @@ export default async function MapDashboardPage(
   const params = await props.params;
   const searchParams = await props.searchParams;
   const id = parseInt(params.mapId);
+  const mapDataId = await resolveMapDataId(id);
   const session = await auth();
   const user = await getUser(session?.user?.email);
   const t = await getTranslations("mapPage");
@@ -114,7 +117,7 @@ export default async function MapDashboardPage(
   ] = await Promise.all([
     getMostPlayedHeroes(id),
     prisma.matchStart.findFirst({
-      where: { MapDataId: id },
+      where: { MapDataId: mapDataId },
       select: { map_name: true, team_1_name: true },
     }),
     prisma.map.findFirst({
@@ -126,12 +129,12 @@ export default async function MapDashboardPage(
       select: { guestMode: true },
     }),
     prisma.heroBan.findMany({
-      where: { MapDataId: id },
+      where: { MapDataId: mapDataId },
     }),
     prisma.note.findFirst({
       where: {
         scrimId: parseInt(params.scrimId),
-        MapDataId: id,
+        MapDataId: mapDataId,
       },
       select: { content: true },
     }),

@@ -25,12 +25,12 @@ export type BaseTeamDataOptions = {
  * Extracted from team-stats-dto.tsx
  */
 async function getTeamRosterUncached(teamId: number): Promise<string[]> {
-  const mapDataRecords = await prisma.map.findMany({
+  const mapRecords = await prisma.map.findMany({
     where: { Scrim: { Team: { id: teamId } } },
-    select: { id: true },
+    select: { mapData: { select: { id: true } } },
   });
 
-  const mapDataIds = mapDataRecords.map((md) => md.id);
+  const mapDataIds = mapRecords.flatMap((m) => m.mapData.map((md) => md.id));
 
   if (mapDataIds.length === 0) {
     return [];
@@ -143,12 +143,13 @@ async function getBaseTeamDataUncached(
     scrimWhereClause.date = { gte: dateRange.from, lte: dateRange.to };
   }
 
-  // Fetch all map data records
-  const allMapDataRecords = await prisma.map.findMany({
+  // Fetch all map records with their MapData IDs
+  const allMapRecords = await prisma.map.findMany({
     where: { Scrim: scrimWhereClause },
     select: {
       id: true,
       name: true,
+      mapData: { select: { id: true } },
       ...(includeDateInfo && {
         Scrim: {
           select: {
@@ -169,9 +170,9 @@ async function getBaseTeamDataUncached(
   });
 
   // Filter map types if requested
-  let mapDataRecords = allMapDataRecords;
+  let filteredMapRecords = allMapRecords;
   if (excludePush || excludeClash) {
-    mapDataRecords = allMapDataRecords.filter((record) => {
+    filteredMapRecords = allMapRecords.filter((record) => {
       const mapName = record.name;
       if (!mapName) return false;
       const mapType =
@@ -184,7 +185,19 @@ async function getBaseTeamDataUncached(
     });
   }
 
-  const mapDataIds = mapDataRecords.map((md) => md.id);
+  // Extract MapData IDs for event table queries
+  const mapDataIds = filteredMapRecords.flatMap((m) =>
+    m.mapData.map((md) => md.id)
+  );
+
+  // Build mapDataRecords using MapData IDs (for compatibility with downstream code)
+  const mapDataRecords = filteredMapRecords.flatMap((m) =>
+    m.mapData.map((md) => ({
+      id: md.id,
+      name: m.name,
+      ...("Scrim" in m && m.Scrim ? { Scrim: m.Scrim } : {}),
+    }))
+  );
 
   // If no maps, return empty data
   if (mapDataIds.length === 0) {

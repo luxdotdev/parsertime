@@ -24,13 +24,15 @@ export async function getTournamentBroadcastData(tournamentId: number) {
 
   const scrims = await prisma.scrim.findMany({
     where: { id: { in: scrimIds } },
-    select: { maps: true },
+    select: { maps: { select: { mapData: { select: { id: true } } } } },
   });
 
   const mapIds: number[] = [];
   for (const scrim of scrims) {
     for (const map of scrim.maps) {
-      mapIds.push(map.id);
+      for (const md of map.mapData) {
+        mapIds.push(md.id);
+      }
     }
   }
 

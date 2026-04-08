@@ -1,3 +1,4 @@
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import {
   groupEventsIntoFights,
@@ -179,13 +180,14 @@ export function tempoPointsToSvgPath(
 export async function getTempoChartData(
   mapId: number
 ): Promise<TempoChartData | null> {
+  const mapDataId = await resolveMapDataId(mapId);
   const [kills, ultStarts, matchStart, matchEnd, mercyRezzes] =
     await Promise.all([
-      prisma.kill.findMany({ where: { MapDataId: mapId } }),
-      prisma.ultimateStart.findMany({ where: { MapDataId: mapId } }),
-      prisma.matchStart.findFirst({ where: { MapDataId: mapId } }),
-      prisma.matchEnd.findFirst({ where: { MapDataId: mapId } }),
-      prisma.mercyRez.findMany({ where: { MapDataId: mapId } }),
+      prisma.kill.findMany({ where: { MapDataId: mapDataId } }),
+      prisma.ultimateStart.findMany({ where: { MapDataId: mapDataId } }),
+      prisma.matchStart.findFirst({ where: { MapDataId: mapDataId } }),
+      prisma.matchEnd.findFirst({ where: { MapDataId: mapDataId } }),
+      prisma.mercyRez.findMany({ where: { MapDataId: mapDataId } }),
     ]);
 
   if (!matchStart || !matchEnd) return null;

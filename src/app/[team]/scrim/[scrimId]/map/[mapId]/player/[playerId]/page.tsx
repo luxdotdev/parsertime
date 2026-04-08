@@ -15,6 +15,7 @@ import { getMostPlayedHeroes } from "@/data/player-dto";
 import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import { aiChat, dataLabeling, scoutingTool } from "@/lib/flags";
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { toTitleCase } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
@@ -61,13 +62,14 @@ export default async function PlayerDashboardPage(
   const params = await props.params;
   const t = await getTranslations("mapPage.player.dashboard");
   const id = parseInt(params.mapId);
+  const mapDataId = await resolveMapDataId(id);
   const playerName = decodeURIComponent(params.playerId);
 
   const mostPlayedHeroes = await getMostPlayedHeroes(id);
 
   const mapName = await prisma.matchStart.findFirst({
     where: {
-      MapDataId: id,
+      MapDataId: mapDataId,
     },
     select: {
       map_name: true,

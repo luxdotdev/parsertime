@@ -1,3 +1,4 @@
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import {
   ColorblindMode,
@@ -278,9 +279,10 @@ export function ultimateStartToKillEvent(
 }
 
 export async function groupKillsIntoFights(mapId: number) {
+  const mapDataId = await resolveMapDataId(mapId);
   const [killsByMapId, rezzesByMapId] = await Promise.all([
-    prisma.kill.findMany({ where: { MapDataId: mapId } }),
-    prisma.mercyRez.findMany({ where: { MapDataId: mapId } }),
+    prisma.kill.findMany({ where: { MapDataId: mapDataId } }),
+    prisma.mercyRez.findMany({ where: { MapDataId: mapDataId } }),
   ]);
 
   if (killsByMapId.length === 0 && rezzesByMapId.length === 0) return [];
@@ -305,9 +307,10 @@ export async function groupPlayerKillsIntoFights(
     end: number;
   };
 
+  const mapDataId = await resolveMapDataId(mapId);
   const [killsByMapId, rezzesByMapId] = await Promise.all([
-    prisma.kill.findMany({ where: { MapDataId: mapId } }),
-    prisma.mercyRez.findMany({ where: { MapDataId: mapId } }),
+    prisma.kill.findMany({ where: { MapDataId: mapDataId } }),
+    prisma.mercyRez.findMany({ where: { MapDataId: mapDataId } }),
   ]);
 
   if (killsByMapId.length === 0) return [];

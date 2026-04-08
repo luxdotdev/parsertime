@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card";
 import { CardIcon } from "@/components/ui/card-icon";
 import { getPlayerFinalStats } from "@/data/scrim-dto";
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import {
   groupKillsIntoFights,
@@ -26,10 +27,11 @@ export async function DefaultOverview({
 }) {
   const t = await getTranslations("mapPage.player.overview");
   const playerNameDecoded = decodeURIComponent(playerName);
+  const mapDataId = await resolveMapDataId(id);
 
   const [finalRound, playerStatsByFinalRound, fights] = await Promise.all([
     prisma.roundEnd.findFirst({
-      where: { MapDataId: id },
+      where: { MapDataId: mapDataId },
       orderBy: { round_number: "desc" },
     }),
     getPlayerFinalStats(id, playerNameDecoded),
@@ -41,7 +43,7 @@ export async function DefaultOverview({
   const teamFinalBlows = removeDuplicateRows(
     await prisma.playerStat.findMany({
       where: {
-        MapDataId: id,
+        MapDataId: mapDataId,
         player_team: team,
         round_number: finalRound?.round_number,
       },

@@ -26,6 +26,7 @@ import {
 import { filterUtilityRoundStartSwaps } from "@/data/team-hero-swap-dto";
 import { getAjaxes } from "@/lib/analytics";
 import { calculateMVPScoresForMap } from "@/lib/mvp-score";
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import {
   groupEventsIntoFights,
@@ -59,15 +60,16 @@ export async function DefaultOverview({
   team1Color: string;
   team2Color: string;
 }) {
+  const mapDataId = await resolveMapDataId(id);
   const [finalRound, matchDetails, finalRoundStats, playerStats, fights] =
     await Promise.all([
       prisma.roundEnd.findFirst({
-        where: { MapDataId: id },
+        where: { MapDataId: mapDataId },
         orderBy: { round_number: "desc" },
       }),
-      prisma.matchStart.findFirst({ where: { MapDataId: id } }),
+      prisma.matchStart.findFirst({ where: { MapDataId: mapDataId } }),
       getFinalRoundStats(id),
-      prisma.playerStat.findMany({ where: { MapDataId: id } }),
+      prisma.playerStat.findMany({ where: { MapDataId: mapDataId } }),
       groupKillsIntoFights(id),
     ]);
 
@@ -81,21 +83,21 @@ export async function DefaultOverview({
   ] = await Promise.all([
     prisma.objectiveCaptured.findMany({
       where: {
-        MapDataId: id,
+        MapDataId: mapDataId,
         capturing_team: matchDetails?.team_1_name ?? "Team 1",
       },
       orderBy: [{ round_number: "asc" }, { match_time: "asc" }],
     }),
     prisma.objectiveCaptured.findMany({
       where: {
-        MapDataId: id,
+        MapDataId: mapDataId,
         capturing_team: matchDetails?.team_2_name ?? "Team 2",
       },
       orderBy: [{ round_number: "asc" }, { match_time: "asc" }],
     }),
     prisma.payloadProgress.findMany({
       where: {
-        MapDataId: id,
+        MapDataId: mapDataId,
         capturing_team: matchDetails?.team_1_name ?? "Team 1",
       },
       orderBy: [
@@ -106,7 +108,7 @@ export async function DefaultOverview({
     }),
     prisma.payloadProgress.findMany({
       where: {
-        MapDataId: id,
+        MapDataId: mapDataId,
         capturing_team: matchDetails?.team_2_name ?? "Team 2",
       },
       orderBy: [
@@ -117,7 +119,7 @@ export async function DefaultOverview({
     }),
     prisma.pointProgress.findMany({
       where: {
-        MapDataId: id,
+        MapDataId: mapDataId,
         capturing_team: matchDetails?.team_1_name ?? "Team 1",
       },
       orderBy: [
@@ -128,7 +130,7 @@ export async function DefaultOverview({
     }),
     prisma.pointProgress.findMany({
       where: {
-        MapDataId: id,
+        MapDataId: mapDataId,
         capturing_team: matchDetails?.team_2_name ?? "Team 2",
       },
       orderBy: [
@@ -202,22 +204,22 @@ export async function DefaultOverview({
   const [ultimateKills, ultimateStarts, ultCalcStats, heroSwaps, roundStarts] =
     await Promise.all([
       prisma.kill.findMany({
-        where: { MapDataId: id, event_ability: "Ultimate" },
+        where: { MapDataId: mapDataId, event_ability: "Ultimate" },
       }),
       prisma.ultimateStart.findMany({
-        where: { MapDataId: id },
+        where: { MapDataId: mapDataId },
         orderBy: { match_time: "asc" },
       }),
       prisma.calculatedStat.findMany({
         where: {
-          MapDataId: id,
+          MapDataId: mapDataId,
           stat: {
             in: ["AVERAGE_ULT_CHARGE_TIME", "AVERAGE_TIME_TO_USE_ULT"],
           },
         },
       }),
       prisma.heroSwap.findMany({
-        where: { MapDataId: id, match_time: { not: 0 } },
+        where: { MapDataId: mapDataId, match_time: { not: 0 } },
         select: {
           id: true,
           match_time: true,
@@ -231,7 +233,7 @@ export async function DefaultOverview({
         orderBy: { match_time: "asc" },
       }),
       prisma.roundStart.findMany({
-        where: { MapDataId: id },
+        where: { MapDataId: mapDataId },
         select: { match_time: true, MapDataId: true },
       }),
     ]);

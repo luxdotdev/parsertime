@@ -14,6 +14,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import type { Kill } from "@prisma/client";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
@@ -40,10 +41,10 @@ async function ChartTooltip() {
 }
 
 async function groupKillsByInterval(id: number, maxInterval: number) {
-  // Fetch the data
+  const mdId = await resolveMapDataId(id);
   const kills = await prisma.kill.findMany({
     where: {
-      MapDataId: id,
+      MapDataId: mdId,
     },
   });
 
@@ -79,9 +80,10 @@ async function groupKillsByInterval(id: number, maxInterval: number) {
 
 export async function MapCharts({ id }: { id: number }) {
   const t = await getTranslations("mapPage.charts");
+  const mapDataId = await resolveMapDataId(id);
   const teams = await prisma.matchStart.findFirst({
     where: {
-      MapDataId: id,
+      MapDataId: mapDataId,
     },
     select: {
       team_1_name: true,
@@ -97,14 +99,14 @@ export async function MapCharts({ id }: { id: number }) {
 
   const team1Kills = await prisma.kill.findMany({
     where: {
-      MapDataId: id,
+      MapDataId: mapDataId,
       attacker_team: team1Name,
     },
   });
 
   const team2Kills = await prisma.kill.findMany({
     where: {
-      MapDataId: id,
+      MapDataId: mapDataId,
       attacker_team: team2Name,
     },
   });
@@ -112,7 +114,7 @@ export async function MapCharts({ id }: { id: number }) {
   const team1DamageByRound = await prisma.playerStat.groupBy({
     by: ["round_number"],
     where: {
-      MapDataId: id,
+      MapDataId: mapDataId,
       player_team: team1Name,
     },
     _sum: {
@@ -123,7 +125,7 @@ export async function MapCharts({ id }: { id: number }) {
   const team2DamageByRound = await prisma.playerStat.groupBy({
     by: ["round_number"],
     where: {
-      MapDataId: id,
+      MapDataId: mapDataId,
       player_team: team2Name,
     },
     _sum: {

@@ -350,7 +350,6 @@ async function getTopMapsByPlaytimeFn(
   teamId: number,
   dateRange?: TeamDateRange
 ) {
-  // Get all Maps for the team (MapDataId in event tables actually stores Map.id)
   const scrimWhereClause: Record<string, unknown> = {
     Team: { id: teamId },
   };
@@ -363,6 +362,7 @@ async function getTopMapsByPlaytimeFn(
     select: {
       id: true,
       name: true,
+      mapData: { select: { id: true } },
     },
   });
 
@@ -370,36 +370,38 @@ async function getTopMapsByPlaytimeFn(
     return [];
   }
 
-  const mapIds = maps.map((m) => m.id);
+  const mapDataIds = maps.flatMap((m) => m.mapData.map((md) => md.id));
+
+  if (mapDataIds.length === 0) {
+    return [];
+  }
+
+  // Build a reverse map from MapData.id -> map name
+  const mapDataIdToName = new Map<number, string>();
+  for (const map of maps) {
+    for (const md of map.mapData) {
+      mapDataIdToName.set(md.id, map.name ?? "Unknown Map");
+    }
+  }
 
   const matchEnds = await prisma.matchEnd.findMany({
-    where: { MapDataId: { in: mapIds } },
+    where: { MapDataId: { in: mapDataIds } },
     select: {
       match_time: true,
       MapDataId: true,
     },
   });
 
-  // First, sum all match ends by Map ID
-  const playtimeByMapId = new Map<number, number>();
-
-  for (const matchEnd of matchEnds) {
-    const mapId = matchEnd.MapDataId;
-    if (!mapId) continue;
-
-    const currentPlaytime = playtimeByMapId.get(mapId) ?? 0;
-    playtimeByMapId.set(mapId, currentPlaytime + matchEnd.match_time);
-  }
-
-  // Then, aggregate by map name (since same map can appear in multiple scrims)
+  // Aggregate playtime by map name
   const playtimeByMapName = new Map<string, number>();
 
-  for (const map of maps) {
-    const mapName = map.name ?? "Unknown Map";
-    const playtime = playtimeByMapId.get(map.id) ?? 0;
+  for (const matchEnd of matchEnds) {
+    const mdId = matchEnd.MapDataId;
+    if (!mdId) continue;
 
+    const mapName = mapDataIdToName.get(mdId) ?? "Unknown Map";
     const currentPlaytime = playtimeByMapName.get(mapName) ?? 0;
-    playtimeByMapName.set(mapName, currentPlaytime + playtime);
+    playtimeByMapName.set(mapName, currentPlaytime + matchEnd.match_time);
   }
 
   // Convert to array format

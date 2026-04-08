@@ -12,6 +12,7 @@ import {
   serializeCalibrationData,
 } from "@/data/killfeed-calibration-dto";
 import { coachingCanvas, positionalData } from "@/lib/flags";
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import {
   groupKillsIntoFights,
@@ -29,6 +30,7 @@ export async function Killfeed({
   team1Color: string;
   team2Color: string;
 }) {
+  const mapDataId = await resolveMapDataId(id);
   const [
     roundEndRows,
     playerTeams,
@@ -38,10 +40,10 @@ export async function Killfeed({
     canvasEnabled,
   ] = await Promise.all([
     prisma.roundEnd.findMany({
-      where: { MapDataId: id },
+      where: { MapDataId: mapDataId },
       orderBy: { match_time: "asc" },
     }),
-    prisma.matchStart.findFirst({ where: { MapDataId: id } }),
+    prisma.matchStart.findFirst({ where: { MapDataId: mapDataId } }),
     groupKillsIntoFights(id),
     getUltimateSpans(id),
     positionalData(),

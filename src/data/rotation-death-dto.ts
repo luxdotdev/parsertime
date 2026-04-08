@@ -7,6 +7,7 @@ import {
   type NearbyPlayer,
   type RotationDeathAnalysis,
 } from "@/lib/replay/rotation-death-detection";
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import { groupEventsIntoFights, mercyRezToKillEvent } from "@/lib/utils";
 import prisma from "@/lib/prisma";
 import { cache } from "react";
@@ -90,11 +91,12 @@ function pushPos(
 
 export const getRotationDeathAnalysis = cache(
   async (mapDataId: number): Promise<RotationDeathAnalysis | null> => {
+    const resolvedId = await resolveMapDataId(mapDataId);
     const [kills, mercyRezzes, damage] = await Promise.all([
-      prisma.kill.findMany({ where: { MapDataId: mapDataId } }),
-      prisma.mercyRez.findMany({ where: { MapDataId: mapDataId } }),
+      prisma.kill.findMany({ where: { MapDataId: resolvedId } }),
+      prisma.mercyRez.findMany({ where: { MapDataId: resolvedId } }),
       prisma.damage.findMany({
-        where: { MapDataId: mapDataId },
+        where: { MapDataId: resolvedId },
         select: {
           match_time: true,
           attacker_name: true,
@@ -128,7 +130,7 @@ export const getRotationDeathAnalysis = cache(
     if (rotationDeaths.length > 0) {
       const [healing, ability1, ability2] = await Promise.all([
         prisma.healing.findMany({
-          where: { MapDataId: mapDataId },
+          where: { MapDataId: resolvedId },
           select: {
             match_time: true,
             healer_name: true,
@@ -144,7 +146,7 @@ export const getRotationDeathAnalysis = cache(
           },
         }),
         prisma.ability1Used.findMany({
-          where: { MapDataId: mapDataId },
+          where: { MapDataId: resolvedId },
           select: {
             match_time: true,
             player_name: true,
@@ -155,7 +157,7 @@ export const getRotationDeathAnalysis = cache(
           },
         }),
         prisma.ability2Used.findMany({
-          where: { MapDataId: mapDataId },
+          where: { MapDataId: resolvedId },
           select: {
             match_time: true,
             player_name: true,

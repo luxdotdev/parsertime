@@ -1,3 +1,4 @@
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { groupKillsIntoFights, type Fight } from "@/lib/utils";
 import type { Kill } from "@prisma/client";
@@ -88,17 +89,18 @@ function assignSpanToFight(span: UltimateSpan, fights: Fight[]): number | null {
 export async function getUltimateSpans(
   mapId: number
 ): Promise<FightUltimateData[]> {
+  const mapDataId = await resolveMapDataId(mapId);
   const [ultimateStarts, ultimateEnds, kills, fights] = await Promise.all([
     prisma.ultimateStart.findMany({
-      where: { MapDataId: mapId },
+      where: { MapDataId: mapDataId },
       orderBy: { match_time: "asc" },
     }),
     prisma.ultimateEnd.findMany({
-      where: { MapDataId: mapId },
+      where: { MapDataId: mapDataId },
       orderBy: { match_time: "asc" },
     }),
     prisma.kill.findMany({
-      where: { MapDataId: mapId },
+      where: { MapDataId: mapDataId },
       orderBy: { match_time: "asc" },
     }),
     groupKillsIntoFights(mapId),

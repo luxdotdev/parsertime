@@ -6,6 +6,7 @@
 // It is annoyingly complicated, and I don't want to spend time on it
 // It works at runtime, so I'm not going to fix it
 
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import {
   getHeroNames,
@@ -91,6 +92,7 @@ export async function getMapEvents(
   team1Color: string,
   team2Color: string
 ) {
+  const mapDataId = await resolveMapDataId(id);
   const [
     matchStart,
     matchEnd,
@@ -104,34 +106,34 @@ export async function getMapEvents(
     lucioKills,
   ] = await Promise.all([
     prisma.matchStart.findFirst({
-      where: { MapDataId: id },
+      where: { MapDataId: mapDataId },
     }),
     prisma.matchEnd.findFirst({
-      where: { MapDataId: id },
+      where: { MapDataId: mapDataId },
     }),
     prisma.roundStart.findMany({
-      where: { MapDataId: id },
+      where: { MapDataId: mapDataId },
     }),
     prisma.roundEnd.findMany({
-      where: { MapDataId: id },
+      where: { MapDataId: mapDataId },
     }),
     prisma.objectiveCaptured.findMany({
-      where: { MapDataId: id },
+      where: { MapDataId: mapDataId },
     }),
     prisma.kill.findMany({
-      where: { MapDataId: id },
+      where: { MapDataId: mapDataId },
     }),
     prisma.ultimateStart.findMany({
-      where: { MapDataId: id },
+      where: { MapDataId: mapDataId },
     }),
     prisma.ultimateEnd.findMany({
-      where: { MapDataId: id },
+      where: { MapDataId: mapDataId },
     }),
     prisma.heroSwap.findMany({
-      where: { MapDataId: id, match_time: { not: 0 } },
+      where: { MapDataId: mapDataId, match_time: { not: 0 } },
     }),
     prisma.kill.findMany({
-      where: { MapDataId: id, victim_hero: "Lúcio" },
+      where: { MapDataId: mapDataId, victim_hero: "Lúcio" },
     }),
   ]);
 
@@ -184,7 +186,7 @@ export async function getMapEvents(
     matchStart.map_type === "Control" || matchStart.map_type === "Flashpoint"
       ? await prisma.objectiveUpdated.findMany({
           where: {
-            MapDataId: id,
+            MapDataId: mapDataId,
           },
         })
       : [];
@@ -526,22 +528,23 @@ export async function getUltimatesUsedList(
 ) {
   const t = await getTranslations("mapPage.events");
 
+  const mdId = await resolveMapDataId(id);
   const [ultimateStartRows, matchStart, matchEnd, roundStarts, roundEndRows] =
     await Promise.all([
       prisma.ultimateStart.findMany({
-        where: { MapDataId: id },
+        where: { MapDataId: mdId },
       }),
       prisma.matchStart.findFirst({
-        where: { MapDataId: id },
+        where: { MapDataId: mdId },
       }),
       prisma.matchEnd.findFirst({
-        where: { MapDataId: id },
+        where: { MapDataId: mdId },
       }),
       prisma.roundStart.findMany({
-        where: { MapDataId: id },
+        where: { MapDataId: mdId },
       }),
       prisma.roundEnd.findMany({
-        where: { MapDataId: id },
+        where: { MapDataId: mdId },
       }),
     ]);
 

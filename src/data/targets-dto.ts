@@ -53,14 +53,21 @@ async function getRecentScrimStatsFn(
       id: true,
       date: true,
       name: true,
-      maps: { select: { id: true } },
+      maps: {
+        select: {
+          id: true,
+          mapData: { select: { id: true } },
+        },
+      },
     },
   });
 
   if (recentScrims.length === 0) return [];
 
   // 2. Get MapData IDs from those scrims
-  const mapIds = recentScrims.flatMap((s) => s.maps.map((m) => m.id));
+  const mapIds = recentScrims.flatMap((s) =>
+    s.maps.flatMap((m) => m.mapData.map((md) => md.id))
+  );
   if (mapIds.length === 0) return [];
 
   // 3. Get final-round PlayerStat rows for this player across those maps
@@ -90,7 +97,9 @@ async function getRecentScrimStatsFn(
   // 4. Aggregate per scrim: sum stat values, compute per-10
   const results: ScrimStatPoint[] = [];
   for (const scrim of recentScrims) {
-    const scrimMapIds = new Set(scrim.maps.map((m) => m.id));
+    const scrimMapIds = new Set(
+      scrim.maps.flatMap((m) => m.mapData.map((md) => md.id))
+    );
     const scrimStats = stats.filter((s) => scrimMapIds.has(s.MapDataId!));
 
     if (scrimStats.length === 0) continue;

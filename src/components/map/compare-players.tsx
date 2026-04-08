@@ -1,6 +1,7 @@
 import { PlayerCard } from "@/components/map/player-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import { getTranslations } from "next-intl/server";
@@ -32,10 +33,11 @@ function sortByRole(a: PlayerToSort, b: PlayerToSort) {
 
 export async function ComparePlayers({ id }: { id: number }) {
   const t = await getTranslations("mapPage.compare");
+  const mapDataId = await resolveMapDataId(id);
 
   const teamNames = await prisma.matchStart.findFirst({
     where: {
-      MapDataId: id,
+      MapDataId: mapDataId,
     },
     select: {
       team_1_name: true,
@@ -46,7 +48,7 @@ export async function ComparePlayers({ id }: { id: number }) {
   const [team1Players, team2Players] = await Promise.all([
     prisma.playerStat.findMany({
       where: {
-        MapDataId: id,
+        MapDataId: mapDataId,
         player_team: teamNames?.team_1_name,
       },
       select: {
@@ -56,7 +58,7 @@ export async function ComparePlayers({ id }: { id: number }) {
     }),
     prisma.playerStat.findMany({
       where: {
-        MapDataId: id,
+        MapDataId: mapDataId,
         player_team: teamNames?.team_2_name,
       },
       select: {

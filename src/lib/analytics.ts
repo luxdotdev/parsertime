@@ -1,16 +1,18 @@
 import { getPlayerFinalStats } from "@/data/scrim-dto";
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { groupKillsIntoFights, removeDuplicateRows, round } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import type { RoundEnd, UltimateCharged, UltimateStart } from "@prisma/client";
 
 export async function getAverageUltChargeTime(id: number, playerName: string) {
+  const mapDataId = await resolveMapDataId(id);
   const [ultimatesCharged, ultimateEnds] = await Promise.all([
     prisma.ultimateCharged.findMany({
-      where: { MapDataId: id, player_name: playerName },
+      where: { MapDataId: mapDataId, player_name: playerName },
     }),
     prisma.ultimateEnd.findMany({
-      where: { MapDataId: id, player_name: playerName },
+      where: { MapDataId: mapDataId, player_name: playerName },
     }),
   ]);
 
@@ -72,15 +74,16 @@ function assignRoundNumbersToUltimates(
 }
 
 export async function getAverageTimeToUseUlt(id: number, playerName: string) {
+  const mapDataId = await resolveMapDataId(id);
   const [ultimatesCharged, ultimateStarts, roundEnds] = await Promise.all([
     prisma.ultimateCharged.findMany({
-      where: { MapDataId: id, player_name: playerName },
+      where: { MapDataId: mapDataId, player_name: playerName },
     }),
     prisma.ultimateStart.findMany({
-      where: { MapDataId: id, player_name: playerName },
+      where: { MapDataId: mapDataId, player_name: playerName },
     }),
     prisma.roundEnd.findMany({
-      where: { MapDataId: id },
+      where: { MapDataId: mapDataId },
     }),
   ]);
 
@@ -126,13 +129,14 @@ export async function getAverageTimeToUseUlt(id: number, playerName: string) {
 }
 
 export async function getKillsPerUltimate(id: number, playerName: string) {
+  const mapDataId = await resolveMapDataId(id);
   const [ultimatesCharged, ultKills] = await Promise.all([
     prisma.ultimateCharged.findMany({
-      where: { MapDataId: id, player_name: playerName },
+      where: { MapDataId: mapDataId, player_name: playerName },
     }),
     prisma.kill.findMany({
       where: {
-        MapDataId: id,
+        MapDataId: mapDataId,
         attacker_name: playerName,
         event_ability: "Ultimate",
       },
@@ -156,12 +160,13 @@ export async function getDuelWinrates(id: number, playerName: string) {
     enemy_deaths: number;
   };
 
+  const mapDataId = await resolveMapDataId(id);
   const [playerKills, playerDeaths] = await Promise.all([
     prisma.kill.findMany({
-      where: { MapDataId: id, attacker_name: playerName },
+      where: { MapDataId: mapDataId, attacker_name: playerName },
     }),
     prisma.kill.findMany({
-      where: { MapDataId: id, victim_name: playerName },
+      where: { MapDataId: mapDataId, victim_name: playerName },
     }),
   ]);
 
@@ -255,6 +260,7 @@ async function calculateAverageDuelWinrate(id: number, playerName: string) {
  *   4. Fight reversals - 15%
  */
 export async function calculateXFactor(mapId: number, playerName: string) {
+  const resolvedMapId = await resolveMapDataId(mapId);
   // Get the player's role
   const playerStats = await getPlayerFinalStats(mapId, playerName);
   const mostPlayedHero = playerStats.sort(
@@ -302,7 +308,7 @@ export async function calculateXFactor(mapId: number, playerName: string) {
   );
 
   const finalRound = await prisma.roundEnd.findFirst({
-    where: { MapDataId: mapId },
+    where: { MapDataId: resolvedMapId },
     orderBy: { round_number: "desc" },
   });
 
@@ -313,7 +319,7 @@ export async function calculateXFactor(mapId: number, playerName: string) {
   const teamFinalBlows = removeDuplicateRows(
     await prisma.playerStat.findMany({
       where: {
-        MapDataId: mapId,
+        MapDataId: resolvedMapId,
         player_team: team,
         round_number: finalRound?.round_number,
       },
@@ -347,7 +353,7 @@ export async function calculateXFactor(mapId: number, playerName: string) {
     FROM
         "PlayerStat"
     WHERE
-        "MapDataId" = ${mapId}
+        "MapDataId" = ${resolvedMapId}
         and "player_name" = ${playerName}
     GROUP BY
         "player_name"`;
@@ -413,12 +419,13 @@ export async function calculateDroughtTime(id: number, playerName: string) {
 }
 
 export async function getAjaxes(id: number, playerName: string) {
+  const mapDataId = await resolveMapDataId(id);
   const [kills, ultimateEnds] = await Promise.all([
     prisma.kill.findMany({
-      where: { MapDataId: id, victim_name: playerName, victim_hero: "Lúcio" },
+      where: { MapDataId: mapDataId, victim_name: playerName, victim_hero: "Lúcio" },
     }),
     prisma.ultimateEnd.findMany({
-      where: { MapDataId: id, player_name: playerName },
+      where: { MapDataId: mapDataId, player_name: playerName },
     }),
   ]);
 

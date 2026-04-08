@@ -1,11 +1,13 @@
 import "server-only";
 
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { cache } from "react";
 
 async function getMostPlayedHeroesFn(id: number) {
+  const mapDataId = await resolveMapDataId(id);
   return await prisma.playerStat.findMany({
-    where: { MapDataId: id },
+    where: { MapDataId: mapDataId },
     select: {
       player_name: true,
       player_team: true,
