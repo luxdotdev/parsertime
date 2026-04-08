@@ -1965,6 +1965,7 @@
       "select": "Select",
       "pen": "Pen",
       "arrow": "Arrow",
+      "circle": "Circle",
       "eraser": "Eraser",
       "undo": "Undo",
       "redo": "Redo",

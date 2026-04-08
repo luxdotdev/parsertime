@@ -1,6 +1,6 @@
 import type { MapTransform } from "@/lib/map-calibration/types";
 
-export type Tool = "select" | "pen" | "arrow" | "eraser";
+export type Tool = "select" | "pen" | "arrow" | "circle" | "eraser";
 
 export type Point = { x: number; y: number };
 
@@ -21,7 +21,16 @@ export type ArrowStroke = {
   width: number;
 };
 
-export type DrawingElement = PenStroke | ArrowStroke;
+export type CircleStroke = {
+  id: string;
+  type: "circle";
+  center: Point;
+  radius: number;
+  color: string;
+  width: number;
+};
+
+export type DrawingElement = PenStroke | ArrowStroke | CircleStroke;
 
 export type PlacedHero = {
   id: string;

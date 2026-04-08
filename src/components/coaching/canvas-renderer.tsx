@@ -6,6 +6,7 @@ import {
 } from "@/lib/coaching/draw-utils";
 import type {
   ArrowStroke,
+  CircleStroke,
   DrawingElement,
   PenStroke,
   Point,
@@ -27,6 +28,8 @@ function toolCursor(tool: Tool) {
     case "pen":
       return "crosshair";
     case "arrow":
+      return "crosshair";
+    case "circle":
       return "crosshair";
     case "eraser":
       return "pointer";
@@ -75,6 +78,7 @@ export function CanvasRenderer({ onCanvasClick }: CanvasRendererProps) {
   const drawingRef = useRef(false);
   const currentStrokeRef = useRef<Point[]>([]);
   const arrowStartRef = useRef<Point | null>(null);
+  const circleCenterRef = useRef<Point | null>(null);
   const activePreviewRef = useRef<DrawingElement | null>(null);
 
   useEffect(() => {
@@ -217,6 +221,12 @@ export function CanvasRenderer({ onCanvasClick }: CanvasRendererProps) {
         return;
       }
 
+      if (activeTool === "circle") {
+        circleCenterRef.current = toImageSpace(e.clientX, e.clientY);
+        canvas.setPointerCapture(e.pointerId);
+        return;
+      }
+
       if (activeTool === "eraser") {
         const imgPoint = toImageSpace(e.clientX, e.clientY);
         coachingCanvasStore.send({
@@ -273,6 +283,24 @@ export function CanvasRenderer({ onCanvasClick }: CanvasRendererProps) {
         return;
       }
 
+      if (activeTool === "circle" && circleCenterRef.current) {
+        const edge = toImageSpace(e.clientX, e.clientY);
+        const radius = Math.hypot(
+          edge.x - circleCenterRef.current.x,
+          edge.y - circleCenterRef.current.y
+        );
+        activePreviewRef.current = {
+          id: "preview",
+          type: "circle",
+          center: circleCenterRef.current,
+          radius,
+          color: strokeColor,
+          width: strokeWidth / view.zoom,
+        };
+        requestAnimationFrame(render);
+        return;
+      }
+
       if (activeTool === "eraser" && drawingRef.current) {
         const imgPoint = toImageSpace(e.clientX, e.clientY);
         coachingCanvasStore.send({
@@ -322,6 +350,28 @@ export function CanvasRenderer({ onCanvasClick }: CanvasRendererProps) {
         };
         coachingCanvasStore.send({ type: "addDrawing", drawing: arrow });
         arrowStartRef.current = null;
+        return;
+      }
+
+      if (activeTool === "circle" && circleCenterRef.current) {
+        const edge = toImageSpace(e.clientX, e.clientY);
+        activePreviewRef.current = null;
+        const radius = Math.hypot(
+          edge.x - circleCenterRef.current.x,
+          edge.y - circleCenterRef.current.y
+        );
+        if (radius > 0) {
+          const circle: CircleStroke = {
+            id: nanoid(),
+            type: "circle",
+            center: circleCenterRef.current,
+            radius,
+            color: strokeColor,
+            width: strokeWidth / view.zoom,
+          };
+          coachingCanvasStore.send({ type: "addDrawing", drawing: circle });
+        }
+        circleCenterRef.current = null;
         return;
       }
 

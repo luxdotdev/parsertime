@@ -1,4 +1,10 @@
-import type { ArrowStroke, DrawingElement, PenStroke, Point } from "./types";
+import type {
+  ArrowStroke,
+  CircleStroke,
+  DrawingElement,
+  PenStroke,
+  Point,
+} from "./types";
 
 export function renderPenStroke(
   ctx: CanvasRenderingContext2D,
@@ -48,21 +54,30 @@ export function renderArrowStroke(
   ctx.stroke();
 }
 
+export function renderCircleStroke(
+  ctx: CanvasRenderingContext2D,
+  circle: CircleStroke
+) {
+  ctx.beginPath();
+  ctx.arc(circle.center.x, circle.center.y, circle.radius, 0, Math.PI * 2);
+  ctx.strokeStyle = circle.color;
+  ctx.lineWidth = circle.width;
+  ctx.lineCap = "round";
+  ctx.stroke();
+}
+
 export function renderDrawingResolved(
   ctx: CanvasRenderingContext2D,
   drawing: DrawingElement,
   styles: CSSStyleDeclaration
 ) {
+  const color = resolveColor(drawing.color, styles);
   if (drawing.type === "pen") {
-    renderPenStroke(ctx, {
-      ...drawing,
-      color: resolveColor(drawing.color, styles),
-    });
-  } else {
-    renderArrowStroke(ctx, {
-      ...drawing,
-      color: resolveColor(drawing.color, styles),
-    });
+    renderPenStroke(ctx, { ...drawing, color });
+  } else if (drawing.type === "arrow") {
+    renderArrowStroke(ctx, { ...drawing, color });
+  } else if (drawing.type === "circle") {
+    renderCircleStroke(ctx, { ...drawing, color });
   }
 }
 

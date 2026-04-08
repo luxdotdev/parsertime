@@ -26,6 +26,7 @@ import { coachingCanvasStore } from "@/stores/coaching-canvas-store";
 import { useSelector } from "@xstate/store/react";
 import {
   ArrowUpRightIcon,
+  CircleIcon,
   EraserIcon,
   MousePointerIcon,
   PenToolIcon,
@@ -108,6 +109,14 @@ export function CanvasToolbar() {
             </ToggleGroupItem>
           </TooltipTrigger>
           <TooltipContent>{t("arrow")}</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <ToggleGroupItem value="circle" aria-label={t("circle")}>
+              <CircleIcon className="size-4" />
+            </ToggleGroupItem>
+          </TooltipTrigger>
+          <TooltipContent>{t("circle")}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>

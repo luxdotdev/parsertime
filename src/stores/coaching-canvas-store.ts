@@ -320,6 +320,10 @@ function isDrawingNearPoint(
   if (d.type === "arrow") {
     return distToSegment(point, d.start, d.end) <= radius;
   }
+  if (d.type === "circle") {
+    const dist = Math.hypot(point.x - d.center.x, point.y - d.center.y);
+    return Math.abs(dist - d.radius) <= radius;
+  }
   for (let i = 0; i < d.points.length - 1; i++) {
     if (distToSegment(point, d.points[i], d.points[i + 1]) <= radius) {
       return true;
