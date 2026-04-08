@@ -21,11 +21,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { LoadedCalibration } from "@/lib/map-calibration/load-calibration";
 import {
   getControlSubMapNames,
   isControlMap,
 } from "@/lib/map-calibration/control-map-index";
+import type { LoadedCalibration } from "@/lib/map-calibration/load-calibration";
 import { cn, toKebabCase, useMapNames } from "@/lib/utils";
 import { coachingCanvasStore } from "@/stores/coaching-canvas-store";
 import { mapNameToMapTypeMapping, type MapName } from "@/types/map";
@@ -143,6 +143,7 @@ export function MapSelector() {
           <Button
             variant="outline"
             role="combobox"
+            aria-controls="combobox"
             aria-expanded={open}
             className="w-[280px] justify-between"
           >
