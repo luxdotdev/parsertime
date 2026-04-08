@@ -24,6 +24,7 @@ import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import type { Tool } from "@/lib/coaching/types";
 import { coachingCanvasStore } from "@/stores/coaching-canvas-store";
 import { useSelector } from "@xstate/store/react";
+import type { LucideIcon } from "lucide-react";
 import {
   ArrowUpRightIcon,
   CircleIcon,
@@ -35,6 +36,14 @@ import {
   Undo2Icon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+
+const TOOLS: { value: Tool; icon: LucideIcon; labelKey: string }[] = [
+  { value: "select", icon: MousePointerIcon, labelKey: "select" },
+  { value: "pen", icon: PenToolIcon, labelKey: "pen" },
+  { value: "arrow", icon: ArrowUpRightIcon, labelKey: "arrow" },
+  { value: "circle", icon: CircleIcon, labelKey: "circle" },
+  { value: "eraser", icon: EraserIcon, labelKey: "eraser" },
+];
 
 const NEUTRAL_COLORS: { value: string; label: string }[] = [
   { value: "#ffffff", label: "White" },
@@ -86,46 +95,23 @@ export function CanvasToolbar() {
         variant="outline"
         size="sm"
       >
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <ToggleGroupItem value="select" aria-label={t("select")}>
-              <MousePointerIcon className="size-4" />
-            </ToggleGroupItem>
-          </TooltipTrigger>
-          <TooltipContent>{t("select")}</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <ToggleGroupItem value="pen" aria-label={t("pen")}>
-              <PenToolIcon className="size-4" />
-            </ToggleGroupItem>
-          </TooltipTrigger>
-          <TooltipContent>{t("pen")}</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <ToggleGroupItem value="arrow" aria-label={t("arrow")}>
-              <ArrowUpRightIcon className="size-4" />
-            </ToggleGroupItem>
-          </TooltipTrigger>
-          <TooltipContent>{t("arrow")}</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <ToggleGroupItem value="circle" aria-label={t("circle")}>
-              <CircleIcon className="size-4" />
-            </ToggleGroupItem>
-          </TooltipTrigger>
-          <TooltipContent>{t("circle")}</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <ToggleGroupItem value="eraser" aria-label={t("eraser")}>
-              <EraserIcon className="size-4" />
-            </ToggleGroupItem>
-          </TooltipTrigger>
-          <TooltipContent>{t("eraser")}</TooltipContent>
-        </Tooltip>
+        {TOOLS.map(({ value, icon: Icon, labelKey }) => {
+          const label = t(labelKey);
+          return (
+            <Tooltip key={value}>
+              <TooltipTrigger asChild>
+                <ToggleGroupItem
+                  value={value}
+                  aria-label={label}
+                  className={activeTool === value ? "bg-muted" : ""}
+                >
+                  <Icon className="size-4" />
+                </ToggleGroupItem>
+              </TooltipTrigger>
+              <TooltipContent>{label}</TooltipContent>
+            </Tooltip>
+          );
+        })}
       </ToggleGroup>
 
       <Separator orientation="vertical" className="h-6" />
