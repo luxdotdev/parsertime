@@ -15,7 +15,6 @@ import TextAlign from "@tiptap/extension-text-align";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useTranslations } from "next-intl";
-import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 async function saveNotes(mapDataId: number, scrimId: number, content: string) {
@@ -35,14 +34,16 @@ async function saveNotes(mapDataId: number, scrimId: number, content: string) {
   return data;
 }
 
-export function TipTap({ noteContent }: { noteContent: string }) {
+export function TipTap({
+  noteContent,
+  mapDataId,
+  scrimId,
+}: {
+  noteContent: string;
+  mapDataId: number;
+  scrimId: number;
+}) {
   const t = useTranslations("mapPage.tiptap");
-
-  const pathname = usePathname();
-  const pathSegments = pathname.split("/");
-
-  const scrimId = Number(pathSegments[3]);
-  const mapDataId = Number(pathSegments[5]);
 
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
