@@ -329,7 +329,7 @@ model HeroBan {
   banPosition Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  MapData     MapData? @relation(fields: [MapDataId], references: [id])
+  MapData     MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId   Int
 
   @@index([scrimId])
@@ -344,7 +344,7 @@ model MapBan {
   banPosition Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  MapData     MapData? @relation(fields: [MapDataId], references: [id])
+  MapData     MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId   Int
 
   @@index([scrimId])
@@ -357,7 +357,7 @@ model Note {
   scrimId   Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  MapData   MapData  @relation(fields: [MapDataId], references: [id])
+  MapData   MapData  @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int
 
   @@unique([scrimId, MapDataId])
@@ -409,7 +409,7 @@ model CalculatedStat {
   value      Float
   createdAt  DateTime           @default(now())
   updatedAt  DateTime           @updatedAt
-  MapData    MapData            @relation(fields: [MapDataId], references: [id])
+  MapData    MapData            @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId  Int
 
   @@index([scrimId, MapDataId])
@@ -517,7 +517,7 @@ model MapData {
   Note                 Note[]
   calculatedStats      CalculatedStat[]
 
-  Map           Map?           @relation(fields: [mapId], references: [id])
+  Map           Map?           @relation(fields: [mapId], references: [id], onDelete: Cascade)
   mapId         Int?
   ability1Useds Ability1Used[]
   ability2Useds Ability2Used[]
@@ -537,7 +537,7 @@ model DefensiveAssist {
   player_name     String
   player_hero     String
   hero_duplicated String
-  MapData         MapData?  @relation(fields: [MapDataId], references: [id])
+  MapData         MapData?  @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId       Int?
 
   @@index([scrimId])
@@ -554,7 +554,7 @@ model DvaRemech {
   player_hero String
   ultimate_id Int
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -571,7 +571,7 @@ model EchoDuplicateEnd {
   player_hero String
   ultimate_id Int
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -589,7 +589,7 @@ model EchoDuplicateStart {
   hero_duplicated String
   ultimate_id     Int
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -606,7 +606,7 @@ model HeroSpawn {
   player_hero      String
   previous_hero    Int?
   hero_time_played Float
-  MapData          MapData?  @relation(fields: [MapDataId], references: [id])
+  MapData          MapData?  @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId        Int?
 
   @@index([MapDataId])
@@ -622,7 +622,7 @@ model HeroSwap {
   player_hero      String
   previous_hero    String
   hero_time_played Float
-  MapData          MapData?  @relation(fields: [MapDataId], references: [id])
+  MapData          MapData?  @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId        Int?
 
   @@index([scrimId])
@@ -651,7 +651,7 @@ model Kill {
   victim_y         Float?
   victim_z         Float?
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -667,7 +667,7 @@ model MatchEnd {
   team_1_score Int
   team_2_score Int
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -684,7 +684,7 @@ model MatchStart {
   team_1_name String
   team_2_name String
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -703,7 +703,7 @@ model MercyRez {
   resurrectee_player String
   resurrectee_hero   String
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -722,7 +722,7 @@ model ObjectiveCaptured {
   control_team_2_progress Float
   match_time_remaining    Float
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -738,7 +738,7 @@ model ObjectiveUpdated {
   previous_objective_index Int
   current_objective_index  Int
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -755,7 +755,7 @@ model OffensiveAssist {
   player_hero     String
   hero_duplicated String
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -772,7 +772,7 @@ model PayloadProgress {
   objective_index          Int
   payload_capture_progress Float
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -822,7 +822,7 @@ model PlayerStat {
   weapon_accuracy              Float
   hero_time_played             Float
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -839,7 +839,7 @@ model PointProgress {
   objective_index        Int
   point_capture_progress Float
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -857,7 +857,7 @@ model RemechCharged {
   hero_duplicated String
   ultimate_id     Int
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -878,7 +878,7 @@ model RoundEnd {
   control_team_2_progress Float
   match_time_remaining    Float
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -896,7 +896,7 @@ model RoundStart {
   team_2_score    Int
   objective_index Int
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -911,7 +911,7 @@ model SetupComplete {
   round_number         Int
   match_time_remaining Float
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -929,7 +929,7 @@ model UltimateCharged {
   hero_duplicated String
   ultimate_id     Int
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -950,7 +950,7 @@ model UltimateEnd {
   player_y        Float?
   player_z        Float?
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -971,7 +971,7 @@ model UltimateStart {
   player_y        Float?
   player_z        Float?
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -991,7 +991,7 @@ model Ability1Used {
   player_y        Float?
   player_z        Float?
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -1011,7 +1011,7 @@ model Ability2Used {
   player_y        Float?
   player_z        Float?
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -1040,7 +1040,7 @@ model Damage {
   victim_y         Float?
   victim_z         Float?
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])
@@ -1068,7 +1068,7 @@ model Healing {
   healee_y       Float?
   healee_z       Float?
 
-  MapData   MapData? @relation(fields: [MapDataId], references: [id])
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
   MapDataId Int?
 
   @@index([scrimId])

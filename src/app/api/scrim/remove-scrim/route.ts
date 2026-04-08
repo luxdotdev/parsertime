@@ -77,38 +77,8 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  await Promise.all([
-    prisma.scrim.delete({ where: { id: scrimId } }),
-    prisma.map.deleteMany({ where: { scrimId } }),
-    prisma.note.deleteMany({ where: { scrimId } }),
-    prisma.calculatedStat.deleteMany({ where: { scrimId } }),
-    prisma.mapData.deleteMany({ where: { scrimId } }),
-    prisma.heroBan.deleteMany({ where: { scrimId } }),
-    prisma.defensiveAssist.deleteMany({ where: { scrimId } }),
-    prisma.dvaRemech.deleteMany({ where: { scrimId } }),
-    prisma.echoDuplicateEnd.deleteMany({ where: { scrimId } }),
-    prisma.echoDuplicateStart.deleteMany({ where: { scrimId } }),
-    prisma.heroSpawn.deleteMany({ where: { scrimId } }),
-    prisma.heroSwap.deleteMany({ where: { scrimId } }),
-    prisma.kill.deleteMany({ where: { scrimId } }),
-    prisma.matchEnd.deleteMany({ where: { scrimId } }),
-    prisma.matchStart.deleteMany({ where: { scrimId } }),
-    prisma.mercyRez.deleteMany({ where: { scrimId } }),
-    prisma.objectiveCaptured.deleteMany({ where: { scrimId } }),
-    prisma.objectiveUpdated.deleteMany({ where: { scrimId } }),
-    prisma.offensiveAssist.deleteMany({ where: { scrimId } }),
-    prisma.payloadProgress.deleteMany({ where: { scrimId } }),
-    prisma.playerStat.deleteMany({ where: { scrimId } }),
-    prisma.pointProgress.deleteMany({ where: { scrimId } }),
-    prisma.remechCharged.deleteMany({ where: { scrimId } }),
-    prisma.roundEnd.deleteMany({ where: { scrimId } }),
-    prisma.roundStart.deleteMany({ where: { scrimId } }),
-    prisma.setupComplete.deleteMany({ where: { scrimId } }),
-    prisma.ultimateCharged.deleteMany({ where: { scrimId } }),
-    prisma.ultimateEnd.deleteMany({ where: { scrimId } }),
-    prisma.ultimateStart.deleteMany({ where: { scrimId } }),
-    prisma.heroBan.deleteMany({ where: { scrimId } }),
-  ]);
+  await prisma.map.deleteMany({ where: { scrimId } });
+  await prisma.scrim.delete({ where: { id: scrimId } });
 
   after(async () => {
     await auditLog.createAuditLog({

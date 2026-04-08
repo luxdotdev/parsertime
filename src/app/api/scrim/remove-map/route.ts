@@ -66,34 +66,7 @@ export async function POST(req: NextRequest) {
   const mapId = parseInt(id);
 
   const deleteStart = performance.now();
-  await Promise.all([
-    prisma.map.delete({ where: { id: mapId } }),
-    prisma.mapData.deleteMany({ where: { mapId } }),
-    prisma.defensiveAssist.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.dvaRemech.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.echoDuplicateEnd.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.echoDuplicateStart.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.heroSpawn.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.heroSwap.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.kill.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.matchEnd.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.matchStart.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.mercyRez.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.objectiveCaptured.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.objectiveUpdated.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.offensiveAssist.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.payloadProgress.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.playerStat.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.pointProgress.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.remechCharged.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.roundEnd.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.roundStart.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.setupComplete.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.ultimateCharged.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.ultimateEnd.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.ultimateStart.deleteMany({ where: { MapDataId: mapId } }),
-    prisma.heroBan.deleteMany({ where: { MapDataId: mapId } }),
-  ]);
+  await prisma.map.delete({ where: { id: mapId } });
   mapDeletionDuration.record(performance.now() - deleteStart);
   mapRemovedCounter.add(1);
 
