@@ -108,15 +108,17 @@ export function register() {
   // OTel SDK nor Next.js registers SIGTERM handlers to flush providers,
   // so pending metrics and spans are silently dropped.
   // Force-flush both providers on SIGTERM to ensure nothing is lost.
-  // globalThis avoids Turbopack's static "process.on" Edge Runtime warning
-  // when this module is analyzed via layout.tsx imports.
-  globalThis.process?.on("SIGTERM", async () => {
-    await Promise.allSettled([
-      provider.forceFlush(),
-      meterProvider.forceFlush(),
-    ]);
-    await Promise.allSettled([provider.shutdown(), meterProvider.shutdown()]);
-  });
+  //
+  // Avoid running this in edge; it will cause errors.
+  if (process.env.NEXT_RUNTIME === 'nodejs') {
+    process.on("SIGTERM", async () => {
+      await Promise.allSettled([
+        provider.forceFlush(),
+        meterProvider.forceFlush(),
+      ]);
+      await Promise.allSettled([provider.shutdown(), meterProvider.shutdown()]);
+    });
+  }
 }
 
 const EffectTracingLive = NodeSdk.layer(() => ({
