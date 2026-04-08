@@ -504,8 +504,8 @@ async function getTeamComparisonStatsFn(
     enemyTeamStats.push(...enemyTeamMapStats);
 
     // Separate calculated stats
-    const mapCalculatedStats = allCalculatedStats.filter(
-      (stat) => mapMdIds.has(stat.MapDataId)
+    const mapCalculatedStats = allCalculatedStats.filter((stat) =>
+      mapMdIds.has(stat.MapDataId)
     );
 
     const myTeamMapCalculatedStats = mapCalculatedStats.filter((stat) =>

@@ -422,7 +422,11 @@ export async function getAjaxes(id: number, playerName: string) {
   const mapDataId = await resolveMapDataId(id);
   const [kills, ultimateEnds] = await Promise.all([
     prisma.kill.findMany({
-      where: { MapDataId: mapDataId, victim_name: playerName, victim_hero: "Lúcio" },
+      where: {
+        MapDataId: mapDataId,
+        victim_name: playerName,
+        victim_hero: "Lúcio",
+      },
     }),
     prisma.ultimateEnd.findMany({
       where: { MapDataId: mapDataId, player_name: playerName },

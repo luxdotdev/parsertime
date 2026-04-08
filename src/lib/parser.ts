@@ -654,16 +654,8 @@ export async function createNewMap(data: CreateNewMapArgs, session: Session) {
         createMatchEndRows(data.map, { id: data.scrimId }, mapData.id),
         createMatchStartRows(data.map, { id: data.scrimId }, mapData.id),
         createMercyRezRows(data.map, { id: data.scrimId }, mapData.id),
-        createObjectiveCapturedRows(
-          data.map,
-          { id: data.scrimId },
-          mapData.id
-        ),
-        createObjectiveUpdatedRows(
-          data.map,
-          { id: data.scrimId },
-          mapData.id
-        ),
+        createObjectiveCapturedRows(data.map, { id: data.scrimId }, mapData.id),
+        createObjectiveUpdatedRows(data.map, { id: data.scrimId }, mapData.id),
         createOffensiveAssistRows(data.map, { id: data.scrimId }, mapData.id),
         createPayloadProgressRows(data.map, { id: data.scrimId }, mapData.id),
         createPlayerStatRows(data.map, { id: data.scrimId }, mapData.id),

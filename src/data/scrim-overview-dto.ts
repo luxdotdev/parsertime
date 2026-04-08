@@ -2127,9 +2127,7 @@ async function getScrimOverviewFn(
       team2PointProgress,
     });
 
-    const ourTeamName = mdId
-      ? (ourTeamNameByMap.get(mdId) ?? null)
-      : null;
+    const ourTeamName = mdId ? (ourTeamNameByMap.get(mdId) ?? null) : null;
     let winner: MapResult["winner"];
 
     if (winnerName === "N/A" || !ourTeamName) {
