@@ -333,162 +333,208 @@ export async function createNewScrimFromParsedData(
   data: CreateScrimRequestData,
   session: Session
 ) {
-  const userId = await prisma.user.findFirst({
-    where: {
-      email: session.user?.email,
-    },
-  });
-
-  if (!userId) {
-    Logger.error("User not found for session: ", session);
-    throw new Error("User not found");
-  }
-
-  // If the team is 0, it is an individual scrim
-  // After changing the database host to Railway, we need to use null instead of 0
-  const teamId = parseInt(data.team) === 0 ? null : parseInt(data.team);
-
-  const scrim = await prisma.scrim.create({
-    data: {
-      name: data.name ?? "New Scrim",
-      date: data.date ?? new Date(),
-      createdAt: new Date(),
-      creatorId: userId.id,
-      teamId,
-      opponentTeamAbbr: data.opponentTeamAbbr ?? null,
-      autoAssignTeamNames: data.autoAssignTeamNames ?? false,
-      team1Name: data.team1Name ?? null,
-      team2Name: data.team2Name ?? null,
-    },
-  });
-
-  Logger.info("Scrim created: ", scrim, session);
-
-  // Get all users in the team and get the team name
-  const [users, team] = await Promise.all([
-    prisma.user.findMany({
-      select: { id: true },
-      where: { teams: { some: { id: teamId ?? 0 } } },
-    }),
-    prisma.team.findFirst({
-      where: { id: teamId ?? 0 },
-      select: { name: true },
-    }),
-  ]);
-
-  // Create a notification for each user UNLESS individual scrim
-  if (teamId !== 0 && teamId !== null) {
-    for (const user of users) {
-      await notifications.createInAppNotification({
-        userId: user.id,
-        title: `${team?.name}: New scrim uploaded by ${session.user?.name}`,
-        description: `Scrim "${scrim.name}" has been uploaded by ${session.user?.name} to ${team?.name}.`,
-        href: `/${teamId}/scrim/${scrim.id}`,
-      });
-    }
-  }
-
-  const mapData = await prisma.mapData.create({
-    data: {
-      scrimId: scrim.id,
-      userId: userId.id,
-    },
-  });
-
-  const map = await prisma.map.create({
-    data: {
-      name: data.map.match_start[0][2] ?? "New Map",
-      scrimId: scrim.id,
-      replayCode: data.replayCode ?? "",
-      mapData: {
-        connect: {
-          id: mapData.id,
-        },
-      },
-    },
-  });
-
-  if (data.heroBans) {
-    await prisma.heroBan.createMany({
-      data: data.heroBans.map((ban) => ({
-        scrimId: scrim.id,
-        hero: ban.hero,
-        team:
-          ban.team === "team1"
-            ? data.map.match_start[0][4]
-            : data.map.match_start[0][5],
-        banPosition: ban.banPosition,
-        MapDataId: mapData.id,
-      })),
-    });
-  }
-
-  await prisma.scrim.update({
-    where: {
-      id: scrim.id,
-    },
-    data: {
-      maps: {
-        connect: {
-          id: map.id,
-        },
-      },
-    },
-  });
-
-  const firstMap = data.map;
+  const startTime = Date.now();
+  const event: Record<string, unknown> = {
+    operation: "createNewScrimFromParsedData",
+    user_email: session.user?.email,
+    scrim_name: data.name,
+    team_id_raw: data.team,
+    has_replay_code: !!data.replayCode,
+    has_hero_bans: (data.heroBans?.length ?? 0) > 0,
+    hero_ban_count: data.heroBans?.length ?? 0,
+    timestamp: new Date().toISOString(),
+  };
 
   try {
-    await Promise.all([
-      createAbility1UsedRows(firstMap, scrim, mapData.id),
-      createAbility2UsedRows(firstMap, scrim, mapData.id),
-      createDamageRows(firstMap, scrim, mapData.id),
-      createDefensiveAssistsRows(firstMap, scrim, mapData.id),
-      createDvaRemechRows(firstMap, scrim, mapData.id),
-      createEchoDuplicateEndRows(firstMap, scrim, mapData.id),
-      createEchoDuplicateStartRows(firstMap, scrim, mapData.id),
-      createHealingRows(firstMap, scrim, mapData.id),
-      createHeroSpawnRows(firstMap, scrim, mapData.id),
-      createHeroSwapRows(firstMap, scrim, mapData.id),
-      createKillRows(firstMap, scrim, mapData.id),
-      createMatchEndRows(firstMap, scrim, mapData.id),
-      createMatchStartRows(firstMap, scrim, mapData.id),
-      createMercyRezRows(firstMap, scrim, mapData.id),
-      createObjectiveCapturedRows(firstMap, scrim, mapData.id),
-      createObjectiveUpdatedRows(firstMap, scrim, mapData.id),
-      createOffensiveAssistRows(firstMap, scrim, mapData.id),
-      createPayloadProgressRows(firstMap, scrim, mapData.id),
-      createPlayerStatRows(firstMap, scrim, mapData.id),
-      createPointProgressRows(firstMap, scrim, mapData.id),
-      createRemechChargedRows(firstMap, scrim, mapData.id),
-      createRoundEndRows(firstMap, scrim, mapData.id),
-      createRoundStartRows(firstMap, scrim, mapData.id),
-      createSetupCompleteRows(firstMap, scrim, mapData.id),
-      createUltimateChargedRows(firstMap, scrim, mapData.id),
-      createUltimateEndRows(firstMap, scrim, mapData.id),
-      createUltimateStartRows(firstMap, scrim, mapData.id),
+    const userId = await prisma.user.findFirst({
+      where: {
+        email: session.user?.email,
+      },
+    });
+
+    if (!userId) {
+      event.outcome = "user_not_found";
+      throw new Error("User not found");
+    }
+
+    event.user_id = userId.id;
+
+    // If the team is 0, it is an individual scrim
+    // After changing the database host to Railway, we need to use null instead of 0
+    const teamId = parseInt(data.team) === 0 ? null : parseInt(data.team);
+    event.team_id = teamId;
+
+    const scrim = await prisma.scrim.create({
+      data: {
+        name: data.name ?? "New Scrim",
+        date: data.date ?? new Date(),
+        createdAt: new Date(),
+        creatorId: userId.id,
+        teamId,
+        opponentTeamAbbr: data.opponentTeamAbbr ?? null,
+        autoAssignTeamNames: data.autoAssignTeamNames ?? false,
+        team1Name: data.team1Name ?? null,
+        team2Name: data.team2Name ?? null,
+      },
+    });
+
+    event.scrim_id = scrim.id;
+
+    // Get all users in the team and get the team name
+    const [users, team] = await Promise.all([
+      prisma.user.findMany({
+        select: { id: true },
+        where: { teams: { some: { id: teamId ?? 0 } } },
+      }),
+      prisma.team.findFirst({
+        where: { id: teamId ?? 0 },
+        select: { name: true },
+      }),
     ]);
 
-    await calculateStatsForMap(mapData.id, scrim.id);
-  } catch (error) {
-    Logger.error("Error creating map data: ", error, session);
+    event.team_name = team?.name;
+    event.team_member_count = users.length;
 
-    // delete the scrim and map if an error occurs
-    await prisma.scrim.delete({
+    // Create a notification for each user UNLESS individual scrim
+    if (teamId !== 0 && teamId !== null) {
+      for (const user of users) {
+        await notifications.createInAppNotification({
+          userId: user.id,
+          title: `${team?.name}: New scrim uploaded by ${session.user?.name}`,
+          description: `Scrim "${scrim.name}" has been uploaded by ${session.user?.name} to ${team?.name}.`,
+          href: `/${teamId}/scrim/${scrim.id}`,
+        });
+      }
+    }
+
+    const mapData = await prisma.mapData.create({
+      data: {
+        scrimId: scrim.id,
+        userId: userId.id,
+      },
+    });
+
+    const map = await prisma.map.create({
+      data: {
+        name: data.map.match_start[0][2] ?? "New Map",
+        scrimId: scrim.id,
+        replayCode: data.replayCode ?? "",
+        mapData: {
+          connect: {
+            id: mapData.id,
+          },
+        },
+      },
+    });
+
+    event.map_id = map.id;
+    event.map_data_id = mapData.id;
+    event.map_name = map.name;
+
+    if (data.heroBans) {
+      await prisma.heroBan.createMany({
+        data: data.heroBans.map((ban) => ({
+          scrimId: scrim.id,
+          hero: ban.hero,
+          team:
+            ban.team === "team1"
+              ? data.map.match_start[0][4]
+              : data.map.match_start[0][5],
+          banPosition: ban.banPosition,
+          MapDataId: mapData.id,
+        })),
+      });
+    }
+
+    await prisma.scrim.update({
       where: {
         id: scrim.id,
       },
-    });
-
-    await prisma.map.delete({
-      where: {
-        id: map.id,
+      data: {
+        maps: {
+          connect: {
+            id: map.id,
+          },
+        },
       },
     });
 
-    Logger.info("Scrim and map deleted: ", scrim.id, map.id);
+    const firstMap = data.map;
+    const eventInsertStart = Date.now();
 
-    throw new Error("Invalid Log Format");
+    try {
+      await Promise.all([
+        createAbility1UsedRows(firstMap, scrim, mapData.id),
+        createAbility2UsedRows(firstMap, scrim, mapData.id),
+        createDamageRows(firstMap, scrim, mapData.id),
+        createDefensiveAssistsRows(firstMap, scrim, mapData.id),
+        createDvaRemechRows(firstMap, scrim, mapData.id),
+        createEchoDuplicateEndRows(firstMap, scrim, mapData.id),
+        createEchoDuplicateStartRows(firstMap, scrim, mapData.id),
+        createHealingRows(firstMap, scrim, mapData.id),
+        createHeroSpawnRows(firstMap, scrim, mapData.id),
+        createHeroSwapRows(firstMap, scrim, mapData.id),
+        createKillRows(firstMap, scrim, mapData.id),
+        createMatchEndRows(firstMap, scrim, mapData.id),
+        createMatchStartRows(firstMap, scrim, mapData.id),
+        createMercyRezRows(firstMap, scrim, mapData.id),
+        createObjectiveCapturedRows(firstMap, scrim, mapData.id),
+        createObjectiveUpdatedRows(firstMap, scrim, mapData.id),
+        createOffensiveAssistRows(firstMap, scrim, mapData.id),
+        createPayloadProgressRows(firstMap, scrim, mapData.id),
+        createPlayerStatRows(firstMap, scrim, mapData.id),
+        createPointProgressRows(firstMap, scrim, mapData.id),
+        createRemechChargedRows(firstMap, scrim, mapData.id),
+        createRoundEndRows(firstMap, scrim, mapData.id),
+        createRoundStartRows(firstMap, scrim, mapData.id),
+        createSetupCompleteRows(firstMap, scrim, mapData.id),
+        createUltimateChargedRows(firstMap, scrim, mapData.id),
+        createUltimateEndRows(firstMap, scrim, mapData.id),
+        createUltimateStartRows(firstMap, scrim, mapData.id),
+      ]);
+
+      event.event_insert_duration_ms = Date.now() - eventInsertStart;
+
+      await calculateStatsForMap(mapData.id, scrim.id);
+    } catch (error) {
+      event.event_insert_duration_ms = Date.now() - eventInsertStart;
+      event.outcome = "event_insert_failed";
+      event.error = {
+        message: error instanceof Error ? error.message : String(error),
+        type: error instanceof Error ? error.name : "UnknownError",
+      };
+
+      // delete the scrim and map if an error occurs
+      await prisma.scrim.delete({
+        where: {
+          id: scrim.id,
+        },
+      });
+
+      await prisma.map.delete({
+        where: {
+          id: map.id,
+        },
+      });
+
+      event.rolled_back = true;
+
+      throw new Error("Invalid Log Format");
+    }
+
+    event.outcome = "success";
+  } catch (error) {
+    if (!event.outcome) {
+      event.outcome = "error";
+      event.error = {
+        message: error instanceof Error ? error.message : String(error),
+        type: error instanceof Error ? error.name : "UnknownError",
+      };
+    }
+    throw error;
+  } finally {
+    event.duration_ms = Date.now() - startTime;
+    Logger.info(event);
   }
 }
 
@@ -503,118 +549,170 @@ type CreateNewMapArgs = {
 };
 
 export async function createNewMap(data: CreateNewMapArgs, session: Session) {
-  const userId = await prisma.user.findFirst({
-    where: {
-      email: session.user.email,
-    },
-  });
-
-  if (!userId) {
-    throw new Error("User not found");
-  }
-
-  const mapData = await prisma.mapData.create({
-    data: {
-      scrimId: data.scrimId,
-      userId: userId.id,
-    },
-  });
-
-  const map = await prisma.map.create({
-    data: {
-      name: toTitleCase(data.map.match_start[0][2]) ?? "New Map",
-      scrimId: data.scrimId,
-      mapData: {
-        connect: {
-          id: mapData.id,
-        },
-      },
-    },
-  });
-
-  Logger.info("Map created: ", map, session);
-
-  if (data.heroBans && data.heroBans.length > 0) {
-    await prisma.heroBan.createMany({
-      data: data.heroBans.map((ban) => ({
-        scrimId: data.scrimId,
-        hero: ban.hero,
-        team:
-          ban.team === "team1"
-            ? data.map.match_start[0][4]
-            : data.map.match_start[0][5],
-        banPosition: ban.banPosition,
-        MapDataId: mapData.id,
-      })),
-    });
-  }
-
-  await prisma.scrim.update({
-    where: {
-      id: data.scrimId,
-    },
-    data: {
-      maps: {
-        connect: {
-          id: map.id,
-        },
-      },
-    },
-  });
-
-  await prisma.note.create({
-    data: {
-      content: "<p>Add your notes here...</p>",
-      scrimId: data.scrimId,
-      MapDataId: mapData.id,
-    },
-  });
+  const startTime = Date.now();
+  const event: Record<string, unknown> = {
+    operation: "createNewMap",
+    user_email: session.user.email,
+    scrim_id: data.scrimId,
+    has_hero_bans: (data.heroBans?.length ?? 0) > 0,
+    hero_ban_count: data.heroBans?.length ?? 0,
+    timestamp: new Date().toISOString(),
+  };
 
   try {
-    await Promise.all([
-      createAbility1UsedRows(data.map, { id: data.scrimId }, mapData.id),
-      createAbility2UsedRows(data.map, { id: data.scrimId }, mapData.id),
-      createDamageRows(data.map, { id: data.scrimId }, mapData.id),
-      createDefensiveAssistsRows(data.map, { id: data.scrimId }, mapData.id),
-      createDvaRemechRows(data.map, { id: data.scrimId }, mapData.id),
-      createEchoDuplicateEndRows(data.map, { id: data.scrimId }, mapData.id),
-      createEchoDuplicateStartRows(data.map, { id: data.scrimId }, mapData.id),
-      createHealingRows(data.map, { id: data.scrimId }, mapData.id),
-      createHeroSpawnRows(data.map, { id: data.scrimId }, mapData.id),
-      createHeroSwapRows(data.map, { id: data.scrimId }, mapData.id),
-      createKillRows(data.map, { id: data.scrimId }, mapData.id),
-      createMatchEndRows(data.map, { id: data.scrimId }, mapData.id),
-      createMatchStartRows(data.map, { id: data.scrimId }, mapData.id),
-      createMercyRezRows(data.map, { id: data.scrimId }, mapData.id),
-      createObjectiveCapturedRows(data.map, { id: data.scrimId }, mapData.id),
-      createObjectiveUpdatedRows(data.map, { id: data.scrimId }, mapData.id),
-      createOffensiveAssistRows(data.map, { id: data.scrimId }, mapData.id),
-      createPayloadProgressRows(data.map, { id: data.scrimId }, mapData.id),
-      createPlayerStatRows(data.map, { id: data.scrimId }, mapData.id),
-      createPointProgressRows(data.map, { id: data.scrimId }, mapData.id),
-      createRemechChargedRows(data.map, { id: data.scrimId }, mapData.id),
-      createRoundEndRows(data.map, { id: data.scrimId }, mapData.id),
-      createRoundStartRows(data.map, { id: data.scrimId }, mapData.id),
-      createSetupCompleteRows(data.map, { id: data.scrimId }, mapData.id),
-      createUltimateChargedRows(data.map, { id: data.scrimId }, mapData.id),
-      createUltimateEndRows(data.map, { id: data.scrimId }, mapData.id),
-      createUltimateStartRows(data.map, { id: data.scrimId }, mapData.id),
-    ]);
-  } catch (error) {
-    Logger.error("Error creating map data: ", error, session);
-
-    await prisma.map.delete({
+    const userId = await prisma.user.findFirst({
       where: {
-        id: map.id,
+        email: session.user.email,
       },
     });
 
-    Logger.info("Map deleted: ", map.id);
+    if (!userId) {
+      event.outcome = "user_not_found";
+      throw new Error("User not found");
+    }
 
-    throw new Error("Invalid Log Format");
+    event.user_id = userId.id;
+
+    const mapData = await prisma.mapData.create({
+      data: {
+        scrimId: data.scrimId,
+        userId: userId.id,
+      },
+    });
+
+    const map = await prisma.map.create({
+      data: {
+        name: toTitleCase(data.map.match_start[0][2]) ?? "New Map",
+        scrimId: data.scrimId,
+        mapData: {
+          connect: {
+            id: mapData.id,
+          },
+        },
+      },
+    });
+
+    event.map_id = map.id;
+    event.map_data_id = mapData.id;
+    event.map_name = map.name;
+
+    if (data.heroBans && data.heroBans.length > 0) {
+      await prisma.heroBan.createMany({
+        data: data.heroBans.map((ban) => ({
+          scrimId: data.scrimId,
+          hero: ban.hero,
+          team:
+            ban.team === "team1"
+              ? data.map.match_start[0][4]
+              : data.map.match_start[0][5],
+          banPosition: ban.banPosition,
+          MapDataId: mapData.id,
+        })),
+      });
+    }
+
+    await prisma.scrim.update({
+      where: {
+        id: data.scrimId,
+      },
+      data: {
+        maps: {
+          connect: {
+            id: map.id,
+          },
+        },
+      },
+    });
+
+    await prisma.note.create({
+      data: {
+        content: "<p>Add your notes here...</p>",
+        scrimId: data.scrimId,
+        MapDataId: mapData.id,
+      },
+    });
+
+    const eventInsertStart = Date.now();
+
+    try {
+      await Promise.all([
+        createAbility1UsedRows(data.map, { id: data.scrimId }, mapData.id),
+        createAbility2UsedRows(data.map, { id: data.scrimId }, mapData.id),
+        createDamageRows(data.map, { id: data.scrimId }, mapData.id),
+        createDefensiveAssistsRows(data.map, { id: data.scrimId }, mapData.id),
+        createDvaRemechRows(data.map, { id: data.scrimId }, mapData.id),
+        createEchoDuplicateEndRows(data.map, { id: data.scrimId }, mapData.id),
+        createEchoDuplicateStartRows(
+          data.map,
+          { id: data.scrimId },
+          mapData.id
+        ),
+        createHealingRows(data.map, { id: data.scrimId }, mapData.id),
+        createHeroSpawnRows(data.map, { id: data.scrimId }, mapData.id),
+        createHeroSwapRows(data.map, { id: data.scrimId }, mapData.id),
+        createKillRows(data.map, { id: data.scrimId }, mapData.id),
+        createMatchEndRows(data.map, { id: data.scrimId }, mapData.id),
+        createMatchStartRows(data.map, { id: data.scrimId }, mapData.id),
+        createMercyRezRows(data.map, { id: data.scrimId }, mapData.id),
+        createObjectiveCapturedRows(
+          data.map,
+          { id: data.scrimId },
+          mapData.id
+        ),
+        createObjectiveUpdatedRows(
+          data.map,
+          { id: data.scrimId },
+          mapData.id
+        ),
+        createOffensiveAssistRows(data.map, { id: data.scrimId }, mapData.id),
+        createPayloadProgressRows(data.map, { id: data.scrimId }, mapData.id),
+        createPlayerStatRows(data.map, { id: data.scrimId }, mapData.id),
+        createPointProgressRows(data.map, { id: data.scrimId }, mapData.id),
+        createRemechChargedRows(data.map, { id: data.scrimId }, mapData.id),
+        createRoundEndRows(data.map, { id: data.scrimId }, mapData.id),
+        createRoundStartRows(data.map, { id: data.scrimId }, mapData.id),
+        createSetupCompleteRows(data.map, { id: data.scrimId }, mapData.id),
+        createUltimateChargedRows(data.map, { id: data.scrimId }, mapData.id),
+        createUltimateEndRows(data.map, { id: data.scrimId }, mapData.id),
+        createUltimateStartRows(data.map, { id: data.scrimId }, mapData.id),
+      ]);
+    } catch (error) {
+      event.event_insert_duration_ms = Date.now() - eventInsertStart;
+      event.outcome = "event_insert_failed";
+      event.error = {
+        message: error instanceof Error ? error.message : String(error),
+        type: error instanceof Error ? error.name : "UnknownError",
+      };
+
+      await prisma.map.delete({
+        where: {
+          id: map.id,
+        },
+      });
+
+      event.rolled_back = true;
+
+      throw new Error("Invalid Log Format");
+    }
+
+    event.event_insert_duration_ms = Date.now() - eventInsertStart;
+
+    await calculateStatsForMap(mapData.id, data.scrimId);
+
+    event.outcome = "success";
+  } catch (error) {
+    if (!event.outcome) {
+      event.outcome = "error";
+      event.error = {
+        message: error instanceof Error ? error.message : String(error),
+        type: error instanceof Error ? error.name : "UnknownError",
+      };
+    }
+    throw error;
+  } finally {
+    event.duration_ms = Date.now() - startTime;
+    Logger.info(event);
   }
-
-  await calculateStatsForMap(mapData.id, data.scrimId);
 }
 
 export async function calculateStatsForMap(mapDataId: number, scrimId: number) {

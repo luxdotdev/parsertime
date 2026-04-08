@@ -20,19 +20,32 @@ export type AddMapRequestData = {
 };
 
 export async function POST(req: NextRequest) {
-  const session = await auth();
-
-  const id = req.nextUrl.searchParams.get("id") ?? "";
-
-  const data = (await req.json()) as AddMapRequestData;
-
-  if (!session?.user?.email) {
-    Logger.warn("Unauthorized request to add map");
-    unauthorized();
-  }
+  const startTime = Date.now();
+  const event: Record<string, unknown> = {
+    route: "POST /api/scrim/add-map",
+    timestamp: new Date().toISOString(),
+  };
 
   try {
+    const session = await auth();
+
+    const id = req.nextUrl.searchParams.get("id") ?? "";
+    event.scrim_id_raw = id;
+
+    const data = (await req.json()) as AddMapRequestData;
+    event.has_hero_bans = (data.heroBans?.length ?? 0) > 0;
+    event.hero_ban_count = data.heroBans?.length ?? 0;
+
+    if (!session?.user?.email) {
+      event.outcome = "unauthorized";
+      event.status_code = 401;
+      unauthorized();
+    }
+
+    event.user_email = session.user.email;
+
     const scrimId = parseInt(id);
+    event.scrim_id = scrimId;
     let mapData = data.map;
 
     const scrim = await prisma.scrim.findUnique({
@@ -45,7 +58,11 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    event.team_id = scrim?.teamId;
+    event.auto_assign_team_names = scrim?.autoAssignTeamNames ?? false;
+
     if (scrim?.autoAssignTeamNames && scrim.teamId && scrim.team1Name) {
+      event.normalized_teams = true;
       mapData = await normalizeMapForScrim(
         mapData,
         scrim.teamId,
@@ -63,8 +80,13 @@ export async function POST(req: NextRequest) {
       },
       session
     );
-    scrimParsingDuration.record(performance.now() - parseStart);
+    const parseDuration = performance.now() - parseStart;
+    scrimParsingDuration.record(parseDuration);
     mapAddedCounter.add(1);
+
+    event.parse_duration_ms = Math.round(parseDuration);
+    event.outcome = "success";
+    event.status_code = 200;
 
     after(async () => {
       await Promise.all([
@@ -80,10 +102,18 @@ export async function POST(req: NextRequest) {
 
     return new Response("OK", { status: 200 });
   } catch (e: unknown) {
-    Logger.error("Error adding map", e);
+    event.outcome = "error";
+    event.status_code = 500;
+    event.error = {
+      message: e instanceof Error ? e.message : String(e),
+      type: e instanceof Error ? e.name : "UnknownError",
+    };
 
     if (e instanceof Error) return new Response(e.message, { status: 500 });
 
     return new Response("Internal Server Error", { status: 500 });
+  } finally {
+    event.duration_ms = Date.now() - startTime;
+    Logger.info(event);
   }
 }
