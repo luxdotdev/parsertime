@@ -1,18 +1,18 @@
 "use client";
 
+import type { SerializedCalibrationData } from "@/data/killfeed-calibration-dto";
 import { getControlSubMapName } from "@/lib/map-calibration/control-map-index";
 import type { LoadedCalibration } from "@/lib/map-calibration/load-calibration";
 import { worldToImage } from "@/lib/map-calibration/world-to-image";
 import { toHero, toKebabCase } from "@/lib/utils";
-import type { SerializedCalibrationData } from "@/data/killfeed-calibration-dto";
 import {
   coachingCanvasStore,
   flushCanvasToLocalStorage,
 } from "@/stores/coaching-canvas-store";
 import type { Kill } from "@prisma/client";
+import type { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
-import type { useTranslations } from "next-intl";
 
 type Fight = {
   kills: Kill[];
@@ -84,7 +84,7 @@ export function ImportToCanvasLink({
       const calInfo = getCalibrationForFight(fight.start, calibrationData);
       if (!calInfo) return;
 
-      const { calibration, calibrationName, subMap } = calInfo;
+      const { calibration, subMap } = calInfo;
 
       const res = await fetch(
         `/api/coaching/fight-positions?mapDataId=${mapDataId}&start=${fight.start}&end=${fight.end}`
