@@ -123,6 +123,7 @@ export function OverviewTable({
                   `${pathname}/player/${encodeURIComponent(playerName)}` as Route
                 }
                 prefetch={true}
+                transitionTypes={["nav-forward"]}
               >
                 <span
                   style={{

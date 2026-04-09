@@ -32,6 +32,7 @@ export function ScrimCard({ scrim, prefetch }: Props) {
     <Link
       href={`/${scrim.teamId}/scrim/${scrim.id}` as Route}
       prefetch={prefetch}
+      transitionTypes={["expand-map"]}
       className="group block"
     >
       <Card className="[@media(hover:hover)_and_(pointer:fine)]:hover:border-primary/50 relative max-w-md overflow-hidden border-2 active:scale-[0.97] motion-safe:transition-[transform,box-shadow,border-color] motion-safe:duration-200 sm:h-48 md:h-64 xl:h-48 [@media(hover:hover)_and_(pointer:fine)]:hover:scale-[1.02] [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-lg">

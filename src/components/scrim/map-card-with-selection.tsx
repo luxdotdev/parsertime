@@ -101,6 +101,7 @@ function MapCardWithSelectionComponent({
       <Link
         href={`/${teamId}/scrim/${scrimId}/map/${map.id}` as Route}
         prefetch={true}
+        transitionTypes={["expand-map"]}
       >
         <CardHeader>
           <h3 className="z-10 text-3xl font-semibold tracking-tight text-white">

@@ -155,7 +155,8 @@ export function PlayerSwitcher({
                       key={player.label}
                       onSelect={() => {
                         router.push(
-                          `${mapUrl}/player/${player.label}` as Route
+                          `${mapUrl}/player/${player.label}` as Route,
+                          { transitionTypes: ["nav-forward"] }
                         );
                       }}
                       className="text-sm"
@@ -188,7 +189,9 @@ export function PlayerSwitcher({
                 <DialogTrigger asChild>
                   <CommandItem
                     onSelect={() => {
-                      router.push(mapUrl);
+                      router.push(mapUrl, {
+                        transitionTypes: ["nav-back"],
+                      });
                       setSelectedPlayer({
                         label: t("default"),
                         value: "default",
