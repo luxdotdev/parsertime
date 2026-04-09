@@ -1,6 +1,7 @@
 import { PlayerCharts } from "@/components/charts/player/player-charts";
 import { MainNav } from "@/components/dashboard/main-nav";
 import { Search } from "@/components/dashboard/search";
+import { DirectionalTransition } from "@/components/directional-transition";
 import { GuestNav } from "@/components/guest-nav";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
@@ -95,94 +96,100 @@ export default async function PlayerDashboardPage(
   ]);
 
   return (
-    <div className="flex-col md:flex">
-      <div className="border-b">
-        <div className="hidden h-16 items-center px-4 md:flex">
-          <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
-          <MainNav
-            className="mx-6 hidden lg:block"
-            scoutingEnabled={scoutingEnabled}
-            aiChatEnabled={aiChatEnabled}
-            dataToolsEnabled={dataToolsEnabled}
-          />
-          <MobileNav
-            className="block pl-2 lg:hidden"
-            session={session}
-            aiChatEnabled={aiChatEnabled}
-            dataToolsEnabled={dataToolsEnabled}
-          />
-          <div className="ml-auto flex items-center space-x-4">
-            <Search user={user} />
-            <ModeToggle />
-            <LocaleSwitcher />
-            {session ? (
-              <>
-                <Notifications />
-                <UserNav />
-              </>
-            ) : (
-              <GuestNav guestMode={visibility.guestMode} />
-            )}
+    <DirectionalTransition>
+      <div className="flex-col md:flex">
+        <div className="border-b" style={{ viewTransitionName: "site-header" }}>
+          <div className="hidden h-16 items-center px-4 md:flex">
+            <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
+            <MainNav
+              className="mx-6 hidden lg:block"
+              scoutingEnabled={scoutingEnabled}
+              aiChatEnabled={aiChatEnabled}
+              dataToolsEnabled={dataToolsEnabled}
+            />
+            <MobileNav
+              className="block pl-2 lg:hidden"
+              session={session}
+              aiChatEnabled={aiChatEnabled}
+              dataToolsEnabled={dataToolsEnabled}
+            />
+            <div className="ml-auto flex items-center space-x-4">
+              <Search user={user} />
+              <ModeToggle />
+              <LocaleSwitcher />
+              {session ? (
+                <>
+                  <Notifications />
+                  <UserNav />
+                </>
+              ) : (
+                <GuestNav guestMode={visibility.guestMode} />
+              )}
+            </div>
+          </div>
+          <div className="flex h-16 items-center px-4 md:hidden">
+            <MobileNav
+              session={session}
+              aiChatEnabled={aiChatEnabled}
+              dataToolsEnabled={dataToolsEnabled}
+            />
+            <div className="ml-auto flex items-center space-x-4">
+              <ModeToggle />
+              <LocaleSwitcher />
+              {session ? (
+                <>
+                  <Notifications />
+                  <UserNav />
+                </>
+              ) : (
+                <GuestNav guestMode={visibility.guestMode} />
+              )}
+            </div>
           </div>
         </div>
-        <div className="flex h-16 items-center px-4 md:hidden">
-          <MobileNav
-            session={session}
-            aiChatEnabled={aiChatEnabled}
-            dataToolsEnabled={dataToolsEnabled}
-          />
-          <div className="ml-auto flex items-center space-x-4">
-            <ModeToggle />
-            <LocaleSwitcher />
-            {session ? (
-              <>
-                <Notifications />
-                <UserNav />
-              </>
-            ) : (
-              <GuestNav guestMode={visibility.guestMode} />
-            )}
+        <div className="flex-1 space-y-4 p-8 pt-6">
+          <div>
+            <h4 className="text-gray-600 dark:text-gray-400">
+              <Link
+                href={
+                  `/${params.team}/scrim/${params.scrimId}/map/${params.mapId}` as Route
+                }
+                transitionTypes={["nav-back"]}
+              >
+                &larr; {t("back")}
+              </Link>
+              {" | "}
+              <Link
+                href={`/stats/${params.playerId}`}
+                transitionTypes={["nav-forward"]}
+              >
+                {t("viewStats")} &rarr;
+              </Link>
+            </h4>
           </div>
+          <div className="flex items-center justify-between space-y-2">
+            <h2 className="text-3xl font-bold tracking-tight">
+              {toTitleCase(mapName?.map_name ?? t("dashboard"))}
+            </h2>
+          </div>
+          <Tabs defaultValue="overview" className="space-y-4">
+            <TabsList>
+              <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
+              <TabsTrigger value="analytics">{t("analytics")}</TabsTrigger>
+              <TabsTrigger value="charts">{t("charts")}</TabsTrigger>
+            </TabsList>
+            <TabsContent value="overview" className="space-y-4">
+              <DefaultOverview id={id} playerName={playerName} />
+            </TabsContent>
+            <TabsContent value="analytics" className="space-y-4">
+              <PlayerAnalytics id={id} playerName={playerName} />
+            </TabsContent>
+            <TabsContent value="charts" className="space-y-4">
+              <PlayerCharts id={id} playerName={playerName} />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
-      <div className="flex-1 space-y-4 p-8 pt-6">
-        <div>
-          <h4 className="text-gray-600 dark:text-gray-400">
-            <Link
-              href={
-                `/${params.team}/scrim/${params.scrimId}/map/${params.mapId}` as Route
-              }
-            >
-              &larr; {t("back")}
-            </Link>
-            {" | "}
-            <Link href={`/stats/${params.playerId}`}>
-              {t("viewStats")} &rarr;
-            </Link>
-          </h4>
-        </div>
-        <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">
-            {toTitleCase(mapName?.map_name ?? t("dashboard"))}
-          </h2>
-        </div>
-        <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
-            <TabsTrigger value="analytics">{t("analytics")}</TabsTrigger>
-            <TabsTrigger value="charts">{t("charts")}</TabsTrigger>
-          </TabsList>
-          <TabsContent value="overview" className="space-y-4">
-            <DefaultOverview id={id} playerName={playerName} />
-          </TabsContent>
-          <TabsContent value="analytics" className="space-y-4">
-            <PlayerAnalytics id={id} playerName={playerName} />
-          </TabsContent>
-          <TabsContent value="charts" className="space-y-4">
-            <PlayerCharts id={id} playerName={playerName} />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
+    </DirectionalTransition>
   );
 }

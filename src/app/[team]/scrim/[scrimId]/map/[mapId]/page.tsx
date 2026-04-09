@@ -1,6 +1,7 @@
 import { MapCharts } from "@/components/charts/map/map-charts";
 import { MainNav } from "@/components/dashboard/main-nav";
 import { Search } from "@/components/dashboard/search";
+import { DirectionalTransition } from "@/components/directional-transition";
 import { GuestNav } from "@/components/guest-nav";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ComparePlayers } from "@/components/map/compare-players";
@@ -18,7 +19,7 @@ import { ReplayCode } from "@/components/scrim/replay-code";
 import { ModeToggle } from "@/components/theme-switcher";
 import { TipTap } from "@/components/tiptap/tiptap";
 import { MapTabsSkeleton } from "@/components/map/map-tabs-skeleton";
-import { Suspense } from "react";
+import { Suspense, ViewTransition } from "react";
 import { UserNav } from "@/components/user-nav";
 import { VodOverview } from "@/components/vods/vod-overview";
 import { getMostPlayedHeroes } from "@/data/player-dto";
@@ -150,164 +151,175 @@ export default async function MapDashboardPage(
   );
 
   return (
-    <div className="flex-col md:flex">
-      <div className="border-b">
-        <div className="hidden h-16 items-center px-4 md:flex">
-          <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
-          <MainNav
-            className="mx-6 hidden lg:block"
-            scoutingEnabled={scoutingEnabled}
-            aiChatEnabled={aiChatEnabled}
-            dataToolsEnabled={dataToolsEnabled}
-          />
-          <MobileNav
-            className="block pl-2 lg:hidden"
-            session={session}
-            aiChatEnabled={aiChatEnabled}
-            dataToolsEnabled={dataToolsEnabled}
-          />
-          <div className="ml-auto flex items-center space-x-4">
-            <Search user={user} />
-            <ModeToggle />
-            <LocaleSwitcher />
-            {session ? (
-              <>
-                <Notifications />
-                <UserNav />
-              </>
-            ) : (
-              <GuestNav guestMode={visibility?.guestMode ?? false} />
-            )}
+    <DirectionalTransition>
+      <div className="flex-col md:flex">
+        <div className="border-b" style={{ viewTransitionName: "site-header" }}>
+          <div className="hidden h-16 items-center px-4 md:flex">
+            <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
+            <MainNav
+              className="mx-6 hidden lg:block"
+              scoutingEnabled={scoutingEnabled}
+              aiChatEnabled={aiChatEnabled}
+              dataToolsEnabled={dataToolsEnabled}
+            />
+            <MobileNav
+              className="block pl-2 lg:hidden"
+              session={session}
+              aiChatEnabled={aiChatEnabled}
+              dataToolsEnabled={dataToolsEnabled}
+            />
+            <div className="ml-auto flex items-center space-x-4">
+              <Search user={user} />
+              <ModeToggle />
+              <LocaleSwitcher />
+              {session ? (
+                <>
+                  <Notifications />
+                  <UserNav />
+                </>
+              ) : (
+                <GuestNav guestMode={visibility?.guestMode ?? false} />
+              )}
+            </div>
+          </div>
+          <div className="flex h-16 items-center px-4 md:hidden">
+            <MobileNav
+              session={session}
+              aiChatEnabled={aiChatEnabled}
+              dataToolsEnabled={dataToolsEnabled}
+            />
+            <div className="ml-auto flex items-center space-x-4">
+              <ModeToggle />
+              <LocaleSwitcher />
+              {session ? (
+                <>
+                  <Notifications />
+                  <UserNav />
+                </>
+              ) : (
+                <GuestNav guestMode={visibility?.guestMode ?? false} />
+              )}
+            </div>
           </div>
         </div>
-        <div className="flex h-16 items-center px-4 md:hidden">
-          <MobileNav
-            session={session}
-            aiChatEnabled={aiChatEnabled}
-            dataToolsEnabled={dataToolsEnabled}
-          />
-          <div className="ml-auto flex items-center space-x-4">
-            <ModeToggle />
-            <LocaleSwitcher />
-            {session ? (
-              <>
-                <Notifications />
-                <UserNav />
-              </>
-            ) : (
-              <GuestNav guestMode={visibility?.guestMode ?? false} />
+        <div className="flex-1 space-y-4 p-8 pt-6">
+          <div>
+            <h4 className="text-gray-600 dark:text-gray-400">
+              <Link
+                href={
+                  (fromTournament && tournamentId && matchId
+                    ? `/tournaments/${tournamentId}/match/${matchId}`
+                    : `/${params.team}/scrim/${params.scrimId}`) as Route
+                }
+                transitionTypes={["contract-map"]}
+              >
+                &larr; {t("back")}
+              </Link>
+            </h4>
+          </div>
+          <div className="flex items-center justify-between space-y-2">
+            <h2 className="text-3xl font-bold tracking-tight">
+              {translatedMapName}
+            </h2>
+            <HeroBans
+              heroBans={heroBans}
+              team1Name={mapDetails?.team_1_name ?? "Team 1"}
+            />
+          </div>
+          <div className="font-semibold tracking-tight text-white">
+            {map?.replayCode && (
+              <ReplayCode replayCode={map?.replayCode ?? ""} subtitle={true} />
             )}
           </div>
+          <Suspense
+            fallback={
+              <ViewTransition exit="slide-down">
+                <MapTabsSkeleton />
+              </ViewTransition>
+            }
+          >
+            <ViewTransition enter="slide-up" default="none">
+              <MapTabs
+                tabs={[
+                  {
+                    value: "overview",
+                    label: t("tabs.overview"),
+                    content: (
+                      <DefaultOverview
+                        id={id}
+                        team1Color={team1}
+                        team2Color={team2}
+                      />
+                    ),
+                  },
+                  {
+                    value: "killfeed",
+                    label: t("tabs.killfeed"),
+                    content: (
+                      <Killfeed id={id} team1Color={team1} team2Color={team2} />
+                    ),
+                  },
+                  {
+                    value: "charts",
+                    label: t("tabs.charts"),
+                    content: <MapCharts id={id} />,
+                  },
+                  ...(positionalDataEnabled
+                    ? [
+                        {
+                          value: "heatmap",
+                          label: t("tabs.heatmap"),
+                          content: <HeatmapTab id={id} />,
+                        },
+                        {
+                          value: "replay",
+                          label: t("tabs.replay"),
+                          content: <ReplayTab id={id} />,
+                        },
+                      ]
+                    : []),
+                  {
+                    value: "events",
+                    label: t("tabs.events"),
+                    className: "hidden md:flex",
+                    content: (
+                      <MapEvents
+                        id={id}
+                        team1Color={team1}
+                        team2Color={team2}
+                        tempoChartEnabled={tempoChartEnabled}
+                      />
+                    ),
+                  },
+                  {
+                    value: "compare",
+                    label: t("tabs.compare"),
+                    content: <ComparePlayers id={id} />,
+                  },
+                  {
+                    value: "notes",
+                    label: t("tabs.notes"),
+                    content: (
+                      <div className="mx-auto py-8">
+                        <TipTap
+                          noteContent={noteContent?.content ?? ""}
+                          mapDataId={mapDataId}
+                          scrimId={parseInt(params.scrimId)}
+                        />
+                      </div>
+                    ),
+                  },
+                  {
+                    value: "vods",
+                    label: t("tabs.vod"),
+                    content: <VodOverview vod={map?.vod ?? ""} mapId={id} />,
+                  },
+                ]}
+              />
+            </ViewTransition>
+          </Suspense>
         </div>
       </div>
-      <div className="flex-1 space-y-4 p-8 pt-6">
-        <div>
-          <h4 className="text-gray-600 dark:text-gray-400">
-            <Link
-              href={
-                (fromTournament && tournamentId && matchId
-                  ? `/tournaments/${tournamentId}/match/${matchId}`
-                  : `/${params.team}/scrim/${params.scrimId}`) as Route
-              }
-            >
-              &larr; {t("back")}
-            </Link>
-          </h4>
-        </div>
-        <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">
-            {translatedMapName}
-          </h2>
-          <HeroBans
-            heroBans={heroBans}
-            team1Name={mapDetails?.team_1_name ?? "Team 1"}
-          />
-        </div>
-        <div className="font-semibold tracking-tight text-white">
-          {map?.replayCode && (
-            <ReplayCode replayCode={map?.replayCode ?? ""} subtitle={true} />
-          )}
-        </div>
-        <Suspense fallback={<MapTabsSkeleton />}>
-          <MapTabs
-            tabs={[
-              {
-                value: "overview",
-                label: t("tabs.overview"),
-                content: (
-                  <DefaultOverview
-                    id={id}
-                    team1Color={team1}
-                    team2Color={team2}
-                  />
-                ),
-              },
-              {
-                value: "killfeed",
-                label: t("tabs.killfeed"),
-                content: (
-                  <Killfeed id={id} team1Color={team1} team2Color={team2} />
-                ),
-              },
-              {
-                value: "charts",
-                label: t("tabs.charts"),
-                content: <MapCharts id={id} />,
-              },
-              ...(positionalDataEnabled
-                ? [
-                    {
-                      value: "heatmap",
-                      label: t("tabs.heatmap"),
-                      content: <HeatmapTab id={id} />,
-                    },
-                    {
-                      value: "replay",
-                      label: t("tabs.replay"),
-                      content: <ReplayTab id={id} />,
-                    },
-                  ]
-                : []),
-              {
-                value: "events",
-                label: t("tabs.events"),
-                className: "hidden md:flex",
-                content: (
-                  <MapEvents
-                    id={id}
-                    team1Color={team1}
-                    team2Color={team2}
-                    tempoChartEnabled={tempoChartEnabled}
-                  />
-                ),
-              },
-              {
-                value: "compare",
-                label: t("tabs.compare"),
-                content: <ComparePlayers id={id} />,
-              },
-              {
-                value: "notes",
-                label: t("tabs.notes"),
-                content: (
-                  <div className="mx-auto py-8">
-                    <TipTap
-                      noteContent={noteContent?.content ?? ""}
-                      mapDataId={mapDataId}
-                      scrimId={parseInt(params.scrimId)}
-                    />
-                  </div>
-                ),
-              },
-              {
-                value: "vods",
-                label: t("tabs.vod"),
-                content: <VodOverview vod={map?.vod ?? ""} mapId={id} />,
-              },
-            ]}
-          />
-        </Suspense>
-      </div>
-    </div>
+    </DirectionalTransition>
   );
 }

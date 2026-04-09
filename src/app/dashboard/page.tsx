@@ -1,3 +1,4 @@
+import { DirectionalTransition } from "@/components/directional-transition";
 import { ScrimPagination } from "@/components/dashboard/scrim-pagination";
 import { UpdateModalWrapper } from "@/components/dashboard/update-modal-wrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -52,27 +53,29 @@ export default async function DashboardPage() {
   const isAdmin = userData?.role === $Enums.UserRole.ADMIN;
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight text-balance">
-          {t("title")}
-        </h2>
+    <DirectionalTransition>
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <div className="flex items-center justify-between space-y-2">
+          <h2 className="text-3xl font-bold tracking-tight text-balance">
+            {t("title")}
+          </h2>
+        </div>
+        <Tabs defaultValue="overview" className="space-y-4">
+          {isAdmin && (
+            <TabsList>
+              <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
+              <TabsTrigger value="admin">{t("admin")}</TabsTrigger>
+            </TabsList>
+          )}
+          <TabsContent value="overview" className="space-y-4">
+            <ScrimPagination seenOnboarding={userData?.seenOnboarding} />
+          </TabsContent>
+          <TabsContent value="admin" className="space-y-4">
+            <ScrimPagination isAdmin={true} seenOnboarding={true} />
+          </TabsContent>
+        </Tabs>
+        <UpdateModalWrapper />
       </div>
-      <Tabs defaultValue="overview" className="space-y-4">
-        {isAdmin && (
-          <TabsList>
-            <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
-            <TabsTrigger value="admin">{t("admin")}</TabsTrigger>
-          </TabsList>
-        )}
-        <TabsContent value="overview" className="space-y-4">
-          <ScrimPagination seenOnboarding={userData?.seenOnboarding} />
-        </TabsContent>
-        <TabsContent value="admin" className="space-y-4">
-          <ScrimPagination isAdmin={true} seenOnboarding={true} />
-        </TabsContent>
-      </Tabs>
-      <UpdateModalWrapper />
-    </div>
+    </DirectionalTransition>
   );
 }
