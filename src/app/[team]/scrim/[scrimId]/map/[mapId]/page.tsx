@@ -27,10 +27,12 @@ import { getUser } from "@/data/user-dto";
 import { auth } from "@/lib/auth";
 import {
   aiChat,
+  coachingCanvas,
   dataLabeling,
   positionalData,
   scoutingTool,
   tempoChart,
+  tournament,
 } from "@/lib/flags";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
@@ -115,6 +117,8 @@ export default async function MapDashboardPage(
     positionalDataEnabled,
     aiChatEnabled,
     dataToolsEnabled,
+    tournamentEnabled,
+    coachingCanvasEnabled,
   ] = await Promise.all([
     getMostPlayedHeroes(id),
     prisma.matchStart.findFirst({
@@ -144,6 +148,8 @@ export default async function MapDashboardPage(
     positionalData(),
     aiChat(),
     dataLabeling(),
+    tournament(),
+    coachingCanvas(),
   ]);
 
   const translatedMapName = await translateMapName(
@@ -153,20 +159,26 @@ export default async function MapDashboardPage(
   return (
     <DirectionalTransition>
       <div className="flex-col md:flex">
-        <div className="border-b" style={{ viewTransitionName: "site-header" }}>
-          <div className="hidden h-16 items-center px-4 md:flex">
+        <div
+          className="shadow-sm"
+          style={{ viewTransitionName: "site-header" }}
+        >
+          <div className="hidden min-h-16 items-center px-4 py-2 md:flex">
             <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
             <MainNav
               className="mx-6 hidden lg:block"
               scoutingEnabled={scoutingEnabled}
               aiChatEnabled={aiChatEnabled}
               dataToolsEnabled={dataToolsEnabled}
+              tournamentEnabled={tournamentEnabled}
+              coachingCanvasEnabled={coachingCanvasEnabled}
             />
             <MobileNav
               className="block pl-2 lg:hidden"
               session={session}
               aiChatEnabled={aiChatEnabled}
               dataToolsEnabled={dataToolsEnabled}
+              coachingCanvasEnabled={coachingCanvasEnabled}
             />
             <div className="ml-auto flex items-center space-x-4">
               <Search user={user} />
@@ -187,6 +199,7 @@ export default async function MapDashboardPage(
               session={session}
               aiChatEnabled={aiChatEnabled}
               dataToolsEnabled={dataToolsEnabled}
+              coachingCanvasEnabled={coachingCanvasEnabled}
             />
             <div className="ml-auto flex items-center space-x-4">
               <ModeToggle />
