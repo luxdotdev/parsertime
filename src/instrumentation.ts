@@ -110,7 +110,7 @@ export function register() {
   // Force-flush both providers on SIGTERM to ensure nothing is lost.
   //
   // Avoid running this in edge; it will cause errors.
-  if (process.env.NEXT_RUNTIME === 'nodejs') {
+  if (process.env.NEXT_RUNTIME === "nodejs") {
     process.on("SIGTERM", async () => {
       await Promise.allSettled([
         provider.forceFlush(),
