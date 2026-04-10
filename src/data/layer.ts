@@ -31,7 +31,9 @@ import { TeamFightStatsServiceLive } from "./team/fight-stats-service";
 import { TeamHeroPoolServiceLive } from "./team/hero-pool-service";
 import { TeamHeroSwapServiceLive } from "./team/hero-swap-service";
 import { TeamMapModeServiceLive } from "./team/map-mode-service";
+import { TeamAnalyticsServiceLive } from "./team/analytics-service";
 import { TeamMatchupServiceLive } from "./team/matchup-service";
+import { TeamPredictionServiceLive } from "./team/prediction-service";
 import { TeamQuickWinsServiceLive } from "./team/quick-wins-service";
 import { TeamRoleStatsServiceLive } from "./team/role-stats-service";
 import { TeamSharedDataServiceLive } from "./team/shared-data-service";
@@ -90,5 +92,7 @@ export const DataLayerLive = Layer.mergeAll(
   TeamBanImpactServiceLive,
   TeamAbilityImpactServiceLive,
   TeamComparisonServiceLive,
-  TeamMatchupServiceLive
+  TeamMatchupServiceLive,
+  TeamAnalyticsServiceLive,
+  TeamPredictionServiceLive
 );
