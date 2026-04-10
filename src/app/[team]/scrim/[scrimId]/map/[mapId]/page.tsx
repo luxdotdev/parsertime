@@ -288,12 +288,12 @@ export default async function MapDashboardPage(
                         {
                           value: "heatmap",
                           label: t("tabs.heatmap"),
-                          content: <HeatmapTab id={id} />,
+                          content: <HeatmapTab id={mapDataId} />,
                         },
                         {
                           value: "replay",
                           label: t("tabs.replay"),
-                          content: <ReplayTab id={id} />,
+                          content: <ReplayTab id={mapDataId} />,
                         },
                       ]
                     : []),
