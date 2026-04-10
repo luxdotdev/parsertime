@@ -9,7 +9,7 @@ export type Service = {
   createAuditLog(args: AuditLogArgs): Effect.Effect<AuditLog, DatabaseError>;
 };
 
-export class AuditLogService extends Context.Tag("AuditLogService")<
+export class AuditLogService extends Context.Tag("@app/audit-logs/AuditLogService")<
   AuditLogService,
   Service
 >() {}

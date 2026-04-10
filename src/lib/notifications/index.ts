@@ -43,7 +43,7 @@ export type Service = {
   ): Effect.Effect<void, DatabaseError | NotFoundError | UnauthorizedError>;
 };
 
-export class NotificationService extends Context.Tag("NotificationService")<
+export class NotificationService extends Context.Tag("@app/notifications/NotificationService")<
   NotificationService,
   Service
 >() {}
