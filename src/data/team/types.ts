@@ -541,3 +541,75 @@ export type EnemyHeroWinrate = {
 export type EnemyHeroAnalysis = {
   winrateVsHero: EnemyHeroWinrate[];
 };
+
+// ---------- analytics-service types ----------
+
+export type HeroPickrate = {
+  heroName: HeroName;
+  role: "Tank" | "Damage" | "Support";
+  playtime: number;
+  gamesPlayed: number;
+};
+
+export type PlayerHeroData = {
+  playerName: string;
+  heroes: HeroPickrate[];
+  totalPlaytime: number;
+};
+
+export type HeroPickrateMatrix = {
+  players: PlayerHeroData[];
+  allHeroes: HeroName[];
+};
+
+export type HeroPickrateRawData = {
+  teamRoster: string[];
+  mapDataRecords: {
+    id: number;
+    name: string | null;
+    scrimDate: Date;
+  }[];
+  allPlayerStats: {
+    player_name: string;
+    player_team: string;
+    player_hero: string;
+    hero_time_played: number;
+    MapDataId: number | null;
+  }[];
+};
+
+export type PlayerMapPerformance = {
+  playerName: string;
+  mapName: string;
+  wins: number;
+  losses: number;
+  winrate: number;
+  gamesPlayed: number;
+};
+
+export type PlayerMapPerformanceMatrix = {
+  players: string[];
+  maps: string[];
+  performance: PlayerMapPerformance[];
+};
+
+// ---------- prediction-service types ----------
+
+export type SimulatorContext = {
+  baseWinrate: number;
+  totalGames: number;
+  heroBanDeltas: Record<string, number>;
+  heroBanSampleSizes: Record<string, number>;
+  ourBanDeltas: Record<string, number>;
+  ourBanSampleSizes: Record<string, number>;
+  mapWinrates: Record<string, number>;
+  mapSampleSizes: Record<string, number>;
+  mapModeWinrates: Record<string, number>;
+  roleTrioWinrates: RoleTrio[];
+  heroPoolWinrates: Record<string, number>;
+  heroPoolSampleSizes: Record<string, number>;
+  enemyHeroWinrates: Record<string, number>;
+  enemyHeroSampleSizes: Record<string, number>;
+  availableHeroes: HeroName[];
+  availableMaps: string[];
+};

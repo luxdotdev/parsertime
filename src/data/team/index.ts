@@ -88,6 +88,15 @@ export type {
   MatchupWinrateData,
   EnemyHeroWinrate,
   EnemyHeroAnalysis,
+  // analytics types
+  HeroPickrate,
+  PlayerHeroData,
+  HeroPickrateMatrix,
+  HeroPickrateRawData,
+  PlayerMapPerformance,
+  PlayerMapPerformanceMatrix,
+  // prediction types
+  SimulatorContext,
 } from "./types";
 
 export { TeamStatsService, TeamStatsServiceLive } from "./stats-service";
@@ -152,3 +161,15 @@ export type { TeamComparisonServiceInterface } from "./comparison-service";
 
 export { TeamMatchupService, TeamMatchupServiceLive } from "./matchup-service";
 export type { TeamMatchupServiceInterface } from "./matchup-service";
+
+export {
+  TeamAnalyticsService,
+  TeamAnalyticsServiceLive,
+} from "./analytics-service";
+export type { TeamAnalyticsServiceInterface } from "./analytics-service";
+
+export {
+  TeamPredictionService,
+  TeamPredictionServiceLive,
+} from "./prediction-service";
+export type { TeamPredictionServiceInterface } from "./prediction-service";
