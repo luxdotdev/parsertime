@@ -101,6 +101,7 @@ export const make: Effect.Effect<R2ServiceInterface, never, R2ConfigService> =
     const s3Client = new S3Client({
       region: "auto",
       endpoint: `https://${config.accountId}.r2.cloudflarestorage.com`,
+      forcePathStyle: true,
       credentials: {
         accessKeyId: config.accessKeyId,
         secretAccessKey: config.secretAccessKey,
