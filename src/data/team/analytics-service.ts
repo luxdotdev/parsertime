@@ -1,4 +1,3 @@
-import { EffectObservabilityLive } from "@/instrumentation";
 import { determineRole } from "@/lib/player-table-data";
 import prisma from "@/lib/prisma";
 import { calculateWinner } from "@/lib/winrate";
@@ -28,6 +27,14 @@ import {
   TeamSharedDataService,
   TeamSharedDataServiceLive,
 } from "./shared-data-service";
+import type {
+  HeroPickrate,
+  HeroPickrateMatrix,
+  HeroPickrateRawData,
+  PlayerHeroData,
+  PlayerMapPerformance,
+  PlayerMapPerformanceMatrix,
+} from "./types";
 
 const analyticsQuerySuccessTotal = Metric.counter(
   "team.analytics.query.success",
@@ -50,17 +57,9 @@ const analyticsQueryDuration = Metric.histogram(
 
 export type {
   HeroPickrate,
-  PlayerHeroData,
   HeroPickrateMatrix,
   HeroPickrateRawData,
-  PlayerMapPerformance,
-  PlayerMapPerformanceMatrix,
-} from "./types";
-import type {
-  HeroPickrate,
   PlayerHeroData,
-  HeroPickrateMatrix,
-  HeroPickrateRawData,
   PlayerMapPerformance,
   PlayerMapPerformanceMatrix,
 } from "./types";
@@ -203,7 +202,8 @@ export const make = Effect.gen(function* () {
           wideEvent.outcome = "success";
           wideEvent.player_count = 0;
           yield* Metric.increment(analyticsQuerySuccessTotal);
-          return { players: [], allHeroes: [] } as HeroPickrateMatrix;
+          const _empty: HeroPickrateMatrix = { players: [], allHeroes: [] };
+          return _empty;
         }
 
         const dateFilter = {
@@ -244,7 +244,8 @@ export const make = Effect.gen(function* () {
           wideEvent.outcome = "success";
           wideEvent.player_count = 0;
           yield* Metric.increment(analyticsQuerySuccessTotal);
-          return { players: [], allHeroes: [] } as HeroPickrateMatrix;
+          const _empty: HeroPickrateMatrix = { players: [], allHeroes: [] };
+          return _empty;
         }
 
         const mapDataIds = mapDataRecords.map((md) => md.id);
@@ -298,7 +299,8 @@ export const make = Effect.gen(function* () {
         wideEvent.outcome = "success";
         wideEvent.player_count = 0;
         yield* Metric.increment(analyticsQuerySuccessTotal);
-        return { players: [], allHeroes: [] } as HeroPickrateMatrix;
+        const _empty: HeroPickrateMatrix = { players: [], allHeroes: [] };
+        return _empty;
       }
 
       const result = buildPlayerHeroData(
@@ -363,7 +365,7 @@ export const make = Effect.gen(function* () {
           players: [],
           maps: [],
           performance: [],
-        } as PlayerMapPerformanceMatrix;
+        } satisfies PlayerMapPerformanceMatrix;
       }
 
       const {
@@ -476,8 +478,7 @@ export const make = Effect.gen(function* () {
         for (const [mapName, data] of mapsData.entries()) {
           uniqueMaps.add(mapName);
           const gamesPlayed = data.wins + data.losses;
-          const winrate =
-            gamesPlayed > 0 ? (data.wins / gamesPlayed) * 100 : 0;
+          const winrate = gamesPlayed > 0 ? (data.wins / gamesPlayed) * 100 : 0;
 
           performance.push({
             playerName,
@@ -515,12 +516,8 @@ export const make = Effect.gen(function* () {
           wideEvent.outcome ??= "interrupted";
           const log =
             wideEvent.outcome === "error"
-              ? Effect.logError(
-                  "team.analytics.getPlayerMapPerformanceMatrix"
-                )
-              : Effect.logInfo(
-                  "team.analytics.getPlayerMapPerformanceMatrix"
-                );
+              ? Effect.logError("team.analytics.getPlayerMapPerformanceMatrix")
+              : Effect.logInfo("team.analytics.getPlayerMapPerformanceMatrix");
           return log.pipe(
             Effect.annotateLogs(wideEvent),
             Effect.andThen(analyticsQueryDuration(Effect.succeed(durationMs)))
@@ -553,7 +550,7 @@ export const make = Effect.gen(function* () {
           teamRoster: [],
           mapDataRecords: [],
           allPlayerStats: [],
-        } as HeroPickrateRawData;
+        } satisfies HeroPickrateRawData;
       }
 
       const scrimWhereClause: Record<string, unknown> = {
@@ -615,7 +612,7 @@ export const make = Effect.gen(function* () {
           teamRoster,
           mapDataRecords: [],
           allPlayerStats: [],
-        } as HeroPickrateRawData;
+        } satisfies HeroPickrateRawData;
       }
 
       const mapDataIds = mapDataRecords.map((md) => md.id);
@@ -683,11 +680,7 @@ export const make = Effect.gen(function* () {
     return `${teamId}:${JSON.stringify(dateRange ?? {})}`;
   }
 
-  function pickrateCacheKeyOf(
-    teamId: number,
-    dateFrom?: Date,
-    dateTo?: Date
-  ) {
+  function pickrateCacheKeyOf(teamId: number, dateFrom?: Date, dateTo?: Date) {
     return `${teamId}:${dateFrom?.toISOString() ?? ""}:${dateTo?.toISOString() ?? ""}`;
   }
 
@@ -740,11 +733,7 @@ export const make = Effect.gen(function* () {
   });
 
   return {
-    getHeroPickrateMatrix: (
-      teamId: number,
-      dateFrom?: Date,
-      dateTo?: Date
-    ) =>
+    getHeroPickrateMatrix: (teamId: number, dateFrom?: Date, dateTo?: Date) =>
       pickrateCache
         .get(pickrateCacheKeyOf(teamId, dateFrom, dateTo))
         .pipe(Effect.tap(() => Metric.increment(teamCacheRequestTotal))),

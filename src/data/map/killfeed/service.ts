@@ -2,7 +2,6 @@ import { EffectObservabilityLive } from "@/instrumentation";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { groupKillsIntoFights, type Fight } from "@/lib/utils";
-import type { Kill } from "@prisma/client";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { MapQueryError } from "../errors";
 import {
@@ -12,17 +11,12 @@ import {
   mapCacheMissTotal,
   mapCacheRequestTotal,
 } from "../metrics";
-import type {
-  FightUltimateData,
-  KillfeedDisplayOptions,
-  KillfeedEvent,
-  UltimateSpan,
-} from "./types";
+import type { FightUltimateData, UltimateSpan } from "./types";
 export {
-  hasAnyUltFeature,
   getEventTime,
-  mergeKillfeedEvents,
+  hasAnyUltFeature,
   isKillDuringUlt,
+  mergeKillfeedEvents,
 } from "./types";
 
 const INSTANT_ULT_THRESHOLD = 1.0;
@@ -128,7 +122,8 @@ export const make: Effect.Effect<KillfeedServiceInterface> = Effect.gen(
           wideEvent.fight_count = 0;
           wideEvent.outcome = "success";
           yield* Metric.increment(killfeedUltSpansQuerySuccessTotal);
-          const _empty: FightUltimateData[] = []; return _empty;
+          const _empty: FightUltimateData[] = [];
+          return _empty;
         }
 
         wideEvent.ult_start_count = ultimateStarts.length;
