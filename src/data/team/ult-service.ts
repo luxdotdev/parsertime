@@ -23,7 +23,10 @@ import {
 } from "effect";
 import { TeamQueryError } from "./errors";
 import type { ExtendedTeamData, TeamDateRange } from "./shared-core";
-import { findTeamNameForMapInMemory } from "./shared-core";
+import {
+  findTeamNameForMapInMemory,
+  parseDateRangeFromCacheKey,
+} from "./shared-core";
 import { teamCacheRequestTotal, teamCacheMissTotal } from "./metrics";
 import {
   TeamSharedDataService,
@@ -756,8 +759,7 @@ export const make = Effect.gen(function* () {
         key.slice(0, key.indexOf(":")),
         key.slice(key.indexOf(":") + 1),
       ];
-      const dateRange = JSON.parse(rest) as TeamDateRange | undefined;
-      const dr = dateRange?.from ? dateRange : undefined;
+      const dr = parseDateRangeFromCacheKey(rest);
       return getTeamUltImpact(Number(teamIdStr), dr).pipe(
         Effect.tap(() => Metric.increment(teamCacheMissTotal))
       );
@@ -772,8 +774,7 @@ export const make = Effect.gen(function* () {
         key.slice(0, key.indexOf(":")),
         key.slice(key.indexOf(":") + 1),
       ];
-      const dateRange = JSON.parse(rest) as TeamDateRange | undefined;
-      const dr = dateRange?.from ? dateRange : undefined;
+      const dr = parseDateRangeFromCacheKey(rest);
       return getTeamUltStats(Number(teamIdStr), dr).pipe(
         Effect.tap(() => Metric.increment(teamCacheMissTotal))
       );

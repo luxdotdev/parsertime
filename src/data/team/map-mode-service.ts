@@ -20,6 +20,7 @@ import {
   buildMatchStartMap,
   buildProgressMaps,
   findTeamNameForMapInMemory,
+  parseDateRangeFromCacheKey,
 } from "./shared-core";
 import {
   TeamSharedDataService,
@@ -366,8 +367,7 @@ export const make = Effect.gen(function* () {
         key.slice(0, key.indexOf(":")),
         key.slice(key.indexOf(":") + 1),
       ];
-      const dateRange = JSON.parse(rest) as TeamDateRange | undefined;
-      const dr = dateRange?.from ? dateRange : undefined;
+      const dr = parseDateRangeFromCacheKey(rest);
       return getMapModePerformance(Number(teamIdStr), dr).pipe(
         Effect.tap(() => Metric.increment(teamCacheMissTotal))
       );

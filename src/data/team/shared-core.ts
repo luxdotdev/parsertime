@@ -57,6 +57,18 @@ export type TeamDateRange = {
   to: Date;
 };
 
+/**
+ * Reconstruct a `TeamDateRange` from a JSON-parsed cache key.
+ * `JSON.parse` turns Date values into strings, so this converts them back.
+ */
+export function parseDateRangeFromCacheKey(
+  raw: string
+): TeamDateRange | undefined {
+  const parsed = JSON.parse(raw) as { from?: string; to?: string } | undefined;
+  if (!parsed?.from || !parsed?.to) return undefined;
+  return { from: new Date(parsed.from), to: new Date(parsed.to) };
+}
+
 export function findTeamNameForMapInMemory(
   mapDataId: number,
   allPlayerStats: {
