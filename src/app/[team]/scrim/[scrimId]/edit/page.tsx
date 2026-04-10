@@ -2,10 +2,10 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import { DangerZone } from "@/components/scrim/danger-zone";
 import { EditScrimForm } from "@/components/scrim/edit-scrim-form";
 import { Link } from "@/components/ui/link";
-import { getScoutingTeams } from "@/data/scouting-dto";
 import { ScrimService } from "@/data/scrim";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
+import { ScoutingService } from "@/data/scouting";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { scoutingTool } from "@/lib/flags";
@@ -37,7 +37,9 @@ export default async function EditScrimPage(
           )
         )
       ),
-      getScoutingTeams(),
+      AppRuntime.runPromise(
+        ScoutingService.pipe(Effect.flatMap((svc) => svc.getScoutingTeams()))
+      ),
       scoutingTool(),
     ]
   );

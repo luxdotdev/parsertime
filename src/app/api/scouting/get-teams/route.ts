@@ -1,4 +1,6 @@
-import { getScoutingTeams } from "@/data/scouting-dto";
+import { AppRuntime } from "@/data/runtime";
+import { ScoutingService } from "@/data/scouting";
+import { Effect } from "effect";
 import { auth } from "@/lib/auth";
 import { unauthorized } from "next/navigation";
 import { NextResponse } from "next/server";
@@ -14,7 +16,9 @@ export async function GET() {
     unauthorized();
   }
 
-  const scoutingTeams = await getScoutingTeams();
+  const scoutingTeams = await AppRuntime.runPromise(
+    ScoutingService.pipe(Effect.flatMap((svc) => svc.getScoutingTeams()))
+  );
 
   const teams = scoutingTeams.map((t) => ({
     abbreviation: t.abbreviation,

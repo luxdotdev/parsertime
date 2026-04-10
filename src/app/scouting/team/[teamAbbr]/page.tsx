@@ -10,12 +10,10 @@ import { TeamOverviewEnhanced } from "@/components/scouting/team-overview-enhanc
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getHeroBanIntelligence } from "@/data/hero-ban-intelligence-dto";
 import { getMapIntelligence } from "@/data/map-intelligence-dto";
-import {
-  getTeamStrengthRating,
-  getTeamStrengthPercentile,
-} from "@/data/opponent-strength-dto";
 import { getPlayerIntelligence } from "@/data/player-intelligence-dto";
-import { getScoutingTeamProfile } from "@/data/scouting-dto";
+import { AppRuntime } from "@/data/runtime";
+import { OpponentStrengthService, ScoutingService } from "@/data/scouting";
+import { Effect } from "effect";
 import { auth } from "@/lib/auth";
 import { resolveDataAvailability } from "@/lib/data-availability";
 import { scoutingTool } from "@/lib/flags";
@@ -86,7 +84,11 @@ export default async function ScoutingTeamPage(
   const teamAbbr = decodeURIComponent(params.teamAbbr);
   const t = await getTranslations("scoutingPage.team");
 
-  const profile = await getScoutingTeamProfile(teamAbbr);
+  const profile = await AppRuntime.runPromise(
+    ScoutingService.pipe(
+      Effect.flatMap((svc) => svc.getScoutingTeamProfile(teamAbbr))
+    )
+  );
   if (!profile) notFound();
 
   const { overview } = profile;
@@ -95,10 +97,21 @@ export default async function ScoutingTeamPage(
   const userTeamId = resolveScoutForTeamId(searchParams.scoutFor, userTeams);
   const hasUserTeamLink = userTeamId !== null;
 
-  const [strengthRating, strengthPercentile, dataAvailability] =
+  const [{ strengthRating, strengthPercentile }, dataAvailability] =
     await Promise.all([
-      getTeamStrengthRating(teamAbbr),
-      getTeamStrengthPercentile(teamAbbr),
+      AppRuntime.runPromise(
+        Effect.all(
+          {
+            strengthRating: OpponentStrengthService.pipe(
+              Effect.flatMap((svc) => svc.getTeamStrengthRating(teamAbbr))
+            ),
+            strengthPercentile: OpponentStrengthService.pipe(
+              Effect.flatMap((svc) => svc.getTeamStrengthPercentile(teamAbbr))
+            ),
+          },
+          { concurrency: "unbounded" }
+        )
+      ),
       resolveDataAvailability(teamAbbr, userTeamId),
     ]);
 

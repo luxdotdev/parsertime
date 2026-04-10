@@ -1,6 +1,6 @@
 import type { HeroBanIntelligence } from "@/data/hero-ban-intelligence-dto";
 import type { MapIntelligence } from "@/data/map-intelligence-dto";
-import type { TeamStrengthRating } from "@/data/opponent-strength-dto";
+import type { TeamStrengthRating } from "@/data/scouting";
 import type { PlayerIntelligence } from "@/data/player-intelligence-dto";
 import {
   assessConfidence,
