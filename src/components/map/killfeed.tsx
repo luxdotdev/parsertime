@@ -58,7 +58,7 @@ export async function Killfeed({
     ? serializeCalibrationData(
         await AppRuntime.runPromise(
           KillfeedCalibrationService.pipe(
-            Effect.flatMap((svc) => svc.getKillfeedCalibration(id))
+            Effect.flatMap((svc) => svc.getKillfeedCalibration(mapDataId))
           )
         )
       )
@@ -243,7 +243,7 @@ export async function Killfeed({
           team2Color={team2Color}
           calibrationData={calibrationData}
           canvasImportEnabled={canvasEnabled && positionalEnabled}
-          mapDataId={id}
+          mapDataId={mapDataId}
         />
       </div>
     </>
