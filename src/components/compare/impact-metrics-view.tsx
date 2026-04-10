@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import type { ComparisonStats, TrendsAnalysis } from "@/data/comparison-dto";
+import type { ComparisonStats, TrendsAnalysis } from "@/data/comparison/types";
 import {
   Award,
   Crosshair,

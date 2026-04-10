@@ -1,4 +1,6 @@
-import { getTeamWinrates } from "@/data/team-stats-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { TeamStatsService } from "@/data/team";
 import {
   authenticateBotSecret,
   resolveDiscordUser,
@@ -90,7 +92,11 @@ export async function GET(request: NextRequest) {
           _count: { select: { users: true } },
         },
       }),
-      getTeamWinrates(teamId),
+      AppRuntime.runPromise(
+        TeamStatsService.pipe(
+          Effect.flatMap((svc) => svc.getTeamWinrates(teamId))
+        )
+      ),
     ]);
 
     if (!team) {

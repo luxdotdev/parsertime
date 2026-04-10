@@ -1,3 +1,5 @@
+import "server-only";
+
 import type { CreateScrimRequestData } from "@/app/api/scrim/create-scrim/route";
 import { calculateStats } from "@/lib/calculate-stats";
 import { headers } from "@/lib/headers";

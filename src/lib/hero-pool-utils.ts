@@ -7,7 +7,7 @@ import type {
   HeroPoolRawData,
   HeroSpecialist,
   HeroWinrate,
-} from "@/data/team-hero-pool-dto";
+} from "@/data/team/types";
 import type { HeroName } from "@/types/heroes";
 
 function findTeamNameForMapInMemory(

@@ -1,4 +1,6 @@
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
@@ -16,7 +18,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     unauthorized();
   }
 
-  const authedUser = await getUser(session.user.email);
+  const authedUser = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+  );
 
   if (!authedUser) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });

@@ -1,4 +1,6 @@
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auditLog } from "@/lib/audit-logs";
 import { auth, getImpersonateUrl } from "@/lib/auth";
 import { $Enums } from "@prisma/client";
@@ -15,7 +17,9 @@ export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session?.user) unauthorized();
 
-  const user = await getUser(session.user.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+  );
 
   if (!user) unauthorized();
   if (user.role !== $Enums.UserRole.ADMIN) unauthorized();

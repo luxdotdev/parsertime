@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { HeroPickrateMatrix } from "@/data/team-analytics-dto";
+import type { HeroPickrateMatrix } from "@/data/team/types";
 import { cn, toHero, toTimestampWithHours, useHeroNames } from "@/lib/utils";
 import { heroPriority, heroRoleMapping } from "@/types/heroes";
 import { useTranslations } from "next-intl";

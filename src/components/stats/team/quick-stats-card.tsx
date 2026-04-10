@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { QuickWinsStats } from "@/data/team-quick-wins-dto";
+import type { QuickWinsStats } from "@/data/team/types";
 import { cn } from "@/lib/utils";
 import { CalendarCheck, Clock, Trophy } from "lucide-react";
 import { useTranslations } from "next-intl";

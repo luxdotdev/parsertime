@@ -13,13 +13,14 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { SerializedCalibrationData } from "@/data/killfeed-calibration-dto";
-import type {
-  KillfeedDisplayOptions,
-  KillfeedEvent,
-  UltimateSpan,
-} from "@/data/killfeed-dto";
-import { getEventTime, isKillDuringUlt } from "@/data/killfeed-dto";
+import {
+  getEventTime,
+  isKillDuringUlt,
+  type KillfeedDisplayOptions,
+  type KillfeedEvent,
+  type SerializedCalibrationData,
+  type UltimateSpan,
+} from "@/data/map/killfeed/types";
 import { useGoToReplay } from "@/components/map/map-tabs";
 import { cn, toHero, toKebabCase, toTimestamp } from "@/lib/utils";
 import type { Kill, RoundEnd } from "@prisma/client";

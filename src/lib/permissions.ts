@@ -1,7 +1,9 @@
-import { getUser } from "@/data/user-dto";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { $Enums, type User } from "@prisma/client";
 import { get } from "@vercel/edge-config";
+import { Effect } from "effect";
 
 const FEATURES = [
   "create-team",
@@ -69,7 +71,9 @@ export class Permission {
       return { user: null, isAuthed: false };
     }
 
-    const user = await getUser(session.user.email);
+    const user = await AppRuntime.runPromise(
+      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+    );
     if (!user) {
       return { user: null, isAuthed: false };
     }

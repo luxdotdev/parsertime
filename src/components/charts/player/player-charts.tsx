@@ -6,7 +6,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getPlayerFinalStats } from "@/data/scrim-dto";
+import { ScrimService } from "@/data/scrim";
+import { AppRuntime } from "@/data/runtime";
+import { Effect } from "effect";
 import {
   type NonMappableStat,
   type Stat,
@@ -69,7 +71,11 @@ export async function PlayerCharts({ id, playerName }: Props) {
   const playerTeam =
     playerTeamName?.player_team === team1Name ? "Team1" : "Team2";
 
-  const finalStats = await getPlayerFinalStats(id, playerName);
+  const finalStats = await AppRuntime.runPromise(
+    ScrimService.pipe(
+      Effect.flatMap((svc) => svc.getFinalRoundStatsForPlayer(id, playerName))
+    )
+  );
 
   const mostPlayedHero = finalStats.find(
     (stat) =>

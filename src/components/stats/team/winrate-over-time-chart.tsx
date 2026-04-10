@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { WinrateDataPoint } from "@/data/team-performance-trends-dto";
+import type { WinrateDataPoint } from "@/data/team/types";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import {

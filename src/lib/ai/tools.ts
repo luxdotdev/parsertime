@@ -1,22 +1,18 @@
-import { getComparisonStats } from "@/data/comparison-dto";
-import { getMapIntelligence } from "@/data/map-intelligence-dto";
-import { getPlayerIntelligence } from "@/data/player-intelligence-dto";
+import { ComparisonAggregationService } from "@/data/comparison";
+import { MapIntelligenceService } from "@/data/intelligence";
+import { IntelligenceService } from "@/data/player";
+import { AppRuntime } from "@/data/runtime";
+import { ScrimAbilityTimingService, ScrimOverviewService } from "@/data/scrim";
 import {
-  getScrimAbilityTiming,
-  getScrimFightTimelines,
-} from "@/data/scrim-ability-timing-dto";
-import { getScrimOverview } from "@/data/scrim-overview-dto";
-import { getTeamAbilityImpact } from "@/data/team-ability-impact-dto";
-import { getTeamFightStats } from "@/data/team-fight-stats-dto";
-import { getHeroPoolAnalysis } from "@/data/team-hero-pool-dto";
-import {
-  getRecentForm,
-  getStreakInfo,
-  getWinrateOverTime,
-} from "@/data/team-performance-trends-dto";
-import { getRolePerformanceStats } from "@/data/team-role-stats-dto";
-import { getTeamRoster } from "@/data/team-shared-data";
-import { getTeamWinrates } from "@/data/team-stats-dto";
+  TeamAbilityImpactService,
+  TeamFightStatsService,
+  TeamHeroPoolService,
+  TeamRoleStatsService,
+  TeamSharedDataService,
+  TeamStatsService,
+  TeamTrendsService,
+} from "@/data/team";
+import { Effect } from "effect";
 import prisma from "@/lib/prisma";
 import type { HeroName } from "@/types/heroes";
 import { allHeroes } from "@/types/heroes";
@@ -46,7 +42,11 @@ async function computeOpponentStats(scrimId: number, teamId: number) {
   const mapDataIds = scrim.maps.flatMap((m) => m.mapData.map((md) => md.id));
   if (mapDataIds.length === 0) return { error: "No map data found." };
 
-  const roster = await getTeamRoster(teamId);
+  const roster = await AppRuntime.runPromise(
+    TeamSharedDataService.pipe(
+      Effect.flatMap((svc) => svc.getTeamRoster(teamId))
+    )
+  );
   const rosterSet = new Set(roster);
 
   const allStats = await prisma.playerStat.findMany({
@@ -266,7 +266,11 @@ export function buildTools(opts: {
         if (!scrim) {
           return { error: `Scrim ${scrimId} not found for team ${teamId}.` };
         }
-        const data = await getScrimOverview(scrimId, teamId);
+        const data = await AppRuntime.runPromise(
+          ScrimOverviewService.pipe(
+            Effect.flatMap((svc) => svc.getScrimOverview(scrimId, teamId))
+          )
+        );
         return formatScrimOverview(data);
       },
     }),
@@ -297,7 +301,11 @@ export function buildTools(opts: {
           scrimIds
             .filter((id) => validIds.has(id))
             .map(async (scrimId) => {
-              const data = await getScrimOverview(scrimId, teamId);
+              const data = await AppRuntime.runPromise(
+                ScrimOverviewService.pipe(
+                  Effect.flatMap((svc) => svc.getScrimOverview(scrimId, teamId))
+                )
+              );
               return { scrimId, ...formatScrimOverview(data) };
             })
         );
@@ -381,10 +389,16 @@ export function buildTools(opts: {
         if (!hasAccess) {
           return { error: "You don't have access to the requested maps." };
         }
-        const data = await getComparisonStats(
-          mapIds,
-          playerName,
-          heroes as HeroName[] | undefined
+        const data = await AppRuntime.runPromise(
+          ComparisonAggregationService.pipe(
+            Effect.flatMap((svc) =>
+              svc.getComparisonStats(
+                mapIds,
+                playerName,
+                heroes as HeroName[] | undefined
+              )
+            )
+          )
         );
         return {
           playerName: data.playerName,
@@ -405,7 +419,11 @@ export function buildTools(opts: {
       }),
       execute: async ({ teamId }) => {
         assertTeamAccess(teamId);
-        const data = await getTeamWinrates(teamId);
+        const data = await AppRuntime.runPromise(
+          TeamStatsService.pipe(
+            Effect.flatMap((svc) => svc.getTeamWinrates(teamId))
+          )
+        );
         return formatTeamWinrates(data);
       },
     }),
@@ -420,11 +438,18 @@ export function buildTools(opts: {
       }),
       execute: async ({ teamId }) => {
         assertTeamAccess(teamId);
-        const [winrateOverTime, recentForm, streakInfo] = await Promise.all([
-          getWinrateOverTime(teamId),
-          getRecentForm(teamId),
-          getStreakInfo(teamId),
-        ]);
+        const [winrateOverTime, recentForm, streakInfo] =
+          await AppRuntime.runPromise(
+            TeamTrendsService.pipe(
+              Effect.flatMap((svc) =>
+                Effect.all([
+                  svc.getWinrateOverTime(teamId),
+                  svc.getRecentForm(teamId),
+                  svc.getStreakInfo(teamId),
+                ])
+              )
+            )
+          );
         return {
           winrateOverTime: winrateOverTime.map((dp) => ({
             period: dp.period,
@@ -463,7 +488,11 @@ export function buildTools(opts: {
       }),
       execute: async ({ teamId }) => {
         assertTeamAccess(teamId);
-        const data = await getTeamFightStats(teamId);
+        const data = await AppRuntime.runPromise(
+          TeamFightStatsService.pipe(
+            Effect.flatMap((svc) => svc.getTeamFightStats(teamId))
+          )
+        );
         return data;
       },
     }),
@@ -476,7 +505,11 @@ export function buildTools(opts: {
       }),
       execute: async ({ teamId }) => {
         assertTeamAccess(teamId);
-        const data = await getHeroPoolAnalysis(teamId);
+        const data = await AppRuntime.runPromise(
+          TeamHeroPoolService.pipe(
+            Effect.flatMap((svc) => svc.getHeroPoolAnalysis(teamId))
+          )
+        );
         return data;
       },
     }),
@@ -489,7 +522,11 @@ export function buildTools(opts: {
       }),
       execute: async ({ teamId }) => {
         assertTeamAccess(teamId);
-        const data = await getRolePerformanceStats(teamId);
+        const data = await AppRuntime.runPromise(
+          TeamRoleStatsService.pipe(
+            Effect.flatMap((svc) => svc.getRolePerformanceStats(teamId))
+          )
+        );
         return data;
       },
     }),
@@ -508,7 +545,13 @@ export function buildTools(opts: {
       }),
       execute: async ({ teamId, opponentAbbr }) => {
         assertTeamAccess(teamId);
-        const data = await getPlayerIntelligence(teamId, opponentAbbr);
+        const data = await AppRuntime.runPromise(
+          IntelligenceService.pipe(
+            Effect.flatMap((svc) =>
+              svc.getPlayerIntelligence(teamId, opponentAbbr)
+            )
+          )
+        );
         return data;
       },
     }),
@@ -529,7 +572,13 @@ export function buildTools(opts: {
       }),
       execute: async ({ opponentAbbr, teamId }) => {
         if (teamId) assertTeamAccess(teamId);
-        const data = await getMapIntelligence(opponentAbbr, teamId);
+        const data = await AppRuntime.runPromise(
+          MapIntelligenceService.pipe(
+            Effect.flatMap((svc) =>
+              svc.getMapIntelligence(opponentAbbr, teamId)
+            )
+          )
+        );
         return data;
       },
     }),
@@ -552,7 +601,11 @@ export function buildTools(opts: {
         });
         if (!scrim) return { error: `Scrim ${scrimId} not found.` };
 
-        const data = await getScrimAbilityTiming(scrimId, teamId);
+        const data = await AppRuntime.runPromise(
+          ScrimAbilityTimingService.pipe(
+            Effect.flatMap((svc) => svc.getScrimAbilityTiming(scrimId, teamId))
+          )
+        );
 
         if (data.rows.length === 0) {
           return {
@@ -611,7 +664,11 @@ export function buildTools(opts: {
       }),
       execute: async ({ teamId, heroes }) => {
         assertTeamAccess(teamId);
-        const data = await getTeamAbilityImpact(teamId);
+        const data = await AppRuntime.runPromise(
+          TeamAbilityImpactService.pipe(
+            Effect.flatMap((svc) => svc.getTeamAbilityImpact(teamId))
+          )
+        );
 
         if (!data || Object.keys(data.byHero).length === 0) {
           return { error: "No ability impact data available for this team." };
@@ -722,7 +779,11 @@ export function buildTools(opts: {
         });
         if (!scrim) return { error: `Scrim ${scrimId} not found.` };
 
-        const data = await getScrimFightTimelines(scrimId, teamId);
+        const data = await AppRuntime.runPromise(
+          ScrimAbilityTimingService.pipe(
+            Effect.flatMap((svc) => svc.getScrimFightTimelines(scrimId, teamId))
+          )
+        );
 
         if (data.fights.length === 0) {
           return {

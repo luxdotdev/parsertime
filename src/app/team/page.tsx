@@ -2,7 +2,9 @@ import { EmptyTeamView } from "@/components/team/empty-team-view";
 import { Card, CardFooter, CardHeader } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
@@ -43,7 +45,9 @@ export default async function TeamPage() {
 
   const session = await auth();
 
-  const userData = await getUser(session?.user?.email);
+  const userData = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
 
   const userTeams = await prisma.team.findMany({
     where: { users: { some: { id: userData?.id } } },

@@ -7,7 +7,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import type { TournamentRecord } from "@/data/player-scouting-dto";
+import type { TournamentRecord } from "@/data/player/types";
 import { cn, toHero } from "@/lib/utils";
 import { ChevronDown, Info } from "lucide-react";
 import { useTranslations } from "next-intl";

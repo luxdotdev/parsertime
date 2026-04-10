@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { ScoutingHeroPerformance } from "@/data/player-scouting-analytics-dto";
+import type { ScoutingHeroPerformance } from "@/data/player/types";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";

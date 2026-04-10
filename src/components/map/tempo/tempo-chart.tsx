@@ -14,7 +14,7 @@ import type {
   KillPin,
   TempoDataPoint,
   UltPin,
-} from "@/data/tempo-dto";
+} from "@/data/map/types";
 import { toTimestamp } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";

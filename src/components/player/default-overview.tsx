@@ -7,7 +7,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CardIcon } from "@/components/ui/card-icon";
-import { getPlayerFinalStats } from "@/data/scrim-dto";
+import { ScrimService } from "@/data/scrim";
+import { AppRuntime } from "@/data/runtime";
+import { Effect } from "effect";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import {
@@ -34,7 +36,13 @@ export async function DefaultOverview({
       where: { MapDataId: mapDataId },
       orderBy: { round_number: "desc" },
     }),
-    getPlayerFinalStats(id, playerNameDecoded),
+    AppRuntime.runPromise(
+      ScrimService.pipe(
+        Effect.flatMap((svc) =>
+          svc.getFinalRoundStatsForPlayer(id, playerNameDecoded)
+        )
+      )
+    ),
     groupKillsIntoFights(id),
   ]);
 

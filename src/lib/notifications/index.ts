@@ -43,10 +43,9 @@ export type Service = {
   ): Effect.Effect<void, DatabaseError | NotFoundError | UnauthorizedError>;
 };
 
-export class NotificationService extends Context.Tag("NotificationService")<
-  NotificationService,
-  Service
->() {}
+export class NotificationService extends Context.Tag(
+  "@app/notifications/NotificationService"
+)<NotificationService, Service>() {}
 
 // Service implementation
 function createService(config: { prisma: typeof prisma }) {
@@ -250,8 +249,8 @@ function createService(config: { prisma: typeof prisma }) {
         ),
 
       markAllAsRead: (userId: string) =>
-        Effect.gen(function* () {
-          yield* Effect.tryPromise({
+        Effect.asVoid(
+          Effect.tryPromise({
             try: () =>
               prisma.notification.updateMany({
                 where: { userId, read: false },
@@ -266,8 +265,8 @@ function createService(config: { prisma: typeof prisma }) {
             Effect.withSpan("notification.update-all-read", {
               attributes: { userId },
             })
-          );
-        }).pipe(
+          )
+        ).pipe(
           Effect.withSpan("notification.markAllAsRead", {
             attributes: { userId },
           })

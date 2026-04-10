@@ -1,4 +1,6 @@
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import { notifications } from "@/lib/notifications";
@@ -18,7 +20,9 @@ export async function GET(request: NextRequest) {
   const session = await auth();
   if (!session) unauthorized();
 
-  const user = await getUser(session.user.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+  );
   if (!user) unauthorized();
 
   const searchParams = request.nextUrl.searchParams;
@@ -73,7 +77,11 @@ export async function POST(request: NextRequest) {
 
     if (body.data.userId) {
       // Explicit user ID provided - verify session user has permission
-      const sessionUser = await getUser(session.user.email);
+      const sessionUser = await AppRuntime.runPromise(
+        UserService.pipe(
+          Effect.flatMap((svc) => svc.getUser(session.user.email))
+        )
+      );
       if (!sessionUser) unauthorized();
 
       // For now, allow any authenticated user to create notifications for any user
@@ -81,7 +89,11 @@ export async function POST(request: NextRequest) {
       targetUserId = body.data.userId;
     } else {
       // Fallback to session user (backward compatibility)
-      const sessionUser = await getUser(session.user.email);
+      const sessionUser = await AppRuntime.runPromise(
+        UserService.pipe(
+          Effect.flatMap((svc) => svc.getUser(session.user.email))
+        )
+      );
       if (!sessionUser) unauthorized();
       targetUserId = sessionUser.id;
     }
@@ -129,7 +141,9 @@ export async function DELETE(request: NextRequest) {
   const session = await auth();
   if (!session) unauthorized();
 
-  const user = await getUser(session.user.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+  );
   if (!user) unauthorized();
 
   const searchParams = request.nextUrl.searchParams;

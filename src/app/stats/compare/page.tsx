@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { Winrate } from "@/data/scrim-dto";
+import type { Winrate } from "@/data/scrim";
 import type { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";

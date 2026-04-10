@@ -6,11 +6,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getUltimateSpans } from "@/data/killfeed-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
 import {
-  getKillfeedCalibration,
+  KillfeedService,
+  KillfeedCalibrationService,
   serializeCalibrationData,
-} from "@/data/killfeed-calibration-dto";
+} from "@/data/map";
 import { coachingCanvas, positionalData } from "@/lib/flags";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
@@ -45,13 +47,21 @@ export async function Killfeed({
     }),
     prisma.matchStart.findFirst({ where: { MapDataId: mapDataId } }),
     groupKillsIntoFights(id),
-    getUltimateSpans(id),
+    AppRuntime.runPromise(
+      KillfeedService.pipe(Effect.flatMap((svc) => svc.getUltimateSpans(id)))
+    ),
     positionalData(),
     coachingCanvas(),
   ]);
 
   const calibrationData = positionalEnabled
-    ? serializeCalibrationData(await getKillfeedCalibration(id))
+    ? serializeCalibrationData(
+        await AppRuntime.runPromise(
+          KillfeedCalibrationService.pipe(
+            Effect.flatMap((svc) => svc.getKillfeedCalibration(id))
+          )
+        )
+      )
     : null;
 
   const roundEnds = removeDuplicateRows(roundEndRows);

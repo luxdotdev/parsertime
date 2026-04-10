@@ -3,7 +3,7 @@
 import { StatTrendChart } from "@/components/targets/stat-trend-chart";
 import { TargetNarrative } from "@/components/targets/target-narrative";
 import { TargetProgressCard } from "@/components/targets/target-progress-card";
-import type { ScrimStatPoint, TargetProgress } from "@/data/targets-dto";
+import type { ScrimStatPoint, TargetProgress } from "@/data/player/types";
 import { getStatsForRole, type RoleName } from "@/lib/target-stats";
 
 type Props = {

@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { PlayerMapPerformanceMatrix } from "@/data/team-analytics-dto";
+import type { PlayerMapPerformanceMatrix } from "@/data/team/types";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

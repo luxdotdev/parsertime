@@ -1,6 +1,6 @@
 "use client";
 
-import type { HeatmapSubMap } from "@/data/heatmap-dto";
+import type { HeatmapSubMap } from "@/data/map/heatmap/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HeatmapCanvas } from "./heatmap-canvas";
 

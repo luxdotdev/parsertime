@@ -1,6 +1,6 @@
 "use client";
 
-import type { SerializedCalibrationData } from "@/data/killfeed-calibration-dto";
+import type { SerializedCalibrationData } from "@/data/map/killfeed/types";
 import { getControlSubMapName } from "@/lib/map-calibration/control-map-index";
 import type { LoadedCalibration } from "@/lib/map-calibration/load-calibration";
 import { worldToImage } from "@/lib/map-calibration/world-to-image";

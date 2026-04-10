@@ -14,7 +14,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import type { ScoutingMapAnalysis } from "@/data/scouting-dto";
+import type { ScoutingMapAnalysis } from "@/data/scouting/types";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";

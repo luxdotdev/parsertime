@@ -1,4 +1,6 @@
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
@@ -10,7 +12,9 @@ export async function GET(req: NextRequest) {
   const session = await auth();
   if (!session) unauthorized();
 
-  const user = await getUser(session.user.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+  );
   if (!user) unauthorized();
   if (user.role !== $Enums.UserRole.ADMIN) forbidden();
 

@@ -1,6 +1,6 @@
 "use client";
 
-import type { HeatmapSubMap, KillPoint } from "@/data/heatmap-dto";
+import type { HeatmapSubMap, KillPoint } from "@/data/map/heatmap/types";
 import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import { toHero, toTimestamp } from "@/lib/utils";
 import Image from "next/image";

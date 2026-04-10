@@ -9,12 +9,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { TeamStrengthRating } from "@/data/opponent-strength-dto";
 import type {
   MatchResult,
   ScoutingMatchHistoryEntry,
   ScoutingTeamOverview,
-} from "@/data/scouting-dto";
+  TeamStrengthRating,
+} from "@/data/scouting/types";
 import { assessConfidence } from "@/lib/confidence";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";

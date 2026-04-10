@@ -7,7 +7,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import type { RoleTrio } from "@/data/team-role-stats-dto";
+import type { RoleTrio } from "@/data/team/types";
 import { cn } from "@/lib/utils";
 import {
   ChevronDown,

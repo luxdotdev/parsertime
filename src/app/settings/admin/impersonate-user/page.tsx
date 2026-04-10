@@ -1,7 +1,9 @@
 import { ImpersonateUserForm } from "@/components/admin/impersonate-user";
 import { NoAuthCard } from "@/components/auth/no-auth";
 import { Separator } from "@/components/ui/separator";
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { $Enums } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
@@ -15,7 +17,9 @@ export default async function AdminSettingsPage() {
     redirect("/sign-in");
   }
 
-  const user = await getUser(session.user.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+  );
 
   if (!user) {
     redirect("/sign-up");

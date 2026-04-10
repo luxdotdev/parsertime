@@ -1,7 +1,9 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { SidebarNav } from "@/components/settings/sidebar-nav";
 import { Separator } from "@/components/ui/separator";
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { $Enums } from "@prisma/client";
 import type { Metadata, Route } from "next";
@@ -75,7 +77,9 @@ export default async function SettingsLayout({
 
   const session = await auth();
 
-  const user = await getUser(session?.user?.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
 
   const isAdmin = user?.role === $Enums.UserRole.ADMIN;
 

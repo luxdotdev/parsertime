@@ -1,5 +1,7 @@
-import { createMapGroup } from "@/data/map-group-dto";
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
+import { MapGroupService } from "@/data/map";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
@@ -32,7 +34,9 @@ export async function GET(request: NextRequest) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const user = await getUser(session.user.email);
+    const user = await AppRuntime.runPromise(
+      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+    );
     if (!user) {
       wideEvent.status_code = 404;
       wideEvent.outcome = "user_not_found";
@@ -144,7 +148,9 @@ export async function POST(request: NextRequest) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const user = await getUser(session.user.email);
+    const user = await AppRuntime.runPromise(
+      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+    );
     if (!user) {
       wideEvent.status_code = 404;
       wideEvent.outcome = "user_not_found";
@@ -222,14 +228,20 @@ export async function POST(request: NextRequest) {
       category,
     };
 
-    const group = await createMapGroup({
-      name,
-      description,
-      teamId,
-      mapIds,
-      category,
-      createdBy: user.id,
-    });
+    const group = await AppRuntime.runPromise(
+      MapGroupService.pipe(
+        Effect.flatMap((svc) =>
+          svc.createMapGroup({
+            name,
+            description,
+            teamId,
+            mapIds,
+            category,
+            createdBy: user.id,
+          })
+        )
+      )
+    );
 
     const groupWithCreator = await prisma.mapGroup.findUnique({
       where: { id: group.id },

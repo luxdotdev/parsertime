@@ -5,7 +5,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { UltimateSpan } from "@/data/killfeed-dto";
+import type { UltimateSpan } from "@/data/map/killfeed/types";
 import { toHero, toTimestamp } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import Image from "next/image";

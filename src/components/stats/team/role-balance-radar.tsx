@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type {
   RoleBalanceAnalysis,
   RolePerformanceStats,
-} from "@/data/team-role-stats-dto";
+} from "@/data/team/types";
 import { round } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import {

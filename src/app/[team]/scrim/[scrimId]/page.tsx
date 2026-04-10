@@ -13,8 +13,10 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { getScrim } from "@/data/scrim-dto";
-import { getUser } from "@/data/user-dto";
+import { ScrimService } from "@/data/scrim";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { mapComparison, overviewCard } from "@/lib/flags";
 import prisma from "@/lib/prisma";
@@ -76,7 +78,9 @@ export default async function ScrimDashboardPage(
   const session = await auth();
   const t = await getTranslations("scrimPage");
 
-  const scrim = await getScrim(id);
+  const scrim = await AppRuntime.runPromise(
+    ScrimService.pipe(Effect.flatMap((svc) => svc.getScrim(id)))
+  );
   if (!scrim) notFound();
 
   const teamId = scrim.teamId;
@@ -89,7 +93,9 @@ export default async function ScrimDashboardPage(
     })
   ).sort((a, b) => a.id - b.id);
 
-  const user = await getUser(session?.user?.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
 
   const isManager = teamId
     ? (await prisma.teamManager.findFirst({

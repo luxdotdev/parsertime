@@ -1,4 +1,4 @@
-import type { ScrimOverviewData } from "@/data/scrim-overview-dto";
+import type { ScrimOverviewData } from "@/data/scrim/types";
 
 function round(value: number, decimals = 1): number {
   const factor = 10 ** decimals;

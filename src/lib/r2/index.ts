@@ -17,7 +17,6 @@ import {
   Schedule,
 } from "effect";
 import {
-  ConfigurationError,
   DeleteError,
   DownloadError,
   PresignError,
@@ -226,12 +225,10 @@ export const make: Effect.Effect<R2ServiceInterface, never, R2ConfigService> =
           );
 
           if (!response.Body) {
-            return yield* Effect.fail(
-              new DownloadError({
-                key,
-                cause: new Error("Empty response body"),
-              })
-            );
+            return yield* new DownloadError({
+              key,
+              cause: new Error("Empty response body"),
+            });
           }
 
           const bytes = yield* Effect.tryPromise({

@@ -1,5 +1,7 @@
 import { ChatInterface } from "@/components/chat/chat-interface";
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import type { UIMessage } from "ai";
@@ -14,7 +16,9 @@ export default async function ConversationPage({
   const session = await auth();
   if (!session?.user?.email) notFound();
 
-  const userData = await getUser(session.user.email);
+  const userData = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+  );
   if (!userData) notFound();
 
   const conversation = await prisma.chatConversation.findFirst({

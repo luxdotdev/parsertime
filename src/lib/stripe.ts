@@ -1,7 +1,9 @@
-import { getUser } from "@/data/user-dto";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import type { BillingPlans } from "@/types/billing-plans";
 import type { User } from "@prisma/client";
 import { get } from "@vercel/edge-config";
+import { Effect } from "effect";
 import type { Session } from "next-auth";
 import Stripe from "stripe";
 
@@ -25,7 +27,9 @@ export async function createCheckout(
     throw new Error("Unauthorized");
   }
 
-  const user = await getUser(session.user.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+  );
 
   if (!user) {
     throw new Error("Unauthorized");

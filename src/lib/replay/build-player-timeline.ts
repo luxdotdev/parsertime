@@ -2,7 +2,7 @@ import type {
   DisplayEvent,
   KillDisplayEvent,
   PositionSample,
-} from "@/data/replay-dto";
+} from "@/data/map/replay/types";
 
 export type PlayerTimeline = {
   playerName: string;

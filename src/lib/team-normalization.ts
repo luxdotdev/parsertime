@@ -1,14 +1,20 @@
 import "server-only";
 
-import { getTeamRoster } from "@/data/team-shared-data";
+import { AppRuntime } from "@/data/runtime";
+import { TeamSharedDataService } from "@/data/team";
 import { normalizeTeamData } from "@/lib/parser";
 import type { ParserData } from "@/types/parser";
+import { Effect } from "effect";
 
 export async function detectUserTeamSide(
   teamId: number,
   parsedData: ParserData
 ): Promise<boolean> {
-  const roster = await getTeamRoster(teamId);
+  const roster = await AppRuntime.runPromise(
+    TeamSharedDataService.pipe(
+      Effect.flatMap((svc) => svc.getTeamRoster(teamId))
+    )
+  );
   if (roster.length === 0) return false;
 
   const rosterSet = new Set(roster);

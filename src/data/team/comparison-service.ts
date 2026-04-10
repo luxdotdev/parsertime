@@ -1,0 +1,700 @@
+import prisma from "@/lib/prisma";
+import { calculateWinner } from "@/lib/winrate";
+import type { HeroName } from "@/types/heroes";
+import type {
+  TeamComparisonStats,
+  TeamMapBreakdown,
+} from "@/types/team-comparison";
+import type { CalculatedStat, MapType, PlayerStat } from "@prisma/client";
+import { CalculatedStatType } from "@prisma/client";
+import {
+  Cache,
+  Context,
+  Duration,
+  Effect,
+  Layer,
+  Metric,
+  MetricBoundaries,
+} from "effect";
+
+import type { AggregatedStats } from "@/data/comparison/types";
+
+import { TeamQueryError } from "./errors";
+import { teamCacheRequestTotal, teamCacheMissTotal } from "./metrics";
+import { findTeamNameForMapInMemory } from "./shared-core";
+import {
+  TeamSharedDataService,
+  TeamSharedDataServiceLive,
+} from "./shared-data-service";
+
+const comparisonQuerySuccessTotal = Metric.counter(
+  "team.comparison.query.success",
+  { description: "Total successful team comparison queries", incremental: true }
+);
+const comparisonQueryErrorTotal = Metric.counter(
+  "team.comparison.query.error",
+  { description: "Total team comparison query failures", incremental: true }
+);
+const comparisonQueryDuration = Metric.histogram(
+  "team.comparison.query.duration_ms",
+  MetricBoundaries.exponential({ start: 10, factor: 2, count: 10 }),
+  "Distribution of team comparison query duration in milliseconds"
+);
+
+function calculatePer10(value: number, timePlayed: number): number {
+  if (timePlayed === 0) return 0;
+  return (value / timePlayed) * 600;
+}
+
+function calculatePercentage(value: number, total: number): number {
+  if (total === 0) return 0;
+  return (value / total) * 100;
+}
+
+function aggregateCalculatedStatsForTeam(
+  stats: CalculatedStat[]
+): Partial<AggregatedStats> {
+  const result: Partial<AggregatedStats> = {
+    fletaDeadliftPercentage: 0,
+    firstPickPercentage: 0,
+    firstPickCount: 0,
+    firstDeathPercentage: 0,
+    firstDeathCount: 0,
+    mvpScore: 0,
+    mapMvpCount: 0,
+    ajaxCount: 0,
+    averageUltChargeTime: 0,
+    averageTimeToUseUlt: 0,
+    averageDroughtTime: 0,
+    killsPerUltimate: 0,
+    duelWinratePercentage: 0,
+    fightReversalPercentage: 0,
+  };
+  const counts: Record<string, number> = {};
+
+  stats.forEach((stat) => {
+    switch (stat.stat) {
+      case CalculatedStatType.FLETA_DEADLIFT_PERCENTAGE:
+        result.fletaDeadliftPercentage =
+          (result.fletaDeadliftPercentage ?? 0) + stat.value;
+        counts.fletaDeadlift = (counts.fletaDeadlift ?? 0) + 1;
+        break;
+      case CalculatedStatType.FIRST_PICK_PERCENTAGE:
+        result.firstPickPercentage =
+          (result.firstPickPercentage ?? 0) + stat.value;
+        counts.firstPick = (counts.firstPick ?? 0) + 1;
+        break;
+      case CalculatedStatType.FIRST_PICK_COUNT:
+        result.firstPickCount = (result.firstPickCount ?? 0) + stat.value;
+        break;
+      case CalculatedStatType.FIRST_DEATH_PERCENTAGE:
+        result.firstDeathPercentage =
+          (result.firstDeathPercentage ?? 0) + stat.value;
+        counts.firstDeath = (counts.firstDeath ?? 0) + 1;
+        break;
+      case CalculatedStatType.FIRST_DEATH_COUNT:
+        result.firstDeathCount = (result.firstDeathCount ?? 0) + stat.value;
+        break;
+      case CalculatedStatType.MVP_SCORE:
+        result.mvpScore = (result.mvpScore ?? 0) + stat.value;
+        counts.mvpScore = (counts.mvpScore ?? 0) + 1;
+        break;
+      case CalculatedStatType.MAP_MVP_COUNT:
+        result.mapMvpCount = (result.mapMvpCount ?? 0) + stat.value;
+        break;
+      case CalculatedStatType.AJAX_COUNT:
+        result.ajaxCount = (result.ajaxCount ?? 0) + stat.value;
+        break;
+      case CalculatedStatType.AVERAGE_ULT_CHARGE_TIME:
+        result.averageUltChargeTime =
+          (result.averageUltChargeTime ?? 0) + stat.value;
+        counts.ultCharge = (counts.ultCharge ?? 0) + 1;
+        break;
+      case CalculatedStatType.AVERAGE_TIME_TO_USE_ULT:
+        result.averageTimeToUseUlt =
+          (result.averageTimeToUseUlt ?? 0) + stat.value;
+        counts.timeToUseUlt = (counts.timeToUseUlt ?? 0) + 1;
+        break;
+      case CalculatedStatType.AVERAGE_DROUGHT_TIME:
+        result.averageDroughtTime =
+          (result.averageDroughtTime ?? 0) + stat.value;
+        counts.drought = (counts.drought ?? 0) + 1;
+        break;
+      case CalculatedStatType.KILLS_PER_ULTIMATE:
+        result.killsPerUltimate = (result.killsPerUltimate ?? 0) + stat.value;
+        counts.killsPerUlt = (counts.killsPerUlt ?? 0) + 1;
+        break;
+      case CalculatedStatType.DUEL_WINRATE_PERCENTAGE:
+        result.duelWinratePercentage =
+          (result.duelWinratePercentage ?? 0) + stat.value;
+        counts.duelWinrate = (counts.duelWinrate ?? 0) + 1;
+        break;
+      case CalculatedStatType.FIGHT_REVERSAL_PERCENTAGE:
+        result.fightReversalPercentage =
+          (result.fightReversalPercentage ?? 0) + stat.value;
+        counts.fightReversal = (counts.fightReversal ?? 0) + 1;
+        break;
+    }
+  });
+
+  if (counts.fletaDeadlift)
+    result.fletaDeadliftPercentage =
+      (result.fletaDeadliftPercentage ?? 0) / counts.fletaDeadlift;
+  if (counts.firstPick)
+    result.firstPickPercentage =
+      (result.firstPickPercentage ?? 0) / counts.firstPick;
+  if (counts.firstDeath)
+    result.firstDeathPercentage =
+      (result.firstDeathPercentage ?? 0) / counts.firstDeath;
+  if (counts.mvpScore)
+    result.mvpScore = (result.mvpScore ?? 0) / counts.mvpScore;
+  if (counts.ultCharge)
+    result.averageUltChargeTime =
+      (result.averageUltChargeTime ?? 0) / counts.ultCharge;
+  if (counts.timeToUseUlt)
+    result.averageTimeToUseUlt =
+      (result.averageTimeToUseUlt ?? 0) / counts.timeToUseUlt;
+  if (counts.drought)
+    result.averageDroughtTime =
+      (result.averageDroughtTime ?? 0) / counts.drought;
+  if (counts.killsPerUlt)
+    result.killsPerUltimate =
+      (result.killsPerUltimate ?? 0) / counts.killsPerUlt;
+  if (counts.duelWinrate)
+    result.duelWinratePercentage =
+      (result.duelWinratePercentage ?? 0) / counts.duelWinrate;
+  if (counts.fightReversal)
+    result.fightReversalPercentage =
+      (result.fightReversalPercentage ?? 0) / counts.fightReversal;
+
+  return result;
+}
+
+function aggregateTeamStats(
+  stats: PlayerStat[],
+  calculatedStats: CalculatedStat[]
+): AggregatedStats {
+  const totals = stats.reduce(
+    (acc, stat) => {
+      acc.eliminations += stat.eliminations;
+      acc.finalBlows += stat.final_blows;
+      acc.deaths += stat.deaths;
+      acc.allDamageDealt += stat.all_damage_dealt;
+      acc.barrierDamageDealt += stat.barrier_damage_dealt;
+      acc.heroDamageDealt += stat.hero_damage_dealt;
+      acc.healingDealt += stat.healing_dealt;
+      acc.healingReceived += stat.healing_received;
+      acc.selfHealing += stat.self_healing;
+      acc.damageTaken += stat.damage_taken;
+      acc.damageBlocked += stat.damage_blocked;
+      acc.defensiveAssists += stat.defensive_assists;
+      acc.offensiveAssists += stat.offensive_assists;
+      acc.ultimatesEarned += stat.ultimates_earned;
+      acc.ultimatesUsed += stat.ultimates_used;
+      acc.multikillBest = Math.max(acc.multikillBest, stat.multikill_best);
+      acc.multikills += stat.multikills;
+      acc.soloKills += stat.solo_kills;
+      acc.objectiveKills += stat.objective_kills;
+      acc.environmentalKills += stat.environmental_kills;
+      acc.environmentalDeaths += stat.environmental_deaths;
+      acc.criticalHits += stat.critical_hits;
+      acc.shotsFired += stat.shots_fired;
+      acc.shotsHit += stat.shots_hit;
+      acc.shotsMissed += stat.shots_missed;
+      acc.scopedShots += stat.scoped_shots;
+      acc.scopedShotsHit += stat.scoped_shots_hit;
+      acc.scopedCriticalHitKills += stat.scoped_critical_hit_kills;
+      acc.heroTimePlayed += stat.hero_time_played;
+      return acc;
+    },
+    {
+      eliminations: 0,
+      finalBlows: 0,
+      deaths: 0,
+      allDamageDealt: 0,
+      barrierDamageDealt: 0,
+      heroDamageDealt: 0,
+      healingDealt: 0,
+      healingReceived: 0,
+      selfHealing: 0,
+      damageTaken: 0,
+      damageBlocked: 0,
+      defensiveAssists: 0,
+      offensiveAssists: 0,
+      ultimatesEarned: 0,
+      ultimatesUsed: 0,
+      multikillBest: 0,
+      multikills: 0,
+      soloKills: 0,
+      objectiveKills: 0,
+      environmentalKills: 0,
+      environmentalDeaths: 0,
+      criticalHits: 0,
+      shotsFired: 0,
+      shotsHit: 0,
+      shotsMissed: 0,
+      scopedShots: 0,
+      scopedShotsHit: 0,
+      scopedCriticalHitKills: 0,
+      heroTimePlayed: 0,
+    }
+  );
+
+  const ca = aggregateCalculatedStatsForTeam(calculatedStats);
+
+  return {
+    ...totals,
+    eliminationsPer10: calculatePer10(
+      totals.eliminations,
+      totals.heroTimePlayed
+    ),
+    finalBlowsPer10: calculatePer10(totals.finalBlows, totals.heroTimePlayed),
+    deathsPer10: calculatePer10(totals.deaths, totals.heroTimePlayed),
+    allDamagePer10: calculatePer10(
+      totals.allDamageDealt,
+      totals.heroTimePlayed
+    ),
+    heroDamagePer10: calculatePer10(
+      totals.heroDamageDealt,
+      totals.heroTimePlayed
+    ),
+    healingDealtPer10: calculatePer10(
+      totals.healingDealt,
+      totals.heroTimePlayed
+    ),
+    healingReceivedPer10: calculatePer10(
+      totals.healingReceived,
+      totals.heroTimePlayed
+    ),
+    damageTakenPer10: calculatePer10(totals.damageTaken, totals.heroTimePlayed),
+    damageBlockedPer10: calculatePer10(
+      totals.damageBlocked,
+      totals.heroTimePlayed
+    ),
+    ultimatesEarnedPer10: calculatePer10(
+      totals.ultimatesEarned,
+      totals.heroTimePlayed
+    ),
+    ultimatesUsedPer10: calculatePer10(
+      totals.ultimatesUsed,
+      totals.heroTimePlayed
+    ),
+    soloKillsPer10: calculatePer10(totals.soloKills, totals.heroTimePlayed),
+    objectiveKillsPer10: calculatePer10(
+      totals.objectiveKills,
+      totals.heroTimePlayed
+    ),
+    defensiveAssistsPer10: calculatePer10(
+      totals.defensiveAssists,
+      totals.heroTimePlayed
+    ),
+    offensiveAssistsPer10: calculatePer10(
+      totals.offensiveAssists,
+      totals.heroTimePlayed
+    ),
+    environmentalKillsPer10: calculatePer10(
+      totals.environmentalKills,
+      totals.heroTimePlayed
+    ),
+    environmentalDeathsPer10: calculatePer10(
+      totals.environmentalDeaths,
+      totals.heroTimePlayed
+    ),
+    multikillsPer10: calculatePer10(totals.multikills, totals.heroTimePlayed),
+    barrierDamagePer10: calculatePer10(
+      totals.barrierDamageDealt,
+      totals.heroTimePlayed
+    ),
+    selfHealingPer10: calculatePer10(totals.selfHealing, totals.heroTimePlayed),
+    firstPicksPer10: calculatePer10(
+      ca.firstPickCount ?? 0,
+      totals.heroTimePlayed
+    ),
+    firstDeathsPer10: calculatePer10(
+      ca.firstDeathCount ?? 0,
+      totals.heroTimePlayed
+    ),
+    mapMvpRate:
+      calculatedStats.length > 0
+        ? ((ca.mapMvpCount ?? 0) / calculatedStats.length) * 100
+        : 0,
+    ajaxPer10: calculatePer10(ca.ajaxCount ?? 0, totals.heroTimePlayed),
+    weaponAccuracy: calculatePercentage(totals.shotsHit, totals.shotsFired),
+    criticalHitAccuracy: calculatePercentage(
+      totals.criticalHits,
+      totals.shotsHit
+    ),
+    scopedAccuracy: calculatePercentage(
+      totals.scopedShotsHit,
+      totals.scopedShots
+    ),
+    scopedCriticalHitAccuracy: calculatePercentage(
+      totals.scopedCriticalHitKills,
+      totals.scopedShotsHit
+    ),
+    fletaDeadliftPercentage: ca.fletaDeadliftPercentage ?? 0,
+    firstPickPercentage: ca.firstPickPercentage ?? 0,
+    firstPickCount: ca.firstPickCount ?? 0,
+    firstDeathPercentage: ca.firstDeathPercentage ?? 0,
+    firstDeathCount: ca.firstDeathCount ?? 0,
+    mvpScore: ca.mvpScore ?? 0,
+    mapMvpCount: ca.mapMvpCount ?? 0,
+    ajaxCount: ca.ajaxCount ?? 0,
+    averageUltChargeTime: ca.averageUltChargeTime ?? 0,
+    averageTimeToUseUlt: ca.averageTimeToUseUlt ?? 0,
+    averageDroughtTime: ca.averageDroughtTime ?? 0,
+    killsPerUltimate: ca.killsPerUltimate ?? 0,
+    duelWinratePercentage: ca.duelWinratePercentage ?? 0,
+    fightReversalPercentage: ca.fightReversalPercentage ?? 0,
+    eliminationsPer10StdDev: 0,
+    deathsPer10StdDev: 0,
+    allDamagePer10StdDev: 0,
+    healingDealtPer10StdDev: 0,
+    firstPickPercentageStdDev: 0,
+    consistencyScore: 0,
+  };
+}
+
+export type TeamComparisonServiceInterface = {
+  readonly getTeamComparisonStats: (
+    mapIds: number[],
+    teamId: number,
+    heroes?: HeroName[]
+  ) => Effect.Effect<TeamComparisonStats, TeamQueryError>;
+};
+
+export class TeamComparisonService extends Context.Tag(
+  "@app/data/team/TeamComparisonService"
+)<TeamComparisonService, TeamComparisonServiceInterface>() {}
+
+export const make = Effect.gen(function* () {
+  const shared = yield* TeamSharedDataService;
+
+  function getTeamComparisonStats(
+    mapIds: number[],
+    teamId: number,
+    heroes?: HeroName[]
+  ): Effect.Effect<TeamComparisonStats, TeamQueryError> {
+    const startTime = Date.now();
+    const wideEvent: Record<string, unknown> = {
+      teamId,
+      mapCount: mapIds.length,
+      hasHeroFilter: !!(heroes && heroes.length > 0),
+    };
+
+    return Effect.gen(function* () {
+      yield* Effect.annotateCurrentSpan("teamId", teamId);
+      yield* Effect.annotateCurrentSpan("mapCount", mapIds.length);
+      if (mapIds.length === 0) {
+        return yield* new TeamQueryError({
+          operation: "team comparison - no maps provided",
+          cause: null,
+        });
+      }
+
+      const teamRoster = yield* shared.getTeamRoster(teamId);
+      const teamRosterSet = new Set(teamRoster);
+
+      if (teamRoster.length === 0) {
+        return yield* new TeamQueryError({
+          operation: "team comparison - no roster found",
+          cause: null,
+        });
+      }
+
+      const maps = yield* Effect.tryPromise({
+        try: () =>
+          prisma.map.findMany({
+            where: { id: { in: mapIds } },
+            include: {
+              Scrim: true,
+              mapData: {
+                include: {
+                  match_start: true,
+                  round_end: true,
+                  objective_captured: true,
+                  payload_progress: true,
+                  point_progress: true,
+                },
+              },
+            },
+          }),
+        catch: (error) =>
+          new TeamQueryError({
+            operation: "fetch maps for comparison",
+            cause: error,
+          }),
+      });
+
+      const mapDataIds = maps.flatMap((map) => map.mapData.map((md) => md.id));
+
+      if (mapDataIds.length === 0) {
+        return yield* new TeamQueryError({
+          operation: "team comparison - no map data found",
+          cause: null,
+        });
+      }
+
+      const [allPlayerStats, allCalculatedStats] = yield* Effect.tryPromise({
+        try: () =>
+          Promise.all([
+            prisma.playerStat.findMany({
+              where: {
+                MapDataId: { in: mapDataIds },
+                ...(heroes && heroes.length > 0
+                  ? { player_hero: { in: heroes } }
+                  : {}),
+              },
+            }),
+            prisma.calculatedStat.findMany({
+              where: {
+                MapDataId: { in: mapDataIds },
+                ...(heroes && heroes.length > 0
+                  ? { hero: { in: heroes } }
+                  : {}),
+              },
+            }),
+          ]),
+        catch: (error) =>
+          new TeamQueryError({
+            operation: "fetch stats for comparison",
+            cause: error,
+          }),
+      });
+
+      const mapDataIdToMapId = new Map<number, number>();
+      for (const map of maps)
+        for (const mapData of map.mapData)
+          mapDataIdToMapId.set(mapData.id, map.id);
+
+      const myTeamStats: PlayerStat[] = [];
+      const enemyTeamStats: PlayerStat[] = [];
+      const myTeamCalculatedStats: CalculatedStat[] = [];
+      const enemyTeamCalculatedStats: CalculatedStat[] = [];
+      const perMapBreakdown: TeamMapBreakdown[] = [];
+
+      for (const map of maps) {
+        const mapMdIds = new Set(map.mapData.map((md) => md.id));
+        const mapPlayerStats = allPlayerStats.filter(
+          (stat) => stat.MapDataId !== null && mapMdIds.has(stat.MapDataId)
+        );
+        if (mapPlayerStats.length === 0) continue;
+
+        const firstMdId = map.mapData[0]?.id ?? map.id;
+        const myTeamName = findTeamNameForMapInMemory(
+          firstMdId,
+          mapPlayerStats,
+          teamRosterSet
+        );
+        if (!myTeamName) continue;
+
+        const firstMapData = map.mapData[0];
+        const matchStart = firstMapData?.match_start[0];
+        const roundEnds = firstMapData?.round_end ?? [];
+        const finalRound =
+          roundEnds.length > 0
+            ? roundEnds.reduce((latest, current) =>
+                current.round_number > latest.round_number ? current : latest
+              )
+            : null;
+        const allCaptures = firstMapData?.objective_captured ?? [];
+        const team1Captures = allCaptures.filter(
+          (c) => c.capturing_team === matchStart?.team_1_name
+        );
+        const team2Captures = allCaptures.filter(
+          (c) => c.capturing_team === matchStart?.team_2_name
+        );
+        const allPayloadProgress = firstMapData?.payload_progress ?? [];
+        const team1PayloadProgress = allPayloadProgress.filter(
+          (p) => p.capturing_team === matchStart?.team_1_name
+        );
+        const team2PayloadProgress = allPayloadProgress.filter(
+          (p) => p.capturing_team === matchStart?.team_2_name
+        );
+        const allPointProgress = firstMapData?.point_progress ?? [];
+        const team1PointProgress = allPointProgress.filter(
+          (p) => p.capturing_team === matchStart?.team_1_name
+        );
+        const team2PointProgress = allPointProgress.filter(
+          (p) => p.capturing_team === matchStart?.team_2_name
+        );
+
+        const enemyTeamName =
+          matchStart?.team_1_name === myTeamName
+            ? matchStart?.team_2_name
+            : matchStart?.team_1_name;
+
+        const myTeamMapStats = mapPlayerStats.filter(
+          (stat) => stat.player_team === myTeamName
+        );
+        const enemyTeamMapStats = mapPlayerStats.filter(
+          (stat) => stat.player_team === enemyTeamName
+        );
+        myTeamStats.push(...myTeamMapStats);
+        enemyTeamStats.push(...enemyTeamMapStats);
+
+        const mapCalculatedStats = allCalculatedStats.filter((stat) =>
+          mapMdIds.has(stat.MapDataId)
+        );
+        const myTeamMapCalculatedStats = mapCalculatedStats.filter((stat) =>
+          teamRosterSet.has(stat.playerName)
+        );
+        const enemyTeamMapCalculatedStats = mapCalculatedStats.filter(
+          (stat) => !teamRosterSet.has(stat.playerName)
+        );
+        myTeamCalculatedStats.push(...myTeamMapCalculatedStats);
+        enemyTeamCalculatedStats.push(...enemyTeamMapCalculatedStats);
+
+        const myTeamMapAggregated = aggregateTeamStats(
+          myTeamMapStats,
+          myTeamMapCalculatedStats
+        );
+        const enemyTeamMapAggregated = aggregateTeamStats(
+          enemyTeamMapStats,
+          enemyTeamMapCalculatedStats
+        );
+
+        const winnerTeamName = calculateWinner({
+          matchDetails: matchStart ?? null,
+          finalRound: finalRound ?? null,
+          team1Captures,
+          team2Captures,
+          team1PayloadProgress,
+          team2PayloadProgress,
+          team1PointProgress,
+          team2PointProgress,
+        });
+
+        const winner: TeamMapBreakdown["winner"] =
+          winnerTeamName === myTeamName
+            ? "myTeam"
+            : winnerTeamName === enemyTeamName
+              ? "enemyTeam"
+              : winnerTeamName === "N/A"
+                ? null
+                : "draw";
+
+        perMapBreakdown.push({
+          mapId: map.id,
+          mapDataId: firstMapData?.id ?? 0,
+          mapName: matchStart?.map_name || map.name,
+          mapType: matchStart?.map_type || ("Control" as MapType),
+          scrimId: map.scrimId ?? 0,
+          scrimName: map.Scrim?.name ?? "Unknown",
+          date: map.Scrim?.date ?? map.createdAt,
+          replayCode: map.replayCode,
+          myTeamName: myTeamName ?? "My Team",
+          enemyTeamName: enemyTeamName ?? "Enemy Team",
+          myTeamStats: myTeamMapAggregated,
+          enemyTeamStats: enemyTeamMapAggregated,
+          winner,
+        });
+      }
+
+      perMapBreakdown.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+      const myTeamAggregated = aggregateTeamStats(
+        myTeamStats,
+        myTeamCalculatedStats
+      );
+      const enemyTeamAggregated = aggregateTeamStats(
+        enemyTeamStats,
+        enemyTeamCalculatedStats
+      );
+
+      const firstMapTeamName =
+        perMapBreakdown.length > 0 ? perMapBreakdown[0].myTeamName : "My Team";
+      const firstMapEnemyTeamName =
+        perMapBreakdown.length > 0
+          ? perMapBreakdown[0].enemyTeamName
+          : "Enemy Team";
+
+      const myTeamPlayerSet = new Set(
+        myTeamStats.map((stat) => stat.player_name)
+      );
+      const enemyTeamPlayerSet = new Set(
+        enemyTeamStats.map((stat) => stat.player_name)
+      );
+
+      wideEvent.outcome = "success";
+      wideEvent.per_map_count = perMapBreakdown.length;
+      yield* Metric.increment(comparisonQuerySuccessTotal);
+
+      return {
+        mapCount: perMapBreakdown.length,
+        mapIds,
+        myTeam: {
+          teamName: firstMapTeamName,
+          playerCount: myTeamPlayerSet.size,
+          stats: myTeamAggregated,
+        },
+        enemyTeam: {
+          teamName: firstMapEnemyTeamName,
+          playerCount: enemyTeamPlayerSet.size,
+          stats: enemyTeamAggregated,
+        },
+        perMapBreakdown,
+      };
+    }).pipe(
+      Effect.tapError((error) =>
+        Effect.sync(() => {
+          wideEvent.outcome = "error";
+          wideEvent.error_tag = error._tag;
+          wideEvent.error_message = error.message;
+        }).pipe(Effect.andThen(Metric.increment(comparisonQueryErrorTotal)))
+      ),
+      Effect.ensuring(
+        Effect.suspend(() => {
+          const durationMs = Date.now() - startTime;
+          wideEvent.duration_ms = durationMs;
+          wideEvent.outcome ??= "interrupted";
+          const log =
+            wideEvent.outcome === "error"
+              ? Effect.logError("team.comparison.getTeamComparisonStats")
+              : Effect.logInfo("team.comparison.getTeamComparisonStats");
+          return log.pipe(
+            Effect.annotateLogs(wideEvent),
+            Effect.andThen(comparisonQueryDuration(Effect.succeed(durationMs)))
+          );
+        })
+      ),
+      Effect.withSpan("team.comparison.getTeamComparisonStats")
+    );
+  }
+
+  const CACHE_TTL = Duration.seconds(30);
+  const CACHE_CAPACITY = 64;
+
+  const comparisonCache = yield* Cache.make({
+    capacity: CACHE_CAPACITY,
+    timeToLive: CACHE_TTL,
+    lookup: (key: string) => {
+      const parsed = JSON.parse(key) as {
+        mapIds: number[];
+        teamId: number;
+        heroes?: HeroName[];
+      };
+      return getTeamComparisonStats(
+        parsed.mapIds,
+        parsed.teamId,
+        parsed.heroes
+      ).pipe(Effect.tap(() => Metric.increment(teamCacheMissTotal)));
+    },
+  });
+
+  return {
+    getTeamComparisonStats: (
+      mapIds: number[],
+      teamId: number,
+      heroes?: HeroName[]
+    ) =>
+      comparisonCache
+        .get(JSON.stringify({ mapIds, teamId, heroes }))
+        .pipe(Effect.tap(() => Metric.increment(teamCacheRequestTotal))),
+  } satisfies TeamComparisonServiceInterface;
+});
+
+export const TeamComparisonServiceLive = Layer.effect(
+  TeamComparisonService,
+  make
+).pipe(Layer.provide(TeamSharedDataServiceLive));

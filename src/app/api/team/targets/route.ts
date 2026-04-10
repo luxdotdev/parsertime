@@ -1,5 +1,7 @@
-import { getRecentScrimStats } from "@/data/targets-dto";
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
+import { TargetsService } from "@/data/player";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { unauthorized } from "next/navigation";
@@ -32,7 +34,9 @@ export async function GET(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.email) unauthorized();
 
-  const user = await getUser(session.user.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+  );
   if (!user) unauthorized();
 
   const { searchParams } = new URL(req.url);
@@ -60,7 +64,9 @@ export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.email) unauthorized();
 
-  const user = await getUser(session.user.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+  );
   if (!user) unauthorized();
 
   // Premium check
@@ -89,10 +95,12 @@ export async function POST(req: NextRequest) {
   if (!hasPerms) unauthorized();
 
   // Calculate baseline from recent scrims
-  const recentStats = await getRecentScrimStats(
-    playerName,
-    teamId,
-    scrimWindow
+  const recentStats = await AppRuntime.runPromise(
+    TargetsService.pipe(
+      Effect.flatMap((svc) =>
+        svc.getRecentScrimStats(playerName, teamId, scrimWindow)
+      )
+    )
   );
   let baselineValue = 0;
   if (recentStats.length > 0) {

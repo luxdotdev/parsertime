@@ -1,4 +1,4 @@
-import { aggregatePlayerStats } from "@/data/comparison-dto";
+import { aggregatePlayerStats } from "@/data/comparison/computation";
 import { authenticateBotSecret } from "@/lib/bot-auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";

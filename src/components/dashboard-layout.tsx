@@ -9,7 +9,8 @@ import { Notifications } from "@/components/notifications";
 import { TeamSwitcherProvider } from "@/components/team-switcher-provider";
 import { ModeToggle } from "@/components/theme-switcher";
 import { UserNav } from "@/components/user-nav";
-import { getUser } from "@/data/user-dto";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import {
   aiChat,
@@ -18,6 +19,7 @@ import {
   scoutingTool,
   tournament,
 } from "@/lib/flags";
+import { Effect } from "effect";
 
 export async function DashboardLayout({
   children,
@@ -41,7 +43,9 @@ export async function DashboardLayout({
     tournament(),
     coachingCanvas(),
   ]);
-  const user = await getUser(session?.user?.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
 
   return (
     <TeamSwitcherProvider>

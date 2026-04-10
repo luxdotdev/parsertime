@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { TeamHeroSwapStats } from "@/data/team-hero-swap-dto";
+import type { TeamHeroSwapStats } from "@/data/team/types";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 

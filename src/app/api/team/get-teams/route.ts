@@ -1,4 +1,6 @@
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
@@ -17,7 +19,9 @@ export async function GET() {
     unauthorized();
   }
 
-  const userId = await getUser(session?.user?.email);
+  const userId = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
 
   const teams = await prisma.team.findMany({
     where: {

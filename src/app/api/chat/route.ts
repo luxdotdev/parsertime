@@ -1,4 +1,6 @@
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { systemPrompt } from "@/lib/ai/system-prompt";
 import { chatTelemetry } from "@/lib/ai/telemetry";
 import { buildTools } from "@/lib/ai/tools";
@@ -29,7 +31,9 @@ export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user?.email) unauthorized();
 
-  const userData = await getUser(session.user.email);
+  const userData = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+  );
   if (!userData) unauthorized();
 
   const { success } = await ratelimit.limit(userData.id);

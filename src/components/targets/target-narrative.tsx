@@ -1,4 +1,4 @@
-import type { TargetProgress } from "@/data/targets-dto";
+import type { TargetProgress } from "@/data/player/types";
 import { getStatConfig } from "@/lib/target-stats";
 import { round } from "@/lib/utils";
 

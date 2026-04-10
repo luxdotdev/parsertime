@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { ComparisonStats } from "@/data/comparison-dto";
+import type { ComparisonStats } from "@/data/comparison/types";
 import { cn } from "@/lib/utils";
 import { ArrowDown, ArrowUp, TrendingDown, TrendingUp } from "lucide-react";
 import { useTranslations } from "next-intl";

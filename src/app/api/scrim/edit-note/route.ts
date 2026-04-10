@@ -1,4 +1,6 @@
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import { upsertNote } from "@/lib/notes";
@@ -23,7 +25,9 @@ export async function POST(request: NextRequest) {
 
     event.user_email = session.user.email;
 
-    const user = await getUser(session.user.email);
+    const user = await AppRuntime.runPromise(
+      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+    );
     if (!user) {
       event.outcome = "user_not_found";
       event.status_code = 404;

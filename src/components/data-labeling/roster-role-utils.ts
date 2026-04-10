@@ -1,5 +1,5 @@
 import { heroRoleMapping, type HeroName } from "@/types/heroes";
-import type { RosterPlayerForLabeling } from "@/data/data-labeling-dto";
+import type { RosterPlayerForLabeling } from "@/data/admin/types";
 import type { RosterRole } from "@prisma/client";
 
 export const HERO_ROLE_TO_ROSTER_ROLES: Record<string, RosterRole[]> = {

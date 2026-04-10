@@ -1,4 +1,6 @@
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
@@ -38,7 +40,9 @@ export async function POST(req: NextRequest) {
   const user = await prisma.user.findFirst({ where: { id: userId } });
   if (!user) return new Response("User not found", { status: 404 });
 
-  const authedUser = await getUser(session?.user?.email);
+  const authedUser = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
 
   if (!authedUser && !devTokenAuthed) {
     return new Response("Unauthorized", { status: 401 });

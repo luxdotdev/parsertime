@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { TeamUltStats } from "@/data/team-ult-stats-dto";
+import type { TeamUltStats } from "@/data/team/types";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 

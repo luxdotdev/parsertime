@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@/components/ui/link";
 import { Separator } from "@/components/ui/separator";
-import { parseData } from "@/lib/parser";
+import { parseData } from "@/lib/parser-client";
 import { ParserDataSchema } from "@/lib/schema";
 import { cn, detectCorruptedData } from "@/lib/utils";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
