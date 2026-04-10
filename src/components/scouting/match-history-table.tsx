@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { ScoutingMatchHistoryEntry } from "@/data/scouting-dto";
+import type { ScoutingMatchHistoryEntry } from "@/data/scouting";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 

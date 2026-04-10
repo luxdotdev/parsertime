@@ -1,4 +1,6 @@
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import { setRequestContext } from "@/lib/axiom/baggage";
@@ -78,7 +80,9 @@ export async function POST(request: NextRequest) {
       const ua = userAgent(request);
       event.user_agent = ua.ua;
 
-      const user = await getUser(session.user.email);
+      const user = await AppRuntime.runPromise(
+        UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+      );
       event.user_id = user?.id;
       event.billing_plan = user?.billingPlan;
 
@@ -124,7 +128,9 @@ export async function POST(request: NextRequest) {
       return new Response("Invalid map data", { status: 400 });
     }
 
-    const user = await getUser(session.user.email);
+    const user = await AppRuntime.runPromise(
+      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+    );
     event.user_id = user?.id;
     event.billing_plan = user?.billingPlan;
 

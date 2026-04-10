@@ -11,7 +11,7 @@ import {
 import type {
   ScoutingRecommendation,
   ScoutingRecommendations as ScoutingRecommendationsType,
-} from "@/data/scouting-dto";
+} from "@/data/scouting";
 import { assessConfidence } from "@/lib/confidence";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";

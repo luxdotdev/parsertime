@@ -1,5 +1,7 @@
 import { MessageResponse } from "@/components/ai-elements/message";
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import type { Metadata } from "next";
@@ -33,7 +35,9 @@ export default async function ReportPage({
     redirect("/sign-in");
   }
 
-  const userData = await getUser(session.user.email);
+  const userData = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+  );
   if (!userData) redirect("/sign-in");
 
   const report = await prisma.chatReport.findUnique({

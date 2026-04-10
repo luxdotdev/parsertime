@@ -11,7 +11,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { getScoutingTeams } from "@/data/scouting-dto";
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { scoutingTool } from "@/lib/flags";
 import prisma from "@/lib/prisma";
@@ -101,7 +103,9 @@ export default async function Team(
 
   const teamMembers = teamMembersData ?? { users: [] };
 
-  const user = await getUser(session?.user?.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
 
   function userIsManager(user: { id: string }) {
     return teamManagers.some((manager) => manager.userId === user.id);

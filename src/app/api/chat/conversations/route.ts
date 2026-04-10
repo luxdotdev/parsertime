@@ -1,4 +1,6 @@
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
@@ -9,7 +11,9 @@ export async function GET() {
   const session = await auth();
   if (!session?.user?.email) unauthorized();
 
-  const userData = await getUser(session.user.email);
+  const userData = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+  );
   if (!userData) unauthorized();
 
   const conversations = await prisma.chatConversation.findMany({
@@ -25,7 +29,9 @@ export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user?.email) unauthorized();
 
-  const userData = await getUser(session.user.email);
+  const userData = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+  );
   if (!userData) unauthorized();
 
   const body = (await req.json()) as {

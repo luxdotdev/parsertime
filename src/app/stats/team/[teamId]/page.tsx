@@ -66,7 +66,9 @@ import {
 import { getTeamAbilityImpact } from "@/data/team-ability-impact-dto";
 import { getTeamUltImpact } from "@/data/team-ult-impact-dto";
 import { getTeamUltStats } from "@/data/team-ult-stats-dto";
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { simulationTool, ultimateImpactTool } from "@/lib/flags";
 import { calculateHeroPickrateMatrix } from "@/lib/hero-pickrate-utils";
@@ -137,7 +139,9 @@ export default async function TeamStatsPage(
   }
 ) {
   const session = await auth();
-  const user = await getUser(session?.user.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user.email)))
+  );
   if (!user) notFound();
 
   const params = await props.params;

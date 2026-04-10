@@ -7,7 +7,9 @@ import { AppSettingsProvider } from "@/components/settings/app-settings-provider
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { register } from "@/instrumentation";
 import { auth } from "@/lib/auth";
 import { WebVitals } from "@/lib/axiom/client";
@@ -69,7 +71,11 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   let user = null;
 
   if (session) {
-    user = await getUser(session.user.email);
+    user = await AppRuntime.runPromise(
+      UserService.pipe(
+        Effect.flatMap((svc) => svc.getUser(session.user.email))
+      )
+    );
   }
 
   const flags = await resolveAllFlags();

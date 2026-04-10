@@ -1,4 +1,6 @@
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
@@ -21,7 +23,9 @@ export async function GET(_req: Request, props: Params) {
     const [session, { id }] = await Promise.all([auth(), props.params]);
     if (!session) unauthorized();
 
-    const user = await getUser(session.user.email);
+    const user = await AppRuntime.runPromise(
+      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+    );
     if (!user) unauthorized();
 
     const enabled = await dataLabeling();
@@ -99,7 +103,9 @@ export async function PUT(req: Request, props: Params) {
     ]);
     if (!session) unauthorized();
 
-    const user = await getUser(session.user.email);
+    const user = await AppRuntime.runPromise(
+      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+    );
     if (!user) unauthorized();
 
     const enabled = await dataLabeling();
@@ -189,7 +195,9 @@ export async function DELETE(_req: Request, props: Params) {
     const [session, { id }] = await Promise.all([auth(), props.params]);
     if (!session) unauthorized();
 
-    const user = await getUser(session.user.email);
+    const user = await AppRuntime.runPromise(
+      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+    );
     if (!user) unauthorized();
 
     const enabled = await dataLabeling();

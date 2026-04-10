@@ -1,4 +1,6 @@
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auditLog } from "@/lib/audit-logs";
 import {
   newBugReportWebhookConstructor,
@@ -20,7 +22,9 @@ export async function POST(req: NextRequest) {
   const body = BugReportSchema.safeParse(await req.json());
   if (!body.success) return new Response("Invalid request", { status: 400 });
 
-  const user = await getUser(body.data.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(body.data.email)))
+  );
 
   const wh = newBugReportWebhookConstructor(
     body.data.title,

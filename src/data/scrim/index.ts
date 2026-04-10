@@ -29,3 +29,33 @@ export {
   PlayerNameSchema,
   OpponentAbbrSchema,
 } from "./types";
+
+export type {
+  AbilityTimingAnalysis,
+  AbilityTimingOutlier,
+  AbilityTimingRow,
+  FightPhase,
+  FightTimeline,
+  MapAbilityTimingAnalysis,
+  MapResult,
+  PlayerMapPerformance,
+  PlayerScrimPerformance,
+  ScrimFightAnalysis,
+  ScrimInsight,
+  ScrimOutlier,
+  ScrimOverviewData,
+  ScrimSwapAnalysis,
+  ScrimTeamTotals,
+  ScrimUltAnalysis,
+  UltEfficiency,
+} from "./types";
+
+export {
+  assignPlayersToSubroles,
+  buildPlayerUltComparisons,
+} from "./ult-helpers";
+export type {
+  PlayerUltComparison,
+  PlayerUltSummary,
+  SubroleUltTiming,
+} from "./ult-helpers";

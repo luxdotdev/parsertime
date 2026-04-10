@@ -1,4 +1,6 @@
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import { notifications } from "@/lib/notifications";
@@ -15,7 +17,9 @@ export async function POST(request: NextRequest) {
   const session = await auth();
   if (!session) unauthorized();
 
-  const user = await getUser(session.user.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+  );
   if (!user) unauthorized();
 
   const body = bodySchema.safeParse(await request.json());

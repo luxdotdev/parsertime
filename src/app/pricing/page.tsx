@@ -11,7 +11,9 @@ import { PricingFaq } from "@/components/pricing/pricing-faq";
 import { PricingHero } from "@/components/pricing/pricing-hero";
 import { PricingStructuredData } from "@/components/pricing/pricing-structured-data";
 import { Link } from "@/components/ui/link";
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { createCheckout, getCustomerPortalUrl } from "@/lib/stripe";
 import { toTitleCase } from "@/lib/utils";
@@ -97,7 +99,9 @@ export default async function PricingPage() {
   const t = await getTranslations("pricingPage");
 
   const session = await auth();
-  const user = await getUser(session?.user?.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
 
   const plan = toTitleCase(user?.billingPlan ?? "");
   const isLoggedIn = !!session?.user;

@@ -13,10 +13,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Link } from "@/components/ui/link";
-import { getUser } from "@/data/user-dto";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { $Enums } from "@prisma/client";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
+import { Effect } from "effect";
 import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
@@ -27,7 +29,9 @@ export async function UserNav() {
     redirect("/sign-in");
   }
 
-  const user = await getUser(session?.user?.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
 
   const isAdmin = user?.role === $Enums.UserRole.ADMIN;
 

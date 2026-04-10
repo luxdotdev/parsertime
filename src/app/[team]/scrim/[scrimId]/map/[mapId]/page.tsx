@@ -23,7 +23,9 @@ import { Suspense, ViewTransition } from "react";
 import { UserNav } from "@/components/user-nav";
 import { VodOverview } from "@/components/vods/vod-overview";
 import { getMostPlayedHeroes } from "@/data/player-dto";
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import {
   aiChat,
@@ -95,7 +97,9 @@ export default async function MapDashboardPage(
   const id = parseInt(params.mapId);
   const mapDataId = await resolveMapDataId(id);
   const session = await auth();
-  const user = await getUser(session?.user?.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
   const t = await getTranslations("mapPage");
 
   // Tournament context for back navigation

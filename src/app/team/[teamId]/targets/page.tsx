@@ -7,7 +7,9 @@ import {
   type TargetProgress,
 } from "@/data/targets-dto";
 import { getTeamRoster } from "@/data/team-shared-data";
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import type { RoleName } from "@/lib/target-stats";
@@ -23,7 +25,9 @@ export default async function TeamTargetsPage(props: Props) {
   const teamId = parseInt(params.teamId);
 
   const session = await auth();
-  const user = await getUser(session?.user?.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
 
   if (!user) {
     return (

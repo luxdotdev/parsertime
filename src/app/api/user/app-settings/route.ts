@@ -1,4 +1,6 @@
-import { getAppSettings, getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
@@ -25,11 +27,15 @@ export async function GET() {
   }
 
   try {
-    let appSettings = await getAppSettings(session.user.email);
+    let appSettings = await AppRuntime.runPromise(
+      UserService.pipe(Effect.flatMap((svc) => svc.getAppSettings(session.user.email)))
+    );
 
     // If no app settings exist, create default ones
     if (!appSettings) {
-      const user = await getUser(session.user.email);
+      const user = await AppRuntime.runPromise(
+        UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+      );
       if (!user) {
         Logger.error("User not found when creating app settings");
         return new Response("User not found", { status: 404 });
@@ -82,7 +88,9 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const validatedData = updateAppSettingsSchema.parse(body);
 
-    const user = await getUser(session.user.email);
+    const user = await AppRuntime.runPromise(
+      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+    );
     if (!user) {
       Logger.error("User not found when updating app settings");
       return new Response("User not found", { status: 404 });

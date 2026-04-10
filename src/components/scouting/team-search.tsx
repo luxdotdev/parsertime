@@ -1,6 +1,6 @@
 "use client";
 
-import type { ScoutingTeam } from "@/data/scouting-dto";
+import type { ScoutingTeam } from "@/data/scouting";
 import { cn } from "@/lib/utils";
 import Fuse from "fuse.js";
 import { Search } from "lucide-react";
