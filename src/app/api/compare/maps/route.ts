@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
-import { getAvailableMapsForComparison } from "@/data/comparison-dto";
+import { ComparisonAggregationService } from "@/data/comparison";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import type { HeroName } from "@/types/heroes";
@@ -89,14 +89,20 @@ export async function GET(request: NextRequest) {
       hero_count: heroes?.length ?? 0,
     };
 
-    const maps = await getAvailableMapsForComparison({
-      teamId,
-      playerName,
-      dateFrom,
-      dateTo,
-      mapType,
-      heroes,
-    });
+    const maps = await AppRuntime.runPromise(
+      ComparisonAggregationService.pipe(
+        Effect.flatMap((svc) =>
+          svc.getAvailableMapsForComparison({
+            teamId,
+            playerName,
+            dateFrom,
+            dateTo,
+            mapType,
+            heroes,
+          })
+        )
+      )
+    );
 
     wideEvent.status_code = 200;
     wideEvent.outcome = "success";

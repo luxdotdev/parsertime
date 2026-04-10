@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
-import { getTeamPlayers } from "@/data/comparison-dto";
+import { ComparisonAggregationService } from "@/data/comparison";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import type { NextRequest } from "next/server";
@@ -79,7 +79,11 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const players = await getTeamPlayers(teamId, mapIds);
+    const players = await AppRuntime.runPromise(
+      ComparisonAggregationService.pipe(
+        Effect.flatMap((svc) => svc.getTeamPlayers(teamId, mapIds))
+      )
+    );
 
     wideEvent.status_code = 200;
     wideEvent.outcome = "success";

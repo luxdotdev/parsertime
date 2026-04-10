@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { ComparisonStats } from "@/data/comparison-dto";
+import type { ComparisonStats } from "@/data/comparison";
 import type { HeroName } from "@/types/heroes";
 import type { FormattedMapGroup } from "@/types/map-group";
 import type { TeamComparisonStats } from "@/types/team-comparison";
