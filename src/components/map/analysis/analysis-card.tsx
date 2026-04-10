@@ -14,7 +14,7 @@ import {
   type TimingData,
   type UltimatesData,
 } from "@/components/map/analysis/analysis-sections";
-import type { SerializedCalibrationData } from "@/data/killfeed-calibration-dto";
+import type { SerializedCalibrationData } from "@/data/map/killfeed/types";
 import {
   Card,
   CardContent,

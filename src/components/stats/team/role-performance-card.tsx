@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { RolePerformanceStats } from "@/data/team-role-stats-dto";
+import type { RolePerformanceStats } from "@/data/team/types";
 import { cn } from "@/lib/utils";
 import { Heart, Shield, Swords } from "lucide-react";
 import { useTranslations } from "next-intl";

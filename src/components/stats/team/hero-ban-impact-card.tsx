@@ -17,7 +17,7 @@ import {
 import type {
   CombinedBanAnalysis,
   HeroBanImpact,
-} from "@/data/team-ban-impact-dto";
+} from "@/data/team/types";
 import { cn, toHero, useHeroNames } from "@/lib/utils";
 import { AlertTriangle, ShieldOff } from "lucide-react";
 import Image from "next/image";

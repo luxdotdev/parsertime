@@ -12,7 +12,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import type { TeamUltStats } from "@/data/team-ult-stats-dto";
+import type { TeamUltStats } from "@/data/team/types";
 import { cn, toHero } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";

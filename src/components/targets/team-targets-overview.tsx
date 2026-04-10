@@ -4,7 +4,7 @@ import { PlayerTargetDetail } from "@/components/targets/player-target-detail";
 import { Sparkline } from "@/components/targets/sparkline";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import type { ScrimStatPoint, TargetProgress } from "@/data/targets-dto";
+import type { ScrimStatPoint, TargetProgress } from "@/data/player/types";
 import type { RoleName } from "@/lib/target-stats";
 import { cn } from "@/lib/utils";
 import type { PlayerTarget } from "@prisma/client";

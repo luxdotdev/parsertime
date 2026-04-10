@@ -14,7 +14,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import type { ScoutingHeroPerformance } from "@/data/player-scouting-analytics-dto";
+import type { ScoutingHeroPerformance } from "@/data/player/types";
 import { cn, toHero } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";

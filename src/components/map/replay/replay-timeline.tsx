@@ -4,7 +4,7 @@ import type {
   DisplayEvent,
   KillDisplayEvent,
   RoundDisplayEvent,
-} from "@/data/replay-dto";
+} from "@/data/map/replay/types";
 import { Slider } from "@/components/ui/slider";
 import { PLAYBACK_SPEEDS, type ReplayStore } from "@/stores/replay-store";
 import { useSelector } from "@xstate/store/react";

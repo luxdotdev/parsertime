@@ -1,7 +1,10 @@
 "use client";
 
-import type { FightBoundary, TempoDataPoint } from "@/data/tempo-dto";
-import { tempoPointsToSvgPath } from "@/data/tempo-dto";
+import {
+  tempoPointsToSvgPath,
+  type FightBoundary,
+  type TempoDataPoint,
+} from "@/data/map/types";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useCallback, useMemo, useRef, useState } from "react";

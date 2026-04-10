@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { HeroFrequency } from "@/data/player-scouting-dto";
+import type { HeroFrequency } from "@/data/player/types";
 import { cn, toHero } from "@/lib/utils";
 import { Info } from "lucide-react";
 import { useTranslations } from "next-intl";

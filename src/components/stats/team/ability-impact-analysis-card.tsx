@@ -26,7 +26,7 @@ import type {
   AbilityImpactData,
   AbilityScenarioStats,
   HeroAbilityImpact,
-} from "@/data/team-ability-impact-dto";
+} from "@/data/team/types";
 import { cn, toHero } from "@/lib/utils";
 import { roleHeroMapping } from "@/types/heroes";
 import { AlertTriangle, Check, ChevronsUpDown } from "lucide-react";

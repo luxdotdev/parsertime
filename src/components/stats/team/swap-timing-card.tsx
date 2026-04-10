@@ -7,7 +7,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import type { TeamHeroSwapStats } from "@/data/team-hero-swap-dto";
+import type { TeamHeroSwapStats } from "@/data/team/types";
 import { useTranslations } from "next-intl";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 

@@ -7,7 +7,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import type { TeamHeroSwapStats } from "@/data/team-hero-swap-dto";
+import type { TeamHeroSwapStats } from "@/data/team/types";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts";

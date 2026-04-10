@@ -13,7 +13,7 @@ import type {
   PlayerHeroDepth,
   PlayerIntelligence,
   PlayerVulnerability,
-} from "@/data/player-intelligence-dto";
+} from "@/data/player/types";
 import { cn } from "@/lib/utils";
 import { AlertTriangle, CheckCircle2, Info, Shield, User } from "lucide-react";
 import { useMemo } from "react";

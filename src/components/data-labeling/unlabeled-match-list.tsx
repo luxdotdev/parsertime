@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { UnlabeledMatchesResult } from "@/data/data-labeling-dto";
+import type { UnlabeledMatchesResult } from "@/data/admin/types";
 import { useQuery } from "@tanstack/react-query";
 import type { Route } from "next";
 import { useTranslations } from "next-intl";

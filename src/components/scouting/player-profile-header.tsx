@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { PlayerProfile } from "@/data/player-scouting-dto";
+import type { PlayerProfile } from "@/data/player/types";
 import { cn, format, toHero } from "@/lib/utils";
 import { ExternalLink } from "lucide-react";
 import { useTranslations } from "next-intl";

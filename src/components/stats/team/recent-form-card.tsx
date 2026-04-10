@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { RecentForm } from "@/data/team-performance-trends-dto";
+import type { RecentForm } from "@/data/team/types";
 import { cn } from "@/lib/utils";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import { useTranslations } from "next-intl";

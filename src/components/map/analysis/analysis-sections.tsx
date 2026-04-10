@@ -17,7 +17,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import type { SerializedCalibrationData } from "@/data/killfeed-calibration-dto";
+import type { SerializedCalibrationData } from "@/data/map/killfeed/types";
 import type {
   PlayerUltComparison,
   SubroleUltTiming,

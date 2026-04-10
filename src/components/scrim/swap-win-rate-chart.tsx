@@ -3,7 +3,7 @@
 import type {
   SwapTimingOutcome,
   SwapWinrateBucket,
-} from "@/data/team-hero-swap-dto";
+} from "@/data/team/types";
 import {
   Bar,
   BarChart,

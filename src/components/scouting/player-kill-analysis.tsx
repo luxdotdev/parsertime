@@ -17,7 +17,7 @@ import {
 import type {
   KillPatterns,
   RoleDistributionEntry,
-} from "@/data/player-scouting-analytics-dto";
+} from "@/data/player/types";
 import { toHero } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import Image from "next/image";

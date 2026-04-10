@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { InsightItem } from "@/data/player-scouting-analytics-dto";
+import type { InsightItem } from "@/data/player/types";
 import { cn } from "@/lib/utils";
 import {
   AlertTriangle,

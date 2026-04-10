@@ -10,12 +10,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { SerializedCalibrationData } from "@/data/killfeed-calibration-dto";
 import {
   DEFAULT_KILLFEED_OPTIONS,
   type FightUltimateData,
   type KillfeedDisplayOptions,
-} from "@/data/killfeed-dto";
+  type SerializedCalibrationData,
+} from "@/data/map/killfeed/types";
 import type { Kill, RoundEnd } from "@prisma/client";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";

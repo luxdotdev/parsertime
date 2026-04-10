@@ -1,10 +1,10 @@
 import { AnalysisCardAccordion as AnalysisCard } from "@/components/map/analysis/analysis-card-accordion";
 import { OverviewTable } from "@/components/map/overview-table";
 import {
-  getKillfeedCalibration,
+  KillfeedCalibrationService,
   serializeCalibrationData,
-} from "@/data/killfeed-calibration-dto";
-import { getRotationDeathAnalysis } from "@/data/rotation-death-dto";
+  RotationDeathService,
+} from "@/data/map";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import {
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/card";
 import { CardIcon } from "@/components/ui/card-icon";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { filterUtilityRoundStartSwaps } from "@/data/team-hero-swap-dto";
+import { filterUtilityRoundStartSwaps } from "@/data/team/hero-swap-service";
 import { getAjaxes } from "@/lib/analytics";
 import { calculateMVPScoresForMap } from "@/lib/mvp-score";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
@@ -264,8 +264,20 @@ export async function DefaultOverview({
           )
         )
       ),
-      positionalEnabled ? getRotationDeathAnalysis(id) : null,
-      positionalEnabled ? getKillfeedCalibration(id) : null,
+      positionalEnabled
+        ? AppRuntime.runPromise(
+            RotationDeathService.pipe(
+              Effect.flatMap((svc) => svc.getRotationDeathAnalysis(id))
+            )
+          )
+        : null,
+      positionalEnabled
+        ? AppRuntime.runPromise(
+            KillfeedCalibrationService.pipe(
+              Effect.flatMap((svc) => svc.getKillfeedCalibration(id))
+            )
+          )
+        : null,
     ]);
 
   const team1Ults = ultimateStarts.filter((u) => u.player_team === team1Name);

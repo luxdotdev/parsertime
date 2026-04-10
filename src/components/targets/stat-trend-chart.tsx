@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { ScrimStatPoint } from "@/data/targets-dto";
+import type { ScrimStatPoint } from "@/data/player/types";
 import { getStatConfig } from "@/lib/target-stats";
 import { format, round } from "@/lib/utils";
 import type { PlayerTarget } from "@prisma/client";

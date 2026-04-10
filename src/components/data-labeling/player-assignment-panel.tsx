@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { RosterPlayerForLabeling } from "@/data/data-labeling-dto";
+import type { RosterPlayerForLabeling } from "@/data/admin/types";
 import { toHero } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import Image from "next/image";

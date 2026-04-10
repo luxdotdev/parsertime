@@ -5,7 +5,7 @@ import { TargetForm } from "@/components/targets/target-form";
 import { TargetNarrative } from "@/components/targets/target-narrative";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { ScrimStatPoint, TargetProgress } from "@/data/targets-dto";
+import type { ScrimStatPoint, TargetProgress } from "@/data/player/types";
 import { type RoleName, getStatsForRole } from "@/lib/target-stats";
 import type { PlayerTarget } from "@prisma/client";
 import { ArrowLeft, Trash2 } from "lucide-react";

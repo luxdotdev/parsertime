@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { TargetProgress } from "@/data/targets-dto";
+import type { TargetProgress } from "@/data/player/types";
 
 type Props = {
   progress: TargetProgress[];
