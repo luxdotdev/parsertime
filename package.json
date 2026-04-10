@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "prepare": "effect-language-service patch",
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next typegen && oxlint",
