@@ -1,5 +1,5 @@
 import type { SimulatorContext } from "@/data/team-prediction-dto";
-import type { RoleTrio } from "@/data/team-role-stats-dto";
+import type { RoleTrio } from "@/data/team/types";
 import { mapNameToMapTypeMapping } from "@/types/map";
 
 export type PredictionScenario = {
