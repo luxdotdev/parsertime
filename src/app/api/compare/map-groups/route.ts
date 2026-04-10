@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
-import { createMapGroup } from "@/data/map-group-dto";
+import { MapGroupService } from "@/data/map";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
@@ -228,14 +228,20 @@ export async function POST(request: NextRequest) {
       category,
     };
 
-    const group = await createMapGroup({
-      name,
-      description,
-      teamId,
-      mapIds,
-      category,
-      createdBy: user.id,
-    });
+    const group = await AppRuntime.runPromise(
+      MapGroupService.pipe(
+        Effect.flatMap((svc) =>
+          svc.createMapGroup({
+            name,
+            description,
+            teamId,
+            mapIds,
+            category,
+            createdBy: user.id,
+          })
+        )
+      )
+    );
 
     const groupWithCreator = await prisma.mapGroup.findUnique({
       where: { id: group.id },

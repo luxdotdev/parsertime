@@ -4,11 +4,7 @@ import {
 } from "@/components/stats/hero/range-picker";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
-import {
-  getAllDeathsForHero,
-  getAllKillsForHero,
-  getAllStatsForHero,
-} from "@/data/hero-dto";
+import { HeroService } from "@/data/hero";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
@@ -146,11 +142,22 @@ export default async function HeroStats(
   let allHeroDeaths: Kill[];
 
   try {
-    [allHeroStats, allHeroKills, allHeroDeaths] = await Promise.all([
-      getAllStatsForHero(allScrimIds, hero),
-      getAllKillsForHero(allScrimIds, hero),
-      getAllDeathsForHero(allScrimIds, hero),
-    ]);
+    [allHeroStats, allHeroKills, allHeroDeaths] = await AppRuntime.runPromise(
+      Effect.all(
+        [
+          HeroService.pipe(
+            Effect.flatMap((svc) => svc.getAllStatsForHero(allScrimIds, hero))
+          ),
+          HeroService.pipe(
+            Effect.flatMap((svc) => svc.getAllKillsForHero(allScrimIds, hero))
+          ),
+          HeroService.pipe(
+            Effect.flatMap((svc) => svc.getAllDeathsForHero(allScrimIds, hero))
+          ),
+        ],
+        { concurrency: "unbounded" }
+      )
+    );
   } catch {
     return (
       <div className="flex-1 space-y-4 p-8 pt-6">

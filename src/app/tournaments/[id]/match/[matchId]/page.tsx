@@ -3,7 +3,9 @@ import { MatchMapsPanel } from "@/components/tournament/match/match-maps-panel";
 import { TeamPanel } from "@/components/tournament/match/team-panel";
 import { TournamentAddMapCard } from "@/components/tournament/match/tournament-add-map-card";
 import { Badge } from "@/components/ui/badge";
-import { getTournamentMatch } from "@/data/tournament-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { TournamentService } from "@/data/tournament";
 import { auth } from "@/lib/auth";
 import { tournament } from "@/lib/flags";
 import prisma from "@/lib/prisma";
@@ -23,7 +25,11 @@ export default async function TournamentMatchPage(props: {
   const matchId = Number(params.matchId);
   if (Number.isNaN(tournamentId) || Number.isNaN(matchId)) notFound();
 
-  const match = await getTournamentMatch(matchId);
+  const match = await AppRuntime.runPromise(
+    TournamentService.pipe(
+      Effect.flatMap((svc) => svc.getTournamentMatch(matchId))
+    )
+  );
   if (!match || match.tournamentId !== tournamentId) notFound();
 
   const isCompleted = match.status === "COMPLETED";

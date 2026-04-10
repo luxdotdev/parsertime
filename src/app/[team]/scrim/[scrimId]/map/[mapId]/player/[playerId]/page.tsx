@@ -12,7 +12,7 @@ import { DefaultOverview } from "@/components/player/default-overview";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserNav } from "@/components/user-nav";
-import { getMostPlayedHeroes } from "@/data/player-dto";
+import { PlayerService } from "@/data/player";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
@@ -68,7 +68,9 @@ export default async function PlayerDashboardPage(
   const mapDataId = await resolveMapDataId(id);
   const playerName = decodeURIComponent(params.playerId);
 
-  const mostPlayedHeroes = await getMostPlayedHeroes(id);
+  const mostPlayedHeroes = await AppRuntime.runPromise(
+    PlayerService.pipe(Effect.flatMap((svc) => svc.getMostPlayedHeroes(id)))
+  );
 
   const mapName = await prisma.matchStart.findFirst({
     where: {

@@ -1,5 +1,7 @@
 import { PlayerSearch } from "@/components/scouting/player-search";
-import { getScoutingPlayers } from "@/data/player-scouting-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { ScoutingService } from "@/data/player";
 import { scoutingTool } from "@/lib/flags";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -9,7 +11,9 @@ export default async function ScoutPlayerPage() {
   if (!scoutingEnabled) notFound();
 
   const t = await getTranslations("scoutingPage.player");
-  const players = await getScoutingPlayers();
+  const players = await AppRuntime.runPromise(
+    ScoutingService.pipe(Effect.flatMap((svc) => svc.getScoutingPlayers()))
+  );
 
   return (
     <div className="flex flex-1 flex-col items-center px-4 pt-16 pb-8 sm:px-8 md:pt-24">

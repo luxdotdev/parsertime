@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
-import { deleteMapGroup, updateMapGroup } from "@/data/map-group-dto";
+import { MapGroupService } from "@/data/map";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
@@ -155,12 +155,18 @@ export async function PUT(
 
     const { name, description, mapIds, category } = validatedData.data;
 
-    const updatedGroup = await updateMapGroup(groupId, {
-      name,
-      description,
-      mapIds,
-      category,
-    });
+    const updatedGroup = await AppRuntime.runPromise(
+      MapGroupService.pipe(
+        Effect.flatMap((svc) =>
+          svc.updateMapGroup(groupId, {
+            name,
+            description,
+            mapIds,
+            category,
+          })
+        )
+      )
+    );
 
     const groupWithCreator = await prisma.mapGroup.findUnique({
       where: { id: updatedGroup.id },
@@ -325,7 +331,11 @@ export async function DELETE(
       is_admin: isAdmin,
     };
 
-    await deleteMapGroup(groupId);
+    await AppRuntime.runPromise(
+      MapGroupService.pipe(
+        Effect.flatMap((svc) => svc.deleteMapGroup(groupId))
+      )
+    );
 
     wideEvent.status_code = 200;
     wideEvent.outcome = "success";

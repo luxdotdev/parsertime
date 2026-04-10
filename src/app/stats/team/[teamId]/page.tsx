@@ -33,39 +33,25 @@ import { WinProbabilityInsights } from "@/components/stats/team/win-probability-
 import { WinrateOverTimeChart } from "@/components/stats/team/winrate-over-time-chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  getHeroPickrateRawData,
-  getPlayerMapPerformanceMatrix,
-} from "@/data/team-analytics-dto";
-import { getTeamBanImpactAnalysis } from "@/data/team-ban-impact-dto";
-import { getMatchupWinrateData } from "@/data/team-matchup-winrate-dto";
-import { getTeamFightStats } from "@/data/team-fight-stats-dto";
-import { getHeroPoolAnalysis } from "@/data/team-hero-pool-dto";
-import { getTeamHeroSwapStats } from "@/data/team-hero-swap-dto";
-import { getMapModePerformance } from "@/data/team-map-mode-stats-dto";
+  TeamAnalyticsService,
+  TeamPredictionService,
+} from "@/data/team";
 import {
-  getRecentForm,
-  getStreakInfo,
-  getWinrateOverTime,
-} from "@/data/team-performance-trends-dto";
-import { getSimulatorContext } from "@/data/team-prediction-dto";
-import { getQuickWinsStats } from "@/data/team-quick-wins-dto";
-import {
-  getBestRoleTrios,
-  getRoleBalanceAnalysis,
-  getRolePerformanceStats,
-} from "@/data/team-role-stats-dto";
-import type { TeamDateRange } from "@/data/team-shared-core";
-import {
-  getBestMapByWinrate,
-  getBlindSpotMap,
-  getTeamRoster,
-  getTeamWinrates,
-  getTop5MapsByPlaytime,
-  getTopMapsByPlaytime,
-} from "@/data/team-stats-dto";
-import { getTeamAbilityImpact } from "@/data/team-ability-impact-dto";
-import { getTeamUltImpact } from "@/data/team-ult-impact-dto";
-import { getTeamUltStats } from "@/data/team-ult-stats-dto";
+  type TeamDateRange,
+  TeamStatsService,
+  TeamFightStatsService,
+  TeamRoleStatsService,
+  TeamTrendsService,
+  TeamMapModeService,
+  TeamQuickWinsService,
+  TeamHeroPoolService,
+  TeamHeroSwapService,
+  TeamBanImpactService,
+  TeamAbilityImpactService,
+  TeamUltService,
+  TeamMatchupService,
+  TeamSharedDataService,
+} from "@/data/team";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
@@ -184,76 +170,148 @@ export default async function TeamStatsPage(
   const dateRange = computeDateRange(effectiveTimeframe, customFrom, customTo);
 
   const [
+    {
+      teamRoster,
+      winrates,
+      top5Maps,
+      allMapsPlaytime,
+      bestMapByWinrate,
+      blindSpotMap,
+      fightStats,
+      roleStats,
+      roleBalance,
+      bestTrios,
+      weeklyWinrate,
+      monthlyWinrate,
+      recentForm,
+      streakInfo,
+      mapModePerformance,
+      quickStats,
+      ultStats,
+      heroSwapStats,
+      banImpactAnalysis,
+      ultImpactAnalysis,
+      abilityImpactAnalysis,
+      matchupWinrateData,
+      heroPool,
+    },
     scrims,
-    teamRoster,
-    winrates,
-    top5Maps,
-    allMapsPlaytime,
-    bestMapByWinrate,
-    blindSpotMap,
-    fightStats,
     mapNames,
-    roleStats,
-    roleBalance,
-    bestTrios,
-    weeklyWinrate,
-    monthlyWinrate,
-    recentForm,
-    streakInfo,
-    mapModePerformance,
-    quickStats,
     playerMapPerformance,
-    ultStats,
-    heroSwapStats,
-    banImpactAnalysis,
     simulatorContext,
     simulationToolEnabled,
-    ultImpactAnalysis,
     ultimateImpactToolEnabled,
-    abilityImpactAnalysis,
-    matchupWinrateData,
+    heroPickrateRawData,
   ] = await Promise.all([
+    AppRuntime.runPromise(
+      Effect.all(
+        {
+          teamRoster: TeamSharedDataService.pipe(
+            Effect.flatMap((svc) => svc.getTeamRoster(teamId))
+          ),
+          winrates: TeamStatsService.pipe(
+            Effect.flatMap((svc) => svc.getTeamWinrates(teamId, dateRange))
+          ),
+          top5Maps: TeamStatsService.pipe(
+            Effect.flatMap((svc) => svc.getTop5MapsByPlaytime(teamId, dateRange))
+          ),
+          allMapsPlaytime: TeamStatsService.pipe(
+            Effect.flatMap((svc) => svc.getTopMapsByPlaytime(teamId, dateRange))
+          ),
+          bestMapByWinrate: TeamStatsService.pipe(
+            Effect.flatMap((svc) => svc.getBestMapByWinrate(teamId, dateRange))
+          ),
+          blindSpotMap: TeamStatsService.pipe(
+            Effect.flatMap((svc) => svc.getBlindSpotMap(teamId, dateRange))
+          ),
+          fightStats: TeamFightStatsService.pipe(
+            Effect.flatMap((svc) => svc.getTeamFightStats(teamId, dateRange))
+          ),
+          roleStats: TeamRoleStatsService.pipe(
+            Effect.flatMap((svc) =>
+              svc.getRolePerformanceStats(teamId, dateRange)
+            )
+          ),
+          roleBalance: TeamRoleStatsService.pipe(
+            Effect.flatMap((svc) =>
+              svc.getRoleBalanceAnalysis(teamId, dateRange)
+            )
+          ),
+          bestTrios: TeamRoleStatsService.pipe(
+            Effect.flatMap((svc) => svc.getBestRoleTrios(teamId, dateRange))
+          ),
+          weeklyWinrate: TeamTrendsService.pipe(
+            Effect.flatMap((svc) =>
+              svc.getWinrateOverTime(teamId, "week", dateRange)
+            )
+          ),
+          monthlyWinrate: TeamTrendsService.pipe(
+            Effect.flatMap((svc) =>
+              svc.getWinrateOverTime(teamId, "month", dateRange)
+            )
+          ),
+          recentForm: TeamTrendsService.pipe(
+            Effect.flatMap((svc) => svc.getRecentForm(teamId, dateRange))
+          ),
+          streakInfo: TeamTrendsService.pipe(
+            Effect.flatMap((svc) => svc.getStreakInfo(teamId, dateRange))
+          ),
+          mapModePerformance: TeamMapModeService.pipe(
+            Effect.flatMap((svc) =>
+              svc.getMapModePerformance(teamId, dateRange)
+            )
+          ),
+          quickStats: TeamQuickWinsService.pipe(
+            Effect.flatMap((svc) => svc.getQuickWinsStats(teamId, dateRange))
+          ),
+          ultStats: TeamUltService.pipe(
+            Effect.flatMap((svc) => svc.getTeamUltStats(teamId, dateRange))
+          ),
+          heroSwapStats: TeamHeroSwapService.pipe(
+            Effect.flatMap((svc) =>
+              svc.getTeamHeroSwapStats(teamId, dateRange)
+            )
+          ),
+          banImpactAnalysis: TeamBanImpactService.pipe(
+            Effect.flatMap((svc) =>
+              svc.getTeamBanImpactAnalysis(teamId, dateRange)
+            )
+          ),
+          ultImpactAnalysis: TeamUltService.pipe(
+            Effect.flatMap((svc) => svc.getTeamUltImpact(teamId, dateRange))
+          ),
+          abilityImpactAnalysis: TeamAbilityImpactService.pipe(
+            Effect.flatMap((svc) =>
+              svc.getTeamAbilityImpact(teamId, dateRange)
+            )
+          ),
+          matchupWinrateData: TeamMatchupService.pipe(
+            Effect.flatMap((svc) =>
+              svc.getMatchupWinrateData(teamId, dateRange)
+            )
+          ),
+          heroPool: TeamHeroPoolService.pipe(
+            Effect.flatMap((svc) =>
+              svc.getHeroPoolAnalysis(teamId, dateRange?.from, dateRange?.to)
+            )
+          ),
+        },
+        { concurrency: "unbounded" }
+      )
+    ),
     prisma.scrim.findMany({
       where: {
         teamId,
         ...(dateRange && { date: { gte: dateRange.from, lte: dateRange.to } }),
       },
     }),
-    getTeamRoster(teamId),
-    getTeamWinrates(teamId, dateRange),
-    getTop5MapsByPlaytime(teamId, dateRange),
-    getTopMapsByPlaytime(teamId, dateRange),
-    getBestMapByWinrate(teamId, dateRange),
-    getBlindSpotMap(teamId, dateRange),
-    getTeamFightStats(teamId, dateRange),
     getMapNames(),
-    getRolePerformanceStats(teamId, dateRange),
-    getRoleBalanceAnalysis(teamId, dateRange),
-    getBestRoleTrios(teamId, dateRange),
-    getWinrateOverTime(teamId, "week", dateRange),
-    getWinrateOverTime(teamId, "month", dateRange),
-    getRecentForm(teamId, dateRange),
-    getStreakInfo(teamId, dateRange),
-    getMapModePerformance(teamId, dateRange),
-    getQuickWinsStats(teamId, dateRange),
-    getPlayerMapPerformanceMatrix(teamId, dateRange),
-    getTeamUltStats(teamId, dateRange),
-    getTeamHeroSwapStats(teamId, dateRange),
-    getTeamBanImpactAnalysis(teamId, dateRange),
-    getSimulatorContext(teamId, dateRange),
+    AppRuntime.runPromise(TeamAnalyticsService.pipe(Effect.flatMap((svc) => svc.getPlayerMapPerformanceMatrix(teamId, dateRange)))),
+    AppRuntime.runPromise(TeamPredictionService.pipe(Effect.flatMap((svc) => svc.getSimulatorContext(teamId, dateRange)))),
     simulationTool(),
-    getTeamUltImpact(teamId, dateRange),
     ultimateImpactTool(),
-    getTeamAbilityImpact(teamId, dateRange),
-    getMatchupWinrateData(teamId, dateRange),
+    AppRuntime.runPromise(TeamAnalyticsService.pipe(Effect.flatMap((svc) => svc.getHeroPickrateRawData(teamId, dateRange)))),
   ]);
-
-  const heroPickrateRawData = await getHeroPickrateRawData(teamId, dateRange);
-  const heroPool = await getHeroPoolAnalysis(
-    teamId,
-    dateRange?.from,
-    dateRange?.to
-  );
   const heroPickrateMatrix = calculateHeroPickrateMatrix(heroPickrateRawData);
 
   const mapPlaytimes: Record<string, number> = {};

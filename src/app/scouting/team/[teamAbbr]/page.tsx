@@ -8,9 +8,8 @@ import { ScoutForTeamPicker } from "@/components/scouting/scout-for-team-picker"
 import { ScoutingReport } from "@/components/scouting/scouting-report";
 import { TeamOverviewEnhanced } from "@/components/scouting/team-overview-enhanced";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getHeroBanIntelligence } from "@/data/hero-ban-intelligence-dto";
-import { getMapIntelligence } from "@/data/map-intelligence-dto";
-import { getPlayerIntelligence } from "@/data/player-intelligence-dto";
+import { HeroBanIntelligenceService, MapIntelligenceService } from "@/data/intelligence";
+import { IntelligenceService } from "@/data/player";
 import { AppRuntime } from "@/data/runtime";
 import { OpponentStrengthService, ScoutingService } from "@/data/scouting";
 import { Effect } from "effect";
@@ -116,13 +115,31 @@ export default async function ScoutingTeamPage(
     ]);
 
   const [mapIntelligence, banIntelligence, playerIntelligence] =
-    await Promise.all([
-      getMapIntelligence(teamAbbr, userTeamId, dataAvailability),
-      getHeroBanIntelligence(teamAbbr, userTeamId, dataAvailability),
-      userTeamId
-        ? getPlayerIntelligence(userTeamId, teamAbbr, dataAvailability)
-        : Promise.resolve(null),
-    ]);
+    await AppRuntime.runPromise(
+      Effect.all({
+        mapIntelligence: MapIntelligenceService.pipe(
+          Effect.flatMap((svc) =>
+            svc.getMapIntelligence(teamAbbr, userTeamId, dataAvailability)
+          )
+        ),
+        banIntelligence: HeroBanIntelligenceService.pipe(
+          Effect.flatMap((svc) =>
+            svc.getHeroBanIntelligence(teamAbbr, userTeamId, dataAvailability)
+          )
+        ),
+        playerIntelligence: userTeamId
+          ? IntelligenceService.pipe(
+              Effect.flatMap((svc) =>
+                svc.getPlayerIntelligence(
+                  userTeamId,
+                  teamAbbr,
+                  dataAvailability
+                )
+              )
+            )
+          : Effect.succeed(null),
+      }, { concurrency: "unbounded" })
+    ).then((r) => [r.mapIntelligence, r.banIntelligence, r.playerIntelligence] as const);
 
   const insightReport = generateInsights({
     mapIntelligence,

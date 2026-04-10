@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
-import { getRecentScrimStats } from "@/data/targets-dto";
+import { TargetsService } from "@/data/player";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { unauthorized } from "next/navigation";
@@ -95,10 +95,12 @@ export async function POST(req: NextRequest) {
   if (!hasPerms) unauthorized();
 
   // Calculate baseline from recent scrims
-  const recentStats = await getRecentScrimStats(
-    playerName,
-    teamId,
-    scrimWindow
+  const recentStats = await AppRuntime.runPromise(
+    TargetsService.pipe(
+      Effect.flatMap((svc) =>
+        svc.getRecentScrimStats(playerName, teamId, scrimWindow)
+      )
+    )
   );
   let baselineValue = 0;
   if (recentStats.length > 0) {

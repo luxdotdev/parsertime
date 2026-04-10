@@ -22,7 +22,7 @@ import { MapTabsSkeleton } from "@/components/map/map-tabs-skeleton";
 import { Suspense, ViewTransition } from "react";
 import { UserNav } from "@/components/user-nav";
 import { VodOverview } from "@/components/vods/vod-overview";
-import { getMostPlayedHeroes } from "@/data/player-dto";
+import { PlayerService } from "@/data/player";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
@@ -124,7 +124,9 @@ export default async function MapDashboardPage(
     tournamentEnabled,
     coachingCanvasEnabled,
   ] = await Promise.all([
-    getMostPlayedHeroes(id),
+    AppRuntime.runPromise(
+      PlayerService.pipe(Effect.flatMap((svc) => svc.getMostPlayedHeroes(id)))
+    ),
     prisma.matchStart.findFirst({
       where: { MapDataId: mapDataId },
       select: { map_name: true, team_1_name: true },

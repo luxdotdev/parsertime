@@ -1,4 +1,6 @@
-import { getTournamentBroadcastData } from "@/data/broadcast-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { BroadcastService } from "@/data/tournament";
 import { Logger } from "@/lib/logger";
 import { Ratelimit } from "@upstash/ratelimit";
 import { ipAddress } from "@vercel/functions";
@@ -45,7 +47,13 @@ export async function GET(
     }
     event.tournamentId = tournamentId;
 
-    const data = await getTournamentBroadcastData(tournamentId);
+    const data = await AppRuntime.runPromise(
+      BroadcastService.pipe(
+        Effect.flatMap((svc) =>
+          svc.getTournamentBroadcastData(tournamentId)
+        )
+      )
+    );
 
     if (!data) {
       event.outcome = "not_found";

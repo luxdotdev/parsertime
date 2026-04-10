@@ -2,11 +2,10 @@ import { TeamTargetsOverview } from "@/components/targets/team-targets-overview"
 import { Link } from "@/components/ui/link";
 import {
   calculateTargetProgress,
-  getRecentScrimStats,
-  getTeamTargets,
+  TargetsService,
   type TargetProgress,
-} from "@/data/targets-dto";
-import { getTeamRoster } from "@/data/team-shared-data";
+} from "@/data/player";
+import { TeamSharedDataService } from "@/data/team";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
@@ -89,7 +88,11 @@ export default async function TeamTargetsPage(props: Props) {
 
   // Use scrim-based roster (same as team stats page) instead of team membership
   const [roster, teamMembersData, targetsByPlayer] = await Promise.all([
-    getTeamRoster(teamId),
+    AppRuntime.runPromise(
+      TeamSharedDataService.pipe(
+        Effect.flatMap((svc) => svc.getTeamRoster(teamId))
+      )
+    ),
     prisma.team.findFirst({
       where: { id: teamId },
       select: {
@@ -98,7 +101,11 @@ export default async function TeamTargetsPage(props: Props) {
         },
       },
     }),
-    getTeamTargets(teamId),
+    AppRuntime.runPromise(
+      TargetsService.pipe(
+        Effect.flatMap((svc) => svc.getTeamTargets(teamId))
+      )
+    ),
   ]);
 
   // Build a lookup of registered team members by name/battletag (case-insensitive)
@@ -148,10 +155,12 @@ export default async function TeamTargetsPage(props: Props) {
         targets.length > 0
           ? Math.max(...targets.map((t) => t.scrimWindow))
           : 10;
-      const scrimStats = await getRecentScrimStats(
-        playerName,
-        teamId,
-        maxWindow
+      const scrimStats = await AppRuntime.runPromise(
+        TargetsService.pipe(
+          Effect.flatMap((svc) =>
+            svc.getRecentScrimStats(playerName, teamId, maxWindow)
+          )
+        )
       );
 
       // Calculate progress for each target

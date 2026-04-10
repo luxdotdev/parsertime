@@ -26,21 +26,73 @@ import {
   tournamentCacheMissTotal,
 } from "./metrics";
 
+import type { Prisma } from "@prisma/client";
+
 type GetTournamentResult = Awaited<
   ReturnType<typeof prisma.tournament.findUnique>
 >;
 
-type GetUserTournamentsResult = Awaited<
-  ReturnType<typeof prisma.tournament.findMany>
->;
+type GetUserTournamentsResult = Prisma.TournamentGetPayload<{
+  include: {
+    teams: { select: { name: true } };
+    _count: { select: { matches: true } };
+  };
+}>[];
 
-type GetTournamentMatchResult = Awaited<
-  ReturnType<typeof prisma.tournamentMatch.findUnique>
->;
+type GetTournamentMatchResult = Prisma.TournamentMatchGetPayload<{
+  include: {
+    tournament: true;
+    round: true;
+    team1: {
+      include: {
+        team: { select: { id: true; name: true; image: true } };
+      };
+    };
+    team2: {
+      include: {
+        team: { select: { id: true; name: true; image: true } };
+      };
+    };
+    winner: true;
+    maps: {
+      include: {
+        map: {
+          include: {
+            mapData: {
+              include: {
+                match_start: true;
+                match_end: true;
+                round_end: true;
+                HeroBan: true;
+              };
+            };
+          };
+        };
+      };
+    };
+  };
+}> | null;
 
-type GetTournamentBracketResult = Awaited<
-  ReturnType<typeof prisma.tournament.findUnique>
->;
+type GetTournamentBracketResult = Prisma.TournamentGetPayload<{
+  include: {
+    teams: true;
+    rounds: true;
+    matches: {
+      include: {
+        team1: { select: { id: true; name: true; seed: true } };
+        team2: { select: { id: true; name: true; seed: true } };
+        winner: { select: { id: true; name: true } };
+        round: {
+          select: {
+            roundNumber: true;
+            roundName: true;
+            bracket: true;
+          };
+        };
+      };
+    };
+  };
+}> | null;
 
 export type TournamentServiceInterface = {
   readonly getTournament: (

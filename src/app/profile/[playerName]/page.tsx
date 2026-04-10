@@ -16,10 +16,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrimService } from "@/data/scrim";
 import {
   calculateTargetProgress,
-  getPlayerTargets,
-  getRecentScrimStats,
+  TargetsService,
   type TargetProgress,
-} from "@/data/targets-dto";
+} from "@/data/player";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
@@ -297,7 +296,12 @@ export default async function ProfilePage(
   const canViewTargets = isOwnProfile ?? isAdmin;
 
   let targetProgress: TargetProgress[] = [];
-  let targetScrimStats: Awaited<ReturnType<typeof getRecentScrimStats>> = [];
+  let targetScrimStats: {
+    scrimId: number;
+    scrimDate: string;
+    scrimName: string;
+    stats: Record<string, number>;
+  }[] = [];
   let playerPrimaryRole: RoleName = "Damage";
 
   if (canViewTargets) {
@@ -319,13 +323,19 @@ export default async function ProfilePage(
         if (topRole) playerPrimaryRole = topRole;
       }
 
-      const targets = await getPlayerTargets(targetTeamId, name);
+      const targets = await AppRuntime.runPromise(
+        TargetsService.pipe(
+          Effect.flatMap((svc) => svc.getPlayerTargets(targetTeamId, name))
+        )
+      );
       if (targets.length > 0) {
         const maxWindow = Math.max(...targets.map((t) => t.scrimWindow));
-        targetScrimStats = await getRecentScrimStats(
-          name,
-          targetTeamId,
-          maxWindow
+        targetScrimStats = await AppRuntime.runPromise(
+          TargetsService.pipe(
+            Effect.flatMap((svc) =>
+              svc.getRecentScrimStats(name, targetTeamId, maxWindow)
+            )
+          )
         );
         targetProgress = targets.map((target) => {
           const windowStats = targetScrimStats.slice(-target.scrimWindow);
