@@ -1,4 +1,4 @@
-import { getComparisonStats } from "@/data/comparison-dto";
+import { ComparisonAggregationService } from "@/data/comparison";
 import { getMapIntelligence } from "@/data/map-intelligence-dto";
 import { getPlayerIntelligence } from "@/data/player-intelligence-dto";
 import { AppRuntime } from "@/data/runtime";
@@ -386,10 +386,16 @@ export function buildTools(opts: {
         if (!hasAccess) {
           return { error: "You don't have access to the requested maps." };
         }
-        const data = await getComparisonStats(
-          mapIds,
-          playerName,
-          heroes as HeroName[] | undefined
+        const data = await AppRuntime.runPromise(
+          ComparisonAggregationService.pipe(
+            Effect.flatMap((svc) =>
+              svc.getComparisonStats(
+                mapIds,
+                playerName,
+                heroes as HeroName[] | undefined
+              )
+            )
+          )
         );
         return {
           playerName: data.playerName,
