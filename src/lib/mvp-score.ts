@@ -205,7 +205,11 @@ export async function calculateMVPScore({
   minTimeSeconds = 300,
 }: CalculateMVPScoreParams): Promise<MVPScoreResult | null> {
   const playerStats = await AppRuntime.runPromise(
-    ScrimService.pipe(Effect.flatMap((svc) => svc.getFinalRoundStatsForPlayer(mapId, playerName)))
+    ScrimService.pipe(
+      Effect.flatMap((svc) =>
+        svc.getFinalRoundStatsForPlayer(mapId, playerName)
+      )
+    )
   );
 
   if (playerStats.length === 0) {

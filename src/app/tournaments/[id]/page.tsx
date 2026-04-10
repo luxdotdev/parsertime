@@ -46,9 +46,7 @@ export default async function TournamentDetailPage(props: {
 
   if (data.format === "ROUND_ROBIN_SE") {
     rrStandings = await AppRuntime.runPromise(
-      TournamentService.pipe(
-        Effect.flatMap((svc) => svc.getRRStandings(id))
-      )
+      TournamentService.pipe(Effect.flatMap((svc) => svc.getRRStandings(id)))
     );
 
     const session = await auth();

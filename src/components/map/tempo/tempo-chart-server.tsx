@@ -17,9 +17,7 @@ export async function TempoChartServer({
 }: TempoChartServerProps) {
   const [data, t] = await Promise.all([
     AppRuntime.runPromise(
-      TempoService.pipe(
-        Effect.flatMap((svc) => svc.getTempoChartData(id))
-      )
+      TempoService.pipe(Effect.flatMap((svc) => svc.getTempoChartData(id)))
     ),
     getTranslations("mapPage.events.tempo"),
   ]);

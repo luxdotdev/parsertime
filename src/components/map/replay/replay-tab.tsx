@@ -7,9 +7,7 @@ import { ReplayViewer } from "./replay-viewer";
 export async function ReplayTab({ id }: { id: number }) {
   const [data, t] = await Promise.all([
     AppRuntime.runPromise(
-      ReplayService.pipe(
-        Effect.flatMap((svc) => svc.getReplayData(id))
-      )
+      ReplayService.pipe(Effect.flatMap((svc) => svc.getReplayData(id)))
     ),
     getTranslations("mapPage.replay"),
   ]);

@@ -30,7 +30,11 @@ export async function calculateStats(mapDataId: number, playerName: string) {
     mapMVP,
   ] = await Promise.all([
     AppRuntime.runPromise(
-      ScrimService.pipe(Effect.flatMap((svc) => svc.getFinalRoundStatsForPlayer(mapDataId, playerName)))
+      ScrimService.pipe(
+        Effect.flatMap((svc) =>
+          svc.getFinalRoundStatsForPlayer(mapDataId, playerName)
+        )
+      )
     ),
     groupKillsIntoFights(mapDataId),
     prisma.roundEnd.findFirst({
@@ -38,7 +42,11 @@ export async function calculateStats(mapDataId: number, playerName: string) {
       orderBy: { round_number: "desc" },
     }),
     AppRuntime.runPromise(
-      ScrimService.pipe(Effect.flatMap((svc) => svc.getFinalRoundStatsForPlayer(mapDataId, playerName)))
+      ScrimService.pipe(
+        Effect.flatMap((svc) =>
+          svc.getFinalRoundStatsForPlayer(mapDataId, playerName)
+        )
+      )
     ),
     getAverageUltChargeTime(mapDataId, playerName),
     getAverageTimeToUseUlt(mapDataId, playerName),

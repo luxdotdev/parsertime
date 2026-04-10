@@ -491,7 +491,13 @@ export const make = Effect.gen(function* () {
     opponentAbbr: string,
     userTeamId: number | null,
     profile?: DataAvailabilityProfile
-  ) { return JSON.stringify({ opponentAbbr, userTeamId, profile: profile ?? null }); }
+  ) {
+    return JSON.stringify({
+      opponentAbbr,
+      userTeamId,
+      profile: profile ?? null,
+    });
+  }
 
   const mapIntelCache = yield* Cache.make({
     capacity: CACHE_CAPACITY,

@@ -146,12 +146,31 @@ export default async function PlayerStats(
 
   try {
     const result = await AppRuntime.runPromise(
-      Effect.all({
-        allPlayerStats: ScrimService.pipe(Effect.flatMap((svc) => svc.getAllStatsForPlayer(permittedScrimIds, name))),
-        allPlayerKills: ScrimService.pipe(Effect.flatMap((svc) => svc.getAllKillsForPlayer(permittedScrimIds, name))),
-        mapWinrates: ScrimService.pipe(Effect.flatMap((svc) => svc.getAllMapWinratesForPlayer(permittedScrimIds, name))),
-        allPlayerDeaths: ScrimService.pipe(Effect.flatMap((svc) => svc.getAllDeathsForPlayer(permittedScrimIds, name))),
-      }, { concurrency: "unbounded" })
+      Effect.all(
+        {
+          allPlayerStats: ScrimService.pipe(
+            Effect.flatMap((svc) =>
+              svc.getAllStatsForPlayer(permittedScrimIds, name)
+            )
+          ),
+          allPlayerKills: ScrimService.pipe(
+            Effect.flatMap((svc) =>
+              svc.getAllKillsForPlayer(permittedScrimIds, name)
+            )
+          ),
+          mapWinrates: ScrimService.pipe(
+            Effect.flatMap((svc) =>
+              svc.getAllMapWinratesForPlayer(permittedScrimIds, name)
+            )
+          ),
+          allPlayerDeaths: ScrimService.pipe(
+            Effect.flatMap((svc) =>
+              svc.getAllDeathsForPlayer(permittedScrimIds, name)
+            )
+          ),
+        },
+        { concurrency: "unbounded" }
+      )
     );
     allPlayerStats = result.allPlayerStats;
     allPlayerKills = result.allPlayerKills;

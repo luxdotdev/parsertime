@@ -3,10 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ChartConfig } from "@/components/ui/chart";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
-import type {
-  SwapTimingBucket,
-  TeamHeroSwapStats,
-} from "@/data/team/types";
+import type { SwapTimingBucket, TeamHeroSwapStats } from "@/data/team/types";
 import { cn, toHero } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";

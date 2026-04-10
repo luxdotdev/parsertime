@@ -332,9 +332,7 @@ export async function DELETE(
     };
 
     await AppRuntime.runPromise(
-      MapGroupService.pipe(
-        Effect.flatMap((svc) => svc.deleteMapGroup(groupId))
-      )
+      MapGroupService.pipe(Effect.flatMap((svc) => svc.deleteMapGroup(groupId)))
     );
 
     wideEvent.status_code = 200;

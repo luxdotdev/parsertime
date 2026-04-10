@@ -8,7 +8,10 @@ import { ScoutForTeamPicker } from "@/components/scouting/scout-for-team-picker"
 import { ScoutingReport } from "@/components/scouting/scouting-report";
 import { TeamOverviewEnhanced } from "@/components/scouting/team-overview-enhanced";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { HeroBanIntelligenceService, MapIntelligenceService } from "@/data/intelligence";
+import {
+  HeroBanIntelligenceService,
+  MapIntelligenceService,
+} from "@/data/intelligence";
 import { IntelligenceService } from "@/data/player";
 import { AppRuntime } from "@/data/runtime";
 import { OpponentStrengthService, ScoutingService } from "@/data/scouting";
@@ -116,30 +119,36 @@ export default async function ScoutingTeamPage(
 
   const [mapIntelligence, banIntelligence, playerIntelligence] =
     await AppRuntime.runPromise(
-      Effect.all({
-        mapIntelligence: MapIntelligenceService.pipe(
-          Effect.flatMap((svc) =>
-            svc.getMapIntelligence(teamAbbr, userTeamId, dataAvailability)
-          )
-        ),
-        banIntelligence: HeroBanIntelligenceService.pipe(
-          Effect.flatMap((svc) =>
-            svc.getHeroBanIntelligence(teamAbbr, userTeamId, dataAvailability)
-          )
-        ),
-        playerIntelligence: userTeamId
-          ? IntelligenceService.pipe(
-              Effect.flatMap((svc) =>
-                svc.getPlayerIntelligence(
-                  userTeamId,
-                  teamAbbr,
-                  dataAvailability
+      Effect.all(
+        {
+          mapIntelligence: MapIntelligenceService.pipe(
+            Effect.flatMap((svc) =>
+              svc.getMapIntelligence(teamAbbr, userTeamId, dataAvailability)
+            )
+          ),
+          banIntelligence: HeroBanIntelligenceService.pipe(
+            Effect.flatMap((svc) =>
+              svc.getHeroBanIntelligence(teamAbbr, userTeamId, dataAvailability)
+            )
+          ),
+          playerIntelligence: userTeamId
+            ? IntelligenceService.pipe(
+                Effect.flatMap((svc) =>
+                  svc.getPlayerIntelligence(
+                    userTeamId,
+                    teamAbbr,
+                    dataAvailability
+                  )
                 )
               )
-            )
-          : Effect.succeed(null),
-      }, { concurrency: "unbounded" })
-    ).then((r) => [r.mapIntelligence, r.banIntelligence, r.playerIntelligence] as const);
+            : Effect.succeed(null),
+        },
+        { concurrency: "unbounded" }
+      )
+    ).then(
+      (r) =>
+        [r.mapIntelligence, r.banIntelligence, r.playerIntelligence] as const
+    );
 
   const insightReport = generateInsights({
     mapIntelligence,

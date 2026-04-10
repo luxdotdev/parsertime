@@ -49,9 +49,7 @@ export async function GET(
 
     const data = await AppRuntime.runPromise(
       BroadcastService.pipe(
-        Effect.flatMap((svc) =>
-          svc.getTournamentBroadcastData(tournamentId)
-        )
+        Effect.flatMap((svc) => svc.getTournamentBroadcastData(tournamentId))
       )
     );
 

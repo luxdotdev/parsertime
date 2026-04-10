@@ -784,7 +784,9 @@ export const make: Effect.Effect<
     );
   }
 
-  function opponentCacheKeyOf(userTeamId: number, opponentAbbr: string) { return JSON.stringify({ userTeamId, opponentAbbr }); }
+  function opponentCacheKeyOf(userTeamId: number, opponentAbbr: string) {
+    return JSON.stringify({ userTeamId, opponentAbbr });
+  }
 
   const mapResultsCache = yield* Cache.make({
     capacity: CACHE_CAPACITY,

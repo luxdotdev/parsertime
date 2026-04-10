@@ -368,7 +368,11 @@ export const make = Effect.gen(function* () {
         wideEvent.outcome = "success";
         wideEvent.hero_count = 0;
         yield* Metric.increment(abilityImpactQuerySuccessTotal);
-        const _empty: AbilityImpactAnalysis = { byHero: {}, availableHeroes: [] }; return _empty;
+        const _empty: AbilityImpactAnalysis = {
+          byHero: {},
+          availableHeroes: [],
+        };
+        return _empty;
       }
 
       const [allAbility1Events, allAbility2Events] = yield* Effect.tryPromise({

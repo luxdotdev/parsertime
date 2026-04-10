@@ -81,7 +81,9 @@ export async function POST(request: NextRequest) {
       event.user_agent = ua.ua;
 
       const user = await AppRuntime.runPromise(
-        UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+        UserService.pipe(
+          Effect.flatMap((svc) => svc.getUser(session.user.email))
+        )
       );
       event.user_id = user?.id;
       event.billing_plan = user?.billingPlan;

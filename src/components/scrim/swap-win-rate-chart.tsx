@@ -1,9 +1,6 @@
 "use client";
 
-import type {
-  SwapTimingOutcome,
-  SwapWinrateBucket,
-} from "@/data/team/types";
+import type { SwapTimingOutcome, SwapWinrateBucket } from "@/data/team/types";
 import {
   Bar,
   BarChart,

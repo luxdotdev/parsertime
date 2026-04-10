@@ -38,7 +38,9 @@ export async function POST(req: NextRequest) {
   if (!teamInviteToken) return new Response("Token not found", { status: 404 });
 
   const inviter = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(teamInviteToken?.email)))
+    UserService.pipe(
+      Effect.flatMap((svc) => svc.getUser(teamInviteToken?.email))
+    )
   );
   if (!inviter) return new Response("Inviter not found", { status: 404 });
 

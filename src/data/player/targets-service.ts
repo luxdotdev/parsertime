@@ -302,7 +302,8 @@ export const make: Effect.Effect<TargetsServiceInterface> = Effect.gen(
           wideEvent.scrim_count = 0;
           wideEvent.outcome = "success";
           yield* Metric.increment(recentScrimStatsQuerySuccessTotal);
-          const _empty: ScrimStatPoint[] = []; return _empty;
+          const _empty: ScrimStatPoint[] = [];
+          return _empty;
         }
 
         const mapIds = recentScrims.flatMap((s) =>
@@ -314,7 +315,8 @@ export const make: Effect.Effect<TargetsServiceInterface> = Effect.gen(
           wideEvent.map_count = 0;
           wideEvent.outcome = "success";
           yield* Metric.increment(recentScrimStatsQuerySuccessTotal);
-          const _empty: ScrimStatPoint[] = []; return _empty;
+          const _empty: ScrimStatPoint[] = [];
+          return _empty;
         }
 
         const stats = yield* Effect.tryPromise({

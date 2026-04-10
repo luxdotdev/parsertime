@@ -32,10 +32,7 @@ import { WinLossStreaksCard } from "@/components/stats/team/win-loss-streaks-car
 import { WinProbabilityInsights } from "@/components/stats/team/win-probability-insights";
 import { WinrateOverTimeChart } from "@/components/stats/team/winrate-over-time-chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  TeamAnalyticsService,
-  TeamPredictionService,
-} from "@/data/team";
+import { TeamAnalyticsService, TeamPredictionService } from "@/data/team";
 import {
   type TeamDateRange,
   TeamStatsService,
@@ -213,7 +210,9 @@ export default async function TeamStatsPage(
             Effect.flatMap((svc) => svc.getTeamWinrates(teamId, dateRange))
           ),
           top5Maps: TeamStatsService.pipe(
-            Effect.flatMap((svc) => svc.getTop5MapsByPlaytime(teamId, dateRange))
+            Effect.flatMap((svc) =>
+              svc.getTop5MapsByPlaytime(teamId, dateRange)
+            )
           ),
           allMapsPlaytime: TeamStatsService.pipe(
             Effect.flatMap((svc) => svc.getTopMapsByPlaytime(teamId, dateRange))
@@ -268,9 +267,7 @@ export default async function TeamStatsPage(
             Effect.flatMap((svc) => svc.getTeamUltStats(teamId, dateRange))
           ),
           heroSwapStats: TeamHeroSwapService.pipe(
-            Effect.flatMap((svc) =>
-              svc.getTeamHeroSwapStats(teamId, dateRange)
-            )
+            Effect.flatMap((svc) => svc.getTeamHeroSwapStats(teamId, dateRange))
           ),
           banImpactAnalysis: TeamBanImpactService.pipe(
             Effect.flatMap((svc) =>
@@ -281,9 +278,7 @@ export default async function TeamStatsPage(
             Effect.flatMap((svc) => svc.getTeamUltImpact(teamId, dateRange))
           ),
           abilityImpactAnalysis: TeamAbilityImpactService.pipe(
-            Effect.flatMap((svc) =>
-              svc.getTeamAbilityImpact(teamId, dateRange)
-            )
+            Effect.flatMap((svc) => svc.getTeamAbilityImpact(teamId, dateRange))
           ),
           matchupWinrateData: TeamMatchupService.pipe(
             Effect.flatMap((svc) =>
@@ -306,11 +301,25 @@ export default async function TeamStatsPage(
       },
     }),
     getMapNames(),
-    AppRuntime.runPromise(TeamAnalyticsService.pipe(Effect.flatMap((svc) => svc.getPlayerMapPerformanceMatrix(teamId, dateRange)))),
-    AppRuntime.runPromise(TeamPredictionService.pipe(Effect.flatMap((svc) => svc.getSimulatorContext(teamId, dateRange)))),
+    AppRuntime.runPromise(
+      TeamAnalyticsService.pipe(
+        Effect.flatMap((svc) =>
+          svc.getPlayerMapPerformanceMatrix(teamId, dateRange)
+        )
+      )
+    ),
+    AppRuntime.runPromise(
+      TeamPredictionService.pipe(
+        Effect.flatMap((svc) => svc.getSimulatorContext(teamId, dateRange))
+      )
+    ),
     simulationTool(),
     ultimateImpactTool(),
-    AppRuntime.runPromise(TeamAnalyticsService.pipe(Effect.flatMap((svc) => svc.getHeroPickrateRawData(teamId, dateRange)))),
+    AppRuntime.runPromise(
+      TeamAnalyticsService.pipe(
+        Effect.flatMap((svc) => svc.getHeroPickrateRawData(teamId, dateRange))
+      )
+    ),
   ]);
   const heroPickrateMatrix = calculateHeroPickrateMatrix(heroPickrateRawData);
 

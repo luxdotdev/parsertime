@@ -19,7 +19,9 @@ export default async function EditScrimPage(
 ) {
   const params = await props.params;
   const scrim = await AppRuntime.runPromise(
-    ScrimService.pipe(Effect.flatMap((svc) => svc.getScrim(parseInt(params.scrimId))))
+    ScrimService.pipe(
+      Effect.flatMap((svc) => svc.getScrim(parseInt(params.scrimId)))
+    )
   );
   const session = await auth();
   const t = await getTranslations("scrimPage.editScrim");
@@ -32,9 +34,7 @@ export default async function EditScrimPage(
     [
       AppRuntime.runPromise(
         UserService.pipe(
-          Effect.flatMap((svc) =>
-            svc.getTeamsWithPerms(session?.user?.email)
-          )
+          Effect.flatMap((svc) => svc.getTeamsWithPerms(session?.user?.email))
         )
       ),
       AppRuntime.runPromise(

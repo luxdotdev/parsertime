@@ -270,12 +270,31 @@ export default async function ProfilePage(
   const permittedScrimIds = data[permitted].map((scrim) => scrim.id);
 
   const { stats, kills, deaths, mapWinrates } = await AppRuntime.runPromise(
-    Effect.all({
-      stats: ScrimService.pipe(Effect.flatMap((svc) => svc.getAllStatsForPlayer(permittedScrimIds, name))),
-      kills: ScrimService.pipe(Effect.flatMap((svc) => svc.getAllKillsForPlayer(permittedScrimIds, name))),
-      deaths: ScrimService.pipe(Effect.flatMap((svc) => svc.getAllDeathsForPlayer(permittedScrimIds, name))),
-      mapWinrates: ScrimService.pipe(Effect.flatMap((svc) => svc.getAllMapWinratesForPlayer(permittedScrimIds, name))),
-    }, { concurrency: "unbounded" })
+    Effect.all(
+      {
+        stats: ScrimService.pipe(
+          Effect.flatMap((svc) =>
+            svc.getAllStatsForPlayer(permittedScrimIds, name)
+          )
+        ),
+        kills: ScrimService.pipe(
+          Effect.flatMap((svc) =>
+            svc.getAllKillsForPlayer(permittedScrimIds, name)
+          )
+        ),
+        deaths: ScrimService.pipe(
+          Effect.flatMap((svc) =>
+            svc.getAllDeathsForPlayer(permittedScrimIds, name)
+          )
+        ),
+        mapWinrates: ScrimService.pipe(
+          Effect.flatMap((svc) =>
+            svc.getAllMapWinratesForPlayer(permittedScrimIds, name)
+          )
+        ),
+      },
+      { concurrency: "unbounded" }
+    )
   );
 
   // Calculate max time for bar chart scaling
@@ -286,9 +305,7 @@ export default async function ProfilePage(
   // Targets tab: visible on own profile or for site admins
   const session = await auth();
   const sessionUser = await AppRuntime.runPromise(
-    UserService.pipe(
-      Effect.flatMap((svc) => svc.getUser(session?.user?.email))
-    )
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
   );
   const isOwnProfile =
     user && session?.user?.email && session.user.email === user.email;

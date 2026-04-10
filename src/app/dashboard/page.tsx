@@ -51,9 +51,7 @@ export default async function DashboardPage() {
   ]);
 
   const userData = await AppRuntime.runPromise(
-    UserService.pipe(
-      Effect.flatMap((svc) => svc.getUser(session?.user?.email))
-    )
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
   );
 
   const isAdmin = userData?.role === $Enums.UserRole.ADMIN;

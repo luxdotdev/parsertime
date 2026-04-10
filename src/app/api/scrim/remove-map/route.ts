@@ -27,7 +27,11 @@ export async function POST(req: NextRequest) {
   }
 
   const user = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email ?? "lucas@lux.dev")))
+    UserService.pipe(
+      Effect.flatMap((svc) =>
+        svc.getUser(session?.user?.email ?? "lucas@lux.dev")
+      )
+    )
   );
 
   if (!user) return new Response("User not found", { status: 404 });

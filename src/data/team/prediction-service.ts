@@ -20,14 +20,8 @@ import {
   TeamHeroPoolService,
   TeamHeroPoolServiceLive,
 } from "./hero-pool-service";
-import {
-  TeamMapModeService,
-  TeamMapModeServiceLive,
-} from "./map-mode-service";
-import {
-  TeamMatchupService,
-  TeamMatchupServiceLive,
-} from "./matchup-service";
+import { TeamMapModeService, TeamMapModeServiceLive } from "./map-mode-service";
+import { TeamMatchupService, TeamMatchupServiceLive } from "./matchup-service";
 import { teamCacheMissTotal, teamCacheRequestTotal } from "./metrics";
 import {
   TeamRoleStatsService,
@@ -234,9 +228,7 @@ export const make = Effect.gen(function* () {
               : Effect.logInfo("team.prediction.getSimulatorContext");
           return log.pipe(
             Effect.annotateLogs(wideEvent),
-            Effect.andThen(
-              predictionQueryDuration(Effect.succeed(durationMs))
-            )
+            Effect.andThen(predictionQueryDuration(Effect.succeed(durationMs)))
           );
         })
       ),

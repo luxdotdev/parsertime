@@ -501,7 +501,8 @@ export const make = Effect.gen(function* () {
         wideEvent.outcome = "success";
         wideEvent.map_count = 0;
         yield* Metric.increment(statsQuerySuccessTotal);
-        const _empty: TopMapByPlaytime[] = []; return _empty;
+        const _empty: TopMapByPlaytime[] = [];
+        return _empty;
       }
 
       const mapDataIds = maps.flatMap((m) => m.mapData.map((md) => md.id));
@@ -510,7 +511,8 @@ export const make = Effect.gen(function* () {
         wideEvent.outcome = "success";
         wideEvent.map_count = 0;
         yield* Metric.increment(statsQuerySuccessTotal);
-        const _empty: TopMapByPlaytime[] = []; return _empty;
+        const _empty: TopMapByPlaytime[] = [];
+        return _empty;
       }
 
       const mapDataIdToName = new Map<number, string>();

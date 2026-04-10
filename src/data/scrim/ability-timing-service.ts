@@ -927,7 +927,9 @@ export const make: Effect.Effect<
     );
   }
 
-  function abilityTimingCacheKeyOf(scrimId: number, teamId: number) { return JSON.stringify({ scrimId, teamId }); }
+  function abilityTimingCacheKeyOf(scrimId: number, teamId: number) {
+    return JSON.stringify({ scrimId, teamId });
+  }
 
   const abilityTimingCache = yield* Cache.make({
     capacity: CACHE_CAPACITY,
@@ -943,7 +945,9 @@ export const make: Effect.Effect<
     },
   });
 
-  function fightTimelinesCacheKeyOf(scrimId: number, teamId: number) { return JSON.stringify({ scrimId, teamId }); }
+  function fightTimelinesCacheKeyOf(scrimId: number, teamId: number) {
+    return JSON.stringify({ scrimId, teamId });
+  }
 
   const fightTimelinesCache = yield* Cache.make({
     capacity: CACHE_CAPACITY,
@@ -963,7 +967,9 @@ export const make: Effect.Effect<
     mapId: number,
     team1Name: string,
     team2Name: string
-  ) { return JSON.stringify({ mapId, team1Name, team2Name }); }
+  ) {
+    return JSON.stringify({ mapId, team1Name, team2Name });
+  }
 
   const mapAbilityTimingCache = yield* Cache.make({
     capacity: CACHE_CAPACITY,

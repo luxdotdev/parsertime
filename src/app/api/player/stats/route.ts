@@ -102,12 +102,31 @@ export async function GET(request: NextRequest) {
   try {
     const { allPlayerStats, allPlayerKills, mapWinrates, allPlayerDeaths } =
       await AppRuntime.runPromise(
-        Effect.all({
-          allPlayerStats: ScrimService.pipe(Effect.flatMap((svc) => svc.getAllStatsForPlayer(permittedScrimIds, name))),
-          allPlayerKills: ScrimService.pipe(Effect.flatMap((svc) => svc.getAllKillsForPlayer(permittedScrimIds, name))),
-          mapWinrates: ScrimService.pipe(Effect.flatMap((svc) => svc.getAllMapWinratesForPlayer(permittedScrimIds, name))),
-          allPlayerDeaths: ScrimService.pipe(Effect.flatMap((svc) => svc.getAllDeathsForPlayer(permittedScrimIds, name))),
-        }, { concurrency: "unbounded" })
+        Effect.all(
+          {
+            allPlayerStats: ScrimService.pipe(
+              Effect.flatMap((svc) =>
+                svc.getAllStatsForPlayer(permittedScrimIds, name)
+              )
+            ),
+            allPlayerKills: ScrimService.pipe(
+              Effect.flatMap((svc) =>
+                svc.getAllKillsForPlayer(permittedScrimIds, name)
+              )
+            ),
+            mapWinrates: ScrimService.pipe(
+              Effect.flatMap((svc) =>
+                svc.getAllMapWinratesForPlayer(permittedScrimIds, name)
+              )
+            ),
+            allPlayerDeaths: ScrimService.pipe(
+              Effect.flatMap((svc) =>
+                svc.getAllDeathsForPlayer(permittedScrimIds, name)
+              )
+            ),
+          },
+          { concurrency: "unbounded" }
+        )
       );
 
     return NextResponse.json({

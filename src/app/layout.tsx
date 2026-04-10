@@ -72,9 +72,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 
   if (session) {
     user = await AppRuntime.runPromise(
-      UserService.pipe(
-        Effect.flatMap((svc) => svc.getUser(session.user.email))
-      )
+      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
     );
   }
 

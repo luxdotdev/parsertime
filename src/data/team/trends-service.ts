@@ -229,7 +229,8 @@ export const make = Effect.gen(function* () {
         wideEvent.outcome = "success";
         wideEvent.match_count = 0;
         yield* Metric.increment(trendsQuerySuccessTotal);
-        const _empty: ProcessedMatchResult[] = []; return _empty;
+        const _empty: ProcessedMatchResult[] = [];
+        return _empty;
       }
 
       const sharedData = yield* shared.getBaseTeamData(teamId, {
@@ -290,7 +291,8 @@ export const make = Effect.gen(function* () {
         wideEvent.outcome = "success";
         wideEvent.period_count = 0;
         yield* Metric.increment(trendsQuerySuccessTotal);
-        const _empty: WinrateDataPoint[] = []; return _empty;
+        const _empty: WinrateDataPoint[] = [];
+        return _empty;
       }
 
       type PeriodKey = string;
@@ -647,10 +649,7 @@ export const make = Effect.gen(function* () {
         groupBy?: "week" | "month";
         dateRange?: TeamDateRange;
       };
-      const dr =
-        parsed.dateRange?.from
-          ? parsed.dateRange
-          : undefined;
+      const dr = parsed.dateRange?.from ? parsed.dateRange : undefined;
       return getWinrateOverTime(Number(teamIdStr), parsed.groupBy, dr).pipe(
         Effect.tap(() => Metric.increment(teamCacheMissTotal))
       );

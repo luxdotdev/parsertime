@@ -28,13 +28,17 @@ export async function GET() {
 
   try {
     let appSettings = await AppRuntime.runPromise(
-      UserService.pipe(Effect.flatMap((svc) => svc.getAppSettings(session.user.email)))
+      UserService.pipe(
+        Effect.flatMap((svc) => svc.getAppSettings(session.user.email))
+      )
     );
 
     // If no app settings exist, create default ones
     if (!appSettings) {
       const user = await AppRuntime.runPromise(
-        UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+        UserService.pipe(
+          Effect.flatMap((svc) => svc.getUser(session.user.email))
+        )
       );
       if (!user) {
         Logger.error("User not found when creating app settings");

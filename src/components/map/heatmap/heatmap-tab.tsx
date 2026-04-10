@@ -8,9 +8,7 @@ import { HeatmapControlTabs } from "./heatmap-control-tabs";
 export async function HeatmapTab({ id }: { id: number }) {
   const [data, t] = await Promise.all([
     AppRuntime.runPromise(
-      HeatmapService.pipe(
-        Effect.flatMap((svc) => svc.getHeatmapData(id))
-      )
+      HeatmapService.pipe(Effect.flatMap((svc) => svc.getHeatmapData(id)))
     ),
     getTranslations("mapPage.heatmap"),
   ]);

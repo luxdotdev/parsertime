@@ -102,9 +102,7 @@ export default async function TeamTargetsPage(props: Props) {
       },
     }),
     AppRuntime.runPromise(
-      TargetsService.pipe(
-        Effect.flatMap((svc) => svc.getTeamTargets(teamId))
-      )
+      TargetsService.pipe(Effect.flatMap((svc) => svc.getTeamTargets(teamId)))
     ),
   ]);
 

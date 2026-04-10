@@ -48,9 +48,7 @@ export async function Killfeed({
     prisma.matchStart.findFirst({ where: { MapDataId: mapDataId } }),
     groupKillsIntoFights(id),
     AppRuntime.runPromise(
-      KillfeedService.pipe(
-        Effect.flatMap((svc) => svc.getUltimateSpans(id))
-      )
+      KillfeedService.pipe(Effect.flatMap((svc) => svc.getUltimateSpans(id)))
     ),
     positionalData(),
     coachingCanvas(),

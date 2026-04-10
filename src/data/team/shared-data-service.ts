@@ -88,7 +88,8 @@ export const make: Effect.Effect<TeamSharedDataServiceInterface> = Effect.gen(
           wideEvent.roster_size = 0;
           wideEvent.outcome = "success";
           yield* Metric.increment(teamRosterQuerySuccessTotal);
-          const _empty: string[] = []; return _empty;
+          const _empty: string[] = [];
+          return _empty;
         }
 
         const allPlayerStats = yield* Effect.tryPromise({
@@ -139,7 +140,8 @@ export const make: Effect.Effect<TeamSharedDataServiceInterface> = Effect.gen(
           wideEvent.roster_size = 0;
           wideEvent.outcome = "success";
           yield* Metric.increment(teamRosterQuerySuccessTotal);
-          const _empty: string[] = []; return _empty;
+          const _empty: string[] = [];
+          return _empty;
         }
 
         let anchorPlayer: string | null = null;
@@ -157,7 +159,8 @@ export const make: Effect.Effect<TeamSharedDataServiceInterface> = Effect.gen(
           wideEvent.roster_size = 0;
           wideEvent.outcome = "success";
           yield* Metric.increment(teamRosterQuerySuccessTotal);
-          const _empty: string[] = []; return _empty;
+          const _empty: string[] = [];
+          return _empty;
         }
 
         function findTeamNameForMap(mapDataId: number): string | null {
@@ -563,10 +566,7 @@ export const make: Effect.Effect<TeamSharedDataServiceInterface> = Effect.gen(
         ),
     });
 
-    function baseDataCacheKeyOf(
-      teamId: number,
-      options?: BaseTeamDataOptions
-    ) {
+    function baseDataCacheKeyOf(teamId: number, options?: BaseTeamDataOptions) {
       return `${teamId}:${JSON.stringify(options ?? {})}`;
     }
 

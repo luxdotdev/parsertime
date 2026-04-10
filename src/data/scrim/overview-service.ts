@@ -2301,7 +2301,9 @@ export const make: Effect.Effect<
     );
   }
 
-  function overviewCacheKeyOf(scrimId: number, teamId: number) { return JSON.stringify({ scrimId, teamId }); }
+  function overviewCacheKeyOf(scrimId: number, teamId: number) {
+    return JSON.stringify({ scrimId, teamId });
+  }
 
   const overviewCache = yield* Cache.make({
     capacity: CACHE_CAPACITY,

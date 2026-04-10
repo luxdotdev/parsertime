@@ -276,7 +276,9 @@ export async function isAuthedToViewScrim(id: number) {
   if (!user) return false;
 
   const listOfViewableScrims = await AppRuntime.runPromise(
-    ScrimService.pipe(Effect.flatMap((svc) => svc.getUserViewableScrims(user.id)))
+    ScrimService.pipe(
+      Effect.flatMap((svc) => svc.getUserViewableScrims(user.id))
+    )
   );
 
   if (listOfViewableScrims.some((scrim) => scrim.id === id)) {

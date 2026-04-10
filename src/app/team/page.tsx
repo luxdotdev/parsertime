@@ -46,9 +46,7 @@ export default async function TeamPage() {
   const session = await auth();
 
   const userData = await AppRuntime.runPromise(
-    UserService.pipe(
-      Effect.flatMap((svc) => svc.getUser(session?.user?.email))
-    )
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
   );
 
   const userTeams = await prisma.team.findMany({

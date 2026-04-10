@@ -7,11 +7,11 @@ import {
 } from "@/data/map";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
+import { ScrimAbilityTimingService, ScrimService } from "@/data/scrim";
 import {
-  ScrimAbilityTimingService,
-  ScrimService,
-} from "@/data/scrim";
-import { assignPlayersToSubroles, buildPlayerUltComparisons } from "@/data/scrim/ult-helpers";
+  assignPlayersToSubroles,
+  buildPlayerUltComparisons,
+} from "@/data/scrim/ult-helpers";
 import type { PlayerUltSummary, UltEfficiency } from "@/data/scrim/types";
 import { positionalData } from "@/lib/flags";
 import {
@@ -69,9 +69,7 @@ export async function DefaultOverview({
       }),
       prisma.matchStart.findFirst({ where: { MapDataId: mapDataId } }),
       AppRuntime.runPromise(
-        ScrimService.pipe(
-          Effect.flatMap((svc) => svc.getFinalRoundStats(id))
-        )
+        ScrimService.pipe(Effect.flatMap((svc) => svc.getFinalRoundStats(id)))
       ),
       prisma.playerStat.findMany({ where: { MapDataId: mapDataId } }),
       groupKillsIntoFights(id),

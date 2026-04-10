@@ -122,10 +122,7 @@ describe("User service parity", () => {
 // ---------------------------------------------------------------------------
 // Tournament domain
 // ---------------------------------------------------------------------------
-import {
-  getTournament,
-  getUserTournaments,
-} from "@/data/tournament-dto";
+import { getTournament, getUserTournaments } from "@/data/tournament-dto";
 import {
   TournamentService,
   TournamentServiceLive,

@@ -1,13 +1,8 @@
 import { ComparisonAggregationService } from "@/data/comparison";
-import {
-  MapIntelligenceService,
-} from "@/data/intelligence";
+import { MapIntelligenceService } from "@/data/intelligence";
 import { IntelligenceService } from "@/data/player";
 import { AppRuntime } from "@/data/runtime";
-import {
-  ScrimAbilityTimingService,
-  ScrimOverviewService,
-} from "@/data/scrim";
+import { ScrimAbilityTimingService, ScrimOverviewService } from "@/data/scrim";
 import {
   TeamAbilityImpactService,
   TeamFightStatsService,
@@ -272,7 +267,9 @@ export function buildTools(opts: {
           return { error: `Scrim ${scrimId} not found for team ${teamId}.` };
         }
         const data = await AppRuntime.runPromise(
-          ScrimOverviewService.pipe(Effect.flatMap((svc) => svc.getScrimOverview(scrimId, teamId)))
+          ScrimOverviewService.pipe(
+            Effect.flatMap((svc) => svc.getScrimOverview(scrimId, teamId))
+          )
         );
         return formatScrimOverview(data);
       },
@@ -305,7 +302,9 @@ export function buildTools(opts: {
             .filter((id) => validIds.has(id))
             .map(async (scrimId) => {
               const data = await AppRuntime.runPromise(
-                ScrimOverviewService.pipe(Effect.flatMap((svc) => svc.getScrimOverview(scrimId, teamId)))
+                ScrimOverviewService.pipe(
+                  Effect.flatMap((svc) => svc.getScrimOverview(scrimId, teamId))
+                )
               );
               return { scrimId, ...formatScrimOverview(data) };
             })
@@ -439,17 +438,18 @@ export function buildTools(opts: {
       }),
       execute: async ({ teamId }) => {
         assertTeamAccess(teamId);
-        const [winrateOverTime, recentForm, streakInfo] = await AppRuntime.runPromise(
-          TeamTrendsService.pipe(
-            Effect.flatMap((svc) =>
-              Effect.all([
-                svc.getWinrateOverTime(teamId),
-                svc.getRecentForm(teamId),
-                svc.getStreakInfo(teamId),
-              ])
+        const [winrateOverTime, recentForm, streakInfo] =
+          await AppRuntime.runPromise(
+            TeamTrendsService.pipe(
+              Effect.flatMap((svc) =>
+                Effect.all([
+                  svc.getWinrateOverTime(teamId),
+                  svc.getRecentForm(teamId),
+                  svc.getStreakInfo(teamId),
+                ])
+              )
             )
-          )
-        );
+          );
         return {
           winrateOverTime: winrateOverTime.map((dp) => ({
             period: dp.period,
@@ -602,7 +602,9 @@ export function buildTools(opts: {
         if (!scrim) return { error: `Scrim ${scrimId} not found.` };
 
         const data = await AppRuntime.runPromise(
-          ScrimAbilityTimingService.pipe(Effect.flatMap((svc) => svc.getScrimAbilityTiming(scrimId, teamId)))
+          ScrimAbilityTimingService.pipe(
+            Effect.flatMap((svc) => svc.getScrimAbilityTiming(scrimId, teamId))
+          )
         );
 
         if (data.rows.length === 0) {
@@ -778,7 +780,9 @@ export function buildTools(opts: {
         if (!scrim) return { error: `Scrim ${scrimId} not found.` };
 
         const data = await AppRuntime.runPromise(
-          ScrimAbilityTimingService.pipe(Effect.flatMap((svc) => svc.getScrimFightTimelines(scrimId, teamId)))
+          ScrimAbilityTimingService.pipe(
+            Effect.flatMap((svc) => svc.getScrimFightTimelines(scrimId, teamId))
+          )
         );
 
         if (data.fights.length === 0) {

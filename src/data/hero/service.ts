@@ -97,7 +97,8 @@ export const make: Effect.Effect<HeroServiceInterface> = Effect.gen(
           wideEvent.outcome = "success";
           wideEvent.resultCount = 0;
           yield* Metric.increment(heroStatsQuerySuccessTotal);
-          const _empty: PlayerStat[] = []; return _empty;
+          const _empty: PlayerStat[] = [];
+          return _empty;
         }
 
         const rows = yield* Effect.tryPromise({
@@ -194,7 +195,8 @@ export const make: Effect.Effect<HeroServiceInterface> = Effect.gen(
           wideEvent.outcome = "success";
           wideEvent.resultCount = 0;
           yield* Metric.increment(heroKillsQuerySuccessTotal);
-          const _empty: Kill[] = []; return _empty;
+          const _empty: Kill[] = [];
+          return _empty;
         }
 
         const kills = yield* Effect.tryPromise({
@@ -274,7 +276,8 @@ export const make: Effect.Effect<HeroServiceInterface> = Effect.gen(
           wideEvent.outcome = "success";
           wideEvent.resultCount = 0;
           yield* Metric.increment(heroDeathsQuerySuccessTotal);
-          const _empty: Kill[] = []; return _empty;
+          const _empty: Kill[] = [];
+          return _empty;
         }
 
         const deaths = yield* Effect.tryPromise({

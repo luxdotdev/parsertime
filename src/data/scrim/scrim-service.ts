@@ -429,7 +429,8 @@ export const make: Effect.Effect<ScrimServiceInterface> = Effect.gen(
           wideEvent.outcome = "success";
           wideEvent.stat_count = 0;
           yield* Metric.increment(scrimGetAllStatsForPlayerSuccessTotal);
-          const _empty: PlayerStat[] = []; return _empty;
+          const _empty: PlayerStat[] = [];
+          return _empty;
         }
 
         const scrims = yield* Effect.tryPromise({
@@ -464,7 +465,8 @@ export const make: Effect.Effect<ScrimServiceInterface> = Effect.gen(
           wideEvent.outcome = "success";
           wideEvent.stat_count = 0;
           yield* Metric.increment(scrimGetAllStatsForPlayerSuccessTotal);
-          const _empty: PlayerStat[] = []; return _empty;
+          const _empty: PlayerStat[] = [];
+          return _empty;
         }
 
         const rawStats = yield* Effect.tryPromise({
@@ -790,7 +792,8 @@ export const make: Effect.Effect<ScrimServiceInterface> = Effect.gen(
           wideEvent.outcome = "success";
           wideEvent.win_count = 0;
           yield* Metric.increment(scrimGetAllMapWinratesForPlayerSuccessTotal);
-          const _empty: Winrate = []; return _empty;
+          const _empty: Winrate = [];
+          return _empty;
         }
 
         const [
@@ -976,7 +979,9 @@ export const make: Effect.Effect<ScrimServiceInterface> = Effect.gen(
     function finalRoundStatsForPlayerCacheKeyOf(
       mapId: number,
       playerName: string
-    ) { return JSON.stringify({ mapId, playerName }); }
+    ) {
+      return JSON.stringify({ mapId, playerName });
+    }
 
     const finalRoundStatsForPlayerCache = yield* Cache.make({
       capacity: CACHE_CAPACITY,
@@ -992,7 +997,9 @@ export const make: Effect.Effect<ScrimServiceInterface> = Effect.gen(
       },
     });
 
-    function allStatsForPlayerCacheKeyOf(scrimIds: number[], name: string) { return JSON.stringify({ scrimIds, name }); }
+    function allStatsForPlayerCacheKeyOf(scrimIds: number[], name: string) {
+      return JSON.stringify({ scrimIds, name });
+    }
 
     const allStatsForPlayerCache = yield* Cache.make({
       capacity: CACHE_CAPACITY,
@@ -1008,7 +1015,9 @@ export const make: Effect.Effect<ScrimServiceInterface> = Effect.gen(
       },
     });
 
-    function allKillsForPlayerCacheKeyOf(scrimIds: number[], name: string) { return JSON.stringify({ scrimIds, name }); }
+    function allKillsForPlayerCacheKeyOf(scrimIds: number[], name: string) {
+      return JSON.stringify({ scrimIds, name });
+    }
 
     const allKillsForPlayerCache = yield* Cache.make({
       capacity: CACHE_CAPACITY,
@@ -1024,7 +1033,9 @@ export const make: Effect.Effect<ScrimServiceInterface> = Effect.gen(
       },
     });
 
-    function allDeathsForPlayerCacheKeyOf(scrimIds: number[], name: string) { return JSON.stringify({ scrimIds, name }); }
+    function allDeathsForPlayerCacheKeyOf(scrimIds: number[], name: string) {
+      return JSON.stringify({ scrimIds, name });
+    }
 
     const allDeathsForPlayerCache = yield* Cache.make({
       capacity: CACHE_CAPACITY,
@@ -1043,7 +1054,9 @@ export const make: Effect.Effect<ScrimServiceInterface> = Effect.gen(
     function allMapWinratesForPlayerCacheKeyOf(
       scrimIds: number[],
       name: string
-    ) { return JSON.stringify({ scrimIds, name }); }
+    ) {
+      return JSON.stringify({ scrimIds, name });
+    }
 
     const allMapWinratesForPlayerCache = yield* Cache.make({
       capacity: CACHE_CAPACITY,

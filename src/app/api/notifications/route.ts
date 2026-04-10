@@ -78,7 +78,9 @@ export async function POST(request: NextRequest) {
     if (body.data.userId) {
       // Explicit user ID provided - verify session user has permission
       const sessionUser = await AppRuntime.runPromise(
-        UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+        UserService.pipe(
+          Effect.flatMap((svc) => svc.getUser(session.user.email))
+        )
       );
       if (!sessionUser) unauthorized();
 
@@ -88,7 +90,9 @@ export async function POST(request: NextRequest) {
     } else {
       // Fallback to session user (backward compatibility)
       const sessionUser = await AppRuntime.runPromise(
-        UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+        UserService.pipe(
+          Effect.flatMap((svc) => svc.getUser(session.user.email))
+        )
       );
       if (!sessionUser) unauthorized();
       targetUserId = sessionUser.id;
