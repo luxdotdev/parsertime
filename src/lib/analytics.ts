@@ -1,5 +1,7 @@
-import { getPlayerFinalStats } from "@/data/scrim-dto";
+import { AppRuntime } from "@/data/runtime";
+import { ScrimService } from "@/data/scrim";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
+import { Effect } from "effect";
 import prisma from "@/lib/prisma";
 import { groupKillsIntoFights, removeDuplicateRows, round } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
@@ -262,7 +264,9 @@ async function calculateAverageDuelWinrate(id: number, playerName: string) {
 export async function calculateXFactor(mapId: number, playerName: string) {
   const resolvedMapId = await resolveMapDataId(mapId);
   // Get the player's role
-  const playerStats = await getPlayerFinalStats(mapId, playerName);
+  const playerStats = await AppRuntime.runPromise(
+    ScrimService.pipe(Effect.flatMap((svc) => svc.getFinalRoundStatsForPlayer(mapId, playerName)))
+  );
   const mostPlayedHero = playerStats.sort(
     (a, b) => b.hero_time_played - a.hero_time_played
   )[0].player_hero;
@@ -312,7 +316,9 @@ export async function calculateXFactor(mapId: number, playerName: string) {
     orderBy: { round_number: "desc" },
   });
 
-  const playerStatsByFinalRound = await getPlayerFinalStats(mapId, playerName);
+  const playerStatsByFinalRound = await AppRuntime.runPromise(
+    ScrimService.pipe(Effect.flatMap((svc) => svc.getFinalRoundStatsForPlayer(mapId, playerName)))
+  );
 
   const team = playerStatsByFinalRound[0]?.player_team;
 

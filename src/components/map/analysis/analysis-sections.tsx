@@ -22,7 +22,7 @@ import type {
   PlayerUltComparison,
   SubroleUltTiming,
   UltEfficiency,
-} from "@/data/scrim-overview-dto";
+} from "@/data/scrim";
 import { toHero, toKebabCase, toTimestamp } from "@/lib/utils";
 import type { RoleName } from "@/types/heroes";
 import type { Kill } from "@prisma/client";

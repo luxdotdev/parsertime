@@ -3,8 +3,10 @@ import { DangerZone } from "@/components/scrim/danger-zone";
 import { EditScrimForm } from "@/components/scrim/edit-scrim-form";
 import { Link } from "@/components/ui/link";
 import { getScoutingTeams } from "@/data/scouting-dto";
-import { getScrim } from "@/data/scrim-dto";
-import { getTeamsWithPerms } from "@/data/user-dto";
+import { ScrimService } from "@/data/scrim";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { scoutingTool } from "@/lib/flags";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
@@ -16,7 +18,9 @@ export default async function EditScrimPage(
   props: PageProps<"/[team]/scrim/[scrimId]/edit">
 ) {
   const params = await props.params;
-  const scrim = await getScrim(parseInt(params.scrimId));
+  const scrim = await AppRuntime.runPromise(
+    ScrimService.pipe(Effect.flatMap((svc) => svc.getScrim(parseInt(params.scrimId))))
+  );
   const session = await auth();
   const t = await getTranslations("scrimPage.editScrim");
 
@@ -26,7 +30,13 @@ export default async function EditScrimPage(
 
   const [teamsWithPerms, scoutingTeamList, scoutingEnabled] = await Promise.all(
     [
-      getTeamsWithPerms(session?.user?.email),
+      AppRuntime.runPromise(
+        UserService.pipe(
+          Effect.flatMap((svc) =>
+            svc.getTeamsWithPerms(session?.user?.email)
+          )
+        )
+      ),
       getScoutingTeams(),
       scoutingTool(),
     ]

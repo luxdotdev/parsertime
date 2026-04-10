@@ -3,8 +3,10 @@ import { ScrimOverviewTabs } from "@/components/scrim/scrim-overview-tabs";
 import { Badge } from "@/components/ui/badge";
 import { CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import type { ScrimInsight } from "@/data/scrim-overview-dto";
-import { getScrimOverview } from "@/data/scrim-overview-dto";
+import type { ScrimInsight } from "@/data/scrim";
+import { ScrimOverviewService } from "@/data/scrim";
+import { AppRuntime } from "@/data/runtime";
+import { Effect } from "effect";
 import { format } from "@/lib/utils";
 import {
   ArrowDownIcon,
@@ -118,7 +120,11 @@ export async function ScrimOverviewCard({
   scrimId,
   teamId,
 }: ScrimOverviewCardProps) {
-  const data = await getScrimOverview(scrimId, teamId);
+  const data = await AppRuntime.runPromise(
+    ScrimOverviewService.pipe(
+      Effect.flatMap((svc) => svc.getScrimOverview(scrimId, teamId))
+    )
+  );
 
   if (data.mapCount === 0 || data.teamPlayers.length === 0) {
     return null;

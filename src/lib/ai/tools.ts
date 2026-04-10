@@ -1,12 +1,13 @@
 import { getComparisonStats } from "@/data/comparison-dto";
 import { getMapIntelligence } from "@/data/map-intelligence-dto";
 import { getPlayerIntelligence } from "@/data/player-intelligence-dto";
+import { AppRuntime } from "@/data/runtime";
 import {
-  getScrimAbilityTiming,
-  getScrimFightTimelines,
-} from "@/data/scrim-ability-timing-dto";
-import { getScrimOverview } from "@/data/scrim-overview-dto";
+  ScrimAbilityTimingService,
+  ScrimOverviewService,
+} from "@/data/scrim";
 import { getTeamAbilityImpact } from "@/data/team-ability-impact-dto";
+import { Effect } from "effect";
 import { getTeamFightStats } from "@/data/team-fight-stats-dto";
 import { getHeroPoolAnalysis } from "@/data/team-hero-pool-dto";
 import {
@@ -266,7 +267,9 @@ export function buildTools(opts: {
         if (!scrim) {
           return { error: `Scrim ${scrimId} not found for team ${teamId}.` };
         }
-        const data = await getScrimOverview(scrimId, teamId);
+        const data = await AppRuntime.runPromise(
+          ScrimOverviewService.pipe(Effect.flatMap((svc) => svc.getScrimOverview(scrimId, teamId)))
+        );
         return formatScrimOverview(data);
       },
     }),
@@ -297,7 +300,9 @@ export function buildTools(opts: {
           scrimIds
             .filter((id) => validIds.has(id))
             .map(async (scrimId) => {
-              const data = await getScrimOverview(scrimId, teamId);
+              const data = await AppRuntime.runPromise(
+                ScrimOverviewService.pipe(Effect.flatMap((svc) => svc.getScrimOverview(scrimId, teamId)))
+              );
               return { scrimId, ...formatScrimOverview(data) };
             })
         );
@@ -552,7 +557,9 @@ export function buildTools(opts: {
         });
         if (!scrim) return { error: `Scrim ${scrimId} not found.` };
 
-        const data = await getScrimAbilityTiming(scrimId, teamId);
+        const data = await AppRuntime.runPromise(
+          ScrimAbilityTimingService.pipe(Effect.flatMap((svc) => svc.getScrimAbilityTiming(scrimId, teamId)))
+        );
 
         if (data.rows.length === 0) {
           return {
@@ -722,7 +729,9 @@ export function buildTools(opts: {
         });
         if (!scrim) return { error: `Scrim ${scrimId} not found.` };
 
-        const data = await getScrimFightTimelines(scrimId, teamId);
+        const data = await AppRuntime.runPromise(
+          ScrimAbilityTimingService.pipe(Effect.flatMap((svc) => svc.getScrimFightTimelines(scrimId, teamId)))
+        );
 
         if (data.fights.length === 0) {
           return {

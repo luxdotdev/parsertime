@@ -7,7 +7,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { PlayerScrimPerformance } from "@/data/scrim-overview-dto";
+import type { PlayerScrimPerformance } from "@/data/scrim";
 import { cn, format, toHero } from "@/lib/utils";
 import { ArrowDownIcon, ArrowUpIcon, MinusIcon } from "@radix-ui/react-icons";
 

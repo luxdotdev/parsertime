@@ -1,5 +1,7 @@
-import { getScrim } from "@/data/scrim-dto";
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
+import { ScrimService } from "@/data/scrim";
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
@@ -24,12 +26,16 @@ export async function POST(req: NextRequest) {
     Logger.log("Authorized removal of scrim with dev token");
   }
 
-  const user = await getUser(session?.user?.email ?? "lucas@lux.dev");
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email ?? "lucas@lux.dev")))
+  );
 
   if (!user) return new Response("User not found", { status: 404 });
   if (!id) return new Response("Missing ID", { status: 400 });
 
-  const scrim = await getScrim(parseInt(id));
+  const scrim = await AppRuntime.runPromise(
+    ScrimService.pipe(Effect.flatMap((svc) => svc.getScrim(parseInt(id))))
+  );
 
   if (!scrim) return new Response("Scrim not found", { status: 404 });
 

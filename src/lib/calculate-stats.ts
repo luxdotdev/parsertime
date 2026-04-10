@@ -1,4 +1,6 @@
-import { getPlayerFinalStats } from "@/data/scrim-dto";
+import { AppRuntime } from "@/data/runtime";
+import { ScrimService } from "@/data/scrim";
+import { Effect } from "effect";
 import {
   calculateDroughtTime,
   getAjaxes,
@@ -27,13 +29,17 @@ export async function calculateStats(mapDataId: number, playerName: string) {
     playerMvpScore,
     mapMVP,
   ] = await Promise.all([
-    getPlayerFinalStats(mapDataId, playerName),
+    AppRuntime.runPromise(
+      ScrimService.pipe(Effect.flatMap((svc) => svc.getFinalRoundStatsForPlayer(mapDataId, playerName)))
+    ),
     groupKillsIntoFights(mapDataId),
     prisma.roundEnd.findFirst({
       where: { MapDataId: mapDataId },
       orderBy: { round_number: "desc" },
     }),
-    getPlayerFinalStats(mapDataId, playerName),
+    AppRuntime.runPromise(
+      ScrimService.pipe(Effect.flatMap((svc) => svc.getFinalRoundStatsForPlayer(mapDataId, playerName)))
+    ),
     getAverageUltChargeTime(mapDataId, playerName),
     getAverageTimeToUseUlt(mapDataId, playerName),
     getKillsPerUltimate(mapDataId, playerName),

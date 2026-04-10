@@ -13,19 +13,16 @@ import {
 import { PlayerTargetsTab } from "@/components/targets/player-targets-tab";
 import { Link } from "@/components/ui/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  getAllDeathsForPlayer,
-  getAllKillsForPlayer,
-  getAllMapWinratesForPlayer,
-  getAllStatsForPlayer,
-} from "@/data/scrim-dto";
+import { ScrimService } from "@/data/scrim";
 import {
   calculateTargetProgress,
   getPlayerTargets,
   getRecentScrimStats,
   type TargetProgress,
 } from "@/data/targets-dto";
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { getCompositeSRLeaderboard } from "@/lib/hero-rating";
 import { Permission } from "@/lib/permissions";
@@ -273,12 +270,14 @@ export default async function ProfilePage(
 
   const permittedScrimIds = data[permitted].map((scrim) => scrim.id);
 
-  const [stats, kills, deaths, mapWinrates] = await Promise.all([
-    getAllStatsForPlayer(permittedScrimIds, name),
-    getAllKillsForPlayer(permittedScrimIds, name),
-    getAllDeathsForPlayer(permittedScrimIds, name),
-    getAllMapWinratesForPlayer(permittedScrimIds, name),
-  ]);
+  const { stats, kills, deaths, mapWinrates } = await AppRuntime.runPromise(
+    Effect.all({
+      stats: ScrimService.pipe(Effect.flatMap((svc) => svc.getAllStatsForPlayer(permittedScrimIds, name))),
+      kills: ScrimService.pipe(Effect.flatMap((svc) => svc.getAllKillsForPlayer(permittedScrimIds, name))),
+      deaths: ScrimService.pipe(Effect.flatMap((svc) => svc.getAllDeathsForPlayer(permittedScrimIds, name))),
+      mapWinrates: ScrimService.pipe(Effect.flatMap((svc) => svc.getAllMapWinratesForPlayer(permittedScrimIds, name))),
+    }, { concurrency: "unbounded" })
+  );
 
   // Calculate max time for bar chart scaling
   const maxTimePlayed = Math.max(
@@ -287,7 +286,11 @@ export default async function ProfilePage(
 
   // Targets tab: visible on own profile or for site admins
   const session = await auth();
-  const sessionUser = await getUser(session?.user?.email);
+  const sessionUser = await AppRuntime.runPromise(
+    UserService.pipe(
+      Effect.flatMap((svc) => svc.getUser(session?.user?.email))
+    )
+  );
   const isOwnProfile =
     user && session?.user?.email && session.user.email === user.email;
   const isAdmin = sessionUser?.role === $Enums.UserRole.ADMIN;

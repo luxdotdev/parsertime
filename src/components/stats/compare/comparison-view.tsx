@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Winrate } from "@/data/scrim-dto";
+import type { Winrate } from "@/data/scrim";
 import { cn } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";
 import type { Kill, PlayerStat, Scrim } from "@prisma/client";

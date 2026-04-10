@@ -2,7 +2,9 @@ import { AllHeroes } from "@/components/player/all-heroes";
 import { SpecificHero } from "@/components/player/specific-hero";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getPlayerFinalStats } from "@/data/scrim-dto";
+import { ScrimService } from "@/data/scrim";
+import { AppRuntime } from "@/data/runtime";
+import { Effect } from "effect";
 import { getHeroNames, toHero } from "@/lib/utils";
 import { getTranslations } from "next-intl/server";
 
@@ -12,7 +14,11 @@ export async function PlayerCard({ playerName, id }: Props) {
   const t = await getTranslations("mapPage.compare.playerCard");
   const heroNames = await getHeroNames();
 
-  const playerStatsByFinalRound = await getPlayerFinalStats(id, playerName);
+  const playerStatsByFinalRound = await AppRuntime.runPromise(
+    ScrimService.pipe(
+      Effect.flatMap((svc) => svc.getFinalRoundStatsForPlayer(id, playerName))
+    )
+  );
 
   const playerStats = playerStatsByFinalRound.filter(
     (stat) => stat.hero_time_played > 0

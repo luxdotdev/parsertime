@@ -5,7 +5,15 @@ import {
   serializeCalibrationData,
 } from "@/data/killfeed-calibration-dto";
 import { getRotationDeathAnalysis } from "@/data/rotation-death-dto";
-import { getMapAbilityTiming } from "@/data/scrim-ability-timing-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import {
+  ScrimAbilityTimingService,
+  ScrimService,
+  assignPlayersToSubroles,
+  buildPlayerUltComparisons,
+} from "@/data/scrim";
+import type { PlayerUltSummary, UltEfficiency } from "@/data/scrim";
 import { positionalData } from "@/lib/flags";
 import {
   Card,
@@ -16,13 +24,6 @@ import {
 } from "@/components/ui/card";
 import { CardIcon } from "@/components/ui/card-icon";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getFinalRoundStats } from "@/data/scrim-dto";
-import {
-  assignPlayersToSubroles,
-  buildPlayerUltComparisons,
-  type PlayerUltSummary,
-  type UltEfficiency,
-} from "@/data/scrim-overview-dto";
 import { filterUtilityRoundStartSwaps } from "@/data/team-hero-swap-dto";
 import { getAjaxes } from "@/lib/analytics";
 import { calculateMVPScoresForMap } from "@/lib/mvp-score";
@@ -68,7 +69,11 @@ export async function DefaultOverview({
         orderBy: { round_number: "desc" },
       }),
       prisma.matchStart.findFirst({ where: { MapDataId: mapDataId } }),
-      getFinalRoundStats(id),
+      AppRuntime.runPromise(
+        ScrimService.pipe(
+          Effect.flatMap((svc) => svc.getFinalRoundStats(id))
+        )
+      ),
       prisma.playerStat.findMany({ where: { MapDataId: mapDataId } }),
       groupKillsIntoFights(id),
     ]);
@@ -253,7 +258,13 @@ export async function DefaultOverview({
 
   const [abilityTimingAnalysis, rotationDeathAnalysis, killfeedCalibration] =
     await Promise.all([
-      getMapAbilityTiming(id, team1Name, team2Name),
+      AppRuntime.runPromise(
+        ScrimAbilityTimingService.pipe(
+          Effect.flatMap((svc) =>
+            svc.getMapAbilityTiming(id, team1Name, team2Name)
+          )
+        )
+      ),
       positionalEnabled ? getRotationDeathAnalysis(id) : null,
       positionalEnabled ? getKillfeedCalibration(id) : null,
     ]);

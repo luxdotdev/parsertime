@@ -4,13 +4,10 @@ import {
 } from "@/components/stats/player/range-picker";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
-import {
-  getAllDeathsForPlayer,
-  getAllKillsForPlayer,
-  getAllMapWinratesForPlayer,
-  getAllStatsForPlayer,
-} from "@/data/scrim-dto";
-import { getUser } from "@/data/user-dto";
+import { ScrimService } from "@/data/scrim";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
@@ -60,7 +57,9 @@ export default async function PlayerStats(
   const name = decodeURIComponent(params.playerName);
 
   const session = await auth();
-  const user = await getUser(session?.user.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user.email)))
+  );
 
   const [timeframe1, timeframe2, timeframe3] = await Promise.all([
     new Permission("stats-timeframe-1").check(),
@@ -146,13 +145,18 @@ export default async function PlayerStats(
   let allPlayerDeaths: Kill[];
 
   try {
-    [allPlayerStats, allPlayerKills, mapWinrates, allPlayerDeaths] =
-      await Promise.all([
-        getAllStatsForPlayer(permittedScrimIds, name),
-        getAllKillsForPlayer(permittedScrimIds, name),
-        getAllMapWinratesForPlayer(permittedScrimIds, name),
-        getAllDeathsForPlayer(permittedScrimIds, name),
-      ]);
+    const result = await AppRuntime.runPromise(
+      Effect.all({
+        allPlayerStats: ScrimService.pipe(Effect.flatMap((svc) => svc.getAllStatsForPlayer(permittedScrimIds, name))),
+        allPlayerKills: ScrimService.pipe(Effect.flatMap((svc) => svc.getAllKillsForPlayer(permittedScrimIds, name))),
+        mapWinrates: ScrimService.pipe(Effect.flatMap((svc) => svc.getAllMapWinratesForPlayer(permittedScrimIds, name))),
+        allPlayerDeaths: ScrimService.pipe(Effect.flatMap((svc) => svc.getAllDeathsForPlayer(permittedScrimIds, name))),
+      }, { concurrency: "unbounded" })
+    );
+    allPlayerStats = result.allPlayerStats;
+    allPlayerKills = result.allPlayerKills;
+    mapWinrates = result.mapWinrates;
+    allPlayerDeaths = result.allPlayerDeaths;
   } catch {
     return (
       <div className="flex-1 space-y-4 p-8 pt-6">
