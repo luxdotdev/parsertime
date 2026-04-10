@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ClientOnly } from "@/lib/client-only";
-import { parseData } from "@/lib/parser";
+import { parseData } from "@/lib/parser-client";
 import { cn, detectFileCorruption } from "@/lib/utils";
 import { heroRoleMapping } from "@/types/heroes";
 import type { ParserData } from "@/types/parser";

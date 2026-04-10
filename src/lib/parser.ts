@@ -1,9 +1,7 @@
+import "server-only";
+
 import type { CreateScrimRequestData } from "@/app/api/scrim/create-scrim/route";
-// Dynamic import to avoid pulling server-only modules into the client bundle.
-// calculateStats calls Prisma + Effect services that require Node.js.
-function loadCalculateStats() {
-  return import("@/lib/calculate-stats").then((m) => m.calculateStats);
-}
+import { calculateStats } from "@/lib/calculate-stats";
 import { headers } from "@/lib/headers";
 import { Logger } from "@/lib/logger";
 import { notifications } from "@/lib/notifications";
@@ -743,7 +741,6 @@ export async function calculateStatsForMap(mapDataId: number, scrimId: number) {
         scrimId
       );
 
-      const calculateStats = await loadCalculateStats();
       const stats = await calculateStats(mapDataId, player.player_name);
 
       const calculatedStatRecords = [];
