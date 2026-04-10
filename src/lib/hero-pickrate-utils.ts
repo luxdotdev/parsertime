@@ -5,7 +5,7 @@ import type {
   HeroPickrateMatrix,
   HeroPickrateRawData,
   PlayerHeroData,
-} from "@/data/team-analytics-dto";
+} from "@/data/team/types";
 
 export function calculateHeroPickrateMatrix(
   rawData: HeroPickrateRawData,

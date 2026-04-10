@@ -1,4 +1,4 @@
-import type { SimulatorContext } from "@/data/team-prediction-dto";
+import type { SimulatorContext } from "@/data/team/types";
 import type { RoleTrio } from "@/data/team/types";
 import { mapNameToMapTypeMapping } from "@/types/map";
 

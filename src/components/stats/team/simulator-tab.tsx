@@ -29,7 +29,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { SimulatorContext } from "@/data/team-prediction-dto";
+import type { SimulatorContext } from "@/data/team/types";
 import { determineRole } from "@/lib/player-table-data";
 import {
   computePrediction,

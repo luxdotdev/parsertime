@@ -1,11 +1,11 @@
 import { AppRuntime } from "@/data/runtime";
 import { ScrimService } from "@/data/scrim";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
-import { Effect } from "effect";
 import prisma from "@/lib/prisma";
 import { groupKillsIntoFights, removeDuplicateRows, round } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import type { RoundEnd, UltimateCharged, UltimateStart } from "@prisma/client";
+import { Effect } from "effect";
 
 export async function getAverageUltChargeTime(id: number, playerName: string) {
   const mapDataId = await resolveMapDataId(id);
@@ -265,7 +265,11 @@ export async function calculateXFactor(mapId: number, playerName: string) {
   const resolvedMapId = await resolveMapDataId(mapId);
   // Get the player's role
   const playerStats = await AppRuntime.runPromise(
-    ScrimService.pipe(Effect.flatMap((svc) => svc.getFinalRoundStatsForPlayer(mapId, playerName)))
+    ScrimService.pipe(
+      Effect.flatMap((svc) =>
+        svc.getFinalRoundStatsForPlayer(mapId, playerName)
+      )
+    )
   );
   const mostPlayedHero = playerStats.sort(
     (a, b) => b.hero_time_played - a.hero_time_played
@@ -317,7 +321,11 @@ export async function calculateXFactor(mapId: number, playerName: string) {
   });
 
   const playerStatsByFinalRound = await AppRuntime.runPromise(
-    ScrimService.pipe(Effect.flatMap((svc) => svc.getFinalRoundStatsForPlayer(mapId, playerName)))
+    ScrimService.pipe(
+      Effect.flatMap((svc) =>
+        svc.getFinalRoundStatsForPlayer(mapId, playerName)
+      )
+    )
   );
 
   const team = playerStatsByFinalRound[0]?.player_team;
