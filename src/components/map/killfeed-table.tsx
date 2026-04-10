@@ -165,6 +165,8 @@ export function KillfeedTable({
                 t={t}
                 tUlt={tUlt}
                 calibrationData={calibrationData}
+                canvasImportEnabled={canvasImportEnabled}
+                mapDataId={mapDataId}
               />
             </div>
           );

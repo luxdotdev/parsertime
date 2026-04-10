@@ -4,7 +4,7 @@ import type { SerializedCalibrationData } from "@/data/map/killfeed/types";
 import { getControlSubMapName } from "@/lib/map-calibration/control-map-index";
 import type { LoadedCalibration } from "@/lib/map-calibration/load-calibration";
 import { worldToImage } from "@/lib/map-calibration/world-to-image";
-import { toHero, toKebabCase } from "@/lib/utils";
+import { cn, toHero, toKebabCase } from "@/lib/utils";
 import {
   coachingCanvasStore,
   flushCanvasToLocalStorage,
@@ -68,12 +68,14 @@ export function ImportToCanvasLink({
   mapDataId,
   team1,
   t,
+  className,
 }: {
   fight: Fight;
   calibrationData: NonNullable<SerializedCalibrationData>;
   mapDataId: number;
   team1: string;
   t: ReturnType<typeof useTranslations>;
+  className?: string;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -132,7 +134,10 @@ export function ImportToCanvasLink({
   return (
     <button
       type="button"
-      className="text-muted-foreground hover:text-foreground cursor-pointer text-xs underline-offset-2 hover:underline"
+      className={cn(
+        "text-muted-foreground hover:text-foreground cursor-pointer text-xs whitespace-nowrap underline-offset-2 hover:underline",
+        className
+      )}
       onClick={handleImport}
       disabled={loading}
     >

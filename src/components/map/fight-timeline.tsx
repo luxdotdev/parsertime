@@ -21,6 +21,7 @@ import {
   type SerializedCalibrationData,
   type UltimateSpan,
 } from "@/data/map/killfeed/types";
+import { ImportToCanvasLink } from "@/components/map/import-to-canvas-link";
 import { useGoToReplay } from "@/components/map/map-tabs";
 import { cn, toHero, toKebabCase, toTimestamp } from "@/lib/utils";
 import type { Kill, RoundEnd } from "@prisma/client";
@@ -125,6 +126,8 @@ type FightTimelineProps = {
   t: ReturnType<typeof useTranslations>;
   tUlt: ReturnType<typeof useTranslations>;
   calibrationData?: SerializedCalibrationData;
+  canvasImportEnabled?: boolean;
+  mapDataId?: number;
 };
 
 export function FightTimeline({
@@ -143,6 +146,8 @@ export function FightTimeline({
   t,
   tUlt,
   calibrationData,
+  canvasImportEnabled,
+  mapDataId,
 }: FightTimelineProps) {
   const timeMin = fight.start;
   const timeMax = Math.max(fight.end, ...spans.map((s) => s.endTime));
@@ -220,7 +225,7 @@ export function FightTimeline({
       {/* Left labels column — fight start/end markers */}
       <div className="relative shrink-0" style={{ width: LEFT_LABEL_WIDTH }}>
         <div
-          className="absolute right-2 flex items-center"
+          className="absolute right-2 flex flex-col items-end"
           style={{
             top: `${fightStartPercent}%`,
             transform: "translateY(-50%)",
@@ -229,6 +234,16 @@ export function FightTimeline({
           <span className="text-muted-foreground text-right text-xs font-medium whitespace-nowrap">
             {t("fight", { num: fightIndex + 1 })} {t("start")}
           </span>
+          {canvasImportEnabled && mapDataId != null && calibrationData && (
+            <ImportToCanvasLink
+              className="mt-1"
+              fight={fight}
+              calibrationData={calibrationData}
+              mapDataId={mapDataId}
+              team1={team1}
+              t={t}
+            />
+          )}
         </div>
         <div
           className="absolute right-2 flex flex-col items-end"
