@@ -1,6 +1,6 @@
 "use client";
 
-import type { PlayerUltComparison } from "@/data/scrim";
+import type { PlayerUltComparison } from "@/data/scrim/types";
 import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import {
   Bar,

@@ -23,7 +23,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { MapAbilityTimingAnalysis } from "@/data/scrim";
+import type { MapAbilityTimingAnalysis } from "@/data/scrim/types";
 import {
   ArrowRightLeft,
   Crosshair,

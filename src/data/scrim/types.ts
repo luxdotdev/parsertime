@@ -2,7 +2,7 @@ import type { TrendsAnalysis } from "@/data/comparison/types";
 import type {
   SwapTimingOutcome,
   SwapWinrateBucket,
-} from "@/data/team/hero-swap-service";
+} from "@/data/team/types";
 import type { ValidStatColumn } from "@/lib/stat-percentiles";
 import type { HeroName, RoleName } from "@/types/heroes";
 import type { MapType } from "@prisma/client";
@@ -291,6 +291,9 @@ export type ScrimOverviewData = {
   abilityTimingAnalysis: AbilityTimingAnalysis;
 };
 
+export type Winrate = { map: string; wins: number; date: Date }[];
+
+export type { PlayerUltSummary } from "./ult-helpers";
 export type { SwapTimingOutcome, SwapWinrateBucket, TrendsAnalysis };
 
 export const ScrimIdSchema = S.Number.pipe(

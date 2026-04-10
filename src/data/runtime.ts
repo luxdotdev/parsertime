@@ -1,3 +1,5 @@
+import "server-only";
+
 import { ManagedRuntime } from "effect";
 import { DataLayerLive } from "./layer";
 

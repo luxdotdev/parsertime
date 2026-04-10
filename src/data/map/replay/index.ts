@@ -1,3 +1,5 @@
+import "server-only";
+
 export { ReplayService, ReplayServiceLive } from "./service";
 export type { ReplayServiceInterface } from "./service";
 

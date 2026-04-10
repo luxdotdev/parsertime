@@ -14,7 +14,7 @@ import type {
   ScoutingMatchHistoryEntry,
   ScoutingTeamOverview,
   TeamStrengthRating,
-} from "@/data/scouting";
+} from "@/data/scouting/types";
 import { assessConfidence } from "@/lib/confidence";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";

@@ -1,3 +1,5 @@
+import "server-only";
+
 export { HeroService, HeroServiceLive } from "./service";
 export type { HeroServiceInterface } from "./service";
 

@@ -42,47 +42,18 @@ const trendsQueryDuration = Metric.histogram(
   "Distribution of team trends query duration in milliseconds"
 );
 
-export type WinrateDataPoint = {
-  date: Date;
-  winrate: number;
-  wins: number;
-  losses: number;
-  period: string;
-};
-
-export type RecentFormMatch = {
-  scrimId: number;
-  scrimName: string;
-  date: Date;
-  mapName: string;
-  result: "win" | "loss";
-};
-
-export type RecentForm = {
-  last5: RecentFormMatch[];
-  last10: RecentFormMatch[];
-  last20: RecentFormMatch[];
-  last5Winrate: number;
-  last10Winrate: number;
-  last20Winrate: number;
-};
-
-export type StreakInfo = {
-  currentStreak: {
-    type: "win" | "loss" | "none";
-    count: number;
-  };
-  longestWinStreak: {
-    count: number;
-    startDate: Date | null;
-    endDate: Date | null;
-  };
-  longestLossStreak: {
-    count: number;
-    startDate: Date | null;
-    endDate: Date | null;
-  };
-};
+export type {
+  WinrateDataPoint,
+  RecentFormMatch,
+  RecentForm,
+  StreakInfo,
+} from "./types";
+import type {
+  WinrateDataPoint,
+  RecentFormMatch,
+  RecentForm,
+  StreakInfo,
+} from "./types";
 
 type ProcessedMatchResult = {
   scrimId: number;

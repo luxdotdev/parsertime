@@ -1,3 +1,5 @@
+import "server-only";
+
 export { UserService, UserServiceLive } from "./service";
 export type { UserServiceInterface } from "./service";
 

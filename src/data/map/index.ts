@@ -1,3 +1,5 @@
+import "server-only";
+
 export { HeatmapService, HeatmapServiceLive } from "./heatmap";
 export type { HeatmapServiceInterface } from "./heatmap";
 export type {

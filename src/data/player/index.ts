@@ -1,3 +1,5 @@
+import "server-only";
+
 export { PlayerService, PlayerServiceLive } from "./player-service";
 export type { PlayerServiceInterface } from "./player-service";
 

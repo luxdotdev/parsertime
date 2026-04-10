@@ -1,3 +1,5 @@
+import "server-only";
+
 export {
   TeamSharedDataService,
   TeamSharedDataServiceLive,
@@ -23,93 +25,45 @@ export type {
 export { TeamNotFoundError, TeamQueryError } from "./errors";
 
 export { TeamIdSchema, BaseTeamDataOptionsSchema } from "./types";
-
-export { TeamStatsService, TeamStatsServiceLive } from "./stats-service";
 export type {
-  TeamStatsServiceInterface,
+  // hero-swap types
+  SwapTimingBucket,
+  SwapWinrateBucket,
+  SwapPair,
+  PlayerSwapStats,
+  SwapTimingOutcome,
+  TeamHeroSwapStats,
+  SwapRecord,
+  // stats types
   TeamWinrates,
   TopMapByPlaytime,
   BestMapByWinrate,
-} from "./stats-service";
-
-export { TeamTrendsService, TeamTrendsServiceLive } from "./trends-service";
-export type {
-  TeamTrendsServiceInterface,
+  // trends types
   WinrateDataPoint,
   RecentFormMatch,
   RecentForm,
   StreakInfo,
-} from "./trends-service";
-
-export {
-  TeamFightStatsService,
-  TeamFightStatsServiceLive,
-} from "./fight-stats-service";
-export type {
-  TeamFightStatsServiceInterface,
+  // fight-stats types
   TeamFightStats,
-} from "./fight-stats-service";
-
-export {
-  TeamRoleStatsService,
-  TeamRoleStatsServiceLive,
-} from "./role-stats-service";
-export type {
-  TeamRoleStatsServiceInterface,
+  // role-stats types
   RoleStats,
   RolePerformanceStats,
   RoleBalanceAnalysis,
   RoleTrio,
   RoleWinrateByMap,
-} from "./role-stats-service";
-
-export {
-  TeamHeroPoolService,
-  TeamHeroPoolServiceLive,
-} from "./hero-pool-service";
-export type {
-  TeamHeroPoolServiceInterface,
+  // hero-pool types
   HeroPlaytime,
   HeroWinrate,
   HeroSpecialist,
   HeroDiversity,
   HeroPoolAnalysis,
   HeroPoolRawData,
-} from "./hero-pool-service";
-
-export {
-  TeamHeroSwapService,
-  TeamHeroSwapServiceLive,
-} from "./hero-swap-service";
-export type {
-  TeamHeroSwapServiceInterface,
-  TeamHeroSwapStats,
-  SwapTimingBucket,
-  SwapWinrateBucket,
-  SwapPair,
-  PlayerSwapStats,
-  SwapTimingOutcome,
-} from "./hero-swap-service";
-
-export { TeamMapModeService, TeamMapModeServiceLive } from "./map-mode-service";
-export type {
-  TeamMapModeServiceInterface,
+  // map-mode types
   MapModeStats,
   MapModePerformance,
-} from "./map-mode-service";
-
-export {
-  TeamQuickWinsService,
-  TeamQuickWinsServiceLive,
-} from "./quick-wins-service";
-export type {
-  TeamQuickWinsServiceInterface,
+  // quick-wins types
   QuickWinsStats,
-} from "./quick-wins-service";
-
-export { TeamUltService, TeamUltServiceLive } from "./ult-service";
-export type {
-  TeamUltServiceInterface,
+  // ult types
   ScenarioStats,
   HeroUltImpact,
   UltImpactAnalysis,
@@ -117,32 +71,78 @@ export type {
   PlayerUltRanking,
   FightOpeningHero,
   TeamUltStats,
-} from "./ult-service";
-
-export {
-  TeamBanImpactService,
-  TeamBanImpactServiceLive,
-} from "./ban-impact-service";
-export type {
-  TeamBanImpactServiceInterface,
+  // ban-impact types
   HeroBanImpact,
   TeamBanImpactAnalysis,
   OurBanImpact,
   TeamOurBanAnalysis,
   CombinedBanAnalysis,
+  // ability-impact types
+  AbilityScenarioStats,
+  AbilityImpactData,
+  HeroAbilityImpact,
+  AbilityImpactAnalysis,
+  // matchup types
+  MapHeroEntry,
+  MatchupMapResult,
+  MatchupWinrateData,
+  EnemyHeroWinrate,
+  EnemyHeroAnalysis,
+} from "./types";
+
+export { TeamStatsService, TeamStatsServiceLive } from "./stats-service";
+export type { TeamStatsServiceInterface } from "./stats-service";
+
+export { TeamTrendsService, TeamTrendsServiceLive } from "./trends-service";
+export type { TeamTrendsServiceInterface } from "./trends-service";
+
+export {
+  TeamFightStatsService,
+  TeamFightStatsServiceLive,
+} from "./fight-stats-service";
+export type { TeamFightStatsServiceInterface } from "./fight-stats-service";
+
+export {
+  TeamRoleStatsService,
+  TeamRoleStatsServiceLive,
+} from "./role-stats-service";
+export type { TeamRoleStatsServiceInterface } from "./role-stats-service";
+
+export {
+  TeamHeroPoolService,
+  TeamHeroPoolServiceLive,
+} from "./hero-pool-service";
+export type { TeamHeroPoolServiceInterface } from "./hero-pool-service";
+
+export {
+  TeamHeroSwapService,
+  TeamHeroSwapServiceLive,
+} from "./hero-swap-service";
+export type { TeamHeroSwapServiceInterface } from "./hero-swap-service";
+
+export { TeamMapModeService, TeamMapModeServiceLive } from "./map-mode-service";
+export type { TeamMapModeServiceInterface } from "./map-mode-service";
+
+export {
+  TeamQuickWinsService,
+  TeamQuickWinsServiceLive,
+} from "./quick-wins-service";
+export type { TeamQuickWinsServiceInterface } from "./quick-wins-service";
+
+export { TeamUltService, TeamUltServiceLive } from "./ult-service";
+export type { TeamUltServiceInterface } from "./ult-service";
+
+export {
+  TeamBanImpactService,
+  TeamBanImpactServiceLive,
 } from "./ban-impact-service";
+export type { TeamBanImpactServiceInterface } from "./ban-impact-service";
 
 export {
   TeamAbilityImpactService,
   TeamAbilityImpactServiceLive,
 } from "./ability-impact-service";
-export type {
-  TeamAbilityImpactServiceInterface,
-  AbilityScenarioStats,
-  AbilityImpactData,
-  HeroAbilityImpact,
-  AbilityImpactAnalysis,
-} from "./ability-impact-service";
+export type { TeamAbilityImpactServiceInterface } from "./ability-impact-service";
 
 export {
   TeamComparisonService,
@@ -151,11 +151,4 @@ export {
 export type { TeamComparisonServiceInterface } from "./comparison-service";
 
 export { TeamMatchupService, TeamMatchupServiceLive } from "./matchup-service";
-export type {
-  TeamMatchupServiceInterface,
-  MapHeroEntry,
-  MatchupMapResult,
-  MatchupWinrateData,
-  EnemyHeroWinrate,
-  EnemyHeroAnalysis,
-} from "./matchup-service";
+export type { TeamMatchupServiceInterface } from "./matchup-service";

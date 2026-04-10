@@ -5,7 +5,7 @@ import type {
   AbilityTimingOutlier,
   AbilityTimingRow,
   FightPhase,
-} from "@/data/scrim";
+} from "@/data/scrim/types";
 import { cn, toHero } from "@/lib/utils";
 import {
   ExclamationTriangleIcon,

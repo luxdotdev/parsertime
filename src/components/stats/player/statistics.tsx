@@ -33,7 +33,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Winrate } from "@/data/scrim";
+import type { Winrate } from "@/data/scrim/types";
 import type { NonMappableStat, Stat } from "@/lib/player-charts";
 import { cn, toHero, useHeroNames } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";

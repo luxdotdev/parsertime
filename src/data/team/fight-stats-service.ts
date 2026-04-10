@@ -37,36 +37,8 @@ const fightStatsQueryDuration = Metric.histogram(
   "Distribution of team fight stats query duration in milliseconds"
 );
 
-export type TeamFightStats = {
-  totalFights: number;
-  fightsWon: number;
-  fightsLost: number;
-  overallWinrate: number;
-  firstPickFights: number;
-  firstPickWins: number;
-  firstPickWinrate: number;
-  firstDeathFights: number;
-  firstDeathWins: number;
-  firstDeathWinrate: number;
-  firstUltFights: number;
-  firstUltWins: number;
-  firstUltWinrate: number;
-  dryFights: number;
-  dryFightWins: number;
-  dryFightWinrate: number;
-  nonDryFights: number;
-  totalUltsInNonDryFights: number;
-  avgUltsPerNonDryFight: number;
-  dryFightReversals: number;
-  dryFightReversalRate: number;
-  nonDryFightReversals: number;
-  nonDryFightReversalRate: number;
-  ultimateEfficiency: number;
-  avgUltsInWonFights: number;
-  avgUltsInLostFights: number;
-  wastedUltimates: number;
-  totalUltsUsed: number;
-};
+export type { TeamFightStats } from "./types";
+import type { TeamFightStats } from "./types";
 
 type FightEvent = Kill & { ultimate_id?: number };
 

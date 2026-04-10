@@ -1,6 +1,6 @@
 "use client";
 
-import type { ScrimFightAnalysis } from "@/data/scrim";
+import type { ScrimFightAnalysis } from "@/data/scrim/types";
 import {
   Bar,
   BarChart,

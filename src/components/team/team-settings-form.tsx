@@ -31,7 +31,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { ScoutingTeam } from "@/data/scouting";
+import type { ScoutingTeam } from "@/data/scouting/types";
 import { ClientOnly } from "@/lib/client-only";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";

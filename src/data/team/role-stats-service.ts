@@ -42,58 +42,20 @@ const roleStatsQueryDuration = Metric.histogram(
   "Distribution of team role stats query duration in milliseconds"
 );
 
-export type RoleStats = {
-  role: "Tank" | "Damage" | "Support";
-  totalPlaytime: number;
-  mapCount: number;
-  eliminations: number;
-  finalBlows: number;
-  deaths: number;
-  assists: number;
-  heroDamage: number;
-  damageTaken: number;
-  healing: number;
-  ultimatesEarned: number;
-  ultimatesUsed: number;
-  kd: number;
-  damagePer10Min: number;
-  healingPer10Min: number;
-  deathsPer10Min: number;
-  ultEfficiency: number;
-};
-
-export type RolePerformanceStats = {
-  Tank: RoleStats;
-  Damage: RoleStats;
-  Support: RoleStats;
-};
-
-export type RoleBalanceAnalysis = {
-  overall: string;
-  weakestRole: "Tank" | "Damage" | "Support" | null;
-  strongestRole: "Tank" | "Damage" | "Support" | null;
-  balanceScore: number;
-  insights: string[];
-};
-
-export type RoleTrio = {
-  tank: string;
-  dps1: string;
-  dps2: string;
-  support1: string;
-  support2: string;
-  wins: number;
-  losses: number;
-  winrate: number;
-  gamesPlayed: number;
-};
-
-export type RoleWinrateByMap = {
-  mapName: string;
-  Tank: { wins: number; losses: number; winrate: number };
-  Damage: { wins: number; losses: number; winrate: number };
-  Support: { wins: number; losses: number; winrate: number };
-};
+export type {
+  RoleStats,
+  RolePerformanceStats,
+  RoleBalanceAnalysis,
+  RoleTrio,
+  RoleWinrateByMap,
+} from "./types";
+import type {
+  RoleStats,
+  RolePerformanceStats,
+  RoleBalanceAnalysis,
+  RoleTrio,
+  RoleWinrateByMap,
+} from "./types";
 
 function createEmptyRoleStats(): RolePerformanceStats {
   const emptyStats: RoleStats = {

@@ -52,62 +52,24 @@ const ultQueryDuration = Metric.histogram(
   "Distribution of team ult query duration in milliseconds"
 );
 
-export type ScenarioStats = {
-  fights: number;
-  wins: number;
-  losses: number;
-  winrate: number;
-};
-
-export type HeroUltImpact = {
-  hero: string;
-  totalFightsAnalyzed: number;
-  scenarios: {
-    uncontestedOurs: ScenarioStats;
-    uncontestedTheirs: ScenarioStats;
-    mirrorOursFirst: ScenarioStats;
-    mirrorTheirsFirst: ScenarioStats;
-  };
-};
-
-export type UltImpactAnalysis = {
-  byHero: Record<string, HeroUltImpact>;
-  availableHeroes: string[];
-};
-
-export type TeamUltRoleBreakdown = {
-  role: RoleName;
-  count: number;
-  percentage: number;
-  subroleTimings: SubroleUltTiming[];
-};
-
-export type PlayerUltRanking = {
-  playerName: string;
-  primaryHero: string;
-  totalUltsUsed: number;
-  mapsPlayed: number;
-  ultsPerMap: number;
-  topFightOpeningHero: string | null;
-  fightOpeningCount: number;
-};
-
-export type FightOpeningHero = { hero: string; count: number };
-
-export type TeamUltStats = {
-  totalUltsUsed: number;
-  totalUltsEarned: number;
-  totalMaps: number;
-  ultsPerMap: number;
-  avgChargeTime: number;
-  avgHoldTime: number;
-  fightInitiationRate: number;
-  fightInitiationCount: number;
-  totalFightsWithUlts: number;
-  topFightOpeningHeroes: FightOpeningHero[];
-  roleBreakdown: TeamUltRoleBreakdown[];
-  playerRankings: PlayerUltRanking[];
-};
+export type {
+  ScenarioStats,
+  HeroUltImpact,
+  UltImpactAnalysis,
+  TeamUltRoleBreakdown,
+  PlayerUltRanking,
+  FightOpeningHero,
+  TeamUltStats,
+} from "./types";
+import type {
+  ScenarioStats,
+  HeroUltImpact,
+  UltImpactAnalysis,
+  TeamUltRoleBreakdown,
+  PlayerUltRanking,
+  FightOpeningHero,
+  TeamUltStats,
+} from "./types";
 
 function emptyScenario(): ScenarioStats {
   return { fights: 0, wins: 0, losses: 0, winrate: 0 };

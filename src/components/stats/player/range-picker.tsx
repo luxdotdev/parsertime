@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Winrate } from "@/data/scrim";
+import type { Winrate } from "@/data/scrim/types";
 import { cn } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";
 import type { Kill, PlayerStat, Scrim } from "@prisma/client";

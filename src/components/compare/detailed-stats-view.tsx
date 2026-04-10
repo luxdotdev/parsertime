@@ -15,7 +15,7 @@ import type {
   AggregatedStats,
   ComparisonStats,
   TrendsAnalysis,
-} from "@/data/comparison";
+} from "@/data/comparison/types";
 import {
   Activity,
   Award,

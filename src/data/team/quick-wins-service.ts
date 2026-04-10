@@ -46,22 +46,8 @@ const quickWinsQueryDuration = Metric.histogram(
   "Distribution of team quick wins query duration in milliseconds"
 );
 
-export type QuickWinsStats = {
-  last10GamesPerformance: { wins: number; losses: number; winrate: number };
-  bestDayOfWeek: {
-    day: string;
-    wins: number;
-    losses: number;
-    winrate: number;
-    gamesPlayed: number;
-  } | null;
-  averageFightDuration: number | null;
-  firstPickSuccessRate: {
-    successfulFirstPicks: number;
-    totalFirstPicks: number;
-    successRate: number;
-  } | null;
-};
+export type { QuickWinsStats } from "./types";
+import type { QuickWinsStats } from "./types";
 
 type FightEvent = Kill & { ultimate_id?: number };
 type Fight = { events: FightEvent[]; start: number; end: number };

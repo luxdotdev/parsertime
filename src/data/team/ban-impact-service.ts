@@ -38,42 +38,20 @@ const banImpactQueryDuration = Metric.histogram(
   "Distribution of team ban impact query duration in milliseconds"
 );
 
-export type HeroBanImpact = {
-  hero: string;
-  totalBans: number;
-  banRate: number;
-  winRateWithHero: number;
-  winRateWithoutHero: number;
-  winRateDelta: number;
-  mapsPlayed: number;
-  mapsBanned: number;
-};
-export type TeamBanImpactAnalysis = {
-  banImpacts: HeroBanImpact[];
-  mostBanned: HeroBanImpact[];
-  weakPoints: HeroBanImpact[];
-  totalMapsAnalyzed: number;
-};
-export type OurBanImpact = {
-  hero: string;
-  totalBans: number;
-  banRate: number;
-  winRateWhenBanned: number;
-  winRateWhenNotBanned: number;
-  winRateDelta: number;
-  mapsPlayed: number;
-  mapsBanned: number;
-};
-export type TeamOurBanAnalysis = {
-  ourBanImpacts: OurBanImpact[];
-  mostBannedByUs: OurBanImpact[];
-  strongBans: OurBanImpact[];
-  totalMapsAnalyzed: number;
-};
-export type CombinedBanAnalysis = {
-  received: TeamBanImpactAnalysis;
-  outgoing: TeamOurBanAnalysis;
-};
+export type {
+  HeroBanImpact,
+  TeamBanImpactAnalysis,
+  OurBanImpact,
+  TeamOurBanAnalysis,
+  CombinedBanAnalysis,
+} from "./types";
+import type {
+  HeroBanImpact,
+  TeamBanImpactAnalysis,
+  OurBanImpact,
+  TeamOurBanAnalysis,
+  CombinedBanAnalysis,
+} from "./types";
 
 const MIN_BANS_FOR_SIGNIFICANCE = 3;
 const WEAK_POINT_DELTA_THRESHOLD = 0.15;

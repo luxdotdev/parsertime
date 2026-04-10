@@ -1,6 +1,6 @@
 "use client";
 
-import type { SubroleUltTiming } from "@/data/scrim";
+import type { SubroleUltTiming } from "@/data/scrim/types";
 import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import {
   Bar,

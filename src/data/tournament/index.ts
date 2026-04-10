@@ -1,3 +1,5 @@
+import "server-only";
+
 export { TournamentService, TournamentServiceLive } from "./tournament-service";
 export type { TournamentServiceInterface } from "./tournament-service";
 

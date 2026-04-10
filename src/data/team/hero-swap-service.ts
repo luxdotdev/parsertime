@@ -1,6 +1,5 @@
 import prisma from "@/lib/prisma";
 import { calculateWinner } from "@/lib/winrate";
-import type { RoleName } from "@/types/heroes";
 import { getHeroRole } from "@/types/heroes";
 import {
   Cache,
@@ -25,6 +24,25 @@ import {
   TeamSharedDataService,
   TeamSharedDataServiceLive,
 } from "./shared-data-service";
+import type {
+  SwapTimingBucket,
+  SwapWinrateBucket,
+  SwapPair,
+  PlayerSwapStats,
+  SwapTimingOutcome,
+  TeamHeroSwapStats,
+  SwapRecord,
+} from "./types";
+
+export type {
+  SwapTimingBucket,
+  SwapWinrateBucket,
+  SwapPair,
+  PlayerSwapStats,
+  SwapTimingOutcome,
+  TeamHeroSwapStats,
+  SwapRecord,
+};
 
 const heroSwapQuerySuccessTotal = Metric.counter(
   "team.hero_swap.query.success",
@@ -41,75 +59,6 @@ const heroSwapQueryDuration = Metric.histogram(
   MetricBoundaries.exponential({ start: 10, factor: 2, count: 10 }),
   "Distribution of team hero swap query duration in milliseconds"
 );
-
-export type SwapTimingBucket = {
-  bucket: string;
-  count: number;
-  percentage: number;
-};
-export type SwapWinrateBucket = {
-  label: string;
-  wins: number;
-  losses: number;
-  winrate: number;
-  totalMaps: number;
-};
-export type SwapPair = {
-  fromHero: string;
-  toHero: string;
-  fromRole: RoleName;
-  toRole: RoleName;
-  count: number;
-  timingDistribution: SwapTimingBucket[];
-};
-export type PlayerSwapStats = {
-  playerName: string;
-  totalSwaps: number;
-  mapsWithSwaps: number;
-  mapsWithoutSwaps: number;
-  winrateWithSwaps: number;
-  winrateWithoutSwaps: number;
-  topSwapPair: { fromHero: string; toHero: string } | null;
-  topSwapPairCount: number;
-};
-export type SwapTimingOutcome = {
-  label: string;
-  wins: number;
-  losses: number;
-  winrate: number;
-  totalMaps: number;
-};
-
-export type TeamHeroSwapStats = {
-  totalSwaps: number;
-  totalMaps: number;
-  swapsPerMap: number;
-  mapsWithSwaps: number;
-  mapsWithoutSwaps: number;
-  avgHeroTimeBeforeSwap: number;
-  noSwapWinrate: number;
-  noSwapWins: number;
-  noSwapLosses: number;
-  swapWinrate: number;
-  swapWins: number;
-  swapLosses: number;
-  timingDistribution: SwapTimingBucket[];
-  winrateBySwapCount: SwapWinrateBucket[];
-  topSwapPairs: SwapPair[];
-  playerBreakdown: PlayerSwapStats[];
-  timingOutcomes: SwapTimingOutcome[];
-};
-
-export type SwapRecord = {
-  id: number;
-  match_time: number;
-  player_team: string;
-  player_name: string;
-  player_hero: string;
-  previous_hero: string;
-  hero_time_played: number;
-  MapDataId: number | null;
-};
 
 const UTILITY_SWAP_HEROES = new Set([
   "Symmetra",

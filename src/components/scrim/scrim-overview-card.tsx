@@ -3,7 +3,7 @@ import { ScrimOverviewTabs } from "@/components/scrim/scrim-overview-tabs";
 import { Badge } from "@/components/ui/badge";
 import { CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import type { ScrimInsight } from "@/data/scrim";
+import type { ScrimInsight } from "@/data/scrim/types";
 import { ScrimOverviewService } from "@/data/scrim";
 import { AppRuntime } from "@/data/runtime";
 import { Effect } from "effect";

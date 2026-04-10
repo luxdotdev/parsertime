@@ -3,13 +3,6 @@ import prisma from "@/lib/prisma";
 import { calculateWinner } from "@/lib/winrate";
 import type { HeroName } from "@/types/heroes";
 import { mapNameToMapTypeMapping } from "@/types/map";
-import type {
-  MatchStart,
-  ObjectiveCaptured,
-  PayloadProgress,
-  PointProgress,
-  RoundEnd,
-} from "@prisma/client";
 import { $Enums } from "@prisma/client";
 import {
   Cache,
@@ -51,67 +44,22 @@ const heroPoolQueryDuration = Metric.histogram(
   "Distribution of team hero pool query duration in milliseconds"
 );
 
-export type HeroPlaytime = {
-  heroName: HeroName;
-  role: "Tank" | "Damage" | "Support";
-  totalPlaytime: number;
-  gamesPlayed: number;
-  playedBy: string[];
-};
-
-export type HeroWinrate = {
-  heroName: HeroName;
-  role: "Tank" | "Damage" | "Support";
-  wins: number;
-  losses: number;
-  winrate: number;
-  gamesPlayed: number;
-  totalPlaytime: number;
-};
-
-export type HeroSpecialist = {
-  playerName: string;
-  heroName: HeroName;
-  role: "Tank" | "Damage" | "Support";
-  playtime: number;
-  gamesPlayed: number;
-  ownershipPercentage: number;
-};
-
-export type HeroDiversity = {
-  totalUniqueHeroes: number;
-  heroesPerRole: { Tank: number; Damage: number; Support: number };
-  diversityScore: number;
-  effectiveHeroPool: number;
-};
-
-export type HeroPoolAnalysis = {
-  mostPlayedByRole: {
-    Tank: HeroPlaytime[];
-    Damage: HeroPlaytime[];
-    Support: HeroPlaytime[];
-  };
-  topHeroWinrates: HeroWinrate[];
-  specialists: HeroSpecialist[];
-  diversity: HeroDiversity;
-};
-
-export type HeroPoolRawData = {
-  teamRoster: string[];
-  mapDataRecords: { id: number; name: string | null; scrimDate: Date }[];
-  allPlayerStats: {
-    player_name: string;
-    player_team: string;
-    player_hero: string;
-    hero_time_played: number;
-    MapDataId: number | null;
-  }[];
-  matchStarts: MatchStart[];
-  finalRounds: RoundEnd[];
-  captures: ObjectiveCaptured[];
-  payloadProgresses: PayloadProgress[];
-  pointProgresses: PointProgress[];
-};
+export type {
+  HeroPlaytime,
+  HeroWinrate,
+  HeroSpecialist,
+  HeroDiversity,
+  HeroPoolAnalysis,
+  HeroPoolRawData,
+} from "./types";
+import type {
+  HeroPlaytime,
+  HeroWinrate,
+  HeroSpecialist,
+  HeroDiversity,
+  HeroPoolAnalysis,
+  HeroPoolRawData,
+} from "./types";
 
 function createEmptyHeroPoolAnalysis(): HeroPoolAnalysis {
   return {

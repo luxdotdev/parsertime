@@ -57,23 +57,8 @@ type MapWinrate = {
   bestWinrate: number;
 };
 
-export type TeamWinrates = {
-  overallWins: number;
-  overallLosses: number;
-  overallWinrate: number;
-  byMap: Record<string, MapWinrate>;
-};
-
-export type TopMapByPlaytime = {
-  name: string;
-  playtime: number;
-};
-
-export type BestMapByWinrate = {
-  mapName: string;
-  playtime: number;
-  winrate: number;
-};
+export type { TeamWinrates, TopMapByPlaytime, BestMapByWinrate } from "./types";
+import type { TeamWinrates, TopMapByPlaytime, BestMapByWinrate } from "./types";
 
 function getRosterForMap(
   mapDataId: number,

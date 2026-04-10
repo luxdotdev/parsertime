@@ -7,7 +7,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import type { PlayerMapPerformance } from "@/data/scrim";
+import type { PlayerMapPerformance } from "@/data/scrim/types";
 import { Logger } from "@/lib/logger";
 import type { HeroName } from "@/types/heroes";
 import { heroRoleMapping } from "@/types/heroes";

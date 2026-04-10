@@ -1,7 +1,7 @@
 "use client";
 
 import { CardContent, CardFooter } from "@/components/ui/card";
-import type { Winrate } from "@/data/scrim";
+import type { Winrate } from "@/data/scrim/types";
 import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import { type MapName, mapNameToMapTypeMapping } from "@/types/map";
 import { useTranslations } from "next-intl";

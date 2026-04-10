@@ -1,3 +1,5 @@
+import "server-only";
+
 export { ScrimService, ScrimServiceLive } from "./scrim-service";
 export type { ScrimServiceInterface, Winrate } from "./scrim-service";
 

@@ -36,31 +36,18 @@ const abilityImpactQueryDuration = Metric.histogram(
   "Distribution of team ability impact query duration in milliseconds"
 );
 
-export type AbilityScenarioStats = {
-  fights: number;
-  wins: number;
-  losses: number;
-  winrate: number;
-};
-export type AbilityImpactData = {
-  abilityName: string;
-  totalFightsAnalyzed: number;
-  scenarios: {
-    usedByUs: AbilityScenarioStats;
-    notUsedByUs: AbilityScenarioStats;
-    usedByEnemy: AbilityScenarioStats;
-    notUsedByEnemy: AbilityScenarioStats;
-  };
-};
-export type HeroAbilityImpact = {
-  hero: string;
-  ability1: AbilityImpactData;
-  ability2: AbilityImpactData;
-};
-export type AbilityImpactAnalysis = {
-  byHero: Record<string, HeroAbilityImpact>;
-  availableHeroes: string[];
-};
+export type {
+  AbilityScenarioStats,
+  AbilityImpactData,
+  HeroAbilityImpact,
+  AbilityImpactAnalysis,
+} from "./types";
+import type {
+  AbilityScenarioStats,
+  AbilityImpactData,
+  HeroAbilityImpact,
+  AbilityImpactAnalysis,
+} from "./types";
 
 function emptyScenario(): AbilityScenarioStats {
   return { fights: 0, wins: 0, losses: 0, winrate: 0 };

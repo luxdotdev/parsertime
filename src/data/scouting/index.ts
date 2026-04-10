@@ -1,3 +1,5 @@
+import "server-only";
+
 export { ScoutingService, ScoutingServiceLive } from "./scouting-service";
 export type {
   ScoutingServiceInterface,

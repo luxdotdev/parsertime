@@ -47,7 +47,8 @@ import {
   scrimGetUserViewableScrimsSuccessTotal,
 } from "./metrics";
 
-export type Winrate = { map: string; wins: number; date: Date }[];
+export type { Winrate } from "./types";
+import type { Winrate } from "./types";
 
 export type ScrimServiceInterface = {
   readonly getScrim: (

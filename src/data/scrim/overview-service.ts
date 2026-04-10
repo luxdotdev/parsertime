@@ -7,12 +7,12 @@ import {
   ScrimAbilityTimingService,
   ScrimAbilityTimingServiceLive,
 } from "@/data/scrim/ability-timing-service";
-import {
-  filterUtilityRoundStartSwaps,
-  type SwapRecord,
-  type SwapTimingOutcome,
-  type SwapWinrateBucket,
-} from "@/data/team/hero-swap-service";
+import { filterUtilityRoundStartSwaps } from "@/data/team/hero-swap-service";
+import type {
+  SwapRecord,
+  SwapTimingOutcome,
+  SwapWinrateBucket,
+} from "@/data/team/types";
 import {
   TeamSharedDataService,
   TeamSharedDataServiceLive,

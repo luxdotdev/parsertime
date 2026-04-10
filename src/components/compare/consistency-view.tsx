@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { ComparisonStats } from "@/data/comparison";
+import type { ComparisonStats } from "@/data/comparison/types";
 import { Activity, Target, TrendingUp, Zap } from "lucide-react";
 import {
   Bar,

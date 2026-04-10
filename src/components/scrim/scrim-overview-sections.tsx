@@ -14,7 +14,7 @@ import type {
   ScrimInsight,
   ScrimSwapAnalysis,
   ScrimUltAnalysis,
-} from "@/data/scrim";
+} from "@/data/scrim/types";
 import { ArrowRightLeft, Swords, Users, Zap } from "lucide-react";
 
 type TeamPair = {

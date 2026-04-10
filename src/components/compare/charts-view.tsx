@@ -9,7 +9,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import type { ComparisonStats } from "@/data/comparison";
+import type { ComparisonStats } from "@/data/comparison/types";
 import { useTranslations } from "next-intl";
 import {
   Bar,

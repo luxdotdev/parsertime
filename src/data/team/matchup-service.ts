@@ -39,40 +39,20 @@ const matchupQueryDuration = Metric.histogram(
   "Distribution of team matchup query duration in milliseconds"
 );
 
-export type MapHeroEntry = {
-  heroName: HeroName;
-  role: "Tank" | "Damage" | "Support";
-  playerName: string;
-  timePlayed: number;
-};
-
-export type MatchupMapResult = {
-  mapDataId: number;
-  mapName: string;
-  scrimName: string;
-  date: string;
-  isWin: boolean;
-  ourHeroes: MapHeroEntry[];
-  enemyHeroes: MapHeroEntry[];
-};
-
-export type MatchupWinrateData = {
-  maps: MatchupMapResult[];
-  allOurHeroes: HeroName[];
-  allEnemyHeroes: HeroName[];
-};
-
-export type EnemyHeroWinrate = {
-  heroName: HeroName;
-  wins: number;
-  losses: number;
-  winrate: number;
-  gamesPlayed: number;
-};
-
-export type EnemyHeroAnalysis = {
-  winrateVsHero: EnemyHeroWinrate[];
-};
+export type {
+  MapHeroEntry,
+  MatchupMapResult,
+  MatchupWinrateData,
+  EnemyHeroWinrate,
+  EnemyHeroAnalysis,
+} from "./types";
+import type {
+  MapHeroEntry,
+  MatchupMapResult,
+  MatchupWinrateData,
+  EnemyHeroWinrate,
+  EnemyHeroAnalysis,
+} from "./types";
 
 const MIN_GAMES_FOR_INCLUSION = 2;
 

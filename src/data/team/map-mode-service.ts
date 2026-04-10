@@ -42,28 +42,8 @@ const mapModeQueryDuration = Metric.histogram(
   "Distribution of team map mode query duration in milliseconds"
 );
 
-export type MapModeStats = {
-  mapType: $Enums.MapType;
-  wins: number;
-  losses: number;
-  winrate: number;
-  gamesPlayed: number;
-  avgPlaytime: number;
-  bestMap: { name: string; winrate: number } | null;
-  worstMap: { name: string; winrate: number } | null;
-};
-
-export type MapModePerformance = {
-  overall: {
-    totalGames: number;
-    totalWins: number;
-    totalLosses: number;
-    overallWinrate: number;
-  };
-  byMode: Record<$Enums.MapType, MapModeStats>;
-  bestMode: $Enums.MapType | null;
-  worstMode: $Enums.MapType | null;
-};
+export type { MapModeStats, MapModePerformance } from "./types";
+import type { MapModeStats, MapModePerformance } from "./types";
 
 function createEmptyMapModePerformance(): MapModePerformance {
   const emptyStats: MapModeStats = {

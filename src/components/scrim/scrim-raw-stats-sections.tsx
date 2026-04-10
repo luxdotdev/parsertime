@@ -7,7 +7,7 @@ import type {
   ScrimFightAnalysis,
   ScrimSwapAnalysis,
   ScrimUltAnalysis,
-} from "@/data/scrim";
+} from "@/data/scrim/types";
 import { cn } from "@/lib/utils";
 
 export function HighlightedPct({

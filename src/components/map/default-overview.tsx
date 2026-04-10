@@ -10,10 +10,9 @@ import { AppRuntime } from "@/data/runtime";
 import {
   ScrimAbilityTimingService,
   ScrimService,
-  assignPlayersToSubroles,
-  buildPlayerUltComparisons,
 } from "@/data/scrim";
-import type { PlayerUltSummary, UltEfficiency } from "@/data/scrim";
+import { assignPlayersToSubroles, buildPlayerUltComparisons } from "@/data/scrim/ult-helpers";
+import type { PlayerUltSummary, UltEfficiency } from "@/data/scrim/types";
 import { positionalData } from "@/lib/flags";
 import {
   Card,
