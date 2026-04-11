@@ -11,6 +11,7 @@ import Image from "next/image";
 import { useRef } from "react";
 
 const logos = [
+  { src: "/teams/dsg.png", alt: "Disguised" },
   { src: "/teams/stclair.svg", alt: "St. Clair College" },
   { src: "/teams/cornell.svg", alt: "Cornell University" },
   { src: "/teams/fiu.svg", alt: "Florida International University" },
