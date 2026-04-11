@@ -1508,6 +1508,27 @@
     "viewTeams": "查看您的团队",
     "teams": "团队",
     "admin": "管理员视图",
+    "search": {
+      "placeholder": "搜索团队...",
+      "filters": "筛选",
+      "readonlyStatus": "状态",
+      "allTeams": "所有团队",
+      "activeTeams": "活跃",
+      "readonlyTeams": "只读",
+      "createdDateRange": "创建日期",
+      "selectDateRange": "选择日期范围",
+      "resetFilters": "重置筛选",
+      "sort": {
+        "title": "排序",
+        "newestFirst": "最新优先",
+        "oldestFirst": "最旧优先"
+      },
+      "readonly": "只读",
+      "noTeamsFound": "未找到团队",
+      "tryAdjustingFilters": "请尝试调整搜索条件或筛选器。",
+      "errorLoading": "加载团队时出错，请重试。",
+      "showingTeams": "共 {count} 个团队"
+    },
     "altText": {
       "custom": "{team} 的头像",
       "default": "默认团队头像",

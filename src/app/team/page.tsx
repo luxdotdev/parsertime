@@ -1,6 +1,6 @@
+import { TeamSearch } from "@/components/admin/team-search";
 import { EmptyTeamView } from "@/components/team/empty-team-view";
-import { Card, CardFooter, CardHeader } from "@/components/ui/card";
-import { Link } from "@/components/ui/link";
+import { UserTeamsList } from "@/components/team/user-teams-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
@@ -9,10 +9,8 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
-import { ChartBarIcon } from "lucide-react";
-import type { Metadata, Route } from "next";
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import Image from "next/image";
 
 export async function generateMetadata(
   props: PagePropsWithLocale<"/team">
@@ -53,8 +51,6 @@ export default async function TeamPage() {
     where: { users: { some: { id: userData?.id } } },
   });
 
-  const allTeams = await prisma.team.findMany();
-
   const hasPerms =
     userData?.role === $Enums.UserRole.ADMIN ||
     userData?.role === $Enums.UserRole.MANAGER;
@@ -76,91 +72,14 @@ export default async function TeamPage() {
           )}
 
           <TabsContent value="teams" className="space-y-4">
-            {userTeams.length > 0 && (
-              <Card className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {userTeams
-                  .sort((a, b) => (a.id > b.id ? 1 : -1))
-                  .map((team) => (
-                    <div key={team.id} className="p-2">
-                      <Card className="relative min-h-[144px] md:w-60 xl:w-80">
-                        <Link href={`/team/${team.id}` as Route}>
-                          <Image
-                            src={
-                              team.image ??
-                              `https://avatar.vercel.sh/${team.name}.png`
-                            }
-                            alt={
-                              team.name
-                                ? t("altText.custom", { team: team.name })
-                                : t("altText.default")
-                            }
-                            width={100}
-                            height={100}
-                            className="float-right rounded-full p-4"
-                          />
-                          <CardHeader>
-                            <h3 className="z-10 text-3xl font-semibold tracking-tight">
-                              {team.name}
-                            </h3>
-                          </CardHeader>
-                        </Link>
-                        <Link
-                          href={`/stats/team/${team.id}` as Route}
-                          className="hover:underline"
-                        >
-                          <CardFooter className="flex items-center gap-2">
-                            <ChartBarIcon className="h-4 w-4" />
-                            {t("viewStats")} &rarr;
-                          </CardFooter>
-                        </Link>
-                      </Card>
-                    </div>
-                  ))}
-              </Card>
+            {userTeams.length > 0 ? (
+              <UserTeamsList teams={userTeams} />
+            ) : (
+              <EmptyTeamView />
             )}
-            {userTeams.length === 0 && <EmptyTeamView />}
           </TabsContent>
           <TabsContent value="admin" className="space-y-4">
-            <Card className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {allTeams
-                .sort((a, b) => (a.id > b.id ? 1 : -1))
-                .map((team) => (
-                  <div key={team.id} className="p-2">
-                    <Card className="relative min-h-[144px] md:w-60 xl:w-80">
-                      <Link href={`/team/${team.id}` as Route}>
-                        <Image
-                          src={
-                            team.image ??
-                            `https://avatar.vercel.sh/${team.name}.png`
-                          }
-                          alt={
-                            team.name
-                              ? t("altText.custom", { team: team.name })
-                              : t("altText.default")
-                          }
-                          width={100}
-                          height={100}
-                          className="float-right rounded-full p-4"
-                        />
-                        <CardHeader>
-                          <h3 className="z-10 text-3xl font-semibold tracking-tight">
-                            {team.name}
-                          </h3>
-                        </CardHeader>
-                      </Link>
-                      <Link
-                        href={`/stats/team/${team.id}` as Route}
-                        className="hover:underline"
-                      >
-                        <CardFooter className="flex items-center gap-2">
-                          <ChartBarIcon className="h-4 w-4" />
-                          {t("viewStats")} &rarr;
-                        </CardFooter>
-                      </Link>
-                    </Card>
-                  </div>
-                ))}
-            </Card>
+            <TeamSearch />
           </TabsContent>
         </Tabs>
       </div>

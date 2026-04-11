@@ -1505,6 +1505,27 @@
     "viewTeams": "내 팀 보기",
     "teams": "팀",
     "admin": "관리자 보기",
+    "search": {
+      "placeholder": "팀 검색...",
+      "filters": "필터",
+      "readonlyStatus": "상태",
+      "allTeams": "모든 팀",
+      "activeTeams": "활성",
+      "readonlyTeams": "읽기 전용",
+      "createdDateRange": "생성 날짜",
+      "selectDateRange": "날짜 범위 선택",
+      "resetFilters": "필터 초기화",
+      "sort": {
+        "title": "정렬",
+        "newestFirst": "최신순",
+        "oldestFirst": "오래된순"
+      },
+      "readonly": "읽기 전용",
+      "noTeamsFound": "팀을 찾을 수 없습니다",
+      "tryAdjustingFilters": "검색어나 필터를 조정해 보세요.",
+      "errorLoading": "팀을 불러오는 중 오류가 발생했습니다. 다시 시도해 주세요.",
+      "showingTeams": "총 {count}개 팀"
+    },
     "altText": {
       "custom": "{team}의 아바타",
       "default": "기본 팀 아바타",

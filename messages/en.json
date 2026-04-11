@@ -2473,6 +2473,27 @@
     "viewTeams": "View Your Teams",
     "teams": "Teams",
     "admin": "Admin View",
+    "search": {
+      "placeholder": "Search teams...",
+      "filters": "Filters",
+      "readonlyStatus": "Status",
+      "allTeams": "All Teams",
+      "activeTeams": "Active",
+      "readonlyTeams": "Read-Only",
+      "createdDateRange": "Created Date",
+      "selectDateRange": "Select date range",
+      "resetFilters": "Reset Filters",
+      "sort": {
+        "title": "Sort by",
+        "newestFirst": "Newest first",
+        "oldestFirst": "Oldest first"
+      },
+      "readonly": "Read-only",
+      "noTeamsFound": "No teams found",
+      "tryAdjustingFilters": "Try adjusting your search or filters.",
+      "errorLoading": "Error loading teams. Please try again.",
+      "showingTeams": "{count, plural, one {# team total} other {# teams total}}"
+    },
     "altText": {
       "custom": "Avatar for {team}",
       "default": "Default team avatar",
