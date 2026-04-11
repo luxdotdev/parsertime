@@ -96,7 +96,7 @@ type ImpactFight = {
   end: number;
 };
 
-function processUltImpactAnalysis(
+export function processUltImpactAnalysis(
   sharedData: ExtendedTeamData
 ): UltImpactAnalysis {
   const {
@@ -366,9 +366,9 @@ function extractTimings(
   return result;
 }
 
-type CalculatedStatRow = { playerName: string; stat: string; value: number };
+export type CalculatedStatRow = { playerName: string; stat: string; value: number };
 
-function processTeamUltStats(
+export function processTeamUltStats(
   sharedData: ExtendedTeamData,
   calculatedStats: CalculatedStatRow[]
 ): TeamUltStats {

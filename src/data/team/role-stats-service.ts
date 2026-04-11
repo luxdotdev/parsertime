@@ -85,7 +85,7 @@ function createEmptyRoleStats(): RolePerformanceStats {
   };
 }
 
-function processRolePerformanceStats(
+export function processRolePerformanceStats(
   sharedData: BaseTeamData
 ): RolePerformanceStats {
   const { teamRosterSet, mapDataIds, allPlayerStats } = sharedData;
@@ -212,7 +212,7 @@ function processRolePerformanceStats(
   };
 }
 
-function processBestRoleTrios(sharedData: BaseTeamData): RoleTrio[] {
+export function processBestRoleTrios(sharedData: BaseTeamData): RoleTrio[] {
   const {
     teamRosterSet,
     mapDataRecords,
@@ -346,7 +346,7 @@ function processBestRoleTrios(sharedData: BaseTeamData): RoleTrio[] {
     .slice(0, 5);
 }
 
-function processRoleWinratesByMap(
+export function processRoleWinratesByMap(
   sharedData: BaseTeamData
 ): RoleWinrateByMap[] {
   const {

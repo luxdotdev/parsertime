@@ -61,7 +61,7 @@ type MapWinrate = {
 export type { TeamWinrates, TopMapByPlaytime, BestMapByWinrate } from "./types";
 import type { TeamWinrates, TopMapByPlaytime, BestMapByWinrate } from "./types";
 
-function getRosterForMap(
+export function getRosterForMap(
   mapDataId: number,
   teamName: string,
   allPlayerStats: {
@@ -79,7 +79,7 @@ function getRosterForMap(
   return Array.from(roster).sort();
 }
 
-function findTeamNameForMap(
+export function findTeamNameForMap(
   mapDataId: number,
   allPlayerStats: {
     player_name: string;
@@ -98,7 +98,7 @@ function findTeamNameForMap(
   return null;
 }
 
-function processTeamWinrates(sharedData: BaseTeamData): TeamWinrates {
+export function processTeamWinrates(sharedData: BaseTeamData): TeamWinrates {
   const {
     teamRosterSet,
     mapDataRecords,

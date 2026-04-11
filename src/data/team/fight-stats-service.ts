@@ -62,7 +62,7 @@ type FightAnalysis = {
   wastedUlts: number;
 };
 
-function analyzeFightOutcome(fight: Fight, ourTeamName: string): FightAnalysis {
+export function analyzeFightOutcome(fight: Fight, ourTeamName: string): FightAnalysis {
   const sortedEvents = [...fight.events].sort(
     (a, b) => a.match_time - b.match_time
   );
@@ -134,7 +134,7 @@ function analyzeFightOutcome(fight: Fight, ourTeamName: string): FightAnalysis {
   };
 }
 
-function processTeamFightStats(sharedData: ExtendedTeamData): TeamFightStats {
+export function processTeamFightStats(sharedData: ExtendedTeamData): TeamFightStats {
   const {
     teamRosterSet,
     mapDataIds,

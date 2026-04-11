@@ -56,7 +56,7 @@ import type {
   StreakInfo,
 } from "./types";
 
-type ProcessedMatchResult = {
+export type ProcessedMatchResult = {
   scrimId: number;
   scrimName: string;
   date: Date;
@@ -64,7 +64,7 @@ type ProcessedMatchResult = {
   isWin: boolean;
 };
 
-function processTeamMatchResults(
+export function processTeamMatchResults(
   sharedData: BaseTeamData,
   mapDataRecordsWithScrim: {
     id: number;

@@ -78,7 +78,7 @@ type AbilityEvent = {
 const ABILITY_PRE_BUFFER = 5;
 const ABILITY_POST_BUFFER = 2;
 
-function processAbilityImpactAnalysis(
+export function processAbilityImpactAnalysis(
   sharedData: ExtendedTeamData,
   allAbility1Events: AbilityEvent[],
   allAbility2Events: AbilityEvent[]

@@ -87,7 +87,7 @@ function analyzeFightOutcome(
   return { won, hadFirstPick };
 }
 
-function processQuickWinsStats(
+export function processQuickWinsStats(
   sharedData: ExtendedTeamData,
   fightStats: TeamFightStats
 ): QuickWinsStats {

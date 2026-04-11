@@ -97,7 +97,7 @@ function buildHeroEntries(
   return entries.slice(0, 5);
 }
 
-function processMatchupWinrateData(
+export function processMatchupWinrateData(
   sharedData: BaseTeamData
 ): MatchupWinrateData {
   const {
@@ -191,7 +191,7 @@ function processMatchupWinrateData(
   };
 }
 
-function processEnemyHeroAnalysis(sharedData: BaseTeamData): EnemyHeroAnalysis {
+export function processEnemyHeroAnalysis(sharedData: BaseTeamData): EnemyHeroAnalysis {
   const {
     teamRosterSet,
     mapDataRecords,
