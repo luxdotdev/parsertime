@@ -27,10 +27,14 @@ export async function Killfeed({
   id,
   team1Color,
   team2Color,
+  positionalDataOverride,
+  coachingCanvasOverride,
 }: {
   id: number;
   team1Color: string;
   team2Color: string;
+  positionalDataOverride?: boolean;
+  coachingCanvasOverride?: boolean;
 }) {
   const mapDataId = await resolveMapDataId(id);
   const [
@@ -50,8 +54,12 @@ export async function Killfeed({
     AppRuntime.runPromise(
       KillfeedService.pipe(Effect.flatMap((svc) => svc.getUltimateSpans(id)))
     ),
-    positionalData(),
-    coachingCanvas(),
+    positionalDataOverride != null
+      ? Promise.resolve(positionalDataOverride)
+      : positionalData(),
+    coachingCanvasOverride != null
+      ? Promise.resolve(coachingCanvasOverride)
+      : coachingCanvas(),
   ]);
 
   const calibrationData = positionalEnabled

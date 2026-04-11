@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { PlayerService } from "@/data/player";
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { toTitleCase } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
@@ -55,7 +56,8 @@ export default async function PlayerDashboardDemoPage(
 ) {
   const params = await props.params;
   const t = await getTranslations("mapPage.player.dashboard");
-  const id = 268;
+  const id = 10148;
+  const mapDataId = await resolveMapDataId(id);
   const playerName = decodeURIComponent(params.playerId);
 
   const mostPlayedHeroes = await AppRuntime.runPromise(
@@ -64,7 +66,7 @@ export default async function PlayerDashboardDemoPage(
 
   const mapName = await prisma.matchStart.findFirst({
     where: {
-      MapDataId: id,
+      MapDataId: mapDataId,
     },
     select: {
       map_name: true,

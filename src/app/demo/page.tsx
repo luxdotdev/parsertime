@@ -1,19 +1,22 @@
 import { MapCharts } from "@/components/charts/map/map-charts";
 import { MainNav } from "@/components/dashboard/main-nav";
 import { Search } from "@/components/dashboard/search";
+import { PremiumHighlight } from "@/components/demo/premium-highlight";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ComparePlayers } from "@/components/map/compare-players";
 import { DefaultOverview } from "@/components/map/default-overview";
+import { HeatmapTab } from "@/components/map/heatmap/heatmap-tab";
 import { HeroBans } from "@/components/map/hero-bans";
 import { Killfeed } from "@/components/map/killfeed";
 import { MapEvents } from "@/components/map/map-events";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
+import { ReplayTab } from "@/components/map/replay/replay-tab";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { PlayerService } from "@/data/player";
-import { tempoChart } from "@/lib/flags";
+import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { toTitleCase, translateMapName } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
@@ -21,15 +24,18 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
+const DEMO_MAP_ID = 10148;
+
 export async function generateMetadata(
   props: PagePropsWithLocale<"/demo">
 ): Promise<Metadata> {
   const params = await props.params;
   const t = await getTranslations("demoPage.metadata");
+  const mapDataId = await resolveMapDataId(DEMO_MAP_ID);
 
   const mapName = await prisma.matchStart.findFirst({
     where: {
-      MapDataId: 268,
+      MapDataId: mapDataId,
     },
     select: {
       map_name: true,
@@ -65,21 +71,21 @@ export async function generateMetadata(
 
 export default async function MapDashboardPage() {
   const t = await getTranslations("mapPage");
-  const id = 268;
+  const id = DEMO_MAP_ID;
+  const mapDataId = await resolveMapDataId(id);
 
-  const mostPlayedHeroes = await AppRuntime.runPromise(
-    PlayerService.pipe(Effect.flatMap((svc) => svc.getMostPlayedHeroes(id)))
-  );
-
-  const mapDetails = await prisma.matchStart.findFirst({
-    where: {
-      MapDataId: id,
-    },
-    select: {
-      map_name: true,
-      team_1_name: true,
-    },
-  });
+  const [mostPlayedHeroes, mapDetails, heroBans] = await Promise.all([
+    AppRuntime.runPromise(
+      PlayerService.pipe(Effect.flatMap((svc) => svc.getMostPlayedHeroes(id)))
+    ),
+    prisma.matchStart.findFirst({
+      where: { MapDataId: mapDataId },
+      select: { map_name: true, team_1_name: true },
+    }),
+    prisma.heroBan.findMany({
+      where: { MapDataId: mapDataId },
+    }),
+  ]);
 
   const translatedMapName = await translateMapName(
     mapDetails?.map_name ?? "Map"
@@ -89,10 +95,6 @@ export default async function MapDashboardPage() {
     team1: "var(--team-1-off)",
     team2: "var(--team-2-off)",
   };
-
-  const heroBans = await prisma.heroBan.findMany({
-    where: { MapDataId: id },
-  });
 
   return (
     <div className="flex-col md:flex">
@@ -139,26 +141,49 @@ export default async function MapDashboardPage() {
               {t("tabs.killfeed")}
             </TabsTrigger>
             <TabsTrigger value="charts">{t("tabs.charts")}</TabsTrigger>
+            <TabsTrigger value="heatmap">{t("tabs.heatmap")}</TabsTrigger>
+            <TabsTrigger value="replay">{t("tabs.replay")}</TabsTrigger>
             <TabsTrigger value="events" className="hidden md:flex">
               {t("tabs.events")}
             </TabsTrigger>
             <TabsTrigger value="compare">{t("tabs.compare")}</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
-            <DefaultOverview id={id} team1Color={team1} team2Color={team2} />
+            <DefaultOverview
+              id={id}
+              team1Color={team1}
+              team2Color={team2}
+              positionalDataOverride
+            />
           </TabsContent>
           <TabsContent value="killfeed" className="space-y-4">
-            <Killfeed id={id} team1Color={team1} team2Color={team2} />
+            <Killfeed
+              id={id}
+              team1Color={team1}
+              team2Color={team2}
+              positionalDataOverride
+              coachingCanvasOverride
+            />
           </TabsContent>
           <TabsContent value="charts" className="space-y-4">
             <MapCharts id={id} />
+          </TabsContent>
+          <TabsContent value="heatmap" className="space-y-4">
+            <PremiumHighlight>
+              <HeatmapTab id={mapDataId} />
+            </PremiumHighlight>
+          </TabsContent>
+          <TabsContent value="replay" className="space-y-4">
+            <PremiumHighlight>
+              <ReplayTab id={mapDataId} />
+            </PremiumHighlight>
           </TabsContent>
           <TabsContent value="events" className="space-y-4">
             <MapEvents
               id={id}
               team1Color={team1}
               team2Color={team2}
-              tempoChartEnabled={await tempoChart()}
+              tempoChartEnabled
             />
           </TabsContent>
           <TabsContent value="compare" className="space-y-4">

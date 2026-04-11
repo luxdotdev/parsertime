@@ -55,10 +55,12 @@ export async function DefaultOverview({
   id,
   team1Color: team1,
   team2Color: team2,
+  positionalDataOverride,
 }: {
   id: number;
   team1Color: string;
   team2Color: string;
+  positionalDataOverride?: boolean;
 }) {
   const mapDataId = await resolveMapDataId(id);
   const [finalRound, matchDetails, finalRoundStats, playerStats, fights] =
@@ -251,7 +253,7 @@ export async function DefaultOverview({
   const team1Name = matchDetails?.team_1_name ?? "Team 1";
   const team2Name = matchDetails?.team_2_name ?? "Team 2";
 
-  const positionalEnabled = await positionalData();
+  const positionalEnabled = positionalDataOverride ?? (await positionalData());
 
   const [abilityTimingAnalysis, rotationDeathAnalysis, killfeedCalibration] =
     await Promise.all([
