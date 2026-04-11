@@ -1321,6 +1321,7 @@ model Tournament {
   name      String
   format    TournamentFormat
   bestOf    Int              @default(3)
+  playoffBestOf       Int?
   teamSlots Int              @default(8)
   status    TournamentStatus @default(DRAFT)
   startDate DateTime?
