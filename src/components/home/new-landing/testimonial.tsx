@@ -37,7 +37,7 @@ export function Testimonial({
             <StarIcon
               // oxlint-disable-next-line react/no-array-index-key
               key={`star-${i}`}
-              className="h-5 w-5 flex-none"
+              className="h-5 w-5 flex-none text-amber-400"
               aria-hidden="true"
             />
           ))}
@@ -48,8 +48,8 @@ export function Testimonial({
         <figcaption className="mt-10 flex items-center gap-x-6">
           <Image
             className="h-12 w-12 rounded-full bg-gray-50 dark:bg-zinc-900"
-            src="/marketing/coy.png"
-            alt="Photo of coy, Manager for o7 Esports"
+            src="/marketing/byzenith.jpg"
+            alt="Photo of byZenith, head coach for Disguised"
             width={48}
             height={48}
           />
