@@ -366,7 +366,11 @@ function extractTimings(
   return result;
 }
 
-export type CalculatedStatRow = { playerName: string; stat: string; value: number };
+export type CalculatedStatRow = {
+  playerName: string;
+  stat: string;
+  value: number;
+};
 
 export function processTeamUltStats(
   sharedData: ExtendedTeamData,

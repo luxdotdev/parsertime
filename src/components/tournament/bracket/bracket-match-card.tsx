@@ -116,9 +116,7 @@ function TeamRow({
         </span>
         {team && (
           <Link
-            href={
-              `/tournaments/${tournamentId}/stats/${team.id}` as Route
-            }
+            href={`/tournaments/${tournamentId}/stats/${team.id}` as Route}
             onClick={(e) => e.stopPropagation()}
             className="text-muted-foreground hover:text-foreground invisible group-hover:visible"
           >

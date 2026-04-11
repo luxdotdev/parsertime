@@ -146,7 +146,16 @@ function emptyStats(): TeamHeroSwapStats {
 
 export function processTeamHeroSwapStats(
   sharedData: BaseTeamData,
-  allHeroSwaps: { id: number; match_time: number; player_team: string; player_name: string; player_hero: string; previous_hero: string; hero_time_played: number; MapDataId: number | null }[],
+  allHeroSwaps: {
+    id: number;
+    match_time: number;
+    player_team: string;
+    player_name: string;
+    player_hero: string;
+    previous_hero: string;
+    hero_time_played: number;
+    MapDataId: number | null;
+  }[],
   matchEnds: { match_time: number; MapDataId: number | null }[],
   roundStarts: { match_time: number; MapDataId: number | null }[]
 ): TeamHeroSwapStats {
@@ -279,8 +288,7 @@ export function processTeamHeroSwapStats(
 
   const noSwapTotal = noSwapWins + noSwapLosses;
   const swapTotal = swapWins + swapLosses;
-  const noSwapWinrate =
-    noSwapTotal > 0 ? (noSwapWins / noSwapTotal) * 100 : 0;
+  const noSwapWinrate = noSwapTotal > 0 ? (noSwapWins / noSwapTotal) * 100 : 0;
   const swapWinrate = swapTotal > 0 ? (swapWins / swapTotal) * 100 : 0;
 
   const buckets = [
@@ -464,8 +472,7 @@ export function processTeamHeroSwapStats(
       totalSwaps: totalPlayerSwaps,
       mapsWithSwaps: mapsWithPlayerSwaps.size,
       mapsWithoutSwaps: mapsWithout.size,
-      winrateWithSwaps:
-        totalWith > 0 ? (winsWithSwaps / totalWith) * 100 : 0,
+      winrateWithSwaps: totalWith > 0 ? (winsWithSwaps / totalWith) * 100 : 0,
       winrateWithoutSwaps:
         totalWithout > 0 ? (winsWithout / totalWithout) * 100 : 0,
       topSwapPair,
@@ -493,24 +500,21 @@ export function processTeamHeroSwapStats(
     if (!ourTeam) continue;
     const winner = winnerByMapId.get(swap.MapDataId);
     if (winner === "N/A") continue;
-    if (winner === ourTeam)
-      timingMapSets[timingIndex].wins.add(swap.MapDataId);
+    if (winner === ourTeam) timingMapSets[timingIndex].wins.add(swap.MapDataId);
     else timingMapSets[timingIndex].losses.add(swap.MapDataId);
   }
-  const timingOutcomes: SwapTimingOutcome[] = timingLabels.map(
-    (label, i) => {
-      const wins = timingMapSets[i].wins.size;
-      const losses = timingMapSets[i].losses.size;
-      const total = wins + losses;
-      return {
-        label,
-        wins,
-        losses,
-        winrate: total > 0 ? (wins / total) * 100 : 0,
-        totalMaps: total,
-      };
-    }
-  );
+  const timingOutcomes: SwapTimingOutcome[] = timingLabels.map((label, i) => {
+    const wins = timingMapSets[i].wins.size;
+    const losses = timingMapSets[i].losses.size;
+    const total = wins + losses;
+    return {
+      label,
+      wins,
+      losses,
+      winrate: total > 0 ? (wins / total) * 100 : 0,
+      totalMaps: total,
+    };
+  });
 
   return {
     totalSwaps,

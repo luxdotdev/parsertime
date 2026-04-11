@@ -76,7 +76,9 @@ function createEmptyHeroPoolAnalysis(): HeroPoolAnalysis {
   };
 }
 
-export function processHeroPoolAnalysis(sharedData: BaseTeamData): HeroPoolAnalysis {
+export function processHeroPoolAnalysis(
+  sharedData: BaseTeamData
+): HeroPoolAnalysis {
   const {
     teamRosterSet,
     mapDataRecords,

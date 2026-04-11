@@ -180,15 +180,12 @@ export function processBanImpactAnalysis(
   const banImpacts: HeroBanImpact[] = [];
   for (const hero of allBannedHeroes) {
     const mapsWithBan = mapOutcomes.filter((o) => o.bannedHeroes.has(hero));
-    const mapsWithoutBan = mapOutcomes.filter(
-      (o) => !o.bannedHeroes.has(hero)
-    );
+    const mapsWithoutBan = mapOutcomes.filter((o) => !o.bannedHeroes.has(hero));
     const mapsBanned = mapsWithBan.length;
     if (mapsBanned < MIN_BANS_FOR_SIGNIFICANCE) continue;
     const winsWhenBanned = mapsWithBan.filter((o) => o.isWin).length;
     const winsWhenAvailable = mapsWithoutBan.filter((o) => o.isWin).length;
-    const winRateWithoutHero =
-      mapsBanned > 0 ? winsWhenBanned / mapsBanned : 0;
+    const winRateWithoutHero = mapsBanned > 0 ? winsWhenBanned / mapsBanned : 0;
     const winRateWithHero =
       mapsWithoutBan.length > 0
         ? winsWhenAvailable / mapsWithoutBan.length
@@ -224,8 +221,7 @@ export function processBanImpactAnalysis(
 
   const allHeroesBannedByUs = new Set<string>();
   for (const outcome of mapOutcomes)
-    for (const hero of outcome.heroesBannedByUs)
-      allHeroesBannedByUs.add(hero);
+    for (const hero of outcome.heroesBannedByUs) allHeroesBannedByUs.add(hero);
 
   const ourBanImpacts: OurBanImpact[] = [];
   for (const hero of allHeroesBannedByUs) {

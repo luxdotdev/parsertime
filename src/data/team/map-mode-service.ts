@@ -262,8 +262,7 @@ export function processMapModePerformance(
     }
   }
 
-  const overallWinrate =
-    totalGames > 0 ? (totalWins / totalGames) * 100 : 0;
+  const overallWinrate = totalGames > 0 ? (totalWins / totalGames) * 100 : 0;
 
   return {
     overall: { totalGames, totalWins, totalLosses, overallWinrate },

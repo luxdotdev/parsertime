@@ -191,7 +191,9 @@ export function processMatchupWinrateData(
   };
 }
 
-export function processEnemyHeroAnalysis(sharedData: BaseTeamData): EnemyHeroAnalysis {
+export function processEnemyHeroAnalysis(
+  sharedData: BaseTeamData
+): EnemyHeroAnalysis {
   const {
     teamRosterSet,
     mapDataRecords,
