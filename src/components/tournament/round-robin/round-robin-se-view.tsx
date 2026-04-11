@@ -91,7 +91,7 @@ export function RoundRobinSEView({
     <div className="space-y-8">
       <div>
         <h3 className="mb-4 text-lg font-semibold">Standings</h3>
-        <StandingsTable standings={standings} advancingCount={advancingCount} />
+        <StandingsTable standings={standings} advancingCount={advancingCount} tournamentId={tournamentId} />
       </div>
 
       <div>

@@ -3,6 +3,7 @@
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { TournamentMatchStatus } from "@prisma/client";
+import { BarChart3 } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
 
@@ -49,6 +50,7 @@ export function BracketMatchCard({ match }: { match: BracketMatchData }) {
             match.winnerId !== match.team1?.id
           }
           status={match.status}
+          tournamentId={match.tournamentId}
         />
         <div className="border-t" />
         <TeamRow
@@ -61,6 +63,7 @@ export function BracketMatchCard({ match }: { match: BracketMatchData }) {
             match.winnerId !== match.team2?.id
           }
           status={match.status}
+          tournamentId={match.tournamentId}
         />
         {isOngoing && (
           <div className="flex items-center justify-center border-t px-3 py-1">
@@ -79,17 +82,19 @@ function TeamRow({
   isWinner,
   isLoser,
   status,
+  tournamentId,
 }: {
   team: TeamSlot;
   score: number;
   isWinner: boolean;
   isLoser: boolean;
   status: TournamentMatchStatus;
+  tournamentId: number;
 }) {
   return (
     <div
       className={cn(
-        "flex flex-1 items-center justify-between px-3 py-2",
+        "group flex flex-1 items-center justify-between px-3 py-2",
         isWinner && "bg-emerald-500/10",
         isLoser && "opacity-50"
       )}
@@ -109,6 +114,17 @@ function TeamRow({
         >
           {team?.name ?? "TBD"}
         </span>
+        {team && (
+          <Link
+            href={
+              `/tournaments/${tournamentId}/stats/${team.id}` as Route
+            }
+            onClick={(e) => e.stopPropagation()}
+            className="text-muted-foreground hover:text-foreground invisible group-hover:visible"
+          >
+            <BarChart3 className="size-3.5" />
+          </Link>
+        )}
       </div>
       {status !== "UPCOMING" && (
         <span

@@ -8,6 +8,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import type { Route } from "next";
+import Link from "next/link";
 
 type Standing = {
   teamId: number;
@@ -22,9 +24,11 @@ type Standing = {
 export function StandingsTable({
   standings,
   advancingCount,
+  tournamentId,
 }: {
   standings: Standing[];
   advancingCount: number;
+  tournamentId: number;
 }) {
   return (
     <Table>
@@ -52,7 +56,14 @@ export function StandingsTable({
               <TableCell className="tabular-nums">{rank}</TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
-                  <span className="font-medium">{team.teamName}</span>
+                  <Link
+                    href={
+                      `/tournaments/${tournamentId}/stats/${team.teamId}` as Route
+                    }
+                    className="font-medium hover:underline"
+                  >
+                    {team.teamName}
+                  </Link>
                   {advances && (
                     <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                       Advances
