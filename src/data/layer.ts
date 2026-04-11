@@ -42,6 +42,8 @@ import { TeamTrendsServiceLive } from "./team/trends-service";
 import { TeamUltServiceLive } from "./team/ult-service";
 import { BroadcastServiceLive } from "./tournament/broadcast-service";
 import { TournamentServiceLive } from "./tournament/tournament-service";
+import { TournamentTeamSharedDataServiceLive } from "./tournament-team/shared-data-service";
+import { TournamentTeamStatsServiceLive } from "./tournament-team/stats-service";
 import { UserServiceLive } from "./user/service";
 
 export const DataLayerLive = Layer.mergeAll(
@@ -94,5 +96,7 @@ export const DataLayerLive = Layer.mergeAll(
   TeamComparisonServiceLive,
   TeamMatchupServiceLive,
   TeamAnalyticsServiceLive,
-  TeamPredictionServiceLive
+  TeamPredictionServiceLive,
+  TournamentTeamSharedDataServiceLive,
+  TournamentTeamStatsServiceLive
 );
