@@ -1,9 +1,9 @@
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
-import { advanceMatch } from "@/lib/tournaments/advancement";
 import { Logger } from "@/lib/logger";
 import { createNewMap } from "@/lib/parser";
 import prisma from "@/lib/prisma";
+import { advanceMatch } from "@/lib/tournaments/advancement";
 import { calculateWinner } from "@/lib/winrate";
 import type { ParserData } from "@/types/parser";
 import { unauthorized } from "next/navigation";
@@ -178,7 +178,17 @@ export async function POST(
       });
 
       if (result !== "N/A") {
-        winner = result;
+        // Map in-game team name to tournament team name by position.
+        // The replay's team_1 corresponds to the match's team1 (left),
+        // and team_2 corresponds to team2 (right).
+        if (result === team1Name && match.team1?.name) {
+          winner = match.team1.name;
+        } else if (result === team2Name && match.team2?.name) {
+          winner = match.team2.name;
+        } else {
+          winner = result;
+        }
+
         await prisma.tournamentMap.update({
           where: { id: tournamentMap.id },
           data: { winnerOverride: winner },
