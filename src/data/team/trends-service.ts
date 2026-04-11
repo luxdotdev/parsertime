@@ -1,7 +1,4 @@
-import prisma from "@/lib/prisma";
 import { calculateWinner } from "@/lib/winrate";
-import { mapNameToMapTypeMapping } from "@/types/map";
-import { $Enums } from "@prisma/client";
 import {
   Cache,
   Context,
@@ -11,7 +8,8 @@ import {
   Metric,
   MetricBoundaries,
 } from "effect";
-import { TeamQueryError } from "./errors";
+import type { TeamQueryError } from "./errors";
+import { teamCacheMissTotal, teamCacheRequestTotal } from "./metrics";
 import type { BaseTeamData, TeamDateRange } from "./shared-core";
 import {
   buildCapturesMaps,
@@ -21,11 +19,16 @@ import {
   findTeamNameForMapInMemory,
   parseDateRangeFromCacheKey,
 } from "./shared-core";
-import { teamCacheRequestTotal, teamCacheMissTotal } from "./metrics";
 import {
   TeamSharedDataService,
   TeamSharedDataServiceLive,
 } from "./shared-data-service";
+import type {
+  RecentForm,
+  RecentFormMatch,
+  StreakInfo,
+  WinrateDataPoint,
+} from "./types";
 
 const trendsQuerySuccessTotal = Metric.counter("team.trends.query.success", {
   description: "Total successful team trends queries",
@@ -44,16 +47,10 @@ const trendsQueryDuration = Metric.histogram(
 );
 
 export type {
-  WinrateDataPoint,
-  RecentFormMatch,
   RecentForm,
-  StreakInfo,
-} from "./types";
-import type {
-  WinrateDataPoint,
   RecentFormMatch,
-  RecentForm,
   StreakInfo,
+  WinrateDataPoint,
 } from "./types";
 
 export type ProcessedMatchResult = {
@@ -191,42 +188,14 @@ export const make = Effect.gen(function* () {
 
     return Effect.gen(function* () {
       yield* Effect.annotateCurrentSpan("teamId", teamId);
-      const scrimWhereClause: Record<string, unknown> = {
-        Team: { id: teamId },
-      };
-      if (dateRange) {
-        scrimWhereClause.date = { gte: dateRange.from, lte: dateRange.to };
-      }
 
-      const allMapDataRecords = yield* Effect.tryPromise({
-        try: () =>
-          prisma.map.findMany({
-            where: { Scrim: scrimWhereClause },
-            select: {
-              id: true,
-              name: true,
-              Scrim: { select: { id: true, name: true, date: true } },
-            },
-            orderBy: { Scrim: { date: "desc" } },
-          }),
-        catch: (error) =>
-          new TeamQueryError({
-            operation: "fetch map records for match results",
-            cause: error,
-          }),
+      const sharedData = yield* shared.getBaseTeamData(teamId, {
+        excludePush: true,
+        includeDateInfo: true,
+        dateRange,
       });
 
-      const mapDataRecords = allMapDataRecords.filter((record) => {
-        const mapName = record.name;
-        if (!mapName) return false;
-        const mapType =
-          mapNameToMapTypeMapping[
-            mapName as keyof typeof mapNameToMapTypeMapping
-          ];
-        return mapType !== $Enums.MapType.Push;
-      });
-
-      if (mapDataRecords.length === 0) {
+      if (sharedData.mapDataRecords.length === 0) {
         wideEvent.outcome = "success";
         wideEvent.match_count = 0;
         yield* Metric.increment(trendsQuerySuccessTotal);
@@ -234,12 +203,10 @@ export const make = Effect.gen(function* () {
         return _empty;
       }
 
-      const sharedData = yield* shared.getBaseTeamData(teamId, {
-        excludePush: true,
-        dateRange,
-      });
-
-      const results = processTeamMatchResults(sharedData, mapDataRecords);
+      const results = processTeamMatchResults(
+        sharedData,
+        sharedData.mapDataRecords
+      );
       wideEvent.outcome = "success";
       wideEvent.match_count = results.length;
       yield* Metric.increment(trendsQuerySuccessTotal);

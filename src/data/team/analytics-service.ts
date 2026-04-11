@@ -220,7 +220,11 @@ export const make = Effect.gen(function* () {
                   ...dateFilter,
                 },
               },
-              select: { id: true, name: true },
+              select: {
+                id: true,
+                name: true,
+                mapData: { select: { id: true } },
+              },
             }),
           catch: (error) =>
             new TeamQueryError({
@@ -229,7 +233,7 @@ export const make = Effect.gen(function* () {
             }),
         });
 
-        const mapDataRecords = allMapDataRecords.filter((record) => {
+        const filteredMapRecords = allMapDataRecords.filter((record) => {
           const mapName = record.name;
           if (!mapName) return false;
           const mapType =
@@ -240,6 +244,10 @@ export const make = Effect.gen(function* () {
             mapType !== $Enums.MapType.Push && mapType !== $Enums.MapType.Clash
           );
         });
+
+        const mapDataRecords = filteredMapRecords.flatMap((m) =>
+          m.mapData.map((md) => ({ id: md.id, name: m.name }))
+        );
 
         if (mapDataRecords.length === 0) {
           wideEvent.outcome = "success";

@@ -14,6 +14,7 @@ import {
   MetricBoundaries,
 } from "effect";
 import { TeamQueryError } from "./errors";
+import { teamCacheMissTotal, teamCacheRequestTotal } from "./metrics";
 import type { BaseTeamData, TeamDateRange } from "./shared-core";
 import {
   buildCapturesMaps,
@@ -23,11 +24,16 @@ import {
   findTeamNameForMapInMemory,
   parseDateRangeFromCacheKey,
 } from "./shared-core";
-import { teamCacheRequestTotal, teamCacheMissTotal } from "./metrics";
 import {
   TeamSharedDataService,
   TeamSharedDataServiceLive,
 } from "./shared-data-service";
+import type {
+  HeroPoolAnalysis,
+  HeroPoolRawData,
+  HeroSpecialist,
+  HeroWinrate,
+} from "./types";
 
 const heroPoolQuerySuccessTotal = Metric.counter(
   "team.hero_pool.query.success",
@@ -46,20 +52,12 @@ const heroPoolQueryDuration = Metric.histogram(
 );
 
 export type {
-  HeroPlaytime,
-  HeroWinrate,
-  HeroSpecialist,
   HeroDiversity,
+  HeroPlaytime,
   HeroPoolAnalysis,
   HeroPoolRawData,
-} from "./types";
-import type {
-  HeroPlaytime,
-  HeroWinrate,
   HeroSpecialist,
-  HeroDiversity,
-  HeroPoolAnalysis,
-  HeroPoolRawData,
+  HeroWinrate,
 } from "./types";
 
 function createEmptyHeroPoolAnalysis(): HeroPoolAnalysis {
@@ -321,7 +319,11 @@ export const make = Effect.gen(function* () {
                   date: { gte: dateFrom, lte: dateTo },
                 },
               },
-              select: { id: true, name: true },
+              select: {
+                id: true,
+                name: true,
+                mapData: { select: { id: true } },
+              },
             }),
           catch: (error) =>
             new TeamQueryError({
@@ -330,7 +332,7 @@ export const make = Effect.gen(function* () {
             }),
         });
 
-        const mapDataRecords = allMapDataRecords.filter((record) => {
+        const filteredMapRecords = allMapDataRecords.filter((record) => {
           const mapName = record.name;
           if (!mapName) return false;
           const mapType =
@@ -341,6 +343,10 @@ export const make = Effect.gen(function* () {
             mapType !== $Enums.MapType.Push && mapType !== $Enums.MapType.Clash
           );
         });
+
+        const mapDataRecords = filteredMapRecords.flatMap((m) =>
+          m.mapData.map((md) => ({ id: md.id, name: m.name }))
+        );
 
         if (mapDataRecords.length === 0) {
           wideEvent.outcome = "success";
@@ -496,7 +502,12 @@ export const make = Effect.gen(function* () {
         try: () =>
           prisma.map.findMany({
             where: { Scrim: scrimWhereClause },
-            select: { id: true, name: true, Scrim: { select: { date: true } } },
+            select: {
+              id: true,
+              name: true,
+              mapData: { select: { id: true } },
+              Scrim: { select: { date: true } },
+            },
           }),
         catch: (error) =>
           new TeamQueryError({
@@ -522,23 +533,25 @@ export const make = Effect.gen(function* () {
         } satisfies HeroPoolRawData;
       }
 
-      const mapDataRecords = allMapDataRecords
-        .filter((record) => {
-          const mapName = record.name;
-          if (!mapName) return false;
-          const mapType =
-            mapNameToMapTypeMapping[
-              mapName as keyof typeof mapNameToMapTypeMapping
-            ];
-          return (
-            mapType !== $Enums.MapType.Push && mapType !== $Enums.MapType.Clash
-          );
-        })
-        .map((record) => ({
-          id: record.id,
+      const filteredMaps = allMapDataRecords.filter((record) => {
+        const mapName = record.name;
+        if (!mapName) return false;
+        const mapType =
+          mapNameToMapTypeMapping[
+            mapName as keyof typeof mapNameToMapTypeMapping
+          ];
+        return (
+          mapType !== $Enums.MapType.Push && mapType !== $Enums.MapType.Clash
+        );
+      });
+
+      const mapDataRecords = filteredMaps.flatMap((record) =>
+        record.mapData.map((md) => ({
+          id: md.id,
           name: record.name,
           scrimDate: record.Scrim?.date ?? new Date(),
-        }));
+        }))
+      );
 
       if (mapDataRecords.length === 0) {
         wideEvent.outcome = "success";
