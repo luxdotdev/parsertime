@@ -17,6 +17,7 @@ type TournamentCardProps = {
   status: TournamentStatus;
   teamSlots: number;
   bestOf: number;
+  playoffBestOf: number | null;
   teamNames: string[];
   matchCount: number;
   createdAt: Date;
@@ -47,10 +48,15 @@ export function TournamentCard({
   status,
   teamSlots,
   bestOf,
+  playoffBestOf,
   teamNames,
   matchCount,
   createdAt,
 }: TournamentCardProps) {
+  const bestOfLabel =
+    playoffBestOf && playoffBestOf !== bestOf
+      ? `Bo${bestOf} / Bo${playoffBestOf}`
+      : `Bo${bestOf}`;
   return (
     <Link href={`/tournaments/${id}` as Route} className="block">
       <Card className="hover:border-primary/50 transition-colors">
@@ -60,7 +66,7 @@ export function TournamentCard({
             <Badge variant={statusVariants[status]}>{status}</Badge>
           </div>
           <CardDescription>
-            {formatLabels[format]} &middot; Bo{bestOf} &middot; {teamSlots}{" "}
+            {formatLabels[format]} &middot; {bestOfLabel} &middot; {teamSlots}{" "}
             teams
           </CardDescription>
         </CardHeader>

@@ -20,17 +20,20 @@ import { unauthorized } from "next/navigation";
 import { after, type NextRequest } from "next/server";
 import { z } from "zod";
 
+const bestOfSchema = z
+  .number()
+  .int()
+  .min(1)
+  .max(9)
+  .refine((n) => n % 2 === 1, {
+    message: "Best-of must be an odd number",
+  });
+
 const createTournamentSchema = z.object({
   name: z.string().min(2).max(50),
   format: z.nativeEnum(TournamentFormat),
-  bestOf: z
-    .number()
-    .int()
-    .min(1)
-    .max(9)
-    .refine((n) => n % 2 === 1, {
-      message: "Best-of must be an odd number",
-    }),
+  bestOf: bestOfSchema,
+  playoffBestOf: bestOfSchema.optional(),
   advancingTeams: z.number().int().min(2).optional(),
   teams: z
     .array(
@@ -91,10 +94,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { name, format, bestOf, teams } = parsed.data;
+    const { name, format, bestOf, playoffBestOf, teams } = parsed.data;
     event.format = format;
     event.teamCount = teams.length;
     event.bestOf = bestOf;
+    event.playoffBestOf = playoffBestOf ?? null;
     event.advancingTeams = parsed.data.advancingTeams ?? null;
 
     const supportedFormats = [
@@ -136,6 +140,7 @@ export async function POST(request: NextRequest) {
           name,
           format,
           bestOf,
+          playoffBestOf: playoffBestOf ?? null,
           advancingTeams: parsed.data.advancingTeams ?? null,
           teamSlots: teams.length,
           creatorId: user.id,
@@ -161,16 +166,24 @@ export async function POST(request: NextRequest) {
       }
 
       const rounds = await Promise.all(
-        bracket.rounds.map((round) =>
-          tx.tournamentRound.create({
+        bracket.rounds.map((round) => {
+          let roundBestOf: number | null = null;
+          if (playoffBestOf && round.bracket === "WINNERS") {
+            roundBestOf = playoffBestOf;
+          } else if (playoffBestOf && round.bracket === "ROUND_ROBIN") {
+            roundBestOf = bestOf;
+          }
+
+          return tx.tournamentRound.create({
             data: {
               tournamentId: t.id,
               roundNumber: round.roundNumber,
               roundName: round.roundName,
               bracket: round.bracket,
+              bestOf: roundBestOf,
             },
-          })
-        )
+          });
+        })
       );
 
       function roundKey(bracket: string, roundNumber: number) {
@@ -287,7 +300,7 @@ export async function POST(request: NextRequest) {
         userEmail: session.user.email,
         action: "TOURNAMENT_CREATED",
         target: tournament.id.toString(),
-        details: `Created tournament "${name}" (${format}, ${teams.length} teams, Bo${bestOf})`,
+        details: `Created tournament "${name}" (${format}, ${teams.length} teams, Bo${bestOf}${playoffBestOf ? ` / Playoff Bo${playoffBestOf}` : ""})`,
       });
     });
 

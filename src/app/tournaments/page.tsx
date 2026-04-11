@@ -47,6 +47,7 @@ export default async function TournamentsPage() {
                 status={t.status}
                 teamSlots={t.teamSlots}
                 bestOf={t.bestOf}
+                playoffBestOf={t.playoffBestOf}
                 teamNames={t.teams.map((team) => team.name)}
                 matchCount={t._count.matches}
                 createdAt={t.createdAt}

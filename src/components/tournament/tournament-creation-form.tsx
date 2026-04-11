@@ -57,6 +57,7 @@ const formSchema = z.object({
     "SWISS",
   ]),
   bestOf: z.number().int().min(1).max(9),
+  playoffBestOf: z.number().int().min(1).max(9).optional(),
   advancingTeams: z.number().int().min(2).optional(),
   teams: z.array(teamEntrySchema).min(2, "At least 2 teams required"),
 });
@@ -139,6 +140,7 @@ export function TournamentCreationForm({
       name: "",
       format: "SINGLE_ELIMINATION",
       bestOf: 3,
+      playoffBestOf: undefined,
       advancingTeams: undefined,
       teams: [],
     },
@@ -190,6 +192,7 @@ export function TournamentCreationForm({
           name: data.name,
           format: data.format,
           bestOf: data.bestOf,
+          playoffBestOf: data.playoffBestOf,
           advancingTeams: data.advancingTeams,
           teams: data.teams.map((t, i) => ({
             name: t.name,
@@ -264,7 +267,9 @@ export function TournamentCreationForm({
         </Field>
 
         <Field>
-          <FieldLabel>Best Of</FieldLabel>
+          <FieldLabel>
+            {selectedFormat === "ROUND_ROBIN_SE" ? "RR Best Of" : "Best Of"}
+          </FieldLabel>
           <Controller
             control={control}
             name="bestOf"
@@ -288,6 +293,36 @@ export function TournamentCreationForm({
           />
         </Field>
       </div>
+
+      {selectedFormat === "ROUND_ROBIN_SE" && (
+        <Field>
+          <FieldLabel>Playoff Best Of</FieldLabel>
+          <FieldDescription>
+            Best-of format for the single elimination playoff phase
+          </FieldDescription>
+          <Controller
+            control={control}
+            name="playoffBestOf"
+            render={({ field }) => (
+              <Select
+                value={field.value ? String(field.value) : ""}
+                onValueChange={(v) => field.onChange(v ? Number(v) : undefined)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Same as RR" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">Bo1</SelectItem>
+                  <SelectItem value="3">Bo3</SelectItem>
+                  <SelectItem value="5">Bo5</SelectItem>
+                  <SelectItem value="7">Bo7</SelectItem>
+                  <SelectItem value="9">Bo9</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
+        </Field>
+      )}
 
       {selectedFormat === "ROUND_ROBIN_SE" && (
         <Field>

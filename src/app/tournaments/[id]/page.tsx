@@ -1,16 +1,16 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
+import type { BracketMatchData } from "@/components/tournament/bracket/bracket-match-card";
 import { BracketView } from "@/components/tournament/bracket/bracket-view";
 import { DoubleBracketView } from "@/components/tournament/bracket/double-bracket-view";
-import type { BracketMatchData } from "@/components/tournament/bracket/bracket-match-card";
 import { RoundRobinSEView } from "@/components/tournament/round-robin/round-robin-se-view";
 import { TournamentActions } from "@/components/tournament/tournament-actions";
 import { Badge } from "@/components/ui/badge";
-import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { TournamentService } from "@/data/tournament";
 import { auth } from "@/lib/auth";
 import { tournament } from "@/lib/flags";
 import prisma from "@/lib/prisma";
+import { Effect } from "effect";
 import { ArrowLeft } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
@@ -182,7 +182,10 @@ export default async function TournamentDetailPage(props: {
                 </Badge>
               </div>
               <p className="text-muted-foreground text-sm">
-                {data.format.replace(/_/g, " ")} &middot; Bo{data.bestOf}{" "}
+                {data.format.replace(/_/g, " ")} &middot;{" "}
+                {data.playoffBestOf && data.playoffBestOf !== data.bestOf
+                  ? `Bo${data.bestOf} / Bo${data.playoffBestOf}`
+                  : `Bo${data.bestOf}`}{" "}
                 &middot; {data.teams.length} teams
               </p>
             </div>

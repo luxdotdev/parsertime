@@ -83,9 +83,7 @@ export default async function TournamentMatchPage(props: {
                 {match.status}
               </Badge>
             </div>
-            <p className="text-muted-foreground text-sm">
-              Best of {match.tournament.bestOf}
-            </p>
+            <p className="text-muted-foreground text-sm">Best of {bestOf}</p>
           </div>
         </div>
 
