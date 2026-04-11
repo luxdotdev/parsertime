@@ -5,8 +5,9 @@ import {
   authSignInCounter,
   rateLimitHitCounter,
 } from "@/lib/axiom/metrics";
-import { getScrim, getUserViewableScrims } from "@/data/scrim-dto";
-import { getUser } from "@/data/user-dto";
+import { AppRuntime } from "@/data/runtime";
+import { ScrimService } from "@/data/scrim";
+import { UserService } from "@/data/user";
 import { email } from "@/lib/email";
 import { createShortLink } from "@/lib/link-service";
 import { Logger } from "@/lib/logger";
@@ -26,6 +27,7 @@ import { track } from "@vercel/analytics/server";
 import { get } from "@vercel/edge-config";
 import { kv } from "@vercel/kv";
 import { createHash, randomBytes } from "crypto";
+import { Effect } from "effect";
 import NextAuth, { type NextAuthConfig } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import GithubProvider from "next-auth/providers/github";
@@ -251,14 +253,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth(config);
 export async function isAuthedToViewScrim(id: number) {
   const session = await auth();
 
-  const user = await getUser(session?.user?.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
 
   // if user is admin return true
   if (user !== null && user?.role === $Enums.UserRole.ADMIN) {
     return true;
   }
 
-  const scrim = await getScrim(id);
+  const scrim = await AppRuntime.runPromise(
+    ScrimService.pipe(Effect.flatMap((svc) => svc.getScrim(id)))
+  );
   if (!scrim) return false;
 
   if (scrim.guestMode) return true;
@@ -269,7 +275,11 @@ export async function isAuthedToViewScrim(id: number) {
 
   if (!user) return false;
 
-  const listOfViewableScrims = await getUserViewableScrims(user.id);
+  const listOfViewableScrims = await AppRuntime.runPromise(
+    ScrimService.pipe(
+      Effect.flatMap((svc) => svc.getUserViewableScrims(user.id))
+    )
+  );
 
   if (listOfViewableScrims.some((scrim) => scrim.id === id)) {
     return true;
@@ -319,14 +329,18 @@ export async function isAuthedToViewScrim(id: number) {
 export async function isAuthedToViewMap(scrimId: number, mapId: number) {
   const session = await auth();
 
-  const user = await getUser(session?.user?.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
 
   // if user is admin return true
   if (user !== null && user?.role === $Enums.UserRole.ADMIN) {
     return true;
   }
 
-  const scrim = await getScrim(scrimId);
+  const scrim = await AppRuntime.runPromise(
+    ScrimService.pipe(Effect.flatMap((svc) => svc.getScrim(scrimId)))
+  );
   if (!scrim) return false;
 
   const scrimMaps = await prisma.map.findMany({
@@ -358,7 +372,9 @@ export async function isAuthedToViewTeam(id: number) {
     return false;
   }
 
-  const user = await getUser(session?.user?.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
 
   if (!user) {
     return false;

@@ -10,7 +10,9 @@ import { MapEvents } from "@/components/map/map-events";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getMostPlayedHeroes } from "@/data/player-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { PlayerService } from "@/data/player";
 import { tempoChart } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import { toTitleCase, translateMapName } from "@/lib/utils";
@@ -65,7 +67,9 @@ export default async function MapDashboardPage() {
   const t = await getTranslations("mapPage");
   const id = 268;
 
-  const mostPlayedHeroes = await getMostPlayedHeroes(id);
+  const mostPlayedHeroes = await AppRuntime.runPromise(
+    PlayerService.pipe(Effect.flatMap((svc) => svc.getMostPlayedHeroes(id)))
+  );
 
   const mapDetails = await prisma.matchStart.findFirst({
     where: {

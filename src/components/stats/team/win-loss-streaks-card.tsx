@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { StreakInfo } from "@/data/team-performance-trends-dto";
+import type { StreakInfo } from "@/data/team/types";
 import { cn } from "@/lib/utils";
 import { Flame, TrendingDown, TrendingUp } from "lucide-react";
 import { useTranslations } from "next-intl";

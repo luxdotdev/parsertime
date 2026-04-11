@@ -1,5 +1,7 @@
-import { getFinalRoundStats, getPlayerFinalStats } from "@/data/scrim-dto";
+import { AppRuntime } from "@/data/runtime";
+import { ScrimService } from "@/data/scrim";
 import type { HeroName } from "@/types/heroes";
+import { Effect } from "effect";
 import type { PlayerStat } from "@prisma/client";
 import {
   compareMultipleStatsToDistribution,
@@ -202,7 +204,13 @@ export async function calculateMVPScore({
   minMaps = 5,
   minTimeSeconds = 300,
 }: CalculateMVPScoreParams): Promise<MVPScoreResult | null> {
-  const playerStats = await getPlayerFinalStats(mapId, playerName);
+  const playerStats = await AppRuntime.runPromise(
+    ScrimService.pipe(
+      Effect.flatMap((svc) =>
+        svc.getFinalRoundStatsForPlayer(mapId, playerName)
+      )
+    )
+  );
 
   if (playerStats.length === 0) {
     return null;
@@ -254,7 +262,9 @@ export async function calculateMVPScoresForMap(
   minMaps = 5,
   minTimeSeconds = 300
 ): Promise<MVPScoreResult[]> {
-  const allStats = await getFinalRoundStats(mapId);
+  const allStats = await AppRuntime.runPromise(
+    ScrimService.pipe(Effect.flatMap((svc) => svc.getFinalRoundStats(mapId)))
+  );
 
   const uniquePlayerNames = new Set(allStats.map((stat) => stat.player_name));
 

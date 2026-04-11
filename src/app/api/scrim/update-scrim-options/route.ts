@@ -1,5 +1,7 @@
-import { getScrim } from "@/data/scrim-dto";
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
+import { ScrimService } from "@/data/scrim";
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
@@ -42,14 +44,18 @@ export async function POST(req: NextRequest) {
   const body = UpdateScrimSchema.safeParse(await req.json());
   if (!body.success) return new Response("Invalid request", { status: 400 });
 
-  const user = await getUser(session.user.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+  );
   if (!user) unauthorized();
 
   const userIsManager = await prisma.teamManager.findFirst({
     where: { userId: user.id },
   });
 
-  const scrim = await getScrim(body.data.scrimId);
+  const scrim = await AppRuntime.runPromise(
+    ScrimService.pipe(Effect.flatMap((svc) => svc.getScrim(body.data.scrimId)))
+  );
   if (!scrim) return new Response("Scrim not found", { status: 404 });
 
   const hasPerms =

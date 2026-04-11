@@ -1,8 +1,10 @@
-import { getScrim } from "@/data/scrim-dto";
-import { getUser } from "@/data/user-dto";
+import { AppRuntime } from "@/data/runtime";
+import { ScrimService } from "@/data/scrim";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
+import { Effect } from "effect";
 import { unauthorized } from "next/navigation";
 
 type UpsertNoteArgs = {
@@ -15,7 +17,9 @@ export async function upsertNote(data: UpsertNoteArgs) {
   const session = await auth();
   if (!session) unauthorized();
 
-  const user = await getUser(session.user?.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user?.email)))
+  );
 
   if (!user) {
     Logger.error("User not found for session: ", session);
@@ -84,14 +88,18 @@ export async function getNote(data: UpsertNoteArgs) {
   const session = await auth();
   if (!session) unauthorized();
 
-  const user = await getUser(session.user?.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user?.email)))
+  );
 
   if (!user) {
     Logger.error("User not found for session: ", session);
     throw new Error("User not found");
   }
 
-  const scrim = await getScrim(data.scrimId);
+  const scrim = await AppRuntime.runPromise(
+    ScrimService.pipe(Effect.flatMap((svc) => svc.getScrim(data.scrimId)))
+  );
 
   if (!scrim) {
     Logger.error(`Scrim with ID ${data.scrimId} not found`);

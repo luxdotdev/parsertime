@@ -1,5 +1,7 @@
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import TeamInviteUserEmail from "@/components/email/team-invite";
-import { getUser } from "@/data/user-dto";
 import { auditLog } from "@/lib/audit-logs";
 import { email } from "@/lib/email";
 import { createShortLink } from "@/lib/link-service";
@@ -35,7 +37,11 @@ export async function POST(req: NextRequest) {
   });
   if (!teamInviteToken) return new Response("Token not found", { status: 404 });
 
-  const inviter = await getUser(teamInviteToken?.email);
+  const inviter = await AppRuntime.runPromise(
+    UserService.pipe(
+      Effect.flatMap((svc) => svc.getUser(teamInviteToken?.email))
+    )
+  );
   if (!inviter) return new Response("Inviter not found", { status: 404 });
 
   const team = await prisma.team.findFirst({
@@ -43,7 +49,9 @@ export async function POST(req: NextRequest) {
   });
   if (!team) return new Response("Team not found", { status: 404 });
 
-  const user = await getUser(inviteeEmail);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(inviteeEmail)))
+  );
   if (!user) return new Response("User not found", { status: 404 });
 
   const shortLink = await createShortLink(

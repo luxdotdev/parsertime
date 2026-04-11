@@ -12,8 +12,10 @@ import { DefaultOverview } from "@/components/player/default-overview";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserNav } from "@/components/user-nav";
-import { getMostPlayedHeroes } from "@/data/player-dto";
-import { getUser } from "@/data/user-dto";
+import { PlayerService } from "@/data/player";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { aiChat, dataLabeling, scoutingTool } from "@/lib/flags";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
@@ -66,7 +68,9 @@ export default async function PlayerDashboardPage(
   const mapDataId = await resolveMapDataId(id);
   const playerName = decodeURIComponent(params.playerId);
 
-  const mostPlayedHeroes = await getMostPlayedHeroes(id);
+  const mostPlayedHeroes = await AppRuntime.runPromise(
+    PlayerService.pipe(Effect.flatMap((svc) => svc.getMostPlayedHeroes(id)))
+  );
 
   const mapName = await prisma.matchStart.findFirst({
     where: {
@@ -78,7 +82,9 @@ export default async function PlayerDashboardPage(
   });
 
   const session = await auth();
-  const user = await getUser(session?.user?.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
 
   const visibility = (await prisma.scrim.findFirst({
     where: {

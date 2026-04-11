@@ -7,10 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type {
-  MatchForLabeling,
-  MatchMapForLabeling,
-} from "@/data/data-labeling-dto";
+import type { MatchForLabeling, MatchMapForLabeling } from "@/data/admin/types";
 import { toHero } from "@/lib/utils";
 import { heroRoleMapping, type HeroName } from "@/types/heroes";
 import { YouTubeEmbed } from "@next/third-parties/google";

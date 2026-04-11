@@ -1,7 +1,9 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { CreateTournamentButton } from "@/components/tournament/create-tournament-button";
 import { TournamentCard } from "@/components/tournament/tournament-card";
-import { getUserTournaments } from "@/data/tournament-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { TournamentService } from "@/data/tournament";
 import { auth } from "@/lib/auth";
 import { tournament } from "@/lib/flags";
 import { notFound, redirect } from "next/navigation";
@@ -13,7 +15,11 @@ export default async function TournamentsPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/");
 
-  const tournaments = await getUserTournaments(session.user.id);
+  const tournaments = await AppRuntime.runPromise(
+    TournamentService.pipe(
+      Effect.flatMap((svc) => svc.getUserTournaments(session.user.id!))
+    )
+  );
 
   return (
     <DashboardLayout>

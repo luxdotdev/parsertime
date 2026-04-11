@@ -1,5 +1,7 @@
 import { MatchLabelingView } from "@/components/data-labeling/match-labeling-view";
-import { getMatchForLabeling } from "@/data/data-labeling-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { DataLabelingService } from "@/data/admin";
 import { dataLabeling } from "@/lib/flags";
 import { notFound } from "next/navigation";
 
@@ -17,7 +19,11 @@ export default async function MatchLabelingPage({
   const id = Number(matchId);
   if (Number.isNaN(id)) notFound();
 
-  const match = await getMatchForLabeling(id);
+  const match = await AppRuntime.runPromise(
+    DataLabelingService.pipe(
+      Effect.flatMap((svc) => svc.getMatchForLabeling(id))
+    )
+  );
   if (!match) notFound();
 
   return (

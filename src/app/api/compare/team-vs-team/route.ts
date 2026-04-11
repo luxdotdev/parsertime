@@ -1,4 +1,6 @@
-import { getTeamComparisonStats } from "@/data/team-comparison-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { TeamComparisonService } from "@/data/team";
 import { Logger } from "@/lib/logger";
 import type { HeroName } from "@/types/heroes";
 import { NextResponse } from "next/server";
@@ -41,7 +43,13 @@ export async function GET(request: Request) {
       ? (heroesParam.split(",") as HeroName[])
       : undefined;
 
-    const stats = await getTeamComparisonStats(mapIds, teamId, heroes);
+    const stats = await AppRuntime.runPromise(
+      TeamComparisonService.pipe(
+        Effect.flatMap((svc) =>
+          svc.getTeamComparisonStats(mapIds, teamId, heroes)
+        )
+      )
+    );
 
     return NextResponse.json({ data: stats });
   } catch (error) {

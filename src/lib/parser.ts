@@ -1,3 +1,5 @@
+import "server-only";
+
 import type { CreateScrimRequestData } from "@/app/api/scrim/create-scrim/route";
 import { calculateStats } from "@/lib/calculate-stats";
 import { headers } from "@/lib/headers";
@@ -175,7 +177,9 @@ export function parseCoordinate(
   value: unknown
 ): { x: number; y: number; z: number } | null {
   if (!value || typeof value !== "string") return null;
-  const match = value.trim().match(/^\(([^,]+),\s*([^,]+),\s*([^)]+)\)$/);
+  const match = value
+    .trim()
+    .match(/^\(([^,\s]+)\s*,\s*([^,\s]+)\s*,\s*([^)\s]+)\s*\)$/);
   if (!match) return null;
   const x = parseFloat(match[1]);
   const y = parseFloat(match[2]);

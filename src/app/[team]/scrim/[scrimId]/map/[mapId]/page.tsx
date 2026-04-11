@@ -22,8 +22,10 @@ import { MapTabsSkeleton } from "@/components/map/map-tabs-skeleton";
 import { Suspense, ViewTransition } from "react";
 import { UserNav } from "@/components/user-nav";
 import { VodOverview } from "@/components/vods/vod-overview";
-import { getMostPlayedHeroes } from "@/data/player-dto";
-import { getUser } from "@/data/user-dto";
+import { PlayerService } from "@/data/player";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import {
   aiChat,
@@ -95,7 +97,9 @@ export default async function MapDashboardPage(
   const id = parseInt(params.mapId);
   const mapDataId = await resolveMapDataId(id);
   const session = await auth();
-  const user = await getUser(session?.user?.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
   const t = await getTranslations("mapPage");
 
   // Tournament context for back navigation
@@ -120,7 +124,9 @@ export default async function MapDashboardPage(
     tournamentEnabled,
     coachingCanvasEnabled,
   ] = await Promise.all([
-    getMostPlayedHeroes(id),
+    AppRuntime.runPromise(
+      PlayerService.pipe(Effect.flatMap((svc) => svc.getMostPlayedHeroes(id)))
+    ),
     prisma.matchStart.findFirst({
       where: { MapDataId: mapDataId },
       select: { map_name: true, team_1_name: true },
@@ -282,12 +288,12 @@ export default async function MapDashboardPage(
                         {
                           value: "heatmap",
                           label: t("tabs.heatmap"),
-                          content: <HeatmapTab id={id} />,
+                          content: <HeatmapTab id={mapDataId} />,
                         },
                         {
                           value: "replay",
                           label: t("tabs.replay"),
-                          content: <ReplayTab id={id} />,
+                          content: <ReplayTab id={mapDataId} />,
                         },
                       ]
                     : []),

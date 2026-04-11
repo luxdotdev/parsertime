@@ -3,7 +3,7 @@
 import { HeroWinratesCard } from "@/components/stats/team/hero-winrates-card";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { HeroPoolAnalysis } from "@/data/team-hero-pool-dto";
+import type { HeroPoolAnalysis } from "@/data/team/types";
 import { cn, toHero, toTimestampWithHours, useHeroNames } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import Image from "next/image";

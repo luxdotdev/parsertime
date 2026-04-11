@@ -14,7 +14,7 @@ import type {
   HeroBanIntelligence,
   HeroExposure,
   ProtectedHero,
-} from "@/data/hero-ban-intelligence-dto";
+} from "@/data/intelligence/types";
 import { cn } from "@/lib/utils";
 import {
   AlertTriangle,

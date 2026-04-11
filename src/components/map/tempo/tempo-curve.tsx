@@ -1,6 +1,6 @@
 "use client";
 
-import { tempoPointsToSvgPath } from "@/data/tempo-dto";
+import { tempoPointsToSvgPath } from "@/data/map/types";
 
 type TempoCurveProps = {
   points: { x: number; y: number }[];

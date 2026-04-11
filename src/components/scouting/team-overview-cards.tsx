@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { MatchResult, ScoutingTeamOverview } from "@/data/scouting-dto";
+import type { MatchResult, ScoutingTeamOverview } from "@/data/scouting/types";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 

@@ -4,7 +4,7 @@ import type {
   DisplayEvent,
   PositionSample,
   ReplayCalibration,
-} from "@/data/replay-dto";
+} from "@/data/map/replay/types";
 import type { LoadedCalibration } from "@/lib/map-calibration/load-calibration";
 import { getControlSubMapName } from "@/lib/map-calibration/control-map-index";
 import {

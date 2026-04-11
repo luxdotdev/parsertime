@@ -1,5 +1,7 @@
-import { getTeamPlayers } from "@/data/comparison-dto";
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
+import { ComparisonAggregationService } from "@/data/comparison";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import type { NextRequest } from "next/server";
@@ -22,7 +24,9 @@ export async function GET(request: NextRequest) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const user = await getUser(session.user.email);
+    const user = await AppRuntime.runPromise(
+      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+    );
     if (!user) {
       wideEvent.status_code = 404;
       wideEvent.outcome = "user_not_found";
@@ -75,7 +79,11 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const players = await getTeamPlayers(teamId, mapIds);
+    const players = await AppRuntime.runPromise(
+      ComparisonAggregationService.pipe(
+        Effect.flatMap((svc) => svc.getTeamPlayers(teamId, mapIds))
+      )
+    );
 
     wideEvent.status_code = 200;
     wideEvent.outcome = "success";

@@ -1,6 +1,6 @@
 "use client";
 
-import type { DisplayEvent } from "@/data/replay-dto";
+import type { DisplayEvent } from "@/data/map/replay/types";
 import { toHero, toTimestamp } from "@/lib/utils";
 import Image from "next/image";
 import { useEffect, useMemo, useRef } from "react";

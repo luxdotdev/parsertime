@@ -1,10 +1,14 @@
-import { getReplayData } from "@/data/replay-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { ReplayService } from "@/data/map";
 import { getTranslations } from "next-intl/server";
 import { ReplayViewer } from "./replay-viewer";
 
 export async function ReplayTab({ id }: { id: number }) {
   const [data, t] = await Promise.all([
-    getReplayData(id),
+    AppRuntime.runPromise(
+      ReplayService.pipe(Effect.flatMap((svc) => svc.getReplayData(id)))
+    ),
     getTranslations("mapPage.replay"),
   ]);
 

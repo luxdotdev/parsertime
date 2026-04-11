@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { HeroPoolAnalysis } from "@/data/team-hero-pool-dto";
+import type { HeroPoolAnalysis } from "@/data/team/types";
 import { cn, toHero, useHeroNames } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import Image from "next/image";

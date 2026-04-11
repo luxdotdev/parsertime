@@ -4,12 +4,10 @@ import {
 } from "@/components/stats/hero/range-picker";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
-import {
-  getAllDeathsForHero,
-  getAllKillsForHero,
-  getAllStatsForHero,
-} from "@/data/hero-dto";
-import { getUser } from "@/data/user-dto";
+import { HeroService } from "@/data/hero";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
@@ -63,7 +61,9 @@ export default async function HeroStats(
   if (heroRoleMapping[hero as HeroName] === undefined) notFound();
 
   const session = await auth();
-  const user = await getUser(session?.user.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user.email)))
+  );
 
   const [timeframe1, timeframe2, timeframe3] = await Promise.all([
     new Permission("stats-timeframe-1").check(),
@@ -142,11 +142,22 @@ export default async function HeroStats(
   let allHeroDeaths: Kill[];
 
   try {
-    [allHeroStats, allHeroKills, allHeroDeaths] = await Promise.all([
-      getAllStatsForHero(allScrimIds, hero),
-      getAllKillsForHero(allScrimIds, hero),
-      getAllDeathsForHero(allScrimIds, hero),
-    ]);
+    [allHeroStats, allHeroKills, allHeroDeaths] = await AppRuntime.runPromise(
+      Effect.all(
+        [
+          HeroService.pipe(
+            Effect.flatMap((svc) => svc.getAllStatsForHero(allScrimIds, hero))
+          ),
+          HeroService.pipe(
+            Effect.flatMap((svc) => svc.getAllKillsForHero(allScrimIds, hero))
+          ),
+          HeroService.pipe(
+            Effect.flatMap((svc) => svc.getAllDeathsForHero(allScrimIds, hero))
+          ),
+        ],
+        { concurrency: "unbounded" }
+      )
+    );
   } catch {
     return (
       <div className="flex-1 space-y-4 p-8 pt-6">

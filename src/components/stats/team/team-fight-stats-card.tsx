@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { TeamFightStats } from "@/data/team-fight-stats-dto";
+import type { TeamFightStats } from "@/data/team/types";
 import { round } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 

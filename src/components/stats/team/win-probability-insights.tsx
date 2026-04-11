@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { TeamFightStats } from "@/data/team-fight-stats-dto";
+import type { TeamFightStats } from "@/data/team/types";
 import { useTranslations } from "next-intl";
 
 type WinProbabilityInsightsProps = {

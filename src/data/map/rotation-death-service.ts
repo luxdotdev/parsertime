@@ -1,0 +1,407 @@
+import { EffectObservabilityLive } from "@/instrumentation";
+import { resolveMapDataId } from "@/lib/map-data-resolver";
+import prisma from "@/lib/prisma";
+import {
+  detectRotationDeaths,
+  summarizeByPlayer,
+  type DamageEvent,
+  type NearbyPlayer,
+  type RotationDeathAnalysis,
+} from "@/lib/replay/rotation-death-detection";
+import { groupEventsIntoFights, mercyRezToKillEvent } from "@/lib/utils";
+import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
+import { MapQueryError } from "./errors";
+import {
+  mapCacheMissTotal,
+  mapCacheRequestTotal,
+  rotationDeathQueryDuration,
+  rotationDeathQueryErrorTotal,
+  rotationDeathQuerySuccessTotal,
+} from "./metrics";
+
+type PositionEvent = {
+  match_time: number;
+  playerName: string;
+  playerTeam: string;
+  hero: string;
+  x: number;
+  z: number;
+};
+
+const NEARBY_WINDOW_SEC = 10;
+
+function findNearbyPlayers(
+  killTime: number,
+  attackerName: string,
+  victimName: string,
+  positionEvents: PositionEvent[]
+): NearbyPlayer[] {
+  const windowStart = killTime - NEARBY_WINDOW_SEC;
+  const closest = new Map<string, { player: NearbyPlayer; dt: number }>();
+
+  let lo = 0;
+  let hi = positionEvents.length;
+  while (lo < hi) {
+    const mid = (lo + hi) >>> 1;
+    if (positionEvents[mid].match_time < windowStart) {
+      lo = mid + 1;
+    } else {
+      hi = mid;
+    }
+  }
+
+  for (let i = lo; i < positionEvents.length; i++) {
+    const e = positionEvents[i];
+    if (e.match_time > killTime) break;
+    if (e.playerName === attackerName || e.playerName === victimName) continue;
+
+    const key = `${e.playerName}::${e.playerTeam}`;
+    const dt = killTime - e.match_time;
+    const existing = closest.get(key);
+    if (!existing || dt < existing.dt) {
+      closest.set(key, {
+        player: {
+          playerName: e.playerName,
+          playerTeam: e.playerTeam,
+          hero: e.hero,
+          x: e.x,
+          z: e.z,
+        },
+        dt,
+      });
+    }
+  }
+
+  return Array.from(closest.values()).map((v) => v.player);
+}
+
+function pushPos(
+  arr: PositionEvent[],
+  matchTime: number,
+  name: string,
+  team: string,
+  hero: string,
+  x: number | null,
+  z: number | null
+) {
+  if (x != null && z != null) {
+    arr.push({
+      match_time: matchTime,
+      playerName: name,
+      playerTeam: team,
+      hero,
+      x,
+      z,
+    });
+  }
+}
+
+export type RotationDeathServiceInterface = {
+  readonly getRotationDeathAnalysis: (
+    mapDataId: number
+  ) => Effect.Effect<RotationDeathAnalysis | null, MapQueryError>;
+};
+
+export class RotationDeathService extends Context.Tag(
+  "@app/data/map/RotationDeathService"
+)<RotationDeathService, RotationDeathServiceInterface>() {}
+
+const CACHE_TTL = Duration.seconds(30);
+const CACHE_CAPACITY = 64;
+
+export const make: Effect.Effect<RotationDeathServiceInterface> = Effect.gen(
+  function* () {
+    function getRotationDeathAnalysis(
+      mapDataId: number
+    ): Effect.Effect<RotationDeathAnalysis | null, MapQueryError> {
+      const startTime = Date.now();
+      const wideEvent: Record<string, unknown> = { mapDataId };
+
+      return Effect.gen(function* () {
+        yield* Effect.annotateCurrentSpan("mapDataId", mapDataId);
+        const resolvedId = yield* Effect.tryPromise({
+          try: () => resolveMapDataId(mapDataId),
+          catch: (error) =>
+            new MapQueryError({
+              operation: "resolve map data id for rotation death",
+              cause: error,
+            }),
+        });
+
+        wideEvent.resolvedMapDataId = resolvedId;
+
+        const [kills, mercyRezzes, damage] = yield* Effect.tryPromise({
+          try: () =>
+            Promise.all([
+              prisma.kill.findMany({ where: { MapDataId: resolvedId } }),
+              prisma.mercyRez.findMany({ where: { MapDataId: resolvedId } }),
+              prisma.damage.findMany({
+                where: { MapDataId: resolvedId },
+                select: {
+                  match_time: true,
+                  attacker_name: true,
+                  attacker_team: true,
+                  attacker_hero: true,
+                  attacker_x: true,
+                  attacker_z: true,
+                  victim_name: true,
+                  victim_team: true,
+                  victim_hero: true,
+                  victim_x: true,
+                  victim_z: true,
+                },
+                orderBy: { match_time: "asc" },
+              }),
+            ]),
+          catch: (error) =>
+            new MapQueryError({
+              operation: "fetch kills and damage for rotation death",
+              cause: error,
+            }),
+        }).pipe(
+          Effect.withSpan("map.rotationDeath.fetchKillsAndDamage", {
+            attributes: { mapDataId: resolvedId },
+          })
+        );
+
+        if (kills.length === 0) {
+          wideEvent.outcome = "success";
+          wideEvent.result = "no_kills";
+          yield* Metric.increment(rotationDeathQuerySuccessTotal);
+          return null;
+        }
+
+        wideEvent.kill_count = kills.length;
+        wideEvent.damage_count = damage.length;
+
+        const damageEvents: DamageEvent[] = damage;
+
+        const fightEvents = [
+          ...kills,
+          ...mercyRezzes.map(mercyRezToKillEvent),
+        ].sort((a, b) => a.match_time - b.match_time);
+
+        const fights = groupEventsIntoFights(fightEvents);
+        const results = detectRotationDeaths(fights, damageEvents);
+        const rotationDeaths = results.filter((r) => r.isRotationDeath);
+
+        wideEvent.fight_count = fights.length;
+        wideEvent.rotation_death_count = rotationDeaths.length;
+
+        if (rotationDeaths.length > 0) {
+          const [healing, ability1, ability2] = yield* Effect.tryPromise({
+            try: () =>
+              Promise.all([
+                prisma.healing.findMany({
+                  where: { MapDataId: resolvedId },
+                  select: {
+                    match_time: true,
+                    healer_name: true,
+                    healer_team: true,
+                    healer_hero: true,
+                    healer_x: true,
+                    healer_z: true,
+                    healee_name: true,
+                    healee_team: true,
+                    healee_hero: true,
+                    healee_x: true,
+                    healee_z: true,
+                  },
+                }),
+                prisma.ability1Used.findMany({
+                  where: { MapDataId: resolvedId },
+                  select: {
+                    match_time: true,
+                    player_name: true,
+                    player_team: true,
+                    player_hero: true,
+                    player_x: true,
+                    player_z: true,
+                  },
+                }),
+                prisma.ability2Used.findMany({
+                  where: { MapDataId: resolvedId },
+                  select: {
+                    match_time: true,
+                    player_name: true,
+                    player_team: true,
+                    player_hero: true,
+                    player_x: true,
+                    player_z: true,
+                  },
+                }),
+              ]),
+            catch: (error) =>
+              new MapQueryError({
+                operation: "fetch position data for rotation death",
+                cause: error,
+              }),
+          }).pipe(
+            Effect.withSpan("map.rotationDeath.fetchPositionData", {
+              attributes: {
+                mapDataId: resolvedId,
+                rotationDeathCount: rotationDeaths.length,
+              },
+            })
+          );
+
+          const positionEvents: PositionEvent[] = [];
+
+          for (const d of damage) {
+            pushPos(
+              positionEvents,
+              d.match_time,
+              d.attacker_name,
+              d.attacker_team,
+              d.attacker_hero,
+              d.attacker_x,
+              d.attacker_z
+            );
+            pushPos(
+              positionEvents,
+              d.match_time,
+              d.victim_name,
+              d.victim_team,
+              d.victim_hero,
+              d.victim_x,
+              d.victim_z
+            );
+          }
+          for (const k of kills) {
+            pushPos(
+              positionEvents,
+              k.match_time,
+              k.attacker_name,
+              k.attacker_team,
+              k.attacker_hero,
+              k.attacker_x,
+              k.attacker_z
+            );
+            pushPos(
+              positionEvents,
+              k.match_time,
+              k.victim_name,
+              k.victim_team,
+              k.victim_hero,
+              k.victim_x,
+              k.victim_z
+            );
+          }
+          for (const h of healing) {
+            pushPos(
+              positionEvents,
+              h.match_time,
+              h.healer_name,
+              h.healer_team,
+              h.healer_hero,
+              h.healer_x,
+              h.healer_z
+            );
+            pushPos(
+              positionEvents,
+              h.match_time,
+              h.healee_name,
+              h.healee_team,
+              h.healee_hero,
+              h.healee_x,
+              h.healee_z
+            );
+          }
+          for (const a of ability1) {
+            pushPos(
+              positionEvents,
+              a.match_time,
+              a.player_name,
+              a.player_team,
+              a.player_hero,
+              a.player_x,
+              a.player_z
+            );
+          }
+          for (const a of ability2) {
+            pushPos(
+              positionEvents,
+              a.match_time,
+              a.player_name,
+              a.player_team,
+              a.player_hero,
+              a.player_x,
+              a.player_z
+            );
+          }
+
+          positionEvents.sort((a, b) => a.match_time - b.match_time);
+
+          for (const rd of rotationDeaths) {
+            rd.nearbyPlayers = findNearbyPlayers(
+              rd.kill.match_time,
+              rd.kill.attacker_name,
+              rd.kill.victim_name,
+              positionEvents
+            );
+          }
+        }
+
+        wideEvent.outcome = "success";
+        yield* Metric.increment(rotationDeathQuerySuccessTotal);
+
+        return {
+          mapDataId,
+          rotationDeaths,
+          totalKills: kills.length,
+          totalFights: fights.length,
+          playerSummaries: summarizeByPlayer(results),
+        };
+      }).pipe(
+        Effect.tapError((error) =>
+          Effect.sync(() => {
+            wideEvent.outcome = "error";
+            wideEvent.error_tag = error._tag;
+            wideEvent.error_message = error.message;
+          }).pipe(
+            Effect.andThen(Metric.increment(rotationDeathQueryErrorTotal))
+          )
+        ),
+        Effect.ensuring(
+          Effect.suspend(() => {
+            const durationMs = Date.now() - startTime;
+            wideEvent.duration_ms = durationMs;
+            wideEvent.outcome ??= "interrupted";
+            const log =
+              wideEvent.outcome === "error"
+                ? Effect.logError("map.rotationDeath.getRotationDeathAnalysis")
+                : Effect.logInfo("map.rotationDeath.getRotationDeathAnalysis");
+            return log.pipe(
+              Effect.annotateLogs(wideEvent),
+              Effect.andThen(
+                rotationDeathQueryDuration(Effect.succeed(durationMs))
+              )
+            );
+          })
+        ),
+        Effect.withSpan("map.rotationDeath.getRotationDeathAnalysis")
+      );
+    }
+
+    const rotationDeathCache = yield* Cache.make({
+      capacity: CACHE_CAPACITY,
+      timeToLive: CACHE_TTL,
+      lookup: (mapDataId: number) =>
+        getRotationDeathAnalysis(mapDataId).pipe(
+          Effect.tap(() => Metric.increment(mapCacheMissTotal))
+        ),
+    });
+
+    return {
+      getRotationDeathAnalysis: (mapDataId: number) =>
+        rotationDeathCache
+          .get(mapDataId)
+          .pipe(Effect.tap(() => Metric.increment(mapCacheRequestTotal))),
+    } satisfies RotationDeathServiceInterface;
+  }
+);
+
+export const RotationDeathServiceLive = Layer.effect(
+  RotationDeathService,
+  make
+).pipe(Layer.provide(EffectObservabilityLive));

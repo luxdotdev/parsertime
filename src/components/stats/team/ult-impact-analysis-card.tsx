@@ -25,7 +25,7 @@ import type {
   HeroUltImpact,
   ScenarioStats,
   UltImpactAnalysis,
-} from "@/data/team-ult-impact-dto";
+} from "@/data/team/types";
 import { cn, toHero } from "@/lib/utils";
 import { roleHeroMapping } from "@/types/heroes";
 import { AlertTriangle, Check, ChevronsUpDown } from "lucide-react";

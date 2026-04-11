@@ -29,7 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { parseData } from "@/lib/parser";
+import { parseData } from "@/lib/parser-client";
 import { cn, detectFileCorruption } from "@/lib/utils";
 import { heroRoleMapping } from "@/types/heroes";
 import type { ParserData } from "@/types/parser";

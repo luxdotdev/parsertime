@@ -22,17 +22,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { SerializedCalibrationData } from "@/data/killfeed-calibration-dto";
-import type {
-  KillfeedDisplayOptions,
-  KillfeedEvent,
-  UltimateSpan,
-} from "@/data/killfeed-dto";
 import {
   hasAnyUltFeature,
   isKillDuringUlt,
   mergeKillfeedEvents,
-} from "@/data/killfeed-dto";
+  type KillfeedDisplayOptions,
+  type KillfeedEvent,
+  type SerializedCalibrationData,
+  type UltimateSpan,
+} from "@/data/map/killfeed/types";
 import { useGoToReplay } from "@/components/map/map-tabs";
 import { cn, toHero, toKebabCase, toTimestamp } from "@/lib/utils";
 import type { Kill, RoundEnd } from "@prisma/client";
@@ -167,6 +165,8 @@ export function KillfeedTable({
                 t={t}
                 tUlt={tUlt}
                 calibrationData={calibrationData}
+                canvasImportEnabled={canvasImportEnabled}
+                mapDataId={mapDataId}
               />
             </div>
           );

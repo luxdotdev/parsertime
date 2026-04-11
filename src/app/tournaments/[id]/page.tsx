@@ -5,7 +5,9 @@ import type { BracketMatchData } from "@/components/tournament/bracket/bracket-m
 import { RoundRobinSEView } from "@/components/tournament/round-robin/round-robin-se-view";
 import { TournamentActions } from "@/components/tournament/tournament-actions";
 import { Badge } from "@/components/ui/badge";
-import { getRRStandings, getTournamentBracket } from "@/data/tournament-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { TournamentService } from "@/data/tournament";
 import { auth } from "@/lib/auth";
 import { tournament } from "@/lib/flags";
 import prisma from "@/lib/prisma";
@@ -24,14 +26,28 @@ export default async function TournamentDetailPage(props: {
   const id = Number(params.id);
   if (Number.isNaN(id)) notFound();
 
-  const data = await getTournamentBracket(id);
+  const data = await AppRuntime.runPromise(
+    TournamentService.pipe(
+      Effect.flatMap((svc) => svc.getTournamentBracket(id))
+    )
+  );
   if (!data) notFound();
 
-  let rrStandings: Awaited<ReturnType<typeof getRRStandings>> = [];
+  let rrStandings: {
+    teamId: number;
+    teamName: string;
+    matchesWon: number;
+    matchesLost: number;
+    mapsWon: number;
+    mapsLost: number;
+    mapDifferential: number;
+  }[] = [];
   let canManage = false;
 
   if (data.format === "ROUND_ROBIN_SE") {
-    rrStandings = await getRRStandings(id);
+    rrStandings = await AppRuntime.runPromise(
+      TournamentService.pipe(Effect.flatMap((svc) => svc.getRRStandings(id)))
+    );
 
     const session = await auth();
     if (session?.user?.email) {

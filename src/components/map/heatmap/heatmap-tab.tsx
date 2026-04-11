@@ -1,11 +1,15 @@
-import { getHeatmapData } from "@/data/heatmap-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { HeatmapService } from "@/data/map";
 import { getTranslations } from "next-intl/server";
 import { HeatmapCanvas } from "./heatmap-canvas";
 import { HeatmapControlTabs } from "./heatmap-control-tabs";
 
 export async function HeatmapTab({ id }: { id: number }) {
   const [data, t] = await Promise.all([
-    getHeatmapData(id),
+    AppRuntime.runPromise(
+      HeatmapService.pipe(Effect.flatMap((svc) => svc.getHeatmapData(id)))
+    ),
     getTranslations("mapPage.heatmap"),
   ]);
 

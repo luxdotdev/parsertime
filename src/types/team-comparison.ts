@@ -1,4 +1,4 @@
-import type { AggregatedStats } from "@/data/comparison-dto";
+import type { AggregatedStats } from "@/data/comparison";
 
 /**
  * Team comparison result showing both teams' aggregated stats

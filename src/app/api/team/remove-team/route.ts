@@ -1,4 +1,6 @@
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
@@ -25,7 +27,13 @@ export async function POST(req: NextRequest) {
     Logger.log("Authorized removal of team with dev token");
   }
 
-  const user = await getUser(session?.user?.email ?? "lucas@lux.dev");
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(
+      Effect.flatMap((svc) =>
+        svc.getUser(session?.user?.email ?? "lucas@lux.dev")
+      )
+    )
+  );
   if (!user) return new Response("User not found", { status: 404 });
 
   const team = await prisma.team.findFirst({ where: { id } });

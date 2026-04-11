@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { ScrimData } from "@/data/player-scouting-analytics-dto";
+import type { ScrimData } from "@/data/player/types";
 import { cn } from "@/lib/utils";
 import { Info } from "lucide-react";
 import { useTranslations } from "next-intl";

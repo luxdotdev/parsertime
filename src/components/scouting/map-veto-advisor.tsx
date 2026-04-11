@@ -12,7 +12,7 @@ import {
 import type {
   MapIntelligence,
   MapMatchupEntry,
-} from "@/data/map-intelligence-dto";
+} from "@/data/intelligence/types";
 import { cn } from "@/lib/utils";
 import { ArrowDown, ArrowRight, ArrowUp, Info } from "lucide-react";
 import { useTranslations } from "next-intl";

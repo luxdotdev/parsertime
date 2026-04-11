@@ -1,10 +1,7 @@
-import {
-  getAllDeathsForPlayer,
-  getAllKillsForPlayer,
-  getAllMapWinratesForPlayer,
-  getAllStatsForPlayer,
-} from "@/data/scrim-dto";
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
+import { ScrimService } from "@/data/scrim";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import { Permission } from "@/lib/permissions";
@@ -20,7 +17,9 @@ export async function GET(request: NextRequest) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const user = await getUser(session.user.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+  );
   if (!user) {
     return new Response("User not found", { status: 404 });
   }
@@ -101,13 +100,34 @@ export async function GET(request: NextRequest) {
   const permittedScrimIds = data[permitted].map((scrim) => scrim.id);
 
   try {
-    const [allPlayerStats, allPlayerKills, mapWinrates, allPlayerDeaths] =
-      await Promise.all([
-        getAllStatsForPlayer(permittedScrimIds, name),
-        getAllKillsForPlayer(permittedScrimIds, name),
-        getAllMapWinratesForPlayer(permittedScrimIds, name),
-        getAllDeathsForPlayer(permittedScrimIds, name),
-      ]);
+    const { allPlayerStats, allPlayerKills, mapWinrates, allPlayerDeaths } =
+      await AppRuntime.runPromise(
+        Effect.all(
+          {
+            allPlayerStats: ScrimService.pipe(
+              Effect.flatMap((svc) =>
+                svc.getAllStatsForPlayer(permittedScrimIds, name)
+              )
+            ),
+            allPlayerKills: ScrimService.pipe(
+              Effect.flatMap((svc) =>
+                svc.getAllKillsForPlayer(permittedScrimIds, name)
+              )
+            ),
+            mapWinrates: ScrimService.pipe(
+              Effect.flatMap((svc) =>
+                svc.getAllMapWinratesForPlayer(permittedScrimIds, name)
+              )
+            ),
+            allPlayerDeaths: ScrimService.pipe(
+              Effect.flatMap((svc) =>
+                svc.getAllDeathsForPlayer(permittedScrimIds, name)
+              )
+            ),
+          },
+          { concurrency: "unbounded" }
+        )
+      );
 
     return NextResponse.json({
       success: true,

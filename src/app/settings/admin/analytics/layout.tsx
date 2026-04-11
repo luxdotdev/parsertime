@@ -1,5 +1,7 @@
 import { NoAuthCard } from "@/components/auth/no-auth";
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { $Enums } from "@prisma/client";
 
@@ -8,7 +10,9 @@ export default async function AdminAnalyticsLayout({
 }: LayoutProps<"/settings/admin/analytics">) {
   const session = await auth();
 
-  const user = await getUser(session?.user?.email);
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
 
   if (user?.role !== $Enums.UserRole.ADMIN) {
     return NoAuthCard();

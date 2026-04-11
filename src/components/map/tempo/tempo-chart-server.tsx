@@ -1,4 +1,6 @@
-import { getTempoChartData } from "@/data/tempo-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { TempoService } from "@/data/map";
 import { getTranslations } from "next-intl/server";
 import { TempoChart } from "./tempo-chart";
 
@@ -14,7 +16,9 @@ export async function TempoChartServer({
   team2Color,
 }: TempoChartServerProps) {
   const [data, t] = await Promise.all([
-    getTempoChartData(id),
+    AppRuntime.runPromise(
+      TempoService.pipe(Effect.flatMap((svc) => svc.getTempoChartData(id)))
+    ),
     getTranslations("mapPage.events.tempo"),
   ]);
 

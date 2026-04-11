@@ -1,4 +1,6 @@
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import {
@@ -40,7 +42,9 @@ export async function POST(request: NextRequest) {
 
   const session = await auth();
 
-  const userId = await getUser(session?.user?.email);
+  const userId = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
   if (!userId) return new Response("Unauthorized", { status: 401 });
 
   const permission = await new Permission("create-team").check();

@@ -2,7 +2,9 @@ import { DirectionalTransition } from "@/components/directional-transition";
 import { ScrimPagination } from "@/components/dashboard/scrim-pagination";
 import { UpdateModalWrapper } from "@/components/dashboard/update-modal-wrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getUser } from "@/data/user-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
@@ -48,7 +50,9 @@ export default async function DashboardPage() {
     getTranslations("dashboard"),
   ]);
 
-  const userData = await getUser(session?.user?.email);
+  const userData = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
 
   const isAdmin = userData?.role === $Enums.UserRole.ADMIN;
 

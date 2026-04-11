@@ -14,10 +14,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import type {
-  OurBanImpact,
-  TeamOurBanAnalysis,
-} from "@/data/team-ban-impact-dto";
+import type { OurBanImpact, TeamOurBanAnalysis } from "@/data/team/types";
 import { cn, toHero, useHeroNames } from "@/lib/utils";
 import { Swords, TrendingUp } from "lucide-react";
 import Image from "next/image";

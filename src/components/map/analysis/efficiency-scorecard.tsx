@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import type { UltEfficiency } from "@/data/scrim-overview-dto";
+import type { UltEfficiency } from "@/data/scrim/types";
 import { cn } from "@/lib/utils";
 
 type EfficiencyScorecardProps = {

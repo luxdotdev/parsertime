@@ -14,7 +14,7 @@ import {
   type TimingData,
   type UltimatesData,
 } from "@/components/map/analysis/analysis-sections";
-import type { SerializedCalibrationData } from "@/data/killfeed-calibration-dto";
+import type { SerializedCalibrationData } from "@/data/map/killfeed/types";
 import {
   Card,
   CardContent,
@@ -23,7 +23,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { MapAbilityTimingAnalysis } from "@/data/scrim-ability-timing-dto";
+import type { MapAbilityTimingAnalysis } from "@/data/scrim/types";
 import {
   ArrowRightLeft,
   Crosshair,

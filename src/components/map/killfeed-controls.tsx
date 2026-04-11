@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import type { KillfeedDisplayOptions } from "@/data/killfeed-dto";
+import type { KillfeedDisplayOptions } from "@/data/map/killfeed/types";
 import { SlidersHorizontal } from "lucide-react";
 import { useTranslations } from "next-intl";
 

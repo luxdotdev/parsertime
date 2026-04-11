@@ -7,8 +7,9 @@ import { PlayerProfileHeader } from "@/components/scouting/player-profile-header
 import { PlayerScrimOverview } from "@/components/scouting/player-scrim-overview";
 import { PlayerStrengthsWeaknesses } from "@/components/scouting/player-strengths-weaknesses";
 import { PlayerTournamentHistory } from "@/components/scouting/player-tournament-history";
-import { getPlayerScoutingAnalytics } from "@/data/player-scouting-analytics-dto";
-import { getPlayerProfile } from "@/data/player-scouting-dto";
+import { Effect } from "effect";
+import { AppRuntime } from "@/data/runtime";
+import { ScoutingService, ScoutingAnalyticsService } from "@/data/player";
 import { scoutingTool } from "@/lib/flags";
 import { ArrowLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
@@ -25,10 +26,16 @@ export default async function ScoutingPlayerPage(
   const slug = decodeURIComponent(params.slug);
   const t = await getTranslations("scoutingPage.player.profile");
 
-  const profile = await getPlayerProfile(slug);
+  const profile = await AppRuntime.runPromise(
+    ScoutingService.pipe(Effect.flatMap((svc) => svc.getPlayerProfile(slug)))
+  );
   if (!profile) notFound();
 
-  const analytics = await getPlayerScoutingAnalytics(profile.name);
+  const analytics = await AppRuntime.runPromise(
+    ScoutingAnalyticsService.pipe(
+      Effect.flatMap((svc) => svc.getPlayerScoutingAnalytics(profile.name))
+    )
+  );
 
   return (
     <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">

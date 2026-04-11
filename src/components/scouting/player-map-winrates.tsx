@@ -15,7 +15,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import type { CompetitiveMapWinrates } from "@/data/player-scouting-analytics-dto";
+import type { CompetitiveMapWinrates } from "@/data/player/types";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";

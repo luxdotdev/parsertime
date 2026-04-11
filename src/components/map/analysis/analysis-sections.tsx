@@ -17,12 +17,12 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import type { SerializedCalibrationData } from "@/data/killfeed-calibration-dto";
+import type { SerializedCalibrationData } from "@/data/map/killfeed/types";
 import type {
   PlayerUltComparison,
   SubroleUltTiming,
   UltEfficiency,
-} from "@/data/scrim-overview-dto";
+} from "@/data/scrim/types";
 import { toHero, toKebabCase, toTimestamp } from "@/lib/utils";
 import type { RoleName } from "@/types/heroes";
 import type { Kill } from "@prisma/client";

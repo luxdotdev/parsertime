@@ -21,10 +21,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type {
-  MatchupMapResult,
-  MatchupWinrateData,
-} from "@/data/team-matchup-winrate-dto";
+import type { MatchupMapResult, MatchupWinrateData } from "@/data/team/types";
 import { determineRole } from "@/lib/player-table-data";
 import { cn, toHero, useHeroNames } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";

@@ -1,10 +1,11 @@
 {
   "name": "parsertime",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "prepare": "effect-language-service patch",
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next typegen && oxlint",

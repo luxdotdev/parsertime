@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { MapModePerformance } from "@/data/team-map-mode-stats-dto";
+import type { MapModePerformance } from "@/data/team/types";
 import { cn, toTimestampWithHours } from "@/lib/utils";
 import { $Enums } from "@prisma/client";
 import { useTranslations } from "next-intl";
