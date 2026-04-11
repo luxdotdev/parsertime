@@ -10,7 +10,7 @@ import {
   MetricBoundaries,
 } from "effect";
 import { TeamQueryError } from "./errors";
-import type { TeamDateRange } from "./shared-core";
+import type { BaseTeamData, TeamDateRange } from "./shared-core";
 import {
   buildCapturesMaps,
   buildFinalRoundMap,
@@ -75,6 +75,210 @@ function createEmptyAnalysis(): CombinedBanAnalysis {
   };
 }
 
+export function processBanImpactAnalysis(
+  sharedData: BaseTeamData,
+  heroBans: { MapDataId: number | null; team: string; hero: string }[]
+): CombinedBanAnalysis {
+  const {
+    teamRosterSet,
+    mapDataRecords,
+    allPlayerStats,
+    matchStarts,
+    finalRounds,
+    captures,
+    payloadProgresses,
+    pointProgresses,
+  } = sharedData;
+
+  if (mapDataRecords.length === 0) return createEmptyAnalysis();
+
+  const finalRoundMap = buildFinalRoundMap(finalRounds);
+  const matchStartMap = buildMatchStartMap(matchStarts);
+  const { team1CapturesMap, team2CapturesMap } = buildCapturesMaps(
+    captures,
+    matchStartMap
+  );
+  const {
+    team1ProgressMap: team1PayloadProgressMap,
+    team2ProgressMap: team2PayloadProgressMap,
+  } = buildProgressMaps(payloadProgresses, matchStartMap);
+  const {
+    team1ProgressMap: team1PointProgressMap,
+    team2ProgressMap: team2PointProgressMap,
+  } = buildProgressMaps(pointProgresses, matchStartMap);
+
+  type MapOutcome = {
+    mapDataId: number;
+    teamName: string;
+    isWin: boolean;
+    bannedHeroes: Set<string>;
+    heroesBannedByUs: Set<string>;
+  };
+  const mapOutcomes: MapOutcome[] = [];
+
+  const bansByMapId = new Map<number, { team: string; hero: string }[]>();
+  for (const ban of heroBans) {
+    if (!ban.MapDataId) continue;
+    if (!bansByMapId.has(ban.MapDataId)) bansByMapId.set(ban.MapDataId, []);
+    bansByMapId.get(ban.MapDataId)!.push({ team: ban.team, hero: ban.hero });
+  }
+
+  for (const mapDataRecord of mapDataRecords) {
+    const mapDataId = mapDataRecord.id;
+    const teamName = findTeamNameForMapInMemory(
+      mapDataId,
+      allPlayerStats,
+      teamRosterSet
+    );
+    if (!teamName) continue;
+
+    const playersOnMap = allPlayerStats.filter(
+      (stat) => stat.MapDataId === mapDataId && stat.player_team === teamName
+    );
+    if (!playersOnMap.every((p) => teamRosterSet.has(p.player_name))) continue;
+
+    const matchDetails = matchStartMap.get(mapDataId) ?? null;
+    const finalRound = finalRoundMap.get(mapDataId) ?? null;
+    const winner = calculateWinner({
+      matchDetails,
+      finalRound,
+      team1Captures: team1CapturesMap.get(mapDataId) ?? [],
+      team2Captures: team2CapturesMap.get(mapDataId) ?? [],
+      team1PayloadProgress: team1PayloadProgressMap.get(mapDataId) ?? [],
+      team2PayloadProgress: team2PayloadProgressMap.get(mapDataId) ?? [],
+      team1PointProgress: team1PointProgressMap.get(mapDataId) ?? [],
+      team2PointProgress: team2PointProgressMap.get(mapDataId) ?? [],
+    });
+
+    const isWin = winner === teamName;
+    const mapBans = bansByMapId.get(mapDataId) ?? [];
+    const bannedHeroes = new Set<string>();
+    const heroesBannedByUs = new Set<string>();
+    for (const ban of mapBans) {
+      if (ban.team !== teamName) bannedHeroes.add(ban.hero);
+      else heroesBannedByUs.add(ban.hero);
+    }
+    mapOutcomes.push({
+      mapDataId,
+      teamName,
+      isWin,
+      bannedHeroes,
+      heroesBannedByUs,
+    });
+  }
+
+  if (mapOutcomes.length === 0) return createEmptyAnalysis();
+
+  const totalMaps = mapOutcomes.length;
+  const overallWins = mapOutcomes.filter((o) => o.isWin).length;
+  const overallWinRate = totalMaps > 0 ? overallWins / totalMaps : 0;
+
+  const allBannedHeroes = new Set<string>();
+  for (const outcome of mapOutcomes)
+    for (const hero of outcome.bannedHeroes) allBannedHeroes.add(hero);
+
+  const banImpacts: HeroBanImpact[] = [];
+  for (const hero of allBannedHeroes) {
+    const mapsWithBan = mapOutcomes.filter((o) => o.bannedHeroes.has(hero));
+    const mapsWithoutBan = mapOutcomes.filter(
+      (o) => !o.bannedHeroes.has(hero)
+    );
+    const mapsBanned = mapsWithBan.length;
+    if (mapsBanned < MIN_BANS_FOR_SIGNIFICANCE) continue;
+    const winsWhenBanned = mapsWithBan.filter((o) => o.isWin).length;
+    const winsWhenAvailable = mapsWithoutBan.filter((o) => o.isWin).length;
+    const winRateWithoutHero =
+      mapsBanned > 0 ? winsWhenBanned / mapsBanned : 0;
+    const winRateWithHero =
+      mapsWithoutBan.length > 0
+        ? winsWhenAvailable / mapsWithoutBan.length
+        : overallWinRate;
+    const winRateDelta = winRateWithHero - winRateWithoutHero;
+    banImpacts.push({
+      hero,
+      totalBans: mapsBanned,
+      banRate: mapsBanned / totalMaps,
+      winRateWithHero,
+      winRateWithoutHero,
+      winRateDelta,
+      mapsPlayed: totalMaps,
+      mapsBanned,
+    });
+  }
+  banImpacts.sort((a, b) => b.banRate - a.banRate);
+  const mostBanned = banImpacts.slice(0, 10);
+  const weakPoints = banImpacts
+    .filter(
+      (impact) =>
+        impact.winRateDelta >= WEAK_POINT_DELTA_THRESHOLD &&
+        impact.mapsBanned >= MIN_BANS_FOR_SIGNIFICANCE
+    )
+    .sort((a, b) => b.winRateDelta - a.winRateDelta);
+
+  const received: TeamBanImpactAnalysis = {
+    banImpacts,
+    mostBanned,
+    weakPoints,
+    totalMapsAnalyzed: totalMaps,
+  };
+
+  const allHeroesBannedByUs = new Set<string>();
+  for (const outcome of mapOutcomes)
+    for (const hero of outcome.heroesBannedByUs)
+      allHeroesBannedByUs.add(hero);
+
+  const ourBanImpacts: OurBanImpact[] = [];
+  for (const hero of allHeroesBannedByUs) {
+    const mapsWhereBanned = mapOutcomes.filter((o) =>
+      o.heroesBannedByUs.has(hero)
+    );
+    const mapsWhereNotBanned = mapOutcomes.filter(
+      (o) => !o.heroesBannedByUs.has(hero)
+    );
+    const mapsBanned = mapsWhereBanned.length;
+    if (mapsBanned < MIN_BANS_FOR_SIGNIFICANCE) continue;
+    const winsWhenWeBanned = mapsWhereBanned.filter((o) => o.isWin).length;
+    const winsWhenWeDidNotBan = mapsWhereNotBanned.filter(
+      (o) => o.isWin
+    ).length;
+    const winRateWhenBanned =
+      mapsBanned > 0 ? winsWhenWeBanned / mapsBanned : 0;
+    const winRateWhenNotBanned =
+      mapsWhereNotBanned.length > 0
+        ? winsWhenWeDidNotBan / mapsWhereNotBanned.length
+        : overallWinRate;
+    const winRateDelta = winRateWhenBanned - winRateWhenNotBanned;
+    ourBanImpacts.push({
+      hero,
+      totalBans: mapsBanned,
+      banRate: mapsBanned / totalMaps,
+      winRateWhenBanned,
+      winRateWhenNotBanned,
+      winRateDelta,
+      mapsPlayed: totalMaps,
+      mapsBanned,
+    });
+  }
+  ourBanImpacts.sort((a, b) => b.banRate - a.banRate);
+  const mostBannedByUs = ourBanImpacts.slice(0, 10);
+  const strongBans = ourBanImpacts
+    .filter(
+      (impact) =>
+        impact.winRateDelta >= STRONG_BAN_DELTA_THRESHOLD &&
+        impact.mapsBanned >= MIN_BANS_FOR_SIGNIFICANCE
+    )
+    .sort((a, b) => b.winRateDelta - a.winRateDelta);
+
+  const outgoing: TeamOurBanAnalysis = {
+    ourBanImpacts,
+    mostBannedByUs,
+    strongBans,
+    totalMapsAnalyzed: totalMaps,
+  };
+
+  return { received, outgoing };
+}
+
 export type TeamBanImpactServiceInterface = {
   readonly getTeamBanImpactAnalysis: (
     teamId: number,
@@ -103,17 +307,7 @@ export const make = Effect.gen(function* () {
       yield* Effect.annotateCurrentSpan("teamId", teamId);
       const sharedData = yield* shared.getBaseTeamData(teamId, { dateRange });
 
-      const {
-        teamRosterSet,
-        mapDataRecords,
-        mapDataIds,
-        allPlayerStats,
-        matchStarts,
-        finalRounds,
-        captures,
-        payloadProgresses,
-        pointProgresses,
-      } = sharedData;
+      const { mapDataRecords, mapDataIds } = sharedData;
 
       if (mapDataRecords.length === 0) {
         wideEvent.outcome = "success";
@@ -132,208 +326,15 @@ export const make = Effect.gen(function* () {
           new TeamQueryError({ operation: "fetch hero bans", cause: error }),
       });
 
-      const finalRoundMap = buildFinalRoundMap(finalRounds);
-      const matchStartMap = buildMatchStartMap(matchStarts);
-      const { team1CapturesMap, team2CapturesMap } = buildCapturesMaps(
-        captures,
-        matchStartMap
-      );
-      const {
-        team1ProgressMap: team1PayloadProgressMap,
-        team2ProgressMap: team2PayloadProgressMap,
-      } = buildProgressMaps(payloadProgresses, matchStartMap);
-      const {
-        team1ProgressMap: team1PointProgressMap,
-        team2ProgressMap: team2PointProgressMap,
-      } = buildProgressMaps(pointProgresses, matchStartMap);
-
-      type MapOutcome = {
-        mapDataId: number;
-        teamName: string;
-        isWin: boolean;
-        bannedHeroes: Set<string>;
-        heroesBannedByUs: Set<string>;
-      };
-      const mapOutcomes: MapOutcome[] = [];
-
-      const bansByMapId = new Map<number, { team: string; hero: string }[]>();
-      for (const ban of heroBans) {
-        if (!ban.MapDataId) continue;
-        if (!bansByMapId.has(ban.MapDataId)) bansByMapId.set(ban.MapDataId, []);
-        bansByMapId
-          .get(ban.MapDataId)!
-          .push({ team: ban.team, hero: ban.hero });
-      }
-
-      for (const mapDataRecord of mapDataRecords) {
-        const mapDataId = mapDataRecord.id;
-        const teamName = findTeamNameForMapInMemory(
-          mapDataId,
-          allPlayerStats,
-          teamRosterSet
-        );
-        if (!teamName) continue;
-
-        const playersOnMap = allPlayerStats.filter(
-          (stat) =>
-            stat.MapDataId === mapDataId && stat.player_team === teamName
-        );
-        if (!playersOnMap.every((p) => teamRosterSet.has(p.player_name)))
-          continue;
-
-        const matchDetails = matchStartMap.get(mapDataId) ?? null;
-        const finalRound = finalRoundMap.get(mapDataId) ?? null;
-        const winner = calculateWinner({
-          matchDetails,
-          finalRound,
-          team1Captures: team1CapturesMap.get(mapDataId) ?? [],
-          team2Captures: team2CapturesMap.get(mapDataId) ?? [],
-          team1PayloadProgress: team1PayloadProgressMap.get(mapDataId) ?? [],
-          team2PayloadProgress: team2PayloadProgressMap.get(mapDataId) ?? [],
-          team1PointProgress: team1PointProgressMap.get(mapDataId) ?? [],
-          team2PointProgress: team2PointProgressMap.get(mapDataId) ?? [],
-        });
-
-        const isWin = winner === teamName;
-        const mapBans = bansByMapId.get(mapDataId) ?? [];
-        const bannedHeroes = new Set<string>();
-        const heroesBannedByUs = new Set<string>();
-        for (const ban of mapBans) {
-          if (ban.team !== teamName) bannedHeroes.add(ban.hero);
-          else heroesBannedByUs.add(ban.hero);
-        }
-        mapOutcomes.push({
-          mapDataId,
-          teamName,
-          isWin,
-          bannedHeroes,
-          heroesBannedByUs,
-        });
-      }
-
-      if (mapOutcomes.length === 0) {
-        wideEvent.outcome = "success";
-        wideEvent.total_maps = 0;
-        yield* Metric.increment(banImpactQuerySuccessTotal);
-        return createEmptyAnalysis();
-      }
-
-      const totalMaps = mapOutcomes.length;
-      const overallWins = mapOutcomes.filter((o) => o.isWin).length;
-      const overallWinRate = totalMaps > 0 ? overallWins / totalMaps : 0;
-
-      // Received bans
-      const allBannedHeroes = new Set<string>();
-      for (const outcome of mapOutcomes)
-        for (const hero of outcome.bannedHeroes) allBannedHeroes.add(hero);
-
-      const banImpacts: HeroBanImpact[] = [];
-      for (const hero of allBannedHeroes) {
-        const mapsWithBan = mapOutcomes.filter((o) => o.bannedHeroes.has(hero));
-        const mapsWithoutBan = mapOutcomes.filter(
-          (o) => !o.bannedHeroes.has(hero)
-        );
-        const mapsBanned = mapsWithBan.length;
-        if (mapsBanned < MIN_BANS_FOR_SIGNIFICANCE) continue;
-        const winsWhenBanned = mapsWithBan.filter((o) => o.isWin).length;
-        const winsWhenAvailable = mapsWithoutBan.filter((o) => o.isWin).length;
-        const winRateWithoutHero =
-          mapsBanned > 0 ? winsWhenBanned / mapsBanned : 0;
-        const winRateWithHero =
-          mapsWithoutBan.length > 0
-            ? winsWhenAvailable / mapsWithoutBan.length
-            : overallWinRate;
-        const winRateDelta = winRateWithHero - winRateWithoutHero;
-        banImpacts.push({
-          hero,
-          totalBans: mapsBanned,
-          banRate: mapsBanned / totalMaps,
-          winRateWithHero,
-          winRateWithoutHero,
-          winRateDelta,
-          mapsPlayed: totalMaps,
-          mapsBanned,
-        });
-      }
-      banImpacts.sort((a, b) => b.banRate - a.banRate);
-      const mostBanned = banImpacts.slice(0, 10);
-      const weakPoints = banImpacts
-        .filter(
-          (impact) =>
-            impact.winRateDelta >= WEAK_POINT_DELTA_THRESHOLD &&
-            impact.mapsBanned >= MIN_BANS_FOR_SIGNIFICANCE
-        )
-        .sort((a, b) => b.winRateDelta - a.winRateDelta);
-
-      const received: TeamBanImpactAnalysis = {
-        banImpacts,
-        mostBanned,
-        weakPoints,
-        totalMapsAnalyzed: totalMaps,
-      };
-
-      // Outgoing bans
-      const allHeroesBannedByUs = new Set<string>();
-      for (const outcome of mapOutcomes)
-        for (const hero of outcome.heroesBannedByUs)
-          allHeroesBannedByUs.add(hero);
-
-      const ourBanImpacts: OurBanImpact[] = [];
-      for (const hero of allHeroesBannedByUs) {
-        const mapsWhereBanned = mapOutcomes.filter((o) =>
-          o.heroesBannedByUs.has(hero)
-        );
-        const mapsWhereNotBanned = mapOutcomes.filter(
-          (o) => !o.heroesBannedByUs.has(hero)
-        );
-        const mapsBanned = mapsWhereBanned.length;
-        if (mapsBanned < MIN_BANS_FOR_SIGNIFICANCE) continue;
-        const winsWhenWeBanned = mapsWhereBanned.filter((o) => o.isWin).length;
-        const winsWhenWeDidNotBan = mapsWhereNotBanned.filter(
-          (o) => o.isWin
-        ).length;
-        const winRateWhenBanned =
-          mapsBanned > 0 ? winsWhenWeBanned / mapsBanned : 0;
-        const winRateWhenNotBanned =
-          mapsWhereNotBanned.length > 0
-            ? winsWhenWeDidNotBan / mapsWhereNotBanned.length
-            : overallWinRate;
-        const winRateDelta = winRateWhenBanned - winRateWhenNotBanned;
-        ourBanImpacts.push({
-          hero,
-          totalBans: mapsBanned,
-          banRate: mapsBanned / totalMaps,
-          winRateWhenBanned,
-          winRateWhenNotBanned,
-          winRateDelta,
-          mapsPlayed: totalMaps,
-          mapsBanned,
-        });
-      }
-      ourBanImpacts.sort((a, b) => b.banRate - a.banRate);
-      const mostBannedByUs = ourBanImpacts.slice(0, 10);
-      const strongBans = ourBanImpacts
-        .filter(
-          (impact) =>
-            impact.winRateDelta >= STRONG_BAN_DELTA_THRESHOLD &&
-            impact.mapsBanned >= MIN_BANS_FOR_SIGNIFICANCE
-        )
-        .sort((a, b) => b.winRateDelta - a.winRateDelta);
-
-      const outgoing: TeamOurBanAnalysis = {
-        ourBanImpacts,
-        mostBannedByUs,
-        strongBans,
-        totalMapsAnalyzed: totalMaps,
-      };
+      const result = processBanImpactAnalysis(sharedData, heroBans);
 
       wideEvent.outcome = "success";
-      wideEvent.total_maps = totalMaps;
-      wideEvent.received_ban_count = banImpacts.length;
-      wideEvent.outgoing_ban_count = ourBanImpacts.length;
+      wideEvent.total_maps = result.received.totalMapsAnalyzed;
+      wideEvent.received_ban_count = result.received.banImpacts.length;
+      wideEvent.outgoing_ban_count = result.outgoing.ourBanImpacts.length;
       yield* Metric.increment(banImpactQuerySuccessTotal);
 
-      return { received, outgoing };
+      return result;
     }).pipe(
       Effect.tapError((error) =>
         Effect.sync(() => {
