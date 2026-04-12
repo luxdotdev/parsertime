@@ -114,6 +114,8 @@ export type TournamentServiceInterface = {
   readonly getRRStandings: (
     tournamentId: number
   ) => Effect.Effect<TeamStanding[], TournamentQueryError>;
+
+  readonly invalidateMatch: (matchId: number) => Effect.Effect<void>;
 };
 
 export class TournamentService extends Context.Tag(
@@ -573,6 +575,8 @@ export const make: Effect.Effect<TournamentServiceInterface> = Effect.gen(
           .pipe(
             Effect.tap(() => Metric.increment(tournamentCacheRequestTotal))
           ),
+      invalidateMatch: (matchId: number) =>
+        getTournamentMatchCache.invalidate(matchId),
     } satisfies TournamentServiceInterface;
   }
 );
