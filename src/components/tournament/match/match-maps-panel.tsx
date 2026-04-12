@@ -1,3 +1,4 @@
+import { DeleteMapButton } from "@/components/tournament/match/delete-map-button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -27,6 +28,7 @@ type MatchMapsPanelProps = {
   team1Name: string;
   team2Name: string;
   scrimId: number | null;
+  canDelete?: boolean;
 };
 
 export function MatchMapsPanel({
@@ -36,6 +38,7 @@ export function MatchMapsPanel({
   team1Name,
   team2Name,
   scrimId,
+  canDelete,
 }: MatchMapsPanelProps) {
   return (
     <div className="space-y-4">
@@ -69,10 +72,10 @@ export function MatchMapsPanel({
                 ? `/_/scrim/${scrimId}/map/${tournamentMap.map.id}?from=tournament&tournamentId=${tournamentId}&matchId=${matchId}`
                 : null;
 
-            const content = (
+            const card = (
               <Card
                 className={cn(
-                  "transition-colors",
+                  "min-w-0 flex-1 transition-colors",
                   mapDetailHref && "hover:border-primary/50 cursor-pointer"
                 )}
               >
@@ -145,15 +148,25 @@ export function MatchMapsPanel({
               </Card>
             );
 
-            if (mapDetailHref) {
-              return (
-                <Link key={tournamentMap.id} href={mapDetailHref as Route}>
-                  {content}
-                </Link>
-              );
-            }
+            const linkedCard = mapDetailHref ? (
+              <Link className="min-w-0 flex-1" href={mapDetailHref as Route}>
+                {card}
+              </Link>
+            ) : (
+              card
+            );
 
-            return <div key={tournamentMap.id}>{content}</div>;
+            return (
+              <div key={tournamentMap.id} className="flex items-center gap-2">
+                {linkedCard}
+                {canDelete && (
+                  <DeleteMapButton
+                    tournamentMapId={tournamentMap.id}
+                    gameNumber={tournamentMap.gameNumber}
+                  />
+                )}
+              </div>
+            );
           })}
         </div>
       )}

@@ -106,6 +106,7 @@ export default async function TournamentMatchPage(props: {
               team1Name={team1Name}
               team2Name={team2Name}
               scrimId={match.scrimId}
+              canDelete={canUpload}
             />
             {canUpload && !isCompleted && (
               <TournamentAddMapCard
