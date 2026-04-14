@@ -1,7 +1,15 @@
-import { CoachingCanvas } from "@/components/coaching/coaching-canvas";
 import { coachingCanvas } from "@/lib/flags";
 import { getTranslations } from "next-intl/server";
+import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
+
+const CoachingCanvas = dynamic(
+  () =>
+    import("@/components/coaching/coaching-canvas").then(
+      (mod) => mod.CoachingCanvas
+    ),
+  { ssr: false }
+);
 
 export default async function CoachingCanvasPage() {
   const enabled = await coachingCanvas();

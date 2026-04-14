@@ -75,8 +75,10 @@ export default async function ScrimDashboardPage(
 ) {
   const params = await props.params;
   const id = parseInt(params.scrimId);
-  const session = await auth();
-  const t = await getTranslations("scrimPage");
+  const [session, t] = await Promise.all([
+    auth(),
+    getTranslations("scrimPage"),
+  ]);
 
   const scrim = await AppRuntime.runPromise(
     ScrimService.pipe(Effect.flatMap((svc) => svc.getScrim(id)))
@@ -85,17 +87,16 @@ export default async function ScrimDashboardPage(
 
   const teamId = scrim.teamId;
 
-  const maps = (
-    await prisma.map.findMany({
-      where: {
-        scrimId: id,
-      },
-    })
-  ).sort((a, b) => a.id - b.id);
-
-  const user = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
-  );
+  const [maps, user] = await Promise.all([
+    prisma.map
+      .findMany({ where: { scrimId: id } })
+      .then((m) => m.sort((a, b) => a.id - b.id)),
+    AppRuntime.runPromise(
+      UserService.pipe(
+        Effect.flatMap((svc) => svc.getUser(session?.user?.email))
+      )
+    ),
+  ]);
 
   const isManager = teamId
     ? (await prisma.teamManager.findFirst({
@@ -112,14 +113,8 @@ export default async function ScrimDashboardPage(
     user?.role === $Enums.UserRole.MANAGER ||
     user?.role === $Enums.UserRole.ADMIN;
 
-  const visibility = (await prisma.scrim.findFirst({
-    where: {
-      id: parseInt(params.scrimId),
-    },
-    select: {
-      guestMode: true,
-    },
-  })) ?? { guestMode: false };
+  // Use guestMode from the already-fetched scrim instead of a redundant query
+  const visibility = { guestMode: scrim.guestMode ?? false };
 
   const [mapComparisonEnabled, overviewCardEnabled, opponentFullName] =
     await Promise.all([

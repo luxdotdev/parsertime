@@ -25,7 +25,7 @@ function toInviteToken(tokenArr: string[]) {
 export default function TeamJoinPage() {
   const t = useTranslations("teamPage.join");
 
-  const [token, setToken] = useState<string[]>(Array(19).fill("")); // Initialize state with 19 empty strings
+  const [token, setToken] = useState<string[]>(() => Array(19).fill(""));
   const router = useRouter();
   const searchParams = useSearchParams();
 

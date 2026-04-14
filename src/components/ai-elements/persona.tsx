@@ -103,7 +103,11 @@ const getCurrentTheme = (): "light" | "dark" => {
 };
 
 const useTheme = (enabled: boolean) => {
-  const [theme, setTheme] = useState<"light" | "dark">(getCurrentTheme);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    setTheme(getCurrentTheme());
+  }, []);
 
   useEffect(() => {
     // Skip if not enabled (avoids unnecessary observers for non-dynamic-color variants)

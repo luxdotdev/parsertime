@@ -49,11 +49,11 @@ export default async function ComparePage(
     notFound();
   }
 
-  // Verify user has access to this team
+  // Verify user has access to this team — only fetch user IDs, not full objects
   const team = await prisma.team.findUnique({
     where: { id: teamId },
     include: {
-      users: true,
+      users: { select: { id: true } },
     },
   });
 

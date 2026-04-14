@@ -26,35 +26,38 @@ export async function POST(req: NextRequest) {
     Logger.log("Authorized removal of scrim with dev token");
   }
 
-  const user = await AppRuntime.runPromise(
-    UserService.pipe(
-      Effect.flatMap((svc) =>
-        svc.getUser(session?.user?.email ?? "lucas@lux.dev")
-      )
-    )
-  );
-
-  if (!user) return new Response("User not found", { status: 404 });
   if (!id) return new Response("Missing ID", { status: 400 });
 
-  const scrim = await AppRuntime.runPromise(
-    ScrimService.pipe(Effect.flatMap((svc) => svc.getScrim(parseInt(id))))
-  );
+  const [user, scrim] = await Promise.all([
+    AppRuntime.runPromise(
+      UserService.pipe(
+        Effect.flatMap((svc) =>
+          svc.getUser(session?.user?.email ?? "lucas@lux.dev")
+        )
+      )
+    ),
+    AppRuntime.runPromise(
+      ScrimService.pipe(Effect.flatMap((svc) => svc.getScrim(parseInt(id))))
+    ),
+  ]);
 
+  if (!user) return new Response("User not found", { status: 404 });
   if (!scrim) return new Response("Scrim not found", { status: 404 });
 
   let isManager = false;
 
-  if (scrim.teamId !== 0) {
-    // scrim is associated with a team
-    const managers = await prisma.team.findFirst({
-      where: { id: scrim.teamId ?? 0 },
-      select: { managers: true },
-    });
+  const team =
+    scrim.teamId !== 0 && scrim.teamId !== null
+      ? await prisma.team.findFirst({
+          where: { id: scrim.teamId },
+          include: { managers: true },
+        })
+      : null;
 
+  if (team) {
     // check if user is a manager
     isManager =
-      managers?.managers.some((manager) => manager.userId === user.id) ?? false;
+      team.managers.some((manager) => manager.userId === user.id) ?? false;
   }
 
   const hasPerms =
@@ -68,23 +71,20 @@ export async function POST(req: NextRequest) {
   const scrimId = parseInt(id);
 
   // If not an individual scrim, create a notification for the team
-  if (scrim.teamId !== 0 && scrim.teamId !== null) {
-    const team = await prisma.team.findFirst({
-      where: { id: scrim.teamId ?? 0 },
-    });
-    if (!team) return new Response("Team not found", { status: 404 });
-
+  if (team) {
     const teamMembers = await prisma.user.findMany({
       where: { teams: { some: { id: scrim.teamId ?? 0 } } },
     });
 
-    for (const member of teamMembers) {
-      await notifications.createInAppNotification({
-        userId: member.id,
-        title: `${team.name}: Scrim ${scrim.name} has been deleted`,
-        description: `Scrim "${scrim.name}" has been deleted by ${user.name}.`,
-      });
-    }
+    await Promise.all(
+      teamMembers.map((member) =>
+        notifications.createInAppNotification({
+          userId: member.id,
+          title: `${team.name}: Scrim ${scrim.name} has been deleted`,
+          description: `Scrim "${scrim.name}" has been deleted by ${user.name}.`,
+        })
+      )
+    );
   }
 
   await prisma.map.deleteMany({ where: { scrimId } });

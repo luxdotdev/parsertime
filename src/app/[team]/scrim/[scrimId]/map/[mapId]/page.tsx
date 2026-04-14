@@ -17,8 +17,13 @@ import { MobileNav } from "@/components/mobile-nav";
 import { Notifications } from "@/components/notifications";
 import { ReplayCode } from "@/components/scrim/replay-code";
 import { ModeToggle } from "@/components/theme-switcher";
-import { TipTap } from "@/components/tiptap/tiptap";
 import { MapTabsSkeleton } from "@/components/map/map-tabs-skeleton";
+import dynamic from "next/dynamic";
+
+const TipTap = dynamic(
+  () => import("@/components/tiptap/tiptap").then((mod) => mod.TipTap),
+  { ssr: false }
+);
 import { Suspense, ViewTransition } from "react";
 import { UserNav } from "@/components/user-nav";
 import { VodOverview } from "@/components/vods/vod-overview";

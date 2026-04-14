@@ -208,15 +208,16 @@ export default async function ProfilePage(
     }
   });
 
-  const calculatedStats = await prisma.calculatedStat.findMany({
-    where: { playerName: { equals: name, mode: "insensitive" } },
-  });
-
-  const playerScrims = await prisma.playerStat.findMany({
-    where: { player_name: { equals: name, mode: "insensitive" } },
-    select: { scrimId: true },
-    distinct: ["scrimId"],
-  });
+  const [calculatedStats, playerScrims] = await Promise.all([
+    prisma.calculatedStat.findMany({
+      where: { playerName: { equals: name, mode: "insensitive" } },
+    }),
+    prisma.playerStat.findMany({
+      where: { player_name: { equals: name, mode: "insensitive" } },
+      select: { scrimId: true },
+      distinct: ["scrimId"],
+    }),
+  ]);
 
   const scrimIds = playerScrims.map((scrim) => scrim.scrimId);
 
