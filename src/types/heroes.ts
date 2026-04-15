@@ -733,6 +733,25 @@ export const Roadhog = {
   },
 } as const;
 
+export const Sierra = {
+  name: "Sierra",
+  image: "sierra.png",
+  ability1: {
+    name: "Anchor Drone",
+    description: "Launch an Anchor Drone. Reactivate to launch towards it.",
+    cooldown: 12,
+    tags: ["movement"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Tremor Charge",
+    description: "Throw a charge that creates a shockwave on impact.",
+    cooldown: 8.5,
+    tags: ["damage", "areaOfEffect"],
+    impact: "low",
+  },
+} as const;
+
 export const Sigma = {
   name: "Sigma",
   image: "sigma.png",
@@ -1073,6 +1092,7 @@ export type DPS =
   | typeof Mei
   | typeof Pharah
   | typeof Reaper
+  | typeof Sierra
   | typeof Sojourn
   | typeof Soldier76
   | typeof Sombra
@@ -1135,6 +1155,7 @@ export const heroRoleMapping: Record<HeroName, "Tank" | "Damage" | "Support"> =
     Reaper: "Damage",
     Reinhardt: "Tank",
     Roadhog: "Tank",
+    Sierra: "Damage",
     Sigma: "Tank",
     Sojourn: "Damage",
     "Soldier: 76": "Damage",
@@ -1186,6 +1207,7 @@ export const roleHeroMapping: Record<
     "Mei",
     "Pharah",
     "Reaper",
+    "Sierra",
     "Sojourn",
     "Soldier: 76",
     "Sombra",
@@ -1230,6 +1252,7 @@ export const subroleHeroMapping: Record<
     "Emre",
     "Hanzo",
     "Freja",
+    "Sierra",
     "Sojourn",
     "Soldier: 76",
     "Tracer",
@@ -1369,6 +1392,7 @@ export const allHeroes = [
   Reaper,
   Reinhardt,
   Roadhog,
+  Sierra,
   Sigma,
   Sojourn,
   Soldier76,
