@@ -107,13 +107,21 @@ export async function parseData(file: File) {
 function cleanInvalidLines(lines: string[][]): string[][] {
   return lines
     .filter((line) => {
+      // Remove invalid mercy_rez lines that contain empty values
       if (line[0] === "mercy_rez") {
+        // Check if any field (except the first one which is event type) is empty
         return !line.slice(1).some((field) => field === "" || field == null);
       }
       return true;
     })
     .map((line) => {
-      return line.map((field) => {
+      return line.map((field, index) => {
+        // Recent Overwatch log exports censor the "kill" event type to "****".
+        // Restore it before the generic asterisk-to-"0" sanitization below
+        // would otherwise drop these rows as an unknown event type.
+        if (index === 0 && field === "****") {
+          return "kill";
+        }
         if (field.includes("*")) {
           return "0";
         }

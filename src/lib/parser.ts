@@ -137,8 +137,14 @@ function cleanInvalidLines(lines: string[][]): string[][] {
       return true;
     })
     .map((line) => {
-      // Replace asterisk values with "0"
-      return line.map((field) => {
+      return line.map((field, index) => {
+        // New bugged behavior as of 4-13-2026:
+        // Recent Overwatch log exports censor the "kill" event type to "****".
+        // Restore it before the generic asterisk-to-"0" sanitization below
+        // would otherwise drop these rows as an unknown event type.
+        if (index === 0 && field === "****") {
+          return "kill";
+        }
         if (field.includes("*")) {
           return "0";
         }
