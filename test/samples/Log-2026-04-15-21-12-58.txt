@@ -1,0 +1,310 @@
+[00:00:00] ,match_start,0,Antarctic Peninsula,Control,Team 1,Team 2
+[00:00:00] ,objective_updated,0,1,0,2
+[00:00:01] ,round_start,0,1,0,0,0,2
+[00:00:09] ,hero_spawn,0,Team 2,Kloverr,Echo,0,0
+[00:00:10] ,hero_spawn,0,Team 2,sleepyme,Bastion,0,0
+[00:00:12] ,hero_spawn,0,Team 1,MomoMiles,Orisa,0,0
+[00:00:14] ,hero_spawn,0,Team 1,sun,Lúcio,0,0
+[00:00:25] ,hero_spawn,0,Team 2,StellBell,Domina,0,0
+[00:00:27] ,hero_spawn,0,Team 2,meowzy,Kiriko,0,0
+[00:00:31] ,hero_spawn,0,Team 2,Dyeonnie,Mercy,0,0
+[00:00:33] ,hero_spawn,0,Team 1,Gray,Cassidy,0,0
+[00:00:36] ,hero_swap,0,Team 2,Dyeonnie,Juno,Mercy,0
+[00:00:36] ,hero_spawn,0,Team 1,Novadachi,Sierra,0,0
+[00:00:42] ,hero_spawn,0,Team 1,VPAL,Baptiste,0,0
+[00:01:34] ,hero_swap,0,Team 1,Gray,Mei,Cassidy,0
+[00:02:39] ,setup_complete,0,1,29.99
+[00:03:07] ,****,28.43,Team 2,sleepyme,Bastion,Team 1,MomoMiles,Orisa,Secondary Fire,93.14,0,0
+[00:03:08] ,defensive_assist,28.75,Team 2,meowzy,Kiriko,0
+[00:03:09] ,****,30.46,Team 1,sun,Lúcio,Team 2,Kloverr,Echo,Primary Fire,4,True,0
+[00:03:09] ,defensive_assist,30.64,Team 1,VPAL,Baptiste,0
+[00:03:10] ,defensive_assist,30.70,Team 1,sun,Lúcio,0
+[00:03:10] ,****,30.94,Team 1,Gray,Mei,Team 2,meowzy,Kiriko,Secondary Fire,68.86,0,0
+[00:03:10] ,offensive_assist,31.17,Team 1,sun,Lúcio,0
+[00:03:14] ,****,35.65,Team 1,Novadachi,Sierra,Team 2,sleepyme,Bastion,Secondary Fire,5.60,0,0
+[00:03:15] ,defensive_assist,35.82,Team 1,VPAL,Baptiste,0
+[00:03:15] ,offensive_assist,35.87,Team 1,sun,Lúcio,0
+[00:03:15] ,defensive_assist,35.87,Team 1,sun,Lúcio,0
+[00:03:20] ,point_progress,41.25,1,All Teams,2,33.49
+[00:03:22] ,point_progress,43.42,1,All Teams,2,66.89
+[00:03:24] ,objective_captured,45.20,1,Team 1,2,0.01,0,0
+[00:03:48] ,****,69.12,Team 2,Dyeonnie,Juno,Team 1,Gray,Mei,Secondary Fire,49.02,0,0
+[00:03:49] ,****,70.53,Team 2,sleepyme,Bastion,Team 1,sun,Lúcio,Primary Fire,3.60,0,0
+[00:03:55] ,****,76.61,Team 2,StellBell,Domina,Team 1,VPAL,Baptiste,0,31.80,0,0
+[00:04:01] ,****,82.25,Team 2,StellBell,Domina,Team 1,Novadachi,Sierra,0,18.89,0,0
+[00:04:02] ,point_progress,82.83,1,Team 2,2,33.57
+[00:04:03] ,point_progress,84.16,1,Team 2,2,66.78
+[00:04:04] ,objective_captured,85.56,1,Team 2,2,33.65,0,0
+[00:04:13] ,ultimate_charged,94.67,Team 1,Gray,Mei,0,1
+[00:04:21] ,ultimate_start,102.57,Team 1,Gray,Mei,0,1
+[00:04:22] ,ultimate_charged,103.26,Team 2,sleepyme,Bastion,0,1
+[00:04:27] ,ultimate_end,108.51,Team 1,Gray,Mei,0,1
+[00:04:27] ,****,108.62,Team 1,Gray,Mei,Team 2,StellBell,Domina,Secondary Fire,38.20,True,0
+[00:04:28] ,defensive_assist,108.68,Team 1,VPAL,Baptiste,0
+[00:04:29] ,****,110.30,Team 1,Gray,Mei,Team 2,sleepyme,Bastion,Secondary Fire,110.60,True,0
+[00:04:29] ,defensive_assist,110.55,Team 1,VPAL,Baptiste,0
+[00:04:32] ,****,112.81,Team 1,Gray,Mei,Team 2,Dyeonnie,Juno,Secondary Fire,55,0,0
+[00:04:32] ,defensive_assist,112.92,Team 1,VPAL,Baptiste,0
+[00:04:33] ,****,114.59,Team 1,sun,Lúcio,Team 2,Kloverr,Echo,Primary Fire,1.96,0,0
+[00:04:36] ,ultimate_charged,116.99,Team 1,Novadachi,Sierra,0,1
+[00:04:36] ,point_progress,117.19,1,Team 1,2,33.68
+[00:04:38] ,point_progress,119.10,1,Team 1,2,66.87
+[00:04:41] ,objective_captured,121.75,1,Team 1,2,33.65,30.16,0
+[00:04:59] ,ultimate_start,139.76,Team 2,sleepyme,Bastion,0,1
+[00:05:09] ,ultimate_end,149.78,Team 2,sleepyme,Bastion,0,1
+[00:05:10] ,point_progress,150.96,1,Team 2,2,33.69
+[00:05:11] ,point_progress,152.29,1,Team 2,2,66.89
+[00:05:12] ,****,153.59,Team 1,MomoMiles,Orisa,Team 2,sleepyme,Bastion,Secondary Fire,25.50,0,0
+[00:05:12] ,objective_captured,153.62,1,Team 2,2,60.20,30.16,0
+[00:05:13] ,defensive_assist,153.80,Team 1,VPAL,Baptiste,0
+[00:05:15] ,ultimate_start,155.86,Team 1,VPAL,Baptiste,0,0
+[00:05:16] ,ultimate_start,157.38,Team 1,Novadachi,Sierra,0,1
+[00:05:17] ,ultimate_charged,157.80,Team 2,meowzy,Kiriko,0,1
+[00:05:17] ,****,157.91,Team 1,Gray,Mei,Team 2,StellBell,Domina,Secondary Fire,210.92,True,0
+[00:05:17] ,offensive_assist,157.99,Team 1,VPAL,Baptiste,0
+[00:05:17] ,defensive_assist,157.99,Team 1,VPAL,Baptiste,0
+[00:05:17] ,offensive_assist,158.02,Team 1,MomoMiles,Orisa,0
+[00:05:17] ,ultimate_end,158.18,Team 1,Novadachi,Sierra,0,1
+[00:05:19] ,****,159.70,Team 1,VPAL,Baptiste,Team 2,Kloverr,Echo,Primary Fire,41,0,0
+[00:05:19] ,defensive_assist,159.89,Team 1,VPAL,Baptiste,0
+[00:05:23] ,point_progress,163.86,1,Team 1,2,33.38
+[00:05:24] ,point_progress,165.40,1,Team 1,2,67.18
+[00:05:25] ,ultimate_end,166.38,Team 1,VPAL,Baptiste,0,0
+[00:05:26] ,objective_captured,166.73,1,Team 1,2,60.20,41.08,0
+[00:05:26] ,ultimate_charged,166.75,Team 2,Dyeonnie,Juno,0,1
+[00:05:40] ,****,181.31,Team 1,Gray,Mei,Team 2,Dyeonnie,Juno,Secondary Fire,100.38,True,0
+[00:05:40] ,ultimate_charged,181.31,Team 1,Gray,Mei,0,2
+[00:05:40] ,defensive_assist,181.46,Team 1,VPAL,Baptiste,0
+[00:05:42] ,ultimate_start,182.85,Team 1,Gray,Mei,0,2
+[00:05:44] ,ultimate_charged,185.02,Team 2,StellBell,Domina,0,1
+[00:05:48] ,ultimate_end,189.23,Team 1,Gray,Mei,0,2
+[00:05:58] ,ultimate_charged,199.03,Team 1,MomoMiles,Orisa,0,1
+[00:06:06] ,ultimate_start,207.00,Team 2,meowzy,Kiriko,0,1
+[00:06:09] ,ultimate_start,210.27,Team 1,MomoMiles,Orisa,0,1
+[00:06:10] ,ultimate_charged,211.02,Team 2,Kloverr,Echo,0,1
+[00:06:12] ,ultimate_end,212.86,Team 1,MomoMiles,Orisa,0,1
+[00:06:12] ,ultimate_start,213.28,Team 2,Dyeonnie,Juno,0,1
+[00:06:13] ,ultimate_start,214.67,Team 2,StellBell,Domina,0,1
+[00:06:15] ,****,216.11,Team 1,MomoMiles,Orisa,Team 2,sleepyme,Bastion,Primary Fire,10.77,0,0
+[00:06:15] ,defensive_assist,216.33,Team 1,VPAL,Baptiste,0
+[00:06:17] ,ultimate_end,218.09,Team 2,meowzy,Kiriko,0,1
+[00:06:19] ,ultimate_end,219.89,Team 2,StellBell,Domina,0,1
+[00:06:19] ,ultimate_charged,220.08,Team 1,sun,Lúcio,0,1
+[00:06:19] ,****,220.35,Team 1,Novadachi,Sierra,Team 2,Dyeonnie,Juno,Secondary Fire,1.66,0,0
+[00:06:19] ,defensive_assist,220.57,Team 1,VPAL,Baptiste,0
+[00:06:20] ,****,221.09,Team 2,meowzy,Kiriko,Team 1,Novadachi,Sierra,0,118.08,True,0
+[00:06:21] ,ultimate_end,221.79,Team 2,Dyeonnie,Juno,0,1
+[00:06:21] ,ultimate_start,221.98,Team 2,Kloverr,Echo,0,1
+[00:06:21] ,ultimate_end,222.32,Team 2,Kloverr,Echo,Orisa,1
+[00:06:21] ,echo_duplicate_start,222.32,Team 2,Kloverr,Echo,Orisa,1
+[00:06:26] ,ultimate_start,226.88,Team 1,sun,Lúcio,0,1
+[00:06:29] ,****,230.47,Team 1,VPAL,Baptiste,Team 2,meowzy,Kiriko,Primary Fire,24.50,0,0
+[00:06:30] ,defensive_assist,230.90,Team 1,sun,Lúcio,0
+[00:06:32] ,echo_duplicate_end,232.90,Team 2,Kloverr,Echo,1
+[00:06:34] ,ultimate_end,234.90,Team 1,sun,Lúcio,0,1
+[00:06:34] ,****,235.69,Team 1,VPAL,Baptiste,Team 2,Kloverr,Echo,Primary Fire,10,0,0
+[00:06:35] ,defensive_assist,235.99,Team 1,sun,Lúcio,0
+[00:06:40] ,****,240.95,Team 1,Gray,Mei,Team 2,StellBell,Domina,Melee,33.72,0,0
+[00:06:40] ,offensive_assist,241.18,Team 1,sun,Lúcio,0
+[00:06:40] ,defensive_assist,241.18,Team 1,sun,Lúcio,0
+[00:06:40] ,defensive_assist,241.26,Team 1,VPAL,Baptiste,0
+[00:06:40] ,offensive_assist,241.30,Team 1,MomoMiles,Orisa,0
+[00:06:42] ,player_stat,243.02,1,Team 1,sun,Lúcio,5,2,1,1551.96,0,886.96,2170.12,953.37,417.32,1295.51,0,5,3,0,0,0,0,0,3,0,0,2,0.06,0,0,0,230,36,174,0,0,0.17,243.02
+[00:06:42] ,player_stat,243.02,1,Team 1,Novadachi,Sierra,7,2,2,3273.76,0,2593.76,0,997.69,0,1510.82,0,0,0,1,1,0,0,0,2,0,0,10,0.03,0,0,0,1110,358,641,0,0,0.36,243.02
+[00:06:42] ,player_stat,243.02,1,Team 2,StellBell,Domina,6,2,3,3619.88,725.12,2873.88,0,3605.24,299.51,5661.84,3518.62,0,0,1,1,0,0,0,2,0,0,0,0,0,0,0,41,19,19,0,0,0.50,243.02
+[00:06:42] ,player_stat,243.02,1,Team 1,VPAL,Baptiste,10,3,1,2210.00,0,1710.00,4504.59,625.94,232.61,1079.43,0,12,1,0,0,0,0,0,3,0,0,8,0.14,0,0,0,198,57,118,0,0,0.33,243.02
+[00:06:42] ,player_stat,243.02,1,Team 2,meowzy,Kiriko,3,1,2,2237.30,419.90,1706.08,2590.16,1064.79,0,1648.46,0,1,0,1,2,0,0,0,1,0,0,3,0.10,0,0,0,118,29,77,0,0,0.27,243.02
+[00:06:42] ,player_stat,243.02,1,Team 2,Dyeonnie,Mercy,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:06:42] ,player_stat,243.02,1,Team 2,Dyeonnie,Juno,2,1,3,1784.02,658,1126.02,0,572.90,0,1356.46,0,0,0,1,1,0,0,0,0,0,0,51,0.09,0,0,0,1653,546,992,0,0,0.36,243.02
+[00:06:42] ,player_stat,243.02,1,Team 1,MomoMiles,Orisa,7,2,1,4785.60,56,3257.60,0,2847.30,0,3928.88,0,0,2,1,1,0,0,0,3,0,0,10,0.06,0,0,0,730,176,418,0,0,0.30,243.02
+[00:06:42] ,player_stat,243.02,1,Team 1,Gray,Cassidy,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:06:42] ,player_stat,243.02,1,Team 1,Gray,Mei,10,7,1,12710.45,0,4932.41,0,1810.47,545.34,2436.90,3638.52,0,0,2,2,1,3,0,3,0,0,0,0,0,0,0,65,26,11,0,0,0.70,243.02
+[00:06:42] ,round_end,243.02,1,0,1,0,2,100,41.08,0
+[00:06:42] ,player_stat,243.02,1,Team 2,Kloverr,Echo,3,0,4,1745.90,319,1324.90,0,777.95,0,2276.93,0,0,0,1,1,0,0,0,0,0,0,5,0.08,0,0,0,399,66,263,0,0,0.20,243.02
+[00:06:42] ,player_stat,243.02,1,Team 2,sleepyme,Bastion,3,2,4,4760.16,1516.50,3220.66,0,1065.68,0,2531.74,0,0,0,1,1,0,0,0,0,0,0,5,0.04,0,0,0,692,132,461,0,0,0.22,243.02
+[00:06:52] ,objective_updated,243.02,2,2,0
+[00:06:53] ,round_start,243.02,2,0,1,0,0
+[00:09:44] ,hero_swap,243.02,Team 1,Novadachi,Ashe,Sierra,0
+[00:10:16] ,hero_swap,243.02,Team 1,Novadachi,Sierra,Ashe,0
+[00:10:59] ,setup_complete,243.02,2,29.99
+[00:11:25] ,****,268.35,Team 1,MomoMiles,Orisa,Team 2,sleepyme,Bastion,Primary Fire,11.70,0,0
+[00:11:35] ,point_progress,278.41,2,All Teams,0,33.69
+[00:11:37] ,point_progress,280.39,2,All Teams,0,66.69
+[00:11:38] ,objective_captured,282.10,2,Team 1,0,0.01,0,0
+[00:12:04] ,****,307.40,Team 2,Kloverr,Echo,Team 1,Novadachi,Sierra,Primary Fire,39.32,True,0
+[00:12:08] ,****,311.81,Team 1,sun,Lúcio,Team 2,Kloverr,Echo,Primary Fire,17.27,0,0
+[00:12:09] ,defensive_assist,312.23,Team 1,VPAL,Baptiste,0
+[00:12:10] ,****,314.19,Team 1,VPAL,Baptiste,Team 2,StellBell,Domina,Primary Fire,4.76,0,0
+[00:12:11] ,offensive_assist,314.56,Team 1,Gray,Mei,0
+[00:12:11] ,defensive_assist,314.58,Team 1,VPAL,Baptiste,0
+[00:12:11] ,offensive_assist,314.63,Team 1,MomoMiles,Orisa,0
+[00:12:23] ,****,327.02,Team 1,Gray,Mei,Team 2,sleepyme,Bastion,Secondary Fire,142.20,True,0
+[00:12:23] ,ultimate_charged,327.02,Team 1,Gray,Mei,0,3
+[00:12:24] ,defensive_assist,327.28,Team 1,VPAL,Baptiste,0
+[00:12:54] ,ultimate_start,357.54,Team 1,Gray,Mei,0,3
+[00:12:59] ,****,362.24,Team 1,MomoMiles,Orisa,Team 2,sleepyme,Bastion,Primary Fire,12.68,True,0
+[00:12:59] ,offensive_assist,362.49,Team 1,Gray,Mei,0
+[00:12:59] ,defensive_assist,362.52,Team 1,VPAL,Baptiste,0
+[00:13:00] ,ultimate_end,363.97,Team 1,Gray,Mei,0,3
+[00:13:00] ,ultimate_charged,364.00,Team 2,sleepyme,Bastion,0,2
+[00:13:05] ,ultimate_charged,368.21,Team 2,meowzy,Kiriko,0,2
+[00:13:07] ,ultimate_charged,370.93,Team 2,Dyeonnie,Juno,0,2
+[00:13:22] ,****,385.90,Team 1,Gray,Mei,Team 2,Kloverr,Echo,Secondary Fire,55,0,0
+[00:13:22] ,defensive_assist,386.01,Team 1,VPAL,Baptiste,0
+[00:13:23] ,ultimate_charged,386.94,Team 1,MomoMiles,Orisa,0,2
+[00:13:27] ,ultimate_start,390.40,Team 2,meowzy,Kiriko,0,2
+[00:13:28] ,ultimate_start,391.92,Team 2,sleepyme,Bastion,0,2
+[00:13:28] ,ultimate_charged,392.01,Team 1,Novadachi,Sierra,0,2
+[00:13:35] ,ultimate_end,399.15,Team 2,sleepyme,Bastion,0,2
+[00:13:36] ,****,399.68,Team 2,Dyeonnie,Juno,Team 1,Novadachi,Sierra,Primary Fire,8.74,0,0
+[00:13:36] ,offensive_assist,400.11,Team 2,meowzy,Kiriko,0
+[00:13:37] ,ultimate_charged,400.57,Team 2,StellBell,Domina,0,2
+[00:13:38] ,ultimate_end,401.52,Team 2,meowzy,Kiriko,0,2
+[00:13:40] ,ultimate_start,403.47,Team 1,VPAL,Baptiste,0,0
+[00:13:40] ,ultimate_charged,403.69,Team 1,sun,Lúcio,0,2
+[00:13:40] ,ultimate_start,403.95,Team 2,StellBell,Domina,0,2
+[00:13:46] ,ultimate_end,409.26,Team 2,StellBell,Domina,0,2
+[00:13:46] ,ultimate_charged,410.14,Team 2,Kloverr,Echo,0,2
+[00:13:49] ,****,412.81,Team 1,Gray,Mei,Team 2,Kloverr,Echo,Secondary Fire,225,True,0
+[00:13:49] ,ultimate_start,413.08,Team 1,MomoMiles,Orisa,0,2
+[00:13:50] ,offensive_assist,413.24,Team 1,VPAL,Baptiste,0
+[00:13:50] ,ultimate_start,413.77,Team 2,Dyeonnie,Juno,0,2
+[00:13:50] ,ultimate_end,414.00,Team 1,VPAL,Baptiste,0,0
+[00:13:51] ,****,414.86,Team 2,Dyeonnie,Juno,Team 1,MomoMiles,Orisa,Primary Fire,0.38,0,0
+[00:13:51] ,ultimate_end,414.86,Team 1,MomoMiles,Orisa,0,2
+[00:13:51] ,offensive_assist,415.15,Team 2,meowzy,Kiriko,0
+[00:13:51] ,defensive_assist,415.15,Team 2,meowzy,Kiriko,0
+[00:13:52] ,****,415.60,Team 1,VPAL,Baptiste,Team 2,sleepyme,Bastion,Primary Fire,15.78,0,0
+[00:13:52] ,offensive_assist,415.66,Team 1,MomoMiles,Orisa,0
+[00:13:52] ,offensive_assist,416.00,Team 1,sun,Lúcio,0
+[00:13:52] ,defensive_assist,416.08,Team 1,VPAL,Baptiste,0
+[00:13:56] ,ultimate_charged,419.95,Team 1,Gray,Mei,0,4
+[00:13:56] ,point_progress,419.99,2,Team 2,0,33.36
+[00:13:57] ,ultimate_start,420.91,Team 1,Gray,Mei,0,4
+[00:13:59] ,ultimate_end,422.28,Team 2,Dyeonnie,Juno,0,2
+[00:14:02] ,ultimate_start,425.96,Team 1,Novadachi,Sierra,0,2
+[00:14:03] ,ultimate_end,426.76,Team 1,Novadachi,Sierra,0,2
+[00:14:04] ,ultimate_end,427.18,Team 1,Gray,Mei,0,4
+[00:14:13] ,****,436.28,Team 2,StellBell,Domina,Team 1,VPAL,Baptiste,0,44.76,0,0
+[00:14:13] ,defensive_assist,436.76,Team 2,meowzy,Kiriko,0
+[00:14:14] ,****,437.35,Team 1,Gray,Mei,Team 2,Dyeonnie,Juno,Secondary Fire,94.30,True,0
+[00:14:14] ,defensive_assist,437.59,Team 1,sun,Lúcio,0
+[00:14:22] ,****,445.59,Team 2,meowzy,Kiriko,Team 1,Gray,Mei,0,37.94,0,0
+[00:14:22] ,defensive_assist,445.72,Team 2,meowzy,Kiriko,0
+[00:14:24] ,point_progress,447.56,2,Team 2,0,66.83
+[00:14:25] ,objective_captured,448.89,2,Team 2,0,99.99,0.01,0
+[00:14:50] ,ultimate_start,473.57,Team 1,sun,Lúcio,0,2
+[00:14:54] ,****,478.13,Team 1,MomoMiles,Orisa,Team 2,sleepyme,Bastion,Primary Fire,7.70,0,0
+[00:14:54] ,defensive_assist,478.14,Team 1,VPAL,Baptiste,0
+[00:14:55] ,offensive_assist,478.48,Team 1,sun,Lúcio,0
+[00:14:55] ,defensive_assist,478.48,Team 1,sun,Lúcio,0
+[00:14:55] ,offensive_assist,478.54,Team 1,Gray,Mei,0
+[00:14:55] ,****,478.88,Team 1,VPAL,Baptiste,Team 2,Kloverr,Echo,Primary Fire,21,0,0
+[00:14:55] ,offensive_assist,478.94,Team 1,sun,Lúcio,0
+[00:14:55] ,defensive_assist,478.94,Team 1,sun,Lúcio,0
+[00:14:55] ,defensive_assist,479.06,Team 1,VPAL,Baptiste,0
+[00:14:56] ,ultimate_charged,479.41,Team 2,meowzy,Kiriko,0,3
+[00:14:57] ,ultimate_start,480.48,Team 2,meowzy,Kiriko,0,3
+[00:14:58] ,****,481.39,Team 1,Gray,Mei,Team 2,meowzy,Kiriko,Melee,39.19,0,0
+[00:14:58] ,ultimate_end,481.50,Team 1,sun,Lúcio,0,2
+[00:15:03] ,ultimate_charged,486.53,Team 1,VPAL,Baptiste,0,1
+[00:15:05] ,ultimate_start,488.94,Team 1,VPAL,Baptiste,0,1
+[00:15:06] ,****,489.39,Team 1,VPAL,Baptiste,Team 2,StellBell,Domina,Primary Fire,5.13,0,0
+[00:15:06] ,defensive_assist,489.41,Team 1,VPAL,Baptiste,0
+[00:15:06] ,offensive_assist,489.44,Team 1,MomoMiles,Orisa,0
+[00:15:06] ,offensive_assist,489.76,Team 1,sun,Lúcio,0
+[00:15:07] ,****,490.33,Team 1,Gray,Mei,Team 2,Dyeonnie,Juno,Secondary Fire,30.52,0,0
+[00:15:08] ,ultimate_end,491.49,Team 2,meowzy,Kiriko,0,3
+[00:15:08] ,point_progress,491.71,2,Team 1,0,33.57
+[00:15:09] ,point_progress,493.04,2,Team 1,0,66.78
+[00:15:11] ,point_progress,494.36,2,Team 1,0,99.98
+[00:15:11] ,objective_captured,494.38,2,Team 1,0,99.99,37.92,0
+[00:15:16] ,player_stat,499.39,2,Team 2,Kloverr,Echo,5,1,8,3833.52,806,2909.92,0,1351.72,0,3835.70,0,0,0,2,1,0,0,0,1,0,0,13,0.09,0,0,0,792,144,555,0,0,0.21,499.39
+[00:15:16] ,player_stat,499.39,2,Team 1,sun,Lúcio,12,3,1,3717.73,240,1868.23,6052.44,2573.12,1254.02,3129.51,0,8,7,0,0,0,0,0,5,0,0,2,0.03,0,0,0,501,69,349,0,0,0.17,499.39
+[00:15:16] ,player_stat,499.39,2,Team 1,Novadachi,Sierra,10,2,4,10460.83,0,5109.73,0,1625.02,0,3089.35,0,0,0,2,2,0,0,0,3,0,0,23,0.04,0,0,0,2298,637,1186,0,0,0.35,499.39
+[00:15:16] ,player_stat,499.39,2,Team 1,Novadachi,Ashe,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:15:16] ,player_stat,499.39,2,Team 1,VPAL,Baptiste,15,7,2,4222.13,182,3138.82,10650.33,1780.68,481.62,2777.15,0,21,2,0,0,0,0,0,5,0,0,15,0.14,0,0,0,364,111,207,0,0,0.35,499.39
+[00:15:16] ,player_stat,499.39,2,Team 2,meowzy,Kiriko,5,2,3,5496.03,1000.70,4264.01,6404.52,1545.78,0,2460.66,0,4,2,3,6,0,0,0,3,0,0,8,0.11,0,0,0,268,72,173,0,0,0.29,499.39
+[00:15:16] ,player_stat,499.39,2,Team 2,Dyeonnie,Mercy,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:15:16] ,player_stat,499.39,2,Team 2,Dyeonnie,Juno,6,3,5,4643.80,953.98,3689.82,0,1185.36,0,2643.80,0,0,0,2,2,0,0,0,2,0,0,99,0.08,0,0,0,3460,1206,2096,0,0,0.37,499.39
+[00:15:16] ,player_stat,499.39,2,Team 1,MomoMiles,Orisa,15,5,2,10578.27,534,6618.44,0,7444.73,0,9746.03,1007.48,0,5,2,2,0,0,0,7,0,0,19,0.05,0,0,0,1543,388,890,0,0,0.30,499.39
+[00:15:16] ,player_stat,499.39,2,Team 1,Gray,Cassidy,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:15:16] ,player_stat,499.39,2,Team 1,Gray,Mei,22,13,2,30903.00,0,10436.74,0,4770.03,1003.80,5978.19,5010.22,0,3,4,4,1,3,2,9,0,0,0,0,0,0,0,385,224,124,0,0,0.64,499.39
+[00:15:16] ,round_end,499.39,2,0,2,0,0,100,37.92,0
+[00:15:16] ,player_stat,499.39,2,Team 2,StellBell,Domina,10,3,5,8616.63,1071.52,7524.23,0,9223.25,837.07,12613.18,9512.08,0,0,2,2,0,0,0,5,0,0,3,0.06,0,0,0,112,49,58,0,0,0.46,499.39
+[00:15:16] ,player_stat,499.39,2,Team 2,sleepyme,Bastion,5,2,9,8540.75,2185.50,6332.24,0,2328.22,0,5713.32,0,0,0,2,2,0,0,0,1,0,0,11,0.04,0,0,0,1050,260,677,0,0,0.28,499.39
+[00:15:16] ,ultimate_end,499.39,Team 1,VPAL,Baptiste,0,1
+[00:15:26] ,objective_updated,499.39,3,0,1
+[00:15:27] ,round_start,499.39,3,0,2,0,1
+[00:15:58] ,hero_swap,499.39,Team 2,StellBell,Wrecking Ball,Domina,0
+[00:16:06] ,hero_swap,499.39,Team 2,StellBell,Zarya,Wrecking Ball,0
+[00:17:21] ,setup_complete,499.39,3,29.99
+[00:17:38] ,****,515.68,Team 1,sun,Lúcio,Team 2,sleepyme,Bastion,Primary Fire,17.20,0,0
+[00:17:38] ,defensive_assist,515.73,Team 1,VPAL,Baptiste,0
+[00:17:51] ,****,528.72,Team 1,Gray,Mei,Team 2,Kloverr,Echo,Secondary Fire,71,0,0
+[00:17:51] ,defensive_assist,528.86,Team 1,VPAL,Baptiste,0
+[00:17:52] ,****,530.14,Team 2,meowzy,Kiriko,Team 1,Novadachi,Sierra,0,29.13,0,0
+[00:17:52] ,defensive_assist,530.25,Team 2,meowzy,Kiriko,0
+[00:17:54] ,point_progress,531.93,3,All Teams,1,33.39
+[00:17:57] ,point_progress,534.60,3,All Teams,1,66.79
+[00:17:59] ,objective_captured,537.27,3,Team 1,1,0,0,0
+[00:18:00] ,****,537.78,Team 1,MomoMiles,Orisa,Team 2,meowzy,Kiriko,Primary Fire,19.60,True,0
+[00:18:00] ,defensive_assist,538.25,Team 1,VPAL,Baptiste,0
+[00:18:29] ,****,566.87,Team 1,VPAL,Baptiste,Team 2,Kloverr,Echo,Primary Fire,47.87,True,0
+[00:18:33] ,****,570.84,Team 2,Dyeonnie,Juno,Team 1,sun,Lúcio,Primary Fire,9.60,0,0
+[00:18:37] ,ultimate_start,574.48,Team 1,VPAL,Baptiste,0,1
+[00:18:42] ,defensive_assist,580.07,Team 1,VPAL,Baptiste,0
+[00:18:42] ,****,580.07,Team 1,Novadachi,Sierra,Team 2,Dyeonnie,Juno,Secondary Fire,10.10,0,0
+[00:18:42] ,****,580.39,Team 2,meowzy,Kiriko,Team 1,Gray,Mei,0,54.31,0,0
+[00:18:43] ,defensive_assist,580.51,Team 2,meowzy,Kiriko,0
+[00:18:47] ,ultimate_end,584.99,Team 1,VPAL,Baptiste,0,1
+[00:18:49] ,****,586.46,Team 2,sleepyme,Bastion,Team 1,VPAL,Baptiste,Primary Fire,6.71,0,0
+[00:18:49] ,defensive_assist,586.61,Team 2,meowzy,Kiriko,0
+[00:18:50] ,****,587.66,Team 1,Novadachi,Sierra,Team 2,StellBell,Zarya,Primary Fire,4.95,0,0
+[00:18:50] ,defensive_assist,588.04,Team 1,VPAL,Baptiste,0
+[00:18:50] ,offensive_assist,588.08,Team 1,MomoMiles,Orisa,0
+[00:18:53] ,point_progress,591.32,3,Team 2,1,33.59
+[00:18:53] ,****,591.39,Team 1,Novadachi,Sierra,Team 2,sleepyme,Bastion,Secondary Fire,6.92,0,0
+[00:18:56] ,****,594.39,Team 1,MomoMiles,Orisa,Team 2,meowzy,Kiriko,Primary Fire,1,0,0
+[00:18:58] ,****,595.78,Team 1,MomoMiles,Orisa,Team 2,Kloverr,Echo,Primary Fire,12.20,0,0
+[00:18:59] ,ultimate_charged,597.37,Team 2,sleepyme,Bastion,0,3
+[00:19:19] ,ultimate_charged,617.34,Team 1,Gray,Mei,0,5
+[00:19:21] ,ultimate_charged,619.36,Team 1,Novadachi,Sierra,0,3
+[00:19:23] ,ultimate_charged,621.23,Team 1,MomoMiles,Orisa,0,3
+[00:19:36] ,ultimate_charged,633.76,Team 2,StellBell,Zarya,0,3
+[00:19:36] ,****,634.20,Team 1,Novadachi,Sierra,Team 2,Kloverr,Echo,Secondary Fire,8,0,0
+[00:19:48] ,ultimate_start,646.01,Team 1,Gray,Mei,0,5
+[00:19:49] ,ultimate_start,646.78,Team 1,Novadachi,Sierra,0,3
+[00:19:49] ,ultimate_start,647.15,Team 2,StellBell,Zarya,0,3
+[00:19:50] ,ultimate_end,647.58,Team 1,Novadachi,Sierra,0,3
+[00:19:50] ,ultimate_charged,647.98,Team 2,meowzy,Kiriko,0,4
+[00:19:51] ,****,648.54,Team 1,Novadachi,Sierra,Team 2,sleepyme,Bastion,Ultimate,120.07,0,0
+[00:19:51] ,offensive_assist,648.64,Team 1,Gray,Mei,0
+[00:19:51] ,defensive_assist,648.67,Team 1,VPAL,Baptiste,0
+[00:19:53] ,ultimate_end,651.37,Team 2,StellBell,Zarya,0,3
+[00:19:54] ,ultimate_end,652.19,Team 1,Gray,Mei,0,5
+[00:19:54] ,point_progress,652.23,3,Team 2,1,33.69
+[00:19:54] ,ultimate_charged,652.31,Team 2,Dyeonnie,Juno,0,3
+[00:19:55] ,ultimate_start,652.55,Team 1,MomoMiles,Orisa,0,3
+[00:19:56] ,****,654.34,Team 1,MomoMiles,Orisa,Team 2,StellBell,Zarya,Ultimate,0.68,0,0
+[00:19:57] ,defensive_assist,654.76,Team 1,VPAL,Baptiste,0
+[00:19:57] ,ultimate_end,654.90,Team 1,MomoMiles,Orisa,0,3
+[00:19:58] ,****,655.96,Team 1,MomoMiles,Orisa,Team 2,Dyeonnie,Juno,Primary Fire,24.80,True,0
+[00:19:58] ,defensive_assist,656.17,Team 1,VPAL,Baptiste,0
+[00:20:03] ,player_stat,661.03,3,Team 2,Dyeonnie,Mercy,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:20:03] ,player_stat,661.03,3,Team 2,Dyeonnie,Juno,8,4,7,5872.31,1226.48,4638.33,0,1248.96,0,3192.90,0,0,0,3,2,0,0,0,3,0,0,137,0.08,0,0,0,4735,1650,2899,0,0,0.36,661.03
+[00:20:03] ,player_stat,661.03,3,Team 1,Gray,Cassidy,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:20:03] ,player_stat,661.03,3,Team 1,Gray,Mei,27,14,3,38321.31,406.50,12859.91,0,6976.23,1187.39,8708.38,5426.58,0,4,5,5,1,3,2,10,0,0,0,0,0,0,0,713,335,291,0,0,0.54,661.03
+[00:20:03] ,round_end,661.03,3,0,3,0,1,100,0,0
+[00:20:03] ,match_end,661.03,3,3,0
+[00:20:03] ,player_stat,661.03,3,Team 2,Kloverr,Echo,5,1,12,4799.12,811,3870.52,0,1383.92,0,4767.90,0,0,0,2,1,0,0,0,1,0,0,16,0.08,0,0,0,977,191,684,0,0,0.22,661.03
+[00:20:03] ,player_stat,661.03,3,Team 1,sun,Lúcio,14,4,2,4272.93,513,2150.43,7472.17,3363.12,1462.11,4144.51,0,8,7,0,0,0,0,0,6,0,0,2,0.02,0,0,0,630,86,441,0,0,0.16,661.03
+[00:20:03] ,player_stat,661.03,3,Team 1,Novadachi,Sierra,18,7,5,12614.36,77,7186.25,0,2162.27,0,3978.44,0,0,0,3,3,0,0,2,5,0,0,39,0.04,0,0,0,2934,867,1555,0,0,0.36,661.03
+[00:20:03] ,player_stat,661.03,3,Team 1,Novadachi,Ashe,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:20:03] ,player_stat,661.03,3,Team 2,StellBell,Domina,10,3,5,8616.63,1071.52,7524.23,0,9223.25,837.07,12613.18,9512.08,0,0,2,2,0,0,0,5,0,0,3,0.06,0,0,0,112,49,58,0,0,0.46,499.39
+[00:20:03] ,player_stat,661.03,3,Team 2,StellBell,Wrecking Ball,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+[00:20:03] ,player_stat,661.03,3,Team 2,StellBell,Zarya,2,0,2,3340.34,588.40,2751.94,0,3063.01,0,4313.23,1838.39,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,48,20,28,0,0,0.42,161.64
+[00:20:03] ,player_stat,661.03,3,Team 1,VPAL,Baptiste,18,8,3,6136,637.39,4597.31,14991.42,2314.16,764.14,3613.54,0,29,2,0,0,0,0,0,6,0,0,21,0.13,0,0,0,483,161,260,0,0,0.38,661.03
+[00:20:03] ,player_stat,661.03,3,Team 2,sleepyme,Bastion,8,3,12,11254.00,2308.74,8847.55,0,3374.32,0,7826.58,0,0,0,3,2,0,0,0,2,0,0,16,0.05,0,0,0,1218,314,788,0,0,0.28,661.03
+[00:20:03] ,player_stat,661.03,3,Team 2,meowzy,Kiriko,7,4,5,6857.48,1600.70,5025.46,8839.14,2044.69,0,3591.34,0,7,2,4,6,0,0,0,3,0,0,9,0.11,0,0,0,354,85,233,0,0,0.27,661.03
+[00:20:03] ,player_stat,661.03,3,Team 1,MomoMiles,Orisa,23,10,2,13816.94,1160.50,9230.61,0,9345.02,0,12213.16,2180.27,0,6,3,3,0,0,1,11,0,0,35,0.07,0,0,0,2109,538,1255,0,0,0.30,661.03
