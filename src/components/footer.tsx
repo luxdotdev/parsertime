@@ -1,3 +1,4 @@
+import { HealthStatus } from "@/components/health-status";
 import { Link } from "@/components/ui/link";
 import {
   Tooltip,
@@ -13,11 +14,9 @@ import {
   scoutingTool,
   tournament,
 } from "@/lib/flags";
-import prisma from "@/lib/prisma";
 import { get } from "@vercel/edge-config";
 import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
-import { unstable_cache } from "next/cache";
 import Image from "next/image";
 
 type FooterLink = {
@@ -190,7 +189,6 @@ export async function Footer() {
     coachingCanvasEnabled,
     tournamentEnabled,
     positionalDataEnabled,
-    healthStatus,
   ] = await Promise.all([
     get<string>("version"),
     get<Route>("changelog"),
@@ -200,18 +198,6 @@ export async function Footer() {
     coachingCanvas(),
     tournament(),
     positionalData(),
-    unstable_cache(
-      async () => {
-        try {
-          await prisma.$queryRaw`SELECT 1`;
-          return "healthy" as const;
-        } catch {
-          return "degraded" as const;
-        }
-      },
-      ["health-check"],
-      { revalidate: 60 }
-    )(),
   ]);
 
   const columns: FooterColumn[] = [
@@ -264,22 +250,7 @@ export async function Footer() {
                   <TooltipContent>{t("changelog")}</TooltipContent>
                 </Tooltip>
                 <span>&bull;</span>
-                <span className="flex items-center gap-1.5">
-                  <span
-                    className={`inline-block h-2 w-2 rounded-full ${
-                      healthStatus === "healthy"
-                        ? "bg-green-500"
-                        : healthStatus === "degraded"
-                          ? "bg-yellow-500"
-                          : "bg-muted-foreground"
-                    }`}
-                  />
-                  {healthStatus === "healthy"
-                    ? t("healthOk")
-                    : healthStatus === "degraded"
-                      ? t("healthDegraded")
-                      : t("healthUnknown")}
-                </span>
+                <HealthStatus />
               </div>
             )}
 
