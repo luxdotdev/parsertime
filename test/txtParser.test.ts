@@ -256,6 +256,61 @@ describe("coordinate log parsing", () => {
   });
 });
 
+/**
+ * Recent Overwatch log exports censor the "kill" event type to "****".
+ * The parser must restore it so kill rows aren't silently dropped.
+ */
+describe("censored kill event type", () => {
+  test("should parse **** event types as kills", async () => {
+    const file = fs.readFileSync(
+      "./test/samples/Log-2026-04-15-21-12-58.txt",
+      "utf8"
+    );
+
+    // @ts-expect-error - cannot pass File type in node
+    const result = await parseDataFromTXT(file);
+
+    expect(result.kill).toBeDefined();
+    expect(result.kill.length).toBeGreaterThan(0);
+
+    for (const kill of result.kill) {
+      expect(kill[0]).toBe("kill");
+    }
+  });
+
+  test("should not emit a '0' event type bucket", async () => {
+    const file = fs.readFileSync(
+      "./test/samples/Log-2026-04-15-21-12-58.txt",
+      "utf8"
+    );
+
+    // @ts-expect-error - cannot pass File type in node
+    const result = await parseDataFromTXT(file);
+
+    expect((result as unknown as Record<string, unknown>)["0"]).toBeUndefined();
+    expect(
+      (result as unknown as Record<string, unknown>)["****"]
+    ).toBeUndefined();
+  });
+
+  test("should rewrite inline censored kill lines", async () => {
+    const log = [
+      "[00:00:00] ,match_start,0,Antarctic Peninsula,Control,Team 1,Team 2",
+      "[00:03:07] ,****,28.43,Team 2,sleepyme,Bastion,Team 1,MomoMiles,Orisa,Secondary Fire,93.14,0,0",
+      "[00:03:09] ,****,30.46,Team 1,sun,Lúcio,Team 2,Kloverr,Echo,Primary Fire,4,True,0",
+    ].join("\n");
+
+    // @ts-expect-error - cannot pass File type in node
+    const result = await parseDataFromTXT(log);
+
+    expect(result.kill.length).toBe(2);
+    expect(result.kill[0][0]).toBe("kill");
+    expect(result.kill[0][2]).toBe("Team 2");
+    expect(result.kill[1][0]).toBe("kill");
+    expect(result.kill[1][10]).toBe("True");
+  });
+});
+
 function local_parseDataFromXLSX(fileName: string) {
   // read the file binary
   const file = fs.readFileSync(fileName, "binary");
