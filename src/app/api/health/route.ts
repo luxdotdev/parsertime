@@ -13,6 +13,16 @@ export async function GET() {
     checks.database = "error";
   }
 
+  try {
+    const res = await fetch("https://discord.parsertime.app/health", {
+      cache: "no-store",
+      signal: AbortSignal.timeout(5000),
+    });
+    checks.discordBot = res.ok ? "ok" : "error";
+  } catch {
+    checks.discordBot = "error";
+  }
+
   const allOk = Object.values(checks).every((v) => v === "ok");
 
   return NextResponse.json(
