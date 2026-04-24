@@ -94,7 +94,7 @@ export function TeamSwitcher({
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false);
 
   // Derive selected team from URL state (via context)
-  const individualTeam = groups[0].teams![0];
+  const individualTeam = (groups[0].teams ?? [])[0];
   const allTeams = groups.flatMap((g) => g.teams ?? []);
   const selectedTeam =
     teamId !== undefined
@@ -137,7 +137,7 @@ export function TeamSwitcher({
                   {isLoading ? (
                     <CommandItem>Loading...</CommandItem>
                   ) : (
-                    group.teams!.map((team) => (
+                    (group.teams ?? []).map((team) => (
                       <CommandItem
                         key={team.value}
                         onSelect={() => {

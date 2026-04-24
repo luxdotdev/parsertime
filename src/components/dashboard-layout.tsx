@@ -58,7 +58,7 @@ export async function DashboardLayout({
       <div className="min-h-[90vh] flex-col md:flex">
         <div className="shadow-sm">
           <div className="hidden min-h-16 items-center px-4 py-2 md:flex">
-            <TeamSwitcher session={session} />
+            {session && <TeamSwitcher session={session} />}
             <MainNav
               scoutingEnabled={scoutingEnabled}
               aiChatEnabled={aiChatEnabled}
