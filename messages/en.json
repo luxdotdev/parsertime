@@ -2847,12 +2847,16 @@
           "selectChannel": "Select channel",
           "selectTeams": "Select teams",
           "submit": "Save",
-          "saving": "Saving..."
+          "saving": "Saving...",
+          "discordNotLinked": "Link your Discord account in the settings above to choose a server.",
+          "noSharedServers": "No servers found. You must share at least one server with the Parsertime bot."
         },
         "toast": {
           "created": "Notification config created successfully.",
           "deleted": "Notification config deleted successfully.",
-          "error": "Something went wrong. Please try again."
+          "error": "Something went wrong. Please try again.",
+          "discordNotLinked": "Link your Discord account to configure notifications.",
+          "notGuildMember": "You must be a member of that Discord server."
         }
       }
     },

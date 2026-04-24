@@ -1819,12 +1819,16 @@
           "selectChannel": "选择频道",
           "selectTeams": "选择队伍",
           "submit": "保存",
-          "saving": "保存中..."
+          "saving": "保存中...",
+          "discordNotLinked": "请先在上方设置中关联您的 Discord 账号，然后选择服务器。",
+          "noSharedServers": "未找到服务器。您必须与 Parsertime 机器人共处至少一个服务器。"
         },
         "toast": {
           "created": "通知配置创建成功。",
           "deleted": "通知配置删除成功。",
-          "error": "出了点问题，请重试。"
+          "error": "出了点问题，请重试。",
+          "discordNotLinked": "请关联您的 Discord 账号以配置通知。",
+          "notGuildMember": "您必须是该 Discord 服务器的成员。"
         }
       }
     },

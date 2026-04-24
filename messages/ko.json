@@ -1816,12 +1816,16 @@
           "selectChannel": "채널 선택",
           "selectTeams": "팀 선택",
           "submit": "저장",
-          "saving": "저장 중..."
+          "saving": "저장 중...",
+          "discordNotLinked": "서버를 선택하려면 위 설정에서 Discord 계정을 연결하세요.",
+          "noSharedServers": "서버를 찾을 수 없습니다. Parsertime 봇과 공유하는 서버가 하나 이상 있어야 합니다."
         },
         "toast": {
           "created": "알림 설정이 생성되었습니다.",
           "deleted": "알림 설정이 삭제되었습니다.",
-          "error": "문제가 발생했습니다. 다시 시도해주세요."
+          "error": "문제가 발생했습니다. 다시 시도해주세요.",
+          "discordNotLinked": "알림을 설정하려면 Discord 계정을 연결하세요.",
+          "notGuildMember": "해당 Discord 서버의 멤버여야 합니다."
         }
       }
     },

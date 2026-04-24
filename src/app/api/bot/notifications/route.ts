@@ -2,7 +2,42 @@ import { auth } from "@/lib/auth";
 import { verifyTeamAccess } from "@/lib/bot-auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
+import { context, propagation } from "@opentelemetry/api";
 import type { NextRequest } from "next/server";
+
+async function verifyUserInGuild(
+  discordUserId: string,
+  guildId: string
+): Promise<
+  { ok: true } | { ok: false; reason: "misconfigured" | "forbidden" }
+> {
+  const botApiUrl = process.env.BOT_API_URL;
+  const botSecret = process.env.BOT_SECRET;
+
+  if (!botApiUrl || !botSecret) {
+    return { ok: false, reason: "misconfigured" };
+  }
+
+  const traceHeaders: Record<string, string> = {};
+  propagation.inject(context.active(), traceHeaders);
+
+  const response = await fetch(
+    `${botApiUrl}/api/guilds/${encodeURIComponent(guildId)}/members/${encodeURIComponent(discordUserId)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${botSecret}`,
+        ...traceHeaders,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    return { ok: false, reason: "forbidden" };
+  }
+
+  const data = (await response.json()) as { member?: boolean };
+  return data.member ? { ok: true } : { ok: false, reason: "forbidden" };
+}
 
 export async function GET() {
   const wideEvent: Record<string, unknown> = {
@@ -85,7 +120,14 @@ export async function POST(request: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { id: true },
+      select: {
+        id: true,
+        accounts: {
+          where: { provider: "discord" },
+          select: { providerAccountId: true },
+          take: 1,
+        },
+      },
     });
 
     if (!user) {
@@ -94,6 +136,20 @@ export async function POST(request: NextRequest) {
       return Response.json(
         { success: false, error: "User not found" },
         { status: 404 }
+      );
+    }
+
+    const discordAccount = user.accounts[0];
+    if (!discordAccount) {
+      wideEvent.outcome = "discord_not_linked";
+      wideEvent.status_code = 403;
+      return Response.json(
+        {
+          success: false,
+          error: "Discord account not linked",
+          code: "discord_not_linked",
+        },
+        { status: 403 }
       );
     }
 
@@ -112,6 +168,27 @@ export async function POST(request: NextRequest) {
           error: "guildId, channelId, and teamIds are required",
         },
         { status: 400 }
+      );
+    }
+
+    const membership = await verifyUserInGuild(
+      discordAccount.providerAccountId,
+      body.guildId
+    );
+    if (!membership.ok) {
+      if (membership.reason === "misconfigured") {
+        wideEvent.outcome = "misconfigured";
+        wideEvent.status_code = 503;
+        return Response.json(
+          { success: false, error: "Bot service not configured" },
+          { status: 503 }
+        );
+      }
+      wideEvent.outcome = "forbidden";
+      wideEvent.status_code = 403;
+      return Response.json(
+        { success: false, error: "You are not a member of that server" },
+        { status: 403 }
       );
     }
 

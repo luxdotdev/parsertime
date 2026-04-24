@@ -89,6 +89,7 @@ export function NotificationConfig({ teams }: NotificationConfigProps) {
   const [selectedTeamIds, setSelectedTeamIds] = useState<number[]>([]);
   const [loadingGuilds, setLoadingGuilds] = useState(false);
   const [loadingChannels, setLoadingChannels] = useState(false);
+  const [discordNotLinked, setDiscordNotLinked] = useState(false);
 
   // Guild/channel name cache for display
   const [guildNames, setGuildNames] = useState<Record<string, string>>({});
@@ -117,11 +118,13 @@ export function NotificationConfig({ teams }: NotificationConfigProps) {
 
   async function fetchGuilds() {
     setLoadingGuilds(true);
+    setDiscordNotLinked(false);
     try {
       const res = await fetch("/api/bot/guilds");
       const data = (await res.json()) as {
         success: boolean;
         data?: Guild[];
+        code?: string;
       };
       if (data.success && Array.isArray(data.data)) {
         setGuilds(data.data);
@@ -130,7 +133,14 @@ export function NotificationConfig({ teams }: NotificationConfigProps) {
           names[g.id] = g.name;
         }
         setGuildNames((prev) => ({ ...prev, ...names }));
+        return;
       }
+      if (data.code === "discord_not_linked") {
+        setDiscordNotLinked(true);
+        setGuilds([]);
+        return;
+      }
+      toast.error(t("toast.error"));
     } catch {
       toast.error(t("toast.error"));
     } finally {
@@ -168,6 +178,8 @@ export function NotificationConfig({ teams }: NotificationConfigProps) {
     setSelectedChannelId("");
     setSelectedTeamIds([]);
     setChannels([]);
+    setGuilds([]);
+    setDiscordNotLinked(false);
     setAddDialogOpen(true);
     void fetchGuilds();
   }
@@ -206,14 +218,26 @@ export function NotificationConfig({ teams }: NotificationConfigProps) {
             teamIds: selectedTeamIds,
           }),
         });
-        const data = (await res.json()) as { success: boolean; error?: string };
+        const data = (await res.json()) as {
+          success: boolean;
+          error?: string;
+          code?: string;
+        };
         if (data.success) {
           toast.success(t("toast.created"));
           setAddDialogOpen(false);
           await fetchConfigs();
-        } else {
-          toast.error(data.error ?? t("toast.error"));
+          return;
         }
+        if (data.code === "discord_not_linked") {
+          toast.error(t("toast.discordNotLinked"));
+          return;
+        }
+        if (res.status === 403) {
+          toast.error(t("toast.notGuildMember"));
+          return;
+        }
+        toast.error(data.error ?? t("toast.error"));
       } catch {
         toast.error(t("toast.error"));
       } finally {
@@ -331,6 +355,14 @@ export function NotificationConfig({ teams }: NotificationConfigProps) {
                 <div className="flex items-center gap-2 py-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
                 </div>
+              ) : discordNotLinked ? (
+                <p className="text-muted-foreground mt-2 text-sm">
+                  {t("addDialog.discordNotLinked")}
+                </p>
+              ) : guilds.length === 0 ? (
+                <p className="text-muted-foreground mt-2 text-sm">
+                  {t("addDialog.noSharedServers")}
+                </p>
               ) : (
                 <Select
                   value={selectedGuildId}
