@@ -366,6 +366,29 @@ export async function isAuthedToViewMap(scrimId: number, mapId: number) {
   return true;
 }
 
+export async function isTeamOwnerOrManager(id: number) {
+  const session = await auth();
+  if (!session) return false;
+
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
+  if (!user) return false;
+
+  if (user.role === $Enums.UserRole.ADMIN) return true;
+
+  const team = await prisma.team.findFirst({
+    where: { id },
+    select: {
+      ownerId: true,
+      managers: { where: { userId: user.id }, select: { id: true } },
+    },
+  });
+  if (!team) return false;
+
+  return team.ownerId === user.id || team.managers.length > 0;
+}
+
 export async function isAuthedToViewTeam(id: number) {
   const session = await auth();
   if (!session) {
