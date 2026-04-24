@@ -70,6 +70,7 @@ model User {
   createdTargets         PlayerTarget[]
   chatConversations      ChatConversation[]
   chatReports            ChatReport[]
+  availabilityResponses  AvailabilityResponse[]
 
   @@index([id, email])
 }
@@ -193,21 +194,23 @@ model AuditLog {
 }
 
 model Team {
-  id               Int               @id @default(autoincrement())
-  name             String
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  image            String?
-  users            User[]
-  scrims           Scrim[]
-  ownerId          String
-  managers         TeamManager[]
-  readonly         Boolean           @default(false)
-  comparisonGroups ComparisonGroup[]
-  mapGroups        MapGroup[]
-  playerTargets    PlayerTarget[]
-  scoutingTeamAbbr String?
-  tournamentTeams  TournamentTeam[]
+  id                    Int                       @id @default(autoincrement())
+  name                  String
+  createdAt             DateTime                  @default(now())
+  updatedAt             DateTime                  @updatedAt
+  image                 String?
+  users                 User[]
+  scrims                Scrim[]
+  ownerId               String
+  managers              TeamManager[]
+  readonly              Boolean                   @default(false)
+  comparisonGroups      ComparisonGroup[]
+  mapGroups             MapGroup[]
+  playerTargets         PlayerTarget[]
+  scoutingTeamAbbr      String?
+  tournamentTeams       TournamentTeam[]
+  availabilitySettings  TeamAvailabilitySettings?
+  availabilitySchedules AvailabilitySchedule[]
 }
 
 model BotNotificationConfig {
@@ -1415,4 +1418,65 @@ model TournamentMap {
   @@unique([matchId, gameNumber])
   @@index([matchId])
   @@index([mapId])
+}
+
+enum AvailabilityIntervalType {
+  WEEKLY
+}
+
+model TeamAvailabilitySettings {
+  id                  String                   @id @default(cuid())
+  teamId              Int                      @unique
+  intervalType        AvailabilityIntervalType @default(WEEKLY)
+  slotMinutes         Int                      @default(30)
+  hoursStart          Int                      @default(12)
+  hoursEnd            Int                      @default(24)
+  timezone            String                   @default("America/New_York")
+  weekStartsOn        Int                      @default(0)
+  reminderEnabled     Boolean                  @default(true)
+  reminderDayOfWeek   Int                      @default(0)
+  reminderHour        Int                      @default(12)
+  reminderMinute      Int                      @default(0)
+  reminderRoleId      String?
+  reminderGuildId     String?
+  reminderChannelId   String?
+  lastReminderFiredAt DateTime?
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+  team                Team                     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+}
+
+model AvailabilitySchedule {
+  id        String   @id @default(cuid())
+  teamId    Int
+  weekStart DateTime
+  weekEnd   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  team      Team                   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  responses AvailabilityResponse[]
+
+  @@unique([teamId, weekStart])
+  @@index([teamId])
+}
+
+model AvailabilityResponse {
+  id              String   @id @default(cuid())
+  scheduleId      String
+  nameKey         String
+  displayName     String
+  userId          String?
+  passwordHash    String?
+  slots           Int[]
+  submittedFromTz String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  schedule AvailabilitySchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  user     User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@unique([scheduleId, nameKey])
+  @@index([scheduleId])
+  @@index([userId])
 }
