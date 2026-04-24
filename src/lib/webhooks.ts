@@ -249,6 +249,37 @@ export function userUnsubscribedWebhookConstructor(
   };
 }
 
+export function userToppedUpWebhookConstructor(
+  user: PrismaUser,
+  amountCents: number,
+  balanceAfterCents: number,
+  source: "topup" | "auto_refill"
+): DiscordWebhook {
+  const dollars = (amountCents / 100).toFixed(2);
+  const balance = (balanceAfterCents / 100).toFixed(2);
+  const label = source === "auto_refill" ? "Auto-refill" : "AI credits top-up";
+
+  return {
+    username: "Parsertime",
+    avatar_url: "https://parsertime.app/icon.png",
+    embeds: [
+      {
+        title: `<@&${process.env.BUG_REPORT_NOTIFICATIONS_ROLE_ID}> ${label}`,
+        description: `${user.name ?? user.email} added $${dollars} of credits · new balance $${balance}`,
+        timestamp: new Date(),
+        color: 0x16a34a,
+        thumbnail: {
+          url: user.image ?? `https://avatar.vercel.sh/${user.email}.png`,
+        },
+        footer: {
+          text: "Parsertime",
+          icon_url: "https://parsertime.app/icon.png",
+        },
+      },
+    ],
+  };
+}
+
 /**
  * Send a message to a Discord webhook.
  *

@@ -9,6 +9,8 @@ export const TOPUP_MIN_CENTS = 500;
 
 export const MIN_BALANCE_TO_CHAT_CENTS = 25;
 
+export const LOW_BALANCE_WARNING_CENTS = 100;
+
 export const TOPUP_PRESETS_CENTS = [500, 1000, 2500, 5000] as const;
 
 export const DEFAULT_AUTO_REFILL_THRESHOLD_CENTS = 200;
@@ -48,5 +50,19 @@ export function shouldTriggerAutoRefill(input: {
   return (
     input.beforeCents >= input.thresholdCents &&
     input.afterCents < input.thresholdCents
+  );
+}
+
+export function shouldSendLowBalanceWarning(input: {
+  autoRefillEnabled: boolean;
+  hasPaymentMethod: boolean;
+  beforeCents: number;
+  afterCents: number;
+  warningCents: number;
+}): boolean {
+  if (input.autoRefillEnabled && input.hasPaymentMethod) return false;
+  return (
+    input.beforeCents >= input.warningCents &&
+    input.afterCents < input.warningCents
   );
 }

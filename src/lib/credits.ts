@@ -3,6 +3,8 @@ import "server-only";
 import {
   DEFAULT_AUTO_REFILL_AMOUNT_CENTS,
   DEFAULT_AUTO_REFILL_THRESHOLD_CENTS,
+  LOW_BALANCE_WARNING_CENTS,
+  shouldSendLowBalanceWarning,
   shouldTriggerAutoRefill,
 } from "@/lib/chat-pricing";
 import { randomUUID } from "crypto";
@@ -115,6 +117,7 @@ export type ChargeResult = {
   balanceAfterCents: number;
   transactionId: number;
   autoRefillTriggered: boolean;
+  lowBalanceWarningTriggered: boolean;
 };
 
 export async function chargeUser(
@@ -172,6 +175,13 @@ export async function chargeUser(
         beforeCents,
         afterCents: balanceAfterCents,
         thresholdCents: updated.autoRefillThresholdCents,
+      }),
+      lowBalanceWarningTriggered: shouldSendLowBalanceWarning({
+        autoRefillEnabled: updated.autoRefillEnabled,
+        hasPaymentMethod: !!updated.stripePaymentMethodId,
+        beforeCents,
+        afterCents: balanceAfterCents,
+        warningCents: LOW_BALANCE_WARNING_CENTS,
       }),
     };
   });

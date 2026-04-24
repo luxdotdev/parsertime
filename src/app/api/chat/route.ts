@@ -1,3 +1,4 @@
+import CreditLowBalanceEmail from "@/components/email/credit-low-balance";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
@@ -11,9 +12,11 @@ import {
   calculateChargeCents,
 } from "@/lib/chat-pricing";
 import { attemptAutoRefill, chargeUser, getUserBalance } from "@/lib/credits";
+import { email } from "@/lib/email";
 import { resolveAllFlags, toFlagValues } from "@/lib/flags-helpers";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
+import { render } from "@react-email/render";
 import { Ratelimit } from "@upstash/ratelimit";
 import { kv } from "@vercel/kv";
 import {
@@ -123,6 +126,31 @@ export async function POST(req: Request) {
               Logger.warn("auto-refill did not fire", {
                 userId: userData.id,
                 reason: refill.reason,
+              });
+            }
+          }
+          if (charge.lowBalanceWarningTriggered) {
+            try {
+              const user = await prisma.user.findUnique({
+                where: { id: userData.id },
+              });
+              if (user) {
+                await email.sendEmail({
+                  to: user.email,
+                  from: "noreply@lux.dev",
+                  subject: "Your Parsertime AI credits are running low",
+                  html: await render(
+                    CreditLowBalanceEmail({
+                      user,
+                      balanceCents: charge.balanceAfterCents,
+                    })
+                  ),
+                });
+              }
+            } catch (error) {
+              Logger.error("failed to send low-balance warning", {
+                userId: userData.id,
+                error: error instanceof Error ? error.message : String(error),
               });
             }
           }

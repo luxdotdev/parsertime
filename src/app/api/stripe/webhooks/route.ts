@@ -1,12 +1,21 @@
 import { stripeWebhookCounter } from "@/lib/axiom/metrics";
 import { handleSubscriptionEvent } from "@/lib/billing-plans";
+import CreditTopupEmail from "@/components/email/credit-topup";
+import { email } from "@/lib/email";
 import {
   clearPendingAutoRefill,
   creditUser,
+  getOrInitUserCredits,
   saveDefaultPaymentMethod,
 } from "@/lib/credits";
 import { Logger } from "@/lib/logger";
+import prisma from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
+import {
+  sendDiscordWebhook,
+  userToppedUpWebhookConstructor,
+} from "@/lib/webhooks";
+import { render } from "@react-email/render";
 import { track } from "@vercel/analytics/server";
 import type Stripe from "stripe";
 
@@ -164,6 +173,13 @@ async function handleTopupCheckoutCompleted(
       });
     }
   }
+
+  await notifyCreditPurchase(
+    userId,
+    amountCents,
+    result.balanceAfterCents,
+    "topup"
+  );
 }
 
 async function handleAutoRefillSucceeded(
@@ -193,9 +209,17 @@ async function handleAutoRefillSucceeded(
       eventId,
       userId,
     });
+    await clearPendingAutoRefill(userId);
+    return;
   }
 
   await clearPendingAutoRefill(userId);
+  await notifyCreditPurchase(
+    userId,
+    amountCents,
+    result.balanceAfterCents,
+    "auto_refill"
+  );
 }
 
 async function handleAutoRefillFailed(paymentIntent: Stripe.PaymentIntent) {
@@ -206,4 +230,70 @@ async function handleAutoRefillFailed(paymentIntent: Stripe.PaymentIntent) {
     userId,
   });
   await clearPendingAutoRefill(userId);
+}
+
+async function notifyCreditPurchase(
+  userId: string,
+  amountCents: number,
+  balanceAfterCents: number,
+  source: "topup" | "auto_refill"
+) {
+  try {
+    const [user, credits] = await Promise.all([
+      prisma.user.findUnique({ where: { id: userId } }),
+      getOrInitUserCredits(userId),
+    ]);
+    if (!user) return;
+
+    if (process.env.DISCORD_WEBHOOK_URL) {
+      try {
+        await sendDiscordWebhook(
+          process.env.DISCORD_WEBHOOK_URL,
+          userToppedUpWebhookConstructor(
+            user,
+            amountCents,
+            balanceAfterCents,
+            source
+          )
+        );
+      } catch (error) {
+        Logger.error("failed to send credit Discord alert", {
+          userId,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
+    try {
+      await email.sendEmail({
+        to: user.email,
+        from: "noreply@lux.dev",
+        subject:
+          source === "auto_refill"
+            ? "Your Parsertime credits were auto-refilled"
+            : "Your Parsertime AI credits receipt",
+        html: await render(
+          CreditTopupEmail({
+            user,
+            amountCents,
+            balanceAfterCents,
+            source,
+            autoRefillEnabled: credits.autoRefillEnabled,
+            autoRefillThresholdCents: credits.autoRefillThresholdCents,
+            autoRefillAmountCents: credits.autoRefillAmountCents,
+          })
+        ),
+      });
+    } catch (error) {
+      Logger.error("failed to send credit topup receipt", {
+        userId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  } catch (error) {
+    Logger.error("credit purchase notification failed", {
+      userId,
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
 }
