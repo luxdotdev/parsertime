@@ -413,6 +413,12 @@
       "settings": "설정",
       "contact": "문의하기",
       "docs": "문서",
+      "leaderboard": "리더보드",
+      "playerStats": "플레이어 통계",
+      "heroStats": "영웅 통계",
+      "mapStats": "맵 통계",
+      "compareStats": "플레이어 비교",
+      "teamStats": "팀 통계",
       "tournaments": "토너먼트"
     },
     "teamSwitcher": {
@@ -2309,6 +2315,7 @@
     "dataToolsTitle": "데이터 도구",
     "playerStats": "플레이어 통계",
     "heroStats": "영웅 통계",
+    "mapStats": "맵 통계",
     "teamStats": "팀 통계",
     "comparePlayers": "플레이어 비교",
     "leaderboard": "리더보드",

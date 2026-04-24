@@ -413,6 +413,12 @@
       "settings": "设置",
       "contact": "联系我们",
       "docs": "文档",
+      "leaderboard": "排行榜",
+      "playerStats": "玩家统计",
+      "heroStats": "英雄统计",
+      "mapStats": "地图统计",
+      "compareStats": "玩家对比",
+      "teamStats": "团队统计",
       "tournaments": "锦标赛"
     },
     "teamSwitcher": {
@@ -2312,6 +2318,7 @@
     "dataToolsTitle": "数据工具",
     "playerStats": "玩家统计",
     "heroStats": "英雄统计",
+    "mapStats": "地图统计",
     "teamStats": "团队统计",
     "comparePlayers": "玩家对比",
     "leaderboard": "排行榜",

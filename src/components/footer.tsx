@@ -44,6 +44,7 @@ const STATS_LINKS: FooterColumn = {
   links: [
     { labelKey: "playerStats", href: "/stats" },
     { labelKey: "heroStats", href: "/stats/hero" },
+    { labelKey: "mapStats", href: "/stats/map" },
     { labelKey: "comparePlayers", href: "/stats/compare" },
   ],
 };
@@ -52,7 +53,6 @@ const TEAMS_LINKS: FooterColumn = {
   titleKey: "teamsTitle",
   links: [
     { labelKey: "yourTeams", href: "/team" },
-    { labelKey: "teamStats", href: "/stats/team" },
     { labelKey: "availability", href: "/team" },
   ],
 };

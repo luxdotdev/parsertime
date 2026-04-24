@@ -15,7 +15,7 @@ const navLinkStyles =
 const dropdownItemStyles =
   "hover:bg-accent hover:text-accent-foreground flex w-full items-center rounded-sm px-2 py-1.5 text-sm transition-colors";
 
-const STATS_PLAYER_ROUTE = /^\/stats\/(?!hero$|team$|compare$)[^/]+$/;
+const STATS_PLAYER_ROUTE = /^\/stats\/(?!hero$|team$|map$|compare$)[^/]+$/;
 const SCOUTING_TEAM_ROUTE = /^\/scouting\/(?!player$|team$)[^/]+$/;
 
 function handleDropdownKeyDown(e: React.KeyboardEvent<HTMLLIElement>) {
@@ -116,6 +116,16 @@ export function MainNav({
                 {t("teamStats")}
               </Link>
               <Link
+                href="/stats/map"
+                role="menuitem"
+                className={cn(
+                  dropdownItemStyles,
+                  pathname.startsWith("/stats/map") && "text-primary"
+                )}
+              >
+                {t("mapStats")}
+              </Link>
+              <Link
                 href="/stats/compare"
                 role="menuitem"
                 className={cn(
@@ -146,9 +156,7 @@ export function MainNav({
             className={cn(
               navLinkStyles,
               "gap-1",
-              (pathname.split("/")[1] === "team" ||
-                pathname.startsWith("/stats/team")) &&
-                "text-primary"
+              pathname.split("/")[1] === "team" && "text-primary"
             )}
           >
             {t("teams")}
@@ -171,16 +179,6 @@ export function MainNav({
                 )}
               >
                 {t("yourTeams")}
-              </Link>
-              <Link
-                href="/stats/team"
-                role="menuitem"
-                className={cn(
-                  dropdownItemStyles,
-                  pathname.startsWith("/stats/team") && "text-primary"
-                )}
-              >
-                {t("teamStats")}
               </Link>
               <Link
                 href={availabilityHref}
