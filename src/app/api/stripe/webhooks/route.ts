@@ -1,5 +1,6 @@
 import { stripeWebhookCounter } from "@/lib/axiom/metrics";
 import { handleSubscriptionEvent } from "@/lib/billing-plans";
+import { creditUser, saveDefaultPaymentMethod } from "@/lib/credits";
 import { Logger } from "@/lib/logger";
 import { stripe } from "@/lib/stripe";
 import { track } from "@vercel/analytics/server";
@@ -12,6 +13,7 @@ const relevantEvents = new Set([
   "customer.subscription.created",
   "customer.subscription.deleted",
   "customer.subscription.updated",
+  "payment_intent.succeeded",
 ]);
 
 export async function POST(req: Request) {
@@ -65,6 +67,18 @@ export async function POST(req: Request) {
               checkoutSession.customer as string,
               true
             );
+          } else if (
+            checkoutSession.mode === "payment" &&
+            checkoutSession.metadata?.type === "ai_chat_topup"
+          ) {
+            await handleTopupCheckoutCompleted(checkoutSession, event.id);
+          }
+          break;
+        }
+        case "payment_intent.succeeded": {
+          const paymentIntent = event.data.object;
+          if (paymentIntent.metadata?.type === "ai_chat_auto_refill") {
+            await handleAutoRefillSucceeded(paymentIntent, event.id);
           }
           break;
         }
@@ -86,4 +100,86 @@ export async function POST(req: Request) {
     });
   }
   return new Response(JSON.stringify({ received: true }));
+}
+
+async function handleTopupCheckoutCompleted(
+  session: Stripe.Checkout.Session,
+  eventId: string
+) {
+  const userId = session.metadata?.userId;
+  const amountCents = session.amount_total ?? 0;
+
+  if (!userId || amountCents <= 0) {
+    Logger.warn("topup checkout missing userId or amount", {
+      sessionId: session.id,
+    });
+    return;
+  }
+
+  const result = await creditUser(userId, {
+    amountCents,
+    type: "TOPUP",
+    description: `Top-up via Stripe Checkout (${session.id})`,
+    stripeEventId: eventId,
+    metadata: { sessionId: session.id },
+  });
+
+  if (!result.ok) {
+    Logger.info("topup checkout event already processed", {
+      eventId,
+      userId,
+    });
+    return;
+  }
+
+  if (typeof session.payment_intent === "string") {
+    try {
+      const paymentIntent = await stripe.paymentIntents.retrieve(
+        session.payment_intent
+      );
+      const paymentMethodId =
+        typeof paymentIntent.payment_method === "string"
+          ? paymentIntent.payment_method
+          : paymentIntent.payment_method?.id;
+      if (paymentMethodId) {
+        await saveDefaultPaymentMethod(userId, paymentMethodId);
+      }
+    } catch (error) {
+      Logger.warn("failed to save payment method from topup", {
+        userId,
+        sessionId: session.id,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+}
+
+async function handleAutoRefillSucceeded(
+  paymentIntent: Stripe.PaymentIntent,
+  eventId: string
+) {
+  const userId = paymentIntent.metadata?.userId;
+  const amountCents = paymentIntent.amount_received ?? paymentIntent.amount;
+
+  if (!userId || amountCents <= 0) {
+    Logger.warn("auto-refill payment missing userId or amount", {
+      paymentIntentId: paymentIntent.id,
+    });
+    return;
+  }
+
+  const result = await creditUser(userId, {
+    amountCents,
+    type: "AUTO_REFILL",
+    description: `Auto-refill via Stripe PaymentIntent (${paymentIntent.id})`,
+    stripeEventId: eventId,
+    metadata: { paymentIntentId: paymentIntent.id },
+  });
+
+  if (!result.ok) {
+    Logger.info("auto-refill event already processed", {
+      eventId,
+      userId,
+    });
+  }
 }
