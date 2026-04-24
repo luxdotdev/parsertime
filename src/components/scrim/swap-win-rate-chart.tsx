@@ -40,7 +40,7 @@ function SwapTooltip({
   if (!active || !payload?.length) return null;
   const datum = payload[0]?.payload as ChartDatum;
   return (
-    <div className="bg-primary text-primary-foreground z-50 overflow-hidden rounded-md px-3 py-1.5 text-xs">
+    <div className="bg-popover text-popover-foreground border border-border shadow-md z-50 overflow-hidden rounded-md px-3 py-1.5 text-xs">
       <p className="font-medium">{label}</p>
       <p className="tabular-nums">{datum.winrate.toFixed(1)}% win rate</p>
       <p className="text-primary-foreground/70">{datum.detail}</p>

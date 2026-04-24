@@ -39,7 +39,7 @@ function WinRateTooltip({
   if (!active || !payload?.length) return null;
   const value = payload[0]?.value as number;
   return (
-    <div className="bg-primary text-primary-foreground z-50 overflow-hidden rounded-md px-3 py-1.5 text-xs">
+    <div className="bg-popover text-popover-foreground border border-border shadow-md z-50 overflow-hidden rounded-md px-3 py-1.5 text-xs">
       <p className="font-medium">{label}</p>
       <p className="tabular-nums">{value.toFixed(1)}% win rate</p>
     </div>
