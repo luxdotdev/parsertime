@@ -6,6 +6,8 @@ import {
   ConversationEmptyState,
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
+import { BalanceChip } from "@/components/chat/balance-chip";
+import { BalanceModal } from "@/components/chat/balance-modal";
 import {
   Message,
   MessageAction,
@@ -30,6 +32,7 @@ import {
 } from "@/components/chat/tool-cards";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useCreditBalance } from "@/hooks/use-credits";
 import { useChat } from "@ai-sdk/react";
 import { useQueryClient } from "@tanstack/react-query";
 import type { ToolUIPart, UIMessage } from "ai";
@@ -85,6 +88,10 @@ export function ChatInterface({
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [balanceModalOpen, setBalanceModalOpen] = useState(false);
+
+  const { data: balance } = useCreditBalance();
+  const blocked = balance !== undefined && balance.balanceCents <= 0;
 
   const isLoading = status === "streaming" || status === "submitted";
 
@@ -200,6 +207,9 @@ export function ChatInterface({
 
   return (
     <div className="flex h-full flex-col">
+      <div className="flex items-center justify-end border-b px-4 py-2">
+        <BalanceChip />
+      </div>
       <Conversation className="flex-1">
         <ConversationContent>
           {messages.length === 0 ? (
@@ -218,19 +228,31 @@ export function ChatInterface({
                     fight breakdowns, ability impact, and more.
                   </p>
                 </div>
-                <div className="grid w-full max-w-lg grid-cols-1 gap-2 sm:grid-cols-2">
-                  {SUGGESTIONS.map((s) => (
-                    <Button
-                      key={s}
-                      variant="outline"
-                      size="sm"
-                      className="h-auto cursor-pointer justify-start px-3 py-2.5 text-left text-xs whitespace-normal active:scale-[0.98]"
-                      onClick={() => handleSubmit(s)}
-                    >
-                      {s}
+                {blocked ? (
+                  <div className="flex flex-col items-center gap-2">
+                    <p className="text-muted-foreground max-w-sm text-center text-xs">
+                      Add credits to start a conversation. AI chat is
+                      pay-as-you-go — $5 minimum.
+                    </p>
+                    <Button size="sm" onClick={() => setBalanceModalOpen(true)}>
+                      Add credits
                     </Button>
-                  ))}
-                </div>
+                  </div>
+                ) : (
+                  <div className="grid w-full max-w-lg grid-cols-1 gap-2 sm:grid-cols-2">
+                    {SUGGESTIONS.map((s) => (
+                      <Button
+                        key={s}
+                        variant="outline"
+                        size="sm"
+                        className="h-auto cursor-pointer justify-start px-3 py-2.5 text-left text-xs whitespace-normal active:scale-[0.98]"
+                        onClick={() => handleSubmit(s)}
+                      >
+                        {s}
+                      </Button>
+                    ))}
+                  </div>
+                )}
               </div>
             </ConversationEmptyState>
           ) : (
@@ -378,9 +400,29 @@ export function ChatInterface({
       </Conversation>
 
       <div className="px-4 py-3 shadow-[0_-1px_3px_rgba(0,0,0,0.05)]">
+        {blocked && (
+          <div className="mx-auto mb-2 flex max-w-3xl items-center justify-between gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-800 dark:text-amber-300">
+            <span>
+              Your balance is empty. Add credits to continue chatting — your
+              past conversations stay visible in read-only mode.
+            </span>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 shrink-0"
+              onClick={() => setBalanceModalOpen(true)}
+            >
+              Add credits
+            </Button>
+          </div>
+        )}
         <form
           onSubmit={(e) => {
             e.preventDefault();
+            if (blocked) {
+              setBalanceModalOpen(true);
+              return;
+            }
             handleSubmit(input);
           }}
           className="relative mx-auto max-w-3xl"
@@ -389,8 +431,12 @@ export function ChatInterface({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask about your team's performance…"
-            disabled={isLoading}
+            placeholder={
+              blocked
+                ? "Add credits to continue chatting…"
+                : "Ask about your team's performance…"
+            }
+            disabled={isLoading || blocked}
             rows={1}
             className="resize-none pr-12 text-sm"
           />
@@ -398,6 +444,7 @@ export function ChatInterface({
             type={isLoading ? "button" : "submit"}
             size="icon"
             variant="ghost"
+            disabled={blocked && !isLoading}
             className="absolute right-1.5 bottom-1.5 size-8 active:scale-[0.96]"
             onClick={isLoading ? stop : undefined}
             aria-label={isLoading ? "Stop generating" : "Send message"}
@@ -413,6 +460,10 @@ export function ChatInterface({
           </Button>
         </form>
       </div>
+      <BalanceModal
+        open={balanceModalOpen}
+        onOpenChange={setBalanceModalOpen}
+      />
     </div>
   );
 }

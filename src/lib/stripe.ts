@@ -83,7 +83,7 @@ export async function createTopupCheckout(
     UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
   );
 
-  if (!user || !user.stripeId) {
+  if (!user?.stripeId) {
     throw new Error("Unauthorized");
   }
 
