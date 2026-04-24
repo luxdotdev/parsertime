@@ -152,40 +152,51 @@ export function AvailabilityFillView({
         </p>
       </header>
 
+      <div className="grid items-end gap-3 sm:grid-cols-3">
+        <div className="space-y-1.5">
+          <Label htmlFor="name">Name</Label>
+          <Input
+            id="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onBlur={checkName}
+            placeholder="Your name"
+            disabled={sessionUserLoggedIn && Boolean(prefillName)}
+            autoComplete="off"
+          />
+        </div>
+        {!sessionUserLoggedIn ? (
+          <div className="space-y-1.5">
+            <Label htmlFor="password">
+              Password {passwordRequired ? "(required)" : "(optional)"}
+            </Label>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder={
+                passwordRequired ? "Enter your password" : "Set a password"
+              }
+              autoComplete="off"
+            />
+          </div>
+        ) : (
+          <div />
+        )}
+        <div className="space-y-1.5">
+          <Label htmlFor="viewer-tz">Viewing timezone</Label>
+          <TimezoneSelect
+            id="viewer-tz"
+            value={viewerTz}
+            onValueChange={setViewerTz}
+          />
+        </div>
+      </div>
+
       <div className="grid gap-6 md:grid-cols-2">
         <section className="space-y-4">
           <h2 className="text-lg font-semibold">Your availability</h2>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                onBlur={checkName}
-                placeholder="Your name"
-                disabled={sessionUserLoggedIn && Boolean(prefillName)}
-                autoComplete="off"
-              />
-            </div>
-            {!sessionUserLoggedIn && (
-              <div className="space-y-1.5">
-                <Label htmlFor="password">
-                  Password {passwordRequired ? "(required)" : "(optional)"}
-                </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder={
-                    passwordRequired ? "Enter your password" : "Set a password"
-                  }
-                  autoComplete="off"
-                />
-              </div>
-            )}
-          </div>
 
           <AvailabilityGrid
             settings={settings}
@@ -205,24 +216,12 @@ export function AvailabilityFillView({
         </section>
 
         <section className="space-y-4">
-          <div className="flex items-center justify-between gap-4">
-            <h2 className="text-lg font-semibold">
-              Group availability
-              <span className="text-muted-foreground ml-2 text-sm font-normal">
-                ({responses.length} responses)
-              </span>
-            </h2>
-            <div className="w-56">
-              <Label htmlFor="viewer-tz" className="sr-only">
-                Viewing timezone
-              </Label>
-              <TimezoneSelect
-                id="viewer-tz"
-                value={viewerTz}
-                onValueChange={setViewerTz}
-              />
-            </div>
-          </div>
+          <h2 className="text-lg font-semibold">
+            Group availability
+            <span className="text-muted-foreground ml-2 text-sm font-normal">
+              ({responses.length} responses)
+            </span>
+          </h2>
 
           <AvailabilityGrid
             settings={settings}
@@ -237,9 +236,32 @@ export function AvailabilityFillView({
           />
 
           <div className="border-border text-muted-foreground min-h-[2rem] rounded-md border px-3 py-2 text-xs">
-            {hoveredSlot !== null && (heatmap.get(hoveredSlot)?.length ?? 0) > 0
-              ? `Available: ${(heatmap.get(hoveredSlot) ?? []).join(", ")}`
-              : "Hover a cell to see who's available"}
+            {hoveredSlot === null ? (
+              "Hover a cell to see who's available"
+            ) : (
+              (() => {
+                const available = heatmap.get(hoveredSlot) ?? [];
+                const unavailable = responses
+                  .map((r) => r.displayName)
+                  .filter((name) => !available.includes(name));
+                return (
+                  <>
+                    <div>
+                      <span className="text-foreground font-medium">
+                        {available.length} / {responses.length}
+                      </span>
+                      {available.length > 0 &&
+                        ` — ${available.join(", ")}`}
+                    </div>
+                    {unavailable.length > 0 && (
+                      <div className="mt-1">
+                        Unavailable: {unavailable.join(", ")}
+                      </div>
+                    )}
+                  </>
+                );
+              })()
+            )}
           </div>
         </section>
       </div>

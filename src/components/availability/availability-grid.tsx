@@ -120,8 +120,8 @@ export function AvailabilityGrid({
 
   function handlePointerEnter(idx: number) {
     return () => {
-      if (readOnly) return;
       onHoverSlot?.(idx);
+      if (readOnly) return;
       if (!dragMode) return;
       applyToCell(idx, dragMode);
     };
@@ -148,10 +148,15 @@ export function AvailabilityGrid({
       if (totalRespondents === 0 || count === 0) {
         return { className: "bg-muted" };
       }
+      // Sweep hue 0 (red) -> 60 (yellow) -> 120 (green) as availability
+      // ratio rises. Saturation stays high so even low-count slots read
+      // clearly; lightness dims slightly at the extremes.
       const ratio = count / totalRespondents;
+      const hue = Math.round(ratio * 120);
+      const lightness = 50 - Math.abs(ratio - 0.5) * 10;
       return {
-        className: "bg-emerald-500",
-        style: { opacity: 0.2 + ratio * 0.7 },
+        className: "",
+        style: { backgroundColor: `hsl(${hue}, 70%, ${lightness}%)` },
       };
     }
     if (selected.has(idx)) {
