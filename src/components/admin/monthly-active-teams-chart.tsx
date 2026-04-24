@@ -5,6 +5,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
 type ChartConfig = {
@@ -23,19 +24,21 @@ export type MonthlyActiveTeamsData = {
 };
 
 type MonthlyActiveTeamsChartProps = {
-  data: MonthlyActiveTeamsData[];
+  twelveMonth: MonthlyActiveTeamsData[];
+  historical: MonthlyActiveTeamsData[];
 };
 
-export function MonthlyActiveTeamsChart({
-  data,
-}: MonthlyActiveTeamsChartProps) {
-  const chartConfig: ChartConfig = {
-    activeTeams: {
-      label: "Active Teams",
-      color: "var(--chart-4)",
-    },
-  };
+const chartConfig: ChartConfig = {
+  activeTeams: {
+    label: "Active Teams",
+    color: "var(--chart-4)",
+  },
+};
 
+function renderChart(
+  data: MonthlyActiveTeamsData[],
+  opts: { shortTicks: boolean }
+) {
   return (
     <ChartContainer config={chartConfig} className="h-[200px] w-full">
       <LineChart
@@ -49,7 +52,11 @@ export function MonthlyActiveTeamsChart({
           tickLine={false}
           tickMargin={10}
           axisLine={false}
-          tickFormatter={(value: string) => value.slice(0, 3)}
+          tickFormatter={(value: string) =>
+            opts.shortTicks ? value.slice(0, 3) : value
+          }
+          interval={opts.shortTicks ? 0 : "preserveStartEnd"}
+          minTickGap={opts.shortTicks ? 0 : 24}
         />
         <YAxis
           tickLine={false}
@@ -68,5 +75,25 @@ export function MonthlyActiveTeamsChart({
         />
       </LineChart>
     </ChartContainer>
+  );
+}
+
+export function MonthlyActiveTeamsChart({
+  twelveMonth,
+  historical,
+}: MonthlyActiveTeamsChartProps) {
+  return (
+    <Tabs defaultValue="twelve-months" className="w-full">
+      <TabsList className="mb-4">
+        <TabsTrigger value="twelve-months">Last 12 months</TabsTrigger>
+        <TabsTrigger value="historical">All time</TabsTrigger>
+      </TabsList>
+      <TabsContent value="twelve-months">
+        {renderChart(twelveMonth, { shortTicks: true })}
+      </TabsContent>
+      <TabsContent value="historical">
+        {renderChart(historical, { shortTicks: false })}
+      </TabsContent>
+    </Tabs>
   );
 }

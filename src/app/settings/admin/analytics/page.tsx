@@ -26,32 +26,60 @@ import { $Enums } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
-async function getMonthlyUserData() {
-  const now = new Date();
-  const monthlyData = [];
+type MonthWindow = {
+  monthStart: Date;
+  monthEnd: Date;
+  longLabel: string;
+  shortLabel: string;
+};
 
-  // Get data for the last 12 months
-  for (let i = 11; i >= 0; i--) {
-    const monthStart = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const monthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
-
-    const userCount = await prisma.user.count({
-      where: {
-        createdAt: {
-          gte: monthStart,
-          lt: monthEnd,
-        },
-      },
+function buildMonthWindowsRange(
+  startDate: Date,
+  endDate: Date = new Date()
+): MonthWindow[] {
+  const cursor = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+  const endCursor = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+  const windows: MonthWindow[] = [];
+  while (cursor.getTime() <= endCursor.getTime()) {
+    const next = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
+    windows.push({
+      monthStart: new Date(cursor),
+      monthEnd: next,
+      longLabel: cursor.toLocaleDateString("en-US", { month: "long" }),
+      shortLabel: cursor.toLocaleDateString("en-US", {
+        month: "short",
+        year: "numeric",
+      }),
     });
-
-    const monthName = monthStart.toLocaleDateString("en-US", { month: "long" });
-    monthlyData.push({
-      month: monthName,
-      users: userCount,
-    });
+    cursor.setMonth(cursor.getMonth() + 1);
   }
+  return windows;
+}
 
-  return monthlyData;
+async function getMonthlyUserData(firstUserDate: Date) {
+  const windows = buildMonthWindowsRange(firstUserDate);
+
+  const counts = await Promise.all(
+    windows.map(({ monthStart, monthEnd }) =>
+      prisma.user.count({
+        where: { createdAt: { gte: monthStart, lt: monthEnd } },
+      })
+    )
+  );
+
+  const historical = windows.map((w, i) => ({
+    month: w.shortLabel,
+    users: counts[i] ?? 0,
+  }));
+
+  const lastTwelveWindows = windows.slice(-12);
+  const lastTwelveCounts = counts.slice(-12);
+  const twelveMonth = lastTwelveWindows.map((w, i) => ({
+    month: w.longLabel,
+    users: lastTwelveCounts[i] ?? 0,
+  }));
+
+  return { twelveMonth, historical };
 }
 
 async function getScrimActivityData() {
@@ -99,32 +127,30 @@ async function getScrimActivityData() {
   return dataArray;
 }
 
-async function getTeamCreationData() {
-  const now = new Date();
-  const monthlyData = [];
+async function getTeamCreationData(firstUserDate: Date) {
+  const windows = buildMonthWindowsRange(firstUserDate);
 
-  // Get data for the last 12 months
-  for (let i = 11; i >= 0; i--) {
-    const monthStart = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const monthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+  const counts = await Promise.all(
+    windows.map(({ monthStart, monthEnd }) =>
+      prisma.team.count({
+        where: { createdAt: { gte: monthStart, lt: monthEnd } },
+      })
+    )
+  );
 
-    const teamCount = await prisma.team.count({
-      where: {
-        createdAt: {
-          gte: monthStart,
-          lt: monthEnd,
-        },
-      },
-    });
+  const historical = windows.map((w, i) => ({
+    month: w.shortLabel,
+    teams: counts[i] ?? 0,
+  }));
 
-    const monthName = monthStart.toLocaleDateString("en-US", { month: "long" });
-    monthlyData.push({
-      month: monthName,
-      teams: teamCount,
-    });
-  }
+  const lastTwelveWindows = windows.slice(-12);
+  const lastTwelveCounts = counts.slice(-12);
+  const twelveMonth = lastTwelveWindows.map((w, i) => ({
+    month: w.longLabel,
+    teams: lastTwelveCounts[i] ?? 0,
+  }));
 
-  return monthlyData;
+  return { twelveMonth, historical };
 }
 
 async function getTeamManagerData() {
@@ -244,22 +270,10 @@ async function getBillingPlanData() {
   }));
 }
 
-function buildMonthWindows(now: Date) {
-  const windows: { monthStart: Date; monthEnd: Date; label: string }[] = [];
-  for (let i = 11; i >= 0; i--) {
-    const monthStart = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const monthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
-    const label = monthStart.toLocaleDateString("en-US", { month: "long" });
-    windows.push({ monthStart, monthEnd, label });
-  }
-  return windows;
-}
+async function getUserActivityData(firstUserDate: Date) {
+  const windows = buildMonthWindowsRange(firstUserDate);
 
-async function getUserActivityData() {
-  const now = new Date();
-  const windows = buildMonthWindows(now);
-
-  const [totalUsers, monthlyCounts] = await Promise.all([
+  const [totalUsers, counts] = await Promise.all([
     prisma.user.count(),
     Promise.all(
       windows.map(({ monthStart, monthEnd }) =>
@@ -278,13 +292,19 @@ async function getUserActivityData() {
     ),
   ]);
 
-  const monthlyActivity = windows.map((w, i) => ({
-    month: w.label,
-    activeUsers: monthlyCounts[i] ?? 0,
+  const historical = windows.map((w, i) => ({
+    month: w.shortLabel,
+    activeUsers: counts[i] ?? 0,
   }));
 
-  const currentMonthActive =
-    monthlyActivity[monthlyActivity.length - 1]?.activeUsers ?? 0;
+  const lastTwelveWindows = windows.slice(-12);
+  const lastTwelveCounts = counts.slice(-12);
+  const twelveMonth = lastTwelveWindows.map((w, i) => ({
+    month: w.longLabel,
+    activeUsers: lastTwelveCounts[i] ?? 0,
+  }));
+
+  const currentMonthActive = counts[counts.length - 1] ?? 0;
   const inactive = Math.max(totalUsers - currentMonthActive, 0);
   const safeTotal = totalUsers > 0 ? totalUsers : 1;
 
@@ -305,14 +325,13 @@ async function getUserActivityData() {
     },
   ];
 
-  return { monthlyActivity, pieData };
+  return { monthlyActivity: { twelveMonth, historical }, pieData };
 }
 
-async function getTeamActivityData() {
-  const now = new Date();
-  const windows = buildMonthWindows(now);
+async function getTeamActivityData(firstUserDate: Date) {
+  const windows = buildMonthWindowsRange(firstUserDate);
 
-  const [totalTeams, monthlyCounts] = await Promise.all([
+  const [totalTeams, counts] = await Promise.all([
     prisma.team.count(),
     Promise.all(
       windows.map(({ monthStart, monthEnd }) =>
@@ -327,13 +346,19 @@ async function getTeamActivityData() {
     ),
   ]);
 
-  const monthlyActivity = windows.map((w, i) => ({
-    month: w.label,
-    activeTeams: monthlyCounts[i] ?? 0,
+  const historical = windows.map((w, i) => ({
+    month: w.shortLabel,
+    activeTeams: counts[i] ?? 0,
   }));
 
-  const currentMonthActive =
-    monthlyActivity[monthlyActivity.length - 1]?.activeTeams ?? 0;
+  const lastTwelveWindows = windows.slice(-12);
+  const lastTwelveCounts = counts.slice(-12);
+  const twelveMonth = lastTwelveWindows.map((w, i) => ({
+    month: w.longLabel,
+    activeTeams: lastTwelveCounts[i] ?? 0,
+  }));
+
+  const currentMonthActive = counts[counts.length - 1] ?? 0;
   const inactive = Math.max(totalTeams - currentMonthActive, 0);
   const safeTotal = totalTeams > 0 ? totalTeams : 1;
 
@@ -354,7 +379,7 @@ async function getTeamActivityData() {
     },
   ];
 
-  return { monthlyActivity, pieData };
+  return { monthlyActivity: { twelveMonth, historical }, pieData };
 }
 
 export default async function AdminAnalyticsPage() {
@@ -374,6 +399,13 @@ export default async function AdminAnalyticsPage() {
   }
 
   const t = await getTranslations("settingsPage.admin.analytics");
+
+  const firstUser = await prisma.user.findFirst({
+    orderBy: { createdAt: "asc" },
+    select: { createdAt: true },
+  });
+  const firstUserDate = firstUser?.createdAt ?? new Date();
+
   const [
     monthlyUserData,
     scrimActivityData,
@@ -384,14 +416,14 @@ export default async function AdminAnalyticsPage() {
     userActivityData,
     teamActivityData,
   ] = await Promise.all([
-    getMonthlyUserData(),
+    getMonthlyUserData(firstUserDate),
     getScrimActivityData(),
-    getTeamCreationData(),
+    getTeamCreationData(firstUserDate),
     getTeamManagerData(),
     getSignupMethodData(),
     getBillingPlanData(),
-    getUserActivityData(),
-    getTeamActivityData(),
+    getUserActivityData(firstUserDate),
+    getTeamActivityData(firstUserDate),
   ]);
 
   return (
@@ -421,7 +453,8 @@ export default async function AdminAnalyticsPage() {
             </CardHeader>
             <CardContent>
               <MonthlyActiveUsersChart
-                data={userActivityData.monthlyActivity}
+                twelveMonth={userActivityData.monthlyActivity.twelveMonth}
+                historical={userActivityData.monthlyActivity.historical}
               />
             </CardContent>
           </Card>
@@ -445,7 +478,8 @@ export default async function AdminAnalyticsPage() {
             </CardHeader>
             <CardContent>
               <MonthlyActiveTeamsChart
-                data={teamActivityData.monthlyActivity}
+                twelveMonth={teamActivityData.monthlyActivity.twelveMonth}
+                historical={teamActivityData.monthlyActivity.historical}
               />
             </CardContent>
           </Card>
@@ -457,7 +491,10 @@ export default async function AdminAnalyticsPage() {
               <CardDescription>{t("userGrowth.description")}</CardDescription>
             </CardHeader>
             <CardContent>
-              <MonthlyUserChart data={monthlyUserData} />
+              <MonthlyUserChart
+                twelveMonth={monthlyUserData.twelveMonth}
+                historical={monthlyUserData.historical}
+              />
             </CardContent>
           </Card>
           <Card>
@@ -503,7 +540,10 @@ export default async function AdminAnalyticsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <TeamCreationChart data={teamCreationData} />
+              <TeamCreationChart
+                twelveMonth={teamCreationData.twelveMonth}
+                historical={teamCreationData.historical}
+              />
             </CardContent>
           </Card>
           <Card>
