@@ -3005,6 +3005,22 @@
       "analytics": {
         "title": "Analytics",
         "description": "View detailed analytics and charts for user activity and growth.",
+        "activeUsers": {
+          "title": "Monthly Active Users",
+          "description": "Users on a team that uploaded a scrim this month, versus the rest of the user base"
+        },
+        "monthlyActiveUsers": {
+          "title": "Active Users Over Time",
+          "description": "Unique users each month whose team uploaded a scrim, over the last 12 months"
+        },
+        "activeTeams": {
+          "title": "Monthly Active Teams",
+          "description": "Teams that uploaded a scrim this month, versus all teams"
+        },
+        "monthlyActiveTeams": {
+          "title": "Active Teams Over Time",
+          "description": "Unique teams that uploaded a scrim each month, over the last 12 months"
+        },
         "userGrowth": {
           "title": "User Growth Over Time",
           "description": "Monthly user registration trends over the last 12 months"

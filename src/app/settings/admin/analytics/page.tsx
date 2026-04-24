@@ -1,4 +1,8 @@
+import { ActiveTeamsPieChart } from "@/components/admin/active-teams-pie-chart";
+import { ActiveUsersPieChart } from "@/components/admin/active-users-pie-chart";
 import { BillingPlanPieChart } from "@/components/admin/billing-plan-pie-chart";
+import { MonthlyActiveTeamsChart } from "@/components/admin/monthly-active-teams-chart";
+import { MonthlyActiveUsersChart } from "@/components/admin/monthly-active-users-chart";
 import { MonthlyUserChart } from "@/components/admin/monthly-user-chart";
 import { ScrimActivityChart } from "@/components/admin/scrim-activity-chart";
 import { SignupMethodPieChart } from "@/components/admin/signup-method-pie-chart";
@@ -240,6 +244,119 @@ async function getBillingPlanData() {
   }));
 }
 
+function buildMonthWindows(now: Date) {
+  const windows: { monthStart: Date; monthEnd: Date; label: string }[] = [];
+  for (let i = 11; i >= 0; i--) {
+    const monthStart = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const monthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+    const label = monthStart.toLocaleDateString("en-US", { month: "long" });
+    windows.push({ monthStart, monthEnd, label });
+  }
+  return windows;
+}
+
+async function getUserActivityData() {
+  const now = new Date();
+  const windows = buildMonthWindows(now);
+
+  const [totalUsers, monthlyCounts] = await Promise.all([
+    prisma.user.count(),
+    Promise.all(
+      windows.map(({ monthStart, monthEnd }) =>
+        prisma.user.count({
+          where: {
+            teams: {
+              some: {
+                scrims: {
+                  some: { createdAt: { gte: monthStart, lt: monthEnd } },
+                },
+              },
+            },
+          },
+        })
+      )
+    ),
+  ]);
+
+  const monthlyActivity = windows.map((w, i) => ({
+    month: w.label,
+    activeUsers: monthlyCounts[i] ?? 0,
+  }));
+
+  const currentMonthActive =
+    monthlyActivity[monthlyActivity.length - 1]?.activeUsers ?? 0;
+  const inactive = Math.max(totalUsers - currentMonthActive, 0);
+  const safeTotal = totalUsers > 0 ? totalUsers : 1;
+
+  const pieData: {
+    status: "Active" | "Inactive";
+    count: number;
+    percentage: number;
+  }[] = [
+    {
+      status: "Active",
+      count: currentMonthActive,
+      percentage: Math.round((currentMonthActive / safeTotal) * 100),
+    },
+    {
+      status: "Inactive",
+      count: inactive,
+      percentage: Math.round((inactive / safeTotal) * 100),
+    },
+  ];
+
+  return { monthlyActivity, pieData };
+}
+
+async function getTeamActivityData() {
+  const now = new Date();
+  const windows = buildMonthWindows(now);
+
+  const [totalTeams, monthlyCounts] = await Promise.all([
+    prisma.team.count(),
+    Promise.all(
+      windows.map(({ monthStart, monthEnd }) =>
+        prisma.team.count({
+          where: {
+            scrims: {
+              some: { createdAt: { gte: monthStart, lt: monthEnd } },
+            },
+          },
+        })
+      )
+    ),
+  ]);
+
+  const monthlyActivity = windows.map((w, i) => ({
+    month: w.label,
+    activeTeams: monthlyCounts[i] ?? 0,
+  }));
+
+  const currentMonthActive =
+    monthlyActivity[monthlyActivity.length - 1]?.activeTeams ?? 0;
+  const inactive = Math.max(totalTeams - currentMonthActive, 0);
+  const safeTotal = totalTeams > 0 ? totalTeams : 1;
+
+  const pieData: {
+    status: "Active" | "Inactive";
+    count: number;
+    percentage: number;
+  }[] = [
+    {
+      status: "Active",
+      count: currentMonthActive,
+      percentage: Math.round((currentMonthActive / safeTotal) * 100),
+    },
+    {
+      status: "Inactive",
+      count: inactive,
+      percentage: Math.round((inactive / safeTotal) * 100),
+    },
+  ];
+
+  return { monthlyActivity, pieData };
+}
+
 export default async function AdminAnalyticsPage() {
   const session = await auth();
   if (!session?.user) {
@@ -264,6 +381,8 @@ export default async function AdminAnalyticsPage() {
     teamManagerData,
     signupMethodData,
     billingPlanData,
+    userActivityData,
+    teamActivityData,
   ] = await Promise.all([
     getMonthlyUserData(),
     getScrimActivityData(),
@@ -271,6 +390,8 @@ export default async function AdminAnalyticsPage() {
     getTeamManagerData(),
     getSignupMethodData(),
     getBillingPlanData(),
+    getUserActivityData(),
+    getTeamActivityData(),
   ]);
 
   return (
@@ -281,6 +402,54 @@ export default async function AdminAnalyticsPage() {
       </div>
       <Separator />
       <div className="space-y-6">
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("activeUsers.title")}</CardTitle>
+              <CardDescription>{t("activeUsers.description")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ActiveUsersPieChart data={userActivityData.pieData} />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("monthlyActiveUsers.title")}</CardTitle>
+              <CardDescription>
+                {t("monthlyActiveUsers.description")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <MonthlyActiveUsersChart
+                data={userActivityData.monthlyActivity}
+              />
+            </CardContent>
+          </Card>
+        </div>
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("activeTeams.title")}</CardTitle>
+              <CardDescription>{t("activeTeams.description")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ActiveTeamsPieChart data={teamActivityData.pieData} />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("monthlyActiveTeams.title")}</CardTitle>
+              <CardDescription>
+                {t("monthlyActiveTeams.description")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <MonthlyActiveTeamsChart
+                data={teamActivityData.monthlyActivity}
+              />
+            </CardContent>
+          </Card>
+        </div>
         <div className="grid gap-6 md:grid-cols-2">
           <Card>
             <CardHeader>
