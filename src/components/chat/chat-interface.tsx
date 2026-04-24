@@ -33,6 +33,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreditBalance } from "@/hooks/use-credits";
+import { MIN_BALANCE_TO_CHAT_CENTS } from "@/lib/chat-pricing";
 import { useChat } from "@ai-sdk/react";
 import { useQueryClient } from "@tanstack/react-query";
 import type { ToolUIPart, UIMessage } from "ai";
@@ -91,7 +92,8 @@ export function ChatInterface({
   const [balanceModalOpen, setBalanceModalOpen] = useState(false);
 
   const { data: balance } = useCreditBalance();
-  const blocked = balance !== undefined && balance.balanceCents <= 0;
+  const blocked =
+    balance !== undefined && balance.balanceCents < MIN_BALANCE_TO_CHAT_CENTS;
 
   const isLoading = status === "streaming" || status === "submitted";
 
@@ -403,8 +405,9 @@ export function ChatInterface({
         {blocked && (
           <div className="mx-auto mb-2 flex max-w-3xl items-center justify-between gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-800 dark:text-amber-300">
             <span>
-              Your balance is empty. Add credits to continue chatting — your
-              past conversations stay visible in read-only mode.
+              Your balance is too low to start a new message. Add credits to
+              continue chatting — your past conversations stay visible in
+              read-only mode.
             </span>
             <Button
               size="sm"

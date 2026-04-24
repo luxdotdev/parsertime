@@ -3,7 +3,7 @@
 import { BalanceModal } from "@/components/chat/balance-modal";
 import { Button } from "@/components/ui/button";
 import { useCreditBalance } from "@/hooks/use-credits";
-import { formatCents } from "@/lib/chat-pricing";
+import { MIN_BALANCE_TO_CHAT_CENTS, formatCents } from "@/lib/chat-pricing";
 import { cn } from "@/lib/utils";
 import { AlertTriangleIcon, CoinsIcon } from "lucide-react";
 import { useState } from "react";
@@ -12,7 +12,8 @@ export function BalanceChip() {
   const [open, setOpen] = useState(false);
   const { data: balance, isLoading } = useCreditBalance();
 
-  const blocked = balance !== undefined && balance.balanceCents <= 0;
+  const blocked =
+    balance !== undefined && balance.balanceCents < MIN_BALANCE_TO_CHAT_CENTS;
 
   return (
     <>

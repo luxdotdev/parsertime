@@ -7,6 +7,8 @@ export const CHAT_MODEL_PRICING = {
 
 export const TOPUP_MIN_CENTS = 500;
 
+export const MIN_BALANCE_TO_CHAT_CENTS = 25;
+
 export const TOPUP_PRESETS_CENTS = [500, 1000, 2500, 5000] as const;
 
 export const DEFAULT_AUTO_REFILL_THRESHOLD_CENTS = 200;
@@ -47,4 +49,12 @@ export function shouldTriggerAutoRefill(input: {
     input.beforeCents >= input.thresholdCents &&
     input.afterCents < input.thresholdCents
   );
+}
+
+export function autoRefillIdempotencyKey(
+  userId: string,
+  nowMs: number = Date.now()
+): string {
+  const windowBucket = Math.floor(nowMs / 60_000);
+  return `ai_chat_auto_refill_${userId}_${windowBucket}`;
 }

@@ -1,5 +1,11 @@
 import { describe, expect, test } from "vitest";
-import { CHAT_MODEL_PRICING, calculateChargeCents } from "@/lib/chat-pricing";
+import {
+  CHAT_MODEL_PRICING,
+  MIN_BALANCE_TO_CHAT_CENTS,
+  TOPUP_MIN_CENTS,
+  autoRefillIdempotencyKey,
+  calculateChargeCents,
+} from "@/lib/chat-pricing";
 
 describe("calculateChargeCents", () => {
   test("rounds up to at least 1 cent for tiny usage", () => {
@@ -34,5 +40,47 @@ describe("calculateChargeCents", () => {
     expect(
       calculateChargeCents({ inputTokens: 100, outputTokens: 100 })
     ).toBeGreaterThanOrEqual(1);
+  });
+});
+
+describe("chat pricing safety constants", () => {
+  test("minimum chat balance covers at least one maximum-expected request", () => {
+    // A reasonable single request with tool loops consumes up to ~20k in / 5k
+    // out tokens. The preflight buffer should cover that ceiling so a single
+    // over-estimate cannot drive the balance negative.
+    const maxExpectedRequestCents = calculateChargeCents({
+      inputTokens: 20_000,
+      outputTokens: 5_000,
+    });
+    expect(MIN_BALANCE_TO_CHAT_CENTS).toBeGreaterThanOrEqual(
+      maxExpectedRequestCents
+    );
+  });
+
+  test("top-up minimum is higher than the chat preflight floor", () => {
+    expect(TOPUP_MIN_CENTS).toBeGreaterThan(MIN_BALANCE_TO_CHAT_CENTS);
+  });
+});
+
+describe("autoRefillIdempotencyKey", () => {
+  test("two calls within the same minute produce the same key", () => {
+    const baseMs = 1_700_000_000_000;
+    const keyA = autoRefillIdempotencyKey("user_123", baseMs);
+    const keyB = autoRefillIdempotencyKey("user_123", baseMs + 30_000);
+    expect(keyA).toBe(keyB);
+  });
+
+  test("calls in different minutes produce different keys", () => {
+    const baseMs = 1_700_000_000_000;
+    const keyA = autoRefillIdempotencyKey("user_123", baseMs);
+    const keyB = autoRefillIdempotencyKey("user_123", baseMs + 60_001);
+    expect(keyA).not.toBe(keyB);
+  });
+
+  test("different users produce different keys at the same moment", () => {
+    const nowMs = 1_700_000_000_000;
+    const keyA = autoRefillIdempotencyKey("user_a", nowMs);
+    const keyB = autoRefillIdempotencyKey("user_b", nowMs);
+    expect(keyA).not.toBe(keyB);
   });
 });

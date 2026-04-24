@@ -3,6 +3,7 @@ import "server-only";
 import {
   DEFAULT_AUTO_REFILL_AMOUNT_CENTS,
   DEFAULT_AUTO_REFILL_THRESHOLD_CENTS,
+  autoRefillIdempotencyKey,
   shouldTriggerAutoRefill,
 } from "@/lib/chat-pricing";
 import { Logger } from "@/lib/logger";
@@ -191,20 +192,25 @@ export async function attemptAutoRefill(
     return { ok: false, reason: "no_method" };
   }
 
+  const idempotencyKey = autoRefillIdempotencyKey(userId);
+
   try {
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: credits.autoRefillAmountCents,
-      currency: "usd",
-      customer: user.stripeId,
-      payment_method: credits.stripePaymentMethodId,
-      confirm: true,
-      off_session: true,
-      automatic_payment_methods: { enabled: true, allow_redirects: "never" },
-      metadata: {
-        type: "ai_chat_auto_refill",
-        userId,
+    const paymentIntent = await stripe.paymentIntents.create(
+      {
+        amount: credits.autoRefillAmountCents,
+        currency: "usd",
+        customer: user.stripeId,
+        payment_method: credits.stripePaymentMethodId,
+        confirm: true,
+        off_session: true,
+        automatic_payment_methods: { enabled: true, allow_redirects: "never" },
+        metadata: {
+          type: "ai_chat_auto_refill",
+          userId,
+        },
       },
-    });
+      { idempotencyKey }
+    );
     return { ok: true, paymentIntentId: paymentIntent.id };
   } catch (error) {
     Logger.error("auto-refill payment failed", {

@@ -6,7 +6,10 @@ import { chatTelemetry } from "@/lib/ai/telemetry";
 import { buildTools } from "@/lib/ai/tools";
 import { auth } from "@/lib/auth";
 import { flagsToBaggage, setRequestContext } from "@/lib/axiom/baggage";
-import { calculateChargeCents } from "@/lib/chat-pricing";
+import {
+  MIN_BALANCE_TO_CHAT_CENTS,
+  calculateChargeCents,
+} from "@/lib/chat-pricing";
 import { attemptAutoRefill, chargeUser, getUserBalance } from "@/lib/credits";
 import { resolveAllFlags, toFlagValues } from "@/lib/flags-helpers";
 import { Logger } from "@/lib/logger";
@@ -48,7 +51,7 @@ export async function POST(req: Request) {
   }
 
   const balanceCents = await getUserBalance(userData.id);
-  if (balanceCents <= 0) {
+  if (balanceCents < MIN_BALANCE_TO_CHAT_CENTS) {
     const chatCount = await prisma.chatConversation.count({
       where: { userId: userData.id },
     });
@@ -56,6 +59,7 @@ export async function POST(req: Request) {
       {
         blocked: true,
         balanceCents,
+        minimumBalanceCents: MIN_BALANCE_TO_CHAT_CENTS,
         hasChats: chatCount > 0,
       },
       { status: 402 }
