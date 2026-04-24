@@ -32,9 +32,22 @@ type Props = {
   value: string;
   onValueChange: (v: string) => void;
   id?: string;
+  /**
+   * When provided and different from the viewer's detected tz, surfaces
+   * the team's configured default timezone as its own pinned section at
+   * the top of the list. Useful on the availability page where viewers
+   * may want to switch to the team's tz to compare with the organizer's
+   * canonical window.
+   */
+  teamTimezone?: string;
 };
 
-export function TimezoneSelect({ value, onValueChange, id }: Props) {
+export function TimezoneSelect({
+  value,
+  onValueChange,
+  id,
+  teamTimezone,
+}: Props) {
   const [open, setOpen] = useState(false);
   const [detected, setDetected] = useState<string | null>(null);
   const listboxId = `tz-listbox-${id ?? "select"}`;
@@ -54,6 +67,10 @@ export function TimezoneSelect({ value, onValueChange, id }: Props) {
         : [],
     [allZones, region]
   );
+  // Only show the team-default section when it's a distinct entry — if
+  // the viewer's detected tz already matches the team's, we don't need
+  // to pin the same zone twice.
+  const showTeamSection = Boolean(teamTimezone && teamTimezone !== detected);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -76,37 +93,47 @@ export function TimezoneSelect({ value, onValueChange, id }: Props) {
           <CommandList id={listboxId} className="max-h-[320px]">
             <CommandEmpty>No timezone found.</CommandEmpty>
             {detected && (
-              <>
-                <CommandGroup heading="Detected">
-                  <TzItem
-                    zone={detected}
-                    current={value}
-                    onSelect={(v) => {
-                      onValueChange(v);
-                      setOpen(false);
-                    }}
-                  />
-                </CommandGroup>
-                {regional.length > 1 && (
-                  <CommandGroup heading={region ?? "Regional"}>
-                    {regional
-                      .filter((z) => z !== detected)
-                      .map((z) => (
-                        <TzItem
-                          key={z}
-                          zone={z}
-                          current={value}
-                          onSelect={(v) => {
-                            onValueChange(v);
-                            setOpen(false);
-                          }}
-                        />
-                      ))}
-                  </CommandGroup>
-                )}
-                <CommandSeparator />
-              </>
+              <CommandGroup heading="Detected">
+                <TzItem
+                  zone={detected}
+                  current={value}
+                  onSelect={(v) => {
+                    onValueChange(v);
+                    setOpen(false);
+                  }}
+                />
+              </CommandGroup>
             )}
+            {showTeamSection && teamTimezone && (
+              <CommandGroup heading="Team default">
+                <TzItem
+                  zone={teamTimezone}
+                  current={value}
+                  onSelect={(v) => {
+                    onValueChange(v);
+                    setOpen(false);
+                  }}
+                />
+              </CommandGroup>
+            )}
+            {detected && regional.length > 1 && (
+              <CommandGroup heading={region ?? "Regional"}>
+                {regional
+                  .filter((z) => z !== detected && z !== teamTimezone)
+                  .map((z) => (
+                    <TzItem
+                      key={z}
+                      zone={z}
+                      current={value}
+                      onSelect={(v) => {
+                        onValueChange(v);
+                        setOpen(false);
+                      }}
+                    />
+                  ))}
+              </CommandGroup>
+            )}
+            {(detected ?? showTeamSection) && <CommandSeparator />}
             <CommandGroup heading="All timezones">
               {allZones.map((z) => (
                 <TzItem

@@ -62,12 +62,17 @@ export function AvailabilityFillView({
   const [saving, setSaving] = useState(false);
   const [hoveredSlot, setHoveredSlot] = useState<number | null>(null);
 
+  const fillLocalTz = useMemo(() => detectLocalTz(), []);
+  // SSR renders in the team tz (Intl can't detect the viewer there); on
+  // mount we switch to the viewer's detected tz so the default matches
+  // where they actually are. Manual dropdown picks stick — this effect's
+  // dependency is stable so it only runs once.
   const [viewerTz, setViewerTz] = useState(settings.timezone);
   useEffect(() => {
-    setViewerTz(settings.timezone);
-  }, [settings.timezone]);
+    setViewerTz(fillLocalTz);
+  }, [fillLocalTz]);
 
-  const fillLocalTz = useMemo(() => detectLocalTz(), []);
+  const tzMismatch = fillLocalTz !== settings.timezone;
 
   const heatmap = useMemo(() => {
     const m = new Map<number, string[]>();
@@ -198,6 +203,7 @@ export function AvailabilityFillView({
             id="viewer-tz"
             value={viewerTz}
             onValueChange={setViewerTz}
+            teamTimezone={settings.timezone}
           />
         </div>
       </div>
@@ -215,12 +221,32 @@ export function AvailabilityFillView({
             onChange={setMySlots}
           />
 
-          <Button onClick={save} disabled={saving}>
-            {saving ? "Saving…" : "Save my availability"}
-          </Button>
-          <p className="text-muted-foreground text-xs">
-            Selecting in your local time: {fillLocalTz}
-          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={save} disabled={saving}>
+              {saving ? "Saving…" : "Save my availability"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setMySlots(new Set())}
+              disabled={saving || mySlots.size === 0}
+            >
+              Clear
+            </Button>
+          </div>
+          {tzMismatch ? (
+            <div className="rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-600 dark:text-amber-400">
+              <span className="font-medium">Heads up:</span> the team&apos;s
+              calendar is set to <strong>{settings.timezone}</strong>, but
+              you&apos;re in <strong>{fillLocalTz}</strong>. Pick slots in your
+              local time — we&apos;ll translate to the team&apos;s timezone
+              automatically.
+            </div>
+          ) : (
+            <p className="text-muted-foreground text-xs">
+              Selecting in your local time: {fillLocalTz}
+            </p>
+          )}
         </section>
 
         <section className="space-y-4">
