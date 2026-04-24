@@ -71,6 +71,8 @@ model User {
   chatConversations      ChatConversation[]
   chatReports            ChatReport[]
   availabilityResponses  AvailabilityResponse[]
+  credits                UserCredits?
+  creditTransactions     CreditTransaction[]
 
   @@index([id, email])
 }
@@ -1480,3 +1482,41 @@ model AvailabilityResponse {
   @@index([scheduleId])
   @@index([userId])
 }
+
+model UserCredits {
+  userId                   String  @id
+  balanceCents             Int     @default(0)
+  autoRefillEnabled        Boolean @default(false)
+  autoRefillThresholdCents Int     @default(200)
+  autoRefillAmountCents    Int     @default(1000)
+  stripePaymentMethodId    String?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum CreditTransactionType {
+  TOPUP
+  AUTO_REFILL
+  CHARGE
+  REFUND
+  ADJUSTMENT
+}
+
+model CreditTransaction {
+  id                Int                   @id @default(autoincrement())
+  userId            String
+  type              CreditTransactionType
+  amountCents       Int
+  balanceAfterCents Int
+  description       String
+  stripeEventId     String?               @unique
+  metadata          Json?
+  createdAt         DateTime              @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
