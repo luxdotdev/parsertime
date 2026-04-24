@@ -1,7 +1,4 @@
-import {
-  authenticateBotSecret,
-  resolveDiscordUser,
-} from "@/lib/bot-auth";
+import { authenticateBotSecret, resolveDiscordUser } from "@/lib/bot-auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import type { NextRequest } from "next/server";

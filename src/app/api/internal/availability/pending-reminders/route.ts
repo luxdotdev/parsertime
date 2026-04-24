@@ -1,5 +1,8 @@
 import { authenticateBotSecret } from "@/lib/bot-auth";
-import { buildReminderJob, type ReminderJob } from "@/lib/availability/build-reminder";
+import {
+  buildReminderJob,
+  type ReminderJob,
+} from "@/lib/availability/build-reminder";
 import {
   isWithinReminderWindow,
   wasFiredThisWeek,
