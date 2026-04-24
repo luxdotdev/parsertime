@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/input-group";
 import { Link } from "@/components/ui/link";
 import type { Team } from "@prisma/client";
-import { ChartBarIcon, Search } from "lucide-react";
+import { CalendarIcon, ChartBarIcon, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Route } from "next";
 import Image from "next/image";
@@ -69,15 +69,22 @@ export function UserTeamsList({ teams }: { teams: Team[] }) {
                     </h3>
                   </CardHeader>
                 </Link>
-                <Link
-                  href={`/stats/team/${team.id}` as Route}
-                  className="hover:underline"
-                >
-                  <CardFooter className="flex items-center gap-2">
-                    <ChartBarIcon className="h-4 w-4" />
+                <CardFooter className="flex flex-col items-start gap-2">
+                  <Link
+                    href={`/stats/team/${team.id}` as Route}
+                    className="flex items-center gap-2 whitespace-nowrap hover:underline"
+                  >
+                    <ChartBarIcon className="h-4 w-4 shrink-0" />
                     {t("viewStats")} &rarr;
-                  </CardFooter>
-                </Link>
+                  </Link>
+                  <Link
+                    href={`/team/${team.id}/availability` as Route}
+                    className="flex items-center gap-2 whitespace-nowrap hover:underline"
+                  >
+                    <CalendarIcon className="h-4 w-4 shrink-0" />
+                    {t("viewAvailability")} &rarr;
+                  </Link>
+                </CardFooter>
               </Card>
             </div>
           ))}

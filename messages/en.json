@@ -435,7 +435,9 @@
       "chatReports": "Reports",
       "tournaments": "Tournaments",
       "coaching": "Coaching",
-      "coachingCanvas": "Canvas"
+      "coachingCanvas": "Canvas",
+      "yourTeams": "Your Teams",
+      "availability": "Availability"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "Search team...",
@@ -2681,7 +2683,8 @@
       "teamMemberCount": "Team Members",
       "usage": "{current} of {allowed} used"
     },
-    "viewStats": "View stats"
+    "viewStats": "View stats",
+    "viewAvailability": "Availability"
   },
   "settingsPage": {
     "metadata": {
@@ -3522,7 +3525,7 @@
     "comparePlayers": "Compare Players",
     "leaderboard": "Leaderboard",
     "yourTeams": "Your Teams",
-    "joinTeam": "Join a Team",
+    "availability": "Availability",
     "dashboard": "Dashboard",
     "settings": "Settings",
     "contact": "Contact",

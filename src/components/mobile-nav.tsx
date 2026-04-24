@@ -1,6 +1,7 @@
 "use client";
 
 import { TeamSwitcher } from "@/components/dashboard/team-switcher";
+import { TeamSwitcherContext } from "@/components/team-switcher-provider";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/components/ui/link";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -17,7 +18,8 @@ const mainNav: { title: string; href: Route }[] = [
   { title: "Stats", href: "/stats" },
   { title: "Hero Stats", href: "/stats/hero" },
   { title: "Compare Players", href: "/stats/compare" },
-  { title: "Teams", href: "/team" },
+  { title: "Your Teams", href: "/team" },
+  { title: "Team Stats", href: "/stats/team" },
   { title: "Settings", href: "/settings" },
   { title: "Contact", href: "/contact" },
   { title: "Docs", href: "https://docs.parsertime.app" },
@@ -37,6 +39,10 @@ export function MobileNav({
   className?: string;
 }) {
   const [open, setOpen] = React.useState(false);
+  const { teamId } = React.use(TeamSwitcherContext);
+  const availabilityHref = (
+    teamId !== undefined ? `/team/${teamId}/availability` : "/team"
+  ) as Route;
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -111,6 +117,9 @@ export function MobileNav({
                   </MobileLink>
                 )
             )}
+            <MobileLink href={availabilityHref} onOpenChange={setOpen}>
+              Availability
+            </MobileLink>
             {aiChatEnabled && (
               <MobileLink href={"/chat" as Route} onOpenChange={setOpen}>
                 Analyst

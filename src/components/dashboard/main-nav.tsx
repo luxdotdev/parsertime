@@ -1,11 +1,13 @@
 "use client";
 
+import { TeamSwitcherContext } from "@/components/team-switcher-provider";
 import { Link } from "@/components/ui/link";
 import { cn } from "@/lib/utils";
 import { ChevronDownIcon } from "lucide-react";
 import type { Route } from "next";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
+import { use } from "react";
 
 const navLinkStyles =
   "text-muted-foreground hover:text-primary inline-flex min-h-11 items-center px-1.5 text-sm font-medium transition-colors";
@@ -40,6 +42,11 @@ export function MainNav({
 }) {
   const pathname = usePathname();
   const t = useTranslations("dashboard.mainNav");
+  const { teamId } = use(TeamSwitcherContext);
+
+  const availabilityHref = (
+    teamId !== undefined ? `/team/${teamId}/availability` : "/team"
+  ) as Route;
 
   return (
     <nav className={cn("flex items-center", className)}>
@@ -132,16 +139,61 @@ export function MainNav({
             {t("leaderboard")}
           </Link>
         </li>
-        <li>
-          <Link
-            href="/team"
+        <li className="group relative" onKeyDown={handleDropdownKeyDown}>
+          <button
+            type="button"
+            aria-haspopup="true"
             className={cn(
               navLinkStyles,
-              pathname.split("/")[1] === "team" && "text-primary"
+              "gap-1",
+              (pathname.split("/")[1] === "team" ||
+                pathname.startsWith("/stats/team")) &&
+                "text-primary"
             )}
           >
             {t("teams")}
-          </Link>
+            <ChevronDownIcon
+              className="size-3 transition-transform duration-200 group-focus-within:rotate-180 group-hover:rotate-180"
+              aria-hidden="true"
+            />
+          </button>
+          <div className="invisible absolute top-full left-0 z-50 pt-1 opacity-0 transition-[opacity,visibility] duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+            <div
+              className="bg-popover text-popover-foreground ring-foreground/10 w-[200px] rounded-md p-1 shadow-md ring-1"
+              role="menu"
+            >
+              <Link
+                href="/team"
+                role="menuitem"
+                className={cn(
+                  dropdownItemStyles,
+                  pathname === "/team" && "text-primary"
+                )}
+              >
+                {t("yourTeams")}
+              </Link>
+              <Link
+                href="/stats/team"
+                role="menuitem"
+                className={cn(
+                  dropdownItemStyles,
+                  pathname.startsWith("/stats/team") && "text-primary"
+                )}
+              >
+                {t("teamStats")}
+              </Link>
+              <Link
+                href={availabilityHref}
+                role="menuitem"
+                className={cn(
+                  dropdownItemStyles,
+                  pathname.includes("/availability") && "text-primary"
+                )}
+              >
+                {t("availability")}
+              </Link>
+            </div>
+          </div>
         </li>
         {tournamentEnabled && (
           <li>
