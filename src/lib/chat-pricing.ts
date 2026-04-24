@@ -50,11 +50,3 @@ export function shouldTriggerAutoRefill(input: {
     input.afterCents < input.thresholdCents
   );
 }
-
-export function autoRefillIdempotencyKey(
-  userId: string,
-  nowMs: number = Date.now()
-): string {
-  const windowBucket = Math.floor(nowMs / 60_000);
-  return `ai_chat_auto_refill_${userId}_${windowBucket}`;
-}

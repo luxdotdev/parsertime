@@ -73,6 +73,7 @@ model User {
   availabilityResponses  AvailabilityResponse[]
   credits                UserCredits?
   creditTransactions     CreditTransaction[]
+  pendingAutoRefill      PendingAutoRefill?
 
   @@index([id, email])
 }
@@ -1518,5 +1519,14 @@ model CreditTransaction {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
+}
+
+model PendingAutoRefill {
+  userId               String   @id
+  stripeIdempotencyKey String   @unique
+  paymentIntentId      String?
+  createdAt            DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 

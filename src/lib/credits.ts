@@ -3,9 +3,9 @@ import "server-only";
 import {
   DEFAULT_AUTO_REFILL_AMOUNT_CENTS,
   DEFAULT_AUTO_REFILL_THRESHOLD_CENTS,
-  autoRefillIdempotencyKey,
   shouldTriggerAutoRefill,
 } from "@/lib/chat-pricing";
+import { randomUUID } from "crypto";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
@@ -126,7 +126,7 @@ export async function chargeUser(
   }
 
   const result = await prisma.$transaction(async (tx) => {
-    const before = await tx.userCredits.upsert({
+    await tx.userCredits.upsert({
       where: { userId },
       create: {
         userId,
@@ -137,12 +137,19 @@ export async function chargeUser(
       update: {},
     });
 
-    const balanceAfterCents = before.balanceCents - args.amountCents;
-
-    await tx.userCredits.update({
+    const updated = await tx.userCredits.update({
       where: { userId },
-      data: { balanceCents: balanceAfterCents },
+      data: { balanceCents: { decrement: args.amountCents } },
+      select: {
+        balanceCents: true,
+        autoRefillEnabled: true,
+        autoRefillThresholdCents: true,
+        stripePaymentMethodId: true,
+      },
     });
+
+    const balanceAfterCents = updated.balanceCents;
+    const beforeCents = balanceAfterCents + args.amountCents;
 
     const txn = await tx.creditTransaction.create({
       data: {
@@ -160,11 +167,11 @@ export async function chargeUser(
       balanceAfterCents,
       transactionId: txn.id,
       autoRefillTriggered: shouldTriggerAutoRefill({
-        enabled: before.autoRefillEnabled,
-        hasPaymentMethod: !!before.stripePaymentMethodId,
-        beforeCents: before.balanceCents,
+        enabled: updated.autoRefillEnabled,
+        hasPaymentMethod: !!updated.stripePaymentMethodId,
+        beforeCents,
         afterCents: balanceAfterCents,
-        thresholdCents: before.autoRefillThresholdCents,
+        thresholdCents: updated.autoRefillThresholdCents,
       }),
     };
   });
@@ -172,11 +179,17 @@ export async function chargeUser(
   return result;
 }
 
-export async function attemptAutoRefill(
-  userId: string
-): Promise<
+export async function attemptAutoRefill(userId: string): Promise<
   | { ok: true; paymentIntentId: string }
-  | { ok: false; reason: "no_method" | "disabled" | "stripe_error" | "no_user" }
+  | {
+      ok: false;
+      reason:
+        | "no_method"
+        | "disabled"
+        | "stripe_error"
+        | "no_user"
+        | "already_pending";
+    }
 > {
   const [credits, user] = await Promise.all([
     prisma.userCredits.findUnique({ where: { userId } }),
@@ -192,7 +205,18 @@ export async function attemptAutoRefill(
     return { ok: false, reason: "no_method" };
   }
 
-  const idempotencyKey = autoRefillIdempotencyKey(userId);
+  const idempotencyKey = randomUUID();
+
+  try {
+    await prisma.pendingAutoRefill.create({
+      data: { userId, stripeIdempotencyKey: idempotencyKey },
+    });
+  } catch (error) {
+    if (isUniqueConstraintOn(error, "userId")) {
+      return { ok: false, reason: "already_pending" };
+    }
+    throw error;
+  }
 
   try {
     const paymentIntent = await stripe.paymentIntents.create(
@@ -211,14 +235,27 @@ export async function attemptAutoRefill(
       },
       { idempotencyKey }
     );
+    await prisma.pendingAutoRefill.update({
+      where: { userId },
+      data: { paymentIntentId: paymentIntent.id },
+    });
     return { ok: true, paymentIntentId: paymentIntent.id };
   } catch (error) {
     Logger.error("auto-refill payment failed", {
       userId,
       error: error instanceof Error ? error.message : String(error),
     });
+    await prisma.pendingAutoRefill
+      .delete({ where: { userId } })
+      .catch(() => undefined);
     return { ok: false, reason: "stripe_error" };
   }
+}
+
+export async function clearPendingAutoRefill(userId: string): Promise<void> {
+  await prisma.pendingAutoRefill
+    .delete({ where: { userId } })
+    .catch(() => undefined);
 }
 
 export async function setAutoRefillConfig(

@@ -1,6 +1,10 @@
 import { stripeWebhookCounter } from "@/lib/axiom/metrics";
 import { handleSubscriptionEvent } from "@/lib/billing-plans";
-import { creditUser, saveDefaultPaymentMethod } from "@/lib/credits";
+import {
+  clearPendingAutoRefill,
+  creditUser,
+  saveDefaultPaymentMethod,
+} from "@/lib/credits";
 import { Logger } from "@/lib/logger";
 import { stripe } from "@/lib/stripe";
 import { track } from "@vercel/analytics/server";
@@ -14,6 +18,7 @@ const relevantEvents = new Set([
   "customer.subscription.deleted",
   "customer.subscription.updated",
   "payment_intent.succeeded",
+  "payment_intent.payment_failed",
 ]);
 
 export async function POST(req: Request) {
@@ -79,6 +84,13 @@ export async function POST(req: Request) {
           const paymentIntent = event.data.object;
           if (paymentIntent.metadata?.type === "ai_chat_auto_refill") {
             await handleAutoRefillSucceeded(paymentIntent, event.id);
+          }
+          break;
+        }
+        case "payment_intent.payment_failed": {
+          const paymentIntent = event.data.object;
+          if (paymentIntent.metadata?.type === "ai_chat_auto_refill") {
+            await handleAutoRefillFailed(paymentIntent);
           }
           break;
         }
@@ -182,4 +194,16 @@ async function handleAutoRefillSucceeded(
       userId,
     });
   }
+
+  await clearPendingAutoRefill(userId);
+}
+
+async function handleAutoRefillFailed(paymentIntent: Stripe.PaymentIntent) {
+  const userId = paymentIntent.metadata?.userId;
+  if (!userId) return;
+  Logger.warn("auto-refill payment failed", {
+    paymentIntentId: paymentIntent.id,
+    userId,
+  });
+  await clearPendingAutoRefill(userId);
 }
