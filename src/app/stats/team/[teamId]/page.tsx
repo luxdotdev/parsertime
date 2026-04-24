@@ -1,8 +1,10 @@
 import { RecentActivityCalendar } from "@/components/profile/recent-activity-calendar";
+import { AbilityImpactAnalysisCard } from "@/components/stats/team/ability-impact-analysis-card";
 import { BestRoleTriosCard } from "@/components/stats/team/best-role-trios-card";
 import { HeroBanImpactCard } from "@/components/stats/team/hero-ban-impact-card";
 import { HeroOurBansCard } from "@/components/stats/team/hero-our-bans-card";
 import { HeroPoolContainer } from "@/components/stats/team/hero-pool-container";
+import { InsufficientScrimsPlaceholder } from "@/components/stats/team/insufficient-scrims-placeholder";
 import { MapModePerformanceCard } from "@/components/stats/team/map-mode-performance-card";
 import { MapWinrateGallery } from "@/components/stats/team/map-winrate-gallery";
 import { MatchupWinrateTab } from "@/components/stats/team/matchup-winrate-tab";
@@ -22,35 +24,34 @@ import { TeamFightStatsCard } from "@/components/stats/team/team-fight-stats-car
 import { TeamRangePicker } from "@/components/stats/team/team-range-picker";
 import { TeamRosterGrid } from "@/components/stats/team/team-roster-grid";
 import { TopMapsCard } from "@/components/stats/team/top-maps-card";
+import { UltImpactAnalysisCard } from "@/components/stats/team/ult-impact-analysis-card";
 import { UltPlayerRankingsCard } from "@/components/stats/team/ult-player-rankings-card";
 import { UltRoleBreakdownCard } from "@/components/stats/team/ult-role-breakdown-card";
-import { AbilityImpactAnalysisCard } from "@/components/stats/team/ability-impact-analysis-card";
-import { UltImpactAnalysisCard } from "@/components/stats/team/ult-impact-analysis-card";
 import { UltUsageOverviewCard } from "@/components/stats/team/ult-usage-overview-card";
 import { UltimateEconomyCard } from "@/components/stats/team/ultimate-economy-card";
 import { WinLossStreaksCard } from "@/components/stats/team/win-loss-streaks-card";
 import { WinProbabilityInsights } from "@/components/stats/team/win-probability-insights";
 import { WinrateOverTimeChart } from "@/components/stats/team/winrate-over-time-chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TeamAnalyticsService, TeamPredictionService } from "@/data/team";
+import { AppRuntime } from "@/data/runtime";
 import {
+  TeamAbilityImpactService,
+  TeamAnalyticsService,
+  TeamBanImpactService,
   type TeamDateRange,
-  TeamStatsService,
   TeamFightStatsService,
-  TeamRoleStatsService,
-  TeamTrendsService,
-  TeamMapModeService,
-  TeamQuickWinsService,
   TeamHeroPoolService,
   TeamHeroSwapService,
-  TeamBanImpactService,
-  TeamAbilityImpactService,
-  TeamUltService,
+  TeamMapModeService,
   TeamMatchupService,
+  TeamPredictionService,
+  TeamQuickWinsService,
+  TeamRoleStatsService,
   TeamSharedDataService,
+  TeamStatsService,
+  TeamTrendsService,
+  TeamUltService,
 } from "@/data/team";
-import { Effect } from "effect";
-import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { simulationTool, ultimateImpactTool } from "@/lib/flags";
@@ -62,6 +63,7 @@ import { getMapNames } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
 import { addMonths, addWeeks, addYears } from "date-fns";
+import { Effect } from "effect";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
@@ -139,6 +141,28 @@ export default async function TeamStatsPage(
 
   const userIsMember = team.users.some((teamUser) => teamUser.id === user.id);
   if (!userIsMember && user.role !== $Enums.UserRole.ADMIN) notFound();
+
+  const totalScrimCount = await prisma.scrim.count({ where: { teamId } });
+
+  if (totalScrimCount < 2) {
+    return (
+      <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
+        <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-4">
+            <Image
+              src={team.image ?? `https://avatar.vercel.sh/${team.name}.png`}
+              alt={team.name}
+              width={100}
+              height={100}
+              className="border-muted rounded-full border-2"
+            />
+            <h1 className="text-3xl font-bold tracking-tight">{team.name}</h1>
+          </div>
+        </div>
+        <InsufficientScrimsPlaceholder scrimCount={totalScrimCount} />
+      </div>
+    );
+  }
 
   const [timeframe1, timeframe2, timeframe3] = await Promise.all([
     new Permission("stats-timeframe-1").check(),
