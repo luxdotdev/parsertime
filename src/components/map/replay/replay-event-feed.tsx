@@ -53,12 +53,25 @@ export function ReplayEventFeed({
 
   // Auto-scroll to keep the current event visible
   useEffect(() => {
-    if (activeRef.current && scrollRef.current) {
-      activeRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }
+    const active = activeRef.current;
+    const scrollContainer = scrollRef.current;
+    if (!active || !scrollContainer) return;
+
+    const containerRect = scrollContainer.getBoundingClientRect();
+    const activeRect = active.getBoundingClientRect();
+    const activeTop =
+      activeRect.top - containerRect.top + scrollContainer.scrollTop;
+    const activeBottom = activeTop + active.offsetHeight;
+    const visibleTop = scrollContainer.scrollTop;
+    const visibleBottom = visibleTop + scrollContainer.clientHeight;
+
+    if (activeTop >= visibleTop && activeBottom <= visibleBottom) return;
+
+    scrollContainer.scrollTo({
+      top:
+        activeTop - scrollContainer.clientHeight / 2 + active.offsetHeight / 2,
+      behavior: "smooth",
+    });
   }, [currentTime]);
 
   function getTeamColor(teamName: string) {

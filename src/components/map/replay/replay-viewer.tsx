@@ -197,6 +197,7 @@ export function ReplayViewer({
       playerName: string;
       playerTeam: string;
       state: NonNullable<ReturnType<typeof getPlayerStateAtTime>>;
+      isInactive: boolean;
     }[] = [];
 
     for (const [key, timeline] of timelines) {
@@ -216,6 +217,26 @@ export function ReplayViewer({
           playerName: timeline.playerName,
           playerTeam: timeline.playerTeam,
           state,
+          isInactive: false,
+        });
+        continue;
+      }
+
+      const staleState = getPlayerStateAtTime(
+        timeline,
+        currentTime,
+        deaths,
+        ults,
+        charges,
+        Number.POSITIVE_INFINITY
+      );
+      if (staleState) {
+        states.push({
+          key,
+          playerName: timeline.playerName,
+          playerTeam: timeline.playerTeam,
+          state: staleState,
+          isInactive: true,
         });
       }
     }

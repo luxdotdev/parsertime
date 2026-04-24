@@ -1,6 +1,7 @@
 "use client";
 
 import { toHero } from "@/lib/utils";
+import { motion, useReducedMotion } from "framer-motion";
 import { Skull } from "lucide-react";
 import Image from "next/image";
 import { memo } from "react";
@@ -13,8 +14,10 @@ type ReplayPlayerMarkerProps = {
   size: number;
   isDead: boolean;
   isUlting: boolean;
+  isInactive: boolean;
   playerName: string;
   isSelected: boolean;
+  animatePosition: boolean;
   onClick: () => void;
 };
 
@@ -26,23 +29,71 @@ function ReplayPlayerMarkerInner({
   size,
   isDead,
   isUlting,
+  isInactive,
   playerName,
   isSelected,
+  animatePosition,
   onClick,
 }: ReplayPlayerMarkerProps) {
+  const prefersReducedMotion = useReducedMotion();
+  const positionTransition =
+    prefersReducedMotion || !animatePosition
+      ? { duration: 0 }
+      : {
+          type: "spring" as const,
+          stiffness: 360,
+          damping: 38,
+          mass: 0.7,
+        };
+  const feedbackTransition = prefersReducedMotion
+    ? { duration: 0 }
+    : { duration: 0.18, ease: "easeInOut" as const };
+
   return (
-    <div
+    <motion.div
       className="absolute flex flex-col items-center"
+      initial={false}
+      animate={{
+        x: x - size / 2,
+        y: y - size / 2,
+        opacity: isInactive ? 0.42 : 1,
+      }}
+      transition={{
+        x: positionTransition,
+        y: positionTransition,
+        opacity: prefersReducedMotion
+          ? { duration: 0 }
+          : { duration: 0.2, ease: [0.215, 0.61, 0.355, 1] },
+      }}
       style={{
-        left: x - size / 2,
-        top: y - size / 2,
+        left: 0,
+        top: 0,
         zIndex: isSelected ? 20 : 10,
+        willChange: "transform, opacity",
       }}
     >
-      <button
+      <motion.button
         type="button"
         onClick={onClick}
         className="flex items-center justify-center overflow-hidden rounded-full shadow-lg transition-transform hover:scale-110"
+        animate={
+          prefersReducedMotion
+            ? undefined
+            : isDead
+              ? { x: [0, -2, 2, -1, 1, 0] }
+              : isInactive
+                ? { scale: [1, 1.08, 1] }
+                : { x: 0, scale: 1 }
+        }
+        transition={
+          isInactive
+            ? {
+                duration: 1.1,
+                ease: "easeInOut",
+                repeat: Number.POSITIVE_INFINITY,
+              }
+            : feedbackTransition
+        }
         style={{
           width: size,
           height: size,
@@ -67,14 +118,14 @@ function ReplayPlayerMarkerInner({
             <Skull className="h-4 w-4 text-red-400" />
           </div>
         )}
-      </button>
+      </motion.button>
       <span
         className="mt-0.5 rounded bg-black/70 px-1 text-[10px] leading-tight font-medium whitespace-nowrap"
         style={{ color }}
       >
         {playerName}
       </span>
-    </div>
+    </motion.div>
   );
 }
 
@@ -87,7 +138,9 @@ export const ReplayPlayerMarker = memo(
       prev.heroName === next.heroName &&
       prev.isDead === next.isDead &&
       prev.isUlting === next.isUlting &&
+      prev.isInactive === next.isInactive &&
       prev.isSelected === next.isSelected &&
+      prev.animatePosition === next.animatePosition &&
       prev.color === next.color
     );
   }

@@ -11,6 +11,7 @@ type PlayerRender = {
   playerName: string;
   playerTeam: string;
   state: PlayerState;
+  isInactive: boolean;
 };
 
 type ReplayMapProps = {
@@ -52,6 +53,7 @@ export function ReplayMap({
   const dragStartRef = useRef({ x: 0, y: 0 });
 
   const [view, setView] = useState({ offsetX: 0, offsetY: 0, zoom: 1 });
+  const previousViewRef = useRef(view);
 
   const { transform, imagePresignedUrl, imageWidth, imageHeight } = calibration;
 
@@ -172,6 +174,16 @@ export function ReplayMap({
     top: imgTop,
   };
 
+  const previousView = previousViewRef.current;
+  const didViewChange =
+    previousView.offsetX !== view.offsetX ||
+    previousView.offsetY !== view.offsetY ||
+    previousView.zoom !== view.zoom;
+
+  useEffect(() => {
+    previousViewRef.current = view;
+  }, [view]);
+
   const killLine = recentKill
     ? {
         from: worldToScreen(recentKill.attackerX, recentKill.attackerZ),
@@ -242,8 +254,10 @@ export function ReplayMap({
               size={MARKER_SIZE}
               isDead={p.state.isDead}
               isUlting={p.state.isUlting}
+              isInactive={p.isInactive}
               playerName={p.playerName}
               isSelected={selectedPlayer === p.key}
+              animatePosition={!didViewChange}
               onClick={() => onSelectPlayerAction(p.key)}
             />
           );

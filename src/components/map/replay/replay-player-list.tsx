@@ -2,6 +2,7 @@
 
 import type { PlayerState } from "@/lib/replay/build-player-timeline";
 import { toHero } from "@/lib/utils";
+import { motion, useReducedMotion } from "framer-motion";
 import { Skull, Zap } from "lucide-react";
 import Image from "next/image";
 
@@ -10,6 +11,7 @@ type PlayerEntry = {
   playerName: string;
   playerTeam: string;
   state: PlayerState;
+  isInactive: boolean;
 };
 
 type ReplayPlayerListProps = {
@@ -89,14 +91,32 @@ function PlayerCard({
 }) {
   const { state } = player;
   const isActive = state.isUlting;
+  const prefersReducedMotion = useReducedMotion();
 
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onClick}
       className="group relative flex flex-col items-center transition-transform hover:scale-105"
+      animate={
+        prefersReducedMotion
+          ? { opacity: player.isInactive ? 0.55 : 1 }
+          : player.isInactive
+            ? { opacity: 0.55, scale: [1, 1.04, 1] }
+            : { opacity: 1, scale: 1 }
+      }
+      transition={
+        player.isInactive
+          ? {
+              duration: 1.1,
+              ease: "easeInOut",
+              repeat: Number.POSITIVE_INFINITY,
+            }
+          : { duration: 0.18, ease: "easeOut" }
+      }
       style={{
         filter: state.isDead ? "grayscale(0.8) brightness(0.6)" : undefined,
+        willChange: "transform, opacity",
       }}
     >
       {/* Player name (top) */}
@@ -159,6 +179,6 @@ function PlayerCard({
           </div>
         )}
       </div>
-    </button>
+    </motion.button>
   );
 }
