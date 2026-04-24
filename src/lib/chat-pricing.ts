@@ -34,3 +34,17 @@ export function calculateChargeCents({
 export function formatCents(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
+
+export function shouldTriggerAutoRefill(input: {
+  enabled: boolean;
+  hasPaymentMethod: boolean;
+  beforeCents: number;
+  afterCents: number;
+  thresholdCents: number;
+}): boolean {
+  if (!input.enabled || !input.hasPaymentMethod) return false;
+  return (
+    input.beforeCents >= input.thresholdCents &&
+    input.afterCents < input.thresholdCents
+  );
+}
