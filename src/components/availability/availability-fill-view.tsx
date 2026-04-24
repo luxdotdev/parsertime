@@ -3,9 +3,17 @@
 import { AvailabilityGrid } from "@/components/availability/availability-grid";
 import { TimezoneSelect } from "@/components/availability/timezone-select";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { AvailabilitySettingsShape } from "@/lib/availability/slots";
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -262,6 +270,68 @@ export function AvailabilityFillView({
           </div>
         </section>
       </div>
+
+      {!sessionUserLoggedIn && <ParsertimePromoCard />}
     </div>
+  );
+}
+
+function ParsertimePromoCard() {
+  return (
+    <Card className="border-border/60">
+      <CardHeader>
+        <CardTitle className="text-xl">
+          Scrim analytics and team tools for Overwatch
+        </CardTitle>
+        <CardDescription>
+          Parsertime turns raw Workshop Log data into skill ratings, trend
+          lines, and coaching insights — plus team management tools like the
+          availability calendar you&apos;re using right now.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <ul className="text-muted-foreground grid gap-2 text-sm sm:grid-cols-2">
+          <li>
+            <span className="text-foreground font-medium">Instant review.</span>{" "}
+            Upload a scrim, see per-player stats, maps, and teamfights in
+            minutes — no spreadsheets.
+          </li>
+          <li>
+            <span className="text-foreground font-medium">CSR ratings.</span>{" "}
+            Objective 1–5000 hero skill ratings across role-specific metrics.
+          </li>
+          <li>
+            <span className="text-foreground font-medium">Trends.</span> Watch
+            players improve across weeks and seasons, not just single matches.
+          </li>
+          <li>
+            <span className="text-foreground font-medium">
+              Coaching canvas.
+            </span>{" "}
+            Draw up strats on a shared whiteboard and keep them alongside the
+            scrims they came from.
+          </li>
+          <li>
+            <span className="text-foreground font-medium">
+              Team availability.
+            </span>{" "}
+            This calendar, plus Discord reminders that ping your role at the
+            start of each week.
+          </li>
+          <li>
+            <span className="text-foreground font-medium">Free to start.</span>{" "}
+            Two teams and five members on the free tier, no credit card.
+          </li>
+        </ul>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/sign-in">
+            <Button>Sign in to see your team&apos;s scrims</Button>
+          </Link>
+          <Link href="/">
+            <Button variant="outline">Learn more about Parsertime</Button>
+          </Link>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
