@@ -313,16 +313,16 @@ model Scrim {
 }
 
 model Map {
-  id              Int              @id @default(autoincrement())
-  name            String
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  mapData         MapData[]
-  Scrim           Scrim?           @relation(fields: [scrimId], references: [id])
-  vod             String?
-  scrimId         Int?
-  replayCode      String?
-  tournamentMaps  TournamentMap[]
+  id             Int             @id @default(autoincrement())
+  name           String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  mapData        MapData[]
+  Scrim          Scrim?          @relation(fields: [scrimId], references: [id])
+  vod            String?
+  scrimId        Int?
+  replayCode     String?
+  tournamentMaps TournamentMap[]
 
   @@index([scrimId])
 }
@@ -1287,22 +1287,22 @@ model ChatReport {
 }
 
 model MapCalibration {
-  id          Int                    @id @default(autoincrement())
-  mapName     String                 @unique
-  imageUrl    String
-  imageWidth  Int
+  id              Int                    @id @default(autoincrement())
+  mapName         String                 @unique
+  imageUrl        String
+  imageWidth      Int
   imageHeight     Int
   displayImageKey String?
   affineA         Float?
-  affineB     Float?
-  affineC     Float?
-  affineD     Float?
-  affineTx    Float?
-  affineTy    Float?
-  createdBy   String
-  createdAt   DateTime               @default(now())
-  updatedAt   DateTime               @updatedAt
-  anchors     MapCalibrationAnchor[]
+  affineB         Float?
+  affineC         Float?
+  affineD         Float?
+  affineTx        Float?
+  affineTy        Float?
+  createdBy       String
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  anchors         MapCalibrationAnchor[]
 }
 
 model MapCalibrationAnchor {
@@ -1323,23 +1323,23 @@ model MapCalibrationAnchor {
 // Tournament Models
 
 model Tournament {
-  id        Int              @id @default(autoincrement())
-  name      String
-  format    TournamentFormat
-  bestOf    Int              @default(3)
-  playoffBestOf       Int?
-  teamSlots Int              @default(8)
-  status    TournamentStatus @default(DRAFT)
-  startDate DateTime?
-  endDate             DateTime?
-  grandFinalReset     Boolean          @default(true)
-  advancingTeams      Int?
-  creatorId String
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-  teams     TournamentTeam[]
-  rounds    TournamentRound[]
-  matches   TournamentMatch[]
+  id              Int               @id @default(autoincrement())
+  name            String
+  format          TournamentFormat
+  bestOf          Int               @default(3)
+  playoffBestOf   Int?
+  teamSlots       Int               @default(8)
+  status          TournamentStatus  @default(DRAFT)
+  startDate       DateTime?
+  endDate         DateTime?
+  grandFinalReset Boolean           @default(true)
+  advancingTeams  Int?
+  creatorId       String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  teams           TournamentTeam[]
+  rounds          TournamentRound[]
+  matches         TournamentMatch[]
 
   @@index([creatorId])
 }
@@ -1485,11 +1485,11 @@ model AvailabilityResponse {
 }
 
 model UserCredits {
-  userId                   String  @id
-  balanceCents             Int     @default(0)
-  autoRefillEnabled        Boolean @default(false)
-  autoRefillThresholdCents Int     @default(200)
-  autoRefillAmountCents    Int     @default(1000)
+  userId                   String   @id
+  balanceCents             Int      @default(0)
+  autoRefillEnabled        Boolean  @default(false)
+  autoRefillThresholdCents Int      @default(200)
+  autoRefillAmountCents    Int      @default(1000)
   stripePaymentMethodId    String?
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
@@ -1529,4 +1529,3 @@ model PendingAutoRefill {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
-
