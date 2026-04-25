@@ -1022,6 +1022,11 @@
         "eyebrow": "라운드 피해",
         "title": "라운드별 누적 영웅 피해",
         "description": "이 차트는 각 팀의 라운드별 가한 영웅 피해를 보여줍니다. x축은 라운드를 나타내고, y축은 가한 피해를 나타냅니다. 피해는 누적되므로, 2라운드의 피해는 1라운드의 피해를 포함합니다."
+      },
+      "tempo": {
+        "eyebrow": "경기 흐름",
+        "title": "경기 템포",
+        "description": "처치와 궁극기를 겹치는 곡선으로 표현합니다. 차트 아래의 스크러버를 드래그해 특정 전투나 단계에 집중하세요."
       }
     },
     "events": {
@@ -1029,21 +1034,50 @@
       "roundEnd": "라운드 {event} 종료됨",
       "matchEnd": "경기 종료됨",
       "matchStart": "경기 시작됨",
+      "noData": "이 맵에 기록된 이벤트가 없습니다.",
+      "round": "라운드 {number}",
       "mapEvents": {
-        "title": "이벤트",
-        "description": "경기 중 발생한 이벤트입니다. 여기에는 목표 점령, 라운드 시작 및 종료, 멀티킬 등이 포함됩니다.",
-        "captureString1": "<color>{team}</color>이(가) 점령 지점을 차지했습니다.",
-        "captureString2": "<color>{team}</color>이(가) 목표를 점령했습니다.",
-        "objectiveUpdate": "점령 완료",
-        "swap": "<img1></img1> <color>{player}</color>이(가) <img2></img2> {hero}(으)로 변경했습니다.",
-        "ultKills": "<img></img> <color>{player}</color>이(가) 궁극기를 사용해 {players, plural, =1 {한 명의 플레이어} other {#명의 플레이어}}를 처치했습니다.",
-        "multikill": "전투 {event} 중에 <span><img></img><color>{player}</color></span>이(가) 멀티킬을 기록하며 {kills}명을 처치했습니다.",
-        "ajax": "<span><img></img><color>{player}</color></span>이(가) 전투 {fight} 중 Ajax를 기록했습니다."
+        "title": "이벤트"
       },
-      "ultsUsed": {
-        "title": "사용된 궁극기",
-        "description": "경기 중 사용된 모든 궁극기와 발생 시간을 보여줍니다.",
-        "ultStart": "<span><img></img><color>{player}</color></span>이(가) 전투 {fight} 중에 궁극기를 사용했습니다."
+      "totals": {
+        "rounds": "라운드",
+        "fights": "전투",
+        "multikills": "멀티킬",
+        "ultimates": "사용한 궁극기",
+        "swaps": "영웅 변경"
+      },
+      "filters": {
+        "label": "이벤트 필터",
+        "all": "전체",
+        "highlights": "하이라이트",
+        "ultimates": "궁극기",
+        "swaps": "변경",
+        "objectives": "목표",
+        "empty": "이 필터와 일치하는 이벤트가 없습니다."
+      },
+      "type": {
+        "matchStart": "경기",
+        "matchEnd": "경기",
+        "roundStart": "라운드",
+        "roundEnd": "라운드 종료",
+        "objective": "목표",
+        "swap": "변경",
+        "ult": "궁극기",
+        "ultKill": "궁극기 처치",
+        "multikill": "멀티킬",
+        "ajax": "에이잭스"
+      },
+      "detail": {
+        "matchStart": "경기가 시작되었습니다.",
+        "matchEnd": "경기가 종료되었습니다.",
+        "roundStart": "라운드 {number}이(가) 시작되었습니다.",
+        "roundEnd": "라운드 {number}이(가) 종료되었습니다.",
+        "capture": "<color>{team}</color>이(가) 목표를 점령했습니다.",
+        "pointTake": "<color>{team}</color>이(가) 점령 지점을 차지했습니다.",
+        "fightTag": "전투 {number}",
+        "ultKill": "<color>{player}</color>이(가) 궁극기를 사용해 {count, plural, =1 {한 명을} other {#명을}} 처치했습니다.",
+        "multikill": "<color>{player}</color>이(가) 전투 {fight}에서 {count, plural, =3 {트리플} =4 {쿼드} =5 {퀸텀플} other {#-멀티}} 킬을 기록했습니다.",
+        "ajax": "<color>{player}</color>이(가) 전투 {fight}에서 에이잭스를 기록했습니다."
       },
       "tempo": {
         "title": "경기 템포",

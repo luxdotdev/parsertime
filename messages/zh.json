@@ -1022,6 +1022,11 @@
         "eyebrow": "回合伤害",
         "title": "每回合累计英雄伤害",
         "description": "此图表显示了每支队伍在各回合累计的英雄伤害。x 轴代表回合，y 轴代表造成的伤害。请注意，伤害是累计的，因此第二回合的伤害包括第一回合的伤害。"
+      },
+      "tempo": {
+        "eyebrow": "比赛流向",
+        "title": "比赛节奏",
+        "description": "以叠加曲线呈现击杀和终极技能。拖动图表下方的滑块以聚焦某场战斗或阶段。"
       }
     },
     "events": {
@@ -1029,21 +1034,50 @@
       "roundEnd": "第 {event} 回合结束",
       "matchEnd": "比赛结束",
       "matchStart": "比赛开始",
+      "noData": "此地图未记录任何事件。",
+      "round": "第 {number} 回合",
       "mapEvents": {
-        "title": "赛事事件",
-        "description": "比赛期间发生的事件，包括目标点占领、回合开始和结束、多重击杀等。",
-        "captureString1": "<color>{team}</color> 占领了目标点。",
-        "captureString2": "<color>{team}</color> 占领了目标。",
-        "objectiveUpdate": "目标点更新",
-        "swap": "<img1></img1> <color>{player}</color> 切换为 <img2></img2> {hero}。",
-        "ultKills": "<img></img> <color>{player}</color> 使用终极技能击杀了 {players, plural, =1 {一名玩家} other {# 名玩家}}。",
-        "multikill": "在第 {event} 场战斗中，<span><img></img><color>{player}</color></span> 完成了一次多杀，击杀了 {kills} 名玩家。",
-        "ajax": "<span><img></img><color>{player}</color></span> 在第 {fight} 场战斗中触发了亚克斯现象。"
+        "title": "赛事事件"
       },
-      "ultsUsed": {
-        "title": "使用的终极技能",
-        "description": "列出了比赛中使用的所有终极技能及其使用时间。",
-        "ultStart": "<span><img></img><color>{player}</color></span> 在第 {fight} 场战斗中使用了他们的终极技能。"
+      "totals": {
+        "rounds": "回合",
+        "fights": "战斗",
+        "multikills": "多杀",
+        "ultimates": "使用的终极技能",
+        "swaps": "英雄切换"
+      },
+      "filters": {
+        "label": "筛选事件",
+        "all": "全部",
+        "highlights": "亮点",
+        "ultimates": "终极技能",
+        "swaps": "切换",
+        "objectives": "目标",
+        "empty": "没有事件匹配该筛选条件。"
+      },
+      "type": {
+        "matchStart": "比赛",
+        "matchEnd": "比赛",
+        "roundStart": "回合",
+        "roundEnd": "回合结束",
+        "objective": "目标",
+        "swap": "切换",
+        "ult": "终极",
+        "ultKill": "终极击杀",
+        "multikill": "多杀",
+        "ajax": "亚克斯"
+      },
+      "detail": {
+        "matchStart": "比赛已开始。",
+        "matchEnd": "比赛已结束。",
+        "roundStart": "第 {number} 回合已开始。",
+        "roundEnd": "第 {number} 回合已结束。",
+        "capture": "<color>{team}</color> 占领了目标。",
+        "pointTake": "<color>{team}</color> 占领了目标点。",
+        "fightTag": "战斗 {number}",
+        "ultKill": "<color>{player}</color> 在终极技能期间击杀了 {count, plural, =1 {一名玩家} other {# 名玩家}}。",
+        "multikill": "<color>{player}</color> 在第 {fight} 场战斗中完成 {count, plural, =3 {三} =4 {四} =5 {五} other {# 连}} 杀。",
+        "ajax": "<color>{player}</color> 在第 {fight} 场战斗中触发了亚克斯现象。"
       },
       "tempo": {
         "title": "比赛节奏",
