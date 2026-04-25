@@ -208,22 +208,22 @@ export function PlayerPerformanceHoverChart({
   perMapPerformance,
 }: Props) {
   const identity = (
-    <div className="flex items-center gap-2">
-      <div className="bg-muted relative h-7 w-7 shrink-0 overflow-hidden rounded-full">
+    <div className="flex min-w-0 items-center gap-3">
+      <div className="border-border/70 bg-muted relative h-9 w-9 shrink-0 overflow-hidden rounded-[4px] border">
         <Image
           src={`/heroes/${heroImageSlug}.png`}
           alt={heroLabel}
           fill
           className="object-cover"
-          sizes="28px"
+          sizes="36px"
         />
       </div>
       <div className="min-w-0">
-        <p className="truncate text-sm font-medium">{playerName}</p>
-        <p className="text-muted-foreground truncate text-xs">
+        <div className="truncate leading-tight font-medium">{playerName}</div>
+        <div className="text-muted-foreground truncate font-mono text-[10px] tracking-wider uppercase">
           {heroLabel}
           {heroCount > 1 && <span> +{heroCount - 1}</span>}
-        </p>
+        </div>
       </div>
     </div>
   );
