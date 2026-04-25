@@ -26,8 +26,8 @@ export function CreateScrimButton() {
       onOpenChange={setOpen}
     >
       <DialogTrigger asChild>
-        <Button className="motion-safe:ease gap-1.5 shadow-sm active:scale-[0.97] motion-safe:transition-[transform,box-shadow] motion-safe:duration-150 [@media(hover:hover)_and_(pointer:fine)]:hover:scale-[1.02] [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-md">
-          <Plus className="motion-safe:ease h-4 w-4 motion-safe:transition-transform motion-safe:duration-150 [@media(hover:hover)_and_(pointer:fine)]:group-hover/button:rotate-90" />
+        <Button className="group/button gap-1.5">
+          <Plus className="h-4 w-4 motion-safe:transition-transform motion-safe:duration-150 motion-safe:ease-out [@media(hover:hover)_and_(pointer:fine)]:group-hover/button:rotate-90" />
           {t("createScrim")}
         </Button>
       </DialogTrigger>

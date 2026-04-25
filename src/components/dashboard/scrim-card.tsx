@@ -35,12 +35,13 @@ export function ScrimCard({ scrim, prefetch }: Props) {
       transitionTypes={["expand-map"]}
       className="group block"
     >
-      <Card className="[@media(hover:hover)_and_(pointer:fine)]:hover:border-primary/50 relative max-w-md overflow-hidden border-2 active:scale-[0.97] motion-safe:transition-[transform,box-shadow,border-color] motion-safe:duration-200 sm:h-48 md:h-64 xl:h-48 [@media(hover:hover)_and_(pointer:fine)]:hover:scale-[1.02] [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-lg">
-        <div className="from-primary/5 absolute inset-0 bg-gradient-to-br via-transparent to-transparent opacity-0 motion-safe:transition-opacity motion-safe:duration-300 [@media(hover:hover)_and_(pointer:fine)]:group-hover:opacity-100" />
-
-        <CardHeader className="relative space-y-2 pb-3">
+      <Card
+        data-size="sm"
+        className="[@media(hover:hover)_and_(pointer:fine)]:hover:ring-foreground/25 relative max-w-md overflow-hidden gap-3 motion-safe:transition-[box-shadow,background-color] motion-safe:duration-150 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-card/60"
+      >
+        <CardHeader className="relative space-y-2 pb-2">
           <div className="flex items-start justify-between gap-3">
-            <h3 className="[@media(hover:hover)_and_(pointer:fine)]:group-hover:text-primary line-clamp-2 text-lg leading-tight font-bold transition-colors duration-200">
+            <h3 className="line-clamp-2 text-base leading-tight font-semibold tracking-tight">
               {scrim.name}
             </h3>
             {scrim.hasPerms && (
@@ -49,10 +50,10 @@ export function ScrimCard({ scrim, prefetch }: Props) {
                   <Link
                     href={`/${scrim.teamId}/scrim/${scrim.id}/edit` as Route}
                     aria-label={t("editScrim")}
-                    className="hover:bg-primary/10 -mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition-colors duration-200"
+                    className="text-muted-foreground hover:bg-muted hover:text-foreground -mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-colors"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <Pencil2Icon className="h-4 w-4" />
+                    <Pencil2Icon className="h-3.5 w-3.5" />
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent>{t("editScrim")}</TooltipContent>
@@ -60,32 +61,42 @@ export function ScrimCard({ scrim, prefetch }: Props) {
             )}
           </div>
 
-          <div className="flex flex-col gap-1 text-sm">
-            <div className="text-muted-foreground flex items-center gap-2">
-              <CalendarIcon className="h-3.5 w-3.5 shrink-0" />
-              <span className="font-medium" suppressHydrationWarning>
+          <div className="flex flex-col gap-0.5">
+            <div className="text-muted-foreground flex items-center gap-2 text-xs">
+              <CalendarIcon className="h-3 w-3 shrink-0" aria-hidden="true" />
+              <span className="font-mono tabular-nums" suppressHydrationWarning>
                 {scrim.date.toLocaleDateString(undefined, {
                   year: "numeric",
                   month: "short",
-                  day: "numeric",
+                  day: "2-digit",
                 })}
               </span>
             </div>
-            <div className="text-muted-foreground flex items-center gap-2">
-              <PersonIcon className="h-3.5 w-3.5 shrink-0" />
+            <div className="text-muted-foreground flex items-center gap-2 text-xs">
+              <PersonIcon className="h-3 w-3 shrink-0" aria-hidden="true" />
               <span className="truncate">{scrim.creator}</span>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="relative">
-          <div className="flex items-center gap-2">
-            <p className="text-md text-foreground font-normal">
-              <span className="text-muted-foreground">{t("team")}</span>
-              {scrim.team}
-            </p>
+        <CardContent>
+          <div className="flex min-w-0 items-center gap-2 text-sm">
+            <span className="text-muted-foreground shrink-0 font-mono text-[0.6875rem] tracking-[0.06em] uppercase">
+              {t("team")}
+            </span>
+            <Image
+              src={scrim.teamImage}
+              alt=""
+              width={20}
+              height={20}
+              className="ring-foreground/10 size-5 shrink-0 rounded-full object-cover ring-1"
+            />
+            <span className="text-foreground truncate">{scrim.team}</span>
             {scrim.opponentTeamAbbr && (
               <>
-                <span className="text-muted-foreground/50" aria-hidden="true">
+                <span
+                  className="text-muted-foreground/40 shrink-0"
+                  aria-hidden="true"
+                >
                   |
                 </span>
                 <Tooltip>
@@ -102,7 +113,7 @@ export function ScrimCard({ scrim, prefetch }: Props) {
                         className="gap-1.5 text-xs font-medium"
                       >
                         <BadgeCheck
-                          className="h-3.5 w-3.5 text-amber-500"
+                          className="text-primary h-3.5 w-3.5"
                           aria-hidden="true"
                         />
                         {scrim.opponentTeamAbbr}
@@ -113,15 +124,6 @@ export function ScrimCard({ scrim, prefetch }: Props) {
                 </Tooltip>
               </>
             )}
-          </div>
-          <div className="absolute right-6 bottom-2 transition-opacity duration-200">
-            <Image
-              src={scrim.teamImage}
-              alt={scrim.team}
-              width={32}
-              height={32}
-              className="ring-foreground/10 rounded-full object-cover ring-1"
-            />
           </div>
         </CardContent>
       </Card>
