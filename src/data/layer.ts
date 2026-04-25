@@ -8,6 +8,7 @@ import { HeroBanIntelligenceServiceLive } from "./intelligence/hero-ban-service"
 import { MapIntelligenceServiceLive } from "./intelligence/map-service";
 import { HeatmapServiceLive } from "./map/heatmap/service";
 import { MapGroupServiceLive } from "./map/group-service";
+import { MapHeroTrendsServiceLive } from "./map/hero-trends-service";
 import { KillfeedCalibrationServiceLive } from "./map/killfeed/calibration";
 import { KillfeedServiceLive } from "./map/killfeed/service";
 import { ReplayServiceLive } from "./map/replay/service";
@@ -77,6 +78,7 @@ export const DataLayerLive = Layer.mergeAll(
   TempoServiceLive,
   RotationDeathServiceLive,
   MapGroupServiceLive,
+  MapHeroTrendsServiceLive,
 
   HeroBanIntelligenceServiceLive,
   MapIntelligenceServiceLive,
