@@ -17,6 +17,7 @@ import {
   selectUniqueScrimCount,
 } from "@/stores/map-selection-store";
 import { useSelector } from "@xstate/store/react";
+import { motion, useReducedMotion } from "framer-motion";
 import { ChevronDown, FolderPlus } from "lucide-react";
 import type { Route } from "next";
 import { useTranslations } from "next-intl";
@@ -30,6 +31,7 @@ type CompareSelectedButtonProps = {
 export function CompareSelectedButton({ teamId }: CompareSelectedButtonProps) {
   const t = useTranslations("scrimPage.compareButton");
   const router = useRouter();
+  const prefersReducedMotion = useReducedMotion();
   const [isMapGroupDialogOpen, setIsMapGroupDialogOpen] = useState(false);
 
   // Memoize selector functions
@@ -99,7 +101,12 @@ export function CompareSelectedButton({ teamId }: CompareSelectedButtonProps) {
         mapIds={selectedMapIds}
         mapName={`${selectionCount} selected map${selectionCount !== 1 ? "s" : ""}`}
       />
-      <div className="bg-card ring-foreground/10 fixed right-6 bottom-6 z-50 flex items-center gap-2 rounded-lg p-4 shadow-lg ring-1">
+      <motion.div
+        className="bg-card ring-foreground/10 fixed inset-x-3 bottom-3 z-50 flex items-center justify-between gap-2 rounded-lg p-4 shadow-lg ring-1 sm:inset-x-auto sm:right-6 sm:bottom-6 sm:justify-start"
+        initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, ease: [0, 0, 0.2, 1] }}
+      >
         <div className="flex items-center gap-3">
           <div className="flex flex-col">
             <span className="text-sm font-medium">
@@ -137,7 +144,7 @@ export function CompareSelectedButton({ teamId }: CompareSelectedButtonProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </div>
+      </motion.div>
     </>
   );
 }

@@ -233,7 +233,7 @@ export function AddMapCard() {
         className={cn(
           "border-border flex w-full cursor-pointer items-center gap-4 rounded-xl border-2 border-dashed px-5 py-6 text-left transition-colors",
           dragActive
-            ? "border-green-500 bg-green-500/5"
+            ? "border-primary bg-primary/5"
             : "hover:border-muted-foreground/30 hover:bg-muted/30"
         )}
         onDragEnter={handleDrag}

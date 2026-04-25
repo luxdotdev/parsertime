@@ -90,10 +90,11 @@ function MapCardWithSelectionComponent({
   const card = (
     <Card
       className={cn(
-        "relative aspect-video overflow-hidden transition-all duration-150",
+        "relative aspect-video overflow-hidden",
         "ring-foreground/10 shadow-xs ring-1",
-        "@media (hover: hover) hover:ring-primary/30 hover:shadow-md",
-        isSelected && "ring-primary border-primary border-l-4 shadow-lg ring-2"
+        "motion-safe:transition-[box-shadow,outline-color] motion-safe:duration-150",
+        "[@media(hover:hover)_and_(pointer:fine)]:hover:ring-foreground/25 [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-md",
+        isSelected && "ring-primary shadow-lg ring-2"
       )}
       role="article"
       aria-label={`${displayName} map card${isSelected ? ", selected for comparison" : ""}`}
@@ -114,6 +115,10 @@ function MapCardWithSelectionComponent({
             alt={t("altText", { map: displayName })}
             fill
             className="rounded-md object-cover brightness-[0.65] select-none"
+          />
+          <div
+            className="pointer-events-none absolute inset-0 rounded-md bg-gradient-to-b from-black/65 via-transparent to-black/55"
+            aria-hidden="true"
           />
         </CardContent>
       </Link>
