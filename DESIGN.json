@@ -1,0 +1,264 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-04-24T00:00:00Z",
+  "title": "Design System: Parsertime",
+  "extensions": {
+    "colorMeta": {
+      "primary-light": {
+        "role": "primary",
+        "displayName": "Signal Amber (light mode)",
+        "canonical": "oklch(0.55 0.17 68)",
+        "tonalRamp": [
+          "oklch(0.18 0.04 68)",
+          "oklch(0.3 0.08 68)",
+          "oklch(0.42 0.12 68)",
+          "oklch(0.55 0.17 68)",
+          "oklch(0.66 0.17 72)",
+          "oklch(0.78 0.17 76)",
+          "oklch(0.88 0.13 80)",
+          "oklch(0.96 0.06 84)"
+        ]
+      },
+      "primary-dark": {
+        "role": "primary",
+        "displayName": "Signal Amber (dark mode)",
+        "canonical": "oklch(0.82 0.17 78)",
+        "tonalRamp": [
+          "oklch(0.18 0.04 78)",
+          "oklch(0.32 0.08 78)",
+          "oklch(0.46 0.12 78)",
+          "oklch(0.6 0.15 78)",
+          "oklch(0.72 0.17 78)",
+          "oklch(0.82 0.17 78)",
+          "oklch(0.9 0.13 80)",
+          "oklch(0.96 0.06 84)"
+        ]
+      },
+      "background-dark": {
+        "role": "neutral",
+        "displayName": "Late-Night Page",
+        "canonical": "oklch(0.14 0.003 250)",
+        "tonalRamp": [
+          "oklch(0.1 0.003 250)",
+          "oklch(0.14 0.003 250)",
+          "oklch(0.18 0.004 250)",
+          "oklch(0.27 0.005 250)",
+          "oklch(0.42 0.005 250)",
+          "oklch(0.6 0.005 250)",
+          "oklch(0.78 0.004 250)",
+          "oklch(0.92 0.003 250)"
+        ]
+      },
+      "background-light": {
+        "role": "neutral",
+        "displayName": "Daylight Page",
+        "canonical": "oklch(0.985 0.003 250)",
+        "tonalRamp": [
+          "oklch(0.18 0.005 250)",
+          "oklch(0.32 0.005 250)",
+          "oklch(0.5 0.005 250)",
+          "oklch(0.68 0.005 250)",
+          "oklch(0.82 0.004 250)",
+          "oklch(0.91 0.004 250)",
+          "oklch(0.97 0.003 250)",
+          "oklch(0.99 0.002 250)"
+        ]
+      },
+      "destructive-light": {
+        "role": "destructive",
+        "displayName": "Stop Red",
+        "canonical": "oklch(0.58 0.22 27)",
+        "tonalRamp": [
+          "oklch(0.18 0.06 27)",
+          "oklch(0.3 0.12 27)",
+          "oklch(0.42 0.18 27)",
+          "oklch(0.5 0.22 27)",
+          "oklch(0.58 0.22 27)",
+          "oklch(0.7 0.18 27)",
+          "oklch(0.84 0.1 27)",
+          "oklch(0.94 0.05 27)"
+        ]
+      },
+      "team-1-off": {
+        "role": "team",
+        "displayName": "Team 1 Cyan",
+        "canonical": "oklch(0.753 0.154 232.18)",
+        "tonalRamp": [
+          "oklch(0.2 0.05 232)",
+          "oklch(0.34 0.08 232)",
+          "oklch(0.48 0.11 232)",
+          "oklch(0.62 0.14 232)",
+          "oklch(0.753 0.154 232.18)",
+          "oklch(0.84 0.13 232)",
+          "oklch(0.92 0.08 232)",
+          "oklch(0.97 0.04 232)"
+        ]
+      },
+      "team-2-off": {
+        "role": "team",
+        "displayName": "Team 2 Red-Orange",
+        "canonical": "oklch(0.6218 0.224 17.51)",
+        "tonalRamp": [
+          "oklch(0.2 0.06 17)",
+          "oklch(0.32 0.12 17)",
+          "oklch(0.44 0.18 17)",
+          "oklch(0.55 0.22 17)",
+          "oklch(0.6218 0.224 17.51)",
+          "oklch(0.74 0.18 17)",
+          "oklch(0.86 0.1 17)",
+          "oklch(0.95 0.04 17)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Marketing hero titles and major page headlines on long-form surfaces." },
+      "headline": { "displayName": "Headline", "purpose": "Page titles inside the product. Default h1 for app pages." },
+      "title": { "displayName": "Title", "purpose": "Card titles, section labels, dialog headings." },
+      "body": { "displayName": "Body", "purpose": "All running content. 65–75ch on prose; product UI ignores measure." },
+      "label": { "displayName": "Label (caps + tracked)", "purpose": "Metadata layer: column headers, eyebrows, taxonomy tags, affordance labels." },
+      "numeral": { "displayName": "Tabular Numeral", "purpose": "Comparable numbers in stat columns, leaderboards, deltas. Aligns on the digit." }
+    },
+    "shadows": [
+      { "name": "xs", "value": "0 1px 2px 0 oklch(0 0 0 / 0.05)", "purpose": "Default card lift, plus inputs and outline buttons. Almost imperceptible — its job is to nudge the eye that a surface is liftable, not to create depth theater." },
+      { "name": "ring-card-dark", "value": "inset 0 0 0 1px oklch(1 0 0 / 0.10)", "purpose": "Card ring in dark mode where shadow-xs is invisible against the deep page." },
+      { "name": "ring-card-light", "value": "inset 0 0 0 1px oklch(0.185 0.005 250 / 0.10)", "purpose": "Card ring in light mode, paired with shadow-xs." }
+    ],
+    "motion": [
+      { "name": "duration-exit", "value": "150ms", "purpose": "View-transition exit animations." },
+      { "name": "duration-enter", "value": "210ms", "purpose": "View-transition enter animations." },
+      { "name": "duration-move", "value": "400ms", "purpose": "View-transition spatial movement (slide, scale)." },
+      { "name": "ease-collapsible", "value": "cubic-bezier(0.215, 0.61, 0.355, 1)", "purpose": "Collapsible open/close (Radix collapsible-down / collapsible-up keyframes)." },
+      { "name": "ease-out", "value": "cubic-bezier(0, 0, 0.2, 1)", "purpose": "Default easing for state transitions and entrances. Exponential ease-out, no bounce." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" },
+      { "name": "2xl", "value": "1536px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Default primary action. Amber on near-black, identical in light and dark.",
+      "html": "<button class=\"ds-btn-primary\">Upload scrim</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 10px; border: 1px solid transparent; border-radius: 8px; background: oklch(0.82 0.17 78); color: oklch(0.185 0.02 80); font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 500; line-height: 1; white-space: nowrap; cursor: pointer; transition: background 120ms cubic-bezier(0,0,0.2,1), box-shadow 120ms cubic-bezier(0,0,0.2,1); } .ds-btn-primary:hover { background: oklch(0.82 0.17 78 / 0.8); } .ds-btn-primary:focus-visible { outline: none; border-color: oklch(0.82 0.17 78); box-shadow: 0 0 0 3px oklch(0.82 0.17 78 / 0.5); } .ds-btn-primary:active { background: oklch(0.82 0.17 78 / 0.9); }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Non-primary action and dropdown trigger. Transparent ground with a low-contrast border.",
+      "html": "<button class=\"ds-btn-outline\">Filter</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 10px; border: 1px solid oklch(1 0 0 / 0.12); border-radius: 8px; background: oklch(0.175 0.004 250 / 0.3); color: oklch(0.98 0.002 250); font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 500; box-shadow: 0 1px 2px 0 oklch(0 0 0 / 0.05); cursor: pointer; transition: background 120ms cubic-bezier(0,0,0.2,1); } .ds-btn-outline:hover { background: oklch(0.22 0.004 250 / 0.5); } .ds-btn-outline:focus-visible { outline: none; border-color: oklch(0.82 0.17 78); box-shadow: 0 0 0 3px oklch(0.82 0.17 78 / 0.5); } .ds-btn-outline[aria-expanded=\"true\"] { background: oklch(0.22 0.004 250); }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Icon-only and toolbar button. No chrome at rest.",
+      "html": "<button class=\"ds-btn-ghost\" aria-label=\"More\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"currentColor\"><circle cx=\"3\" cy=\"8\" r=\"1.4\"/><circle cx=\"8\" cy=\"8\" r=\"1.4\"/><circle cx=\"13\" cy=\"8\" r=\"1.4\"/></svg></button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; padding: 0; border: 1px solid transparent; border-radius: 8px; background: transparent; color: oklch(0.98 0.002 250); cursor: pointer; transition: background 120ms cubic-bezier(0,0,0.2,1); } .ds-btn-ghost:hover { background: oklch(0.22 0.004 250 / 0.5); } .ds-btn-ghost:focus-visible { outline: none; border-color: oklch(0.82 0.17 78); box-shadow: 0 0 0 3px oklch(0.82 0.17 78 / 0.5); }"
+    },
+    {
+      "name": "Destructive Button",
+      "kind": "button",
+      "refersTo": "button-destructive",
+      "description": "Soft-fill destructive action. Red-tinted background, never used as the page-primary CTA.",
+      "html": "<button class=\"ds-btn-destructive\">Delete scrim</button>",
+      "css": ".ds-btn-destructive { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 10px; border: 1px solid transparent; border-radius: 8px; background: oklch(0.65 0.22 27 / 0.2); color: oklch(0.65 0.22 27); font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 120ms cubic-bezier(0,0,0.2,1); } .ds-btn-destructive:hover { background: oklch(0.65 0.22 27 / 0.3); } .ds-btn-destructive:focus-visible { outline: none; border-color: oklch(0.65 0.22 27 / 0.4); box-shadow: 0 0 0 3px oklch(0.65 0.22 27 / 0.4); }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Default card surface. Tonal lift over the page plus a 1px ring; no decorative shadow.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card__header\"><div class=\"ds-card__title\">Map performance</div><div class=\"ds-card__description\">Win rate by map across the last 14 days.</div></div><div class=\"ds-card__content\">Body content goes here.</div></div>",
+      "css": ".ds-card { display: flex; flex-direction: column; gap: 24px; padding: 24px 0; border-radius: 14px; background: oklch(0.175 0.004 250); color: oklch(0.98 0.002 250); box-shadow: 0 1px 2px 0 oklch(0 0 0 / 0.05), inset 0 0 0 1px oklch(1 0 0 / 0.10); overflow: hidden; font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 14px; line-height: 1.5; } .ds-card__header { display: grid; gap: 4px; padding: 0 24px; } .ds-card__title { font-size: 16px; font-weight: 500; line-height: 1.3; } .ds-card__description { color: oklch(0.68 0.005 250); font-size: 14px; } .ds-card__content { padding: 0 24px; }"
+    },
+    {
+      "name": "Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Text input. Focus is an instant 3px amber ring — no glow, no animation.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Search players\" />",
+      "css": ".ds-input { display: block; width: 100%; height: 36px; padding: 4px 10px; border: 1px solid oklch(1 0 0 / 0.12); border-radius: 8px; background: oklch(0.175 0.004 250 / 0.3); color: oklch(0.98 0.002 250); font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 14px; line-height: 1.4; box-shadow: 0 1px 2px 0 oklch(0 0 0 / 0.05); transition: border-color 120ms cubic-bezier(0,0,0.2,1), box-shadow 120ms cubic-bezier(0,0,0.2,1); outline: none; } .ds-input::placeholder { color: oklch(0.68 0.005 250); } .ds-input:focus-visible { border-color: oklch(0.82 0.17 78); box-shadow: 0 0 0 3px oklch(0.82 0.17 78 / 0.5); } .ds-input[aria-invalid=\"true\"] { border-color: oklch(0.65 0.22 27); box-shadow: 0 0 0 3px oklch(0.65 0.22 27 / 0.4); }"
+    },
+    {
+      "name": "Badge",
+      "kind": "chip",
+      "refersTo": "badge-default",
+      "description": "Filled badge / pill. Used for taxonomy tags and inline status.",
+      "html": "<span class=\"ds-badge\">MAIN SUPPORT</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 8px; border-radius: 6px; background: oklch(0.225 0.005 250); color: oklch(0.98 0.002 250); font-family: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1; }"
+    },
+    {
+      "name": "Stat Cell",
+      "kind": "custom",
+      "refersTo": "stat-cell",
+      "description": "Right-aligned tabular numeral cell with a caps label above. The base unit of any stat column or leaderboard row.",
+      "html": "<div class=\"ds-stat\"><div class=\"ds-stat__label\">FINAL BLOWS</div><div class=\"ds-stat__value\">28</div><div class=\"ds-stat__delta\">+4 vs last scrim</div></div>",
+      "css": ".ds-stat { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-family: Geist, ui-sans-serif, system-ui, sans-serif; } .ds-stat__label { font-family: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: oklch(0.68 0.005 250); } .ds-stat__value { font-family: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-feature-settings: 'tnum'; font-size: 20px; font-weight: 600; color: oklch(0.98 0.002 250); line-height: 1.1; } .ds-stat__delta { font-family: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-feature-settings: 'tnum'; font-size: 12px; color: oklch(0.82 0.17 78); }"
+    },
+    {
+      "name": "Chart Tooltip",
+      "kind": "custom",
+      "refersTo": "chart-tooltip",
+      "description": "Recharts tooltip restyled to honor the Tooltip Surface Rule — popover ground, never amber.",
+      "html": "<div class=\"ds-chart-tooltip\"><div class=\"ds-chart-tooltip__label\">Hanamura</div><div class=\"ds-chart-tooltip__row\"><span class=\"ds-chart-tooltip__swatch\" style=\"background: oklch(0.753 0.154 232.18)\"></span><span class=\"ds-chart-tooltip__name\">Team 1</span><span class=\"ds-chart-tooltip__value\">62%</span></div><div class=\"ds-chart-tooltip__row\"><span class=\"ds-chart-tooltip__swatch\" style=\"background: oklch(0.6218 0.224 17.51)\"></span><span class=\"ds-chart-tooltip__name\">Team 2</span><span class=\"ds-chart-tooltip__value\">38%</span></div></div>",
+      "css": ".ds-chart-tooltip { display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; border: 1px solid oklch(1 0 0 / 0.10); border-radius: 8px; background: oklch(0.175 0.004 250); color: oklch(0.98 0.002 250); font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 12px; box-shadow: 0 4px 16px 0 oklch(0 0 0 / 0.4); min-width: 160px; } .ds-chart-tooltip__label { font-size: 12px; color: oklch(0.68 0.005 250); } .ds-chart-tooltip__row { display: grid; grid-template-columns: 10px 1fr auto; align-items: center; gap: 8px; } .ds-chart-tooltip__swatch { width: 10px; height: 10px; border-radius: 2px; } .ds-chart-tooltip__name { font-size: 13px; } .ds-chart-tooltip__value { font-family: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-feature-settings: 'tnum'; font-size: 13px; font-weight: 500; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Coach's Terminal",
+    "overview": "Parsertime sits next to a coach at 10pm ET, after the scrim block ends, on a 27\" monitor. It is a working surface, not a marketing surface — the data is the product, and every interface decision serves a coach who is reading numbers fast, comparing players across weeks, and deciding what next practice should focus on. The closest reference is a Bloomberg terminal in temperament: cool neutrals carry the UI, warm signal lands on the things that matter, and the system never gets visually tiring across hours of use. Linear's tuning, Vercel's restraint, PlanetScale's data calm.\n\nThe system is achromatic-first with a single amber accent. Neutrals are very slightly cool-tinted (hue ~250°, chroma 0.003–0.005); the coolness is imperceptible as 'blue' but it makes amber read as deliberately gold, not mustard. Amber is the brand identity, but the specific lightness shifts per mode for contrast: deep amber oklch(0.55 0.17 68) + near-white foreground in light mode, bright amber oklch(0.82 0.17 78) + near-black foreground in dark mode. Both still read as amber; both clear WCAG AA when used as text on the page background. Amber is reserved for selected, active, and primary CTA states. Hover gets a subtler treatment so amber stays meaningful for 'this is the chosen one.' Team identity, win/loss deltas, and chart series carry the rest of the chromatic weight.\n\nThis system explicitly rejects the gamer-aesthetic AI palette (cyan-on-near-black, purple-to-blue gradients, neon accents on dark). It rejects identical icon-heading-blurb dashboard bento grids, sparklines as decoration, glow/gradient hero cards, gradient text, and side-stripe accent borders. Caps + mono + tracked-out is the metadata layer for column headers and taxonomy tags — never the default voice.",
+    "keyCharacteristics": [
+      "Achromatic-first with one signal hue (amber oklch(0.82 0.17 78))",
+      "Cool-tinted neutrals (hue 250°, chroma 0.003–0.005)",
+      "Dark by default, light fully first-class",
+      "Geist Sans for content, Geist Mono for labels and tabular numerals",
+      "Density tuned for desktop; mobile is for quick lookups, not the design target",
+      "Charts are first-class UI, with color-blind-safe team encoding as a hard requirement",
+      "Motion is functional only — view transitions, state changes, reduced-motion honored"
+    ],
+    "rules": [
+      { "name": "The Amber-as-Signal Rule", "body": "Amber is for primary CTAs, focus rings, and selected/active state — and nothing else. Hover state must use a subtler treatment (slightly brighter border, slight surface lift). If hover and selected both turn amber, 'selected' loses its signal value and every card reads as winning on mouseover.", "section": "colors" },
+      { "name": "The Mode-Aware Amber Rule", "body": "Light mode uses deep amber (oklch(0.55 0.17 68) + near-white foreground); dark mode uses bright amber (oklch(0.82 0.17 78) + near-black foreground). Both clear WCAG AA when used as text on the page background. Don't reach for the dark-mode amber in light mode — it fails contrast on text-primary against bg-background and the active nav item disappears.", "section": "colors" },
+      { "name": "The Cool-Neutral, Warm-Signal Rule", "body": "Neutrals carry hue ~250°, chroma 0.003–0.005. Amber lands at hue ~68–78°, chroma 0.17. The contrast between cool ground and warm figure is the Bloomberg-terminal move — it is what makes the accent read as gold.", "section": "colors" },
+      { "name": "The Tooltip Surface Rule", "body": "Chart tooltips render on --popover neutral surfaces with a border, never on --primary amber. Amber backgrounds wreck contrast for team-1 cyan and team-2 red-orange data text inside them.", "section": "colors" },
+      { "name": "The Team-Token Rule", "body": "Any chart comparing entities (teams, heroes, players) uses --team-* tokens with the active colorblind variant honored. The chart-1..5 ramp is for categorical metrics without inherent entity identity.", "section": "colors" },
+      { "name": "The Describing-vs.-Doing Rule", "body": "Caps + Geist Mono + tracked-out is for text that labels, describes, or taxonomizes. Sentence case in Geist Sans is for text that is content or asks the user to act. Caps everywhere is shouty and AI-templated; caps nowhere collapses metadata into content.", "section": "typography" },
+      { "name": "The Tabular-Numeral Rule", "body": "Any number that compares to another number renders in Geist Mono with font-feature-settings: 'tnum'. Mixed proportional digits in stat columns is the kind of small unprofessionalism that disqualifies a tool from a coaching workflow.", "section": "typography" },
+      { "name": "The No-Mono-As-Vibe Rule", "body": "Geist Mono is functional — labels, numerals, IDs, code. It is not used to make body prose look 'technical,' and it is not used on CTAs.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest. Depth is conveyed by tonal layering and a 1px ring at low contrast. A shadow only appears on shadow-xs cards and on floating menus/popovers/dialogs at the framework level — never as a decorative lift on landing-page hero cards.", "section": "elevation" },
+      { "name": "The Ring-Over-Shadow Rule", "body": "In dark mode, cards use ring-1 ring-foreground/10 instead of a shadow because shadows over a oklch(0.14 ...) background are invisible. The ring uses a translucent white so it picks up the surface tint correctly when stacked.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep amber for primary CTAs, focus rings, and selected/active state. Light mode: deep amber oklch(0.55 0.17 68) + near-white foreground oklch(0.985 0.003 250). Dark mode: bright amber oklch(0.82 0.17 78) + near-black foreground oklch(0.185 0.02 80). Both clear WCAG AA when used as text on the page background.",
+      "Do render comparable numbers in Geist Mono with font-feature-settings: 'tnum'. Stat columns must align on the digit.",
+      "Do use caps + Geist Mono + tracked-out (0.06em) for the metadata layer (column headers, eyebrows, taxonomy tags) — and only that layer. Buttons, pills, CTAs, page titles, hero names stay in sentence-case Geist Sans.",
+      "Do use --team-* tokens for entity-identity charts (teams, heroes, players). Honor the user's active colorblind variant (off / deuteranopia / tritanopia / protanopia).",
+      "Do convey card depth through tonal layering plus ring-1 ring-foreground/10. Use shadow-xs for the soft lift; reserve real shadows for popovers and dialogs.",
+      "Do gate every keyframe and view transition behind prefers-reduced-motion: reduce. Reduced motion gets instant state changes.",
+      "Do render chart tooltips on --popover surfaces with a border. Body Geist Sans for category labels, Geist Mono tnum for values."
+    ],
+    "donts": [
+      "Don't use cyan-on-near-black, neon-on-dark, or purple-to-blue gradients. That is the AI-tool palette; this is a coach's terminal.",
+      "Don't put amber on hover state. Hover uses a subtler treatment (slightly brighter border, surface lift). Amber must stay reserved for 'selected' so it carries signal.",
+      "Don't use the dark-mode amber oklch(0.82 0.17 78) as a text color in light mode. It fails WCAG AA against the near-white page background and the active nav item disappears. Use the deep light-mode amber oklch(0.55 0.17 68) (which is what --primary resolves to in light mode) instead.",
+      "Don't use side-stripe accent borders (border-left greater than 1px as a colored stripe) on cards, list rows, callouts, or alerts as a generic chrome treatment. Exception: an amber border-l-4 border-primary/50 stripe on testimonial blockquotes and emphasis blocks is welcome — it reads as an intentional quote indicator.",
+      "Don't use gradient text (background-clip: text plus a gradient background). Emphasis comes from weight or size, not from a decorative gradient.",
+      "Don't reach for glass / backdrop-blur as a default decorative trick. Rare and purposeful, or nothing.",
+      "Don't ship sparklines as decoration. A chart in this product must carry real signal at the size it is drawn — if it doesn't, cut it.",
+      "Don't use the identical-icon-heading-blurb dashboard bento grid pattern. It's the AI dashboard cliché and reads as templated.",
+      "Don't put caps on buttons, pills, CTAs, hero names, or page titles. Caps belongs on the metadata layer; everywhere else, sentence case.",
+      "Don't put chart tooltips on amber backgrounds. Team-1 cyan and team-2 red-orange data text wrecks against --primary.",
+      "Don't use Geist Mono on prose to make text look 'technical.' It is for labels, numerals, IDs, and code.",
+      "Don't add purple-era violet accents. The marketing aurora hero and per-team gradient orbs are the last remnants — they get retuned in the polish pass before launch.",
+      "Don't use em dashes or -- in copy. Use commas, colons, semicolons, periods, or parentheses."
+    ]
+  }
+}
