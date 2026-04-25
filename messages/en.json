@@ -1324,7 +1324,9 @@
       }
     },
     "vod": {
+      "eyebrow": "Film Review",
       "title": "VOD",
+      "description": "Link a YouTube or Twitch recording to review this map alongside the data.",
       "addVod": "Add VOD",
       "changeVod": "Change VOD",
       "uploadVod": "Upload VOD",
@@ -1339,7 +1341,8 @@
       "vodRequired": "A VOD URL is required."
     },
     "tiptap": {
-      "placeholder": "Write, format, and highlight your text below.",
+      "eyebrow": "Map Notebook",
+      "placeholder": "Capture observations and follow-ups for this map. Notes save when you click save.",
       "notes": "Notes",
       "save": "Save",
       "saving": "Saving...",
@@ -1630,6 +1633,7 @@
       "tooltipDiedDuringUlt": "Died during ultimate"
     },
     "charts": {
+      "title": "Charts",
       "tooltip": "Looking for more information on charts? <link>Check out the documentation</link> to learn more.",
       "team1": "Team 1",
       "team2": "Team 2",
@@ -1639,14 +1643,17 @@
       "support": "Support",
       "round": "Round {round}",
       "killsByFight": {
+        "eyebrow": "Fight Flow",
         "title": "Kills By Fight",
         "description": "Kills are grouped by 15 second intervals. This chart shows the cumulative kills for each team at each interval. The x-axis represents the time in seconds, and the y-axis represents the cumulative kills. Team 1 is represented with positive numbers, while Team 2 is represented with negative numbers. The chart resets to 0 after each fight."
       },
       "finalBlowsByRole": {
+        "eyebrow": "Role Breakdown",
         "title": "Final Blows By Role",
         "description": "This chart shows the number of final blows by role for each team. The roles are split into Tank, Damage, and Support. The x-axis represents the role, and the y-axis represents the number of final blows."
       },
       "dmgByRound": {
+        "eyebrow": "Round Damage",
         "title": "Cumulative Hero Damage By Round",
         "description": "This chart shows the hero damage done by round for each team. The x-axis represents the round, and the y-axis represents the damage done. Note that the damage is cumulative, so the damage done in round 2 includes the damage done in round 1."
       }
