@@ -542,6 +542,10 @@
     "back": "대시보드로 돌아가기",
     "newScrim": "새 스크림",
     "edit": "스크림 편집",
+    "meta": {
+      "mapCount": "{count, plural, one {맵 #개} other {맵 #개}}",
+      "opp": "상대"
+    },
     "maps": {
       "title": "맵",
       "altText": "{map}의 로딩 화면 아트."

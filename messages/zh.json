@@ -542,6 +542,10 @@
     "back": "返回仪表板",
     "newScrim": "新训练赛",
     "edit": "编辑训练赛",
+    "meta": {
+      "mapCount": "{count, plural, one {# 张地图} other {# 张地图}}",
+      "opp": "对手"
+    },
     "maps": {
       "title": "地图",
       "altText": "{map} 的加载画面艺术"

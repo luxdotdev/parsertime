@@ -641,6 +641,10 @@
     "back": "Back to dashboard",
     "newScrim": "New Scrim",
     "edit": "Edit scrim",
+    "meta": {
+      "mapCount": "{count, plural, one {# map} other {# maps}}",
+      "opp": "Opp"
+    },
     "maps": {
       "title": "Maps",
       "altText": "The loading screen art for {map}."

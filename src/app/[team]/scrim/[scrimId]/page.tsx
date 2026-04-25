@@ -6,7 +6,6 @@ import { CompareSelectedButton } from "@/components/scrim/compare-selected-butto
 import { MapCardWithSelection } from "@/components/scrim/map-card-with-selection";
 import { ScrimOverviewCard } from "@/components/scrim/scrim-overview-card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { Link } from "@/components/ui/link";
 import {
   Tooltip,
@@ -153,97 +152,105 @@ export default async function ScrimDashboardPage(
   return (
     <DirectionalTransition>
       <DashboardLayout guestMode={visibility.guestMode}>
-        <div className="flex-1 space-y-6 p-8 pt-6">
-          {/* Header Section */}
-          <div>
-            <h4 className="text-gray-600 dark:text-gray-400">
-              <Link href="/dashboard" transitionTypes={["contract-map"]}>
-                &larr; {t("back")}
-              </Link>
-              {teamId && (
-                <>
-                  {" | "}
-                  <Link
-                    href={`/stats/team/${teamId}` as Route}
-                    transitionTypes={["nav-forward"]}
-                  >
-                    {t("viewStats")} &rarr;
-                  </Link>
-                </>
-              )}
-            </h4>
-            <div className="mt-2 flex items-center justify-between">
-              <h2 className="text-3xl leading-none font-bold tracking-tight">
-                <span className="flex items-center space-x-2">
-                  {scrim?.name ?? t("newScrim")}{" "}
-                  {hasPerms && (
-                    <Link
-                      className="inline-flex items-center pl-2"
-                      href={
-                        `/${params.team}/scrim/${params.scrimId}/edit` as Route
-                      }
-                      aria-label={t("edit")}
-                    >
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Pencil2Icon className="h-6 w-6 align-middle" />
-                        </TooltipTrigger>
-                        <TooltipContent>{t("edit")}</TooltipContent>
-                      </Tooltip>
-                    </Link>
-                  )}
+        <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+          <nav className="text-muted-foreground flex items-center gap-3 text-sm">
+            <Link href="/dashboard" transitionTypes={["contract-map"]}>
+              &larr; {t("back")}
+            </Link>
+            {teamId && (
+              <>
+                <span className="text-muted-foreground/40" aria-hidden="true">
+                  |
                 </span>
-              </h2>
-            </div>
-            <div className="mt-2 flex flex-wrap items-center gap-3">
-              <h4 className="text-xl font-semibold tracking-tight">
-                <ClientDate date={scrim.date} />
-              </h4>
-              {scrim.opponentTeamAbbr && (
+                <Link
+                  href={`/stats/team/${teamId}` as Route}
+                  transitionTypes={["nav-forward"]}
+                >
+                  {t("viewStats")} &rarr;
+                </Link>
+              </>
+            )}
+          </nav>
+
+          <div className="mt-3 flex items-center gap-2">
+            <h1 className="text-2xl font-bold tracking-tight">
+              {scrim?.name ?? t("newScrim")}
+            </h1>
+            {hasPerms && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href={
+                      `/${params.team}/scrim/${params.scrimId}/edit` as Route
+                    }
+                    aria-label={t("edit")}
+                    className="text-muted-foreground hover:bg-muted hover:text-foreground -mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-colors"
+                  >
+                    <Pencil2Icon className="h-3.5 w-3.5" />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>{t("edit")}</TooltipContent>
+              </Tooltip>
+            )}
+          </div>
+
+          <div
+            className="text-muted-foreground mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[0.6875rem] tracking-[0.04em] uppercase tabular-nums"
+            aria-label="Scrim metadata"
+          >
+            <ClientDate date={scrim.date} />
+            <span className="text-muted-foreground/40" aria-hidden="true">
+              ·
+            </span>
+            <span>{t("meta.mapCount", { count: maps.length })}</span>
+            {scrim.opponentTeamAbbr && (
+              <>
+                <span className="text-muted-foreground/40" aria-hidden="true">
+                  ·
+                </span>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Link
                       href={
                         `/scouting/team/${encodeURIComponent(scrim.opponentTeamAbbr)}` as Route
                       }
-                      className="no-underline"
+                      className="hover:text-foreground inline-flex items-center gap-1.5 no-underline"
                     >
-                      <Badge
-                        variant="secondary"
-                        className="gap-1.5 text-xs font-medium"
-                      >
-                        <BadgeCheck
-                          className="h-3.5 w-3.5 text-amber-500"
-                          aria-hidden="true"
-                        />
-                        Opponent: {opponentFullName ?? scrim.opponentTeamAbbr}
-                      </Badge>
+                      <BadgeCheck
+                        className="text-primary size-3"
+                        aria-hidden="true"
+                      />
+                      <span>
+                        {t("meta.opp")}{" "}
+                        {opponentFullName ?? scrim.opponentTeamAbbr}
+                      </span>
                     </Link>
                   </TooltipTrigger>
                   <TooltipContent>View OWCS scouting report</TooltipContent>
                 </Tooltip>
-              )}
-            </div>
+              </>
+            )}
           </div>
 
-          {/* Overview Card */}
           {overviewCardEnabled && maps.length > 0 && teamId && (
-            <ScrimOverviewCard scrimId={id} teamId={teamId} />
+            <div className="mt-8">
+              <ScrimOverviewCard scrimId={id} teamId={teamId} />
+            </div>
           )}
 
-          {/* Drop Zone (managers/owners only) */}
-          {hasPerms && <AddMapCard />}
-
-          {/* Maps Section */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-2xl font-semibold tracking-tight">
-                {t("maps.title")}
-              </h3>
+          {hasPerms && (
+            <div className="mt-6">
+              <AddMapCard />
             </div>
+          )}
+
+          <div className="mt-10">
+            <h2 className="text-lg font-semibold tracking-tight">
+              {t("maps.title")}
+            </h2>
 
             {maps.length > 0 ? (
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {maps.map((map) => (
                   <MapCardWithSelection
                     key={map.id}
@@ -256,8 +263,11 @@ export default async function ScrimDashboardPage(
                 ))}
               </div>
             ) : (
-              <Alert variant="destructive" className="max-w-xl">
-                <ExclamationTriangleIcon className="h-4 w-4" />
+              <Alert variant="destructive" className="mt-4 max-w-xl">
+                <ExclamationTriangleIcon
+                  className="h-4 w-4"
+                  aria-hidden="true"
+                />
                 <AlertTitle>{t("noMaps.title")}</AlertTitle>
                 <AlertDescription>
                   {t("noMaps.description")}
@@ -275,7 +285,6 @@ export default async function ScrimDashboardPage(
           </div>
         </div>
 
-        {/* Compare Selected Button */}
         {mapComparisonEnabled && teamId && (
           <CompareSelectedButton teamId={teamId} />
         )}
