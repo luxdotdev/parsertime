@@ -1656,6 +1656,11 @@
         "eyebrow": "Round Damage",
         "title": "Cumulative Hero Damage By Round",
         "description": "This chart shows the hero damage done by round for each team. The x-axis represents the round, and the y-axis represents the damage done. Note that the damage is cumulative, so the damage done in round 2 includes the damage done in round 1."
+      },
+      "tempo": {
+        "eyebrow": "Match Flow",
+        "title": "Match Tempo",
+        "description": "Kills and ultimates traced as overlapping curves. Drag the scrubber below the chart to focus on a fight or phase."
       }
     },
     "events": {
@@ -1663,21 +1668,50 @@
       "roundEnd": "Round {event} ended",
       "matchEnd": "Match ended",
       "matchStart": "Match started",
+      "noData": "No events recorded for this map.",
+      "round": "Round {number}",
       "mapEvents": {
-        "title": "Events",
-        "description": "Events that occurred during the match. This includes objective captures, rounds starting and ending, multikills, and more.",
-        "captureString1": "<color>{team}</color> took control of the point.",
-        "captureString2": "<color>{team}</color> captured the objective.",
-        "objectiveUpdate": "Point captured",
-        "swap": "<img1></img1> <color>{player}</color> swapped to <img2></img2> {hero}.",
-        "ultKills": "<img></img> <color>{player}</color> killed {players, plural, =1 {one player} other {# players}} with/during their ultimate.",
-        "multikill": "During fight {event}, <span><img></img><color>{player}</color></span> got a multikill, killing {kills} players.",
-        "ajax": "<span><img></img><color>{player}</color></span> Ajaxed during fight {fight}."
+        "title": "Events"
       },
-      "ultsUsed": {
-        "title": "Ultimates Used",
-        "description": "A list of all ultimates used during the match and the times when they occurred.",
-        "ultStart": "<span><img></img><color>{player}</color></span> used their ultimate during fight {fight}."
+      "totals": {
+        "rounds": "Rounds",
+        "fights": "Fights",
+        "multikills": "Multikills",
+        "ultimates": "Ultimates used",
+        "swaps": "Hero swaps"
+      },
+      "filters": {
+        "label": "Filter events",
+        "all": "All",
+        "highlights": "Highlights",
+        "ultimates": "Ultimates",
+        "swaps": "Swaps",
+        "objectives": "Objectives",
+        "empty": "No events match this filter."
+      },
+      "type": {
+        "matchStart": "Match",
+        "matchEnd": "Match",
+        "roundStart": "Round",
+        "roundEnd": "Round end",
+        "objective": "Objective",
+        "swap": "Swap",
+        "ult": "Ult",
+        "ultKill": "Ult kill",
+        "multikill": "Multikill",
+        "ajax": "Ajax"
+      },
+      "detail": {
+        "matchStart": "Match started.",
+        "matchEnd": "Match ended.",
+        "roundStart": "Round {number} started.",
+        "roundEnd": "Round {number} ended.",
+        "capture": "<color>{team}</color> captured the objective.",
+        "pointTake": "<color>{team}</color> took control of the point.",
+        "fightTag": "Fight {number}",
+        "ultKill": "<color>{player}</color> got {count, plural, =1 {one kill} other {# kills}} during their ultimate.",
+        "multikill": "<color>{player}</color> got {count, plural, =3 {a triple} =4 {a quad} =5 {a quint} other {a # multi}} kill in fight {fight}.",
+        "ajax": "<color>{player}</color> ajaxed in fight {fight}."
       },
       "tempo": {
         "title": "Match Tempo",

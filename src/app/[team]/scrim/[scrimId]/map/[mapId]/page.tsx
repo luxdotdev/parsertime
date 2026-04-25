@@ -280,7 +280,14 @@ export default async function MapDashboardPage(
                   {
                     value: "charts",
                     label: t("tabs.charts"),
-                    content: <MapCharts id={id} />,
+                    content: (
+                      <MapCharts
+                        id={id}
+                        team1Color={team1}
+                        team2Color={team2}
+                        tempoChartEnabled={tempoChartEnabled}
+                      />
+                    ),
                   },
                   ...(positionalDataEnabled
                     ? [
@@ -305,7 +312,6 @@ export default async function MapDashboardPage(
                         id={id}
                         team1Color={team1}
                         team2Color={team2}
-                        tempoChartEnabled={tempoChartEnabled}
                       />
                     ),
                   },
