@@ -1,4 +1,5 @@
 import { AnalysisCardAccordion as AnalysisCard } from "@/components/map/analysis/analysis-card-accordion";
+import { MapStatCell } from "@/components/map/map-stat-cell";
 import { OverviewTable } from "@/components/map/overview-table";
 import {
   KillfeedCalibrationService,
@@ -43,31 +44,6 @@ import {
 } from "@/types/heroes";
 import { $Enums, type Kill } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
-import type { ReactNode } from "react";
-
-function MapStatCell({
-  label,
-  value,
-  sub,
-}: {
-  label: string;
-  value: string;
-  sub?: ReactNode;
-}) {
-  return (
-    <div className="flex min-w-0 flex-col gap-0.5">
-      <span className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.06em] uppercase">
-        {label}
-      </span>
-      <span className="font-mono text-base leading-tight font-semibold tabular-nums">
-        {value}
-      </span>
-      {sub ? (
-        <span className="text-muted-foreground text-xs">{sub}</span>
-      ) : null}
-    </div>
-  );
-}
 
 export async function DefaultOverview({
   id,
@@ -916,24 +892,17 @@ export async function DefaultOverview({
                     .filter(
                       (stat) =>
                         stat.round_number ===
-                        round +
-                          (mapType === $Enums.MapType.Flashpoint ? 2 : 1)
+                        round + (mapType === $Enums.MapType.Flashpoint ? 2 : 1)
                     )
-                    .sort((a, b) =>
-                      a.player_name.localeCompare(b.player_name)
-                    )
+                    .sort((a, b) => a.player_name.localeCompare(b.player_name))
                     .sort(
                       (a, b) =>
                         heroPriority[
                           heroRoleMapping[a.player_hero as HeroName]
                         ] -
-                        heroPriority[
-                          heroRoleMapping[b.player_hero as HeroName]
-                        ]
+                        heroPriority[heroRoleMapping[b.player_hero as HeroName]]
                     )
-                    .sort((a, b) =>
-                      a.player_team.localeCompare(b.player_team)
-                    )}
+                    .sort((a, b) => a.player_team.localeCompare(b.player_team))}
                 />
               </TabsContent>
             ))}
