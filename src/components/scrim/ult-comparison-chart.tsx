@@ -43,7 +43,7 @@ function CustomTooltip({
   const datum = data.find((d) => d.subrole === label);
 
   return (
-    <div className="bg-popover text-popover-foreground border border-border shadow-md z-50 overflow-hidden rounded-md px-3 py-1.5 text-xs">
+    <div className="bg-popover text-popover-foreground border-border z-50 overflow-hidden rounded-md border px-3 py-1.5 text-xs shadow-md">
       <h3 className="text-base font-medium">{label}</h3>
       <p className="text-sm">
         <strong style={{ color: team1 }}>{teamNames[0]}</strong>:{" "}

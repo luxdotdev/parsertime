@@ -109,7 +109,7 @@ function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
   if (!row || row.total === 0) return null;
 
   return (
-    <div className="bg-popover text-popover-foreground border border-border shadow-md z-50 overflow-hidden rounded-md px-3 py-2 text-xs">
+    <div className="bg-popover text-popover-foreground border-border z-50 overflow-hidden rounded-md border px-3 py-2 text-xs shadow-md">
       <h3 className="text-sm font-semibold">{row.label}</h3>
       <p className="text-sm">
         <span className="font-semibold tabular-nums">{row.total}</span>{" "}

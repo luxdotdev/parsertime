@@ -72,7 +72,7 @@ function ChartTooltip({
 }: TooltipProps<ValueType, NameType>) {
   if (active && payload?.length) {
     return (
-      <div className="bg-popover text-popover-foreground border border-border shadow-md z-50 rounded-md px-3 py-1.5 text-xs">
+      <div className="bg-popover text-popover-foreground border-border z-50 rounded-md border px-3 py-1.5 text-xs shadow-md">
         <p className="text-sm font-bold">
           {new Date(label as string).toLocaleDateString()}
         </p>
