@@ -31,6 +31,7 @@ export function SortableBanItem({
   team2Name?: string;
 }) {
   const t = useTranslations("dashboard.scrimCreationForm");
+  const tBans = useTranslations("scrimPage.addMap.heroBans");
   const {
     attributes,
     listeners,
@@ -52,12 +53,12 @@ export function SortableBanItem({
     <div
       ref={setNodeRef}
       style={style}
-      className="grid grid-cols-[28px_1fr_1fr_56px_36px] items-center gap-2"
+      className="grid grid-cols-[minmax(28px,32px)_minmax(0,1fr)_minmax(0,1fr)_minmax(56px,64px)_minmax(44px,48px)] items-center gap-2"
     >
       <button
         type="button"
-        aria-label="Reorder"
-        className="text-muted-foreground hover:text-foreground hover:bg-muted flex h-9 cursor-grab items-center justify-center rounded-md transition-colors active:cursor-grabbing"
+        aria-label={tBans("reorder")}
+        className="text-muted-foreground hover:text-foreground hover:bg-muted flex h-11 w-11 min-w-11 cursor-grab items-center justify-center rounded-md transition-colors active:cursor-grabbing"
         {...attributes}
         {...listeners}
       >
@@ -91,8 +92,8 @@ export function SortableBanItem({
         type="button"
         variant="ghost"
         size="icon-sm"
-        className="text-muted-foreground hover:text-destructive"
-        aria-label="Remove ban"
+        className="text-muted-foreground hover:text-destructive size-11 min-h-11 min-w-11"
+        aria-label={tBans("removeBan")}
         onClick={onRemove}
       >
         <X className="size-3.5" />
