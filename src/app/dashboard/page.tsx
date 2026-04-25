@@ -58,23 +58,21 @@ export default async function DashboardPage() {
 
   return (
     <DirectionalTransition>
-      <div className="flex-1 space-y-4 p-8 pt-6">
-        <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight text-balance">
-            {t("title")}
-          </h2>
+      <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+        <div className="mb-3 flex items-end justify-between gap-4">
+          <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
         </div>
-        <Tabs defaultValue="overview" className="space-y-4">
+        <Tabs defaultValue="overview">
           {isAdmin && (
-            <TabsList>
+            <TabsList className="mb-5">
               <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
               <TabsTrigger value="admin">{t("admin")}</TabsTrigger>
             </TabsList>
           )}
-          <TabsContent value="overview" className="space-y-4">
+          <TabsContent value="overview" className="mt-0">
             <ScrimPagination seenOnboarding={userData?.seenOnboarding} />
           </TabsContent>
-          <TabsContent value="admin" className="space-y-4">
+          <TabsContent value="admin" className="mt-0">
             <ScrimPagination isAdmin={true} seenOnboarding={true} />
           </TabsContent>
         </Tabs>

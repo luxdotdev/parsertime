@@ -5,7 +5,6 @@ import { EmptyScrimList } from "@/components/dashboard/empty-scrim-list";
 import { ScrimCard } from "@/components/dashboard/scrim-card";
 import { ScrimCardSkeleton } from "@/components/dashboard/scrim-card-skeleton";
 import { TeamSwitcherContext } from "@/components/team-switcher-provider";
-import { Card } from "@/components/ui/card";
 import {
   InputGroup,
   InputGroupAddon,
@@ -229,18 +228,14 @@ export function ScrimPagination({
   // Handle error state
   if (isError) {
     return (
-      <Card className="bg-background">
-        <div
-          className="flex h-96 items-center justify-center"
-          aria-live="polite"
-        >
-          <div className="text-center">
-            <p className="text-muted-foreground">
-              Error loading scrims: {error?.message}
-            </p>
-          </div>
-        </div>
-      </Card>
+      <div
+        className="border-border bg-card flex h-72 items-center justify-center rounded-xl border"
+        aria-live="polite"
+      >
+        <p className="text-muted-foreground text-sm">
+          Error loading scrims: {error?.message}
+        </p>
+      </div>
     );
   }
 
@@ -251,9 +246,18 @@ export function ScrimPagination({
 
   const firstFiveScrims = data?.scrims.slice(0, 5) ?? [];
 
+  const pageStart = (currentPage - 1) * pageSize + 1;
+  const pageEnd = Math.min(currentPage * pageSize, totalCount);
+  const sortLabel =
+    sort === "date-desc"
+      ? t("filter.newToOld").toLowerCase()
+      : sort === "date-asc"
+        ? t("filter.oldToNew").toLowerCase()
+        : null;
+
   return (
-    <Card className="bg-background">
-      <div className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <span className="inline-flex gap-2">
           <Select value={sort || undefined} onValueChange={handleFilterChange}>
             <SelectTrigger className="w-[180px]">
@@ -317,7 +321,63 @@ export function ScrimPagination({
         <CreateScrimButton />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div
+        className="text-muted-foreground mt-4 flex h-5 items-center justify-between font-mono text-[0.6875rem] tracking-[0.04em] tabular-nums uppercase"
+        aria-live="polite"
+      >
+        <span>
+          {isLoading ? (
+            <span className="opacity-0">·</span>
+          ) : data && totalCount > 0 ? (
+            <>
+              {pagination.totalPages > 1 ? (
+                <>
+                  {pageStart}
+                  <span className="text-muted-foreground/50">–</span>
+                  {pageEnd}
+                  <span className="text-muted-foreground/60 mx-1">of</span>
+                  {totalCount}
+                  <span className="text-foreground/80 ml-1.5 normal-case">
+                    {totalCount === 1 ? "scrim" : "scrims"}
+                  </span>
+                </>
+              ) : (
+                <>
+                  {totalCount}
+                  <span className="text-foreground/80 ml-1.5 normal-case">
+                    {totalCount === 1 ? "scrim" : "scrims"}
+                  </span>
+                </>
+              )}
+              {sortLabel && (
+                <>
+                  <span className="text-muted-foreground/40 mx-2">·</span>
+                  <span className="normal-case">{sortLabel}</span>
+                </>
+              )}
+              {debouncedSearch && (
+                <>
+                  <span className="text-muted-foreground/40 mx-2">·</span>
+                  <span className="normal-case">
+                    matching &ldquo;{debouncedSearch}&rdquo;
+                  </span>
+                </>
+              )}
+            </>
+          ) : null}
+        </span>
+        {!isLoading && data && pagination.totalPages > 1 && (
+          <span>
+            page {currentPage}
+            <span className="text-muted-foreground/60 mx-1 normal-case">
+              of
+            </span>
+            {pagination.totalPages}
+          </span>
+        )}
+      </div>
+
+      <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {isLoading ? (
           <>
             {/* Show skeleton cards during loading */}
@@ -362,72 +422,73 @@ export function ScrimPagination({
           </>
         )}
 
-        <div className="col-span-full">
-          {!isLoading && data && pagination.totalPages > 1 && (
-            <Pagination>
-              <PaginationContent>
-                {pagination.hasPrevious && (
-                  <>
-                    <PaginationPrevious
-                      className="hidden md:flex"
+      </div>
+
+      {!isLoading && data && pagination.totalPages > 1 && (
+        <div className="mt-8">
+          <Pagination>
+            <PaginationContent>
+              {pagination.hasPrevious && (
+                <>
+                  <PaginationPrevious
+                    className="hidden md:flex"
+                    href={pageUrl(currentPage - 1)}
+                    onClick={(e) => handlePageClick(currentPage - 1, e)}
+                  />
+                  <PaginationItem className="md:hidden">
+                    <PaginationLink
                       href={pageUrl(currentPage - 1)}
                       onClick={(e) => handlePageClick(currentPage - 1, e)}
-                    />
-                    <PaginationItem className="md:hidden">
-                      <PaginationLink
-                        href={pageUrl(currentPage - 1)}
-                        onClick={(e) => handlePageClick(currentPage - 1, e)}
-                      >
-                        <ChevronLeftIcon className="h-4 w-4" />
-                      </PaginationLink>
-                    </PaginationItem>
-                  </>
-                )}
-                {pagination.pages.map((pageNum, index) => {
-                  if (pageNum === "...") {
-                    return (
-                      <PaginationEllipsis
-                        // oxlint-disable-next-line react/no-array-index-key
-                        key={`ellipsis-${index}`}
-                      />
-                    );
-                  }
+                    >
+                      <ChevronLeftIcon className="h-4 w-4" />
+                    </PaginationLink>
+                  </PaginationItem>
+                </>
+              )}
+              {pagination.pages.map((pageNum, index) => {
+                if (pageNum === "...") {
                   return (
-                    <PaginationItem key={pageNum}>
-                      <PaginationLink
-                        href={pageUrl(pageNum)}
-                        onClick={(e) => handlePageClick(pageNum, e)}
-                        isActive={currentPage === pageNum}
-                        className="tabular-nums"
-                      >
-                        {pageNum}
-                      </PaginationLink>
-                    </PaginationItem>
+                    <PaginationEllipsis
+                      // oxlint-disable-next-line react/no-array-index-key
+                      key={`ellipsis-${index}`}
+                    />
                   );
-                })}
-                {pagination.hasNext && (
-                  <>
-                    <PaginationNext
-                      className="hidden md:flex"
+                }
+                return (
+                  <PaginationItem key={pageNum}>
+                    <PaginationLink
+                      href={pageUrl(pageNum)}
+                      onClick={(e) => handlePageClick(pageNum, e)}
+                      isActive={currentPage === pageNum}
+                      className="tabular-nums"
+                    >
+                      {pageNum}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
+              {pagination.hasNext && (
+                <>
+                  <PaginationNext
+                    className="hidden md:flex"
+                    href={pageUrl(currentPage + 1)}
+                    onClick={(e) => handlePageClick(currentPage + 1, e)}
+                  />
+                  <PaginationItem className="md:hidden">
+                    <PaginationLink
                       href={pageUrl(currentPage + 1)}
                       onClick={(e) => handlePageClick(currentPage + 1, e)}
-                    />
-                    <PaginationItem className="md:hidden">
-                      <PaginationLink
-                        href={pageUrl(currentPage + 1)}
-                        onClick={(e) => handlePageClick(currentPage + 1, e)}
-                      >
-                        <ChevronRightIcon className="h-4 w-4" />
-                      </PaginationLink>
-                    </PaginationItem>
-                  </>
-                )}
-              </PaginationContent>
-            </Pagination>
-          )}
+                    >
+                      <ChevronRightIcon className="h-4 w-4" />
+                    </PaginationLink>
+                  </PaginationItem>
+                </>
+              )}
+            </PaginationContent>
+          </Pagination>
         </div>
-      </div>
-    </Card>
+      )}
+    </div>
   );
 }
 
