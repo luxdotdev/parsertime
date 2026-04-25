@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function ScrimCardSkeleton() {
   return (
-    <Card data-size="sm" className="relative max-w-md overflow-hidden gap-3">
+    <Card data-size="sm" className="relative max-w-md gap-3 overflow-hidden">
       <CardHeader className="space-y-2 pb-2">
         <div className="flex items-start justify-between gap-3">
           <Skeleton className="h-5 w-36" />

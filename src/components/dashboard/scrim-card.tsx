@@ -37,7 +37,7 @@ export function ScrimCard({ scrim, prefetch }: Props) {
     >
       <Card
         data-size="sm"
-        className="[@media(hover:hover)_and_(pointer:fine)]:hover:ring-foreground/25 relative max-w-md overflow-hidden gap-3 motion-safe:transition-[box-shadow,background-color] motion-safe:duration-150 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-card/60"
+        className="[@media(hover:hover)_and_(pointer:fine)]:hover:ring-foreground/25 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-card/60 relative max-w-md gap-3 overflow-hidden motion-safe:transition-[box-shadow,background-color] motion-safe:duration-150"
       >
         <CardHeader className="relative space-y-2 pb-2">
           <div className="flex items-start justify-between gap-3">

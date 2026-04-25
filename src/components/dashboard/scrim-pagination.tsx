@@ -322,7 +322,7 @@ export function ScrimPagination({
       </div>
 
       <div
-        className="text-muted-foreground mt-4 flex h-5 items-center justify-between font-mono text-[0.6875rem] tracking-[0.04em] tabular-nums uppercase"
+        className="text-muted-foreground mt-4 flex h-5 items-center justify-between font-mono text-[0.6875rem] tracking-[0.04em] uppercase tabular-nums"
         aria-live="polite"
       >
         <span>
@@ -421,7 +421,6 @@ export function ScrimPagination({
             </motion.div>
           </>
         )}
-
       </div>
 
       {!isLoading && data && pagination.totalPages > 1 && (
