@@ -1,11 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  DialogClose,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { DialogClose, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,

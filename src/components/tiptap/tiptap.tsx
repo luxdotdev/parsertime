@@ -2,13 +2,6 @@
 
 import { MenuBar } from "@/components/tiptap/menu-bar";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { noteDataSchema } from "@/lib/utils";
 import Highlight from "@tiptap/extension-highlight";
 import TextAlign from "@tiptap/extension-text-align";
@@ -104,17 +97,22 @@ export function TipTap({
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("notes")}</CardTitle>
+    <section aria-label={t("notes")} className="space-y-5">
+      <div className="space-y-1">
+        <span className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.06em] uppercase">
+          {t("eyebrow")}
+        </span>
+        <h2 className="text-foreground text-xl font-semibold tracking-tight">
+          {t("notes")}
+        </h2>
         <p className="text-muted-foreground text-sm">{t("placeholder")}</p>
+      </div>
 
-        <MenuBar editor={editor} />
-      </CardHeader>
-      <CardContent className="max-w-full">
-        <EditorContent editor={editor} />
-      </CardContent>
-      <CardFooter className="justify-end gap-2">
+      <MenuBar editor={editor} />
+
+      <EditorContent editor={editor} />
+
+      <div className="flex items-center justify-end gap-2">
         <span aria-live="polite" className="text-muted-foreground text-sm">
           {hasUnsavedChanges ? t("unsavedChanges") : ""}
         </span>
@@ -125,7 +123,7 @@ export function TipTap({
         >
           {isSaving ? t("saving") : t("save")}
         </Button>
-      </CardFooter>
-    </Card>
+      </div>
+    </section>
   );
 }

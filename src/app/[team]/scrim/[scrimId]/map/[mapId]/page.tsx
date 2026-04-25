@@ -318,13 +318,11 @@ export default async function MapDashboardPage(
                     value: "notes",
                     label: t("tabs.notes"),
                     content: (
-                      <div className="mx-auto py-8">
-                        <TipTap
-                          noteContent={noteContent?.content ?? ""}
-                          mapDataId={mapDataId}
-                          scrimId={parseInt(params.scrimId)}
-                        />
-                      </div>
+                      <TipTap
+                        noteContent={noteContent?.content ?? ""}
+                        mapDataId={mapDataId}
+                        scrimId={parseInt(params.scrimId)}
+                      />
                     ),
                   },
                   {
