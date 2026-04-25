@@ -10,7 +10,7 @@ import { usePathname } from "next/navigation";
 import { use } from "react";
 
 const navLinkStyles =
-  "text-muted-foreground hover:text-primary inline-flex min-h-11 items-center px-1.5 text-sm font-medium transition-colors";
+  "text-muted-foreground hover:text-foreground inline-flex min-h-11 items-center px-1.5 text-sm font-medium transition-colors";
 
 const dropdownItemStyles =
   "hover:bg-accent hover:text-accent-foreground flex w-full items-center rounded-sm px-2 py-1.5 text-sm transition-colors";
