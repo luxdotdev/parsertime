@@ -685,9 +685,14 @@
       },
       "submitting": "Submitting",
       "submit": "Submit",
+      "cancel": "Cancel",
       "addHeroBan": "Add Hero Ban",
       "heroBansDescription": "Configure hero bans for this map. You can skip this step by clicking Submit without adding any bans.",
-      "heroBansTitle": "Add Hero Bans (Optional)"
+      "heroBansTitle": "Add Hero Bans (Optional)",
+      "heroBans": {
+        "reorder": "Reorder",
+        "removeBan": "Remove ban"
+      }
     },
     "editScrim": {
       "back": "Back to scrim",
@@ -1142,6 +1147,10 @@
     },
     "back": "Back to scrim overview",
     "dashboard": "Dashboard",
+    "mobileBanner": {
+      "message": "For the best experience, we recommend using a larger screen.",
+      "dismiss": "Dismiss"
+    },
     "playerSwitcher": {
       "select": "Select a player",
       "search": "Search player...",
@@ -1256,7 +1265,7 @@
           "totalScore": "Total Score: {score}",
           "per10Value": "{per10Value}/10min vs avg {heroAverage}",
           "percentile": "{percentile, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} percentile",
-          "explanation": "The MVP score can be used to understand how a player is performing compared to similar players on their hero. The MVP stat does not take into account a player's performance compared to their teammates—it is a way to see who is having a stand-out performance compared to the global averages on their hero. MVP scores typically range between -100 and +100, with a normal distribution centered around 0."
+          "explanation": "The MVP score can be used to understand how a player is performing compared to similar players on their hero. The MVP stat does not take into account a player's performance compared to their teammates; it is a way to see who is having a stand-out performance compared to the global averages on their hero. MVP scores typically range between -100 and +100, with a normal distribution centered around 0."
         }
       },
       "charts": {
@@ -1321,19 +1330,38 @@
       "uploadVod": "Upload VOD",
       "cancel": "Cancel",
       "inputPlaceholder": "Enter VOD URL here...",
-      "uploadVOD": "Upload Your VOD",
-      "noVod": "No VOD linked yet. Click here to add one.",
+      "uploadVOD": "Upload your VOD",
+      "noVod": "No VOD linked yet. Add one to start review.",
       "vodSuccess": "VOD linked successfully.",
       "vodFail": "Failed to link VOD",
       "invalidUrl": "URL must be from YouTube or Twitch",
-      "vodLabel": "Please enter a VOD URL (YouTube or Twitch)."
+      "vodLabel": "Please enter a VOD URL (YouTube or Twitch).",
+      "vodRequired": "A VOD URL is required."
     },
     "tiptap": {
       "placeholder": "Write, format, and highlight your text below.",
       "notes": "Notes",
       "save": "Save",
       "saving": "Saving...",
-      "unsavedChanges": "Unsaved changes"
+      "unsavedChanges": "Unsaved changes",
+      "toolbar": {
+        "label": "Notes formatting",
+        "undo": "Undo",
+        "redo": "Redo",
+        "h1": "Heading 1",
+        "h2": "Heading 2",
+        "h3": "Heading 3",
+        "bold": "Bold",
+        "italic": "Italic",
+        "strike": "Strikethrough",
+        "codeBlock": "Code block",
+        "alignLeft": "Align left",
+        "alignCenter": "Align center",
+        "alignRight": "Align right",
+        "list": "Bulleted list",
+        "orderedList": "Numbered list",
+        "highlight": "Highlight"
+      }
     },
     "overview": {
       "matchTime": "Total Match Time",
@@ -1359,7 +1387,7 @@
         "footerTiming": "Ult timing categorizes each ultimate as initiation (first third of fight), midfight (middle third), or late (final third). Players are assigned to subroles based on their most-played heroes.",
         "footerEfficiency": "Efficiency rating = fights won per ultimate used. Wasted ultimates are those used when the team was already down 3+ players. Dry fights are fights where no ultimates were used. Reversals are fights won after being down 2+ kills.",
         "tabRotationDeaths": "Rotation Deaths",
-        "footerRotationDeaths": "Rotation deaths are kills that occur before teams engage — typically when a player is picked off while the team is moving between positions. Detected by checking if the first kill in a fight happens while team centroids are more than 50 meters apart.",
+        "footerRotationDeaths": "Rotation deaths are kills that occur before teams engage, typically when a player is picked off while the team is moving between positions. Detected by checking if the first kill in a fight happens while team centroids are more than 50 meters apart.",
         "footerSwaps": "Hero swaps are tracked from in-game hero change events. Round-start utility swaps (e.g. swapping to Lúcio for speed boost) are filtered out to show only mid-round strategic swaps.",
         "deathDescriptionTeam1": "<span1>{team1Name}</span1> had a first death in {team1FirstDeaths} fights, which is a percentage of <span2>{percentage}</span2>%.",
         "deathDescriptionTeam2": "<span1>{team2Name}</span1> had a first death in {team2FirstDeaths} fights, which is a percentage of <span2>{percentage}</span2>%.",
@@ -1376,21 +1404,107 @@
         "ultFightInitiator": "<span>{teamName}</span> initiated fights with ultimates in <pct>{percentage}</pct>% of ult-involved fights ({count} of {total}).",
         "ultTopFightOpener": "The most common fight-opening ultimate was <span>{hero}</span>, used to start <b>{count}</b> {count, plural, one {fight} other {fights}}.",
         "ultTopFightOpenerTeam": "<span>{teamName}</span>'s most common fight-opening ultimate: <span>{hero}</span> (<b>{count}</b> {count, plural, one {fight} other {fights}}).",
-        "ultSubroleTiming": "{subrole}: <b>{count}</b> {count, plural, one {ultimate} other {ultimates}} ({percentage}%) — {initiation} initiation, {midfight} midfight, {late} late",
+        "ultSubroleTiming": "{subrole}: <b>{count}</b> {count, plural, one {ultimate} other {ultimates}} ({percentage}%): {initiation} initiation, {midfight} midfight, {late} late",
         "ultEfficiency": "Ultimate Efficiency: <b>{value}</b> fights won per ultimate used ({rating}).",
         "ultEfficiencyExcellent": "Excellent",
         "ultEfficiencyGood": "Good",
         "ultEfficiencyAverage": "Average",
         "ultEfficiencyPoor": "Poor",
         "ultWonVsLost": "Used an average of <won>{wonAvg}</won> ultimates per won fight vs <lost>{lostAvg}</lost> per lost fight.",
-        "ultGoodDiscipline": "Good ultimate discipline — more ultimates used in wins than losses.",
-        "ultNeedsDiscipline": "Room for improvement — more ultimates used in losses than wins.",
+        "ultGoodDiscipline": "Good ultimate discipline: more ultimates used in wins than losses.",
+        "ultNeedsDiscipline": "Room for improvement: more ultimates used in losses than wins.",
         "ultWasted": "<b>{count}</b> wasted {count, plural, one {ultimate} other {ultimates}} (<b>{percentage}</b>% of total) used in lost situations (3+ player disadvantage).",
         "ultDryFights": "<b>{dryCount}</b> dry {dryCount, plural, one {fight} other {fights}} (no ultimates used) with a <b>{winrate}</b>% win rate, plus <b>{nonDryCount}</b> {nonDryCount, plural, one {fight} other {fights}} where ultimates were used (<b>{nonDryWinrate}</b>% WR).",
         "ultReversalRate": "Fight reversal rate (won after being down 2+ kills): <b>{dryRate}</b>% in dry fights vs <b>{nonDryRate}</b>% when ultimates were used.",
         "swapOverview": "<span1>{team1Name}</span1> made <b>{team1Count}</b> hero {team1Count, plural, one {swap} other {swaps}} vs <span2>{team2Name}</span2>'s <b>{team2Count}</b> hero {team2Count, plural, one {swap} other {swaps}}.",
         "swapTopPairTeam": "<span>{teamName}</span>'s most common swap: <b>{fromHero}</b> → <b>{toHero}</b> (<n>{count}</n> {count, plural, one {time} other {times}}).",
-        "swapTopSwapperTeam": "<span>{teamName}</span>'s most active swapper: <b>{playerName}</b> with <n>{count}</n> {count, plural, one {swap} other {swaps}}."
+        "swapTopSwapperTeam": "<span>{teamName}</span>'s most active swapper: <b>{playerName}</b> with <n>{count}</n> {count, plural, one {swap} other {swaps}}.",
+        "tabAbilityTiming": "Ability Timing",
+        "footerAbilityTiming": "Win rates are computed per fight phase (pre-fight, early, mid, late, cleanup). Cells require at least 3 fights of data; outliers are highlighted when phase win rate diverges meaningfully from the ability's best phase.",
+        "collapseAll": "Collapse all",
+        "expandAll": "Expand all",
+        "mobileLabel": {
+          "deaths": "Deaths",
+          "ults": "Ults",
+          "timing": "Timing",
+          "efficiency": "Eff.",
+          "swaps": "Swaps",
+          "rotation": "Rotation",
+          "abilities": "Abilities"
+        },
+        "deaths": {
+          "headToHeadLabel": "First Death Rate",
+          "headToHeadUnit": "first deaths",
+          "topPlayerCallout": "Player with most first deaths: <player>{playerName}</player> <num>({count} of {total} fights)</num>",
+          "ajaxCallout": "<player>{playerName}</player> played Lúcio and Ajaxed <num>{count}</num> {count, plural, one {time} other {times}}",
+          "fightStripHeading": "Fight-by-fight first deaths",
+          "fightCount": "{count} fights",
+          "team1DiedFirst": "{teamName} died first",
+          "team2DiedFirst": "{teamName} died first",
+          "momentumHeading": "First death momentum",
+          "team1DyingMore": "{teamName} dying more",
+          "team2DyingMore": "{teamName} dying more",
+          "streakCallout": "Longest first death streak: <team>{teamName}</team> died first in <count>{count}</count> consecutive fights",
+          "fightAriaLabel": "Fight {fight}: {playerName} ({hero}) died first for {teamName}",
+          "fightTooltipFight": "Fight {fight}",
+          "fightTooltipFirstDeath": "{teamName} first death: {playerName} ({hero})"
+        },
+        "ultimates": {
+          "headToHeadLabel": "Total Ultimates Used",
+          "headToHeadUnit": "ults",
+          "roleHeadToHeadLabel": "{role}: Used Ult First",
+          "roleHeadToHeadUnit": "fights",
+          "topUltUserLabel": "Top ult user:",
+          "topFightOpenerLabel": "Top fight opener:",
+          "fightCount": "{count, plural, one {# fight} other {# fights}}",
+          "subroleChartHeading": "Ultimate usage by subrole"
+        },
+        "timing": {
+          "empty": "No timing data available for this map.",
+          "comparisonCallout": "<team1>{team1Name}</team1> uses <pct1>{team1Pct}%</pct1> of ults in initiation vs <team2>{team2Name}</team2>'s <pct2>{team2Pct}%</pct2>",
+          "breakdownHeading": "Ultimate timing breakdown"
+        },
+        "efficiency": {
+          "empty": "No efficiency data available for this map.",
+          "avgChargeTimeLabel": "Avg Ult Charge Time",
+          "avgHoldTimeLabel": "Avg Ult Hold Time",
+          "scorecard": {
+            "wonFights": "Won Fights",
+            "lostFights": "Lost Fights",
+            "wasted": "Wasted",
+            "dryFights": "Dry Fights",
+            "winRate": "Win Rate",
+            "reversal": "Reversal",
+            "ultsPerFight": "{count} ults/fight",
+            "excellent": "Excellent",
+            "good": "Good",
+            "average": "Average",
+            "poor": "Poor"
+          }
+        },
+        "swaps": {
+          "empty": "No hero swaps recorded for this map.",
+          "headToHeadLabel": "Total Hero Swaps",
+          "headToHeadUnit": "swaps",
+          "tableTopSwap": "Top Swap",
+          "tableMostActive": "Most Active",
+          "tableEmpty": "-",
+          "topPair": "{from} → {to} ({count}x)",
+          "topSwapper": "{name} ({count} swaps)"
+        },
+        "rotationDeaths": {
+          "empty": "No coordinate data available for rotation death analysis on this map.",
+          "noEvents": "No rotation deaths detected on this map.",
+          "headToHeadLabel": "Rotation Deaths",
+          "headToHeadUnit": "deaths",
+          "topPlayerCallout": "Most picked on rotation: <player>{playerName}</player> <num>({rotationCount} of {totalDeaths} deaths, {rate}%)</num>",
+          "topKillerCallout": "Most rotation picks with: <heroname>{hero}</heroname> <num>({count} {count, plural, one {kill} other {kills}})</num>",
+          "tablePlayer": "Player",
+          "tableRotationDeaths": "Rotation Deaths",
+          "tableTotalDeaths": "Total Deaths",
+          "tableRate": "Rate",
+          "eventsHeading": "Rotation death events ({count})"
+        }
       }
     },
     "overviewTable": {
@@ -1473,7 +1587,7 @@
       },
       "exportCSV": "Export as CSV",
       "teamWins": "{team} Wins",
-      "roundEnded": "Round {num} Ended — {team}"
+      "roundEnded": "Round {num} Ended: {team}"
     },
     "killfeedControls": {
       "title": "Display Options",
@@ -1493,7 +1607,7 @@
       "ultEnded": "{player}'s ultimate ended ({duration}s)",
       "ultEndedDeath": "{player} died, ending ultimate ({duration}s)",
       "ultDuration": "Duration: {duration}s",
-      "ultTime": "{start} — {end}",
+      "ultTime": "{start} to {end}",
       "ultKills": "{count, plural, one {# kill} other {# kills}} during ult",
       "ultDeaths": "{count, plural, one {# death} other {# deaths}} during ult",
       "diedDuringUlt": "{player} died during ultimate",
