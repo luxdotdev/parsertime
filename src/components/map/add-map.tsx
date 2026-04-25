@@ -350,7 +350,7 @@ export function AddMapCard() {
               onClick={() => setModalOpen(false)}
               disabled={isSubmitting}
             >
-              Cancel
+              {t("cancel")}
             </Button>
             <Button onClick={handleSubmit} disabled={isSubmitting}>
               {isSubmitting ? (

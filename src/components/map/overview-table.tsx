@@ -124,6 +124,7 @@ export function OverviewTable({
                 }
                 prefetch={true}
                 transitionTypes={["nav-forward"]}
+                className="hover:underline"
               >
                 <span
                   style={{
@@ -210,7 +211,7 @@ export function OverviewTable({
         </OverviewTableHeader>
       ),
       cell: ({ row }) => (
-        <div className={cn(GeistMono.className, "text-right capitalize")}>
+        <div className={cn(GeistMono.className, "text-right tabular-nums")}>
           {toTimestamp(row.getValue<number>("timePlayed"))}
         </div>
       ),
@@ -225,7 +226,7 @@ export function OverviewTable({
         </OverviewTableHeader>
       ),
       cell: ({ row }) => (
-        <div className={cn(GeistMono.className, "text-right capitalize")}>
+        <div className={cn(GeistMono.className, "text-right tabular-nums")}>
           {row.getValue("eliminations")}
         </div>
       ),
@@ -240,7 +241,7 @@ export function OverviewTable({
         </OverviewTableHeader>
       ),
       cell: ({ row }) => (
-        <div className={cn(GeistMono.className, "text-right capitalize")}>
+        <div className={cn(GeistMono.className, "text-right tabular-nums")}>
           {row.getValue("kills")}
         </div>
       ),
@@ -255,7 +256,7 @@ export function OverviewTable({
         </OverviewTableHeader>
       ),
       cell: ({ row }) => (
-        <div className={cn(GeistMono.className, "text-right capitalize")}>
+        <div className={cn(GeistMono.className, "text-right tabular-nums")}>
           {row.getValue("assists")}
         </div>
       ),
@@ -270,7 +271,7 @@ export function OverviewTable({
         </OverviewTableHeader>
       ),
       cell: ({ row }) => (
-        <div className={cn(GeistMono.className, "text-right capitalize")}>
+        <div className={cn(GeistMono.className, "text-right tabular-nums")}>
           {row.getValue("deaths")}
         </div>
       ),
@@ -285,7 +286,7 @@ export function OverviewTable({
         </OverviewTableHeader>
       ),
       cell: ({ row }) => (
-        <div className={cn(GeistMono.className, "text-right capitalize")}>
+        <div className={cn(GeistMono.className, "text-right tabular-nums")}>
           {row.getValue<number>("kd").toFixed(2)}
         </div>
       ),
@@ -300,7 +301,7 @@ export function OverviewTable({
         </OverviewTableHeader>
       ),
       cell: ({ row }) => (
-        <div className={cn(GeistMono.className, "text-right capitalize")}>
+        <div className={cn(GeistMono.className, "text-right tabular-nums")}>
           {row.getValue<number>("kad").toFixed(2)}
         </div>
       ),
@@ -315,7 +316,7 @@ export function OverviewTable({
         </OverviewTableHeader>
       ),
       cell: ({ row }) => (
-        <div className={cn(GeistMono.className, "text-right capitalize")}>
+        <div className={cn(GeistMono.className, "text-right tabular-nums")}>
           {row.getValue<number>("firstDeathRate").toFixed(1)}%
         </div>
       ),
@@ -333,7 +334,7 @@ export function OverviewTable({
         </OverviewTableHeader>
       ),
       cell: ({ row }) => (
-        <div className={cn(GeistMono.className, "text-right capitalize")}>
+        <div className={cn(GeistMono.className, "text-right tabular-nums")}>
           {row.getValue<number>("teamFirstDeathRate").toFixed(1)}%
         </div>
       ),
@@ -348,7 +349,7 @@ export function OverviewTable({
         </OverviewTableHeader>
       ),
       cell: ({ row }) => (
-        <div className={cn(GeistMono.className, "text-right capitalize")}>
+        <div className={cn(GeistMono.className, "text-right tabular-nums")}>
           {round(row.getValue<number>("heroDmgDealt")).toLocaleString()}
         </div>
       ),
@@ -363,7 +364,7 @@ export function OverviewTable({
         </OverviewTableHeader>
       ),
       cell: ({ row }) => (
-        <div className={cn(GeistMono.className, "text-right capitalize")}>
+        <div className={cn(GeistMono.className, "text-right tabular-nums")}>
           {round(row.getValue<number>("dmgReceived")).toLocaleString()}
         </div>
       ),
@@ -378,7 +379,7 @@ export function OverviewTable({
         </OverviewTableHeader>
       ),
       cell: ({ row }) => (
-        <div className={cn(GeistMono.className, "text-right capitalize")}>
+        <div className={cn(GeistMono.className, "text-right tabular-nums")}>
           {round(row.getValue<number>("healingReceived")).toLocaleString()}
         </div>
       ),
@@ -393,7 +394,7 @@ export function OverviewTable({
         </OverviewTableHeader>
       ),
       cell: ({ row }) => (
-        <div className={cn(GeistMono.className, "text-right capitalize")}>
+        <div className={cn(GeistMono.className, "text-right tabular-nums")}>
           {round(row.getValue<number>("healingDealt")).toLocaleString()}
         </div>
       ),
@@ -408,7 +409,7 @@ export function OverviewTable({
         </OverviewTableHeader>
       ),
       cell: ({ row }) => (
-        <div className={cn(GeistMono.className, "text-right capitalize")}>
+        <div className={cn(GeistMono.className, "text-right tabular-nums")}>
           {row.getValue<number>("dmgToHealsRatio").toFixed(2)}
         </div>
       ),
@@ -423,7 +424,7 @@ export function OverviewTable({
         </OverviewTableHeader>
       ),
       cell: ({ row }) => (
-        <div className={cn(GeistMono.className, "text-right capitalize")}>
+        <div className={cn(GeistMono.className, "text-right tabular-nums")}>
           {row.getValue("ultsCharged")}
         </div>
       ),
@@ -438,7 +439,7 @@ export function OverviewTable({
         </OverviewTableHeader>
       ),
       cell: ({ row }) => (
-        <div className={cn(GeistMono.className, "text-right capitalize")}>
+        <div className={cn(GeistMono.className, "text-right tabular-nums")}>
           {row.getValue("ultsUsed")}
         </div>
       ),
@@ -492,7 +493,7 @@ export function OverviewTable({
 
   return (
     <div className="w-full">
-      <div className="rounded-md border">
+      <div className="overflow-x-auto rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -553,12 +554,12 @@ function OverviewTableHeader({
 }) {
   return (
     <Tooltip>
-      <TooltipTrigger>
-        {header.isPlaceholder ? null : header.column.getCanSort() ? (
+      {header.isPlaceholder ? null : header.column.getCanSort() ? (
+        <TooltipTrigger asChild>
           <Button
             variant="ghost"
             onClick={header.column.getToggleSortingHandler()}
-            className="h-max w-full p-1"
+            className="h-11 w-full px-2"
           >
             {children}
             {!header.column.getIsSorted() && (
@@ -569,10 +570,10 @@ function OverviewTableHeader({
               desc: <ChevronDownIcon className="w-4 min-w-4" />,
             }[header.column.getIsSorted() as string] ?? null}
           </Button>
-        ) : (
-          children
-        )}
-      </TooltipTrigger>
+        </TooltipTrigger>
+      ) : (
+        <TooltipTrigger>{children}</TooltipTrigger>
+      )}
       <TooltipContent>{tooltip ?? ""}</TooltipContent>
     </Tooltip>
   );
@@ -624,8 +625,8 @@ function MVPScoreBreakdown({
                 className={cn(
                   "font-semibold",
                   contribution.pointsAwarded > 0
-                    ? "text-green-500"
-                    : "text-red-500"
+                    ? "text-emerald-600 dark:text-emerald-400"
+                    : "text-rose-600 dark:text-rose-400"
                 )}
               >
                 {contribution.pointsAwarded > 0 ? "+" : ""}

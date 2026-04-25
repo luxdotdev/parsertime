@@ -25,7 +25,7 @@ export function MapTabs({ tabs }: MapTabsProps) {
 
   return (
     <Tabs value={tab} onValueChange={setTab} className="space-y-4">
-      <TabsList>
+      <TabsList aria-label="Map sections">
         {tabs.map((t) =>
           t.hidden ? null : (
             <TabsTrigger key={t.value} value={t.value} className={t.className}>

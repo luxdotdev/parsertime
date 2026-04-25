@@ -165,8 +165,8 @@ export default async function MapDashboardPage(
   return (
     <DirectionalTransition>
       <div className="flex-col md:flex">
-        <div
-          className="shadow-sm"
+        <header
+          className="shadow-xs"
           style={{ viewTransitionName: "site-header" }}
         >
           <div className="hidden min-h-16 items-center px-4 py-2 md:flex">
@@ -220,32 +220,31 @@ export default async function MapDashboardPage(
               )}
             </div>
           </div>
-        </div>
-        <div className="flex-1 space-y-4 p-8 pt-6">
-          <div>
-            <h4 className="text-gray-600 dark:text-gray-400">
-              <Link
-                href={
-                  (fromTournament && tournamentId && matchId
-                    ? `/tournaments/${tournamentId}/match/${matchId}`
-                    : `/${params.team}/scrim/${params.scrimId}`) as Route
-                }
-                transitionTypes={["contract-map"]}
-              >
-                &larr; {t("back")}
-              </Link>
-            </h4>
-          </div>
+        </header>
+        <div className="flex-1 space-y-4 px-6 pt-6 pb-12 md:px-8">
+          <nav className="text-muted-foreground text-sm">
+            <Link
+              href={
+                (fromTournament && tournamentId && matchId
+                  ? `/tournaments/${tournamentId}/match/${matchId}`
+                  : `/${params.team}/scrim/${params.scrimId}`) as Route
+              }
+              transitionTypes={["contract-map"]}
+              className="hover:text-foreground"
+            >
+              &larr; {t("back")}
+            </Link>
+          </nav>
           <div className="flex items-center justify-between space-y-2">
-            <h2 className="text-3xl font-bold tracking-tight">
+            <h1 className="text-2xl font-bold tracking-tight">
               {translatedMapName}
-            </h2>
+            </h1>
             <HeroBans
               heroBans={heroBans}
               team1Name={mapDetails?.team_1_name ?? "Team 1"}
             />
           </div>
-          <div className="font-semibold tracking-tight text-white">
+          <div className="font-semibold tracking-tight">
             {map?.replayCode && (
               <ReplayCode replayCode={map?.replayCode ?? ""} subtitle={true} />
             )}

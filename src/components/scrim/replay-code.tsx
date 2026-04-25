@@ -32,17 +32,14 @@ export function ReplayCode({
         {subtitle ? (
           <Button
             variant="link"
-            asChild
-            className="text-md -mt-4 mb-2 p-0"
+            className="h-auto p-0 text-base font-mono tabular-nums"
             onClick={() => handleClick({ replayCode })}
           >
-            <h3>{t("code", { replayCode })}</h3>
+            {t("code", { replayCode })}
           </Button>
         ) : (
           <Button variant="link" onClick={() => handleClick({ replayCode })}>
-            <p className="z-10 font-semibold tracking-tight text-white">
-              {replayCode}
-            </p>
+            <p className="z-10 font-semibold tracking-tight">{replayCode}</p>
           </Button>
         )}
       </TooltipTrigger>
