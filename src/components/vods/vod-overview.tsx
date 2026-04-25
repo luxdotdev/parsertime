@@ -67,15 +67,21 @@ export function VodOverview({ vod, mapId }: { vod: string; mapId: number }) {
               src={twitchSrc}
               title="Twitch VOD"
               className="h-full w-full border-0"
+              loading="lazy"
+              referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
             />
           )}
           {!vodState && (
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-              <DialogTrigger className="bg-muted" asChild>
-                <div className="flex aspect-video w-full cursor-pointer items-center justify-center">
-                  <span className="text-gray-500">{t("noVod")}</span>
-                </div>
+              <DialogTrigger asChild>
+                <button
+                  type="button"
+                  aria-label={t("addVod")}
+                  className="bg-card border-border hover:border-muted-foreground/30 flex aspect-video w-full cursor-pointer items-center justify-center rounded-md border border-dashed transition-colors"
+                >
+                  <span className="text-muted-foreground">{t("noVod")}</span>
+                </button>
               </DialogTrigger>
               <DialogContent>
                 <VodForm
@@ -90,7 +96,7 @@ export function VodOverview({ vod, mapId }: { vod: string; mapId: number }) {
         </div>
 
         {vodState && (
-          <div className="flex justify-center p-6">
+          <div className="flex justify-center">
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
               <DialogTrigger asChild>
                 <Button variant="secondary">{t("changeVod")}</Button>

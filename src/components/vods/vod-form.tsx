@@ -1,8 +1,19 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { DialogClose, DialogHeader } from "@/components/ui/dialog";
-import { Form, FormField, FormMessage } from "@/components/ui/form";
+import {
+  DialogClose,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -38,7 +49,7 @@ export function VodForm({
   const formSchema = z.object({
     vodUrl: z
       .string()
-      .min(1, { message: t("vodLabel") })
+      .min(1, { message: t("vodRequired") })
       .refine(
         (url) => {
           return ALLOWED_DOMAINS.some((domain) => url.startsWith(domain));
@@ -96,22 +107,26 @@ export function VodForm({
   }
   return (
     <div>
-      <DialogHeader className="mb-4">{t("uploadVOD")}</DialogHeader>
+      <DialogHeader className="mb-4">
+        <DialogTitle>{t("uploadVOD")}</DialogTitle>
+      </DialogHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
             name="vodUrl"
             render={({ field }) => (
-              <>
-                <Input
-                  {...field}
-                  type="text"
-                  placeholder={t("inputPlaceholder")}
-                  className="mb-2"
-                />
+              <FormItem>
+                <FormLabel>{t("vodLabel")}</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    placeholder={t("inputPlaceholder")}
+                    {...field}
+                  />
+                </FormControl>
                 <FormMessage />
-              </>
+              </FormItem>
             )}
           />
           <div className="flex gap-2">
