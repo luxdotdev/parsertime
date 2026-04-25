@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import type { $Enums, Kill } from "@prisma/client";
 import { useTranslations } from "next-intl";
+import { useMemo } from "react";
 
 type Fight = {
   kills: Kill[];
@@ -31,24 +32,28 @@ type FlattenedData = {
 export function KillfeedExport({ fights }: { fights: Fight[] }) {
   const t = useTranslations("mapPage.killfeedTable");
 
-  const flattenedData = fights.flatMap((fight) =>
-    fight.kills.map((kill) => ({
-      fight_number: fights.indexOf(fight) + 1,
-      fight_start: fight.start,
-      fight_end: fight.end,
-      event_type: kill.event_type,
-      match_time: kill.match_time,
-      attacker_team: kill.attacker_team,
-      attacker_name: kill.attacker_name,
-      attacker_hero: kill.attacker_hero,
-      victim_team: kill.victim_team,
-      victim_name: kill.victim_name,
-      victim_hero: kill.victim_hero,
-      event_ability: kill.event_ability,
-      event_damage: kill.event_damage,
-      is_critical_hit: kill.is_critical_hit,
-      is_environmental: kill.is_environmental,
-    }))
+  const flattenedData = useMemo(
+    () =>
+      fights.flatMap((fight, fightIndex) =>
+        fight.kills.map((kill) => ({
+          fight_number: fightIndex + 1,
+          fight_start: fight.start,
+          fight_end: fight.end,
+          event_type: kill.event_type,
+          match_time: kill.match_time,
+          attacker_team: kill.attacker_team,
+          attacker_name: kill.attacker_name,
+          attacker_hero: kill.attacker_hero,
+          victim_team: kill.victim_team,
+          victim_name: kill.victim_name,
+          victim_hero: kill.victim_hero,
+          event_ability: kill.event_ability,
+          event_damage: kill.event_damage,
+          is_critical_hit: kill.is_critical_hit,
+          is_environmental: kill.is_environmental,
+        }))
+      ),
+    [fights]
   );
 
   function generateCSV(flattenedData: FlattenedData): string {

@@ -211,10 +211,6 @@ export function KillfeedTable({
   );
 }
 
-// ---------------------------------------------------------------------------
-// Standard table mode (brackets off) — unchanged from original
-// ---------------------------------------------------------------------------
-
 function StandardFight({
   fight,
   fightIndex,
@@ -248,6 +244,16 @@ function StandardFight({
   canvasImportEnabled?: boolean;
   mapDataId?: number;
 }) {
+  const killIndexByKill = new Map<Kill, number>();
+  for (let i = 0; i < fight.kills.length; i++) {
+    killIndexByKill.set(fight.kills[i], i);
+  }
+  const team1Kills = fight.kills.filter(
+    (k) => k.attacker_team === team1
+  ).length;
+  const fightWinner =
+    team1Kills > fight.kills.length / 2 ? team1 : team2;
+
   return (
     <Table>
       <TableCaption>
@@ -266,12 +272,24 @@ function StandardFight({
       </TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-20">{t("time")}</TableHead>
-          <TableHead className="w-80">{t("kill")}</TableHead>
-          <TableHead className="w-20">{t("method")}</TableHead>
-          <TableHead className="w-20">{t("start")}</TableHead>
-          <TableHead className="w-20">{t("end")}</TableHead>
-          <TableHead className="w-20">{t("fightWinner")}</TableHead>
+          <TableHead className="text-muted-foreground w-20 font-mono text-[11px] tracking-[0.06em] uppercase">
+            {t("time")}
+          </TableHead>
+          <TableHead className="text-muted-foreground w-80 font-mono text-[11px] tracking-[0.06em] uppercase">
+            {t("kill")}
+          </TableHead>
+          <TableHead className="text-muted-foreground w-20 font-mono text-[11px] tracking-[0.06em] uppercase">
+            {t("method")}
+          </TableHead>
+          <TableHead className="text-muted-foreground w-20 font-mono text-[11px] tracking-[0.06em] uppercase">
+            {t("start")}
+          </TableHead>
+          <TableHead className="text-muted-foreground w-20 font-mono text-[11px] tracking-[0.06em] uppercase">
+            {t("end")}
+          </TableHead>
+          <TableHead className="text-muted-foreground w-20 font-mono text-[11px] tracking-[0.06em] uppercase">
+            {t("fightWinner")}
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -314,7 +332,7 @@ function StandardFight({
           }
 
           const kill = event.data;
-          const killIndex = fight.kills.indexOf(kill);
+          const killIndex = killIndexByKill.get(kill) ?? 0;
           const isFirstKill = killIndex === 0;
           const activeUlt = options?.showUltKillHighlights
             ? isKillDuringUlt(kill, spans)
@@ -326,8 +344,8 @@ function StandardFight({
               kill={kill}
               fight={fight}
               isFirstKill={isFirstKill}
+              fightWinner={fightWinner}
               team1={team1}
-              team2={team2}
               team1Color={team1Color}
               team2Color={team2Color}
               environmentalString={environmentalString}
@@ -342,16 +360,12 @@ function StandardFight({
   );
 }
 
-// ---------------------------------------------------------------------------
-// Standard table row components
-// ---------------------------------------------------------------------------
-
 function KillRow({
   kill,
   fight,
   isFirstKill,
+  fightWinner,
   team1,
-  team2,
   team1Color,
   team2Color,
   environmentalString,
@@ -362,8 +376,8 @@ function KillRow({
   kill: Kill;
   fight: Fight;
   isFirstKill: boolean;
+  fightWinner: string;
   team1: string;
-  team2: string;
   team1Color: string;
   team2Color: string;
   environmentalString: string;
@@ -399,20 +413,21 @@ function KillRow({
   const killContent = (
     <span className="flex items-center space-x-2">
       <div className="pr-2">
-        <Image
-          src={`/heroes/${toHero(kill.attacker_hero)}.png`}
-          alt=""
-          width={256}
-          height={256}
-          className="h-8 w-8 rounded border-2"
+        <span
+          className="inline-block h-8 w-8 rounded"
           style={{
-            border:
-              kill.attacker_team === team1
-                ? `2px solid ${team1Color}`
-                : `2px solid ${team2Color}`,
+            boxShadow: `0 0 0 2px ${kill.attacker_team === team1 ? team1Color : team2Color}`,
             opacity: kill.attacker_name === kill.victim_name ? 0 : 1,
           }}
-        />
+        >
+          <Image
+            src={`/heroes/${toHero(kill.attacker_hero)}.png`}
+            alt=""
+            width={256}
+            height={256}
+            className="h-8 w-8 rounded"
+          />
+        </span>
       </div>
       <div
         className={cn(
@@ -424,20 +439,21 @@ function KillRow({
       </div>
       <div className="pr-16">&rarr;</div>
       <div className="pr-2">
-        <Image
-          src={`/heroes/${toHero(kill.victim_hero)}.png`}
-          alt=""
-          width={256}
-          height={256}
-          className="h-8 w-8 rounded border-2"
+        <span
+          className="inline-block h-8 w-8 rounded"
           style={{
-            border:
-              kill.victim_team === team1
-                ? `2px solid ${team1Color}`
-                : `2px solid ${team2Color}`,
+            boxShadow: `0 0 0 2px ${kill.victim_team === team1 ? team1Color : team2Color}`,
             opacity: kill.attacker_name === kill.victim_name ? 0 : 1,
           }}
-        />
+        >
+          <Image
+            src={`/heroes/${toHero(kill.victim_hero)}.png`}
+            alt=""
+            width={256}
+            height={256}
+            className="h-8 w-8 rounded"
+          />
+        </span>
       </div>
       <div className="w-32">{kill.victim_name}</div>
     </span>
@@ -447,7 +463,9 @@ function KillRow({
     <TableRow
       style={
         ultHighlightColor
-          ? { borderLeft: `2px solid ${ultHighlightColor}` }
+          ? {
+              backgroundColor: `color-mix(in oklch, ${ultHighlightColor} 8%, transparent)`,
+            }
           : undefined
       }
     >
@@ -456,7 +474,7 @@ function KillRow({
           <button
             type="button"
             className="hover:text-foreground text-muted-foreground cursor-pointer underline-offset-2 hover:underline"
-            title="View in Replay"
+            aria-label="View in Replay"
             onClick={() => goToReplay(kill.match_time)}
           >
             {kill.match_time.toFixed(2)}{" "}
@@ -503,12 +521,7 @@ function KillRow({
         <>
           <TableCell>{toTimestamp(fight.start)}</TableCell>
           <TableCell>{toTimestamp(fight.end)}</TableCell>
-          <TableCell>
-            {fight.kills.filter((k) => k.attacker_team === team1).length >
-            fight.kills.length / 2
-              ? team1
-              : team2}
-          </TableCell>
+          <TableCell>{fightWinner}</TableCell>
         </>
       ) : (
         <>

@@ -122,6 +122,7 @@ export async function Killfeed({
               strokeLinejoin="round"
               strokeWidth="2"
               className="text-muted-foreground h-4 w-4"
+              aria-hidden="true"
             >
               <circle cx="12" cy="12" r="10" />
               <polyline points="12 6 12 12 16 14" />
@@ -152,6 +153,7 @@ export async function Killfeed({
               strokeLinejoin="round"
               strokeWidth="2"
               className="text-muted-foreground h-4 w-4"
+              aria-hidden="true"
             >
               <circle cx="12" cy="12" r="10" />
               <line x1="22" x2="18" y1="12" y2="12" />
@@ -184,6 +186,7 @@ export async function Killfeed({
               strokeLinejoin="round"
               strokeWidth="2"
               className="text-muted-foreground h-4 w-4"
+              aria-hidden="true"
             >
               <circle cx="9" cy="12" r="1" />
               <circle cx="15" cy="12" r="1" />
@@ -218,6 +221,7 @@ export async function Killfeed({
               strokeLinejoin="round"
               strokeWidth="2"
               className="text-muted-foreground h-4 w-4"
+              aria-hidden="true"
             >
               <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
               <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />

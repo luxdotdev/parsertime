@@ -48,7 +48,7 @@ export function KillfeedControls({
         </PopoverHeader>
         <div className="flex flex-col gap-3">
           <fieldset>
-            <legend className="text-muted-foreground mb-2 text-[11px] font-medium tracking-wide uppercase">
+            <legend className="text-muted-foreground mb-2 font-mono text-xs tracking-[0.06em] uppercase">
               {t("viewMode")}
             </legend>
             <div className="flex flex-col gap-2">
@@ -60,7 +60,7 @@ export function KillfeedControls({
                   >
                     {t("timelineView")}
                   </Label>
-                  <span className="text-muted-foreground text-[10px] leading-tight">
+                  <span className="text-muted-foreground text-xs leading-tight">
                     {t("timelineViewDescription")}
                   </span>
                 </div>
@@ -76,7 +76,7 @@ export function KillfeedControls({
           <Separator />
 
           <fieldset disabled={ultOptionsDisabled} className="group">
-            <legend className="text-muted-foreground mb-2 text-[11px] font-medium tracking-wide uppercase group-disabled:opacity-50">
+            <legend className="text-muted-foreground mb-2 font-mono text-xs tracking-[0.06em] uppercase group-disabled:opacity-50">
               {t("ultSection")}
             </legend>
             <div className="flex flex-col gap-2 group-disabled:opacity-50">
