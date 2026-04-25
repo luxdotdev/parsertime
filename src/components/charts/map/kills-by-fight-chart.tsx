@@ -103,8 +103,12 @@ export function KillsByFightChart({ fights, teamNames }: Props) {
     return acc;
   }, [fights, teamNames]);
 
-  const totalTeam1 = data.length ? Math.max(...data.map((d) => d.team1Kills)) : 0;
-  const totalTeam2 = data.length ? Math.abs(Math.min(...data.map((d) => d.team2Kills))) : 0;
+  const totalTeam1 = data.length
+    ? Math.max(...data.map((d) => d.team1Kills))
+    : 0;
+  const totalTeam2 = data.length
+    ? Math.abs(Math.min(...data.map((d) => d.team2Kills)))
+    : 0;
 
   const summary = `Across ${fights.length} fights, ${teamNames[0]} took ${totalTeam1} kills total, ${teamNames[1]} took ${totalTeam2} kills total.`;
 

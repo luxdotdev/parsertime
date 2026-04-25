@@ -1,14 +1,8 @@
 import { DamageByRoundChart } from "@/components/charts/map/damage-by-round-chart";
 import { KillsByFightChart } from "@/components/charts/map/kills-by-fight-chart";
 import { KillsByRoleChart } from "@/components/charts/map/kills-by-role-chart";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
+import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
   TooltipContent,
@@ -25,7 +19,7 @@ async function ChartTooltip() {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <InfoCircledIcon className="h-4 w-4" />
+        <InfoCircledIcon className="text-muted-foreground h-3.5 w-3.5" />
       </TooltipTrigger>
       <TooltipContent className="max-w-[280px]">
         {t.rich("tooltip", {
@@ -52,30 +46,64 @@ async function groupKillsByInterval(id: number, maxInterval: number) {
   let currentGroup: Kill[] = [];
 
   kills.forEach((kill, index) => {
-    // Add the first kill to the current group
     if (currentGroup.length === 0) {
       currentGroup.push(kill);
     } else {
-      // Calculate the time difference between the current kill and the previous one
       const timeDifference = kill.match_time - kills[index - 1].match_time;
 
-      // If the time difference is within the maxInterval, add it to the current group
       if (timeDifference <= maxInterval) {
         currentGroup.push(kill);
       } else {
-        // If the difference is greater than maxInterval, start a new group
         groupedKills.push(currentGroup);
-        currentGroup = [kill]; // Start a new group with the current kill
+        currentGroup = [kill];
       }
     }
   });
 
-  // Add the last group if it's not empty
   if (currentGroup.length > 0) {
     groupedKills.push(currentGroup);
   }
 
   return groupedKills;
+}
+
+type ChartSectionProps = {
+  id: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+  children: React.ReactNode;
+};
+
+function ChartSection({
+  id,
+  eyebrow,
+  title,
+  description,
+  children,
+}: ChartSectionProps) {
+  return (
+    <div className="space-y-3">
+      <div className="space-y-1">
+        <span className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.06em] uppercase">
+          {eyebrow}
+        </span>
+        <div className="flex items-center gap-1.5">
+          <h3
+            id={id}
+            className="font-sans text-base font-semibold tracking-tight"
+          >
+            {title}
+          </h3>
+          <ChartTooltip />
+        </div>
+      </div>
+      <div className="-ml-2">{children}</div>
+      <p className="text-muted-foreground text-xs leading-relaxed">
+        {description}
+      </p>
+    </div>
+  );
 }
 
 export async function MapCharts({ id }: { id: number }) {
@@ -134,70 +162,49 @@ export async function MapCharts({ id }: { id: number }) {
   });
 
   return (
-    <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
-      <Card className="col-span-full block">
-        <CardHeader>
-          <CardTitle>
-            <span className="inline-flex gap-1">
-              {t("killsByFight.title")} <ChartTooltip />
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pl-2">
-          <KillsByFightChart fights={fights} teamNames={teamNames} />
-        </CardContent>
-        <CardFooter>
-          <p className="text-muted-foreground text-xs">
-            {t("killsByFight.description")}
-          </p>
-        </CardFooter>
-      </Card>
-      <Card className="col-span-3">
-        <CardHeader>
-          <CardTitle>
-            <span className="inline-flex gap-1">
-              {t("finalBlowsByRole.title")} <ChartTooltip />
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pl-2">
-          <KillsByRoleChart
-            team1Kills={team1Kills}
-            team2Kills={team2Kills}
-            teamNames={teamNames}
-          />
-        </CardContent>
-        <CardFooter>
-          <p className="text-muted-foreground text-xs">
-            {t("finalBlowsByRole.description")}
-          </p>
-        </CardFooter>
-      </Card>
-      <Card className="col-span-3">
-        <CardHeader>
-          <CardTitle>
-            <span className="inline-flex gap-1">
-              {t("dmgByRound.title")} <ChartTooltip />
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pl-2">
-          <DamageByRoundChart
-            team1DamageByRound={team1DamageByRound.sort(
-              (a, b) => a.round_number - b.round_number
-            )}
-            team2DamageByRound={team2DamageByRound.sort(
-              (a, b) => a.round_number - b.round_number
-            )}
-            teamNames={teamNames}
-          />
-        </CardContent>
-        <CardFooter>
-          <p className="text-muted-foreground text-xs">
-            {t("dmgByRound.description")}
-          </p>
-        </CardFooter>
-      </Card>
-    </div>
+    <section aria-label={t("title")} className="space-y-6">
+      <ChartSection
+        id="kills-by-fight"
+        eyebrow={t("killsByFight.eyebrow")}
+        title={t("killsByFight.title")}
+        description={t("killsByFight.description")}
+      >
+        <KillsByFightChart fights={fights} teamNames={teamNames} />
+      </ChartSection>
+
+      <Separator />
+
+      <ChartSection
+        id="final-blows-by-role"
+        eyebrow={t("finalBlowsByRole.eyebrow")}
+        title={t("finalBlowsByRole.title")}
+        description={t("finalBlowsByRole.description")}
+      >
+        <KillsByRoleChart
+          team1Kills={team1Kills}
+          team2Kills={team2Kills}
+          teamNames={teamNames}
+        />
+      </ChartSection>
+
+      <Separator />
+
+      <ChartSection
+        id="damage-by-round"
+        eyebrow={t("dmgByRound.eyebrow")}
+        title={t("dmgByRound.title")}
+        description={t("dmgByRound.description")}
+      >
+        <DamageByRoundChart
+          team1DamageByRound={team1DamageByRound.sort(
+            (a, b) => a.round_number - b.round_number
+          )}
+          team2DamageByRound={team2DamageByRound.sort(
+            (a, b) => a.round_number - b.round_number
+          )}
+          teamNames={teamNames}
+        />
+      </ChartSection>
+    </section>
   );
 }

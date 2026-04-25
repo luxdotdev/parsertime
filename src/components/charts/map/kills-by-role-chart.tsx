@@ -94,10 +94,12 @@ export function KillsByRoleChart({ team1Kills, team2Kills, teamNames }: Props) {
       {
         name: t("support"),
         team1Kills: team1Kills.filter(
-          (kill) => heroRoleMapping[kill.attacker_hero as HeroName] === "Support"
+          (kill) =>
+            heroRoleMapping[kill.attacker_hero as HeroName] === "Support"
         ).length,
         team2Kills: team2Kills.filter(
-          (kill) => heroRoleMapping[kill.attacker_hero as HeroName] === "Support"
+          (kill) =>
+            heroRoleMapping[kill.attacker_hero as HeroName] === "Support"
         ).length,
       },
     ],
