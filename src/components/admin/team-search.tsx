@@ -117,7 +117,8 @@ export function TeamSearch() {
 
   useEffect(() => {
     void setPage(null);
-  }, [readonlyFilter, dateRange, setPage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [readonlyFilter, dateRange?.from?.getTime(), dateRange?.to?.getTime(), setPage]);
 
   const currentPage = Math.max(1, page);
 
@@ -133,7 +134,8 @@ export function TeamSearch() {
       debouncedSearch,
       sort,
       readonlyFilter,
-      dateRange,
+      dateRange?.from?.toISOString(),
+      dateRange?.to?.toISOString(),
     ],
     queryFn: async () => {
       const params = new URLSearchParams();

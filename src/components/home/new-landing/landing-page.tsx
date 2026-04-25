@@ -9,7 +9,11 @@ import type { SVGProps } from "react";
 import { CtaSection } from "./cta-section";
 import { FeatureSpotlight } from "./feature-spotlight";
 import { FeaturesBento } from "./features-bento";
-import { Hero } from "./hero";
+import dynamic from "next/dynamic";
+
+const Hero = dynamic(() => import("./hero").then((mod) => mod.Hero), {
+  ssr: false,
+});
 import { HowItWorks } from "./how-it-works";
 import { LogoCloud } from "./logo-cloud";
 import { StatsCounter } from "./stats-counter";

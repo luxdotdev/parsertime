@@ -84,17 +84,19 @@ export default async function ScoutingTeamPage(
     props.searchParams,
   ]);
   const teamAbbr = decodeURIComponent(params.teamAbbr);
-  const t = await getTranslations("scoutingPage.team");
 
-  const profile = await AppRuntime.runPromise(
-    ScoutingService.pipe(
-      Effect.flatMap((svc) => svc.getScoutingTeamProfile(teamAbbr))
-    )
-  );
+  const [t, profile, { teams: userTeams }] = await Promise.all([
+    getTranslations("scoutingPage.team"),
+    AppRuntime.runPromise(
+      ScoutingService.pipe(
+        Effect.flatMap((svc) => svc.getScoutingTeamProfile(teamAbbr))
+      )
+    ),
+    getUserTeams(),
+  ]);
   if (!profile) notFound();
 
   const { overview } = profile;
-  const { teams: userTeams } = await getUserTeams();
 
   const userTeamId = resolveScoutForTeamId(searchParams.scoutFor, userTeams);
   const hasUserTeamLink = userTeamId !== null;

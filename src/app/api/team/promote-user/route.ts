@@ -30,31 +30,27 @@ export async function POST(req: NextRequest) {
 
   const { teamId, userId } = body.data;
 
-  const team = await prisma.team.findFirst({
-    where: {
-      id: parseInt(teamId),
-    },
-  });
+  const [team, user, authedUser] = await Promise.all([
+    prisma.team.findFirst({
+      where: { id: parseInt(teamId) },
+      include: { managers: true },
+    }),
+    prisma.user.findFirst({ where: { id: userId } }),
+    AppRuntime.runPromise(
+      UserService.pipe(
+        Effect.flatMap((svc) => svc.getUser(session?.user?.email))
+      )
+    ),
+  ]);
   if (!team) return new Response("Team not found", { status: 404 });
-
-  const user = await prisma.user.findFirst({ where: { id: userId } });
   if (!user) return new Response("User not found", { status: 404 });
-
-  const authedUser = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
-  );
 
   if (!authedUser && !devTokenAuthed) {
     return new Response("Unauthorized", { status: 401 });
   }
 
   if (!devTokenAuthed) {
-    const managers = await prisma.team.findFirst({
-      where: { id: parseInt(teamId) },
-      select: { managers: { where: { userId: authedUser?.id } } },
-    });
-
-    const isManager = managers?.managers.some(
+    const isManager = team.managers.some(
       (manager) => manager.userId === authedUser?.id
     );
 

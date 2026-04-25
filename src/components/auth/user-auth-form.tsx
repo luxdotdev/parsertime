@@ -30,8 +30,13 @@ export function UserAuthForm({
 }: React.HTMLAttributes<HTMLDivElement> & { callbackUrl?: string }) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [email, setEmail] = React.useState("");
+  const [lastSignedInUsing, setLastSignedInUsing] = React.useState<
+    string | null
+  >(null);
 
-  const lastSignedInUsing = localStorage.getItem("lastSignedInUsing");
+  React.useEffect(() => {
+    setLastSignedInUsing(localStorage.getItem("lastSignedInUsing"));
+  }, []);
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();

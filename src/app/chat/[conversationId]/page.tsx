@@ -1,5 +1,11 @@
-import { ChatInterface } from "@/components/chat/chat-interface";
 import { Effect } from "effect";
+import dynamic from "next/dynamic";
+
+const ChatInterface = dynamic(
+  () =>
+    import("@/components/chat/chat-interface").then((mod) => mod.ChatInterface),
+  { ssr: false }
+);
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";

@@ -2,15 +2,17 @@
 
 import { ClientOnly } from "@/lib/client-only";
 import { XMarkIcon } from "@heroicons/react/20/solid";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function BetaBanner() {
   const [isDismissed, setIsDismissed] = useState(false);
+  const [isBeta, setIsBeta] = useState(false);
 
-  if (typeof window !== "undefined") {
-    const url = window.location.href;
-    if (!url.includes("beta.parsertime.app")) return null;
-  }
+  useEffect(() => {
+    setIsBeta(window.location.href.includes("beta.parsertime.app"));
+  }, []);
+
+  if (!isBeta) return null;
 
   return (
     <ClientOnly>
