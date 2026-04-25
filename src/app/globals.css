@@ -127,6 +127,7 @@
   --color-team-2-tritanopia: var(--team-2-tritanopia);
   --color-team-1-protanopia: var(--team-1-protanopia);
   --color-team-2-protanopia: var(--team-2-protanopia);
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
 }
 
 @keyframes collapsible-down {
