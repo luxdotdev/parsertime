@@ -4,7 +4,11 @@ import { AddMapCard } from "@/components/map/add-map";
 import { ClientDate } from "@/components/scrim/client-date";
 import { CompareSelectedButton } from "@/components/scrim/compare-selected-button";
 import { MapCardWithSelection } from "@/components/scrim/map-card-with-selection";
-import { ScrimOverviewCard } from "@/components/scrim/scrim-overview-card";
+import {
+  ScrimOverviewSection,
+  WinLossBadge,
+  WinRateBadge,
+} from "@/components/scrim/scrim-overview-section";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Link } from "@/components/ui/link";
 import {
@@ -12,7 +16,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ScrimService } from "@/data/scrim";
+import { ScrimOverviewService, ScrimService } from "@/data/scrim";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
@@ -149,6 +153,19 @@ export default async function ScrimDashboardPage(
         : Promise.resolve(null),
     ]);
 
+  const overviewData =
+    overviewCardEnabled && maps.length > 0 && teamId
+      ? await AppRuntime.runPromise(
+          ScrimOverviewService.pipe(
+            Effect.flatMap((svc) => svc.getScrimOverview(id, teamId))
+          )
+        )
+      : null;
+  const showOverview =
+    overviewData !== null &&
+    overviewData.mapCount > 0 &&
+    overviewData.teamPlayers.length > 0;
+
   return (
     <DirectionalTransition>
       <DashboardLayout guestMode={visibility.guestMode}>
@@ -172,25 +189,40 @@ export default async function ScrimDashboardPage(
             )}
           </nav>
 
-          <div className="mt-3 flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight">
-              {scrim?.name ?? t("newScrim")}
-            </h1>
-            {hasPerms && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link
-                    href={
-                      `/${params.team}/scrim/${params.scrimId}/edit` as Route
-                    }
-                    aria-label={t("edit")}
-                    className="text-muted-foreground hover:bg-muted hover:text-foreground -mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-colors"
-                  >
-                    <Pencil2Icon className="h-3.5 w-3.5" />
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent>{t("edit")}</TooltipContent>
-              </Tooltip>
+          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+            <div className="flex min-w-0 items-center gap-2">
+              <h1 className="truncate text-2xl font-bold tracking-tight">
+                {scrim?.name ?? t("newScrim")}
+              </h1>
+              {hasPerms && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href={
+                        `/${params.team}/scrim/${params.scrimId}/edit` as Route
+                      }
+                      aria-label={t("edit")}
+                      className="text-muted-foreground hover:bg-muted hover:text-foreground -mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-colors"
+                    >
+                      <Pencil2Icon className="h-3.5 w-3.5" />
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>{t("edit")}</TooltipContent>
+                </Tooltip>
+              )}
+            </div>
+            {showOverview && (
+              <div className="ml-auto flex items-center gap-3">
+                <WinLossBadge
+                  wins={overviewData.wins}
+                  losses={overviewData.losses}
+                  draws={overviewData.draws}
+                />
+                <WinRateBadge
+                  wins={overviewData.wins}
+                  mapCount={overviewData.mapCount}
+                />
+              </div>
             )}
           </div>
 
@@ -232,9 +264,9 @@ export default async function ScrimDashboardPage(
             )}
           </div>
 
-          {overviewCardEnabled && maps.length > 0 && teamId && (
+          {showOverview && (
             <div className="mt-8">
-              <ScrimOverviewCard scrimId={id} teamId={teamId} />
+              <ScrimOverviewSection data={overviewData} />
             </div>
           )}
 
@@ -250,7 +282,7 @@ export default async function ScrimDashboardPage(
             </h2>
 
             {maps.length > 0 ? (
-              <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                 {maps.map((map) => (
                   <MapCardWithSelection
                     key={map.id}

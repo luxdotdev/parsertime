@@ -22,8 +22,8 @@ export default async function ScrimLoading() {
             <h2 className="text-lg font-semibold tracking-tight">
               {t("maps.title")}
             </h2>
-            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {Array.from({ length: 6 }).map((_, index) => (
+            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {Array.from({ length: 8 }).map((_, index) => (
                 <Skeleton
                   // oxlint-disable-next-line react/no-array-index-key -- Skeleton elements are not unique
                   key={index}

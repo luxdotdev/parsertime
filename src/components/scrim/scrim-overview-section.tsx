@@ -1,28 +1,17 @@
-import { CollapsibleCard } from "@/components/scrim/collapsible-card-wrapper";
 import { ScrimOverviewTabs } from "@/components/scrim/scrim-overview-tabs";
 import { Badge } from "@/components/ui/badge";
-import { CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import type { ScrimInsight } from "@/data/scrim/types";
-import { ScrimOverviewService } from "@/data/scrim";
-import { AppRuntime } from "@/data/runtime";
-import { Effect } from "effect";
+import type { ScrimInsight, ScrimOverviewData } from "@/data/scrim/types";
 import { format } from "@/lib/utils";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
   ExclamationTriangleIcon,
-  InfoCircledIcon,
   LightningBoltIcon,
   StarFilledIcon,
 } from "@radix-ui/react-icons";
 
-type ScrimOverviewCardProps = {
-  scrimId: number;
-  teamId: number;
-};
-
-function WinLossBadge({
+export function WinLossBadge({
   wins,
   losses,
   draws,
@@ -52,6 +41,21 @@ function WinLossBadge({
         </>
       )}
     </div>
+  );
+}
+
+export function WinRateBadge({
+  wins,
+  mapCount,
+}: {
+  wins: number;
+  mapCount: number;
+}) {
+  const winRate = mapCount > 0 ? Math.round((wins / mapCount) * 100) : 0;
+  return (
+    <Badge variant="secondary" className="tabular-nums">
+      {winRate}% win rate
+    </Badge>
   );
 }
 
@@ -106,126 +110,70 @@ function InsightIcon({ type }: { type: ScrimInsight["type"] }) {
   }
 }
 
-function InsightChip({ insight }: { insight: ScrimInsight }) {
-  return (
-    <div className="bg-muted/60 border-border flex min-w-0 flex-1 items-start gap-2 rounded-lg border p-3">
-      <span className="mt-0.5 shrink-0">
-        <InsightIcon type={insight.type} />
-      </span>
-      <p className="text-foreground min-w-0 text-xs leading-relaxed">
-        {insight.headline}
-      </p>
-    </div>
-  );
-}
-
-export async function ScrimOverviewCard({
-  scrimId,
-  teamId,
-}: ScrimOverviewCardProps) {
-  const data = await AppRuntime.runPromise(
-    ScrimOverviewService.pipe(
-      Effect.flatMap((svc) => svc.getScrimOverview(scrimId, teamId))
-    )
-  );
-
+export function ScrimOverviewSection({ data }: { data: ScrimOverviewData }) {
   if (data.mapCount === 0 || data.teamPlayers.length === 0) {
     return null;
   }
 
-  const { wins, losses, draws, mapCount, teamTotals, insights } = data;
-
-  const winRate = mapCount > 0 ? Math.round((wins / mapCount) * 100) : 0;
+  const { wins, losses, mapCount, teamTotals, insights } = data;
   const kdDisplay = teamTotals.kdRatio.toFixed(2);
   const totalElims = teamTotals.eliminations;
   const totalDamage = teamTotals.heroDamage;
 
-  const headlineInsight = insights.find(
-    (i) => i.type === "mvp" || i.type === "outlier_positive"
-  );
-
   return (
-    <CollapsibleCard
-      header={
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="space-y-1">
-            <CardTitle className="text-base font-semibold">
-              Scrim Overview
-            </CardTitle>
-            {headlineInsight && (
-              <p className="text-muted-foreground text-sm">
-                {headlineInsight.headline}
-              </p>
-            )}
-          </div>
-          <div className="flex items-center gap-4">
-            <WinLossBadge wins={wins} losses={losses} draws={draws} />
-            <Badge variant="secondary" className="tabular-nums">
-              {winRate}% win rate
-            </Badge>
-          </div>
-        </div>
-      }
-    >
-      <CardContent className="mb-4 space-y-6">
-        {/* Summary stats row */}
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-          <StatSummaryCell
-            label="Maps"
-            value={String(mapCount)}
-            sub={`${wins}W · ${losses}L`}
-          />
-          <span className="bg-border h-4 w-px shrink-0" aria-hidden />
-          <StatSummaryCell
-            label="Team K/D"
-            value={kdDisplay}
-            sub={`${totalElims} elims`}
-          />
-          <span className="bg-border h-4 w-px shrink-0" aria-hidden />
-          <StatSummaryCell
-            label="Total Damage"
-            value={format(Math.round(totalDamage))}
-            sub="hero damage"
-          />
-          <span className="bg-border h-4 w-px shrink-0" aria-hidden />
-          <StatSummaryCell
-            label="Total Healing"
-            value={format(Math.round(teamTotals.healing))}
-            sub="healing dealt"
-          />
-        </div>
+    <section aria-label="Scrim overview" className="space-y-5">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <StatSummaryCell
+          label="Maps"
+          value={String(mapCount)}
+          sub={`${wins}W · ${losses}L`}
+        />
+        <span className="bg-border h-4 w-px shrink-0" aria-hidden />
+        <StatSummaryCell
+          label="Team K/D"
+          value={kdDisplay}
+          sub={`${totalElims} elims`}
+        />
+        <span className="bg-border h-4 w-px shrink-0" aria-hidden />
+        <StatSummaryCell
+          label="Total Damage"
+          value={format(Math.round(totalDamage))}
+          sub="hero damage"
+        />
+        <span className="bg-border h-4 w-px shrink-0" aria-hidden />
+        <StatSummaryCell
+          label="Total Healing"
+          value={format(Math.round(teamTotals.healing))}
+          sub="healing dealt"
+        />
+      </div>
 
-        {insights.length > 0 && (
-          <>
-            <Separator />
-            <section aria-label="Performance insights">
-              <h4 className="text-muted-foreground mb-3 font-mono text-[0.6875rem] font-medium tracking-[0.06em] uppercase">
-                Key Insights
-              </h4>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
-                {insights.map((insight) => (
-                  <InsightChip key={insight.headline} insight={insight} />
-                ))}
-              </div>
-            </section>
-          </>
-        )}
-
-        <Separator />
-        <ScrimOverviewTabs data={data} />
-      </CardContent>
-      <CardFooter className="border-t">
-        <div className="flex items-center gap-1.5">
-          <InfoCircledIcon
-            className="text-muted-foreground h-3.5 w-3.5 shrink-0"
-            aria-hidden
-          />
-          <p className="text-muted-foreground text-xs">
-            Hover over a player&apos;s name to see their performance trend
-            across maps.
-          </p>
+      {insights.length > 0 && (
+        <div>
+          <h2 className="text-muted-foreground mb-2 font-mono text-[11px] tracking-[0.14em] uppercase">
+            Key Insights
+          </h2>
+          <ul className="space-y-1.5">
+            {insights.map((insight) => (
+              <li
+                key={insight.headline}
+                className="flex items-start gap-2 text-sm"
+              >
+                <span className="mt-1 shrink-0">
+                  <InsightIcon type={insight.type} />
+                </span>
+                <span className="text-foreground/90 leading-relaxed">
+                  {insight.headline}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
-      </CardFooter>
-    </CollapsibleCard>
+      )}
+
+      <Separator />
+
+      <ScrimOverviewTabs data={data} />
+    </section>
   );
 }
