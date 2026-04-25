@@ -39,7 +39,7 @@ type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
 >;
 
-type TeamSwitcherProps = {} & PopoverTriggerProps;
+type PlayerSwitcherProps = PopoverTriggerProps;
 
 type MostPlayedHeroesType = {
   player_team: string;
@@ -51,7 +51,7 @@ type MostPlayedHeroesType = {
 export function PlayerSwitcher({
   className,
   mostPlayedHeroes,
-}: TeamSwitcherProps & {
+}: PlayerSwitcherProps & {
   mostPlayedHeroes: MostPlayedHeroesType;
 }) {
   const t = useTranslations("mapPage.playerSwitcher");
@@ -86,39 +86,32 @@ export function PlayerSwitcher({
     }
   }, [mostPlayedHeroes, pathname]);
 
-  function createTeamGroups(playerStats: MostPlayedHeroesType): TeamGroup[] {
+  const teams = React.useMemo(() => {
+    const sorted = [...mostPlayedHeroes]
+      .sort((a, b) => a.player_name.localeCompare(b.player_name))
+      .sort(
+        (a, b) =>
+          heroPriority[heroRoleMapping[a.player_hero as HeroName]] -
+          heroPriority[heroRoleMapping[b.player_hero as HeroName]]
+      );
+
     const teamGroupsMap = new Map<string, TeamGroup>();
-
-    // Organize player stats by team
-    playerStats.forEach((playerStat) => {
+    sorted.forEach((playerStat) => {
       let teamGroup = teamGroupsMap.get(playerStat.player_team);
-
-      // If the team doesn't exist in the map, create it
       if (!teamGroup) {
         teamGroup = { label: playerStat.player_team, players: [] };
         teamGroupsMap.set(playerStat.player_team, teamGroup);
       }
-
-      // Add the player and their most played hero to the team
       teamGroup.players.push({
         label: playerStat.player_name,
         value: playerStat.player_hero,
       });
     });
 
-    // Convert the map to an array
-    return Array.from(teamGroupsMap.values());
-  }
-
-  const teams = createTeamGroups(
-    mostPlayedHeroes
-      .sort((a, b) => a.player_name.localeCompare(b.player_name))
-      .sort(
-        (a, b) =>
-          heroPriority[heroRoleMapping[a.player_hero as HeroName]] -
-          heroPriority[heroRoleMapping[b.player_hero as HeroName]]
-      )
-  ).sort((a, b) => a.label.localeCompare(b.label));
+    return Array.from(teamGroupsMap.values()).sort((a, b) =>
+      a.label.localeCompare(b.label)
+    );
+  }, [mostPlayedHeroes]);
 
   return (
     <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
@@ -165,7 +158,6 @@ export function PlayerSwitcher({
                         <AvatarImage
                           src={`/heroes/${toHero(player.value)}.png`}
                           alt={player.label}
-                          // className="grayscale"
                         />
                         <AvatarFallback>PT</AvatarFallback>
                       </Avatar>
