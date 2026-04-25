@@ -135,7 +135,7 @@ export async function MapCharts({ id }: { id: number }) {
 
   return (
     <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
-      <Card className="col-span-full hidden md:grid">
+      <Card className="col-span-full block">
         <CardHeader>
           <CardTitle>
             <span className="inline-flex gap-1">
@@ -147,7 +147,7 @@ export async function MapCharts({ id }: { id: number }) {
           <KillsByFightChart fights={fights} teamNames={teamNames} />
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-gray-500">
+          <p className="text-muted-foreground text-xs">
             {t("killsByFight.description")}
           </p>
         </CardFooter>
@@ -168,7 +168,7 @@ export async function MapCharts({ id }: { id: number }) {
           />
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-gray-500">
+          <p className="text-muted-foreground text-xs">
             {t("finalBlowsByRole.description")}
           </p>
         </CardFooter>
@@ -193,7 +193,9 @@ export async function MapCharts({ id }: { id: number }) {
           />
         </CardContent>
         <CardFooter>
-          <p className="text-sm text-gray-500">{t("dmgByRound.description")}</p>
+          <p className="text-muted-foreground text-xs">
+            {t("dmgByRound.description")}
+          </p>
         </CardFooter>
       </Card>
     </div>
