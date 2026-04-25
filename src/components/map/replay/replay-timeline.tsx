@@ -17,6 +17,7 @@ type ReplayTimelineProps = {
   team1Name: string;
   team1Color: string;
   team2Color: string;
+  keyboardHintId?: string;
 };
 
 function formatTime(seconds: number): string {
@@ -31,6 +32,7 @@ export function ReplayTimeline({
   team1Name,
   team1Color,
   team2Color,
+  keyboardHintId,
 }: ReplayTimelineProps) {
   const currentTime = useSelector(store, (s) => s.context.currentTime);
   const isPlaying = useSelector(store, (s) => s.context.isPlaying);
@@ -79,7 +81,7 @@ export function ReplayTimeline({
           {roundMarkers.map((m) => (
             <div
               key={`r-${m.position}`}
-              className="absolute top-0 h-6 w-0.5 bg-yellow-500/60"
+              className="bg-primary/60 absolute top-0 h-6 w-0.5"
               style={{ left: `${m.position}%` }}
             />
           ))}
@@ -91,6 +93,8 @@ export function ReplayTimeline({
           step={0.1}
           value={[currentTime]}
           onValueChange={([v]) => store.send({ type: "seek", time: v })}
+          aria-label="Replay scrubber"
+          aria-valuetext={formatTime(currentTime)}
           className="relative z-10"
         />
       </div>
@@ -102,7 +106,7 @@ export function ReplayTimeline({
           type="button"
           onClick={() => store.send({ type: "seek", time: currentTime - 5 })}
           className="text-muted-foreground hover:text-foreground transition-colors"
-          title="Back 5s"
+          aria-label="Skip back 5 seconds"
         >
           <SkipBack className="h-4 w-4" />
         </button>
@@ -112,7 +116,7 @@ export function ReplayTimeline({
           type="button"
           onClick={() => store.send({ type: "togglePlayback" })}
           className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:opacity-90"
-          title={isPlaying ? "Pause" : "Play"}
+          aria-label={isPlaying ? "Pause" : "Play"}
         >
           {isPlaying ? (
             <Pause className="h-4 w-4" />
@@ -126,17 +130,23 @@ export function ReplayTimeline({
           type="button"
           onClick={() => store.send({ type: "seek", time: currentTime + 5 })}
           className="text-muted-foreground hover:text-foreground transition-colors"
-          title="Forward 5s"
+          aria-label="Skip forward 5 seconds"
         >
           <SkipForward className="h-4 w-4" />
         </button>
 
         {/* Speed selector */}
-        <div className="flex items-center gap-1">
+        <div
+          role="radiogroup"
+          aria-label="Playback speed"
+          className="flex items-center gap-1"
+        >
           {PLAYBACK_SPEEDS.map((speed) => (
             <button
               key={speed}
               type="button"
+              role="radio"
+              aria-checked={playbackSpeed === speed}
               onClick={() => store.send({ type: "setSpeed", speed })}
               className={`rounded px-1.5 py-0.5 text-xs font-medium transition-colors ${
                 playbackSpeed === speed
@@ -156,7 +166,10 @@ export function ReplayTimeline({
       </div>
 
       {/* Keyboard hint */}
-      <div className="text-muted-foreground mt-2 text-[10px]">
+      <div
+        id={keyboardHintId}
+        className="text-muted-foreground mt-2 text-[10px]"
+      >
         Space: play/pause · Arrow keys: seek 5s (Shift: 1s) · [ / ]: speed
       </div>
     </div>

@@ -75,7 +75,15 @@ function ReplayPlayerMarkerInner({
       <motion.button
         type="button"
         onClick={onClick}
-        className="flex items-center justify-center overflow-hidden rounded-full shadow-lg transition-transform hover:scale-110"
+        aria-label={`${playerName}, ${heroName}${isDead ? ", eliminated" : ""}${isUlting ? ", ultimate active" : ""}`}
+        aria-pressed={isSelected}
+        className={`bg-popover/90 flex items-center justify-center overflow-hidden rounded-full transition-transform hover:scale-110 ${
+          isUlting
+            ? "ring-primary/70 ring-offset-background ring-2 ring-offset-2"
+            : isSelected
+              ? "ring-primary ring-2"
+              : ""
+        }`}
         animate={
           prefersReducedMotion
             ? undefined
@@ -98,12 +106,6 @@ function ReplayPlayerMarkerInner({
           width: size,
           height: size,
           border: `3px solid ${color}`,
-          backgroundColor: "rgba(0,0,0,0.6)",
-          boxShadow: isUlting
-            ? `0 0 12px 4px ${color}`
-            : isSelected
-              ? `0 0 8px 2px ${color}`
-              : undefined,
         }}
       >
         <Image
@@ -114,13 +116,13 @@ function ReplayPlayerMarkerInner({
           className={`h-full w-full rounded-full object-cover ${isDead ? "grayscale" : ""}`}
         />
         {isDead && (
-          <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
-            <Skull className="h-4 w-4 text-red-400" />
+          <div className="bg-popover/70 absolute inset-0 flex items-center justify-center rounded-full">
+            <Skull className="text-destructive h-4 w-4" />
           </div>
         )}
       </motion.button>
       <span
-        className="mt-0.5 rounded bg-black/70 px-1 text-[10px] leading-tight font-medium whitespace-nowrap"
+        className="bg-popover/90 mt-0.5 rounded px-1 text-[10px] leading-tight font-medium whitespace-nowrap"
         style={{ color }}
       >
         {playerName}

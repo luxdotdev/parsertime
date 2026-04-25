@@ -20,7 +20,14 @@ import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import { useReplayTimeParam } from "@/components/map/map-tabs";
 import { createReplayStore } from "@/stores/replay-store";
 import { useSelector } from "@xstate/store/react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { ReplayMap } from "./replay-map";
 import { ReplayTimeline } from "./replay-timeline";
 import { ReplayEventFeed } from "./replay-event-feed";
@@ -252,6 +259,7 @@ export function ReplayViewer({
   );
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const keyboardHintId = useId();
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -321,6 +329,9 @@ export function ReplayViewer({
       // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus required for keyboard playback controls
       tabIndex={0}
       role="application"
+      aria-label="Replay viewer"
+      aria-keyshortcuts="Space ArrowLeft ArrowRight"
+      aria-describedby={keyboardHintId}
       onKeyDown={handleKeyDown}
     >
       {/* Player list */}
@@ -367,6 +378,7 @@ export function ReplayViewer({
         team1Name={team1Name}
         team1Color={team1Color}
         team2Color={team2Color}
+        keyboardHintId={keyboardHintId}
       />
     </div>
   );

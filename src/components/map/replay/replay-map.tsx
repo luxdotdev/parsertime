@@ -106,6 +106,14 @@ export function ReplayMap({
     };
   }
 
+  const viewRef = useRef(view);
+  useEffect(() => {
+    viewRef.current = view;
+  }, [view]);
+
+  const dragRafRef = useRef<number | null>(null);
+  const pendingDragRef = useRef<{ dx: number; dy: number } | null>(null);
+
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     if (e.button === 0) {
       draggingRef.current = true;
@@ -119,15 +127,45 @@ export function ReplayMap({
     const dx = e.clientX - dragStartRef.current.x;
     const dy = e.clientY - dragStartRef.current.y;
     dragStartRef.current = { x: e.clientX, y: e.clientY };
-    setView((v) => ({
-      ...v,
-      offsetX: v.offsetX + dx,
-      offsetY: v.offsetY + dy,
-    }));
+    const pending = pendingDragRef.current ?? { dx: 0, dy: 0 };
+    pending.dx += dx;
+    pending.dy += dy;
+    pendingDragRef.current = pending;
+    if (dragRafRef.current != null) return;
+    dragRafRef.current = requestAnimationFrame(() => {
+      dragRafRef.current = null;
+      const queued = pendingDragRef.current;
+      pendingDragRef.current = null;
+      if (!queued) return;
+      const v = viewRef.current;
+      viewRef.current = {
+        ...v,
+        offsetX: v.offsetX + queued.dx,
+        offsetY: v.offsetY + queued.dy,
+      };
+      setView(viewRef.current);
+    });
   }, []);
 
   const handlePointerUp = useCallback(() => {
-    draggingRef.current = false;
+    if (draggingRef.current) {
+      draggingRef.current = false;
+      if (dragRafRef.current != null) {
+        cancelAnimationFrame(dragRafRef.current);
+        dragRafRef.current = null;
+      }
+      const queued = pendingDragRef.current;
+      pendingDragRef.current = null;
+      if (queued) {
+        const v = viewRef.current;
+        viewRef.current = {
+          ...v,
+          offsetX: v.offsetX + queued.dx,
+          offsetY: v.offsetY + queued.dy,
+        };
+      }
+      setView(viewRef.current);
+    }
   }, []);
 
   useEffect(() => {
@@ -264,7 +302,7 @@ export function ReplayMap({
         })}
 
       {/* Zoom indicator */}
-      <div className="absolute right-2 bottom-2 rounded-md bg-black/60 px-2.5 py-1.5 text-xs text-white/60 backdrop-blur-sm">
+      <div className="bg-popover/95 text-muted-foreground absolute right-2 bottom-2 rounded-md border px-2.5 py-1.5 text-xs">
         {Math.round(view.zoom * 100)}% · Scroll to zoom · Drag to pan
       </div>
     </div>
