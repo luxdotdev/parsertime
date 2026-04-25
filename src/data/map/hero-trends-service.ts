@@ -484,9 +484,7 @@ export const make: Effect.Effect<MapHeroTrendsServiceInterface> = Effect.gen(
               operation: "fetch recent map data records",
               cause: error,
             }),
-        }).pipe(
-          Effect.withSpan("map.hero_trends.fetchMapDataRecords")
-        );
+        }).pipe(Effect.withSpan("map.hero_trends.fetchMapDataRecords"));
 
         const maps: MapDataRecord[] = mapDataRecords
           .map((record) => ({

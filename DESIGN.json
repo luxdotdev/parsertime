@@ -111,24 +111,74 @@
       }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Marketing hero titles and major page headlines on long-form surfaces." },
-      "headline": { "displayName": "Headline", "purpose": "Page titles inside the product. Default h1 for app pages." },
-      "title": { "displayName": "Title", "purpose": "Card titles, section labels, dialog headings." },
-      "body": { "displayName": "Body", "purpose": "All running content. 65–75ch on prose; product UI ignores measure." },
-      "label": { "displayName": "Label (caps + tracked)", "purpose": "Metadata layer: column headers, eyebrows, taxonomy tags, affordance labels." },
-      "numeral": { "displayName": "Tabular Numeral", "purpose": "Comparable numbers in stat columns, leaderboards, deltas. Aligns on the digit." }
+      "display": {
+        "displayName": "Display",
+        "purpose": "Marketing hero titles and major page headlines on long-form surfaces."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page titles inside the product. Default h1 for app pages."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card titles, section labels, dialog headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "All running content. 65–75ch on prose; product UI ignores measure."
+      },
+      "label": {
+        "displayName": "Label (caps + tracked)",
+        "purpose": "Metadata layer: column headers, eyebrows, taxonomy tags, affordance labels."
+      },
+      "numeral": {
+        "displayName": "Tabular Numeral",
+        "purpose": "Comparable numbers in stat columns, leaderboards, deltas. Aligns on the digit."
+      }
     },
     "shadows": [
-      { "name": "xs", "value": "0 1px 2px 0 oklch(0 0 0 / 0.05)", "purpose": "Default card lift, plus inputs and outline buttons. Almost imperceptible — its job is to nudge the eye that a surface is liftable, not to create depth theater." },
-      { "name": "ring-card-dark", "value": "inset 0 0 0 1px oklch(1 0 0 / 0.10)", "purpose": "Card ring in dark mode where shadow-xs is invisible against the deep page." },
-      { "name": "ring-card-light", "value": "inset 0 0 0 1px oklch(0.185 0.005 250 / 0.10)", "purpose": "Card ring in light mode, paired with shadow-xs." }
+      {
+        "name": "xs",
+        "value": "0 1px 2px 0 oklch(0 0 0 / 0.05)",
+        "purpose": "Default card lift, plus inputs and outline buttons. Almost imperceptible — its job is to nudge the eye that a surface is liftable, not to create depth theater."
+      },
+      {
+        "name": "ring-card-dark",
+        "value": "inset 0 0 0 1px oklch(1 0 0 / 0.10)",
+        "purpose": "Card ring in dark mode where shadow-xs is invisible against the deep page."
+      },
+      {
+        "name": "ring-card-light",
+        "value": "inset 0 0 0 1px oklch(0.185 0.005 250 / 0.10)",
+        "purpose": "Card ring in light mode, paired with shadow-xs."
+      }
     ],
     "motion": [
-      { "name": "duration-exit", "value": "150ms", "purpose": "View-transition exit animations." },
-      { "name": "duration-enter", "value": "210ms", "purpose": "View-transition enter animations." },
-      { "name": "duration-move", "value": "400ms", "purpose": "View-transition spatial movement (slide, scale)." },
-      { "name": "ease-collapsible", "value": "cubic-bezier(0.215, 0.61, 0.355, 1)", "purpose": "Collapsible open/close (Radix collapsible-down / collapsible-up keyframes)." },
-      { "name": "ease-out", "value": "cubic-bezier(0, 0, 0.2, 1)", "purpose": "Default easing for state transitions and entrances. Exponential ease-out, no bounce." }
+      {
+        "name": "duration-exit",
+        "value": "150ms",
+        "purpose": "View-transition exit animations."
+      },
+      {
+        "name": "duration-enter",
+        "value": "210ms",
+        "purpose": "View-transition enter animations."
+      },
+      {
+        "name": "duration-move",
+        "value": "400ms",
+        "purpose": "View-transition spatial movement (slide, scale)."
+      },
+      {
+        "name": "ease-collapsible",
+        "value": "cubic-bezier(0.215, 0.61, 0.355, 1)",
+        "purpose": "Collapsible open/close (Radix collapsible-down / collapsible-up keyframes)."
+      },
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0, 0, 0.2, 1)",
+        "purpose": "Default easing for state transitions and entrances. Exponential ease-out, no bounce."
+      }
     ],
     "breakpoints": [
       { "name": "sm", "value": "640px" },
@@ -225,16 +275,56 @@
       "Motion is functional only — view transitions, state changes, reduced-motion honored"
     ],
     "rules": [
-      { "name": "The Amber-as-Signal Rule", "body": "Amber is for primary CTAs, focus rings, and selected/active state — and nothing else. Hover state must use a subtler treatment (slightly brighter border, slight surface lift). If hover and selected both turn amber, 'selected' loses its signal value and every card reads as winning on mouseover.", "section": "colors" },
-      { "name": "The Mode-Aware Amber Rule", "body": "Light mode uses deep amber (oklch(0.55 0.17 68) + near-white foreground); dark mode uses bright amber (oklch(0.82 0.17 78) + near-black foreground). Both clear WCAG AA when used as text on the page background. Don't reach for the dark-mode amber in light mode — it fails contrast on text-primary against bg-background and the active nav item disappears.", "section": "colors" },
-      { "name": "The Cool-Neutral, Warm-Signal Rule", "body": "Neutrals carry hue ~250°, chroma 0.003–0.005. Amber lands at hue ~68–78°, chroma 0.17. The contrast between cool ground and warm figure is the Bloomberg-terminal move — it is what makes the accent read as gold.", "section": "colors" },
-      { "name": "The Tooltip Surface Rule", "body": "Chart tooltips render on --popover neutral surfaces with a border, never on --primary amber. Amber backgrounds wreck contrast for team-1 cyan and team-2 red-orange data text inside them.", "section": "colors" },
-      { "name": "The Team-Token Rule", "body": "Any chart comparing entities (teams, heroes, players) uses --team-* tokens with the active colorblind variant honored. The chart-1..5 ramp is for categorical metrics without inherent entity identity.", "section": "colors" },
-      { "name": "The Describing-vs.-Doing Rule", "body": "Caps + Geist Mono + tracked-out is for text that labels, describes, or taxonomizes. Sentence case in Geist Sans is for text that is content or asks the user to act. Caps everywhere is shouty and AI-templated; caps nowhere collapses metadata into content.", "section": "typography" },
-      { "name": "The Tabular-Numeral Rule", "body": "Any number that compares to another number renders in Geist Mono with font-feature-settings: 'tnum'. Mixed proportional digits in stat columns is the kind of small unprofessionalism that disqualifies a tool from a coaching workflow.", "section": "typography" },
-      { "name": "The No-Mono-As-Vibe Rule", "body": "Geist Mono is functional — labels, numerals, IDs, code. It is not used to make body prose look 'technical,' and it is not used on CTAs.", "section": "typography" },
-      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest. Depth is conveyed by tonal layering and a 1px ring at low contrast. A shadow only appears on shadow-xs cards and on floating menus/popovers/dialogs at the framework level — never as a decorative lift on landing-page hero cards.", "section": "elevation" },
-      { "name": "The Ring-Over-Shadow Rule", "body": "In dark mode, cards use ring-1 ring-foreground/10 instead of a shadow because shadows over a oklch(0.14 ...) background are invisible. The ring uses a translucent white so it picks up the surface tint correctly when stacked.", "section": "elevation" }
+      {
+        "name": "The Amber-as-Signal Rule",
+        "body": "Amber is for primary CTAs, focus rings, and selected/active state — and nothing else. Hover state must use a subtler treatment (slightly brighter border, slight surface lift). If hover and selected both turn amber, 'selected' loses its signal value and every card reads as winning on mouseover.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mode-Aware Amber Rule",
+        "body": "Light mode uses deep amber (oklch(0.55 0.17 68) + near-white foreground); dark mode uses bright amber (oklch(0.82 0.17 78) + near-black foreground). Both clear WCAG AA when used as text on the page background. Don't reach for the dark-mode amber in light mode — it fails contrast on text-primary against bg-background and the active nav item disappears.",
+        "section": "colors"
+      },
+      {
+        "name": "The Cool-Neutral, Warm-Signal Rule",
+        "body": "Neutrals carry hue ~250°, chroma 0.003–0.005. Amber lands at hue ~68–78°, chroma 0.17. The contrast between cool ground and warm figure is the Bloomberg-terminal move — it is what makes the accent read as gold.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tooltip Surface Rule",
+        "body": "Chart tooltips render on --popover neutral surfaces with a border, never on --primary amber. Amber backgrounds wreck contrast for team-1 cyan and team-2 red-orange data text inside them.",
+        "section": "colors"
+      },
+      {
+        "name": "The Team-Token Rule",
+        "body": "Any chart comparing entities (teams, heroes, players) uses --team-* tokens with the active colorblind variant honored. The chart-1..5 ramp is for categorical metrics without inherent entity identity.",
+        "section": "colors"
+      },
+      {
+        "name": "The Describing-vs.-Doing Rule",
+        "body": "Caps + Geist Mono + tracked-out is for text that labels, describes, or taxonomizes. Sentence case in Geist Sans is for text that is content or asks the user to act. Caps everywhere is shouty and AI-templated; caps nowhere collapses metadata into content.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular-Numeral Rule",
+        "body": "Any number that compares to another number renders in Geist Mono with font-feature-settings: 'tnum'. Mixed proportional digits in stat columns is the kind of small unprofessionalism that disqualifies a tool from a coaching workflow.",
+        "section": "typography"
+      },
+      {
+        "name": "The No-Mono-As-Vibe Rule",
+        "body": "Geist Mono is functional — labels, numerals, IDs, code. It is not used to make body prose look 'technical,' and it is not used on CTAs.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Surfaces are flat at rest. Depth is conveyed by tonal layering and a 1px ring at low contrast. A shadow only appears on shadow-xs cards and on floating menus/popovers/dialogs at the framework level — never as a decorative lift on landing-page hero cards.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Ring-Over-Shadow Rule",
+        "body": "In dark mode, cards use ring-1 ring-foreground/10 instead of a shadow because shadows over a oklch(0.14 ...) background are invisible. The ring uses a translucent white so it picks up the surface tint correctly when stacked.",
+        "section": "elevation"
+      }
     ],
     "dos": [
       "Do keep amber for primary CTAs, focus rings, and selected/active state. Light mode: deep amber oklch(0.55 0.17 68) + near-white foreground oklch(0.985 0.003 250). Dark mode: bright amber oklch(0.82 0.17 78) + near-black foreground oklch(0.185 0.02 80). Both clear WCAG AA when used as text on the page background.",

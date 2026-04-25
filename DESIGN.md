@@ -159,6 +159,7 @@ The system is **achromatic-first with a single amber accent**. Neutrals are very
 This system explicitly rejects the gamer-aesthetic AI palette (cyan-on-near-black, purple-to-blue gradients, neon accents on dark). It rejects identical icon-heading-blurb dashboard bento grids, sparklines as decoration, glow/gradient hero cards, gradient text, and side-stripe accent borders. Caps + mono + tracked-out is the metadata layer for column headers and taxonomy tags — never the default voice.
 
 **Key Characteristics:**
+
 - Achromatic-first with one signal hue (amber `oklch(0.82 0.17 78)`)
 - Cool-tinted neutrals (hue 250°, chroma 0.003–0.005)
 - Dark by default, light fully first-class
@@ -172,13 +173,16 @@ This system explicitly rejects the gamer-aesthetic AI palette (cyan-on-near-blac
 A cool-tinted achromatic spine with one warm amber signal hue. Team-identity and chart colors carry the rest of the chromatic weight; the brand hue is reserved for user intent and brand moments.
 
 ### Primary
+
 - **Signal Amber, light mode** (`oklch(0.55 0.17 68)`): Primary CTAs, focus rings, selected/active state (open tab, highlighted card, active nav item), and brand moments on marketing. Paired with near-white foreground `oklch(0.985 0.003 250)`. Deep enough to clear WCAG AA when used as text on the near-white page background — that's the active-nav case (`text-primary` on a `bg-background` surface) the dark-mode doctrine alone could not cover.
 - **Signal Amber, dark mode** (`oklch(0.82 0.17 78)`): Same role, brighter pairing. Paired with near-black foreground `oklch(0.185 0.02 80)`. The brightness keeps amber readable as text on the deep `oklch(0.14 ...)` page and gives buttons a confident gold lift.
 
 The amber identity is shared across modes — same hue family, same role, same place in the system. The lightness shifts (0.55 vs 0.82) are the price of clearing contrast in both themes; the token is no longer mode-independent.
 
 ### Tertiary (chart ramp)
+
 The amber-family chart ramp lives entirely in the brand hue but uses **wide lightness intervals** so adjacent slices in a binary pie are clearly distinguishable. A tight monochromatic ramp failed; a non-amber gray looked dead; multi-hue palettes felt candy-ish. The ordering below maximizes contrast for the common 2-series case (binary pies, active/inactive splits).
+
 - **Hero Amber** (`chart-1`, `oklch(0.55 0.17 68)` light / `oklch(0.82 0.17 78)` dark): Matches `--primary`. The hero shade.
 - **Deep Bronze** (`chart-2`, `oklch(0.32 0.09 58)` light / `oklch(0.48 0.11 68)` dark): A large lightness jump from chart-1 — same family, opposite end of the scale — so binary pies read instantly.
 - **Pale Cream Amber** (`chart-3`, `oklch(0.72 0.16 78)` light / `oklch(0.92 0.1 88)` dark): The "third direction" shade.
@@ -186,7 +190,9 @@ The amber-family chart ramp lives entirely in the brand hue but uses **wide ligh
 - **Dark Umber** (`chart-5`, `oklch(0.22 0.04 50)` light / `oklch(0.35 0.06 55)` dark): Near the contrast floor, for deep backgrounds or rare 5th categories.
 
 ### Neutral
+
 The cool tint (~250° hue, 0.003–0.005 chroma) is imperceptible as blue but flips amber from mustard to gold by contrast. Pure grays would flatten the system; warm-tinted neutrals would tip it into sepia.
+
 - **Page Background** (light `oklch(0.985 0.003 250)` / dark `oklch(0.14 0.003 250)`): Body surface. Dark mode runs deep so cards lift cleanly off it.
 - **Card Surface** (light `oklch(0.998 0.002 250)` / dark `oklch(0.175 0.004 250)`): Card / popover background. In dark mode, sits one step lighter than the page so layering works without shadows.
 - **Foreground** (light `oklch(0.185 0.005 250)` / dark `oklch(0.98 0.002 250)`): Body text and primary content.
@@ -194,7 +200,9 @@ The cool tint (~250° hue, 0.003–0.005 chroma) is imperceptible as blue but fl
 - **Border** (light `oklch(0.915 0.004 250)` / dark `oklch(1 0 0 / 10%)`): Card rings, dividers, input strokes. Dark mode uses a translucent white so borders pick up the surface tint correctly when stacked.
 
 ### Team Identity (semantic)
+
 Load-bearing — team identity is a data primitive in this product. Each team token has off / deuteranopia / tritanopia / protanopia variants, and the active variant is a user-level preference. Charts that compare entities (teams, heroes, players) must use these tokens or an explicit per-entity palette, never the chart-1..5 ramp.
+
 - **Team 1** (default `oklch(0.753 0.154 232)` — cyan-leaning): Home team identity.
 - **Team 2** (default `oklch(0.622 0.224 17.5)` — red-orange): Opposing team identity.
 
@@ -219,6 +227,7 @@ Load-bearing — team identity is a data primitive in this product. Each team to
 **Character.** Geist is Vercel's house sans — neutral, quietly geometric, well-tuned at small sizes. The pairing fits the trader-terminal direction: precise, restrained, never decorative. Geist Mono handles tabular numerals, IDs, hashes, stat-column figures, and the metadata layer of caps-and-tracked labels. It is never used as "technical vibes" decoration on prose.
 
 ### Hierarchy
+
 - **Display** (700, `1.875rem` / 30px, line-height 1.15, tracking -0.01em): Marketing hero titles and major page headlines on long-form surfaces.
 - **Headline** (700, `1.5rem` / 24px, line-height 1.2): Page titles inside the product. The default `h1` for app pages.
 - **Title** (600, `1.125rem` / 18px, line-height 1.3): Card titles, section labels, dialog headings. The default `h2` / `h3` weight in product UI.
@@ -241,6 +250,7 @@ The system is **flat-by-default with surface-tonal layering**. Cards lift off th
 Depth in this product is conveyed by: tonal layer (page → card → popover), border/ring (1px, very low contrast), and the active-state amber accent. Drop shadows are a polish tool for popovers and floating menus, never a generalized "depth" trick.
 
 ### Shadow Vocabulary
+
 - **xs** (`box-shadow: 0 1px 2px 0 oklch(0 0 0 / 0.05)`): The default card shadow, plus inputs and outline buttons. Almost imperceptible — its job is to nudge the eye that a surface is liftable, not to create depth theater.
 
 ### Named Rules
@@ -252,6 +262,7 @@ Depth in this product is conveyed by: tonal layer (page → card → popover), b
 ## 5. Components
 
 ### Buttons
+
 - **Shape:** `rounded-md` corners (8px). Default size 36px tall, x-padding 10px, x-small 24px, small 32px, large 40px. The radius narrows by 2px at smaller sizes (`rounded-[min(var(--radius-md),10px)]` for `sm`, `8px` for `xs`) to keep optical roundness consistent.
 - **Primary:** `bg-primary text-primary-foreground` — bright amber on near-black in dark mode, deep amber on near-white in light mode. Hover dims to 80% opacity (`hover:bg-primary/80`); selected/expanded state stays at full amber.
 - **Outline:** Transparent background with `border-border`; hover swaps to `bg-muted text-foreground`. In dark mode, the outline button picks up `bg-input/30` for a subtle filled feel. `aria-expanded:true` matches the hover surface so dropdown triggers stay anchored when open.
@@ -263,6 +274,7 @@ Depth in this product is conveyed by: tonal layer (page → card → popover), b
 - **Icon sizing:** Auto-sized SVG (`size-4` default, `size-3` at xs). Icon-only variants use the matching square size.
 
 ### Cards
+
 - **Corner Style:** `rounded-xl` (14px).
 - **Background:** `bg-card` — one step lighter than the page in dark mode, near-white in light. The card never shares the page background.
 - **Shadow Strategy:** `shadow-xs` plus `ring-1 ring-foreground/10`. The ring carries depth in dark mode where `shadow-xs` is invisible; the shadow carries depth in light mode where the ring is faint.
@@ -271,32 +283,38 @@ Depth in this product is conveyed by: tonal layer (page → card → popover), b
 - **Image edge:** `*:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl` — full-bleed images at the top or bottom of a card stay flush with the card's corner radius.
 
 ### Inputs / Fields
+
 - **Style:** `border-input` 1px stroke, transparent background in light, `bg-input/30` in dark. `rounded-md` (8px), 36px tall, `px-2.5 py-1`. `text-base` mobile / `text-sm` desktop so iOS doesn't auto-zoom on focus.
 - **Focus:** `border-ring` swap and `ring-[3px] ring-ring/50` — the same amber 3px ring buttons use. No glow, no animation; the ring snaps in instantly.
 - **Error / Invalid:** `aria-invalid:border-destructive` plus `aria-invalid:ring-destructive/20` (40% in dark). The error state is the same pattern as focus, just in destructive red.
 - **Disabled:** `disabled:opacity-50 disabled:pointer-events-none`. No background change — the opacity drop is sufficient signal.
 
 ### Badges / Chips
+
 - **Style:** `rounded-sm` (6px), 20px tall, `px-2 py-0.5`, `text-xs` Geist Sans. Filled variant uses `bg-secondary` (or `bg-muted`) with `text-secondary-foreground`. Outlined variant uses `border` with transparent background.
 - **State:** Active/selected badges shift to `bg-primary text-primary-foreground` — the same amber-as-signal rule as buttons.
 
 ### Navigation
+
 - **Style:** Sidebar uses `bg-sidebar` (slightly lighter than `bg-background` in dark mode, slightly lighter than `bg-card` in light). Active nav item picks up `bg-sidebar-accent` and `text-sidebar-accent-foreground`; the active-active state (current route) gets the amber `bg-sidebar-primary` token.
 - **Typography:** Body Geist Sans for nav labels — caps treatment is reserved for sidebar group headers (the metadata layer).
 - **Mobile:** Sidebar collapses behind a sheet trigger; on phones we surface a bottom-anchored navigation strip with the same amber-as-active rule.
 
 ### Charts
+
 - **Library:** Recharts, restyled. Defaults are a starting point, not a destination.
 - **Tooltip:** Always `bg-popover` with `border-border`, `rounded-md`, body Geist Sans for category labels, Geist Mono with `tnum` for values. Never amber background — see the Tooltip Surface Rule.
 - **Color encoding:** Categorical metrics use the `chart-1..5` ramp. Entity comparisons (teams, heroes, players) use `--team-*` tokens with the active colorblind variant honored. Wins/losses use destructive red and primary amber respectively.
 - **Axes / labels:** Geist Mono caps for axis labels, body Geist Sans for legend entries. Gridlines pick up `border-border` at 30–40% opacity.
 
 ### View Transitions (signature)
+
 The product runs `view-transition-name` on persistent surfaces (site header, the active map card transitioning to a map detail page). Three transition styles in use: `fade-in`/`fade-out` (default), `slide-up`/`slide-down` (vertical navigation), `nav-forward`/`nav-back` (horizontal directional navigation), and `expand-map`/`contract-map` (the map card → map page flourish). Timing tokens: `--duration-exit: 150ms`, `--duration-enter: 210ms`, `--duration-move: 400ms`. Reduced motion zeroes all three.
 
 ## 6. Do's and Don'ts
 
 ### Do:
+
 - **Do** keep amber for primary CTAs, focus rings, and selected/active state. Light mode: deep amber `oklch(0.55 0.17 68)` + near-white foreground `oklch(0.985 0.003 250)`. Dark mode: bright amber `oklch(0.82 0.17 78)` + near-black foreground `oklch(0.185 0.02 80)`. Both clear WCAG AA when the token is used as text on the page background.
 - **Do** render comparable numbers in Geist Mono with `font-feature-settings: "tnum"`. Stat columns must align on the digit.
 - **Do** use caps + Geist Mono + tracked-out (0.06em) for the metadata layer (column headers, eyebrows, taxonomy tags) — and only that layer. Buttons, pills, CTAs, page titles, hero names stay in sentence-case Geist Sans.
@@ -306,6 +324,7 @@ The product runs `view-transition-name` on persistent surfaces (site header, the
 - **Do** render chart tooltips on `--popover` surfaces with a border. Body Geist Sans for category labels, Geist Mono `tnum` for values.
 
 ### Don't:
+
 - **Don't** use cyan-on-near-black, neon-on-dark, or purple-to-blue gradients. That is the AI-tool palette; this is a coach's terminal.
 - **Don't** put amber on hover state. Hover uses a subtler treatment (slightly brighter border, surface lift). Amber must stay reserved for "selected" so it carries signal.
 - **Don't** use the dark-mode amber `oklch(0.82 0.17 78)` as a text color in light mode. It fails WCAG AA against the near-white page background and the active nav item disappears. Use the deep light-mode amber `oklch(0.55 0.17 68)` (which is what `--primary` resolves to in light mode) instead.

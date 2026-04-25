@@ -3,6 +3,7 @@
 All metrics are emitted to the Axiom dataset `ptime-metrics`. Paste each MPL query into Axiom's metrics chart builder (Explore → new chart → paste into the editor).
 
 Chart-builder tips:
+
 - Counters use `align to 5m using sum` — switch to `align using rate` for per-second rate charts.
 - Duration histograms (`*_ms`) use `align to 5m using avg`. Use `p95` / `p99` via the builder's aggregator picker if you want tail latency.
 - Replace `5m` with `$__interval` to let the dashboard auto-bucket by time range.
@@ -1715,4 +1716,3 @@ Application-wide counters and latency histograms covering the core funnel, HTTP,
 ```
 `ptime-metrics`:`bot.notifications` | align to 5m using sum
 ```
-
