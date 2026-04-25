@@ -452,17 +452,15 @@ function TimelineDiamond({
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <div
-          className="absolute left-1/2 cursor-default before:absolute before:inset-[-18px] before:content-['']"
+        <button
+          type="button"
+          className="focus-visible:ring-ring absolute left-1/2 cursor-default appearance-none border-0 bg-transparent p-0 before:absolute before:inset-[-18px] before:content-[''] focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none"
           style={{
             top: `${topPercent}%`,
             transform: "translate(-50%, -50%)",
             width: size,
             height: size,
           }}
-          // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus required for tooltip access
-          tabIndex={0}
-          role="img"
           aria-label={label}
         >
           <div
@@ -471,7 +469,7 @@ function TimelineDiamond({
               height: size,
               backgroundColor: color,
               transform: "rotate(45deg)",
-              boxShadow: `0 0 0 1px var(--background), 0 0 3px 0 ${color}`,
+              boxShadow: `0 0 0 1px var(--background)`,
             }}
           />
           {showTimestamp && (
@@ -484,7 +482,7 @@ function TimelineDiamond({
               {timestamp}
             </span>
           )}
-        </div>
+        </button>
       </TooltipTrigger>
       <TooltipContent>{tooltipContent ?? timestamp}</TooltipContent>
     </Tooltip>
@@ -748,7 +746,7 @@ function KillEventRow({
             GeistMono.className
           )}
           style={{ width: "4.5rem" }}
-          title="View in Replay"
+          aria-label="View in Replay"
           onClick={(e) => {
             e.stopPropagation();
             goToReplay(kill.match_time);
@@ -769,20 +767,21 @@ function KillEventRow({
       )}
 
       <span className="flex shrink-0 items-center gap-1.5">
-        <Image
-          src={`/heroes/${toHero(kill.attacker_hero)}.png`}
-          alt=""
-          width={256}
-          height={256}
-          className="h-6 w-6 shrink-0 rounded"
+        <span
+          className="inline-block h-6 w-6 shrink-0 rounded"
           style={{
-            border:
-              kill.attacker_team === team1
-                ? `2px solid ${team1Color}`
-                : `2px solid ${team2Color}`,
+            boxShadow: `0 0 0 2px ${kill.attacker_team === team1 ? team1Color : team2Color}`,
             opacity: isSuicide ? 0 : 1,
           }}
-        />
+        >
+          <Image
+            src={`/heroes/${toHero(kill.attacker_hero)}.png`}
+            alt=""
+            width={256}
+            height={256}
+            className="h-6 w-6 rounded"
+          />
+        </span>
         <span className={cn("w-24 truncate text-sm", isSuicide && "opacity-0")}>
           {kill.attacker_name}
         </span>
@@ -791,20 +790,21 @@ function KillEventRow({
       <span className="text-muted-foreground shrink-0 text-xs">&rarr;</span>
 
       <span className="flex shrink-0 items-center gap-1.5">
-        <Image
-          src={`/heroes/${toHero(kill.victim_hero)}.png`}
-          alt=""
-          width={256}
-          height={256}
-          className="h-6 w-6 shrink-0 rounded"
+        <span
+          className="inline-block h-6 w-6 shrink-0 rounded"
           style={{
-            border:
-              kill.victim_team === team1
-                ? `2px solid ${team1Color}`
-                : `2px solid ${team2Color}`,
+            boxShadow: `0 0 0 2px ${kill.victim_team === team1 ? team1Color : team2Color}`,
             opacity: isSuicide ? 0 : 1,
           }}
-        />
+        >
+          <Image
+            src={`/heroes/${toHero(kill.victim_hero)}.png`}
+            alt=""
+            width={256}
+            height={256}
+            className="h-6 w-6 rounded"
+          />
+        </span>
         <span className="w-24 truncate text-sm">{kill.victim_name}</span>
       </span>
 
@@ -820,10 +820,9 @@ function KillEventRow({
       style={{
         top: `${topPercent}%`,
         transform: "translateY(-50%)",
-        boxShadow: ultHighlightColor
-          ? `inset 2px 0 0 ${ultHighlightColor}`
+        backgroundColor: ultHighlightColor
+          ? `color-mix(in oklch, ${ultHighlightColor} 8%, transparent)`
           : undefined,
-        paddingLeft: ultHighlightColor ? 6 : 0,
       }}
     >
       {hasCoords ? (
@@ -918,7 +917,7 @@ function UltEventRow({
             GeistMono.className
           )}
           style={{ width: "4.5rem" }}
-          title="View in Replay"
+          aria-label="View in Replay"
           onClick={() => goToReplay(getEventTime(event))}
         >
           {toTimestamp(getEventTime(event))}

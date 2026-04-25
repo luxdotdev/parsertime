@@ -17,7 +17,7 @@ import type {
 } from "@/data/map/types";
 import { toTimestamp } from "@/lib/utils";
 import { useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
+import { startTransition, useCallback, useMemo, useState } from "react";
 import { EvalBar } from "./eval-bar";
 import { HeroPin } from "./hero-pin";
 import { KillDot } from "./kill-dot";
@@ -103,10 +103,14 @@ export function TempoChart({
 }: TempoChartProps) {
   const t = useTranslations("mapPage.events.tempo");
   const [activeTab, setActiveTab] = useState<TabValue>("combined");
-  const [range, setRange] = useState<[number, number]>([
+  const [range, setRangeRaw] = useState<[number, number]>([
     matchStartTime,
     matchEndTime,
   ]);
+
+  const setRange = useCallback((next: [number, number]) => {
+    startTransition(() => setRangeRaw(next));
+  }, []);
 
   const activeSeries = useMemo(() => {
     switch (activeTab) {
@@ -210,6 +214,17 @@ export function TempoChart({
     return { team1: t1Sum / count, team2: t2Sum / count };
   }, [activeSeries, visibleStart, visibleEnd]);
 
+  const tempoChartDesc = useMemo(() => {
+    let team1Peak = { time: matchStartTime, val: -Infinity };
+    let team2Peak = { time: matchStartTime, val: -Infinity };
+    for (const p of activeSeries) {
+      if (p.team1 > team1Peak.val) team1Peak = { time: p.time, val: p.team1 };
+      if (p.team2 > team2Peak.val) team2Peak = { time: p.time, val: p.team2 };
+    }
+    const totalSeconds = Math.round(matchEndTime - matchStartTime);
+    return `Tempo over ${totalSeconds} seconds. ${team1Name} peaked at ${toTimestamp(team1Peak.time)}, ${team2Name} peaked at ${toTimestamp(team2Peak.time)}.`;
+  }, [activeSeries, matchStartTime, matchEndTime, team1Name, team2Name]);
+
   const visibleKillDots = useMemo(() => {
     if (!showKillDots) return [];
 
@@ -268,7 +283,7 @@ export function TempoChart({
 
             {/* Chart */}
             <div
-              className="border-border/50 relative aspect-[5/2] w-full overflow-hidden rounded-lg border bg-zinc-50 dark:bg-zinc-900/50"
+              className="border-border/50 bg-muted/30 relative aspect-[5/2] w-full overflow-hidden rounded-lg border"
               role="img"
               aria-label={t("title")}
             >
@@ -277,6 +292,8 @@ export function TempoChart({
                 preserveAspectRatio="xMidYMid meet"
                 className="h-full w-full"
               >
+                <title>{t("title")}</title>
+                <desc>{tempoChartDesc}</desc>
                 {/* Center dashed line */}
                 <line
                   x1={0}
@@ -428,6 +445,8 @@ export function TempoChart({
           onRangeChange={setRange}
           fightBoundaries={fightBoundaries}
           miniSeries={combinedSeries}
+          team1Color={team1Color}
+          team2Color={team2Color}
         />
       </CardContent>
     </Card>

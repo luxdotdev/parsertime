@@ -72,7 +72,7 @@ function SpanTooltipContent({
   return (
     <div className="flex flex-col gap-0.5">
       <span className="text-xs font-medium">
-        {span.playerName} — {span.playerHero}
+        {span.playerName}, {span.playerHero}
       </span>
       <span className="text-xs opacity-80">
         {t("tooltipTeam", { team: span.playerTeam })}

@@ -7,7 +7,7 @@ import {
 } from "@/data/map/types";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 function SkipBackIcon({ className }: { className?: string }) {
   return (
@@ -74,6 +74,8 @@ type TempoScrubberProps = {
   onRangeChange: (range: [number, number]) => void;
   fightBoundaries: FightBoundary[];
   miniSeries: TempoDataPoint[];
+  team1Color: string;
+  team2Color: string;
 };
 
 const MIN_SELECTION_PCT = 5; // minimum selection width as % of total
@@ -106,6 +108,8 @@ export function TempoScrubber({
   onRangeChange,
   fightBoundaries,
   miniSeries,
+  team1Color,
+  team2Color,
 }: TempoScrubberProps) {
   const t = useTranslations("mapPage.events.tempo");
   const [snapEnabled, setSnapEnabled] = useState(true);
@@ -115,6 +119,16 @@ export function TempoScrubber({
     startX: number;
     startRange: [number, number];
   } | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const pendingClientXRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    };
+  }, []);
 
   const duration = matchEnd - matchStart;
   const leftPct = ((range[0] - matchStart) / duration) * 100;
@@ -160,60 +174,74 @@ export function TempoScrubber({
     [range]
   );
 
+  const flushPointerMove = useCallback(() => {
+    rafRef.current = null;
+    const clientX = pendingClientXRef.current;
+    pendingClientXRef.current = null;
+    const drag = dragRef.current;
+    if (clientX == null || !drag) return;
+
+    const currentPct = xToPct(clientX);
+
+    if (drag.target === "left") {
+      const newLeft = Math.min(currentPct, rightPct - MIN_SELECTION_PCT);
+      onRangeChange([pctToTime(Math.max(0, newLeft)), range[1]]);
+    } else if (drag.target === "right") {
+      const newRight = Math.max(currentPct, leftPct + MIN_SELECTION_PCT);
+      onRangeChange([range[0], pctToTime(Math.min(100, newRight))]);
+    } else if (drag.target === "center") {
+      const el = containerRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const deltaPx = clientX - drag.startX;
+      const deltaPct = (deltaPx / rect.width) * 100;
+      const origLeftPct =
+        ((drag.startRange[0] - matchStart) / duration) * 100;
+      const origRightPct =
+        ((drag.startRange[1] - matchStart) / duration) * 100;
+      const width = origRightPct - origLeftPct;
+
+      let newLeft = origLeftPct + deltaPct;
+      let newRight = origRightPct + deltaPct;
+
+      if (newLeft < 0) {
+        newLeft = 0;
+        newRight = width;
+      }
+      if (newRight > 100) {
+        newRight = 100;
+        newLeft = 100 - width;
+      }
+
+      onRangeChange([pctToTime(newLeft), pctToTime(newRight)]);
+    }
+  }, [
+    xToPct,
+    pctToTime,
+    onRangeChange,
+    range,
+    leftPct,
+    rightPct,
+    matchStart,
+    duration,
+  ]);
+
   const handlePointerMove = useCallback(
     (e: React.PointerEvent) => {
-      const drag = dragRef.current;
-      if (!drag) return;
-
-      const currentPct = xToPct(e.clientX);
-
-      if (drag.target === "left") {
-        const newLeft = Math.min(currentPct, rightPct - MIN_SELECTION_PCT);
-        onRangeChange([pctToTime(Math.max(0, newLeft)), range[1]]);
-      } else if (drag.target === "right") {
-        const newRight = Math.max(currentPct, leftPct + MIN_SELECTION_PCT);
-        onRangeChange([range[0], pctToTime(Math.min(100, newRight))]);
-      } else if (drag.target === "center") {
-        const el = containerRef.current;
-        if (!el) return;
-        const rect = el.getBoundingClientRect();
-        const deltaPx = e.clientX - drag.startX;
-        const deltaPct = (deltaPx / rect.width) * 100;
-        const origLeftPct =
-          ((drag.startRange[0] - matchStart) / duration) * 100;
-        const origRightPct =
-          ((drag.startRange[1] - matchStart) / duration) * 100;
-        const width = origRightPct - origLeftPct;
-
-        let newLeft = origLeftPct + deltaPct;
-        let newRight = origRightPct + deltaPct;
-
-        if (newLeft < 0) {
-          newLeft = 0;
-          newRight = width;
-        }
-        if (newRight > 100) {
-          newRight = 100;
-          newLeft = 100 - width;
-        }
-
-        onRangeChange([pctToTime(newLeft), pctToTime(newRight)]);
-      }
+      if (!dragRef.current) return;
+      pendingClientXRef.current = e.clientX;
+      rafRef.current ??= requestAnimationFrame(flushPointerMove);
     },
-    [
-      xToPct,
-      pctToTime,
-      onRangeChange,
-      range,
-      leftPct,
-      rightPct,
-      matchStart,
-      duration,
-    ]
+    [flushPointerMove]
   );
 
   const handlePointerUp = useCallback(() => {
     if (dragRef.current) {
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+      pendingClientXRef.current = null;
       commitSnap(range);
       dragRef.current = null;
     }
@@ -320,12 +348,76 @@ export function TempoScrubber({
   const transportBtnClass =
     "flex items-center justify-center rounded-md p-1 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-30";
 
+  const handleHandleKeyDown = useCallback(
+    (target: "left" | "right") => (e: React.KeyboardEvent) => {
+      const totalRange = matchEnd - matchStart;
+      if (totalRange <= 0) return;
+
+      let stepPct = 0;
+      switch (e.key) {
+        case "ArrowLeft":
+        case "ArrowDown":
+          stepPct = e.shiftKey ? -5 : -1;
+          break;
+        case "ArrowRight":
+        case "ArrowUp":
+          stepPct = e.shiftKey ? 5 : 1;
+          break;
+        case "PageDown":
+          stepPct = -10;
+          break;
+        case "PageUp":
+          stepPct = 10;
+          break;
+        case "Home":
+          e.preventDefault();
+          if (target === "left") {
+            onRangeChange([matchStart, range[1]]);
+          } else {
+            const minEnd = matchStart + (MIN_SELECTION_PCT / 100) * totalRange;
+            onRangeChange([range[0], Math.max(minEnd, range[0])]);
+          }
+          return;
+        case "End":
+          e.preventDefault();
+          if (target === "right") {
+            onRangeChange([range[0], matchEnd]);
+          } else {
+            const maxStart = matchEnd - (MIN_SELECTION_PCT / 100) * totalRange;
+            onRangeChange([Math.min(maxStart, range[1]), range[1]]);
+          }
+          return;
+        default:
+          return;
+      }
+
+      e.preventDefault();
+      const deltaTime = (stepPct / 100) * totalRange;
+      if (target === "left") {
+        const minSelectionTime = (MIN_SELECTION_PCT / 100) * totalRange;
+        const next = Math.max(
+          matchStart,
+          Math.min(range[0] + deltaTime, range[1] - minSelectionTime)
+        );
+        onRangeChange([next, range[1]]);
+      } else {
+        const minSelectionTime = (MIN_SELECTION_PCT / 100) * totalRange;
+        const next = Math.min(
+          matchEnd,
+          Math.max(range[1] + deltaTime, range[0] + minSelectionTime)
+        );
+        onRangeChange([range[0], next]);
+      }
+    },
+    [matchStart, matchEnd, range, onRangeChange]
+  );
+
   return (
     <div className="space-y-2">
       {/* Scrubber track */}
       <div
         ref={containerRef}
-        className="relative h-12 w-full overflow-hidden rounded-lg bg-zinc-900 select-none dark:bg-zinc-950"
+        className="bg-muted relative h-12 w-full overflow-hidden rounded-lg select-none"
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
@@ -341,18 +433,18 @@ export function TempoScrubber({
             <path
               d={tempoPointsToSvgPath(miniPoints1)}
               fill="none"
-              stroke="white"
+              stroke={team1Color}
               strokeWidth={1}
-              opacity={0.2}
+              opacity={0.7}
             />
           )}
           {miniPoints2.length > 1 && (
             <path
               d={tempoPointsToSvgPath(miniPoints2)}
               fill="none"
-              stroke="white"
+              stroke={team2Color}
               strokeWidth={1}
-              opacity={0.2}
+              opacity={0.7}
             />
           )}
 
@@ -366,18 +458,16 @@ export function TempoScrubber({
                   y1={0}
                   x2={x1}
                   y2={miniHeight}
-                  stroke="white"
+                  stroke="var(--border)"
                   strokeWidth={0.5}
-                  opacity={0.1}
                 />
                 <line
                   x1={x2}
                   y1={0}
                   x2={x2}
                   y2={miniHeight}
-                  stroke="white"
+                  stroke="var(--border)"
                   strokeWidth={0.5}
-                  opacity={0.1}
                 />
               </g>
             );
@@ -386,13 +476,13 @@ export function TempoScrubber({
 
         {/* Dim left region */}
         <div
-          className="pointer-events-none absolute inset-y-0 left-0 bg-black/50"
+          className="bg-background/70 pointer-events-none absolute inset-y-0 left-0"
           style={{ width: `${leftPct}%` }}
         />
 
         {/* Dim right region */}
         <div
-          className="pointer-events-none absolute inset-y-0 right-0 bg-black/50"
+          className="bg-background/70 pointer-events-none absolute inset-y-0 right-0"
           style={{ width: `${100 - rightPct}%` }}
         />
 
@@ -418,6 +508,7 @@ export function TempoScrubber({
           <div
             className="bg-primary focus-visible:ring-ring absolute inset-y-0 -left-px flex w-4 cursor-ew-resize items-center justify-center rounded-l-md focus-visible:ring-2 focus-visible:outline-none"
             onPointerDown={handlePointerDown("left")}
+            onKeyDown={handleHandleKeyDown("left")}
             tabIndex={0}
             role="slider"
             aria-label="Selection start"
@@ -456,6 +547,7 @@ export function TempoScrubber({
           <div
             className="bg-primary focus-visible:ring-ring absolute inset-y-0 -right-px flex w-4 cursor-ew-resize items-center justify-center rounded-r-md focus-visible:ring-2 focus-visible:outline-none"
             onPointerDown={handlePointerDown("right")}
+            onKeyDown={handleHandleKeyDown("right")}
             tabIndex={0}
             role="slider"
             aria-label="Selection end"
@@ -538,7 +630,7 @@ export function TempoScrubber({
                 ? t("fightLabel", { number: currentFightIndex + 1 })
                 : isFullRange
                   ? t("allFights")
-                  : "—"}
+                  : "..."}
             </span>
 
             {/* Next fight */}
