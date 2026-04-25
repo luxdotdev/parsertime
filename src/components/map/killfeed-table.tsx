@@ -251,8 +251,7 @@ function StandardFight({
   const team1Kills = fight.kills.filter(
     (k) => k.attacker_team === team1
   ).length;
-  const fightWinner =
-    team1Kills > fight.kills.length / 2 ? team1 : team2;
+  const fightWinner = team1Kills > fight.kills.length / 2 ? team1 : team2;
 
   return (
     <Table>
