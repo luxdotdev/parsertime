@@ -120,7 +120,7 @@ export function Hero({
                   track("badge-click", { title: latestUpdatesTitle })
                 }
               >
-                <span className="rounded-full bg-indigo-500/20 px-2 py-0.5 text-xs font-semibold text-indigo-300">
+                <span className="rounded-full bg-amber-400/20 px-2 py-0.5 text-xs font-semibold text-amber-200">
                   {latestUpdatesLabel}
                 </span>
                 <span>{latestUpdatesTitle}</span>

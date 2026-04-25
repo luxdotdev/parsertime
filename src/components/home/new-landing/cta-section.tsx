@@ -32,12 +32,10 @@ export function CtaSection({
       className="relative isolate overflow-hidden py-32 sm:py-40"
       aria-label="Call to action"
     >
-      {/* Gradient background with soft edges */}
+      {/* Diagonal warm wash anchored in the corners */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-cyan-500/10 dark:from-indigo-500/20 dark:to-cyan-500/20" />
-        {/* Fade top edge */}
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-transparent to-amber-300/10 dark:from-amber-500/20 dark:to-amber-300/15" />
         <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white dark:from-black" />
-        {/* Fade bottom edge */}
         <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white dark:from-black" />
       </div>
 

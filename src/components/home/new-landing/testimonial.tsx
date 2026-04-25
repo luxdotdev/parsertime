@@ -42,7 +42,7 @@ export function Testimonial({
             />
           ))}
         </div>
-        <blockquote className="mt-10 border-l-4 border-indigo-500/50 pl-6 text-xl leading-8 font-semibold tracking-tight text-gray-900 sm:text-2xl sm:leading-9 dark:text-white">
+        <blockquote className="border-primary/50 mt-10 border-l-4 pl-6 text-xl leading-8 font-semibold tracking-tight text-gray-900 sm:text-2xl sm:leading-9 dark:text-white">
           <p>{quote}</p>
         </blockquote>
         <figcaption className="mt-10 flex items-center gap-x-6">
