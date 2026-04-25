@@ -11,7 +11,6 @@ import { UltComparisonChart } from "@/components/scrim/ult-comparison-chart";
 import type {
   PlayerScrimPerformance,
   ScrimFightAnalysis,
-  ScrimInsight,
   ScrimSwapAnalysis,
   ScrimUltAnalysis,
 } from "@/data/scrim/types";
@@ -332,23 +331,8 @@ export function ScrimSwapsSection({
 
 export function ScrimPlayersSection({
   players,
-  insights,
 }: {
   players: PlayerScrimPerformance[];
-  insights: ScrimInsight[];
 }) {
-  const mvpInsight = insights.find(
-    (i) => i.type === "mvp" || i.type === "outlier_positive"
-  );
-
-  return (
-    <div className="space-y-4">
-      {mvpInsight && (
-        <Callout icon={<Users className="size-4" />}>
-          {mvpInsight.headline}
-        </Callout>
-      )}
-      <PlayerPerformanceTable players={players} />
-    </div>
-  );
+  return <PlayerPerformanceTable players={players} />;
 }

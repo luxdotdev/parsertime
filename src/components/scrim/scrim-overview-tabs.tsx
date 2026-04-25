@@ -106,10 +106,7 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
               </span>
             </AccordionTrigger>
             <AccordionContent className="h-auto">
-              <ScrimPlayersSection
-                players={data.teamPlayers}
-                insights={data.insights}
-              />
+              <ScrimPlayersSection players={data.teamPlayers} />
             </AccordionContent>
           </AccordionItem>
 
