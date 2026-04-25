@@ -3,14 +3,14 @@
 import { ScrimCreationForm } from "@/components/dashboard/scrim-creator";
 import { Button } from "@/components/ui/button";
 import {
+  DialogClose,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Dialog } from "@radix-ui/react-dialog";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useNextStep } from "nextstepjs";
 import { useState } from "react";
@@ -31,14 +31,26 @@ export function CreateScrimButton() {
           {t("createScrim")}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>{t("createScrim")}</DialogTitle>
-          <DialogDescription></DialogDescription>
+      <DialogContent
+        className="flex max-h-[85svh] flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl"
+        showCloseButton={false}
+      >
+        <DialogHeader className="border-border/60 flex flex-row items-center justify-between border-b px-6 py-4">
+          <DialogTitle className="text-base font-semibold tracking-tight">
+            {t("createScrim")}
+          </DialogTitle>
+          <DialogClose asChild>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="text-muted-foreground hover:text-foreground -mr-2"
+              aria-label="Close"
+            >
+              <X className="size-4" />
+            </Button>
+          </DialogClose>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <ScrimCreationForm setOpen={setOpen} />
-        </div>
+        <ScrimCreationForm setOpen={setOpen} />
       </DialogContent>
     </Dialog>
   );
