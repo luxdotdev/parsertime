@@ -50,3 +50,6 @@ next-env.d.ts
 .superpowers/
 # next-agents-md
 .next-docs/
+# agent-browser auth state
+my-auth.json
+*.auth.json
