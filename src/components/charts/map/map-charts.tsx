@@ -1,6 +1,7 @@
 import { DamageByRoundChart } from "@/components/charts/map/damage-by-round-chart";
 import { KillsByFightChart } from "@/components/charts/map/kills-by-fight-chart";
 import { KillsByRoleChart } from "@/components/charts/map/kills-by-role-chart";
+import { TempoChartServer } from "@/components/map/tempo/tempo-chart-server";
 import { Link } from "@/components/ui/link";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -106,7 +107,17 @@ function ChartSection({
   );
 }
 
-export async function MapCharts({ id }: { id: number }) {
+export async function MapCharts({
+  id,
+  team1Color,
+  team2Color,
+  tempoChartEnabled,
+}: {
+  id: number;
+  team1Color: string;
+  team2Color: string;
+  tempoChartEnabled: boolean;
+}) {
   const t = await getTranslations("mapPage.charts");
   const mapDataId = await resolveMapDataId(id);
   const teams = await prisma.matchStart.findFirst({
@@ -163,6 +174,25 @@ export async function MapCharts({ id }: { id: number }) {
 
   return (
     <section aria-label={t("title")} className="space-y-6">
+      {tempoChartEnabled && (
+        <>
+          <ChartSection
+            id="tempo"
+            eyebrow={t("tempo.eyebrow")}
+            title={t("tempo.title")}
+            description={t("tempo.description")}
+          >
+            <TempoChartServer
+              id={id}
+              team1Color={team1Color}
+              team2Color={team2Color}
+            />
+          </ChartSection>
+
+          <Separator />
+        </>
+      )}
+
       <ChartSection
         id="kills-by-fight"
         eyebrow={t("killsByFight.eyebrow")}
@@ -174,37 +204,37 @@ export async function MapCharts({ id }: { id: number }) {
 
       <Separator />
 
-      <ChartSection
-        id="final-blows-by-role"
-        eyebrow={t("finalBlowsByRole.eyebrow")}
-        title={t("finalBlowsByRole.title")}
-        description={t("finalBlowsByRole.description")}
-      >
-        <KillsByRoleChart
-          team1Kills={team1Kills}
-          team2Kills={team2Kills}
-          teamNames={teamNames}
-        />
-      </ChartSection>
+      <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
+        <ChartSection
+          id="final-blows-by-role"
+          eyebrow={t("finalBlowsByRole.eyebrow")}
+          title={t("finalBlowsByRole.title")}
+          description={t("finalBlowsByRole.description")}
+        >
+          <KillsByRoleChart
+            team1Kills={team1Kills}
+            team2Kills={team2Kills}
+            teamNames={teamNames}
+          />
+        </ChartSection>
 
-      <Separator />
-
-      <ChartSection
-        id="damage-by-round"
-        eyebrow={t("dmgByRound.eyebrow")}
-        title={t("dmgByRound.title")}
-        description={t("dmgByRound.description")}
-      >
-        <DamageByRoundChart
-          team1DamageByRound={team1DamageByRound.sort(
-            (a, b) => a.round_number - b.round_number
-          )}
-          team2DamageByRound={team2DamageByRound.sort(
-            (a, b) => a.round_number - b.round_number
-          )}
-          teamNames={teamNames}
-        />
-      </ChartSection>
+        <ChartSection
+          id="damage-by-round"
+          eyebrow={t("dmgByRound.eyebrow")}
+          title={t("dmgByRound.title")}
+          description={t("dmgByRound.description")}
+        >
+          <DamageByRoundChart
+            team1DamageByRound={team1DamageByRound.sort(
+              (a, b) => a.round_number - b.round_number
+            )}
+            team2DamageByRound={team2DamageByRound.sort(
+              (a, b) => a.round_number - b.round_number
+            )}
+            teamNames={teamNames}
+          />
+        </ChartSection>
+      </div>
     </section>
   );
 }

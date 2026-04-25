@@ -1,12 +1,5 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import type {
@@ -249,27 +242,19 @@ export function TempoChart({
   ]);
 
   return (
-    <Card className="col-span-6">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>{t("title")}</CardTitle>
-            <CardDescription>{t("description")}</CardDescription>
-          </div>
-          <Tabs
-            value={activeTab}
-            onValueChange={(v) => setActiveTab(v as TabValue)}
-          >
-            <TabsList>
-              <TabsTrigger value="combined">{t("combined")}</TabsTrigger>
-              <TabsTrigger value="ultimates">{t("ultimates")}</TabsTrigger>
-              <TabsTrigger value="kills">{t("kills")}</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <TooltipProvider>
+    <div className="space-y-4">
+      <Tabs
+        value={activeTab}
+        onValueChange={(v) => setActiveTab(v as TabValue)}
+        className="flex justify-end"
+      >
+        <TabsList>
+          <TabsTrigger value="combined">{t("combined")}</TabsTrigger>
+          <TabsTrigger value="ultimates">{t("ultimates")}</TabsTrigger>
+          <TabsTrigger value="kills">{t("kills")}</TabsTrigger>
+        </TabsList>
+      </Tabs>
+      <TooltipProvider>
           <div className="flex gap-2">
             {/* Eval bar */}
             <EvalBar
@@ -448,7 +433,6 @@ export function TempoChart({
           team1Color={team1Color}
           team2Color={team2Color}
         />
-      </CardContent>
-    </Card>
+    </div>
   );
 }
