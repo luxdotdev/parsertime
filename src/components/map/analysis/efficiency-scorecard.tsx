@@ -28,7 +28,7 @@ function StatCell({
 }) {
   return (
     <div className="space-y-0.5">
-      <p className="text-muted-foreground text-[10px] tracking-wider uppercase">
+      <p className="text-muted-foreground font-mono text-[10px] tracking-[0.06em] uppercase">
         {label}
       </p>
       <p className={cn("text-sm font-semibold tabular-nums", className)}>
@@ -50,10 +50,7 @@ export function EfficiencyScorecard({
       : "0.0";
 
   return (
-    <div
-      className="rounded-lg bg-zinc-50 p-3 shadow-[inset_4px_0_0_var(--team-color),0_1px_2px_0_rgba(0,0,0,0.03),0_0_0_1px_rgba(0,0,0,0.04)] dark:bg-zinc-900/50 dark:shadow-[inset_4px_0_0_var(--team-color),0_1px_2px_0_rgba(0,0,0,0.2),0_0_0_1px_rgba(255,255,255,0.04)]"
-      style={{ "--team-color": teamColor } as React.CSSProperties}
-    >
+    <div className="bg-muted/30 ring-foreground/10 rounded-lg p-3 shadow-xs ring-1">
       <div className="mb-3 flex items-center justify-between">
         <span className="text-sm font-semibold" style={{ color: teamColor }}>
           {teamName}
@@ -71,12 +68,12 @@ export function EfficiencyScorecard({
         <StatCell
           label="Won Fights"
           value={`${eff.avgUltsInWonFights.toFixed(1)} ults/fight`}
-          className="text-green-600 dark:text-green-400"
+          className="text-emerald-600 dark:text-emerald-400"
         />
         <StatCell
           label="Lost Fights"
           value={`${eff.avgUltsInLostFights.toFixed(1)} ults/fight`}
-          className="text-red-600 dark:text-red-400"
+          className="text-rose-600 dark:text-rose-400"
         />
         <StatCell label="Wasted" value={String(eff.wastedUltimates)} />
         <StatCell label="Dry Fights" value={String(eff.dryFights)} />

@@ -79,7 +79,7 @@ function InsightIcon({ type }: { type: ScrimInsight["type"] }) {
   switch (type) {
     case "mvp":
       return (
-        <StarFilledIcon className="h-3.5 w-3.5 text-amber-500" aria-hidden />
+        <StarFilledIcon className="text-primary h-3.5 w-3.5" aria-hidden />
       );
     case "most_improved":
       return (
@@ -91,12 +91,15 @@ function InsightIcon({ type }: { type: ScrimInsight["type"] }) {
       );
     case "outlier_positive":
       return (
-        <LightningBoltIcon className="h-3.5 w-3.5 text-sky-500" aria-hidden />
+        <LightningBoltIcon
+          className="h-3.5 w-3.5 text-emerald-500"
+          aria-hidden
+        />
       );
     case "outlier_negative":
       return (
         <ExclamationTriangleIcon
-          className="h-3.5 w-3.5 text-orange-500"
+          className="text-destructive h-3.5 w-3.5"
           aria-hidden
         />
       );
@@ -196,7 +199,7 @@ export async function ScrimOverviewCard({
           <>
             <Separator />
             <section aria-label="Performance insights">
-              <h4 className="text-muted-foreground mb-3 text-xs font-medium tracking-wide uppercase">
+              <h4 className="text-muted-foreground mb-3 font-mono text-[0.6875rem] font-medium tracking-[0.06em] uppercase">
                 Key Insights
               </h4>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
