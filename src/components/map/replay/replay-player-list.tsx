@@ -40,7 +40,7 @@ export function ReplayPlayerList({
       {/* Team 1 - left aligned */}
       <div className="flex items-center gap-0.5">
         <span
-          className="text-muted-foreground mr-2 font-mono text-xs uppercase tracking-[0.06em]"
+          className="text-muted-foreground mr-2 font-mono text-xs tracking-[0.06em] uppercase"
           style={{ color: team1Color }}
         >
           {team1Name}
@@ -68,7 +68,7 @@ export function ReplayPlayerList({
           />
         ))}
         <span
-          className="text-muted-foreground ml-2 font-mono text-xs uppercase tracking-[0.06em]"
+          className="text-muted-foreground ml-2 font-mono text-xs tracking-[0.06em] uppercase"
           style={{ color: team2Color }}
         >
           {team2Name}

@@ -28,6 +28,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { Separator } from "@/components/ui/separator";
 import { ReplayMap } from "./replay-map";
 import { ReplayTimeline } from "./replay-timeline";
 import { ReplayEventFeed } from "./replay-event-feed";
@@ -325,7 +326,7 @@ export function ReplayViewer({
   return (
     <div
       ref={containerRef}
-      className="space-y-3 outline-none"
+      className="space-y-4 outline-none"
       // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus required for keyboard playback controls
       tabIndex={0}
       role="application"
@@ -334,7 +335,6 @@ export function ReplayViewer({
       aria-describedby={keyboardHintId}
       onKeyDown={handleKeyDown}
     >
-      {/* Player list */}
       <ReplayPlayerList
         team1Players={team1Players}
         team2Players={team2Players}
@@ -346,7 +346,8 @@ export function ReplayViewer({
         onSelectPlayer={handleSelectPlayer}
       />
 
-      {/* Main content: map + event feed */}
+      <Separator />
+
       <div className="flex gap-3">
         <div className="min-w-0 flex-1">
           <ReplayMap
@@ -371,7 +372,8 @@ export function ReplayViewer({
         </div>
       </div>
 
-      {/* Timeline / controls */}
+      <Separator />
+
       <ReplayTimeline
         store={store}
         displayEvents={displayEvents}

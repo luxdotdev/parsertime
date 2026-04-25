@@ -1,6 +1,7 @@
 "use client";
 
 import type { DisplayEvent } from "@/data/map/replay/types";
+import { Separator } from "@/components/ui/separator";
 import { toHero, toTimestamp } from "@/lib/utils";
 import { useReducedMotion } from "framer-motion";
 import Image from "next/image";
@@ -85,17 +86,18 @@ export function ReplayEventFeed({
   }
 
   return (
-    <div className="bg-card flex h-[500px] flex-col rounded-lg border">
-      <div className="border-b px-3 py-2">
-        <h3 className="text-sm font-medium">Events</h3>
-      </div>
+    <div className="flex h-[500px] flex-col gap-2">
+      <span className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.06em] uppercase">
+        Events
+      </span>
+      <Separator />
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
         {visibleEvents.length === 0 ? (
           <div className="flex h-full items-center justify-center">
             <p className="text-muted-foreground text-xs">No events nearby</p>
           </div>
         ) : (
-          <div className="space-y-0.5 p-2">
+          <div className="space-y-0.5">
             {visibleEvents.map((event) => {
               const isPast = event.t <= currentTime;
               const isCurrent = Math.abs(event.t - currentTime) < 0.5;
@@ -142,7 +144,9 @@ function EventRow({
     case "kill":
       return (
         <div className="flex items-center gap-1.5">
-          <span className="text-muted-foreground shrink-0">{timeStr}</span>
+          <span className="text-muted-foreground shrink-0 font-mono tabular-nums">
+            {timeStr}
+          </span>
           <Image
             src={`/heroes/${toHero(event.attackerHero)}.png`}
             alt=""
@@ -180,7 +184,9 @@ function EventRow({
     case "ult_start":
       return (
         <div className="flex items-center gap-1.5">
-          <span className="text-muted-foreground shrink-0">{timeStr}</span>
+          <span className="text-muted-foreground shrink-0 font-mono tabular-nums">
+            {timeStr}
+          </span>
           <Image
             src={`/heroes/${toHero(event.playerHero)}.png`}
             alt=""
@@ -203,7 +209,9 @@ function EventRow({
     case "ult_end":
       return (
         <div className="flex items-center gap-1.5">
-          <span className="text-muted-foreground shrink-0">{timeStr}</span>
+          <span className="text-muted-foreground shrink-0 font-mono tabular-nums">
+            {timeStr}
+          </span>
           <Image
             src={`/heroes/${toHero(event.playerHero)}.png`}
             alt=""
@@ -226,7 +234,9 @@ function EventRow({
     case "hero_swap":
       return (
         <div className="flex items-center gap-1.5">
-          <span className="text-muted-foreground shrink-0">{timeStr}</span>
+          <span className="text-muted-foreground shrink-0 font-mono tabular-nums">
+            {timeStr}
+          </span>
           <Image
             src={`/heroes/${toHero(event.previousHero)}.png`}
             alt=""
@@ -257,7 +267,9 @@ function EventRow({
     case "round_start":
       return (
         <div className="flex items-center gap-1.5">
-          <span className="text-muted-foreground shrink-0">{timeStr}</span>
+          <span className="text-muted-foreground shrink-0 font-mono tabular-nums">
+            {timeStr}
+          </span>
           <span className="text-primary font-medium">
             Round {event.roundNumber} Start
           </span>
@@ -267,7 +279,9 @@ function EventRow({
     case "round_end":
       return (
         <div className="flex items-center gap-1.5">
-          <span className="text-muted-foreground shrink-0">{timeStr}</span>
+          <span className="text-muted-foreground shrink-0 font-mono tabular-nums">
+            {timeStr}
+          </span>
           <span className="text-muted-foreground font-medium">
             Round {event.roundNumber} End
           </span>
