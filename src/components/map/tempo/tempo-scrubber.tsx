@@ -195,10 +195,8 @@ export function TempoScrubber({
       const rect = el.getBoundingClientRect();
       const deltaPx = clientX - drag.startX;
       const deltaPct = (deltaPx / rect.width) * 100;
-      const origLeftPct =
-        ((drag.startRange[0] - matchStart) / duration) * 100;
-      const origRightPct =
-        ((drag.startRange[1] - matchStart) / duration) * 100;
+      const origLeftPct = ((drag.startRange[0] - matchStart) / duration) * 100;
+      const origRightPct = ((drag.startRange[1] - matchStart) / duration) * 100;
       const width = origRightPct - origLeftPct;
 
       let newLeft = origLeftPct + deltaPct;

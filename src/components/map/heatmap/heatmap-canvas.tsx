@@ -5,7 +5,14 @@ import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import { toHero, toTimestamp } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import Image from "next/image";
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 type HeatmapCategory = "damage" | "healing" | "kills";
 
@@ -39,15 +46,11 @@ const RAMP_ALPHAS = [0, 130, 180, 215, 240];
 function parseOklchToRgb(value: string): [number, number, number] | null {
   const match = value.trim().match(/oklch\(\s*([^)]+)\)/i);
   if (!match) return null;
-  const parts = match[1]
-    .replace(/\//g, " ")
-    .split(/[ ,]+/)
-    .filter(Boolean);
+  const parts = match[1].replace(/\//g, " ").split(/[ ,]+/).filter(Boolean);
   if (parts.length < 3) return null;
-  const L =
-    parts[0].endsWith("%")
-      ? parseFloat(parts[0]) / 100
-      : parseFloat(parts[0]);
+  const L = parts[0].endsWith("%")
+    ? parseFloat(parts[0]) / 100
+    : parseFloat(parts[0]);
   const C = parseFloat(parts[1]);
   const H = (parseFloat(parts[2]) * Math.PI) / 180;
   if (!Number.isFinite(L) || !Number.isFinite(C) || !Number.isFinite(H)) {
@@ -233,12 +236,7 @@ export function HeatmapCanvas({
     void resolvedTheme;
     if (typeof window === "undefined") {
       return {
-        ramp: RAMP_TOKENS.map((_, i) => [
-          200,
-          120,
-          80,
-          RAMP_ALPHAS[i],
-        ]) as Ramp,
+        ramp: RAMP_TOKENS.map((_, i) => [200, 120, 80, RAMP_ALPHAS[i]]) as Ramp,
         background: "#0a0a0a",
         team1: team1,
         team2: team2,
@@ -491,7 +489,8 @@ export function HeatmapCanvas({
       e.preventDefault();
       setView((v) => {
         const newZoom = Math.max(minZoom, v.zoom * 0.9);
-        if (newZoom <= minZoom) return { offsetX: 0, offsetY: 0, zoom: newZoom };
+        if (newZoom <= minZoom)
+          return { offsetX: 0, offsetY: 0, zoom: newZoom };
         return { ...v, zoom: newZoom };
       });
       return;

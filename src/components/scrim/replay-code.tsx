@@ -32,7 +32,7 @@ export function ReplayCode({
         {subtitle ? (
           <Button
             variant="link"
-            className="h-auto p-0 text-base font-mono tabular-nums"
+            className="h-auto p-0 font-mono text-base tabular-nums"
             onClick={() => handleClick({ replayCode })}
           >
             {t("code", { replayCode })}

@@ -186,9 +186,7 @@ function TeamHeatmap({
 
             {/* Data rows */}
             {analysis.rows.map((row) => (
-              <React.Fragment
-                key={`${row.heroName}-${row.abilitySlot}-row`}
-              >
+              <React.Fragment key={`${row.heroName}-${row.abilitySlot}-row`}>
                 <div
                   key={`${row.heroName}-${row.abilitySlot}-label`}
                   className="flex items-center gap-2 pr-2 text-sm"

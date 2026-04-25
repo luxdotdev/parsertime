@@ -136,10 +136,7 @@ export function DeathsSection({
             playerName: ajax.playerName,
             count: ajax.count,
             player: (chunks) => (
-              <span
-                className="font-semibold"
-                style={{ color: ajax.teamColor }}
-              >
+              <span className="font-semibold" style={{ color: ajax.teamColor }}>
                 {chunks}
               </span>
             ),
@@ -270,9 +267,7 @@ export function TimingSection({
     timing.team2AllTimings.length === 0
   )
     return (
-      <p className="text-muted-foreground text-sm text-pretty">
-        {t("empty")}
-      </p>
+      <p className="text-muted-foreground text-sm text-pretty">{t("empty")}</p>
     );
 
   const t1Init = timing.team1AllTimings.reduce((s, t) => s + t.initiation, 0);
@@ -329,9 +324,7 @@ export function EfficiencySection({
     efficiency.team2.totalUltsUsedInFights === 0
   )
     return (
-      <p className="text-muted-foreground text-sm text-pretty">
-        {t("empty")}
-      </p>
+      <p className="text-muted-foreground text-sm text-pretty">{t("empty")}</p>
     );
 
   return (
@@ -389,9 +382,7 @@ export function SwapsSection({
   const t = useTranslations("mapPage.overview.analysis.swaps");
   if (swaps.team1Count === 0 && swaps.team2Count === 0)
     return (
-      <p className="text-muted-foreground text-sm text-pretty">
-        {t("empty")}
-      </p>
+      <p className="text-muted-foreground text-sm text-pretty">{t("empty")}</p>
     );
 
   const empty = t("tableEmpty");
@@ -523,9 +514,7 @@ export function RotationDeathsSection({
 
   if (!rotationDeaths)
     return (
-      <p className="text-muted-foreground text-sm text-pretty">
-        {t("empty")}
-      </p>
+      <p className="text-muted-foreground text-sm text-pretty">{t("empty")}</p>
     );
 
   const { team1Count, team2Count, events, playerBreakdown } = rotationDeaths;

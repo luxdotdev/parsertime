@@ -30,7 +30,9 @@ function sortByRole(a: PlayerToSort, b: PlayerToSort) {
 }
 
 function uniquePlayers(players: PlayerToSort[]) {
-  return Array.from(new Set([...players].sort(sortByRole).map((p) => p.player_name)));
+  return Array.from(
+    new Set([...players].sort(sortByRole).map((p) => p.player_name))
+  );
 }
 
 function TeamColumn({

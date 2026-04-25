@@ -32,7 +32,12 @@ function StatCell({
       <p className="text-muted-foreground font-mono text-[10px] tracking-[0.06em] uppercase">
         {label}
       </p>
-      <p className={cn("font-mono text-sm font-semibold tabular-nums", className)}>
+      <p
+        className={cn(
+          "font-mono text-sm font-semibold tabular-nums",
+          className
+        )}
+      >
         {value}
       </p>
     </div>
@@ -44,9 +49,7 @@ export function EfficiencyScorecard({
   teamColor,
   efficiency: eff,
 }: EfficiencyScorecardProps) {
-  const t = useTranslations(
-    "mapPage.overview.analysis.efficiency.scorecard"
-  );
+  const t = useTranslations("mapPage.overview.analysis.efficiency.scorecard");
   const rating = getEfficiencyRatingKey(eff.ultimateEfficiency);
   const nonDryWinrate =
     eff.nonDryFights > 0
@@ -71,12 +74,16 @@ export function EfficiencyScorecard({
       <div className="grid grid-cols-3 gap-x-4 gap-y-2">
         <StatCell
           label={t("wonFights")}
-          value={t("ultsPerFight", { count: eff.avgUltsInWonFights.toFixed(1) })}
+          value={t("ultsPerFight", {
+            count: eff.avgUltsInWonFights.toFixed(1),
+          })}
           className="text-emerald-600 dark:text-emerald-400"
         />
         <StatCell
           label={t("lostFights")}
-          value={t("ultsPerFight", { count: eff.avgUltsInLostFights.toFixed(1) })}
+          value={t("ultsPerFight", {
+            count: eff.avgUltsInLostFights.toFixed(1),
+          })}
           className="text-rose-600 dark:text-rose-400"
         />
         <StatCell label={t("wasted")} value={String(eff.wastedUltimates)} />
