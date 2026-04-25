@@ -86,8 +86,24 @@ export function UltComparisonChart({ comparisons, teamNames }: Props) {
         margin={{ top: 10, right: 10, left: -10, bottom: 5 }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="subrole" tick={{ fontSize: 11 }} />
-        <YAxis allowDecimals={false} />
+        <XAxis
+          dataKey="subrole"
+          tick={{
+            fontSize: 10,
+            fontFamily: "var(--font-mono)",
+            letterSpacing: "0.06em",
+            fill: "var(--muted-foreground)",
+          }}
+          tickFormatter={(v: string) => v.toUpperCase()}
+        />
+        <YAxis
+          allowDecimals={false}
+          tick={{
+            fontSize: 10,
+            fontFamily: "var(--font-mono)",
+            fill: "var(--muted-foreground)",
+          }}
+        />
         <Legend />
         <Tooltip
           content={<CustomTooltip teamNames={teamNames} data={data} />}

@@ -43,7 +43,7 @@ export function HeadToHeadBar({
 
   return (
     <div className="space-y-1.5">
-      <div className="text-muted-foreground flex items-center justify-between text-xs font-medium">
+      <div className="text-muted-foreground flex items-center justify-between font-mono text-[11px] tracking-[0.06em] uppercase">
         <span>{label}</span>
         <span className="tabular-nums">
           {formatValue(team1Value, format)} &ndash;{" "}

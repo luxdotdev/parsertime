@@ -100,11 +100,25 @@ export function FightWinRateChart({
         margin={{ top: 10, right: 10, left: -10, bottom: 5 }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="label" tick={{ fontSize: 11 }} />
+        <XAxis
+          dataKey="label"
+          tick={{
+            fontSize: 10,
+            fontFamily: "var(--font-mono)",
+            letterSpacing: "0.06em",
+            fill: "var(--muted-foreground)",
+          }}
+          tickFormatter={(v: string) => v.toUpperCase()}
+        />
         <YAxis
           domain={[0, 100]}
           tickFormatter={(v: number) => `${v}%`}
           allowDecimals={false}
+          tick={{
+            fontSize: 10,
+            fontFamily: "var(--font-mono)",
+            fill: "var(--muted-foreground)",
+          }}
         />
         <ReferenceLine
           y={50}

@@ -76,9 +76,9 @@ function OutlierInsight({ outlier }: { outlier: AbilityTimingOutlier }) {
     <div className="bg-muted/60 border-border flex min-w-0 flex-1 items-start gap-2 rounded-lg border p-3">
       <span className="mt-0.5 shrink-0">
         {isNegative ? (
-          <ExclamationTriangleIcon className="h-3.5 w-3.5 text-orange-500" />
+          <ExclamationTriangleIcon className="text-destructive h-3.5 w-3.5" />
         ) : (
-          <LightningBoltIcon className="h-3.5 w-3.5 text-blue-500" />
+          <LightningBoltIcon className="h-3.5 w-3.5 text-emerald-500" />
         )}
       </span>
       <p className="text-foreground min-w-0 text-xs leading-relaxed">
@@ -86,11 +86,11 @@ function OutlierInsight({ outlier }: { outlier: AbilityTimingOutlier }) {
         {isNegative ? (
           <>
             used {phaseLabel(outlier.phase).toLowerCase()} has{" "}
-            <span className="font-semibold text-red-400">
+            <span className="font-semibold text-rose-600 dark:text-rose-400">
               {Math.round(outlier.phaseWinrate)}% winrate
             </span>{" "}
             vs{" "}
-            <span className="font-semibold text-green-400">
+            <span className="font-semibold text-emerald-600 dark:text-emerald-400">
               {Math.round(outlier.bestPhaseWinrate)}%
             </span>{" "}
             when used {phaseLabel(outlier.bestPhase).toLowerCase()}
@@ -98,7 +98,7 @@ function OutlierInsight({ outlier }: { outlier: AbilityTimingOutlier }) {
         ) : (
           <>
             in {phaseLabel(outlier.phase).toLowerCase()} correlates with{" "}
-            <span className="font-semibold text-green-400">
+            <span className="font-semibold text-emerald-600 dark:text-emerald-400">
               {Math.round(outlier.phaseWinrate)}% winrate
             </span>{" "}
             — strong {outlier.phase === "pre-fight" ? "initiation" : "timing"}{" "}
@@ -167,7 +167,7 @@ export function ScrimAbilityTimingSection({
             {PHASE_ORDER.map((phase) => (
               <div
                 key={phase}
-                className="text-muted-foreground px-2 pb-2 text-center text-xs font-medium"
+                className="text-muted-foreground px-2 pb-2 text-center font-mono text-[11px] tracking-[0.06em] uppercase"
               >
                 {PHASE_LABELS[phase]}
               </div>
