@@ -94,29 +94,34 @@ export function DeathsSection({
   team2,
   deaths,
 }: TeamPair & { deaths: DeathsData }) {
+  const t = useTranslations("mapPage.overview.analysis.deaths");
   return (
     <div className="space-y-4">
       <HeadToHeadBar
-        label="First Death Rate"
+        label={t("headToHeadLabel")}
         team1Value={deaths.team1FirstDeaths}
         team2Value={deaths.totalFights - deaths.team1FirstDeaths}
         team1Name={team1.name}
         team2Name={team2.name}
         team1Color={team1.color}
         team2Color={team2.color}
-        unit="first deaths"
+        unit={t("headToHeadUnit")}
       />
       <Callout icon={<Skull className="size-4" />}>
-        Player with most first deaths:{" "}
-        <span
-          className="font-semibold"
-          style={{ color: deaths.playerTeamColor }}
-        >
-          {deaths.playerWithMostFirstDeaths}
-        </span>{" "}
-        <span className="tabular-nums">
-          ({deaths.playerFirstDeathCount} of {deaths.totalFights} fights)
-        </span>
+        {t.rich("topPlayerCallout", {
+          playerName: deaths.playerWithMostFirstDeaths,
+          count: deaths.playerFirstDeathCount,
+          total: deaths.totalFights,
+          player: (chunks) => (
+            <span
+              className="font-semibold"
+              style={{ color: deaths.playerTeamColor }}
+            >
+              {chunks}
+            </span>
+          ),
+          num: (chunks) => <span className="tabular-nums">{chunks}</span>,
+        })}
       </Callout>
       {deaths.fightFirstDeaths.length > 0 && (
         <FirstDeathTimeline
@@ -127,12 +132,21 @@ export function DeathsSection({
       )}
       {deaths.lucioAjaxes.map((ajax) => (
         <Callout key={ajax.playerName} icon="🎵">
-          <span className="font-semibold" style={{ color: ajax.teamColor }}>
-            {ajax.playerName}
-          </span>{" "}
-          played Lúcio and Ajaxed{" "}
-          <span className="font-semibold tabular-nums">{ajax.count}</span>{" "}
-          {ajax.count === 1 ? "time" : "times"}
+          {t.rich("ajaxCallout", {
+            playerName: ajax.playerName,
+            count: ajax.count,
+            player: (chunks) => (
+              <span
+                className="font-semibold"
+                style={{ color: ajax.teamColor }}
+              >
+                {chunks}
+              </span>
+            ),
+            num: (chunks) => (
+              <span className="font-semibold tabular-nums">{chunks}</span>
+            ),
+          })}
         </Callout>
       ))}
     </div>
@@ -144,17 +158,18 @@ export function UltimatesSection({
   team2,
   ultimates,
 }: TeamPair & { ultimates: UltimatesData }) {
+  const t = useTranslations("mapPage.overview.analysis.ultimates");
   return (
     <div className="space-y-4">
       <HeadToHeadBar
-        label="Total Ultimates Used"
+        label={t("headToHeadLabel")}
         team1Value={ultimates.team1Count}
         team2Value={ultimates.team2Count}
         team1Name={team1.name}
         team2Name={team2.name}
         team1Color={team1.color}
         team2Color={team2.color}
-        unit="ults"
+        unit={t("headToHeadUnit")}
       />
       {ROLES.map((role) => {
         const data = ultimates.firstUltByRole[role];
@@ -162,21 +177,21 @@ export function UltimatesSection({
         return (
           <HeadToHeadBar
             key={role}
-            label={`${role} — Used Ult First`}
+            label={t("roleHeadToHeadLabel", { role })}
             team1Value={data.team1First}
             team2Value={data.team2First}
             team1Name={team1.name}
             team2Name={team2.name}
             team1Color={team1.color}
             team2Color={team2.color}
-            unit="fights"
+            unit={t("roleHeadToHeadUnit")}
           />
         );
       })}
       <div className="grid gap-3 sm:grid-cols-2">
         {ultimates.team1TopUlt && (
           <Callout icon={<Zap className="size-4" />}>
-            <span style={{ color: team1.color }}>Top ult user:</span>{" "}
+            <span style={{ color: team1.color }}>{t("topUltUserLabel")}</span>{" "}
             <span className="font-semibold">{ultimates.team1TopUlt.name}</span>{" "}
             ({ultimates.team1TopUlt.hero},{" "}
             <span className="tabular-nums">{ultimates.team1TopUlt.count}</span>)
@@ -184,7 +199,7 @@ export function UltimatesSection({
         )}
         {ultimates.team2TopUlt && (
           <Callout icon={<Zap className="size-4" />}>
-            <span style={{ color: team2.color }}>Top ult user:</span>{" "}
+            <span style={{ color: team2.color }}>{t("topUltUserLabel")}</span>{" "}
             <span className="font-semibold">{ultimates.team2TopUlt.name}</span>{" "}
             ({ultimates.team2TopUlt.hero},{" "}
             <span className="tabular-nums">{ultimates.team2TopUlt.count}</span>)
@@ -195,33 +210,35 @@ export function UltimatesSection({
         <div className="grid gap-3 sm:grid-cols-2">
           {ultimates.team1TopFightInitiator && (
             <Callout icon={<Crosshair className="size-4" />}>
-              <span style={{ color: team1.color }}>Top fight opener:</span>{" "}
+              <span style={{ color: team1.color }}>
+                {t("topFightOpenerLabel")}
+              </span>{" "}
               <span className="font-semibold">
                 {ultimates.team1TopFightInitiator.hero}
               </span>{" "}
               (
               <span className="tabular-nums">
-                {ultimates.team1TopFightInitiator.count}
-              </span>{" "}
-              {ultimates.team1TopFightInitiator.count === 1
-                ? "fight"
-                : "fights"}
+                {t("fightCount", {
+                  count: ultimates.team1TopFightInitiator.count,
+                })}
+              </span>
               )
             </Callout>
           )}
           {ultimates.team2TopFightInitiator && (
             <Callout icon={<Crosshair className="size-4" />}>
-              <span style={{ color: team2.color }}>Top fight opener:</span>{" "}
+              <span style={{ color: team2.color }}>
+                {t("topFightOpenerLabel")}
+              </span>{" "}
               <span className="font-semibold">
                 {ultimates.team2TopFightInitiator.hero}
               </span>{" "}
               (
               <span className="tabular-nums">
-                {ultimates.team2TopFightInitiator.count}
-              </span>{" "}
-              {ultimates.team2TopFightInitiator.count === 1
-                ? "fight"
-                : "fights"}
+                {t("fightCount", {
+                  count: ultimates.team2TopFightInitiator.count,
+                })}
+              </span>
               )
             </Callout>
           )}
@@ -229,8 +246,8 @@ export function UltimatesSection({
       )}
       {ultimates.playerComparisons.length > 0 && (
         <div className="min-h-[300px]">
-          <h4 className="text-muted-foreground mb-2 text-xs font-medium tracking-wider uppercase">
-            Ultimate Usage by Subrole
+          <h4 className="text-muted-foreground mb-2 font-mono text-xs tracking-[0.06em] uppercase">
+            {t("subroleChartHeading")}
           </h4>
           <UltComparisonChart
             comparisons={ultimates.playerComparisons}
@@ -247,13 +264,14 @@ export function TimingSection({
   team2,
   timing,
 }: TeamPair & { timing: TimingData }) {
+  const t = useTranslations("mapPage.overview.analysis.timing");
   if (
     timing.team1AllTimings.length === 0 &&
     timing.team2AllTimings.length === 0
   )
     return (
       <p className="text-muted-foreground text-sm text-pretty">
-        No timing data available for this map.
+        {t("empty")}
       </p>
     );
 
@@ -267,14 +285,28 @@ export function TimingSection({
   return (
     <div className="space-y-4">
       <Callout icon={<Crosshair className="size-4" />}>
-        <span style={{ color: team1.color }}>{team1.name}</span> uses{" "}
-        <span className="font-semibold tabular-nums">{t1Pct}%</span> of ults in
-        initiation vs <span style={{ color: team2.color }}>{team2.name}</span>
-        &apos;s <span className="font-semibold tabular-nums">{t2Pct}%</span>
+        {t.rich("comparisonCallout", {
+          team1Name: team1.name,
+          team2Name: team2.name,
+          team1Pct: t1Pct,
+          team2Pct: t2Pct,
+          team1: (chunks) => (
+            <span style={{ color: team1.color }}>{chunks}</span>
+          ),
+          team2: (chunks) => (
+            <span style={{ color: team2.color }}>{chunks}</span>
+          ),
+          pct1: (chunks) => (
+            <span className="font-semibold tabular-nums">{chunks}</span>
+          ),
+          pct2: (chunks) => (
+            <span className="font-semibold tabular-nums">{chunks}</span>
+          ),
+        })}
       </Callout>
       <div className="min-h-[300px]">
-        <h4 className="text-muted-foreground mb-2 text-xs font-medium tracking-wider uppercase">
-          Ultimate Timing Breakdown
+        <h4 className="text-muted-foreground mb-2 font-mono text-xs tracking-[0.06em] uppercase">
+          {t("breakdownHeading")}
         </h4>
         <UltTimingChart
           team1Timings={timing.team1AllTimings}
@@ -291,13 +323,14 @@ export function EfficiencySection({
   team2,
   efficiency,
 }: TeamPair & { efficiency: EfficiencyData }) {
+  const t = useTranslations("mapPage.overview.analysis.efficiency");
   if (
     efficiency.team1.totalUltsUsedInFights === 0 &&
     efficiency.team2.totalUltsUsedInFights === 0
   )
     return (
       <p className="text-muted-foreground text-sm text-pretty">
-        No efficiency data available for this map.
+        {t("empty")}
       </p>
     );
 
@@ -322,7 +355,7 @@ export function EfficiencySection({
       {(efficiency.team1AvgChargeTime > 0 ||
         efficiency.team2AvgChargeTime > 0) && (
         <HeadToHeadBar
-          label="Avg Ult Charge Time"
+          label={t("avgChargeTimeLabel")}
           team1Value={efficiency.team1AvgChargeTime}
           team2Value={efficiency.team2AvgChargeTime}
           team1Name={team1.name}
@@ -334,7 +367,7 @@ export function EfficiencySection({
       )}
       {(efficiency.team1AvgHoldTime > 0 || efficiency.team2AvgHoldTime > 0) && (
         <HeadToHeadBar
-          label="Avg Ult Hold Time"
+          label={t("avgHoldTimeLabel")}
           team1Value={efficiency.team1AvgHoldTime}
           team2Value={efficiency.team2AvgHoldTime}
           team1Name={team1.name}
@@ -353,26 +386,29 @@ export function SwapsSection({
   team2,
   swaps,
 }: TeamPair & { swaps: SwapsData }) {
+  const t = useTranslations("mapPage.overview.analysis.swaps");
   if (swaps.team1Count === 0 && swaps.team2Count === 0)
     return (
       <p className="text-muted-foreground text-sm text-pretty">
-        No hero swaps recorded for this map.
+        {t("empty")}
       </p>
     );
+
+  const empty = t("tableEmpty");
 
   return (
     <div className="space-y-4">
       <HeadToHeadBar
-        label="Total Hero Swaps"
+        label={t("headToHeadLabel")}
         team1Value={swaps.team1Count}
         team2Value={swaps.team2Count}
         team1Name={team1.name}
         team2Name={team2.name}
         team1Color={team1.color}
         team2Color={team2.color}
-        unit="swaps"
+        unit={t("headToHeadUnit")}
       />
-      <div className="overflow-hidden rounded-lg border border-black/[0.06] shadow-[0_1px_2px_0_rgba(0,0,0,0.03)] dark:border-white/[0.06] dark:shadow-[0_1px_2px_0_rgba(0,0,0,0.2)]">
+      <div className="border-border ring-foreground/10 overflow-hidden rounded-lg border shadow-xs ring-1">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-muted/50">
@@ -394,32 +430,46 @@ export function SwapsSection({
           <tbody className="divide-y">
             <tr>
               <td className="text-muted-foreground px-3 py-2 text-xs font-medium">
-                Top Swap
+                {t("tableTopSwap")}
               </td>
               <td className="px-3 py-2 font-medium tabular-nums">
                 {swaps.team1TopPair
-                  ? `${swaps.team1TopPair.from} → ${swaps.team1TopPair.to} (${swaps.team1TopPair.count}x)`
-                  : "—"}
+                  ? t("topPair", {
+                      from: swaps.team1TopPair.from,
+                      to: swaps.team1TopPair.to,
+                      count: swaps.team1TopPair.count,
+                    })
+                  : empty}
               </td>
               <td className="px-3 py-2 font-medium tabular-nums">
                 {swaps.team2TopPair
-                  ? `${swaps.team2TopPair.from} → ${swaps.team2TopPair.to} (${swaps.team2TopPair.count}x)`
-                  : "—"}
+                  ? t("topPair", {
+                      from: swaps.team2TopPair.from,
+                      to: swaps.team2TopPair.to,
+                      count: swaps.team2TopPair.count,
+                    })
+                  : empty}
               </td>
             </tr>
             <tr>
               <td className="text-muted-foreground px-3 py-2 text-xs font-medium">
-                Most Active
+                {t("tableMostActive")}
               </td>
               <td className="px-3 py-2 font-medium tabular-nums">
                 {swaps.team1TopSwapper
-                  ? `${swaps.team1TopSwapper.name} (${swaps.team1TopSwapper.count} swaps)`
-                  : "—"}
+                  ? t("topSwapper", {
+                      name: swaps.team1TopSwapper.name,
+                      count: swaps.team1TopSwapper.count,
+                    })
+                  : empty}
               </td>
               <td className="px-3 py-2 font-medium tabular-nums">
                 {swaps.team2TopSwapper
-                  ? `${swaps.team2TopSwapper.name} (${swaps.team2TopSwapper.count} swaps)`
-                  : "—"}
+                  ? t("topSwapper", {
+                      name: swaps.team2TopSwapper.name,
+                      count: swaps.team2TopSwapper.count,
+                    })
+                  : empty}
               </td>
             </tr>
           </tbody>
@@ -469,10 +519,12 @@ export function RotationDeathsSection({
   rotationDeaths: RotationDeathsData;
   calibrationData?: SerializedCalibrationData;
 }) {
+  const t = useTranslations("mapPage.overview.analysis.rotationDeaths");
+
   if (!rotationDeaths)
     return (
       <p className="text-muted-foreground text-sm text-pretty">
-        No coordinate data available for rotation death analysis on this map.
+        {t("empty")}
       </p>
     );
 
@@ -481,7 +533,7 @@ export function RotationDeathsSection({
   if (events.length === 0)
     return (
       <p className="text-muted-foreground text-sm text-pretty">
-        No rotation deaths detected on this map.
+        {t("noEvents")}
       </p>
     );
 
@@ -500,65 +552,72 @@ export function RotationDeathsSection({
   return (
     <div className="space-y-4">
       <HeadToHeadBar
-        label="Rotation Deaths"
+        label={t("headToHeadLabel")}
         team1Value={team1Count}
         team2Value={team2Count}
         team1Name={team1.name}
         team2Name={team2.name}
         team1Color={team1.color}
         team2Color={team2.color}
-        unit="deaths"
+        unit={t("headToHeadUnit")}
       />
 
       <div className="grid gap-3 sm:grid-cols-2">
         {topPlayer && (
           <Callout icon={<Route className="size-4" />}>
-            Most picked on rotation:{" "}
-            <span
-              className="font-semibold"
-              style={{
-                color:
-                  topPlayer.playerTeam === team1.name
-                    ? team1.color
-                    : team2.color,
-              }}
-            >
-              {topPlayer.playerName}
-            </span>{" "}
-            <span className="tabular-nums">
-              ({topPlayer.rotationDeathCount} of {topPlayer.totalDeaths} deaths,{" "}
-              {(topPlayer.rotationDeathRate * 100).toFixed(0)}%)
-            </span>
+            {t.rich("topPlayerCallout", {
+              playerName: topPlayer.playerName,
+              rotationCount: topPlayer.rotationDeathCount,
+              totalDeaths: topPlayer.totalDeaths,
+              rate: (topPlayer.rotationDeathRate * 100).toFixed(0),
+              player: (chunks) => (
+                <span
+                  className="font-semibold"
+                  style={{
+                    color:
+                      topPlayer.playerTeam === team1.name
+                        ? team1.color
+                        : team2.color,
+                  }}
+                >
+                  {chunks}
+                </span>
+              ),
+              num: (chunks) => <span className="tabular-nums">{chunks}</span>,
+            })}
           </Callout>
         )}
         {topKiller && (
           <Callout icon={<Crosshair className="size-4" />}>
-            Most rotation picks with:{" "}
-            <span className="font-semibold">{topKiller[0]}</span>{" "}
-            <span className="tabular-nums">
-              ({topKiller[1]} {topKiller[1] === 1 ? "kill" : "kills"})
-            </span>
+            {t.rich("topKillerCallout", {
+              hero: topKiller[0],
+              count: topKiller[1],
+              heroname: (chunks) => (
+                <span className="font-semibold">{chunks}</span>
+              ),
+              num: (chunks) => <span className="tabular-nums">{chunks}</span>,
+            })}
           </Callout>
         )}
       </div>
 
       {/* Per-player breakdown table */}
       {sorted.length > 0 && (
-        <div className="overflow-hidden rounded-lg border border-black/[0.06] shadow-[0_1px_2px_0_rgba(0,0,0,0.03)] dark:border-white/[0.06] dark:shadow-[0_1px_2px_0_rgba(0,0,0,0.2)]">
+        <div className="border-border ring-foreground/10 overflow-hidden rounded-lg border shadow-xs ring-1">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-muted/50">
                 <th className="text-muted-foreground px-3 py-2 text-left text-xs font-medium">
-                  Player
+                  {t("tablePlayer")}
                 </th>
                 <th className="text-muted-foreground px-3 py-2 text-right text-xs font-medium">
-                  Rotation Deaths
+                  {t("tableRotationDeaths")}
                 </th>
                 <th className="text-muted-foreground px-3 py-2 text-right text-xs font-medium">
-                  Total Deaths
+                  {t("tableTotalDeaths")}
                 </th>
                 <th className="text-muted-foreground px-3 py-2 text-right text-xs font-medium">
-                  Rate
+                  {t("tableRate")}
                 </th>
               </tr>
             </thead>
@@ -592,8 +651,8 @@ export function RotationDeathsSection({
 
       {/* Individual rotation death events */}
       <div>
-        <h4 className="text-muted-foreground mb-2 text-xs font-medium tracking-wider uppercase">
-          Rotation Death Events ({events.length})
+        <h4 className="text-muted-foreground mb-2 font-mono text-xs tracking-[0.06em] uppercase">
+          {t("eventsHeading", { count: events.length })}
         </h4>
         <div className="space-y-1">
           {events.map((e) => (

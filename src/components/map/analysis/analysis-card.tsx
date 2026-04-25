@@ -32,7 +32,11 @@ import {
   Skull,
   Zap,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
+
+const TAB_PANEL_CLASS =
+  "animate-in fade-in-0 data-[state=inactive]:animate-out data-[state=inactive]:fade-out-0 min-h-[180px] motion-reduce:animate-none";
 
 export type AnalysisCardProps = {
   team1: { name: string; color: string };
@@ -76,6 +80,7 @@ export function AnalysisCard({
   calibrationData,
   translations: t,
 }: AnalysisCardProps) {
+  const tShort = useTranslations("mapPage.overview.analysis.mobileLabel");
   const [activeTab, setActiveTab] = useState("deaths");
   const hasRotationData = rotationDeaths !== undefined;
 
@@ -101,50 +106,42 @@ export function AnalysisCard({
             <TabsTrigger value="deaths" className="gap-1.5">
               <Skull className="size-3.5" />
               <span className="hidden sm:inline">{t.tabFirstDeaths}</span>
-              <span className="sm:hidden">Deaths</span>
+              <span className="sm:hidden">{tShort("deaths")}</span>
             </TabsTrigger>
             <TabsTrigger value="ultimates" className="gap-1.5">
               <Zap className="size-3.5" />
               <span className="hidden sm:inline">{t.tabUltimates}</span>
-              <span className="sm:hidden">Ults</span>
+              <span className="sm:hidden">{tShort("ults")}</span>
             </TabsTrigger>
             <TabsTrigger value="timing" className="gap-1.5">
               <Crosshair className="size-3.5" />
               <span className="hidden sm:inline">{t.tabTiming}</span>
-              <span className="sm:hidden">Timing</span>
+              <span className="sm:hidden">{tShort("timing")}</span>
             </TabsTrigger>
             <TabsTrigger value="efficiency" className="gap-1.5">
               <Gauge className="size-3.5" />
               <span className="hidden sm:inline">{t.tabEfficiency}</span>
-              <span className="sm:hidden">Eff.</span>
+              <span className="sm:hidden">{tShort("efficiency")}</span>
             </TabsTrigger>
             <TabsTrigger value="swaps" className="gap-1.5">
               <ArrowRightLeft className="size-3.5" />
               <span className="hidden sm:inline">{t.tabSwaps}</span>
-              <span className="sm:hidden">Swaps</span>
+              <span className="sm:hidden">{tShort("swaps")}</span>
             </TabsTrigger>
-            {hasRotationData && (
+            {hasRotationData && t.tabRotationDeaths && (
               <TabsTrigger value="rotationDeaths" className="gap-1.5">
                 <Route className="size-3.5" />
-                <span className="hidden sm:inline">
-                  {t.tabRotationDeaths ?? "Rotation Deaths"}
-                </span>
-                <span className="sm:hidden">Rotation</span>
+                <span className="hidden sm:inline">{t.tabRotationDeaths}</span>
+                <span className="sm:hidden">{tShort("rotation")}</span>
               </TabsTrigger>
             )}
           </TabsList>
 
-          <TabsContent
-            value="deaths"
-            className="animate-in fade-in-0 data-[state=inactive]:animate-out data-[state=inactive]:fade-out-0 min-h-[180px] motion-reduce:animate-none"
-          >
+          <TabsContent value="deaths" className={TAB_PANEL_CLASS}>
             <DeathsSection team1={team1} team2={team2} deaths={deaths} />
           </TabsContent>
 
-          <TabsContent
-            value="ultimates"
-            className="animate-in fade-in-0 data-[state=inactive]:animate-out data-[state=inactive]:fade-out-0 min-h-[180px] motion-reduce:animate-none"
-          >
+          <TabsContent value="ultimates" className={TAB_PANEL_CLASS}>
             <UltimatesSection
               team1={team1}
               team2={team2}
@@ -152,17 +149,11 @@ export function AnalysisCard({
             />
           </TabsContent>
 
-          <TabsContent
-            value="timing"
-            className="animate-in fade-in-0 data-[state=inactive]:animate-out data-[state=inactive]:fade-out-0 min-h-[180px] motion-reduce:animate-none"
-          >
+          <TabsContent value="timing" className={TAB_PANEL_CLASS}>
             <TimingSection team1={team1} team2={team2} timing={timing} />
           </TabsContent>
 
-          <TabsContent
-            value="efficiency"
-            className="animate-in fade-in-0 data-[state=inactive]:animate-out data-[state=inactive]:fade-out-0 min-h-[180px] motion-reduce:animate-none"
-          >
+          <TabsContent value="efficiency" className={TAB_PANEL_CLASS}>
             <EfficiencySection
               team1={team1}
               team2={team2}
@@ -170,18 +161,12 @@ export function AnalysisCard({
             />
           </TabsContent>
 
-          <TabsContent
-            value="swaps"
-            className="animate-in fade-in-0 data-[state=inactive]:animate-out data-[state=inactive]:fade-out-0 min-h-[180px] motion-reduce:animate-none"
-          >
+          <TabsContent value="swaps" className={TAB_PANEL_CLASS}>
             <SwapsSection team1={team1} team2={team2} swaps={swaps} />
           </TabsContent>
 
           {hasRotationData && (
-            <TabsContent
-              value="rotationDeaths"
-              className="animate-in fade-in-0 data-[state=inactive]:animate-out data-[state=inactive]:fade-out-0 min-h-[180px] motion-reduce:animate-none"
-            >
+            <TabsContent value="rotationDeaths" className={TAB_PANEL_CLASS}>
               <RotationDeathsSection
                 team1={team1}
                 team2={team2}

@@ -34,6 +34,7 @@ import {
   Skull,
   Zap,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 const BASE_SECTIONS = ["deaths", "ultimates", "timing", "efficiency", "swaps"];
@@ -51,6 +52,7 @@ export function AnalysisCardAccordion({
   abilityTiming,
   translations: t,
 }: AnalysisCardProps) {
+  const tAnalysis = useTranslations("mapPage.overview.analysis");
   const hasAbilityData =
     abilityTiming &&
     (abilityTiming.team1.rows.length > 0 ||
@@ -77,17 +79,17 @@ export function AnalysisCardAccordion({
           <button
             type="button"
             onClick={toggleAll}
-            className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-xs font-medium transition-[color] active:scale-[0.96]"
+            className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-xs font-medium transition-[color] active:scale-[0.96] motion-reduce:active:scale-100"
           >
             {allExpanded ? (
               <>
                 <ChevronsDownUp className="size-3.5" aria-hidden="true" />
-                Collapse all
+                {tAnalysis("collapseAll")}
               </>
             ) : (
               <>
                 <ChevronsUpDown className="size-3.5" aria-hidden="true" />
-                Expand all
+                {tAnalysis("expandAll")}
               </>
             )}
           </button>
@@ -205,7 +207,7 @@ export function AnalysisCardAccordion({
                     className="text-muted-foreground size-4"
                     aria-hidden="true"
                   />
-                  {t.tabRotationDeaths ?? "Rotation Deaths"}
+                  {t.tabRotationDeaths ?? tAnalysis("tabRotationDeaths")}
                 </span>
               </AccordionTrigger>
               <AccordionContent>
@@ -232,7 +234,7 @@ export function AnalysisCardAccordion({
                     className="text-muted-foreground size-4"
                     aria-hidden="true"
                   />
-                  {t.tabAbilityTiming ?? "Ability Timing"}
+                  {t.tabAbilityTiming ?? tAnalysis("tabAbilityTiming")}
                 </span>
               </AccordionTrigger>
               <AccordionContent>

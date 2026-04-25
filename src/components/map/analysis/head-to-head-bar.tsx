@@ -53,7 +53,7 @@ export function HeadToHeadBar({
       <div className="flex h-7 w-full gap-px overflow-hidden rounded-md shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)] dark:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]">
         <div
           className={cn(
-            "flex items-center justify-center text-xs font-semibold text-white tabular-nums transition-[width] duration-300 ease-out motion-reduce:transition-none",
+            "flex items-center justify-center text-xs font-semibold text-white tabular-nums transition-[width] duration-300 ease-out [text-shadow:0_0_2px_rgba(0,0,0,0.4)] motion-reduce:transition-none",
             team1Pct < 15 && "justify-start pl-1"
           )}
           style={{
@@ -72,7 +72,7 @@ export function HeadToHeadBar({
         </div>
         <div
           className={cn(
-            "flex items-center justify-center text-xs font-semibold text-white tabular-nums transition-[width] duration-300 ease-out motion-reduce:transition-none",
+            "flex items-center justify-center text-xs font-semibold text-white tabular-nums transition-[width] duration-300 ease-out [text-shadow:0_0_2px_rgba(0,0,0,0.4)] motion-reduce:transition-none",
             team2Pct < 15 && "justify-end pr-1"
           )}
           style={{

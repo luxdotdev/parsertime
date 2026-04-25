@@ -70,7 +70,7 @@ export function FirstDeathTimeline({
     <div className="space-y-3">
       {/* Fight strip */}
       <div>
-        <div className="text-muted-foreground mb-1.5 flex items-center justify-between text-[10px] font-medium tracking-wider uppercase">
+        <div className="text-muted-foreground mb-1.5 flex items-center justify-between font-mono text-[10px] tracking-[0.06em] uppercase">
           <span>Fight-by-fight first deaths</span>
           <span className="tabular-nums">{fights.length} fights</span>
         </div>
@@ -83,12 +83,12 @@ export function FirstDeathTimeline({
                 <TooltipTrigger asChild>
                   <button
                     type="button"
-                    className="relative h-6 min-w-0 flex-1 rounded-sm transition-[opacity] hover:opacity-80 focus-visible:ring-2 focus-visible:ring-offset-1"
+                    className="focus-visible:ring-ring focus-visible:ring-offset-background relative h-6 min-w-0 flex-1 rounded-sm transition-[opacity] hover:opacity-80 focus-visible:ring-2 focus-visible:ring-offset-1 motion-reduce:transition-none"
                     style={{ backgroundColor: color }}
                     aria-label={`Fight ${f.fightNumber}: ${f.victimName} (${f.victimHero}) died first for ${teamName}`}
                   >
                     {fights.length <= 20 && (
-                      <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-white/80 tabular-nums">
+                      <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-white tabular-nums [text-shadow:0_0_2px_rgba(0,0,0,0.5)]">
                         {f.fightNumber}
                       </span>
                     )}
@@ -98,7 +98,7 @@ export function FirstDeathTimeline({
                   <div className="space-y-0.5">
                     <div className="font-semibold">
                       Fight {f.fightNumber}{" "}
-                      <span className="font-normal text-white/60">
+                      <span className="text-muted-foreground font-normal">
                         {toTimestamp(f.matchTime)}
                       </span>
                     </div>
@@ -134,10 +134,10 @@ export function FirstDeathTimeline({
 
       {/* Momentum chart */}
       <div>
-        <div className="text-muted-foreground mb-1.5 text-[10px] font-medium tracking-wider uppercase">
+        <div className="text-muted-foreground mb-1.5 font-mono text-[10px] tracking-[0.06em] uppercase">
           First death momentum
         </div>
-        <div className="relative h-16 w-full overflow-hidden rounded-md border border-black/[0.04] bg-zinc-50 dark:border-white/[0.04] dark:bg-zinc-900/50">
+        <div className="bg-muted/30 border-border relative h-16 w-full overflow-hidden rounded-md border">
           {/* Center line */}
           <div className="border-muted-foreground/20 absolute top-1/2 right-0 left-0 border-t border-dashed" />
           {/* Team labels on edges */}

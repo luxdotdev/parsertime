@@ -14,7 +14,7 @@ import {
 } from "@radix-ui/react-icons";
 import { Info } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import React, { useState } from "react";
 
 const PHASE_ORDER: FightPhase[] = [
   "pre-fight",
@@ -35,18 +35,18 @@ const PHASE_LABELS: Record<FightPhase, string> = {
 const MIN_FIGHTS = 3;
 
 function getWinrateColor(winrate: number, hasFights: boolean): string {
-  if (!hasFights) return "bg-zinc-800";
-  if (winrate < 45) return "bg-red-900";
-  if (winrate < 55) return "bg-zinc-800";
-  if (winrate < 65) return "bg-green-900";
-  return "bg-green-700";
+  if (!hasFights) return "bg-muted";
+  if (winrate < 45) return "bg-destructive/10";
+  if (winrate < 55) return "bg-muted";
+  if (winrate < 65) return "bg-emerald-500/10 dark:bg-emerald-500/15";
+  return "bg-emerald-500/20 dark:bg-emerald-500/25";
 }
 
 function getWinrateTextColor(winrate: number, hasFights: boolean): string {
-  if (!hasFights) return "text-zinc-500";
-  if (winrate < 45) return "text-red-200";
-  if (winrate < 55) return "text-zinc-400";
-  return "text-green-200";
+  if (!hasFights) return "text-muted-foreground";
+  if (winrate < 45) return "text-destructive";
+  if (winrate < 55) return "text-muted-foreground";
+  return "text-emerald-600 dark:text-emerald-400";
 }
 
 function getOutlierBorder(
@@ -62,8 +62,8 @@ function getOutlierBorder(
   );
   if (!outlier) return "";
   return outlier.type === "negative"
-    ? "ring-2 ring-red-500"
-    : "ring-2 ring-green-500";
+    ? "ring-2 ring-destructive"
+    : "ring-2 ring-emerald-500";
 }
 
 function phaseLabel(phase: FightPhase): string {
@@ -77,9 +77,9 @@ function OutlierInsight({ outlier }: { outlier: AbilityTimingOutlier }) {
     <div className="bg-muted/60 border-border flex min-w-0 flex-1 items-start gap-2 rounded-lg border p-3">
       <span className="mt-0.5 shrink-0">
         {isNegative ? (
-          <ExclamationTriangleIcon className="h-3.5 w-3.5 text-orange-500" />
+          <ExclamationTriangleIcon className="text-destructive h-3.5 w-3.5" />
         ) : (
-          <LightningBoltIcon className="h-3.5 w-3.5 text-blue-500" />
+          <LightningBoltIcon className="h-3.5 w-3.5 text-emerald-500" />
         )}
       </span>
       <p className="text-foreground min-w-0 text-xs leading-relaxed">
@@ -87,11 +87,11 @@ function OutlierInsight({ outlier }: { outlier: AbilityTimingOutlier }) {
         {isNegative ? (
           <>
             used {phaseLabel(outlier.phase).toLowerCase()} has{" "}
-            <span className="font-semibold text-red-400">
+            <span className="text-destructive font-semibold">
               {Math.round(outlier.phaseWinrate)}% winrate
             </span>{" "}
             vs{" "}
-            <span className="font-semibold text-green-400">
+            <span className="font-semibold text-emerald-600 dark:text-emerald-400">
               {Math.round(outlier.bestPhaseWinrate)}%
             </span>{" "}
             when used {phaseLabel(outlier.bestPhase).toLowerCase()}
@@ -99,10 +99,10 @@ function OutlierInsight({ outlier }: { outlier: AbilityTimingOutlier }) {
         ) : (
           <>
             in {phaseLabel(outlier.phase).toLowerCase()} correlates with{" "}
-            <span className="font-semibold text-green-400">
+            <span className="font-semibold text-emerald-600 dark:text-emerald-400">
               {Math.round(outlier.phaseWinrate)}% winrate
-            </span>{" "}
-            — strong {outlier.phase === "pre-fight" ? "initiation" : "timing"}{" "}
+            </span>
+            : strong {outlier.phase === "pre-fight" ? "initiation" : "timing"}{" "}
             pattern
           </>
         )}
@@ -178,7 +178,7 @@ function TeamHeatmap({
             {PHASE_ORDER.map((phase) => (
               <div
                 key={phase}
-                className="text-muted-foreground px-2 pb-2 text-center text-xs font-medium"
+                className="text-muted-foreground px-2 pb-2 text-center font-mono text-xs tracking-[0.06em] uppercase"
               >
                 {PHASE_LABELS[phase]}
               </div>
@@ -186,7 +186,9 @@ function TeamHeatmap({
 
             {/* Data rows */}
             {analysis.rows.map((row) => (
-              <>
+              <React.Fragment
+                key={`${row.heroName}-${row.abilitySlot}-row`}
+              >
                 <div
                   key={`${row.heroName}-${row.abilitySlot}-label`}
                   className="flex items-center gap-2 pr-2 text-sm"
@@ -238,13 +240,13 @@ function TeamHeatmap({
                           : `Fewer than ${MIN_FIGHTS} fights`
                       }
                     >
-                      <span className="text-xs font-bold tabular-nums">
-                        {hasFights ? `${Math.round(stats.winrate)}%` : "—"}
+                      <span className="font-mono text-xs font-bold tabular-nums">
+                        {hasFights ? `${Math.round(stats.winrate)}%` : "-"}
                       </span>
                     </div>
                   );
                 })}
-              </>
+              </React.Fragment>
             ))}
           </div>
         </div>
@@ -309,28 +311,28 @@ export function MapAbilityTimingSection({
       <div className="border-border flex flex-wrap items-center gap-x-3 gap-y-1 border-t pt-3">
         <span className="text-muted-foreground text-xs">Win rate:</span>
         <div className="flex items-center gap-1">
-          <div className="h-3 w-3 rounded-sm bg-red-900" />
+          <div className="bg-destructive/10 h-3 w-3 rounded-sm" />
           <span className="text-muted-foreground text-xs">&lt;45%</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="h-3 w-3 rounded-sm bg-zinc-800" />
+          <div className="bg-muted h-3 w-3 rounded-sm" />
           <span className="text-muted-foreground text-xs">45-55%</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="h-3 w-3 rounded-sm bg-green-900" />
+          <div className="h-3 w-3 rounded-sm bg-emerald-500/10 dark:bg-emerald-500/15" />
           <span className="text-muted-foreground text-xs">55-65%</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="h-3 w-3 rounded-sm bg-green-700" />
+          <div className="h-3 w-3 rounded-sm bg-emerald-500/20 dark:bg-emerald-500/25" />
           <span className="text-muted-foreground text-xs">&gt;65%</span>
         </div>
         <span className="bg-border mx-1 h-3 w-px" />
         <div className="flex items-center gap-1">
-          <div className="h-3 w-3 rounded-sm ring-2 ring-red-500" />
+          <div className="ring-destructive h-3 w-3 rounded-sm ring-2" />
           <span className="text-muted-foreground text-xs">Bad timing</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="h-3 w-3 rounded-sm ring-2 ring-green-500" />
+          <div className="h-3 w-3 rounded-sm ring-2 ring-emerald-500" />
           <span className="text-muted-foreground text-xs">Good timing</span>
         </div>
       </div>
@@ -353,7 +355,7 @@ export function MapAbilityTimingSection({
             aria-hidden
           />
           <p className="text-muted-foreground text-xs">
-            Win rates are from each team&apos;s perspective. &ldquo;—&rdquo; =
+            Win rates are from each team&apos;s perspective. &ldquo;-&rdquo; =
             fewer than {MIN_FIGHTS} fights. Hover for details.
           </p>
         </div>
