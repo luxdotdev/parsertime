@@ -103,7 +103,8 @@ function findMultikills(fights: Fight[]) {
       { times: number[]; team: string; hero: string }
     > = {};
     for (const kill of fight.kills) {
-      if (kill.match_time < fight.start || kill.match_time > fight.end) continue;
+      if (kill.match_time < fight.start || kill.match_time > fight.end)
+        continue;
       const slot = counter[kill.attacker_name] ?? {
         times: [],
         team: kill.attacker_team,
@@ -235,7 +236,9 @@ export async function getMapEventsData(
 
   const events: EventEntry[] = [
     { kind: "match_start", time: matchStart.match_time },
-    ...(matchEnd ? [{ kind: "match_end" as const, time: matchEnd.match_time }] : []),
+    ...(matchEnd
+      ? [{ kind: "match_end" as const, time: matchEnd.match_time }]
+      : []),
     ...roundStarts.map((r) => ({
       kind: "round_start" as const,
       time: r.match_time,

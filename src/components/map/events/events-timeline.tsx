@@ -2,21 +2,13 @@
 
 import { MapStatCell } from "@/components/map/map-stat-cell";
 import { Separator } from "@/components/ui/separator";
-import type {
-  EventEntry,
-  MapEventsData,
-} from "@/lib/get-map-events";
+import type { EventEntry, MapEventsData } from "@/lib/get-map-events";
 import { toHero, toTimestamp } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 
-type FilterKey =
-  | "all"
-  | "highlights"
-  | "ultimates"
-  | "swaps"
-  | "objectives";
+type FilterKey = "all" | "highlights" | "ultimates" | "swaps" | "objectives";
 
 type EventsTimelineProps = {
   data: MapEventsData;
@@ -306,7 +298,12 @@ function EventRow({
         {label}
       </span>
       <div className="text-sm">
-        <EventDetail entry={entry} teamColor={teamColor} teamName={teamName} t={t} />
+        <EventDetail
+          entry={entry}
+          teamColor={teamColor}
+          teamName={teamName}
+          t={t}
+        />
       </div>
     </li>
   );
@@ -359,7 +356,10 @@ function EventDetail({
             borderColor={teamColor(entry.team)}
             alt={entry.fromHero}
           />
-          <span style={{ color: teamColor(entry.team) }} className="font-medium">
+          <span
+            style={{ color: teamColor(entry.team) }}
+            className="font-medium"
+          >
             {entry.player}
           </span>
           <span className="text-muted-foreground font-mono text-xs">→</span>
@@ -378,7 +378,10 @@ function EventDetail({
             borderColor={teamColor(entry.team)}
             alt={entry.hero}
           />
-          <span style={{ color: teamColor(entry.team) }} className="font-medium">
+          <span
+            style={{ color: teamColor(entry.team) }}
+            className="font-medium"
+          >
             {entry.player}
           </span>
           {entry.fight !== null ? (
