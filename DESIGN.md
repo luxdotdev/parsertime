@@ -42,25 +42,25 @@ colors:
   team-2-protanopia: "oklch(0.7307 0.1638 346.28)"
 typography:
   display:
-    fontFamily: "Geist, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Switzer, ui-sans-serif, system-ui, sans-serif"
     fontSize: "1.875rem"
     fontWeight: 700
     lineHeight: 1.15
     letterSpacing: "-0.01em"
   headline:
-    fontFamily: "Geist, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Switzer, ui-sans-serif, system-ui, sans-serif"
     fontSize: "1.5rem"
     fontWeight: 700
     lineHeight: 1.2
     letterSpacing: "-0.005em"
   title:
-    fontFamily: "Geist, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Switzer, ui-sans-serif, system-ui, sans-serif"
     fontSize: "1.125rem"
     fontWeight: 600
     lineHeight: 1.3
     letterSpacing: "normal"
   body:
-    fontFamily: "Geist, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Switzer, ui-sans-serif, system-ui, sans-serif"
     fontSize: "0.875rem"
     fontWeight: 400
     lineHeight: 1.5
@@ -163,7 +163,7 @@ This system explicitly rejects the gamer-aesthetic AI palette (cyan-on-near-blac
 - Achromatic-first with one signal hue (amber `oklch(0.82 0.17 78)`)
 - Cool-tinted neutrals (hue 250°, chroma 0.003–0.005)
 - Dark by default, light fully first-class
-- Geist Sans for content, Geist Mono for labels and tabular numerals
+- Switzer for content, Geist Mono for labels and tabular numerals
 - Density tuned for desktop; mobile is for quick lookups, not the design target
 - Charts are first-class UI, with color-blind-safe team encoding as a hard requirement
 - Motion is functional only — view transitions, state changes, reduced-motion honored
@@ -220,11 +220,11 @@ Load-bearing — team identity is a data primitive in this product. Each team to
 
 ## 3. Typography
 
-**Display Font:** Geist Sans (loaded via `next/font/google` at weights 400 and 700). Fallback: `ui-sans-serif, system-ui, sans-serif`.
-**Body Font:** Geist Sans, same family.
-**Label / Mono Font:** Geist Mono. Fallback: `ui-monospace, "SF Mono", Menlo, monospace`.
+**Display Font:** Switzer (Indian Type Foundry / Pangram Pangram, OFL). Loaded via `next/font/local` as a single variable woff2, weight axis `100 900`, with a matching italic. Fallback: `ui-sans-serif, system-ui, -apple-system, sans-serif`.
+**Body Font:** Switzer, same family.
+**Label / Mono Font:** Geist Mono (Vercel, loaded via `next/font/google`). Fallback: `ui-monospace, "SF Mono", Menlo, monospace`.
 
-**Character.** Geist is Vercel's house sans — neutral, quietly geometric, well-tuned at small sizes. The pairing fits the trader-terminal direction: precise, restrained, never decorative. Geist Mono handles tabular numerals, IDs, hashes, stat-column figures, and the metadata layer of caps-and-tracked labels. It is never used as "technical vibes" decoration on prose.
+**Character.** Switzer is a modern grotesk with geometric precision and slightly sharper terminals than Geist — reads neutral at body sizes, picks up a confident edge at headlines. The variable axis lets us reach unusual weights (350, 550, 650) without loading extra files, which gives the hierarchy more room to breathe than the prior 400/700-only pairing. Geist Mono is retained as the metadata-and-numeral face; it is the half of the system that already does the trader-terminal lift on tabular figures, IDs, and caps-and-tracked labels, and it is never used as "technical vibes" decoration on prose.
 
 ### Hierarchy
 
@@ -237,7 +237,7 @@ Load-bearing — team identity is a data primitive in this product. Each team to
 
 ### Named Rules
 
-**The Describing-vs.-Doing Rule.** Caps + Geist Mono + tracked-out is for text that _labels, describes, or taxonomizes_: page eyebrows, column headers, role tags, "Sort"/"Filter" affordance labels. Sentence case in Geist Sans is for text that _is content_ or _asks the user to act_: hero names, page titles, prose, button labels, dropdown items, CTAs. Caps everywhere is shouty and AI-templated; caps nowhere collapses metadata into content.
+**The Describing-vs.-Doing Rule.** Caps + Geist Mono + tracked-out is for text that _labels, describes, or taxonomizes_: page eyebrows, column headers, role tags, "Sort"/"Filter" affordance labels. Sentence case in Switzer is for text that _is content_ or _asks the user to act_: hero names, page titles, prose, button labels, dropdown items, CTAs. Caps everywhere is shouty and AI-templated; caps nowhere collapses metadata into content.
 
 **The Tabular-Numeral Rule.** Any number that compares to another number renders in Geist Mono with `font-feature-settings: "tnum"`. Mixed proportional digits in stat columns is the kind of small unprofessionalism that disqualifies a tool from a coaching workflow.
 
@@ -291,21 +291,21 @@ Depth in this product is conveyed by: tonal layer (page → card → popover), b
 
 ### Badges / Chips
 
-- **Style:** `rounded-sm` (6px), 20px tall, `px-2 py-0.5`, `text-xs` Geist Sans. Filled variant uses `bg-secondary` (or `bg-muted`) with `text-secondary-foreground`. Outlined variant uses `border` with transparent background.
+- **Style:** `rounded-sm` (6px), 20px tall, `px-2 py-0.5`, `text-xs` Switzer. Filled variant uses `bg-secondary` (or `bg-muted`) with `text-secondary-foreground`. Outlined variant uses `border` with transparent background.
 - **State:** Active/selected badges shift to `bg-primary text-primary-foreground` — the same amber-as-signal rule as buttons.
 
 ### Navigation
 
 - **Style:** Sidebar uses `bg-sidebar` (slightly lighter than `bg-background` in dark mode, slightly lighter than `bg-card` in light). Active nav item picks up `bg-sidebar-accent` and `text-sidebar-accent-foreground`; the active-active state (current route) gets the amber `bg-sidebar-primary` token.
-- **Typography:** Body Geist Sans for nav labels — caps treatment is reserved for sidebar group headers (the metadata layer).
+- **Typography:** Body Switzer for nav labels — caps treatment is reserved for sidebar group headers (the metadata layer).
 - **Mobile:** Sidebar collapses behind a sheet trigger; on phones we surface a bottom-anchored navigation strip with the same amber-as-active rule.
 
 ### Charts
 
 - **Library:** Recharts, restyled. Defaults are a starting point, not a destination.
-- **Tooltip:** Always `bg-popover` with `border-border`, `rounded-md`, body Geist Sans for category labels, Geist Mono with `tnum` for values. Never amber background — see the Tooltip Surface Rule.
+- **Tooltip:** Always `bg-popover` with `border-border`, `rounded-md`, body Switzer for category labels, Geist Mono with `tnum` for values. Never amber background — see the Tooltip Surface Rule.
 - **Color encoding:** Categorical metrics use the `chart-1..5` ramp. Entity comparisons (teams, heroes, players) use `--team-*` tokens with the active colorblind variant honored. Wins/losses use destructive red and primary amber respectively.
-- **Axes / labels:** Geist Mono caps for axis labels, body Geist Sans for legend entries. Gridlines pick up `border-border` at 30–40% opacity.
+- **Axes / labels:** Geist Mono caps for axis labels, body Switzer for legend entries. Gridlines pick up `border-border` at 30–40% opacity.
 
 ### View Transitions (signature)
 
@@ -317,11 +317,11 @@ The product runs `view-transition-name` on persistent surfaces (site header, the
 
 - **Do** keep amber for primary CTAs, focus rings, and selected/active state. Light mode: deep amber `oklch(0.55 0.17 68)` + near-white foreground `oklch(0.985 0.003 250)`. Dark mode: bright amber `oklch(0.82 0.17 78)` + near-black foreground `oklch(0.185 0.02 80)`. Both clear WCAG AA when the token is used as text on the page background.
 - **Do** render comparable numbers in Geist Mono with `font-feature-settings: "tnum"`. Stat columns must align on the digit.
-- **Do** use caps + Geist Mono + tracked-out (0.06em) for the metadata layer (column headers, eyebrows, taxonomy tags) — and only that layer. Buttons, pills, CTAs, page titles, hero names stay in sentence-case Geist Sans.
+- **Do** use caps + Geist Mono + tracked-out (0.06em) for the metadata layer (column headers, eyebrows, taxonomy tags) — and only that layer. Buttons, pills, CTAs, page titles, hero names stay in sentence-case Switzer.
 - **Do** use `--team-*` tokens for entity-identity charts (teams, heroes, players). Honor the user's active colorblind variant (off / deuteranopia / tritanopia / protanopia).
 - **Do** convey card depth through tonal layering plus `ring-1 ring-foreground/10`. Use `shadow-xs` for the soft lift; reserve real shadows for popovers and dialogs.
 - **Do** gate every keyframe and view transition behind `prefers-reduced-motion: reduce`. Reduced motion gets instant state changes.
-- **Do** render chart tooltips on `--popover` surfaces with a border. Body Geist Sans for category labels, Geist Mono `tnum` for values.
+- **Do** render chart tooltips on `--popover` surfaces with a border. Body Switzer for category labels, Geist Mono `tnum` for values.
 
 ### Don't:
 

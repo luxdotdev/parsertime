@@ -195,7 +195,7 @@
       "refersTo": "button-primary",
       "description": "Default primary action. Amber on near-black, identical in light and dark.",
       "html": "<button class=\"ds-btn-primary\">Upload scrim</button>",
-      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 10px; border: 1px solid transparent; border-radius: 8px; background: oklch(0.82 0.17 78); color: oklch(0.185 0.02 80); font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 500; line-height: 1; white-space: nowrap; cursor: pointer; transition: background 120ms cubic-bezier(0,0,0.2,1), box-shadow 120ms cubic-bezier(0,0,0.2,1); } .ds-btn-primary:hover { background: oklch(0.82 0.17 78 / 0.8); } .ds-btn-primary:focus-visible { outline: none; border-color: oklch(0.82 0.17 78); box-shadow: 0 0 0 3px oklch(0.82 0.17 78 / 0.5); } .ds-btn-primary:active { background: oklch(0.82 0.17 78 / 0.9); }"
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 10px; border: 1px solid transparent; border-radius: 8px; background: oklch(0.82 0.17 78); color: oklch(0.185 0.02 80); font-family: Switzer, ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 500; line-height: 1; white-space: nowrap; cursor: pointer; transition: background 120ms cubic-bezier(0,0,0.2,1), box-shadow 120ms cubic-bezier(0,0,0.2,1); } .ds-btn-primary:hover { background: oklch(0.82 0.17 78 / 0.8); } .ds-btn-primary:focus-visible { outline: none; border-color: oklch(0.82 0.17 78); box-shadow: 0 0 0 3px oklch(0.82 0.17 78 / 0.5); } .ds-btn-primary:active { background: oklch(0.82 0.17 78 / 0.9); }"
     },
     {
       "name": "Outline Button",
@@ -203,7 +203,7 @@
       "refersTo": "button-outline",
       "description": "Non-primary action and dropdown trigger. Transparent ground with a low-contrast border.",
       "html": "<button class=\"ds-btn-outline\">Filter</button>",
-      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 10px; border: 1px solid oklch(1 0 0 / 0.12); border-radius: 8px; background: oklch(0.175 0.004 250 / 0.3); color: oklch(0.98 0.002 250); font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 500; box-shadow: 0 1px 2px 0 oklch(0 0 0 / 0.05); cursor: pointer; transition: background 120ms cubic-bezier(0,0,0.2,1); } .ds-btn-outline:hover { background: oklch(0.22 0.004 250 / 0.5); } .ds-btn-outline:focus-visible { outline: none; border-color: oklch(0.82 0.17 78); box-shadow: 0 0 0 3px oklch(0.82 0.17 78 / 0.5); } .ds-btn-outline[aria-expanded=\"true\"] { background: oklch(0.22 0.004 250); }"
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 10px; border: 1px solid oklch(1 0 0 / 0.12); border-radius: 8px; background: oklch(0.175 0.004 250 / 0.3); color: oklch(0.98 0.002 250); font-family: Switzer, ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 500; box-shadow: 0 1px 2px 0 oklch(0 0 0 / 0.05); cursor: pointer; transition: background 120ms cubic-bezier(0,0,0.2,1); } .ds-btn-outline:hover { background: oklch(0.22 0.004 250 / 0.5); } .ds-btn-outline:focus-visible { outline: none; border-color: oklch(0.82 0.17 78); box-shadow: 0 0 0 3px oklch(0.82 0.17 78 / 0.5); } .ds-btn-outline[aria-expanded=\"true\"] { background: oklch(0.22 0.004 250); }"
     },
     {
       "name": "Ghost Button",
@@ -219,7 +219,7 @@
       "refersTo": "button-destructive",
       "description": "Soft-fill destructive action. Red-tinted background, never used as the page-primary CTA.",
       "html": "<button class=\"ds-btn-destructive\">Delete scrim</button>",
-      "css": ".ds-btn-destructive { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 10px; border: 1px solid transparent; border-radius: 8px; background: oklch(0.65 0.22 27 / 0.2); color: oklch(0.65 0.22 27); font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 120ms cubic-bezier(0,0,0.2,1); } .ds-btn-destructive:hover { background: oklch(0.65 0.22 27 / 0.3); } .ds-btn-destructive:focus-visible { outline: none; border-color: oklch(0.65 0.22 27 / 0.4); box-shadow: 0 0 0 3px oklch(0.65 0.22 27 / 0.4); }"
+      "css": ".ds-btn-destructive { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 10px; border: 1px solid transparent; border-radius: 8px; background: oklch(0.65 0.22 27 / 0.2); color: oklch(0.65 0.22 27); font-family: Switzer, ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 120ms cubic-bezier(0,0,0.2,1); } .ds-btn-destructive:hover { background: oklch(0.65 0.22 27 / 0.3); } .ds-btn-destructive:focus-visible { outline: none; border-color: oklch(0.65 0.22 27 / 0.4); box-shadow: 0 0 0 3px oklch(0.65 0.22 27 / 0.4); }"
     },
     {
       "name": "Card",
@@ -227,7 +227,7 @@
       "refersTo": "card",
       "description": "Default card surface. Tonal lift over the page plus a 1px ring; no decorative shadow.",
       "html": "<div class=\"ds-card\"><div class=\"ds-card__header\"><div class=\"ds-card__title\">Map performance</div><div class=\"ds-card__description\">Win rate by map across the last 14 days.</div></div><div class=\"ds-card__content\">Body content goes here.</div></div>",
-      "css": ".ds-card { display: flex; flex-direction: column; gap: 24px; padding: 24px 0; border-radius: 14px; background: oklch(0.175 0.004 250); color: oklch(0.98 0.002 250); box-shadow: 0 1px 2px 0 oklch(0 0 0 / 0.05), inset 0 0 0 1px oklch(1 0 0 / 0.10); overflow: hidden; font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 14px; line-height: 1.5; } .ds-card__header { display: grid; gap: 4px; padding: 0 24px; } .ds-card__title { font-size: 16px; font-weight: 500; line-height: 1.3; } .ds-card__description { color: oklch(0.68 0.005 250); font-size: 14px; } .ds-card__content { padding: 0 24px; }"
+      "css": ".ds-card { display: flex; flex-direction: column; gap: 24px; padding: 24px 0; border-radius: 14px; background: oklch(0.175 0.004 250); color: oklch(0.98 0.002 250); box-shadow: 0 1px 2px 0 oklch(0 0 0 / 0.05), inset 0 0 0 1px oklch(1 0 0 / 0.10); overflow: hidden; font-family: Switzer, ui-sans-serif, system-ui, sans-serif; font-size: 14px; line-height: 1.5; } .ds-card__header { display: grid; gap: 4px; padding: 0 24px; } .ds-card__title { font-size: 16px; font-weight: 500; line-height: 1.3; } .ds-card__description { color: oklch(0.68 0.005 250); font-size: 14px; } .ds-card__content { padding: 0 24px; }"
     },
     {
       "name": "Input",
@@ -235,7 +235,7 @@
       "refersTo": "input",
       "description": "Text input. Focus is an instant 3px amber ring — no glow, no animation.",
       "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Search players\" />",
-      "css": ".ds-input { display: block; width: 100%; height: 36px; padding: 4px 10px; border: 1px solid oklch(1 0 0 / 0.12); border-radius: 8px; background: oklch(0.175 0.004 250 / 0.3); color: oklch(0.98 0.002 250); font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 14px; line-height: 1.4; box-shadow: 0 1px 2px 0 oklch(0 0 0 / 0.05); transition: border-color 120ms cubic-bezier(0,0,0.2,1), box-shadow 120ms cubic-bezier(0,0,0.2,1); outline: none; } .ds-input::placeholder { color: oklch(0.68 0.005 250); } .ds-input:focus-visible { border-color: oklch(0.82 0.17 78); box-shadow: 0 0 0 3px oklch(0.82 0.17 78 / 0.5); } .ds-input[aria-invalid=\"true\"] { border-color: oklch(0.65 0.22 27); box-shadow: 0 0 0 3px oklch(0.65 0.22 27 / 0.4); }"
+      "css": ".ds-input { display: block; width: 100%; height: 36px; padding: 4px 10px; border: 1px solid oklch(1 0 0 / 0.12); border-radius: 8px; background: oklch(0.175 0.004 250 / 0.3); color: oklch(0.98 0.002 250); font-family: Switzer, ui-sans-serif, system-ui, sans-serif; font-size: 14px; line-height: 1.4; box-shadow: 0 1px 2px 0 oklch(0 0 0 / 0.05); transition: border-color 120ms cubic-bezier(0,0,0.2,1), box-shadow 120ms cubic-bezier(0,0,0.2,1); outline: none; } .ds-input::placeholder { color: oklch(0.68 0.005 250); } .ds-input:focus-visible { border-color: oklch(0.82 0.17 78); box-shadow: 0 0 0 3px oklch(0.82 0.17 78 / 0.5); } .ds-input[aria-invalid=\"true\"] { border-color: oklch(0.65 0.22 27); box-shadow: 0 0 0 3px oklch(0.65 0.22 27 / 0.4); }"
     },
     {
       "name": "Badge",
@@ -251,7 +251,7 @@
       "refersTo": "stat-cell",
       "description": "Right-aligned tabular numeral cell with a caps label above. The base unit of any stat column or leaderboard row.",
       "html": "<div class=\"ds-stat\"><div class=\"ds-stat__label\">FINAL BLOWS</div><div class=\"ds-stat__value\">28</div><div class=\"ds-stat__delta\">+4 vs last scrim</div></div>",
-      "css": ".ds-stat { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-family: Geist, ui-sans-serif, system-ui, sans-serif; } .ds-stat__label { font-family: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: oklch(0.68 0.005 250); } .ds-stat__value { font-family: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-feature-settings: 'tnum'; font-size: 20px; font-weight: 600; color: oklch(0.98 0.002 250); line-height: 1.1; } .ds-stat__delta { font-family: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-feature-settings: 'tnum'; font-size: 12px; color: oklch(0.82 0.17 78); }"
+      "css": ".ds-stat { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-family: Switzer, ui-sans-serif, system-ui, sans-serif; } .ds-stat__label { font-family: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: oklch(0.68 0.005 250); } .ds-stat__value { font-family: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-feature-settings: 'tnum'; font-size: 20px; font-weight: 600; color: oklch(0.98 0.002 250); line-height: 1.1; } .ds-stat__delta { font-family: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-feature-settings: 'tnum'; font-size: 12px; color: oklch(0.82 0.17 78); }"
     },
     {
       "name": "Chart Tooltip",
@@ -259,7 +259,7 @@
       "refersTo": "chart-tooltip",
       "description": "Recharts tooltip restyled to honor the Tooltip Surface Rule — popover ground, never amber.",
       "html": "<div class=\"ds-chart-tooltip\"><div class=\"ds-chart-tooltip__label\">Hanamura</div><div class=\"ds-chart-tooltip__row\"><span class=\"ds-chart-tooltip__swatch\" style=\"background: oklch(0.753 0.154 232.18)\"></span><span class=\"ds-chart-tooltip__name\">Team 1</span><span class=\"ds-chart-tooltip__value\">62%</span></div><div class=\"ds-chart-tooltip__row\"><span class=\"ds-chart-tooltip__swatch\" style=\"background: oklch(0.6218 0.224 17.51)\"></span><span class=\"ds-chart-tooltip__name\">Team 2</span><span class=\"ds-chart-tooltip__value\">38%</span></div></div>",
-      "css": ".ds-chart-tooltip { display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; border: 1px solid oklch(1 0 0 / 0.10); border-radius: 8px; background: oklch(0.175 0.004 250); color: oklch(0.98 0.002 250); font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 12px; box-shadow: 0 4px 16px 0 oklch(0 0 0 / 0.4); min-width: 160px; } .ds-chart-tooltip__label { font-size: 12px; color: oklch(0.68 0.005 250); } .ds-chart-tooltip__row { display: grid; grid-template-columns: 10px 1fr auto; align-items: center; gap: 8px; } .ds-chart-tooltip__swatch { width: 10px; height: 10px; border-radius: 2px; } .ds-chart-tooltip__name { font-size: 13px; } .ds-chart-tooltip__value { font-family: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-feature-settings: 'tnum'; font-size: 13px; font-weight: 500; }"
+      "css": ".ds-chart-tooltip { display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; border: 1px solid oklch(1 0 0 / 0.10); border-radius: 8px; background: oklch(0.175 0.004 250); color: oklch(0.98 0.002 250); font-family: Switzer, ui-sans-serif, system-ui, sans-serif; font-size: 12px; box-shadow: 0 4px 16px 0 oklch(0 0 0 / 0.4); min-width: 160px; } .ds-chart-tooltip__label { font-size: 12px; color: oklch(0.68 0.005 250); } .ds-chart-tooltip__row { display: grid; grid-template-columns: 10px 1fr auto; align-items: center; gap: 8px; } .ds-chart-tooltip__swatch { width: 10px; height: 10px; border-radius: 2px; } .ds-chart-tooltip__name { font-size: 13px; } .ds-chart-tooltip__value { font-family: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-feature-settings: 'tnum'; font-size: 13px; font-weight: 500; }"
     }
   ],
   "narrative": {
@@ -269,7 +269,7 @@
       "Achromatic-first with one signal hue (amber oklch(0.82 0.17 78))",
       "Cool-tinted neutrals (hue 250°, chroma 0.003–0.005)",
       "Dark by default, light fully first-class",
-      "Geist Sans for content, Geist Mono for labels and tabular numerals",
+      "Switzer for content, Geist Mono for labels and tabular numerals",
       "Density tuned for desktop; mobile is for quick lookups, not the design target",
       "Charts are first-class UI, with color-blind-safe team encoding as a hard requirement",
       "Motion is functional only — view transitions, state changes, reduced-motion honored"
@@ -302,7 +302,7 @@
       },
       {
         "name": "The Describing-vs.-Doing Rule",
-        "body": "Caps + Geist Mono + tracked-out is for text that labels, describes, or taxonomizes. Sentence case in Geist Sans is for text that is content or asks the user to act. Caps everywhere is shouty and AI-templated; caps nowhere collapses metadata into content.",
+        "body": "Caps + Geist Mono + tracked-out is for text that labels, describes, or taxonomizes. Sentence case in Switzer is for text that is content or asks the user to act. Caps everywhere is shouty and AI-templated; caps nowhere collapses metadata into content.",
         "section": "typography"
       },
       {
@@ -329,11 +329,11 @@
     "dos": [
       "Do keep amber for primary CTAs, focus rings, and selected/active state. Light mode: deep amber oklch(0.55 0.17 68) + near-white foreground oklch(0.985 0.003 250). Dark mode: bright amber oklch(0.82 0.17 78) + near-black foreground oklch(0.185 0.02 80). Both clear WCAG AA when used as text on the page background.",
       "Do render comparable numbers in Geist Mono with font-feature-settings: 'tnum'. Stat columns must align on the digit.",
-      "Do use caps + Geist Mono + tracked-out (0.06em) for the metadata layer (column headers, eyebrows, taxonomy tags) — and only that layer. Buttons, pills, CTAs, page titles, hero names stay in sentence-case Geist Sans.",
+      "Do use caps + Geist Mono + tracked-out (0.06em) for the metadata layer (column headers, eyebrows, taxonomy tags) — and only that layer. Buttons, pills, CTAs, page titles, hero names stay in sentence-case Switzer.",
       "Do use --team-* tokens for entity-identity charts (teams, heroes, players). Honor the user's active colorblind variant (off / deuteranopia / tritanopia / protanopia).",
       "Do convey card depth through tonal layering plus ring-1 ring-foreground/10. Use shadow-xs for the soft lift; reserve real shadows for popovers and dialogs.",
       "Do gate every keyframe and view transition behind prefers-reduced-motion: reduce. Reduced motion gets instant state changes.",
-      "Do render chart tooltips on --popover surfaces with a border. Body Geist Sans for category labels, Geist Mono tnum for values."
+      "Do render chart tooltips on --popover surfaces with a border. Body Switzer for category labels, Geist Mono tnum for values."
     ],
     "donts": [
       "Don't use cyan-on-near-black, neon-on-dark, or purple-to-blue gradients. That is the AI-tool palette; this is a coach's terminal.",
