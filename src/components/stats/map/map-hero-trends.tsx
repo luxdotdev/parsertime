@@ -1,5 +1,6 @@
 "use client";
 
+import { HeroPickRateHoverChart } from "@/components/charts/map/hero-pick-rate-hover-chart";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -21,7 +22,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { MapHeroTrendGroup } from "@/data/map/hero-trends-service";
+import type {
+  MapHeroTrendGroup,
+  MapHeroTrendPoint,
+} from "@/data/map/hero-trends-service";
 import {
   cn,
   toHero,
@@ -459,6 +463,7 @@ type HeroRowData = {
   winrate: number;
   samples: number;
   playtimeTrend: number;
+  trend: MapHeroTrendPoint[];
 };
 
 function HeroRow({
@@ -496,30 +501,41 @@ function HeroRow({
         {rank}
       </div>
 
-      <div className="flex min-w-0 items-center gap-3">
-        <Image
-          src={`/heroes/${toHero(hero.hero)}.png`}
-          alt={name}
-          width={36}
-          height={36}
-          className="border-border/70 h-9 w-9 rounded-[4px] border object-cover"
-        />
-        <div className="min-w-0">
-          <div
-            className={cn(
-              "truncate leading-tight font-medium",
-              isTop && "text-primary"
-            )}
-          >
-            {name}
-          </div>
-          {hero.subrole ? (
-            <div className="text-muted-foreground font-mono text-[10px] tracking-wider uppercase">
-              {SUBROLE_DISPLAY_NAMES[hero.subrole]}
+      <HeroPickRateHoverChart
+        heroLabel={name}
+        subrole={hero.subrole ? SUBROLE_DISPLAY_NAMES[hero.subrole] : null}
+        trend={hero.trend}
+        pickRate={hero.pickRate}
+      >
+        <button
+          type="button"
+          className="-mx-1 flex min-w-0 cursor-pointer items-center gap-3 rounded-sm px-1 py-0.5 text-left focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:outline-none"
+          aria-label={`Show pick rate trend for ${name}`}
+        >
+          <Image
+            src={`/heroes/${toHero(hero.hero)}.png`}
+            alt={name}
+            width={36}
+            height={36}
+            className="border-border/70 h-9 w-9 rounded-[4px] border object-cover"
+          />
+          <div className="min-w-0">
+            <div
+              className={cn(
+                "truncate leading-tight font-medium",
+                isTop && "text-primary"
+              )}
+            >
+              {name}
             </div>
-          ) : null}
-        </div>
-      </div>
+            {hero.subrole ? (
+              <div className="text-muted-foreground font-mono text-[10px] tracking-wider uppercase">
+                {SUBROLE_DISPLAY_NAMES[hero.subrole]}
+              </div>
+            ) : null}
+          </div>
+        </button>
+      </HeroPickRateHoverChart>
 
       <div className="text-muted-foreground font-mono text-[11px] tracking-wider uppercase">
         {hero.role}
