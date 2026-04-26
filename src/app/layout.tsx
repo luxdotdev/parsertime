@@ -22,7 +22,8 @@ import { FlagValues } from "flags/react";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 
@@ -52,9 +53,21 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const geistSans = Geist({
-  subsets: ["latin"],
-  weight: ["400", "700"],
+const switzer = localFont({
+  src: [
+    {
+      path: "../../public/fonts/Switzer-Variable.woff2",
+      weight: "100 900",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Switzer-VariableItalic.woff2",
+      weight: "100 900",
+      style: "italic",
+    },
+  ],
+  variable: "--font-switzer",
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
@@ -82,9 +95,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     <html lang={locale} className="h-full" suppressHydrationWarning>
       <body
         className={cn(
-          geistSans.className,
+          switzer.variable,
           geistMono.variable,
-          "h-full antialiased"
+          "font-sans h-full antialiased"
         )}
       >
         <NuqsAdapter>
