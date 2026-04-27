@@ -181,6 +181,16 @@ export function MainNav({
                 {t("yourTeams")}
               </Link>
               <Link
+                href="/matchmaker"
+                role="menuitem"
+                className={cn(
+                  dropdownItemStyles,
+                  pathname.startsWith("/matchmaker") && "text-primary"
+                )}
+              >
+                {t("matchmaker")}
+              </Link>
+              <Link
                 href={availabilityHref}
                 role="menuitem"
                 className={cn(

@@ -439,7 +439,8 @@
       "coaching": "Coaching",
       "coachingCanvas": "Canvas",
       "yourTeams": "Your Teams",
-      "availability": "Availability"
+      "availability": "Availability",
+      "matchmaker": "Matchmaker"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "Search team...",
@@ -3745,7 +3746,8 @@
     "coachingCanvas": "Canvas",
     "tournamentsTitle": "Tournaments",
     "viewTournaments": "View Tournaments",
-    "createTournament": "Create Tournament"
+    "createTournament": "Create Tournament",
+    "matchmaker": "Matchmaker"
   },
   "demoPage": {
     "metadata": {

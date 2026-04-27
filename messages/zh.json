@@ -419,7 +419,8 @@
       "mapStats": "地图统计",
       "compareStats": "玩家对比",
       "teamStats": "团队统计",
-      "tournaments": "锦标赛"
+      "tournaments": "锦标赛",
+      "matchmaker": "Matchmaker"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "搜索团队...",
@@ -2384,7 +2385,8 @@
     "mapCalibration": "地图校准",
     "tournamentsTitle": "锦标赛",
     "viewTournaments": "查看锦标赛",
-    "createTournament": "创建锦标赛"
+    "createTournament": "创建锦标赛",
+    "matchmaker": "Matchmaker"
   },
   "demoPage": {
     "metadata": {

@@ -20,6 +20,7 @@ const mainNav: { title: string; href: Route }[] = [
   { title: "Map Stats", href: "/stats/map" },
   { title: "Compare Players", href: "/stats/compare" },
   { title: "Your Teams", href: "/team" },
+  { title: "Matchmaker", href: "/matchmaker" },
   { title: "Settings", href: "/settings" },
   { title: "Contact", href: "/contact" },
   { title: "Docs", href: "https://docs.parsertime.app" },

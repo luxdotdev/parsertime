@@ -419,7 +419,8 @@
       "mapStats": "맵 통계",
       "compareStats": "플레이어 비교",
       "teamStats": "팀 통계",
-      "tournaments": "토너먼트"
+      "tournaments": "토너먼트",
+      "matchmaker": "Matchmaker"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "팀 검색...",
@@ -2381,7 +2382,8 @@
     "mapCalibration": "맵 캘리브레이션",
     "tournamentsTitle": "토너먼트",
     "viewTournaments": "토너먼트 보기",
-    "createTournament": "토너먼트 만들기"
+    "createTournament": "토너먼트 만들기",
+    "matchmaker": "Matchmaker"
   },
   "demoPage": {
     "metadata": {

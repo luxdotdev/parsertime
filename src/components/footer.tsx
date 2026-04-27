@@ -53,6 +53,7 @@ const TEAMS_LINKS: FooterColumn = {
   titleKey: "teamsTitle",
   links: [
     { labelKey: "yourTeams", href: "/team" },
+    { labelKey: "matchmaker", href: "/matchmaker" },
     { labelKey: "availability", href: "/team" },
   ],
 };
