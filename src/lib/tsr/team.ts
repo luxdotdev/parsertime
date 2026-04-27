@@ -2,29 +2,33 @@ import { getCompositeSRLeaderboard } from "@/lib/hero-rating";
 import prisma from "@/lib/prisma";
 import { getPlayerTsrByBattletag } from "@/lib/tsr/lookup";
 import type { HeroName } from "@/types/heroes";
+import { Prisma } from "@prisma/client";
 
 export type TeamTsrSource = "tsr" | "predicted" | "csr_fallback";
 export type TeamTsrConfidence = "high" | "medium" | "low";
 
-export type TeamTsrStarter = {
+export type TeamTsrMember = {
   userId: string;
   name: string;
   battletag: string | null;
   tsr: number | null;
   compositeCsr: number | null;
-  contribution: number;
-  contributionType: "tsr" | "predicted" | "csr";
+  playtimeSeconds: number;
+  playtimeWeight: number; // 0-1 share of total roster playtime
+  contribution: number | null; // null when player has no signal at all
+  contributionType: "tsr" | "predicted" | "csr" | "none";
 };
 
 export type TeamTsrResult = {
   value: number | null;
   source: TeamTsrSource;
   confidence: TeamTsrConfidence;
-  starterCount: number;
-  realTsrCount: number;
   rosterSize: number;
+  ratedCount: number;       // members with TSR
+  contributingCount: number; // members with any signal AND playtime > 0
+  playtimeBackedShare: number; // share of playtime carried by real-TSR members
   offsetStdev: number | null;
-  starters: TeamTsrStarter[];
+  members: TeamTsrMember[];
 };
 
 type TeamMember = {
@@ -33,7 +37,6 @@ type TeamMember = {
   battletag: string | null;
 };
 
-const STARTING_ROSTER_SIZE = 5;
 // Empirical threshold for downgrading confidence on the predicted path.
 // Tunable post-launch; the spec leaves the exact value open.
 const PREDICTION_VARIANCE_THRESHOLD = 200;
@@ -66,23 +69,44 @@ function battletagCandidates(member: TeamMember): string[] {
   return [...out];
 }
 
+// In-game logs use the BattleTag prefix (no discriminator). Try the user's
+// display name and every plausible BattleTag form so members whose
+// User.name doesn't match their in-game handle still resolve.
+function playerNameCandidates(member: TeamMember): string[] {
+  const out = new Set<string>();
+  for (const c of battletagCandidates(member)) {
+    out.add(c.toLowerCase());
+  }
+  return [...out];
+}
+
 // Mean of the top two heroes' Raw CSR by playtime — the spec's
-// "player composite CSR" used as the predictor input.
+// "player composite CSR" used as the predictor input. Heroes are picked
+// from the team's scrims so the predictor reflects the player's role on
+// THIS team, not their main from elsewhere.
 async function getPlayerCompositeCsr(
-  playerName: string
+  candidates: string[],
+  scrimIds: number[]
 ): Promise<number | null> {
-  type HeroRow = { player_hero: string; total_time_played: bigint };
+  if (candidates.length === 0 || scrimIds.length === 0) return null;
+  type HeroRow = {
+    player_hero: string;
+    player_name: string;
+    total_time_played: bigint;
+  };
   const heroes = await prisma.$queryRaw<HeroRow[]>`
     WITH final_rows AS (
       SELECT DISTINCT ON ("MapDataId", player_name, player_hero)
-        player_hero, hero_time_played
+        player_hero, player_name, hero_time_played
       FROM "PlayerStat"
-      WHERE player_name ILIKE ${playerName} AND hero_time_played > 0
+      WHERE LOWER(player_name) IN (${Prisma.join(candidates)})
+        AND "scrimId" IN (${Prisma.join(scrimIds)})
+        AND hero_time_played > 0
       ORDER BY "MapDataId", player_name, player_hero, round_number DESC, id DESC
     )
-    SELECT player_hero, SUM(hero_time_played) AS total_time_played
+    SELECT player_hero, player_name, SUM(hero_time_played) AS total_time_played
     FROM final_rows
-    GROUP BY player_hero
+    GROUP BY player_hero, player_name
     ORDER BY total_time_played DESC
     LIMIT 2
   `;
@@ -92,7 +116,7 @@ async function getPlayerCompositeCsr(
     try {
       const row = await getCompositeSRLeaderboard({
         hero: h.player_hero as HeroName,
-        player: playerName,
+        player: h.player_name,
         limit: 300,
       });
       if (row?.composite_sr) ratings.push(row.composite_sr);
@@ -110,13 +134,40 @@ type EnrichedMember = {
   battletag: string | null;
   tsr: number | null;
   compositeCsr: number | null;
+  playtimeSeconds: number;
 };
 
-async function enrichMember(member: TeamMember): Promise<EnrichedMember> {
+async function getPlayerTotalPlaytime(
+  candidates: string[],
+  scrimIds: number[]
+): Promise<number> {
+  if (candidates.length === 0 || scrimIds.length === 0) return 0;
+  type Row = { total_seconds: number | null };
+  const rows = await prisma.$queryRaw<Row[]>`
+    WITH final_rows AS (
+      SELECT DISTINCT ON ("MapDataId", player_name, player_hero)
+        hero_time_played
+      FROM "PlayerStat"
+      WHERE LOWER(player_name) IN (${Prisma.join(candidates)})
+        AND "scrimId" IN (${Prisma.join(scrimIds)})
+        AND hero_time_played > 0
+      ORDER BY "MapDataId", player_name, player_hero, round_number DESC, id DESC
+    )
+    SELECT COALESCE(SUM(hero_time_played), 0)::int AS total_seconds FROM final_rows
+  `;
+  return rows[0]?.total_seconds ?? 0;
+}
+
+async function enrichMember(
+  member: TeamMember,
+  scrimIds: number[]
+): Promise<EnrichedMember> {
   const name = member.name ?? member.battletag ?? "";
-  const [tsrSnapshot, csr] = await Promise.all([
+  const nameCandidates = playerNameCandidates(member);
+  const [tsrSnapshot, csr, playtime] = await Promise.all([
     getPlayerTsrByBattletag(battletagCandidates(member)),
-    name ? getPlayerCompositeCsr(name) : Promise.resolve(null),
+    getPlayerCompositeCsr(nameCandidates, scrimIds),
+    getPlayerTotalPlaytime(nameCandidates, scrimIds),
   ]);
   return {
     userId: member.id,
@@ -124,120 +175,163 @@ async function enrichMember(member: TeamMember): Promise<EnrichedMember> {
     battletag: member.battletag,
     tsr: tsrSnapshot?.rating ?? null,
     compositeCsr: csr,
+    playtimeSeconds: playtime,
   };
 }
 
-export async function computeTeamTsr(
-  members: TeamMember[]
-): Promise<TeamTsrResult> {
-  if (members.length === 0) {
-    return {
-      value: null,
-      source: "csr_fallback",
-      confidence: "low",
-      starterCount: 0,
-      realTsrCount: 0,
-      rosterSize: 0,
-      offsetStdev: null,
-      starters: [],
-    };
+function emptyResult(rosterSize: number): TeamTsrResult {
+  return {
+    value: null,
+    source: "csr_fallback",
+    confidence: "low",
+    rosterSize,
+    ratedCount: 0,
+    contributingCount: 0,
+    playtimeBackedShare: 0,
+    offsetStdev: null,
+    members: [],
+  };
+}
+
+function weightedMean(
+  pairs: { value: number; weight: number }[]
+): number | null {
+  let weighted = 0;
+  let totalWeight = 0;
+  for (const p of pairs) {
+    if (p.weight <= 0) continue;
+    weighted += p.value * p.weight;
+    totalWeight += p.weight;
   }
+  if (totalWeight === 0) return null;
+  return weighted / totalWeight;
+}
 
-  const enriched = await Promise.all(members.map(enrichMember));
+export async function computeTeamTsr(
+  members: TeamMember[],
+  scrimIds: number[]
+): Promise<TeamTsrResult> {
+  if (members.length === 0) return emptyResult(0);
 
-  // Pick up to 5 starters, sorted by best available rating signal so the
-  // strongest five represent the team. Smaller rosters use what's there.
-  const ranked = enriched.slice().sort((a, b) => {
-    const ar = a.tsr ?? a.compositeCsr ?? 0;
-    const br = b.tsr ?? b.compositeCsr ?? 0;
-    return br - ar;
-  });
-  const starters = ranked.slice(0, STARTING_ROSTER_SIZE);
-  const realTsrCount = starters.filter((s) => s.tsr !== null).length;
+  const enriched = await Promise.all(
+    members.map((m) => enrichMember(m, scrimIds))
+  );
+  const totalPlaytime = enriched.reduce((s, m) => s + m.playtimeSeconds, 0);
 
-  // Path 1: 3+ real TSRs → use real values, predict the missing ones.
-  if (realTsrCount >= 3) {
-    const offsets = starters
-      .filter((s) => s.tsr !== null && s.compositeCsr !== null)
-      .map((s) => s.tsr! - s.compositeCsr!);
-    const teamOffset = offsets.length > 0 ? mean(offsets) : 0;
-    const offsetStdev = offsets.length >= 2 ? stdev(offsets) : null;
+  // Compute team offset from members who have BOTH a real TSR and a CSR
+  // signal. Used to predict TSR for unrostered scrim regulars on the team.
+  const offsets = enriched
+    .filter((m) => m.tsr !== null && m.compositeCsr !== null)
+    .map((m) => m.tsr! - m.compositeCsr!);
+  const teamOffset = offsets.length > 0 ? mean(offsets) : 0;
+  const offsetStdev = offsets.length >= 2 ? stdev(offsets) : null;
 
-    const detail: TeamTsrStarter[] = starters.map((s) => {
-      if (s.tsr !== null) {
+  const ratedCount = enriched.filter((m) => m.tsr !== null).length;
+  const playtimeBackedSeconds = enriched
+    .filter((m) => m.tsr !== null)
+    .reduce((s, m) => s + m.playtimeSeconds, 0);
+  const playtimeBackedShare =
+    totalPlaytime > 0 ? playtimeBackedSeconds / totalPlaytime : 0;
+
+  // For each member, decide what their per-player contribution to the
+  // team rating should be. The TSR/Predicted path is preferred whenever
+  // the playtime backed by real TSRs is meaningful (>=60%) or when a
+  // strong cohort (3+ real TSRs) makes prediction reliable. Below that,
+  // we fall back to CSR-only on the same scale (not TSR-comparable).
+  const useTsrPath =
+    ratedCount >= 3 && (playtimeBackedShare >= 0.6 || ratedCount >= 4);
+
+  const detail: TeamTsrMember[] = enriched.map((m) => {
+    const playtimeWeight =
+      totalPlaytime > 0 ? m.playtimeSeconds / totalPlaytime : 0;
+    if (useTsrPath) {
+      if (m.tsr !== null) {
         return {
-          ...s,
-          contribution: s.tsr,
+          ...m,
+          playtimeWeight,
+          contribution: m.tsr,
           contributionType: "tsr",
         };
       }
-      if (s.compositeCsr !== null) {
+      if (m.compositeCsr !== null) {
         return {
-          ...s,
+          ...m,
+          playtimeWeight,
           contribution: Math.round(
-            clamp(s.compositeCsr + teamOffset, 1, 5000)
+            clamp(m.compositeCsr + teamOffset, 1, 5000)
           ),
           contributionType: "predicted",
         };
       }
-      // No data at all for this player; fall back to the team mean of
-      // available signals so they don't pull the average to zero.
-      const fallback =
-        teamOffset !== 0 ? Math.round(clamp(2500 + teamOffset, 1, 5000)) : 2500;
       return {
-        ...s,
-        contribution: fallback,
-        contributionType: "predicted",
+        ...m,
+        playtimeWeight,
+        contribution: null,
+        contributionType: "none",
       };
-    });
+    }
+    // CSR fallback path: every player contributes their composite CSR.
+    return {
+      ...m,
+      playtimeWeight,
+      contribution: m.compositeCsr,
+      contributionType: m.compositeCsr !== null ? "csr" : "none",
+    };
+  });
 
-    const value = Math.round(mean(detail.map((d) => d.contribution)));
-    let confidence: TeamTsrConfidence = realTsrCount >= 4 ? "high" : "medium";
+  const contributing = detail.filter(
+    (m) => m.contribution !== null && m.playtimeSeconds > 0
+  );
+  const value = weightedMean(
+    contributing.map((m) => ({
+      value: m.contribution!,
+      weight: m.playtimeSeconds,
+    }))
+  );
+
+  let source: TeamTsrSource;
+  let confidence: TeamTsrConfidence;
+  if (!useTsrPath) {
+    source = "csr_fallback";
+    confidence = "low";
+  } else if (
+    ratedCount === enriched.filter((m) => m.playtimeSeconds > 0).length &&
+    playtimeBackedShare >= 0.99
+  ) {
+    source = "tsr";
+    confidence =
+      offsetStdev !== null && offsetStdev > PREDICTION_VARIANCE_THRESHOLD
+        ? "low"
+        : "high";
+  } else {
+    source = "predicted";
     if (
       offsetStdev !== null &&
       offsetStdev > PREDICTION_VARIANCE_THRESHOLD
     ) {
       confidence = "low";
+    } else if (playtimeBackedShare >= 0.8) {
+      confidence = "high";
+    } else if (playtimeBackedShare >= 0.6) {
+      confidence = "medium";
+    } else {
+      confidence = "low";
     }
-
-    return {
-      value,
-      source: realTsrCount === starters.length ? "tsr" : "predicted",
-      confidence,
-      starterCount: starters.length,
-      realTsrCount,
-      rosterSize: members.length,
-      offsetStdev,
-      starters: detail,
-    };
   }
 
-  // Path 2: 0-2 real TSRs → CSR fallback (not comparable to TSR scale).
-  const csrDetail: TeamTsrStarter[] = starters
-    .filter((s) => s.compositeCsr !== null)
-    .map((s) => ({
-      ...s,
-      contribution: s.compositeCsr!,
-      contributionType: "csr",
-    }));
-  const csrValue =
-    csrDetail.length > 0
-      ? Math.round(mean(csrDetail.map((d) => d.contribution)))
-      : null;
+  // Sort members by playtime descending so the heaviest contributors
+  // surface first in the breakdown.
+  detail.sort((a, b) => b.playtimeSeconds - a.playtimeSeconds);
+
   return {
-    value: csrValue,
-    source: "csr_fallback",
-    confidence: "low",
-    starterCount: starters.length,
-    realTsrCount,
+    value: value !== null ? Math.round(value) : null,
+    source,
+    confidence,
     rosterSize: members.length,
-    offsetStdev: null,
-    starters: csrDetail.length > 0
-      ? csrDetail
-      : starters.map((s) => ({
-          ...s,
-          contribution: 0,
-          contributionType: "csr",
-        })),
+    ratedCount,
+    contributingCount: contributing.length,
+    playtimeBackedShare,
+    offsetStdev,
+    members: detail,
   };
 }

@@ -75,6 +75,7 @@ export default async function Team(
     teamManagers,
     scoutingEnabled,
     scoutingTeams,
+    teamScrims,
   ] = await Promise.all([
     prisma.team.findFirst({ where: { id: teamId } }),
     prisma.team.findFirst({
@@ -103,16 +104,19 @@ export default async function Team(
     AppRuntime.runPromise(
       ScoutingService.pipe(Effect.flatMap((svc) => svc.getScoutingTeams()))
     ),
+    prisma.scrim.findMany({ where: { teamId }, select: { id: true } }),
   ]);
 
   const teamMembers = teamMembersData ?? { users: [] };
+  const teamScrimIds = teamScrims.map((s) => s.id);
 
   const teamTsr = await computeTeamTsr(
     teamMembers.users.map((u) => ({
       id: u.id,
       name: u.name,
       battletag: u.battletag,
-    }))
+    })),
+    teamScrimIds
   );
 
   const user = await AppRuntime.runPromise(
