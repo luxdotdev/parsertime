@@ -1,13 +1,13 @@
 import MagicLinkEmail from "@/components/email/magic-link";
 import UserOnboardingEmail from "@/components/email/onboarding";
+import { AppRuntime } from "@/data/runtime";
+import { ScrimService } from "@/data/scrim";
+import { UserService } from "@/data/user";
 import {
   authNewUserCounter,
   authSignInCounter,
   rateLimitHitCounter,
 } from "@/lib/axiom/metrics";
-import { AppRuntime } from "@/data/runtime";
-import { ScrimService } from "@/data/scrim";
-import { UserService } from "@/data/user";
 import { email } from "@/lib/email";
 import { createShortLink } from "@/lib/link-service";
 import { Logger } from "@/lib/logger";
@@ -30,6 +30,7 @@ import { createHash, randomBytes } from "crypto";
 import { Effect } from "effect";
 import NextAuth, { type NextAuthConfig } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
+import FaceitProvider from "next-auth/providers/faceit";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import isEmail from "validator/lib/isEmail";
@@ -81,6 +82,10 @@ export const config = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+    FaceitProvider({
+      clientId: process.env.FACEIT_CLIENT_ID,
+      clientSecret: process.env.FACEIT_CLIENT_SECRET,
     }),
     {
       id: "email",
