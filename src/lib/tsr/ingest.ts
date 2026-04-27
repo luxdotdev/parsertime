@@ -7,6 +7,7 @@ import {
   getMatch,
   getPlayerById,
   getPlayerHistory,
+  iterateChampionshipMatches,
   listOrganizerChampionships,
 } from "@/lib/tsr/faceit-client";
 import { TRACKED_ORGANIZERS, isTrackedOrganizer } from "@/lib/tsr/organizers";
@@ -327,10 +328,7 @@ export async function discoverChampionshipsForOrganizer(
   organizerId: string,
   opts?: FaceitClientOptions
 ): Promise<DiscoverChampionshipsResult> {
-  const items = await listOrganizerChampionships(organizerId, {
-    ...opts,
-    limit: 100,
-  });
+  const items = await listOrganizerChampionships(organizerId, opts);
   let inserted = 0;
   let updated = 0;
   let unclassified = 0;
@@ -428,4 +426,99 @@ export async function enrichKnownPlayers(
     if (pacing > 0) await new Promise((r) => setTimeout(r, pacing));
   }
   return { scanned: players.length, enriched, failed };
+}
+
+export type IngestChampionshipResult = {
+  championshipId: string;
+  scanned: number;
+  ingested: number;
+  skipped: number;
+};
+
+// Pulls every match in a championship and upserts each. Cascades to all
+// roster co-players via upsertMatch's roster handling. This is the path
+// that fills in seasons we don't have a seed player for.
+export async function ingestChampionshipMatches(
+  championshipId: string,
+  opts?: FaceitClientOptions & {
+    type?: "past" | "ongoing";
+    pacingMs?: number;
+  }
+): Promise<IngestChampionshipResult> {
+  const pacing = opts?.pacingMs ?? 60;
+  let scanned = 0;
+  let ingested = 0;
+  let skipped = 0;
+  for await (const item of iterateChampionshipMatches(championshipId, opts)) {
+    scanned += 1;
+    try {
+      const md = await getMatch(item.match_id, opts);
+      const res = await upsertMatch(md);
+      if (res.ingested) ingested += 1;
+      else skipped += 1;
+    } catch (err) {
+      Logger.warn({
+        event: "tsr.ingest.championship_match_failed",
+        championship_id: championshipId,
+        faceit_match_id: item.match_id,
+        error_message: err instanceof Error ? err.message : "unknown",
+      });
+      skipped += 1;
+    }
+    if (pacing > 0) await new Promise((r) => setTimeout(r, pacing));
+  }
+  return { championshipId, scanned, ingested, skipped };
+}
+
+export type BackfillChampionshipsResult = {
+  championships: number;
+  totalIngested: number;
+  totalSkipped: number;
+  perChampionship: IngestChampionshipResult[];
+};
+
+// Walks every tracked, classified championship in the DB and ingests both
+// past and ongoing matches. Use this once after discovery to backfill
+// historical seasons (S5 OWCS Central, S8 Master regular season, etc.)
+// that no seed player has covered. Idempotent — re-running just refreshes
+// existing matches.
+export async function backfillTrackedChampionships(
+  opts?: FaceitClientOptions & { pacingMs?: number; includeOngoing?: boolean }
+): Promise<BackfillChampionshipsResult> {
+  const championships = await prisma.faceitChampionship.findMany({
+    where: { tier: { not: FaceitTier.UNCLASSIFIED } },
+    select: { championshipId: true, name: true },
+    orderBy: { name: "asc" },
+  });
+  const includeOngoing = opts?.includeOngoing ?? true;
+  const perChampionship: IngestChampionshipResult[] = [];
+  let totalIngested = 0;
+  let totalSkipped = 0;
+  for (const c of championships) {
+    const past = await ingestChampionshipMatches(c.championshipId, {
+      ...opts,
+      type: "past",
+    });
+    perChampionship.push(past);
+    totalIngested += past.ingested;
+    totalSkipped += past.skipped;
+    if (includeOngoing) {
+      const ongoing = await ingestChampionshipMatches(c.championshipId, {
+        ...opts,
+        type: "ongoing",
+      });
+      perChampionship.push({
+        ...ongoing,
+        championshipId: `${c.championshipId} (ongoing)`,
+      });
+      totalIngested += ongoing.ingested;
+      totalSkipped += ongoing.skipped;
+    }
+  }
+  return {
+    championships: championships.length,
+    totalIngested,
+    totalSkipped,
+    perChampionship,
+  };
 }

@@ -9,9 +9,16 @@
  *      auto-classification).
  *   2. For each seed player, fetch their history → upsert all
  *      championship-type matches → cascade to all roster co-players.
- *   3. Enrich every FaceitPlayer row with their full profile (readable
+ *   3. Backfill every tracked, classified championship in the DB by
+ *      pulling its full match list (past + ongoing). Fills in seasons
+ *      that no seed player has covered.
+ *   4. Enrich every FaceitPlayer row with their full profile (readable
  *      BattleTag, region, verified flag, skill level).
- *   4. Run a full TSR recompute.
+ *   5. Run a full TSR recompute.
+ *
+ * Step 3 is the slow one (potentially thousands of API calls). Pass
+ * --skip-backfill to run only steps 1, 2, 4, 5 — useful for re-runs
+ * after small data changes.
  *
  * Usage:
  *   FACEIT_API_KEY=<key> bun scripts/tsr-bootstrap.ts [seed-nicknames…]
@@ -20,6 +27,7 @@
  */
 
 import {
+  backfillTrackedChampionships,
   discoverAllTrackedChampionships,
   enrichKnownPlayers,
   ingestPlayerHistory,
@@ -58,16 +66,18 @@ async function main() {
     process.exit(1);
   }
 
-  const seeds = process.argv.slice(2).length
-    ? process.argv.slice(2)
-    : DEFAULT_SEEDS;
+  const args = process.argv.slice(2);
+  const skipBackfill = args.includes("--skip-backfill");
+  const seeds = args.filter((a) => !a.startsWith("--"));
+  const seedNicks = seeds.length > 0 ? seeds : DEFAULT_SEEDS;
+  const totalSteps = skipBackfill ? 4 : 5;
 
-  console.log(`\n[1/3] Discovering championships under tracked organizers…`);
+  console.log(`\n[1/${totalSteps}] Discovering championships under tracked organizers…`);
   const discovery = await discoverAllTrackedChampionships();
   console.log(`  ${JSON.stringify(discovery, null, 2)}`);
 
-  console.log(`\n[2/3] Ingesting seed players: ${seeds.join(", ")}`);
-  for (const nick of seeds) {
+  console.log(`\n[2/${totalSteps}] Ingesting seed players: ${seedNicks.join(", ")}`);
+  for (const nick of seedNicks) {
     console.log(`\n  → ${nick}`);
     const player = await resolveSeed(nick);
     if (!player) {
@@ -84,15 +94,26 @@ async function main() {
     );
   }
 
+  if (!skipBackfill) {
+    console.log(
+      `\n[3/${totalSteps}] Backfilling every tracked championship (past + ongoing)…`
+    );
+    const backfill = await backfillTrackedChampionships();
+    console.log(
+      `  championships=${backfill.championships} ingested=${backfill.totalIngested} skipped=${backfill.totalSkipped}`
+    );
+  }
+
+  const enrichStep = skipBackfill ? 3 : 4;
   console.log(
-    `\n[3/4] Enriching player profiles (readable BattleTags, regions)…`
+    `\n[${enrichStep}/${totalSteps}] Enriching player profiles (readable BattleTags, regions)…`
   );
   const enrich = await enrichKnownPlayers();
   console.log(
     `  scanned=${enrich.scanned} enriched=${enrich.enriched} failed=${enrich.failed}`
   );
 
-  console.log(`\n[4/4] Running full TSR recompute…`);
+  console.log(`\n[${totalSteps}/${totalSteps}] Running full TSR recompute…`);
   const replay = await recomputeAllTsrs();
   console.log(`  ${JSON.stringify(replay)}`);
 

@@ -224,13 +224,55 @@ export type FaceitChampionshipListResponse = {
 
 export async function listOrganizerChampionships(
   organizerId: string,
-  opts?: FaceitClientOptions & { offset?: number; limit?: number }
+  opts?: FaceitClientOptions & { maxPages?: number }
 ): Promise<FaceitChampionshipListItem[]> {
-  const offset = opts?.offset ?? 0;
-  const limit = opts?.limit ?? 100;
-  const data = await faceitFetch<FaceitChampionshipListResponse>(
-    `/organizers/${organizerId}/championships?offset=${offset}&limit=${limit}`,
-    opts
-  );
-  return data.items ?? [];
+  const maxPages = opts?.maxPages ?? 10;
+  const limit = 100;
+  const all: FaceitChampionshipListItem[] = [];
+  for (let page = 0; page < maxPages; page++) {
+    const data = await faceitFetch<FaceitChampionshipListResponse>(
+      `/organizers/${organizerId}/championships?offset=${page * limit}&limit=${limit}`,
+      opts
+    );
+    if (!data.items?.length) break;
+    all.push(...data.items);
+    if (data.items.length < limit) break;
+  }
+  return all;
+}
+
+export type FaceitChampionshipMatchListItem = {
+  match_id: string;
+  status: string;
+  finished_at?: number;
+};
+
+export type FaceitChampionshipMatchListResponse = {
+  items: FaceitChampionshipMatchListItem[];
+};
+
+const CHAMPIONSHIP_MATCHES_PAGE_LIMIT = 100;
+
+// FACEIT serves a championship's match list at /championships/{id}/matches.
+// Unlike /championships/{id} (which 404s for many active events), this
+// endpoint is reliable. type=past returns finished matches.
+export async function* iterateChampionshipMatches(
+  championshipId: string,
+  opts?: FaceitClientOptions & {
+    type?: "past" | "ongoing" | "upcoming";
+    maxPages?: number;
+  }
+): AsyncGenerator<FaceitChampionshipMatchListItem, void, unknown> {
+  const type = opts?.type ?? "past";
+  const maxPages = opts?.maxPages ?? 20;
+  for (let page = 0; page < maxPages; page++) {
+    const offset = page * CHAMPIONSHIP_MATCHES_PAGE_LIMIT;
+    const data = await faceitFetch<FaceitChampionshipMatchListResponse>(
+      `/championships/${championshipId}/matches?type=${type}&offset=${offset}&limit=${CHAMPIONSHIP_MATCHES_PAGE_LIMIT}`,
+      opts
+    );
+    if (!data.items?.length) return;
+    for (const item of data.items) yield item;
+    if (data.items.length < CHAMPIONSHIP_MATCHES_PAGE_LIMIT) return;
+  }
 }
