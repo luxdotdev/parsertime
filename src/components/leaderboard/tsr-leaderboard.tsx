@@ -1,6 +1,8 @@
 "use client";
 
+import { loadTsrBreakdown } from "@/app/leaderboard/tsr/actions";
 import { LeaderboardSubnav } from "@/components/leaderboard/leaderboard-subnav";
+import { TsrDetailPanel } from "@/components/leaderboard/tsr-detail-panel";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -9,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import type { TsrBreakdown } from "@/lib/tsr/breakdown";
 import type {
   TsrLeaderboardRow,
   TsrLeaderboardSnapshot,
@@ -16,7 +19,7 @@ import type {
 import { cn } from "@/lib/utils";
 import { FaceitTier, TsrRegion } from "@prisma/client";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 
 type Props = {
   snapshot: TsrLeaderboardSnapshot;
@@ -87,6 +90,24 @@ export function TsrLeaderboard({ snapshot }: Props) {
   const [tier, setTier] = useState<TierFilter>("All");
   const [sortKey, setSortKey] = useState<SortKey>("rating");
   const [query, setQuery] = useState("");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [breakdown, setBreakdown] = useState<TsrBreakdown | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const requestSeq = useRef(0);
+
+  useEffect(() => {
+    if (!selectedId) {
+      setBreakdown(null);
+      return;
+    }
+    const seq = ++requestSeq.current;
+    startTransition(async () => {
+      const data = await loadTsrBreakdown(selectedId);
+      // Drop stale responses if a newer selection has happened.
+      if (seq !== requestSeq.current) return;
+      setBreakdown(data);
+    });
+  }, [selectedId]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -200,36 +221,48 @@ export function TsrLeaderboard({ snapshot }: Props) {
         })}
       </div>
 
-      <section className="mt-8">
-        <div
-          className={cn(
-            "text-muted-foreground border-border grid items-center gap-4 border-b pb-3 font-mono text-[11px] tracking-[0.14em] uppercase",
-            COLS
-          )}
-        >
-          <div>#</div>
-          <div>Player</div>
-          <div className="text-right">Region</div>
-          <div className="hidden sm:block">Peak tier</div>
-          <div className="text-right">Rating</div>
-          <div className="text-right">Matches</div>
-          <div className="hidden text-right sm:block">Last seen</div>
-        </div>
-
-        {filtered.length === 0 ? (
-          <div className="text-muted-foreground py-12 text-center text-sm">
-            {snapshot.rows.length === 0
-              ? "No tracked TSR data yet. Seed FACEIT players to populate."
-              : "No players match the selected filters."}
+      <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+        <section className="min-w-0">
+          <div
+            className={cn(
+              "text-muted-foreground border-border grid items-center gap-4 border-b pb-3 font-mono text-[11px] tracking-[0.14em] uppercase",
+              COLS
+            )}
+          >
+            <div>#</div>
+            <div>Player</div>
+            <div className="text-right">Region</div>
+            <div className="hidden sm:block">Peak tier</div>
+            <div className="text-right">Rating</div>
+            <div className="text-right">Matches</div>
+            <div className="hidden text-right sm:block">Last seen</div>
           </div>
-        ) : (
-          <ul>
-            {filtered.map((row, index) => (
-              <PlayerRow key={row.faceitPlayerId} row={row} index={index} />
-            ))}
-          </ul>
-        )}
-      </section>
+
+          {filtered.length === 0 ? (
+            <div className="text-muted-foreground py-12 text-center text-sm">
+              {snapshot.rows.length === 0
+                ? "No tracked TSR data yet. Seed FACEIT players to populate."
+                : "No players match the selected filters."}
+            </div>
+          ) : (
+            <ul>
+              {filtered.map((row, index) => (
+                <PlayerRow
+                  key={row.faceitPlayerId}
+                  row={row}
+                  index={index}
+                  selected={selectedId === row.faceitPlayerId}
+                  onSelect={() => setSelectedId(row.faceitPlayerId)}
+                />
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <aside className="lg:sticky lg:top-6 lg:self-start">
+          <TsrDetailPanel breakdown={breakdown} loading={isPending} />
+        </aside>
+      </div>
     </div>
   );
 }
@@ -284,13 +317,39 @@ function FilterPills<T extends string>({
   );
 }
 
-function PlayerRow({ row, index }: { row: TsrLeaderboardRow; index: number }) {
+function PlayerRow({
+  row,
+  index,
+  selected,
+  onSelect,
+}: {
+  row: TsrLeaderboardRow;
+  index: number;
+  selected: boolean;
+  onSelect: () => void;
+}) {
   const isTop = index === 0;
   const rank = String(index + 1).padStart(2, "0");
+
+  function handleKey(e: React.KeyboardEvent<HTMLLIElement>) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onSelect();
+    }
+  }
+
   return (
     <li
+      // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role
+      role="button"
+      tabIndex={0}
+      aria-pressed={selected}
+      onClick={onSelect}
+      onKeyDown={handleKey}
       className={cn(
-        "border-border hover:bg-muted/40 group grid items-center gap-4 border-b py-3 transition-colors",
+        "border-border group grid cursor-pointer items-center gap-4 border-b py-3 transition-colors",
+        "focus-visible:bg-muted/60 focus-visible:outline-none",
+        selected ? "bg-primary/[0.06]" : "hover:bg-muted/40",
         "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-bottom-1 motion-safe:duration-200 motion-safe:[animation-fill-mode:both]",
         COLS
       )}
@@ -308,6 +367,7 @@ function PlayerRow({ row, index }: { row: TsrLeaderboardRow; index: number }) {
       <div className="min-w-0">
         <Link
           href={`/profile/${encodeURIComponent(row.battletag ?? row.faceitNickname)}`}
+          onClick={(e) => e.stopPropagation()}
           className={cn(
             "block min-w-0 truncate leading-tight font-medium hover:underline",
             isTop && "text-primary"
