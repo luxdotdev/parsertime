@@ -3,6 +3,7 @@
 import { loadTsrBreakdown } from "@/app/leaderboard/tsr/actions";
 import { LeaderboardSubnav } from "@/components/leaderboard/leaderboard-subnav";
 import { TsrDetailPanel } from "@/components/leaderboard/tsr-detail-panel";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -15,19 +16,20 @@ import type { TsrBreakdown } from "@/lib/tsr/breakdown";
 import type {
   TsrLeaderboardRow,
   TsrLeaderboardSnapshot,
+  TsrSortKey,
 } from "@/lib/tsr/leaderboard";
 import { cn } from "@/lib/utils";
 import { FaceitTier, TsrRegion } from "@prisma/client";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 
 type Props = {
-  snapshot: TsrLeaderboardSnapshot;
+  initialSnapshot: TsrLeaderboardSnapshot;
 };
 
 type RegionFilter = "All" | TsrRegion;
 type TierFilter = "All" | FaceitTier;
-type SortKey = "rating" | "matches" | "recent";
 
 const REGION_PILLS: { value: RegionFilter; label: string }[] = [
   { value: "All", label: "All regions" },
@@ -46,7 +48,7 @@ const TIER_PILLS: { value: TierFilter; label: string }[] = [
   { value: FaceitTier.CAH, label: "CAH" },
 ];
 
-const SORT_OPTIONS: { value: SortKey; label: string }[] = [
+const SORT_OPTIONS: { value: TsrSortKey; label: string }[] = [
   { value: "rating", label: "Rating" },
   { value: "matches", label: "Total matches" },
   { value: "recent", label: "Recent activity" },
@@ -63,7 +65,9 @@ const TIER_LABEL: Record<FaceitTier, string> = {
 };
 
 const COLS =
-  "grid-cols-[2.5rem_minmax(0,1fr)_4rem_5.5rem_5.5rem_5.5rem] sm:grid-cols-[2.5rem_minmax(0,1fr)_4.5rem_6rem_6rem_5.5rem_6.5rem]";
+  "grid-cols-[3rem_minmax(0,1fr)_4rem_5.5rem_5.5rem_5.5rem] sm:grid-cols-[3rem_minmax(0,1fr)_4.5rem_6rem_6rem_5.5rem_6.5rem]";
+
+const PAGE_SIZE = 50;
 
 function formatRelativeDate(d: Date | null): string {
   if (!d) return "—";
@@ -85,11 +89,107 @@ function formatComputedAt(d: Date | null): string | null {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
-export function TsrLeaderboard({ snapshot }: Props) {
+function useDebounced<T>(value: T, delay = 250): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(t);
+  }, [value, delay]);
+  return debounced;
+}
+
+async function fetchSnapshot(
+  region: RegionFilter,
+  tier: TierFilter,
+  sort: TsrSortKey,
+  q: string,
+  offset: number
+): Promise<TsrLeaderboardSnapshot> {
+  const params = new URLSearchParams();
+  if (region !== "All") params.set("region", region);
+  if (tier !== "All") params.set("tier", tier);
+  params.set("sort", sort);
+  if (q.trim()) params.set("q", q.trim());
+  params.set("offset", String(offset));
+  params.set("limit", String(PAGE_SIZE));
+  const res = await fetch(`/api/leaderboard/tsr?${params}`);
+  if (!res.ok) throw new Error(`Leaderboard fetch failed: ${res.status}`);
+  const json = (await res.json()) as TsrLeaderboardSnapshot;
+  // Date fields come back as ISO strings; rehydrate them.
+  return {
+    ...json,
+    rows: json.rows.map((r) => ({
+      ...r,
+      lastMatchAt: r.lastMatchAt ? new Date(r.lastMatchAt) : null,
+    })),
+    meta: {
+      ...json.meta,
+      computedAt: json.meta.computedAt ? new Date(json.meta.computedAt) : null,
+    },
+  };
+}
+
+export function TsrLeaderboard({ initialSnapshot }: Props) {
   const [region, setRegion] = useState<RegionFilter>("All");
   const [tier, setTier] = useState<TierFilter>("All");
-  const [sortKey, setSortKey] = useState<SortKey>("rating");
+  const [sortKey, setSortKey] = useState<TsrSortKey>("rating");
   const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounced(query, 250);
+  const [accumulated, setAccumulated] = useState<TsrLeaderboardRow[]>(
+    initialSnapshot.rows
+  );
+  const [offset, setOffset] = useState(0);
+
+  const isInitial =
+    region === "All" &&
+    tier === "All" &&
+    sortKey === "rating" &&
+    debouncedQuery.trim() === "" &&
+    offset === 0;
+
+  const result = useQuery({
+    queryKey: [
+      "tsr-leaderboard",
+      region,
+      tier,
+      sortKey,
+      debouncedQuery,
+      offset,
+    ],
+    queryFn: () => fetchSnapshot(region, tier, sortKey, debouncedQuery, offset),
+    initialData: isInitial ? initialSnapshot : undefined,
+    placeholderData: keepPreviousData,
+    staleTime: 60_000,
+  });
+
+  const snapshot = result.data ?? initialSnapshot;
+
+  // Reset accumulated rows when filters change; append when paginating.
+  useEffect(() => {
+    setOffset(0);
+    setAccumulated([]);
+  }, [region, tier, sortKey, debouncedQuery]);
+
+  useEffect(() => {
+    if (!result.data) return;
+    if (offset === 0) {
+      setAccumulated(result.data.rows);
+    } else {
+      // Append, deduping by faceitPlayerId in case of overlap.
+      setAccumulated((prev) => {
+        const seen = new Set(prev.map((r) => r.faceitPlayerId));
+        const next = [...prev];
+        for (const r of result.data.rows) {
+          if (!seen.has(r.faceitPlayerId)) next.push(r);
+        }
+        return next;
+      });
+    }
+  }, [result.data, offset]);
+
+  const computedAt = formatComputedAt(snapshot.meta.computedAt);
+  const showInactive = debouncedQuery.trim() !== "";
+
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [breakdown, setBreakdown] = useState<TsrBreakdown | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -103,33 +203,10 @@ export function TsrLeaderboard({ snapshot }: Props) {
     const seq = ++requestSeq.current;
     startTransition(async () => {
       const data = await loadTsrBreakdown(selectedId);
-      // Drop stale responses if a newer selection has happened.
       if (seq !== requestSeq.current) return;
       setBreakdown(data);
     });
   }, [selectedId]);
-
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const out = snapshot.rows.filter((r) => {
-      if (region !== "All" && r.region !== region) return false;
-      if (tier !== "All" && r.maxTierReached !== tier) return false;
-      if (q.length > 0) {
-        const hayNickname = r.faceitNickname.toLowerCase();
-        const hayBattletag = r.battletag?.toLowerCase() ?? "";
-        if (!hayNickname.includes(q) && !hayBattletag.includes(q)) return false;
-      }
-      return true;
-    });
-    return [...out].sort((a, b) => {
-      if (sortKey === "matches") return b.matchCount - a.matchCount;
-      if (sortKey === "recent")
-        return b.recentMatchCount365d - a.recentMatchCount365d;
-      return b.rating - a.rating;
-    });
-  }, [snapshot.rows, region, tier, sortKey, query]);
-
-  const computedAt = formatComputedAt(snapshot.computedAt);
 
   return (
     <div className="px-6 pt-8 pb-16 sm:px-10">
@@ -148,19 +225,24 @@ export function TsrLeaderboard({ snapshot }: Props) {
           </p>
         </div>
         <dl className="flex flex-wrap items-baseline gap-x-8 gap-y-2 font-mono">
-          <Stat label="Active" value={snapshot.totalActive.toLocaleString()} />
+          <Stat
+            label="Active"
+            value={snapshot.meta.totalActive.toLocaleString()}
+          />
           <Stat
             label="Tracked players"
-            value={snapshot.totalAll.toLocaleString()}
+            value={snapshot.meta.totalAll.toLocaleString()}
           />
           <Stat
             label="Tracked matches"
-            value={snapshot.totalTrackedMatches.toLocaleString()}
+            value={snapshot.meta.totalTrackedMatches.toLocaleString()}
           />
           <Stat
             label="Top rating"
             value={
-              snapshot.topRating ? snapshot.topRating.toLocaleString() : "—"
+              snapshot.meta.topRating
+                ? snapshot.meta.topRating.toLocaleString()
+                : "—"
             }
           />
         </dl>
@@ -186,7 +268,7 @@ export function TsrLeaderboard({ snapshot }: Props) {
           </span>
           <Select
             value={sortKey}
-            onValueChange={(v) => setSortKey(v as SortKey)}
+            onValueChange={(v) => setSortKey(v as TsrSortKey)}
           >
             <SelectTrigger className="h-9 w-44 text-sm">
               <SelectValue />
@@ -240,25 +322,49 @@ export function TsrLeaderboard({ snapshot }: Props) {
             <div className="hidden text-right sm:block">Last seen</div>
           </div>
 
-          {filtered.length === 0 ? (
+          {result.isLoading && accumulated.length === 0 ? (
             <div className="text-muted-foreground py-12 text-center text-sm">
-              {snapshot.rows.length === 0
-                ? "No tracked TSR data yet. Seed FACEIT players to populate."
-                : "No players match the selected filters."}
+              Loading…
+            </div>
+          ) : accumulated.length === 0 ? (
+            <div className="text-muted-foreground py-12 text-center text-sm">
+              {showInactive
+                ? `No players match "${debouncedQuery}".`
+                : "No active players match the selected filters."}
             </div>
           ) : (
             <ul>
-              {filtered.map((row, index) => (
+              {accumulated.map((row) => (
                 <PlayerRow
                   key={row.faceitPlayerId}
                   row={row}
-                  index={index}
                   selected={selectedId === row.faceitPlayerId}
                   onSelect={() => setSelectedId(row.faceitPlayerId)}
+                  showInactive={showInactive}
                 />
               ))}
             </ul>
           )}
+
+          {snapshot.meta.hasMore ? (
+            <div className="mt-4 flex items-center justify-between gap-4">
+              <span className="text-muted-foreground font-mono text-[11px] tracking-wider uppercase">
+                Showing {accumulated.length} of {snapshot.meta.matchedCount}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setOffset((o) => o + PAGE_SIZE)}
+                disabled={result.isFetching}
+              >
+                {result.isFetching ? "Loading…" : "Load more"}
+              </Button>
+            </div>
+          ) : accumulated.length > 0 && !showInactive ? (
+            <div className="text-muted-foreground mt-4 text-center font-mono text-[11px] tracking-wider uppercase">
+              {accumulated.length} of {snapshot.meta.matchedCount} active
+            </div>
+          ) : null}
         </section>
 
         <aside className="lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:pr-2">
@@ -321,17 +427,17 @@ function FilterPills<T extends string>({
 
 function PlayerRow({
   row,
-  index,
   selected,
   onSelect,
+  showInactive,
 }: {
   row: TsrLeaderboardRow;
-  index: number;
   selected: boolean;
   onSelect: () => void;
+  showInactive: boolean;
 }) {
-  const isTop = index === 0;
-  const rank = String(index + 1).padStart(2, "0");
+  const isTop = row.rank === 1;
+  const rank = String(row.rank).padStart(2, "0");
 
   function handleKey(e: React.KeyboardEvent<HTMLLIElement>) {
     if (e.key === "Enter" || e.key === " ") {
@@ -352,10 +458,9 @@ function PlayerRow({
         "border-border group grid cursor-pointer items-center gap-4 border-b py-3 transition-colors",
         "focus-visible:bg-muted/60 focus-visible:outline-none",
         selected ? "bg-primary/[0.06]" : "hover:bg-muted/40",
-        "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-bottom-1 motion-safe:duration-200 motion-safe:[animation-fill-mode:both]",
+        row.inactive && "opacity-70",
         COLS
       )}
-      style={{ animationDelay: `${Math.min(index, 20) * 15}ms` }}
     >
       <div
         className={cn(
@@ -381,7 +486,12 @@ function PlayerRow({
           {row.battletag ? (
             <span className="font-mono">{row.faceitNickname}</span>
           ) : null}
-          <span className="font-mono text-[10px] tracking-wider uppercase sm:hidden">
+          {showInactive && row.inactive ? (
+            <span className="text-muted-foreground/80 font-mono text-[10px] tracking-wider uppercase">
+              Inactive
+            </span>
+          ) : null}
+          <span className="sm:hidden font-mono text-[10px] tracking-wider uppercase">
             {TIER_LABEL[row.maxTierReached]}
           </span>
         </div>

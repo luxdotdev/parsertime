@@ -2,7 +2,7 @@ import {
   LeaderboardHub,
   type MetricStats,
 } from "@/components/leaderboard/leaderboard-hub";
-import { getTsrLeaderboard } from "@/lib/tsr/leaderboard";
+import { getInitialTsrLeaderboard } from "@/lib/tsr/leaderboard";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function LeaderboardHubPage() {
-  const tsr = await getTsrLeaderboard();
+  const tsr = await getInitialTsrLeaderboard();
 
   const statsById: Partial<Record<"csr" | "tsr", MetricStats>> = {
     csr: {
@@ -25,23 +25,25 @@ export default async function LeaderboardHubPage() {
     },
     tsr: {
       ribbon: [
-        { label: "Active", value: tsr.totalActive.toLocaleString() },
+        { label: "Active", value: tsr.meta.totalActive.toLocaleString() },
         {
           label: "Tracked players",
-          value: tsr.totalAll.toLocaleString(),
+          value: tsr.meta.totalAll.toLocaleString(),
         },
         {
           label: "Tracked matches",
-          value: tsr.totalTrackedMatches.toLocaleString(),
+          value: tsr.meta.totalTrackedMatches.toLocaleString(),
         },
         {
           label: "Top rating",
-          value: tsr.topRating ? tsr.topRating.toLocaleString() : "—",
+          value: tsr.meta.topRating
+            ? tsr.meta.topRating.toLocaleString()
+            : "—",
         },
       ],
       status:
-        tsr.totalAll > 0
-          ? `Last full recompute ${formatRecompute(tsr.computedAt)}.`
+        tsr.meta.totalAll > 0
+          ? `Last full recompute ${formatRecompute(tsr.meta.computedAt)}.`
           : "Awaiting initial seed.",
     },
   };

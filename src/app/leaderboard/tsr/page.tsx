@@ -1,5 +1,5 @@
 import { TsrLeaderboard } from "@/components/leaderboard/tsr-leaderboard";
-import { getTsrLeaderboard } from "@/lib/tsr/leaderboard";
+import { getInitialTsrLeaderboard } from "@/lib/tsr/leaderboard";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,6 +9,6 @@ export const metadata: Metadata = {
 };
 
 export default async function TsrLeaderboardPage() {
-  const snapshot = await getTsrLeaderboard();
-  return <TsrLeaderboard snapshot={snapshot} />;
+  const snapshot = await getInitialTsrLeaderboard();
+  return <TsrLeaderboard initialSnapshot={snapshot} />;
 }
