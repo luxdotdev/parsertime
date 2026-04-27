@@ -3779,6 +3779,32 @@
     "error-loading-description": "Please try refreshing the page.",
     "no-notifications-description": "You'll see notifications here when they arrive."
   },
+  "matchmaker": {
+    "title": "Scrim matchmaker",
+    "subtitle": "Find a team near your skill level",
+    "no-snapshot-title": "No Team TSR yet",
+    "no-snapshot-description": "Your team needs a Team TSR before you can search for scrim partners. Play in tracked tournaments or wait for the next daily refresh.",
+    "back-to-team": "Back to team",
+    "no-candidates-title": "No nearby teams right now",
+    "no-candidates-description": "Try again later — the candidate pool refreshes daily.",
+    "requests-remaining": "{count} of 10 daily requests remaining",
+    "send-button": "Send scrim request",
+    "send-button-cooldown": "Available in {duration}",
+    "send-button-limit": "Daily limit reached, resets in {duration}",
+    "send-button-not-manager": "Only managers can send scrim requests",
+    "delta-positive": "+{value}",
+    "delta-negative": "−{value}",
+    "delta-zero": "±0",
+    "skill-deviation": "Skill deviation",
+    "availability-overlap": "{hours}h overlap this week",
+    "no-availability": "No shared availability data",
+    "roster": "Roster",
+    "send-success": "Scrim request sent",
+    "send-error-409": "You already messaged this team recently. Try again in 24 hours.",
+    "send-error-422": "One of the teams no longer has a Team TSR.",
+    "send-error-429": "Daily limit reached. Resets in 24 hours.",
+    "send-error-generic": "Couldn't send scrim request. Try again."
+  },
   "dataCorruption": {
     "warning": {
       "title": "Data Corruption Detected",

@@ -161,7 +161,7 @@ export default async function Team(
           </TabsList>
         )}
         <TabsContent value="members" className="space-y-4">
-          <TeamTsrCard result={teamTsr} />
+          <TeamTsrCard result={teamTsr} teamId={teamId} />
 
           <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
             {t("members")}

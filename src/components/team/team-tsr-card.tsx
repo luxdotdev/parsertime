@@ -13,6 +13,8 @@ import type {
 } from "@/lib/tsr/team";
 import { getTierBucket } from "@/lib/tsr/tier-bucket";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import type { Route } from "next";
 
 const SOURCE_LABEL: Record<TeamTsrSource, string> = {
   tsr: "Real TSR",
@@ -66,9 +68,10 @@ function formatPlaytime(seconds: number): string {
 
 type Props = {
   result: TeamTsrResult;
+  teamId: number;
 };
 
-export function TeamTsrCard({ result }: Props) {
+export function TeamTsrCard({ result, teamId }: Props) {
   const ratingLabel = result.source === "csr_fallback" ? "Team CSR" : "Team TSR";
   const noData = result.value === null;
   const playtimeShare = Math.round(result.playtimeBackedShare * 100);
@@ -121,7 +124,7 @@ export function TeamTsrCard({ result }: Props) {
 
       <CardContent className="space-y-6">
         {!noData && result.source !== "csr_fallback" && (
-          <ScrimBracket rating={result.value!} />
+          <ScrimBracket rating={result.value!} teamId={teamId} />
         )}
         {result.members.length === 0 ? (
           <p className="text-muted-foreground text-sm">
@@ -140,17 +143,25 @@ export function TeamTsrCard({ result }: Props) {
   );
 }
 
-function ScrimBracket({ rating }: { rating: number }) {
+function ScrimBracket({ rating, teamId }: { rating: number; teamId: number }) {
   const bucket = getTierBucket(rating);
   return (
     <div className="space-y-3">
-      <div className="flex items-baseline justify-between gap-x-6">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
         <span className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
           Scrim bracket
         </span>
-        <span className="font-mono text-sm font-semibold tracking-[0.08em] uppercase">
-          {bucket.label}
-        </span>
+        <div className="flex flex-wrap items-baseline gap-3">
+          <Link
+            href={`/matchmaker/${teamId}` as Route}
+            className="text-primary font-mono text-[11px] tracking-[0.16em] uppercase hover:underline"
+          >
+            Find scrims →
+          </Link>
+          <span className="font-mono text-sm font-semibold tracking-[0.08em] uppercase">
+            {bucket.label}
+          </span>
+        </div>
       </div>
       <TierLadder rating={rating} maxTierReached={bucket.tier} compact />
     </div>
