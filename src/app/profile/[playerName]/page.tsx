@@ -5,6 +5,7 @@ import { PersonalRecords } from "@/components/profile/personal-records";
 import { PlayStyleIndicator } from "@/components/profile/play-style-indicator";
 import { ProfileHeader } from "@/components/profile/profile-header";
 import { RecentActivityCalendar } from "@/components/profile/recent-activity-calendar";
+import { SkillRatingCard } from "@/components/profile/skill-rating-card";
 import { StatFluctuationCards } from "@/components/profile/stat-fluctuation-cards";
 import {
   RangePicker,
@@ -26,6 +27,7 @@ import { auth } from "@/lib/auth";
 import { getCompositeSRLeaderboard } from "@/lib/hero-rating";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
+import { getPlayerTsrByBattletag } from "@/lib/tsr/lookup";
 import type { RoleName } from "@/lib/target-stats";
 import {
   cn,
@@ -186,6 +188,21 @@ export default async function ProfilePage(
   });
 
   const top3Heroes = allHeroesData.slice(0, 3);
+
+  const peakHero = allHeroesData.reduce<HeroData | null>(
+    (best, h) => (h.hero_rating > (best?.hero_rating ?? 0) ? h : best),
+    null
+  );
+  const peakCsr = {
+    rating: peakHero?.hero_rating ?? 0,
+    hero: peakHero?.player_hero ?? null,
+    mapsPlayed: peakHero?.mapsPlayed ?? 0,
+  };
+
+  const tsrSnapshot = await getPlayerTsrByBattletag([
+    user?.battletag,
+    name,
+  ]);
 
   // Calculate Role Data
   const roleData: Record<
@@ -376,6 +393,7 @@ export default async function ProfilePage(
           {user && <TabsTrigger value="achievements">Achievements</TabsTrigger>}
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
+          <SkillRatingCard peakCsr={peakCsr} tsr={tsrSnapshot} />
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
             {/* Left Column: Most Played Heroes */}
             <div className="col-span-4 space-y-4 lg:col-span-4">
