@@ -909,6 +909,8 @@ export async function DefaultOverview({
           </Tabs>
         )}
       </div>
+      <Separator />
+
       <AnalysisCard
         team1={{ name: team1Name, color: team1 }}
         team2={{ name: team2Name, color: team2 }}
