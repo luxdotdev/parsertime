@@ -3,6 +3,7 @@ import { DangerZone } from "@/components/team/danger-zone";
 import { TeamMemberCard } from "@/components/team/team-member-card";
 import { TeamMemberUsage } from "@/components/team/team-member-usage";
 import { TeamSettingsForm } from "@/components/team/team-settings-form";
+import { TeamTsrCard } from "@/components/team/team-tsr-card";
 import { UserCardButtons } from "@/components/team/user-card-buttons";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -17,6 +18,7 @@ import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { scoutingTool } from "@/lib/flags";
 import prisma from "@/lib/prisma";
+import { computeTeamTsr } from "@/lib/tsr/team";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
 import { Lock } from "lucide-react";
@@ -105,6 +107,14 @@ export default async function Team(
 
   const teamMembers = teamMembersData ?? { users: [] };
 
+  const teamTsr = await computeTeamTsr(
+    teamMembers.users.map((u) => ({
+      id: u.id,
+      name: u.name,
+      battletag: u.battletag,
+    }))
+  );
+
   const user = await AppRuntime.runPromise(
     UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
   );
@@ -147,6 +157,8 @@ export default async function Team(
           </TabsList>
         )}
         <TabsContent value="members" className="space-y-4">
+          <TeamTsrCard result={teamTsr} />
+
           <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
             {t("members")}
           </h3>
