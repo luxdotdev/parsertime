@@ -47,12 +47,12 @@ A new lightweight derived value:
 ### Tier priors
 
 Each player is anchored at the prior of the **highest tier they have ever
-played** in tracked tournaments — *not* the tier of their first observed
+played** in tracked tournaments — _not_ the tier of their first observed
 match. (See "Why max-tier-prior" below for why this diverges from the original
 spec.)
 
 | Highest tier reached | Prior |
-|----------------------|-------|
+| -------------------- | ----- |
 | No tracked history   | 2500  |
 | Open                 | 2500  |
 | CAH                  | 2500  |
@@ -80,12 +80,12 @@ opposing roster's current TSRs**.
 
 #### `K_base` — by per-player match count
 
-| Matches played | K  |
-|----------------|----|
-| < 5            | 48 |
-| 5–14           | 32 |
-| 15–29          | 24 |
-| 30+            | 16 |
+| Matches played | K   |
+| -------------- | --- |
+| < 5            | 48  |
+| 5–14           | 32  |
+| 15–29          | 24  |
+| 30+            | 16  |
 
 #### `mov_multiplier` — closeness of the bo3/bo5/bo7 result
 
@@ -96,7 +96,7 @@ mov_multiplier = 1.5 - closeness
 ```
 
 | Format | Score | mov_multiplier |
-|--------|-------|----------------|
+| ------ | ----- | -------------- |
 | bo3    | 2-0   | 1.50×          |
 | bo3    | 2-1   | 1.00×          |
 | bo5    | 3-0   | 1.50×          |
@@ -116,7 +116,7 @@ gain_dampener = (delta > 0)
 ```
 
 | Rating | Dampener |
-|--------|----------|
+| ------ | -------- |
 | ≤ 4000 | 1.00     |
 | 4250   | 0.94     |
 | 4500   | 0.75     |
@@ -134,7 +134,7 @@ recency_weight(age_days) = 0.5 ^ (age_days / 365)
 ```
 
 | Match age | Weight |
-|-----------|--------|
+| --------- | ------ |
 | Today     | 1.00   |
 | 90 days   | 0.84   |
 | 180 days  | 0.71   |
@@ -167,8 +167,8 @@ casing varies (`FINISHED` vs `finished`); both must be accepted.
 
 ## Why max-tier-prior (deviation from v1 spec)
 
-The v1 spec said: *"A player's prior is set by the tier of their first
-observed FACEIT tournament."* The dry-run revealed two failure modes:
+The v1 spec said: _"A player's prior is set by the tier of their first
+observed FACEIT tournament."_ The dry-run revealed two failure modes:
 
 1. **Inactive players cling to inflated ratings.** A player whose first match
    was an OWCS 2024 Stage 1 Main Event in April 2024 gets a 3850 prior. Their
@@ -212,7 +212,7 @@ leaderboard.
 
 TSR is **not** a streaming rating. It is **fully recomputed via chronological
 replay** because the recency weight depends on each match's age relative to
-*today*, not the time of the original update.
+_today_, not the time of the original update.
 
 ### Replay procedure (per region)
 
@@ -257,7 +257,11 @@ function classifyTier(name: string): Tier {
   // OW2 is 5v5; explicitly reject mini formats. These run under the literal
   // "faceit" organizer (1v1/2v2/3v3 trials, brawl learnings) and would skew
   // Elo wildly if mixed with tournament play.
-  if (/\b1v1\b|\b2v2\b|\b3v3\b|brawl vs brawl|\belimination\b|mini-poke|knight & squire|trial event/.test(n))
+  if (
+    /\b1v1\b|\b2v2\b|\b3v3\b|brawl vs brawl|\belimination\b|mini-poke|knight & squire|trial event/.test(
+      n
+    )
+  )
     return "unclassified";
 
   // OWCS umbrella. Open Qualifiers / OQ Phase / generic "Qualifier" within
@@ -270,8 +274,8 @@ function classifyTier(name: string): Tier {
     return "owcs";
   }
 
-  if (/master/.test(n))   return "masters";
-  if (/expert/.test(n))   return "expert";
+  if (/master/.test(n)) return "masters";
+  if (/expert/.test(n)) return "expert";
   if (/advanced/.test(n)) return "advanced";
   if (/calling all heroes|\bcah\b/.test(n)) return "cah";
 
@@ -295,12 +299,12 @@ The v1 spec listed two organizers and acknowledged the CAH GUID as TBD. The
 dry-run discovered four practical organizers covering the bulk of NA/EMEA OW2
 competitive play:
 
-| Organizer GUID                                | What it runs                                                      |
-|-----------------------------------------------|-------------------------------------------------------------------|
-| `faceit_ow2`                                  | FACEIT-run cups: Overdrive Cup, WASB Cup                          |
-| `abd401de-e6ec-4ef1-8d4b-3d820f8f62ce`        | OWCS 2024 (NA + EMEA Stage 1–4), Dreamhack Dallas, OWWC Conference Cups |
-| `f0e8a591-08fd-4619-9d59-d97f0571842e`        | FACEIT League S1–S8 (Master / Expert / Advanced / Open Central) + OWCS Central S4–S8 + OWCS 2025/2026 OQs + EWC Master qualifiers + LCQ |
-| `37d7c27f-ddb7-4c2c-91d5-771cfe3376cd`        | Calling All Heroes (CAH)                                          |
+| Organizer GUID                         | What it runs                                                                                                                            |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `faceit_ow2`                           | FACEIT-run cups: Overdrive Cup, WASB Cup                                                                                                |
+| `abd401de-e6ec-4ef1-8d4b-3d820f8f62ce` | OWCS 2024 (NA + EMEA Stage 1–4), Dreamhack Dallas, OWWC Conference Cups                                                                 |
+| `f0e8a591-08fd-4619-9d59-d97f0571842e` | FACEIT League S1–S8 (Master / Expert / Advanced / Open Central) + OWCS Central S4–S8 + OWCS 2025/2026 OQs + EWC Master qualifiers + LCQ |
+| `37d7c27f-ddb7-4c2c-91d5-771cfe3376cd` | Calling All Heroes (CAH)                                                                                                                |
 
 **Drift caveat.** OWCS 2024 ran under `abd401de-...`. Mid-2024 the FACEIT
 Master league transitioned to OWCS Central under the new organizer
@@ -354,11 +358,11 @@ Output structure:
 
 ## Unrostered Player Handling
 
-| Real TSRs on team | Behavior                                                                |
-|-------------------|-------------------------------------------------------------------------|
-| 5 of 5            | All real; `source = "tsr"`, `confidence = "high"`                       |
-| 4 of 5            | Predict TSR for the 1 unrostered; `source = "predicted"`, `confidence = "high"` |
-| 3 of 5            | Predict TSR for the 2 unrostered; `source = "predicted"`, `confidence = "medium"` |
+| Real TSRs on team | Behavior                                                                               |
+| ----------------- | -------------------------------------------------------------------------------------- |
+| 5 of 5            | All real; `source = "tsr"`, `confidence = "high"`                                      |
+| 4 of 5            | Predict TSR for the 1 unrostered; `source = "predicted"`, `confidence = "high"`        |
+| 3 of 5            | Predict TSR for the 2 unrostered; `source = "predicted"`, `confidence = "medium"`      |
 | 0–2 of 5          | Team rating uses Raw CSR for everyone; `source = "csr_fallback"`, `confidence = "low"` |
 
 ### Predicted TSR mechanic
@@ -495,21 +499,21 @@ PlayerTsr
 ## Calibration Reference
 
 These are sanity-check targets, not contracts. The dry-run validates the
-algorithm's *shape* matches reality; absolute numbers depend on each player's
+algorithm's _shape_ matches reality; absolute numbers depend on each player's
 current form.
 
-| Scenario                                          | Expected TSR  |
-|---------------------------------------------------|---------------|
-| Top OWCS NA, sustained recent results             | 4000–4350     |
-| OWCS bottom-of-table, mixed record                | 3500–3800     |
-| OWCS player on a rough current run (e.g. 1W-3L)   | 3700–3900     |
-| Top-2 Masters, recent close OWCS qualifier loss   | 3300–3550     |
-| Mid-Masters                                       | 3200–3450     |
-| Top-4 Expert finisher                             | 2900–3150     |
-| Mid-Advanced                                      | 2700–2900     |
-| Open champion, never advanced                     | 2600–2800     |
-| Open team going 0-3 in groups, repeatedly         | 1800–2300     |
-| Unranked scrim-only player                        | No TSR        |
+| Scenario                                        | Expected TSR |
+| ----------------------------------------------- | ------------ |
+| Top OWCS NA, sustained recent results           | 4000–4350    |
+| OWCS bottom-of-table, mixed record              | 3500–3800    |
+| OWCS player on a rough current run (e.g. 1W-3L) | 3700–3900    |
+| Top-2 Masters, recent close OWCS qualifier loss | 3300–3550    |
+| Mid-Masters                                     | 3200–3450    |
+| Top-4 Expert finisher                           | 2900–3150    |
+| Mid-Advanced                                    | 2700–2900    |
+| Open champion, never advanced                   | 2600–2800    |
+| Open team going 0-3 in groups, repeatedly       | 1800–2300    |
+| Unranked scrim-only player                      | No TSR       |
 
 ---
 
