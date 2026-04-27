@@ -1529,3 +1529,144 @@ model PendingAutoRefill {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+enum FaceitTier {
+  UNCLASSIFIED
+  OPEN
+  CAH
+  ADVANCED
+  EXPERT
+  MASTERS
+  OWCS
+}
+
+enum TsrRegion {
+  NA
+  EMEA
+  OTHER
+}
+
+enum FaceitMatchStatus {
+  FINISHED
+  CANCELLED
+  ABORTED
+}
+
+enum TsrRosterOverrideAction {
+  INCLUDE
+  EXCLUDE
+}
+
+model FaceitPlayer {
+  faceitPlayerId String    @id
+  battletag      String?
+  faceitNickname String
+  region         TsrRegion @default(OTHER)
+  verified       Boolean   @default(false)
+  ow2SkillLevel  Int?
+  firstSeenAt    DateTime  @default(now())
+  lastSyncedAt   DateTime  @default(now())
+
+  rosterEntries   FaceitMatchRoster[]
+  rosterOverrides TsrRosterOverride[]
+  aliases         BattletagAlias[]
+  tsr             PlayerTsr?
+
+  @@index([battletag])
+  @@index([region])
+}
+
+model FaceitChampionship {
+  championshipId String     @id
+  name           String
+  organizerId    String
+  tier           FaceitTier @default(UNCLASSIFIED)
+  region         TsrRegion  @default(OTHER)
+  startDate      DateTime?
+  classifiedBy   String?
+  classifiedAt   DateTime?
+  ingestedAt     DateTime   @default(now())
+
+  matches FaceitMatch[]
+
+  @@index([organizerId])
+  @@index([tier])
+  @@index([organizerId, tier])
+}
+
+model FaceitMatch {
+  faceitMatchId  String            @id
+  championshipId String
+  organizerId    String
+  bestOf         Int
+  team1Score     Int
+  team2Score     Int
+  winnerFaction  Int
+  status         FaceitMatchStatus
+  finishedAt     DateTime
+  rawRegion      String
+  ingestedAt     DateTime          @default(now())
+
+  championship    FaceitChampionship  @relation(fields: [championshipId], references: [championshipId], onDelete: Cascade)
+  rosters         FaceitMatchRoster[]
+  rosterOverrides TsrRosterOverride[]
+
+  @@index([championshipId])
+  @@index([finishedAt])
+  @@index([organizerId, finishedAt])
+}
+
+model FaceitMatchRoster {
+  id             Int    @id @default(autoincrement())
+  matchId        String
+  teamSide       Int
+  faceitPlayerId String
+
+  match  FaceitMatch  @relation(fields: [matchId], references: [faceitMatchId], onDelete: Cascade)
+  player FaceitPlayer @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
+
+  @@unique([matchId, faceitPlayerId])
+  @@index([faceitPlayerId])
+  @@index([matchId])
+}
+
+model TsrRosterOverride {
+  id             Int                     @id @default(autoincrement())
+  matchId        String
+  faceitPlayerId String
+  action         TsrRosterOverrideAction
+  // Only meaningful for INCLUDE (which team the sub played for, 1 or 2).
+  // Null for EXCLUDE.
+  teamSide       Int?
+  createdBy      String?
+  createdAt      DateTime                @default(now())
+
+  match  FaceitMatch  @relation(fields: [matchId], references: [faceitMatchId], onDelete: Cascade)
+  player FaceitPlayer @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
+
+  @@unique([matchId, faceitPlayerId])
+}
+
+model BattletagAlias {
+  battletag      String @id
+  faceitPlayerId String
+
+  player FaceitPlayer @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
+
+  @@index([faceitPlayerId])
+}
+
+model PlayerTsr {
+  faceitPlayerId       String     @id
+  region               TsrRegion
+  rating               Int
+  matchCount           Int
+  recentMatchCount365d Int
+  maxTierReached       FaceitTier
+  computedAt           DateTime
+
+  player FaceitPlayer @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
+
+  @@index([region, rating(sort: Desc)])
+  @@index([recentMatchCount365d])
+}
