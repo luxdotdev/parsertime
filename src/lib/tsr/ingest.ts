@@ -5,6 +5,7 @@ import {
   type FaceitMatchDetail,
   type FaceitPlayerLookupResult,
   getMatch,
+  getPlayerById,
   getPlayerHistory,
   listOrganizerChampionships,
 } from "@/lib/tsr/faceit-client";
@@ -31,17 +32,28 @@ function regionFromOw2Field(faceitRegion: string | undefined): TsrRegion {
   return TsrRegion.OTHER;
 }
 
+// FACEIT's `game_player_id` is the numeric Battle.net account ID; the
+// human-readable BattleTag (e.g. "xomba") lives in `game_player_name`.
+function readableBattletag(
+  ow2: NonNullable<FaceitPlayerLookupResult["games"]>["ow2"] | undefined
+): string | null {
+  const name = ow2?.game_player_name?.trim();
+  if (!name) return null;
+  return name;
+}
+
 export async function upsertFullPlayer(
   player: FaceitPlayerLookupResult
 ): Promise<void> {
   const ow2 = player.games?.ow2;
   const region = regionFromOw2Field(ow2?.region);
+  const battletag = readableBattletag(ow2);
   await prisma.faceitPlayer.upsert({
     where: { faceitPlayerId: player.player_id },
     create: {
       faceitPlayerId: player.player_id,
       faceitNickname: player.nickname,
-      battletag: ow2?.game_player_id ?? null,
+      battletag,
       region,
       verified: !!player.verified,
       ow2SkillLevel:
@@ -49,7 +61,7 @@ export async function upsertFullPlayer(
     },
     update: {
       faceitNickname: player.nickname,
-      battletag: ow2?.game_player_id ?? undefined,
+      battletag,
       region,
       verified: !!player.verified,
       ow2SkillLevel:
@@ -371,4 +383,42 @@ export async function discoverAllTrackedChampionships(
     }
   }
   return out;
+}
+
+export type EnrichPlayersResult = {
+  scanned: number;
+  enriched: number;
+  failed: number;
+};
+
+// Walks every FaceitPlayer (or just those with a missing battletag if
+// onlyMissing) and replaces the row with the full profile from FACEIT, so
+// roster-only players — who arrive with just nickname + ID — get their
+// readable BattleTag, region, verified flag, and skill level.
+export async function enrichKnownPlayers(
+  opts?: FaceitClientOptions & { onlyMissing?: boolean; pacingMs?: number }
+): Promise<EnrichPlayersResult> {
+  const players = await prisma.faceitPlayer.findMany({
+    where: opts?.onlyMissing ? { battletag: null } : undefined,
+    select: { faceitPlayerId: true },
+  });
+  let enriched = 0;
+  let failed = 0;
+  const pacing = opts?.pacingMs ?? 60;
+  for (const p of players) {
+    try {
+      const profile = await getPlayerById(p.faceitPlayerId, opts);
+      await upsertFullPlayer(profile);
+      enriched += 1;
+    } catch (err) {
+      Logger.warn({
+        event: "tsr.enrich.player_failed",
+        faceit_player_id: p.faceitPlayerId,
+        error_message: err instanceof Error ? err.message : "unknown",
+      });
+      failed += 1;
+    }
+    if (pacing > 0) await new Promise((r) => setTimeout(r, pacing));
+  }
+  return { scanned: players.length, enriched, failed };
 }

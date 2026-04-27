@@ -9,7 +9,9 @@
  *      auto-classification).
  *   2. For each seed player, fetch their history → upsert all
  *      championship-type matches → cascade to all roster co-players.
- *   3. Run a full TSR recompute.
+ *   3. Enrich every FaceitPlayer row with their full profile (readable
+ *      BattleTag, region, verified flag, skill level).
+ *   4. Run a full TSR recompute.
  *
  * Usage:
  *   FACEIT_API_KEY=<key> bun scripts/tsr-bootstrap.ts [seed-nicknames…]
@@ -19,6 +21,7 @@
 
 import {
   discoverAllTrackedChampionships,
+  enrichKnownPlayers,
   ingestPlayerHistory,
   upsertFullPlayer,
 } from "@/lib/tsr/ingest";
@@ -81,7 +84,15 @@ async function main() {
     );
   }
 
-  console.log(`\n[3/3] Running full TSR recompute…`);
+  console.log(
+    `\n[3/4] Enriching player profiles (readable BattleTags, regions)…`
+  );
+  const enrich = await enrichKnownPlayers();
+  console.log(
+    `  scanned=${enrich.scanned} enriched=${enrich.enriched} failed=${enrich.failed}`
+  );
+
+  console.log(`\n[4/4] Running full TSR recompute…`);
   const replay = await recomputeAllTsrs();
   console.log(`  ${JSON.stringify(replay)}`);
 
