@@ -45,10 +45,13 @@ export function TierLadder({ rating, maxTierReached }: Props) {
     <div className="space-y-3">
       <div className="text-muted-foreground flex items-baseline justify-between font-mono text-[11px] tracking-[0.14em] uppercase">
         <span>Tier ladder</span>
-        <span className="text-muted-foreground/70">
-          {LADDER_MIN.toLocaleString()} – {LADDER_MAX.toLocaleString()}
-        </span>
+        <span className="text-muted-foreground/70">1 – 5,000</span>
       </div>
+      <p className="text-muted-foreground/70 text-[11px] leading-relaxed">
+        Visualization zooms to {LADDER_MIN.toLocaleString()}–
+        {LADDER_MAX.toLocaleString()}, the empirical band where active
+        tournament players actually sit. The full scale runs 1 to 5,000.
+      </p>
 
       <div className="relative h-2 w-full">
         <div className="bg-muted absolute inset-0 flex overflow-hidden rounded-full">
