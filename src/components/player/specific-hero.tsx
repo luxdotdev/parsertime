@@ -97,12 +97,7 @@ export async function SpecificHero({
           {heroDisplayName} <HeroSRDisplay sr={compositeHeroSR} />
         </h2>
       </div>
-      <div
-        className={cn(
-          "flex flex-col gap-4",
-          showTable && "2xl:flex-row"
-        )}
-      >
+      <div className={cn("flex flex-col gap-4", showTable && "2xl:flex-row")}>
         <div className={cn(showTable && "2xl:flex-1")}>
           <StatPanel>
             <div className="flex flex-col lg:flex-row">
@@ -302,7 +297,9 @@ export async function SpecificHero({
                           <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14" />
                         </CardIcon>
                       }
-                      value={t("finalBlowsNum", { num: playerStat.final_blows })}
+                      value={t("finalBlowsNum", {
+                        num: playerStat.final_blows,
+                      })}
                       sub={
                         <StatCardFooter
                           baseText={t("finalBlowsPer10Min", {
@@ -385,7 +382,9 @@ export async function SpecificHero({
                         </CardIcon>
                       }
                       value={t("healingReceivedNum", {
-                        num: round(playerStat.healing_received).toLocaleString(),
+                        num: round(
+                          playerStat.healing_received
+                        ).toLocaleString(),
                       })}
                       sub={
                         <StatCardFooter

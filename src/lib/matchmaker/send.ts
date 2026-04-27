@@ -182,9 +182,7 @@ async function deliverNotifications(input: {
     const snap = await getPlayerTsrByBattletag([u.battletag]);
     rosterEntries.push({ battletag: u.battletag, tsr: snap?.rating ?? null });
   }
-  rosterEntries.sort(
-    (a, b) => (b.tsr ?? -Infinity) - (a.tsr ?? -Infinity)
-  );
+  rosterEntries.sort((a, b) => (b.tsr ?? -Infinity) - (a.tsr ?? -Infinity));
   const fromRoster = rosterEntries.slice(0, 5);
 
   await Promise.allSettled([

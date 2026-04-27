@@ -36,7 +36,10 @@ export async function GET(req: Request): Promise<Response> {
 
   try {
     const query: TsrLeaderboardQuery = {
-      region: parseEnum(url.searchParams.get("region"), Object.values(TsrRegion)),
+      region: parseEnum(
+        url.searchParams.get("region"),
+        Object.values(TsrRegion)
+      ),
       tier: parseEnum(url.searchParams.get("tier"), Object.values(FaceitTier)),
       sort: parseEnum(url.searchParams.get("sort"), VALID_SORTS) ?? "rating",
       q: url.searchParams.get("q") ?? undefined,

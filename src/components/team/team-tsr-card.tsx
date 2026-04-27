@@ -72,7 +72,8 @@ type Props = {
 };
 
 export function TeamTsrCard({ result, teamId }: Props) {
-  const ratingLabel = result.source === "csr_fallback" ? "Team CSR" : "Team TSR";
+  const ratingLabel =
+    result.source === "csr_fallback" ? "Team CSR" : "Team TSR";
   const noData = result.value === null;
   const playtimeShare = Math.round(result.playtimeBackedShare * 100);
 
@@ -128,8 +129,7 @@ export function TeamTsrCard({ result, teamId }: Props) {
         )}
         {result.members.length === 0 ? (
           <p className="text-muted-foreground text-sm">
-            Add team members with linked BattleTags to compute a roster
-            rating.
+            Add team members with linked BattleTags to compute a roster rating.
           </p>
         ) : (
           <ul className="divide-border divide-y">
@@ -200,7 +200,9 @@ function MemberRow({ member }: { member: TeamTsrMember }) {
           />
         </div>
         <span className="text-muted-foreground w-14 text-right font-mono text-[10px] tabular-nums">
-          {noPlaytime ? "—" : `${weightPct}% · ${formatPlaytime(member.playtimeSeconds)}`}
+          {noPlaytime
+            ? "—"
+            : `${weightPct}% · ${formatPlaytime(member.playtimeSeconds)}`}
         </span>
       </div>
       <div

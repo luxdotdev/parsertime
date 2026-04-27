@@ -99,7 +99,7 @@ export default async function MatchmakerDetailPage({ params }: PageProps) {
           name: u.name,
           battletag: u.battletag,
         })),
-        fromTeam.scrims.map((s) => s.id),
+        fromTeam.scrims.map((s) => s.id)
       ),
       computeTeamTsr(
         toTeam.users.map((u) => ({
@@ -107,7 +107,7 @@ export default async function MatchmakerDetailPage({ params }: PageProps) {
           name: u.name,
           battletag: u.battletag,
         })),
-        toTeam.scrims.map((s) => s.id),
+        toTeam.scrims.map((s) => s.id)
       ),
       loadCurrentTeamAvailability(fromTeamId),
       loadCurrentTeamAvailability(toTeamId),
@@ -166,10 +166,7 @@ export default async function MatchmakerDetailPage({ params }: PageProps) {
         </div>
       </div>
 
-      <SkillDeviation
-        fromRating={fromSnap.rating}
-        toRating={toSnap.rating}
-      />
+      <SkillDeviation fromRating={fromSnap.rating} toRating={toSnap.rating} />
 
       {overlapHours > 0 && (
         <div className="border-border bg-card rounded-xl border p-6">
@@ -181,8 +178,7 @@ export default async function MatchmakerDetailPage({ params }: PageProps) {
             <span className="font-mono font-semibold tabular-nums">
               {overlapHours}
             </span>{" "}
-            shared{" "}
-            {overlapHours === 1 ? "hour" : "hours"} this week.
+            shared {overlapHours === 1 ? "hour" : "hours"} this week.
           </p>
         </div>
       )}

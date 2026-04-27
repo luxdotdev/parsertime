@@ -29,12 +29,7 @@ export function StatGrid({
   className?: string;
 }) {
   return (
-    <div
-      className={cn(
-        "grid",
-        className ?? "grid-cols-2 lg:grid-cols-4"
-      )}
-    >
+    <div className={cn("grid", className ?? "grid-cols-2 lg:grid-cols-4")}>
       {children}
     </div>
   );
@@ -56,10 +51,7 @@ export function StatBlock({
   ...rest
 }: StatBlockProps) {
   return (
-    <div
-      {...rest}
-      className={cn("flex min-w-0 flex-col px-5 py-4", className)}
-    >
+    <div {...rest} className={cn("flex min-w-0 flex-col px-5 py-4", className)}>
       <div className="text-muted-foreground flex items-center justify-between gap-2">
         <span className="font-mono text-[0.6875rem] tracking-[0.06em] uppercase">
           {label}

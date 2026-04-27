@@ -36,9 +36,7 @@ export default async function LeaderboardHubPage() {
         },
         {
           label: "Top rating",
-          value: tsr.meta.topRating
-            ? tsr.meta.topRating.toLocaleString()
-            : "—",
+          value: tsr.meta.topRating ? tsr.meta.topRating.toLocaleString() : "—",
         },
       ],
       status:

@@ -2,11 +2,7 @@ import { DmgDoneVsDmgTakenChart } from "@/components/charts/player/dmg-done-vs-d
 import { DmgTakenVsHealingReceivedChart } from "@/components/charts/player/dmg-taken-vs-healing-chart";
 import { KillfeedTable } from "@/components/map/killfeed-table";
 import { MVPCard } from "@/components/player/mvp-card";
-import {
-  StatBlock,
-  StatGrid,
-  StatPanel,
-} from "@/components/player/stat-panel";
+import { StatBlock, StatGrid, StatPanel } from "@/components/player/stat-panel";
 import { CardIcon } from "@/components/ui/card-icon";
 import {
   calculateDroughtTime,

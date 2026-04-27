@@ -1,9 +1,5 @@
 import { Statistics } from "@/components/player/statistics";
-import {
-  StatBlock,
-  StatGrid,
-  StatPanel,
-} from "@/components/player/stat-panel";
+import { StatBlock, StatGrid, StatPanel } from "@/components/player/stat-panel";
 import { CardIcon } from "@/components/ui/card-icon";
 import { ScrimService } from "@/data/scrim";
 import { AppRuntime } from "@/data/runtime";

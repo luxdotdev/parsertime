@@ -98,9 +98,12 @@ export async function queryTsrLeaderboard(
       recentMatchCount365d: p.recentMatchCount365d,
     }))
     .sort((a, b) => {
-      if (sort === "matches") return b.matchCount - a.matchCount || b.rating - a.rating;
+      if (sort === "matches")
+        return b.matchCount - a.matchCount || b.rating - a.rating;
       if (sort === "recent")
-        return b.recentMatchCount365d - a.recentMatchCount365d || b.rating - a.rating;
+        return (
+          b.recentMatchCount365d - a.recentMatchCount365d || b.rating - a.rating
+        );
       return b.rating - a.rating;
     });
   const rankByPlayer = new Map<string, number>();
@@ -138,47 +141,50 @@ export async function queryTsrLeaderboard(
   const hasMore = offset + limit < surfaceIds.length;
 
   // Aggregates and full-detail fetch for the paged slice.
-  const [details, totalActive, totalAll, totalTrackedMatches] = await Promise.all([
-    pagedIds.length > 0
-      ? prisma.playerTsr.findMany({
-          where: { faceitPlayerId: { in: pagedIds } },
-          include: {
-            player: {
-              select: {
-                faceitNickname: true,
-                battletag: true,
-                rosterEntries: {
-                  select: { match: { select: { finishedAt: true } } },
-                  orderBy: { match: { finishedAt: "desc" } },
-                  take: 1,
-                },
-              },
-            },
-          },
-        })
-      : Promise.resolve([] as Prisma.PromiseReturnType<
-          typeof prisma.playerTsr.findMany<{
+  const [details, totalActive, totalAll, totalTrackedMatches] =
+    await Promise.all([
+      pagedIds.length > 0
+        ? prisma.playerTsr.findMany({
+            where: { faceitPlayerId: { in: pagedIds } },
             include: {
               player: {
                 select: {
-                  faceitNickname: true;
-                  battletag: true;
+                  faceitNickname: true,
+                  battletag: true,
                   rosterEntries: {
-                    select: { match: { select: { finishedAt: true } } };
-                    orderBy: { match: { finishedAt: "desc" } };
-                    take: 1;
+                    select: { match: { select: { finishedAt: true } } },
+                    orderBy: { match: { finishedAt: "desc" } },
+                    take: 1,
+                  },
+                },
+              },
+            },
+          })
+        : Promise.resolve(
+            [] as Prisma.PromiseReturnType<
+              typeof prisma.playerTsr.findMany<{
+                include: {
+                  player: {
+                    select: {
+                      faceitNickname: true;
+                      battletag: true;
+                      rosterEntries: {
+                        select: { match: { select: { finishedAt: true } } };
+                        orderBy: { match: { finishedAt: "desc" } };
+                        take: 1;
+                      };
+                    };
                   };
                 };
-              };
-            };
-          }>
-        >),
-    prisma.playerTsr.count({
-      where: { recentMatchCount365d: { gte: ACTIVE_THRESHOLD } },
-    }),
-    prisma.playerTsr.count(),
-    prisma.faceitMatch.count({ where: { status: "FINISHED" } }),
-  ]);
+              }>
+            >
+          ),
+      prisma.playerTsr.count({
+        where: { recentMatchCount365d: { gte: ACTIVE_THRESHOLD } },
+      }),
+      prisma.playerTsr.count(),
+      prisma.faceitMatch.count({ where: { status: "FINISHED" } }),
+    ]);
 
   const detailById = new Map(details.map((d) => [d.faceitPlayerId, d]));
   const rows: TsrLeaderboardRow[] = pagedIds.flatMap((id) => {
@@ -205,7 +211,8 @@ export async function queryTsrLeaderboard(
   const topRating = ranked[0]?.rating ?? 0;
   const computedAt =
     details[0]?.computedAt ??
-    (await prisma.playerTsr.findFirst({ select: { computedAt: true } }))?.computedAt ??
+    (await prisma.playerTsr.findFirst({ select: { computedAt: true } }))
+      ?.computedAt ??
     null;
 
   return {

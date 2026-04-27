@@ -74,11 +74,7 @@ function MetricSection({
           </p>
         ) : null}
 
-        <Button
-          asChild
-          size="sm"
-          className="mt-6 h-9 rounded-md px-3 text-sm"
-        >
+        <Button asChild size="sm" className="mt-6 h-9 rounded-md px-3 text-sm">
           <Link href={metric.href}>
             Browse {metric.fullName}
             <ArrowRightIcon className="ml-1.5 size-3.5" aria-hidden />

@@ -212,8 +212,8 @@ function EmptyState() {
           Detail panel
         </p>
         <p className="text-foreground mt-3 text-sm leading-relaxed">
-          Pick a player to see their SR distribution, performance breakdown,
-          and per-10 stats against the leaderboard average.
+          Pick a player to see their SR distribution, performance breakdown, and
+          per-10 stats against the leaderboard average.
         </p>
       </div>
     </div>

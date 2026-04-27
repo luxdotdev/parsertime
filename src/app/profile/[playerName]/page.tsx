@@ -199,10 +199,7 @@ export default async function ProfilePage(
     mapsPlayed: peakHero?.mapsPlayed ?? 0,
   };
 
-  const tsrSnapshot = await getPlayerTsrByBattletag([
-    user?.battletag,
-    name,
-  ]);
+  const tsrSnapshot = await getPlayerTsrByBattletag([user?.battletag, name]);
 
   // Calculate Role Data
   const roleData: Record<

@@ -491,7 +491,7 @@ function PlayerRow({
               Inactive
             </span>
           ) : null}
-          <span className="sm:hidden font-mono text-[10px] tracking-wider uppercase">
+          <span className="font-mono text-[10px] tracking-wider uppercase sm:hidden">
             {TIER_LABEL[row.maxTierReached]}
           </span>
         </div>

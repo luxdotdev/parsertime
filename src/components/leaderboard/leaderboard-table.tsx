@@ -31,8 +31,7 @@ type Props = {
   onPlayerSelect: (player: LeaderboardPlayer) => void;
 };
 
-const COLS_BASE =
-  "grid-cols-[2.5rem_minmax(0,1fr)_4rem_3.5rem_4.5rem_4.5rem]";
+const COLS_BASE = "grid-cols-[2.5rem_minmax(0,1fr)_4rem_3.5rem_4.5rem_4.5rem]";
 const COLS_FOUR = `${COLS_BASE} sm:grid-cols-[2.5rem_minmax(0,1fr)_4.5rem_4rem_5rem_5rem_5rem]`;
 const COLS_FIVE = `${COLS_BASE} sm:grid-cols-[2.5rem_minmax(0,1fr)_4.5rem_4rem_5rem_5rem_5rem_5rem]`;
 

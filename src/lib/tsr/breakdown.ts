@@ -9,7 +9,12 @@ import {
 import { FaceitTier, type TsrRegion } from "@prisma/client";
 
 export type TsrBreakdownFactor = {
-  key: "winRate" | "recentActivity" | "tierStrength" | "marginOfVictory" | "matchVolume";
+  key:
+    | "winRate"
+    | "recentActivity"
+    | "tierStrength"
+    | "marginOfVictory"
+    | "matchVolume";
   label: string;
   value: number; // 0-1 normalized
   rawLabel: string; // human-readable raw value, e.g. "63% wins"
@@ -46,7 +51,12 @@ export type TsrBreakdown = {
     recentWins: number;
     recentLosses: number;
   };
-  tierMix: { tier: FaceitTier; matches: number; wins: number; losses: number }[];
+  tierMix: {
+    tier: FaceitTier;
+    matches: number;
+    wins: number;
+    losses: number;
+  }[];
   factors: TsrBreakdownFactor[];
   recentMatches: TsrBreakdownMatch[];
   topSwings: TsrBreakdownMatch[];
@@ -101,7 +111,10 @@ export async function getTsrBreakdown(
   let losses = 0;
   let recentWins = 0;
   let recentLosses = 0;
-  const tierMix = new Map<FaceitTier, { matches: number; wins: number; losses: number }>();
+  const tierMix = new Map<
+    FaceitTier,
+    { matches: number; wins: number; losses: number }
+  >();
   let movSum = 0;
   let movCount = 0;
   let tierRankWeighted = 0;
@@ -179,7 +192,9 @@ export async function getTsrBreakdown(
       : 0;
   // mov range is 0.875 - 1.5; scale to 0-1
   const marginOfVictory =
-    avgMovOnWin > 0 ? Math.min(1, Math.max(0, (avgMovOnWin - 0.875) / 0.625)) : 0;
+    avgMovOnWin > 0
+      ? Math.min(1, Math.max(0, (avgMovOnWin - 0.875) / 0.625))
+      : 0;
 
   const factors: TsrBreakdownFactor[] = [
     {
@@ -204,10 +219,7 @@ export async function getTsrBreakdown(
       key: "marginOfVictory",
       label: "Win margin",
       value: marginOfVictory,
-      rawLabel:
-        avgMovOnWin > 0
-          ? `${avgMovOnWin.toFixed(2)}× avg`
-          : "—",
+      rawLabel: avgMovOnWin > 0 ? `${avgMovOnWin.toFixed(2)}× avg` : "—",
     },
     {
       key: "matchVolume",
@@ -284,13 +296,16 @@ function avgTierLabel(rank: number): string {
   return "—";
 }
 
-export const TIER_FLOOR_MARKERS: { tier: FaceitTier; floor: number; label: string }[] =
-  [
-    { tier: FaceitTier.OPEN, floor: TIER_PRIORS.OPEN, label: "Open" },
-    { tier: FaceitTier.ADVANCED, floor: TIER_PRIORS.ADVANCED, label: "Advanced" },
-    { tier: FaceitTier.EXPERT, floor: TIER_PRIORS.EXPERT, label: "Expert" },
-    { tier: FaceitTier.MASTERS, floor: TIER_PRIORS.MASTERS, label: "Masters" },
-    { tier: FaceitTier.OWCS, floor: TIER_PRIORS.OWCS, label: "OWCS" },
-  ];
+export const TIER_FLOOR_MARKERS: {
+  tier: FaceitTier;
+  floor: number;
+  label: string;
+}[] = [
+  { tier: FaceitTier.OPEN, floor: TIER_PRIORS.OPEN, label: "Open" },
+  { tier: FaceitTier.ADVANCED, floor: TIER_PRIORS.ADVANCED, label: "Advanced" },
+  { tier: FaceitTier.EXPERT, floor: TIER_PRIORS.EXPERT, label: "Expert" },
+  { tier: FaceitTier.MASTERS, floor: TIER_PRIORS.MASTERS, label: "Masters" },
+  { tier: FaceitTier.OWCS, floor: TIER_PRIORS.OWCS, label: "OWCS" },
+];
 
 export const RECENCY_HALF_LIFE_LABEL = `${RECENCY_HALF_LIFE_DAYS}-day half-life`;

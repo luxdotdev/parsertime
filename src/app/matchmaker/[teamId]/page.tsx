@@ -40,9 +40,8 @@ export default async function MatchmakerListPage({ params }: PageProps) {
             No Team TSR yet
           </h1>
           <p className="text-muted-foreground mx-auto mt-2 max-w-md text-sm leading-relaxed">
-            Your team needs a Team TSR before you can search for scrim
-            partners. Play in tracked tournaments or wait for the daily
-            refresh.
+            Your team needs a Team TSR before you can search for scrim partners.
+            Play in tracked tournaments or wait for the daily refresh.
           </p>
           <Link
             href={`/team/${teamId}` as Route}

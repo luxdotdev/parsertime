@@ -30,9 +30,7 @@ const CONFIDENCE_TO_PRISMA: Record<
 // Region is the modal FaceitPlayer.region across the team's rated members.
 // NA wins ties so North American teams aren't stranded in OTHER when the
 // roster is exactly half EMEA-registered.
-async function deriveRegion(
-  battletags: (string | null)[]
-): Promise<TsrRegion> {
+async function deriveRegion(battletags: (string | null)[]): Promise<TsrRegion> {
   const tally: Record<TsrRegion, number> = {
     [TsrRegion.NA]: 0,
     [TsrRegion.EMEA]: 0,
@@ -93,7 +91,8 @@ export async function upsertTeamTsrSnapshot(teamId: number): Promise<void> {
       rating: result.value,
       source: SOURCE_TO_PRISMA[result.source],
       confidence: CONFIDENCE_TO_PRISMA[result.confidence],
-      bracketTier: bucket.tier === FaceitTier.UNCLASSIFIED ? FaceitTier.OPEN : bucket.tier,
+      bracketTier:
+        bucket.tier === FaceitTier.UNCLASSIFIED ? FaceitTier.OPEN : bucket.tier,
       bracketBand: bucket.band,
       region,
       rosterSize: result.rosterSize,
@@ -105,7 +104,8 @@ export async function upsertTeamTsrSnapshot(teamId: number): Promise<void> {
       rating: result.value,
       source: SOURCE_TO_PRISMA[result.source],
       confidence: CONFIDENCE_TO_PRISMA[result.confidence],
-      bracketTier: bucket.tier === FaceitTier.UNCLASSIFIED ? FaceitTier.OPEN : bucket.tier,
+      bracketTier:
+        bucket.tier === FaceitTier.UNCLASSIFIED ? FaceitTier.OPEN : bucket.tier,
       bracketBand: bucket.band,
       region,
       rosterSize: result.rosterSize,

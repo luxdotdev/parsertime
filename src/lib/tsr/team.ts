@@ -24,7 +24,7 @@ export type TeamTsrResult = {
   source: TeamTsrSource;
   confidence: TeamTsrConfidence;
   rosterSize: number;
-  ratedCount: number;       // members with TSR
+  ratedCount: number; // members with TSR
   contributingCount: number; // members with any signal AND playtime > 0
   playtimeBackedShare: number; // share of playtime carried by real-TSR members
   offsetStdev: number | null;
@@ -49,7 +49,8 @@ function mean(values: number[]): number {
 function stdev(values: number[]): number {
   if (values.length < 2) return 0;
   const avg = mean(values);
-  const sq = values.reduce((s, v) => s + (v - avg) * (v - avg), 0) / values.length;
+  const sq =
+    values.reduce((s, v) => s + (v - avg) * (v - avg), 0) / values.length;
   return Math.sqrt(sq);
 }
 
@@ -257,9 +258,7 @@ export async function computeTeamTsr(
         return {
           ...m,
           playtimeWeight,
-          contribution: Math.round(
-            clamp(m.compositeCsr + teamOffset, 1, 5000)
-          ),
+          contribution: Math.round(clamp(m.compositeCsr + teamOffset, 1, 5000)),
           contributionType: "predicted",
         };
       }
@@ -305,10 +304,7 @@ export async function computeTeamTsr(
         : "high";
   } else {
     source = "predicted";
-    if (
-      offsetStdev !== null &&
-      offsetStdev > PREDICTION_VARIANCE_THRESHOLD
-    ) {
+    if (offsetStdev !== null && offsetStdev > PREDICTION_VARIANCE_THRESHOLD) {
       confidence = "low";
     } else if (playtimeBackedShare >= 0.8) {
       confidence = "high";

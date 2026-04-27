@@ -67,8 +67,7 @@ function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
       <div className="bg-popover text-popover-foreground border-border rounded-md border px-3 py-2 text-xs shadow-xs">
         <p className="text-foreground font-medium">{payloadData.stat}</p>
         <p className="text-muted-foreground mt-0.5 font-mono tabular-nums">
-          Z-score{" "}
-          <span className="text-foreground">{zScore.toFixed(2)}</span>
+          Z-score <span className="text-foreground">{zScore.toFixed(2)}</span>
         </p>
       </div>
     );
@@ -185,7 +184,12 @@ export function PlayerStatsRadarChart({ player, leaderboardData }: Props) {
               fontFamily: "var(--font-geist-mono, ui-monospace)",
             }}
           />
-          <PolarRadiusAxis angle={90} domain={[-3, 3]} tick={false} axisLine={false} />
+          <PolarRadiusAxis
+            angle={90}
+            domain={[-3, 3]}
+            tick={false}
+            axisLine={false}
+          />
           <Radar
             name={player.player_name}
             dataKey="value"

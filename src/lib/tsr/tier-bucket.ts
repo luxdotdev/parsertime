@@ -16,7 +16,11 @@ export function getTierBucket(rating: number): TierBucket {
   const floors = TIER_FLOOR_MARKERS;
   const first = floors[0];
   if (rating < first.floor) {
-    return { tier: FaceitTier.UNCLASSIFIED, band: null, label: `Below ${first.label}` };
+    return {
+      tier: FaceitTier.UNCLASSIFIED,
+      band: null,
+      label: `Below ${first.label}`,
+    };
   }
   let idx = 0;
   for (let i = 0; i < floors.length; i++) {

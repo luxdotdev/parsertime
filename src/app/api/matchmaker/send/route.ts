@@ -32,10 +32,7 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) {
       event.outcome = "bad_request";
       event.status_code = 400;
-      return Response.json(
-        { error: "Invalid request body" },
-        { status: 400 },
-      );
+      return Response.json({ error: "Invalid request body" }, { status: 400 });
     }
 
     if (parsed.data.fromTeamId === parsed.data.toTeamId) {
@@ -43,14 +40,12 @@ export async function POST(request: NextRequest) {
       event.status_code = 400;
       return Response.json(
         { error: "Cannot send a scrim request to your own team" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
     const user = await AppRuntime.runPromise(
-      UserService.pipe(
-        Effect.flatMap((svc) => svc.getUser(session.user.email)),
-      ),
+      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
     );
     if (!user) {
       event.outcome = "user_not_found";
@@ -71,10 +66,7 @@ export async function POST(request: NextRequest) {
       event.outcome = "rejected";
       event.status_code = result.status;
       event.reason = result.reason;
-      return Response.json(
-        { error: result.reason },
-        { status: result.status },
-      );
+      return Response.json({ error: result.reason }, { status: result.status });
     }
 
     event.outcome = "success";

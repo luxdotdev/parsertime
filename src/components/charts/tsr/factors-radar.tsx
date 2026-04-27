@@ -48,11 +48,7 @@ export function FactorsRadar({ factors }: Props) {
               fontFamily: "var(--font-geist-mono, ui-monospace)",
             }}
           />
-          <PolarRadiusAxis
-            domain={[0, 1]}
-            tick={false}
-            axisLine={false}
-          />
+          <PolarRadiusAxis domain={[0, 1]} tick={false} axisLine={false} />
           <Radar
             name="Factors"
             dataKey="value"

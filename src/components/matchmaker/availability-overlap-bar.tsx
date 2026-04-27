@@ -15,11 +15,11 @@ export function AvailabilityOverlapBar({ hours }: Props) {
     <div className="flex items-center gap-2">
       <div className="bg-muted h-1 w-20 overflow-hidden rounded-full">
         <div
-          className="bg-emerald-500/70 h-full"
+          className="h-full bg-emerald-500/70"
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className="text-muted-foreground font-mono text-[10px] tabular-nums tracking-[0.08em] uppercase">
+      <span className="text-muted-foreground font-mono text-[10px] tracking-[0.08em] uppercase tabular-nums">
         {hours}h overlap
       </span>
     </div>

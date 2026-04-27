@@ -29,8 +29,7 @@ function deltaTone(d: number): string {
 }
 
 export function CandidateRow({ searcherTeamId, candidate }: Props) {
-  const href =
-    `/matchmaker/${searcherTeamId}/vs/${candidate.teamId}` as Route;
+  const href = `/matchmaker/${searcherTeamId}/vs/${candidate.teamId}` as Route;
   const sentAt = candidate.cooledUntil
     ? new Date(candidate.cooledUntil.getTime() - 24 * 3_600_000)
     : null;

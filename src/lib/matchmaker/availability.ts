@@ -19,7 +19,9 @@ export function computeAvailabilityOverlapHours(input: {
   return overlap;
 }
 
-function hoursWithCoverage(team: NonNullable<TeamAvailabilityWeek>): Set<number> {
+function hoursWithCoverage(
+  team: NonNullable<TeamAvailabilityWeek>
+): Set<number> {
   const slotsPerHour = 60 / team.slotMinutes;
   const counts = new Map<number, number>();
   for (const r of team.responses) {
@@ -56,7 +58,11 @@ export async function loadCurrentTeamAvailability(
   });
   if (!settings) return null;
   const schedule = await prisma.availabilitySchedule.findFirst({
-    where: { teamId, weekStart: { lte: new Date() }, weekEnd: { gt: new Date() } },
+    where: {
+      teamId,
+      weekStart: { lte: new Date() },
+      weekEnd: { gt: new Date() },
+    },
     include: { responses: { select: { slots: true } } },
     orderBy: { weekStart: "desc" },
   });

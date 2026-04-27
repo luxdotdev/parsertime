@@ -30,10 +30,9 @@ export function MatchmakerHub({ teams }: Props) {
           Find a scrim partner
         </h1>
         <p className="text-muted-foreground mt-3 max-w-prose text-sm leading-relaxed">
-          Match your roster against teams at a comparable skill level, see
-          where they sit on the bracket ladder, and send a single canned
-          introduction. Built on Team TSR — same scale you see on the team
-          page.
+          Match your roster against teams at a comparable skill level, see where
+          they sit on the bracket ladder, and send a single canned introduction.
+          Built on Team TSR — same scale you see on the team page.
         </p>
       </header>
 
@@ -46,9 +45,9 @@ export function MatchmakerHub({ teams }: Props) {
             Skill-aligned, lightweight, abuse-resistant
           </h2>
           <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
-            The matchmaker is a routed introduction, not a booking system.
-            You browse teams; you fire one canned request; the other team
-            picks it up in-app and on Discord.
+            The matchmaker is a routed introduction, not a booking system. You
+            browse teams; you fire one canned request; the other team picks it
+            up in-app and on Discord.
           </p>
         </div>
 
@@ -91,9 +90,9 @@ export function MatchmakerHub({ teams }: Props) {
               Which roster are you searching from?
             </h2>
             <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
-              Each team you belong to has its own Team TSR. Choose the one
-              you want to scrim with — only teams with a Team TSR can be
-              searched from.
+              Each team you belong to has its own Team TSR. Choose the one you
+              want to scrim with — only teams with a Team TSR can be searched
+              from.
             </p>
           </div>
 
@@ -137,7 +136,7 @@ function TeamRow({ team }: { team: HubTeam }) {
           ) : null}
         </div>
         {team.rating !== null ? (
-          <div className="text-muted-foreground mt-1 font-mono text-[11px] tabular-nums tracking-[0.08em] uppercase">
+          <div className="text-muted-foreground mt-1 font-mono text-[11px] tracking-[0.08em] uppercase tabular-nums">
             TSR {team.rating.toLocaleString()}
           </div>
         ) : (
@@ -175,8 +174,7 @@ function EmptyState() {
         You&apos;re not on any teams yet
       </h3>
       <p className="text-muted-foreground mx-auto mt-2 max-w-sm text-sm leading-relaxed">
-        Join or create a team first, then return here to find scrim
-        partners.
+        Join or create a team first, then return here to find scrim partners.
       </p>
       <Link
         href={"/team" as Route}
@@ -196,10 +194,7 @@ function BulletGroup({ label, items }: { label: string; items: string[] }) {
       </p>
       <ul className="mt-2 space-y-1.5">
         {items.map((item) => (
-          <li
-            key={item}
-            className="text-foreground text-sm leading-relaxed"
-          >
+          <li key={item} className="text-foreground text-sm leading-relaxed">
             <span
               aria-hidden
               className="text-muted-foreground/70 mr-2 font-mono text-xs"

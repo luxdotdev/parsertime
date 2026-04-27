@@ -38,7 +38,8 @@ export function TsrDetailPanel({ breakdown, loading }: Props) {
     <div className="space-y-8">
       <header className="border-border border-b pb-5">
         <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-          Selected · {player.region === TsrRegion.OTHER ? "—" : player.region} · Peak {TIER_LABEL[player.maxTierReached]}
+          Selected · {player.region === TsrRegion.OTHER ? "—" : player.region} ·
+          Peak {TIER_LABEL[player.maxTierReached]}
         </p>
         <div className="mt-2 flex items-baseline justify-between gap-4">
           <h2 className="text-2xl leading-tight font-semibold tracking-tight">
@@ -75,9 +76,7 @@ export function TsrDetailPanel({ breakdown, loading }: Props) {
           <RecordCell
             label="Win rate"
             value={
-              totalMatches > 0
-                ? `${Math.round(record.winRate * 100)}%`
-                : "—"
+              totalMatches > 0 ? `${Math.round(record.winRate * 100)}%` : "—"
             }
           />
           <RecordCell

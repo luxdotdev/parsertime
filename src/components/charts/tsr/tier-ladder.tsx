@@ -23,7 +23,8 @@ const LADDER_MAX = 4300;
 export function TierLadder({ rating, maxTierReached, compact = false }: Props) {
   const range = LADDER_MAX - LADDER_MIN;
   const playerPct =
-    (Math.max(LADDER_MIN, Math.min(LADDER_MAX, rating)) - LADDER_MIN) / range *
+    ((Math.max(LADDER_MIN, Math.min(LADDER_MAX, rating)) - LADDER_MIN) /
+      range) *
     100;
 
   // Build segments between floor markers. Floors define the lower edge of

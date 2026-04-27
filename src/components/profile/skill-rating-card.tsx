@@ -116,7 +116,8 @@ export async function SkillRatingCard({ peakCsr, tsr }: Props) {
                 <TooltipContent className="max-w-xs">
                   Tournament Skill Rating — Elo-style rating from FACEIT-hosted
                   Overwatch 2 tournament results, recency-weighted. Answers
-                  &ldquo;what level of competition can this player handle?&rdquo;
+                  &ldquo;what level of competition can this player
+                  handle?&rdquo;
                 </TooltipContent>
               </Tooltip>
             </div>

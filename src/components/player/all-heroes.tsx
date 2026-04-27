@@ -74,12 +74,7 @@ export async function AllHeroes({
       <h2 className="text-foreground scroll-m-20 pb-3 text-xl font-semibold tracking-tight first:mt-0">
         {t("title")}
       </h2>
-      <div
-        className={cn(
-          "flex flex-col gap-4",
-          showTable && "2xl:flex-row"
-        )}
-      >
+      <div className={cn("flex flex-col gap-4", showTable && "2xl:flex-row")}>
         <div className={cn(showTable && "2xl:flex-1")}>
           <StatPanel>
             <div className="flex flex-col lg:flex-row">

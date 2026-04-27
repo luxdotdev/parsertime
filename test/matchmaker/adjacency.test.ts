@@ -40,9 +40,7 @@ describe("adjacency", () => {
       bracketTier: FaceitTier.OPEN,
       bracketBand: "Low",
     });
-    expect(adj).toEqual([
-      { bracketTier: FaceitTier.OPEN, bracketBand: "Mid" },
-    ]);
+    expect(adj).toEqual([{ bracketTier: FaceitTier.OPEN, bracketBand: "Mid" }]);
   });
 
   it("High Open is adjacent to Mid Open and Low Advanced", () => {

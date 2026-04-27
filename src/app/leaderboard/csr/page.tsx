@@ -93,8 +93,8 @@ export default async function CsrLeaderboardPage(props: {
               The leaderboard is per hero
             </h2>
             <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
-              Choose a hero above to view the top 50 performers. CSR is
-              computed independently per hero so comparisons stay grounded in
+              Choose a hero above to view the top 50 performers. CSR is computed
+              independently per hero so comparisons stay grounded in
               role-relevant stats.
             </p>
           </div>
@@ -132,8 +132,8 @@ export default async function CsrLeaderboardPage(props: {
                     <p className="mt-1">
                       Each role prioritizes different stats. Tank: low Deaths
                       (30%), Eliminations (20%), Solo Kills (15%). Damage:
-                      Eliminations (30%), Final Blows (20%), Damage Dealt
-                      (20%). Support: Healing (35%), low Deaths (25%).
+                      Eliminations (30%), Final Blows (20%), Damage Dealt (20%).
+                      Support: Healing (35%), low Deaths (25%).
                     </p>
                     <p className="text-muted-foreground mt-2 text-xs">
                       Specific heroes like Mercy use unique weightings.
@@ -142,8 +142,8 @@ export default async function CsrLeaderboardPage(props: {
                   <div>
                     <h4 className="font-semibold">Final scaling</h4>
                     <p className="mt-1">
-                      Weighted Z-scores are summed and converted to an SR
-                      scale centered at 2500.
+                      Weighted Z-scores are summed and converted to an SR scale
+                      centered at 2500.
                     </p>
                     <pre className="bg-muted mt-2 overflow-x-auto rounded-md p-2 font-mono text-xs">
                       2500 + (Z * (1250 / (1 + |Z| / 3)))
