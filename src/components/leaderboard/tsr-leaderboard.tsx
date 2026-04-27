@@ -153,7 +153,7 @@ export function TsrLeaderboard({ snapshot }: Props) {
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search nickname or BattleTag"
+          placeholder="Search BattleTag or nickname"
           className="h-9 w-full sm:w-[220px]"
           aria-label="Search players"
         />
@@ -307,17 +307,17 @@ function PlayerRow({ row, index }: { row: TsrLeaderboardRow; index: number }) {
 
       <div className="min-w-0">
         <Link
-          href={`/profile/${encodeURIComponent(row.faceitNickname)}`}
+          href={`/profile/${encodeURIComponent(row.battletag ?? row.faceitNickname)}`}
           className={cn(
             "block min-w-0 truncate leading-tight font-medium hover:underline",
             isTop && "text-primary"
           )}
         >
-          {row.faceitNickname}
+          {row.battletag ?? row.faceitNickname}
         </Link>
         <div className="text-muted-foreground mt-0.5 flex items-center gap-2 text-xs">
           {row.battletag ? (
-            <span className="font-mono">{row.battletag}</span>
+            <span className="font-mono">{row.faceitNickname}</span>
           ) : null}
           <span className="sm:hidden font-mono text-[10px] tracking-wider uppercase">
             {TIER_LABEL[row.maxTierReached]}
