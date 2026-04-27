@@ -74,6 +74,7 @@ model User {
   credits                UserCredits?
   creditTransactions     CreditTransaction[]
   pendingAutoRefill      PendingAutoRefill?
+  scrimRequestsSent      ScrimRequest[]
 
   @@index([id, email])
 }
@@ -182,6 +183,7 @@ enum AuditLogAction {
   TOURNAMENT_UPDATED
   TOURNAMENT_DELETED
   TOURNAMENT_MATCH_UPDATED
+  SCRIM_REQUEST_SENT
 }
 
 model AuditLog {
@@ -214,6 +216,9 @@ model Team {
   tournamentTeams       TournamentTeam[]
   availabilitySettings  TeamAvailabilitySettings?
   availabilitySchedules AvailabilitySchedule[]
+  teamTsrSnapshot       TeamTsrSnapshot?
+  scrimRequestsFrom     ScrimRequest[]            @relation("ScrimRequestFrom")
+  scrimRequestsTo       ScrimRequest[]            @relation("ScrimRequestTo")
 }
 
 model BotNotificationConfig {
@@ -1540,6 +1545,18 @@ enum FaceitTier {
   OWCS
 }
 
+enum TeamTsrSource {
+  TSR
+  PREDICTED
+  CSR_FALLBACK
+}
+
+enum TeamTsrConfidence {
+  HIGH
+  MEDIUM
+  LOW
+}
+
 enum TsrRegion {
   NA
   EMEA
@@ -1669,4 +1686,42 @@ model PlayerTsr {
 
   @@index([region, rating(sort: Desc)])
   @@index([recentMatchCount365d])
+}
+
+model TeamTsrSnapshot {
+  teamId              Int               @id
+  rating              Int
+  source              TeamTsrSource
+  confidence          TeamTsrConfidence
+  bracketTier         FaceitTier
+  bracketBand         String?
+  region              TsrRegion
+  rosterSize          Int
+  ratedCount          Int
+  playtimeBackedShare Float
+  computedAt          DateTime          @default(now())
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([region, rating])
+  @@index([bracketTier, bracketBand])
+}
+
+model ScrimRequest {
+  id           String   @id @default(cuid())
+  fromTeamId   Int
+  toTeamId     Int
+  sentByUserId String
+  fromTsr      Int
+  toTsr        Int
+  message      String
+  createdAt    DateTime @default(now())
+
+  fromTeam Team @relation("ScrimRequestFrom", fields: [fromTeamId], references: [id], onDelete: Cascade)
+  toTeam   Team @relation("ScrimRequestTo", fields: [toTeamId], references: [id], onDelete: Cascade)
+  sentBy   User @relation(fields: [sentByUserId], references: [id], onDelete: Cascade)
+
+  @@index([fromTeamId, createdAt])
+  @@index([toTeamId, createdAt])
+  @@index([fromTeamId, toTeamId, createdAt])
 }
