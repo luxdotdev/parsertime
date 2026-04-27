@@ -428,6 +428,57 @@ export async function enrichKnownPlayers(
   return { scanned: players.length, enriched, failed };
 }
 
+export type IngestKnownPlayersHistoryResult = {
+  scanned: number;
+  ingested: number;
+  skipped: number;
+  failed: number;
+  newChampionships: number;
+};
+
+// Walks every FaceitPlayer in the DB and pulls their full championship-type
+// match history. Cascades into upsertMatch which creates any missing
+// FaceitChampionship rows from the match payload — this is the only way to
+// discover regular-season / playoffs championships, since the organizer's
+// /championships endpoint omits them and only lists qualifiers and special
+// events. After this runs, backfillTrackedChampionships() will be able to
+// fill in matches for the newly-discovered championships.
+export async function ingestKnownPlayersHistory(
+  opts?: FaceitClientOptions & { pacingMs?: number; maxPages?: number }
+): Promise<IngestKnownPlayersHistoryResult> {
+  const players = await prisma.faceitPlayer.findMany({
+    select: { faceitPlayerId: true },
+  });
+  const before = await prisma.faceitChampionship.count();
+  const pacing = opts?.pacingMs ?? 60;
+  let ingested = 0;
+  let skipped = 0;
+  let failed = 0;
+  for (const p of players) {
+    try {
+      const r = await ingestPlayerHistory(p.faceitPlayerId, opts);
+      ingested += r.ingested;
+      skipped += r.skipped;
+    } catch (err) {
+      failed += 1;
+      Logger.warn({
+        event: "tsr.ingest.deep_history_failed",
+        faceit_player_id: p.faceitPlayerId,
+        error_message: err instanceof Error ? err.message : "unknown",
+      });
+    }
+    if (pacing > 0) await new Promise((r) => setTimeout(r, pacing));
+  }
+  const after = await prisma.faceitChampionship.count();
+  return {
+    scanned: players.length,
+    ingested,
+    skipped,
+    failed,
+    newChampionships: after - before,
+  };
+}
+
 export type IngestChampionshipResult = {
   championshipId: string;
   scanned: number;
