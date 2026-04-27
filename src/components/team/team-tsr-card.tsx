@@ -1,3 +1,4 @@
+import { TierLadder } from "@/components/charts/tsr/tier-ladder";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   Tooltip,
@@ -10,6 +11,7 @@ import type {
   TeamTsrResult,
   TeamTsrSource,
 } from "@/lib/tsr/team";
+import { getTierBucket } from "@/lib/tsr/tier-bucket";
 import { cn } from "@/lib/utils";
 
 const SOURCE_LABEL: Record<TeamTsrSource, string> = {
@@ -117,7 +119,10 @@ export function TeamTsrCard({ result }: Props) {
         </div>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="space-y-6">
+        {!noData && result.source !== "csr_fallback" && (
+          <ScrimBracket rating={result.value!} />
+        )}
         {result.members.length === 0 ? (
           <p className="text-muted-foreground text-sm">
             Add team members with linked BattleTags to compute a roster
@@ -132,6 +137,23 @@ export function TeamTsrCard({ result }: Props) {
         )}
       </CardContent>
     </Card>
+  );
+}
+
+function ScrimBracket({ rating }: { rating: number }) {
+  const bucket = getTierBucket(rating);
+  return (
+    <div className="space-y-3">
+      <div className="flex items-baseline justify-between gap-x-6">
+        <span className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+          Scrim bracket
+        </span>
+        <span className="font-mono text-sm font-semibold tracking-[0.08em] uppercase">
+          {bucket.label}
+        </span>
+      </div>
+      <TierLadder rating={rating} maxTierReached={bucket.tier} compact />
+    </div>
   );
 }
 
