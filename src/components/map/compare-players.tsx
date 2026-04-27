@@ -80,11 +80,19 @@ export async function ComparePlayers({ id }: { id: number }) {
 
   const [team1Players, team2Players] = await Promise.all([
     prisma.playerStat.findMany({
-      where: { MapDataId: mapDataId, player_team: teamNames?.team_1_name },
+      where: {
+        MapDataId: mapDataId,
+        player_team: teamNames?.team_1_name,
+        hero_time_played: { gt: 0 },
+      },
       select: { player_name: true, player_hero: true },
     }),
     prisma.playerStat.findMany({
-      where: { MapDataId: mapDataId, player_team: teamNames?.team_2_name },
+      where: {
+        MapDataId: mapDataId,
+        player_team: teamNames?.team_2_name,
+        hero_time_played: { gt: 0 },
+      },
       select: { player_name: true, player_hero: true },
     }),
   ]);
