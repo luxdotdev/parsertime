@@ -66,11 +66,11 @@ export function StatBlock({
         </span>
         {icon}
       </div>
-      <span className="mt-2 font-mono text-2xl leading-tight font-semibold tabular-nums">
+      <span className="mt-3.5 font-mono text-2xl leading-tight font-semibold tabular-nums">
         {value}
       </span>
       {sub ? (
-        <span className="text-muted-foreground mt-1.5 text-xs leading-snug">
+        <span className="text-muted-foreground mt-2.5 text-xs leading-snug">
           {sub}
         </span>
       ) : null}

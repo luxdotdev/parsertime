@@ -742,6 +742,8 @@
         "noResult": "无结果。"
       },
       "analytics": {
+        "rhythm": "节奏",
+        "roundTrends": "回合趋势",
         "avgUltChargeTime": {
           "title": "平均终极充能时间",
           "footer": "完成一个终极技能充能所需的平均时间。时间越短越好，时间过长可能表明伤害或治疗量不足。"
@@ -762,7 +764,9 @@
           "title": "与其他玩家的比较",
           "description": "{playerName} 对敌方队伍玩家的得分和胜率。",
           "score": "得分:",
-          "winrate": "胜率: <color>{winrate}</color>%"
+          "winrate": "胜率: <color>{winrate}</color>%",
+          "winrateLabel": "胜率",
+          "empty": "该玩家暂无对位数据。"
         },
         "playerKillfeed": {
           "title": "玩家击杀记录",

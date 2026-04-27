@@ -1217,6 +1217,8 @@
         "noResult": "No results."
       },
       "analytics": {
+        "rhythm": "Rhythm",
+        "roundTrends": "Round trends",
         "avgUltChargeTime": {
           "title": "Average Ultimate Charge Time",
           "footer": "The average time it takes to build an ultimate. A lower time is better, while a longer time might indicate that you are not doing enough damage or healing."
@@ -1237,7 +1239,9 @@
           "title": "Versus Other Players",
           "description": "{playerName}'s score and winrates against players on the enemy team.",
           "score": "Score:",
-          "winrate": "Winrate: <color>{winrate}</color>%"
+          "winrate": "Winrate: <color>{winrate}</color>%",
+          "winrateLabel": "Winrate",
+          "empty": "No matchup data recorded for this player."
         },
         "playerKillfeed": {
           "title": "Player Killfeed",

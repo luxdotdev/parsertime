@@ -21,7 +21,7 @@ export async function Statistics({
     <section aria-labelledby="player-statistics-heading" className="pt-2">
       <h2
         id="player-statistics-heading"
-        className="text-muted-foreground mb-3 font-mono text-[0.6875rem] tracking-[0.06em] uppercase"
+        className="text-muted-foreground mb-5 font-mono text-[0.6875rem] tracking-[0.08em] uppercase"
       >
         {t("playerStats")}
       </h2>

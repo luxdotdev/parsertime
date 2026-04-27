@@ -1,11 +1,5 @@
 import { PlayerStatByRoundChart } from "@/components/charts/player/player-stat-by-round-chart";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { StatPanel } from "@/components/player/stat-panel";
 import { ScrimService } from "@/data/scrim";
 import { AppRuntime } from "@/data/runtime";
 import { Effect } from "effect";
@@ -47,25 +41,15 @@ export async function PlayerCharts({ id, playerName }: Props) {
   }
 
   const teams = await prisma.matchStart.findFirst({
-    where: {
-      MapDataId: mapDataId,
-    },
-    select: {
-      team_1_name: true,
-      team_2_name: true,
-    },
+    where: { MapDataId: mapDataId },
+    select: { team_1_name: true, team_2_name: true },
   });
 
   const team1Name = teams?.team_1_name ?? t("team1");
 
   const playerTeamName = await prisma.playerStat.findFirst({
-    where: {
-      MapDataId: mapDataId,
-      player_name: playerName,
-    },
-    select: {
-      player_team: true,
-    },
+    where: { MapDataId: mapDataId, player_name: playerName },
+    select: { player_team: true },
   });
 
   const playerTeam =
@@ -85,122 +69,102 @@ export async function PlayerCharts({ id, playerName }: Props) {
 
   const playerRole = heroRoleMapping[mostPlayedHero];
 
+  const cells: { title: string; footer: string; chart: React.ReactNode }[] = [
+    {
+      title: t("dmgByRound.title"),
+      footer: t("dmgByRound.footer", { playerName }),
+      chart: (
+        <PlayerStatByRoundChart
+          stat="hero_damage_dealt"
+          playerStatByRound={await getStatByRound("hero_damage_dealt")}
+          playerName={playerName}
+          playerTeam={playerTeam}
+        />
+      ),
+    },
+  ];
+
+  if (playerRole === "Tank") {
+    cells.push({
+      title: t("dmgBlockByRound.title"),
+      footer: t("dmgBlockByRound.footer", { playerName }),
+      chart: (
+        <PlayerStatByRoundChart
+          stat="damage_blocked"
+          playerStatByRound={await getStatByRound("damage_blocked")}
+          playerName={playerName}
+          playerTeam={playerTeam}
+        />
+      ),
+    });
+  } else if (playerRole === "Damage") {
+    cells.push({
+      title: t("finalBlowsByRound.title"),
+      footer: t("finalBlowsByRound.footer", { playerName }),
+      chart: (
+        <PlayerStatByRoundChart
+          stat="final_blows"
+          playerStatByRound={await getStatByRound("final_blows")}
+          playerName={playerName}
+          playerTeam={playerTeam}
+        />
+      ),
+    });
+  } else if (playerRole === "Support") {
+    cells.push({
+      title: t("healingByRound.title"),
+      footer: t("healingByRound.footer", { playerName }),
+      chart: (
+        <PlayerStatByRoundChart
+          stat="healing_dealt"
+          playerStatByRound={await getStatByRound("healing_dealt")}
+          playerName={playerName}
+          playerTeam={playerTeam}
+        />
+      ),
+    });
+  }
+
+  cells.push(
+    {
+      title: t("dmgTakenByRound.title"),
+      footer: t("dmgTakenByRound.footer", { playerName }),
+      chart: (
+        <PlayerStatByRoundChart
+          stat="damage_taken"
+          playerStatByRound={await getStatByRound("damage_taken")}
+          playerName={playerName}
+          playerTeam={playerTeam}
+        />
+      ),
+    },
+    {
+      title: t("healingReceivedByRound.title"),
+      footer: t("healingReceivedByRound.footer", { playerName }),
+      chart: (
+        <PlayerStatByRoundChart
+          stat="healing_received"
+          playerStatByRound={await getStatByRound("healing_received")}
+          playerName={playerName}
+          playerTeam={playerTeam}
+        />
+      ),
+    }
+  );
+
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
-      <Card className="col-span-3">
-        <CardHeader>
-          <CardTitle>{t("dmgByRound.title")}</CardTitle>
-        </CardHeader>
-        <CardContent className="pl-2">
-          <PlayerStatByRoundChart
-            stat="hero_damage_dealt"
-            playerStatByRound={await getStatByRound("hero_damage_dealt")}
-            playerName={playerName}
-            playerTeam={playerTeam}
-          />
-        </CardContent>
-        <CardFooter>
-          <p className="text-sm text-gray-500">
-            {t("dmgByRound.footer", { playerName })}
-          </p>
-        </CardFooter>
-      </Card>
-      {playerRole === "Tank" && (
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>{t("dmgBlockByRound.title")}</CardTitle>
-          </CardHeader>
-          <CardContent className="pl-2">
-            <PlayerStatByRoundChart
-              stat="damage_blocked"
-              playerStatByRound={await getStatByRound("damage_blocked")}
-              playerName={playerName}
-              playerTeam={playerTeam}
-            />
-          </CardContent>
-          <CardFooter>
-            <p className="text-sm text-gray-500">
-              {t("dmgBlockByRound.footer", { playerName })}
-            </p>
-          </CardFooter>
-        </Card>
-      )}
-      {playerRole === "Damage" && (
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>{t("finalBlowsByRound.title")}</CardTitle>
-          </CardHeader>
-          <CardContent className="pl-2">
-            <PlayerStatByRoundChart
-              stat="final_blows"
-              playerStatByRound={await getStatByRound("final_blows")}
-              playerName={playerName}
-              playerTeam={playerTeam}
-            />
-          </CardContent>
-          <CardFooter>
-            <p className="text-sm text-gray-500">
-              {t("finalBlowsByRound.footer", { playerName })}
-            </p>
-          </CardFooter>
-        </Card>
-      )}
-      {playerRole === "Support" && (
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>{t("healingByRound.title")}</CardTitle>
-          </CardHeader>
-          <CardContent className="pl-2">
-            <PlayerStatByRoundChart
-              stat="healing_dealt"
-              playerStatByRound={await getStatByRound("healing_dealt")}
-              playerName={playerName}
-              playerTeam={playerTeam}
-            />
-          </CardContent>
-          <CardFooter>
-            <p className="text-sm text-gray-500">
-              {t("healingByRound.footer", { playerName })}
-            </p>
-          </CardFooter>
-        </Card>
-      )}
-      <Card className="col-span-3">
-        <CardHeader>
-          <CardTitle>{t("dmgTakenByRound.title")}</CardTitle>
-        </CardHeader>
-        <CardContent className="pl-2">
-          <PlayerStatByRoundChart
-            stat="damage_taken"
-            playerStatByRound={await getStatByRound("damage_taken")}
-            playerName={playerName}
-            playerTeam={playerTeam}
-          />
-        </CardContent>
-        <CardFooter>
-          <p className="text-sm text-gray-500">
-            {t("dmgTakenByRound.footer", { playerName })}
-          </p>
-        </CardFooter>
-      </Card>
-      <Card className="col-span-3">
-        <CardHeader>
-          <CardTitle>{t("healingReceivedByRound.title")}</CardTitle>
-        </CardHeader>
-        <CardContent className="pl-2">
-          <PlayerStatByRoundChart
-            stat="healing_received"
-            playerStatByRound={await getStatByRound("healing_received")}
-            playerName={playerName}
-            playerTeam={playerTeam}
-          />
-        </CardContent>
-        <CardFooter>
-          <p className="text-sm text-gray-500">
-            {t("healingReceivedByRound.footer", { playerName })}
-          </p>
-        </CardFooter>
-      </Card>
-    </div>
+    <StatPanel>
+      <div className="bg-border grid grid-cols-1 gap-px lg:grid-cols-2">
+        {cells.map((cell) => (
+          <div key={cell.title} className="bg-card flex flex-col px-5 py-5">
+            <h3 className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.06em] uppercase">
+              {cell.title}
+            </h3>
+            <div className="mt-5">{cell.chart}</div>
+            <p className="text-muted-foreground mt-4 text-xs">{cell.footer}</p>
+          </div>
+        ))}
+      </div>
+    </StatPanel>
   );
 }

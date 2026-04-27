@@ -742,6 +742,8 @@
         "noResult": "결과 없음."
       },
       "analytics": {
+        "rhythm": "리듬",
+        "roundTrends": "라운드별 추이",
         "avgUltChargeTime": {
           "title": "평균 궁극기 충전 시간",
           "footer": "궁극기를 충전하는 데 걸리는 평균 시간입니다. 시간이 짧을수록 좋으며, 시간이 길 경우 충분한 피해나 치유를 하지 않고 있다는 것을 나타낼 수 있습니다."
@@ -762,7 +764,9 @@
           "title": "다른 플레이어와의 비교",
           "description": "{playerName}의 점수와 적 팀 플레이어에 대한 승률.",
           "score": "점수:",
-          "winrate": "승률: <color>{winrate}</color>%"
+          "winrate": "승률: <color>{winrate}</color>%",
+          "winrateLabel": "승률",
+          "empty": "이 플레이어의 매치업 데이터가 없습니다."
         },
         "playerKillfeed": {
           "title": "플레이어 킬 피드",
