@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { StatBlock } from "@/components/player/stat-panel";
 import { CardIcon } from "@/components/ui/card-icon";
 import {
   HoverCard,
@@ -39,11 +33,10 @@ export function MVPCard({ playerName, mvpScores }: MVPCardProps) {
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {t("mvpScore.title")}
-            </CardTitle>
+        <StatBlock
+          className="hover:bg-muted/40 cursor-help transition-colors"
+          label={t("mvpScore.title")}
+          icon={
             <CardIcon>
               <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
               <path d="M5 3v4" />
@@ -51,18 +44,17 @@ export function MVPCard({ playerName, mvpScores }: MVPCardProps) {
               <path d="M3 5h4" />
               <path d="M17 19h4" />
             </CardIcon>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {playerScore ? playerScore.totalScore.toFixed(2) : "—"} pts
-            </div>
-          </CardContent>
-          <CardFooter>
-            <p className="text-muted-foreground text-xs">
-              {t("mvpScore.footer")}
-            </p>
-          </CardFooter>
-        </Card>
+          }
+          value={
+            <>
+              {playerScore ? playerScore.totalScore.toFixed(2) : "—"}
+              <span className="text-muted-foreground ml-1 text-base font-normal">
+                pts
+              </span>
+            </>
+          }
+          sub={t("mvpScore.footer")}
+        />
       </HoverCardTrigger>
       <HoverCardContent className="w-fit">
         {playerScore ? (

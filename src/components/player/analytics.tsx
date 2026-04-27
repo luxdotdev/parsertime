@@ -3,6 +3,11 @@ import { DmgTakenVsHealingReceivedChart } from "@/components/charts/player/dmg-t
 import { KillfeedTable } from "@/components/map/killfeed-table";
 import { MVPCard } from "@/components/player/mvp-card";
 import {
+  StatBlock,
+  StatGrid,
+  StatPanel,
+} from "@/components/player/stat-panel";
+import {
   Card,
   CardContent,
   CardFooter,
@@ -79,7 +84,6 @@ export async function PlayerAnalytics({
   const allHealingReceivedsByRound = removeDuplicateRows(allHealingReceiveds);
   const allHeroDamageDoneByRound = removeDuplicateRows(allHeroDamageDone);
 
-  // filter out different heroes and sum the damage taken and healing received by round
   const damageTakenByRound = allDamageTakensByRound.reduce(
     (acc, { round_number, damage_taken }) => {
       if (!acc[round_number]) {
@@ -118,77 +122,57 @@ export async function PlayerAnalytics({
   );
 
   return (
-    <main className="min-h-[65vh]">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {t("avgUltChargeTime.title")}
-            </CardTitle>
-            <CardIcon>
-              <line x1="10" x2="14" y1="2" y2="2" />
-              <line x1="12" x2="15" y1="14" y2="11" />
-              <circle cx="12" cy="14" r="8" />
-            </CardIcon>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {toTimestamp(averageTimeToUltimate)}
-            </div>
-          </CardContent>
-          <CardFooter>
-            <p className="text-muted-foreground text-xs">
-              {t("avgUltChargeTime.footer")}
-            </p>
-          </CardFooter>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {t("avgTimeUseUlt.title")}
-            </CardTitle>
-            <CardIcon>
-              <path d="M5 22h14" />
-              <path d="M5 2h14" />
-              <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" />
-              <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" />
-            </CardIcon>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {toTimestamp(averageTimeToUseUlt)}
-            </div>
-          </CardContent>
-          <CardFooter>
-            <p className="text-muted-foreground text-xs">
-              {t("avgTimeUseUlt.footer")}
-            </p>
-          </CardFooter>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {t("avgDroughtTime.title")}
-            </CardTitle>
-            <CardIcon>
-              <path d="M10 2h4" />
-              <path d="M4.6 11a8 8 0 0 0 1.7 8.7 8 8 0 0 0 8.7 1.7" />
-              <path d="M7.4 7.4a8 8 0 0 1 10.3 1 8 8 0 0 1 .9 10.2" />
-              <path d="m2 2 20 20" />
-              <path d="M12 12v-2" />
-            </CardIcon>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{toTimestamp(droughtTime)}</div>
-          </CardContent>
-          <CardFooter>
-            <p className="text-muted-foreground text-xs">
-              {t("avgDroughtTime.footer")}
-            </p>
-          </CardFooter>
-        </Card>
-        <MVPCard playerName={playerName} mvpScores={mvpScore} />
-        <Card className="col-span-full max-h-[80vh] overflow-y-auto 2xl:col-span-1">
+    <main className="min-h-[65vh] space-y-4">
+      <StatPanel>
+        <StatGrid>
+          <StatBlock
+            label={t("avgUltChargeTime.title")}
+            icon={
+              <CardIcon>
+                <line x1="10" x2="14" y1="2" y2="2" />
+                <line x1="12" x2="15" y1="14" y2="11" />
+                <circle cx="12" cy="14" r="8" />
+              </CardIcon>
+            }
+            value={toTimestamp(averageTimeToUltimate)}
+            sub={t("avgUltChargeTime.footer")}
+          />
+          <StatBlock
+            label={t("avgTimeUseUlt.title")}
+            icon={
+              <CardIcon>
+                <path d="M5 22h14" />
+                <path d="M5 2h14" />
+                <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" />
+                <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" />
+              </CardIcon>
+            }
+            value={toTimestamp(averageTimeToUseUlt)}
+            sub={t("avgTimeUseUlt.footer")}
+          />
+          <StatBlock
+            label={t("avgDroughtTime.title")}
+            icon={
+              <CardIcon>
+                <path d="M10 2h4" />
+                <path d="M4.6 11a8 8 0 0 0 1.7 8.7 8 8 0 0 0 8.7 1.7" />
+                <path d="M7.4 7.4a8 8 0 0 1 10.3 1 8 8 0 0 1 .9 10.2" />
+                <path d="m2 2 20 20" />
+                <path d="M12 12v-2" />
+              </CardIcon>
+            }
+            value={toTimestamp(droughtTime)}
+            sub={t("avgDroughtTime.footer")}
+          />
+          <MVPCard playerName={playerName} mvpScores={mvpScore} />
+        </StatGrid>
+      </StatPanel>
+
+      <div className="grid gap-4 2xl:grid-cols-4">
+        <Card
+          data-size="sm"
+          className="max-h-[80vh] overflow-y-auto 2xl:col-span-1"
+        >
           <CardHeader>
             <CardTitle className="text-sm font-medium">
               {t("versus.title")}
@@ -291,7 +275,10 @@ export async function PlayerAnalytics({
             ))}
           </CardContent>
         </Card>
-        <Card className="col-span-full max-h-[80vh] overflow-y-auto 2xl:col-span-3">
+        <Card
+          data-size="sm"
+          className="max-h-[80vh] overflow-y-auto 2xl:col-span-3"
+        >
           <CardHeader>
             <CardTitle className="text-sm font-medium">
               {t("playerKillfeed.title")}
@@ -310,7 +297,10 @@ export async function PlayerAnalytics({
             />
           </CardContent>
         </Card>
-        <Card className="col-span-full xl:col-span-2">
+      </div>
+
+      <div className="grid gap-4 xl:grid-cols-2">
+        <Card data-size="sm">
           <CardHeader>
             <CardTitle className="text-sm font-medium">
               {t("dmgTakenHealingReceived.title")}
@@ -328,7 +318,7 @@ export async function PlayerAnalytics({
             </p>
           </CardFooter>
         </Card>
-        <Card className="col-span-full xl:col-span-2">
+        <Card data-size="sm">
           <CardHeader>
             <CardTitle className="text-sm font-medium">
               {t("dmgDoneDmgTaken.title")}

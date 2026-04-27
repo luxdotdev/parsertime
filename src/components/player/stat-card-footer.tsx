@@ -147,19 +147,21 @@ export function StatCardFooter({
       <div className="text-sm">{baseText}</div>
       <Tooltip>
         <TooltipTrigger>
-          <div className="flex items-center gap-1">
-            <span>
+          <div className="flex items-center gap-1.5">
+            <span className="tabular-nums">
               {t("vsAverage", {
                 average: comparison.heroAverage.toLocaleString(),
               })}
             </span>
-            <span>&mdash;</span>
-            <span className="text-foreground">
+            <span className="text-muted-foreground/40" aria-hidden="true">
+              ·
+            </span>
+            <span className="text-foreground tabular-nums">
               {t("percentile", {
                 percentile: comparison.percentile.toFixed(0),
               })}
             </span>
-            <span>
+            <span className="tabular-nums">
               ({comparison.zScore > 0 ? "+" : ""}
               {comparison.zScore.toFixed(2)}σ)
             </span>
