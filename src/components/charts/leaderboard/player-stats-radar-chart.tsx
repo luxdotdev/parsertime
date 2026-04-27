@@ -2,7 +2,6 @@
 
 import { useMemo } from "react";
 import {
-  Legend,
   PolarAngleAxis,
   PolarGrid,
   PolarRadiusAxis,
@@ -65,18 +64,11 @@ function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
     const payloadData = data.payload as RadarDataPoint;
     const zScore = data.value as number;
     return (
-      <div className="bg-popover text-popover-foreground border-border z-50 overflow-hidden rounded-md border px-3 py-2 text-xs shadow-xl">
-        <p className="mb-1 text-sm font-semibold">{payloadData.stat}</p>
-        <p className="text-muted-foreground">
-          Z-Score:{" "}
-          <span className="text-foreground font-medium">
-            {zScore.toFixed(2)}
-          </span>
-        </p>
-        <p
-          className={`mt-1 text-xs font-medium ${zScore > 0 ? "text-green-600 dark:text-green-400" : "text-orange-600 dark:text-orange-400"}`}
-        >
-          {zScore > 0 ? "Above average" : "Below average"}
+      <div className="bg-popover text-popover-foreground border-border rounded-md border px-3 py-2 text-xs shadow-xs">
+        <p className="text-foreground font-medium">{payloadData.stat}</p>
+        <p className="text-muted-foreground mt-0.5 font-mono tabular-nums">
+          Z-score{" "}
+          <span className="text-foreground">{zScore.toFixed(2)}</span>
         </p>
       </div>
     );
@@ -180,47 +172,31 @@ export function PlayerStatsRadarChart({ player, leaderboardData }: Props) {
     return data;
   }, [player, leaderboardData]);
 
-  const averageZScore =
-    radarData.reduce((sum, d) => sum + d.value, 0) / radarData.length;
-
   return (
     <div className="w-full">
-      <ResponsiveContainer width="100%" height={300}>
-        <RadarChart data={radarData}>
-          <PolarGrid />
-          <PolarAngleAxis dataKey="stat" tick={{ fontSize: 12 }} />
-          <PolarRadiusAxis angle={90} domain={[-3, 3]} />
+      <ResponsiveContainer width="100%" height={260}>
+        <RadarChart data={radarData} outerRadius="70%">
+          <PolarGrid stroke="var(--border)" strokeOpacity={0.4} />
+          <PolarAngleAxis
+            dataKey="stat"
+            tick={{
+              fill: "var(--muted-foreground)",
+              fontSize: 11,
+              fontFamily: "var(--font-geist-mono, ui-monospace)",
+            }}
+          />
+          <PolarRadiusAxis angle={90} domain={[-3, 3]} tick={false} axisLine={false} />
           <Radar
             name={player.player_name}
             dataKey="value"
-            stroke="var(--chart-2)"
-            fill="var(--chart-2)"
-            fillOpacity={0.6}
+            stroke="var(--primary)"
+            fill="var(--primary)"
+            fillOpacity={0.25}
+            strokeWidth={1.5}
           />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend />
+          <Tooltip content={<CustomTooltip />} cursor={false} />
         </RadarChart>
       </ResponsiveContainer>
-
-      <div className="mt-4 space-y-2">
-        <div className="text-center">
-          <p className="text-muted-foreground text-sm">Average Z-Score</p>
-          <p className="text-lg font-semibold">
-            {averageZScore.toFixed(2)}
-            <span className="text-muted-foreground ml-2 text-sm">
-              ({averageZScore > 0 ? "Above" : "Below"} Average)
-            </span>
-          </p>
-        </div>
-        <div className="bg-muted rounded-md p-3 text-xs">
-          <p className="text-muted-foreground">
-            <strong>Understanding Z-Scores:</strong> A Z-score measures how many
-            standard deviations a stat is from the average. 0 = average,
-            positive values = above average, negative values = below average.
-            Most players fall between -2 and +2.
-          </p>
-        </div>
-      </div>
     </div>
   );
 }
