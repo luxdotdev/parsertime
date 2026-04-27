@@ -159,7 +159,9 @@ export function TsrLeaderboard({ snapshot }: Props) {
           />
           <Stat
             label="Top rating"
-            value={snapshot.topRating ? snapshot.topRating.toLocaleString() : "—"}
+            value={
+              snapshot.topRating ? snapshot.topRating.toLocaleString() : "—"
+            }
           />
         </dl>
       </header>
@@ -259,7 +261,7 @@ export function TsrLeaderboard({ snapshot }: Props) {
           )}
         </section>
 
-        <aside className="lg:sticky lg:top-6 lg:self-start">
+        <aside className="lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:pr-2">
           <TsrDetailPanel breakdown={breakdown} loading={isPending} />
         </aside>
       </div>
@@ -379,7 +381,7 @@ function PlayerRow({
           {row.battletag ? (
             <span className="font-mono">{row.faceitNickname}</span>
           ) : null}
-          <span className="sm:hidden font-mono text-[10px] tracking-wider uppercase">
+          <span className="font-mono text-[10px] tracking-wider uppercase sm:hidden">
             {TIER_LABEL[row.maxTierReached]}
           </span>
         </div>
