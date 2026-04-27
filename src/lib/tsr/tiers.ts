@@ -33,7 +33,14 @@ export function inferRegion(
   const n = (name ?? "").toLowerCase();
   if (/\bna\b|north america|americas/.test(n)) return TsrRegion.NA;
   if (/\bemea\b|\beu\b|europe/.test(n)) return TsrRegion.EMEA;
-  if (faceitRegion === "US") return TsrRegion.NA;
-  if (faceitRegion === "EU") return TsrRegion.EMEA;
-  return TsrRegion.OTHER;
+  switch (faceitRegion?.toUpperCase()) {
+    case "NA":
+    case "US":
+      return TsrRegion.NA;
+    case "EMEA":
+    case "EU":
+      return TsrRegion.EMEA;
+    default:
+      return TsrRegion.OTHER;
+  }
 }

@@ -27,9 +27,16 @@ function normalizeStatus(raw: string): FaceitMatchStatus | null {
 }
 
 function regionFromOw2Field(faceitRegion: string | undefined): TsrRegion {
-  if (faceitRegion === "US") return TsrRegion.NA;
-  if (faceitRegion === "EU") return TsrRegion.EMEA;
-  return TsrRegion.OTHER;
+  switch (faceitRegion?.toUpperCase()) {
+    case "NA":
+    case "US":
+      return TsrRegion.NA;
+    case "EMEA":
+    case "EU":
+      return TsrRegion.EMEA;
+    default:
+      return TsrRegion.OTHER;
+  }
 }
 
 // FACEIT's `game_player_id` is the numeric Battle.net account ID; the
