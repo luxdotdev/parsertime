@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/tooltip";
 import type {
   TeamTsrConfidence,
+  TeamTsrMember,
   TeamTsrResult,
   TeamTsrSource,
 } from "@/lib/tsr/team";
@@ -18,11 +19,11 @@ const SOURCE_LABEL: Record<TeamTsrSource, string> = {
 };
 
 const SOURCE_COPY: Record<TeamTsrSource, string> = {
-  tsr: "Mean of every starter's tournament rating.",
+  tsr: "Playtime-weighted mean of every active starter's tournament rating.",
   predicted:
-    "Real TSR for rated starters; the rest predicted from team CSR offset.",
+    "Real TSR for rated players; the rest predicted from team CSR offset. Weighted by scrim playtime.",
   csr_fallback:
-    "Not enough rated starters for TSR. Showing per-hero CSR average — not on the same scale as TSR.",
+    "Not enough rated playtime for TSR. Showing playtime-weighted per-hero CSR — not on the same scale as TSR.",
 };
 
 const CONFIDENCE_LABEL: Record<TeamTsrConfidence, string> = {
@@ -31,13 +32,11 @@ const CONFIDENCE_LABEL: Record<TeamTsrConfidence, string> = {
   low: "Low confidence",
 };
 
-const CONTRIBUTION_LABEL: Record<
-  TeamTsrResult["starters"][number]["contributionType"],
-  string
-> = {
+const CONTRIBUTION_LABEL: Record<TeamTsrMember["contributionType"], string> = {
   tsr: "TSR",
   predicted: "Predicted",
   csr: "CSR",
+  none: "—",
 };
 
 function ratingToneClass(rating: number, source: TeamTsrSource): string {
@@ -50,6 +49,19 @@ function ratingToneClass(rating: number, source: TeamTsrSource): string {
   return "text-muted-foreground";
 }
 
+function displayName(member: TeamTsrMember): string {
+  const handle = member.battletag ?? member.name;
+  return handle.split("#")[0] || handle;
+}
+
+function formatPlaytime(seconds: number): string {
+  if (seconds <= 0) return "—";
+  const hours = seconds / 3600;
+  if (hours >= 1) return `${hours.toFixed(1)}h`;
+  const minutes = Math.round(seconds / 60);
+  return `${minutes}m`;
+}
+
 type Props = {
   result: TeamTsrResult;
 };
@@ -57,6 +69,7 @@ type Props = {
 export function TeamTsrCard({ result }: Props) {
   const ratingLabel = result.source === "csr_fallback" ? "Team CSR" : "Team TSR";
   const noData = result.value === null;
+  const playtimeShare = Math.round(result.playtimeBackedShare * 100);
 
   return (
     <Card>
@@ -64,8 +77,8 @@ export function TeamTsrCard({ result }: Props) {
         <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
           <div>
             <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-              {ratingLabel} ·{" "}
-              {result.realTsrCount} of {result.starterCount} rated
+              {ratingLabel} · {result.ratedCount} of {result.rosterSize} rated ·{" "}
+              {playtimeShare}% playtime backed
             </p>
             <h3 className="mt-1 text-base font-semibold tracking-tight">
               Roster skill rating
@@ -105,61 +118,69 @@ export function TeamTsrCard({ result }: Props) {
       </CardHeader>
 
       <CardContent>
-        {result.starters.length === 0 ? (
+        {result.members.length === 0 ? (
           <p className="text-muted-foreground text-sm">
             Add team members with linked BattleTags to compute a roster
             rating.
           </p>
         ) : (
           <ul className="divide-border divide-y">
-            {result.starters.map((s) => {
-              const noContribution =
-                s.contributionType === "csr" && s.compositeCsr === null;
-              return (
-                <li
-                  key={s.userId}
-                  className="grid grid-cols-[minmax(0,1fr)_5rem_4rem] items-center gap-4 py-2 text-sm"
-                >
-                  <div className="min-w-0">
-                    <div className="truncate font-medium">
-                      {s.battletag ?? s.name}
-                    </div>
-                    <div className="text-muted-foreground mt-0.5 flex items-center gap-2 font-mono text-[10px] tracking-wider uppercase">
-                      {s.tsr !== null ? (
-                        <span>TSR {s.tsr.toLocaleString()}</span>
-                      ) : (
-                        <span>No TSR</span>
-                      )}
-                      {s.compositeCsr !== null ? (
-                        <span>· CSR {s.compositeCsr.toLocaleString()}</span>
-                      ) : null}
-                    </div>
-                  </div>
-                  <div
-                    className={cn(
-                      "text-right font-mono text-base tabular-nums",
-                      noContribution && "text-muted-foreground"
-                    )}
-                  >
-                    {noContribution
-                      ? "—"
-                      : s.contribution.toLocaleString()}
-                  </div>
-                  <div className="text-muted-foreground text-right font-mono text-[10px] tracking-wider uppercase">
-                    {CONTRIBUTION_LABEL[s.contributionType]}
-                  </div>
-                </li>
-              );
-            })}
+            {result.members.map((m) => (
+              <MemberRow key={m.userId} member={m} />
+            ))}
           </ul>
         )}
-        {result.rosterSize > result.starterCount ? (
-          <p className="text-muted-foreground/70 mt-3 text-[11px]">
-            Roster has {result.rosterSize} members; rating uses the top{" "}
-            {result.starterCount} by available rating signal.
-          </p>
-        ) : null}
       </CardContent>
     </Card>
+  );
+}
+
+function MemberRow({ member }: { member: TeamTsrMember }) {
+  const noPlaytime = member.playtimeSeconds <= 0;
+  const noContribution = member.contribution === null;
+  const weightPct = Math.round(member.playtimeWeight * 100);
+  return (
+    <li
+      className={cn(
+        "grid grid-cols-[minmax(0,1fr)_minmax(0,7rem)_5rem_4rem] items-center gap-4 py-2 text-sm",
+        noPlaytime && "opacity-60"
+      )}
+    >
+      <div className="min-w-0">
+        <div className="truncate font-medium">{displayName(member)}</div>
+        <div className="text-muted-foreground mt-0.5 flex items-center gap-2 font-mono text-[10px] tracking-wider uppercase">
+          {member.tsr !== null ? (
+            <span>TSR {member.tsr.toLocaleString()}</span>
+          ) : (
+            <span>No TSR</span>
+          )}
+          {member.compositeCsr !== null ? (
+            <span>· CSR {member.compositeCsr.toLocaleString()}</span>
+          ) : null}
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <div className="bg-muted h-1.5 flex-1 overflow-hidden rounded-full">
+          <div
+            className="bg-primary/70 h-full"
+            style={{ width: `${weightPct}%` }}
+          />
+        </div>
+        <span className="text-muted-foreground w-14 text-right font-mono text-[10px] tabular-nums">
+          {noPlaytime ? "—" : `${weightPct}% · ${formatPlaytime(member.playtimeSeconds)}`}
+        </span>
+      </div>
+      <div
+        className={cn(
+          "text-right font-mono text-base tabular-nums",
+          noContribution && "text-muted-foreground"
+        )}
+      >
+        {noContribution ? "—" : member.contribution!.toLocaleString()}
+      </div>
+      <div className="text-muted-foreground text-right font-mono text-[10px] tracking-wider uppercase">
+        {CONTRIBUTION_LABEL[member.contributionType]}
+      </div>
+    </li>
   );
 }
