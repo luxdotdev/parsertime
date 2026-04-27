@@ -13,6 +13,20 @@ export type ScrimNotification = {
   };
 };
 
+export type ScrimRequestNotification = {
+  event: "scrim.request";
+  data: {
+    fromTeamId: number;
+    fromTeamName: string;
+    fromBracketLabel: string;
+    fromTsr: number;
+    toTsr: number;
+    fromRoster: { battletag: string; tsr: number | null }[];
+    message: string;
+    teamId: number; // recipient
+  };
+};
+
 export async function sendScrimNotifications(
   teamId: number,
   notification: ScrimNotification
@@ -71,6 +85,72 @@ export async function sendScrimNotifications(
       });
       Logger.error("Bot notification delivery failed", {
         teamId,
+        event: notification.event,
+        error: (result.reason as Error).message,
+      });
+    } else {
+      botNotificationCounter.add(1, {
+        event: notification.event,
+        status: "delivered",
+      });
+    }
+  }
+}
+
+export async function sendScrimRequestNotification(
+  toTeamId: number,
+  notification: ScrimRequestNotification
+): Promise<void> {
+  const configs = await prisma.botNotificationConfig.findMany({
+    where: { teamIds: { has: toTeamId } },
+  });
+
+  if (configs.length === 0) return;
+
+  const botApiUrl = process.env.BOT_API_URL;
+  const botSecret = process.env.BOT_SECRET;
+
+  if (!botApiUrl || !botSecret) {
+    Logger.error("BOT_API_URL or BOT_SECRET not configured");
+    return;
+  }
+
+  const results = await Promise.allSettled(
+    configs.map(async (config) => {
+      const traceHeaders: Record<string, string> = {};
+      propagation.inject(context.active(), traceHeaders);
+
+      const response = await fetch(`${botApiUrl}/api/notifications/send`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${botSecret}`,
+          ...traceHeaders,
+        },
+        body: JSON.stringify({
+          guildId: config.guildId,
+          channelId: config.channelId,
+          event: notification.event,
+          data: notification.data,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Notification delivery failed: ${response.status} ${response.statusText}`
+        );
+      }
+    })
+  );
+
+  for (const result of results) {
+    if (result.status === "rejected") {
+      botNotificationCounter.add(1, {
+        event: notification.event,
+        status: "failed",
+      });
+      Logger.error("Bot notification delivery failed", {
+        teamId: toTeamId,
         event: notification.event,
         error: (result.reason as Error).message,
       });
