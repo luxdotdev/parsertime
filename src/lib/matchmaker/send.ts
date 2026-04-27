@@ -192,7 +192,7 @@ async function deliverNotifications(input: {
           userId,
           title: `${input.fromTeamName} wants to scrim`,
           description: input.message,
-          href: `/team/${input.fromTeamId}`,
+          href: `/matchmaker/${input.toTeamId}/vs/${input.fromTeamId}`,
         })
         .catch((err) => {
           Logger.error("Matchmaker in-app notification failed", {
