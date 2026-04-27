@@ -1,4 +1,5 @@
 import { Logger } from "@/lib/logger";
+import { recomputeAllTeamTsrSnapshots } from "@/lib/matchmaker/snapshot";
 import {
   discoverAllTrackedChampionships,
   ingestPlayerHistory,
@@ -111,6 +112,9 @@ export async function GET(req: Request): Promise<Response> {
       duration_ms: replay.durationMs,
     };
 
+    const snapshotResult = await recomputeAllTeamTsrSnapshots();
+    wideEvent.team_snapshots = snapshotResult;
+
     wideEvent.status_code = 200;
     wideEvent.outcome = "success";
 
@@ -119,6 +123,7 @@ export async function GET(req: Request): Promise<Response> {
       discovery: wideEvent.discovery,
       reingest: wideEvent.reingest,
       replay: wideEvent.replay,
+      team_snapshots: wideEvent.team_snapshots,
     });
   } catch (error) {
     wideEvent.status_code = 500;
