@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/tooltip";
 import { toHero, toTimestampWithHours } from "@/lib/utils";
 import { heroRoleMapping, type HeroName } from "@/types/heroes";
+import type { Route } from "next";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
@@ -138,7 +139,7 @@ function HeroTile({ hero }: { hero: HeroData }) {
             className={`group relative flex flex-col items-center gap-2 rounded-lg border-2 p-3 transition-all duration-200 hover:scale-105 hover:shadow-lg ${tier.borderColor} ${tier.bgColor}`}
           >
             <Link
-              href={`/leaderboard?hero=${hero.player_hero}`}
+              href={`/leaderboard/csr?hero=${hero.player_hero}` as Route}
               target="_blank"
             >
               <div className="relative h-16 w-16 overflow-hidden rounded-full">

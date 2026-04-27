@@ -140,10 +140,10 @@ export function MainNav({
         </li>
         <li>
           <Link
-            href="/leaderboard"
+            href="/leaderboard/csr"
             className={cn(
               navLinkStyles,
-              pathname === "/leaderboard" && "text-primary"
+              pathname.startsWith("/leaderboard") && "text-primary"
             )}
           >
             {t("leaderboard")}
