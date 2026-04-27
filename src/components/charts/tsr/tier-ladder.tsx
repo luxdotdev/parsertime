@@ -10,8 +10,12 @@ type Props = {
 // The hard 1-5000 floor/ceiling crushes every tier marker into the right
 // half of the bar (Open starts at 2500 = 50%). Clamp the visualization to
 // the band where competitive ratings actually live so the markers spread.
+// 4300 is effectively the empirical ceiling — clearing it would require an
+// OWCS player who beats the soft cap and never loses, which doesn't happen
+// in practice. The OWCS segment runs 3850-4300 and gets 13% of the bar,
+// which is plenty for the variance among active OWCS players.
 const LADDER_MIN = 1500;
-const LADDER_MAX = 5000;
+const LADDER_MAX = 4300;
 
 export function TierLadder({ rating, maxTierReached }: Props) {
   const range = LADDER_MAX - LADDER_MIN;
