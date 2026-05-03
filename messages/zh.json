@@ -1480,7 +1480,8 @@
     },
     "heroStats": {
       "title": "英雄统计数据",
-      "description": "选择一个英雄查看他们的统计数据。统计数据来自所有训练赛的累积。",
+      "pickerTitle": "英雄统计",
+      "description": "选择一名英雄，深入了解其在所有训练赛中的表现。",
       "timeframe": {
         "one-week": "一周",
         "two-weeks": "两周",
@@ -1580,7 +1581,7 @@
         "environmental_kills": "环境击杀",
         "deaths": "死亡",
         "hero_damage_dealt": "英雄伤害"
-      }
+      },
     }
   },
   "teamPage": {

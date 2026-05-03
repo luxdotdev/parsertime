@@ -2566,7 +2566,8 @@
     },
     "heroStats": {
       "title": "Hero Stats",
-      "description": "Select a hero to view their stats. Stats are aggregated from all scrims played.",
+      "pickerTitle": "Hero stats",
+      "description": "Pick a hero to dive into their performance across all scrims.",
       "timeframe": {
         "one-week": "one week",
         "two-weeks": "two weeks",
@@ -2666,7 +2667,7 @@
         "environmental_kills": "Environmental Kills",
         "deaths": "Deaths",
         "hero_damage_dealt": "Hero Damage Dealt"
-      }
+      },
     },
     "playerMetrics": {
       "mvpScore": "Avg MVP Score",

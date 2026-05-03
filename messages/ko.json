@@ -1477,7 +1477,8 @@
     },
     "heroStats": {
       "title": "영웅 통계",
-      "description": "영웅을 선택하여 통계를 확인하세요. 통계는 플레이된 모든 스크림에서 집계됩니다.",
+      "pickerTitle": "영웅 통계",
+      "description": "영웅을 선택하여 모든 스크림에서의 성과를 확인하세요.",
       "timeframe": {
         "one-week": "1주",
         "two-weeks": "2주",
@@ -1577,7 +1578,7 @@
         "environmental_kills": "환경 처치",
         "deaths": "죽음",
         "hero_damage_dealt": "가한 영웅 피해"
-      }
+      },
     }
   },
   "teamPage": {
