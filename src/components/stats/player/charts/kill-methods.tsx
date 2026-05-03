@@ -6,6 +6,9 @@ import { format } from "@/lib/utils";
 import type { Kill } from "@prisma/client";
 import { useTranslations } from "next-intl";
 import {
+  Cell,
+  Pie,
+  PieChart,
   PolarAngleAxis,
   PolarGrid,
   Radar,
@@ -28,6 +31,14 @@ type Data = {
 type Props = {
   data: Kill[];
 };
+
+const PIE_PALETTE = [
+  "var(--chart-1)",
+  "var(--chart-2)",
+  "var(--chart-3)",
+  "var(--chart-4)",
+  "var(--chart-5)",
+];
 
 function CustomTooltip({
   active,
@@ -84,32 +95,60 @@ export function KillMethodChart({ data }: Props) {
     })
   );
 
+  const useFallbackPie = processedData.length <= 2;
+
   return (
     <>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
-          <RadarChart
-            width={500}
-            height={250}
-            margin={{
-              top: 10,
-              right: 40,
-              left: 30,
-              bottom: 10,
-            }}
-            data={processedData}
-          >
-            <PolarGrid />
-            <PolarAngleAxis dataKey="method" />
-            <Radar
-              type="monotone"
-              dataKey="pv"
-              stroke={team2}
-              fill={team2}
-              fillOpacity={0.6}
-            />
-            <Tooltip content={<CustomTooltip />} />
-          </RadarChart>
+          {useFallbackPie ? (
+            <PieChart margin={{ top: 10, right: 40, left: 30, bottom: 10 }}>
+              <Pie
+                data={processedData}
+                dataKey="pv"
+                nameKey="method"
+                outerRadius={100}
+                stroke="var(--card)"
+                strokeWidth={2}
+                label={({ method, pv }) =>
+                  `${method} (${Math.round((pv / data.length) * 100)}%)`
+                }
+                labelLine={false}
+                isAnimationActive={false}
+              >
+                {processedData.map((entry, idx) => (
+                  <Cell
+                    key={entry.method}
+                    fill={PIE_PALETTE[idx % PIE_PALETTE.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip content={<CustomTooltip />} />
+            </PieChart>
+          ) : (
+            <RadarChart
+              width={500}
+              height={250}
+              margin={{
+                top: 10,
+                right: 40,
+                left: 30,
+                bottom: 10,
+              }}
+              data={processedData}
+            >
+              <PolarGrid />
+              <PolarAngleAxis dataKey="method" />
+              <Radar
+                type="monotone"
+                dataKey="pv"
+                stroke={team2}
+                fill={team2}
+                fillOpacity={0.6}
+              />
+              <Tooltip content={<CustomTooltip />} />
+            </RadarChart>
+          )}
         </ResponsiveContainer>
       </CardContent>
       <CardFooter>
