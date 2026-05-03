@@ -1458,10 +1458,21 @@
       },
       "sections": {
         "overview": "개요",
+        "breakdown": "성과 분석",
         "form": "폼",
         "maps": "맵 기록",
         "habits": "습관",
         "combat": "전투"
+      },
+      "performanceBreakdown": {
+        "description": "선택한 영웅의 CSR 리더보드 내 순위와 동일한 동료 풀과의 Z-점수 비교입니다.",
+        "selectOne": "위의 영웅 포트폴리오에서 영웅 하나를 선택하면 SR 분포와 Z-점수 분석을 볼 수 있습니다.",
+        "loading": "분석 데이터를 불러오는 중…",
+        "error": "이 영웅의 분석 데이터를 불러올 수 없습니다.",
+        "notRanked": "{hero}에 대한 비교 데이터가 부족합니다 (플레이어당 60초 이상 플레이된 맵이 10개 이상 필요).",
+        "distributionLabel": "SR 분포 · {hero}",
+        "vsLabel": "다른 {hero} 플레이어와의 Z-점수 비교",
+        "explainer": "각 축은 선택한 영웅에서 이 플레이어가 평균보다 얼마나 표준편차만큼 위(양수) 또는 아래(음수)에 있는지를 보여줍니다. CSR 리더보드와 동일한 데이터를 사용합니다."
       }
     },
     "heroStats": {

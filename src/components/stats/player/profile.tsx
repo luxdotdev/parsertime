@@ -8,6 +8,7 @@ import { RolePieChart } from "@/components/stats/player/charts/role-pie-chart";
 import { StatPer10Chart } from "@/components/stats/player/charts/stat-per-10";
 import { WinsPerMapTypeChart } from "@/components/stats/player/charts/wins-per-map-type";
 import { HeroPortfolio } from "@/components/stats/player/hero-portfolio";
+import { PerformanceBreakdown } from "@/components/stats/player/performance-breakdown";
 import type { Timeframe } from "@/components/stats/player/range-picker";
 import { Link } from "@/components/ui/link";
 import {
@@ -217,6 +218,22 @@ export function PlayerProfile({
           />
         </StatPanel>
       </section>
+
+      {heroes.length === 1 && (
+        <section aria-labelledby="profile-breakdown">
+          <SectionHeader
+            id="profile-breakdown"
+            title={t("sections.breakdown")}
+            description={t("performanceBreakdown.description")}
+          />
+          <StatPanel>
+            <PerformanceBreakdown
+              playerName={playerName}
+              selectedHeroes={heroes}
+            />
+          </StatPanel>
+        </section>
+      )}
 
       <section aria-labelledby="profile-form">
         <SectionHeader id="profile-form" title={t("sections.form")} />

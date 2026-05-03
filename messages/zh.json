@@ -1461,10 +1461,21 @@
       },
       "sections": {
         "overview": "概览",
+        "breakdown": "表现细分",
         "form": "表现趋势",
         "maps": "地图记录",
         "habits": "习惯",
         "combat": "对战"
+      },
+      "performanceBreakdown": {
+        "description": "该玩家在所选英雄 CSR 排行榜上的位置，以及与同行对比的 Z-score 细分。",
+        "selectOne": "在上方英雄表现中选择一名英雄即可查看 SR 分布与 Z-score 细分。",
+        "loading": "正在加载细分数据…",
+        "error": "无法加载该英雄的细分数据。",
+        "notRanked": "{hero} 的同行数据还不够（每位玩家需要至少 10 张地图且每张地图至少 60 秒）。",
+        "distributionLabel": "SR 分布 · {hero}",
+        "vsLabel": "与其他 {hero} 玩家的 Z-score 对比",
+        "explainer": "每个轴显示该玩家在所选英雄上相比平均值高出（正值）或低出（负值）多少个标准差。数据与 CSR 排行榜一致。"
       }
     },
     "heroStats": {

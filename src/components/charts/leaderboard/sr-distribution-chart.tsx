@@ -35,6 +35,8 @@ type LeaderboardPlayer = {
 type Props = {
   leaderboardData: LeaderboardPlayer[];
   selectedPlayer: LeaderboardPlayer;
+  showOtherPlayers?: boolean;
+  showPlayerAsLine?: boolean;
 };
 
 type PlayerPointData = {
@@ -94,6 +96,8 @@ function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
 export function SRDistributionChart({
   leaderboardData,
   selectedPlayer,
+  showOtherPlayers = true,
+  showPlayerAsLine = false,
 }: Props) {
   const chartData = useMemo(() => {
     const srValues = leaderboardData.map((p) => p.composite_sr);
@@ -121,6 +125,12 @@ export function SRDistributionChart({
       isSelected: player.player_name === selectedPlayer.player_name,
     }));
 
+    const playerSR = selectedPlayer.composite_sr;
+    const playerPercent = Math.max(
+      0,
+      Math.min(100, ((playerSR - min) / (max - min)) * 100)
+    );
+
     return {
       bellCurveData: normalizedBellCurve,
       playerPoints,
@@ -128,6 +138,7 @@ export function SRDistributionChart({
       stdDev,
       min,
       max,
+      playerPercent,
     };
   }, [leaderboardData, selectedPlayer]);
 
@@ -173,15 +184,43 @@ export function SRDistributionChart({
               <stop offset="5%" stopColor="var(--chart-1)" stopOpacity={0.8} />
               <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0.1} />
             </linearGradient>
+            <linearGradient id="colorSplitFill" x1="0" y1="0" x2="1" y2="0">
+              <stop
+                offset={`${chartData.playerPercent}%`}
+                stopColor="var(--chart-1)"
+                stopOpacity={0.5}
+              />
+              <stop
+                offset={`${chartData.playerPercent}%`}
+                stopColor="var(--muted-foreground)"
+                stopOpacity={0.15}
+              />
+            </linearGradient>
+            <linearGradient id="colorSplitStroke" x1="0" y1="0" x2="1" y2="0">
+              <stop
+                offset={`${chartData.playerPercent}%`}
+                stopColor="var(--chart-1)"
+                stopOpacity={1}
+              />
+              <stop
+                offset={`${chartData.playerPercent}%`}
+                stopColor="var(--muted-foreground)"
+                stopOpacity={0.45}
+              />
+            </linearGradient>
           </defs>
 
           <Area
             data={chartData.bellCurveData}
             type="monotone"
             dataKey="frequency"
-            stroke="var(--chart-1)"
-            fill="url(#colorFrequency)"
-            name="Distribution"
+            stroke={
+              showPlayerAsLine ? "url(#colorSplitStroke)" : "var(--chart-1)"
+            }
+            fill={
+              showPlayerAsLine ? "url(#colorSplitFill)" : "url(#colorFrequency)"
+            }
+            name={showPlayerAsLine ? "Achieved · Potential" : "Distribution"}
             isAnimationActive={false}
           />
 
@@ -195,22 +234,41 @@ export function SRDistributionChart({
             }}
           />
 
-          <Scatter
-            data={otherPoints}
-            dataKey="value"
-            fill="var(--chart-2)"
-            name="Other Players"
-            shape="circle"
-          />
+          {showPlayerAsLine && (
+            <ReferenceLine
+              x={selectedPlayer.composite_sr}
+              stroke="var(--primary)"
+              strokeWidth={2}
+              label={{
+                value: `${selectedPlayer.player_name} (${selectedPlayer.composite_sr})`,
+                position: "insideTopRight",
+                fill: "var(--primary)",
+                fontSize: 12,
+                offset: 24,
+              }}
+            />
+          )}
 
-          <Scatter
-            data={selectedPoint ? [selectedPoint] : []}
-            dataKey="value"
-            fill="var(--chart-5)"
-            name="Selected Player"
-            shape="circle"
-            r={8}
-          />
+          {showOtherPlayers && (
+            <Scatter
+              data={otherPoints}
+              dataKey="value"
+              fill="var(--chart-2)"
+              name="Other Players"
+              shape="circle"
+            />
+          )}
+
+          {!showPlayerAsLine && (
+            <Scatter
+              data={selectedPoint ? [selectedPoint] : []}
+              dataKey="value"
+              fill="var(--chart-5)"
+              name="Selected Player"
+              shape="circle"
+              r={8}
+            />
+          )}
         </ComposedChart>
       </ResponsiveContainer>
 

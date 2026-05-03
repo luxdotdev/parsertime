@@ -2530,10 +2530,21 @@
       },
       "sections": {
         "overview": "Overview",
+        "breakdown": "Performance breakdown",
         "form": "Form",
         "maps": "Map record",
         "habits": "Habits",
         "combat": "Combat"
+      },
+      "performanceBreakdown": {
+        "description": "How this player ranks on the CSR leaderboard for the chosen hero, plus a Z-score breakdown vs the same peer pool.",
+        "selectOne": "Pick a single hero in the portfolio above to see the SR distribution and Z-score breakdown.",
+        "loading": "Loading breakdown…",
+        "error": "Could not load the breakdown for this hero.",
+        "notRanked": "{hero} doesn't have enough peer data yet (needs 10+ maps with 60s+ playtime per player).",
+        "distributionLabel": "SR distribution · {hero}",
+        "vsLabel": "Z-score vs other {hero} players",
+        "explainer": "Each axis shows how many standard deviations above (positive) or below (negative) the average this player sits on the selected hero. Pulls from the same data as the CSR leaderboard."
       }
     },
     "compareStats": {
