@@ -2,6 +2,7 @@ import { DmgDoneVsDmgTakenChart } from "@/components/charts/player/dmg-done-vs-d
 import { DmgTakenVsHealingReceivedChart } from "@/components/charts/player/dmg-taken-vs-healing-chart";
 import { KillfeedTable } from "@/components/map/killfeed-table";
 import { MVPCard } from "@/components/player/mvp-card";
+import { SectionHeader } from "@/components/section-header";
 import { StatBlock, StatGrid, StatPanel } from "@/components/player/stat-panel";
 import { CardIcon } from "@/components/ui/card-icon";
 import {
@@ -289,30 +290,6 @@ export async function PlayerAnalytics({
         </StatPanel>
       </section>
     </main>
-  );
-}
-
-function SectionHeader({
-  id,
-  title,
-  description,
-}: {
-  id: string;
-  title: string;
-  description?: string;
-}) {
-  return (
-    <header className="mb-5 flex flex-col gap-1">
-      <h2
-        id={id}
-        className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.08em] uppercase"
-      >
-        {title}
-      </h2>
-      {description ? (
-        <p className="text-muted-foreground text-xs">{description}</p>
-      ) : null}
-    </header>
   );
 }
 
