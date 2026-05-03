@@ -49,9 +49,9 @@ export const make: Effect.Effect<HeroServiceInterface> = Effect.gen(
       return Effect.gen(function* () {
         const mapDataIds = yield* Effect.tryPromise({
           try: () =>
-            prisma.scrim.findMany({
-              where: { id: { in: scrimIds } },
-              select: { maps: true },
+            prisma.mapData.findMany({
+              where: { scrimId: { in: scrimIds } },
+              select: { id: true },
             }),
           catch: (error) =>
             new HeroQueryError({
@@ -61,10 +61,8 @@ export const make: Effect.Effect<HeroServiceInterface> = Effect.gen(
         });
 
         const mapDataIdSet = new Set<number>();
-        mapDataIds.forEach((scrim) => {
-          scrim.maps.forEach((map) => {
-            mapDataIdSet.add(map.id);
-          });
+        mapDataIds.forEach((mapData) => {
+          mapDataIdSet.add(mapData.id);
         });
 
         return Array.from(mapDataIdSet);
