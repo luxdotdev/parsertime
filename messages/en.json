@@ -2503,6 +2503,37 @@
         "environmental_kills": "Environmental Kills",
         "deaths": "Deaths",
         "hero_damage_dealt": "Hero Damage Dealt"
+      },
+      "identity": {
+        "scrims": "Scrims",
+        "games": "Maps",
+        "hours": "Hours",
+        "winrate": "Win rate",
+        "winrateSub": "{wins} of {total} maps won",
+        "scopeTimeframe": "Across {scrims} scrims · last {timeframe}",
+        "scopeAllTime": "Across {scrims} scrims · all time",
+        "scopeCustom": "Across {scrims} scrims · {from} → {to}",
+        "scopeCustomEmpty": "Pick a date range to see stats"
+      },
+      "heroPortfolio": {
+        "title": "Hero portfolio",
+        "description": "Most played heroes in this window. Click any to filter the rest of the page.",
+        "empty": "No heroes played in this window",
+        "games": "Maps",
+        "finalBlows": "FBs",
+        "deaths": "Deaths",
+        "role": {
+          "tank": "Tank",
+          "damage": "Damage",
+          "support": "Support"
+        }
+      },
+      "sections": {
+        "overview": "Overview",
+        "form": "Form",
+        "maps": "Map record",
+        "habits": "Habits",
+        "combat": "Combat"
       }
     },
     "compareStats": {

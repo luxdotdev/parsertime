@@ -674,6 +674,7 @@ export default async function ProfilePage(
         </TabsContent>
         <TabsContent value="statistics" className="space-y-4">
           <RangePicker
+            playerName={name}
             permissions={permissions}
             data={data}
             stats={stats}

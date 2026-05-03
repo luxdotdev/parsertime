@@ -1434,6 +1434,37 @@
         "environmental_kills": "环境击杀",
         "deaths": "死亡",
         "hero_damage_dealt": "英雄伤害"
+      },
+      "identity": {
+        "scrims": "训练赛",
+        "games": "地图",
+        "hours": "小时",
+        "winrate": "胜率",
+        "winrateSub": "{wins}/{total} 张地图获胜",
+        "scopeTimeframe": "共 {scrims} 场训练赛 · 过去 {timeframe}",
+        "scopeAllTime": "共 {scrims} 场训练赛 · 全部时间",
+        "scopeCustom": "共 {scrims} 场训练赛 · {from} → {to}",
+        "scopeCustomEmpty": "选择日期范围以查看统计数据"
+      },
+      "heroPortfolio": {
+        "title": "英雄表现",
+        "description": "在此时间范围内最常使用的英雄。点击任意一个以筛选页面其余内容。",
+        "empty": "在此时间范围内未使用任何英雄",
+        "games": "地图",
+        "finalBlows": "最后一击",
+        "deaths": "死亡",
+        "role": {
+          "tank": "坦克",
+          "damage": "输出",
+          "support": "支援"
+        }
+      },
+      "sections": {
+        "overview": "概览",
+        "form": "表现趋势",
+        "maps": "地图记录",
+        "habits": "习惯",
+        "combat": "对战"
       }
     },
     "heroStats": {

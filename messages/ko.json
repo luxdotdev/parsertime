@@ -1431,6 +1431,37 @@
         "environmental_kills": "환경 처치",
         "deaths": "죽음",
         "hero_damage_dealt": "가한 영웅 피해"
+      },
+      "identity": {
+        "scrims": "스크림",
+        "games": "맵",
+        "hours": "시간",
+        "winrate": "승률",
+        "winrateSub": "{total}개 중 {wins}개 승리",
+        "scopeTimeframe": "스크림 {scrims}회 · 지난 {timeframe}",
+        "scopeAllTime": "스크림 {scrims}회 · 전체 기간",
+        "scopeCustom": "스크림 {scrims}회 · {from} → {to}",
+        "scopeCustomEmpty": "통계를 보려면 기간을 선택하세요"
+      },
+      "heroPortfolio": {
+        "title": "영웅 포트폴리오",
+        "description": "이 기간 동안 가장 많이 플레이한 영웅입니다. 클릭하여 페이지 전체에 필터를 적용하세요.",
+        "empty": "이 기간 동안 플레이한 영웅이 없습니다",
+        "games": "맵",
+        "finalBlows": "마지막 일격",
+        "deaths": "죽음",
+        "role": {
+          "tank": "탱커",
+          "damage": "딜러",
+          "support": "지원"
+        }
+      },
+      "sections": {
+        "overview": "개요",
+        "form": "폼",
+        "maps": "맵 기록",
+        "habits": "습관",
+        "combat": "전투"
       }
     },
     "heroStats": {

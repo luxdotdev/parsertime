@@ -178,26 +178,25 @@ export default async function PlayerStats(
     allPlayerDeaths = result.allPlayerDeaths;
   } catch {
     return (
-      <div className="flex-1 space-y-4 p-8 pt-6">
-        <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">
+      <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold tracking-tight">{name}</h1>
+          <p className="text-muted-foreground mt-1 text-sm">
             {t("title", { name, suffix: name.endsWith("s") ? "'" : "'s" })}
-          </h2>
+          </p>
         </div>
 
-        <Card className="h-[70vh] border-none">
-          <div className="flex h-full items-center justify-center">
-            <div className="text-center text-xl font-bold text-red-500">
+        <Card className="h-[60vh] border-none">
+          <div className="flex h-full flex-col items-center justify-center gap-2">
+            <p className="text-destructive text-base font-semibold">
               {t("statsFail", { name })}
-              <div className="text-center">
-                <Link
-                  href="/stats"
-                  className="text-muted-foreground text-base font-normal"
-                >
-                  &larr; {t("back")}
-                </Link>
-              </div>
-            </div>
+            </p>
+            <Link
+              href="/stats"
+              className="text-muted-foreground text-sm font-normal"
+            >
+              &larr; {t("back")}
+            </Link>
           </div>
         </Card>
       </div>
@@ -205,14 +204,13 @@ export default async function PlayerStats(
   }
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">
-          {t("title", { name, suffix: name.endsWith("s") ? "'" : "'s" })}
-        </h2>
+    <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold tracking-tight">{name}</h1>
       </div>
 
       <RangePicker
+        playerName={name}
         permissions={permissions}
         data={data}
         stats={allPlayerStats}
