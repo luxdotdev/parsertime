@@ -2690,7 +2690,7 @@
         "topPlayers": "Top players",
         "topCount": "top {count}",
         "notRanked": "Not enough peer data on this hero yet (needs 10+ maps with 60s+ playtime per player).",
-        "explainer": "CSR is computed across all-time data — independent of the timeframe filter above. Click a player to see their full profile."
+        "explainer": "CSR is computed from the selected timeframe above. Click a player to see their full profile."
       }
     },
     "playerMetrics": {

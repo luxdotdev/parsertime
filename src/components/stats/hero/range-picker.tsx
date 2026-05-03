@@ -1,7 +1,6 @@
 "use client";
 
 import { HeroProfile } from "@/components/stats/hero/profile";
-import type { TalentPlayer } from "@/components/stats/hero/talent-panel";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Link } from "@/components/ui/link";
@@ -46,7 +45,6 @@ export function RangePicker({
   kills,
   deaths,
   hero,
-  csrLeaderboard,
 }: {
   permissions: { [key: string]: boolean };
   data: Record<Timeframe, Scrim[]>;
@@ -54,7 +52,6 @@ export function RangePicker({
   kills: Kill[];
   deaths: Kill[];
   hero: HeroName;
-  csrLeaderboard: TalentPlayer[];
 }) {
   const t = useTranslations("statsPage.heroStats.rangePicker");
 
@@ -203,7 +200,6 @@ export function RangePicker({
         stats={stats}
         kills={kills}
         deaths={deaths}
-        csrLeaderboard={csrLeaderboard}
       />
     </main>
   );

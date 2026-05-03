@@ -2,13 +2,10 @@
 
 import { SectionHeader } from "@/components/section-header";
 import { StatBlock, StatGrid, StatPanel } from "@/components/player/stat-panel";
-import {
-  TalentPanel,
-  type TalentPlayer,
-} from "@/components/stats/hero/talent-panel";
+import { TalentPanel } from "@/components/stats/hero/talent-panel";
 import { KillMethodChart } from "@/components/stats/player/charts/kill-methods";
 import { StatPer10Chart } from "@/components/stats/player/charts/stat-per-10";
-import type { Timeframe } from "@/components/stats/player/range-picker";
+import type { Timeframe } from "@/components/stats/hero/range-picker";
 import { Link } from "@/components/ui/link";
 import {
   Select,
@@ -22,6 +19,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { buildHeroTalentLeaderboard } from "@/lib/hero-talent-leaderboard";
 import type { NonMappableStat, Stat } from "@/lib/player-charts";
 import { cn, toHero, useHeroNames } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
@@ -56,7 +54,6 @@ export function HeroProfile({
   stats,
   kills,
   deaths,
-  csrLeaderboard,
 }: {
   hero: HeroName;
   timeframe: Timeframe;
@@ -65,7 +62,6 @@ export function HeroProfile({
   stats: PlayerStat[];
   kills: Kill[];
   deaths: Kill[];
-  csrLeaderboard: TalentPlayer[];
 }) {
   const t = useTranslations("statsPage.heroStats");
   const heroNames = useHeroNames();
@@ -103,6 +99,10 @@ export function HeroProfile({
   const filteredDeaths = useMemo(
     () => deaths.filter((d) => scrimIds.has(d.scrimId)),
     [deaths, scrimIds]
+  );
+  const csrLeaderboard = useMemo(
+    () => buildHeroTalentLeaderboard(filteredStats, hero),
+    [filteredStats, hero]
   );
 
   const identity = useMemo(() => {
@@ -187,18 +187,16 @@ export function HeroProfile({
         </StatPanel>
       </section>
 
-      {csrLeaderboard.length >= 3 && (
-        <section aria-labelledby="hero-talent">
-          <SectionHeader
-            id="hero-talent"
-            title={t("sections.talent")}
-            description={t("talent.description")}
-          />
-          <StatPanel>
-            <TalentPanel hero={hero} leaderboard={csrLeaderboard} />
-          </StatPanel>
-        </section>
-      )}
+      <section aria-labelledby="hero-talent">
+        <SectionHeader
+          id="hero-talent"
+          title={t("sections.talent")}
+          description={t("talent.description")}
+        />
+        <StatPanel>
+          <TalentPanel hero={hero} leaderboard={csrLeaderboard} />
+        </StatPanel>
+      </section>
 
       <section aria-labelledby="hero-form">
         <SectionHeader id="hero-form" title={t("sections.form")} />

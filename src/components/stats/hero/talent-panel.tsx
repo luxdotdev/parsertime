@@ -2,18 +2,14 @@
 
 import { SRDistributionChart } from "@/components/charts/leaderboard/sr-distribution-chart";
 import { Link } from "@/components/ui/link";
+import type { TalentLeaderboardPlayer } from "@/lib/hero-talent-leaderboard";
 import { cn, toHero } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";
 import type { Route } from "next";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
-export type TalentPlayer = {
-  composite_sr: number;
-  player_name: string;
-  rank: number;
-  percentile: string;
-};
+export type TalentPlayer = TalentLeaderboardPlayer;
 
 export function TalentPanel({
   hero,

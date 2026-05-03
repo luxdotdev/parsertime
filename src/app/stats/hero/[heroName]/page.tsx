@@ -2,7 +2,6 @@ import {
   RangePicker,
   type Timeframe,
 } from "@/components/stats/hero/range-picker";
-import type { TalentPlayer } from "@/components/stats/hero/talent-panel";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
 import { HeroService } from "@/data/hero";
@@ -10,7 +9,6 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
-import { getCompositeSRLeaderboard } from "@/lib/hero-rating";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { translateHeroName } from "@/lib/utils";
@@ -142,40 +140,24 @@ export default async function HeroStats(
   let allHeroStats: PlayerStat[];
   let allHeroKills: Kill[];
   let allHeroDeaths: Kill[];
-  let csrLeaderboard: TalentPlayer[] = [];
 
   try {
-    const [statsResult, leaderboardResult] = await Promise.all([
-      AppRuntime.runPromise(
-        Effect.all(
-          [
-            HeroService.pipe(
-              Effect.flatMap((svc) => svc.getAllStatsForHero(allScrimIds, hero))
-            ),
-            HeroService.pipe(
-              Effect.flatMap((svc) => svc.getAllKillsForHero(allScrimIds, hero))
-            ),
-            HeroService.pipe(
-              Effect.flatMap((svc) =>
-                svc.getAllDeathsForHero(allScrimIds, hero)
-              )
-            ),
-          ],
-          { concurrency: "unbounded" }
-        )
-      ),
-      getCompositeSRLeaderboard({
-        hero: hero as HeroName,
-        limit: 10000,
-      }).catch(() => []),
-    ]);
-    [allHeroStats, allHeroKills, allHeroDeaths] = statsResult;
-    csrLeaderboard = leaderboardResult.map((row) => ({
-      composite_sr: Number(row.composite_sr),
-      player_name: row.player_name,
-      rank: Number(row.rank),
-      percentile: row.percentile,
-    }));
+    [allHeroStats, allHeroKills, allHeroDeaths] = await AppRuntime.runPromise(
+      Effect.all(
+        [
+          HeroService.pipe(
+            Effect.flatMap((svc) => svc.getAllStatsForHero(allScrimIds, hero))
+          ),
+          HeroService.pipe(
+            Effect.flatMap((svc) => svc.getAllKillsForHero(allScrimIds, hero))
+          ),
+          HeroService.pipe(
+            Effect.flatMap((svc) => svc.getAllDeathsForHero(allScrimIds, hero))
+          ),
+        ],
+        { concurrency: "unbounded" }
+      )
+    );
   } catch {
     return (
       <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
@@ -217,7 +199,6 @@ export default async function HeroStats(
         kills={allHeroKills}
         deaths={allHeroDeaths}
         hero={hero as HeroName}
-        csrLeaderboard={csrLeaderboard}
       />
     </div>
   );
