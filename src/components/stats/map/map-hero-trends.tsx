@@ -42,7 +42,7 @@ import {
 import { $Enums } from "@prisma/client";
 import { CheckIcon, ChevronsUpDownIcon, LayersIcon } from "lucide-react";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 
 type RoleFilter = "All" | RoleName | SubroleName;
 type SortKey = "playtime" | "pickRate" | "winrate" | "trend";
@@ -100,6 +100,7 @@ export function MapHeroTrends({
   const [roleFilter, setRoleFilter] = useState<RoleFilter>("All");
   const [sortKey, setSortKey] = useState<SortKey>("pickRate");
   const [mapPickerOpen, setMapPickerOpen] = useState(false);
+  const mapPickerListboxId = useId();
 
   const selectedGroup = useMemo(() => {
     if (selectedMap === null) return allMaps;
@@ -186,6 +187,7 @@ export function MapHeroTrends({
               variant="outline"
               role="combobox"
               aria-expanded={mapPickerOpen}
+              aria-controls={mapPickerListboxId}
               className="h-9 w-full justify-between sm:w-[280px]"
             >
               {isAllMaps ? (
@@ -216,7 +218,11 @@ export function MapHeroTrends({
               <ChevronsUpDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[280px] p-0" align="start">
+          <PopoverContent
+            id={mapPickerListboxId}
+            className="w-[280px] p-0"
+            align="start"
+          >
             <Command>
               <CommandInput placeholder="Search maps..." />
               <CommandList>
