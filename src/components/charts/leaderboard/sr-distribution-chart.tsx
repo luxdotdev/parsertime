@@ -103,7 +103,7 @@ export function SRDistributionChart({
     const srValues = leaderboardData.map((p) => p.composite_sr);
     const mean = calculateMean(srValues);
     const stdDev = calculateStandardDeviation(srValues, mean);
-    const { min, max } = getSRRange(mean, stdDev);
+    const { min, max } = getSRRange(mean, stdDev, srValues);
 
     const bellCurveData = generateBellCurveData(mean, stdDev, min, max, 100);
 
