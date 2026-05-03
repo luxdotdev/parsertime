@@ -34,7 +34,7 @@ type LeaderboardPlayer = {
 
 type Props = {
   leaderboardData: LeaderboardPlayer[];
-  selectedPlayer: LeaderboardPlayer;
+  selectedPlayer?: LeaderboardPlayer;
   showOtherPlayers?: boolean;
   showPlayerAsLine?: boolean;
 };
@@ -122,10 +122,10 @@ export function SRDistributionChart({
       player_name: player.player_name,
       rank: player.rank,
       percentile: player.percentile,
-      isSelected: player.player_name === selectedPlayer.player_name,
+      isSelected: player.player_name === selectedPlayer?.player_name,
     }));
 
-    const playerSR = selectedPlayer.composite_sr;
+    const playerSR = selectedPlayer?.composite_sr ?? mean;
     const playerPercent = Math.max(
       0,
       Math.min(100, ((playerSR - min) / (max - min)) * 100)
@@ -234,7 +234,7 @@ export function SRDistributionChart({
             }}
           />
 
-          {showPlayerAsLine && (
+          {showPlayerAsLine && selectedPlayer && (
             <ReferenceLine
               x={selectedPlayer.composite_sr}
               stroke="var(--primary)"
@@ -259,7 +259,7 @@ export function SRDistributionChart({
             />
           )}
 
-          {!showPlayerAsLine && (
+          {!showPlayerAsLine && selectedPlayer && (
             <Scatter
               data={selectedPoint ? [selectedPoint] : []}
               dataKey="value"
@@ -283,16 +283,22 @@ export function SRDistributionChart({
             ±{Math.round(chartData.stdDev)}
           </p>
         </div>
-        <div>
-          <p className="text-muted-foreground">Selected Player SR</p>
-          <p className="text-lg font-semibold">{selectedPlayer.composite_sr}</p>
-        </div>
-        <div>
-          <p className="text-muted-foreground">Percentile</p>
-          <p className="text-lg font-semibold">
-            {parseFloat(selectedPlayer.percentile).toFixed(1)}%
-          </p>
-        </div>
+        {selectedPlayer && (
+          <>
+            <div>
+              <p className="text-muted-foreground">Selected Player SR</p>
+              <p className="text-lg font-semibold">
+                {selectedPlayer.composite_sr}
+              </p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Percentile</p>
+              <p className="text-lg font-semibold">
+                {parseFloat(selectedPlayer.percentile).toFixed(1)}%
+              </p>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

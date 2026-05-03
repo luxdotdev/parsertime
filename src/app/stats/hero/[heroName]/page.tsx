@@ -2,6 +2,7 @@ import {
   RangePicker,
   type Timeframe,
 } from "@/components/stats/hero/range-picker";
+import type { TalentPlayer } from "@/components/stats/hero/talent-panel";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
 import { HeroService } from "@/data/hero";
@@ -9,6 +10,7 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
+import { getCompositeSRLeaderboard } from "@/lib/hero-rating";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { translateHeroName } from "@/lib/utils";
@@ -140,46 +142,60 @@ export default async function HeroStats(
   let allHeroStats: PlayerStat[];
   let allHeroKills: Kill[];
   let allHeroDeaths: Kill[];
+  let csrLeaderboard: TalentPlayer[] = [];
 
   try {
-    [allHeroStats, allHeroKills, allHeroDeaths] = await AppRuntime.runPromise(
-      Effect.all(
-        [
-          HeroService.pipe(
-            Effect.flatMap((svc) => svc.getAllStatsForHero(allScrimIds, hero))
-          ),
-          HeroService.pipe(
-            Effect.flatMap((svc) => svc.getAllKillsForHero(allScrimIds, hero))
-          ),
-          HeroService.pipe(
-            Effect.flatMap((svc) => svc.getAllDeathsForHero(allScrimIds, hero))
-          ),
-        ],
-        { concurrency: "unbounded" }
-      )
-    );
+    const [statsResult, leaderboardResult] = await Promise.all([
+      AppRuntime.runPromise(
+        Effect.all(
+          [
+            HeroService.pipe(
+              Effect.flatMap((svc) => svc.getAllStatsForHero(allScrimIds, hero))
+            ),
+            HeroService.pipe(
+              Effect.flatMap((svc) => svc.getAllKillsForHero(allScrimIds, hero))
+            ),
+            HeroService.pipe(
+              Effect.flatMap((svc) =>
+                svc.getAllDeathsForHero(allScrimIds, hero)
+              )
+            ),
+          ],
+          { concurrency: "unbounded" }
+        )
+      ),
+      getCompositeSRLeaderboard({
+        hero: hero as HeroName,
+        limit: 10000,
+      }).catch(() => []),
+    ]);
+    [allHeroStats, allHeroKills, allHeroDeaths] = statsResult;
+    csrLeaderboard = leaderboardResult.map((row) => ({
+      composite_sr: Number(row.composite_sr),
+      player_name: row.player_name,
+      rank: Number(row.rank),
+      percentile: row.percentile,
+    }));
   } catch {
     return (
-      <div className="flex-1 space-y-4 p-8 pt-6">
-        <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">
-            {t("header", { hero: translatedHeroName })}
-          </h2>
+      <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold tracking-tight">
+            {translatedHeroName}
+          </h1>
         </div>
 
-        <Card className="h-[70vh] border-none">
-          <div className="flex h-full items-center justify-center">
-            <div className="text-center text-xl font-bold text-red-500">
+        <Card className="h-[60vh] border-none">
+          <div className="flex h-full flex-col items-center justify-center gap-2">
+            <p className="text-destructive text-base font-semibold">
               {t("heroFail", { hero: translatedHeroName })}
-              <div className="text-center">
-                <Link
-                  href="/stats"
-                  className="text-muted-foreground text-base font-normal"
-                >
-                  &larr; {t("back")}
-                </Link>
-              </div>
-            </div>
+            </p>
+            <Link
+              href="/stats/hero"
+              className="text-muted-foreground text-sm font-normal"
+            >
+              &larr; {t("back")}
+            </Link>
           </div>
         </Card>
       </div>
@@ -187,11 +203,11 @@ export default async function HeroStats(
   }
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">
-          {t("header", { hero: translatedHeroName })}
-        </h2>
+    <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold tracking-tight">
+          {translatedHeroName}
+        </h1>
       </div>
 
       <RangePicker
@@ -201,6 +217,7 @@ export default async function HeroStats(
         kills={allHeroKills}
         deaths={allHeroDeaths}
         hero={hero as HeroName}
+        csrLeaderboard={csrLeaderboard}
       />
     </div>
   );

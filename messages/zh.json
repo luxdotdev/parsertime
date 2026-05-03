@@ -1582,6 +1582,30 @@
         "deaths": "死亡",
         "hero_damage_dealt": "英雄伤害"
       },
+      "identity": {
+        "games": "场次",
+        "totalKills": "击杀",
+        "totalDeaths": "死亡",
+        "kd": "K / D",
+        "scopeTimeframe": "共 {scrims} 场训练赛 · 过去 {timeframe}",
+        "scopeAllTime": "共 {scrims} 场训练赛 · 全部时间",
+        "scopeCustom": "共 {scrims} 场训练赛 · {from} → {to}",
+        "scopeCustomEmpty": "选择日期范围以查看统计数据"
+      },
+      "sections": {
+        "overview": "概览",
+        "talent": "玩家池",
+        "form": "表现趋势",
+        "combat": "对战"
+      },
+      "talent": {
+        "description": "符合 CSR 资格的玩家在此英雄上的分布，以及 CSR 排名前列的玩家。",
+        "distribution": "SR 分布",
+        "topPlayers": "顶尖玩家",
+        "topCount": "前 {count} 名",
+        "notRanked": "该英雄的同行数据还不够（每位玩家至少需要 10 张地图且每张至少 60 秒）。",
+        "explainer": "CSR 基于所有历史数据计算，不受上方时间筛选影响。点击玩家可查看其完整资料。"
+      }
     }
   },
   "teamPage": {

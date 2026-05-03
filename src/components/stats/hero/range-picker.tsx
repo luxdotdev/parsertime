@@ -1,6 +1,7 @@
 "use client";
 
-import { Statistics } from "@/components/stats/hero/statistics";
+import { HeroProfile } from "@/components/stats/hero/profile";
+import type { TalentPlayer } from "@/components/stats/hero/talent-panel";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Link } from "@/components/ui/link";
@@ -45,6 +46,7 @@ export function RangePicker({
   kills,
   deaths,
   hero,
+  csrLeaderboard,
 }: {
   permissions: { [key: string]: boolean };
   data: Record<Timeframe, Scrim[]>;
@@ -52,6 +54,7 @@ export function RangePicker({
   kills: Kill[];
   deaths: Kill[];
   hero: HeroName;
+  csrLeaderboard: TalentPlayer[];
 }) {
   const t = useTranslations("statsPage.heroStats.rangePicker");
 
@@ -79,8 +82,8 @@ export function RangePicker({
   }
 
   return (
-    <main className="space-y-2">
-      <div className="items-center gap-2 space-y-2 md:flex md:space-y-0">
+    <main className="space-y-6">
+      <div className="flex flex-wrap items-center gap-2">
         <Select onValueChange={onTimeframeChange} defaultValue="one-week">
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder={t("selectTime")} />
@@ -153,55 +156,54 @@ export function RangePicker({
         </Select>
 
         {timeframe === "custom" && (
-          <div className="grid gap-2">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  id="date"
-                  variant="outline"
-                  className={cn(
-                    "w-[300px] justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date?.from ? (
-                    date.to ? (
-                      <>
-                        {format(date.from, "LLL dd, y")} -{" "}
-                        {format(date.to, "LLL dd, y")}
-                      </>
-                    ) : (
-                      format(date.from, "LLL dd, y")
-                    )
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                id="date"
+                variant="outline"
+                className={cn(
+                  "w-[280px] justify-start text-left font-normal",
+                  !date && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date?.from ? (
+                  date.to ? (
+                    <>
+                      {format(date.from, "LLL dd, y")} -{" "}
+                      {format(date.to, "LLL dd, y")}
+                    </>
                   ) : (
-                    <span>{t("pickDate")}</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  initialFocus
-                  mode="range"
-                  defaultMonth={date?.from}
-                  selected={date}
-                  onSelect={setDate}
-                  numberOfMonths={2}
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
+                    format(date.from, "LLL dd, y")
+                  )
+                ) : (
+                  <span>{t("pickDate")}</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={date?.from}
+                selected={date}
+                onSelect={setDate}
+                numberOfMonths={2}
+              />
+            </PopoverContent>
+          </Popover>
         )}
       </div>
 
-      <Statistics
+      <HeroProfile
+        hero={hero}
         timeframe={timeframe}
         date={date}
         scrims={data}
         stats={stats}
         kills={kills}
         deaths={deaths}
-        hero={hero}
+        csrLeaderboard={csrLeaderboard}
       />
     </main>
   );

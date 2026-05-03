@@ -2668,6 +2668,30 @@
         "deaths": "Deaths",
         "hero_damage_dealt": "Hero Damage Dealt"
       },
+      "identity": {
+        "games": "Games",
+        "totalKills": "Kills",
+        "totalDeaths": "Deaths",
+        "kd": "K / D",
+        "scopeTimeframe": "Across {scrims} scrims · last {timeframe}",
+        "scopeAllTime": "Across {scrims} scrims · all time",
+        "scopeCustom": "Across {scrims} scrims · {from} → {to}",
+        "scopeCustomEmpty": "Pick a date range to see stats"
+      },
+      "sections": {
+        "overview": "Overview",
+        "talent": "Talent pool",
+        "form": "Form",
+        "combat": "Combat"
+      },
+      "talent": {
+        "description": "Where the CSR-eligible player pool sits on this hero, plus the top performers by CSR.",
+        "distribution": "SR distribution",
+        "topPlayers": "Top players",
+        "topCount": "top {count}",
+        "notRanked": "Not enough peer data on this hero yet (needs 10+ maps with 60s+ playtime per player).",
+        "explainer": "CSR is computed across all-time data — independent of the timeframe filter above. Click a player to see their full profile."
+      }
     },
     "playerMetrics": {
       "mvpScore": "Avg MVP Score",
