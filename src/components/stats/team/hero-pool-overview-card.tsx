@@ -27,7 +27,7 @@ export function HeroPoolOverviewCard({ heroPool }: HeroPoolOverviewCardProps) {
   if (!hasData) {
     return (
       <section className="space-y-4">
-        <SectionHeader eyebrow="Heroes · Pool" title={t("title")} />
+        <SectionHeader eyebrow="Heroes · Pool overview" title={t("title")} />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
@@ -43,7 +43,7 @@ export function HeroPoolOverviewCard({ heroPool }: HeroPoolOverviewCardProps) {
   return (
     <div className="space-y-8">
       <section className="space-y-4">
-        <SectionHeader eyebrow="Heroes · Pool" title={t("title")} />
+        <SectionHeader eyebrow="Heroes · Pool overview" title={t("title")} />
         <div className="grid gap-4 md:grid-cols-4">
           <div className="space-y-1">
             <div className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
