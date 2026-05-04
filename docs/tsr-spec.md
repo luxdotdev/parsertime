@@ -12,11 +12,16 @@ Two distinct ratings live side-by-side:
 - **TSR** (Tournament Skill Rating) — per-player rating grounded in
   FACEIT-hosted Overwatch 2 tournament results. Aggregates to **Team TSR** for
   scrim matchmaking.
+- **Adjusted CSR** — an additive, display-only per-hero rating in
+  `src/lib/adjusted-csr.ts`. It keeps Raw CSR's stat model but compares each
+  player to peers in their current TSR tier before anchoring the result to that
+  tier's TSR prior.
 
-The two are deliberately not coupled. Raw CSR's bias against players who face
-elite opponents is exactly why it cannot feed into TSR even as a prior. The
-only point of contact is the **predicted-TSR fallback** for unrostered players
-(see Unrostered Player Handling).
+Raw CSR and TSR are deliberately not coupled. Raw CSR's bias against players who
+face elite opponents is exactly why it cannot feed into TSR even as a prior. The
+only point of contact for TSR computation is the **predicted-TSR fallback** for
+unrostered players (see Unrostered Player Handling). Adjusted CSR may read TSR
+as context, but it never feeds back into TSR, Team TSR, or predicted TSR.
 
 ---
 
@@ -31,6 +36,42 @@ A new lightweight derived value:
 - **Player composite CSR** = mean of the player's two most-played heroes'
   Raw CSRs over the active window. Used only by the unrostered-player TSR
   prediction.
+
+## Adjusted CSR
+
+Adjusted CSR is an additive leaderboard metric for answering:
+
+> How does this player's hero performance compare against peers in the same
+> current TSR tier?
+
+For each hero, players are bucketed by current TSR rating using the same tier
+anchors as TSR priors:
+
+| Current TSR rating | Adjusted CSR anchor |
+| ------------------ | ------------------- |
+| < 2800             | 2500 (Open)         |
+| 2800–3099          | 2800 (Advanced)     |
+| 3100–3449          | 3100 (Expert)       |
+| 3450–3849          | 3450 (Masters)      |
+| ≥ 3850             | 3850 (OWCS)         |
+
+Within each hero and TSR tier, Parsertime computes the same role-weighted
+per-10 stat Z-score as Raw CSR, but the baseline is the player's TSR-tier peer
+pool instead of the global hero pool.
+
+```
+peer_delta   = peer_z * 450 / (1 + |peer_z| / 3)
+adjusted_CSR = clamp(tier_anchor + peer_delta, 1, 5000)
+```
+
+Small peer buckets are blended toward the global hero baseline:
+
+```
+confidence = peer_count / (peer_count + 25)
+```
+
+This keeps sparse OWCS or hero-specific cohorts from producing unstable
+ratings while still rewarding or penalizing performance against harder lobbies.
 
 ---
 

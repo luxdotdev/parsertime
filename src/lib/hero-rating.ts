@@ -64,7 +64,7 @@ type CompositeLeaderboardParams = {
   customWeights?: Record<string, number>;
 };
 
-function getStatAlias(column: string): string {
+export function getStatAlias(column: string): string {
   const aliases: Record<string, string> = {
     eliminations: "elims",
     final_blows: "fb",
@@ -87,27 +87,7 @@ function buildCompositeSRQuery({
   customWeights,
 }: CompositeLeaderboardParams): Prisma.Sql {
   const role = heroRoleMapping[hero] || "Damage";
-  let statConfigs;
-
-  switch (hero) {
-    case "Mercy":
-      statConfigs = MERCY_STAT_CONFIG;
-      break;
-    case "Juno":
-    case "Wuyang":
-      statConfigs = NON_HEALING_SUPPORT_STAT_CONFIGS;
-      break;
-    default:
-      statConfigs = ROLE_STAT_CONFIGS[role];
-      break;
-  }
-
-  if (customWeights) {
-    statConfigs = statConfigs.map((stat) => ({
-      ...stat,
-      weight: customWeights[stat.column] ?? stat.weight,
-    }));
-  }
+  const statConfigs = getHeroStatConfigs(hero, customWeights);
 
   const statColumns = statConfigs.map((s) => s.column).join(",\n          ");
 
@@ -230,6 +210,34 @@ function buildCompositeSRQuery({
       rank
     LIMIT ${limit}
   `;
+}
+
+export function getHeroStatConfigs(
+  hero: HeroName,
+  customWeights?: Record<string, number>
+): StatConfig[] {
+  const role = heroRoleMapping[hero] || "Damage";
+  let statConfigs: StatConfig[];
+
+  switch (hero) {
+    case "Mercy":
+      statConfigs = MERCY_STAT_CONFIG;
+      break;
+    case "Juno":
+    case "Wuyang":
+      statConfigs = NON_HEALING_SUPPORT_STAT_CONFIGS;
+      break;
+    default:
+      statConfigs = ROLE_STAT_CONFIGS[role];
+      break;
+  }
+
+  if (!customWeights) return statConfigs;
+
+  return statConfigs.map((stat) => ({
+    ...stat,
+    weight: customWeights[stat.column] ?? stat.weight,
+  }));
 }
 
 type CompositeSRLeaderboardResult = {
