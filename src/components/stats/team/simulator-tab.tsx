@@ -1,14 +1,8 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
+import { SectionHeader } from "@/components/stats/team/section-header";
+import { StatRibbon } from "@/components/stats/team/stat-ribbon";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   Command,
   CommandEmpty,
@@ -23,7 +17,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
   TooltipContent,
@@ -158,34 +151,66 @@ export function SimulatorTab({ ctx }: SimulatorTabProps) {
 
   if (ctx.totalGames === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Win Probability Simulator</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">
-            No game data available for the selected time period. Play some
-            scrims to unlock the simulator.
-          </p>
-        </CardContent>
-      </Card>
+      <section className="space-y-4">
+        <SectionHeader
+          eyebrow="Simulator · Win probability"
+          title="Win probability simulator"
+        />
+        <p className="text-muted-foreground text-sm">
+          No game data available for the selected time period. Play some scrims
+          to unlock the simulator.
+        </p>
+      </section>
     );
   }
 
+  const basePct = (ctx.baseWinrate * 100).toFixed(1);
+
   return (
-    <div className="space-y-4">
-      <div className="grid gap-4 lg:grid-cols-[1fr_400px]">
-        <ScenarioPanel
-          ctx={ctx}
-          scenario={scenario}
-          dispatch={dispatch}
-          hasAnyInput={hasAnyInput}
-        />
-        <PredictionResultCard
-          result={result}
-          ctx={ctx}
-          hasInput={hasAnyInput}
-        />
+    <div className="space-y-12">
+      <StatRibbon
+        cells={[
+          {
+            label: "Maps tracked",
+            value: String(ctx.totalGames),
+            sub: "historical sample",
+            emphasis: true,
+          },
+          {
+            label: "Base winrate",
+            value: `${basePct}%`,
+            sub: "before scenario",
+          },
+          {
+            label: "Heroes scored",
+            value: String(ctx.availableHeroes.length),
+            sub: "available picks",
+          },
+          {
+            label: "Maps scored",
+            value: String(ctx.availableMaps.length),
+            sub: "available picks",
+          },
+        ]}
+        columns={4}
+      />
+
+      <div className="grid gap-x-10 gap-y-8 lg:grid-cols-12">
+        <div className="lg:col-span-7">
+          <ScenarioPanel
+            ctx={ctx}
+            scenario={scenario}
+            dispatch={dispatch}
+            hasAnyInput={hasAnyInput}
+          />
+        </div>
+        <div className="lg:col-span-5">
+          <PredictionResultPanel
+            result={result}
+            ctx={ctx}
+            hasInput={hasAnyInput}
+          />
+        </div>
       </div>
     </div>
   );
@@ -207,31 +232,26 @@ function ScenarioPanel({
   const heroNames = useHeroNames();
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-start justify-between gap-2">
-          <div>
-            <CardTitle>Scenario Setup</CardTitle>
-            <CardDescription className="mt-1">
-              Configure bans, map, and composition to see how your estimated win
-              rate changes.
-            </CardDescription>
-          </div>
-          {hasAnyInput && (
+    <section className="space-y-6">
+      <SectionHeader
+        eyebrow="Simulator · Scenario"
+        title="Scenario setup"
+        description="Configure bans, map, and composition to see how your estimated win rate changes."
+        rightSlot={
+          hasAnyInput ? (
             <Button
               variant="ghost"
               size="sm"
               onClick={() => dispatch({ type: "RESET" })}
-              className="shrink-0"
               aria-label="Reset all scenario inputs"
             >
               <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
               Reset
             </Button>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-6">
+          ) : null
+        }
+      />
+      <div className="space-y-6">
         <BanSection
           label="Enemy bans against us"
           description="Heroes the opponent is banning from your pool"
@@ -243,8 +263,6 @@ function ScenarioPanel({
           excluded={[...scenario.ourBans, ...scenario.ourComposition]}
           heroNames={heroNames}
           maxSlots={4}
-          colorClass=""
-          emptySlotClass="hover:border-muted-foreground/40"
         />
 
         <BanSection
@@ -261,19 +279,13 @@ function ScenarioPanel({
           ]}
           heroNames={heroNames}
           maxSlots={4}
-          colorClass=""
-          emptySlotClass="hover:border-muted-foreground/40"
         />
-
-        <Separator />
 
         <MapCombobox
           availableMaps={ctx.availableMaps}
           selectedMap={scenario.selectedMap}
           onSelect={(map) => dispatch({ type: "SET_MAP", map })}
         />
-
-        <Separator />
 
         <CompositionSection
           label="Our composition"
@@ -285,8 +297,6 @@ function ScenarioPanel({
           excluded={[...scenario.enemyBansAgainstUs, ...scenario.ourBans]}
           heroNames={heroNames}
         />
-
-        <Separator />
 
         <CompositionSection
           label="Enemy composition"
@@ -300,8 +310,8 @@ function ScenarioPanel({
           excluded={[...scenario.enemyBansAgainstUs, ...scenario.ourBans]}
           heroNames={heroNames}
         />
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 
@@ -316,8 +326,6 @@ type BanSectionProps = {
   excluded: string[];
   heroNames: Map<string, string>;
   maxSlots: number;
-  colorClass: string;
-  emptySlotClass: string;
 };
 
 function BanSection({
@@ -331,8 +339,6 @@ function BanSection({
   excluded,
   heroNames,
   maxSlots,
-  colorClass,
-  emptySlotClass,
 }: BanSectionProps) {
   const emptySlots = maxSlots - selected.length;
 
@@ -340,12 +346,12 @@ function BanSection({
     <div className="space-y-2">
       <div className="flex items-center gap-1.5">
         {icon}
-        <span className="text-sm font-medium">{label}</span>
+        <span className="font-mono text-[11px] tracking-[0.16em] uppercase">
+          {label}
+        </span>
       </div>
       <p className="text-muted-foreground text-xs">{description}</p>
-      <div
-        className={cn("flex flex-wrap gap-2 rounded-md border p-2", colorClass)}
-      >
+      <div className="border-border flex flex-wrap gap-2 rounded-md border p-2">
         {selected.map((hero) => (
           <HeroSlot
             key={hero}
@@ -361,7 +367,6 @@ function BanSection({
             excluded={[...excluded, ...selected]}
             heroNames={heroNames}
             onSelect={onAdd}
-            emptySlotClass={emptySlotClass}
           />
         ))}
       </div>
@@ -378,7 +383,6 @@ type CompositionSectionProps = {
   available: HeroName[];
   excluded: string[];
   heroNames: Map<string, string>;
-  colorClass?: string;
 };
 
 function CompositionSection({
@@ -390,22 +394,21 @@ function CompositionSection({
   available,
   excluded,
   heroNames,
-  colorClass,
 }: CompositionSectionProps) {
   const emptySlots = 5 - selected.length;
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-1.5">
-        <span className="text-sm font-medium">{label}</span>
-        <span className="text-muted-foreground text-xs">
+      <div className="flex flex-wrap items-baseline gap-x-2">
+        <span className="font-mono text-[11px] tracking-[0.16em] uppercase">
+          {label}
+        </span>
+        <span className="text-muted-foreground font-mono text-xs tabular-nums">
           ({selected.length}/5)
         </span>
       </div>
       <p className="text-muted-foreground text-xs">{description}</p>
-      <div
-        className={cn("flex flex-wrap gap-2 rounded-md border p-2", colorClass)}
-      >
+      <div className="border-border flex flex-wrap gap-2 rounded-md border p-2">
         {selected.map((hero) => (
           <HeroSlot
             key={hero}
@@ -421,7 +424,6 @@ function CompositionSection({
             excluded={[...excluded, ...selected]}
             heroNames={heroNames}
             onSelect={onAdd}
-            emptySlotClass="hover:border-muted-foreground/40"
           />
         ))}
       </div>
@@ -446,7 +448,7 @@ function HeroSlot({ hero, heroNames, onRemove }: HeroSlotProps) {
           type="button"
           onClick={onRemove}
           aria-label={`Remove ${displayName}`}
-          className="group relative h-11 w-11 overflow-hidden rounded-md border border-transparent transition-all duration-150 ease-out hover:ring-2 hover:ring-red-400/70 focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:outline-none"
+          className="group focus-visible:ring-destructive hover:ring-destructive/70 relative h-11 w-11 overflow-hidden rounded-md border border-transparent transition-all duration-150 ease-out hover:ring-2 focus-visible:ring-2 focus-visible:outline-none"
         >
           <Image
             src={`/heroes/${slug}.png`}
@@ -461,7 +463,7 @@ function HeroSlot({ hero, heroNames, onRemove }: HeroSlotProps) {
         </button>
       </TooltipTrigger>
       <TooltipContent side="bottom">
-        {displayName} — click to remove
+        {displayName} (click to remove)
       </TooltipContent>
     </Tooltip>
   );
@@ -472,7 +474,6 @@ type HeroPickerSlotProps = {
   excluded: string[];
   heroNames: Map<string, string>;
   onSelect: (hero: string) => void;
-  emptySlotClass: string;
 };
 
 function HeroPickerSlot({
@@ -480,7 +481,6 @@ function HeroPickerSlot({
   excluded,
   heroNames,
   onSelect,
-  emptySlotClass,
 }: HeroPickerSlotProps) {
   const excludedSet = new Set(excluded);
   const pickable = available.filter((h) => !excludedSet.has(h));
@@ -504,9 +504,8 @@ function HeroPickerSlot({
           type="button"
           aria-label="Add hero"
           className={cn(
-            "focus-visible:ring-ring flex h-11 w-11 items-center justify-center rounded-md border-2 border-dashed transition-colors duration-150 focus-visible:ring-2 focus-visible:outline-none",
-            "text-muted-foreground hover:text-foreground",
-            emptySlotClass
+            "focus-visible:ring-ring border-border hover:border-muted-foreground/40 flex h-11 w-11 items-center justify-center rounded-md border-2 border-dashed transition-colors duration-150 focus-visible:ring-2 focus-visible:outline-none",
+            "text-muted-foreground hover:text-foreground"
           )}
         >
           <span className="text-lg leading-none">+</span>
@@ -523,7 +522,7 @@ function HeroPickerSlot({
               if (byRole[role].length === 0) return null;
               return (
                 <div key={role}>
-                  <p className="text-muted-foreground mb-1.5 text-xs font-semibold tracking-wide uppercase">
+                  <p className="text-muted-foreground mb-1.5 font-mono text-[10px] tracking-[0.16em] uppercase">
                     {role}
                   </p>
                   <div className="flex flex-wrap gap-1.5">
@@ -613,7 +612,9 @@ function MapCombobox({
 
   return (
     <div className="space-y-2">
-      <span className="text-sm font-medium">Map</span>
+      <span className="font-mono text-[11px] tracking-[0.16em] uppercase">
+        Map
+      </span>
       <p className="text-muted-foreground text-xs">
         Select the map being played
       </p>
@@ -627,13 +628,13 @@ function MapCombobox({
             aria-label="Select a map"
             className="w-full justify-between font-normal"
           >
-            <span className="truncate">{selectedMap ?? "Select a map…"}</span>
+            <span className="truncate">{selectedMap ?? "Select a map..."}</span>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-72 p-0" align="start">
           <Command>
-            <CommandInput placeholder="Search maps…" />
+            <CommandInput placeholder="Search maps..." />
             <CommandList id="map-combobox-listbox">
               <CommandEmpty>No maps found.</CommandEmpty>
               <CommandItem
@@ -685,109 +686,110 @@ function MapCombobox({
   );
 }
 
-type PredictionResultCardProps = {
+type PredictionResultPanelProps = {
   result: PredictionResult;
   ctx: SimulatorContext;
   hasInput: boolean;
 };
 
-function PredictionResultCard({
+function PredictionResultPanel({
   result,
   ctx,
   hasInput,
-}: PredictionResultCardProps) {
+}: PredictionResultPanelProps) {
   const pct = (result.estimatedWinrate * 100).toFixed(1);
   const basePct = (ctx.baseWinrate * 100).toFixed(1);
   const delta = result.estimatedWinrate - ctx.baseWinrate;
   const deltaSign = delta >= 0 ? "+" : "";
 
+  const confidenceTone: Record<string, string> = {
+    high: "bg-primary/15 text-primary",
+    medium: "bg-muted text-muted-foreground",
+    low: "bg-destructive/15 text-destructive",
+  };
+  const confidenceLabel: Record<string, string> = {
+    high: "High confidence",
+    medium: "Medium confidence",
+    low: "Low confidence",
+  };
+
   return (
-    <Card className="flex flex-col">
-      <CardHeader>
-        <CardTitle>Predicted Win Rate</CardTitle>
-        <CardDescription>
-          Based on your team&apos;s historical data across {ctx.totalGames} maps
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-1 flex-col gap-6">
+    <section className="space-y-6">
+      <SectionHeader
+        eyebrow="Simulator · Prediction"
+        title="Predicted win rate"
+        description={`Based on your team's historical data across ${ctx.totalGames} maps`}
+      />
+      <div className="space-y-4">
         <div className="flex items-baseline gap-3">
           <span
-            className="text-primary font-mono text-5xl leading-none font-bold tabular-nums"
-            style={{ fontVariantNumeric: "tabular-nums" }}
+            className="text-primary font-mono text-5xl leading-none font-semibold tabular-nums"
             aria-label={`Estimated win rate: ${pct}%`}
           >
             {pct}%
           </span>
-          <div className="flex flex-col gap-1">
-            <ConfidenceBadge confidence={result.confidence} />
+          <div className="space-y-1">
+            <span
+              className={cn(
+                "inline-block rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase",
+                confidenceTone[result.confidence]
+              )}
+            >
+              {confidenceLabel[result.confidence]}
+            </span>
             {hasInput && (
-              <span
-                className="text-muted-foreground font-mono text-xs font-medium tabular-nums"
-                style={{ fontVariantNumeric: "tabular-nums" }}
-              >
+              <p className="text-muted-foreground font-mono text-xs tabular-nums">
                 {deltaSign}
-                {(delta * 100).toFixed(1)}% vs. base ({basePct}%)
-              </span>
+                {(delta * 100).toFixed(1)}pp vs base ({basePct}%)
+              </p>
             )}
           </div>
         </div>
 
         {result.topInsight && (
-          <div className="bg-muted/50 flex items-start gap-2 rounded-md border px-3 py-2 text-sm">
-            <Info className="text-muted-foreground mt-0.5 h-4 w-4 shrink-0" />
+          <div className="text-muted-foreground flex items-start gap-2 text-sm">
+            <Info className="mt-0.5 h-4 w-4 shrink-0" />
             <span className="text-foreground">{result.topInsight}</span>
           </div>
         )}
+      </div>
 
-        <BreakdownChart result={result} hasInput={hasInput} />
+      <BreakdownTable result={result} hasInput={hasInput} />
 
-        {result.warnings.length > 0 && (
-          <div className="space-y-1.5">
-            <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-              Warnings
-            </p>
+      {result.warnings.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+            Warnings
+          </p>
+          <ul className="space-y-1.5">
             {result.warnings.map((warning) => (
-              <div key={warning} className="flex items-start gap-1.5 text-xs">
+              <li key={warning} className="flex items-start gap-1.5 text-xs">
                 <AlertTriangle className="text-primary mt-0.5 h-3.5 w-3.5 shrink-0" />
                 <span className="text-muted-foreground">{warning}</span>
-              </div>
+              </li>
             ))}
-          </div>
-        )}
+          </ul>
+        </div>
+      )}
 
-        {!hasInput && (
-          <p className="text-muted-foreground mt-auto text-center text-sm">
-            Configure a scenario on the left to see how parameters affect your
-            win probability.
-          </p>
-        )}
-      </CardContent>
-    </Card>
+      {!hasInput && (
+        <p className="text-muted-foreground text-sm">
+          Configure a scenario on the left to see how parameters affect your win
+          probability.
+        </p>
+      )}
+    </section>
   );
 }
 
-function ConfidenceBadge({
-  confidence,
-}: {
-  confidence: "low" | "medium" | "high";
-}) {
-  const config = {
-    high: { label: "High confidence", variant: "default" as const },
-    medium: { label: "Medium confidence", variant: "secondary" as const },
-    low: { label: "Low confidence", variant: "destructive" as const },
-  };
-  const { label, variant } = config[confidence];
-  return <Badge variant={variant}>{label}</Badge>;
-}
-
-type BreakdownChartProps = {
+type BreakdownTableProps = {
   result: PredictionResult;
   hasInput: boolean;
 };
 
 const MAX_BAR_DELTA_PP = 30;
 
-function BreakdownChart({ result, hasInput }: BreakdownChartProps) {
+function BreakdownTable({ result, hasInput }: BreakdownTableProps) {
   const { breakdown } = result;
 
   const rows: {
@@ -857,11 +859,11 @@ function BreakdownChart({ result, hasInput }: BreakdownChartProps) {
   const scale = Math.max(maxAbsDelta, 5);
 
   return (
-    <div className="space-y-2.5">
-      <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+    <div className="space-y-3">
+      <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
         Breakdown
       </p>
-      <div className="space-y-2" role="list" aria-label="Win rate breakdown">
+      <div className="space-y-1.5" role="list" aria-label="Win rate breakdown">
         {rows.map((row) => {
           if (row.isBase) {
             return <BaseRow key={row.label} value={row.value} />;
@@ -885,9 +887,8 @@ function BreakdownChart({ result, hasInput }: BreakdownChartProps) {
               key={row.label}
               role="listitem"
               className={cn(
-                "flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors duration-150",
-                isLargest &&
-                  "bg-muted/50 ring-muted-foreground/20 ring-1 ring-inset"
+                "flex items-center gap-2 rounded-sm px-2 py-1.5 transition-colors duration-150",
+                isLargest && "bg-muted/40"
               )}
             >
               <div className="flex w-28 shrink-0 items-center gap-1 text-xs">
@@ -897,11 +898,15 @@ function BreakdownChart({ result, hasInput }: BreakdownChartProps) {
                 </span>
               </div>
               <div className="flex flex-1 items-center gap-2">
-                <div className="bg-muted relative h-2 flex-1 overflow-hidden rounded-full">
+                <div className="bg-muted relative h-1.5 flex-1 overflow-hidden rounded-full">
                   <div
                     className={cn(
                       "h-full rounded-full transition-all",
-                      isActive ? "bg-foreground/70" : "bg-muted-foreground/30"
+                      isActive
+                        ? isPositive
+                          ? "bg-primary/70"
+                          : "bg-destructive/70"
+                        : "bg-muted-foreground/30"
                     )}
                     style={{
                       width: isActive ? `${barWidthPct}%` : "2px",
@@ -918,7 +923,6 @@ function BreakdownChart({ result, hasInput }: BreakdownChartProps) {
                     "w-14 text-right font-mono text-xs font-medium tabular-nums",
                     isActive ? "text-foreground" : "text-muted-foreground"
                   )}
-                  style={{ fontVariantNumeric: "tabular-nums" }}
                 >
                   {isActive
                     ? `${isPositive ? "+" : ""}${(row.value * 100).toFixed(1)}%`
@@ -929,10 +933,10 @@ function BreakdownChart({ result, hasInput }: BreakdownChartProps) {
           );
         })}
       </div>
-      <div className="text-muted-foreground mt-1 text-xs">
+      <p className="text-muted-foreground text-xs">
         Bar scale: ±{Math.ceil(scale)}pp max. Bars are capped at ±
         {MAX_BAR_DELTA_PP}pp.
-      </div>
+      </p>
     </div>
   );
 }
@@ -941,23 +945,20 @@ function BaseRow({ value }: { value: number }) {
   return (
     <div
       role="listitem"
-      className="flex items-center gap-2 rounded-md px-2 py-1.5"
+      className="flex items-center gap-2 rounded-sm px-2 py-1.5"
     >
       <div className="text-muted-foreground w-28 shrink-0 text-xs">
         Base win rate
       </div>
       <div className="flex flex-1 items-center gap-2">
-        <div className="bg-muted relative h-2 flex-1 overflow-hidden rounded-full">
+        <div className="bg-muted relative h-1.5 flex-1 overflow-hidden rounded-full">
           <div
             className="bg-muted-foreground/50 h-full rounded-full"
             style={{ width: `${value * 100}%` }}
             aria-hidden="true"
           />
         </div>
-        <span
-          className="text-muted-foreground w-14 text-right text-xs font-medium tabular-nums"
-          style={{ fontVariantNumeric: "tabular-nums" }}
-        >
+        <span className="text-muted-foreground w-14 text-right font-mono text-xs font-medium tabular-nums">
           {(value * 100).toFixed(1)}%
         </span>
       </div>
