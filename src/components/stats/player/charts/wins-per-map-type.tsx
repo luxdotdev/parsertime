@@ -1,8 +1,6 @@
 "use client";
 
-import { CardContent, CardFooter } from "@/components/ui/card";
 import type { Winrate } from "@/data/scrim/types";
-import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import { type MapName, mapNameToMapTypeMapping } from "@/types/map";
 import { useTranslations } from "next-intl";
 import {
@@ -25,6 +23,8 @@ type MapTypeData = {
   wins: number;
   total: number;
 };
+
+const RADAR_COLOR = "var(--chart-1)";
 
 function processMapWinrates(
   mapWinrates: Winrate,
@@ -69,14 +69,15 @@ function CustomTooltip({
   payload,
   label,
 }: TooltipProps<ValueType, NameType>) {
-  const { team1 } = useColorblindMode();
-
   if (active && payload?.length) {
     return (
       <div className="bg-popover text-popover-foreground border-border animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 overflow-hidden rounded-md border px-3 py-1.5 text-xs shadow-md">
         <h3 className="text-base font-bold">{label}</h3>
         <p className="text-sm">
-          <span style={{ color: team1 }}>
+          <span
+            className="font-mono tabular-nums"
+            style={{ color: RADAR_COLOR }}
+          >
             {(payload[0].value as number).toFixed(2)}%
           </span>
         </p>
@@ -94,40 +95,43 @@ type Props = {
 export function WinsPerMapTypeChart({ data }: Props) {
   const t = useTranslations("statsPage.playerStats.winrateMapType");
   const processedData = processMapWinrates(data, t);
-  const { team1 } = useColorblindMode();
 
   return (
-    <>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={400}>
-          <RadarChart
-            width={500}
-            height={400}
-            margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-            data={processedData}
-          >
-            <PolarGrid />
-            <PolarAngleAxis dataKey="mapType" />
-            <PolarRadiusAxis angle={45} domain={[0, 100]} opacity={0.6} />
-            <Radar
-              name={t("chartName")}
-              dataKey="winrate"
-              stroke={team1}
-              fill={team1}
-              fillOpacity={0.6}
-            />
-            <Tooltip content={<CustomTooltip />} />
-          </RadarChart>
-        </ResponsiveContainer>
-      </CardContent>
-      <CardFooter>
-        <p className="text-muted-foreground text-sm">{t("footer")}</p>
-      </CardFooter>
-    </>
+    <div className="space-y-3">
+      <ResponsiveContainer width="100%" height={400}>
+        <RadarChart
+          width={500}
+          height={400}
+          margin={{
+            top: 5,
+            right: 30,
+            left: 20,
+            bottom: 5,
+          }}
+          data={processedData}
+        >
+          <PolarGrid stroke="var(--border)" />
+          <PolarAngleAxis
+            dataKey="mapType"
+            tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
+          />
+          <PolarRadiusAxis
+            angle={45}
+            domain={[0, 100]}
+            opacity={0.6}
+            tick={{ fill: "var(--muted-foreground)", fontSize: 10 }}
+          />
+          <Radar
+            name={t("chartName")}
+            dataKey="winrate"
+            stroke={RADAR_COLOR}
+            fill={RADAR_COLOR}
+            fillOpacity={0.6}
+          />
+          <Tooltip content={<CustomTooltip />} />
+        </RadarChart>
+      </ResponsiveContainer>
+      <p className="text-muted-foreground text-sm">{t("footer")}</p>
+    </div>
   );
 }

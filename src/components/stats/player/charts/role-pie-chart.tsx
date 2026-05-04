@@ -1,7 +1,6 @@
 "use client";
 
-import { CardContent, CardFooter } from "@/components/ui/card";
-import { cn, toTimestampWithHours } from "@/lib/utils";
+import { toTimestampWithHours } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import type { PlayerStat } from "@prisma/client";
 import { useTranslations } from "next-intl";
@@ -23,24 +22,31 @@ type Data = {
   pv: number;
 }[];
 
-const COLORS = ["#3b82f6", "#ef4444", "#22c55e"] as const;
+const TANK_COLOR = "var(--chart-1)";
+const DAMAGE_COLOR = "var(--chart-3)";
+const SUPPORT_COLOR = "var(--chart-5)";
+
+function colorForRole(
+  name: string,
+  t: ReturnType<typeof useTranslations>
+): string {
+  if (name === t("tank")) return TANK_COLOR;
+  if (name === t("damage")) return DAMAGE_COLOR;
+  return SUPPORT_COLOR;
+}
 
 function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
   const t = useTranslations("statsPage.playerStats.timeSpent");
 
   if (active && payload?.length) {
+    const name = payload[0].name as string;
     return (
       <div className="bg-popover text-popover-foreground border-border animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 overflow-hidden rounded-md border px-3 py-1.5 text-xs shadow-md">
-        <h3 className="text-base font-bold">{payload[0].name}</h3>
+        <h3 className="text-base font-bold">{name}</h3>
         <p className="text-sm">
           <span
-            className={cn(
-              payload[0].name === t("tank")
-                ? "text-blue-500"
-                : payload[0].name === t("damage")
-                  ? "text-red-500"
-                  : "text-green-500"
-            )}
+            className="font-mono tabular-nums"
+            style={{ color: colorForRole(name, t) }}
           >
             {(payload[0].value as number).toFixed(2)}%
           </span>
@@ -110,9 +116,10 @@ export function RolePieChart({ data }: Props) {
       <text
         x={x}
         y={y}
-        fill="white"
+        fill="var(--primary-foreground)"
         textAnchor={x > cx ? "start" : "end"}
         dominantBaseline="central"
+        className="font-mono text-[11px] tabular-nums"
       >
         {`${(percent * 100).toFixed(0)}%`}
       </text>
@@ -120,56 +127,47 @@ export function RolePieChart({ data }: Props) {
   }
 
   return (
-    <>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={250}>
-          <PieChart
-            width={500}
-            height={250}
-            margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
+    <div className="space-y-3">
+      <ResponsiveContainer width="100%" height={250}>
+        <PieChart
+          width={500}
+          height={250}
+          margin={{
+            top: 5,
+            right: 30,
+            left: 20,
+            bottom: 5,
+          }}
+        >
+          <Pie
+            data={pieData}
+            type="monotone"
+            dataKey="pv"
+            label={renderCustomizedLabel}
+            labelLine={false}
+            stroke="var(--card)"
+            strokeWidth={2}
           >
-            <Pie
-              data={pieData}
-              type="monotone"
-              dataKey="pv"
-              fill="#82ca9d"
-              label={renderCustomizedLabel}
-              labelLine={false}
-            >
-              {pieData.map((entry, index) => (
-                <Cell
-                  // oxlint-disable-next-line react/no-array-index-key
-                  key={`cell-${index}`}
-                  fill={
-                    entry.name === t("tank")
-                      ? COLORS[0]
-                      : entry.name === t("damage")
-                        ? COLORS[1]
-                        : COLORS[2]
-                  }
-                />
-              ))}
-            </Pie>
-            <Tooltip content={<CustomTooltip />} />
-          </PieChart>
-        </ResponsiveContainer>
-      </CardContent>
-      <CardFooter>
-        <p className="text-muted-foreground text-sm">
-          {t.rich("footer", {
-            span: (chunks) => <span className="text-foreground">{chunks}</span>,
-            toTimestampWithHours: toTimestampWithHours(totalTimePlayed),
-            timePerRole: pieData
-              .map((entry) => `${entry.name}: ${entry.pv.toFixed(2)}%`)
-              .join(", "),
-          })}
-        </p>
-      </CardFooter>
-    </>
+            {pieData.map((entry) => (
+              <Cell key={entry.name} fill={colorForRole(entry.name, t)} />
+            ))}
+          </Pie>
+          <Tooltip content={<CustomTooltip />} />
+        </PieChart>
+      </ResponsiveContainer>
+      <p className="text-muted-foreground line-clamp-2 text-sm">
+        {t.rich("footer", {
+          span: (chunks) => (
+            <span className="text-foreground font-mono tabular-nums">
+              {chunks}
+            </span>
+          ),
+          toTimestampWithHours: toTimestampWithHours(totalTimePlayed),
+          timePerRole: pieData
+            .map((entry) => `${entry.name}: ${entry.pv.toFixed(2)}%`)
+            .join(", "),
+        })}
+      </p>
+    </div>
   );
 }
