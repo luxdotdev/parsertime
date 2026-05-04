@@ -3,34 +3,62 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+const tabTriggerClass =
+  "text-muted-foreground hover:text-foreground data-[state=active]:text-foreground border-0 border-b-2 border-b-transparent data-[state=active]:border-b-primary rounded-none bg-transparent px-0 pb-3 pt-1 font-mono text-[11px] tracking-[0.16em] uppercase shadow-none data-[state=active]:shadow-none data-[state=active]:bg-transparent dark:bg-transparent dark:data-[state=active]:bg-transparent dark:data-[state=active]:border-b-primary transition-colors";
+
 export default function TeamStatsLoading() {
   return (
-    <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
-      {/* Header Section Skeleton */}
-      <div className="mb-6 flex items-center gap-4">
-        <Skeleton className="h-[100px] w-[100px] rounded-full" />
-        <div className="flex flex-col space-y-2">
-          <Skeleton className="h-9 w-64" />
-          <div className="flex items-center gap-4">
-            <Skeleton className="h-5 w-48" />
-            <Skeleton className="h-5 w-32" />
+    <div className="px-6 pt-8 pb-16 sm:px-10">
+      <header className="border-border flex flex-wrap items-end justify-between gap-x-10 gap-y-4 border-b pb-6">
+        <div className="flex items-end gap-4">
+          <Skeleton className="h-12 w-12 shrink-0 rounded-full" />
+          <div>
+            <Skeleton className="h-3 w-32" />
+            <Skeleton className="mt-3 h-9 w-64" />
           </div>
         </div>
-      </div>
+        <div className="flex flex-wrap items-end gap-x-6 gap-y-4">
+          <div className="flex items-baseline gap-x-8">
+            <div className="space-y-2">
+              <Skeleton className="h-2.5 w-12" />
+              <Skeleton className="h-6 w-16" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-2.5 w-14" />
+              <Skeleton className="h-6 w-12" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-2.5 w-12" />
+              <Skeleton className="h-6 w-10" />
+            </div>
+          </div>
+          <Skeleton className="h-9 w-32" />
+        </div>
+      </header>
 
-      {/* Tabbed Content Skeleton */}
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="performance">Performance</TabsTrigger>
-          <TabsTrigger value="heroes">Heroes</TabsTrigger>
-          <TabsTrigger value="trends">Trends</TabsTrigger>
-          <TabsTrigger value="maps">Maps</TabsTrigger>
-          <TabsTrigger value="teamfights">Teamfights</TabsTrigger>
+      <Tabs defaultValue="overview" className="mt-6 space-y-8">
+        <TabsList className="border-border h-auto w-full justify-start gap-6 rounded-none border-b bg-transparent p-0">
+          <TabsTrigger value="overview" className={tabTriggerClass}>
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="performance" className={tabTriggerClass}>
+            Performance
+          </TabsTrigger>
+          <TabsTrigger value="heroes" className={tabTriggerClass}>
+            Heroes
+          </TabsTrigger>
+          <TabsTrigger value="trends" className={tabTriggerClass}>
+            Trends
+          </TabsTrigger>
+          <TabsTrigger value="maps" className={tabTriggerClass}>
+            Maps
+          </TabsTrigger>
+          <TabsTrigger value="teamfights" className={tabTriggerClass}>
+            Teamfights
+          </TabsTrigger>
         </TabsList>
 
-        {/* Overview Tab Skeleton */}
-        <TabsContent value="overview" className="space-y-4">
+        <TabsContent value="overview" className="space-y-6">
           {/* Quick Stats Skeleton */}
           <Card>
             <CardHeader>
@@ -143,7 +171,7 @@ export default function TeamStatsLoading() {
         </TabsContent>
 
         {/* Other Tabs Skeleton (shown when switching tabs during loading) */}
-        <TabsContent value="performance" className="space-y-4">
+        <TabsContent value="performance" className="space-y-6">
           <Card>
             <CardHeader>
               <Skeleton className="h-6 w-48" />
@@ -154,7 +182,7 @@ export default function TeamStatsLoading() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="heroes" className="space-y-4">
+        <TabsContent value="heroes" className="space-y-6">
           <Card>
             <CardHeader>
               <Skeleton className="h-6 w-32" />
@@ -165,7 +193,7 @@ export default function TeamStatsLoading() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="trends" className="space-y-4">
+        <TabsContent value="trends" className="space-y-6">
           <Card>
             <CardHeader>
               <Skeleton className="h-6 w-40" />
@@ -176,7 +204,7 @@ export default function TeamStatsLoading() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="maps" className="space-y-4">
+        <TabsContent value="maps" className="space-y-6">
           <Card>
             <CardHeader>
               <Skeleton className="h-6 w-36" />
@@ -187,7 +215,7 @@ export default function TeamStatsLoading() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="teamfights" className="space-y-4">
+        <TabsContent value="teamfights" className="space-y-6">
           <Card>
             <CardHeader>
               <Skeleton className="h-6 w-44" />

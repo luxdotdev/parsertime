@@ -118,6 +118,30 @@ function clampTimeframe(
   return requested;
 }
 
+function formatTimeframeLabel(timeframe: Timeframe): string {
+  switch (timeframe) {
+    case "one-week":
+      return "Last 7 days";
+    case "two-weeks":
+      return "Last 14 days";
+    case "one-month":
+      return "Last 30 days";
+    case "three-months":
+      return "Last 3 months";
+    case "six-months":
+      return "Last 6 months";
+    case "one-year":
+      return "Last 365 days";
+    case "all-time":
+      return "All time";
+    case "custom":
+      return "Custom range";
+  }
+}
+
+const tabTriggerClass =
+  "text-muted-foreground hover:text-foreground data-[state=active]:text-foreground border-0 border-b-2 border-b-transparent data-[state=active]:border-b-primary rounded-none bg-transparent px-0 pb-3 pt-1 font-mono text-[11px] tracking-[0.16em] uppercase shadow-none data-[state=active]:shadow-none data-[state=active]:bg-transparent dark:bg-transparent dark:data-[state=active]:bg-transparent dark:data-[state=active]:border-b-primary transition-colors";
+
 export default async function TeamStatsPage(
   props: PagePropsWithLocale<"/stats/team/[teamId]"> & {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -146,20 +170,29 @@ export default async function TeamStatsPage(
 
   if (totalScrimCount < 2) {
     return (
-      <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
-        <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-4">
+      <div className="px-6 pt-8 pb-16 sm:px-10">
+        <header className="border-border flex flex-wrap items-end justify-between gap-x-10 gap-y-4 border-b pb-6">
+          <div className="flex items-end gap-4">
             <Image
               src={team.image ?? `https://avatar.vercel.sh/${team.name}.png`}
               alt={team.name}
-              width={100}
-              height={100}
-              className="border-muted rounded-full border-2"
+              width={48}
+              height={48}
+              className="border-border h-12 w-12 shrink-0 rounded-full border object-cover"
             />
-            <h1 className="text-3xl font-bold tracking-tight">{team.name}</h1>
+            <div>
+              <p className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
+                Team
+              </p>
+              <h1 className="mt-3 text-4xl leading-none font-semibold tracking-tight">
+                {team.name}
+              </h1>
+            </div>
           </div>
+        </header>
+        <div className="mt-8">
+          <InsufficientScrimsPlaceholder scrimCount={totalScrimCount} />
         </div>
-        <InsufficientScrimsPlaceholder scrimCount={totalScrimCount} />
       </div>
     );
   }
@@ -353,58 +386,86 @@ export default async function TeamStatsPage(
   });
 
   const totalGames = winrates.overallWins + winrates.overallLosses;
+  const timeframeLabel = formatTimeframeLabel(effectiveTimeframe);
 
   return (
-    <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
-      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-4">
+    <div className="px-6 pt-8 pb-16 sm:px-10">
+      <header className="border-border flex flex-wrap items-end justify-between gap-x-10 gap-y-4 border-b pb-6">
+        <div className="flex items-end gap-4">
           <Image
             src={team.image ?? `https://avatar.vercel.sh/${team.name}.png`}
             alt={team.name}
-            width={100}
-            height={100}
-            className="border-muted rounded-full border-2"
+            width={48}
+            height={48}
+            className="border-border h-12 w-12 shrink-0 rounded-full border object-cover"
           />
-          <div className="flex flex-col space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight">{team.name}</h1>
-            {totalGames > 0 && (
-              <div className="flex items-center gap-4 text-sm">
-                <span className="text-muted-foreground">
-                  Overall Record: {winrates.overallWins}W -{" "}
-                  {winrates.overallLosses}L
-                </span>
-                <span className="font-semibold">
-                  {winrates.overallWinrate.toFixed(1)}% Win Rate
-                </span>
-              </div>
-            )}
+          <div>
+            <p className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
+              Team · {timeframeLabel}
+            </p>
+            <h1 className="mt-3 text-4xl leading-none font-semibold tracking-tight">
+              {team.name}
+            </h1>
           </div>
         </div>
-        <TeamRangePicker
-          permissions={permissions}
-          defaultTimeframe={effectiveTimeframe}
-        />
-      </div>
+        <div className="flex flex-wrap items-end gap-x-6 gap-y-4">
+          {totalGames > 0 ? (
+            <dl className="flex flex-wrap items-baseline gap-x-8 gap-y-2 font-mono">
+              <Stat
+                label="Record"
+                value={`${winrates.overallWins}–${winrates.overallLosses}`}
+              />
+              <Stat
+                label="Winrate"
+                value={`${winrates.overallWinrate.toFixed(1)}%`}
+              />
+              <Stat label="Scrims" value={totalScrimCount} />
+            </dl>
+          ) : null}
+          <TeamRangePicker
+            permissions={permissions}
+            defaultTimeframe={effectiveTimeframe}
+          />
+        </div>
+      </header>
 
-      {/* Tabbed Content */}
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="performance">Performance</TabsTrigger>
-          <TabsTrigger value="heroes">Heroes</TabsTrigger>
-          <TabsTrigger value="trends">Trends</TabsTrigger>
-          <TabsTrigger value="maps">Maps</TabsTrigger>
-          <TabsTrigger value="swaps">Swaps</TabsTrigger>
-          <TabsTrigger value="teamfights">Teamfights</TabsTrigger>
-          <TabsTrigger value="ultimates">Ultimates</TabsTrigger>
-          <TabsTrigger value="winrates">Winrates</TabsTrigger>
+      <Tabs defaultValue="overview" className="mt-6 space-y-8">
+        <TabsList className="border-border h-auto w-full justify-start gap-6 rounded-none border-b bg-transparent p-0">
+          <TabsTrigger value="overview" className={tabTriggerClass}>
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="performance" className={tabTriggerClass}>
+            Performance
+          </TabsTrigger>
+          <TabsTrigger value="heroes" className={tabTriggerClass}>
+            Heroes
+          </TabsTrigger>
+          <TabsTrigger value="trends" className={tabTriggerClass}>
+            Trends
+          </TabsTrigger>
+          <TabsTrigger value="maps" className={tabTriggerClass}>
+            Maps
+          </TabsTrigger>
+          <TabsTrigger value="swaps" className={tabTriggerClass}>
+            Swaps
+          </TabsTrigger>
+          <TabsTrigger value="teamfights" className={tabTriggerClass}>
+            Teamfights
+          </TabsTrigger>
+          <TabsTrigger value="ultimates" className={tabTriggerClass}>
+            Ultimates
+          </TabsTrigger>
+          <TabsTrigger value="winrates" className={tabTriggerClass}>
+            Winrates
+          </TabsTrigger>
           {simulationToolEnabled && (
-            <TabsTrigger value="simulator">Simulator</TabsTrigger>
+            <TabsTrigger value="simulator" className={tabTriggerClass}>
+              Simulator
+            </TabsTrigger>
           )}
         </TabsList>
 
-        {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-4">
+        <TabsContent value="overview" className="space-y-6">
           {/* Quick Stats */}
           <QuickStatsCard stats={quickStats} />
 
@@ -440,13 +501,13 @@ export default async function TeamStatsPage(
         </TabsContent>
 
         {/* Performance Tab */}
-        <TabsContent value="performance" className="space-y-4">
+        <TabsContent value="performance" className="space-y-6">
           <RolePerformanceCard roleStats={roleStats} />
           <BestRoleTriosCard trios={bestTrios} />
         </TabsContent>
 
         {/* Heroes Tab */}
-        <TabsContent value="heroes" className="space-y-4">
+        <TabsContent value="heroes" className="space-y-6">
           <HeroPoolContainer
             initialData={heroPool}
             heatmapInitialData={heroPickrateMatrix}
@@ -456,7 +517,7 @@ export default async function TeamStatsPage(
         </TabsContent>
 
         {/* Trends Tab */}
-        <TabsContent value="trends" className="space-y-4">
+        <TabsContent value="trends" className="space-y-6">
           <WinrateOverTimeChart
             weeklyData={weeklyWinrate}
             monthlyData={monthlyWinrate}
@@ -468,7 +529,7 @@ export default async function TeamStatsPage(
         </TabsContent>
 
         {/* Maps Tab */}
-        <TabsContent value="maps" className="space-y-4">
+        <TabsContent value="maps" className="space-y-6">
           <MapModePerformanceCard modePerformance={mapModePerformance} />
           <MapWinrateGallery
             winrates={winrates.byMap}
@@ -479,7 +540,7 @@ export default async function TeamStatsPage(
         </TabsContent>
 
         {/* Swaps Tab */}
-        <TabsContent value="swaps" className="space-y-4">
+        <TabsContent value="swaps" className="space-y-6">
           <SwapOverviewCard swapStats={heroSwapStats} />
           <SwapTimingCard swapStats={heroSwapStats} />
           <SwapWinrateImpactCard swapStats={heroSwapStats} />
@@ -488,14 +549,14 @@ export default async function TeamStatsPage(
         </TabsContent>
 
         {/* Teamfights Tab */}
-        <TabsContent value="teamfights" className="space-y-4">
+        <TabsContent value="teamfights" className="space-y-6">
           <TeamFightStatsCard fightStats={fightStats} />
           <WinProbabilityInsights fightStats={fightStats} />
           <AbilityImpactAnalysisCard analysis={abilityImpactAnalysis} />
         </TabsContent>
 
         {/* Ultimates Tab */}
-        <TabsContent value="ultimates" className="space-y-4">
+        <TabsContent value="ultimates" className="space-y-6">
           <UltUsageOverviewCard ultStats={ultStats} />
           {ultimateImpactToolEnabled && (
             <UltImpactAnalysisCard analysis={ultImpactAnalysis} />
@@ -506,15 +567,26 @@ export default async function TeamStatsPage(
         </TabsContent>
 
         {/* Winrates Tab */}
-        <TabsContent value="winrates" className="space-y-4">
+        <TabsContent value="winrates" className="space-y-6">
           <MatchupWinrateTab data={matchupWinrateData} />
         </TabsContent>
 
         {/* Simulator Tab */}
-        <TabsContent value="simulator" className="space-y-4">
+        <TabsContent value="simulator" className="space-y-6">
           <SimulatorTab ctx={simulatorContext} />
         </TabsContent>
       </Tabs>
+    </div>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="flex flex-col">
+      <dt className="text-muted-foreground text-[10px] tracking-[0.18em] uppercase">
+        {label}
+      </dt>
+      <dd className="text-lg font-medium tabular-nums">{value}</dd>
     </div>
   );
 }
