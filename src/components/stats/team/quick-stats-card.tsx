@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { QuickWinsStats } from "@/data/team/types";
 import { cn } from "@/lib/utils";
@@ -14,13 +13,6 @@ type QuickStatsCardProps = {
 function formatFightDuration(seconds: number | null): string {
   if (seconds === null) return "N/A";
   return `${seconds.toFixed(1)}s`;
-}
-
-function getWinrateColor(winrate: number): string {
-  if (winrate >= 60) return "text-green-600 dark:text-green-400";
-  if (winrate >= 50) return "text-blue-600 dark:text-blue-400";
-  if (winrate >= 40) return "text-yellow-600 dark:text-yellow-400";
-  return "text-red-600 dark:text-red-400";
 }
 
 export function QuickStatsCard({ stats }: QuickStatsCardProps) {
@@ -40,12 +32,7 @@ export function QuickStatsCard({ stats }: QuickStatsCardProps) {
               <span>{t("last10Games")}</span>
             </div>
             <div className="space-y-1">
-              <div
-                className={cn(
-                  "text-3xl font-bold",
-                  getWinrateColor(stats.last10GamesPerformance.winrate)
-                )}
-              >
+              <div className="text-primary font-mono text-3xl font-bold tabular-nums">
                 {stats.last10GamesPerformance.winrate.toFixed(0)}%
               </div>
               <div className="text-muted-foreground text-xs">
@@ -69,16 +56,16 @@ export function QuickStatsCard({ stats }: QuickStatsCardProps) {
                   {stats.bestDayOfWeek.day}
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge
-                    variant="outline"
+                  <span
                     className={cn(
-                      "text-xs",
-                      stats.bestDayOfWeek.winrate >= 60 &&
-                        "border-green-500 text-green-600 dark:text-green-400"
+                      "rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase",
+                      stats.bestDayOfWeek.winrate >= 60
+                        ? "bg-primary/15 text-primary"
+                        : "bg-muted text-muted-foreground"
                     )}
                   >
                     {stats.bestDayOfWeek.winrate.toFixed(0)}% WR
-                  </Badge>
+                  </span>
                   <span className="text-muted-foreground text-xs">
                     {t("gamesLabel", {
                       count: stats.bestDayOfWeek.gamesPlayed,
@@ -102,7 +89,7 @@ export function QuickStatsCard({ stats }: QuickStatsCardProps) {
               <span>{t("avgFightDuration")}</span>
             </div>
             <div className="space-y-1">
-              <div className="text-3xl font-bold">
+              <div className="font-mono text-3xl font-bold tabular-nums">
                 {formatFightDuration(stats.averageFightDuration)}
               </div>
               {stats.averageFightDuration !== null && (
@@ -125,12 +112,7 @@ export function QuickStatsCard({ stats }: QuickStatsCardProps) {
             </div>
             {stats.firstPickSuccessRate ? (
               <div className="space-y-1">
-                <div
-                  className={cn(
-                    "text-3xl font-bold",
-                    getWinrateColor(stats.firstPickSuccessRate.successRate)
-                  )}
-                >
+                <div className="text-foreground font-mono text-3xl font-bold tabular-nums">
                   {stats.firstPickSuccessRate.successRate.toFixed(0)}%
                 </div>
                 <div className="text-muted-foreground text-xs">

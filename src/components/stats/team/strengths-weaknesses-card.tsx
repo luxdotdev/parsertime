@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toKebabCase, toTimestampWithHours } from "@/lib/utils";
 import { TrendingDown, TrendingUp } from "lucide-react";
@@ -51,13 +50,13 @@ export function StrengthsWeaknessesCard({
         {bestMap && (
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
-              <h3 className="font-semibold text-green-600 dark:text-green-400">
+              <TrendingUp className="text-muted-foreground h-4 w-4" />
+              <h3 className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
                 {t("strongestMap")}
               </h3>
             </div>
 
-            <div className="relative h-32 overflow-hidden rounded-lg border-2 border-green-500">
+            <div className="border-border relative h-32 overflow-hidden rounded-lg border">
               <Image
                 src={`/maps/${toKebabCase(bestMap.mapName)}.webp`}
                 alt={
@@ -68,14 +67,14 @@ export function StrengthsWeaknessesCard({
               />
 
               <div className="absolute inset-0 flex flex-col justify-between p-4">
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between gap-2">
                   <h4 className="text-lg font-bold text-white drop-shadow-lg">
                     {mapNames.get(toKebabCase(bestMap.mapName)) ??
                       bestMap.mapName}
                   </h4>
-                  <Badge className="bg-green-500 font-bold text-white">
+                  <span className="rounded-sm bg-white/15 px-2 py-0.5 font-mono text-[10px] font-bold tracking-[0.16em] text-white uppercase tabular-nums backdrop-blur-sm">
                     {bestMap.winrate.toFixed(1)}%
-                  </Badge>
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -97,13 +96,13 @@ export function StrengthsWeaknessesCard({
         {blindSpot && (
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <TrendingDown className="h-5 w-5 text-red-600 dark:text-red-400" />
-              <h3 className="font-semibold text-red-600 dark:text-red-400">
+              <TrendingDown className="text-muted-foreground h-4 w-4" />
+              <h3 className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
                 {t("blindSpot")}
               </h3>
             </div>
 
-            <div className="relative h-32 overflow-hidden rounded-lg border-2 border-red-500">
+            <div className="border-border relative h-32 overflow-hidden rounded-lg border">
               <Image
                 src={`/maps/${toKebabCase(blindSpot.mapName)}.webp`}
                 alt={
@@ -115,14 +114,14 @@ export function StrengthsWeaknessesCard({
               />
 
               <div className="absolute inset-0 flex flex-col justify-between p-4">
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between gap-2">
                   <h4 className="text-lg font-bold text-white drop-shadow-lg">
                     {mapNames.get(toKebabCase(blindSpot.mapName)) ??
                       blindSpot.mapName}
                   </h4>
-                  <Badge className="bg-red-500 font-bold text-white">
+                  <span className="rounded-sm bg-white/15 px-2 py-0.5 font-mono text-[10px] font-bold tracking-[0.16em] text-white uppercase tabular-nums backdrop-blur-sm">
                     {blindSpot.winrate.toFixed(1)}%
-                  </Badge>
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between">
