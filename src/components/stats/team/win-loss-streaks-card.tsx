@@ -1,9 +1,7 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { StreakInfo } from "@/data/team/types";
-import { cn } from "@/lib/utils";
 import { Flame, TrendingDown, TrendingUp } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -48,6 +46,13 @@ export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
     return `${startStr} - ${endStr}`;
   }
 
+  const currentStreakLabel =
+    currentStreak.count > 0
+      ? currentStreak.type === "win"
+        ? t("winStreakCount", { count: currentStreak.count })
+        : t("lossStreakCount", { count: currentStreak.count })
+      : null;
+
   return (
     <Card>
       <CardHeader>
@@ -55,59 +60,33 @@ export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {currentStreak.count > 0 && (
-            <div
-              className={cn(
-                "rounded-lg border-2 p-4",
-                currentStreak.type === "win"
-                  ? "border-green-500 bg-green-50 dark:bg-green-950/30"
-                  : "border-red-500 bg-red-50 dark:bg-red-950/30"
-              )}
-            >
-              <div className="flex items-center gap-2">
-                <Flame
-                  className={cn(
-                    "h-5 w-5",
-                    currentStreak.type === "win"
-                      ? "text-green-600 dark:text-green-400"
-                      : "text-red-600 dark:text-red-400"
-                  )}
-                />
-                <h3 className="text-sm font-semibold">{t("currentStreak")}</h3>
-              </div>
-              <div className="mt-2 flex items-center justify-between">
-                <span className="text-2xl font-bold">
-                  {currentStreak.type === "win"
-                    ? t("winStreakCount", {
-                        count: currentStreak.count,
-                      })
-                    : t("lossStreakCount", {
-                        count: currentStreak.count,
-                      })}
-                </span>
-                <Badge
-                  className={cn(
-                    "text-sm font-bold",
-                    currentStreak.type === "win" ? "bg-green-500" : "bg-red-500"
-                  )}
-                >
-                  {currentStreak.type === "win" ? t("hot") : t("cold")}
-                </Badge>
-              </div>
+          <div className="bg-card border-border rounded-lg border p-4">
+            <div className="mb-3 flex items-center gap-2">
+              <Flame className="text-muted-foreground size-4" />
+              <h3 className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+                {t("currentStreak")}
+              </h3>
             </div>
-          )}
+            {currentStreak.count > 0 && currentStreakLabel ? (
+              <div className="text-primary font-mono text-3xl font-bold tabular-nums">
+                {currentStreakLabel}
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-sm">{t("noData")}</p>
+            )}
+          </div>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-lg border p-4">
+            <div className="bg-card border-border rounded-lg border p-4">
               <div className="mb-3 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
-                <h3 className="text-sm font-semibold text-green-600 dark:text-green-400">
+                <TrendingUp className="text-muted-foreground size-4" />
+                <h3 className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
                   {t("longestWinStreak")}
                 </h3>
               </div>
               {longestWinStreak.count > 0 ? (
                 <>
-                  <div className="mb-2 text-3xl font-bold">
+                  <div className="text-foreground mb-2 font-mono text-3xl font-bold tabular-nums">
                     {longestWinStreak.count}
                   </div>
                   <p className="text-muted-foreground text-xs">
@@ -124,16 +103,16 @@ export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
               )}
             </div>
 
-            <div className="rounded-lg border p-4">
+            <div className="bg-card border-border rounded-lg border p-4">
               <div className="mb-3 flex items-center gap-2">
-                <TrendingDown className="h-4 w-4 text-red-600 dark:text-red-400" />
-                <h3 className="text-sm font-semibold text-red-600 dark:text-red-400">
+                <TrendingDown className="text-muted-foreground size-4" />
+                <h3 className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
                   {t("longestLossStreak")}
                 </h3>
               </div>
               {longestLossStreak.count > 0 ? (
                 <>
-                  <div className="mb-2 text-3xl font-bold">
+                  <div className="text-foreground mb-2 font-mono text-3xl font-bold tabular-nums">
                     {longestLossStreak.count}
                   </div>
                   <p className="text-muted-foreground text-xs">
@@ -154,7 +133,6 @@ export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
           {currentStreak.type === "win" && currentStreak.count >= 3 && (
             <div className="bg-muted/50 rounded-lg p-3 text-center">
               <p className="text-sm">
-                🎯{" "}
                 <span className="font-semibold">{t("keepMomentumGoing")}</span>
               </p>
             </div>
@@ -163,7 +141,6 @@ export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
           {currentStreak.type === "loss" && currentStreak.count >= 3 && (
             <div className="bg-muted/50 rounded-lg p-3 text-center">
               <p className="text-sm">
-                💪{" "}
                 <span className="font-semibold">{t("timeToBreakStreak")}</span>
               </p>
             </div>

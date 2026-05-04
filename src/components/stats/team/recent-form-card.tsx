@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -86,11 +85,20 @@ export function RecentFormCard({ recentForm }: RecentFormCardProps) {
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               {winrate >= 60 ? (
-                <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
+                <TrendingUp className="text-muted-foreground h-5 w-5" />
               ) : winrate <= 40 ? (
-                <TrendingDown className="h-5 w-5 text-red-600 dark:text-red-400" />
+                <TrendingDown className="text-muted-foreground h-5 w-5" />
               ) : null}
-              <span className="text-sm font-medium">
+              <span
+                className={cn(
+                  "rounded-sm px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.16em]",
+                  winrate >= 60
+                    ? "bg-primary/15 text-primary"
+                    : winrate <= 40
+                      ? "bg-destructive/15 text-destructive"
+                      : "bg-muted text-muted-foreground"
+                )}
+              >
                 {winrate >= 60
                   ? t("strongRecentPerformance")
                   : winrate <= 40
@@ -98,18 +106,9 @@ export function RecentFormCard({ recentForm }: RecentFormCardProps) {
                     : t("averagePerformance")}
               </span>
             </div>
-            <Badge
-              className={cn(
-                "font-bold",
-                winrate >= 60
-                  ? "bg-green-500"
-                  : winrate >= 50
-                    ? "bg-blue-500"
-                    : "bg-red-500"
-              )}
-            >
+            <span className="text-foreground font-mono text-sm font-bold tabular-nums">
               {winrate.toFixed(1)}%
-            </Badge>
+            </span>
           </div>
 
           <div className="space-y-2">
