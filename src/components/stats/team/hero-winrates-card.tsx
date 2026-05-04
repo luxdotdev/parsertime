@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { HeroPoolAnalysis } from "@/data/team/types";
 import { cn, toHero, useHeroNames } from "@/lib/utils";
@@ -36,12 +35,14 @@ export function HeroWinratesCard({ heroPool }: HeroWinratesCardProps) {
       {topHeroes.map((hero, idx) => (
         <div
           key={hero.heroName}
-          className={cn(
-            "flex items-center gap-3 rounded-lg border p-3",
-            idx === 0 && "border-green-500 bg-green-50 dark:bg-green-950/30"
-          )}
+          className="flex items-center gap-3 rounded-lg border p-3"
         >
-          <span className="text-muted-foreground text-lg font-bold">
+          <span
+            className={cn(
+              "font-mono text-lg font-bold tabular-nums",
+              idx === 0 ? "text-primary" : "text-muted-foreground"
+            )}
+          >
             #{idx + 1}
           </span>
           <div className="relative h-12 w-12 overflow-hidden rounded">
@@ -64,18 +65,9 @@ export function HeroWinratesCard({ heroPool }: HeroWinratesCardProps) {
               })}
             </div>
           </div>
-          <Badge
-            className={cn(
-              "text-sm font-bold",
-              hero.winrate >= 60
-                ? "bg-green-500"
-                : hero.winrate >= 50
-                  ? "bg-blue-500"
-                  : "bg-gray-500"
-            )}
-          >
+          <span className="text-foreground font-mono text-sm font-semibold tabular-nums">
             {hero.winrate.toFixed(1)}%
-          </Badge>
+          </span>
         </div>
       ))}
     </div>
