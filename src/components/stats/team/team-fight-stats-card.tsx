@@ -1,16 +1,17 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import type { TeamFightStats } from "@/data/team/types";
-import { round } from "@/lib/utils";
+import { cn, round } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
 type TeamFightStatsCardProps = {
   fightStats: TeamFightStats;
+};
+
+type FightCell = {
+  label: string;
+  value: string;
+  sub: string;
+  emphasis?: boolean;
 };
 
 export function TeamFightStatsCard({ fightStats }: TeamFightStatsCardProps) {
@@ -18,12 +19,10 @@ export function TeamFightStatsCard({ fightStats }: TeamFightStatsCardProps) {
 
   if (fightStats.totalFights === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-          <CardDescription>{t("noData")}</CardDescription>
-        </CardHeader>
-      </Card>
+      <section className="space-y-4">
+        <SectionHeader eyebrow="Teamfights · Fight stats" title={t("title")} />
+        <p className="text-muted-foreground text-sm">{t("noData")}</p>
+      </section>
     );
   }
 
@@ -32,111 +31,86 @@ export function TeamFightStatsCard({ fightStats }: TeamFightStatsCardProps) {
       ? (fightStats.dryFights / fightStats.totalFights) * 100
       : 0;
 
+  const cells: FightCell[] = [
+    {
+      label: t("overallWinrate"),
+      value: `${round(fightStats.overallWinrate)}%`,
+      sub: t("record", {
+        wins: fightStats.fightsWon,
+        losses: fightStats.fightsLost,
+      }),
+      emphasis: true,
+    },
+  ];
+
+  if (fightStats.firstPickFights > 0) {
+    cells.push({
+      label: t("firstPickWinrate"),
+      value: `${round(fightStats.firstPickWinrate)}%`,
+      sub: t("firstPickCount", { count: fightStats.firstPickFights }),
+    });
+  }
+
+  if (fightStats.firstDeathFights > 0) {
+    cells.push({
+      label: t("firstDeathWinrate"),
+      value: `${round(fightStats.firstDeathWinrate)}%`,
+      sub: t("firstDeathCount", { count: fightStats.firstDeathFights }),
+    });
+  }
+
+  if (fightStats.firstUltFights > 0) {
+    cells.push({
+      label: t("firstUltWinrate"),
+      value: `${round(fightStats.firstUltWinrate)}%`,
+      sub: t("firstUltCount", { count: fightStats.firstUltFights }),
+    });
+  }
+
+  cells.push({
+    label: t("dryFights"),
+    value: `${round(dryFightPercentage)}%`,
+    sub: t("dryFightDetails", {
+      count: fightStats.dryFights,
+      winrate: round(fightStats.dryFightWinrate),
+    }),
+  });
+
+  if (fightStats.nonDryFights > 0) {
+    cells.push({
+      label: t("avgUltsPerFight"),
+      value: `${round(fightStats.avgUltsPerNonDryFight)}`,
+      sub: t("avgUltsDescription", {
+        count: fightStats.nonDryFights,
+      }),
+    });
+  }
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-        <CardDescription>
-          {t("description", { count: fightStats.totalFights })}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* Overall Fight Winrate */}
-          <div className="space-y-2">
-            <h4 className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-              {t("overallWinrate")}
-            </h4>
-            <p className="text-foreground font-mono text-2xl font-bold tabular-nums">
-              {round(fightStats.overallWinrate)}%
-            </p>
-            <p className="text-muted-foreground text-xs">
-              {t("record", {
-                wins: fightStats.fightsWon,
-                losses: fightStats.fightsLost,
-              })}
-            </p>
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Teamfights · Fight stats"
+        title={t("title")}
+        description={t("description", { count: fightStats.totalFights })}
+      />
+      <dl className="border-border grid grid-cols-1 divide-x divide-y divide-[var(--border)] border-y sm:grid-cols-2 lg:grid-cols-3 lg:divide-y-0">
+        {cells.map((cell) => (
+          <div key={cell.label} className="flex flex-col gap-1 px-4 py-4">
+            <dt className="text-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase">
+              {cell.label}
+            </dt>
+            <dd
+              className={cn(
+                "font-mono text-2xl leading-none font-semibold tabular-nums",
+                cell.emphasis ? "text-primary" : "text-foreground"
+              )}
+            >
+              {cell.value}
+            </dd>
+            <dd className="text-muted-foreground text-xs">{cell.sub}</dd>
           </div>
-
-          {/* First Pick Winrate */}
-          {fightStats.firstPickFights > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-                {t("firstPickWinrate")}
-              </h4>
-              <p className="text-foreground font-mono text-2xl font-bold tabular-nums">
-                {round(fightStats.firstPickWinrate)}%
-              </p>
-              <p className="text-muted-foreground text-xs">
-                {t("firstPickCount", { count: fightStats.firstPickFights })}
-              </p>
-            </div>
-          )}
-
-          {/* First Death Winrate */}
-          {fightStats.firstDeathFights > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-                {t("firstDeathWinrate")}
-              </h4>
-              <p className="text-foreground font-mono text-2xl font-bold tabular-nums">
-                {round(fightStats.firstDeathWinrate)}%
-              </p>
-              <p className="text-muted-foreground text-xs">
-                {t("firstDeathCount", { count: fightStats.firstDeathFights })}
-              </p>
-            </div>
-          )}
-
-          {/* First Ultimate Winrate */}
-          {fightStats.firstUltFights > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-                {t("firstUltWinrate")}
-              </h4>
-              <p className="text-foreground font-mono text-2xl font-bold tabular-nums">
-                {round(fightStats.firstUltWinrate)}%
-              </p>
-              <p className="text-muted-foreground text-xs">
-                {t("firstUltCount", { count: fightStats.firstUltFights })}
-              </p>
-            </div>
-          )}
-
-          {/* Dry Fight Stats */}
-          <div className="space-y-2">
-            <h4 className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-              {t("dryFights")}
-            </h4>
-            <p className="text-foreground font-mono text-2xl font-bold tabular-nums">
-              {round(dryFightPercentage)}%
-            </p>
-            <p className="text-muted-foreground text-xs">
-              {t("dryFightDetails", {
-                count: fightStats.dryFights,
-                winrate: round(fightStats.dryFightWinrate),
-              })}
-            </p>
-          </div>
-
-          {/* Average Ultimates Per Fight */}
-          {fightStats.nonDryFights > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-                {t("avgUltsPerFight")}
-              </h4>
-              <p className="text-foreground font-mono text-2xl font-bold tabular-nums">
-                {round(fightStats.avgUltsPerNonDryFight)}
-              </p>
-              <p className="text-muted-foreground text-xs">
-                {t("avgUltsDescription", {
-                  count: fightStats.nonDryFights,
-                })}
-              </p>
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+        ))}
+      </dl>
+    </section>
   );
 }

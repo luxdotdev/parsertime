@@ -1,13 +1,7 @@
 "use client";
 
+import { SectionHeader } from "@/components/stats/team/section-header";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   Command,
   CommandEmpty,
@@ -24,7 +18,6 @@ import {
 import type {
   AbilityImpactAnalysis,
   AbilityImpactData,
-  AbilityScenarioStats,
   HeroAbilityImpact,
 } from "@/data/team/types";
 import { cn, toHero } from "@/lib/utils";
@@ -39,146 +32,52 @@ type AbilityImpactAnalysisCardProps = {
 
 const ROLE_ORDER = ["Tank", "Damage", "Support"] as const;
 
-function getWinrateColor(winrate: number): string {
-  if (winrate >= 55) return "text-green-600 dark:text-green-400";
-  if (winrate >= 45) return "text-yellow-600 dark:text-yellow-400";
-  return "text-red-600 dark:text-red-400";
+type AbilityRow = {
+  abilityName: string;
+  fights: number;
+  withWinrate: number | null;
+  withFights: number;
+  withoutWinrate: number | null;
+  withoutFights: number;
+  delta: number | null;
+  totalAnalyzed: number;
+};
+
+function buildRows(heroData: HeroAbilityImpact): AbilityRow[] {
+  return [heroData.ability1, heroData.ability2].map((a) => toRow(a));
 }
 
-function getAccentBorder(favorable: boolean): string {
-  return favorable
-    ? "border-l-green-500 dark:border-l-green-400"
-    : "border-l-red-500 dark:border-l-red-400";
+function toRow(ability: AbilityImpactData): AbilityRow {
+  const used = ability.scenarios.usedByUs;
+  const notUsed = ability.scenarios.notUsedByUs;
+  const withWR = used.fights > 0 ? used.winrate : null;
+  const withoutWR = notUsed.fights > 0 ? notUsed.winrate : null;
+  const delta =
+    withWR !== null && withoutWR !== null ? withWR - withoutWR : null;
+  return {
+    abilityName: ability.abilityName,
+    fights: used.fights + notUsed.fights,
+    withWinrate: withWR,
+    withFights: used.fights,
+    withoutWinrate: withoutWR,
+    withoutFights: notUsed.fights,
+    delta,
+    totalAnalyzed: ability.totalFightsAnalyzed,
+  };
 }
 
-function ScenarioCard({
-  label,
-  stats,
-  favorable,
-  footer,
-}: {
-  label: string;
-  stats: AbilityScenarioStats;
-  favorable: boolean;
-  footer: string;
-}) {
-  return (
-    <div
-      className={cn(
-        "bg-muted/50 rounded-lg border-l-4 p-4",
-        getAccentBorder(favorable)
-      )}
-    >
-      <h4 className="text-muted-foreground mb-2 text-sm font-medium">
-        {label}
-      </h4>
-      {stats.fights > 0 ? (
-        <>
-          <p className="flex min-w-0 items-center gap-2 tabular-nums">
-            <span className="text-muted-foreground text-sm font-medium">
-              We win
-            </span>
-            <span
-              className={cn(
-                "text-3xl font-bold",
-                getWinrateColor(stats.winrate)
-              )}
-            >
-              {stats.winrate.toFixed(1)}%
-            </span>
-            <span className="text-muted-foreground text-sm font-medium">
-              of fights
-            </span>
-          </p>
-          <p className="text-muted-foreground mt-2 text-sm tabular-nums">
-            {footer}
-          </p>
-          {stats.fights < 3 && (
-            <p className="mt-2 flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
-              <AlertTriangle className="h-3 w-3" aria-hidden="true" />
-              Small sample size
-            </p>
-          )}
-        </>
-      ) : (
-        <p className="text-muted-foreground text-sm">No data</p>
-      )}
-    </div>
-  );
+function getDeltaClass(delta: number | null): string {
+  if (delta === null) return "text-muted-foreground";
+  if (delta >= 5) return "text-primary";
+  if (delta <= -5) return "text-destructive";
+  return "text-foreground";
 }
 
-function HeadlineInsight({
-  data,
-  abilityData,
-}: {
-  data: HeroAbilityImpact;
-  abilityData: AbilityImpactData;
-}) {
-  const { usedByUs, notUsedByUs } = abilityData.scenarios;
-
-  if (usedByUs.fights === 0 && notUsedByUs.fights === 0) return null;
-
-  if (usedByUs.fights >= 1 && notUsedByUs.fights >= 1) {
-    const delta = usedByUs.winrate - notUsedByUs.winrate;
-    const deltaSign = delta >= 0 ? "+" : "";
-
-    return (
-      <p className="text-muted-foreground text-sm">
-        When our{" "}
-        <span className="text-foreground font-medium">{data.hero}</span> uses{" "}
-        <span className="text-foreground font-medium">
-          {abilityData.abilityName}
-        </span>
-        , we win{" "}
-        <span
-          className={cn(
-            "font-semibold tabular-nums",
-            getWinrateColor(usedByUs.winrate)
-          )}
-        >
-          {usedByUs.winrate.toFixed(0)}%
-        </span>{" "}
-        of fights (
-        <span
-          className={cn(
-            "font-semibold tabular-nums",
-            delta >= 5
-              ? "text-green-600 dark:text-green-400"
-              : delta <= -5
-                ? "text-red-600 dark:text-red-400"
-                : "text-yellow-600 dark:text-yellow-400"
-          )}
-        >
-          {deltaSign}
-          {delta.toFixed(0)}%
-        </span>{" "}
-        vs. not using it)
-      </p>
-    );
-  }
-
-  const bestSide = usedByUs.fights >= 1 ? usedByUs : notUsedByUs;
-  const label = usedByUs.fights >= 1 ? "uses" : "doesn't use";
-
-  return (
-    <p className="text-muted-foreground text-sm">
-      When our <span className="text-foreground font-medium">{data.hero}</span>{" "}
-      {label}{" "}
-      <span className="text-foreground font-medium">
-        {abilityData.abilityName}
-      </span>
-      , we win{" "}
-      <span
-        className={cn(
-          "font-semibold tabular-nums",
-          getWinrateColor(bestSide.winrate)
-        )}
-      >
-        {bestSide.winrate.toFixed(0)}%
-      </span>{" "}
-      of fights ({bestSide.fights} fights)
-    </p>
-  );
+function getWinrateClass(winrate: number | null): string {
+  if (winrate === null) return "text-muted-foreground";
+  if (winrate >= 55) return "text-primary";
+  if (winrate < 45) return "text-destructive";
+  return "text-foreground";
 }
 
 function HeroCombobox({
@@ -216,7 +115,7 @@ function HeroCombobox({
           aria-expanded={open}
           aria-controls="ability-hero-combobox-listbox"
           aria-label="Select a hero"
-          className="w-full justify-between font-normal md:w-72"
+          className="w-full justify-between font-normal md:w-64"
         >
           <span className="flex items-center gap-2 truncate">
             {selectedHero ? (
@@ -231,7 +130,7 @@ function HeroCombobox({
                 {selectedHero}
               </>
             ) : (
-              "Select a hero…"
+              "Select a hero"
             )}
           </span>
           <ChevronsUpDown
@@ -240,7 +139,7 @@ function HeroCombobox({
           />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-72 p-0" align="start">
+      <PopoverContent className="w-72 p-0" align="end">
         <Command
           filter={(value, search) => {
             const normalized = toHero(value);
@@ -248,7 +147,7 @@ function HeroCombobox({
             return normalized.includes(normalizedSearch) ? 1 : 0;
           }}
         >
-          <CommandInput placeholder="Search heroes…" />
+          <CommandInput placeholder="Search heroes" />
           <CommandList id="ability-hero-combobox-listbox">
             <CommandEmpty>No heroes found.</CommandEmpty>
             {ROLE_ORDER.map((role) => {
@@ -296,7 +195,6 @@ export function AbilityImpactAnalysisCard({
   analysis,
 }: AbilityImpactAnalysisCardProps) {
   const [selectedHero, setSelectedHero] = useState<string | null>(null);
-  const [selectedAbility, setSelectedAbility] = useState<1 | 2>(1);
 
   const resolvedHero = useMemo(() => {
     if (!selectedHero) return null;
@@ -307,102 +205,164 @@ export function AbilityImpactAnalysisCard({
   }, [selectedHero, analysis.availableHeroes]);
 
   const heroData = resolvedHero ? analysis.byHero[resolvedHero] : null;
-  const abilityData = heroData
-    ? selectedAbility === 1
-      ? heroData.ability1
-      : heroData.ability2
-    : null;
+
+  const rows = useMemo(() => (heroData ? buildRows(heroData) : []), [heroData]);
+
+  const { keyAbility, riskAbility } = useMemo(() => {
+    const withDelta = rows.filter((r) => r.delta !== null);
+    if (withDelta.length === 0) {
+      return { keyAbility: null, riskAbility: null };
+    }
+    const sorted = [...withDelta].sort((a, b) => b.delta! - a.delta!);
+    const top = sorted[0];
+    const bottom = sorted[sorted.length - 1];
+    const keyAbility = top && top.delta! >= 5 ? top.abilityName : null;
+    const riskAbility =
+      bottom && bottom !== top && bottom.delta! <= -5
+        ? bottom.abilityName
+        : null;
+    return { keyAbility, riskAbility };
+  }, [rows]);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Ability Impact Analysis</CardTitle>
-        <CardDescription>
-          Analyze how specific hero abilities affect fight outcomes across your
-          scrims
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center">
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Teamfights · Ability impact"
+        title="Ability impact"
+        description="How specific hero abilities shift fight outcomes across your scrims."
+        rightSlot={
           <HeroCombobox
             availableHeroes={analysis.availableHeroes}
             selectedHero={resolvedHero}
             onSelect={(hero) => {
               setSelectedHero(hero);
-              setSelectedAbility(1);
             }}
           />
+        }
+      />
 
-          {heroData && (
-            <div className="flex gap-2">
-              <Button
-                variant={selectedAbility === 1 ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedAbility(1)}
-              >
-                {heroData.ability1.abilityName}
-              </Button>
-              <Button
-                variant={selectedAbility === 2 ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedAbility(2)}
-              >
-                {heroData.ability2.abilityName}
-              </Button>
-            </div>
+      {heroData ? (
+        <>
+          <div className="border-border overflow-hidden rounded-md border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/30">
+                <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
+                  <th className="px-4 py-2 text-left font-medium">Ability</th>
+                  <th className="px-4 py-2 text-right font-medium">Fights</th>
+                  <th className="px-4 py-2 text-right font-medium">With WR</th>
+                  <th className="px-4 py-2 text-right font-medium">
+                    Without WR
+                  </th>
+                  <th className="px-4 py-2 text-right font-medium">Delta</th>
+                  <th className="w-24 px-4 py-2 text-right font-medium">Tag</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[var(--border)]">
+                {rows.map((row) => {
+                  const isKey =
+                    keyAbility !== null && row.abilityName === keyAbility;
+                  const isRisk =
+                    riskAbility !== null && row.abilityName === riskAbility;
+                  const deltaSign =
+                    row.delta !== null && row.delta >= 0 ? "+" : "";
+                  return (
+                    <tr
+                      key={row.abilityName}
+                      className="hover:bg-muted/30 transition-colors"
+                    >
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <Image
+                            src={`/heroes/${toHero(heroData.hero)}.png`}
+                            alt={heroData.hero}
+                            width={28}
+                            height={28}
+                            className="border-border shrink-0 rounded border"
+                          />
+                          <div className="flex flex-col">
+                            <span className="font-medium">
+                              {row.abilityName}
+                            </span>
+                            <span className="text-muted-foreground text-xs">
+                              {heroData.hero}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
+                        {row.fights}
+                      </td>
+                      <td
+                        className={cn(
+                          "px-4 py-3 text-right font-mono tabular-nums",
+                          getWinrateClass(row.withWinrate)
+                        )}
+                      >
+                        {row.withWinrate !== null
+                          ? `${row.withWinrate.toFixed(0)}%`
+                          : "—"}
+                        {row.withFights > 0 ? (
+                          <span className="text-muted-foreground ml-1 text-xs">
+                            ({row.withFights})
+                          </span>
+                        ) : null}
+                      </td>
+                      <td
+                        className={cn(
+                          "px-4 py-3 text-right font-mono tabular-nums",
+                          getWinrateClass(row.withoutWinrate)
+                        )}
+                      >
+                        {row.withoutWinrate !== null
+                          ? `${row.withoutWinrate.toFixed(0)}%`
+                          : "—"}
+                        {row.withoutFights > 0 ? (
+                          <span className="text-muted-foreground ml-1 text-xs">
+                            ({row.withoutFights})
+                          </span>
+                        ) : null}
+                      </td>
+                      <td
+                        className={cn(
+                          "px-4 py-3 text-right font-mono font-semibold tabular-nums",
+                          getDeltaClass(row.delta)
+                        )}
+                      >
+                        {row.delta !== null
+                          ? `${deltaSign}${row.delta.toFixed(0)}%`
+                          : "—"}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        {isKey ? (
+                          <span className="bg-primary/15 text-primary rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase">
+                            Key
+                          </span>
+                        ) : isRisk ? (
+                          <span className="bg-destructive/15 text-destructive rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase">
+                            Risk
+                          </span>
+                        ) : null}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {rows.some((r) => r.totalAnalyzed < 10) && (
+            <p className="text-muted-foreground flex items-center gap-1.5 font-mono text-[10px] tracking-[0.16em] uppercase">
+              <AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" />
+              Small sample for {heroData.hero}, results may not be statistically
+              significant.
+            </p>
           )}
-        </div>
-
-        {heroData && abilityData ? (
-          <>
-            <HeadlineInsight data={heroData} abilityData={abilityData} />
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <ScenarioCard
-                label={`Our ${heroData.hero} used ${abilityData.abilityName}`}
-                stats={abilityData.scenarios.usedByUs}
-                favorable={true}
-                footer={`We win ${abilityData.scenarios.usedByUs.wins}/${abilityData.scenarios.usedByUs.fights} fights when ability is used`}
-              />
-              <ScenarioCard
-                label={`Our ${heroData.hero} didn't use ${abilityData.abilityName}`}
-                stats={abilityData.scenarios.notUsedByUs}
-                favorable={false}
-                footer={`We win ${abilityData.scenarios.notUsedByUs.wins}/${abilityData.scenarios.notUsedByUs.fights} fights without ability usage`}
-              />
-              <ScenarioCard
-                label={`Enemy ${heroData.hero} used ${abilityData.abilityName}`}
-                stats={abilityData.scenarios.usedByEnemy}
-                favorable={false}
-                footer={`We win ${abilityData.scenarios.usedByEnemy.wins}/${abilityData.scenarios.usedByEnemy.fights} fights when enemy uses ability`}
-              />
-              <ScenarioCard
-                label={`Enemy ${heroData.hero} didn't use ${abilityData.abilityName}`}
-                stats={abilityData.scenarios.notUsedByEnemy}
-                favorable={true}
-                footer={`We win ${abilityData.scenarios.notUsedByEnemy.wins}/${abilityData.scenarios.notUsedByEnemy.fights} fights when enemy doesn't use ability`}
-              />
-            </div>
-
-            {abilityData.totalFightsAnalyzed < 10 && (
-              <p className="text-muted-foreground flex items-center gap-1.5 text-xs">
-                <AlertTriangle
-                  className="h-3.5 w-3.5 text-amber-500"
-                  aria-hidden="true"
-                />
-                Only {abilityData.totalFightsAnalyzed} fight
-                {abilityData.totalFightsAnalyzed === 1 ? "" : "s"} analyzed for{" "}
-                {heroData.hero}. Results may not be statistically significant.
-              </p>
-            )}
-          </>
-        ) : (
-          <p className="text-muted-foreground text-sm">
-            Select a hero above to see how their abilities impact fight
-            outcomes.
-          </p>
-        )}
-      </CardContent>
-    </Card>
+        </>
+      ) : (
+        <p className="text-muted-foreground text-sm">
+          Select a hero to see how their abilities shift fight outcomes.
+        </p>
+      )}
+    </section>
   );
 }
