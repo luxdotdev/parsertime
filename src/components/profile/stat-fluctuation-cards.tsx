@@ -1,7 +1,6 @@
 "use client";
 
 import type { Timeframe } from "@/components/stats/player/range-picker";
-import { Card, CardContent } from "@/components/ui/card";
 import { ChartContainer } from "@/components/ui/chart";
 import {
   Empty,
@@ -298,116 +297,111 @@ export function StatFluctuationCards({
   }
 
   return (
-    <div className={cn("flex w-full items-center justify-center", className)}>
-      <dl className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {summary.map((item) => {
-          const sanitizedName = sanitizeName(item.name);
-          const gradientId = `gradient-${sanitizedName}`;
+    <dl
+      className={cn(
+        "bg-border grid w-full grid-cols-1 gap-px sm:grid-cols-2 lg:grid-cols-3",
+        className
+      )}
+    >
+      {summary.map((item) => {
+        const sanitizedName = sanitizeName(item.name);
+        const gradientId = `gradient-${sanitizedName}`;
 
-          const isGoodStat =
-            !item.statType.includes("DEATH") &&
-            !item.statType.includes("DROUGHT");
-          const displayChangeType = isGoodStat
-            ? item.changeType
-            : item.changeType === "positive"
-              ? "negative"
-              : "positive";
+        const isGoodStat =
+          !item.statType.includes("DEATH") &&
+          !item.statType.includes("DROUGHT");
+        const displayChangeType = isGoodStat
+          ? item.changeType
+          : item.changeType === "positive"
+            ? "negative"
+            : "positive";
 
-          const color =
-            displayChangeType === "positive"
-              ? "hsl(142.1 76.2% 36.3%)"
-              : "hsl(0 72.2% 50.6%)";
+        const color =
+          displayChangeType === "positive"
+            ? "hsl(142.1 76.2% 36.3%)"
+            : "hsl(0 72.2% 50.6%)";
 
-          return (
-            <Card key={item.name} className="p-0">
-              <CardContent className="p-4 pb-0">
-                <div>
-                  <dt className="text-foreground text-sm font-medium">
-                    {item.name}
-                  </dt>
-                  <div className="flex items-baseline justify-between">
-                    <dd className="text-lg font-semibold">{item.value}</dd>
-                    <dd className="flex items-center space-x-1 text-sm">
-                      <span className="text-foreground font-medium">
-                        {item.change}
-                      </span>
-                      <span
-                        className={cn(
-                          displayChangeType === "positive"
-                            ? "text-green-600 dark:text-green-500"
-                            : "text-red-600 dark:text-red-500"
-                        )}
-                      >
-                        ({item.percentageChange})
-                      </span>
-                    </dd>
-                  </div>
-                  {item.maxValue && (
-                    <div className="text-muted-foreground mt-1 text-xs">
-                      Max: {item.maxValue}
-                    </div>
+        return (
+          <div key={item.name} className="bg-card flex flex-col px-5 py-4">
+            <dt className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.06em] uppercase">
+              {item.name}
+            </dt>
+            <div className="mt-2 flex items-baseline justify-between gap-2">
+              <dd className="font-mono text-2xl font-semibold tabular-nums">
+                {item.value}
+              </dd>
+              <dd className="flex items-baseline gap-1 font-mono text-xs tabular-nums">
+                <span className="text-muted-foreground">{item.change}</span>
+                <span
+                  className={cn(
+                    displayChangeType === "positive"
+                      ? "text-emerald-600 dark:text-emerald-500"
+                      : "text-red-600 dark:text-red-500"
                   )}
-                </div>
+                >
+                  ({item.percentageChange})
+                </span>
+              </dd>
+            </div>
+            {item.maxValue ? (
+              <div className="text-muted-foreground/80 mt-0.5 font-mono text-[10px] tabular-nums">
+                Max {item.maxValue}
+              </div>
+            ) : null}
 
-                <div className="mt-2 h-16 overflow-hidden">
-                  <ChartContainer
-                    className="h-full w-full"
-                    config={{
-                      [item.name]: {
-                        label: item.name,
-                        color,
-                      },
-                    }}
-                  >
-                    {item.aggregation === "sum" ? (
-                      <BarChart data={item.data}>
-                        <XAxis dataKey="date" hide={true} />
-                        <Bar
-                          dataKey={item.name}
-                          fill={color}
-                          radius={[4, 4, 0, 0]}
+            <div className="mt-3 h-14 overflow-hidden">
+              <ChartContainer
+                className="h-full w-full"
+                config={{
+                  [item.name]: {
+                    label: item.name,
+                    color,
+                  },
+                }}
+              >
+                {item.aggregation === "sum" ? (
+                  <BarChart data={item.data}>
+                    <XAxis dataKey="date" hide={true} />
+                    <Bar
+                      dataKey={item.name}
+                      fill={color}
+                      radius={[2, 2, 0, 0]}
+                    />
+                  </BarChart>
+                ) : (
+                  <AreaChart data={item.data}>
+                    <defs>
+                      <linearGradient
+                        id={gradientId}
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor={color}
+                          stopOpacity={0.35}
                         />
-                      </BarChart>
-                    ) : (
-                      <AreaChart data={item.data}>
-                        <defs>
-                          <linearGradient
-                            id={gradientId}
-                            x1="0"
-                            y1="0"
-                            x2="0"
-                            y2="1"
-                          >
-                            <stop
-                              offset="5%"
-                              stopColor={color}
-                              stopOpacity={0.3}
-                            />
-                            <stop
-                              offset="95%"
-                              stopColor={color}
-                              stopOpacity={0}
-                            />
-                          </linearGradient>
-                        </defs>
-                        <XAxis dataKey="date" hide={true} />
-                        <Area
-                          dataKey={item.name}
-                          stroke={color}
-                          fill={`url(#${gradientId})`}
-                          fillOpacity={0.4}
-                          strokeWidth={1.5}
-                          type="monotone"
-                        />
-                      </AreaChart>
-                    )}
-                  </ChartContainer>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </dl>
-    </div>
+                        <stop offset="95%" stopColor={color} stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <XAxis dataKey="date" hide={true} />
+                    <Area
+                      dataKey={item.name}
+                      stroke={color}
+                      fill={`url(#${gradientId})`}
+                      fillOpacity={0.5}
+                      strokeWidth={1.5}
+                      type="monotone"
+                    />
+                  </AreaChart>
+                )}
+              </ChartContainer>
+            </div>
+          </div>
+        );
+      })}
+    </dl>
   );
 }

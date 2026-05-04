@@ -135,47 +135,42 @@ function HeroTile({ hero }: { hero: HeroData }) {
     <TooltipProvider delayDuration={200}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div
-            className={`group relative flex flex-col items-center gap-2 rounded-lg border-2 p-3 transition-all duration-200 hover:scale-105 hover:shadow-lg ${tier.borderColor} ${tier.bgColor}`}
+          <Link
+            href={`/leaderboard/csr?hero=${hero.player_hero}` as Route}
+            target="_blank"
+            className="bg-card hover:bg-muted/40 group flex items-center gap-3 px-3 py-3 transition-colors"
           >
-            <Link
-              href={`/leaderboard/csr?hero=${hero.player_hero}` as Route}
-              target="_blank"
-            >
-              <div className="relative h-16 w-16 overflow-hidden rounded-full">
-                <Image
-                  src={`/heroes/${heroName}.png`}
-                  alt={hero.player_hero}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="flex flex-col items-center gap-1">
-                <span className="text-center text-xs font-semibold">
-                  {t(heroName)}
+            <Image
+              src={`/heroes/${heroName}.png`}
+              alt={hero.player_hero}
+              width={256}
+              height={256}
+              className="ring-foreground/10 size-10 shrink-0 rounded-md object-cover ring-1"
+            />
+            <div className="flex min-w-0 flex-1 flex-col">
+              <span className="truncate text-sm font-medium">
+                {t(heroName)}
+              </span>
+              {hero.hero_rating > 0 ? (
+                <span className="text-muted-foreground/80 font-mono text-[0.625rem] tracking-[0.06em] uppercase">
+                  {tier.name}
                 </span>
-                {hero.hero_rating > 0 ? (
-                  <div className="flex items-center gap-1">
-                    {tier.rankImage && (
-                      <Image
-                        src={tier.rankImage}
-                        alt={tier.name}
-                        width={16}
-                        height={16}
-                      />
-                    )}
-                    <span className={`text-xs font-bold ${tier.textColor}`}>
-                      {hero.hero_rating}
-                    </span>
-                  </div>
-                ) : (
-                  <span className="text-muted-foreground text-xs">
-                    Unplaced
-                  </span>
-                )}
-              </div>
-            </Link>
-          </div>
+              ) : (
+                <span className="text-muted-foreground/80 font-mono text-[0.625rem] tracking-[0.06em] uppercase">
+                  {hero.mapsPlayed}/10 maps
+                </span>
+              )}
+            </div>
+            {hero.hero_rating > 0 ? (
+              <span className="font-mono text-sm font-semibold tabular-nums">
+                {hero.hero_rating}
+              </span>
+            ) : (
+              <span className="text-muted-foreground/60 font-mono text-xs">
+                —
+              </span>
+            )}
+          </Link>
         </TooltipTrigger>
         <TooltipContent side="top" className="max-w-xs">
           <div className="space-y-1">
@@ -202,22 +197,23 @@ function HeroTile({ hero }: { hero: HeroData }) {
 function RoleSection({
   roleName,
   heroes,
-  roleColor,
 }: {
   roleName: string;
   heroes: HeroData[];
-  roleColor: string;
 }) {
   if (heroes.length === 0) return null;
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <div className={`h-4 w-4 rounded-full ${roleColor}`} />
-        <h4 className="font-semibold">{roleName}</h4>
-        <span className="text-muted-foreground text-sm">({heroes.length})</span>
+      <div className="flex items-baseline gap-3">
+        <h4 className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.16em] uppercase">
+          {roleName}
+        </h4>
+        <span className="text-muted-foreground/70 font-mono text-[0.6875rem] tabular-nums">
+          {heroes.length}
+        </span>
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+      <div className="bg-border grid grid-cols-1 gap-px sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {heroes.map((hero) => (
           <HeroTile key={hero.player_hero} hero={hero} />
         ))}
@@ -244,33 +240,19 @@ export function HeroMasteryGrid({ heroesData }: HeroMasteryGridProps) {
   groupedByRole.Damage.sort((a, b) => b.hero_rating - a.hero_rating);
   groupedByRole.Support.sort((a, b) => b.hero_rating - a.hero_rating);
 
-  return (
-    <div className="bg-card text-card-foreground rounded-xl pt-6 shadow">
-      <h3 className="mb-4 leading-none font-semibold tracking-tight">
-        Hero Mastery
-      </h3>
-      <div className="space-y-6">
-        <RoleSection
-          roleName="Tank"
-          heroes={groupedByRole.Tank}
-          roleColor="bg-blue-500"
-        />
-        <RoleSection
-          roleName="Damage"
-          heroes={groupedByRole.Damage}
-          roleColor="bg-red-500"
-        />
-        <RoleSection
-          roleName="Support"
-          heroes={groupedByRole.Support}
-          roleColor="bg-green-500"
-        />
+  if (heroesData.length === 0) {
+    return (
+      <div className="bg-card text-muted-foreground flex h-32 items-center justify-center px-5 text-sm">
+        No hero data available
       </div>
-      {heroesData.length === 0 && (
-        <div className="text-muted-foreground py-8 text-center text-sm">
-          No hero data available
-        </div>
-      )}
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <RoleSection roleName="Tank" heroes={groupedByRole.Tank} />
+      <RoleSection roleName="Damage" heroes={groupedByRole.Damage} />
+      <RoleSection roleName="Support" heroes={groupedByRole.Support} />
     </div>
   );
 }

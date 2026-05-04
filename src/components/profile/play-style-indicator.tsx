@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer } from "@/components/ui/chart";
 import type { CalculatedStatType } from "@prisma/client";
 import {
@@ -98,14 +97,14 @@ export function PlayStyleIndicator({
   const hasData = playStyleData.some((metric) => metric.value > 0);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Play Style</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <div className="bg-border grid grid-cols-1 gap-px lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+      <div className="bg-card flex flex-col px-5 py-5">
+        <h3 className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.06em] uppercase">
+          Radar
+        </h3>
         {hasData ? (
           <ChartContainer
-            className="mx-auto aspect-square h-[350px]"
+            className="mx-auto mt-2 aspect-square h-[320px] w-full"
             config={{
               value: {
                 label: "Score",
@@ -126,24 +125,35 @@ export function PlayStyleIndicator({
                 dataKey="value"
                 stroke="var(--chart-2)"
                 fill="var(--chart-2)"
-                fillOpacity={0.6}
+                fillOpacity={0.55}
               />
             </RadarChart>
           </ChartContainer>
         ) : (
-          <div className="text-muted-foreground flex h-[350px] items-center justify-center text-sm">
+          <div className="text-muted-foreground flex h-[320px] items-center justify-center text-sm">
             Not enough data to display play style
           </div>
         )}
-        <div className="mt-4 space-y-2 text-sm">
+      </div>
+      <div className="bg-card flex flex-col px-5 py-5">
+        <h3 className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.06em] uppercase">
+          Scores
+        </h3>
+        <ul className="mt-4 flex flex-col divide-y divide-[var(--border)]">
           {playStyleData.map((metric) => (
-            <div key={metric.attribute} className="flex justify-between">
-              <span className="text-muted-foreground">{metric.attribute}</span>
-              <span className="font-semibold">{metric.value}/100</span>
-            </div>
+            <li
+              key={metric.attribute}
+              className="flex items-baseline justify-between gap-3 py-2.5 first:pt-0 last:pb-0"
+            >
+              <span className="text-sm">{metric.attribute}</span>
+              <span className="font-mono text-sm font-semibold tabular-nums">
+                {metric.value}
+                <span className="text-muted-foreground/70">/100</span>
+              </span>
+            </li>
           ))}
-        </div>
-      </CardContent>
-    </Card>
+        </ul>
+      </div>
+    </div>
   );
 }
