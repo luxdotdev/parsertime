@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import type { ChartConfig } from "@/components/ui/chart";
 import {
   ChartContainer,
@@ -29,6 +29,35 @@ const timingChartConfig: ChartConfig = {
   },
 };
 
+type Bucket = {
+  label: string;
+  winrate: number;
+  maps: number;
+  wins: number;
+  losses: number;
+};
+
+function MicroStats({ entries }: { entries: Bucket[] }) {
+  const cols = entries.length <= 2 ? "grid-cols-2" : "grid-cols-3";
+  return (
+    <div
+      className={`border-border grid divide-x divide-y divide-[var(--border)] border-y ${cols} lg:divide-y-0`}
+    >
+      {entries.map((entry) => (
+        <div key={entry.label} className="flex flex-col gap-1 px-3 py-2">
+          <p className="text-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase">
+            {entry.label}
+          </p>
+          <p className="text-foreground font-mono text-lg leading-none font-semibold tabular-nums">
+            {entry.winrate.toFixed(1)}%
+          </p>
+          <p className="text-muted-foreground text-[11px]">{entry.maps} maps</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function SwapWinrateImpactCard({
   swapStats,
 }: SwapWinrateImpactCardProps) {
@@ -41,18 +70,14 @@ export function SwapWinrateImpactCard({
 
   if (!hasCountData && !hasTimingData) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">{t("noData")}</p>
-        </CardContent>
-      </Card>
+      <section className="space-y-4">
+        <SectionHeader eyebrow="Swaps · Winrate impact" title={t("title")} />
+        <p className="text-muted-foreground text-sm">{t("noData")}</p>
+      </section>
     );
   }
 
-  const countData = swapStats.winrateBySwapCount
+  const countData: Bucket[] = swapStats.winrateBySwapCount
     .filter((b) => b.totalMaps > 0)
     .map((b) => ({
       label: b.label,
@@ -62,7 +87,7 @@ export function SwapWinrateImpactCard({
       losses: b.losses,
     }));
 
-  const timingData = swapStats.timingOutcomes
+  const timingData: Bucket[] = swapStats.timingOutcomes
     .filter((b) => b.totalMaps > 0)
     .map((b) => ({
       label: b.label,
@@ -73,26 +98,24 @@ export function SwapWinrateImpactCard({
     }));
 
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      {hasCountData && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">{t("byCount")}</CardTitle>
-            <p className="text-muted-foreground text-sm">
-              {t("descriptionCount")}
+    <section className="space-y-4">
+      <SectionHeader eyebrow="Swaps · Winrate impact" title={t("title")} />
+      <div className="grid gap-x-8 gap-y-6 md:grid-cols-2">
+        {hasCountData && (
+          <div className="space-y-3">
+            <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+              By count
             </p>
-          </CardHeader>
-          <CardContent>
             <ChartContainer
               config={countChartConfig}
-              className="h-[240px] w-full"
+              className="h-[200px] w-full"
             >
               <BarChart
                 accessibilityLayer
                 data={countData}
                 margin={{ left: 8, right: 16, top: 8, bottom: 4 }}
               >
-                <CartesianGrid vertical={false} />
+                <CartesianGrid vertical={false} stroke="var(--border)" />
                 <XAxis
                   dataKey="label"
                   tickLine={false}
@@ -121,48 +144,25 @@ export function SwapWinrateImpactCard({
                 />
               </BarChart>
             </ChartContainer>
+            <MicroStats entries={countData} />
+          </div>
+        )}
 
-            <div className="mt-4 grid grid-cols-2 gap-2">
-              {countData.map((entry) => (
-                <div
-                  key={entry.label}
-                  className="bg-muted rounded-md px-3 py-2"
-                >
-                  <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-                    {entry.label}
-                  </p>
-                  <p className="text-foreground font-mono text-lg font-semibold tabular-nums">
-                    {entry.winrate.toFixed(1)}%
-                  </p>
-                  <p className="text-muted-foreground text-xs">
-                    {t("maps", { count: entry.maps })}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {hasTimingData && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">{t("byTiming")}</CardTitle>
-            <p className="text-muted-foreground text-sm">
-              {t("descriptionTiming")}
+        {hasTimingData && (
+          <div className="space-y-3">
+            <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+              By timing
             </p>
-          </CardHeader>
-          <CardContent>
             <ChartContainer
               config={timingChartConfig}
-              className="h-[240px] w-full"
+              className="h-[200px] w-full"
             >
               <BarChart
                 accessibilityLayer
                 data={timingData}
                 margin={{ left: 8, right: 16, top: 8, bottom: 4 }}
               >
-                <CartesianGrid vertical={false} />
+                <CartesianGrid vertical={false} stroke="var(--border)" />
                 <XAxis
                   dataKey="label"
                   tickLine={false}
@@ -191,28 +191,10 @@ export function SwapWinrateImpactCard({
                 />
               </BarChart>
             </ChartContainer>
-
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              {timingData.map((entry) => (
-                <div
-                  key={entry.label}
-                  className="bg-muted rounded-md px-3 py-2"
-                >
-                  <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-                    {entry.label}
-                  </p>
-                  <p className="text-foreground font-mono text-lg font-semibold tabular-nums">
-                    {entry.winrate.toFixed(1)}%
-                  </p>
-                  <p className="text-muted-foreground text-xs">
-                    {t("maps", { count: entry.maps })}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-    </div>
+            <MicroStats entries={timingData} />
+          </div>
+        )}
+      </div>
+    </section>
   );
 }

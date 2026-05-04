@@ -24,7 +24,7 @@ export function SwapPlayerBreakdownCard({
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Swaps · Players"
+          eyebrow="Swaps · Player breakdown"
           title={t("title")}
           description={t("noData")}
         />
@@ -35,7 +35,7 @@ export function SwapPlayerBreakdownCard({
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Swaps · Players"
+        eyebrow="Swaps · Player breakdown"
         title={t("title")}
         description={t("description")}
       />

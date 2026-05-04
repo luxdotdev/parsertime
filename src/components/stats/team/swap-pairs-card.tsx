@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import type { ChartConfig } from "@/components/ui/chart";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import type { SwapTimingBucket, TeamHeroSwapStats } from "@/data/team/types";
@@ -142,18 +142,18 @@ function SwapPairTooltip({
   const hasTimingData = timing?.some((b) => b.count > 0);
 
   return (
-    <div className="bg-background border-border min-w-[160px] rounded-lg border px-3 py-2 shadow-md">
+    <div className="bg-popover text-popover-foreground border-border min-w-[160px] rounded-lg border px-3 py-2 shadow-md">
       <p className="text-foreground mb-1 text-sm font-semibold">{data.pair}</p>
-      <p className="text-muted-foreground text-xs tabular-nums">
+      <p className="text-muted-foreground font-mono text-xs tabular-nums">
         {data.count} {data.count === 1 ? "time" : "times"}
       </p>
       {timing && hasTimingData && (
         <div className="mt-2 border-t pt-2">
-          <p className="text-muted-foreground mb-1 text-[10px] font-medium tracking-wide uppercase">
+          <p className="text-muted-foreground mb-1 font-mono text-[10px] tracking-[0.16em] uppercase">
             When in match
           </p>
           <MiniTimingChart buckets={timing} />
-          <div className="text-muted-foreground mt-1 flex justify-between text-[9px] tabular-nums">
+          <div className="text-muted-foreground mt-1 flex justify-between font-mono text-[9px] tabular-nums">
             <span>0%</span>
             <span>50%</span>
             <span>100%</span>
@@ -169,14 +169,10 @@ export function SwapPairsCard({ swapStats }: SwapPairsCardProps) {
 
   if (swapStats.topSwapPairs.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">{t("noData")}</p>
-        </CardContent>
-      </Card>
+      <section className="space-y-4">
+        <SectionHeader eyebrow="Swaps · Common pairs" title={t("title")} />
+        <p className="text-muted-foreground text-sm">{t("noData")}</p>
+      </section>
     );
   }
 
@@ -196,49 +192,48 @@ export function SwapPairsCard({ swapStats }: SwapPairsCardProps) {
   const chartHeight = Math.max(200, chartData.length * 44);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-        <p className="text-muted-foreground text-sm">{t("description")}</p>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer
-          config={chartConfig}
-          className="w-full"
-          style={{ height: chartHeight }}
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Swaps · Common pairs"
+        title={t("title")}
+        description={t("description")}
+      />
+      <ChartContainer
+        config={chartConfig}
+        className="w-full"
+        style={{ height: chartHeight }}
+      >
+        <BarChart
+          accessibilityLayer
+          data={chartData}
+          layout="vertical"
+          margin={{ left: 8, right: 16, top: 4, bottom: 4 }}
         >
-          <BarChart
-            accessibilityLayer
-            data={chartData}
-            layout="vertical"
-            margin={{ left: 8, right: 16, top: 4, bottom: 4 }}
-          >
-            <CartesianGrid horizontal={false} />
-            <YAxis
-              dataKey="pair"
-              type="category"
-              tickLine={false}
-              axisLine={false}
-              width={Y_AXIS_WIDTH}
-              tick={renderSwapPairTick}
-            />
-            <XAxis
-              type="number"
-              tickLine={false}
-              axisLine={false}
-              allowDecimals={false}
-            />
-            <ChartTooltip
-              content={<SwapPairTooltip timingByPair={timingByPair} />}
-            />
-            <Bar
-              dataKey="count"
-              fill="var(--color-count)"
-              radius={[0, 4, 4, 0]}
-            />
-          </BarChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+          <CartesianGrid horizontal={false} stroke="var(--border)" />
+          <YAxis
+            dataKey="pair"
+            type="category"
+            tickLine={false}
+            axisLine={false}
+            width={Y_AXIS_WIDTH}
+            tick={renderSwapPairTick}
+          />
+          <XAxis
+            type="number"
+            tickLine={false}
+            axisLine={false}
+            allowDecimals={false}
+          />
+          <ChartTooltip
+            content={<SwapPairTooltip timingByPair={timingByPair} />}
+          />
+          <Bar
+            dataKey="count"
+            fill="var(--color-count)"
+            radius={[0, 4, 4, 0]}
+          />
+        </BarChart>
+      </ChartContainer>
+    </section>
   );
 }
