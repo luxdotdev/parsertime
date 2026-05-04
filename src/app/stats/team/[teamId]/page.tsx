@@ -1,4 +1,3 @@
-import { RecentActivityCalendar } from "@/components/profile/recent-activity-calendar";
 import { AbilityImpactAnalysisCard } from "@/components/stats/team/ability-impact-analysis-card";
 import { BestRoleTriosCard } from "@/components/stats/team/best-role-trios-card";
 import { HeroBanImpactCard } from "@/components/stats/team/hero-ban-impact-card";
@@ -6,24 +5,25 @@ import { HeroOurBansCard } from "@/components/stats/team/hero-our-bans-card";
 import { HeroPoolContainer } from "@/components/stats/team/hero-pool-container";
 import { InsufficientScrimsPlaceholder } from "@/components/stats/team/insufficient-scrims-placeholder";
 import { MapModePerformanceCard } from "@/components/stats/team/map-mode-performance-card";
+import { MapPerformanceTable } from "@/components/stats/team/map-performance-table";
 import { MapWinrateGallery } from "@/components/stats/team/map-winrate-gallery";
 import { MatchupWinrateTab } from "@/components/stats/team/matchup-winrate-tab";
+import { OverviewInsightsBand } from "@/components/stats/team/overview-insights-band";
 import { PlayerMapPerformanceCard } from "@/components/stats/team/player-map-performance-card";
-import { QuickStatsCard } from "@/components/stats/team/quick-stats-card";
+import { QuickStatsRibbon } from "@/components/stats/team/quick-stats-ribbon";
 import { RecentFormCard } from "@/components/stats/team/recent-form-card";
-import { RoleBalanceRadar } from "@/components/stats/team/role-balance-radar";
 import { RolePerformanceCard } from "@/components/stats/team/role-performance-card";
 import { SimulatorTab } from "@/components/stats/team/simulator-tab";
-import { StrengthsWeaknessesCard } from "@/components/stats/team/strengths-weaknesses-card";
 import { SwapOverviewCard } from "@/components/stats/team/swap-overview-card";
 import { SwapPairsCard } from "@/components/stats/team/swap-pairs-card";
 import { SwapPlayerBreakdownCard } from "@/components/stats/team/swap-player-breakdown-card";
 import { SwapTimingCard } from "@/components/stats/team/swap-timing-card";
+import { StatRibbon } from "@/components/stats/team/stat-ribbon";
 import { SwapWinrateImpactCard } from "@/components/stats/team/swap-winrate-impact-card";
 import { TeamFightStatsCard } from "@/components/stats/team/team-fight-stats-card";
 import { TeamRangePicker } from "@/components/stats/team/team-range-picker";
 import { TeamRosterGrid } from "@/components/stats/team/team-roster-grid";
-import { TopMapsCard } from "@/components/stats/team/top-maps-card";
+import { TeamTsrStat } from "@/components/stats/team/team-tsr-stat";
 import { UltImpactAnalysisCard } from "@/components/stats/team/ult-impact-analysis-card";
 import { UltPlayerRankingsCard } from "@/components/stats/team/ult-player-rankings-card";
 import { UltRoleBreakdownCard } from "@/components/stats/team/ult-role-breakdown-card";
@@ -59,6 +59,7 @@ import { calculateHeroPickrateMatrix } from "@/lib/hero-pickrate-utils";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { isValidTimeframe, type Timeframe } from "@/lib/timeframe";
+import { computeTeamTsr } from "@/lib/tsr/team";
 import { getMapNames } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
@@ -249,7 +250,7 @@ export default async function TeamStatsPage(
       matchupWinrateData,
       heroPool,
     },
-    scrims,
+    teamTsr,
     mapNames,
     playerMapPerformance,
     simulatorContext,
@@ -351,12 +352,18 @@ export default async function TeamStatsPage(
         { concurrency: "unbounded" }
       )
     ),
-    prisma.scrim.findMany({
-      where: {
-        teamId,
-        ...(dateRange && { date: { gte: dateRange.from, lte: dateRange.to } }),
-      },
-    }),
+    prisma.scrim
+      .findMany({ where: { teamId }, select: { id: true } })
+      .then((rows) =>
+        computeTeamTsr(
+          team.users.map((u) => ({
+            id: u.id,
+            name: u.name,
+            battletag: u.battletag,
+          })),
+          rows.map((r) => r.id)
+        )
+      ),
     getMapNames(),
     AppRuntime.runPromise(
       TeamAnalyticsService.pipe(
@@ -420,6 +427,7 @@ export default async function TeamStatsPage(
                 value={`${winrates.overallWinrate.toFixed(1)}%`}
               />
               <Stat label="Scrims" value={totalScrimCount} />
+              <TeamTsrStat result={teamTsr} />
             </dl>
           ) : null}
           <TeamRangePicker
@@ -465,49 +473,106 @@ export default async function TeamStatsPage(
           )}
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-6">
-          {/* Quick Stats */}
-          <QuickStatsCard stats={quickStats} />
+        <TabsContent value="overview" className="space-y-12">
+          <QuickStatsRibbon
+            stats={quickStats}
+            uniqueHeroes={heroPool.diversity.totalUniqueHeroes}
+            uniqueMaps={allMapsPlaytime.length}
+          />
 
-          <div className="grid gap-4 md:grid-cols-2">
-            {/* Team Roster */}
-            <TeamRosterGrid roster={teamRoster} teamId={teamId} />
+          <OverviewInsightsBand
+            quickStats={quickStats}
+            roleStats={roleStats}
+            roleBalance={roleBalance}
+            bestMap={bestMapByWinrate}
+            blindSpot={blindSpotMap}
+            mapNames={mapNames}
+          />
 
-            {/* Recent Activity Calendar */}
-            <RecentActivityCalendar scrims={scrims} dateRange={dateRange} />
-          </div>
+          <MapPerformanceTable
+            topMaps={top5Maps}
+            winrates={winrates.byMap}
+            bestMap={bestMapByWinrate}
+            blindSpot={blindSpotMap}
+            mapNames={mapNames}
+          />
 
-          {/* Two Column Layout: Top Maps + Strengths/Weaknesses */}
-          <div className="grid gap-4 md:grid-cols-2">
-            <TopMapsCard
-              topMaps={top5Maps}
-              winrates={winrates.byMap}
-              mapNames={mapNames}
-            />
-            <StrengthsWeaknessesCard
-              bestMap={bestMapByWinrate}
-              blindSpot={blindSpotMap}
-              mapNames={mapNames}
-            />
-          </div>
-
-          {/* Role Balance Overview */}
-          <div className="grid gap-4 md:grid-cols-1">
-            <RoleBalanceRadar
-              roleStats={roleStats}
-              balanceAnalysis={roleBalance}
-            />
-          </div>
+          <TeamRosterGrid roster={teamRoster} teamId={teamId} />
         </TabsContent>
 
         {/* Performance Tab */}
-        <TabsContent value="performance" className="space-y-6">
+        <TabsContent value="performance" className="space-y-12">
+          <StatRibbon
+            cells={[
+              {
+                label: "Tank K/D",
+                value: roleStats.Tank.kd.toFixed(2),
+                sub:
+                  roleStats.Tank.totalPlaytime > 0
+                    ? `${(roleStats.Tank.totalPlaytime / 3600).toFixed(1)}h played`
+                    : "no playtime",
+              },
+              {
+                label: "Damage K/D",
+                value: roleStats.Damage.kd.toFixed(2),
+                sub:
+                  roleStats.Damage.totalPlaytime > 0
+                    ? `${(roleStats.Damage.totalPlaytime / 3600).toFixed(1)}h played`
+                    : "no playtime",
+              },
+              {
+                label: "Support K/D",
+                value: roleStats.Support.kd.toFixed(2),
+                sub:
+                  roleStats.Support.totalPlaytime > 0
+                    ? `${(roleStats.Support.totalPlaytime / 3600).toFixed(1)}h played`
+                    : "no playtime",
+              },
+              {
+                label: "Best role",
+                value: roleBalance.strongestRole ?? "—",
+                sub: roleBalance.strongestRole
+                  ? "leading K/D"
+                  : "insufficient data",
+                emphasis: !!roleBalance.strongestRole,
+              },
+            ]}
+            columns={4}
+          />
           <RolePerformanceCard roleStats={roleStats} />
           <BestRoleTriosCard trios={bestTrios} />
         </TabsContent>
 
         {/* Heroes Tab */}
-        <TabsContent value="heroes" className="space-y-6">
+        <TabsContent value="heroes" className="space-y-12">
+          <StatRibbon
+            cells={[
+              {
+                label: "Heroes played",
+                value: String(heroPool.diversity.totalUniqueHeroes),
+                sub: "unique heroes",
+                emphasis: true,
+              },
+              {
+                label: "Effective pool",
+                value: heroPool.diversity.effectiveHeroPool.toFixed(1),
+                sub: "core rotation",
+              },
+              {
+                label: "Top winrate",
+                value: heroPool.topHeroWinrates[0]
+                  ? `${heroPool.topHeroWinrates[0].winrate.toFixed(0)}%`
+                  : "—",
+                sub: heroPool.topHeroWinrates[0]?.heroName ?? "—",
+              },
+              {
+                label: "Bans against us",
+                value: String(banImpactAnalysis.received.totalMapsAnalyzed),
+                sub: `${banImpactAnalysis.received.banImpacts.length} unique`,
+              },
+            ]}
+            columns={4}
+          />
           <HeroPoolContainer
             initialData={heroPool}
             heatmapInitialData={heroPickrateMatrix}
@@ -517,7 +582,57 @@ export default async function TeamStatsPage(
         </TabsContent>
 
         {/* Trends Tab */}
-        <TabsContent value="trends" className="space-y-6">
+        <TabsContent value="trends" className="space-y-12">
+          <StatRibbon
+            cells={[
+              {
+                label: "Last 5",
+                value:
+                  recentForm.last5.length > 0
+                    ? `${recentForm.last5Winrate.toFixed(0)}%`
+                    : "—",
+                sub:
+                  recentForm.last5.length > 0
+                    ? `${recentForm.last5.filter((m) => m.result === "win").length}–${recentForm.last5.filter((m) => m.result === "loss").length}`
+                    : "no data",
+                emphasis: true,
+              },
+              {
+                label: "Last 10",
+                value:
+                  recentForm.last10.length > 0
+                    ? `${recentForm.last10Winrate.toFixed(0)}%`
+                    : "—",
+                sub:
+                  recentForm.last10.length > 0
+                    ? `${recentForm.last10.filter((m) => m.result === "win").length}–${recentForm.last10.filter((m) => m.result === "loss").length}`
+                    : "no data",
+              },
+              {
+                label: "Last 20",
+                value:
+                  recentForm.last20.length > 0
+                    ? `${recentForm.last20Winrate.toFixed(0)}%`
+                    : "—",
+                sub:
+                  recentForm.last20.length > 0
+                    ? `${recentForm.last20.filter((m) => m.result === "win").length}–${recentForm.last20.filter((m) => m.result === "loss").length}`
+                    : "no data",
+              },
+              {
+                label: "Current streak",
+                value:
+                  streakInfo.currentStreak.count > 0
+                    ? `${streakInfo.currentStreak.count}${streakInfo.currentStreak.type === "win" ? "W" : "L"}`
+                    : "—",
+                sub:
+                  streakInfo.longestWinStreak.count > 0
+                    ? `${streakInfo.longestWinStreak.count}W best run`
+                    : "no streaks yet",
+              },
+            ]}
+            columns={4}
+          />
           <WinrateOverTimeChart
             weeklyData={weeklyWinrate}
             monthlyData={monthlyWinrate}
@@ -529,7 +644,41 @@ export default async function TeamStatsPage(
         </TabsContent>
 
         {/* Maps Tab */}
-        <TabsContent value="maps" className="space-y-6">
+        <TabsContent value="maps" className="space-y-12">
+          <StatRibbon
+            cells={[
+              {
+                label: "Maps played",
+                value: String(allMapsPlaytime.length),
+                sub: "unique maps",
+                emphasis: true,
+              },
+              {
+                label: "Best mode",
+                value: mapModePerformance.bestMode ?? "—",
+                sub: mapModePerformance.bestMode
+                  ? `${mapModePerformance.byMode[mapModePerformance.bestMode].winrate.toFixed(0)}% winrate`
+                  : "no data",
+              },
+              {
+                label: "Bleed mode",
+                value: mapModePerformance.worstMode ?? "—",
+                sub: mapModePerformance.worstMode
+                  ? `${mapModePerformance.byMode[mapModePerformance.worstMode].winrate.toFixed(0)}% winrate`
+                  : "no data",
+              },
+              {
+                label: "Modes played",
+                value: String(
+                  Object.values(mapModePerformance.byMode).filter(
+                    (m) => m.gamesPlayed > 0
+                  ).length
+                ),
+                sub: "with games",
+              },
+            ]}
+            columns={4}
+          />
           <MapModePerformanceCard modePerformance={mapModePerformance} />
           <MapWinrateGallery
             winrates={winrates.byMap}
@@ -540,7 +689,45 @@ export default async function TeamStatsPage(
         </TabsContent>
 
         {/* Swaps Tab */}
-        <TabsContent value="swaps" className="space-y-6">
+        <TabsContent value="swaps" className="space-y-12">
+          <StatRibbon
+            cells={[
+              {
+                label: "Total swaps",
+                value: String(heroSwapStats.totalSwaps),
+                sub: `across ${heroSwapStats.totalMaps} maps`,
+                emphasis: true,
+              },
+              {
+                label: "Swaps per map",
+                value: heroSwapStats.swapsPerMap.toFixed(1),
+                sub: "average",
+              },
+              {
+                label: "Post-swap WR",
+                value:
+                  heroSwapStats.swapWins + heroSwapStats.swapLosses > 0
+                    ? `${heroSwapStats.swapWinrate.toFixed(0)}%`
+                    : "—",
+                sub:
+                  heroSwapStats.swapWins + heroSwapStats.swapLosses > 0
+                    ? `${heroSwapStats.swapWins}–${heroSwapStats.swapLosses}`
+                    : "no swap maps",
+              },
+              {
+                label: "No-swap WR",
+                value:
+                  heroSwapStats.noSwapWins + heroSwapStats.noSwapLosses > 0
+                    ? `${heroSwapStats.noSwapWinrate.toFixed(0)}%`
+                    : "—",
+                sub:
+                  heroSwapStats.noSwapWins + heroSwapStats.noSwapLosses > 0
+                    ? `${heroSwapStats.noSwapWins}–${heroSwapStats.noSwapLosses}`
+                    : "no static maps",
+              },
+            ]}
+            columns={4}
+          />
           <SwapOverviewCard swapStats={heroSwapStats} />
           <SwapTimingCard swapStats={heroSwapStats} />
           <SwapWinrateImpactCard swapStats={heroSwapStats} />
@@ -549,14 +736,90 @@ export default async function TeamStatsPage(
         </TabsContent>
 
         {/* Teamfights Tab */}
-        <TabsContent value="teamfights" className="space-y-6">
+        <TabsContent value="teamfights" className="space-y-12">
+          <StatRibbon
+            cells={[
+              {
+                label: "Fight winrate",
+                value:
+                  fightStats.totalFights > 0
+                    ? `${fightStats.overallWinrate.toFixed(0)}%`
+                    : "—",
+                sub:
+                  fightStats.totalFights > 0
+                    ? `${fightStats.fightsWon}–${fightStats.fightsLost} of ${fightStats.totalFights}`
+                    : "no fights",
+                emphasis: true,
+              },
+              {
+                label: "First pick",
+                value:
+                  fightStats.firstPickFights > 0
+                    ? `${fightStats.firstPickWinrate.toFixed(0)}%`
+                    : "—",
+                sub:
+                  fightStats.firstPickFights > 0
+                    ? `${fightStats.firstPickFights} fights`
+                    : "no data",
+              },
+              {
+                label: "First death",
+                value:
+                  fightStats.firstDeathFights > 0
+                    ? `${fightStats.firstDeathWinrate.toFixed(0)}%`
+                    : "—",
+                sub:
+                  fightStats.firstDeathFights > 0
+                    ? `${fightStats.firstDeathFights} fights`
+                    : "no data",
+              },
+              {
+                label: "Dry fight WR",
+                value:
+                  fightStats.dryFights > 0
+                    ? `${fightStats.dryFightWinrate.toFixed(0)}%`
+                    : "—",
+                sub:
+                  fightStats.dryFights > 0
+                    ? `${fightStats.dryFights} fights`
+                    : "no dry fights",
+              },
+            ]}
+            columns={4}
+          />
           <TeamFightStatsCard fightStats={fightStats} />
           <WinProbabilityInsights fightStats={fightStats} />
           <AbilityImpactAnalysisCard analysis={abilityImpactAnalysis} />
         </TabsContent>
 
         {/* Ultimates Tab */}
-        <TabsContent value="ultimates" className="space-y-6">
+        <TabsContent value="ultimates" className="space-y-12">
+          <StatRibbon
+            cells={[
+              {
+                label: "Total ults",
+                value: String(ultStats.totalUltsUsed),
+                sub: `${ultStats.ultsPerMap.toFixed(1)} per map`,
+                emphasis: true,
+              },
+              {
+                label: "In fights",
+                value: `${ultStats.fightInitiationRate.toFixed(0)}%`,
+                sub: `${ultStats.fightInitiationCount} initiations`,
+              },
+              {
+                label: "Avg charge",
+                value: `${ultStats.avgChargeTime.toFixed(0)}s`,
+                sub: `held ${ultStats.avgHoldTime.toFixed(0)}s`,
+              },
+              {
+                label: "Wasted",
+                value: String(fightStats.wastedUltimates),
+                sub: "no fight impact",
+              },
+            ]}
+            columns={4}
+          />
           <UltUsageOverviewCard ultStats={ultStats} />
           {ultimateImpactToolEnabled && (
             <UltImpactAnalysisCard analysis={ultImpactAnalysis} />
