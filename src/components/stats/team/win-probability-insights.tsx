@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import type { TeamFightStats } from "@/data/team/types";
 import { useTranslations } from "next-intl";
 
@@ -15,14 +15,13 @@ export function WinProbabilityInsights({
 
   if (fightStats.totalFights === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">{t("noData")}</p>
-        </CardContent>
-      </Card>
+      <section className="space-y-4">
+        <SectionHeader
+          eyebrow="Teamfights · Win probability"
+          title={t("title")}
+        />
+        <p className="text-muted-foreground text-sm">{t("noData")}</p>
+      </section>
     );
   }
 
@@ -122,94 +121,81 @@ export function WinProbabilityInsights({
     });
   }
 
-  function getImpactColor(impact: string): string {
-    if (impact === "high-positive")
-      return "border-green-500 bg-green-50 dark:bg-green-950/30";
-    if (impact === "negative")
-      return "border-red-500 bg-red-50 dark:bg-red-950/30";
-    return "border-yellow-500 bg-yellow-50 dark:bg-yellow-950/30";
-  }
-
-  function getImpactBadge(impact: string): string {
+  function getImpactLabel(impact: string): string {
     if (impact === "high-positive") return t("strongAdvantage");
     if (impact === "negative") return t("needsImprovement");
     return t("average");
   }
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">{t("title")}</CardTitle>
-        <p className="text-muted-foreground text-sm">{t("description")}</p>
-      </CardHeader>
-      <CardContent>
-        <div className="grid gap-4 md:grid-cols-2">
-          {insights.map((insight) => (
-            <div
-              key={insight.title}
-              className={`rounded-lg border p-4 ${getImpactColor(insight.impact)}`}
-            >
-              <div className="mb-2 flex items-start justify-between">
-                <h4 className="font-semibold">{insight.title}</h4>
-                <span
-                  className={`rounded px-2 py-1 text-xs ${
-                    insight.impact === "high-positive"
-                      ? "bg-green-600 text-white"
-                      : insight.impact === "negative"
-                        ? "bg-red-600 text-white"
-                        : "bg-yellow-600 text-white"
-                  }`}
-                >
-                  {getImpactBadge(insight.impact)}
-                </span>
-              </div>
-              <div className="mb-2 text-3xl font-bold">{insight.value}</div>
-              <p className="text-muted-foreground mb-1 text-sm">
-                {insight.description}
-              </p>
-              <p className="text-muted-foreground text-xs">{insight.detail}</p>
-            </div>
-          ))}
-        </div>
+  function getImpactTagClass(impact: string): string {
+    if (impact === "high-positive") return "bg-primary/15 text-primary";
+    if (impact === "negative") return "bg-destructive/15 text-destructive";
+    return "bg-muted text-muted-foreground";
+  }
 
-        <div className="bg-muted mt-6 rounded-lg p-4">
-          <h4 className="mb-2 text-sm font-semibold">
-            {t("overallFightPerformance")}
-          </h4>
-          <div className="grid gap-4 md:grid-cols-3">
-            <div>
-              <div className="text-muted-foreground text-xs">
-                {t("totalFights")}
-              </div>
-              <div className="text-2xl font-bold">{fightStats.totalFights}</div>
-            </div>
-            <div>
-              <div className="text-muted-foreground text-xs">
-                {t("fightsWon")}
-              </div>
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                {fightStats.fightsWon}
-              </div>
-            </div>
-            <div>
-              <div className="text-muted-foreground text-xs">
-                {t("overallWinrate")}
-              </div>
-              <div
-                className={`text-2xl font-bold ${
-                  fightStats.overallWinrate >= 55
-                    ? "text-green-600 dark:text-green-400"
-                    : fightStats.overallWinrate >= 45
-                      ? "text-yellow-600 dark:text-yellow-400"
-                      : "text-red-600 dark:text-red-400"
-                }`}
+  return (
+    <section className="space-y-6">
+      <SectionHeader
+        eyebrow="Teamfights · Win probability"
+        title={t("title")}
+        description={t("description")}
+      />
+      <div className="grid gap-4 md:grid-cols-2">
+        {insights.map((insight) => (
+          <div
+            key={insight.title}
+            className="border-border rounded-lg border p-4"
+          >
+            <div className="mb-2 flex items-start justify-between gap-2">
+              <h4 className="font-semibold">{insight.title}</h4>
+              <span
+                className={`rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase ${getImpactTagClass(insight.impact)}`}
               >
-                {fightStats.overallWinrate.toFixed(1)}%
-              </div>
+                {getImpactLabel(insight.impact)}
+              </span>
+            </div>
+            <div className="text-foreground mb-2 font-mono text-3xl font-bold tabular-nums">
+              {insight.value}
+            </div>
+            <p className="text-muted-foreground mb-1 text-sm">
+              {insight.description}
+            </p>
+            <p className="text-muted-foreground text-xs">{insight.detail}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="border-border border-t pt-4">
+        <h4 className="text-muted-foreground mb-3 font-mono text-[11px] tracking-[0.16em] uppercase">
+          {t("overallFightPerformance")}
+        </h4>
+        <div className="grid gap-4 md:grid-cols-3">
+          <div>
+            <div className="text-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase">
+              {t("totalFights")}
+            </div>
+            <div className="text-foreground font-mono text-2xl font-bold tabular-nums">
+              {fightStats.totalFights}
+            </div>
+          </div>
+          <div>
+            <div className="text-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase">
+              {t("fightsWon")}
+            </div>
+            <div className="text-foreground font-mono text-2xl font-bold tabular-nums">
+              {fightStats.fightsWon}
+            </div>
+          </div>
+          <div>
+            <div className="text-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase">
+              {t("overallWinrate")}
+            </div>
+            <div className="text-foreground font-mono text-2xl font-bold tabular-nums">
+              {fightStats.overallWinrate.toFixed(1)}%
             </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

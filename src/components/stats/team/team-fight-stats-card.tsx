@@ -44,10 +44,10 @@ export function TeamFightStatsCard({ fightStats }: TeamFightStatsCardProps) {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {/* Overall Fight Winrate */}
           <div className="space-y-2">
-            <h4 className="text-muted-foreground text-sm font-medium">
+            <h4 className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
               {t("overallWinrate")}
             </h4>
-            <p className="text-2xl font-bold">
+            <p className="text-foreground font-mono text-2xl font-bold tabular-nums">
               {round(fightStats.overallWinrate)}%
             </p>
             <p className="text-muted-foreground text-xs">
@@ -61,10 +61,10 @@ export function TeamFightStatsCard({ fightStats }: TeamFightStatsCardProps) {
           {/* First Pick Winrate */}
           {fightStats.firstPickFights > 0 && (
             <div className="space-y-2">
-              <h4 className="text-muted-foreground text-sm font-medium">
+              <h4 className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
                 {t("firstPickWinrate")}
               </h4>
-              <p className="text-2xl font-bold">
+              <p className="text-foreground font-mono text-2xl font-bold tabular-nums">
                 {round(fightStats.firstPickWinrate)}%
               </p>
               <p className="text-muted-foreground text-xs">
@@ -76,10 +76,10 @@ export function TeamFightStatsCard({ fightStats }: TeamFightStatsCardProps) {
           {/* First Death Winrate */}
           {fightStats.firstDeathFights > 0 && (
             <div className="space-y-2">
-              <h4 className="text-muted-foreground text-sm font-medium">
+              <h4 className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
                 {t("firstDeathWinrate")}
               </h4>
-              <p className="text-2xl font-bold">
+              <p className="text-foreground font-mono text-2xl font-bold tabular-nums">
                 {round(fightStats.firstDeathWinrate)}%
               </p>
               <p className="text-muted-foreground text-xs">
@@ -91,10 +91,10 @@ export function TeamFightStatsCard({ fightStats }: TeamFightStatsCardProps) {
           {/* First Ultimate Winrate */}
           {fightStats.firstUltFights > 0 && (
             <div className="space-y-2">
-              <h4 className="text-muted-foreground text-sm font-medium">
+              <h4 className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
                 {t("firstUltWinrate")}
               </h4>
-              <p className="text-2xl font-bold">
+              <p className="text-foreground font-mono text-2xl font-bold tabular-nums">
                 {round(fightStats.firstUltWinrate)}%
               </p>
               <p className="text-muted-foreground text-xs">
@@ -105,10 +105,12 @@ export function TeamFightStatsCard({ fightStats }: TeamFightStatsCardProps) {
 
           {/* Dry Fight Stats */}
           <div className="space-y-2">
-            <h4 className="text-muted-foreground text-sm font-medium">
+            <h4 className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
               {t("dryFights")}
             </h4>
-            <p className="text-2xl font-bold">{round(dryFightPercentage)}%</p>
+            <p className="text-foreground font-mono text-2xl font-bold tabular-nums">
+              {round(dryFightPercentage)}%
+            </p>
             <p className="text-muted-foreground text-xs">
               {t("dryFightDetails", {
                 count: fightStats.dryFights,
@@ -120,10 +122,10 @@ export function TeamFightStatsCard({ fightStats }: TeamFightStatsCardProps) {
           {/* Average Ultimates Per Fight */}
           {fightStats.nonDryFights > 0 && (
             <div className="space-y-2">
-              <h4 className="text-muted-foreground text-sm font-medium">
+              <h4 className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
                 {t("avgUltsPerFight")}
               </h4>
-              <p className="text-2xl font-bold">
+              <p className="text-foreground font-mono text-2xl font-bold tabular-nums">
                 {round(fightStats.avgUltsPerNonDryFight)}
               </p>
               <p className="text-muted-foreground text-xs">
