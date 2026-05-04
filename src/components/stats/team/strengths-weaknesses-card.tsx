@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import { toKebabCase, toTimestampWithHours } from "@/lib/utils";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -29,28 +29,21 @@ export function StrengthsWeaknessesCard({
 
   if (!bestMap && !blindSpot) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">{t("noData")}</p>
-        </CardContent>
-      </Card>
+      <section className="space-y-4">
+        <SectionHeader eyebrow="Overview · Best & worst" title={t("title")} />
+        <p className="text-muted-foreground text-sm">{t("noData")}</p>
+      </section>
     );
   }
 
   return (
-    <Card className="h-full">
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Best Map - Strength */}
+    <section className="space-y-4">
+      <SectionHeader eyebrow="Overview · Best & worst" title={t("title")} />
+      <div className="grid gap-6 md:grid-cols-2">
         {bestMap && (
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <TrendingUp className="text-muted-foreground h-4 w-4" />
+              <TrendingUp className="text-muted-foreground size-4" />
               <h3 className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
                 {t("strongestMap")}
               </h3>
@@ -92,11 +85,10 @@ export function StrengthsWeaknessesCard({
           </div>
         )}
 
-        {/* Blind Spot - Weakness */}
         {blindSpot && (
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <TrendingDown className="text-muted-foreground h-4 w-4" />
+              <TrendingDown className="text-muted-foreground size-4" />
               <h3 className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
                 {t("blindSpot")}
               </h3>
@@ -138,7 +130,7 @@ export function StrengthsWeaknessesCard({
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

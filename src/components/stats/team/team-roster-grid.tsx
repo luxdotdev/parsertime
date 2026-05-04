@@ -1,12 +1,6 @@
 import { PlayerHoverCard } from "@/components/player/hover-card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
 import prisma from "@/lib/prisma";
 import { Target } from "lucide-react";
@@ -39,16 +33,26 @@ async function getPlayerData(playerName: string) {
 export async function TeamRosterGrid({ roster, teamId }: TeamRosterGridProps) {
   const t = await getTranslations("teamStatsPage.teamRosterGrid");
 
+  const playerTargetsLink = (
+    <Link
+      href={`/team/${teamId}/targets` as Route}
+      className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 font-mono text-[11px] tracking-[0.16em] uppercase transition-colors"
+    >
+      <Target className="size-3.5" />
+      Player Targets
+    </Link>
+  );
+
   if (roster.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">{t("noData")}</p>
-        </CardContent>
-      </Card>
+      <section className="space-y-4">
+        <SectionHeader
+          eyebrow="Overview · Roster"
+          title={t("title")}
+          rightSlot={playerTargetsLink}
+        />
+        <p className="text-muted-foreground text-sm">{t("noData")}</p>
+      </section>
     );
   }
 
@@ -64,47 +68,33 @@ export async function TeamRosterGrid({ roster, teamId }: TeamRosterGridProps) {
   );
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-        <CardAction>
-          <Link
-            href={`/team/${teamId}/targets` as Route}
-            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
-          >
-            <Target className="h-4 w-4" />
-            Player Targets
-          </Link>
-        </CardAction>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-          {playersData.map((player) => (
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Overview · Roster"
+        title={t("title")}
+        rightSlot={playerTargetsLink}
+      />
+      <div className="flex flex-wrap gap-x-6 gap-y-2">
+        {playersData.map((player) => (
+          <PlayerHoverCard key={player.name} player={player.name}>
             <Link
-              key={player.name}
               href={`/stats/${encodeURIComponent(player.name)}` as Route}
-              className="group hover:bg-accent flex flex-col items-center gap-2 rounded-lg p-3 transition-colors"
+              className="hover:bg-muted/50 flex items-center gap-3 rounded-md px-2 py-1.5 transition-colors"
             >
-              <PlayerHoverCard player={player.name}>
-                <div className="flex flex-col items-center gap-2">
-                  <Avatar className="h-16 w-16 transition-transform group-hover:scale-110">
-                    <AvatarImage
-                      src={player.image ?? undefined}
-                      alt={player.displayName}
-                    />
-                    <AvatarFallback className="text-lg font-bold">
-                      {player.displayName.slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="w-full truncate text-center text-sm font-medium">
-                    {player.displayName}
-                  </span>
-                </div>
-              </PlayerHoverCard>
+              <Avatar className="h-10 w-10">
+                <AvatarImage
+                  src={player.image ?? undefined}
+                  alt={player.displayName}
+                />
+                <AvatarFallback className="text-sm font-bold">
+                  {player.displayName.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-sm font-medium">{player.displayName}</span>
             </Link>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+          </PlayerHoverCard>
+        ))}
+      </div>
+    </section>
   );
 }

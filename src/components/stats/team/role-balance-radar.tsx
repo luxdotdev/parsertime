@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import type {
   RoleBalanceAnalysis,
   RolePerformanceStats,
@@ -57,16 +57,40 @@ export function RoleBalanceRadar({
     (role) => roleStats[role as keyof RolePerformanceStats].totalPlaytime > 0
   );
 
+  function getBalanceBadgeClass(
+    overall: RoleBalanceAnalysis["overall"]
+  ): string {
+    switch (overall) {
+      case "Balanced":
+        return "bg-primary/15 text-primary";
+      case "Insufficient data":
+        return "bg-muted text-muted-foreground";
+      default:
+        return "bg-muted text-muted-foreground";
+    }
+  }
+
+  const balanceBadge = (
+    <span
+      className={cn(
+        "rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase",
+        getBalanceBadgeClass(balanceAnalysis.overall)
+      )}
+    >
+      {balanceAnalysis.overall}
+    </span>
+  );
+
   if (!hasData) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">{t("noData")}</p>
-        </CardContent>
-      </Card>
+      <section className="space-y-4">
+        <SectionHeader
+          eyebrow="Overview · Role balance"
+          title={t("title")}
+          rightSlot={balanceBadge}
+        />
+        <p className="text-muted-foreground text-sm">{t("noData")}</p>
+      </section>
     );
   }
 
@@ -113,107 +137,82 @@ export function RoleBalanceRadar({
     },
   ];
 
-  function getBalanceBadgeClass(
-    overall: RoleBalanceAnalysis["overall"]
-  ): string {
-    switch (overall) {
-      case "Balanced":
-        return "bg-primary/15 text-primary";
-      case "Insufficient data":
-        return "bg-muted text-muted-foreground";
-      default:
-        return "bg-muted text-muted-foreground";
-    }
-  }
-
   return (
-    <Card className="h-full">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>{t("title")}</CardTitle>
-          <span
-            className={cn(
-              "rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase",
-              getBalanceBadgeClass(balanceAnalysis.overall)
-            )}
-          >
-            {balanceAnalysis.overall}
-          </span>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <ResponsiveContainer width="100%" height={300}>
-            <RadarChart data={chartData}>
-              <PolarGrid />
-              <PolarAngleAxis dataKey="metric" />
-              <PolarRadiusAxis angle={90} domain={[0, 100]} />
-              <Radar
-                name={t("tank")}
-                dataKey="Tank"
-                stroke="var(--chart-1)"
-                fill="var(--chart-1)"
-                fillOpacity={0.4}
-              />
-              <Radar
-                name={t("damage")}
-                dataKey="Damage"
-                stroke="var(--chart-3)"
-                fill="var(--chart-3)"
-                fillOpacity={0.4}
-              />
-              <Radar
-                name={t("support")}
-                dataKey="Support"
-                stroke="var(--chart-5)"
-                fill="var(--chart-5)"
-                fillOpacity={0.4}
-              />
-              <Legend />
-              <Tooltip content={<CustomTooltip />} />
-            </RadarChart>
-          </ResponsiveContainer>
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Overview · Role balance"
+        title={t("title")}
+        rightSlot={balanceBadge}
+      />
+      <ResponsiveContainer width="100%" height={300}>
+        <RadarChart data={chartData}>
+          <PolarGrid />
+          <PolarAngleAxis dataKey="metric" />
+          <PolarRadiusAxis angle={90} domain={[0, 100]} />
+          <Radar
+            name={t("tank")}
+            dataKey="Tank"
+            stroke="var(--chart-1)"
+            fill="var(--chart-1)"
+            fillOpacity={0.4}
+          />
+          <Radar
+            name={t("damage")}
+            dataKey="Damage"
+            stroke="var(--chart-3)"
+            fill="var(--chart-3)"
+            fillOpacity={0.4}
+          />
+          <Radar
+            name={t("support")}
+            dataKey="Support"
+            stroke="var(--chart-5)"
+            fill="var(--chart-5)"
+            fillOpacity={0.4}
+          />
+          <Legend />
+          <Tooltip content={<CustomTooltip />} />
+        </RadarChart>
+      </ResponsiveContainer>
 
-          {balanceAnalysis.insights.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold">{t("insights")}</h4>
-              <ul className="text-muted-foreground space-y-1 text-sm">
-                {balanceAnalysis.insights.map((insight) => (
-                  <li key={insight} className="flex gap-2">
-                    <span>•</span>
-                    <span>{insight}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {balanceAnalysis.strongestRole && balanceAnalysis.weakestRole && (
-            <div className="bg-muted/50 rounded-lg p-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t("strongest")}</span>
-                <span className="text-foreground font-semibold">
-                  {balanceAnalysis.strongestRole}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t("needsWork")}</span>
-                <span className="text-foreground font-semibold">
-                  {balanceAnalysis.weakestRole}
-                </span>
-              </div>
-              <div className="mt-2 flex justify-between">
-                <span className="text-muted-foreground">
-                  {t("balanceScore")}
-                </span>
-                <span className="text-foreground font-mono font-semibold tabular-nums">
-                  {(balanceAnalysis.balanceScore * 100).toFixed(0)}%
-                </span>
-              </div>
-            </div>
-          )}
+      {balanceAnalysis.insights.length > 0 && (
+        <div className="space-y-2">
+          <h4 className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+            {t("insights")}
+          </h4>
+          <ul className="text-muted-foreground space-y-1 text-sm">
+            {balanceAnalysis.insights.map((insight) => (
+              <li key={insight} className="flex gap-2">
+                <span>•</span>
+                <span>{insight}</span>
+              </li>
+            ))}
+          </ul>
         </div>
-      </CardContent>
-    </Card>
+      )}
+
+      {balanceAnalysis.strongestRole && balanceAnalysis.weakestRole && (
+        <div className="bg-muted/50 rounded-lg p-3 text-sm">
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">{t("strongest")}</span>
+            <span className="text-foreground font-semibold">
+              {balanceAnalysis.strongestRole}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">{t("needsWork")}</span>
+            <span className="text-foreground font-semibold">
+              {balanceAnalysis.weakestRole}
+            </span>
+          </div>
+          <div className="mt-2 flex justify-between">
+            <span className="text-muted-foreground">{t("balanceScore")}</span>
+            <span className="text-foreground font-mono font-semibold tabular-nums">
+              {(balanceAnalysis.balanceScore * 100).toFixed(0)}%
+            </span>
+          </div>
+        </div>
+      )}
+    </section>
   );
 }
