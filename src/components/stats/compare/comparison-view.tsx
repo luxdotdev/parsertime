@@ -5,7 +5,6 @@ import type { Timeframe } from "@/components/stats/player/range-picker";
 import { Statistics } from "@/components/stats/player/statistics";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
 import {
   Popover,
@@ -55,7 +54,6 @@ export function ComparisonView({
   player1Data,
   player2Data,
 }: ComparisonViewProps) {
-  const t = useTranslations("statsPage.compareStats");
   const tRange = useTranslations("statsPage.playerStats.rangePicker");
   const TODAY = new Date();
   const LAST_WEEK = addWeeks(TODAY, -1);
@@ -84,176 +82,177 @@ export function ComparisonView({
   }
 
   return (
-    <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("filters")}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="items-center gap-2 space-y-2 md:flex md:space-y-0">
-            <Select onValueChange={onTimeframeChange} defaultValue="one-week">
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder={tRange("selectTime")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>{tRange("selectTime")}</SelectLabel>
-                  <SelectItem
-                    value="one-week"
-                    disabled={!permissions["stats-timeframe-1"]}
-                  >
-                    {tRange("lastWeek")}
-                  </SelectItem>
-                  <SelectItem
-                    value="two-weeks"
-                    disabled={!permissions["stats-timeframe-1"]}
-                  >
-                    {tRange("last2Weeks")}
-                  </SelectItem>
-                  <SelectItem
-                    value="one-month"
-                    disabled={!permissions["stats-timeframe-1"]}
-                  >
-                    {tRange("lastMonth")}
-                  </SelectItem>
-                  <SelectItem
-                    value="three-months"
-                    disabled={!permissions["stats-timeframe-2"]}
-                  >
-                    {tRange("last3Months")}
-                  </SelectItem>
-                  <SelectItem
-                    value="six-months"
-                    disabled={!permissions["stats-timeframe-2"]}
-                  >
-                    {tRange("last6Months")}
-                  </SelectItem>
-                  <SelectItem
-                    value="one-year"
-                    disabled={!permissions["stats-timeframe-3"]}
-                  >
-                    {tRange("lastYear")}
-                  </SelectItem>
-                  <SelectItem
-                    value="all-time"
-                    disabled={!permissions["stats-timeframe-3"]}
-                  >
-                    {tRange("allTime")}
-                  </SelectItem>
-                  <SelectItem
-                    value="custom"
-                    disabled={!permissions["stats-timeframe-3"]}
-                  >
-                    {tRange("custom")}
-                  </SelectItem>
-                </SelectGroup>
-                {!permissions["stats-timeframe-3"] && (
-                  <>
-                    <SelectSeparator />
-                    <SelectGroup>
-                      <SelectLabel>
-                        <Link href="/pricing" external>
-                          {tRange("upgrade")}
-                        </Link>
-                      </SelectLabel>
-                    </SelectGroup>
-                  </>
-                )}
-              </SelectContent>
-            </Select>
+    <div className="space-y-10">
+      <div className="space-y-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <Select onValueChange={onTimeframeChange} defaultValue="one-week">
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder={tRange("selectTime")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>{tRange("selectTime")}</SelectLabel>
+                <SelectItem
+                  value="one-week"
+                  disabled={!permissions["stats-timeframe-1"]}
+                >
+                  {tRange("lastWeek")}
+                </SelectItem>
+                <SelectItem
+                  value="two-weeks"
+                  disabled={!permissions["stats-timeframe-1"]}
+                >
+                  {tRange("last2Weeks")}
+                </SelectItem>
+                <SelectItem
+                  value="one-month"
+                  disabled={!permissions["stats-timeframe-1"]}
+                >
+                  {tRange("lastMonth")}
+                </SelectItem>
+                <SelectItem
+                  value="three-months"
+                  disabled={!permissions["stats-timeframe-2"]}
+                >
+                  {tRange("last3Months")}
+                </SelectItem>
+                <SelectItem
+                  value="six-months"
+                  disabled={!permissions["stats-timeframe-2"]}
+                >
+                  {tRange("last6Months")}
+                </SelectItem>
+                <SelectItem
+                  value="one-year"
+                  disabled={!permissions["stats-timeframe-3"]}
+                >
+                  {tRange("lastYear")}
+                </SelectItem>
+                <SelectItem
+                  value="all-time"
+                  disabled={!permissions["stats-timeframe-3"]}
+                >
+                  {tRange("allTime")}
+                </SelectItem>
+                <SelectItem
+                  value="custom"
+                  disabled={!permissions["stats-timeframe-3"]}
+                >
+                  {tRange("custom")}
+                </SelectItem>
+              </SelectGroup>
+              {!permissions["stats-timeframe-3"] && (
+                <>
+                  <SelectSeparator />
+                  <SelectGroup>
+                    <SelectLabel>
+                      <Link href="/pricing" external>
+                        {tRange("upgrade")}
+                      </Link>
+                    </SelectLabel>
+                  </SelectGroup>
+                </>
+              )}
+            </SelectContent>
+          </Select>
 
-            {timeframe === "custom" && (
-              <div className="grid gap-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      id="date"
-                      variant="outline"
-                      className={cn(
-                        "w-[300px] justify-start text-left font-normal",
-                        !date && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {date?.from ? (
-                        date.to ? (
-                          <>
-                            {format(date.from, "LLL dd, y")} -{" "}
-                            {format(date.to, "LLL dd, y")}
-                          </>
-                        ) : (
-                          format(date.from, "LLL dd, y")
-                        )
-                      ) : (
-                        <span>{tRange("pickDate")}</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      initialFocus
-                      mode="range"
-                      defaultMonth={date?.from}
-                      selected={date}
-                      onSelect={setDate}
-                      numberOfMonths={2}
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-            )}
-          </div>
+          {timeframe === "custom" && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  id="date"
+                  variant="outline"
+                  className={cn(
+                    "w-[280px] justify-start text-left font-normal",
+                    !date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date?.from ? (
+                    date.to ? (
+                      <>
+                        {format(date.from, "LLL dd, y")} -{" "}
+                        {format(date.to, "LLL dd, y")}
+                      </>
+                    ) : (
+                      format(date.from, "LLL dd, y")
+                    )
+                  ) : (
+                    <span>{tRange("pickDate")}</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  initialFocus
+                  mode="range"
+                  defaultMonth={date?.from}
+                  selected={date}
+                  onSelect={setDate}
+                  numberOfMonths={2}
+                />
+              </PopoverContent>
+            </Popover>
+          )}
 
           <HeroFilter
             selectedHeroes={selectedHeroes}
             onSelectionChange={setSelectedHeroes}
           />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <Card className="min-w-0">
-          <CardHeader>
-            <CardTitle className="text-center text-2xl font-bold tracking-tight">
-              {player1Data.playerName}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 md:p-6">
-            <Statistics
-              timeframe={timeframe}
-              date={date}
-              scrims={player1Data.scrims}
-              stats={player1Data.stats}
-              heroes={selectedHeroes}
-              kills={player1Data.kills}
-              mapWinrates={player1Data.mapWinrates}
-              deaths={player1Data.deaths}
-              comparisonView={true}
-            />
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 gap-x-10 gap-y-12 xl:grid-cols-2">
+        <PlayerColumn label="Player A" name={player1Data.playerName}>
+          <Statistics
+            timeframe={timeframe}
+            date={date}
+            scrims={player1Data.scrims}
+            stats={player1Data.stats}
+            heroes={selectedHeroes}
+            kills={player1Data.kills}
+            mapWinrates={player1Data.mapWinrates}
+            deaths={player1Data.deaths}
+            comparisonView={true}
+          />
+        </PlayerColumn>
 
-        <Card className="min-w-0">
-          <CardHeader>
-            <CardTitle className="text-center text-2xl font-bold tracking-tight">
-              {player2Data.playerName}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 md:p-6">
-            <Statistics
-              timeframe={timeframe}
-              date={date}
-              scrims={player2Data.scrims}
-              stats={player2Data.stats}
-              heroes={selectedHeroes}
-              kills={player2Data.kills}
-              mapWinrates={player2Data.mapWinrates}
-              deaths={player2Data.deaths}
-              comparisonView={true}
-            />
-          </CardContent>
-        </Card>
+        <PlayerColumn label="Player B" name={player2Data.playerName}>
+          <Statistics
+            timeframe={timeframe}
+            date={date}
+            scrims={player2Data.scrims}
+            stats={player2Data.stats}
+            heroes={selectedHeroes}
+            kills={player2Data.kills}
+            mapWinrates={player2Data.mapWinrates}
+            deaths={player2Data.deaths}
+            comparisonView={true}
+          />
+        </PlayerColumn>
       </div>
     </div>
+  );
+}
+
+function PlayerColumn({
+  label,
+  name,
+  children,
+}: {
+  label: string;
+  name: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="min-w-0 space-y-6">
+      <div className="border-border border-b pb-4">
+        <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+          {label}
+        </p>
+        <h2 className="mt-2 text-2xl font-semibold tracking-tight">{name}</h2>
+      </div>
+      {children}
+    </section>
   );
 }
