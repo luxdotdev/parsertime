@@ -9,17 +9,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { TeamUltStats } from "@/data/team/types";
-import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
 type UltRoleBreakdownCardProps = {
   ultStats: TeamUltStats;
-};
-
-const ROLE_COLORS: Record<string, string> = {
-  Tank: "bg-blue-500",
-  Damage: "bg-red-500",
-  Support: "bg-green-500",
 };
 
 export function UltRoleBreakdownCard({ ultStats }: UltRoleBreakdownCardProps) {
@@ -49,17 +42,16 @@ export function UltRoleBreakdownCard({ ultStats }: UltRoleBreakdownCardProps) {
         <div className="space-y-6">
           <div className="grid gap-4 md:grid-cols-3">
             {ultStats.roleBreakdown.map((role) => (
-              <div key={role.role} className="rounded-lg border p-4">
-                <div className="mb-2 flex items-center justify-between">
-                  <h4 className="text-sm font-medium">{role.role}</h4>
-                  <div
-                    className={cn(
-                      "h-2 w-2 rounded-full",
-                      ROLE_COLORS[role.role]
-                    )}
-                  />
-                </div>
-                <p className="text-2xl font-bold tabular-nums">{role.count}</p>
+              <div
+                key={role.role}
+                className="border-border rounded-lg border p-4"
+              >
+                <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+                  {role.role}
+                </p>
+                <p className="mt-2 font-mono text-2xl font-bold tabular-nums">
+                  {role.count}
+                </p>
                 <p className="text-muted-foreground text-xs">
                   {t("percentage", {
                     value: role.percentage.toFixed(1),

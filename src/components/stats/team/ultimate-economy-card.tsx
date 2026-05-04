@@ -30,26 +30,18 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
   const wastePercentage =
     (fightStats.wastedUltimates / fightStats.totalUltsUsed) * 100;
 
-  function getEfficiencyColor(efficiency: number): string {
-    if (efficiency >= 0.4) return "text-green-600 dark:text-green-400";
-    if (efficiency >= 0.25) return "text-blue-600 dark:text-blue-400";
-    if (efficiency >= 0.15) return "text-yellow-600 dark:text-yellow-400";
-    return "text-red-600 dark:text-red-400";
+  function getEfficiencyRatingKey(
+    efficiency: number
+  ): "excellent" | "good" | "average" | "poor" {
+    if (efficiency >= 0.4) return "excellent";
+    if (efficiency >= 0.25) return "good";
+    if (efficiency >= 0.15) return "average";
+    return "poor";
   }
 
-  function getEfficiencyRating(efficiency: number): string {
-    if (efficiency >= 0.4) return t("excellent");
-    if (efficiency >= 0.25) return t("good");
-    if (efficiency >= 0.15) return t("average");
-    return t("poor");
-  }
-
-  function getWasteColor(percentage: number): string {
-    if (percentage >= 30) return "text-red-600 dark:text-red-400";
-    if (percentage >= 20) return "text-yellow-600 dark:text-yellow-400";
-    if (percentage >= 10) return "text-blue-600 dark:text-blue-400";
-    return "text-green-600 dark:text-green-400";
-  }
+  const efficiencyRating = getEfficiencyRatingKey(
+    fightStats.ultimateEfficiency
+  );
 
   return (
     <Card>
@@ -61,36 +53,38 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
         <div className="space-y-6">
           {/* Main Metrics */}
           <div className="grid gap-4 md:grid-cols-3">
-            <div className="rounded-lg border p-4">
+            <div className="bg-card border-border rounded-lg border p-4">
               <div className="text-muted-foreground mb-2 text-sm">
                 {t("ultimateEfficiency")}
               </div>
-              <div
-                className={cn(
-                  "mb-1 text-3xl font-bold",
-                  getEfficiencyColor(fightStats.ultimateEfficiency)
-                )}
-              >
+              <div className="text-primary mb-1 font-mono text-3xl font-bold tabular-nums">
                 {fightStats.ultimateEfficiency.toFixed(2)}
               </div>
               <div className="text-muted-foreground text-xs">
                 {t("fightsWonPerUltUsed")}
               </div>
-              <div className="mt-2 text-xs font-medium">
-                {getEfficiencyRating(fightStats.ultimateEfficiency)}
+              <div className="mt-2">
+                <span
+                  className={cn(
+                    "rounded-sm px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.16em]",
+                    efficiencyRating === "excellent" ||
+                      efficiencyRating === "good"
+                      ? "bg-primary/15 text-primary"
+                      : efficiencyRating === "poor"
+                        ? "bg-destructive/15 text-destructive"
+                        : "bg-muted text-muted-foreground"
+                  )}
+                >
+                  {t(efficiencyRating)}
+                </span>
               </div>
             </div>
 
-            <div className="rounded-lg border p-4">
+            <div className="bg-card border-border rounded-lg border p-4">
               <div className="text-muted-foreground mb-2 text-sm">
                 {t("wastedUltimates")}
               </div>
-              <div
-                className={cn(
-                  "mb-1 text-3xl font-bold",
-                  getWasteColor(wastePercentage)
-                )}
-              >
+              <div className="text-foreground mb-1 font-mono text-3xl font-bold tabular-nums">
                 {fightStats.wastedUltimates}
               </div>
               <div className="text-muted-foreground text-xs">
@@ -98,16 +92,16 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
                   percentage: wastePercentage.toFixed(1),
                 })}
               </div>
-              <div className="mt-2 text-xs font-medium">
+              <div className="text-muted-foreground mt-2 text-xs font-medium">
                 {t("usedInLostSituations")}
               </div>
             </div>
 
-            <div className="rounded-lg border p-4">
+            <div className="bg-card border-border rounded-lg border p-4">
               <div className="text-muted-foreground mb-2 text-sm">
                 {t("totalUltimates")}
               </div>
-              <div className="mb-1 text-3xl font-bold">
+              <div className="text-foreground mb-1 font-mono text-3xl font-bold tabular-nums">
                 {fightStats.totalUltsUsed}
               </div>
               <div className="text-muted-foreground text-xs">
@@ -115,7 +109,7 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
                   fights: fightStats.totalFights,
                 })}
               </div>
-              <div className="mt-2 text-xs font-medium">
+              <div className="text-muted-foreground mt-2 text-xs font-medium">
                 {t("ultimatesPerFight", {
                   ultimates: (
                     fightStats.totalUltsUsed / fightStats.totalFights
@@ -129,18 +123,18 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
           <div>
             <h4 className="mb-3 font-semibold">{t("ultimateUsage")}</h4>
             <div className="grid gap-4 md:grid-cols-2">
-              <div className="rounded-lg border border-green-500 bg-green-50 p-4 dark:bg-green-950/30">
+              <div className="bg-card border-border rounded-lg border p-4">
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-sm font-medium">
+                  <span className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
                     {t("winningFights")}
                   </span>
-                  <span className="rounded bg-green-600 px-2 py-1 text-xs font-bold text-white">
+                  <span className="text-muted-foreground font-mono text-xs tabular-nums">
                     {t("fights", {
                       count: fightStats.fightsWon,
                     })}
                   </span>
                 </div>
-                <div className="text-3xl font-bold text-green-600 dark:text-green-400">
+                <div className="text-foreground font-mono text-3xl font-bold tabular-nums">
                   {fightStats.avgUltsInWonFights.toFixed(1)}
                 </div>
                 <div className="text-muted-foreground text-xs">
@@ -148,18 +142,18 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
                 </div>
               </div>
 
-              <div className="rounded-lg border border-red-500 bg-red-50 p-4 dark:bg-red-950/30">
+              <div className="bg-card border-border rounded-lg border p-4">
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-sm font-medium">
+                  <span className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
                     {t("losingFights")}
                   </span>
-                  <span className="rounded bg-red-600 px-2 py-1 text-xs font-bold text-white">
+                  <span className="text-muted-foreground font-mono text-xs tabular-nums">
                     {t("fights", {
                       count: fightStats.fightsLost,
                     })}
                   </span>
                 </div>
-                <div className="text-3xl font-bold text-red-600 dark:text-red-400">
+                <div className="text-foreground font-mono text-3xl font-bold tabular-nums">
                   {fightStats.avgUltsInLostFights.toFixed(1)}
                 </div>
                 <div className="text-muted-foreground text-xs">

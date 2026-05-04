@@ -18,9 +18,9 @@ import type {
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
 
-const INITIATION_COLOR = "#10b981";
-const MIDFIGHT_COLOR = "#eab308";
-const LATE_COLOR = "#f43f5e";
+const INITIATION_COLOR = "var(--chart-1)";
+const MIDFIGHT_COLOR = "var(--chart-3)";
+const LATE_COLOR = "var(--chart-5)";
 
 type TimingRow = {
   label: string;
