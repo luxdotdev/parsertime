@@ -45,22 +45,6 @@ type MapWinrateGalleryProps = {
 
 type SortOption = "winrate" | "playtime" | "alphabetical";
 
-function getWinrateColor(winrate: number): string {
-  if (winrate >= 70) return "bg-green-500/90";
-  if (winrate >= 55) return "bg-green-400/90";
-  if (winrate >= 45) return "bg-yellow-500/90";
-  if (winrate >= 30) return "bg-orange-500/90";
-  return "bg-red-500/90";
-}
-
-function getWinrateBorderColor(winrate: number): string {
-  if (winrate >= 70) return "border-green-500";
-  if (winrate >= 55) return "border-green-400";
-  if (winrate >= 45) return "border-yellow-500";
-  if (winrate >= 30) return "border-orange-500";
-  return "border-red-500";
-}
-
 function getMapType(mapName: string): $Enums.MapType | null {
   return (
     mapNameToMapTypeMapping[mapName as keyof typeof mapNameToMapTypeMapping] ??
@@ -83,7 +67,6 @@ export function MapWinrateGallery({
 
   const mapEntries = Object.entries(winrates);
 
-  // Get unique map types
   const availableMapTypes = useMemo(() => {
     const types = new Set<$Enums.MapType>();
     mapEntries.forEach(([mapName]) => {
@@ -93,11 +76,9 @@ export function MapWinrateGallery({
     return Array.from(types).sort();
   }, [mapEntries]);
 
-  // Filter and sort maps
   const filteredAndSortedMaps = useMemo(() => {
     let filtered = mapEntries;
 
-    // Apply map type filter
     if (filterMapType !== "all") {
       filtered = filtered.filter(([mapName]) => {
         const mapType = getMapType(mapName);
@@ -105,7 +86,6 @@ export function MapWinrateGallery({
       });
     }
 
-    // Apply search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(([mapName]) => {
@@ -117,7 +97,6 @@ export function MapWinrateGallery({
       });
     }
 
-    // Sort
     const sorted = [...filtered].sort((a, b) => {
       const [mapNameA, dataA] = a;
       const [mapNameB, dataB] = b;
@@ -126,7 +105,6 @@ export function MapWinrateGallery({
         case "winrate":
           return dataB.totalWinrate - dataA.totalWinrate;
         case "playtime": {
-          // Guard against undefined mapPlaytimes
           if (!mapPlaytimes) return 0;
           const playtimeA = mapPlaytimes[mapNameA] ?? 0;
           const playtimeB = mapPlaytimes[mapNameB] ?? 0;
@@ -143,6 +121,18 @@ export function MapWinrateGallery({
 
     return sorted;
   }, [mapEntries, filterMapType, searchQuery, sortBy, mapNames, mapPlaytimes]);
+
+  const leaderMapName = useMemo(() => {
+    let topName: string | null = null;
+    let topWinrate = -1;
+    for (const [mapName, data] of mapEntries) {
+      if (data.totalWinrate > topWinrate) {
+        topWinrate = data.totalWinrate;
+        topName = mapName;
+      }
+    }
+    return topName;
+  }, [mapEntries]);
 
   function handleMapClick(mapName: string) {
     setSelectedMap(mapName);
@@ -182,7 +172,6 @@ export function MapWinrateGallery({
   return (
     <>
       <div className="space-y-4">
-        {/* Filters and Search */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
@@ -202,7 +191,6 @@ export function MapWinrateGallery({
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {/* Search */}
               <div className="space-y-2">
                 <Label htmlFor="search">{t("searchMaps")}</Label>
                 <div className="relative">
@@ -217,7 +205,6 @@ export function MapWinrateGallery({
                 </div>
               </div>
 
-              {/* Map Type Filter */}
               <div className="space-y-2">
                 <Label htmlFor="map-type">{t("mapType")}</Label>
                 <Select value={filterMapType} onValueChange={setFilterMapType}>
@@ -235,7 +222,6 @@ export function MapWinrateGallery({
                 </Select>
               </div>
 
-              {/* Sort By */}
               <div className="space-y-2">
                 <Label htmlFor="sort">{t("sortBy")}</Label>
                 <Select
@@ -267,7 +253,6 @@ export function MapWinrateGallery({
           </CardContent>
         </Card>
 
-        {/* Results Count */}
         <div className="text-muted-foreground flex items-center justify-between text-sm">
           <span>
             {t("showingMaps", {
@@ -280,7 +265,6 @@ export function MapWinrateGallery({
           )}
         </div>
 
-        {/* Map Grid */}
         {filteredAndSortedMaps.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
@@ -296,15 +280,13 @@ export function MapWinrateGallery({
               const winrate = data.totalWinrate;
               const kebabName = toKebabCase(mapName);
               const mapType = getMapType(mapName);
+              const isLeader = leaderMapName === mapName;
 
               return (
                 <Card
                   key={mapName}
                   onClick={() => handleMapClick(mapName)}
-                  className={cn(
-                    "group relative h-48 cursor-pointer overflow-hidden border-2 transition-all hover:scale-105 hover:shadow-lg",
-                    getWinrateBorderColor(winrate)
-                  )}
+                  className="bg-card border-border group relative h-48 cursor-pointer overflow-hidden rounded-md border transition-all hover:scale-105 hover:shadow-lg"
                 >
                   <Image
                     src={`/maps/${kebabName}.webp`}
@@ -313,44 +295,42 @@ export function MapWinrateGallery({
                     className="object-cover brightness-[0.4] transition-all group-hover:brightness-[0.5]"
                   />
 
-                  {/* Map Type Badge */}
                   {mapType && (
                     <div className="absolute top-4 left-4 z-10">
-                      <Badge variant="secondary" className="text-xs">
+                      <span className="bg-muted text-muted-foreground rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase">
                         {mapType}
-                      </Badge>
+                      </span>
                     </div>
                   )}
 
-                  {/* Map Name */}
                   <div className="absolute bottom-16 left-4 z-10">
                     <h3 className="text-lg font-bold text-white drop-shadow-lg">
                       {mapNames.get(kebabName) ?? mapName}
                     </h3>
                   </div>
 
-                  {/* Winrate Badge */}
                   <div className="absolute top-4 right-4 z-10">
-                    <Badge
+                    <span
                       className={cn(
-                        "px-3 py-1 text-lg font-bold text-white",
-                        getWinrateColor(winrate)
+                        "rounded-sm px-2 py-0.5 font-mono text-[11px] tracking-[0.16em] uppercase tabular-nums",
+                        isLeader
+                          ? "bg-primary/15 text-primary"
+                          : "bg-muted text-muted-foreground"
                       )}
                     >
                       {winrate.toFixed(1)}%
-                    </Badge>
+                    </span>
                   </div>
 
-                  {/* Stats at bottom */}
                   <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/80 to-transparent p-4 pt-8">
                     <div className="flex items-center justify-between text-sm text-white">
-                      <div className="flex gap-3">
+                      <div className="flex gap-3 font-mono tabular-nums">
                         <span className="font-semibold">{data.totalWins}W</span>
                         <span className="font-semibold">
                           {data.totalLosses}L
                         </span>
                       </div>
-                      <span className="text-xs text-white/70">
+                      <span className="font-mono text-xs text-white/70 tabular-nums">
                         {t("gamesLabel", { count: totalGames })}
                       </span>
                     </div>

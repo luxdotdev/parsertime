@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn, toKebabCase, toTimestampWithHours } from "@/lib/utils";
+import { toKebabCase, toTimestampWithHours } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
@@ -55,7 +55,6 @@ export function TopMapsCard({ topMaps, winrates, mapNames }: TopMapsCardProps) {
             return (
               <div key={map.name} className="space-y-2">
                 <div className="flex items-center gap-3">
-                  {/* Map thumbnail */}
                   <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded border">
                     <Image
                       src={`/maps/${kebabName}.webp`}
@@ -65,7 +64,6 @@ export function TopMapsCard({ topMaps, winrates, mapNames }: TopMapsCardProps) {
                     />
                   </div>
 
-                  {/* Map info and bar */}
                   <div className="flex-1 space-y-1">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -75,30 +73,19 @@ export function TopMapsCard({ topMaps, winrates, mapNames }: TopMapsCardProps) {
                       </div>
                       <div className="flex items-center gap-3 text-xs">
                         {winrateData && (
-                          <span
-                            className={cn(
-                              "font-semibold",
-                              winrate >= 50
-                                ? "text-green-600 dark:text-green-400"
-                                : "text-red-600 dark:text-red-400"
-                            )}
-                          >
+                          <span className="text-foreground font-mono font-semibold tabular-nums">
                             {winrate.toFixed(1)}%
                           </span>
                         )}
-                        <span className="text-muted-foreground">
+                        <span className="text-muted-foreground font-mono tabular-nums">
                           {toTimestampWithHours(map.playtime)}
                         </span>
                       </div>
                     </div>
 
-                    {/* Progress bar */}
                     <div className="bg-muted h-2 overflow-hidden rounded-full">
                       <div
-                        className={cn(
-                          "h-full transition-all",
-                          winrate >= 50 ? "bg-green-500" : "bg-blue-500"
-                        )}
+                        className="bg-primary/60 h-full transition-all"
                         style={{ width: `${widthPercentage}%` }}
                       />
                     </div>
