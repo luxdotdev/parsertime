@@ -156,7 +156,7 @@ function FooterColumn({
 }) {
   return (
     <div className="space-y-4">
-      <p className="text-foreground text-sm font-bold tracking-wider uppercase">
+      <p className="text-foreground/80 font-mono text-xs font-medium tracking-[0.06em] uppercase">
         {t(column.titleKey)}
       </p>
       <ul className="space-y-3 text-sm">
@@ -215,29 +215,29 @@ export async function Footer() {
   ];
 
   return (
-    <footer className="bg-background border-t py-12 print:hidden">
+    <footer className="bg-background border-border/60 border-t py-12 print:hidden">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 gap-12 xl:grid-cols-[280px_1fr]">
           <div className="flex flex-col items-start gap-6">
             <Link
               href="/"
               aria-label="Home"
-              className="flex items-center gap-2"
+              className="group flex items-center gap-2"
             >
               <Image
                 src="/parsertime.png"
-                alt="Parsertime"
+                alt=""
                 width={50}
                 height={50}
-                className="h-8 w-auto dark:invert"
+                className="h-7 w-auto dark:invert"
               />
-              <span className="text-lg font-semibold tracking-tight">
+              <span className="text-foreground text-base font-semibold tracking-tight">
                 Parsertime
               </span>
             </Link>
 
             {version && (
-              <div className="text-muted-foreground flex items-center gap-2 text-xs">
+              <div className="text-muted-foreground flex items-center gap-2 font-mono text-xs">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Link
@@ -250,7 +250,7 @@ export async function Footer() {
                   </TooltipTrigger>
                   <TooltipContent>{t("changelog")}</TooltipContent>
                 </Tooltip>
-                <span>&bull;</span>
+                <span aria-hidden="true">&bull;</span>
                 <HealthStatus />
               </div>
             )}
@@ -259,7 +259,7 @@ export async function Footer() {
               code={positionalDataEnabled ? "Z0ASA" : "DKEEH"}
             />
 
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground font-mono text-xs">
               &copy; 2024&ndash;{new Date().getFullYear()} lux.dev
             </p>
           </div>
