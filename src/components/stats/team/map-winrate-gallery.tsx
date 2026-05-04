@@ -1,9 +1,10 @@
 "use client";
 
 import { MapRosterDetailsSheet } from "@/components/stats/team/map-roster-details-sheet";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -158,100 +159,87 @@ export function MapWinrateGallery({
 
   if (mapEntries.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">{t("noData")}</p>
-        </CardContent>
-      </Card>
+      <section className="space-y-4">
+        <SectionHeader eyebrow="Maps · Winrate gallery" title={t("title")} />
+        <p className="text-muted-foreground text-sm">{t("noData")}</p>
+      </section>
     );
   }
 
+  const filtersRightSlot = hasActiveFilters ? (
+    <Button variant="ghost" size="sm" onClick={clearFilters} className="h-8">
+      <X className="mr-2 h-4 w-4" />
+      {t("clearFilters")}
+    </Button>
+  ) : null;
+
   return (
     <>
-      <div className="space-y-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>{t("mapFilters")}</span>
-              {hasActiveFilters && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearFilters}
-                  className="h-8"
-                >
-                  <X className="mr-2 h-4 w-4" />
-                  {t("clearFilters")}
-                </Button>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <div className="space-y-2">
-                <Label htmlFor="search">{t("searchMaps")}</Label>
-                <div className="relative">
-                  <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                  <Input
-                    id="search"
-                    placeholder={t("searchMapNames")}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9"
-                  />
-                </div>
-              </div>
+      <section className="space-y-4">
+        <SectionHeader
+          eyebrow="Maps · Winrate gallery"
+          title={t("title")}
+          rightSlot={filtersRightSlot}
+        />
 
-              <div className="space-y-2">
-                <Label htmlFor="map-type">{t("mapType")}</Label>
-                <Select value={filterMapType} onValueChange={setFilterMapType}>
-                  <SelectTrigger id="map-type">
-                    <SelectValue placeholder={t("allTypes")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t("allTypes")}</SelectItem>
-                    {availableMapTypes.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="sort">{t("sortBy")}</Label>
-                <Select
-                  value={sortBy}
-                  onValueChange={(value) => setSortBy(value as SortOption)}
-                >
-                  <SelectTrigger id="sort">
-                    <SelectValue placeholder={t("sortByPlaceholder")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="winrate">
-                      {t("highestWinrate")}
-                    </SelectItem>
-                    <SelectItem
-                      value="playtime"
-                      disabled={
-                        !mapPlaytimes || Object.keys(mapPlaytimes).length === 0
-                      }
-                    >
-                      {t("mostPlayed")}
-                    </SelectItem>
-                    <SelectItem value="alphabetical">
-                      {t("alphabetical")}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+        <div className="border-border grid gap-4 border-y py-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="space-y-2">
+            <Label htmlFor="search">{t("searchMaps")}</Label>
+            <div className="relative">
+              <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+              <Input
+                id="search"
+                placeholder={t("searchMapNames")}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9"
+              />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="map-type">{t("mapType")}</Label>
+            <Select value={filterMapType} onValueChange={setFilterMapType}>
+              <SelectTrigger id="map-type">
+                <SelectValue placeholder={t("allTypes")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("allTypes")}</SelectItem>
+                {availableMapTypes.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="sort">{t("sortBy")}</Label>
+            <Select
+              value={sortBy}
+              onValueChange={(value) => setSortBy(value as SortOption)}
+            >
+              <SelectTrigger id="sort">
+                <SelectValue placeholder={t("sortByPlaceholder")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="winrate">{t("highestWinrate")}</SelectItem>
+                <SelectItem
+                  value="playtime"
+                  disabled={
+                    !mapPlaytimes || Object.keys(mapPlaytimes).length === 0
+                  }
+                >
+                  {t("mostPlayed")}
+                </SelectItem>
+                <SelectItem value="alphabetical">
+                  {t("alphabetical")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
         <div className="text-muted-foreground flex items-center justify-between text-sm">
           <span>
@@ -266,13 +254,9 @@ export function MapWinrateGallery({
         </div>
 
         {filteredAndSortedMaps.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground text-sm">
-                {t("noMapsMatchFilters")}
-              </p>
-            </CardContent>
-          </Card>
+          <p className="text-muted-foreground py-12 text-center text-sm">
+            {t("noMapsMatchFilters")}
+          </p>
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredAndSortedMaps.map(([mapName, data]) => {
@@ -344,7 +328,7 @@ export function MapWinrateGallery({
         <p className="text-muted-foreground text-center text-sm">
           {t("clickToSeeRosterPerformance")}
         </p>
-      </div>
+      </section>
 
       {selectedMapData && (
         <MapRosterDetailsSheet

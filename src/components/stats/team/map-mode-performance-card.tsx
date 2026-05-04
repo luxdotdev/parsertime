@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import type { MapModePerformance } from "@/data/team/types";
 import { cn, toTimestampWithHours } from "@/lib/utils";
 import { $Enums } from "@prisma/client";
@@ -77,14 +77,10 @@ export function MapModePerformanceCard({
 
   if (!hasData) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">{t("noData")}</p>
-        </CardContent>
-      </Card>
+      <section className="space-y-4">
+        <SectionHeader eyebrow="Maps · Mode performance" title={t("title")} />
+        <p className="text-muted-foreground text-sm">{t("noData")}</p>
+      </section>
     );
   }
 
@@ -105,180 +101,172 @@ export function MapModePerformanceCard({
     .filter((data) => data.games > 0)
     .sort((a, b) => b.winrate - a.winrate);
 
+  const bestModeBadge = modePerformance.bestMode ? (
+    <span className="bg-primary/15 text-primary rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase">
+      {t("best", { mode: mapTypeLabels[modePerformance.bestMode] })}
+    </span>
+  ) : null;
+
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>{t("title")}</CardTitle>
-          {modePerformance.bestMode && (
-            <span className="bg-primary/15 text-primary rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase">
-              {t("best", { mode: mapTypeLabels[modePerformance.bestMode] })}
-            </span>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis domain={[0, 100]} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Bar
-                dataKey="winrate"
-                name={t("winrateLabel")}
-                fill="var(--primary)"
-                radius={[4, 4, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Maps · Mode performance"
+        title={t("title")}
+        rightSlot={bestModeBadge}
+      />
+      <div className="space-y-6">
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+            <XAxis dataKey="name" />
+            <YAxis domain={[0, 100]} />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
+            <Bar
+              dataKey="winrate"
+              name={t("winrateLabel")}
+              fill="var(--primary)"
+              radius={[4, 4, 0, 0]}
+            />
+          </BarChart>
+        </ResponsiveContainer>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {Object.values($Enums.MapType)
-              .filter(
-                (type) =>
-                  type !== $Enums.MapType.Push &&
-                  type !== $Enums.MapType.Clash &&
-                  modePerformance.byMode[type].gamesPlayed > 0
-              )
-              .sort(
-                (a, b) =>
-                  modePerformance.byMode[b].winrate -
-                  modePerformance.byMode[a].winrate
-              )
-              .map((mapType) => {
-                const stats = modePerformance.byMode[mapType];
-                const isBest = modePerformance.bestMode === mapType;
+        <div className="border-border divide-y divide-[var(--border)] border-y md:grid md:grid-cols-2 md:divide-x md:divide-y-0 lg:grid-cols-3">
+          {Object.values($Enums.MapType)
+            .filter(
+              (type) =>
+                type !== $Enums.MapType.Push &&
+                type !== $Enums.MapType.Clash &&
+                modePerformance.byMode[type].gamesPlayed > 0
+            )
+            .sort(
+              (a, b) =>
+                modePerformance.byMode[b].winrate -
+                modePerformance.byMode[a].winrate
+            )
+            .map((mapType) => {
+              const stats = modePerformance.byMode[mapType];
+              const isBest = modePerformance.bestMode === mapType;
 
-                return (
-                  <div
-                    key={mapType}
-                    className="bg-card border-border rounded-lg border p-4"
-                  >
-                    <div className="mb-3 flex items-center justify-between">
-                      <h3 className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-                        {mapTypeLabels[mapType]}
-                      </h3>
-                      <span
-                        className={cn(
-                          "rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase tabular-nums",
-                          isBest
-                            ? "bg-primary/15 text-primary"
-                            : "bg-muted text-muted-foreground"
-                        )}
-                      >
-                        {stats.winrate.toFixed(1)}%
-                      </span>
-                    </div>
-
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
-                          {t("record")}
-                        </span>
-                        <span className="font-mono font-medium tabular-nums">
-                          {t("winsLossesRecord", {
-                            wins: stats.wins,
-                            losses: stats.losses,
-                          })}
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
-                          {t("gamesLabel")}
-                        </span>
-                        <span className="font-mono font-medium tabular-nums">
-                          {stats.gamesPlayed}
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
-                          {t("avgTimeLabel")}
-                        </span>
-                        <span className="font-mono font-medium tabular-nums">
-                          {toTimestampWithHours(stats.avgPlaytime)}
-                        </span>
-                      </div>
-
-                      {stats.bestMap && (
-                        <div className="border-muted-foreground mt-3 border-t pt-2">
-                          <div className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-                            {t("bestMap")}
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-xs">
-                              {stats.bestMap.name}
-                            </span>
-                            <span className="font-mono text-xs font-semibold tabular-nums">
-                              {stats.bestMap.winrate.toFixed(1)}%
-                            </span>
-                          </div>
-                        </div>
+              return (
+                <div key={mapType} className="space-y-3 px-4 py-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+                      {mapTypeLabels[mapType]}
+                    </h3>
+                    <span
+                      className={cn(
+                        "rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase tabular-nums",
+                        isBest
+                          ? "bg-primary/15 text-primary"
+                          : "bg-muted text-muted-foreground"
                       )}
-
-                      {stats.worstMap &&
-                        stats.bestMap?.name !== stats.worstMap.name && (
-                          <div>
-                            <div className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-                              {t("worstMap")}
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-xs">
-                                {stats.worstMap.name}
-                              </span>
-                              <span className="font-mono text-xs font-semibold tabular-nums">
-                                {stats.worstMap.winrate.toFixed(1)}%
-                              </span>
-                            </div>
-                          </div>
-                        )}
-                    </div>
+                    >
+                      {stats.winrate.toFixed(1)}%
+                    </span>
                   </div>
-                );
-              })}
-          </div>
 
-          {modePerformance.bestMode && modePerformance.worstMode && (
-            <div className="bg-muted/50 rounded-lg p-4">
-              <h4 className="mb-2 text-sm font-semibold">{t("insights")}</h4>
-              <ul className="text-muted-foreground list-inside list-disc space-y-1 text-sm">
-                <li>
-                  {t.rich("excelsAt", {
-                    span: (chunks) => (
-                      <span className="text-foreground font-semibold">
-                        {chunks}
-                      </span>
-                    ),
-                    mode: mapTypeLabels[modePerformance.bestMode],
-                    winrate:
-                      modePerformance.byMode[
-                        modePerformance.bestMode
-                      ].winrate.toFixed(1),
-                  })}
-                </li>
-                <li>
-                  {t.rich("considerPracticing", {
-                    span: (chunks) => (
-                      <span className="text-foreground font-semibold">
-                        {chunks}
-                      </span>
-                    ),
-                    mode: mapTypeLabels[modePerformance.worstMode],
-                    winrate:
-                      modePerformance.byMode[
-                        modePerformance.worstMode
-                      ].winrate.toFixed(1),
-                  })}
-                </li>
-              </ul>
-            </div>
-          )}
+                  <dl className="space-y-1.5 text-sm">
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">{t("record")}</dt>
+                      <dd className="font-mono font-medium tabular-nums">
+                        {t("winsLossesRecord", {
+                          wins: stats.wins,
+                          losses: stats.losses,
+                        })}
+                      </dd>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">
+                        {t("gamesLabel")}
+                      </dt>
+                      <dd className="font-mono font-medium tabular-nums">
+                        {stats.gamesPlayed}
+                      </dd>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">
+                        {t("avgTimeLabel")}
+                      </dt>
+                      <dd className="font-mono font-medium tabular-nums">
+                        {toTimestampWithHours(stats.avgPlaytime)}
+                      </dd>
+                    </div>
+                  </dl>
+
+                  {stats.bestMap && (
+                    <div className="border-border space-y-1 border-t pt-2">
+                      <p className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
+                        {t("bestMap")}
+                      </p>
+                      <div className="flex justify-between text-xs">
+                        <span>{stats.bestMap.name}</span>
+                        <span className="font-mono font-semibold tabular-nums">
+                          {stats.bestMap.winrate.toFixed(1)}%
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {stats.worstMap &&
+                    stats.bestMap?.name !== stats.worstMap.name && (
+                      <div className="space-y-1">
+                        <p className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
+                          {t("worstMap")}
+                        </p>
+                        <div className="flex justify-between text-xs">
+                          <span>{stats.worstMap.name}</span>
+                          <span className="font-mono font-semibold tabular-nums">
+                            {stats.worstMap.winrate.toFixed(1)}%
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                </div>
+              );
+            })}
         </div>
-      </CardContent>
-    </Card>
+
+        {modePerformance.bestMode && modePerformance.worstMode && (
+          <div className="border-border border-l-2 pl-4">
+            <h4 className="text-muted-foreground mb-2 font-mono text-[10px] tracking-[0.18em] uppercase">
+              {t("insights")}
+            </h4>
+            <ul className="text-muted-foreground list-inside list-disc space-y-1 text-sm">
+              <li>
+                {t.rich("excelsAt", {
+                  span: (chunks) => (
+                    <span className="text-foreground font-semibold">
+                      {chunks}
+                    </span>
+                  ),
+                  mode: mapTypeLabels[modePerformance.bestMode],
+                  winrate:
+                    modePerformance.byMode[
+                      modePerformance.bestMode
+                    ].winrate.toFixed(1),
+                })}
+              </li>
+              <li>
+                {t.rich("considerPracticing", {
+                  span: (chunks) => (
+                    <span className="text-foreground font-semibold">
+                      {chunks}
+                    </span>
+                  ),
+                  mode: mapTypeLabels[modePerformance.worstMode],
+                  winrate:
+                    modePerformance.byMode[
+                      modePerformance.worstMode
+                    ].winrate.toFixed(1),
+                })}
+              </li>
+            </ul>
+          </div>
+        )}
+      </div>
+    </section>
   );
 }

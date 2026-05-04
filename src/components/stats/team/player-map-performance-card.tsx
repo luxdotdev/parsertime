@@ -24,7 +24,7 @@ export function PlayerMapPerformanceCard({
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Maps · Player matrix"
+          eyebrow="Maps · Player map matrix"
           title={t("title")}
           description={t("noData")}
         />
@@ -49,7 +49,7 @@ export function PlayerMapPerformanceCard({
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Maps · Player matrix"
+        eyebrow="Maps · Player map matrix"
         title={t("title")}
         description={t("description")}
       />
