@@ -1,5 +1,6 @@
 "use client";
 
+import { SectionHeader } from "@/components/stats/team/section-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -234,8 +235,8 @@ function MatchupFilterPanel({
             onAdd={onAddOurHero}
             onRemove={onRemoveOurHero}
             heroNames={heroNames}
-            colorClass="border-blue-500/30 bg-blue-500/5"
-            emptySlotClass="border-blue-300/40 hover:border-blue-400/60"
+            colorClass="border-team-1-off/30 bg-team-1-off/10"
+            emptySlotClass="border-team-1-off/30 hover:border-team-1-off/60"
           />
 
           <div className="hidden items-center sm:flex">
@@ -254,8 +255,8 @@ function MatchupFilterPanel({
             onAdd={onAddEnemyHero}
             onRemove={onRemoveEnemyHero}
             heroNames={heroNames}
-            colorClass="border-red-500/30 bg-red-500/5"
-            emptySlotClass="border-red-300/40 hover:border-red-400/60"
+            colorClass="border-team-2-off/30 bg-team-2-off/10"
+            emptySlotClass="border-team-2-off/30 hover:border-team-2-off/60"
           />
         </div>
       </CardContent>
@@ -349,7 +350,7 @@ function HeroSlot({ hero, heroNames, onRemove }: HeroSlotProps) {
           type="button"
           onClick={onRemove}
           aria-label={`Remove ${displayName}`}
-          className="group relative h-11 w-11 overflow-hidden rounded-md border border-transparent transition-all duration-150 ease-out hover:ring-2 hover:ring-red-400/70 focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:outline-none"
+          className="group focus-visible:ring-destructive hover:ring-destructive/70 relative h-11 w-11 overflow-hidden rounded-md border border-transparent transition-all duration-150 ease-out hover:ring-2 focus-visible:ring-2 focus-visible:outline-none"
         >
           <Image
             src={`/heroes/${slug}.png`}
@@ -548,13 +549,7 @@ function MatchupSummaryCard({
   const pct = summary.winrate.toFixed(1);
 
   const winrateColorClass =
-    summary.gamesPlayed === 0
-      ? "text-foreground"
-      : summary.winrate > 55
-        ? "text-green-600 dark:text-green-400"
-        : summary.winrate < 45
-          ? "text-red-600 dark:text-red-400"
-          : "text-foreground";
+    summary.gamesPlayed === 0 ? "text-foreground" : "text-primary";
 
   const confidence =
     summary.gamesPlayed >= 5
@@ -585,10 +580,9 @@ function MatchupSummaryCard({
             <div className="flex items-baseline gap-3">
               <span
                 className={cn(
-                  "text-5xl leading-none font-bold",
+                  "font-mono text-5xl leading-none font-bold tabular-nums",
                   winrateColorClass
                 )}
-                style={{ fontVariantNumeric: "tabular-nums" }}
                 aria-label={`Win rate: ${pct}%`}
               >
                 {pct}%
@@ -608,9 +602,9 @@ function MatchupSummaryCard({
             </div>
 
             {hasSelection && (
-              <div className="flex items-start gap-2 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm dark:border-blue-800 dark:bg-blue-950/40">
-                <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-600 dark:text-blue-400" />
-                <span className="text-blue-800 dark:text-blue-300">
+              <div className="border-border bg-muted/50 flex items-start gap-2 rounded-md border px-3 py-2 text-sm">
+                <Info className="text-muted-foreground mt-0.5 h-4 w-4 shrink-0" />
+                <span className="text-foreground">
                   {Math.abs(delta) < 1
                     ? "Roughly equal to your base winrate"
                     : `${delta > 0 ? "+" : ""}${delta.toFixed(0)}pp ${delta > 0 ? "above" : "below"} your base winrate (${baseWinrate.toFixed(0)}%)`}
@@ -653,15 +647,13 @@ function CustomDot(props: {
   if (!cx || !cy || !payload) return null;
   const isWinningScrim = payload.scrimWinrate > 50;
   const isSplit = payload.scrimWinrate === 50;
+  const fill = isSplit
+    ? "var(--muted-foreground)"
+    : isWinningScrim
+      ? "var(--primary)"
+      : "var(--destructive)";
   return (
-    <circle
-      cx={cx}
-      cy={cy}
-      r={5}
-      fill={isSplit ? "#94a3b8" : isWinningScrim ? "#22c55e" : "#ef4444"}
-      stroke={isSplit ? "#64748b" : isWinningScrim ? "#16a34a" : "#dc2626"}
-      strokeWidth={1.5}
-    />
+    <circle cx={cx} cy={cy} r={5} fill={fill} stroke={fill} strokeWidth={1.5} />
   );
 }
 
@@ -718,9 +710,9 @@ function MatchupTrendChart({ trendData }: MatchupTrendChartProps) {
               <span
                 className={
                   trend > 0
-                    ? "text-green-600 dark:text-green-400"
+                    ? "text-primary"
                     : trend < 0
-                      ? "text-red-600 dark:text-red-400"
+                      ? "text-destructive"
                       : ""
                 }
               >
@@ -756,7 +748,7 @@ function MatchupTrendChart({ trendData }: MatchupTrendChartProps) {
               <Line
                 type="monotone"
                 dataKey={() => 50}
-                stroke="#94a3b8"
+                stroke="var(--muted-foreground)"
                 strokeDasharray="5 5"
                 strokeWidth={1}
                 name="50%"
@@ -765,7 +757,7 @@ function MatchupTrendChart({ trendData }: MatchupTrendChartProps) {
               <Line
                 type="linear"
                 dataKey="trendLine"
-                stroke="#a78bfa"
+                stroke="var(--chart-3)"
                 strokeWidth={2}
                 strokeOpacity={0.5}
                 strokeDasharray="8 4"
@@ -776,7 +768,7 @@ function MatchupTrendChart({ trendData }: MatchupTrendChartProps) {
               <Line
                 type="monotone"
                 dataKey="runningWinrate"
-                stroke="#3b82f6"
+                stroke="var(--chart-1)"
                 strokeWidth={2}
                 name="Cumulative Winrate"
                 dot={<CustomDot />}
@@ -855,23 +847,10 @@ function BestCompositionsCard({ comps, heroNames }: BestCompositionsCardProps) {
                   })}
                 </div>
                 <div className="ml-auto flex items-center gap-3">
-                  <span
-                    className={cn(
-                      "text-sm font-semibold tabular-nums",
-                      comp.winrate > 55
-                        ? "text-green-600 dark:text-green-400"
-                        : comp.winrate < 45
-                          ? "text-red-600 dark:text-red-400"
-                          : "text-foreground"
-                    )}
-                    style={{ fontVariantNumeric: "tabular-nums" }}
-                  >
+                  <span className="text-foreground font-mono text-sm font-semibold tabular-nums">
                     {comp.winrate.toFixed(0)}%
                   </span>
-                  <span
-                    className="text-muted-foreground text-xs tabular-nums"
-                    style={{ fontVariantNumeric: "tabular-nums" }}
-                  >
+                  <span className="text-muted-foreground font-mono text-xs tabular-nums">
                     {comp.wins}W-{comp.losses}L
                   </span>
                 </div>
@@ -897,51 +876,52 @@ type MatchupResultsTableProps = {
 
 function MatchupResultsTable({ maps, heroNames }: MatchupResultsTableProps) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Match Results</CardTitle>
-        <CardDescription>
-          Individual map outcomes for this matchup
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {maps.length > 0 ? (
-          <ScrollArea className="h-[420px]">
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Winrates · Matches"
+        title="Match Results"
+        description="Individual map outcomes for this matchup"
+      />
+      {maps.length > 0 ? (
+        <ScrollArea className="h-[420px]">
+          <div className="relative overflow-x-auto">
             <table className="w-full text-sm" role="table">
               <thead>
-                <tr className="text-muted-foreground border-b text-left text-xs">
-                  <th className="pr-3 pb-2 font-medium">Date</th>
-                  <th className="pr-3 pb-2 font-medium">Scrim</th>
-                  <th className="pr-3 pb-2 font-medium">Map</th>
-                  <th className="pr-3 pb-2 font-medium">Result</th>
-                  <th className="pr-3 pb-2 font-medium">Our Heroes</th>
-                  <th className="pb-2 font-medium">Enemy Heroes</th>
+                <tr className="text-muted-foreground border-border border-b font-mono text-[11px] tracking-[0.16em] uppercase">
+                  <th className="pr-3 pb-2 text-left font-medium">Date</th>
+                  <th className="pr-3 pb-2 text-left font-medium">Scrim</th>
+                  <th className="pr-3 pb-2 text-left font-medium">Map</th>
+                  <th className="pr-3 pb-2 text-left font-medium">Result</th>
+                  <th className="pr-3 pb-2 text-left font-medium">
+                    Our Heroes
+                  </th>
+                  <th className="pb-2 text-left font-medium">Enemy Heroes</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-border divide-y">
                 {maps.map((map) => (
-                  <tr key={map.mapDataId} className="border-b last:border-0">
+                  <tr key={map.mapDataId}>
                     <td
-                      className="py-2 pr-3 tabular-nums"
+                      className="text-foreground py-2 pr-3 font-mono tabular-nums"
                       style={{ fontVariantNumeric: "tabular-nums" }}
                     >
                       {formatDate(map.date)}
                     </td>
-                    <td className="max-w-[120px] truncate py-2 pr-3">
+                    <td className="text-foreground max-w-[120px] truncate py-2 pr-3">
                       {map.scrimName}
                     </td>
-                    <td className="py-2 pr-3">{map.mapName}</td>
+                    <td className="text-foreground py-2 pr-3">{map.mapName}</td>
                     <td className="py-2 pr-3">
-                      <Badge
-                        variant={map.isWin ? "default" : "destructive"}
-                        className={
+                      <span
+                        className={cn(
+                          "inline-block rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase",
                           map.isWin
-                            ? "bg-green-600 text-white dark:bg-green-700"
-                            : ""
-                        }
+                            ? "bg-primary/15 text-primary"
+                            : "bg-destructive/15 text-destructive"
+                        )}
                       >
                         {map.isWin ? "W" : "L"}
-                      </Badge>
+                      </span>
                     </td>
                     <td className="py-2 pr-3">
                       <HeroImageRow
@@ -959,14 +939,12 @@ function MatchupResultsTable({ maps, heroNames }: MatchupResultsTableProps) {
                 ))}
               </tbody>
             </table>
-          </ScrollArea>
-        ) : (
-          <p className="text-muted-foreground text-sm">
-            No matching maps found.
-          </p>
-        )}
-      </CardContent>
-    </Card>
+          </div>
+        </ScrollArea>
+      ) : (
+        <p className="text-muted-foreground text-sm">No matching maps found.</p>
+      )}
+    </section>
   );
 }
 

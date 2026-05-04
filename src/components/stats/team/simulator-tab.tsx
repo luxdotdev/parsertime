@@ -235,7 +235,7 @@ function ScenarioPanel({
         <BanSection
           label="Enemy bans against us"
           description="Heroes the opponent is banning from your pool"
-          icon={<ShieldOff className="h-4 w-4 text-red-500" />}
+          icon={<ShieldOff className="text-muted-foreground h-4 w-4" />}
           selected={scenario.enemyBansAgainstUs}
           onAdd={(hero) => dispatch({ type: "ADD_ENEMY_BAN", hero })}
           onRemove={(hero) => dispatch({ type: "REMOVE_ENEMY_BAN", hero })}
@@ -243,14 +243,14 @@ function ScenarioPanel({
           excluded={[...scenario.ourBans, ...scenario.ourComposition]}
           heroNames={heroNames}
           maxSlots={4}
-          colorClass="border-red-500/30 bg-red-500/5"
-          emptySlotClass="border-red-300/40 hover:border-red-400/60"
+          colorClass=""
+          emptySlotClass="hover:border-muted-foreground/40"
         />
 
         <BanSection
           label="Our bans"
           description="Heroes you are banning from the opponent"
-          icon={<Swords className="h-4 w-4 text-blue-500" />}
+          icon={<Swords className="text-muted-foreground h-4 w-4" />}
           selected={scenario.ourBans}
           onAdd={(hero) => dispatch({ type: "ADD_OUR_BAN", hero })}
           onRemove={(hero) => dispatch({ type: "REMOVE_OUR_BAN", hero })}
@@ -261,8 +261,8 @@ function ScenarioPanel({
           ]}
           heroNames={heroNames}
           maxSlots={4}
-          colorClass="border-blue-500/30 bg-blue-500/5"
-          emptySlotClass="border-blue-300/40 hover:border-blue-400/60"
+          colorClass=""
+          emptySlotClass="hover:border-muted-foreground/40"
         />
 
         <Separator />
@@ -299,7 +299,6 @@ function ScenarioPanel({
           available={ctx.availableHeroes}
           excluded={[...scenario.enemyBansAgainstUs, ...scenario.ourBans]}
           heroNames={heroNames}
-          colorClass="border-red-500/20 bg-red-500/5"
         />
       </CardContent>
     </Card>
@@ -702,13 +701,6 @@ function PredictionResultCard({
   const delta = result.estimatedWinrate - ctx.baseWinrate;
   const deltaSign = delta >= 0 ? "+" : "";
 
-  const winrateColorClass =
-    delta > 0.02
-      ? "text-green-600 dark:text-green-400"
-      : delta < -0.02
-        ? "text-red-600 dark:text-red-400"
-        : "text-foreground";
-
   return (
     <Card className="flex flex-col">
       <CardHeader>
@@ -720,11 +712,7 @@ function PredictionResultCard({
       <CardContent className="flex flex-1 flex-col gap-6">
         <div className="flex items-baseline gap-3">
           <span
-            className={cn(
-              "leading-none font-bold tabular-nums",
-              winrateColorClass,
-              "text-5xl"
-            )}
+            className="text-primary font-mono text-5xl leading-none font-bold tabular-nums"
             style={{ fontVariantNumeric: "tabular-nums" }}
             aria-label={`Estimated win rate: ${pct}%`}
           >
@@ -734,14 +722,7 @@ function PredictionResultCard({
             <ConfidenceBadge confidence={result.confidence} />
             {hasInput && (
               <span
-                className={cn(
-                  "text-xs font-medium tabular-nums",
-                  delta > 0.005
-                    ? "text-green-600 dark:text-green-400"
-                    : delta < -0.005
-                      ? "text-red-600 dark:text-red-400"
-                      : "text-muted-foreground"
-                )}
+                className="text-muted-foreground font-mono text-xs font-medium tabular-nums"
                 style={{ fontVariantNumeric: "tabular-nums" }}
               >
                 {deltaSign}
@@ -752,11 +733,9 @@ function PredictionResultCard({
         </div>
 
         {result.topInsight && (
-          <div className="flex items-start gap-2 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm dark:border-blue-800 dark:bg-blue-950/40">
-            <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-600 dark:text-blue-400" />
-            <span className="text-blue-800 dark:text-blue-300">
-              {result.topInsight}
-            </span>
+          <div className="bg-muted/50 flex items-start gap-2 rounded-md border px-3 py-2 text-sm">
+            <Info className="text-muted-foreground mt-0.5 h-4 w-4 shrink-0" />
+            <span className="text-foreground">{result.topInsight}</span>
           </div>
         )}
 
@@ -769,7 +748,7 @@ function PredictionResultCard({
             </p>
             {result.warnings.map((warning) => (
               <div key={warning} className="flex items-start gap-1.5 text-xs">
-                <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-500" />
+                <AlertTriangle className="text-primary mt-0.5 h-3.5 w-3.5 shrink-0" />
                 <span className="text-muted-foreground">{warning}</span>
               </div>
             ))}
@@ -827,9 +806,9 @@ function BreakdownChart({ result, hasInput }: BreakdownChartProps) {
       value: breakdown.banImpact,
       icon:
         breakdown.banImpact < -0.005 ? (
-          <TrendingDown className="h-3.5 w-3.5 text-red-500" />
+          <TrendingDown className="text-muted-foreground h-3.5 w-3.5" />
         ) : breakdown.banImpact > 0.005 ? (
-          <TrendingUp className="h-3.5 w-3.5 text-green-500" />
+          <TrendingUp className="text-muted-foreground h-3.5 w-3.5" />
         ) : null,
     },
     {
@@ -837,7 +816,7 @@ function BreakdownChart({ result, hasInput }: BreakdownChartProps) {
       value: breakdown.ourBanImpact,
       icon:
         breakdown.ourBanImpact > 0.005 ? (
-          <TrendingUp className="h-3.5 w-3.5 text-green-500" />
+          <TrendingUp className="text-muted-foreground h-3.5 w-3.5" />
         ) : null,
     },
     {
@@ -845,9 +824,9 @@ function BreakdownChart({ result, hasInput }: BreakdownChartProps) {
       value: breakdown.mapImpact,
       icon:
         breakdown.mapImpact > 0.005 ? (
-          <TrendingUp className="h-3.5 w-3.5 text-green-500" />
+          <TrendingUp className="text-muted-foreground h-3.5 w-3.5" />
         ) : breakdown.mapImpact < -0.005 ? (
-          <TrendingDown className="h-3.5 w-3.5 text-red-500" />
+          <TrendingDown className="text-muted-foreground h-3.5 w-3.5" />
         ) : null,
     },
     {
@@ -855,9 +834,9 @@ function BreakdownChart({ result, hasInput }: BreakdownChartProps) {
       value: breakdown.compositionImpact,
       icon:
         breakdown.compositionImpact > 0.005 ? (
-          <TrendingUp className="h-3.5 w-3.5 text-green-500" />
+          <TrendingUp className="text-muted-foreground h-3.5 w-3.5" />
         ) : breakdown.compositionImpact < -0.005 ? (
-          <TrendingDown className="h-3.5 w-3.5 text-red-500" />
+          <TrendingDown className="text-muted-foreground h-3.5 w-3.5" />
         ) : null,
     },
     {
@@ -865,9 +844,9 @@ function BreakdownChart({ result, hasInput }: BreakdownChartProps) {
       value: breakdown.enemyCompositionImpact,
       icon:
         breakdown.enemyCompositionImpact > 0.005 ? (
-          <TrendingUp className="h-3.5 w-3.5 text-green-500" />
+          <TrendingUp className="text-muted-foreground h-3.5 w-3.5" />
         ) : breakdown.enemyCompositionImpact < -0.005 ? (
-          <TrendingDown className="h-3.5 w-3.5 text-red-500" />
+          <TrendingDown className="text-muted-foreground h-3.5 w-3.5" />
         ) : null,
     },
   ];
@@ -922,11 +901,7 @@ function BreakdownChart({ result, hasInput }: BreakdownChartProps) {
                   <div
                     className={cn(
                       "h-full rounded-full transition-all",
-                      isActive
-                        ? isPositive
-                          ? "bg-green-500"
-                          : "bg-red-500"
-                        : "bg-muted-foreground/30"
+                      isActive ? "bg-foreground/70" : "bg-muted-foreground/30"
                     )}
                     style={{
                       width: isActive ? `${barWidthPct}%` : "2px",
@@ -940,12 +915,8 @@ function BreakdownChart({ result, hasInput }: BreakdownChartProps) {
                 </div>
                 <span
                   className={cn(
-                    "w-14 text-right text-xs font-medium tabular-nums",
-                    isActive
-                      ? isPositive
-                        ? "text-green-600 dark:text-green-400"
-                        : "text-red-600 dark:text-red-400"
-                      : "text-muted-foreground"
+                    "w-14 text-right font-mono text-xs font-medium tabular-nums",
+                    isActive ? "text-foreground" : "text-muted-foreground"
                   )}
                   style={{ fontVariantNumeric: "tabular-nums" }}
                 >
