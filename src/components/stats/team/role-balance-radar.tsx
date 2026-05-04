@@ -1,12 +1,11 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type {
   RoleBalanceAnalysis,
   RolePerformanceStats,
 } from "@/data/team/types";
-import { round } from "@/lib/utils";
+import { cn, round } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import {
   Legend,
@@ -29,13 +28,13 @@ function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
     return (
       <div className="bg-popover text-popover-foreground border-border z-50 overflow-hidden rounded-md border px-3 py-2 shadow-xl">
         <p className="text-sm font-semibold">Role Balance</p>
-        <p className="text-[#3b82f6]">
+        <p className="text-foreground font-mono text-xs tabular-nums">
           Tank: {round(payload[0].value as number)}
         </p>
-        <p className="text-[#ef4444]">
+        <p className="text-foreground font-mono text-xs tabular-nums">
           Damage: {round(payload[1].value as number)}
         </p>
-        <p className="text-[#eab308]">
+        <p className="text-foreground font-mono text-xs tabular-nums">
           Support: {round(payload[2].value as number)}
         </p>
       </div>
@@ -114,16 +113,16 @@ export function RoleBalanceRadar({
     },
   ];
 
-  function getBalanceBadgeColor(
+  function getBalanceBadgeClass(
     overall: RoleBalanceAnalysis["overall"]
   ): string {
     switch (overall) {
       case "Balanced":
-        return "bg-green-500";
+        return "bg-primary/15 text-primary";
       case "Insufficient data":
-        return "bg-gray-500";
+        return "bg-muted text-muted-foreground";
       default:
-        return "bg-yellow-500";
+        return "bg-muted text-muted-foreground";
     }
   }
 
@@ -132,9 +131,14 @@ export function RoleBalanceRadar({
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>{t("title")}</CardTitle>
-          <Badge className={getBalanceBadgeColor(balanceAnalysis.overall)}>
+          <span
+            className={cn(
+              "rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase",
+              getBalanceBadgeClass(balanceAnalysis.overall)
+            )}
+          >
             {balanceAnalysis.overall}
-          </Badge>
+          </span>
         </div>
       </CardHeader>
       <CardContent>
@@ -147,23 +151,23 @@ export function RoleBalanceRadar({
               <Radar
                 name={t("tank")}
                 dataKey="Tank"
-                stroke="#3b82f6"
-                fill="#3b82f6"
-                fillOpacity={0.5}
+                stroke="var(--chart-1)"
+                fill="var(--chart-1)"
+                fillOpacity={0.4}
               />
               <Radar
                 name={t("damage")}
                 dataKey="Damage"
-                stroke="#ef4444"
-                fill="#ef4444"
-                fillOpacity={0.5}
+                stroke="var(--chart-3)"
+                fill="var(--chart-3)"
+                fillOpacity={0.4}
               />
               <Radar
                 name={t("support")}
                 dataKey="Support"
-                stroke="#eab308"
-                fill="#eab308"
-                fillOpacity={0.5}
+                stroke="var(--chart-5)"
+                fill="var(--chart-5)"
+                fillOpacity={0.4}
               />
               <Legend />
               <Tooltip content={<CustomTooltip />} />
@@ -188,13 +192,13 @@ export function RoleBalanceRadar({
             <div className="bg-muted/50 rounded-lg p-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">{t("strongest")}</span>
-                <span className="font-semibold text-green-600 dark:text-green-400">
+                <span className="text-foreground font-semibold">
                   {balanceAnalysis.strongestRole}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">{t("needsWork")}</span>
-                <span className="font-semibold text-red-600 dark:text-red-400">
+                <span className="text-foreground font-semibold">
                   {balanceAnalysis.weakestRole}
                 </span>
               </div>
@@ -202,7 +206,7 @@ export function RoleBalanceRadar({
                 <span className="text-muted-foreground">
                   {t("balanceScore")}
                 </span>
-                <span className="font-semibold">
+                <span className="text-foreground font-mono font-semibold tabular-nums">
                   {(balanceAnalysis.balanceScore * 100).toFixed(0)}%
                 </span>
               </div>
