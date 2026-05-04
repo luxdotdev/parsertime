@@ -7,16 +7,9 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import type { TeamUltStats } from "@/data/team/types";
-import { cn, toHero } from "@/lib/utils";
-import { ChevronDown } from "lucide-react";
+import { toHero } from "@/lib/utils";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 type UltUsageOverviewCardProps = {
@@ -78,12 +71,14 @@ const chartConfig: ChartConfig = {
 
 export function UltUsageOverviewCard({ ultStats }: UltUsageOverviewCardProps) {
   const t = useTranslations("teamStatsPage.ultimatesTab.overview");
-  const [openersOpen, setOpenersOpen] = useState(false);
 
   if (ultStats.totalUltsUsed === 0) {
     return (
       <section className="space-y-4">
-        <SectionHeader eyebrow="Ultimates · Usage" title={t("title")} />
+        <SectionHeader
+          eyebrow="Ultimates · Usage overview"
+          title={t("title")}
+        />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
@@ -95,156 +90,130 @@ export function UltUsageOverviewCard({ ultStats }: UltUsageOverviewCardProps) {
   }));
   const chartHeight = Math.max(200, heroChartData.length * 40);
 
+  const tempoRows: { label: string; value: string; sub: string }[] = [];
+
+  if (ultStats.avgChargeTime > 0) {
+    tempoRows.push({
+      label: t("avgChargeTime"),
+      value: `${ultStats.avgChargeTime.toFixed(1)}s`,
+      sub: t(getChargeTimeRating(ultStats.avgChargeTime)),
+    });
+  }
+
+  if (ultStats.avgHoldTime > 0) {
+    tempoRows.push({
+      label: t("avgHoldTime"),
+      value: `${ultStats.avgHoldTime.toFixed(1)}s`,
+      sub: t(getHoldTimeRating(ultStats.avgHoldTime)),
+    });
+  }
+
+  if (ultStats.totalFightsWithUlts > 0) {
+    tempoRows.push({
+      label: t("fightInitiation"),
+      value: `${ultStats.fightInitiationRate.toFixed(1)}%`,
+      sub: t("fightInitiationDetail", {
+        count: ultStats.fightInitiationCount,
+        total: ultStats.totalFightsWithUlts,
+      }),
+    });
+  }
+
   return (
     <section className="space-y-6">
       <SectionHeader
-        eyebrow="Ultimates · Usage"
+        eyebrow="Ultimates · Usage overview"
         title={t("title")}
         description={t("description", { maps: ultStats.totalMaps })}
       />
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div className="space-y-2">
-          <h4 className="text-muted-foreground text-sm font-medium">
-            {t("totalUltsUsed")}
-          </h4>
-          <p className="text-3xl font-bold tabular-nums">
-            {ultStats.totalUltsUsed}
-          </p>
-          <p className="text-muted-foreground text-xs">
-            {t("ultsPerMap", {
-              count: ultStats.ultsPerMap.toFixed(1),
-            })}
-          </p>
-        </div>
 
-        <div className="space-y-2">
-          <h4 className="text-muted-foreground text-sm font-medium">
-            {t("avgChargeTime")}
-          </h4>
-          {ultStats.avgChargeTime > 0 ? (
-            <>
-              <p className="text-3xl font-bold tabular-nums">
-                {ultStats.avgChargeTime.toFixed(1)}s
-              </p>
-              <p className="text-muted-foreground text-xs">
-                {t(getChargeTimeRating(ultStats.avgChargeTime))}
-              </p>
-            </>
-          ) : (
-            <p className="text-muted-foreground text-sm">{t("noData")}</p>
-          )}
+      {tempoRows.length > 0 && (
+        <div className="border-border overflow-hidden rounded-md border">
+          <table className="w-full text-sm">
+            <thead className="bg-muted/30">
+              <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
+                <th className="px-4 py-2 text-left font-medium">Metric</th>
+                <th className="px-4 py-2 text-right font-medium">Value</th>
+                <th className="px-4 py-2 text-left font-medium">Read</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[var(--border)]">
+              {tempoRows.map((row) => (
+                <tr
+                  key={row.label}
+                  className="hover:bg-muted/30 transition-colors"
+                >
+                  <td className="text-muted-foreground px-4 py-3">
+                    {row.label}
+                  </td>
+                  <td className="text-foreground px-4 py-3 text-right font-mono font-semibold tabular-nums">
+                    {row.value}
+                  </td>
+                  <td className="text-muted-foreground px-4 py-3">{row.sub}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-
-        <div className="space-y-2">
-          <h4 className="text-muted-foreground text-sm font-medium">
-            {t("avgHoldTime")}
-          </h4>
-          {ultStats.avgHoldTime > 0 ? (
-            <>
-              <p className="text-3xl font-bold tabular-nums">
-                {ultStats.avgHoldTime.toFixed(1)}s
-              </p>
-              <p className="text-muted-foreground text-xs">
-                {t(getHoldTimeRating(ultStats.avgHoldTime))}
-              </p>
-            </>
-          ) : (
-            <p className="text-muted-foreground text-sm">{t("noData")}</p>
-          )}
-        </div>
-
-        <div className="space-y-2">
-          <h4 className="text-muted-foreground text-sm font-medium">
-            {t("fightInitiation")}
-          </h4>
-          {ultStats.totalFightsWithUlts > 0 ? (
-            <>
-              <p className="text-foreground font-mono text-3xl font-bold tabular-nums">
-                {ultStats.fightInitiationRate.toFixed(1)}%
-              </p>
-              <p className="text-muted-foreground text-xs">
-                {t("fightInitiationDetail", {
-                  count: ultStats.fightInitiationCount,
-                  total: ultStats.totalFightsWithUlts,
-                })}
-              </p>
-            </>
-          ) : (
-            <p className="text-muted-foreground text-sm">{t("noData")}</p>
-          )}
-        </div>
-      </div>
+      )}
 
       {heroChartData.length > 0 && (
-        <Collapsible open={openersOpen} onOpenChange={setOpenersOpen}>
-          <CollapsibleTrigger
-            className={cn(
-              "bg-muted hover:bg-muted/80 flex w-full items-center justify-between p-3 text-sm transition-colors",
-              openersOpen ? "rounded-t-lg" : "rounded-lg"
-            )}
-          >
-            <span>
+        <div className="space-y-3">
+          <div className="flex items-baseline justify-between gap-3">
+            <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+              Top fight openers
+            </p>
+            <p className="text-muted-foreground font-mono text-xs tabular-nums">
               {t.rich("topOpenersLabel", {
                 span: (chunks) => (
-                  <span className="font-semibold">{chunks}</span>
+                  <span className="text-foreground">{chunks}</span>
                 ),
                 top: ultStats.topFightOpeningHeroes[0]?.hero ?? "",
                 count: ultStats.topFightOpeningHeroes[0]?.count ?? 0,
               })}
-            </span>
-            <ChevronDown
-              className={cn(
-                "text-muted-foreground h-4 w-4 shrink-0 transition-transform duration-200",
-                openersOpen && "rotate-180"
-              )}
-              aria-hidden
-            />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down overflow-hidden">
-            <div className="rounded-b-lg border border-t-0 px-3 pt-4 pb-3">
-              <ChartContainer
-                config={chartConfig}
-                className="w-full"
-                style={{ height: chartHeight }}
-              >
-                <BarChart
-                  accessibilityLayer
-                  data={heroChartData}
-                  layout="vertical"
-                  margin={{ left: 8, right: 16, top: 4, bottom: 4 }}
-                >
-                  <CartesianGrid horizontal={false} />
-                  <YAxis
-                    dataKey="hero"
-                    type="category"
-                    tickLine={false}
-                    axisLine={false}
-                    width={Y_AXIS_WIDTH}
-                    tick={renderHeroTick}
+            </p>
+          </div>
+          <ChartContainer
+            config={chartConfig}
+            className="w-full"
+            style={{ height: chartHeight }}
+          >
+            <BarChart
+              accessibilityLayer
+              data={heroChartData}
+              layout="vertical"
+              margin={{ left: 8, right: 16, top: 4, bottom: 4 }}
+            >
+              <CartesianGrid horizontal={false} />
+              <YAxis
+                dataKey="hero"
+                type="category"
+                tickLine={false}
+                axisLine={false}
+                width={Y_AXIS_WIDTH}
+                tick={renderHeroTick}
+              />
+              <XAxis
+                type="number"
+                tickLine={false}
+                axisLine={false}
+                allowDecimals={false}
+              />
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    labelFormatter={(label: string) => label}
                   />
-                  <XAxis
-                    type="number"
-                    tickLine={false}
-                    axisLine={false}
-                    allowDecimals={false}
-                  />
-                  <ChartTooltip
-                    content={
-                      <ChartTooltipContent
-                        labelFormatter={(label: string) => label}
-                      />
-                    }
-                  />
-                  <Bar
-                    dataKey="count"
-                    fill="var(--color-count)"
-                    radius={[0, 4, 4, 0]}
-                  />
-                </BarChart>
-              </ChartContainer>
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
+                }
+              />
+              <Bar
+                dataKey="count"
+                fill="var(--color-count)"
+                radius={[0, 4, 4, 0]}
+              />
+            </BarChart>
+          </ChartContainer>
+        </div>
       )}
     </section>
   );

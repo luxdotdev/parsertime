@@ -4284,7 +4284,7 @@
         "holdTimeSlow": "Holding too long — use ults sooner",
         "fightInitiation": "Fight Initiation Rate",
         "fightInitiationDetail": "{count} of {total} ult fights",
-        "topOpenersLabel": "Top fight opener: <span>{top}</span> ({count} fights) — click to expand"
+        "topOpenersLabel": "Top fight opener: <span>{top}</span> ({count} fights)"
       },
       "roleBreakdown": {
         "title": "Ultimate Usage by Role",

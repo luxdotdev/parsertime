@@ -1,13 +1,7 @@
 "use client";
 
+import { SectionHeader } from "@/components/stats/team/section-header";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   Command,
   CommandEmpty,
@@ -38,11 +32,48 @@ type UltImpactAnalysisCardProps = {
 
 const ROLE_ORDER = ["Tank", "Damage", "Support"] as const;
 
-function getWinrateColor(winrate: number): string {
-  if (winrate >= 55) return "text-green-600 dark:text-green-400";
-  if (winrate >= 45) return "text-yellow-600 dark:text-yellow-400";
-  return "text-red-600 dark:text-red-400";
-}
+type ScenarioKey =
+  | "uncontestedOurs"
+  | "uncontestedTheirs"
+  | "mirrorOursFirst"
+  | "mirrorTheirsFirst";
+
+type ScenarioRow = {
+  key: ScenarioKey;
+  label: string;
+  perspective: "ours" | "theirs";
+  fights: number;
+  wins: number;
+  losses: number;
+  winrate: number;
+};
+
+const SCENARIO_DEFS: {
+  key: ScenarioKey;
+  label: string;
+  perspective: "ours" | "theirs";
+}[] = [
+  {
+    key: "uncontestedOurs",
+    label: "Uncontested (ours)",
+    perspective: "ours",
+  },
+  {
+    key: "uncontestedTheirs",
+    label: "Uncontested (enemy)",
+    perspective: "theirs",
+  },
+  {
+    key: "mirrorOursFirst",
+    label: "Mirror, ours first",
+    perspective: "ours",
+  },
+  {
+    key: "mirrorTheirsFirst",
+    label: "Mirror, theirs first",
+    perspective: "theirs",
+  },
+];
 
 /** Flip stats to show from the ult-user's perspective (swap wins/losses). */
 function flipStats(stats: ScenarioStats): ScenarioStats {
@@ -54,119 +85,31 @@ function flipStats(stats: ScenarioStats): ScenarioStats {
   };
 }
 
-function getAccentBorder(favorable: boolean): string {
-  return favorable
-    ? "border-l-green-500 dark:border-l-green-400"
-    : "border-l-red-500 dark:border-l-red-400";
+function buildRows(heroData: HeroUltImpact): ScenarioRow[] {
+  return SCENARIO_DEFS.map((def) => {
+    const raw = heroData.scenarios[def.key];
+    const stats = def.perspective === "theirs" ? flipStats(raw) : raw;
+    return {
+      key: def.key,
+      label: def.label,
+      perspective: def.perspective,
+      fights: stats.fights,
+      wins: stats.wins,
+      losses: stats.losses,
+      winrate: stats.winrate,
+    };
+  });
 }
 
-function ScenarioCard({
-  label,
-  stats,
-  favorable,
-  footer,
-}: {
-  label: string;
-  stats: ScenarioStats;
-  favorable: boolean;
-  footer: string;
-}) {
-  return (
-    <div
-      className={cn(
-        "bg-muted/50 rounded-lg border-l-4 p-4",
-        getAccentBorder(favorable)
-      )}
-    >
-      <h4 className="text-muted-foreground mb-2 text-sm font-medium">
-        {label}
-      </h4>
-      {stats.fights > 0 ? (
-        <>
-          <p className="flex min-w-0 items-center gap-2 tabular-nums">
-            <span className="text-muted-foreground text-sm font-medium">
-              {favorable ? "We win" : "We lose"}
-            </span>
-            <span
-              className={cn(
-                "text-3xl font-bold",
-                getWinrateColor(favorable ? stats.winrate : 100 - stats.winrate)
-              )}
-            >
-              {stats.winrate.toFixed(1)}%
-            </span>
-            <span className="text-muted-foreground text-sm font-medium">
-              of fights
-            </span>
-          </p>
-          <p className="text-muted-foreground mt-2 text-sm tabular-nums">
-            {footer}
-          </p>
-          {stats.fights < 3 && (
-            <p className="mt-2 flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
-              <AlertTriangle className="h-3 w-3" aria-hidden="true" />
-              Small sample size
-            </p>
-          )}
-        </>
-      ) : (
-        <p className="text-muted-foreground text-sm">No data</p>
-      )}
-    </div>
-  );
-}
-
-function HeadlineInsight({ data }: { data: HeroUltImpact }) {
-  const scenarios = [
-    {
-      key: "uncontestedOurs" as const,
-      label: "uncontested (ours)",
-      stats: data.scenarios.uncontestedOurs,
-    },
-    {
-      key: "uncontestedTheirs" as const,
-      label: "uncontested (enemy)",
-      stats: flipStats(data.scenarios.uncontestedTheirs),
-    },
-    {
-      key: "mirrorOursFirst" as const,
-      label: "in mirrors (ours first)",
-      stats: data.scenarios.mirrorOursFirst,
-    },
-    {
-      key: "mirrorTheirsFirst" as const,
-      label: "in mirrors (theirs first)",
-      stats: flipStats(data.scenarios.mirrorTheirsFirst),
-    },
-  ];
-
-  // Find the scenario with the highest fight count and meaningful winrate deviation
-  const best = scenarios
-    .filter((s) => s.stats.fights >= 1)
-    .sort((a, b) => {
-      const aSignal =
-        Math.abs(a.stats.winrate - 50) * Math.log2(a.stats.fights + 1);
-      const bSignal =
-        Math.abs(b.stats.winrate - 50) * Math.log2(b.stats.fights + 1);
-      return bSignal - aSignal;
-    })[0];
-
-  if (!best) return null;
-
-  return (
-    <p className="text-muted-foreground text-sm">
-      <span className="text-foreground font-medium">{data.hero}</span> wins{" "}
-      <span
-        className={cn(
-          "font-semibold tabular-nums",
-          getWinrateColor(best.stats.winrate)
-        )}
-      >
-        {best.stats.winrate.toFixed(0)}%
-      </span>{" "}
-      of fights {best.label} ({best.stats.fights} fights)
-    </p>
-  );
+function getWinrateClass(
+  winrate: number,
+  perspective: "ours" | "theirs"
+): string {
+  // For "theirs" rows, a high winrate is bad for us.
+  const adjusted = perspective === "ours" ? winrate : 100 - winrate;
+  if (adjusted >= 55) return "text-primary";
+  if (adjusted < 45) return "text-destructive";
+  return "text-foreground";
 }
 
 function HeroCombobox({
@@ -204,7 +147,7 @@ function HeroCombobox({
           aria-expanded={open}
           aria-controls="ult-hero-combobox-listbox"
           aria-label="Select a hero"
-          className="w-full justify-between font-normal md:w-72"
+          className="w-full justify-between font-normal md:w-64"
         >
           <span className="flex items-center gap-2 truncate">
             {selectedHero ? (
@@ -219,7 +162,7 @@ function HeroCombobox({
                 {selectedHero}
               </>
             ) : (
-              "Select a hero…"
+              "Select a hero"
             )}
           </span>
           <ChevronsUpDown
@@ -228,7 +171,7 @@ function HeroCombobox({
           />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-72 p-0" align="start">
+      <PopoverContent className="w-72 p-0" align="end">
         <Command
           filter={(value, search) => {
             const normalized = toHero(value);
@@ -236,7 +179,7 @@ function HeroCombobox({
             return normalized.includes(normalizedSearch) ? 1 : 0;
           }}
         >
-          <CommandInput placeholder="Search heroes…" />
+          <CommandInput placeholder="Search heroes" />
           <CommandList id="ult-hero-combobox-listbox">
             <CommandEmpty>No heroes found.</CommandEmpty>
             {ROLE_ORDER.map((role) => {
@@ -285,10 +228,8 @@ export function UltImpactAnalysisCard({
 }: UltImpactAnalysisCardProps) {
   const [selectedHero, setSelectedHero] = useState<string | null>(null);
 
-  // Resolve selected hero from combobox value (Command lowercases)
   const resolvedHero = useMemo(() => {
     if (!selectedHero) return null;
-    // Command's onSelect returns the lowercased value; match against available heroes
     const match = analysis.availableHeroes.find(
       (h) => h.toLowerCase() === selectedHero.toLowerCase()
     );
@@ -297,72 +238,121 @@ export function UltImpactAnalysisCard({
 
   const heroData = resolvedHero ? analysis.byHero[resolvedHero] : null;
 
+  const rows = useMemo(() => (heroData ? buildRows(heroData) : []), [heroData]);
+
+  // Find the most-impactful scenario: highest |winrate - 50|, weighted by sample size.
+  const keyScenarioKey = useMemo<ScenarioKey | null>(() => {
+    const candidates = rows.filter((r) => r.fights >= 1);
+    if (candidates.length === 0) return null;
+    const sorted = [...candidates].sort((a, b) => {
+      const aSignal = Math.abs(a.winrate - 50) * Math.log2(a.fights + 1);
+      const bSignal = Math.abs(b.winrate - 50) * Math.log2(b.fights + 1);
+      return bSignal - aSignal;
+    });
+    return sorted[0]?.key ?? null;
+  }, [rows]);
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Ultimate Impact Analysis</CardTitle>
-        <CardDescription>
-          Analyze how specific hero ultimates affect fight outcomes across
-          different scenarios
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <HeroCombobox
-          availableHeroes={analysis.availableHeroes}
-          selectedHero={resolvedHero}
-          onSelect={setSelectedHero}
-        />
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Ultimates · Impact analysis"
+        title="Ultimate impact"
+        description="How specific hero ultimates affect fight outcomes across scenarios."
+        rightSlot={
+          <HeroCombobox
+            availableHeroes={analysis.availableHeroes}
+            selectedHero={resolvedHero}
+            onSelect={setSelectedHero}
+          />
+        }
+      />
 
-        {heroData ? (
-          <>
-            <HeadlineInsight data={heroData} />
+      {heroData ? (
+        <>
+          <div className="border-border overflow-hidden rounded-md border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/30">
+                <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
+                  <th className="px-4 py-2 text-left font-medium">Hero</th>
+                  <th className="px-4 py-2 text-left font-medium">Scenario</th>
+                  <th className="px-4 py-2 text-right font-medium">Fights</th>
+                  <th className="px-4 py-2 text-right font-medium">Wins</th>
+                  <th className="px-4 py-2 text-right font-medium">Losses</th>
+                  <th className="px-4 py-2 text-right font-medium">Winrate</th>
+                  <th className="w-28 px-4 py-2 text-right font-medium">Tag</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[var(--border)]">
+                {rows.map((row) => {
+                  const isKey = row.fights > 0 && row.key === keyScenarioKey;
+                  const noData = row.fights === 0;
+                  return (
+                    <tr
+                      key={row.key}
+                      className="hover:bg-muted/30 transition-colors"
+                    >
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <Image
+                            src={`/heroes/${toHero(heroData.hero)}.png`}
+                            alt={heroData.hero}
+                            width={28}
+                            height={28}
+                            className="border-border shrink-0 rounded border"
+                          />
+                          <span className="font-medium">{heroData.hero}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="text-foreground">{row.label}</span>
+                      </td>
+                      <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
+                        {noData ? "—" : row.fights}
+                      </td>
+                      <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
+                        {noData ? "—" : row.wins}
+                      </td>
+                      <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
+                        {noData ? "—" : row.losses}
+                      </td>
+                      <td
+                        className={cn(
+                          "px-4 py-3 text-right font-mono font-semibold tabular-nums",
+                          noData
+                            ? "text-muted-foreground"
+                            : getWinrateClass(row.winrate, row.perspective)
+                        )}
+                      >
+                        {noData ? "—" : `${row.winrate.toFixed(0)}%`}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        {isKey ? (
+                          <span className="bg-primary/15 text-primary rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase">
+                            Key ult
+                          </span>
+                        ) : null}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <ScenarioCard
-                label={`Our ${heroData.hero} uncontested`}
-                stats={heroData.scenarios.uncontestedOurs}
-                favorable={true}
-                footer={`We win ${heroData.scenarios.uncontestedOurs.wins}/${heroData.scenarios.uncontestedOurs.fights} fights when using ultimate uncontested`}
-              />
-              <ScenarioCard
-                label={`Enemy ${heroData.hero} uncontested`}
-                stats={flipStats(heroData.scenarios.uncontestedTheirs)}
-                favorable={false}
-                footer={`Enemy wins ${heroData.scenarios.uncontestedTheirs.losses}/${heroData.scenarios.uncontestedTheirs.fights} fights when using ultimate uncontested`}
-              />
-              <ScenarioCard
-                label="Mirror — Ours first"
-                stats={heroData.scenarios.mirrorOursFirst}
-                favorable={true}
-                footer={`We win ${heroData.scenarios.mirrorOursFirst.wins}/${heroData.scenarios.mirrorOursFirst.fights} fights when we use ultimate first`}
-              />
-              <ScenarioCard
-                label="Mirror — Theirs first"
-                stats={flipStats(heroData.scenarios.mirrorTheirsFirst)}
-                favorable={false}
-                footer={`Enemy wins ${heroData.scenarios.mirrorTheirsFirst.losses}/${heroData.scenarios.mirrorTheirsFirst.fights} fights when they use ultimate first`}
-              />
-            </div>
-
-            {heroData.totalFightsAnalyzed < 10 && (
-              <p className="text-muted-foreground flex items-center gap-1.5 text-xs">
-                <AlertTriangle
-                  className="h-3.5 w-3.5 text-amber-500"
-                  aria-hidden="true"
-                />
-                Only {heroData.totalFightsAnalyzed} fight
-                {heroData.totalFightsAnalyzed === 1 ? "" : "s"} analyzed for{" "}
-                {heroData.hero}. Results may not be statistically significant.
-              </p>
-            )}
-          </>
-        ) : (
-          <p className="text-muted-foreground text-sm">
-            Select a hero above to see how their ultimate impacts fight
-            outcomes.
-          </p>
-        )}
-      </CardContent>
-    </Card>
+          {heroData.totalFightsAnalyzed < 10 && (
+            <p className="text-muted-foreground flex items-center gap-1.5 font-mono text-[10px] tracking-[0.16em] uppercase">
+              <AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" />
+              Only {heroData.totalFightsAnalyzed} fight
+              {heroData.totalFightsAnalyzed === 1 ? "" : "s"} analyzed for{" "}
+              {heroData.hero}, results may not be statistically significant.
+            </p>
+          )}
+        </>
+      ) : (
+        <p className="text-muted-foreground text-sm">
+          Select a hero to see how their ultimate impacts fight outcomes.
+        </p>
+      )}
+    </section>
   );
 }

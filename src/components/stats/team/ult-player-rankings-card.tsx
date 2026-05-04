@@ -17,7 +17,7 @@ export function UltPlayerRankingsCard({
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Ultimates · Rankings"
+          eyebrow="Ultimates · Player rankings"
           title={t("title")}
           description={t("noData")}
         />
@@ -28,49 +28,52 @@ export function UltPlayerRankingsCard({
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Ultimates · Rankings"
+        eyebrow="Ultimates · Player rankings"
         title={t("title")}
         description={t("description")}
       />
-      <div className="relative overflow-x-auto">
+      <div className="border-border overflow-hidden rounded-md border">
         <table className="w-full text-sm" aria-label={t("tableLabel")}>
-          <thead>
-            <tr className="text-muted-foreground border-border border-b font-mono text-[11px] tracking-[0.16em] uppercase">
-              <th className="pr-3 pb-2 text-left font-medium">{t("player")}</th>
-              <th className="pr-3 pb-2 text-left font-medium">{t("hero")}</th>
-              <th className="pr-3 pb-2 text-right font-medium">
+          <thead className="bg-muted/30">
+            <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
+              <th className="px-4 py-2 text-left font-medium">{t("player")}</th>
+              <th className="px-4 py-2 text-left font-medium">{t("hero")}</th>
+              <th className="px-4 py-2 text-right font-medium">
                 {t("totalUlts")}
               </th>
-              <th className="pr-3 pb-2 text-right font-medium">
+              <th className="px-4 py-2 text-right font-medium">
                 {t("mapsPlayed")}
               </th>
-              <th className="pr-3 pb-2 text-right font-medium">
+              <th className="px-4 py-2 text-right font-medium">
                 {t("ultsPerMap")}
               </th>
-              <th className="pb-2 text-right font-medium">
+              <th className="px-4 py-2 text-right font-medium">
                 {t("fightOpener")}
               </th>
             </tr>
           </thead>
-          <tbody className="divide-border divide-y">
+          <tbody className="divide-y divide-[var(--border)]">
             {ultStats.playerRankings.map((player) => (
-              <tr key={player.playerName}>
-                <td className="text-foreground py-2.5 pr-3 font-medium">
+              <tr
+                key={player.playerName}
+                className="hover:bg-muted/30 transition-colors"
+              >
+                <td className="text-foreground px-4 py-3 font-medium">
                   {player.playerName}
                 </td>
-                <td className="text-muted-foreground py-2.5 pr-3">
+                <td className="text-muted-foreground px-4 py-3">
                   {player.primaryHero}
                 </td>
-                <td className="text-foreground py-2.5 pr-3 text-right font-mono font-medium tabular-nums">
+                <td className="text-foreground px-4 py-3 text-right font-mono font-semibold tabular-nums">
                   {player.totalUltsUsed}
                 </td>
-                <td className="text-muted-foreground py-2.5 pr-3 text-right font-mono tabular-nums">
+                <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
                   {player.mapsPlayed}
                 </td>
-                <td className="text-foreground py-2.5 pr-3 text-right font-mono tabular-nums">
+                <td className="text-foreground px-4 py-3 text-right font-mono tabular-nums">
                   {player.ultsPerMap.toFixed(1)}
                 </td>
-                <td className="text-muted-foreground py-2.5 text-right">
+                <td className="text-muted-foreground px-4 py-3 text-right">
                   {player.topFightOpeningHero ? (
                     <span>
                       {player.topFightOpeningHero}{" "}
