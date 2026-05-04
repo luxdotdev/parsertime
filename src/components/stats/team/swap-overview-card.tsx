@@ -16,18 +16,6 @@ function formatSeconds(seconds: number): string {
   return `${mins}m ${secs}s`;
 }
 
-function getWinrateDeltaColor(delta: number): string {
-  if (delta > 5) return "text-green-600 dark:text-green-400";
-  if (delta < -5) return "text-red-600 dark:text-red-400";
-  return "text-muted-foreground";
-}
-
-function getWinrateColor(rate: number): string {
-  if (rate >= 55) return "text-green-600 dark:text-green-400";
-  if (rate >= 45) return "text-blue-600 dark:text-blue-400";
-  return "text-red-600 dark:text-red-400";
-}
-
 export function SwapOverviewCard({ swapStats }: SwapOverviewCardProps) {
   const t = useTranslations("teamStatsPage.swapsTab.overview");
 
@@ -59,10 +47,10 @@ export function SwapOverviewCard({ swapStats }: SwapOverviewCardProps) {
       <CardContent>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-2">
-            <h4 className="text-muted-foreground text-sm font-medium">
+            <h4 className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
               {t("totalSwaps")}
             </h4>
-            <p className="text-3xl font-bold tabular-nums">
+            <p className="text-primary font-mono text-3xl font-bold tabular-nums">
               {swapStats.totalSwaps}
             </p>
             <p className="text-muted-foreground text-xs">
@@ -73,17 +61,12 @@ export function SwapOverviewCard({ swapStats }: SwapOverviewCardProps) {
           </div>
 
           <div className="space-y-2">
-            <h4 className="text-muted-foreground text-sm font-medium">
+            <h4 className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
               {t("noSwapWinrate")}
             </h4>
             {noSwapTotal > 0 ? (
               <>
-                <p
-                  className={cn(
-                    "text-3xl font-bold tabular-nums",
-                    getWinrateColor(swapStats.noSwapWinrate)
-                  )}
-                >
+                <p className="text-foreground font-mono text-3xl font-bold tabular-nums">
                   {swapStats.noSwapWinrate.toFixed(1)}%
                 </p>
                 <p className="text-muted-foreground text-xs">
@@ -99,17 +82,12 @@ export function SwapOverviewCard({ swapStats }: SwapOverviewCardProps) {
           </div>
 
           <div className="space-y-2">
-            <h4 className="text-muted-foreground text-sm font-medium">
+            <h4 className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
               {t("swapWinrate")}
             </h4>
             {swapTotal > 0 ? (
               <>
-                <p
-                  className={cn(
-                    "text-3xl font-bold tabular-nums",
-                    getWinrateColor(swapStats.swapWinrate)
-                  )}
-                >
+                <p className="text-foreground font-mono text-3xl font-bold tabular-nums">
                   {swapStats.swapWinrate.toFixed(1)}%
                 </p>
                 <p className="text-muted-foreground text-xs">
@@ -125,12 +103,12 @@ export function SwapOverviewCard({ swapStats }: SwapOverviewCardProps) {
           </div>
 
           <div className="space-y-2">
-            <h4 className="text-muted-foreground text-sm font-medium">
+            <h4 className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
               {t("avgTimeBeforeSwap")}
             </h4>
             {swapStats.totalSwaps > 0 ? (
               <>
-                <p className="text-3xl font-bold tabular-nums">
+                <p className="text-foreground font-mono text-3xl font-bold tabular-nums">
                   {formatSeconds(swapStats.avgHeroTimeBeforeSwap)}
                 </p>
                 <p className="text-muted-foreground text-xs">
@@ -150,7 +128,14 @@ export function SwapOverviewCard({ swapStats }: SwapOverviewCardProps) {
                 {t("winrateDelta")}:{" "}
               </span>
               <span
-                className={cn("font-semibold", getWinrateDeltaColor(delta))}
+                className={cn(
+                  "rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase",
+                  delta > 5
+                    ? "bg-primary/15 text-primary"
+                    : delta < -5
+                      ? "bg-destructive/15 text-destructive"
+                      : "bg-muted text-muted-foreground"
+                )}
               >
                 {delta > 0
                   ? t("winrateDeltaPositive", { delta: delta.toFixed(1) })

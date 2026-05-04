@@ -8,25 +8,12 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import type { TeamHeroSwapStats } from "@/data/team/types";
-import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
-import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 type SwapWinrateImpactCardProps = {
   swapStats: TeamHeroSwapStats;
 };
-
-function getBarColor(winrate: number): string {
-  if (winrate >= 55) return "var(--chart-2)";
-  if (winrate >= 45) return "var(--chart-1)";
-  return "var(--chart-5)";
-}
-
-function getWinrateTextColor(winrate: number): string {
-  if (winrate >= 55) return "text-green-600 dark:text-green-400";
-  if (winrate >= 45) return "text-blue-600 dark:text-blue-400";
-  return "text-red-600 dark:text-red-400";
-}
 
 const countChartConfig: ChartConfig = {
   winrate: {
@@ -127,11 +114,11 @@ export function SwapWinrateImpactCard({
                     />
                   }
                 />
-                <Bar dataKey="winrate" radius={[4, 4, 0, 0]}>
-                  {countData.map((entry) => (
-                    <Cell key={entry.label} fill={getBarColor(entry.winrate)} />
-                  ))}
-                </Bar>
+                <Bar
+                  dataKey="winrate"
+                  fill="var(--color-winrate)"
+                  radius={[4, 4, 0, 0]}
+                />
               </BarChart>
             </ChartContainer>
 
@@ -141,13 +128,10 @@ export function SwapWinrateImpactCard({
                   key={entry.label}
                   className="bg-muted rounded-md px-3 py-2"
                 >
-                  <p className="text-muted-foreground text-xs">{entry.label}</p>
-                  <p
-                    className={cn(
-                      "text-lg font-semibold tabular-nums",
-                      getWinrateTextColor(entry.winrate)
-                    )}
-                  >
+                  <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+                    {entry.label}
+                  </p>
+                  <p className="text-foreground font-mono text-lg font-semibold tabular-nums">
                     {entry.winrate.toFixed(1)}%
                   </p>
                   <p className="text-muted-foreground text-xs">
@@ -200,11 +184,11 @@ export function SwapWinrateImpactCard({
                     />
                   }
                 />
-                <Bar dataKey="winrate" radius={[4, 4, 0, 0]}>
-                  {timingData.map((entry) => (
-                    <Cell key={entry.label} fill={getBarColor(entry.winrate)} />
-                  ))}
-                </Bar>
+                <Bar
+                  dataKey="winrate"
+                  fill="var(--color-winrate)"
+                  radius={[4, 4, 0, 0]}
+                />
               </BarChart>
             </ChartContainer>
 
@@ -214,13 +198,10 @@ export function SwapWinrateImpactCard({
                   key={entry.label}
                   className="bg-muted rounded-md px-3 py-2"
                 >
-                  <p className="text-muted-foreground text-xs">{entry.label}</p>
-                  <p
-                    className={cn(
-                      "text-lg font-semibold tabular-nums",
-                      getWinrateTextColor(entry.winrate)
-                    )}
-                  >
+                  <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+                    {entry.label}
+                  </p>
+                  <p className="text-foreground font-mono text-lg font-semibold tabular-nums">
                     {entry.winrate.toFixed(1)}%
                   </p>
                   <p className="text-muted-foreground text-xs">
