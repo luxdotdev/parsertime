@@ -1,18 +1,19 @@
 import { Achievements } from "@/components/profile/achievements";
+import { CalculatedStatsBlock } from "@/components/profile/calculated-stats-block";
 import { HeroMasteryGrid } from "@/components/profile/hero-mastery-grid";
 import { HeroRating } from "@/components/profile/hero-rating";
 import { PersonalRecords } from "@/components/profile/personal-records";
 import { PlayStyleIndicator } from "@/components/profile/play-style-indicator";
 import { ProfileHeader } from "@/components/profile/profile-header";
 import { RecentActivityCalendar } from "@/components/profile/recent-activity-calendar";
-import { SkillRatingCard } from "@/components/profile/skill-rating-card";
-import { StatFluctuationCards } from "@/components/profile/stat-fluctuation-cards";
+import { SkillRatingDetail } from "@/components/profile/skill-rating-card";
 import {
   RangePicker,
   type Timeframe,
 } from "@/components/stats/player/range-picker";
+import { SectionHeader } from "@/components/stats/team/section-header";
+import { StatRibbon } from "@/components/stats/team/stat-ribbon";
 import { PlayerTargetsTab } from "@/components/targets/player-targets-tab";
-import { Link } from "@/components/ui/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrimService } from "@/data/scrim";
 import {
@@ -29,19 +30,13 @@ import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { getPlayerTsrByBattletag } from "@/lib/tsr/lookup";
 import type { RoleName } from "@/lib/target-stats";
-import {
-  cn,
-  getHeroRatingBorderColor,
-  toHero,
-  toTimestampWithHours,
-} from "@/lib/utils";
+import { cn, toHero, toTimestampWithHours } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums, type Scrim } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
-// Helper type for hero data
 type HeroData = {
   player_hero: string;
   total_time_played: number;
@@ -51,6 +46,15 @@ type HeroData = {
   rank: number;
 };
 
+const tabTriggerClass =
+  "text-muted-foreground hover:text-foreground data-[state=active]:text-foreground border-0 border-b-2 border-b-transparent data-[state=active]:border-b-primary rounded-none bg-transparent px-0 pb-3 pt-1 font-mono text-[11px] tracking-[0.16em] uppercase shadow-none data-[state=active]:shadow-none data-[state=active]:bg-transparent dark:bg-transparent dark:data-[state=active]:bg-transparent dark:data-[state=active]:border-b-primary transition-colors";
+
+const ROLE_HUE_CLASS: Record<"Tank" | "Damage" | "Support", string> = {
+  Tank: "bg-sky-500/80",
+  Damage: "bg-rose-500/80",
+  Support: "bg-emerald-500/80",
+};
+
 export default async function ProfilePage(
   props: PagePropsWithLocale<"/profile/[playerName]">
 ) {
@@ -58,7 +62,6 @@ export default async function ProfilePage(
   const name = decodeURIComponent(params.playerName);
   const t = await getTranslations("heroes");
 
-  // Attempt to fetch user data
   const user = await prisma.user.findFirst({
     where: {
       OR: [
@@ -97,8 +100,6 @@ export default async function ProfilePage(
     email: user?.email ?? null,
   };
 
-  // 1. Fetch all heroes played by the user, sorted by time played
-  // We use raw query for speed and aggregation
   type HeroPlayTime = {
     player_hero: string;
     total_time_played: number;
@@ -131,9 +132,6 @@ export default async function ProfilePage(
     ORDER BY
       total_time_played DESC
   `;
-
-  // Uncomment this to rate only the top 10 heroes to avoid too many DB calls
-  // const topHeroesToRate = heroesPlayed.slice(0, 10);
 
   const heroRatings = await Promise.all(
     heroesPlayed.map(async (hero) => {
@@ -172,7 +170,6 @@ export default async function ProfilePage(
     })
   );
 
-  // Merge back into full list
   const allHeroesData: HeroData[] = heroesPlayed.map((hero) => {
     const ratedHero = heroRatings.find(
       (h) => h.player_hero === hero.player_hero
@@ -181,7 +178,7 @@ export default async function ProfilePage(
     return {
       ...hero,
       hero_rating: 0,
-      mapsPlayed: 0, // We didn't fetch this for non-top heroes to save time
+      mapsPlayed: 0,
       percentile: "0",
       rank: 0,
     };
@@ -201,7 +198,6 @@ export default async function ProfilePage(
 
   const tsrSnapshot = await getPlayerTsrByBattletag([user?.battletag, name]);
 
-  // Calculate Role Data
   const roleData: Record<
     "Tank" | "Damage" | "Support",
     { time: number; sr: number }
@@ -216,7 +212,6 @@ export default async function ProfilePage(
     if (role) {
       roleData[role].time += hero.total_time_played;
       if (hero.hero_rating > 0) {
-        // Use max hero SR as the "Role SR" for now, as it represents peak performance
         roleData[role].sr = Math.max(roleData[role].sr, hero.hero_rating);
       }
     }
@@ -311,12 +306,25 @@ export default async function ProfilePage(
     )
   );
 
-  // Calculate max time for bar chart scaling
   const maxTimePlayed = Math.max(
-    ...allHeroesData.map((h) => h.total_time_played)
+    ...allHeroesData.map((h) => h.total_time_played),
+    1
   );
 
-  // Targets tab: visible on own profile or for site admins
+  const totalHours = allHeroesData.reduce(
+    (acc, hero) => acc + hero.total_time_played,
+    0
+  );
+  const totalHoursLabel =
+    totalHours / 3600 >= 10
+      ? `${Math.floor(totalHours / 3600)}h`
+      : `${(totalHours / 3600).toFixed(1)}h`;
+
+  const placedHeroes = allHeroesData.filter((h) => h.hero_rating > 0).length;
+  const uniqueScrimDates = new Set(
+    allScrims.map((s) => new Date(s.date).toISOString().split("T")[0])
+  ).size;
+
   const session = await auth();
   const sessionUser = await AppRuntime.runPromise(
     UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
@@ -336,7 +344,6 @@ export default async function ProfilePage(
   let playerPrimaryRole: RoleName = "Damage";
 
   if (canViewTargets) {
-    // Use the profile user's teamId, or fall back to looking up from their targets
     let targetTeamId = user?.teamId ?? null;
     if (!targetTeamId) {
       const anyTarget = await prisma.playerTarget.findFirst({
@@ -347,7 +354,6 @@ export default async function ProfilePage(
     }
 
     if (targetTeamId) {
-      // Determine primary role
       if (allHeroesData.length > 0) {
         const topRole =
           heroRoleMapping[allHeroesData[0].player_hero as HeroName];
@@ -378,301 +384,294 @@ export default async function ProfilePage(
   }
 
   return (
-    <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
-      <ProfileHeader player={playerData} />
+    <div className="px-6 pt-8 pb-16 sm:px-10">
+      <ProfileHeader
+        player={playerData}
+        stats={[
+          {
+            label: "Peak CSR",
+            value: peakCsr.rating > 0 ? peakCsr.rating.toLocaleString() : "—",
+            sub:
+              peakCsr.rating > 0 && peakCsr.hero
+                ? `on ${t(toHero(peakCsr.hero))}`
+                : "Unplaced",
+          },
+          {
+            label: "TSR",
+            value: tsrSnapshot ? tsrSnapshot.rating.toLocaleString() : "—",
+            sub: tsrSnapshot
+              ? `${tsrSnapshot.region} · ${tsrSnapshot.matchCount}m`
+              : "no FACEIT data",
+          },
+          {
+            label: "Heroes",
+            value: allHeroesData.length.toString(),
+            sub: placedHeroes > 0 ? `${placedHeroes} placed` : "—",
+          },
+          {
+            label: "Hours",
+            value: totalHoursLabel,
+            sub: `${allScrims.length} scrims`,
+          },
+        ]}
+      />
 
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="progression">Progression</TabsTrigger>
-          <TabsTrigger value="statistics">Statistics</TabsTrigger>
-          {canViewTargets && <TabsTrigger value="targets">Targets</TabsTrigger>}
-          {user && <TabsTrigger value="achievements">Achievements</TabsTrigger>}
+      <Tabs defaultValue="overview" className="mt-6 space-y-8">
+        <TabsList className="border-border h-auto w-full justify-start gap-6 rounded-none border-b bg-transparent p-0">
+          <TabsTrigger value="overview" className={tabTriggerClass}>
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="progression" className={tabTriggerClass}>
+            Progression
+          </TabsTrigger>
+          <TabsTrigger value="statistics" className={tabTriggerClass}>
+            Statistics
+          </TabsTrigger>
+          {canViewTargets && (
+            <TabsTrigger value="targets" className={tabTriggerClass}>
+              Targets
+            </TabsTrigger>
+          )}
+          {user && (
+            <TabsTrigger value="achievements" className={tabTriggerClass}>
+              Achievements
+            </TabsTrigger>
+          )}
         </TabsList>
-        <TabsContent value="overview" className="space-y-4">
-          <SkillRatingCard peakCsr={peakCsr} tsr={tsrSnapshot} />
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            {/* Left Column: Most Played Heroes */}
-            <div className="col-span-4 space-y-4 lg:col-span-4">
-              <div className="bg-card text-card-foreground rounded-xl border shadow">
-                <div className="p-6">
-                  <h3 className="mb-4 leading-none font-semibold tracking-tight">
-                    Most Played Heroes
-                  </h3>
-                  <div className="flex items-center justify-around py-4">
-                    {top3Heroes.map((hero, index) => (
-                      <div
-                        key={hero.player_hero}
-                        className="flex flex-col items-center gap-2"
-                      >
+
+        <TabsContent value="overview" className="space-y-12">
+          <StatRibbon
+            cells={[
+              {
+                label: "Peak CSR",
+                value:
+                  peakCsr.rating > 0 ? peakCsr.rating.toLocaleString() : "—",
+                sub:
+                  peakCsr.rating > 0 && peakCsr.hero
+                    ? `${t(toHero(peakCsr.hero))} · ${peakCsr.mapsPlayed} maps`
+                    : "no placed heroes",
+                emphasis: peakCsr.rating > 0,
+              },
+              {
+                label: "TSR",
+                value: tsrSnapshot ? tsrSnapshot.rating.toLocaleString() : "—",
+                sub: tsrSnapshot
+                  ? `${tsrSnapshot.region} · ${tsrSnapshot.matchCount} matches`
+                  : "no FACEIT tournaments",
+              },
+              {
+                label: "Heroes",
+                value: allHeroesData.length.toString(),
+                sub: `${placedHeroes} placed · ${allHeroesData.length - placedHeroes} unplaced`,
+              },
+              {
+                label: "Days active",
+                value: uniqueScrimDates.toString(),
+                sub:
+                  allScrims.length > 0
+                    ? `${allScrims.length} scrims logged`
+                    : "no scrims",
+              },
+            ]}
+            columns={4}
+          />
+
+          <section className="space-y-4">
+            <SectionHeader
+              eyebrow="Overview · Skill rating"
+              title="Peak CSR and Tournament Skill Rating"
+            />
+            <SkillRatingDetail peakCsr={peakCsr} tsr={tsrSnapshot} />
+          </section>
+
+          {top3Heroes.length > 0 ? (
+            <section className="space-y-4">
+              <SectionHeader
+                eyebrow="Overview · Top heroes"
+                title="Most played in this window"
+              />
+              <div className="bg-border grid grid-cols-1 gap-px sm:grid-cols-3">
+                {top3Heroes.map((hero) => (
+                  <div
+                    key={hero.player_hero}
+                    className="bg-card flex items-center gap-4 px-5 py-5"
+                  >
+                    <Image
+                      src={`/heroes/${toHero(hero.player_hero)}.png`}
+                      alt={hero.player_hero}
+                      width={256}
+                      height={256}
+                      className="ring-foreground/10 size-14 shrink-0 rounded-md object-cover ring-1"
+                    />
+                    <div className="flex min-w-0 flex-1 flex-col">
+                      <span className="truncate text-base font-semibold">
+                        {t(toHero(hero.player_hero))}
+                      </span>
+                      <span className="text-muted-foreground/80 font-mono text-[0.625rem] tracking-[0.06em] uppercase">
+                        {toTimestampWithHours(hero.total_time_played)}
+                      </span>
+                      <div className="mt-1.5">
+                        <HeroRating
+                          heroRating={hero.hero_rating}
+                          mapsPlayed={hero.mapsPlayed}
+                          rank={hero.rank}
+                          percentile={hero.percentile}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {allHeroesData.length > 0 ? (
+            <section className="space-y-4">
+              <SectionHeader
+                eyebrow="Overview · Hero pool"
+                title="Time played and rating"
+              />
+              <ul className="bg-border grid grid-cols-1 gap-px">
+                {allHeroesData.slice(0, 8).map((hero) => {
+                  const widthPct = Math.max(
+                    2,
+                    (hero.total_time_played / maxTimePlayed) * 100
+                  );
+                  return (
+                    <li
+                      key={hero.player_hero}
+                      className="bg-card flex items-center gap-4 px-5 py-3"
+                    >
+                      <div className="flex min-w-[180px] items-center gap-3">
+                        <Image
+                          src={`/heroes/${toHero(hero.player_hero)}.png`}
+                          alt={hero.player_hero}
+                          width={256}
+                          height={256}
+                          className="ring-foreground/10 size-8 shrink-0 rounded-md object-cover ring-1"
+                        />
+                        <span className="truncate text-sm font-medium">
+                          {t(toHero(hero.player_hero))}
+                        </span>
+                      </div>
+                      <div className="bg-muted/60 relative h-1.5 flex-1 overflow-hidden rounded-full">
                         <div
-                          className={cn(
-                            "bg-muted relative overflow-hidden rounded-full border-4",
-                            getHeroRatingBorderColor(
-                              hero.hero_rating,
-                              hero.rank
-                            ),
-                            index === 0
-                              ? "h-28 w-28 scale-110 shadow-lg"
-                              : "h-24 w-24"
-                          )}
-                        >
-                          <Image
-                            src={`/heroes/${toHero(hero.player_hero)}.png`}
-                            alt={hero.player_hero}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <div className="flex flex-col items-center gap-1 text-center">
+                          className="bg-primary/70 absolute inset-y-0 left-0"
+                          style={{ width: `${widthPct}%` }}
+                        />
+                      </div>
+                      <span className="text-muted-foreground w-[88px] shrink-0 text-right font-mono text-xs tabular-nums">
+                        {toTimestampWithHours(hero.total_time_played)}
+                      </span>
+                      <div className="w-[120px] shrink-0 text-right">
+                        {hero.hero_rating > 0 ? (
                           <HeroRating
                             heroRating={hero.hero_rating}
                             mapsPlayed={hero.mapsPlayed}
                             rank={hero.rank}
                             percentile={hero.percentile}
                           />
-                          <div className="text-muted-foreground text-sm font-semibold uppercase">
-                            {t(toHero(hero.player_hero))}
-                          </div>
-                        </div>
+                        ) : (
+                          <span className="text-muted-foreground/70 font-mono text-xs">
+                            Unplaced
+                          </span>
+                        )}
                       </div>
-                    ))}
-                    {top3Heroes.length === 0 && (
-                      <div className="text-muted-foreground text-sm">
-                        No data available
-                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ) : null}
+
+          <section className="space-y-4">
+            <SectionHeader
+              eyebrow="Overview · Roles"
+              title="Time played and peak SR per role"
+            />
+            <div className="bg-border grid grid-cols-1 gap-px sm:grid-cols-3">
+              {(["Tank", "Damage", "Support"] as const).map((role) => (
+                <div
+                  key={role}
+                  className="bg-card flex flex-col gap-2 px-5 py-4"
+                >
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={cn(
+                        "size-2 rounded-full",
+                        ROLE_HUE_CLASS[role]
+                      )}
+                    />
+                    <span className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.06em] uppercase">
+                      {role}
+                    </span>
+                  </div>
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="font-mono text-xl font-semibold tabular-nums">
+                      {roleData[role].time > 0
+                        ? toTimestampWithHours(roleData[role].time)
+                        : "—"}
+                    </span>
+                    {roleData[role].sr > 0 ? (
+                      <HeroRating
+                        heroRating={roleData[role].sr}
+                        mapsPlayed={10}
+                        rank={0}
+                      />
+                    ) : (
+                      <span className="text-muted-foreground/70 font-mono text-xs">
+                        no peak
+                      </span>
                     )}
                   </div>
                 </div>
-              </div>
-              <RecentActivityCalendar scrims={allScrims} />
-
-              <Tabs defaultValue="one-week">
-                <TabsList>
-                  <TabsTrigger value="one-week" disabled={!timeframe1}>
-                    One Week
-                  </TabsTrigger>
-                  <TabsTrigger value="two-weeks" disabled={!timeframe1}>
-                    Two Weeks
-                  </TabsTrigger>
-                  <TabsTrigger value="one-month" disabled={!timeframe1}>
-                    One Month
-                  </TabsTrigger>
-                  <TabsTrigger value="three-months" disabled={!timeframe2}>
-                    Three Months
-                  </TabsTrigger>
-                  <TabsTrigger value="six-months" disabled={!timeframe2}>
-                    Six Months
-                  </TabsTrigger>
-                  <TabsTrigger value="one-year" disabled={!timeframe3}>
-                    One Year
-                  </TabsTrigger>
-                  <TabsTrigger value="all-time" disabled={!timeframe3}>
-                    All Time
-                  </TabsTrigger>
-                </TabsList>
-                {!timeframe3 && (
-                  <div className="text-muted-foreground text-sm">
-                    <Link href="/pricing" external>
-                      Upgrade to view more timeframes
-                    </Link>
-                  </div>
-                )}
-                <TabsContent value="all-time">
-                  <StatFluctuationCards
-                    calculatedStats={calculatedStats}
-                    timeframe="all-time"
-                  />
-                </TabsContent>
-                <TabsContent value="one-week">
-                  <StatFluctuationCards
-                    calculatedStats={calculatedStats}
-                    timeframe="one-week"
-                  />
-                </TabsContent>
-                <TabsContent value="two-weeks">
-                  <StatFluctuationCards
-                    calculatedStats={calculatedStats}
-                    timeframe="two-weeks"
-                  />
-                </TabsContent>
-                <TabsContent value="one-month">
-                  <StatFluctuationCards
-                    calculatedStats={calculatedStats}
-                    timeframe="one-month"
-                  />
-                </TabsContent>
-                <TabsContent value="three-months">
-                  <StatFluctuationCards
-                    calculatedStats={calculatedStats}
-                    timeframe="three-months"
-                  />
-                </TabsContent>
-                <TabsContent value="six-months">
-                  <StatFluctuationCards
-                    calculatedStats={calculatedStats}
-                    timeframe="six-months"
-                  />
-                </TabsContent>
-                <TabsContent value="one-year">
-                  <StatFluctuationCards
-                    calculatedStats={calculatedStats}
-                    timeframe="one-year"
-                  />
-                </TabsContent>
-              </Tabs>
+              ))}
             </div>
+          </section>
 
-            {/* Right Column: Comparison / Role Stats */}
-            <div className="col-span-3 space-y-4 lg:col-span-3">
-              <div className="bg-card text-card-foreground h-full rounded-xl border p-6 shadow">
-                <div className="mb-4 flex items-center justify-between">
-                  <h3 className="leading-none font-semibold tracking-tight">
-                    Hero Comparison
-                  </h3>
-                  <span className="text-muted-foreground text-sm">
-                    Time Played
-                  </span>
-                </div>
-                {/* Comparison Bars */}
-                <div className="space-y-3">
-                  {allHeroesData.slice(0, 5).map((hero) => (
-                    <div key={hero.player_hero} className="space-y-1">
-                      <div className="flex items-center gap-3">
-                        <div className="flex min-w-[120px] flex-col gap-0.5">
-                          <span className="text-sm font-medium">
-                            {t(toHero(hero.player_hero))}
-                          </span>
-                          {hero.hero_rating > 0 ? (
-                            <HeroRating
-                              heroRating={hero.hero_rating}
-                              mapsPlayed={hero.mapsPlayed}
-                              rank={hero.rank}
-                              percentile={hero.percentile}
-                            />
-                          ) : (
-                            <span className="text-muted-foreground text-xs">
-                              Unplaced
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex flex-1 items-center gap-2">
-                          <div className="bg-muted h-4 flex-1 overflow-hidden rounded-full">
-                            <div
-                              className="bg-primary h-full"
-                              style={{
-                                width: `${(hero.total_time_played / maxTimePlayed) * 100}%`,
-                              }}
-                            />
-                          </div>
-                          <span className="text-muted-foreground min-w-[80px] text-right text-sm">
-                            {toTimestampWithHours(hero.total_time_played)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  {allHeroesData.length === 0 && (
-                    <div className="text-muted-foreground text-sm">
-                      No data available
-                    </div>
-                  )}
-                </div>
+          <RecentActivityCalendar scrims={allScrims} />
 
-                <div className="mt-8">
-                  <div className="text-muted-foreground mb-2 grid grid-cols-3 gap-2 px-2 text-xs font-semibold">
-                    <div className="uppercase">Role</div>
-                    <div className="text-right uppercase">Time Played</div>
-                    <div className="text-right uppercase">Peak SR</div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="bg-muted/50 grid grid-cols-3 items-center gap-2 rounded p-2">
-                      <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 rounded-full bg-blue-500" />
-                        <span>Tank</span>
-                      </div>
-                      <div className="text-right">
-                        {roleData.Tank.time > 0
-                          ? toTimestampWithHours(roleData.Tank.time)
-                          : "-"}
-                      </div>
-                      <div className="flex justify-end">
-                        {roleData.Tank.sr > 0 ? (
-                          <HeroRating
-                            heroRating={roleData.Tank.sr}
-                            mapsPlayed={10}
-                            rank={0}
-                          />
-                        ) : (
-                          "-"
-                        )}
-                      </div>
-                    </div>
-                    <div className="bg-muted/50 grid grid-cols-3 items-center gap-2 rounded p-2">
-                      <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 rounded-full bg-red-500" />
-                        <span>Damage</span>
-                      </div>
-                      <div className="text-right">
-                        {roleData.Damage.time > 0
-                          ? toTimestampWithHours(roleData.Damage.time)
-                          : "-"}
-                      </div>
-                      <div className="flex justify-end">
-                        {roleData.Damage.sr > 0 ? (
-                          <HeroRating
-                            heroRating={roleData.Damage.sr}
-                            mapsPlayed={10}
-                            rank={0}
-                          />
-                        ) : (
-                          "-"
-                        )}
-                      </div>
-                    </div>
-                    <div className="bg-muted/50 grid grid-cols-3 items-center gap-2 rounded p-2">
-                      <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 rounded-full bg-green-500" />
-                        <span>Support</span>
-                      </div>
-                      <div className="text-right">
-                        {roleData.Support.time > 0
-                          ? toTimestampWithHours(roleData.Support.time)
-                          : "-"}
-                      </div>
-                      <div className="flex justify-end">
-                        {roleData.Support.sr > 0 ? (
-                          <HeroRating
-                            heroRating={roleData.Support.sr}
-                            mapsPlayed={10}
-                            rank={0}
-                          />
-                        ) : (
-                          "-"
-                        )}
-                      </div>
-                    </div>
-                    <HeroMasteryGrid heroesData={allHeroesData} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <section className="space-y-4">
+            <SectionHeader
+              eyebrow="Overview · Hero mastery"
+              title="Per-hero rank breakdown"
+            />
+            <HeroMasteryGrid heroesData={allHeroesData} />
+          </section>
+
+          <section className="space-y-4">
+            <SectionHeader
+              eyebrow="Overview · Calculated stats"
+              title="MVP, first-pick, fight reversal, and more"
+              description="Trends across the chosen timeframe."
+            />
+            <CalculatedStatsBlock
+              calculatedStats={calculatedStats}
+              permissions={permissions}
+            />
+          </section>
         </TabsContent>
-        <TabsContent value="progression" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            {/* Left Column: Play Style Indicator */}
-            <div className="col-span-4 space-y-4 lg:col-span-4">
-              <PlayStyleIndicator calculatedStats={calculatedStats} />
-            </div>
 
-            {/* Right Column: Personal Records */}
-            <div className="col-span-3 space-y-4 lg:col-span-3">
-              <PersonalRecords stats={stats} heroesData={allHeroesData} />
-            </div>
-          </div>
+        <TabsContent value="progression" className="space-y-12">
+          <section className="space-y-4">
+            <SectionHeader
+              eyebrow="Progression · Play style"
+              title="Aggression, survivability, impact, clutch"
+              description="Built from calculated stats across this player's history."
+            />
+            <PlayStyleIndicator calculatedStats={calculatedStats} />
+          </section>
+
+          <section className="space-y-4">
+            <SectionHeader
+              eyebrow="Progression · Personal records"
+              title="Single-map highs"
+            />
+            <PersonalRecords stats={stats} heroesData={allHeroesData} />
+          </section>
         </TabsContent>
-        <TabsContent value="statistics" className="space-y-4">
+
+        <TabsContent value="statistics" className="space-y-6">
           <RangePicker
             playerName={name}
             permissions={permissions}
@@ -684,7 +683,7 @@ export default async function ProfilePage(
           />
         </TabsContent>
         {canViewTargets && (
-          <TabsContent value="targets" className="space-y-4">
+          <TabsContent value="targets" className="space-y-6">
             <PlayerTargetsTab
               playerRole={playerPrimaryRole}
               scrimStats={targetScrimStats}
@@ -692,7 +691,7 @@ export default async function ProfilePage(
             />
           </TabsContent>
         )}
-        <TabsContent value="achievements" className="space-y-4">
+        <TabsContent value="achievements" className="space-y-6">
           <Achievements user={user!} />
         </TabsContent>
       </Tabs>
