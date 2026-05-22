@@ -35,7 +35,7 @@ type Datum = {
 export function OpponentRadarChart({ opponents, playerTeam, labels }: Props) {
   const { team1, team2 } = useColorblindMode();
   const dealtColor = playerTeam === "Team1" ? team1 : team2;
-  const receivedColor = "var(--destructive)";
+  const receivedColor = playerTeam === "Team1" ? team2 : team1;
 
   const data: Datum[] = opponents.map((o) => ({
     opponent: o.name,

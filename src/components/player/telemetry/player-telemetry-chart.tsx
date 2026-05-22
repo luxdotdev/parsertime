@@ -22,7 +22,6 @@ const LANE_PAD_TOP = 14;
 const LANE_PAD_BOTTOM = 8;
 const HEALING_COLOR = "var(--chart-3)";
 const HEALING_RECEIVED_COLOR = "var(--chart-4)";
-const TAKEN_COLOR = "var(--destructive)";
 export const ROLE_COLORS = {
   tank: "oklch(0.62 0.1 250)", // steel blue
   damage: "oklch(0.7 0.16 65)", // amber
@@ -68,6 +67,7 @@ export function PlayerTelemetryChart({
   const t = useTranslations("mapPage.player.telemetry");
   const { team1, team2 } = useColorblindMode();
   const teamColor = telemetry.playerTeam === "Team1" ? team1 : team2;
+  const opponentColor = telemetry.playerTeam === "Team1" ? team2 : team1;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(880);
@@ -133,7 +133,7 @@ export function PlayerTelemetryChart({
       traces: [
         {
           channel: channels.damageTaken,
-          color: TAKEN_COLOR,
+          color: opponentColor,
           label: t("channels.damageTaken"),
         },
         {
@@ -145,7 +145,7 @@ export function PlayerTelemetryChart({
     };
 
     return [output, survival];
-  }, [telemetry, teamColor, t]);
+  }, [telemetry, teamColor, opponentColor, t]);
 
   const targetLane: CurveLane = useMemo(
     () => ({
@@ -191,6 +191,7 @@ export function PlayerTelemetryChart({
       <div className="space-y-3">
         <Legend
           teamColor={teamColor}
+          opponentColor={opponentColor}
           role={telemetry.role}
           showRoles={hasTargetDamage}
           labels={{
@@ -244,6 +245,7 @@ export function PlayerTelemetryChart({
           <EventsLaneView
             telemetry={telemetry}
             teamColor={teamColor}
+            opponentColor={opponentColor}
             width={width}
             timeToX={timeToX}
             cursorX={cursorX}
@@ -591,6 +593,7 @@ function StackedLaneView({
 function EventsLaneView({
   telemetry,
   teamColor,
+  opponentColor,
   width,
   timeToX,
   cursorX,
@@ -601,6 +604,7 @@ function EventsLaneView({
 }: {
   telemetry: PlayerTelemetry;
   teamColor: string;
+  opponentColor: string;
   width: number;
   timeToX: (time: number) => number;
   cursorX: number | null;
@@ -703,7 +707,7 @@ function EventsLaneView({
           victimHero={d.playerHero}
           victimName={playerName}
           teamLabel={displayAbility(d.ability)}
-          color={TAKEN_COLOR}
+          color={opponentColor}
           time={d.time}
         />
       ))}
@@ -875,11 +879,13 @@ function CursorReadout({
 
 function Legend({
   teamColor,
+  opponentColor,
   role,
   showRoles,
   labels,
 }: {
   teamColor: string;
+  opponentColor: string;
   role: PlayerTelemetry["role"];
   showRoles: boolean;
   labels: Record<
@@ -900,7 +906,7 @@ function Legend({
 }) {
   const items: { color: string; label: string }[] = [
     { color: teamColor, label: labels.damageDealt },
-    { color: TAKEN_COLOR, label: labels.damageTaken },
+    { color: opponentColor, label: labels.damageTaken },
   ];
   if (role === "Support") {
     items.push({ color: HEALING_COLOR, label: labels.healingDealt });
@@ -956,7 +962,7 @@ function Legend({
         {labels.kill}
       </span>
       <span className="flex items-center gap-1.5">
-        <span style={{ color: TAKEN_COLOR }} aria-hidden="true">
+        <span style={{ color: opponentColor }} aria-hidden="true">
           ●
         </span>
         {labels.death}
