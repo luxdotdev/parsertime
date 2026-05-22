@@ -714,7 +714,13 @@
           "output": "가한 피해",
           "support": "힐 / 피해",
           "survival": "받은 피해 / 힐",
-          "events": "이벤트"
+          "events": "이벤트",
+          "target": "대상별 피해"
+        },
+        "roles": {
+          "tank": "탱커",
+          "damage": "딜러",
+          "support": "힐러"
         },
         "channels": {
           "damageDealt": "가한 피해",
@@ -730,6 +736,20 @@
           "ability1": "스킬 1",
           "ability2": "스킬 2",
           "swap": "영웅 교체"
+        },
+        "matchups": {
+          "title": "타겟 및 매치업",
+          "description": "이 선수가 맵 전반에서 누구에게 피해를 주고 교전했는지 보여줍니다.",
+          "byTarget": {
+            "title": "역할별 가한 피해",
+            "empty": "이 맵에서 가한 피해가 없습니다."
+          },
+          "radar": {
+            "title": "상대별 피해 교환",
+            "dealt": "가함",
+            "received": "받음",
+            "empty": "이 맵에 대한 상대 피해 기록이 없습니다."
+          }
         },
         "heatmap": {
           "title": "위치 히트맵",

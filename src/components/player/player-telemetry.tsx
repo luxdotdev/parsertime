@@ -1,6 +1,7 @@
 import { SectionHeader } from "@/components/section-header";
 import { StatBlock, StatGrid, StatPanel } from "@/components/player/stat-panel";
 import { PlayerHeatmap } from "@/components/player/telemetry/player-heatmap";
+import { PlayerMatchups } from "@/components/player/telemetry/player-matchups";
 import { PlayerTelemetryChart } from "@/components/player/telemetry/player-telemetry-chart";
 import { PlayerTelemetryService } from "@/data/map";
 import type { PlayerTelemetry as PlayerTelemetryData } from "@/data/map/player-telemetry-types";
@@ -53,6 +54,21 @@ export async function PlayerTelemetry({ id, playerName }: Props) {
         />
         <StatPanel className="px-4 py-5 sm:px-5">
           <PlayerTelemetryChart telemetry={telemetry} playerName={playerName} />
+        </StatPanel>
+      </section>
+
+      <section aria-labelledby="telemetry-matchups-heading">
+        <SectionHeader
+          id="telemetry-matchups-heading"
+          title={t("matchups.title")}
+          description={t("matchups.description")}
+        />
+        <StatPanel>
+          <PlayerMatchups
+            totals={telemetry.damageByRoleTotals}
+            opponents={telemetry.opponents}
+            playerTeam={telemetry.playerTeam}
+          />
         </StatPanel>
       </section>
 

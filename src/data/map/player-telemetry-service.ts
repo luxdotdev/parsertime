@@ -237,8 +237,9 @@ export const make: Effect.Effect<PlayerTelemetryServiceInterface> = Effect.gen(
                 orderBy: { match_time: "asc" },
               }),
               prisma.playerStat.findMany({
-                where: { ...where, player_name: playerName },
+                where,
                 select: {
+                  player_name: true,
                   player_hero: true,
                   hero_time_played: true,
                   player_team: true,
@@ -251,6 +252,9 @@ export const make: Effect.Effect<PlayerTelemetryServiceInterface> = Effect.gen(
                   event_damage: true,
                   attacker_x: true,
                   attacker_z: true,
+                  victim_name: true,
+                  victim_team: true,
+                  victim_hero: true,
                 },
               }),
               prisma.damage.findMany({
@@ -260,6 +264,8 @@ export const make: Effect.Effect<PlayerTelemetryServiceInterface> = Effect.gen(
                   event_damage: true,
                   victim_x: true,
                   victim_z: true,
+                  attacker_name: true,
+                  attacker_team: true,
                 },
               }),
               prisma.healing.findMany({
@@ -351,7 +357,7 @@ export const make: Effect.Effect<PlayerTelemetryServiceInterface> = Effect.gen(
           matchStart,
           matchEnd,
           roundStarts,
-          playerStats,
+          allPlayerStats,
           dmgDealt,
           dmgTaken,
           healDealt,
@@ -391,6 +397,9 @@ export const make: Effect.Effect<PlayerTelemetryServiceInterface> = Effect.gen(
         const endTime = matchEnd?.match_time ?? lastEventTime;
 
         // Role + team from the player's most-played hero.
+        const playerStats = allPlayerStats.filter(
+          (s) => s.player_name === playerName
+        );
         const heroTime = new Map<string, number>();
         for (const s of playerStats) {
           heroTime.set(
@@ -447,6 +456,63 @@ export const make: Effect.Effect<PlayerTelemetryServiceInterface> = Effect.gen(
           ),
         };
 
+        // Damage dealt to enemies, split by the victim's role (time-series +
+        // totals) and tallied per opponent. Self / friendly events are skipped.
+        const roleEvents: Record<PlayerRole, WeightedEvent[]> = {
+          Tank: [],
+          Damage: [],
+          Support: [],
+        };
+        const roleTotals = { tank: 0, damage: 0, support: 0 };
+        const dealtByOpponent = new Map<string, number>();
+        for (const d of dmgDealt) {
+          if (d.victim_team === playerTeamName) continue;
+          dealtByOpponent.set(
+            d.victim_name,
+            (dealtByOpponent.get(d.victim_name) ?? 0) + d.event_damage
+          );
+          const victimRole = heroRoleMapping[d.victim_hero as HeroName];
+          if (!victimRole) continue;
+          roleEvents[victimRole].push({
+            time: d.match_time,
+            weight: d.event_damage,
+          });
+          if (victimRole === "Tank") roleTotals.tank += d.event_damage;
+          else if (victimRole === "Support")
+            roleTotals.support += d.event_damage;
+          else roleTotals.damage += d.event_damage;
+        }
+
+        const receivedByOpponent = new Map<string, number>();
+        for (const d of dmgTaken) {
+          if (d.attacker_team === playerTeamName) continue;
+          receivedByOpponent.set(
+            d.attacker_name,
+            (receivedByOpponent.get(d.attacker_name) ?? 0) + d.event_damage
+          );
+        }
+
+        // Enemy roster + each enemy's most-played hero, for the matchup radar.
+        const enemyTopHero = new Map<string, { hero: string; time: number }>();
+        for (const s of allPlayerStats) {
+          if (s.player_team === playerTeamName) continue;
+          const current = enemyTopHero.get(s.player_name);
+          if (!current || s.hero_time_played > current.time) {
+            enemyTopHero.set(s.player_name, {
+              hero: s.player_hero,
+              time: s.hero_time_played,
+            });
+          }
+        }
+        const opponents = [...enemyTopHero.entries()]
+          .map(([name, { hero }]) => ({
+            name,
+            hero,
+            dealt: Math.round(dealtByOpponent.get(name) ?? 0),
+            received: Math.round(receivedByOpponent.get(name) ?? 0),
+          }))
+          .sort((a, b) => b.dealt + b.received - (a.dealt + a.received));
+
         const rounds = roundStarts.map((r, i) => ({
           roundNumber: r.round_number,
           start: r.match_time,
@@ -460,6 +526,13 @@ export const make: Effect.Effect<PlayerTelemetryServiceInterface> = Effect.gen(
           playerTeam,
           topHero,
           channels,
+          damageByRole: {
+            tank: weightedRateSeries(roleEvents.Tank, startTime, endTime),
+            damage: weightedRateSeries(roleEvents.Damage, startTime, endTime),
+            support: weightedRateSeries(roleEvents.Support, startTime, endTime),
+          },
+          damageByRoleTotals: roleTotals,
+          opponents,
           totals: {
             damageDealt: channels.damageDealt.total,
             damageTaken: channels.damageTaken.total,

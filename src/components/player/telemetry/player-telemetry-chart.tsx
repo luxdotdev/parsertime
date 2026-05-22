@@ -12,14 +12,7 @@ import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import { toTimestamp } from "@/lib/utils";
 import { heroAbilityMapping, type HeroName } from "@/types/heroes";
 import { useTranslations } from "next-intl";
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const SAMPLE_INTERVAL = 0.5;
 const MAX_PATH_POINTS = 600;
@@ -30,6 +23,11 @@ const LANE_PAD_BOTTOM = 8;
 const HEALING_COLOR = "var(--chart-3)";
 const HEALING_RECEIVED_COLOR = "var(--chart-4)";
 const TAKEN_COLOR = "var(--destructive)";
+export const ROLE_COLORS = {
+  tank: "oklch(0.62 0.1 250)", // steel blue
+  damage: "oklch(0.7 0.16 65)", // amber
+  support: "oklch(0.66 0.13 155)", // green
+} as const;
 
 type LaneTrace = {
   channel: TelemetryChannel;
@@ -149,6 +147,34 @@ export function PlayerTelemetryChart({
     return [output, survival];
   }, [telemetry, teamColor, t]);
 
+  const targetLane: CurveLane = useMemo(
+    () => ({
+      id: "target",
+      label: t("lanes.target"),
+      traces: [
+        {
+          channel: telemetry.damageByRole.tank,
+          color: ROLE_COLORS.tank,
+          label: t("roles.tank"),
+        },
+        {
+          channel: telemetry.damageByRole.damage,
+          color: ROLE_COLORS.damage,
+          label: t("roles.damage"),
+        },
+        {
+          channel: telemetry.damageByRole.support,
+          color: ROLE_COLORS.support,
+          label: t("roles.support"),
+        },
+      ],
+    }),
+    [telemetry.damageByRole, t]
+  );
+
+  const { tank, damage, support } = telemetry.damageByRoleTotals;
+  const hasTargetDamage = tank + damage + support > 0;
+
   const cursorTime = cursorX == null ? null : xToTime(cursorX);
 
   function handlePointerMove(e: React.PointerEvent) {
@@ -166,6 +192,7 @@ export function PlayerTelemetryChart({
         <Legend
           teamColor={teamColor}
           role={telemetry.role}
+          showRoles={hasTargetDamage}
           labels={{
             damageDealt: t("channels.damageDealt"),
             damageTaken: t("channels.damageTaken"),
@@ -176,6 +203,9 @@ export function PlayerTelemetryChart({
             death: t("markers.death"),
             ability: t("markers.ability"),
             swap: t("markers.swap"),
+            roleTank: t("roles.tank"),
+            roleDamage: t("roles.damage"),
+            roleSupport: t("roles.support"),
           }}
         />
 
@@ -200,6 +230,17 @@ export function PlayerTelemetryChart({
             />
           ))}
 
+          {hasTargetDamage && (
+            <StackedLaneView
+              lane={targetLane}
+              width={width}
+              timeToX={timeToX}
+              rounds={telemetry.rounds}
+              heroSwaps={telemetry.heroSwaps}
+              cursorX={cursorX}
+            />
+          )}
+
           <EventsLaneView
             telemetry={telemetry}
             teamColor={teamColor}
@@ -223,7 +264,7 @@ export function PlayerTelemetryChart({
               width={width}
               time={cursorTime}
               start={start}
-              lanes={lanes}
+              lanes={hasTargetDamage ? [...lanes, targetLane] : lanes}
             />
           )}
         </div>
@@ -376,6 +417,162 @@ function CurveLaneView({
         })}
 
       {/* crosshair */}
+      {cursorX != null && (
+        <line
+          x1={cursorX}
+          y1={0}
+          x2={cursorX}
+          y2={h}
+          className="stroke-foreground/40"
+          strokeWidth={1}
+          pointerEvents="none"
+        />
+      )}
+    </svg>
+  );
+}
+
+function StackedLaneView({
+  lane,
+  width,
+  timeToX,
+  rounds,
+  heroSwaps,
+  cursorX,
+}: {
+  lane: CurveLane;
+  width: number;
+  timeToX: (time: number) => number;
+  rounds: PlayerTelemetry["rounds"];
+  heroSwaps: PlayerTelemetry["heroSwaps"];
+  cursorX: number | null;
+}) {
+  const h = CURVE_LANE_HEIGHT;
+  const baselineY = h - LANE_PAD_BOTTOM;
+  const amplitude = h - LANE_PAD_TOP - LANE_PAD_BOTTOM;
+
+  const { layers, peak } = useMemo(() => {
+    const series = lane.traces.map((tr) => tr.channel.points);
+    const n = series[0]?.length ?? 0;
+    if (n === 0) return { layers: [], peak: 0 };
+
+    const step = Math.max(1, Math.ceil(n / MAX_PATH_POINTS));
+    let max = 0;
+    for (let i = 0; i < n; i++) {
+      let total = 0;
+      for (const s of series) total += s[i]?.value ?? 0;
+      if (total > max) max = total;
+    }
+    const norm = max > 0 ? max : 1;
+    function yFor(c: number) {
+      return baselineY - (c / norm) * amplitude;
+    }
+
+    const idxs: number[] = [];
+    for (let i = 0; i < n; i += step) idxs.push(i);
+    if (idxs[idxs.length - 1] !== n - 1) idxs.push(n - 1);
+
+    const layers = lane.traces.map((tr, layerIdx) => {
+      const top: { x: number; y: number }[] = [];
+      const bottom: { x: number; y: number }[] = [];
+      for (const i of idxs) {
+        const x = timeToX(series[0][i].time);
+        let lower = 0;
+        for (let j = 0; j < layerIdx; j++) lower += series[j][i]?.value ?? 0;
+        const upper = lower + (series[layerIdx][i]?.value ?? 0);
+        top.push({ x, y: yFor(upper) });
+        bottom.push({ x, y: yFor(lower) });
+      }
+      let area = `M${top[0].x},${top[0].y}`;
+      for (let k = 1; k < top.length; k++) area += `L${top[k].x},${top[k].y}`;
+      for (let k = bottom.length - 1; k >= 0; k--) {
+        area += `L${bottom[k].x},${bottom[k].y}`;
+      }
+      area += "Z";
+      let line = `M${top[0].x},${top[0].y}`;
+      for (let k = 1; k < top.length; k++) line += `L${top[k].x},${top[k].y}`;
+      return { color: tr.color, label: tr.label, area, line };
+    });
+    return { layers, peak: Math.round(max) };
+  }, [lane, timeToX, baselineY, amplitude]);
+
+  return (
+    <svg
+      width={width}
+      height={h}
+      viewBox={`0 0 ${width} ${h}`}
+      className="block"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <line
+        x1={0}
+        y1={baselineY}
+        x2={width}
+        y2={baselineY}
+        className="stroke-border"
+        strokeWidth={1}
+      />
+      {rounds.map((r) => {
+        const x = timeToX(r.start);
+        if (x <= 0) return null;
+        return (
+          <line
+            key={`tr-${r.roundNumber}-${r.start}`}
+            x1={x}
+            y1={0}
+            x2={x}
+            y2={h}
+            className="stroke-muted-foreground/15"
+            strokeWidth={1}
+            strokeDasharray="2 4"
+          />
+        );
+      })}
+      {heroSwaps.map((s) => (
+        <line
+          key={`ts-${s.time}`}
+          x1={timeToX(s.time)}
+          y1={0}
+          x2={timeToX(s.time)}
+          y2={h}
+          className="stroke-foreground/25"
+          strokeWidth={1}
+          strokeDasharray="1 3"
+        />
+      ))}
+      {layers.map((ly) => (
+        <g key={ly.label}>
+          <path
+            d={ly.area}
+            fill={ly.color}
+            fillOpacity={0.6}
+            className="motion-safe:transition-opacity"
+          />
+          <path
+            d={ly.line}
+            fill="none"
+            stroke={ly.color}
+            strokeWidth={1}
+            strokeLinejoin="round"
+          />
+        </g>
+      ))}
+      <text
+        x={8}
+        y={16}
+        className="fill-muted-foreground font-mono text-[10px] tracking-[0.08em] uppercase"
+      >
+        {lane.label}
+      </text>
+      <text
+        x={width - 8}
+        y={16}
+        textAnchor="end"
+        className="fill-muted-foreground/70 font-mono text-[10px] tabular-nums"
+      >
+        {peak.toLocaleString()}/s
+      </text>
       {cursorX != null && (
         <line
           x1={cursorX}
@@ -679,10 +876,12 @@ function CursorReadout({
 function Legend({
   teamColor,
   role,
+  showRoles,
   labels,
 }: {
   teamColor: string;
   role: PlayerTelemetry["role"];
+  showRoles: boolean;
   labels: Record<
     | "damageDealt"
     | "damageTaken"
@@ -692,11 +891,14 @@ function Legend({
     | "kill"
     | "death"
     | "ability"
-    | "swap",
+    | "swap"
+    | "roleTank"
+    | "roleDamage"
+    | "roleSupport",
     string
   >;
 }) {
-  const items: { color: string; label: string; glyph?: ReactNode }[] = [
+  const items: { color: string; label: string }[] = [
     { color: teamColor, label: labels.damageDealt },
     { color: TAKEN_COLOR, label: labels.damageTaken },
   ];
@@ -704,6 +906,12 @@ function Legend({
     items.push({ color: HEALING_COLOR, label: labels.healingDealt });
   }
   items.push({ color: HEALING_RECEIVED_COLOR, label: labels.healingReceived });
+
+  const roleItems: { color: string; label: string }[] = [
+    { color: ROLE_COLORS.tank, label: labels.roleTank },
+    { color: ROLE_COLORS.damage, label: labels.roleDamage },
+    { color: ROLE_COLORS.support, label: labels.roleSupport },
+  ];
 
   return (
     <div className="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px]">
@@ -717,6 +925,23 @@ function Legend({
           {item.label}
         </span>
       ))}
+      {showRoles && (
+        <>
+          <span className="text-muted-foreground/30" aria-hidden="true">
+            |
+          </span>
+          {roleItems.map((item) => (
+            <span key={item.label} className="flex items-center gap-1.5">
+              <span
+                className="inline-block size-2 rounded-[2px]"
+                style={{ backgroundColor: item.color }}
+                aria-hidden="true"
+              />
+              {item.label}
+            </span>
+          ))}
+        </>
+      )}
       <span className="text-muted-foreground/30" aria-hidden="true">
         |
       </span>

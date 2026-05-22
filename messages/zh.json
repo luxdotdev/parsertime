@@ -714,7 +714,13 @@
           "output": "输出伤害",
           "support": "治疗 / 伤害",
           "survival": "承受 / 治疗",
-          "events": "事件"
+          "events": "事件",
+          "target": "按目标分类的伤害"
+        },
+        "roles": {
+          "tank": "坦克",
+          "damage": "输出",
+          "support": "辅助"
         },
         "channels": {
           "damageDealt": "造成伤害",
@@ -730,6 +736,20 @@
           "ability1": "技能 1",
           "ability2": "技能 2",
           "swap": "英雄切换"
+        },
+        "matchups": {
+          "title": "目标与对位",
+          "description": "该玩家在整张地图中对谁造成伤害并交火。",
+          "byTarget": {
+            "title": "按角色分类的伤害",
+            "empty": "此地图未造成伤害。"
+          },
+          "radar": {
+            "title": "每个对手的伤害交换",
+            "dealt": "造成",
+            "received": "受到",
+            "empty": "此地图没有对手伤害记录。"
+          }
         },
         "heatmap": {
           "title": "位置热力图",

@@ -1189,7 +1189,13 @@
           "output": "Damage out",
           "support": "Healing / damage out",
           "survival": "Taken / healing",
-          "events": "Events"
+          "events": "Events",
+          "target": "Damage by target"
+        },
+        "roles": {
+          "tank": "Tank",
+          "damage": "DPS",
+          "support": "Support"
         },
         "channels": {
           "damageDealt": "Damage dealt",
@@ -1205,6 +1211,20 @@
           "ability1": "Ability 1",
           "ability2": "Ability 2",
           "swap": "Hero swap"
+        },
+        "matchups": {
+          "title": "Targeting & matchups",
+          "description": "Who this player damaged and traded with across the map.",
+          "byTarget": {
+            "title": "Damage by target role",
+            "empty": "No damage dealt on this map."
+          },
+          "radar": {
+            "title": "Damage traded per opponent",
+            "dealt": "Dealt",
+            "received": "Received",
+            "empty": "No opponent damage recorded for this map."
+          }
         },
         "heatmap": {
           "title": "Positional heatmap",

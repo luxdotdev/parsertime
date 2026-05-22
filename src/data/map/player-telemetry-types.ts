@@ -60,6 +60,27 @@ export type TelemetryRoundMarker = {
   end: number;
 };
 
+/** Damage the player dealt to enemies, split by the enemy's role. */
+export type DamageByRole = {
+  tank: TelemetryChannel;
+  damage: TelemetryChannel;
+  support: TelemetryChannel;
+};
+
+export type DamageByRoleTotals = {
+  tank: number;
+  damage: number;
+  support: number;
+};
+
+/** One enemy player: total damage the player dealt to and received from them. */
+export type OpponentMatchup = {
+  name: string;
+  hero: string;
+  dealt: number;
+  received: number;
+};
+
 export type PlayerTelemetry = {
   matchStartTime: number;
   matchEndTime: number;
@@ -72,6 +93,9 @@ export type PlayerTelemetry = {
     healingDealt: TelemetryChannel;
     healingReceived: TelemetryChannel;
   };
+  damageByRole: DamageByRole;
+  damageByRoleTotals: DamageByRoleTotals;
+  opponents: OpponentMatchup[];
   totals: {
     damageDealt: number;
     damageTaken: number;
