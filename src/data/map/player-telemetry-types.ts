@@ -81,6 +81,21 @@ export type OpponentMatchup = {
   received: number;
 };
 
+/**
+ * The player's damage share of their team's kills. `bins` holds the count of
+ * team kills falling in each contribution bracket: 0%, 1-25%, 26-50%, 51-75%,
+ * 76-100%.
+ */
+export type KillContribution = {
+  bins: number[];
+  /** Player damage / team damage across all counted kills, as a percent. */
+  focusContribution: number;
+  /** Percent of counted kills where the player dealt any damage to the victim. */
+  participation: number;
+  /** Number of team kills with tracked pre-death damage. */
+  totalKills: number;
+};
+
 export type PlayerTelemetry = {
   matchStartTime: number;
   matchEndTime: number;
@@ -95,6 +110,8 @@ export type PlayerTelemetry = {
   };
   damageByRole: DamageByRole;
   damageByRoleTotals: DamageByRoleTotals;
+  damageTakenByRoleTotals: DamageByRoleTotals;
+  killContribution: KillContribution;
   opponents: OpponentMatchup[];
   totals: {
     damageDealt: number;

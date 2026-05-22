@@ -65,7 +65,9 @@ export async function PlayerTelemetry({ id, playerName }: Props) {
         />
         <StatPanel>
           <PlayerMatchups
-            totals={telemetry.damageByRoleTotals}
+            byTarget={telemetry.damageByRoleTotals}
+            takenByRole={telemetry.damageTakenByRoleTotals}
+            killContribution={telemetry.killContribution}
             opponents={telemetry.opponents}
             playerTeam={telemetry.playerTeam}
           />

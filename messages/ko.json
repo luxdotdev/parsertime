@@ -744,6 +744,17 @@
             "title": "역할별 가한 피해",
             "empty": "이 맵에서 가한 피해가 없습니다."
           },
+          "takenByRole": {
+            "title": "역할별 받은 피해",
+            "empty": "이 맵에서 받은 피해가 없습니다."
+          },
+          "killContribution": {
+            "title": "킬 기여도",
+            "focus": "포커스 기여",
+            "participation": "참여율",
+            "killsLabel": "팀 킬",
+            "empty": "추적된 피해가 있는 팀 킬이 없습니다."
+          },
           "radar": {
             "title": "상대별 피해 교환",
             "dealt": "가함",

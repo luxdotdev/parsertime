@@ -744,6 +744,17 @@
             "title": "按角色分类的伤害",
             "empty": "此地图未造成伤害。"
           },
+          "takenByRole": {
+            "title": "按来源角色分类的承受伤害",
+            "empty": "此地图未承受伤害。"
+          },
+          "killContribution": {
+            "title": "击杀贡献",
+            "focus": "集火贡献",
+            "participation": "参与率",
+            "killsLabel": "团队击杀",
+            "empty": "没有可追踪伤害的团队击杀。"
+          },
           "radar": {
             "title": "每个对手的伤害交换",
             "dealt": "造成",

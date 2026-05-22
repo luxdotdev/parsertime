@@ -1219,6 +1219,17 @@
             "title": "Damage by target role",
             "empty": "No damage dealt on this map."
           },
+          "takenByRole": {
+            "title": "Damage taken by source role",
+            "empty": "No damage taken on this map."
+          },
+          "killContribution": {
+            "title": "Kill contribution",
+            "focus": "Focus contribution",
+            "participation": "Participation",
+            "killsLabel": "team kills",
+            "empty": "No team kills with tracked damage."
+          },
           "radar": {
             "title": "Damage traded per opponent",
             "dealt": "Dealt",

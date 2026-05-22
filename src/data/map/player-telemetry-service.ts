@@ -16,6 +16,7 @@ import { MapQueryError } from "./errors";
 import { mapCacheMissTotal, mapCacheRequestTotal } from "./metrics";
 import type {
   HeatPoint,
+  KillContribution,
   PlayerHeatLayer,
   PlayerHeatmapResult,
   PlayerHeatmapSubMap,
@@ -80,6 +81,87 @@ function weightedRateSeries(
   }
 
   return { points, peak, total };
+}
+
+// ── Focus fire ────────────────────────────────────────────────────────────────
+
+/** Seconds before a kill counted as the burst that secured it. */
+const FOCUS_WINDOW_SEC = 5;
+
+type TeamKill = { match_time: number; victim_name: string };
+type EnemyDamage = {
+  match_time: number;
+  victim_name: string;
+  attacker_name: string;
+  event_damage: number;
+};
+
+/**
+ * For every kill the player's team secured, sum the damage dealt to that victim
+ * in the {@link FOCUS_WINDOW_SEC}-second window before death and compute the
+ * player's share. Returns the distribution of those shares across kills plus the
+ * overall focus contribution and participation rate. Kills with no tracked
+ * damage in the window (melee, environmental) are skipped.
+ */
+function computeKillContribution(
+  teamKills: TeamKill[],
+  enemyDamage: EnemyDamage[],
+  playerName: string
+): KillContribution {
+  const byVictim = new Map<
+    string,
+    { t: number; attacker: string; dmg: number }[]
+  >();
+  for (const d of enemyDamage) {
+    const arr = byVictim.get(d.victim_name) ?? [];
+    arr.push({
+      t: d.match_time,
+      attacker: d.attacker_name,
+      dmg: d.event_damage,
+    });
+    byVictim.set(d.victim_name, arr);
+  }
+  for (const arr of byVictim.values()) arr.sort((a, b) => a.t - b.t);
+
+  const bins = [0, 0, 0, 0, 0];
+  let participated = 0;
+  let killsWithDamage = 0;
+  let totalPlayer = 0;
+  let totalTeam = 0;
+
+  for (const k of teamKills) {
+    const arr = byVictim.get(k.victim_name);
+    if (!arr) continue;
+    let team = 0;
+    let player = 0;
+    for (const ev of arr) {
+      if (ev.t > k.match_time) break;
+      if (ev.t >= k.match_time - FOCUS_WINDOW_SEC) {
+        team += ev.dmg;
+        if (ev.attacker === playerName) player += ev.dmg;
+      }
+    }
+    if (team <= 0) continue;
+    killsWithDamage++;
+    totalTeam += team;
+    totalPlayer += player;
+    if (player > 0) participated++;
+    const pct = (player / team) * 100;
+    const idx =
+      pct === 0 ? 0 : pct <= 25 ? 1 : pct <= 50 ? 2 : pct <= 75 ? 3 : 4;
+    bins[idx]++;
+  }
+
+  return {
+    bins,
+    focusContribution:
+      totalTeam > 0 ? Math.round((totalPlayer / totalTeam) * 100) : 0,
+    participation:
+      killsWithDamage > 0
+        ? Math.round((participated / killsWithDamage) * 100)
+        : 0,
+    totalKills: killsWithDamage,
+  };
 }
 
 // ── Positional helpers ───────────────────────────────────────────────────────
@@ -266,6 +348,7 @@ export const make: Effect.Effect<PlayerTelemetryServiceInterface> = Effect.gen(
                   victim_z: true,
                   attacker_name: true,
                   attacker_team: true,
+                  attacker_hero: true,
                 },
               }),
               prisma.healing.findMany({
@@ -483,13 +566,22 @@ export const make: Effect.Effect<PlayerTelemetryServiceInterface> = Effect.gen(
           else roleTotals.damage += d.event_damage;
         }
 
+        // Damage the player took from enemies, tallied per opponent and split
+        // by the attacker's role (mirror of the damage-dealt role split).
         const receivedByOpponent = new Map<string, number>();
+        const takenRoleTotals = { tank: 0, damage: 0, support: 0 };
         for (const d of dmgTaken) {
           if (d.attacker_team === playerTeamName) continue;
           receivedByOpponent.set(
             d.attacker_name,
             (receivedByOpponent.get(d.attacker_name) ?? 0) + d.event_damage
           );
+          const attackerRole = heroRoleMapping[d.attacker_hero as HeroName];
+          if (!attackerRole) continue;
+          if (attackerRole === "Tank") takenRoleTotals.tank += d.event_damage;
+          else if (attackerRole === "Support")
+            takenRoleTotals.support += d.event_damage;
+          else takenRoleTotals.damage += d.event_damage;
         }
 
         // Enemy roster + each enemy's most-played hero, for the matchup radar.
@@ -513,6 +605,49 @@ export const make: Effect.Effect<PlayerTelemetryServiceInterface> = Effect.gen(
           }))
           .sort((a, b) => b.dealt + b.received - (a.dealt + a.received));
 
+        const enemyTeamName =
+          playerTeamName === matchStart.team_1_name
+            ? matchStart.team_2_name
+            : matchStart.team_1_name;
+
+        const [teamKills, enemyDamage] = yield* Effect.tryPromise({
+          try: () =>
+            Promise.all([
+              prisma.kill.findMany({
+                where: {
+                  MapDataId: mapDataId,
+                  attacker_team: playerTeamName,
+                  victim_team: enemyTeamName,
+                },
+                select: { match_time: true, victim_name: true },
+              }),
+              prisma.damage.findMany({
+                where: { MapDataId: mapDataId, victim_team: enemyTeamName },
+                select: {
+                  match_time: true,
+                  victim_name: true,
+                  attacker_name: true,
+                  event_damage: true,
+                },
+              }),
+            ]),
+          catch: (error) =>
+            new MapQueryError({
+              operation: "fetch focus-fire data",
+              cause: error,
+            }),
+        }).pipe(
+          Effect.withSpan("map.playerTelemetry.focusFire", {
+            attributes: { mapId, mapDataId },
+          })
+        );
+
+        const killContribution = computeKillContribution(
+          teamKills,
+          enemyDamage,
+          playerName
+        );
+
         const rounds = roundStarts.map((r, i) => ({
           roundNumber: r.round_number,
           start: r.match_time,
@@ -532,6 +667,8 @@ export const make: Effect.Effect<PlayerTelemetryServiceInterface> = Effect.gen(
             support: weightedRateSeries(roleEvents.Support, startTime, endTime),
           },
           damageByRoleTotals: roleTotals,
+          damageTakenByRoleTotals: takenRoleTotals,
+          killContribution,
           opponents,
           totals: {
             damageDealt: channels.damageDealt.total,
