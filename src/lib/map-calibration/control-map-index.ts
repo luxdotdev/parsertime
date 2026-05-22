@@ -12,7 +12,7 @@ const CONTROL_OBJECTIVE_MAP: Record<string, string[]> = {
     "Antarctic Peninsula: Sublevel",
   ],
   Busan: ["Busan: Downtown", "Busan: Sanctuary", "Busan: Meka Base"],
-  Ilios: ["Ilios: Lighthouse", "Ilios: Ruins", "Ilios: Well"],
+  Ilios: ["Ilios: Lighthouse", "Ilios: Well", "Ilios: Ruins"],
   "Lijiang Tower": [
     "Lijiang Tower: Night Market",
     "Lijiang Tower: Garden",
