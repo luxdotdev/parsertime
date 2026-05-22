@@ -12,6 +12,7 @@ import { MapHeroTrendsServiceLive } from "./map/hero-trends-service";
 import { KillfeedCalibrationServiceLive } from "./map/killfeed/calibration";
 import { KillfeedServiceLive } from "./map/killfeed/service";
 import { ReplayServiceLive } from "./map/replay/service";
+import { PlayerTelemetryServiceLive } from "./map/player-telemetry-service";
 import { RotationDeathServiceLive } from "./map/rotation-death-service";
 import { TempoServiceLive } from "./map/tempo-service";
 import { IntelligenceServiceLive } from "./player/intelligence-service";
@@ -76,6 +77,7 @@ export const DataLayerLive = Layer.mergeAll(
   KillfeedCalibrationServiceLive,
   ReplayServiceLive,
   TempoServiceLive,
+  PlayerTelemetryServiceLive,
   RotationDeathServiceLive,
   MapGroupServiceLive,
   MapHeroTrendsServiceLive,

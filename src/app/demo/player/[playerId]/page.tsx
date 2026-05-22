@@ -5,6 +5,7 @@ import { LocaleSwitcher } from "@/components/locale-switcher";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
 import { PlayerAnalytics } from "@/components/player/analytics";
 import { DefaultOverview } from "@/components/player/default-overview";
+import { PlayerTelemetry } from "@/components/player/player-telemetry";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Effect } from "effect";
@@ -109,6 +110,7 @@ export default async function PlayerDashboardDemoPage(
             <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
             <TabsTrigger value="analytics">{t("analytics")}</TabsTrigger>
             <TabsTrigger value="charts">{t("charts")}</TabsTrigger>
+            <TabsTrigger value="telemetry">{t("telemetry")}</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
             <DefaultOverview id={id} playerName={playerName} />
@@ -118,6 +120,9 @@ export default async function PlayerDashboardDemoPage(
           </TabsContent>
           <TabsContent value="charts" className="space-y-4">
             <PlayerCharts id={id} playerName={playerName} />
+          </TabsContent>
+          <TabsContent value="telemetry" className="space-y-4">
+            <PlayerTelemetry id={id} playerName={playerName} />
           </TabsContent>
         </Tabs>
       </div>

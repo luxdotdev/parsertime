@@ -690,7 +690,65 @@
         "dashboard": "대시보드",
         "overview": "개요",
         "analytics": "분석",
-        "charts": "차트"
+        "charts": "차트",
+        "telemetry": "텔레메트리"
+      },
+      "telemetry": {
+        "noData": {
+          "title": "이 맵에는 텔레메트리가 없습니다",
+          "description": "이 맵은 이벤트별 타이밍 데이터가 기록되기 전에 업로드되었습니다. 차트 탭에서 라운드별 통계를 확인할 수 있습니다."
+        },
+        "stats": {
+          "damageDealt": "가한 피해",
+          "damageTaken": "받은 피해",
+          "healingDealt": "힐량",
+          "eliminations": "처치",
+          "deaths": "죽음"
+        },
+        "trace": {
+          "title": "활동 텔레메트리",
+          "description": "맵 전반의 피해, 힐, 이벤트입니다. 임의의 지점에 마우스를 올려 해당 순간을 확인하세요."
+        },
+        "ariaChart": "{seconds}초 동안의 플레이어 활동 텔레메트리",
+        "lanes": {
+          "output": "가한 피해",
+          "support": "힐 / 피해",
+          "survival": "받은 피해 / 힐",
+          "events": "이벤트"
+        },
+        "channels": {
+          "damageDealt": "가한 피해",
+          "damageTaken": "받은 피해",
+          "healingDealt": "힐량",
+          "healingReceived": "받은 힐"
+        },
+        "markers": {
+          "ult": "궁극기",
+          "kill": "처치",
+          "death": "죽음",
+          "ability": "스킬",
+          "ability1": "스킬 1",
+          "ability2": "스킬 2",
+          "swap": "영웅 교체"
+        },
+        "heatmap": {
+          "title": "위치 히트맵",
+          "description": "이 선수가 교전하고, 죽고, 스킬을 사용한 위치입니다. 드래그하여 이동, 스크롤하여 확대하세요.",
+          "heatGroup": "히트맵",
+          "loading": "맵 이미지 로드 중...",
+          "noCalibration": "이 맵은 아직 보정되지 않아 맵 이미지 위에 위치를 표시할 수 없습니다.",
+          "noCoordinates": "이 맵에서 이 선수의 위치 데이터가 기록되지 않았습니다.",
+          "subMapsLabel": "서브맵",
+          "abilityFilter": "스킬 필터",
+          "layers": {
+            "damageDealt": "가한 피해",
+            "damageTaken": "받은 피해",
+            "healingDealt": "힐",
+            "kills": "처치",
+            "deaths": "죽음",
+            "abilities": "스킬"
+          }
+        }
       },
       "overview": {
         "matchTime": "총 경기 시간",

@@ -1165,7 +1165,65 @@
         "dashboard": "Dashboard",
         "overview": "Overview",
         "analytics": "Analytics",
-        "charts": "Charts"
+        "charts": "Charts",
+        "telemetry": "Telemetry"
+      },
+      "telemetry": {
+        "noData": {
+          "title": "No telemetry for this map",
+          "description": "This map was logged before per-event timing data was captured. The Charts tab still has round-by-round stats."
+        },
+        "stats": {
+          "damageDealt": "Damage dealt",
+          "damageTaken": "Damage taken",
+          "healingDealt": "Healing dealt",
+          "eliminations": "Eliminations",
+          "deaths": "Deaths"
+        },
+        "trace": {
+          "title": "Activity telemetry",
+          "description": "Damage, healing, and events across the map. Hover any point to read that moment."
+        },
+        "ariaChart": "Player activity telemetry over {seconds} seconds",
+        "lanes": {
+          "output": "Damage out",
+          "support": "Healing / damage out",
+          "survival": "Taken / healing",
+          "events": "Events"
+        },
+        "channels": {
+          "damageDealt": "Damage dealt",
+          "damageTaken": "Damage taken",
+          "healingDealt": "Healing dealt",
+          "healingReceived": "Healing received"
+        },
+        "markers": {
+          "ult": "Ultimate",
+          "kill": "Kill",
+          "death": "Death",
+          "ability": "Ability",
+          "ability1": "Ability 1",
+          "ability2": "Ability 2",
+          "swap": "Hero swap"
+        },
+        "heatmap": {
+          "title": "Positional heatmap",
+          "description": "Where this player fought, died, and used abilities. Drag to pan, scroll to zoom.",
+          "heatGroup": "Heat",
+          "loading": "Loading map image...",
+          "noCalibration": "This map isn't calibrated yet, so positions can't be drawn over the map image.",
+          "noCoordinates": "No positional data was captured for this player on this map.",
+          "subMapsLabel": "Sub-maps",
+          "abilityFilter": "Filter abilities",
+          "layers": {
+            "damageDealt": "Damage dealt",
+            "damageTaken": "Damage taken",
+            "healingDealt": "Healing done",
+            "kills": "Kills",
+            "deaths": "Deaths",
+            "abilities": "Abilities"
+          }
+        }
       },
       "overview": {
         "matchTime": "Total Match Time",

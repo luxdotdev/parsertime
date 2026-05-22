@@ -50,6 +50,12 @@ export type {
 } from "./replay";
 
 export {
+  PlayerTelemetryService,
+  PlayerTelemetryServiceLive,
+} from "./player-telemetry-service";
+export type { PlayerTelemetryServiceInterface } from "./player-telemetry-service";
+
+export {
   TempoService,
   TempoServiceLive,
   computeTempoSeries,

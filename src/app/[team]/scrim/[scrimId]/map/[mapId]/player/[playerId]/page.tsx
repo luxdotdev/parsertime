@@ -9,6 +9,7 @@ import { MobileNav } from "@/components/mobile-nav";
 import { Notifications } from "@/components/notifications";
 import { PlayerAnalytics } from "@/components/player/analytics";
 import { DefaultOverview } from "@/components/player/default-overview";
+import { PlayerTelemetry } from "@/components/player/player-telemetry";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Link } from "@/components/ui/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -232,6 +233,7 @@ export default async function PlayerDashboardPage(
               <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
               <TabsTrigger value="analytics">{t("analytics")}</TabsTrigger>
               <TabsTrigger value="charts">{t("charts")}</TabsTrigger>
+              <TabsTrigger value="telemetry">{t("telemetry")}</TabsTrigger>
             </TabsList>
             <TabsContent value="overview" className="space-y-4">
               <DefaultOverview id={id} playerName={playerName} />
@@ -241,6 +243,9 @@ export default async function PlayerDashboardPage(
             </TabsContent>
             <TabsContent value="charts" className="space-y-4">
               <PlayerCharts id={id} playerName={playerName} />
+            </TabsContent>
+            <TabsContent value="telemetry" className="space-y-4">
+              <PlayerTelemetry id={id} playerName={playerName} />
             </TabsContent>
           </Tabs>
         </div>

@@ -690,7 +690,65 @@
         "dashboard": "仪表板",
         "overview": "概览",
         "analytics": "分析",
-        "charts": "图表"
+        "charts": "图表",
+        "telemetry": "遥测"
+      },
+      "telemetry": {
+        "noData": {
+          "title": "此地图没有遥测数据",
+          "description": "此地图在记录逐事件计时数据之前上传。图表标签页仍提供逐回合统计。"
+        },
+        "stats": {
+          "damageDealt": "造成伤害",
+          "damageTaken": "承受伤害",
+          "healingDealt": "治疗量",
+          "eliminations": "击杀",
+          "deaths": "死亡"
+        },
+        "trace": {
+          "title": "活动遥测",
+          "description": "整张地图的伤害、治疗与事件。悬停任意位置查看该时刻。"
+        },
+        "ariaChart": "{seconds} 秒内的玩家活动遥测",
+        "lanes": {
+          "output": "输出伤害",
+          "support": "治疗 / 伤害",
+          "survival": "承受 / 治疗",
+          "events": "事件"
+        },
+        "channels": {
+          "damageDealt": "造成伤害",
+          "damageTaken": "承受伤害",
+          "healingDealt": "治疗量",
+          "healingReceived": "受到治疗"
+        },
+        "markers": {
+          "ult": "终极技能",
+          "kill": "击杀",
+          "death": "死亡",
+          "ability": "技能",
+          "ability1": "技能 1",
+          "ability2": "技能 2",
+          "swap": "英雄切换"
+        },
+        "heatmap": {
+          "title": "位置热力图",
+          "description": "该玩家交战、死亡和使用技能的位置。拖动平移，滚动缩放。",
+          "heatGroup": "热力",
+          "loading": "正在加载地图图像……",
+          "noCalibration": "此地图尚未校准，无法在地图图像上绘制位置。",
+          "noCoordinates": "未记录该玩家在此地图上的位置数据。",
+          "subMapsLabel": "子地图",
+          "abilityFilter": "筛选技能",
+          "layers": {
+            "damageDealt": "造成伤害",
+            "damageTaken": "承受伤害",
+            "healingDealt": "治疗",
+            "kills": "击杀",
+            "deaths": "死亡",
+            "abilities": "技能"
+          }
+        }
       },
       "overview": {
         "matchTime": "总比赛时间",
