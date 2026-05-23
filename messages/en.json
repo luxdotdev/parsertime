@@ -4488,15 +4488,27 @@
       }
     },
     "bestRoleTriosCard": {
+      "eyebrow": "Performance · Best trios",
       "title": "Best Role Trios",
+      "description": "Most successful five-player rosters by winrate.",
       "noData": "Not enough data to determine best player combinations yet. Need at least 3 games with the same roster.",
+      "rank": "Rank",
+      "roster": "Roster",
+      "games": "Games",
+      "recordHeader": "W, L",
+      "winrateHeader": "Winrate",
+      "toggleDetails": "Toggle details",
+      "collapseTrio": "Collapse trio #{rank}",
+      "expandTrio": "Expand trio #{rank}",
       "gamesPlayed": "{count, plural, =0 {no games} =1 {one game} other {# games}}",
       "wins": "{count}W",
       "losses": "{count}L",
+      "record": "{wins}W, {losses}L",
       "tank": "Tank",
       "damage": "Damage",
       "support": "Support",
       "winRate": "Win Rate",
+      "winRateValue": "Win Rate {winrate}",
       "playMoreGames": "Play more games to see your best roster combinations"
     },
     "heroPickrateHeatmap": {

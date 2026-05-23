@@ -3749,6 +3749,30 @@
       "bestMap": "최고 맵",
       "worstMap": "최저 맵"
     },
+    "bestRoleTriosCard": {
+      "eyebrow": "성능 · 최고 트리오",
+      "title": "최고 역할 트리오",
+      "description": "승률 기준 가장 성공적인 5인 로스터입니다.",
+      "noData": "아직 최고의 플레이어 조합을 판단할 데이터가 부족합니다. 같은 로스터로 최소 3경기가 필요합니다.",
+      "rank": "순위",
+      "roster": "로스터",
+      "games": "경기",
+      "recordHeader": "승, 패",
+      "winrateHeader": "승률",
+      "toggleDetails": "세부정보 토글",
+      "collapseTrio": "{rank}위 트리오 접기",
+      "expandTrio": "{rank}위 트리오 펼치기",
+      "gamesPlayed": "{count, plural, =0 {경기 없음} other {#경기}}",
+      "wins": "{count}승",
+      "losses": "{count}패",
+      "record": "{wins}승, {losses}패",
+      "tank": "탱커",
+      "damage": "딜러",
+      "support": "지원",
+      "winRate": "승률",
+      "winRateValue": "승률 {winrate}",
+      "playMoreGames": "더 많은 경기를 플레이하면 최고의 로스터 조합을 볼 수 있습니다"
+    },
     "ultimatesTab": {
       "combos": {
         "title": "궁극기 콤보",

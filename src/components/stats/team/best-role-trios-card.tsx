@@ -4,7 +4,7 @@ import { SectionHeader } from "@/components/stats/team/section-header";
 import type { RoleTrio } from "@/data/team/types";
 import { cn } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { Fragment, useState } from "react";
 
 type BestRoleTriosCardProps = {
@@ -19,15 +19,21 @@ function winrateClass(winrate: number): string {
 
 export function BestRoleTriosCard({ trios }: BestRoleTriosCardProps) {
   const t = useTranslations("teamStatsPage.bestRoleTriosCard");
+  const format = useFormatter();
   const [expandedTrios, setExpandedTrios] = useState<Set<number>>(new Set([0]));
+
+  function formatPercent(value: number): string {
+    return format.number(value / 100, {
+      style: "percent",
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+  }
 
   if (trios.length === 0) {
     return (
       <section className="space-y-4">
-        <SectionHeader
-          eyebrow="Performance · Best trios"
-          title="Best Role Trios"
-        />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
@@ -48,20 +54,26 @@ export function BestRoleTriosCard({ trios }: BestRoleTriosCardProps) {
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Performance · Best trios"
-        title="Best Role Trios"
-        description="Most successful five-player rosters by winrate."
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        description={t("description")}
       />
       <div className="border-border overflow-hidden rounded-md border">
         <table className="w-full text-sm">
           <thead className="bg-muted/30">
             <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-              <th className="w-12 px-4 py-2 text-left font-medium">Rank</th>
-              <th className="px-4 py-2 text-left font-medium">Roster</th>
-              <th className="px-4 py-2 text-right font-medium">Games</th>
-              <th className="px-4 py-2 text-right font-medium">W, L</th>
-              <th className="px-4 py-2 text-right font-medium">Winrate</th>
-              <th className="w-10 px-4 py-2" aria-label="Toggle details" />
+              <th className="w-12 px-4 py-2 text-left font-medium">
+                {t("rank")}
+              </th>
+              <th className="px-4 py-2 text-left font-medium">{t("roster")}</th>
+              <th className="px-4 py-2 text-right font-medium">{t("games")}</th>
+              <th className="px-4 py-2 text-right font-medium">
+                {t("recordHeader")}
+              </th>
+              <th className="px-4 py-2 text-right font-medium">
+                {t("winrateHeader")}
+              </th>
+              <th className="w-10 px-4 py-2" aria-label={t("toggleDetails")} />
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--border)]">
@@ -91,10 +103,10 @@ export function BestRoleTriosCard({ trios }: BestRoleTriosCardProps) {
                       <span className="font-medium">{rosterPreview}</span>
                     </td>
                     <td className="px-4 py-3 text-right font-mono tabular-nums">
-                      {trio.gamesPlayed}
+                      {format.number(trio.gamesPlayed)}
                     </td>
                     <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
-                      {trio.wins}, {trio.losses}
+                      {t("record", { wins: trio.wins, losses: trio.losses })}
                     </td>
                     <td
                       className={cn(
@@ -102,7 +114,7 @@ export function BestRoleTriosCard({ trios }: BestRoleTriosCardProps) {
                         winrateClass(trio.winrate)
                       )}
                     >
-                      {trio.winrate.toFixed(1)}%
+                      {formatPercent(trio.winrate)}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <button
@@ -111,8 +123,8 @@ export function BestRoleTriosCard({ trios }: BestRoleTriosCardProps) {
                         aria-controls={detailId}
                         aria-label={
                           isOpen
-                            ? `Collapse trio #${index + 1}`
-                            : `Expand trio #${index + 1}`
+                            ? t("collapseTrio", { rank: index + 1 })
+                            : t("expandTrio", { rank: index + 1 })
                         }
                         onClick={(event) => {
                           event.stopPropagation();
@@ -169,7 +181,9 @@ export function BestRoleTriosCard({ trios }: BestRoleTriosCardProps) {
                             {t("losses", { count: trio.losses })}
                           </span>
                           <span className={cn(winrateClass(trio.winrate))}>
-                            {t("winRate")} {trio.winrate.toFixed(1)}%
+                            {t("winRateValue", {
+                              winrate: formatPercent(trio.winrate),
+                            })}
                           </span>
                         </div>
                       </td>

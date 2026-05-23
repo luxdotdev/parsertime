@@ -3749,6 +3749,30 @@
       "bestMap": "最佳地图",
       "worstMap": "最差地图"
     },
+    "bestRoleTriosCard": {
+      "eyebrow": "表现 · 最佳三职责组合",
+      "title": "最佳职责组合",
+      "description": "按胜率排序最成功的五人阵容。",
+      "noData": "数据不足，暂时无法确定最佳玩家组合。需要同一阵容至少 3 场比赛。",
+      "rank": "排名",
+      "roster": "阵容",
+      "games": "比赛",
+      "recordHeader": "胜, 负",
+      "winrateHeader": "胜率",
+      "toggleDetails": "切换详情",
+      "collapseTrio": "收起第 {rank} 名组合",
+      "expandTrio": "展开第 {rank} 名组合",
+      "gamesPlayed": "{count, plural, =0 {无比赛} other {# 场比赛}}",
+      "wins": "{count}胜",
+      "losses": "{count}负",
+      "record": "{wins}胜, {losses}负",
+      "tank": "坦克",
+      "damage": "输出",
+      "support": "支援",
+      "winRate": "胜率",
+      "winRateValue": "胜率 {winrate}",
+      "playMoreGames": "进行更多比赛后即可查看你的最佳阵容组合"
+    },
     "ultimatesTab": {
       "combos": {
         "title": "终极技能连招",
