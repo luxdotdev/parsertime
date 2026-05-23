@@ -2,7 +2,7 @@
 
 import { SectionHeader } from "@/components/stats/team/section-header";
 import type { StreakInfo } from "@/data/team/types";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 
 type WinLossStreaksCardProps = {
   streakInfo: StreakInfo;
@@ -17,6 +17,7 @@ type StreakTile = {
 
 export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
   const t = useTranslations("teamStatsPage.winLossStreaksCard");
+  const format = useFormatter();
 
   const { currentStreak, longestWinStreak, longestLossStreak } = streakInfo;
 
@@ -28,7 +29,7 @@ export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
   if (!hasData) {
     return (
       <section className="space-y-4">
-        <SectionHeader eyebrow="Trends · Streaks" title={t("title")} />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
@@ -36,16 +37,16 @@ export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
 
   function formatDateRange(start: Date | null, end: Date | null): string {
     if (!start || !end) return t("na");
-    const startStr = start.toLocaleDateString("en-US", {
+    const startStr = format.dateTime(start, {
       month: "short",
       day: "numeric",
     });
-    const endStr = end.toLocaleDateString("en-US", {
+    const endStr = format.dateTime(end, {
       month: "short",
       day: "numeric",
       year: "numeric",
     });
-    return `${startStr} - ${endStr}`;
+    return t("dateRange", { start: startStr, end: endStr });
   }
 
   const currentStreakValue =
@@ -95,7 +96,7 @@ export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
 
   return (
     <section className="space-y-4">
-      <SectionHeader eyebrow="Trends · Streaks" title={t("title")} />
+      <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
       <dl className="border-border grid grid-cols-1 divide-x divide-y divide-[var(--border)] border-y sm:grid-cols-3 sm:divide-y-0">
         {tiles.map((tile) => (
           <div key={tile.label} className="flex flex-col gap-1 px-4 py-4">

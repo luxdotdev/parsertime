@@ -13,17 +13,17 @@ type QuickStatsRibbonProps = {
   uniqueMaps: number;
 };
 
-function formatFightDuration(seconds: number | null): string {
-  if (seconds === null) return "—";
-  return `${seconds.toFixed(1)}s`;
-}
-
 export function QuickStatsRibbon({
   stats,
   uniqueHeroes,
   uniqueMaps,
 }: QuickStatsRibbonProps) {
   const t = useTranslations("teamStatsPage.quickStatsCard");
+
+  function formatFightDuration(seconds: number | null): string {
+    if (seconds === null) return "—";
+    return t("durationSeconds", { seconds: seconds.toFixed(1) });
+  }
 
   const last10 = stats.last10GamesPerformance;
   const last10HasGames = last10.wins + last10.losses > 0;
@@ -33,7 +33,9 @@ export function QuickStatsRibbon({
     {
       label: t("last10Games"),
       value: last10HasGames ? `${last10.winrate.toFixed(0)}%` : "—",
-      sub: last10HasGames ? `${last10.wins}–${last10.losses}` : t("noData"),
+      sub: last10HasGames
+        ? t("recordShort", { wins: last10.wins, losses: last10.losses })
+        : t("noData"),
       emphasis: true,
     },
     {
@@ -49,14 +51,14 @@ export function QuickStatsRibbon({
               : t("longFights"),
     },
     {
-      label: "Hero Pool",
+      label: t("heroPool"),
       value: uniqueHeroes > 0 ? String(uniqueHeroes) : "—",
-      sub: uniqueHeroes > 0 ? "unique heroes" : "—",
+      sub: uniqueHeroes > 0 ? t("uniqueHeroes", { count: uniqueHeroes }) : "—",
     },
     {
-      label: "Map Pool",
+      label: t("mapPool"),
       value: uniqueMaps > 0 ? String(uniqueMaps) : "—",
-      sub: uniqueMaps > 0 ? "unique maps" : "—",
+      sub: uniqueMaps > 0 ? t("uniqueMaps", { count: uniqueMaps }) : "—",
     },
   ];
 

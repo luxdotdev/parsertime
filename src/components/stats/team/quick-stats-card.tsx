@@ -10,20 +10,24 @@ type QuickStatsCardProps = {
   stats: QuickWinsStats;
 };
 
-function formatFightDuration(seconds: number | null): string {
-  if (seconds === null) return "N/A";
-  return `${seconds.toFixed(1)}s`;
-}
-
 const eyebrowClass =
   "text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase";
 
 export function QuickStatsCard({ stats }: QuickStatsCardProps) {
   const t = useTranslations("teamStatsPage.quickStatsCard");
 
+  function formatFightDuration(seconds: number | null): string {
+    if (seconds === null) return t("notAvailable");
+    return t("durationSeconds", { seconds: seconds.toFixed(1) });
+  }
+
+  function formatDay(day: string): string {
+    return t(`days.${day.toLowerCase()}`);
+  }
+
   return (
     <section className="space-y-4">
-      <SectionHeader eyebrow="Overview · Signals" title={t("title")} />
+      <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-2">
           <div className={cn("flex items-center gap-2", eyebrowClass)}>
@@ -51,7 +55,7 @@ export function QuickStatsCard({ stats }: QuickStatsCardProps) {
           {stats.bestDayOfWeek ? (
             <div className="space-y-1">
               <div className="text-foreground font-mono text-3xl font-bold tabular-nums">
-                {stats.bestDayOfWeek.day}
+                {formatDay(stats.bestDayOfWeek.day)}
               </div>
               <div className="flex items-center gap-2">
                 <span
@@ -62,7 +66,9 @@ export function QuickStatsCard({ stats }: QuickStatsCardProps) {
                       : "bg-muted text-muted-foreground"
                   )}
                 >
-                  {stats.bestDayOfWeek.winrate.toFixed(0)}% WR
+                  {t("winrateShort", {
+                    winrate: stats.bestDayOfWeek.winrate.toFixed(0),
+                  })}
                 </span>
                 <span className="text-muted-foreground text-xs">
                   {t("gamesLabel", {

@@ -3531,6 +3531,57 @@
         "Push": "밀기"
       }
     },
+    "quickStatsCard": {
+      "eyebrow": "개요 · 신호",
+      "title": "빠른 통계",
+      "last10Games": "최근 10경기",
+      "winsLossesRecord": "{wins}승 - {losses}패",
+      "recordShort": "{wins}-{losses}",
+      "bestDay": "최고 요일",
+      "notEnoughData": "데이터가 부족합니다 <span>(요일별 3경기 이상 필요)</span>",
+      "gamesLabel": "{count, plural, =0 {플레이한 경기 없음} other {#경기 플레이}}",
+      "winrateShort": "승률 {winrate}%",
+      "avgFightDuration": "평균 교전 시간",
+      "notAvailable": "해당 없음",
+      "durationSeconds": "{seconds}초",
+      "quickFights": "빠른 교전",
+      "standard": "보통",
+      "longFights": "긴 교전",
+      "firstPickSuccess": "첫 처치 성공",
+      "firstPickSuccessRate": "{totalFirstPicks}번 중 {successfulFirstPicks}번 승리",
+      "heroPool": "영웅 풀",
+      "mapPool": "맵 풀",
+      "uniqueHeroes": "{count, plural, =0 {고유 영웅 없음} other {고유 영웅 #명}}",
+      "uniqueMaps": "{count, plural, =0 {고유 맵 없음} other {고유 맵 #개}}",
+      "days": {
+        "sunday": "일요일",
+        "monday": "월요일",
+        "tuesday": "화요일",
+        "wednesday": "수요일",
+        "thursday": "목요일",
+        "friday": "금요일",
+        "saturday": "토요일"
+      },
+      "noData": "데이터 없음"
+    },
+    "winLossStreaksCard": {
+      "eyebrow": "추세 · 연승/연패",
+      "title": "연승/연패",
+      "noData": "아직 연승/연패 데이터가 없습니다.",
+      "na": "해당 없음",
+      "dateRange": "{start} - {end}",
+      "currentStreak": "현재 흐름",
+      "winStreakCount": "{count}연승",
+      "lossStreakCount": "{count}연패",
+      "hot": "🔥 상승세",
+      "cold": "❄️ 하락세",
+      "longestWinStreak": "최장 연승",
+      "noWinsYet": "아직 승리가 없습니다",
+      "longestLossStreak": "최장 연패",
+      "noLossesYet": "아직 패배가 없습니다",
+      "keepMomentumGoing": "좋은 흐름을 계속 이어가세요!",
+      "timeToBreakStreak": "흐름을 끊을 때입니다 - 최근 VOD를 다시 확인해 보세요"
+    },
     "ultimatesTab": {
       "combos": {
         "title": "궁극기 콤보",

@@ -4624,18 +4624,36 @@
       "worstMap": "Worst map"
     },
     "quickStatsCard": {
+      "eyebrow": "Overview · Signals",
       "title": "Quick Stats",
       "last10Games": "Last 10 Games",
       "winsLossesRecord": "{wins}W - {losses}L",
+      "recordShort": "{wins}-{losses}",
       "bestDay": "Best Day",
       "notEnoughData": "Not enough data <span>(need 3+ games per day)</span>",
       "gamesLabel": "{count, plural, =0 {no games} =1 {1 game} other {# games}} played",
+      "winrateShort": "{winrate}% WR",
       "avgFightDuration": "Avg Fight Duration",
+      "notAvailable": "N/A",
+      "durationSeconds": "{seconds}s",
       "quickFights": "Quick fights",
       "standard": "Standard",
       "longFights": "Long fights",
       "firstPickSuccess": "First Pick Success",
       "firstPickSuccessRate": "{successfulFirstPicks} / {totalFirstPicks} picks won",
+      "heroPool": "Hero Pool",
+      "mapPool": "Map Pool",
+      "uniqueHeroes": "{count, plural, =0 {no unique heroes} =1 {1 unique hero} other {# unique heroes}}",
+      "uniqueMaps": "{count, plural, =0 {no unique maps} =1 {1 unique map} other {# unique maps}}",
+      "days": {
+        "sunday": "Sunday",
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday"
+      },
       "noData": "No data"
     },
     "recentFormCard": {
@@ -4721,9 +4739,11 @@
       "reversalInsightMechanical": "Your team reverses fights more often without ultimates ({dryRate}%) than with them ({nonDryRate}%), showing strong mechanical comeback ability."
     },
     "winLossStreaksCard": {
+      "eyebrow": "Trends · Streaks",
       "title": "Win/Loss Streaks",
       "noData": "No streak data available yet.",
       "na": "N/A",
+      "dateRange": "{start} - {end}",
       "currentStreak": "Current Streak",
       "winStreakCount": "{count} {count, plural, =0 {wins} =1 {win} other {wins}}",
       "lossStreakCount": "{count} {count, plural, =0 {losses} =1 {loss} other {losses}}",

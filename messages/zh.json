@@ -3531,6 +3531,57 @@
         "Push": "机动推进"
       }
     },
+    "quickStatsCard": {
+      "eyebrow": "概览 · 信号",
+      "title": "快速数据",
+      "last10Games": "最近 10 场",
+      "winsLossesRecord": "{wins}胜 - {losses}负",
+      "recordShort": "{wins}-{losses}",
+      "bestDay": "最佳日期",
+      "notEnoughData": "数据不足 <span>（每天至少需要 3 场比赛）</span>",
+      "gamesLabel": "{count, plural, =0 {未进行比赛} other {已进行 # 场比赛}}",
+      "winrateShort": "胜率 {winrate}%",
+      "avgFightDuration": "平均团战时长",
+      "notAvailable": "暂无",
+      "durationSeconds": "{seconds} 秒",
+      "quickFights": "快速团战",
+      "standard": "标准",
+      "longFights": "长团战",
+      "firstPickSuccess": "首杀成功率",
+      "firstPickSuccessRate": "{totalFirstPicks} 次首杀中赢下 {successfulFirstPicks} 次",
+      "heroPool": "英雄池",
+      "mapPool": "地图池",
+      "uniqueHeroes": "{count, plural, =0 {无独特英雄} other {# 名独特英雄}}",
+      "uniqueMaps": "{count, plural, =0 {无独特地图} other {# 张独特地图}}",
+      "days": {
+        "sunday": "星期日",
+        "monday": "星期一",
+        "tuesday": "星期二",
+        "wednesday": "星期三",
+        "thursday": "星期四",
+        "friday": "星期五",
+        "saturday": "星期六"
+      },
+      "noData": "无数据"
+    },
+    "winLossStreaksCard": {
+      "eyebrow": "趋势 · 连胜/连败",
+      "title": "连胜/连败",
+      "noData": "还没有连胜/连败数据。",
+      "na": "暂无",
+      "dateRange": "{start} - {end}",
+      "currentStreak": "当前走势",
+      "winStreakCount": "{count} 连胜",
+      "lossStreakCount": "{count} 连败",
+      "hot": "🔥 状态正热",
+      "cold": "❄️ 状态低迷",
+      "longestWinStreak": "最长连胜",
+      "noWinsYet": "还没有胜场",
+      "longestLossStreak": "最长连败",
+      "noLossesYet": "还没有负场",
+      "keepMomentumGoing": "继续保持势头！",
+      "timeToBreakStreak": "该终结连败了 - 复盘最近的 VOD"
+    },
     "ultimatesTab": {
       "combos": {
         "title": "终极技能连招",
