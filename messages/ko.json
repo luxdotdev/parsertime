@@ -3447,6 +3447,38 @@
       "upgrade": "더 많은 기간을 보려면 업그레이드하세요",
       "pickDateRange": "날짜 범위 선택"
     },
+    "roleBalanceRadar": {
+      "eyebrow": "개요 · 역할 균형",
+      "title": "역할 균형",
+      "noData": "역할 균형을 분석하기에는 아직 데이터가 부족합니다.",
+      "tooltipTitle": "역할 균형",
+      "eliminations": "처치",
+      "survivability": "생존력",
+      "ultUsage": "궁극기 사용",
+      "activity": "활동량",
+      "balanced": "균형적",
+      "tankHeavy": "탱커 편중",
+      "damageHeavy": "딜러 편중",
+      "supportHeavy": "지원 편중",
+      "insufficientData": "데이터 부족",
+      "tank": "탱커",
+      "damage": "딜러",
+      "support": "지원",
+      "insights": "인사이트",
+      "excellentBalance": "팀이 모든 역할에서 매우 균형 잡힌 모습을 보입니다.",
+      "fairlyBalanced": "팀은 약간의 역할 편차가 있지만 대체로 균형적입니다.",
+      "considerStrengthening": "팀 균형을 개선하려면 {role} 성능을 강화해 보세요.",
+      "negativeKD": "{role} 플레이어의 K/D가 음수입니다.",
+      "dyingFrequently": "{role} 플레이어가 자주 사망하고 있습니다 - 포지셔닝에 집중하세요.",
+      "strongest": "가장 강한 역할:",
+      "needsWork": "개선 필요:",
+      "balanceScore": "균형 점수:",
+      "roles": {
+        "Tank": "탱커",
+        "Damage": "딜러",
+        "Support": "지원"
+      }
+    },
     "mapWinrateGallery": {
       "eyebrow": "맵 · 승률 갤러리",
       "title": "맵 성능",

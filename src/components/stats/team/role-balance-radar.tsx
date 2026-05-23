@@ -6,7 +6,7 @@ import type {
   RolePerformanceStats,
 } from "@/data/team/types";
 import { cn, round } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import {
   Legend,
   PolarAngleAxis,
@@ -23,19 +23,33 @@ import type {
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
 
-function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
+type RoleKey = "Tank" | "Damage" | "Support";
+
+type CustomTooltipProps = TooltipProps<ValueType, NameType> & {
+  title: string;
+  roleLabels: Record<RoleKey, string>;
+  formatValue: (value: number) => string;
+};
+
+function CustomTooltip({
+  active,
+  payload,
+  title,
+  roleLabels,
+  formatValue,
+}: CustomTooltipProps) {
   if (active && payload?.length) {
     return (
       <div className="bg-popover text-popover-foreground border-border z-50 overflow-hidden rounded-md border px-3 py-2 shadow-xl">
-        <p className="text-sm font-semibold">Role Balance</p>
+        <p className="text-sm font-semibold">{title}</p>
         <p className="text-foreground font-mono text-xs tabular-nums">
-          Tank: {round(payload[0].value as number)}
+          {roleLabels.Tank}: {formatValue(round(payload[0].value as number))}
         </p>
         <p className="text-foreground font-mono text-xs tabular-nums">
-          Damage: {round(payload[1].value as number)}
+          {roleLabels.Damage}: {formatValue(round(payload[1].value as number))}
         </p>
         <p className="text-foreground font-mono text-xs tabular-nums">
-          Support: {round(payload[2].value as number)}
+          {roleLabels.Support}: {formatValue(round(payload[2].value as number))}
         </p>
       </div>
     );
@@ -52,29 +66,35 @@ export function RoleBalanceRadar({
   balanceAnalysis,
 }: RoleBalanceRadarProps) {
   const t = useTranslations("teamStatsPage.roleBalanceRadar");
+  const format = useFormatter();
 
   const hasData = ["Tank", "Damage", "Support"].some(
     (role) => roleStats[role as keyof RolePerformanceStats].totalPlaytime > 0
   );
 
-  function getBalanceBadgeClass(
-    overall: RoleBalanceAnalysis["overall"]
-  ): string {
-    switch (overall) {
-      case "Balanced":
-        return "bg-primary/15 text-primary";
-      case "Insufficient data":
-        return "bg-muted text-muted-foreground";
-      default:
-        return "bg-muted text-muted-foreground";
+  const roleLabels: Record<RoleKey, string> = {
+    Tank: t("roles.Tank"),
+    Damage: t("roles.Damage"),
+    Support: t("roles.Support"),
+  };
+
+  function formatRole(role: RoleKey): string {
+    return roleLabels[role];
+  }
+
+  function getBalanceBadgeClass(): string {
+    if (hasData && balanceAnalysis.balanceScore >= 0.8) {
+      return "bg-primary/15 text-primary";
     }
+
+    return "bg-muted text-muted-foreground";
   }
 
   const balanceBadge = (
     <span
       className={cn(
         "rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase",
-        getBalanceBadgeClass(balanceAnalysis.overall)
+        getBalanceBadgeClass()
       )}
     >
       {balanceAnalysis.overall}
@@ -85,7 +105,7 @@ export function RoleBalanceRadar({
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Overview · Role balance"
+          eyebrow={t("eyebrow")}
           title={t("title")}
           rightSlot={balanceBadge}
         />
@@ -140,7 +160,7 @@ export function RoleBalanceRadar({
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Overview · Role balance"
+        eyebrow={t("eyebrow")}
         title={t("title")}
         rightSlot={balanceBadge}
       />
@@ -171,7 +191,15 @@ export function RoleBalanceRadar({
             fillOpacity={0.4}
           />
           <Legend />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip
+            content={
+              <CustomTooltip
+                title={t("tooltipTitle")}
+                roleLabels={roleLabels}
+                formatValue={(value) => format.number(value)}
+              />
+            }
+          />
         </RadarChart>
       </ResponsiveContainer>
 
@@ -196,19 +224,22 @@ export function RoleBalanceRadar({
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t("strongest")}</span>
             <span className="text-foreground font-semibold">
-              {balanceAnalysis.strongestRole}
+              {formatRole(balanceAnalysis.strongestRole)}
             </span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t("needsWork")}</span>
             <span className="text-foreground font-semibold">
-              {balanceAnalysis.weakestRole}
+              {formatRole(balanceAnalysis.weakestRole)}
             </span>
           </div>
           <div className="mt-2 flex justify-between">
             <span className="text-muted-foreground">{t("balanceScore")}</span>
             <span className="text-foreground font-mono font-semibold tabular-nums">
-              {(balanceAnalysis.balanceScore * 100).toFixed(0)}%
+              {format.number(balanceAnalysis.balanceScore, {
+                style: "percent",
+                maximumFractionDigits: 0,
+              })}
             </span>
           </div>
         </div>

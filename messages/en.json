@@ -4456,8 +4456,10 @@
       "pickDateRange": "Pick a date range"
     },
     "roleBalanceRadar": {
+      "eyebrow": "Overview · Role balance",
       "title": "Role Balance",
       "noData": "Not enough data to analyze role balance yet.",
+      "tooltipTitle": "Role Balance",
       "eliminations": "Eliminations",
       "survivability": "Survivability",
       "ultUsage": "Ult Usage",
@@ -4473,12 +4475,17 @@
       "insights": "Insights",
       "excellentBalance": "Your team shows excellent balance across all roles.",
       "fairlyBalanced": "Your team is fairly balanced with minor role disparities.",
-      "considerStrengthening": "Consider strengthening your {weakestRole} performance to improve team balance.",
+      "considerStrengthening": "Consider strengthening your {role} performance to improve team balance.",
       "negativeKD": "{role} players have a negative K/D ratio.",
       "dyingFrequently": "{role} players are dying frequently - focus on positioning.",
       "strongest": "Strongest:",
       "needsWork": "Needs Work:",
-      "balanceScore": "Balance Score:"
+      "balanceScore": "Balance Score:",
+      "roles": {
+        "Tank": "Tank",
+        "Damage": "Damage",
+        "Support": "Support"
+      }
     },
     "bestRoleTriosCard": {
       "title": "Best Role Trios",

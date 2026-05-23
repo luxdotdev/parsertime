@@ -376,6 +376,11 @@ export const make = Effect.gen(function* () {
             "Damage",
             "Support",
           ];
+
+          function formatRole(role: (typeof roles)[number]): string {
+            return t(`roles.${role}`);
+          }
+
           const totalPlaytime = roles.reduce(
             (sum, role) => sum + roleStats[role].totalPlaytime,
             0
@@ -421,14 +426,17 @@ export const make = Effect.gen(function* () {
           const insights: string[] = [];
           if (balanceScore >= 0.8) insights.push(t("excellentBalance"));
           else if (balanceScore >= 0.6) insights.push(t("fairlyBalanced"));
-          else insights.push(t("considerStrengthening", { role: weakestRole }));
+          else
+            insights.push(
+              t("considerStrengthening", { role: formatRole(weakestRole) })
+            );
 
           roles.forEach((role) => {
             const stats = roleStats[role];
             if (stats.kd < 1.0 && stats.totalPlaytime > 600)
-              insights.push(t("negativeKD", { role }));
+              insights.push(t("negativeKD", { role: formatRole(role) }));
             if (stats.deathsPer10Min > 7 && stats.totalPlaytime > 600)
-              insights.push(t("dyingFrequently", { role }));
+              insights.push(t("dyingFrequently", { role: formatRole(role) }));
           });
 
           wideEvent.balance_score = balanceScore;
