@@ -1064,6 +1064,26 @@
         }
       }
     },
+    "rawStatsSections": {
+      "fights": {
+        "label": "Fight analysis",
+        "title": "Fight Analysis"
+      },
+      "ultimates": {
+        "label": "Ultimate analysis",
+        "title": "Ultimate Analysis",
+        "ourTopFightInitiator": "Your most common fight-opening ultimate: <strong>{hero}</strong> (<n>{count}</n> {count, plural, one {fight} other {fights}}).",
+        "opponentTopFightInitiator": "Opponent's most common fight-opening ultimate: <strong>{hero}</strong> (<n>{count}</n> {count, plural, one {fight} other {fights}}).",
+        "goodDiscipline": "Good ultimate discipline — more ultimates used in wins than losses.",
+        "roomForImprovement": "Room for improvement — more ultimates used in losses than wins."
+      },
+      "swaps": {
+        "label": "Hero swap analysis",
+        "title": "Hero Swap Analysis",
+        "ourTopSwap": "Your most common swap: <strong>{fromHero}</strong> → <strong>{toHero}</strong> (<n>{count}</n> {count, plural, one {time} other {times}}).",
+        "opponentTopSwap": "Opponent's most common swap: <strong>{fromHero}</strong> → <strong>{toHero}</strong> (<n>{count}</n> {count, plural, one {time} other {times}})."
+      }
+    },
     "overviewSummary": {
       "ariaLabel": "Scrim overview",
       "recordAria": "Record: {wins, plural, one {# win} other {# wins}}, {losses, plural, one {# loss} other {# losses}}, {draws, plural, one {# draw} other {# draws}}",

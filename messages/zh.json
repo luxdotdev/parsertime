@@ -1064,6 +1064,26 @@
         }
       }
     },
+    "rawStatsSections": {
+      "fights": {
+        "label": "团战分析",
+        "title": "团战分析"
+      },
+      "ultimates": {
+        "label": "终极技能分析",
+        "title": "终极技能分析",
+        "ourTopFightInitiator": "你方最常用的开战终极技能：<strong>{hero}</strong>（<n>{count}</n>{count, plural, other { 场战斗}}）。",
+        "opponentTopFightInitiator": "对手最常用的开战终极技能：<strong>{hero}</strong>（<n>{count}</n>{count, plural, other { 场战斗}}）。",
+        "goodDiscipline": "终极技能纪律良好 — 胜利团战中使用的终极技能多于失败团战。",
+        "roomForImprovement": "仍有改进空间 — 失败团战中使用的终极技能多于胜利团战。"
+      },
+      "swaps": {
+        "label": "英雄更换分析",
+        "title": "英雄更换分析",
+        "ourTopSwap": "你方最常见更换：<strong>{fromHero}</strong> → <strong>{toHero}</strong>（<n>{count}</n>{count, plural, other { 次}}）。",
+        "opponentTopSwap": "对手最常见更换：<strong>{fromHero}</strong> → <strong>{toHero}</strong>（<n>{count}</n>{count, plural, other { 次}}）。"
+      }
+    },
     "overviewSummary": {
       "ariaLabel": "训练赛概览",
       "recordAria": "战绩：{wins} 胜，{losses} 负，{draws} 平",

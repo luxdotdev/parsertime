@@ -1064,6 +1064,26 @@
         }
       }
     },
+    "rawStatsSections": {
+      "fights": {
+        "label": "전투 분석",
+        "title": "전투 분석"
+      },
+      "ultimates": {
+        "label": "궁극기 분석",
+        "title": "궁극기 분석",
+        "ourTopFightInitiator": "가장 자주 전투를 연 궁극기: <strong>{hero}</strong> (<n>{count}</n>{count, plural, other {회 전투}}).",
+        "opponentTopFightInitiator": "상대가 가장 자주 전투를 연 궁극기: <strong>{hero}</strong> (<n>{count}</n>{count, plural, other {회 전투}}).",
+        "goodDiscipline": "좋은 궁극기 관리 — 패배한 전투보다 승리한 전투에서 궁극기를 더 많이 사용했습니다.",
+        "roomForImprovement": "개선 여지 — 승리한 전투보다 패배한 전투에서 궁극기를 더 많이 사용했습니다."
+      },
+      "swaps": {
+        "label": "영웅 교체 분석",
+        "title": "영웅 교체 분석",
+        "ourTopSwap": "가장 흔한 교체: <strong>{fromHero}</strong> → <strong>{toHero}</strong> (<n>{count}</n>{count, plural, other {회}}).",
+        "opponentTopSwap": "상대의 가장 흔한 교체: <strong>{fromHero}</strong> → <strong>{toHero}</strong> (<n>{count}</n>{count, plural, other {회}})."
+      }
+    },
     "overviewSummary": {
       "ariaLabel": "스크림 개요",
       "recordAria": "전적: {wins}승, {losses}패, {draws}무",

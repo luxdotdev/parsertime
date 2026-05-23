@@ -9,6 +9,8 @@ import type {
   ScrimUltAnalysis,
 } from "@/data/scrim/types";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 
 export function HighlightedPct({
   value,
@@ -36,6 +38,7 @@ export function FightAnalysisSection({
 }: {
   analysis: ScrimFightAnalysis;
 }) {
+  const t = useTranslations("scrimPage.rawStatsSections.fights");
   if (analysis.totalFights === 0) return null;
 
   const fightsLost = analysis.totalFights - analysis.fightsWon;
@@ -43,9 +46,9 @@ export function FightAnalysisSection({
   return (
     <>
       <Separator />
-      <section aria-label="Fight analysis">
+      <section aria-label={t("label")}>
         <h4 className="text-muted-foreground mb-3 text-xs font-medium tracking-wide uppercase">
-          Fight Analysis
+          {t("title")}
         </h4>
         <ul className="text-foreground space-y-2 text-sm leading-relaxed">
           <li>
@@ -144,6 +147,13 @@ export function UltAnalysisSection({
   analysis: ScrimUltAnalysis;
   teamNames: readonly [string, string];
 }) {
+  const t = useTranslations("scrimPage.rawStatsSections.ultimates");
+  const tRatings = useTranslations(
+    "scrimPage.overviewSections.ultimates.ratings"
+  );
+  const tHeadings = useTranslations(
+    "scrimPage.overviewSections.ultimates.headings"
+  );
   if (analysis.ourUltsUsed === 0 && analysis.opponentUltsUsed === 0) {
     return null;
   }
@@ -161,9 +171,9 @@ export function UltAnalysisSection({
   return (
     <>
       <Separator />
-      <section aria-label="Ultimate analysis">
+      <section aria-label={t("label")}>
         <h4 className="text-muted-foreground mb-3 text-xs font-medium tracking-wide uppercase">
-          Ultimate Analysis
+          {t("title")}
         </h4>
         <div
           className={cn(
@@ -269,34 +279,34 @@ export function UltAnalysisSection({
                 </li>
                 {analysis.ourTopFightInitiator && (
                   <li>
-                    Your most common fight-opening ultimate:{" "}
-                    <span className="font-semibold">
-                      {analysis.ourTopFightInitiator.hero}
-                    </span>{" "}
-                    (
-                    <span className="font-semibold tabular-nums">
-                      {analysis.ourTopFightInitiator.count}
-                    </span>{" "}
-                    {analysis.ourTopFightInitiator.count === 1
-                      ? "fight"
-                      : "fights"}
-                    ).
+                    {t.rich("ourTopFightInitiator", {
+                      hero: analysis.ourTopFightInitiator.hero,
+                      count: analysis.ourTopFightInitiator.count,
+                      strong: (chunks: ReactNode) => (
+                        <span className="font-semibold">{chunks}</span>
+                      ),
+                      n: (chunks: ReactNode) => (
+                        <span className="font-semibold tabular-nums">
+                          {chunks}
+                        </span>
+                      ),
+                    })}
                   </li>
                 )}
                 {analysis.opponentTopFightInitiator && (
                   <li>
-                    Opponent&apos;s most common fight-opening ultimate:{" "}
-                    <span className="font-semibold">
-                      {analysis.opponentTopFightInitiator.hero}
-                    </span>{" "}
-                    (
-                    <span className="font-semibold tabular-nums">
-                      {analysis.opponentTopFightInitiator.count}
-                    </span>{" "}
-                    {analysis.opponentTopFightInitiator.count === 1
-                      ? "fight"
-                      : "fights"}
-                    ).
+                    {t.rich("opponentTopFightInitiator", {
+                      hero: analysis.opponentTopFightInitiator.hero,
+                      count: analysis.opponentTopFightInitiator.count,
+                      strong: (chunks: ReactNode) => (
+                        <span className="font-semibold">{chunks}</span>
+                      ),
+                      n: (chunks: ReactNode) => (
+                        <span className="font-semibold tabular-nums">
+                          {chunks}
+                        </span>
+                      ),
+                    })}
                   </li>
                 )}
               </>
@@ -351,12 +361,12 @@ export function UltAnalysisSection({
                   </span>{" "}
                   fights won per ultimate used (
                   {analysis.ultEfficiency.ultimateEfficiency >= 0.4
-                    ? "Excellent"
+                    ? tRatings("excellent")
                     : analysis.ultEfficiency.ultimateEfficiency >= 0.25
-                      ? "Good"
+                      ? tRatings("good")
                       : analysis.ultEfficiency.ultimateEfficiency >= 0.15
-                        ? "Average"
-                        : "Poor"}
+                        ? tRatings("average")
+                        : tRatings("poor")}
                   ).
                 </li>
                 <li>
@@ -371,8 +381,8 @@ export function UltAnalysisSection({
                   per lost fight.{" "}
                   {analysis.ultEfficiency.avgUltsInWonFights >
                   analysis.ultEfficiency.avgUltsInLostFights
-                    ? "Good ultimate discipline \u2014 more ultimates used in wins than losses."
-                    : "Room for improvement \u2014 more ultimates used in losses than wins."}
+                    ? t("goodDiscipline")
+                    : t("roomForImprovement")}
                 </li>
                 {analysis.ultEfficiency.wastedUltimates > 0 && (
                   <li>
@@ -457,7 +467,7 @@ export function UltAnalysisSection({
               {hasComparisons && (
                 <div className="min-h-[300px]">
                   <h5 className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                    Ultimate Usage by Subrole
+                    {tHeadings("usageBySubrole")}
                   </h5>
                   <UltComparisonChart
                     comparisons={analysis.playerComparisons}
@@ -468,7 +478,7 @@ export function UltAnalysisSection({
               {hasTimingData && (
                 <div className="min-h-[300px]">
                   <h5 className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                    Ultimate Timing Breakdown
+                    {tHeadings("timingBreakdown")}
                   </h5>
                   <UltTimingChart
                     team1Timings={allOurTimings}
@@ -490,6 +500,7 @@ export function HeroSwapAnalysisSection({
 }: {
   analysis: ScrimSwapAnalysis;
 }) {
+  const t = useTranslations("scrimPage.rawStatsSections.swaps");
   if (analysis.ourSwaps === 0 && analysis.opponentSwaps === 0) return null;
 
   const winrateDelta = analysis.swapWinrate - analysis.noSwapWinrate;
@@ -505,9 +516,9 @@ export function HeroSwapAnalysisSection({
   return (
     <>
       <Separator />
-      <section aria-label="Hero swap analysis">
+      <section aria-label={t("label")}>
         <h4 className="text-muted-foreground mb-3 text-xs font-medium tracking-wide uppercase">
-          Hero Swap Analysis
+          {t("title")}
         </h4>
         <ul className="text-foreground space-y-2 text-sm leading-relaxed">
           <li>
@@ -583,32 +594,33 @@ export function HeroSwapAnalysisSection({
 
           {analysis.ourTopSwap && (
             <li>
-              Your most common swap:{" "}
-              <span className="font-semibold">{analysis.ourTopSwap.from}</span>{" "}
-              &rarr;{" "}
-              <span className="font-semibold">{analysis.ourTopSwap.to}</span> (
-              <span className="font-semibold tabular-nums">
-                {analysis.ourTopSwap.count}
-              </span>{" "}
-              {analysis.ourTopSwap.count === 1 ? "time" : "times"}).
+              {t.rich("ourTopSwap", {
+                fromHero: analysis.ourTopSwap.from,
+                toHero: analysis.ourTopSwap.to,
+                count: analysis.ourTopSwap.count,
+                strong: (chunks: ReactNode) => (
+                  <span className="font-semibold">{chunks}</span>
+                ),
+                n: (chunks: ReactNode) => (
+                  <span className="font-semibold tabular-nums">{chunks}</span>
+                ),
+              })}
             </li>
           )}
 
           {analysis.opponentTopSwap && (
             <li>
-              Opponent&apos;s most common swap:{" "}
-              <span className="font-semibold">
-                {analysis.opponentTopSwap.from}
-              </span>{" "}
-              &rarr;{" "}
-              <span className="font-semibold">
-                {analysis.opponentTopSwap.to}
-              </span>{" "}
-              (
-              <span className="font-semibold tabular-nums">
-                {analysis.opponentTopSwap.count}
-              </span>{" "}
-              {analysis.opponentTopSwap.count === 1 ? "time" : "times"}).
+              {t.rich("opponentTopSwap", {
+                fromHero: analysis.opponentTopSwap.from,
+                toHero: analysis.opponentTopSwap.to,
+                count: analysis.opponentTopSwap.count,
+                strong: (chunks: ReactNode) => (
+                  <span className="font-semibold">{chunks}</span>
+                ),
+                n: (chunks: ReactNode) => (
+                  <span className="font-semibold tabular-nums">{chunks}</span>
+                ),
+              })}
             </li>
           )}
 
