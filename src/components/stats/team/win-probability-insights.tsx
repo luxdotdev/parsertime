@@ -3,7 +3,7 @@
 import { SectionHeader } from "@/components/stats/team/section-header";
 import type { TeamFightStats } from "@/data/team/types";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import {
   Bar,
   BarChart,
@@ -39,13 +39,23 @@ type FightTypeRow = {
   color: string;
 };
 
+type ChartTooltipProps = TooltipProps<ValueType, NameType> & {
+  formatPercent: (value: number) => string;
+  summary: (values: { winrate: string; fights: number }) => string;
+};
+
 function toneFromDelta(delta: number, threshold = 5): InsightTone {
   if (delta >= threshold) return "positive";
   if (delta <= -threshold) return "negative";
   return "neutral";
 }
 
-function ChartTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
+function ChartTooltip({
+  active,
+  payload,
+  formatPercent,
+  summary,
+}: ChartTooltipProps) {
   if (!active || !payload?.length) return null;
   const row = payload[0]?.payload as FightTypeRow | undefined;
   if (!row) return null;
@@ -53,7 +63,10 @@ function ChartTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
     <div className="bg-popover text-popover-foreground border-border z-50 overflow-hidden rounded-md border px-3 py-2 shadow-xl">
       <p className="text-xs font-semibold">{row.label}</p>
       <p className="text-foreground font-mono text-xs tabular-nums">
-        {row.winrate.toFixed(1)}% over {row.fights} fights
+        {summary({
+          winrate: formatPercent(row.winrate),
+          fights: row.fights,
+        })}
       </p>
     </div>
   );
@@ -63,14 +76,28 @@ export function WinProbabilityInsights({
   fightStats,
 }: WinProbabilityInsightsProps) {
   const t = useTranslations("teamStatsPage.winProbabilityInsights");
+  const format = useFormatter();
+
+  function formatPercent(value: number, maximumFractionDigits = 1): string {
+    return format.number(value / 100, {
+      style: "percent",
+      minimumFractionDigits: maximumFractionDigits,
+      maximumFractionDigits,
+    });
+  }
+
+  function formatDelta(value: number): string {
+    return format.number(value, {
+      signDisplay: "exceptZero",
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+  }
 
   if (fightStats.totalFights === 0) {
     return (
       <section className="space-y-4">
-        <SectionHeader
-          eyebrow="Teamfights · Win probability"
-          title={t("title")}
-        />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
@@ -83,8 +110,14 @@ export function WinProbabilityInsights({
     const delta = fightStats.firstPickWinrate - overall;
     insights.push({
       eyebrow: t("firstPickImpact"),
-      headline: `${fightStats.firstPickWinrate.toFixed(1)}% with first pick`,
-      detail: `${fightStats.firstPickWins}W of ${fightStats.firstPickFights} (${delta >= 0 ? "+" : ""}${delta.toFixed(1)} vs overall)`,
+      headline: t("firstPickHeadline", {
+        winrate: formatPercent(fightStats.firstPickWinrate),
+      }),
+      detail: t("firstPickDetail", {
+        wins: fightStats.firstPickWins,
+        fights: fightStats.firstPickFights,
+        delta: formatDelta(delta),
+      }),
       tone: toneFromDelta(delta),
     });
   }
@@ -93,8 +126,14 @@ export function WinProbabilityInsights({
     const delta = fightStats.firstDeathWinrate - overall;
     insights.push({
       eyebrow: t("firstDeathComeback"),
-      headline: `${fightStats.firstDeathWinrate.toFixed(1)}% after first death`,
-      detail: `${fightStats.firstDeathWins}W of ${fightStats.firstDeathFights} (${delta >= 0 ? "+" : ""}${delta.toFixed(1)} vs overall)`,
+      headline: t("firstDeathHeadline", {
+        winrate: formatPercent(fightStats.firstDeathWinrate),
+      }),
+      detail: t("firstDeathDetail", {
+        wins: fightStats.firstDeathWins,
+        fights: fightStats.firstDeathFights,
+        delta: formatDelta(delta),
+      }),
       tone: toneFromDelta(delta),
     });
   }
@@ -103,8 +142,14 @@ export function WinProbabilityInsights({
     const delta = fightStats.firstUltWinrate - overall;
     insights.push({
       eyebrow: t("ultimateAdvantage"),
-      headline: `${fightStats.firstUltWinrate.toFixed(1)}% on first ult`,
-      detail: `${fightStats.firstUltWins}W of ${fightStats.firstUltFights} (${delta >= 0 ? "+" : ""}${delta.toFixed(1)} vs overall)`,
+      headline: t("firstUltHeadline", {
+        winrate: formatPercent(fightStats.firstUltWinrate),
+      }),
+      detail: t("firstUltDetail", {
+        wins: fightStats.firstUltWins,
+        fights: fightStats.firstUltFights,
+        delta: formatDelta(delta),
+      }),
       tone: toneFromDelta(delta),
     });
   }
@@ -113,8 +158,14 @@ export function WinProbabilityInsights({
     const delta = fightStats.dryFightWinrate - overall;
     insights.push({
       eyebrow: t("dryFightSuccess"),
-      headline: `${fightStats.dryFightWinrate.toFixed(1)}% in dry fights`,
-      detail: `${fightStats.dryFightWins}W of ${fightStats.dryFights} dry fights (${delta >= 0 ? "+" : ""}${delta.toFixed(1)} vs overall)`,
+      headline: t("dryFightHeadline", {
+        winrate: formatPercent(fightStats.dryFightWinrate),
+      }),
+      detail: t("dryFightDetail", {
+        wins: fightStats.dryFightWins,
+        fights: fightStats.dryFights,
+        delta: formatDelta(delta),
+      }),
       tone: toneFromDelta(delta),
     });
   }
@@ -122,9 +173,20 @@ export function WinProbabilityInsights({
   if (fightStats.avgUltsInWonFights > 0 || fightStats.avgUltsInLostFights > 0) {
     const diff = fightStats.avgUltsInWonFights - fightStats.avgUltsInLostFights;
     insights.push({
-      eyebrow: "Ult economy",
-      headline: `${fightStats.avgUltsInWonFights.toFixed(1)} ults per won fight`,
-      detail: `${fightStats.avgUltsInLostFights.toFixed(1)} per lost fight (${diff >= 0 ? "+" : ""}${diff.toFixed(1)} delta)`,
+      eyebrow: t("ultEconomy"),
+      headline: t("ultEconomyHeadline", {
+        count: format.number(fightStats.avgUltsInWonFights, {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        }),
+      }),
+      detail: t("ultEconomyDetail", {
+        count: format.number(fightStats.avgUltsInLostFights, {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        }),
+        delta: formatDelta(diff),
+      }),
       tone: toneFromDelta(-diff, 0.5),
     });
   }
@@ -135,15 +197,21 @@ export function WinProbabilityInsights({
     const higher = Math.max(dry, wet);
     insights.push({
       eyebrow: t("fightReversalComparison"),
-      headline: `${dry.toFixed(0)}% dry, ${wet.toFixed(0)}% with ults reverse`,
-      detail: `${fightStats.dryFightReversals} dry, ${fightStats.nonDryFightReversals} ult reversals`,
+      headline: t("fightReversalHeadline", {
+        dryRate: formatPercent(dry, 0),
+        ultRate: formatPercent(wet, 0),
+      }),
+      detail: t("fightReversalDetail", {
+        dryReversals: fightStats.dryFightReversals,
+        ultReversals: fightStats.nonDryFightReversals,
+      }),
       tone: higher > 15 ? "positive" : higher < 5 ? "negative" : "neutral",
     });
   }
 
   const fightTypeRows: FightTypeRow[] = [
     {
-      label: "Overall",
+      label: t("rows.overall"),
       winrate: overall,
       fights: fightStats.totalFights,
       color: "var(--chart-1)",
@@ -151,7 +219,7 @@ export function WinProbabilityInsights({
   ];
   if (fightStats.firstPickFights > 0) {
     fightTypeRows.push({
-      label: "First pick",
+      label: t("rows.firstPick"),
       winrate: fightStats.firstPickWinrate,
       fights: fightStats.firstPickFights,
       color: "var(--chart-2)",
@@ -159,7 +227,7 @@ export function WinProbabilityInsights({
   }
   if (fightStats.firstDeathFights > 0) {
     fightTypeRows.push({
-      label: "First death",
+      label: t("rows.firstDeath"),
       winrate: fightStats.firstDeathWinrate,
       fights: fightStats.firstDeathFights,
       color: "var(--chart-3)",
@@ -167,7 +235,7 @@ export function WinProbabilityInsights({
   }
   if (fightStats.firstUltFights > 0) {
     fightTypeRows.push({
-      label: "First ult",
+      label: t("rows.firstUlt"),
       winrate: fightStats.firstUltWinrate,
       fights: fightStats.firstUltFights,
       color: "var(--chart-4)",
@@ -175,7 +243,7 @@ export function WinProbabilityInsights({
   }
   if (fightStats.dryFights > 0) {
     fightTypeRows.push({
-      label: "Dry",
+      label: t("rows.dry"),
       winrate: fightStats.dryFightWinrate,
       fights: fightStats.dryFights,
       color: "var(--chart-5)",
@@ -188,7 +256,7 @@ export function WinProbabilityInsights({
     const wr =
       fightStats.nonDryFights > 0 ? (wins / fightStats.nonDryFights) * 100 : 0;
     fightTypeRows.push({
-      label: "With ults",
+      label: t("rows.withUlts"),
       winrate: wr,
       fights: fightStats.nonDryFights,
       color: "var(--chart-2)",
@@ -200,7 +268,7 @@ export function WinProbabilityInsights({
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Teamfights · Win probability"
+        eyebrow={t("eyebrow")}
         title={t("title")}
         description={t("description")}
       />
@@ -237,7 +305,7 @@ export function WinProbabilityInsights({
         </div>
         <div className="lg:col-span-5">
           <p className="text-muted-foreground mb-3 font-mono text-[10px] tracking-[0.18em] uppercase">
-            Winrate by fight type
+            {t("chartTitle")}
           </p>
           <ResponsiveContainer width="100%" height={chartHeight}>
             <BarChart
@@ -253,7 +321,7 @@ export function WinProbabilityInsights({
                   fill: "var(--muted-foreground)",
                   fontFamily: "var(--font-mono)",
                 }}
-                tickFormatter={(v) => `${v}%`}
+                tickFormatter={(v) => formatPercent(Number(v), 0)}
                 axisLine={{ stroke: "var(--border)" }}
                 tickLine={{ stroke: "var(--border)" }}
               />
@@ -270,7 +338,12 @@ export function WinProbabilityInsights({
                 tickLine={false}
               />
               <Tooltip
-                content={<ChartTooltip />}
+                content={
+                  <ChartTooltip
+                    formatPercent={formatPercent}
+                    summary={(values) => t("tooltipSummary", values)}
+                  />
+                }
                 cursor={{ fill: "var(--muted)", fillOpacity: 0.4 }}
               />
               <Bar dataKey="winrate" radius={[0, 2, 2, 0]}>
