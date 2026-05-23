@@ -1232,6 +1232,67 @@
       },
       "compareButton": "比较"
     },
+    "mapGroupManager": {
+      "title": "地图组",
+      "description": "创建自定义地图组来整理并比较表现",
+      "newGroup": "新建组",
+      "createDialog": {
+        "title": "创建地图组",
+        "description": "将地图组合在一起，以分析不同情境下的表现"
+      },
+      "editDialog": {
+        "title": "编辑地图组",
+        "description": "更新地图组详情和地图选择"
+      },
+      "deleteDialog": {
+        "title": "删除地图组",
+        "description": "确定要删除“{name}”吗？此操作无法撤销。",
+        "cancel": "取消",
+        "delete": "删除"
+      },
+      "empty": {
+        "title": "还没有地图组",
+        "description": "创建第一个地图组，以整理地图并比较不同情境下的表现",
+        "create": "创建地图组"
+      },
+      "actions": {
+        "label": "组操作",
+        "edit": "编辑",
+        "delete": "删除"
+      },
+      "card": {
+        "maps": "地图",
+        "createdBy": "由 {name} 创建"
+      },
+      "form": {
+        "name": "组名称",
+        "namePlaceholder": "例如：团战地图、开放地图",
+        "description": "描述",
+        "descriptionPlaceholder": "此组的可选描述",
+        "category": "类别",
+        "categoryPlaceholder": "例如：打法、地图类型",
+        "selectMaps": "选择地图",
+        "noMapsAvailable": "没有可用地图",
+        "selectedMaps": "{count, plural, one {已选择 # 张地图} other {已选择 # 张地图}}",
+        "create": "创建组",
+        "update": "更新组"
+      },
+      "toast": {
+        "created": "地图组已创建",
+        "createdDescription": "地图组已成功创建。",
+        "updated": "地图组已更新",
+        "updatedDescription": "地图组已成功更新。",
+        "deleted": "地图组已删除",
+        "deletedDescription": "地图组已成功删除。",
+        "error": "错误"
+      },
+      "errors": {
+        "fetchFailed": "获取地图组失败",
+        "createFailed": "创建地图组失败",
+        "updateFailed": "更新地图组失败",
+        "deleteFailed": "删除地图组失败"
+      }
+    },
     "teamComparison": {
       "myTeam": "我方队伍",
       "enemyTeam": "敌方队伍",

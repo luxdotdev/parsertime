@@ -1381,6 +1381,67 @@
       },
       "compareButton": "Compare"
     },
+    "mapGroupManager": {
+      "title": "Map Groups",
+      "description": "Create custom map groups to organize and compare performance",
+      "newGroup": "New Group",
+      "createDialog": {
+        "title": "Create Map Group",
+        "description": "Group maps together to analyze performance across different contexts"
+      },
+      "editDialog": {
+        "title": "Edit Map Group",
+        "description": "Update the map group details and map selection"
+      },
+      "deleteDialog": {
+        "title": "Delete Map Group",
+        "description": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+        "cancel": "Cancel",
+        "delete": "Delete"
+      },
+      "empty": {
+        "title": "No map groups yet",
+        "description": "Create your first map group to organize maps and compare performance across different contexts",
+        "create": "Create Map Group"
+      },
+      "actions": {
+        "label": "Group actions",
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "card": {
+        "maps": "Maps",
+        "createdBy": "Created by {name}"
+      },
+      "form": {
+        "name": "Group Name",
+        "namePlaceholder": "e.g., Brawl Maps, Open Maps",
+        "description": "Description",
+        "descriptionPlaceholder": "Optional description for this group",
+        "category": "Category",
+        "categoryPlaceholder": "e.g., Playstyle, Map Type",
+        "selectMaps": "Select Maps",
+        "noMapsAvailable": "No maps available",
+        "selectedMaps": "{count, plural, one {# map selected} other {# maps selected}}",
+        "create": "Create Group",
+        "update": "Update Group"
+      },
+      "toast": {
+        "created": "Map group created",
+        "createdDescription": "Your map group has been created successfully.",
+        "updated": "Map group updated",
+        "updatedDescription": "Your map group has been updated successfully.",
+        "deleted": "Map group deleted",
+        "deletedDescription": "The map group has been deleted successfully.",
+        "error": "Error"
+      },
+      "errors": {
+        "fetchFailed": "Failed to fetch map groups",
+        "createFailed": "Failed to create map group",
+        "updateFailed": "Failed to update map group",
+        "deleteFailed": "Failed to delete map group"
+      }
+    },
     "teamComparison": {
       "myTeam": "My Team",
       "enemyTeam": "Enemy Team",

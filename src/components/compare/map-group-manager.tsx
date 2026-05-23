@@ -39,6 +39,7 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -58,10 +59,13 @@ type MapGroupFormData = {
   mapIds: number[];
 };
 
-async function fetchMapGroups(teamId: number): Promise<FormattedMapGroup[]> {
+async function fetchMapGroups(
+  teamId: number,
+  fallbackError: string
+): Promise<FormattedMapGroup[]> {
   const response = await fetch(`/api/compare/map-groups?teamId=${teamId}`);
   if (!response.ok) {
-    throw new Error("Failed to fetch map groups");
+    throw new Error(fallbackError);
   }
   const data = (await response.json()) as {
     success: boolean;
@@ -72,7 +76,8 @@ async function fetchMapGroups(teamId: number): Promise<FormattedMapGroup[]> {
 
 async function createMapGroup(
   teamId: number,
-  formData: MapGroupFormData
+  formData: MapGroupFormData,
+  fallbackError: string
 ): Promise<FormattedMapGroup> {
   const response = await fetch("/api/compare/map-groups", {
     method: "POST",
@@ -84,7 +89,7 @@ async function createMapGroup(
   });
   if (!response.ok) {
     const error = (await response.json()) as { error: string };
-    throw new Error(error.error || "Failed to create map group");
+    throw new Error(error.error || fallbackError);
   }
   const data = (await response.json()) as {
     success: boolean;
@@ -95,7 +100,8 @@ async function createMapGroup(
 
 async function updateMapGroup(
   groupId: number,
-  formData: Partial<MapGroupFormData>
+  formData: Partial<MapGroupFormData>,
+  fallbackError: string
 ): Promise<FormattedMapGroup> {
   const response = await fetch(`/api/compare/map-groups/${groupId}`, {
     method: "PUT",
@@ -104,7 +110,7 @@ async function updateMapGroup(
   });
   if (!response.ok) {
     const error = (await response.json()) as { error: string };
-    throw new Error(error.error || "Failed to update map group");
+    throw new Error(error.error || fallbackError);
   }
   const data = (await response.json()) as {
     success: boolean;
@@ -113,13 +119,16 @@ async function updateMapGroup(
   return data.group;
 }
 
-async function deleteMapGroup(groupId: number): Promise<void> {
+async function deleteMapGroup(
+  groupId: number,
+  fallbackError: string
+): Promise<void> {
   const response = await fetch(`/api/compare/map-groups/${groupId}`, {
     method: "DELETE",
   });
   if (!response.ok) {
     const error = (await response.json()) as { error: string };
-    throw new Error(error.error || "Failed to delete map group");
+    throw new Error(error.error || fallbackError);
   }
 }
 
@@ -134,6 +143,7 @@ function MapGroupForm({
   onSuccess: () => void;
   editGroup?: FormattedMapGroup;
 }) {
+  const t = useTranslations("comparePage.mapGroupManager");
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState<MapGroupFormData>({
@@ -144,32 +154,34 @@ function MapGroupForm({
   });
 
   const createMutation = useMutation({
-    mutationFn: () => createMapGroup(teamId, formData),
+    mutationFn: () =>
+      createMapGroup(teamId, formData, t("errors.createFailed")),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["mapGroups", teamId] });
-      toast.success("Map group created", {
-        description: "Your map group has been created successfully.",
+      toast.success(t("toast.created"), {
+        description: t("toast.createdDescription"),
       });
       onSuccess();
     },
     onError: (error: Error) => {
-      toast.error("Error", {
+      toast.error(t("toast.error"), {
         description: error.message,
       });
     },
   });
 
   const updateMutation = useMutation({
-    mutationFn: () => updateMapGroup(editGroup!.id, formData),
+    mutationFn: () =>
+      updateMapGroup(editGroup!.id, formData, t("errors.updateFailed")),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["mapGroups", teamId] });
-      toast.success("Map group updated", {
-        description: "Your map group has been updated successfully.",
+      toast.success(t("toast.updated"), {
+        description: t("toast.updatedDescription"),
       });
       onSuccess();
     },
     onError: (error: Error) => {
-      toast.error("Error", {
+      toast.error(t("toast.error"), {
         description: error.message,
       });
     },
@@ -199,11 +211,12 @@ function MapGroupForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="name">
-          Group Name<span className="text-destructive ml-1">*</span>
+          {t("form.name")}
+          <span className="text-destructive ml-1">*</span>
         </Label>
         <Input
           id="name"
-          placeholder="e.g., Brawl Maps, Open Maps"
+          placeholder={t("form.namePlaceholder")}
           value={formData.name}
           onChange={(e) =>
             setFormData((prev) => ({ ...prev, name: e.target.value }))
@@ -214,10 +227,10 @@ function MapGroupForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="description">{t("form.description")}</Label>
         <Textarea
           id="description"
-          placeholder="Optional description for this group"
+          placeholder={t("form.descriptionPlaceholder")}
           value={formData.description}
           onChange={(e) =>
             setFormData((prev) => ({ ...prev, description: e.target.value }))
@@ -228,10 +241,10 @@ function MapGroupForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="category">Category</Label>
+        <Label htmlFor="category">{t("form.category")}</Label>
         <Input
           id="category"
-          placeholder="e.g., Playstyle, Map Type"
+          placeholder={t("form.categoryPlaceholder")}
           value={formData.category}
           onChange={(e) =>
             setFormData((prev) => ({ ...prev, category: e.target.value }))
@@ -242,12 +255,13 @@ function MapGroupForm({
 
       <div className="space-y-2">
         <span className="text-sm font-medium">
-          Select Maps<span className="text-destructive ml-1">*</span>
+          {t("form.selectMaps")}
+          <span className="text-destructive ml-1">*</span>
         </span>
         <div className="max-h-[300px] overflow-y-auto rounded-lg border">
           {availableMaps.length === 0 ? (
             <div className="text-muted-foreground p-4 text-center text-sm">
-              No maps available
+              {t("form.noMapsAvailable")}
             </div>
           ) : (
             <div className="divide-y">
@@ -279,8 +293,7 @@ function MapGroupForm({
         </div>
         {formData.mapIds.length > 0 && (
           <p className="text-muted-foreground text-xs">
-            {formData.mapIds.length} map
-            {formData.mapIds.length !== 1 ? "s" : ""} selected
+            {t("form.selectedMaps", { count: formData.mapIds.length })}
           </p>
         )}
       </div>
@@ -291,7 +304,7 @@ function MapGroupForm({
           disabled={isLoading || formData.mapIds.length === 0}
         >
           {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
-          {editGroup ? "Update Group" : "Create Group"}
+          {editGroup ? t("form.update") : t("form.create")}
         </Button>
       </DialogFooter>
     </form>
@@ -302,6 +315,7 @@ export function MapGroupManager({
   teamId,
   availableMaps,
 }: MapGroupManagerProps) {
+  const t = useTranslations("comparePage.mapGroupManager");
   const queryClient = useQueryClient();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingGroup, setEditingGroup] = useState<FormattedMapGroup | null>(
@@ -313,21 +327,22 @@ export function MapGroupManager({
 
   const { data: mapGroups, isLoading } = useQuery({
     queryKey: ["mapGroups", teamId],
-    queryFn: () => fetchMapGroups(teamId),
+    queryFn: () => fetchMapGroups(teamId, t("errors.fetchFailed")),
     staleTime: 5 * 60 * 1000,
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (groupId: number) => deleteMapGroup(groupId),
+    mutationFn: (groupId: number) =>
+      deleteMapGroup(groupId, t("errors.deleteFailed")),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["mapGroups", teamId] });
-      toast.success("Map group deleted", {
-        description: "The map group has been deleted successfully.",
+      toast.success(t("toast.deleted"), {
+        description: t("toast.deletedDescription"),
       });
       setDeletingGroup(null);
     },
     onError: (error: Error) => {
-      toast.error("Error", {
+      toast.error(t("toast.error"), {
         description: error.message,
       });
     },
@@ -338,24 +353,23 @@ export function MapGroupManager({
       <CardHeader className="border-b">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-lg">Map Groups</CardTitle>
+            <CardTitle className="text-lg">{t("title")}</CardTitle>
             <p className="text-muted-foreground mt-1 text-sm">
-              Create custom map groups to organize and compare performance
+              {t("description")}
             </p>
           </div>
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild>
               <Button size="sm">
                 <FolderPlus className="mr-2 size-4" />
-                New Group
+                {t("newGroup")}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Create Map Group</DialogTitle>
+                <DialogTitle>{t("createDialog.title")}</DialogTitle>
                 <DialogDescription>
-                  Group maps together to analyze performance across different
-                  contexts
+                  {t("createDialog.description")}
                 </DialogDescription>
               </DialogHeader>
               <MapGroupForm
@@ -377,14 +391,13 @@ export function MapGroupManager({
             <div className="bg-muted/50 mx-auto mb-4 flex size-16 items-center justify-center rounded-full">
               <FolderPlus className="text-muted-foreground size-8" />
             </div>
-            <h3 className="mb-2 text-base font-semibold">No map groups yet</h3>
+            <h3 className="mb-2 text-base font-semibold">{t("empty.title")}</h3>
             <p className="text-muted-foreground mx-auto mb-4 max-w-sm text-sm text-pretty">
-              Create your first map group to organize maps and compare
-              performance across different contexts
+              {t("empty.description")}
             </p>
             <Button onClick={() => setIsCreateOpen(true)} size="sm">
               <FolderPlus className="mr-2 size-4" />
-              Create Map Group
+              {t("empty.create")}
             </Button>
           </div>
         ) : (
@@ -409,7 +422,7 @@ export function MapGroupManager({
                           variant="ghost"
                           size="sm"
                           className="size-8 p-0"
-                          aria-label="Group actions"
+                          aria-label={t("actions.label")}
                         >
                           <MoreVertical className="size-4" />
                         </Button>
@@ -419,14 +432,14 @@ export function MapGroupManager({
                           onClick={() => setEditingGroup(group)}
                         >
                           <Pencil className="mr-2 size-4" />
-                          Edit
+                          {t("actions.edit")}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => setDeletingGroup(group)}
                           className="text-destructive focus:text-destructive"
                         >
                           <Trash2 className="mr-2 size-4" />
-                          Delete
+                          {t("actions.delete")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -439,13 +452,15 @@ export function MapGroupManager({
                     </p>
                   )}
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="text-muted-foreground">Maps:</span>
+                    <span className="text-muted-foreground">
+                      {t("card.maps")}:
+                    </span>
                     <span className="font-medium tabular-nums">
                       {group.mapCount}
                     </span>
                   </div>
                   <div className="text-muted-foreground text-xs">
-                    Created by {group.createdBy}
+                    {t("card.createdBy", { name: group.createdBy })}
                   </div>
                 </CardContent>
               </Card>
@@ -460,9 +475,9 @@ export function MapGroupManager({
         >
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Edit Map Group</DialogTitle>
+              <DialogTitle>{t("editDialog.title")}</DialogTitle>
               <DialogDescription>
-                Update the map group details and map selection
+                {t("editDialog.description")}
               </DialogDescription>
             </DialogHeader>
             {editingGroup && (
@@ -483,14 +498,15 @@ export function MapGroupManager({
         >
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Delete Map Group</AlertDialogTitle>
+              <AlertDialogTitle>{t("deleteDialog.title")}</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to delete &quot;{deletingGroup?.name}
-                &quot;? This action cannot be undone.
+                {t("deleteDialog.description", {
+                  name: deletingGroup?.name ?? "",
+                })}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>{t("deleteDialog.cancel")}</AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => {
                   if (deletingGroup) {
@@ -502,7 +518,7 @@ export function MapGroupManager({
                 {deleteMutation.isPending && (
                   <Loader2 className="mr-2 size-4 animate-spin" />
                 )}
-                Delete
+                {t("deleteDialog.delete")}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
