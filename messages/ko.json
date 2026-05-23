@@ -2315,16 +2315,155 @@
       "ogDescription": "OWCS 팀을 스카우팅하세요. 이름으로 검색하고 경기 기록, 승률, 토너먼트 성과를 확인할 수 있습니다.",
       "ogImage": "스카우팅"
     },
-    "search": {
-      "label": "팀 검색",
-      "placeholder": "팀 검색...",
-      "helperText": "이름이나 약어로 OWCS 팀을 검색하세요.",
-      "resultsLabel": "팀 검색 결과",
-      "matchCount": "{count, plural, =1 {경기 1개} other {경기 #개}}",
-      "winRate": "{winRate} 승률",
-      "noResults": "팀을 찾을 수 없습니다."
-    }
+  "search": {
+    "label": "팀 검색",
+    "placeholder": "팀 검색...",
+    "helperText": "이름이나 약어로 OWCS 팀을 검색하세요.",
+    "resultsLabel": "팀 검색 결과",
+    "matchCount": "{count, plural, =1 {경기 1개} other {경기 #개}}",
+    "winRate": "{winRate} 승률",
+    "noResults": "팀을 찾을 수 없습니다."
   },
+  "player": {
+    "title": "선수 스카우트",
+    "subtitle": "프로 선수를 검색하고 경쟁 이력을 분석하세요.",
+    "metadata": {
+      "title": "선수 스카우트 | Parsertime",
+      "description": "프로 Overwatch 선수를 검색하고 경쟁 이력, 영웅 풀, 토너먼트 성과를 확인하세요.",
+      "ogTitle": "선수 스카우트 | Parsertime",
+      "ogDescription": "프로 Overwatch 선수를 검색하고 경쟁 이력, 영웅 풀, 토너먼트 성과를 확인하세요.",
+      "ogImage": "선수 스카우트"
+    },
+    "search": {
+      "label": "선수 검색",
+      "placeholder": "선수 검색...",
+      "helperText": "이름, 팀, 역할로 프로 선수를 검색하세요.",
+      "resultsLabel": "선수 검색 결과",
+      "noResults": "선수를 찾을 수 없습니다."
+    },
+    "profile": {
+      "metadata": {
+        "title": "{player} | 선수 스카우트 | Parsertime",
+        "description": "{player} 스카우트 — 영웅 풀, 토너먼트 이력, 경쟁 성과를 확인하세요.",
+        "ogTitle": "{player} | 선수 스카우트 | Parsertime",
+        "ogDescription": "{player} 스카우트 — 영웅 풀, 토너먼트 이력, 경쟁 성과를 확인하세요."
+      },
+      "backToSearch": "검색으로 돌아가기",
+      "liquipediaProfile": "Liquipedia에서 보기",
+      "careerWinnings": "커리어 상금",
+      "signatureHeroes": "대표 영웅",
+      "tournamentAppearances": "토너먼트 출전",
+      "competitiveMaps": "경쟁전 맵",
+      "tournaments": "{count}개 토너먼트",
+      "maps": "{count}개 맵",
+      "heroPool": "영웅 풀",
+      "knownFor": "주요 특징",
+      "knownForSource": "Liquipedia 출처",
+      "observedInCompetition": "대회에서 관찰됨",
+      "heroMaps": "{count}개 맵",
+      "noHeroData": "아직 경쟁 영웅 데이터가 없습니다.",
+      "tournamentHistory": "토너먼트 이력",
+      "team": "팀",
+      "role": "역할",
+      "record": "전적",
+      "winRate": "승률",
+      "noTournamentData": "아직 토너먼트 데이터가 없습니다.",
+      "matchDetails": "경기 세부 정보",
+      "opponent": "상대",
+      "score": "점수",
+      "result": "결과",
+      "heroes": "영웅",
+      "win": "승",
+      "loss": "패"
+    },
+    "analytics": {
+      "scrimOverview": {
+        "title": "스크림 성과",
+        "description": "Parsertime 스크림 데이터의 핵심 지표입니다.",
+        "mvpScore": "MVP 점수",
+        "kdRatio": "K/D 비율",
+        "firstPickRate": "첫 픽 비율",
+        "firstDeathRate": "첫 사망 비율",
+        "fightReversalRate": "전투 역전율",
+        "killsPerUltimate": "궁극기당 처치",
+        "consistencyScore": "일관성",
+        "mapsPlayed": "플레이한 맵",
+        "firstPicks": "첫 픽 {count}회",
+        "firstDeaths": "첫 사망 {count}회",
+        "outOf100": "/ 100",
+        "methodology": {
+          "mvpScore": "글로벌 영웅 평균과 비교한 10분당 지표 기반 점수입니다. 각 지표는 중요도에 따라 최대 ±10점까지 기여합니다(표준편차당 4점). 일반적인 범위는 −100에서 +100입니다.",
+          "kdRatio": "기록된 모든 스크림에서 총 처치를 총 사망으로 나눈 값입니다. 처치에는 최종 타격과 지원이 모두 포함됩니다.",
+          "firstPickRate": "이 선수가 개막 처치를 기록한 팀 전투의 비율입니다. 맵별로 측정한 뒤 전체 맵 평균을 사용합니다.",
+          "firstDeathRate": "이 선수가 전투에서 가장 먼저 사망한 팀 전투의 비율입니다. 높은 값은 공격적인 포지셔닝 또는 집중 견제를 의미할 수 있습니다.",
+          "fightReversalRate": "이 선수의 팀이 먼저 2명 이상 잃은 뒤 승리한 전투의 비율입니다. 클러치 잠재력을 보여줍니다.",
+          "killsPerUltimate": "사용한 궁극기당 평균 처치 수입니다. 값이 높을수록 궁극기 활용 효율이 좋다는 뜻입니다.",
+          "consistencyScore": "맵별 10분당 지표가 얼마나 안정적인지 0-100으로 점수화합니다. 처치, 사망, 피해, 치유의 평균 변동계수 역수로 계산하며 75 이상은 매우 일관적입니다.",
+          "mapsPlayed": "Parsertime에 기록된 이 선수의 스크림 맵 총수입니다. 모든 스크림 기반 지표의 표본 크기입니다."
+        }
+      },
+      "performanceRadar": {
+        "title": "성과 프로필",
+        "description": "전체 Parsertime 선수의 글로벌 영웅 평균 대비 z-점수입니다.",
+        "aboveAverage": "평균 이상",
+        "belowAverage": "평균 이하",
+        "noData": "레이더 차트에 사용할 스크림 데이터가 없습니다.",
+        "methodology": "각 축은 이 선수의 10분당 지표가 동일 영웅 글로벌 평균에서 표준편차(σ) 기준으로 얼마나 떨어져 있는지 보여줍니다. 같은 영웅을 플레이한 모든 Parsertime 선수의 최소 3맵 이상 데이터를 기준선으로 사용합니다."
+      },
+      "heroZScores": {
+        "title": "영웅 성과",
+        "description": "글로벌 기준선과 비교한 영웅별 종합 z-점수입니다.",
+        "primary": "주 영웅",
+        "maps": "{count}개 맵",
+        "delta": "차이",
+        "significantDropOff": "큰 하락",
+        "noData": "영웅 성과 데이터가 없습니다.",
+        "methodology": "종합 z-점수는 각 영웅의 지표별 z-점수(처치, 사망, 피해, 치유, 방어)를 가중 평균한 값입니다. 개별 z-점수는 이 선수의 10분당 지표를 해당 영웅의 글로벌 평균 및 표준편차와 비교합니다. 차이는 주 영웅과 보조 영웅 숙련도 간 격차를 보여줍니다."
+      },
+      "mapWinrates": {
+        "title": "맵 성과",
+        "description": "대회 경기의 승률입니다.",
+        "byMapType": "맵 유형별",
+        "byMap": "맵별",
+        "competitive": "대회",
+        "scrims": "스크림",
+        "played": "플레이",
+        "won": "승리",
+        "noData": "경쟁 맵 데이터가 없습니다.",
+        "methodologyMapType": "맵 유형별 승률은 이 선수의 팀이 참가한 모든 대회 경기 결과에서 계산됩니다. 비율은 각 게임 모드(Control, Escort, Hybrid, Push, Flashpoint)에서 승리 ÷ 총 플레이 맵입니다.",
+        "methodologyByMap": "개별 맵 승률은 대회 경기 결과에서 계산됩니다. 테두리는 색으로 구분됩니다: 승률 60% 이상은 초록, 40% 이하는 빨강, 그 외는 중립입니다."
+      },
+      "killAnalysis": {
+        "title": "전투 패턴",
+        "description": "스크림 데이터의 처치 및 사망 분석입니다.",
+        "topTargets": "주요 대상",
+        "topThreats": "주요 위협",
+        "killMethods": "처치 방식",
+        "roleDistribution": "역할 분포",
+        "kills": "{count}킬",
+        "deaths": "{count}사망",
+        "methodology": "처치 및 사망 데이터는 Parsertime 스크림 로그에서 가져옵니다. 주요 대상과 위협은 총량 기준으로 가장 많이 처치한 영웅과 가장 많이 사망한 상대 영웅 상위 5개를 보여줍니다. 처치 방식은 스킬 유형별로 그룹화됩니다. 역할 분포는 모든 스크림의 영웅 플레이 시간을 기준으로 Tank, Damage, Support 비율을 반영합니다."
+      },
+      "strengthsWeaknesses": {
+        "title": "스카우팅 인사이트",
+        "description": "대회 및 스크림 데이터에서 자동 생성된 강점과 약점입니다.",
+        "strengths": "강점",
+        "weaknesses": "약점",
+        "noStrengths": "강점을 식별하기에 데이터가 부족합니다.",
+        "noWeaknesses": "뚜렷한 약점이 식별되지 않았습니다.",
+        "methodology": "인사이트는 z-점수(글로벌 평균 대비 영웅 성과), 대회 맵 승률, 첫 픽/첫 사망 비율, 일관성 점수, 영웅 풀 깊이를 분석해 자동 생성됩니다. 강점은 긍정 임계값을 넘을 때, 약점은 부정 임계값에 도달할 때 표시됩니다. 모든 데이터 소스를 결합해 종합적인 관점을 제공합니다."
+      },
+      "noScrimData": "이 선수는 아직 Parsertime 스크림 데이터가 없습니다. 대회 분석과 토너먼트 이력은 계속 사용할 수 있습니다.",
+      "statLabels": {
+        "eliminations": "처치",
+        "deaths": "사망",
+        "hero_damage_dealt": "영웅 피해",
+        "healing_dealt": "치유",
+        "damage_blocked": "방어한 피해"
+      }
+    }
+  }
+},
   "statsPage": {
     "layoutMetadata": {
       "title": "통계 | Parsertime",

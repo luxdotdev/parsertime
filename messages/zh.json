@@ -2315,16 +2315,155 @@
       "ogDescription": "球探 OWCS 团队：按名称搜索，查看比赛历史、胜率和赛事表现。",
       "ogImage": "球探"
     },
-    "search": {
-      "label": "搜索团队",
-      "placeholder": "搜索团队...",
-      "helperText": "按名称或缩写搜索 OWCS 团队。",
-      "resultsLabel": "团队搜索结果",
-      "matchCount": "{count, plural, =1 {1 场比赛} other {# 场比赛}}",
-      "winRate": "{winRate} 胜率",
-      "noResults": "未找到团队。"
-    }
+  "search": {
+    "label": "搜索团队",
+    "placeholder": "搜索团队...",
+    "helperText": "按名称或缩写搜索 OWCS 团队。",
+    "resultsLabel": "团队搜索结果",
+    "matchCount": "{count, plural, =1 {1 场比赛} other {# 场比赛}}",
+    "winRate": "{winRate} 胜率",
+    "noResults": "未找到团队。"
   },
+  "player": {
+    "title": "球探选手",
+    "subtitle": "搜索职业选手并分析他们的赛事历史。",
+    "metadata": {
+      "title": "球探选手 | Parsertime",
+      "description": "搜索职业《守望先锋》选手，查看他们的赛事历史、英雄池和锦标赛表现。",
+      "ogTitle": "球探选手 | Parsertime",
+      "ogDescription": "搜索职业《守望先锋》选手，查看他们的赛事历史、英雄池和锦标赛表现。",
+      "ogImage": "球探选手"
+    },
+    "search": {
+      "label": "搜索选手",
+      "placeholder": "搜索选手...",
+      "helperText": "按姓名、队伍或职责搜索职业选手。",
+      "resultsLabel": "选手搜索结果",
+      "noResults": "未找到选手。"
+    },
+    "profile": {
+      "metadata": {
+        "title": "{player} | 球探选手 | Parsertime",
+        "description": "球探 {player} — 查看英雄池、锦标赛历史和竞技表现。",
+        "ogTitle": "{player} | 球探选手 | Parsertime",
+        "ogDescription": "球探 {player} — 查看英雄池、锦标赛历史和竞技表现。"
+      },
+      "backToSearch": "返回搜索",
+      "liquipediaProfile": "在 Liquipedia 查看",
+      "careerWinnings": "职业奖金",
+      "signatureHeroes": "代表英雄",
+      "tournamentAppearances": "锦标赛出场",
+      "competitiveMaps": "竞技地图",
+      "tournaments": "{count} 项锦标赛",
+      "maps": "{count} 张地图",
+      "heroPool": "英雄池",
+      "knownFor": "知名特点",
+      "knownForSource": "来自 Liquipedia",
+      "observedInCompetition": "比赛中观察到",
+      "heroMaps": "{count} 张地图",
+      "noHeroData": "暂无竞技英雄数据。",
+      "tournamentHistory": "锦标赛历史",
+      "team": "队伍",
+      "role": "职责",
+      "record": "战绩",
+      "winRate": "胜率",
+      "noTournamentData": "暂无锦标赛数据。",
+      "matchDetails": "比赛详情",
+      "opponent": "对手",
+      "score": "比分",
+      "result": "结果",
+      "heroes": "英雄",
+      "win": "胜",
+      "loss": "负"
+    },
+    "analytics": {
+      "scrimOverview": {
+        "title": "训练赛表现",
+        "description": "来自 Parsertime 训练赛数据的关键指标。",
+        "mvpScore": "MVP 分数",
+        "kdRatio": "K/D 比",
+        "firstPickRate": "首杀率",
+        "firstDeathRate": "首死率",
+        "fightReversalRate": "团战逆转率",
+        "killsPerUltimate": "每大招击杀",
+        "consistencyScore": "稳定性",
+        "mapsPlayed": "已打地图",
+        "firstPicks": "{count} 次首杀",
+        "firstDeaths": "{count} 次首死",
+        "outOf100": "/ 100",
+        "methodology": {
+          "mvpScore": "基于积分的分数，将每 10 分钟数据与全局英雄平均值进行比较。每项数据按重要性最多贡献 ±10 分（每个标准差 4 分）。通常范围为 −100 到 +100。",
+          "kdRatio": "所有已记录训练赛中的总消灭数除以总死亡数。消灭包括最后一击和助攻。",
+          "firstPickRate": "该选手取得开场击杀的团战比例。按地图测量，并在所有地图上取平均。",
+          "firstDeathRate": "该选手在团战中率先阵亡的比例。较高数值可能表示站位激进或被重点针对。",
+          "fightReversalRate": "该选手所在队伍在先损失 2 名或更多队员后仍赢下团战的比例，体现关键局能力。",
+          "killsPerUltimate": "每次使用终极技能取得的平均消灭数。数值越高说明终极技能使用效率越好。",
+          "consistencyScore": "根据各地图每 10 分钟数据的稳定程度给出 0-100 分。由消灭、死亡、伤害和治疗的平均变异系数倒数计算；75 以上表示非常稳定。",
+          "mapsPlayed": "Parsertime 中记录的该选手训练赛地图总数，是所有训练赛指标的样本量。"
+        }
+      },
+      "performanceRadar": {
+        "title": "表现画像",
+        "description": "与所有 Parsertime 选手的全局英雄平均值相比的 z 分数。",
+        "aboveAverage": "高于平均",
+        "belowAverage": "低于平均",
+        "noData": "暂无可用于雷达图的训练赛数据。",
+        "methodology": "每个轴表示该选手每 10 分钟数据距离同英雄全局平均值多少个标准差（σ）。基线来自所有 Parsertime 选手在同一英雄上的数据，且至少需要 3 张地图。"
+      },
+      "heroZScores": {
+        "title": "英雄表现",
+        "description": "与全局基线相比的各英雄综合 z 分数。",
+        "primary": "主力",
+        "maps": "{count} 张地图",
+        "delta": "差值",
+        "significantDropOff": "明显下滑",
+        "noData": "暂无英雄表现数据。",
+        "methodology": "综合 z 分数是每个英雄各项数据 z 分数（消灭、死亡、伤害、治疗、承伤）的加权平均。单项 z 分数将该选手每 10 分钟数据与该英雄的全局平均值和标准差比较。差值显示主力英雄与第二英雄熟练度之间的差距。"
+      },
+      "mapWinrates": {
+        "title": "地图表现",
+        "description": "来自正式比赛的胜率。",
+        "byMapType": "按地图类型",
+        "byMap": "按地图",
+        "competitive": "正式比赛",
+        "scrims": "训练赛",
+        "played": "已打",
+        "won": "获胜",
+        "noData": "暂无竞技地图数据。",
+        "methodologyMapType": "地图类型胜率根据该选手所在队伍参与的所有正式比赛结果计算。百分比为每种模式（Control、Escort、Hybrid、Push、Flashpoint）的胜场数 ÷ 总地图数。",
+        "methodologyByMap": "单张地图胜率根据正式比赛结果计算。边框按颜色区分：胜率 ≥60% 为绿色，≤40% 为红色，其余为中性。"
+      },
+      "killAnalysis": {
+        "title": "战斗模式",
+        "description": "来自训练赛数据的击杀和死亡分析。",
+        "topTargets": "主要目标",
+        "topThreats": "主要威胁",
+        "killMethods": "击杀方式",
+        "roleDistribution": "职责分布",
+        "kills": "{count} 次击杀",
+        "deaths": "{count} 次死亡",
+        "methodology": "击杀和死亡数据来自 Parsertime 训练赛日志。主要目标和威胁展示总数最高的 5 个被击杀英雄和导致该选手死亡的英雄。击杀方式按技能类型分组。职责分布根据所有训练赛中的英雄使用时间，反映 Tank、Damage 和 Support 的占比。"
+      },
+      "strengthsWeaknesses": {
+        "title": "球探洞察",
+        "description": "根据正式比赛和训练赛数据自动生成的优势与弱点。",
+        "strengths": "优势",
+        "weaknesses": "弱点",
+        "noStrengths": "数据不足，无法识别优势。",
+        "noWeaknesses": "未发现明显弱点。",
+        "methodology": "洞察通过分析 z 分数（相对全局平均的英雄表现）、正式比赛地图胜率、首杀/首死率、稳定性分数和英雄池深度自动生成。指标超过正向阈值时触发优势，达到负向阈值时触发弱点。系统会结合所有数据来源提供整体视角。"
+      },
+      "noScrimData": "该选手尚无 Parsertime 训练赛数据。正式比赛分析和锦标赛历史仍可查看。",
+      "statLabels": {
+        "eliminations": "消灭",
+        "deaths": "死亡",
+        "hero_damage_dealt": "英雄伤害",
+        "healing_dealt": "治疗",
+        "damage_blocked": "承受伤害"
+      }
+    }
+  }
+},
   "statsPage": {
     "layoutMetadata": {
       "title": "统计数据 | Parsertime",
