@@ -760,6 +760,28 @@
         "createDescription": "맵이 성공적으로 생성되었습니다.",
         "errorTitle": "오류",
         "errorDescription": "오류가 발생했습니다: {res}. <here>여기</here>에서 문서를 읽고 오류를 해결할 수 있는지 확인하세요."
+      },
+      "dataCorruption": {
+        "warning": {
+          "title": "데이터 손상 감지됨",
+          "baseDescription": "손상된 데이터가 감지되었습니다. 자동 수정을 시도합니다:",
+          "invalidMercyRez": "잘못된 mercy_rez 줄은 제거됩니다",
+          "asteriskValues": "별표 값은 0으로 대체됩니다"
+        },
+        "success": {
+          "title": "맵 추가 완료",
+          "description": "손상된 데이터가 자동으로 수정되었고 맵이 성공적으로 추가되었습니다."
+        }
+      },
+      "submitting": "제출 중",
+      "submit": "제출",
+      "cancel": "취소",
+      "addHeroBan": "영웅 밴 추가",
+      "heroBansDescription": "이 맵의 영웅 밴을 설정하세요. 밴을 추가하지 않고 제출을 클릭하면 이 단계를 건너뛸 수 있습니다.",
+      "heroBansTitle": "영웅 밴 추가 (선택 사항)",
+      "heroBans": {
+        "reorder": "순서 변경",
+        "removeBan": "밴 제거"
       }
     },
     "editScrim": {
@@ -1878,6 +1900,10 @@
     "killfeedControls": {
       "title": "표시 옵션",
       "ariaLabel": "킬 피드 표시 설정",
+      "viewMode": "보기 모드",
+      "timelineView": "이벤트 타임라인",
+      "timelineViewDescription": "모든 맵 이벤트를 시간 비율에 맞춰 표시합니다",
+      "ultSection": "궁극기 추적",
       "ultBrackets": "궁극기 지속 괄호",
       "ultLabels": "궁극기 라벨",
       "ultStartEvents": "궁극기 시작 이벤트",
@@ -1890,13 +1916,26 @@
       "ultEndedDeath": "{player}이(가) 사망하여 궁극기가 종료되었습니다 ({duration}초)",
       "ultDuration": "지속 시간: {duration}초",
       "ultTime": "{start} — {end}",
-      "ultKills": "궁극기 중 {count}처치",
-      "ultDeaths": "궁극기 중 {count}사망",
+      "ultKills": "{count, plural, other {궁극기 중 #처치}}",
+      "ultDeaths": "{count, plural, other {궁극기 중 #사망}}",
       "diedDuringUlt": "{player}이(가) 궁극기 중 사망했습니다",
-      "ultLabel": "{player} ({hero})이(가) {duration}초 동안 궁극기를 사용, {kills}처치",
+      "ultLabel": "{player} ({hero})이(가) {duration}초 동안 궁극기를 사용, {kills, plural, other {#처치}}",
       "instantUlt": "{player} ({hero})이(가) 즉시 궁극기를 사용했습니다",
       "instantUltAt": "{time}에 즉시 궁극기 사용",
-      "ultInstant": "{player}의 즉시 궁극기 ({duration}초)"
+      "ultInstant": "{player}의 즉시 궁극기 ({duration}초)",
+      "tooltipFightStart": "전투 {num} 시작",
+      "tooltipFightEnd": "전투 {num} 종료",
+      "tooltipTimestamp": "시간: {time}",
+      "tooltipDuration": "지속 시간: {duration}초",
+      "tooltipWinner": "승자: {team}",
+      "tooltipTotalKills": "{count, plural, other {총 #처치}}",
+      "tooltipKill": "{attacker} → {victim}",
+      "tooltipMethod": "방식: {method}",
+      "tooltipTeam": "팀: {team}",
+      "tooltipUltActivated": "{player}이(가) {hero} 궁극기를 사용했습니다",
+      "tooltipUltEnded": "{player}의 {hero} 궁극기가 종료되었습니다",
+      "tooltipUltInstant": "{player}이(가) 즉시 {hero} 궁극기를 사용했습니다",
+      "tooltipDiedDuringUlt": "궁극기 중 사망"
     },
     "charts": {
       "title": "차트",
@@ -2110,6 +2149,13 @@
     }
   },
   "scoutingPage": {
+    "metadata": {
+      "title": "스카우팅 | Parsertime",
+      "description": "OWCS 팀을 스카우팅하세요. 이름으로 검색하고 경기 기록, 승률, 토너먼트 성과를 확인할 수 있습니다.",
+      "ogTitle": "스카우팅 | Parsertime",
+      "ogDescription": "OWCS 팀을 스카우팅하세요. 이름으로 검색하고 경기 기록, 승률, 토너먼트 성과를 확인할 수 있습니다.",
+      "ogImage": "스카우팅"
+    },
     "search": {
       "label": "팀 검색",
       "placeholder": "팀 검색...",
@@ -2639,6 +2685,19 @@
     "owner": "(소유자)",
     "you": "(나)",
     "addMember": "멤버 추가...",
+    "scoutingLink": {
+      "title": "OWCS 스카우팅 연결",
+      "description": "교차 참조 스카우팅 보고서를 활성화하려면 이 팀을 OWCS 팀 약어와 연결하세요. 업로드한 스크림 데이터가 상대 경기 기록과 연결됩니다.",
+      "placeholder": "예: CORNELL, NYU, COLU",
+      "noTeam": "연결된 팀 없음",
+      "linked": "{abbr}에 연결됨"
+    },
+    "teamMemberUsage": {
+      "title": "사용량 세부정보",
+      "description": "팀 멤버 사용량은 아래에 표시됩니다. 사용량은 청구 플랜과 생성한 팀 수를 기준으로 합니다.",
+      "teamMemberCount": "팀 멤버",
+      "usage": "{allowed}명 중 {current}명 사용됨"
+    },
     "empty": {
       "title": "팀 없음",
       "joinInvite": "초대 코드로 팀에 가입하려면 여기를 클릭하세요.",
@@ -2819,8 +2878,13 @@
     "description": "계정 설정 및 환경설정을 관리하세요.",
     "sideNav": {
       "profile": "프로필",
-      "linkedAccounts": "Integrations",
-      "admin": "관리자"
+      "linkedAccounts": "연동",
+      "admin": "관리자",
+      "dashboard": "대시보드",
+      "analytics": "분석",
+      "impersonateUser": "사용자 가장",
+      "auditLogs": "감사 로그",
+      "billing": "청구"
     },
     "profile": {
       "title": "프로필",
@@ -3313,6 +3377,12 @@
     }
   },
   "privacyPage": {
+    "metadata": {
+      "title": "개인정보처리방침 | Parsertime",
+      "description": "오버워치 스크림 분석 도구 Parsertime의 개인정보처리방침입니다.",
+      "ogTitle": "개인정보처리방침 | Parsertime",
+      "ogDescription": "오버워치 스크림 분석 도구 Parsertime의 개인정보처리방침입니다."
+    },
     "privacyPolicy": {
       "title": "개인정보처리방침",
       "description": "Parsertime은 웹사이트 방문자의 신뢰와 자신감을 유지하기 위해 최선을 다하고 있습니다. 특히, Parsertime은 이메일 목록을 마케팅 목적으로 다른 회사 및 비즈니스에 판매, 임대 또는 거래하지 않는다는 점을 알려드리고자 합니다. 이 개인정보처리방침에서는 언제, 왜 개인 정보를 수집하는지, 이를 어떻게 사용하는지, 그리고 이를 안전하게 보호하는 방법에 대해 자세히 설명합니다."
@@ -3359,6 +3429,12 @@
     }
   },
   "termsPage": {
+    "metadata": {
+      "title": "서비스 이용약관 | Parsertime",
+      "description": "오버워치 스크림 분석 도구 Parsertime의 서비스 이용약관입니다.",
+      "ogTitle": "서비스 이용약관 | Parsertime",
+      "ogDescription": "오버워치 스크림 분석 도구 Parsertime의 서비스 이용약관입니다."
+    },
     "termsOfService": {
       "title": "서비스 이용약관",
       "description": "이 서비스 이용약관은 오버워치 스크림 분석을 위한 오픈소스 도구인 Parsertime의 사용을 규정합니다. 당사의 서비스에 접근하거나 사용함으로써 이 약관에 구속되는 것에 동의합니다."
@@ -3429,6 +3505,32 @@
     "contactUs": {
       "title": "연락처 정보",
       "description": "이 서비스 이용약관에 대한 질문이 있으시면 <link>legal@lux.dev</link>로 연락해 주십시오."
+    }
+  },
+  "dataCorruption": {
+    "warning": {
+      "title": "데이터 손상 감지됨",
+      "baseDescription": "손상된 데이터가 감지되었습니다. 자동 수정을 시도합니다:",
+      "invalidMercyRez": "잘못된 mercy_rez 줄은 제거됩니다",
+      "asteriskValues": "별표 값은 0으로 대체됩니다"
+    }
+  },
+  "leaderboardPage": {
+    "metadata": {
+      "title": "리더보드 | Parsertime",
+      "description": "각 영웅의 최고 랭킹 플레이어를 확인하세요.",
+      "ogTitle": "리더보드 | Parsertime",
+      "ogDescription": "각 영웅의 최고 랭킹 플레이어를 확인하세요.",
+      "ogImage": "리더보드"
+    }
+  },
+  "profilePage": {
+    "layoutMetadata": {
+      "title": "{playerName}의 프로필 | Parsertime",
+      "description": "Parsertime에서 {playerName}의 프로필과 통계를 확인하세요.",
+      "ogTitle": "{playerName}의 프로필 | Parsertime",
+      "ogDescription": "Parsertime에서 {playerName}의 프로필과 통계를 확인하세요.",
+      "ogImage": "{playerName}의 프로필"
     }
   },
   "notFound": {
@@ -3652,6 +3754,14 @@
     "send-error-generic": "Couldn't send scrim request. Try again."
   },
   "teamStatsPage": {
+    "layoutMetadata": {
+      "defaultTeam": "팀",
+      "title": "{teamName} 통계 | Parsertime",
+      "description": "Parsertime에서 {teamName}의 통계입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "ogTitle": "{teamName} 통계 | Parsertime",
+      "ogDescription": "Parsertime에서 {teamName}의 통계입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "ogImage": "{teamName} 통계"
+    },
     "rangePicker": {
       "selectTimeframe": "기간 선택",
       "lastWeek": "지난주",

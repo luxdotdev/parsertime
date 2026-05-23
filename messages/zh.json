@@ -760,6 +760,28 @@
         "createDescription": "地图已成功创建。",
         "errorTitle": "错误",
         "errorDescription": "发生错误： {res}。请查看 <here>文档</here> 以解决该问题。"
+      },
+      "dataCorruption": {
+        "warning": {
+          "title": "检测到数据损坏",
+          "baseDescription": "检测到损坏的数据。正在尝试自动修复：",
+          "invalidMercyRez": "无效的 mercy_rez 行将被移除",
+          "asteriskValues": "星号值将被替换为 0"
+        },
+        "success": {
+          "title": "地图添加成功",
+          "description": "损坏的数据已自动修复，地图已成功添加。"
+        }
+      },
+      "submitting": "正在提交",
+      "submit": "提交",
+      "cancel": "取消",
+      "addHeroBan": "添加英雄禁用",
+      "heroBansDescription": "为此地图配置英雄禁用。如果不添加任何禁用并点击提交，可以跳过此步骤。",
+      "heroBansTitle": "添加英雄禁用（可选）",
+      "heroBans": {
+        "reorder": "重新排序",
+        "removeBan": "移除禁用"
       }
     },
     "editScrim": {
@@ -1878,6 +1900,10 @@
     "killfeedControls": {
       "title": "显示选项",
       "ariaLabel": "击杀记录显示设置",
+      "viewMode": "查看模式",
+      "timelineView": "事件时间线",
+      "timelineViewDescription": "按时间比例显示所有地图事件",
+      "ultSection": "终极技能追踪",
       "ultBrackets": "终极技能持续括号",
       "ultLabels": "终极技能标签",
       "ultStartEvents": "终极技能开始事件",
@@ -1890,13 +1916,26 @@
       "ultEndedDeath": "{player} 死亡，终极技能结束 ({duration}秒)",
       "ultDuration": "持续时间: {duration}秒",
       "ultTime": "{start} — {end}",
-      "ultKills": "终极技能期间 {count} 次击杀",
-      "ultDeaths": "终极技能期间 {count} 次死亡",
+      "ultKills": "{count, plural, other {终极技能期间 # 次击杀}}",
+      "ultDeaths": "{count, plural, other {终极技能期间 # 次死亡}}",
       "diedDuringUlt": "{player} 在终极技能期间死亡",
-      "ultLabel": "{player} ({hero}) 使用了终极技能 {duration}秒，{kills} 次击杀",
+      "ultLabel": "{player} ({hero}) 使用了终极技能 {duration}秒，{kills, plural, other {# 次击杀}}",
       "instantUlt": "{player} ({hero}) 使用了瞬间终极技能",
       "instantUltAt": "在 {time} 使用了瞬间终极技能",
-      "ultInstant": "{player} 的瞬间终极技能 ({duration}秒)"
+      "ultInstant": "{player} 的瞬间终极技能 ({duration}秒)",
+      "tooltipFightStart": "战斗 {num} 开始",
+      "tooltipFightEnd": "战斗 {num} 结束",
+      "tooltipTimestamp": "时间：{time}",
+      "tooltipDuration": "持续时间：{duration}秒",
+      "tooltipWinner": "获胜方：{team}",
+      "tooltipTotalKills": "{count, plural, other {共 # 次击杀}}",
+      "tooltipKill": "{attacker} → {victim}",
+      "tooltipMethod": "方式：{method}",
+      "tooltipTeam": "队伍：{team}",
+      "tooltipUltActivated": "{player} 使用了 {hero} 终极技能",
+      "tooltipUltEnded": "{player} 的 {hero} 终极技能已结束",
+      "tooltipUltInstant": "{player} 使用了瞬间 {hero} 终极技能",
+      "tooltipDiedDuringUlt": "在终极技能期间死亡"
     },
     "charts": {
       "title": "图表",
@@ -2110,6 +2149,13 @@
     }
   },
   "scoutingPage": {
+    "metadata": {
+      "title": "球探 | Parsertime",
+      "description": "球探 OWCS 团队：按名称搜索，查看比赛历史、胜率和赛事表现。",
+      "ogTitle": "球探 | Parsertime",
+      "ogDescription": "球探 OWCS 团队：按名称搜索，查看比赛历史、胜率和赛事表现。",
+      "ogImage": "球探"
+    },
     "search": {
       "label": "搜索团队",
       "placeholder": "搜索团队...",
@@ -2639,6 +2685,19 @@
     "owner": "（所有者）",
     "you": "（您）",
     "addMember": "添加成员...",
+    "scoutingLink": {
+      "title": "OWCS 球探关联",
+      "description": "将此团队关联到 OWCS 团队缩写，以启用交叉引用的球探报告。这会把您上传的训练赛数据连接到对手比赛历史。",
+      "placeholder": "例如：CORNELL、NYU、COLU",
+      "noTeam": "未关联团队",
+      "linked": "已关联到 {abbr}"
+    },
+    "teamMemberUsage": {
+      "title": "用量详情",
+      "description": "您的团队成员用量如下所示。用量基于您的计费方案和已创建的团队数量。",
+      "teamMemberCount": "团队成员",
+      "usage": "已使用 {current} / {allowed}"
+    },
     "empty": {
       "title": "没有团队",
       "joinInvite": "点击这里使用邀请码加入团队。",
@@ -2819,8 +2878,13 @@
     "description": "管理账户设置和偏好。",
     "sideNav": {
       "profile": "简介",
-      "linkedAccounts": "Integrations",
-      "admin": "管理员"
+      "linkedAccounts": "集成",
+      "admin": "管理员",
+      "dashboard": "仪表板",
+      "analytics": "分析",
+      "impersonateUser": "模拟用户",
+      "auditLogs": "审计日志",
+      "billing": "账单"
     },
     "profile": {
       "title": "简介",
@@ -3313,6 +3377,12 @@
     }
   },
   "privacyPage": {
+    "metadata": {
+      "title": "隐私政策 | Parsertime",
+      "description": "Parsertime 的隐私政策，Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "隐私政策 | Parsertime",
+      "ogDescription": "Parsertime 的隐私政策，Parsertime 是一款用于分析《守望先锋》训练赛的工具。"
+    },
     "privacyPolicy": {
       "title": "隐私政策",
       "description": "在 Parsertime，我们致力于维护访问我们网站的用户的信任和信心。特别是，我们希望您知道 Parsertime 并不会出于营销目的向其他公司和企业出售、出租或交易电子邮件列表。在本隐私政策中，我们提供了有关我们何时以及为何收集您的个人信息、如何使用这些信息以及如何确保其安全的详细信息。"
@@ -3359,6 +3429,12 @@
     }
   },
   "termsPage": {
+    "metadata": {
+      "title": "服务条款 | Parsertime",
+      "description": "Parsertime 的服务条款，Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "服务条款 | Parsertime",
+      "ogDescription": "Parsertime 的服务条款，Parsertime 是一款用于分析《守望先锋》训练赛的工具。"
+    },
     "termsOfService": {
       "title": "服务条款",
       "description": "本服务条款规范您对 Parsertime 的使用，这是一个用于分析《守望先锋》训练赛的开源工具。通过访问或使用我们的服务，您同意受这些条款的约束。"
@@ -3429,6 +3505,32 @@
     "contactUs": {
       "title": "联系信息",
       "description": "如果您对这些服务条款有任何疑问，请通过 <link>legal@lux.dev</link> 联系我们。"
+    }
+  },
+  "dataCorruption": {
+    "warning": {
+      "title": "检测到数据损坏",
+      "baseDescription": "检测到损坏的数据。正在尝试自动修复：",
+      "invalidMercyRez": "无效的 mercy_rez 行将被移除",
+      "asteriskValues": "星号值将被替换为 0"
+    }
+  },
+  "leaderboardPage": {
+    "metadata": {
+      "title": "排行榜 | Parsertime",
+      "description": "查看每位英雄排名最高的玩家。",
+      "ogTitle": "排行榜 | Parsertime",
+      "ogDescription": "查看每位英雄排名最高的玩家。",
+      "ogImage": "排行榜"
+    }
+  },
+  "profilePage": {
+    "layoutMetadata": {
+      "title": "{playerName} 的个人资料 | Parsertime",
+      "description": "在 Parsertime 查看 {playerName} 的个人资料和统计数据。",
+      "ogTitle": "{playerName} 的个人资料 | Parsertime",
+      "ogDescription": "在 Parsertime 查看 {playerName} 的个人资料和统计数据。",
+      "ogImage": "{playerName} 的个人资料"
     }
   },
   "notFound": {
@@ -3652,6 +3754,14 @@
     "send-error-generic": "Couldn't send scrim request. Try again."
   },
   "teamStatsPage": {
+    "layoutMetadata": {
+      "defaultTeam": "团队",
+      "title": "{teamName} 统计 | Parsertime",
+      "description": "Parsertime 上 {teamName} 的统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "{teamName} 统计 | Parsertime",
+      "ogDescription": "Parsertime 上 {teamName} 的统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogImage": "{teamName} 统计"
+    },
     "rangePicker": {
       "selectTimeframe": "选择时间范围",
       "lastWeek": "过去一周",
