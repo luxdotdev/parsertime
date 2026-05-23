@@ -1847,7 +1847,28 @@
     },
     "replay": {
       "noCalibration": "맵 캘리브레이션이 없습니다. 리플레이 뷰어는 캘리브레이션된 정사영 맵 이미지가 필요합니다.",
-      "noCoordinates": "이 맵에 좌표 데이터가 없습니다."
+      "noCoordinates": "이 맵에 좌표 데이터가 없습니다.",
+      "noCalibrationForRange": "이 시간 범위에 사용할 맵 캘리브레이션이 없습니다.",
+      "viewerLabel": "리플레이 뷰어",
+      "timeline": {
+        "roundShort": "R{number}",
+        "scrubber": "리플레이 탐색 막대",
+        "skipBack": "{seconds, number}초 뒤로 이동",
+        "skipForward": "{seconds, number}초 앞으로 이동",
+        "play": "재생",
+        "pause": "일시정지",
+        "playbackSpeed": "재생 속도",
+        "keyboardHint": "Space: 재생/일시정지 · 화살표 키: 5초 이동 (Shift: 1초) · [ / ]: 속도"
+      },
+      "eventFeed": {
+        "events": "이벤트",
+        "noEventsNearby": "근처 이벤트가 없습니다",
+        "teamLabel": "{team}팀:",
+        "ultActivated": "궁극기 활성화",
+        "ultEnded": "궁극기 종료",
+        "roundStart": "{round, number}라운드 시작",
+        "roundEnd": "{round, number}라운드 종료"
+      }
     },
     "heatmap": {
       "noCalibration": "맵 캘리브레이션이 없습니다. 히트맵은 캘리브레이션된 정사영 맵 이미지가 필요합니다.",

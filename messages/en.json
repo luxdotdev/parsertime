@@ -1847,7 +1847,28 @@
     },
     "replay": {
       "noCalibration": "No map calibration available. The replay viewer requires a calibrated orthographic map image.",
-      "noCoordinates": "No coordinate data available for this map."
+      "noCoordinates": "No coordinate data available for this map.",
+      "noCalibrationForRange": "No map calibration available for this time range.",
+      "viewerLabel": "Replay viewer",
+      "timeline": {
+        "roundShort": "R{number}",
+        "scrubber": "Replay scrubber",
+        "skipBack": "Skip back {seconds, plural, one {# second} other {# seconds}}",
+        "skipForward": "Skip forward {seconds, plural, one {# second} other {# seconds}}",
+        "play": "Play",
+        "pause": "Pause",
+        "playbackSpeed": "Playback speed",
+        "keyboardHint": "Space: play/pause · Arrow keys: seek 5s (Shift: 1s) · [ / ]: speed"
+      },
+      "eventFeed": {
+        "events": "Events",
+        "noEventsNearby": "No events nearby",
+        "teamLabel": "Team {team}:",
+        "ultActivated": "ult activated",
+        "ultEnded": "ult ended",
+        "roundStart": "Round {round, number} Start",
+        "roundEnd": "Round {round, number} End"
+      }
     },
     "heatmap": {
       "noCalibration": "No map calibration available. The heatmap requires a calibrated orthographic map image.",

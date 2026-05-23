@@ -20,6 +20,7 @@ import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import { useReplayTimeParam } from "@/components/map/map-tabs";
 import { createReplayStore } from "@/stores/replay-store";
 import { useSelector } from "@xstate/store/react";
+import { useTranslations } from "next-intl";
 import {
   useCallback,
   useEffect,
@@ -124,6 +125,7 @@ export function ReplayViewer({
   team1Name,
   team2Name,
 }: ReplayViewerProps) {
+  const t = useTranslations("mapPage.replay");
   const { team1: team1Color, team2: team2Color } = useColorblindMode();
 
   const minTime = positionSamples.length > 0 ? positionSamples[0].t : 0;
@@ -314,7 +316,7 @@ export function ReplayViewer({
     return (
       <div className="flex min-h-[300px] items-center justify-center rounded-lg border border-dashed">
         <p className="text-muted-foreground text-sm">
-          No map calibration available for this time range.
+          {t("noCalibrationForRange")}
         </p>
       </div>
     );
@@ -330,7 +332,7 @@ export function ReplayViewer({
       // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus required for keyboard playback controls
       tabIndex={0}
       role="application"
-      aria-label="Replay viewer"
+      aria-label={t("viewerLabel")}
       aria-keyshortcuts="Space ArrowLeft ArrowRight"
       aria-describedby={keyboardHintId}
       onKeyDown={handleKeyDown}

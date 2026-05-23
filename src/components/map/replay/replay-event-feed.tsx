@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { toHero, toTimestamp } from "@/lib/utils";
 import { useReducedMotion } from "framer-motion";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef } from "react";
 
 type ReplayEventFeedProps = {
@@ -41,6 +42,7 @@ export function ReplayEventFeed({
   team1Color,
   team2Color,
 }: ReplayEventFeedProps) {
+  const t = useTranslations("mapPage.replay.eventFeed");
   const scrollRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
@@ -88,13 +90,15 @@ export function ReplayEventFeed({
   return (
     <div className="flex h-[500px] flex-col gap-2">
       <span className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.06em] uppercase">
-        Events
+        {t("events")}
       </span>
       <Separator />
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
         {visibleEvents.length === 0 ? (
           <div className="flex h-full items-center justify-center">
-            <p className="text-muted-foreground text-xs">No events nearby</p>
+            <p className="text-muted-foreground text-xs">
+              {t("noEventsNearby")}
+            </p>
           </div>
         ) : (
           <div className="space-y-0.5">
@@ -138,6 +142,7 @@ function EventRow({
   getTeamColor: (team: string) => string;
   teamLabel: (team: string) => string;
 }) {
+  const t = useTranslations("mapPage.replay.eventFeed");
   const timeStr = toTimestamp(event.t);
 
   switch (event.type) {
@@ -155,7 +160,9 @@ function EventRow({
             className="h-4 w-4 shrink-0 rounded-full border"
             style={{ borderColor: getTeamColor(event.attackerTeam) }}
           />
-          <span className="sr-only">{`Team ${teamLabel(event.attackerTeam)}: `}</span>
+          <span className="sr-only">
+            {t("teamLabel", { team: teamLabel(event.attackerTeam) })}
+          </span>
           <span
             className="truncate font-medium"
             style={{ color: getTeamColor(event.attackerTeam) }}
@@ -171,7 +178,9 @@ function EventRow({
             className="h-4 w-4 shrink-0 rounded-full border grayscale"
             style={{ borderColor: getTeamColor(event.victimTeam) }}
           />
-          <span className="sr-only">{`Team ${teamLabel(event.victimTeam)}: `}</span>
+          <span className="sr-only">
+            {t("teamLabel", { team: teamLabel(event.victimTeam) })}
+          </span>
           <span
             className="truncate font-medium"
             style={{ color: getTeamColor(event.victimTeam) }}
@@ -195,14 +204,16 @@ function EventRow({
             className="h-4 w-4 shrink-0 rounded-full border"
             style={{ borderColor: getTeamColor(event.playerTeam) }}
           />
-          <span className="sr-only">{`Team ${teamLabel(event.playerTeam)}: `}</span>
+          <span className="sr-only">
+            {t("teamLabel", { team: teamLabel(event.playerTeam) })}
+          </span>
           <span
             className="truncate font-medium"
             style={{ color: getTeamColor(event.playerTeam) }}
           >
             {event.playerName}
           </span>
-          <span className="text-primary">ult activated</span>
+          <span className="text-primary">{t("ultActivated")}</span>
         </div>
       );
 
@@ -220,14 +231,16 @@ function EventRow({
             className="h-4 w-4 shrink-0 rounded-full border"
             style={{ borderColor: getTeamColor(event.playerTeam) }}
           />
-          <span className="sr-only">{`Team ${teamLabel(event.playerTeam)}: `}</span>
+          <span className="sr-only">
+            {t("teamLabel", { team: teamLabel(event.playerTeam) })}
+          </span>
           <span
             className="truncate font-medium"
             style={{ color: getTeamColor(event.playerTeam) }}
           >
             {event.playerName}
           </span>
-          <span className="text-muted-foreground">ult ended</span>
+          <span className="text-muted-foreground">{t("ultEnded")}</span>
         </div>
       );
 
@@ -254,7 +267,9 @@ function EventRow({
             className="h-4 w-4 shrink-0 rounded-full border"
             style={{ borderColor: getTeamColor(event.playerTeam) }}
           />
-          <span className="sr-only">{`Team ${teamLabel(event.playerTeam)}: `}</span>
+          <span className="sr-only">
+            {t("teamLabel", { team: teamLabel(event.playerTeam) })}
+          </span>
           <span
             className="truncate font-medium"
             style={{ color: getTeamColor(event.playerTeam) }}
@@ -271,7 +286,7 @@ function EventRow({
             {timeStr}
           </span>
           <span className="text-primary font-medium">
-            Round {event.roundNumber} Start
+            {t("roundStart", { round: event.roundNumber })}
           </span>
         </div>
       );
@@ -283,7 +298,7 @@ function EventRow({
             {timeStr}
           </span>
           <span className="text-muted-foreground font-medium">
-            Round {event.roundNumber} End
+            {t("roundEnd", { round: event.roundNumber })}
           </span>
         </div>
       );

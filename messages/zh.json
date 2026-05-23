@@ -1847,7 +1847,28 @@
     },
     "replay": {
       "noCalibration": "没有可用的地图校准数据。回放查看器需要已校准的正射地图图片。",
-      "noCoordinates": "此地图没有坐标数据。"
+      "noCoordinates": "此地图没有坐标数据。",
+      "noCalibrationForRange": "此时间范围没有可用的地图校准数据。",
+      "viewerLabel": "回放查看器",
+      "timeline": {
+        "roundShort": "R{number}",
+        "scrubber": "回放拖动条",
+        "skipBack": "后退 {seconds, number} 秒",
+        "skipForward": "前进 {seconds, number} 秒",
+        "play": "播放",
+        "pause": "暂停",
+        "playbackSpeed": "播放速度",
+        "keyboardHint": "Space：播放/暂停 · 方向键：跳转 5 秒（Shift：1 秒）· [ / ]：速度"
+      },
+      "eventFeed": {
+        "events": "事件",
+        "noEventsNearby": "附近没有事件",
+        "teamLabel": "{team}队：",
+        "ultActivated": "终极技能已启动",
+        "ultEnded": "终极技能已结束",
+        "roundStart": "第 {round, number} 回合开始",
+        "roundEnd": "第 {round, number} 回合结束"
+      }
     },
     "heatmap": {
       "noCalibration": "没有可用的地图校准数据。热力图需要已校准的正射地图图片。",
