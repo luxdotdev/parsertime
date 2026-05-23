@@ -5,6 +5,7 @@ import {
   imageToWorld,
   worldToImage,
 } from "@/lib/map-calibration/world-to-image";
+import { useFormatter, useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type Anchor = {
@@ -54,6 +55,8 @@ export function MapCanvas({
   testPoints,
   onImageClick,
 }: MapCanvasProps) {
+  const t = useTranslations("mapCalibrationPage.canvas");
+  const formatter = useFormatter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
@@ -386,7 +389,7 @@ export function MapCanvas({
     >
       <canvas
         ref={canvasRef}
-        aria-label="Map calibration canvas. Click to place anchor points, drag to pan, scroll to zoom."
+        aria-label={t("ariaLabel")}
         role="img"
         style={{ width: canvasSize.width, height: canvasSize.height }}
         className="cursor-crosshair"
@@ -396,7 +399,7 @@ export function MapCanvas({
       />
       {!imageLoaded ? (
         <div className="absolute inset-0 flex items-center justify-center">
-          <p className="text-muted-foreground">Loading map image…</p>
+          <p className="text-muted-foreground">{t("loading")}</p>
         </div>
       ) : null}
       <div className="absolute right-2 bottom-2 flex items-center gap-3 rounded-md bg-black/60 px-2.5 py-1.5 text-xs backdrop-blur-sm">
@@ -410,12 +413,16 @@ export function MapCanvas({
                 : "text-white/50 hover:text-white/80"
             }`}
           >
-            Grid {showGrid ? "ON" : "OFF"}
+            {showGrid ? t("gridOn") : t("gridOff")}
           </button>
         ) : null}
         <span className="text-white/60">
-          {Math.round(view.zoom * 100)}% · Scroll to zoom · Drag to pan · Click
-          to place
+          {t("instructions", {
+            zoom: formatter.number(view.zoom, {
+              style: "percent",
+              maximumFractionDigits: 0,
+            }),
+          })}
         </span>
       </div>
     </div>

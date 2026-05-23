@@ -13,6 +13,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { MapCalibration, MapCalibrationAnchor } from "@prisma/client";
 import type { Route } from "next";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
 type CalibrationWithAnchors = MapCalibration & {
@@ -74,22 +75,25 @@ const CALIBRATION_MAPS: { name: string; type: string }[] = [
   { name: "Watchpoint: Gibraltar", type: "Escort" },
 ];
 
-function getCalibrationStatus(
-  calibration: CalibrationWithAnchors | undefined
-): { label: string; variant: "default" | "secondary" | "destructive" } {
+function getCalibrationStatus(calibration: CalibrationWithAnchors | undefined):
+  | { key: "noImage"; count?: never; variant: "destructive" }
+  | { key: "calibrated"; count?: never; variant: "default" }
+  | { key: "anchors"; count: number; variant: "secondary" }
+  | { key: "imageUploaded"; count?: never; variant: "secondary" } {
   if (!calibration) {
-    return { label: "No image", variant: "destructive" };
+    return { key: "noImage", variant: "destructive" };
   }
   if (calibration.affineA !== null) {
-    return { label: "Calibrated", variant: "default" };
+    return { key: "calibrated", variant: "default" };
   }
   if (calibration.anchors.length > 0) {
     return {
-      label: `${calibration.anchors.length} anchor${calibration.anchors.length === 1 ? "" : "s"}`,
+      key: "anchors",
+      count: calibration.anchors.length,
       variant: "secondary",
     };
   }
-  return { label: "Image uploaded", variant: "secondary" };
+  return { key: "imageUploaded", variant: "secondary" };
 }
 
 export function MapCalibrationList({
@@ -97,6 +101,8 @@ export function MapCalibrationList({
 }: {
   calibrations: CalibrationWithAnchors[];
 }) {
+  const t = useTranslations("mapCalibrationPage.list");
+  const tMapTypes = useTranslations("mapCalibrationPage.mapTypes");
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<string[]>([]);
 
@@ -129,7 +135,7 @@ export function MapCalibrationList({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <Input
           name="mapSearch"
-          placeholder="Search maps…"
+          placeholder={t("searchPlaceholder")}
           autoComplete="off"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -144,7 +150,7 @@ export function MapCalibrationList({
         >
           {MAP_TYPES.map((t) => (
             <ToggleGroupItem key={t} value={t} size="sm" className="text-xs">
-              {t}
+              {mapTypeLabel(tMapTypes, t)}
             </ToggleGroupItem>
           ))}
         </ToggleGroup>
@@ -152,7 +158,7 @@ export function MapCalibrationList({
 
       {filtered.length === 0 ? (
         <p className="text-muted-foreground py-8 text-center text-sm">
-          No maps match your filters.
+          {t("noMatches")}
         </p>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -171,16 +177,24 @@ export function MapCalibrationList({
                       <CardTitle className="text-base text-pretty">
                         {name}
                       </CardTitle>
-                      <Badge variant={status.variant}>{status.label}</Badge>
+                      <Badge variant={status.variant}>
+                        {status.key === "anchors"
+                          ? t("status.anchors", { count: status.count })
+                          : t(`status.${status.key}`)}
+                      </Badge>
                     </div>
-                    <CardDescription>{type}</CardDescription>
+                    <CardDescription>
+                      {mapTypeLabel(tMapTypes, type)}
+                    </CardDescription>
                   </CardHeader>
                   {calibration ? (
                     <CardContent className="pt-0">
                       <p className="text-muted-foreground text-xs">
-                        {calibration.anchors.length} anchor
-                        {calibration.anchors.length === 1 ? "" : "s"}
-                        {calibration.affineA !== null && " · transform saved"}
+                        {t("anchorSummary", {
+                          count: calibration.anchors.length,
+                        })}
+                        {calibration.affineA !== null &&
+                          t("transformSavedSuffix")}
                       </p>
                     </CardContent>
                   ) : null}
@@ -192,4 +206,24 @@ export function MapCalibrationList({
       )}
     </div>
   );
+}
+
+function mapTypeLabel(
+  t: ReturnType<typeof useTranslations>,
+  type: string
+): string {
+  switch (type) {
+    case "Control":
+      return t("control");
+    case "Escort":
+      return t("escort");
+    case "Flashpoint":
+      return t("flashpoint");
+    case "Hybrid":
+      return t("hybrid");
+    case "Push":
+      return t("push");
+    default:
+      return type;
+  }
 }

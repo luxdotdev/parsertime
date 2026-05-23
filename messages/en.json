@@ -4503,6 +4503,109 @@
     "createTournament": "Create Tournament",
     "matchmaker": "Matchmaker"
   },
+  "mapCalibrationPage": {
+    "title": "Map Calibration",
+    "description": "Calibrate coordinate transforms for top-down map images. Each map needs anchor points mapping world coordinates to image pixels.",
+    "mapTypes": {
+      "control": "Control",
+      "escort": "Escort",
+      "flashpoint": "Flashpoint",
+      "hybrid": "Hybrid",
+      "push": "Push"
+    },
+    "list": {
+      "searchPlaceholder": "Search maps…",
+      "noMatches": "No maps match your filters.",
+      "status": {
+        "noImage": "No image",
+        "calibrated": "Calibrated",
+        "anchors": "{count, plural, one {# anchor} other {# anchors}}",
+        "imageUploaded": "Image uploaded"
+      },
+      "anchorSummary": "{count, plural, one {# anchor} other {# anchors}}",
+      "transformSavedSuffix": " · transform saved"
+    },
+    "anchorDialog": {
+      "title": "Add Anchor Point",
+      "description": "Image position: ({imageU}, {imageV}). Enter the corresponding in-game world coordinates. Overwatch uses (<x>X</x>, Y, <z>Z</z>) where Y is vertical — enter only <x>X</x> and <z>Z</z>.",
+      "worldX": "World X",
+      "worldZ": "World Z",
+      "worldXPlaceholder": "e.g. 42.5",
+      "worldZPlaceholder": "e.g. -18.3",
+      "label": "Label (optional)",
+      "labelPlaceholder": "e.g. Point A, Spawn door",
+      "cancel": "Cancel",
+      "addAnchor": "Add Anchor"
+    },
+    "anchorList": {
+      "empty": "No anchor points yet. Click on the map image to place one.",
+      "label": "Label",
+      "worldCoordinates": "World (X, Z)",
+      "imageCoordinates": "Image (U, V)",
+      "deleteAnchor": "Delete anchor {label}"
+    },
+    "upload": {
+      "button": "Upload Image",
+      "title": "Upload Map Image",
+      "description": "Upload a top-down orthographic image for {mapName}. Supports PNG and JPEG up to 150MB.",
+      "selectFile": "Select map image file",
+      "requestingUploadUrl": "Requesting upload URL…",
+      "uploadingToStorage": "Uploading image to storage…",
+      "processingImage": "Processing image…",
+      "uploading": "Uploading…",
+      "largeImageNote": "This may take a moment for large images.",
+      "uploadUrlError": "Failed to get upload URL",
+      "storageUploadError": "Failed to upload image to storage",
+      "processImageError": "Failed to process image",
+      "uploadError": "Failed to upload image."
+    },
+    "editor": {
+      "back": "Back",
+      "noImageUploaded": "No image uploaded for this map yet.",
+      "anchorPoints": "{formattedCount} {count, plural, one {Anchor Point} other {Anchor Points}}",
+      "computeTransform": "Compute Transform",
+      "computing": "Computing…",
+      "save": "Save",
+      "saving": "Saving…",
+      "minimumAnchorsHint": "Place at least 3 anchor points to compute a transform. More points improve accuracy.",
+      "createRecordError": "Failed to create calibration record.",
+      "addAnchorError": "Failed to add anchor point.",
+      "deleteAnchorError": "Failed to delete anchor point.",
+      "computeTransformError": "Failed to compute transform.",
+      "transformSaved": "Transform saved.",
+      "saveTransformError": "Failed to save transform.",
+      "imageReplaced": "Image replaced. Anchors cleared.",
+      "replaceImageError": "Failed to replace image."
+    },
+    "transform": {
+      "title": "Computed Transform",
+      "saved": "Saved",
+      "unsaved": "Unsaved",
+      "scaleX": "Scale X:",
+      "scaleY": "Scale Y:",
+      "determinant": "Determinant:",
+      "avgError": "Avg Error:",
+      "pixelsPerUnit": "{value} px/unit",
+      "errorValue": "{percent} ({pixels}px)",
+      "withinTolerance": "Within expected tolerance for high-res images."
+    },
+    "preview": {
+      "title": "Preview Test Points",
+      "description": "Enter world coordinates to verify they project to the expected map position. From Overwatch's (<x>X</x>, Y, <z>Z</z>), use only <x>X</x> and <z>Z</z>.",
+      "worldX": "World X",
+      "worldZ": "World Z",
+      "label": "Label",
+      "addTestPoint": "Add Test Point",
+      "clear": "Clear ({count})"
+    },
+    "canvas": {
+      "ariaLabel": "Map calibration canvas. Click to place anchor points, drag to pan, scroll to zoom.",
+      "loading": "Loading map image…",
+      "gridOn": "Grid ON",
+      "gridOff": "Grid OFF",
+      "instructions": "{zoom} · Scroll to zoom · Drag to pan · Click to place"
+    }
+  },
   "demoPage": {
     "metadata": {
       "title": "{mapName} Demo | Parsertime",

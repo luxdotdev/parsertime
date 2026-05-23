@@ -4425,6 +4425,109 @@
     "createTournament": "토너먼트 만들기",
     "matchmaker": "Matchmaker"
   },
+  "mapCalibrationPage": {
+    "title": "맵 캘리브레이션",
+    "description": "탑다운 맵 이미지의 좌표 변환을 보정합니다. 각 맵에는 월드 좌표를 이미지 픽셀에 매핑하는 앵커 포인트가 필요합니다.",
+    "mapTypes": {
+      "control": "컨트롤",
+      "escort": "호위",
+      "flashpoint": "플래시포인트",
+      "hybrid": "하이브리드",
+      "push": "푸시"
+    },
+    "list": {
+      "searchPlaceholder": "맵 검색…",
+      "noMatches": "필터와 일치하는 맵이 없습니다.",
+      "status": {
+        "noImage": "이미지 없음",
+        "calibrated": "보정됨",
+        "anchors": "앵커 {count}개",
+        "imageUploaded": "이미지 업로드됨"
+      },
+      "anchorSummary": "앵커 {count}개",
+      "transformSavedSuffix": " · 변환 저장됨"
+    },
+    "anchorDialog": {
+      "title": "앵커 포인트 추가",
+      "description": "이미지 위치: ({imageU}, {imageV}). 대응하는 게임 내 월드 좌표를 입력하세요. Overwatch는 (<x>X</x>, Y, <z>Z</z>)를 사용하며 Y는 수직축입니다. <x>X</x>와 <z>Z</z>만 입력하세요.",
+      "worldX": "월드 X",
+      "worldZ": "월드 Z",
+      "worldXPlaceholder": "예: 42.5",
+      "worldZPlaceholder": "예: -18.3",
+      "label": "라벨(선택)",
+      "labelPlaceholder": "예: A 지점, 스폰 문",
+      "cancel": "취소",
+      "addAnchor": "앵커 추가"
+    },
+    "anchorList": {
+      "empty": "아직 앵커 포인트가 없습니다. 맵 이미지를 클릭해 배치하세요.",
+      "label": "라벨",
+      "worldCoordinates": "월드 (X, Z)",
+      "imageCoordinates": "이미지 (U, V)",
+      "deleteAnchor": "{label} 앵커 삭제"
+    },
+    "upload": {
+      "button": "이미지 업로드",
+      "title": "맵 이미지 업로드",
+      "description": "{mapName}의 탑다운 직교 이미지를 업로드하세요. PNG 및 JPEG를 최대 150MB까지 지원합니다.",
+      "selectFile": "맵 이미지 파일 선택",
+      "requestingUploadUrl": "업로드 URL 요청 중…",
+      "uploadingToStorage": "스토리지에 이미지 업로드 중…",
+      "processingImage": "이미지 처리 중…",
+      "uploading": "업로드 중…",
+      "largeImageNote": "큰 이미지는 시간이 걸릴 수 있습니다.",
+      "uploadUrlError": "업로드 URL을 가져오지 못했습니다",
+      "storageUploadError": "스토리지에 이미지를 업로드하지 못했습니다",
+      "processImageError": "이미지를 처리하지 못했습니다",
+      "uploadError": "이미지 업로드에 실패했습니다."
+    },
+    "editor": {
+      "back": "뒤로",
+      "noImageUploaded": "아직 이 맵에 업로드된 이미지가 없습니다.",
+      "anchorPoints": "앵커 포인트 {formattedCount}개",
+      "computeTransform": "변환 계산",
+      "computing": "계산 중…",
+      "save": "저장",
+      "saving": "저장 중…",
+      "minimumAnchorsHint": "변환을 계산하려면 최소 3개의 앵커 포인트를 배치하세요. 포인트가 많을수록 정확도가 향상됩니다.",
+      "createRecordError": "캘리브레이션 기록을 만들지 못했습니다.",
+      "addAnchorError": "앵커 포인트를 추가하지 못했습니다.",
+      "deleteAnchorError": "앵커 포인트를 삭제하지 못했습니다.",
+      "computeTransformError": "변환을 계산하지 못했습니다.",
+      "transformSaved": "변환이 저장되었습니다.",
+      "saveTransformError": "변환을 저장하지 못했습니다.",
+      "imageReplaced": "이미지가 교체되었습니다. 앵커가 초기화되었습니다.",
+      "replaceImageError": "이미지를 교체하지 못했습니다."
+    },
+    "transform": {
+      "title": "계산된 변환",
+      "saved": "저장됨",
+      "unsaved": "저장 안 됨",
+      "scaleX": "X 스케일:",
+      "scaleY": "Y 스케일:",
+      "determinant": "행렬식:",
+      "avgError": "평균 오차:",
+      "pixelsPerUnit": "{value} px/단위",
+      "errorValue": "{percent} ({pixels}px)",
+      "withinTolerance": "고해상도 이미지의 예상 허용 오차 범위 안입니다."
+    },
+    "preview": {
+      "title": "테스트 포인트 미리보기",
+      "description": "월드 좌표가 예상 맵 위치에 투영되는지 확인하세요. Overwatch의 (<x>X</x>, Y, <z>Z</z>) 중 <x>X</x>와 <z>Z</z>만 사용합니다.",
+      "worldX": "월드 X",
+      "worldZ": "월드 Z",
+      "label": "라벨",
+      "addTestPoint": "테스트 포인트 추가",
+      "clear": "지우기({count})"
+    },
+    "canvas": {
+      "ariaLabel": "맵 캘리브레이션 캔버스입니다. 클릭해 앵커 포인트를 배치하고, 드래그해 이동하며, 스크롤해 확대/축소합니다.",
+      "loading": "맵 이미지 로드 중…",
+      "gridOn": "그리드 켜짐",
+      "gridOff": "그리드 꺼짐",
+      "instructions": "{zoom} · 스크롤로 확대/축소 · 드래그로 이동 · 클릭으로 배치"
+    }
+  },
   "coaching": {
     "title": "코칭 캔버스",
     "subtitle": "맵에 영웅 배치, 그림, 전략 노트를 표시하세요.",

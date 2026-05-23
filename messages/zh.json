@@ -4425,6 +4425,109 @@
     "createTournament": "创建锦标赛",
     "matchmaker": "Matchmaker"
   },
+  "mapCalibrationPage": {
+    "title": "地图校准",
+    "description": "为俯视地图图像校准坐标变换。每张地图都需要锚点，将世界坐标映射到图像像素。",
+    "mapTypes": {
+      "control": "控制",
+      "escort": "运载",
+      "flashpoint": "闪点",
+      "hybrid": "混合",
+      "push": "推进"
+    },
+    "list": {
+      "searchPlaceholder": "搜索地图…",
+      "noMatches": "没有地图符合筛选条件。",
+      "status": {
+        "noImage": "无图像",
+        "calibrated": "已校准",
+        "anchors": "{count} 个锚点",
+        "imageUploaded": "已上传图像"
+      },
+      "anchorSummary": "{count} 个锚点",
+      "transformSavedSuffix": " · 变换已保存"
+    },
+    "anchorDialog": {
+      "title": "添加锚点",
+      "description": "图像位置：({imageU}, {imageV})。请输入对应的游戏内世界坐标。《守望先锋》使用 (<x>X</x>, Y, <z>Z</z>)，其中 Y 是垂直轴；这里只输入 <x>X</x> 和 <z>Z</z>。",
+      "worldX": "世界 X",
+      "worldZ": "世界 Z",
+      "worldXPlaceholder": "例如 42.5",
+      "worldZPlaceholder": "例如 -18.3",
+      "label": "标签（可选）",
+      "labelPlaceholder": "例如 A 点、出生点门口",
+      "cancel": "取消",
+      "addAnchor": "添加锚点"
+    },
+    "anchorList": {
+      "empty": "还没有锚点。点击地图图像放置一个锚点。",
+      "label": "标签",
+      "worldCoordinates": "世界 (X, Z)",
+      "imageCoordinates": "图像 (U, V)",
+      "deleteAnchor": "删除锚点 {label}"
+    },
+    "upload": {
+      "button": "上传图像",
+      "title": "上传地图图像",
+      "description": "为 {mapName} 上传俯视正交图像。支持 PNG 和 JPEG，最大 150MB。",
+      "selectFile": "选择地图图像文件",
+      "requestingUploadUrl": "正在请求上传 URL…",
+      "uploadingToStorage": "正在上传图像到存储…",
+      "processingImage": "正在处理图像…",
+      "uploading": "正在上传…",
+      "largeImageNote": "大图像可能需要一些时间。",
+      "uploadUrlError": "获取上传 URL 失败",
+      "storageUploadError": "上传图像到存储失败",
+      "processImageError": "处理图像失败",
+      "uploadError": "图像上传失败。"
+    },
+    "editor": {
+      "back": "返回",
+      "noImageUploaded": "这张地图尚未上传图像。",
+      "anchorPoints": "{formattedCount} 个锚点",
+      "computeTransform": "计算变换",
+      "computing": "正在计算…",
+      "save": "保存",
+      "saving": "正在保存…",
+      "minimumAnchorsHint": "至少放置 3 个锚点才能计算变换。更多点可以提高精度。",
+      "createRecordError": "创建校准记录失败。",
+      "addAnchorError": "添加锚点失败。",
+      "deleteAnchorError": "删除锚点失败。",
+      "computeTransformError": "计算变换失败。",
+      "transformSaved": "变换已保存。",
+      "saveTransformError": "保存变换失败。",
+      "imageReplaced": "图像已替换，锚点已清除。",
+      "replaceImageError": "替换图像失败。"
+    },
+    "transform": {
+      "title": "计算出的变换",
+      "saved": "已保存",
+      "unsaved": "未保存",
+      "scaleX": "X 缩放：",
+      "scaleY": "Y 缩放：",
+      "determinant": "行列式：",
+      "avgError": "平均误差：",
+      "pixelsPerUnit": "{value} px/单位",
+      "errorValue": "{percent}（{pixels}px）",
+      "withinTolerance": "在高分辨率图像的预期容差范围内。"
+    },
+    "preview": {
+      "title": "预览测试点",
+      "description": "输入世界坐标，确认它们是否投影到预期地图位置。从《守望先锋》的 (<x>X</x>, Y, <z>Z</z>) 中，只使用 <x>X</x> 和 <z>Z</z>。",
+      "worldX": "世界 X",
+      "worldZ": "世界 Z",
+      "label": "标签",
+      "addTestPoint": "添加测试点",
+      "clear": "清除（{count}）"
+    },
+    "canvas": {
+      "ariaLabel": "地图校准画布。点击放置锚点，拖动平移，滚动缩放。",
+      "loading": "正在加载地图图像…",
+      "gridOn": "网格开启",
+      "gridOff": "网格关闭",
+      "instructions": "{zoom} · 滚动缩放 · 拖动平移 · 点击放置"
+    }
+  },
   "coaching": {
     "title": "教练画布",
     "subtitle": "在地图上标注英雄站位、绘图和战术笔记。",
