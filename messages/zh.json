@@ -2720,6 +2720,15 @@
     "profileForm": {
       "minMessage": "姓名必须至少包含 2 个字符。",
       "maxMessage": "姓名长度不得超过 30 个字符。",
+      "specialCharsMessage": "姓名不能包含特殊字符。",
+      "unknownError": "未知错误",
+      "errors": {
+        "updateName": "更新姓名失败：{res}",
+        "updateBattletag": "更新 Battletag 失败：{res}",
+        "updateTitle": "更新称号失败：{res}",
+        "updateOnboarding": "更新引导设置失败：{res}",
+        "updateSettings": "更新设置失败：{res}"
+      },
       "onSubmit": {
         "title": "简介已更新",
         "description": "您的个人资料已成功更新。",
@@ -2729,6 +2738,10 @@
       "username": {
         "title": "用户名",
         "description": "这是您的公开显示名称。可以是真名，也可以是化名。"
+      },
+      "seenOnboarding": {
+        "title": "已看过引导",
+        "description": "启用后，下次访问仪表板时将不再显示介绍。"
       },
       "avatar": {
         "title": "头像",
@@ -2769,7 +2782,50 @@
           }
         }
       },
-      "update": "更新个人资料"
+      "update": "更新个人资料",
+      "colorblindMode": {
+        "title": "无障碍设置",
+        "description": "配置色盲无障碍选项以改善你的使用体验",
+        "label": "色盲模式",
+        "options": {
+          "off": {
+            "label": "关闭",
+            "description": "标准颜色"
+          },
+          "deuteranopia": {
+            "label": "绿色弱",
+            "description": "红绿色盲（绿色弱）"
+          },
+          "protanopia": {
+            "label": "红色弱",
+            "description": "红绿色盲（红色弱）"
+          },
+          "tritanopia": {
+            "label": "蓝黄色盲",
+            "description": "蓝黄色觉异常"
+          },
+          "custom": {
+            "label": "自定义",
+            "description": "选择你自己的队伍颜色"
+          }
+        },
+        "team1": "Team 1",
+        "team2": "Team 2",
+        "customTeamColors": "自定义队伍颜色",
+        "customTeamColorsDescription": "为每支队伍选择自定义颜色",
+        "team1Color": "Team 1 颜色",
+        "team2Color": "Team 2 颜色"
+      },
+      "updating": "正在更新...",
+      "battletag": {
+        "title": "Battletag",
+        "description": "这是要与你账户关联的游戏内用户名。请不要包含井号后的数字。"
+      },
+      "title": {
+        "title": "称号",
+        "placeholder": "选择称号",
+        "description": "选择要在个人资料上使用的称号。"
+      }
     },
     "linkedAccounts": {
       "title": "Integrations",

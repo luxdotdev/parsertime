@@ -3436,6 +3436,15 @@
     "profileForm": {
       "minMessage": "Name must be at least 2 characters.",
       "maxMessage": "Name must not be longer than 30 characters.",
+      "specialCharsMessage": "Name must not contain special characters.",
+      "unknownError": "Unknown error",
+      "errors": {
+        "updateName": "Failed to update name: {res}",
+        "updateBattletag": "Failed to update battletag: {res}",
+        "updateTitle": "Failed to update title: {res}",
+        "updateOnboarding": "Failed to update onboarding: {res}",
+        "updateSettings": "Failed to update settings: {res}"
+      },
       "onSubmit": {
         "title": "Profile updated",
         "description": "Your profile has been successfully updated.",
@@ -3494,6 +3503,28 @@
         "title": "Accessibility Settings",
         "description": "Configure colorblind accessibility options to improve your experience",
         "label": "Colorblind Mode",
+        "options": {
+          "off": {
+            "label": "Off",
+            "description": "Standard colors"
+          },
+          "deuteranopia": {
+            "label": "Deuteranopia",
+            "description": "Red-green colorblind (green-weak)"
+          },
+          "protanopia": {
+            "label": "Protanopia",
+            "description": "Red-green colorblind (red-weak)"
+          },
+          "tritanopia": {
+            "label": "Tritanopia",
+            "description": "Blue-yellow colorblind"
+          },
+          "custom": {
+            "label": "Custom",
+            "description": "Choose your own team colors"
+          }
+        },
         "team1": "Team 1",
         "team2": "Team 2",
         "customTeamColors": "Custom Team Colors",
@@ -3508,6 +3539,7 @@
       },
       "title": {
         "title": "Title",
+        "placeholder": "Select a title",
         "description": "Select a title to use on your profile."
       }
     },

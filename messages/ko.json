@@ -2720,6 +2720,15 @@
     "profileForm": {
       "minMessage": "이름은 최소 2자 이상이어야 합니다.",
       "maxMessage": "이름은 30자를 초과할 수 없습니다.",
+      "specialCharsMessage": "이름에는 특수 문자를 포함할 수 없습니다.",
+      "unknownError": "알 수 없는 오류",
+      "errors": {
+        "updateName": "이름 업데이트 실패: {res}",
+        "updateBattletag": "배틀태그 업데이트 실패: {res}",
+        "updateTitle": "칭호 업데이트 실패: {res}",
+        "updateOnboarding": "온보딩 설정 업데이트 실패: {res}",
+        "updateSettings": "설정 업데이트 실패: {res}"
+      },
       "onSubmit": {
         "title": "프로필 업데이트 완료",
         "description": "프로필이 성공적으로 업데이트되었습니다.",
@@ -2729,6 +2738,10 @@
       "username": {
         "title": "사용자 이름",
         "description": "공개 표시 이름입니다. 실제 이름이나 별명을 사용할 수 있습니다."
+      },
+      "seenOnboarding": {
+        "title": "온보딩 확인 완료",
+        "description": "활성화하면 다음에 대시보드를 방문할 때 소개를 보지 않습니다."
       },
       "avatar": {
         "title": "아바타",
@@ -2769,7 +2782,50 @@
           }
         }
       },
-      "update": "프로필 업데이트"
+      "update": "프로필 업데이트",
+      "colorblindMode": {
+        "title": "접근성 설정",
+        "description": "경험을 개선하기 위한 색각 보정 옵션을 설정하세요",
+        "label": "색각 보정 모드",
+        "options": {
+          "off": {
+            "label": "끄기",
+            "description": "기본 색상"
+          },
+          "deuteranopia": {
+            "label": "제2색약",
+            "description": "적록 색각 이상(녹색 약화)"
+          },
+          "protanopia": {
+            "label": "제1색약",
+            "description": "적록 색각 이상(적색 약화)"
+          },
+          "tritanopia": {
+            "label": "제3색약",
+            "description": "청황 색각 이상"
+          },
+          "custom": {
+            "label": "사용자 지정",
+            "description": "팀 색상을 직접 선택"
+          }
+        },
+        "team1": "Team 1",
+        "team2": "Team 2",
+        "customTeamColors": "사용자 지정 팀 색상",
+        "customTeamColorsDescription": "각 팀의 사용자 지정 색상을 선택하세요",
+        "team1Color": "Team 1 색상",
+        "team2Color": "Team 2 색상"
+      },
+      "updating": "업데이트 중...",
+      "battletag": {
+        "title": "배틀태그",
+        "description": "계정과 연결할 게임 내 사용자 이름입니다. 해시태그 뒤 숫자는 포함하지 마세요."
+      },
+      "title": {
+        "title": "칭호",
+        "placeholder": "칭호 선택",
+        "description": "프로필에 사용할 칭호를 선택하세요."
+      }
     },
     "linkedAccounts": {
       "title": "Integrations",

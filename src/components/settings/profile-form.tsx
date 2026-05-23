@@ -47,56 +47,58 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { Switch } from "../ui/switch";
 
-const colorblindModeOptions = [
+const colorblindModeOptionValues = [
   {
     value: $Enums.ColorblindMode.OFF,
-    label: "Off",
-    description: "Standard colors",
+    labelKey: "colorblindMode.options.off.label",
+    descriptionKey: "colorblindMode.options.off.description",
   },
   {
     value: $Enums.ColorblindMode.DEUTERANOPIA,
-    label: "Deuteranopia",
-    description: "Red-green colorblind (green-weak)",
+    labelKey: "colorblindMode.options.deuteranopia.label",
+    descriptionKey: "colorblindMode.options.deuteranopia.description",
   },
   {
     value: $Enums.ColorblindMode.PROTANOPIA,
-    label: "Protanopia",
-    description: "Red-green colorblind (red-weak)",
+    labelKey: "colorblindMode.options.protanopia.label",
+    descriptionKey: "colorblindMode.options.protanopia.description",
   },
   {
     value: $Enums.ColorblindMode.TRITANOPIA,
-    label: "Tritanopia",
-    description: "Blue-yellow colorblind",
+    labelKey: "colorblindMode.options.tritanopia.label",
+    descriptionKey: "colorblindMode.options.tritanopia.description",
   },
   {
     value: $Enums.ColorblindMode.CUSTOM,
-    label: "Custom",
-    description: "Choose your own team colors",
+    labelKey: "colorblindMode.options.custom.label",
+    descriptionKey: "colorblindMode.options.custom.description",
   },
-];
+] as const;
 
-const profileFormSchema = z.object({
-  name: z
-    .string()
-    .min(2, {
-      message: "Name must be at least 2 characters.",
-    })
-    .max(30, {
-      message: "Name must not be longer than 30 characters.",
-    })
-    .trim()
-    .regex(/^(?!.*?:).*$/, {
-      message: "Name must not contain special characters.",
-    }),
-  battletag: z.string().optional(),
-  title: z.enum($Enums.Title).optional(),
-  colorblindMode: z.enum($Enums.ColorblindMode),
-  customTeam1Color: z.string().optional(),
-  customTeam2Color: z.string().optional(),
-  seenOnboarding: z.boolean().optional(),
-});
+function createProfileFormSchema(t: ReturnType<typeof useTranslations>) {
+  return z.object({
+    name: z
+      .string()
+      .min(2, {
+        message: t("minMessage"),
+      })
+      .max(30, {
+        message: t("maxMessage"),
+      })
+      .trim()
+      .regex(/^(?!.*?:).*$/, {
+        message: t("specialCharsMessage"),
+      }),
+    battletag: z.string().optional(),
+    title: z.enum($Enums.Title).optional(),
+    colorblindMode: z.enum($Enums.ColorblindMode),
+    customTeam1Color: z.string().optional(),
+    customTeam2Color: z.string().optional(),
+    seenOnboarding: z.boolean().optional(),
+  });
+}
 
-type ProfileFormValues = z.infer<typeof profileFormSchema>;
+type ProfileFormValues = z.infer<ReturnType<typeof createProfileFormSchema>>;
 
 type AppSettings = {
   id: number;
@@ -132,7 +134,7 @@ export function ProfileForm({
   const queryClient = useQueryClient();
 
   const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileFormSchema),
+    resolver: zodResolver(createProfileFormSchema(t)),
     defaultValues: {
       name: user.name ?? "",
       battletag: user.battletag ?? "",
@@ -172,7 +174,9 @@ export function ProfileForm({
         });
 
         if (!nameRes.ok) {
-          throw new Error(`Failed to update name: ${await nameRes.text()}`);
+          throw new Error(
+            t("errors.updateName", { res: await nameRes.text() })
+          );
         }
       }
 
@@ -188,7 +192,7 @@ export function ProfileForm({
 
         if (!battletagRes.ok) {
           throw new Error(
-            `Failed to update battletag: ${await battletagRes.text()}`
+            t("errors.updateBattletag", { res: await battletagRes.text() })
           );
         }
       }
@@ -208,7 +212,9 @@ export function ProfileForm({
         });
 
         if (!titleRes.ok) {
-          throw new Error(`Failed to update title: ${await titleRes.text()}`);
+          throw new Error(
+            t("errors.updateTitle", { res: await titleRes.text() })
+          );
         }
       }
 
@@ -225,7 +231,9 @@ export function ProfileForm({
 
         if (!seeOnboardingRes.ok) {
           throw new Error(
-            `Failed to update onboarding: ${await seeOnboardingRes.text()}`
+            t("errors.updateOnboarding", {
+              res: await seeOnboardingRes.text(),
+            })
           );
         }
       }
@@ -254,7 +262,7 @@ export function ProfileForm({
 
         if (!settingsRes.ok) {
           throw new Error(
-            `Failed to update settings: ${await settingsRes.text()}`
+            t("errors.updateSettings", { res: await settingsRes.text() })
           );
         }
 
@@ -271,7 +279,7 @@ export function ProfileForm({
     } catch (error) {
       toast.error(t("onSubmit.errorTitle"), {
         description: t("onSubmit.errorDescription", {
-          res: error instanceof Error ? error.message : "Unknown error",
+          res: error instanceof Error ? error.message : t("unknownError"),
         }),
         duration: 5000,
       });
@@ -376,7 +384,7 @@ export function ProfileForm({
                 <FormControl>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a title" />
+                      <SelectValue placeholder={t("title.placeholder")} />
                     </SelectTrigger>
                     <SelectContent>
                       {user.titles.map((title) => (
@@ -524,7 +532,7 @@ export function ProfileForm({
                       disabled={form.formState.isSubmitting}
                       className="mt-2"
                     >
-                      {colorblindModeOptions.map((option) => (
+                      {colorblindModeOptionValues.map((option) => (
                         <div
                           key={option.value}
                           className="flex items-start space-x-2"
@@ -539,10 +547,10 @@ export function ProfileForm({
                               htmlFor={option.value}
                               className="cursor-pointer font-medium"
                             >
-                              {option.label}
+                              {t(option.labelKey)}
                             </Label>
                             <p className="text-muted-foreground text-sm">
-                              {option.description}
+                              {t(option.descriptionKey)}
                             </p>
                             <div className="mt-2 flex items-center gap-2">
                               <div className="flex items-center gap-1">
