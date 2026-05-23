@@ -4488,12 +4488,14 @@
       },
       "stats": {
         "selectedMeta": "已选择 · 第 {rank, number} 名 · {role}",
+        "sheetMeta": "第 {rank, number} 名 • {hero} • {role}",
         "roles": {
           "tank": "重装",
           "damage": "输出",
           "support": "支援"
         },
         "snapshot": "快照",
+        "compositeSr": "综合 SR",
         "percentileLabel": "百分位",
         "maps": "地图",
         "time": "时间",
@@ -4504,6 +4506,8 @@
         "performanceBreakdown": "表现分析",
         "performanceDescription": "相对于排行榜平均值的 Z 分数。0 表示平均，正数高于平均，负数低于平均。大多数玩家位于 -2 到 +2 之间。",
         "per10Minutes": "每 10 分钟",
+        "detailedStats": "详细数据（每 10 分钟）",
+        "statLabel": "{label}：",
         "emptyTitle": "详情面板",
         "emptyDescription": "选择一名玩家即可查看其 SR 分布、表现分析，以及相对于排行榜平均值的每 10 分钟数据。",
         "zScore": "Z 分数",

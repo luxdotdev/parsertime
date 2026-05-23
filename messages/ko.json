@@ -4488,12 +4488,14 @@
       },
       "stats": {
         "selectedMeta": "선택됨 · {rank, number}위 · {role}",
+        "sheetMeta": "{rank, number}위 • {hero} • {role}",
         "roles": {
           "tank": "탱커",
           "damage": "공격",
           "support": "지원"
         },
         "snapshot": "스냅샷",
+        "compositeSr": "종합 SR",
         "percentileLabel": "백분위",
         "maps": "맵",
         "time": "시간",
@@ -4504,6 +4506,8 @@
         "performanceBreakdown": "성과 분석",
         "performanceDescription": "리더보드 평균 대비 Z-점수입니다. 0은 평균, 양수는 평균 이상, 음수는 평균 이하입니다. 대부분의 플레이어는 -2에서 +2 사이에 분포합니다.",
         "per10Minutes": "10분당",
+        "detailedStats": "세부 통계(10분당)",
+        "statLabel": "{label}:",
         "emptyTitle": "세부 패널",
         "emptyDescription": "플레이어를 선택하면 SR 분포, 성과 분석, 리더보드 평균 대비 10분당 통계를 확인할 수 있습니다.",
         "zScore": "Z-점수",

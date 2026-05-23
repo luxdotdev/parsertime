@@ -5046,12 +5046,14 @@
       },
       "stats": {
         "selectedMeta": "Selected · Rank {rank, number} · {role}",
+        "sheetMeta": "Rank #{rank, number} • {hero} • {role}",
         "roles": {
           "tank": "Tank",
           "damage": "Damage",
           "support": "Support"
         },
         "snapshot": "Snapshot",
+        "compositeSr": "Composite SR",
         "percentileLabel": "Percentile",
         "maps": "Maps",
         "time": "Time",
@@ -5062,6 +5064,8 @@
         "performanceBreakdown": "Performance breakdown",
         "performanceDescription": "Z-scores against the leaderboard average. 0 is the average; positive is above, negative is below. Most players fall between -2 and +2.",
         "per10Minutes": "Per 10 minutes",
+        "detailedStats": "Detailed stats (per 10 min)",
+        "statLabel": "{label}:",
         "emptyTitle": "Detail panel",
         "emptyDescription": "Pick a player to see their SR distribution, performance breakdown, and per-10 stats against the leaderboard average.",
         "zScore": "Z-score",

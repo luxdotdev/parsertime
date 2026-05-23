@@ -11,6 +11,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { useFormatter, useTranslations } from "next-intl";
 
 type LeaderboardPlayer = {
   composite_sr: number;
@@ -44,17 +45,20 @@ export function PlayerStatsSheet({
   player,
   leaderboardData,
 }: Props) {
+  const t = useTranslations("leaderboardPage.csr.stats");
+  const formatter = useFormatter();
+
   if (!player) return null;
 
   const percentile = parseFloat(player.percentile);
   function getPercentileDescription(pct: number) {
-    if (pct >= 99) return "Top 1% - Elite Performance";
-    if (pct >= 95) return "Top 5% - Exceptional";
-    if (pct >= 90) return "Top 10% - Excellent";
-    if (pct >= 75) return "Top 25% - Very Good";
-    if (pct >= 50) return "Above Average";
-    if (pct >= 25) return "Average";
-    return "Below Average";
+    if (pct >= 99) return t("percentile.top1");
+    if (pct >= 95) return t("percentile.top5");
+    if (pct >= 90) return t("percentile.top10");
+    if (pct >= 75) return t("percentile.top25");
+    if (pct >= 50) return t("percentile.aboveAverage");
+    if (pct >= 25) return t("percentile.average");
+    return t("percentile.belowAverage");
   }
 
   return (
@@ -63,7 +67,11 @@ export function PlayerStatsSheet({
         <SheetHeader>
           <SheetTitle className="text-2xl">{player.player_name}</SheetTitle>
           <SheetDescription>
-            Rank #{player.rank} • {player.hero} • {player.role}
+            {t("sheetMeta", {
+              rank: player.rank,
+              hero: player.hero,
+              role: getRoleLabel(player.role, t),
+            })}
           </SheetDescription>
         </SheetHeader>
 
@@ -71,24 +79,38 @@ export function PlayerStatsSheet({
           <div className="space-y-6 p-6">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="bg-muted rounded-lg p-4">
-                <p className="text-muted-foreground text-sm">Composite SR</p>
-                <p className="text-3xl font-bold">{player.composite_sr}</p>
+                <p className="text-muted-foreground text-sm">
+                  {t("compositeSr")}
+                </p>
+                <p className="text-3xl font-bold">
+                  {formatter.number(player.composite_sr)}
+                </p>
               </div>
               <div className="bg-muted rounded-lg p-4">
-                <p className="text-muted-foreground text-sm">Percentile</p>
-                <p className="text-3xl font-bold">{percentile.toFixed(1)}%</p>
+                <p className="text-muted-foreground text-sm">
+                  {t("percentileLabel")}
+                </p>
+                <p className="text-3xl font-bold">
+                  {formatter.number(percentile / 100, {
+                    style: "percent",
+                    minimumFractionDigits: 1,
+                    maximumFractionDigits: 1,
+                  })}
+                </p>
                 <p className="text-muted-foreground mt-1 text-xs">
                   {getPercentileDescription(percentile)}
                 </p>
               </div>
               <div className="bg-muted rounded-lg p-4">
-                <p className="text-muted-foreground text-sm">Maps Played</p>
-                <p className="text-2xl font-semibold">{player.maps}</p>
+                <p className="text-muted-foreground text-sm">{t("maps")}</p>
+                <p className="text-2xl font-semibold">
+                  {formatter.number(player.maps)}
+                </p>
               </div>
               <div className="bg-muted rounded-lg p-4">
-                <p className="text-muted-foreground text-sm">Time Played</p>
+                <p className="text-muted-foreground text-sm">{t("time")}</p>
                 <p className="text-2xl font-semibold">
-                  {Math.round(player.minutes_played)} min
+                  {t("minutes", { count: Math.round(player.minutes_played) })}
                 </p>
               </div>
             </div>
@@ -96,11 +118,13 @@ export function PlayerStatsSheet({
             <Separator />
 
             <div>
-              <h3 className="mb-2 text-lg font-semibold">SR Distribution</h3>
+              <h3 className="mb-2 text-lg font-semibold">
+                {t("srDistribution")}
+              </h3>
               <p className="text-muted-foreground mb-4 text-sm">
-                This chart shows where {player.player_name} ranks compared to
-                other players on the leaderboard. The bell curve represents the
-                normal distribution of skill ratings.
+                {t("distributionDescription", {
+                  playerName: player.player_name,
+                })}
               </p>
               <SRDistributionChart
                 leaderboardData={leaderboardData}
@@ -112,13 +136,12 @@ export function PlayerStatsSheet({
 
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                Performance Breakdown
+                {t("performanceBreakdown")}
               </h3>
               <p className="text-muted-foreground mb-4 text-sm">
-                This radar chart shows how {player.player_name}&apos;s
-                statistics compare to the average player on this leaderboard.
-                Values further from the center indicate greater deviation from
-                the average.
+                {t("performanceDescription", {
+                  playerName: player.player_name,
+                })}
               </p>
               <PlayerStatsRadarChart
                 player={player}
@@ -129,69 +152,98 @@ export function PlayerStatsSheet({
             <Separator />
 
             <div className="bg-muted space-y-2 rounded-lg p-4">
-              <h4 className="text-sm font-semibold">
-                Detailed Stats (per 10 min)
-              </h4>
+              <h4 className="text-sm font-semibold">{t("detailedStats")}</h4>
               <div className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
                 {player.elims_per10 !== undefined && (
                   <div>
-                    <span className="text-muted-foreground">Eliminations:</span>{" "}
+                    <span className="text-muted-foreground">
+                      {t("statLabel", { label: t("per10.eliminations") })}
+                    </span>{" "}
                     <span className="font-mono">
-                      {player.elims_per10.toFixed(2)}
+                      {formatter.number(player.elims_per10, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
                     </span>
                   </div>
                 )}
                 {player.fb_per10 !== undefined && (
                   <div>
-                    <span className="text-muted-foreground">Final Blows:</span>{" "}
+                    <span className="text-muted-foreground">
+                      {t("statLabel", { label: t("per10.finalBlows") })}
+                    </span>{" "}
                     <span className="font-mono">
-                      {player.fb_per10.toFixed(2)}
+                      {formatter.number(player.fb_per10, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
                     </span>
                   </div>
                 )}
                 <div>
-                  <span className="text-muted-foreground">Deaths:</span>{" "}
+                  <span className="text-muted-foreground">
+                    {t("statLabel", { label: t("per10.deaths") })}
+                  </span>{" "}
                   <span className="font-mono">
-                    {player.deaths_per10.toFixed(2)}
+                    {formatter.number(player.deaths_per10, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                   </span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Damage:</span>{" "}
+                  <span className="text-muted-foreground">
+                    {t("statLabel", { label: t("per10.damage") })}
+                  </span>{" "}
                   <span className="font-mono">
-                    {Math.round(player.damage_per10)}
+                    {formatter.number(Math.round(player.damage_per10))}
                   </span>
                 </div>
                 {player.healing_per10 !== undefined &&
                   player.healing_per10 > 0 && (
                     <div>
-                      <span className="text-muted-foreground">Healing:</span>{" "}
+                      <span className="text-muted-foreground">
+                        {t("statLabel", { label: t("per10.healing") })}
+                      </span>{" "}
                       <span className="font-mono">
-                        {Math.round(player.healing_per10)}
+                        {formatter.number(Math.round(player.healing_per10))}
                       </span>
                     </div>
                   )}
                 {player.blocked_per10 !== undefined &&
                   player.blocked_per10 > 0 && (
                     <div>
-                      <span className="text-muted-foreground">Blocked:</span>{" "}
+                      <span className="text-muted-foreground">
+                        {t("statLabel", { label: t("per10.blocked") })}
+                      </span>{" "}
                       <span className="font-mono">
-                        {Math.round(player.blocked_per10)}
+                        {formatter.number(Math.round(player.blocked_per10))}
                       </span>
                     </div>
                   )}
                 {player.solo_per10 !== undefined && (
                   <div>
-                    <span className="text-muted-foreground">Solo Kills:</span>{" "}
+                    <span className="text-muted-foreground">
+                      {t("statLabel", { label: t("per10.soloKills") })}
+                    </span>{" "}
                     <span className="font-mono">
-                      {player.solo_per10.toFixed(2)}
+                      {formatter.number(player.solo_per10, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
                     </span>
                   </div>
                 )}
                 {player.ults_per10 !== undefined && (
                   <div>
-                    <span className="text-muted-foreground">Ultimates:</span>{" "}
+                    <span className="text-muted-foreground">
+                      {t("statLabel", { label: t("per10.ultimates") })}
+                    </span>{" "}
                     <span className="font-mono">
-                      {player.ults_per10.toFixed(2)}
+                      {formatter.number(player.ults_per10, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
                     </span>
                   </div>
                 )}
@@ -202,4 +254,17 @@ export function PlayerStatsSheet({
       </SheetContent>
     </Sheet>
   );
+}
+
+function getRoleLabel(role: string, t: ReturnType<typeof useTranslations>) {
+  switch (role.toLowerCase()) {
+    case "tank":
+      return t("roles.tank");
+    case "damage":
+      return t("roles.damage");
+    case "support":
+      return t("roles.support");
+    default:
+      return role;
+  }
 }
