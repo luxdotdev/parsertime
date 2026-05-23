@@ -5698,6 +5698,30 @@
         "Support": "Support"
       }
     },
+    "overviewInsightsBand": {
+      "eyebrow": "Overview · Headline reads",
+      "title": "What's moving the needle",
+      "noInsights": "Not enough data for headline insights.",
+      "strongestRole": "Strongest role",
+      "needsWork": "Needs work",
+      "strongestMap": "Strongest map",
+      "bleedSpot": "Bleed spot",
+      "bestDay": "Best day",
+      "firstPickRate": "First pick rate",
+      "roleDetail": "{kd} K/D · {deaths} deaths/10m",
+      "mapWinrate": "{winrate} winrate",
+      "bestDayDetail": "{winrate} over {count, plural, =0 {no games} =1 {# game} other {# games}}",
+      "firstPickDetail": "{successful} of {total} closed",
+      "days": {
+        "sunday": "Sunday",
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday"
+      }
+    },
     "bestRoleTriosCard": {
       "eyebrow": "Performance · Best trios",
       "title": "Best Role Trios",

@@ -5908,6 +5908,30 @@
         "Support": "지원"
       }
     },
+    "overviewInsightsBand": {
+      "eyebrow": "개요 · 핵심 신호",
+      "title": "무엇이 성과를 움직이는가",
+      "noInsights": "핵심 인사이트를 만들 만큼 데이터가 아직 충분하지 않습니다.",
+      "strongestRole": "가장 강한 역할",
+      "needsWork": "개선 필요",
+      "strongestMap": "가장 강한 맵",
+      "bleedSpot": "취약 지점",
+      "bestDay": "최고 요일",
+      "firstPickRate": "첫 처치 전환율",
+      "roleDetail": "{kd} K/D · 10분당 사망 {deaths}",
+      "mapWinrate": "승률 {winrate}",
+      "bestDayDetail": "{count, plural, =0 {게임 없음} other {#게임}} 기준 {winrate}",
+      "firstPickDetail": "{total}회 중 {successful}회 마무리",
+      "days": {
+        "sunday": "일요일",
+        "monday": "월요일",
+        "tuesday": "화요일",
+        "wednesday": "수요일",
+        "thursday": "목요일",
+        "friday": "금요일",
+        "saturday": "토요일"
+      }
+    },
     "mapWinrateGallery": {
       "eyebrow": "맵 · 승률 갤러리",
       "title": "맵 성능",

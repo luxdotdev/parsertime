@@ -5908,6 +5908,30 @@
         "Support": "支援"
       }
     },
+    "overviewInsightsBand": {
+      "eyebrow": "概览 · 关键解读",
+      "title": "影响胜负的因素",
+      "noInsights": "数据还不足，无法生成关键洞察。",
+      "strongestRole": "最强职责",
+      "needsWork": "需要加强",
+      "strongestMap": "最强地图",
+      "bleedSpot": "薄弱地图",
+      "bestDay": "最佳星期",
+      "firstPickRate": "首杀转化率",
+      "roleDetail": "{kd} K/D · 每 10 分钟死亡 {deaths}",
+      "mapWinrate": "胜率 {winrate}",
+      "bestDayDetail": "在 {count, plural, =0 {0 场比赛} other {# 场比赛}} 中 {winrate}",
+      "firstPickDetail": "{total} 次中成功收下 {successful} 次",
+      "days": {
+        "sunday": "星期日",
+        "monday": "星期一",
+        "tuesday": "星期二",
+        "wednesday": "星期三",
+        "thursday": "星期四",
+        "friday": "星期五",
+        "saturday": "星期六"
+      }
+    },
     "mapWinrateGallery": {
       "eyebrow": "地图 · 胜率图库",
       "title": "地图表现",

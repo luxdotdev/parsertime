@@ -7,7 +7,7 @@ import type {
   RolePerformanceStats,
 } from "@/data/team/types";
 import { cn, round, toKebabCase } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import {
   PolarAngleAxis,
   PolarGrid,
@@ -40,6 +40,8 @@ type OverviewInsightsBandProps = {
 };
 
 function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
+  const tBalance = useTranslations("teamStatsPage.roleBalanceRadar");
+
   if (!active || !payload?.length) return null;
   const metric = (payload[0]?.payload as { metric?: string } | undefined)
     ?.metric;
@@ -47,13 +49,13 @@ function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
     <div className="bg-popover text-popover-foreground border-border z-50 overflow-hidden rounded-md border px-3 py-2 shadow-xl">
       <p className="text-xs font-semibold">{metric}</p>
       <p className="text-foreground font-mono text-xs tabular-nums">
-        Tank: {round(payload[0].value as number)}
+        {tBalance("tank")}: {round(payload[0].value as number)}
       </p>
       <p className="text-foreground font-mono text-xs tabular-nums">
-        Damage: {round(payload[1].value as number)}
+        {tBalance("damage")}: {round(payload[1].value as number)}
       </p>
       <p className="text-foreground font-mono text-xs tabular-nums">
-        Support: {round(payload[2].value as number)}
+        {tBalance("support")}: {round(payload[2].value as number)}
       </p>
     </div>
   );
@@ -80,7 +82,9 @@ export function OverviewInsightsBand({
   blindSpot,
   mapNames,
 }: OverviewInsightsBandProps) {
+  const t = useTranslations("teamStatsPage.overviewInsightsBand");
   const tBalance = useTranslations("teamStatsPage.roleBalanceRadar");
+  const formatter = useFormatter();
 
   const insights: Insight[] = [];
 
@@ -106,9 +110,18 @@ export function OverviewInsightsBand({
   if (strongestRole) {
     const stats = roleStats[strongestRole];
     insights.push({
-      eyebrow: "Strongest role",
-      headline: strongestRole,
-      detail: `${stats.kd.toFixed(2)} K/D · ${stats.deathsPer10Min.toFixed(1)} deaths/10m`,
+      eyebrow: t("strongestRole"),
+      headline: tBalance(`roles.${strongestRole}`),
+      detail: t("roleDetail", {
+        kd: formatter.number(stats.kd, {
+          maximumFractionDigits: 2,
+          minimumFractionDigits: 2,
+        }),
+        deaths: formatter.number(stats.deathsPer10Min, {
+          maximumFractionDigits: 1,
+          minimumFractionDigits: 1,
+        }),
+      }),
       tone: "positive",
     });
   }
@@ -116,37 +129,62 @@ export function OverviewInsightsBand({
   if (weakestRole && weakestRole !== strongestRole) {
     const stats = roleStats[weakestRole];
     insights.push({
-      eyebrow: "Needs work",
-      headline: weakestRole,
-      detail: `${stats.kd.toFixed(2)} K/D · ${stats.deathsPer10Min.toFixed(1)} deaths/10m`,
+      eyebrow: t("needsWork"),
+      headline: tBalance(`roles.${weakestRole}`),
+      detail: t("roleDetail", {
+        kd: formatter.number(stats.kd, {
+          maximumFractionDigits: 2,
+          minimumFractionDigits: 2,
+        }),
+        deaths: formatter.number(stats.deathsPer10Min, {
+          maximumFractionDigits: 1,
+          minimumFractionDigits: 1,
+        }),
+      }),
       tone: "negative",
     });
   }
 
   if (bestMap) {
     insights.push({
-      eyebrow: "Strongest map",
+      eyebrow: t("strongestMap"),
       headline: mapNames.get(toKebabCase(bestMap.mapName)) ?? bestMap.mapName,
-      detail: `${bestMap.winrate.toFixed(0)}% winrate`,
+      detail: t("mapWinrate", {
+        winrate: formatter.number(bestMap.winrate / 100, {
+          style: "percent",
+          maximumFractionDigits: 0,
+        }),
+      }),
       tone: "positive",
     });
   }
 
   if (blindSpot) {
     insights.push({
-      eyebrow: "Bleed spot",
+      eyebrow: t("bleedSpot"),
       headline:
         mapNames.get(toKebabCase(blindSpot.mapName)) ?? blindSpot.mapName,
-      detail: `${blindSpot.winrate.toFixed(0)}% winrate`,
+      detail: t("mapWinrate", {
+        winrate: formatter.number(blindSpot.winrate / 100, {
+          style: "percent",
+          maximumFractionDigits: 0,
+        }),
+      }),
       tone: "negative",
     });
   }
 
   if (quickStats.bestDayOfWeek) {
     insights.push({
-      eyebrow: "Best day",
-      headline: quickStats.bestDayOfWeek.day,
-      detail: `${quickStats.bestDayOfWeek.winrate.toFixed(0)}% over ${quickStats.bestDayOfWeek.gamesPlayed} games`,
+      eyebrow: t("bestDay"),
+      headline: t(`days.${quickStats.bestDayOfWeek.day.toLowerCase()}`),
+      detail: t("bestDayDetail", {
+        winrate: formatter.number(quickStats.bestDayOfWeek.winrate / 100, {
+          style: "percent",
+          maximumFractionDigits: 0,
+        }),
+        count: quickStats.bestDayOfWeek.gamesPlayed,
+      }),
       tone: quickStats.bestDayOfWeek.winrate >= 60 ? "positive" : "neutral",
     });
   }
@@ -154,9 +192,15 @@ export function OverviewInsightsBand({
   if (quickStats.firstPickSuccessRate) {
     const fp = quickStats.firstPickSuccessRate;
     insights.push({
-      eyebrow: "First pick rate",
-      headline: `${fp.successRate.toFixed(0)}%`,
-      detail: `${fp.successfulFirstPicks} of ${fp.totalFirstPicks} closed`,
+      eyebrow: t("firstPickRate"),
+      headline: formatter.number(fp.successRate / 100, {
+        style: "percent",
+        maximumFractionDigits: 0,
+      }),
+      detail: t("firstPickDetail", {
+        successful: fp.successfulFirstPicks,
+        total: fp.totalFirstPicks,
+      }),
       tone:
         fp.successRate >= 60
           ? "positive"
@@ -167,7 +211,7 @@ export function OverviewInsightsBand({
   }
 
   const balanceBadgeClass =
-    roleBalance.overall === "Balanced"
+    roleBalance.balanceScore >= 0.6
       ? "bg-primary/15 text-primary"
       : "bg-muted text-muted-foreground";
 
@@ -218,16 +262,14 @@ export function OverviewInsightsBand({
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Overview · Headline reads"
-        title="What's moving the needle"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         rightSlot={balanceBadge}
       />
       <div className="grid gap-x-10 gap-y-8 lg:grid-cols-12">
         <div className="lg:col-span-7">
           {insights.length === 0 ? (
-            <p className="text-muted-foreground text-sm">
-              Not enough data for headline insights.
-            </p>
+            <p className="text-muted-foreground text-sm">{t("noInsights")}</p>
           ) : (
             <dl className="grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2">
               {insights.map((ins) => (
