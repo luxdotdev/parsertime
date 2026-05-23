@@ -5759,6 +5759,35 @@
         "highValue": "高价值"
       }
     },
+    "abilityImpactAnalysisCard": {
+      "eyebrow": "团战 · 技能影响",
+      "title": "技能影响",
+      "description": "查看特定英雄技能如何影响训练赛中的团战结果。",
+      "selectHero": "选择英雄",
+      "searchHeroes": "搜索英雄",
+      "noHeroesFound": "未找到英雄。",
+      "percentagePoints": "{value}pp",
+      "sampleCount": "（{count, number}）",
+      "roles": {
+        "Tank": "坦克",
+        "Damage": "输出",
+        "Support": "支援"
+      },
+      "table": {
+        "ability": "技能",
+        "fights": "团战",
+        "withWr": "使用时胜率",
+        "withoutWr": "未使用时胜率",
+        "delta": "差值",
+        "tag": "标签"
+      },
+      "tags": {
+        "key": "关键",
+        "risk": "风险"
+      },
+      "smallSample": "{hero} 的样本较小，结果可能不具备统计显著性。",
+      "selectHeroPrompt": "选择一名英雄，查看其技能如何改变团战结果。"
+    },
     "mapModePerformanceCard": {
       "eyebrow": "地图 · 模式表现",
       "winrate": "胜率：<span>{winrate}</span>",

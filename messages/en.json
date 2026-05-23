@@ -5561,6 +5561,35 @@
         "highValue": "High value"
       }
     },
+    "abilityImpactAnalysisCard": {
+      "eyebrow": "Teamfights · Ability impact",
+      "title": "Ability impact",
+      "description": "How specific hero abilities shift fight outcomes across your scrims.",
+      "selectHero": "Select a hero",
+      "searchHeroes": "Search heroes",
+      "noHeroesFound": "No heroes found.",
+      "percentagePoints": "{value}pp",
+      "sampleCount": "({count, number})",
+      "roles": {
+        "Tank": "Tank",
+        "Damage": "Damage",
+        "Support": "Support"
+      },
+      "table": {
+        "ability": "Ability",
+        "fights": "Fights",
+        "withWr": "With WR",
+        "withoutWr": "Without WR",
+        "delta": "Delta",
+        "tag": "Tag"
+      },
+      "tags": {
+        "key": "Key",
+        "risk": "Risk"
+      },
+      "smallSample": "Small sample for {hero}, results may not be statistically significant.",
+      "selectHeroPrompt": "Select a hero to see how their abilities shift fight outcomes."
+    },
     "mapModePerformanceCard": {
       "eyebrow": "Maps · Mode performance",
       "winrate": "Winrate: <span>{winrate}</span>",

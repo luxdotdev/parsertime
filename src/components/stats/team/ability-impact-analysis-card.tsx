@@ -24,6 +24,7 @@ import { cn, toHero } from "@/lib/utils";
 import { roleHeroMapping } from "@/types/heroes";
 import { AlertTriangle, Check, ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
+import { useFormatter, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
 type AbilityImpactAnalysisCardProps = {
@@ -80,6 +81,31 @@ function getWinrateClass(winrate: number | null): string {
   return "text-foreground";
 }
 
+function formatPercent(
+  value: number,
+  formatter: ReturnType<typeof useFormatter>,
+  digits = 0
+) {
+  return formatter.number(value / 100, {
+    style: "percent",
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  });
+}
+
+function formatPercentagePoints(
+  value: number,
+  formatter: ReturnType<typeof useFormatter>,
+  t: ReturnType<typeof useTranslations>
+) {
+  return t("percentagePoints", {
+    value: formatter.number(value, {
+      maximumFractionDigits: 0,
+      signDisplay: "exceptZero",
+    }),
+  });
+}
+
 function HeroCombobox({
   availableHeroes,
   selectedHero,
@@ -89,6 +115,7 @@ function HeroCombobox({
   selectedHero: string | null;
   onSelect: (hero: string | null) => void;
 }) {
+  const t = useTranslations("teamStatsPage.abilityImpactAnalysisCard");
   const [open, setOpen] = useState(false);
   const availableSet = useMemo(
     () => new Set(availableHeroes),
@@ -114,7 +141,7 @@ function HeroCombobox({
           role="combobox"
           aria-expanded={open}
           aria-controls="ability-hero-combobox-listbox"
-          aria-label="Select a hero"
+          aria-label={t("selectHero")}
           className="w-full justify-between font-normal md:w-64"
         >
           <span className="flex items-center gap-2 truncate">
@@ -130,7 +157,7 @@ function HeroCombobox({
                 {selectedHero}
               </>
             ) : (
-              "Select a hero"
+              t("selectHero")
             )}
           </span>
           <ChevronsUpDown
@@ -147,14 +174,14 @@ function HeroCombobox({
             return normalized.includes(normalizedSearch) ? 1 : 0;
           }}
         >
-          <CommandInput placeholder="Search heroes" />
+          <CommandInput placeholder={t("searchHeroes")} />
           <CommandList id="ability-hero-combobox-listbox">
-            <CommandEmpty>No heroes found.</CommandEmpty>
+            <CommandEmpty>{t("noHeroesFound")}</CommandEmpty>
             {ROLE_ORDER.map((role) => {
               const heroes = byRole[role];
               if (!heroes || heroes.length === 0) return null;
               return (
-                <CommandGroup key={role} heading={role}>
+                <CommandGroup key={role} heading={t(`roles.${role}`)}>
                   {heroes.map((hero) => (
                     <CommandItem
                       key={hero}
@@ -194,6 +221,8 @@ function HeroCombobox({
 export function AbilityImpactAnalysisCard({
   analysis,
 }: AbilityImpactAnalysisCardProps) {
+  const t = useTranslations("teamStatsPage.abilityImpactAnalysisCard");
+  const formatter = useFormatter();
   const [selectedHero, setSelectedHero] = useState<string | null>(null);
 
   const resolvedHero = useMemo(() => {
@@ -227,9 +256,9 @@ export function AbilityImpactAnalysisCard({
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Teamfights · Ability impact"
-        title="Ability impact"
-        description="How specific hero abilities shift fight outcomes across your scrims."
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        description={t("description")}
         rightSlot={
           <HeroCombobox
             availableHeroes={analysis.availableHeroes}
@@ -247,14 +276,24 @@ export function AbilityImpactAnalysisCard({
             <table className="w-full text-sm">
               <thead className="bg-muted/30">
                 <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-                  <th className="px-4 py-2 text-left font-medium">Ability</th>
-                  <th className="px-4 py-2 text-right font-medium">Fights</th>
-                  <th className="px-4 py-2 text-right font-medium">With WR</th>
-                  <th className="px-4 py-2 text-right font-medium">
-                    Without WR
+                  <th className="px-4 py-2 text-left font-medium">
+                    {t("table.ability")}
                   </th>
-                  <th className="px-4 py-2 text-right font-medium">Delta</th>
-                  <th className="w-24 px-4 py-2 text-right font-medium">Tag</th>
+                  <th className="px-4 py-2 text-right font-medium">
+                    {t("table.fights")}
+                  </th>
+                  <th className="px-4 py-2 text-right font-medium">
+                    {t("table.withWr")}
+                  </th>
+                  <th className="px-4 py-2 text-right font-medium">
+                    {t("table.withoutWr")}
+                  </th>
+                  <th className="px-4 py-2 text-right font-medium">
+                    {t("table.delta")}
+                  </th>
+                  <th className="w-24 px-4 py-2 text-right font-medium">
+                    {t("table.tag")}
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)]">
@@ -263,8 +302,6 @@ export function AbilityImpactAnalysisCard({
                     keyAbility !== null && row.abilityName === keyAbility;
                   const isRisk =
                     riskAbility !== null && row.abilityName === riskAbility;
-                  const deltaSign =
-                    row.delta !== null && row.delta >= 0 ? "+" : "";
                   return (
                     <tr
                       key={row.abilityName}
@@ -290,7 +327,7 @@ export function AbilityImpactAnalysisCard({
                         </div>
                       </td>
                       <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
-                        {row.fights}
+                        {formatter.number(row.fights)}
                       </td>
                       <td
                         className={cn(
@@ -299,11 +336,11 @@ export function AbilityImpactAnalysisCard({
                         )}
                       >
                         {row.withWinrate !== null
-                          ? `${row.withWinrate.toFixed(0)}%`
+                          ? formatPercent(row.withWinrate, formatter)
                           : "—"}
                         {row.withFights > 0 ? (
                           <span className="text-muted-foreground ml-1 text-xs">
-                            ({row.withFights})
+                            {t("sampleCount", { count: row.withFights })}
                           </span>
                         ) : null}
                       </td>
@@ -314,11 +351,11 @@ export function AbilityImpactAnalysisCard({
                         )}
                       >
                         {row.withoutWinrate !== null
-                          ? `${row.withoutWinrate.toFixed(0)}%`
+                          ? formatPercent(row.withoutWinrate, formatter)
                           : "—"}
                         {row.withoutFights > 0 ? (
                           <span className="text-muted-foreground ml-1 text-xs">
-                            ({row.withoutFights})
+                            {t("sampleCount", { count: row.withoutFights })}
                           </span>
                         ) : null}
                       </td>
@@ -329,17 +366,17 @@ export function AbilityImpactAnalysisCard({
                         )}
                       >
                         {row.delta !== null
-                          ? `${deltaSign}${row.delta.toFixed(0)}%`
+                          ? formatPercentagePoints(row.delta, formatter, t)
                           : "—"}
                       </td>
                       <td className="px-4 py-3 text-right">
                         {isKey ? (
                           <span className="bg-primary/15 text-primary rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase">
-                            Key
+                            {t("tags.key")}
                           </span>
                         ) : isRisk ? (
                           <span className="bg-destructive/15 text-destructive rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase">
-                            Risk
+                            {t("tags.risk")}
                           </span>
                         ) : null}
                       </td>
@@ -353,15 +390,12 @@ export function AbilityImpactAnalysisCard({
           {rows.some((r) => r.totalAnalyzed < 10) && (
             <p className="text-muted-foreground flex items-center gap-1.5 font-mono text-[10px] tracking-[0.16em] uppercase">
               <AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" />
-              Small sample for {heroData.hero}, results may not be statistically
-              significant.
+              {t("smallSample", { hero: heroData.hero })}
             </p>
           )}
         </>
       ) : (
-        <p className="text-muted-foreground text-sm">
-          Select a hero to see how their abilities shift fight outcomes.
-        </p>
+        <p className="text-muted-foreground text-sm">{t("selectHeroPrompt")}</p>
       )}
     </section>
   );
