@@ -4546,6 +4546,7 @@
       "winsAndLosses": "{wins}W - {losses}L • {games} games"
     },
     "mapModePerformanceCard": {
+      "eyebrow": "Maps · Mode performance",
       "winrate": "Winrate: <span>{winrate}</span>",
       "winsAndLosses": "{wins}W - {losses}L ({games, plural, =0 {no games} =1 {1 game} other {# games}})",
       "title": "Map Mode Performance",
@@ -4560,7 +4561,15 @@
       "worstMap": "Worst Map",
       "insights": "Insights",
       "excelsAt": "Your team excels at <span>{mode}</span> maps ({winrate}% winrate)",
-      "considerPracticing": "Consider practicing <span>{mode}</span> maps to improve balance ({winrate}% winrate)"
+      "considerPracticing": "Consider practicing <span>{mode}</span> maps to improve balance ({winrate}% winrate)",
+      "mapTypes": {
+        "Clash": "Clash",
+        "Control": "Control",
+        "Escort": "Escort",
+        "Flashpoint": "Flashpoint",
+        "Hybrid": "Hybrid",
+        "Push": "Push"
+      }
     },
     "mapRosterDetailsSheet": {
       "overall": "Overall: {wins}W - {losses}L ({winrate}% winrate) • {games, plural, =0 {no games} =1 {1 game} other {# games}} played",

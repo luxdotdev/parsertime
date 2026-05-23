@@ -3505,6 +3505,32 @@
         "Support": "支援"
       }
     },
+    "mapModePerformanceCard": {
+      "eyebrow": "地图 · 模式表现",
+      "winrate": "胜率：<span>{winrate}</span>",
+      "winsAndLosses": "{wins}胜 - {losses}负（{games, plural, =0 {无比赛} other {# 场比赛}}）",
+      "title": "地图模式表现",
+      "noData": "还没有地图模式数据。",
+      "best": "最佳：{mode}",
+      "winrateLabel": "胜率 %",
+      "record": "战绩",
+      "winsLossesRecord": "{wins}胜 - {losses}负",
+      "gamesLabel": "比赛",
+      "avgTimeLabel": "平均时间",
+      "bestMap": "最佳地图",
+      "worstMap": "最低地图",
+      "insights": "洞察",
+      "excelsAt": "你的队伍擅长 <span>{mode}</span> 地图（胜率 {winrate}%）",
+      "considerPracticing": "建议练习 <span>{mode}</span> 地图以改善平衡性（胜率 {winrate}%）",
+      "mapTypes": {
+        "Clash": "攻防争锋",
+        "Control": "占领要点",
+        "Escort": "运载目标",
+        "Flashpoint": "闪点作战",
+        "Hybrid": "攻击/护送",
+        "Push": "机动推进"
+      }
+    },
     "ultimatesTab": {
       "combos": {
         "title": "终极技能连招",

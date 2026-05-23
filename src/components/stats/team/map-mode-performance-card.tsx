@@ -25,15 +25,6 @@ type MapModePerformanceCardProps = {
   modePerformance: MapModePerformance;
 };
 
-const mapTypeLabels: Record<$Enums.MapType, string> = {
-  [$Enums.MapType.Control]: "Control",
-  [$Enums.MapType.Hybrid]: "Hybrid",
-  [$Enums.MapType.Escort]: "Escort",
-  [$Enums.MapType.Push]: "Push",
-  [$Enums.MapType.Clash]: "Clash",
-  [$Enums.MapType.Flashpoint]: "Flashpoint",
-};
-
 function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
   const t = useTranslations("teamStatsPage.mapModePerformanceCard");
 
@@ -75,10 +66,14 @@ export function MapModePerformanceCard({
   const t = useTranslations("teamStatsPage.mapModePerformanceCard");
   const hasData = modePerformance.overall.totalGames > 0;
 
+  function formatMapType(mapType: $Enums.MapType) {
+    return t(`mapTypes.${mapType}`);
+  }
+
   if (!hasData) {
     return (
       <section className="space-y-4">
-        <SectionHeader eyebrow="Maps · Mode performance" title={t("title")} />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
@@ -91,7 +86,7 @@ export function MapModePerformanceCard({
     .map((mapType) => {
       const stats = modePerformance.byMode[mapType];
       return {
-        name: mapTypeLabels[mapType],
+        name: formatMapType(mapType),
         winrate: stats.winrate,
         wins: stats.wins,
         losses: stats.losses,
@@ -103,14 +98,14 @@ export function MapModePerformanceCard({
 
   const bestModeBadge = modePerformance.bestMode ? (
     <span className="bg-primary/15 text-primary rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase">
-      {t("best", { mode: mapTypeLabels[modePerformance.bestMode] })}
+      {t("best", { mode: formatMapType(modePerformance.bestMode) })}
     </span>
   ) : null;
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Maps · Mode performance"
+        eyebrow={t("eyebrow")}
         title={t("title")}
         rightSlot={bestModeBadge}
       />
@@ -152,7 +147,7 @@ export function MapModePerformanceCard({
                 <div key={mapType} className="space-y-3 px-4 py-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-                      {mapTypeLabels[mapType]}
+                      {formatMapType(mapType)}
                     </h3>
                     <span
                       className={cn(
@@ -242,7 +237,7 @@ export function MapModePerformanceCard({
                       {chunks}
                     </span>
                   ),
-                  mode: mapTypeLabels[modePerformance.bestMode],
+                  mode: formatMapType(modePerformance.bestMode),
                   winrate:
                     modePerformance.byMode[
                       modePerformance.bestMode
@@ -256,7 +251,7 @@ export function MapModePerformanceCard({
                       {chunks}
                     </span>
                   ),
-                  mode: mapTypeLabels[modePerformance.worstMode],
+                  mode: formatMapType(modePerformance.worstMode),
                   winrate:
                     modePerformance.byMode[
                       modePerformance.worstMode
