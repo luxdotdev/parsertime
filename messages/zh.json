@@ -73,6 +73,7 @@
     "reaper": "死神",
     "reinhardt": "莱因哈特",
     "roadhog": "路霸",
+    "sierra": "希拉",
     "sigma": "西格玛",
     "sojourn": "索杰恩",
     "soldier76": "士兵：76",
@@ -80,10 +81,12 @@
     "symmetra": "秩序之光",
     "torbjorn": "托比昂",
     "tracer": "猎空",
+    "vendetta": "文德塔",
     "venture": "探奇",
     "widowmaker": "黑百合",
     "winston": "温斯顿",
     "wreckingball": "破坏球",
+    "wuyang": "无漾",
     "zarya": "查莉娅",
     "zenyatta": "禅雅塔"
   },
@@ -313,7 +316,8 @@
       "contact": "联系我们",
       "docs": "文档",
       "admin": "管理员",
-      "signOut": "退出登录"
+      "signOut": "退出登录",
+      "profile": "个人资料"
     },
     "commandMenu": {
       "searchPlaceholder": "输入命令或搜索...",
@@ -1047,6 +1051,12 @@
       "clear": "清除"
     }
   },
+  "mapGroupsPage": {
+    "metadata": {
+      "title": "地图组 | Parsertime",
+      "description": "创建和管理用于分析的自定义地图组"
+    }
+  },
   "comparePage": {
     "metadata": {
       "title": "地图比较 | Parsertime",
@@ -1455,6 +1465,10 @@
     },
     "back": "返回比赛概览",
     "dashboard": "仪表板",
+    "mobileBanner": {
+      "message": "为了获得最佳体验，建议使用更大的屏幕。",
+      "dismiss": "关闭"
+    },
     "playerSwitcher": {
       "select": "选择玩家",
       "search": "搜索玩家...",
@@ -1706,6 +1720,8 @@
       "charts": "图表",
       "events": "事件",
       "compare": "对比",
+      "notes": "笔记",
+      "vod": "VOD",
       "heatmap": "热力图",
       "replay": "回放"
     },
@@ -2088,6 +2104,9 @@
         "percentileExplanation": "{stat} 表现位于 {hero} 玩家前 {percent}%",
         "vsAverage": "对比平均 {average}/10分钟"
       }
+    },
+    "heroBans": {
+      "bannedBy": "{hero} 被 {team} 禁用"
     }
   },
   "scoutingPage": {
@@ -3457,6 +3476,7 @@
     "comparePlayers": "玩家对比",
     "leaderboard": "排行榜",
     "yourTeams": "我的团队",
+    "availability": "可用时间",
     "joinTeam": "加入团队",
     "dashboard": "仪表板",
     "settings": "设置",
@@ -3470,6 +3490,8 @@
     "reports": "报告",
     "dataLabeling": "数据标注",
     "mapCalibration": "地图校准",
+    "coachingTitle": "教练",
+    "coachingCanvas": "画布",
     "tournamentsTitle": "锦标赛",
     "viewTournaments": "查看锦标赛",
     "createTournament": "创建锦标赛",

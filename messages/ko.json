@@ -73,6 +73,7 @@
     "reaper": "리퍼",
     "reinhardt": "라인하르트",
     "roadhog": "로드호그",
+    "sierra": "시에라",
     "sigma": "시그마",
     "sojourn": "소전",
     "soldier76": "솔저: 76",
@@ -80,10 +81,12 @@
     "symmetra": "시메트라",
     "torbjorn": "토르비욘",
     "tracer": "트레이서",
+    "vendetta": "벤데타",
     "venture": "벤처",
     "widowmaker": "위도우메이커",
     "winston": "윈스턴",
     "wreckingball": "레킹볼",
+    "wuyang": "우양",
     "zarya": "자리야",
     "zenyatta": "젠야타"
   },
@@ -313,7 +316,8 @@
       "contact": "문의하기",
       "docs": "문서",
       "admin": "관리자",
-      "signOut": "로그아웃"
+      "signOut": "로그아웃",
+      "profile": "프로필"
     },
     "commandMenu": {
       "searchPlaceholder": "명령어 입력 또는 검색...",
@@ -1047,6 +1051,12 @@
       "clear": "초기화"
     }
   },
+  "mapGroupsPage": {
+    "metadata": {
+      "title": "맵 그룹 | Parsertime",
+      "description": "분석을 위한 사용자 지정 맵 그룹을 만들고 관리하세요"
+    }
+  },
   "comparePage": {
     "metadata": {
       "title": "맵 비교 | Parsertime",
@@ -1455,6 +1465,10 @@
     },
     "back": "스크림 개요로 돌아가기",
     "dashboard": "대시보드",
+    "mobileBanner": {
+      "message": "최상의 경험을 위해 더 큰 화면 사용을 권장합니다.",
+      "dismiss": "닫기"
+    },
     "playerSwitcher": {
       "select": "플레이어 선택",
       "search": "플레이어 검색...",
@@ -1706,6 +1720,8 @@
       "charts": "차트",
       "events": "이벤트",
       "compare": "비교",
+      "notes": "노트",
+      "vod": "VOD",
       "heatmap": "히트맵",
       "replay": "리플레이"
     },
@@ -2088,6 +2104,9 @@
         "percentileExplanation": "{hero} 플레이어 중 {stat} 성과 상위 {percent}%",
         "vsAverage": "평균 대비 {average}/10분"
       }
+    },
+    "heroBans": {
+      "bannedBy": "{hero} 영웅이 {team}에 의해 밴됨"
     }
   },
   "scoutingPage": {
@@ -3457,6 +3476,7 @@
     "comparePlayers": "플레이어 비교",
     "leaderboard": "리더보드",
     "yourTeams": "내 팀",
+    "availability": "가능 시간",
     "joinTeam": "팀 참가",
     "dashboard": "대시보드",
     "settings": "설정",
@@ -3470,6 +3490,8 @@
     "reports": "보고서",
     "dataLabeling": "데이터 라벨링",
     "mapCalibration": "맵 캘리브레이션",
+    "coachingTitle": "코칭",
+    "coachingCanvas": "캔버스",
     "tournamentsTitle": "토너먼트",
     "viewTournaments": "토너먼트 보기",
     "createTournament": "토너먼트 만들기",
