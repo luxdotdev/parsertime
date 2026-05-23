@@ -3,7 +3,7 @@
 import { SectionHeader } from "@/components/stats/team/section-header";
 import type { PlayerMapPerformanceMatrix } from "@/data/team/types";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 
 type PlayerMapPerformanceCardProps = {
@@ -14,17 +14,26 @@ export function PlayerMapPerformanceCard({
   data,
 }: PlayerMapPerformanceCardProps) {
   const t = useTranslations("teamStatsPage.playerMapPerformanceCard");
+  const format = useFormatter();
 
   const [hoveredCell, setHoveredCell] = useState<{
     player: string;
     map: string;
   } | null>(null);
 
+  function formatPercent(value: number, maximumFractionDigits = 1): string {
+    return format.number(value / 100, {
+      style: "percent",
+      minimumFractionDigits: maximumFractionDigits,
+      maximumFractionDigits,
+    });
+  }
+
   if (data.players.length === 0 || data.maps.length === 0) {
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Maps · Player map matrix"
+          eyebrow={t("eyebrow")}
           title={t("title")}
           description={t("noData")}
         />
@@ -49,7 +58,7 @@ export function PlayerMapPerformanceCard({
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Maps · Player map matrix"
+        eyebrow={t("eyebrow")}
         title={t("title")}
         description={t("description")}
       />
@@ -125,7 +134,7 @@ export function PlayerMapPerformanceCard({
                             ? t("playerOnMap", {
                                 player: playerName,
                                 map: mapName,
-                                winrate: perf.winrate.toFixed(1),
+                                winrate: formatPercent(perf.winrate),
                                 wins: perf.wins,
                                 losses: perf.losses,
                               })
@@ -138,7 +147,7 @@ export function PlayerMapPerformanceCard({
                         {perf ? (
                           <>
                             <span className="font-mono text-lg font-bold tabular-nums">
-                              {perf.winrate.toFixed(0)}%
+                              {formatPercent(perf.winrate, 0)}
                             </span>
                             <span className="font-mono text-xs tabular-nums opacity-90">
                               {t("winsLossesRecord", {
@@ -182,7 +191,7 @@ export function PlayerMapPerformanceCard({
                 {t.rich("playerMapPerformance", {
                   player: hoveredCell.player,
                   map: hoveredCell.map,
-                  winrate: perf.winrate.toFixed(1),
+                  winrate: formatPercent(perf.winrate),
                   wins: perf.wins,
                   losses: perf.losses,
                   games: perf.gamesPlayed,
@@ -204,31 +213,31 @@ export function PlayerMapPerformanceCard({
         <div className="flex items-center gap-1.5">
           <div className="bg-muted h-3 w-6 rounded-sm" />
           <span className="text-muted-foreground font-mono tracking-wider uppercase">
-            0%
+            {formatPercent(0, 0)}
           </span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="bg-primary/20 h-3 w-6 rounded-sm" />
           <span className="text-muted-foreground font-mono tracking-wider uppercase">
-            30%
+            {formatPercent(30, 0)}
           </span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="bg-primary/35 h-3 w-6 rounded-sm" />
           <span className="text-muted-foreground font-mono tracking-wider uppercase">
-            45%
+            {formatPercent(45, 0)}
           </span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="bg-primary/60 h-3 w-6 rounded-sm" />
           <span className="text-muted-foreground font-mono tracking-wider uppercase">
-            55%
+            {formatPercent(55, 0)}
           </span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="bg-primary h-3 w-6 rounded-sm" />
           <span className="text-muted-foreground font-mono tracking-wider uppercase">
-            70%+
+            {t("percentOrHigher", { winrate: formatPercent(70, 0) })}
           </span>
         </div>
         <div className="ml-auto flex flex-wrap items-center gap-x-4 gap-y-2">

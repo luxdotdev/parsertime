@@ -3734,6 +3734,21 @@
       "win": "胜",
       "loss": "负"
     },
+    "playerMapPerformanceCard": {
+      "eyebrow": "地图 · 玩家地图矩阵",
+      "title": "玩家地图表现矩阵",
+      "noData": "还没有地图表现数据。",
+      "description": "每名玩家按胜率显示最佳和最差地图",
+      "playerOnMap": "{player} 在 {map}：{winrate}（{wins}胜-{losses}负）",
+      "noDataTitle": "{player} - {map}：无数据",
+      "winsLossesRecord": "{wins}胜 - {losses}负",
+      "hasntPlayedMap": "<span>{player}</span> 还没有玩过 <span>{map}</span>。",
+      "playerMapPerformance": "<span>{player}</span> 在 <span>{map}</span>：{winrate}（{wins}胜-{losses}负），{games, plural, =0 {未进行比赛} other {已进行 # 场比赛}}",
+      "hoverToSeePerformance": "将鼠标悬停在单元格上，查看该玩家在此地图上的表现。",
+      "percentOrHigher": "{winrate}+",
+      "bestMap": "最佳地图",
+      "worstMap": "最差地图"
+    },
     "ultimatesTab": {
       "combos": {
         "title": "终极技能连招",
