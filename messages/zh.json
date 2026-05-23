@@ -4349,6 +4349,114 @@
       "ogDescription": "查看每位英雄排名最高的玩家。",
       "ogImage": "排行榜"
     },
+    "hub": {
+      "metadata": {
+        "title": "排行榜 | Parsertime",
+        "description": "用两种方式理解《守望先锋 2》玩家实力：按英雄统计的综合评分，以及基于锦标赛的 Elo。"
+      },
+      "eyebrow": "排行榜",
+      "title": "技术评分",
+      "description": "玩家实力不止一种衡量方式。选择你要回答的问题，再查看对应的榜单。",
+      "answersEyebrow": "{metric} · 回答的问题",
+      "browse": "浏览 {metric}",
+      "computed": "计算方式",
+      "reachesFor": "适合衡量",
+      "doesNotCapture": "不适合衡量",
+      "stats": {
+        "perHero": "按英雄",
+        "topCount": "前 {count, number}",
+        "minSample": "最低样本",
+        "mapCount": "{count, number} 张地图",
+        "scale": "量表",
+        "scaleValue": "1-{max, number}",
+        "csrStatus": "训练赛上传后会更新。",
+        "active": "活跃",
+        "trackedPlayers": "已跟踪玩家",
+        "trackedMatches": "已跟踪比赛",
+        "topRating": "最高评分",
+        "lastRecompute": "上次完整重算：{when}。",
+        "awaitingSeed": "正在等待初始数据。"
+      },
+      "relative": {
+        "justNow": "刚刚",
+        "minutesAgo": "{count}分钟前",
+        "hoursAgo": "{count}小时前",
+        "daysAgo": "{count}天前"
+      },
+      "metrics": {
+        "csr": {
+          "fullName": "综合技术评分",
+          "question": "这名玩家与同英雄同侪相比，统计表现如何？",
+          "derivation": "基于已记录训练赛中的角色加权每 10 分钟数据计算 Z 分数。缩放到 1 到 5000，均值为 2500。按英雄展示前 50 名。",
+          "strengths": {
+            "heroSpecific": "按英雄、按角色理解",
+            "scrimExecution": "反映训练赛原始执行表现",
+            "fastUpdates": "训练赛上传后立即更新"
+          },
+          "caveats": {
+            "opponentStrength": "不计入对手强度",
+            "minimumSample": "至少 10 张地图且每张地图 60 秒"
+          }
+        },
+        "tsr": {
+          "fullName": "锦标赛技术评分",
+          "question": "这名玩家能应对什么级别的竞争？",
+          "derivation": "对 FACEIT 举办的 OW2 锦标赛结果进行 Elo 风格重放。按 365 天半衰期加权近期表现，并以达到过的最高级别校准。",
+          "strengths": {
+            "headToHead": "基于直接对战结果",
+            "comparable": "可跨地区和级别比较",
+            "currentForm": "反映当前状态"
+          },
+          "caveats": {
+            "faceitOnly": "只统计 FACEIT 跟踪的锦标赛",
+            "battleTag": "需要已关联的 BattleTag"
+          }
+        }
+      }
+    },
+    "csrPage": {
+      "metadata": {
+        "title": "综合技术评分 | Parsertime",
+        "description": "按英雄计算的技术评分，来自与同英雄同侪比较后的 Z 分数统计表现。"
+      },
+      "eyebrow": "排行榜",
+      "eyebrowWithHero": "排行榜 · {hero}",
+      "title": "综合技术评分",
+      "description": "按英雄计算的评分，来自与同英雄同侪比较后的 Z 分数统计表现。每位英雄前 50 名，需要 10 张地图且每张地图至少 60 秒。",
+      "empty": {
+        "eyebrow": "选择英雄",
+        "title": "排行榜按英雄计算",
+        "description": "在上方选择英雄即可查看前 50 名玩家。CSR 会按英雄独立计算，因此比较会基于符合角色定位的数据。"
+      },
+      "accordion": {
+        "calculated": {
+          "title": "CSR 如何计算？",
+          "intro": "CSR 是一种技术评分，来自你在特定英雄上的统计表现与平均玩家的比较。",
+          "formulaTitle": "公式",
+          "formula": "我们会为每项关键统计计算 Z 分数，衡量你高于或低于平均值多少个标准差。",
+          "normalized": "统计会归一化为每 10 分钟数据。",
+          "positiveStats": "正向统计（消灭）数值越高奖励越多。",
+          "negativeStats": "负向统计（死亡、承受伤害）数值越低奖励越多。",
+          "roleWeightingTitle": "角色权重",
+          "roleWeighting": "不同角色优先考虑不同统计。重装：低死亡（30%）、消灭（20%）、单杀（15%）。输出：消灭（30%）、最后一击（20%）、造成伤害（20%）。支援：治疗（35%）、低死亡（25%）。",
+          "uniqueWeightings": "像 Mercy 这样的特定英雄会使用专属权重。",
+          "finalScalingTitle": "最终缩放",
+          "finalScaling": "加权 Z 分数会汇总并转换为以 2500 为中心的 SR 量表。"
+        },
+        "goodSr": {
+          "title": "什么算好的 SR？",
+          "body": "分数遵循钟形曲线。平均值为 2500；高出一个标准差（约 300 到 400 SR）大约位于前 16%。高于 2500 越多，评分越稀有。"
+        },
+        "rank": {
+          "title": "怎样登上榜单？",
+          "body": "使用该英雄至少打 10 张地图，并且每张地图至少有 60 秒上场时间。短暂的地图中途换人不会计入。榜单显示前 50 名；低于此排名的结果仍会显示在玩家资料中。"
+        },
+        "interactive": {
+          "title": "阅读表格",
+          "body": "点击任意行即可打开详细统计面板：SR 分布、角色雷达图和每 10 分钟分解数据。也可以通过 Tab 和 Enter 使用键盘操作。"
+        }
+      }
+    },
     "csr": {
       "table": {
         "player": "玩家",

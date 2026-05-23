@@ -5,6 +5,7 @@ import {
 } from "@/lib/leaderboard/registry";
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export type MetricStats = {
   /** Two or three eyebrow stat pairs to render in the per-metric ribbon. */
@@ -18,18 +19,19 @@ type Props = {
 };
 
 export function LeaderboardHub({ statsById }: Props) {
+  const t = useTranslations("leaderboardPage.hub");
+
   return (
     <div className="px-6 pt-8 pb-16 sm:px-10">
       <header className="border-border border-b pb-6">
         <p className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
-          Leaderboard
+          {t("eyebrow")}
         </p>
         <h1 className="mt-3 text-4xl leading-none font-semibold tracking-tight">
-          Skill ratings
+          {t("title")}
         </h1>
         <p className="text-muted-foreground mt-3 max-w-prose text-sm leading-relaxed">
-          Player skill is measured more than one way. Pick the question
-          you&apos;re answering and read the board that fits.
+          {t("description")}
         </p>
       </header>
 
@@ -56,6 +58,9 @@ function MetricSection({
   stats?: MetricStats;
   index: number;
 }) {
+  const t = useTranslations("leaderboardPage.hub");
+  const copy = getMetricCopy(metric.id, t);
+
   return (
     <section
       className="grid gap-x-10 gap-y-6 py-10 sm:py-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]"
@@ -63,10 +68,10 @@ function MetricSection({
     >
       <div>
         <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-          {metric.shortLabel} · Answers
+          {t("answersEyebrow", { metric: copy.shortLabel })}
         </p>
         <h2 className="mt-3 text-2xl font-semibold tracking-tight">
-          {metric.question}
+          {copy.question}
         </h2>
         {stats?.status ? (
           <p className="text-muted-foreground mt-3 font-mono text-xs tracking-wider">
@@ -76,7 +81,7 @@ function MetricSection({
 
         <Button asChild size="sm" className="mt-6 h-9 rounded-md px-3 text-sm">
           <Link href={metric.href}>
-            Browse {metric.fullName}
+            {t("browse", { metric: copy.fullName })}
             <ArrowRightIcon className="ml-1.5 size-3.5" aria-hidden />
           </Link>
         </Button>
@@ -98,28 +103,68 @@ function MetricSection({
 
         <div>
           <p className="text-muted-foreground font-mono text-[11px] tracking-[0.14em] uppercase">
-            How it&apos;s computed
+            {t("computed")}
           </p>
           <p className="text-foreground mt-2 text-sm leading-relaxed">
-            {metric.derivation}
+            {copy.derivation}
           </p>
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2">
           <BulletGroup
-            label="Reaches for"
-            items={metric.strengths}
+            label={t("reachesFor")}
+            items={copy.strengths}
             tone="foreground"
           />
           <BulletGroup
-            label="Doesn't capture"
-            items={metric.caveats}
+            label={t("doesNotCapture")}
+            items={copy.caveats}
             tone="muted"
           />
         </div>
       </div>
     </section>
   );
+}
+
+function getMetricCopy(
+  id: LeaderboardMetric["id"],
+  t: ReturnType<typeof useTranslations>
+) {
+  switch (id) {
+    case "csr":
+      return {
+        shortLabel: "CSR",
+        fullName: t("metrics.csr.fullName"),
+        question: t("metrics.csr.question"),
+        derivation: t("metrics.csr.derivation"),
+        strengths: [
+          t("metrics.csr.strengths.heroSpecific"),
+          t("metrics.csr.strengths.scrimExecution"),
+          t("metrics.csr.strengths.fastUpdates"),
+        ],
+        caveats: [
+          t("metrics.csr.caveats.opponentStrength"),
+          t("metrics.csr.caveats.minimumSample"),
+        ],
+      };
+    case "tsr":
+      return {
+        shortLabel: "TSR",
+        fullName: t("metrics.tsr.fullName"),
+        question: t("metrics.tsr.question"),
+        derivation: t("metrics.tsr.derivation"),
+        strengths: [
+          t("metrics.tsr.strengths.headToHead"),
+          t("metrics.tsr.strengths.comparable"),
+          t("metrics.tsr.strengths.currentForm"),
+        ],
+        caveats: [
+          t("metrics.tsr.caveats.faceitOnly"),
+          t("metrics.tsr.caveats.battleTag"),
+        ],
+      };
+  }
 }
 
 function BulletGroup({

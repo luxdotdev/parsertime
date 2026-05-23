@@ -8,18 +8,26 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { getCompositeSRLeaderboard } from "@/lib/hero-rating";
+import { getHeroNames, toHero } from "@/lib/utils";
 import { heroRoleMapping, type HeroName } from "@/types/heroes";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Composite Skill Rating | Parsertime",
-  description:
-    "Per-hero skill rating derived from Z-scored statistical performance against peers on the same hero.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("leaderboardPage.csrPage.metadata");
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
 
 export default async function CsrLeaderboardPage(props: {
   searchParams: Promise<{ hero?: string }>;
 }) {
+  const [t, heroNames] = await Promise.all([
+    getTranslations("leaderboardPage.csrPage"),
+    getHeroNames(),
+  ]);
   const searchParams = await props.searchParams;
   const heroParam = searchParams.hero;
   const currentHero = (
@@ -59,21 +67,24 @@ export default async function CsrLeaderboardPage(props: {
       }))
     : [];
   const role = currentHero ? heroRoleMapping[currentHero] : undefined;
+  const currentHeroName = currentHero
+    ? (heroNames.get(toHero(currentHero)) ?? currentHero)
+    : null;
 
   return (
     <div className="px-6 pt-8 pb-16 sm:px-10">
       <header className="border-border flex flex-wrap items-end justify-between gap-x-10 gap-y-4 border-b pb-6">
         <div>
           <p className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
-            Leaderboard{currentHero ? ` · ${currentHero}` : null}
+            {currentHeroName
+              ? t("eyebrowWithHero", { hero: currentHeroName })
+              : t("eyebrow")}
           </p>
           <h1 className="mt-3 text-4xl leading-none font-semibold tracking-tight">
-            Composite Skill Rating
+            {t("title")}
           </h1>
           <p className="text-muted-foreground mt-2 max-w-prose text-sm">
-            Per-hero rating derived from Z-scored statistical performance
-            against peers on the same hero. Top 50 per hero, requires 10 maps
-            and 60 seconds per map.
+            {t("description")}
           </p>
         </div>
       </header>
@@ -87,63 +98,52 @@ export default async function CsrLeaderboardPage(props: {
         <section className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
           <div>
             <p className="text-muted-foreground font-mono text-[11px] tracking-[0.14em] uppercase">
-              Pick a hero
+              {t("empty.eyebrow")}
             </p>
             <h2 className="mt-2 text-xl font-semibold tracking-tight">
-              The leaderboard is per hero
+              {t("empty.title")}
             </h2>
             <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
-              Choose a hero above to view the top 50 performers. CSR is computed
-              independently per hero so comparisons stay grounded in
-              role-relevant stats.
+              {t("empty.description")}
             </p>
           </div>
 
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="how-it-works">
-              <AccordionTrigger>How is CSR calculated?</AccordionTrigger>
+              <AccordionTrigger>
+                {t("accordion.calculated.title")}
+              </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-4 text-sm">
-                  <p>
-                    CSR is a skill rating derived from your statistical
-                    performance compared to the average player on a specific
-                    hero.
-                  </p>
+                  <p>{t("accordion.calculated.intro")}</p>
                   <div>
-                    <h4 className="font-semibold">The formula</h4>
-                    <p className="mt-1">
-                      We calculate a Z-score for each key statistic, which
-                      measures how many standard deviations you are above or
-                      below the average.
-                    </p>
+                    <h4 className="font-semibold">
+                      {t("accordion.calculated.formulaTitle")}
+                    </h4>
+                    <p className="mt-1">{t("accordion.calculated.formula")}</p>
                     <ul className="mt-2 list-inside list-disc space-y-1 pl-2">
-                      <li>Stats are normalized to per 10 minutes.</li>
-                      <li>
-                        Positive stats (Eliminations) reward higher values.
-                      </li>
-                      <li>
-                        Negative stats (Deaths, Damage Taken) reward lower
-                        values.
-                      </li>
+                      <li>{t("accordion.calculated.normalized")}</li>
+                      <li>{t("accordion.calculated.positiveStats")}</li>
+                      <li>{t("accordion.calculated.negativeStats")}</li>
                     </ul>
                   </div>
                   <div>
-                    <h4 className="font-semibold">Role weighting</h4>
+                    <h4 className="font-semibold">
+                      {t("accordion.calculated.roleWeightingTitle")}
+                    </h4>
                     <p className="mt-1">
-                      Each role prioritizes different stats. Tank: low Deaths
-                      (30%), Eliminations (20%), Solo Kills (15%). Damage:
-                      Eliminations (30%), Final Blows (20%), Damage Dealt (20%).
-                      Support: Healing (35%), low Deaths (25%).
+                      {t("accordion.calculated.roleWeighting")}
                     </p>
                     <p className="text-muted-foreground mt-2 text-xs">
-                      Specific heroes like Mercy use unique weightings.
+                      {t("accordion.calculated.uniqueWeightings")}
                     </p>
                   </div>
                   <div>
-                    <h4 className="font-semibold">Final scaling</h4>
+                    <h4 className="font-semibold">
+                      {t("accordion.calculated.finalScalingTitle")}
+                    </h4>
                     <p className="mt-1">
-                      Weighted Z-scores are summed and converted to an SR scale
-                      centered at 2500.
+                      {t("accordion.calculated.finalScaling")}
                     </p>
                     <pre className="bg-muted mt-2 overflow-x-auto rounded-md p-2 font-mono text-xs">
                       2500 + (Z * (1250 / (1 + |Z| / 3)))
@@ -153,39 +153,28 @@ export default async function CsrLeaderboardPage(props: {
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="what-is-good-sr">
-              <AccordionTrigger>What is a good SR?</AccordionTrigger>
+              <AccordionTrigger>{t("accordion.goodSr.title")}</AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-2 text-sm">
-                  <p>
-                    Scores follow a bell curve. Average is 2500; one standard
-                    deviation above (about 300 to 400 SR) puts you in roughly
-                    the top 16%. The further above 2500, the rarer the rating.
-                  </p>
+                  <p>{t("accordion.goodSr.body")}</p>
                 </div>
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="how-to-rank">
-              <AccordionTrigger>How do I get on the board?</AccordionTrigger>
+              <AccordionTrigger>{t("accordion.rank.title")}</AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-2 text-sm">
-                  <p>
-                    Play at least 10 maps on the hero with at least 60 seconds
-                    of playtime per map. Brief mid-map swaps don&apos;t count.
-                    The board displays the top 50; ranks below that still show
-                    on the player profile.
-                  </p>
+                  <p>{t("accordion.rank.body")}</p>
                 </div>
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="interactive">
-              <AccordionTrigger>Reading the table</AccordionTrigger>
+              <AccordionTrigger>
+                {t("accordion.interactive.title")}
+              </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-2 text-sm">
-                  <p>
-                    Click any row to open a detailed stat panel: SR
-                    distribution, role-radar, and per-10 breakdowns.
-                    Keyboard-navigable via Tab and Enter.
-                  </p>
+                  <p>{t("accordion.interactive.body")}</p>
                 </div>
               </AccordionContent>
             </AccordionItem>

@@ -4,57 +4,83 @@ import {
 } from "@/components/leaderboard/leaderboard-hub";
 import { getInitialTsrLeaderboard } from "@/lib/tsr/leaderboard";
 import type { Metadata } from "next";
+import { getFormatter, getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Leaderboards | Parsertime",
-  description:
-    "Two ways to read player skill in Overwatch 2: per-hero composite rating and tournament-grounded Elo.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("leaderboardPage.hub.metadata");
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
 
 export default async function LeaderboardHubPage() {
-  const tsr = await getInitialTsrLeaderboard();
+  const [tsr, t, formatter] = await Promise.all([
+    getInitialTsrLeaderboard(),
+    getTranslations("leaderboardPage.hub"),
+    getFormatter(),
+  ]);
 
   const statsById: Partial<Record<"csr" | "tsr", MetricStats>> = {
     csr: {
       ribbon: [
-        { label: "Per hero", value: "Top 50" },
-        { label: "Min sample", value: "10 maps" },
-        { label: "Scale", value: "1 – 5000" },
+        {
+          label: t("stats.perHero"),
+          value: t("stats.topCount", { count: 50 }),
+        },
+        {
+          label: t("stats.minSample"),
+          value: t("stats.mapCount", { count: 10 }),
+        },
+        {
+          label: t("stats.scale"),
+          value: t("stats.scaleValue", { max: 5000 }),
+        },
       ],
-      status: "Updates as scrims upload.",
+      status: t("stats.csrStatus"),
     },
     tsr: {
       ribbon: [
-        { label: "Active", value: tsr.meta.totalActive.toLocaleString() },
         {
-          label: "Tracked players",
-          value: tsr.meta.totalAll.toLocaleString(),
+          label: t("stats.active"),
+          value: formatter.number(tsr.meta.totalActive),
         },
         {
-          label: "Tracked matches",
-          value: tsr.meta.totalTrackedMatches.toLocaleString(),
+          label: t("stats.trackedPlayers"),
+          value: formatter.number(tsr.meta.totalAll),
         },
         {
-          label: "Top rating",
-          value: tsr.meta.topRating ? tsr.meta.topRating.toLocaleString() : "—",
+          label: t("stats.trackedMatches"),
+          value: formatter.number(tsr.meta.totalTrackedMatches),
+        },
+        {
+          label: t("stats.topRating"),
+          value: tsr.meta.topRating
+            ? formatter.number(tsr.meta.topRating)
+            : "—",
         },
       ],
       status:
         tsr.meta.totalAll > 0
-          ? `Last full recompute ${formatRecompute(tsr.meta.computedAt)}.`
-          : "Awaiting initial seed.",
+          ? t("stats.lastRecompute", {
+              when: formatRecompute(tsr.meta.computedAt, t),
+            })
+          : t("stats.awaitingSeed"),
     },
   };
 
   return <LeaderboardHub statsById={statsById} />;
 }
 
-function formatRecompute(date: Date | null): string {
+function formatRecompute(
+  date: Date | null,
+  t: Awaited<ReturnType<typeof getTranslations>>
+): string {
   if (!date) return "—";
   const minutes = Math.floor((Date.now() - date.getTime()) / 60_000);
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 1) return t("relative.justNow");
+  if (minutes < 60) return t("relative.minutesAgo", { count: minutes });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  return `${Math.floor(hours / 24)}d ago`;
+  if (hours < 24) return t("relative.hoursAgo", { count: hours });
+  return t("relative.daysAgo", { count: Math.floor(hours / 24) });
 }

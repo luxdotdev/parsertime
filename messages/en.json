@@ -4748,6 +4748,114 @@
       "ogDescription": "View the highest ranked players for each hero.",
       "ogImage": "Leaderboard"
     },
+    "hub": {
+      "metadata": {
+        "title": "Leaderboards | Parsertime",
+        "description": "Two ways to read player skill in Overwatch 2: per-hero composite rating and tournament-grounded Elo."
+      },
+      "eyebrow": "Leaderboard",
+      "title": "Skill ratings",
+      "description": "Player skill is measured more than one way. Pick the question you're answering and read the board that fits.",
+      "answersEyebrow": "{metric} · Answers",
+      "browse": "Browse {metric}",
+      "computed": "How it's computed",
+      "reachesFor": "Reaches for",
+      "doesNotCapture": "Doesn't capture",
+      "stats": {
+        "perHero": "Per hero",
+        "topCount": "Top {count, number}",
+        "minSample": "Min sample",
+        "mapCount": "{count, plural, one {# map} other {# maps}}",
+        "scale": "Scale",
+        "scaleValue": "1-{max, number}",
+        "csrStatus": "Updates as scrims upload.",
+        "active": "Active",
+        "trackedPlayers": "Tracked players",
+        "trackedMatches": "Tracked matches",
+        "topRating": "Top rating",
+        "lastRecompute": "Last full recompute {when}.",
+        "awaitingSeed": "Awaiting initial seed."
+      },
+      "relative": {
+        "justNow": "just now",
+        "minutesAgo": "{count, plural, one {#m ago} other {#m ago}}",
+        "hoursAgo": "{count, plural, one {#h ago} other {#h ago}}",
+        "daysAgo": "{count, plural, one {#d ago} other {#d ago}}"
+      },
+      "metrics": {
+        "csr": {
+          "fullName": "Composite Skill Rating",
+          "question": "How does this player perform statistically vs. peers on the same hero?",
+          "derivation": "Z-score across role-weighted per-10-minute stats from logged scrims. Scaled to 1 to 5000, mean 2500. Per hero, top 50.",
+          "strengths": {
+            "heroSpecific": "Hero-specific, role-aware",
+            "scrimExecution": "Reflects raw scrim execution",
+            "fastUpdates": "Updates as soon as scrims upload"
+          },
+          "caveats": {
+            "opponentStrength": "Doesn't account for opponent strength",
+            "minimumSample": "10 maps and 60 seconds per map minimum"
+          }
+        },
+        "tsr": {
+          "fullName": "Tournament Skill Rating",
+          "question": "What level of competition can this player handle?",
+          "derivation": "Elo-style replay over FACEIT-hosted OW2 tournament results. Recency-weighted with a 365-day half-life, anchored at peak tier reached.",
+          "strengths": {
+            "headToHead": "Grounded in head-to-head outcomes",
+            "comparable": "Comparable across regions and tiers",
+            "currentForm": "Reflects current form"
+          },
+          "caveats": {
+            "faceitOnly": "Only counts FACEIT-tracked tournaments",
+            "battleTag": "Requires linked BattleTag"
+          }
+        }
+      }
+    },
+    "csrPage": {
+      "metadata": {
+        "title": "Composite Skill Rating | Parsertime",
+        "description": "Per-hero skill rating derived from Z-scored statistical performance against peers on the same hero."
+      },
+      "eyebrow": "Leaderboard",
+      "eyebrowWithHero": "Leaderboard · {hero}",
+      "title": "Composite Skill Rating",
+      "description": "Per-hero rating derived from Z-scored statistical performance against peers on the same hero. Top 50 per hero, requires 10 maps and 60 seconds per map.",
+      "empty": {
+        "eyebrow": "Pick a hero",
+        "title": "The leaderboard is per hero",
+        "description": "Choose a hero above to view the top 50 performers. CSR is computed independently per hero so comparisons stay grounded in role-relevant stats."
+      },
+      "accordion": {
+        "calculated": {
+          "title": "How is CSR calculated?",
+          "intro": "CSR is a skill rating derived from your statistical performance compared to the average player on a specific hero.",
+          "formulaTitle": "The formula",
+          "formula": "We calculate a Z-score for each key statistic, which measures how many standard deviations you are above or below the average.",
+          "normalized": "Stats are normalized to per 10 minutes.",
+          "positiveStats": "Positive stats (Eliminations) reward higher values.",
+          "negativeStats": "Negative stats (Deaths, Damage Taken) reward lower values.",
+          "roleWeightingTitle": "Role weighting",
+          "roleWeighting": "Each role prioritizes different stats. Tank: low Deaths (30%), Eliminations (20%), Solo Kills (15%). Damage: Eliminations (30%), Final Blows (20%), Damage Dealt (20%). Support: Healing (35%), low Deaths (25%).",
+          "uniqueWeightings": "Specific heroes like Mercy use unique weightings.",
+          "finalScalingTitle": "Final scaling",
+          "finalScaling": "Weighted Z-scores are summed and converted to an SR scale centered at 2500."
+        },
+        "goodSr": {
+          "title": "What is a good SR?",
+          "body": "Scores follow a bell curve. Average is 2500; one standard deviation above (about 300 to 400 SR) puts you in roughly the top 16%. The further above 2500, the rarer the rating."
+        },
+        "rank": {
+          "title": "How do I get on the board?",
+          "body": "Play at least 10 maps on the hero with at least 60 seconds of playtime per map. Brief mid-map swaps don't count. The board displays the top 50; ranks below that still show on the player profile."
+        },
+        "interactive": {
+          "title": "Reading the table",
+          "body": "Click any row to open a detailed stat panel: SR distribution, role-radar, and per-10 breakdowns. Keyboard-navigable via Tab and Enter."
+        }
+      }
+    },
     "csr": {
       "table": {
         "player": "Player",
