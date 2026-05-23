@@ -2128,6 +2128,27 @@
         "damage": "输出",
         "support": "支援"
       },
+      "heroFilter": {
+        "selectHeroes": "选择英雄",
+        "allHeroes": "所有英雄",
+        "heroesSelected": "已选择 {count} 个英雄",
+        "searchHeroes": "搜索英雄...",
+        "noHeroesFound": "未找到英雄",
+        "quickSelect": "快速选择",
+        "reset": "重置",
+        "allTanks": "所有坦克",
+        "allDamage": "所有输出",
+        "allSupport": "所有支援",
+        "hitscanDPS": "长枪输出",
+        "flexDPS": "自由输出",
+        "groundTanks": "地面坦克",
+        "diveTanks": "机动坦克",
+        "flexSupports": "自由支援",
+        "mainSupports": "主支援",
+        "tank": "坦克",
+        "damage": "输出",
+        "support": "支援"
+      },
       "mostPlayed": {
         "title": "最常使用的英雄",
         "rank": "排名",

@@ -2105,6 +2105,9 @@
         "all-time-data": "전체 기간 데이터에서",
         "custom": "{from} - {to} 사이"
       },
+      "clientDate": {
+        "formatDate": "{date, date, ::EEE MMM dd yyyy}"
+      },
       "rangePicker": {
         "selectTime": "기간 선택",
         "lastWeek": "지난주",
@@ -2122,6 +2125,27 @@
         "calendarDate": "{from} - {to}",
         "formatDate": "{date, date, ::MMM dd yyyy}",
         "tank": "탱크",
+        "damage": "딜러",
+        "support": "지원"
+      },
+      "heroFilter": {
+        "selectHeroes": "영웅 선택",
+        "allHeroes": "모든 영웅",
+        "heroesSelected": "{count}명의 영웅 선택됨",
+        "searchHeroes": "영웅 검색...",
+        "noHeroesFound": "영웅을 찾을 수 없습니다",
+        "quickSelect": "빠른 선택",
+        "reset": "초기화",
+        "allTanks": "모든 탱커",
+        "allDamage": "모든 딜러",
+        "allSupport": "모든 지원가",
+        "hitscanDPS": "히트스캔 딜러",
+        "flexDPS": "플렉스 딜러",
+        "groundTanks": "그라운드 탱커",
+        "diveTanks": "다이브 탱커",
+        "flexSupports": "플렉스 지원가",
+        "mainSupports": "메인 지원가",
+        "tank": "탱커",
         "damage": "딜러",
         "support": "지원"
       },
