@@ -4872,6 +4872,15 @@
       "ogTitle": "{playerName}'s Profile | Parsertime",
       "ogDescription": "View {playerName}'s profile and stats on Parsertime.",
       "ogImage": "{playerName}'s Profile"
+    },
+    "hoverCard": {
+      "bannerAlt": "{playerName} banner",
+      "topHeroes": "Top Heroes",
+      "timePlayed": "Time Played",
+      "loading": "Loading...",
+      "error": "Error loading data",
+      "empty": "No data available",
+      "viewProfile": "View Profile →"
     }
   },
   "titles": {

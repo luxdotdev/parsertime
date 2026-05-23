@@ -4681,6 +4681,15 @@
       "ogTitle": "{playerName}의 프로필 | Parsertime",
       "ogDescription": "Parsertime에서 {playerName}의 프로필과 통계를 확인하세요.",
       "ogImage": "{playerName}의 프로필"
+    },
+    "hoverCard": {
+      "bannerAlt": "{playerName} 배너",
+      "topHeroes": "상위 영웅",
+      "timePlayed": "플레이 시간",
+      "loading": "불러오는 중...",
+      "error": "데이터를 불러오는 중 오류가 발생했습니다",
+      "empty": "사용 가능한 데이터가 없습니다",
+      "viewProfile": "프로필 보기 →"
     }
   },
   "notFound": {

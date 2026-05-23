@@ -4681,6 +4681,15 @@
       "ogTitle": "{playerName} 的个人资料 | Parsertime",
       "ogDescription": "在 Parsertime 查看 {playerName} 的个人资料和统计数据。",
       "ogImage": "{playerName} 的个人资料"
+    },
+    "hoverCard": {
+      "bannerAlt": "{playerName} 横幅",
+      "topHeroes": "常用英雄",
+      "timePlayed": "游戏时间",
+      "loading": "正在加载...",
+      "error": "加载数据时出错",
+      "empty": "暂无可用数据",
+      "viewProfile": "查看资料 →"
     }
   },
   "notFound": {
