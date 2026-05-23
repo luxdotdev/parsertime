@@ -64,6 +64,7 @@ export type {
   FightOpeningHero,
   TeamUltStats,
   UltCombosAnalysis,
+  UltEconomyAnalysis,
 } from "./types";
 import type {
   ScenarioStats,
@@ -74,8 +75,10 @@ import type {
   FightOpeningHero,
   TeamUltStats,
   UltCombosAnalysis,
+  UltEconomyAnalysis,
 } from "./types";
 import { processUltCombos } from "./ult-combos";
+import { processUltEconomy } from "./ult-economy";
 
 function emptyScenario(): ScenarioStats {
   return { fights: 0, wins: 0, losses: 0, winrate: 0 };
@@ -632,6 +635,11 @@ export type TeamUltServiceInterface = {
     teamId: number,
     dateRange?: TeamDateRange
   ) => Effect.Effect<UltCombosAnalysis, TeamQueryError>;
+
+  readonly getTeamUltEconomy: (
+    teamId: number,
+    dateRange?: TeamDateRange
+  ) => Effect.Effect<UltEconomyAnalysis, TeamQueryError>;
 };
 
 export class TeamUltService extends Context.Tag(
@@ -802,6 +810,77 @@ export const make = Effect.gen(function* () {
     );
   }
 
+  function getTeamUltEconomy(
+    teamId: number,
+    dateRange?: TeamDateRange
+  ): Effect.Effect<UltEconomyAnalysis, TeamQueryError> {
+    const startTime = Date.now();
+    const wideEvent: Record<string, unknown> = {
+      teamId,
+      hasDateRange: !!dateRange,
+    };
+
+    return Effect.gen(function* () {
+      yield* Effect.annotateCurrentSpan("teamId", teamId);
+      const data = yield* shared.getExtendedTeamData(teamId, { dateRange });
+
+      if (data.mapDataIds.length === 0) {
+        wideEvent.outcome = "success";
+        wideEvent.total_fights = 0;
+        yield* Metric.increment(ultQuerySuccessTotal);
+        return processUltEconomy(data, []);
+      }
+
+      const charged = yield* Effect.tryPromise({
+        try: () =>
+          prisma.ultimateCharged.findMany({
+            where: { MapDataId: { in: data.mapDataIds } },
+            select: {
+              player_team: true,
+              player_name: true,
+              match_time: true,
+              MapDataId: true,
+            },
+          }),
+        catch: (error) =>
+          new TeamQueryError({
+            operation: "fetch ultimate charges for ult economy",
+            cause: error,
+          }),
+      });
+
+      const result = processUltEconomy(data, charged);
+      wideEvent.outcome = "success";
+      wideEvent.total_fights = result.totalFights;
+      yield* Metric.increment(ultQuerySuccessTotal);
+      return result;
+    }).pipe(
+      Effect.tapError((error) =>
+        Effect.sync(() => {
+          wideEvent.outcome = "error";
+          wideEvent.error_tag = error._tag;
+          wideEvent.error_message = error.message;
+        }).pipe(Effect.andThen(Metric.increment(ultQueryErrorTotal)))
+      ),
+      Effect.ensuring(
+        Effect.suspend(() => {
+          const durationMs = Date.now() - startTime;
+          wideEvent.duration_ms = durationMs;
+          wideEvent.outcome ??= "interrupted";
+          const log =
+            wideEvent.outcome === "error"
+              ? Effect.logError("team.ult.getTeamUltEconomy")
+              : Effect.logInfo("team.ult.getTeamUltEconomy");
+          return log.pipe(
+            Effect.annotateLogs(wideEvent),
+            Effect.andThen(ultQueryDuration(Effect.succeed(durationMs)))
+          );
+        })
+      ),
+      Effect.withSpan("team.ult.getTeamUltEconomy")
+    );
+  }
+
   const CACHE_TTL = Duration.seconds(30);
   const CACHE_CAPACITY = 64;
 
@@ -854,6 +933,21 @@ export const make = Effect.gen(function* () {
     },
   });
 
+  const ultEconomyCache = yield* Cache.make({
+    capacity: CACHE_CAPACITY,
+    timeToLive: CACHE_TTL,
+    lookup: (key: string) => {
+      const [teamIdStr, rest] = [
+        key.slice(0, key.indexOf(":")),
+        key.slice(key.indexOf(":") + 1),
+      ];
+      const dr = parseDateRangeFromCacheKey(rest);
+      return getTeamUltEconomy(Number(teamIdStr), dr).pipe(
+        Effect.tap(() => Metric.increment(teamCacheMissTotal))
+      );
+    },
+  });
+
   return {
     getTeamUltImpact: (teamId: number, dateRange?: TeamDateRange) =>
       ultImpactCache
@@ -865,6 +959,10 @@ export const make = Effect.gen(function* () {
         .pipe(Effect.tap(() => Metric.increment(teamCacheRequestTotal))),
     getTeamUltCombos: (teamId: number, dateRange?: TeamDateRange) =>
       ultCombosCache
+        .get(cacheKeyOf(teamId, dateRange))
+        .pipe(Effect.tap(() => Metric.increment(teamCacheRequestTotal))),
+    getTeamUltEconomy: (teamId: number, dateRange?: TeamDateRange) =>
+      ultEconomyCache
         .get(cacheKeyOf(teamId, dateRange))
         .pipe(Effect.tap(() => Metric.increment(teamCacheRequestTotal))),
   } satisfies TeamUltServiceInterface;

@@ -483,6 +483,51 @@ export type TeamUltStats = {
   playerRankings: PlayerUltRanking[];
 };
 
+// ---------- ult-economy-service types ----------
+
+export type UltAdvantageBucketKey =
+  | "behind2"
+  | "behind1"
+  | "even"
+  | "ahead1"
+  | "ahead2";
+
+/** Fights grouped by how many more/fewer ults we held than the enemy entering them. */
+export type UltAdvantageBucket = {
+  key: UltAdvantageBucketKey;
+  fights: number;
+  wins: number;
+  winrate: number;
+  /** Percentage of all analyzed fights that fall in this bucket. */
+  share: number;
+};
+
+/** Average ult advantage entering the Nth fight of a map, averaged across maps. */
+export type UltTempoPoint = {
+  fightNumber: number;
+  avgAdvantage: number;
+  samples: number;
+};
+
+export type UltEconomyAnalysis = {
+  /** Fights with usable bank data (maps that recorded ultimate charges). */
+  totalFights: number;
+  /** Ordered behind2, behind1, even, ahead1, ahead2. */
+  buckets: UltAdvantageBucket[];
+  /** Share of fights entered ult-disadvantaged / even / advantaged (0-100). */
+  disadvantagedShare: number;
+  evenShare: number;
+  advantagedShare: number;
+  /** Win rate when entering a fight ahead / even / behind on ults (0-100). */
+  winrateAhead: number;
+  winrateEven: number;
+  winrateBehind: number;
+  /** Mean (our bank − enemy bank) across analyzed fights. */
+  avgAdvantage: number;
+  tempo: UltTempoPoint[];
+  totalMaps: number;
+};
+
 // ---------- ban-impact-service types ----------
 
 export type HeroBanImpact = {

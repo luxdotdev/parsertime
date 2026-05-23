@@ -28,6 +28,7 @@ import { UltImpactAnalysisCard } from "@/components/stats/team/ult-impact-analys
 import { UltPlayerRankingsCard } from "@/components/stats/team/ult-player-rankings-card";
 import { UltRoleBreakdownCard } from "@/components/stats/team/ult-role-breakdown-card";
 import { UltCombosCard } from "@/components/stats/team/ult-combos-card";
+import { UltEconomyCard } from "@/components/stats/team/ult-economy-card";
 import { UltResponseCard } from "@/components/stats/team/ult-response-card";
 import { UltUsageOverviewCard } from "@/components/stats/team/ult-usage-overview-card";
 import { UltimateEconomyCard } from "@/components/stats/team/ultimate-economy-card";
@@ -246,6 +247,7 @@ export default async function TeamStatsPage(
       quickStats,
       ultStats,
       ultCombos,
+      ultEconomy,
       heroSwapStats,
       banImpactAnalysis,
       ultImpactAnalysis,
@@ -329,6 +331,9 @@ export default async function TeamStatsPage(
           ),
           ultCombos: TeamUltService.pipe(
             Effect.flatMap((svc) => svc.getTeamUltCombos(teamId, dateRange))
+          ),
+          ultEconomy: TeamUltService.pipe(
+            Effect.flatMap((svc) => svc.getTeamUltEconomy(teamId, dateRange))
           ),
           heroSwapStats: TeamHeroSwapService.pipe(
             Effect.flatMap((svc) => svc.getTeamHeroSwapStats(teamId, dateRange))
@@ -833,6 +838,7 @@ export default async function TeamStatsPage(
           <UltCombosCard analysis={ultCombos} />
           <UltResponseCard analysis={ultCombos} />
           <UltimateEconomyCard fightStats={fightStats} />
+          <UltEconomyCard analysis={ultEconomy} />
           <UltRoleBreakdownCard ultStats={ultStats} />
           <UltPlayerRankingsCard ultStats={ultStats} />
         </TabsContent>

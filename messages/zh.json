@@ -2646,6 +2646,33 @@
         "noEnemyUlts": "未找到敌方终极技能。",
         "flowSummary": "用 {ourHero} 应对 {enemyHero} {count} 次（胜率 {winrate}%）。",
         "noResponsesForHero": "没有针对该敌方终极技能的记录应对。"
+      },
+      "ultAdvantage": {
+        "title": "终极技能优势",
+        "description": "在 {maps} 张地图中，进入团战时你的终极技能储备相比敌方的情况。",
+        "noData": "终极技能充能数据不足，暂时无法追踪终极技能优势。",
+        "avgAdvantage": "平均终极技能优势",
+        "avgAdvantageSub": "进入团战时相比敌方的终极技能数",
+        "winWhenAhead": "占优时胜率",
+        "winWhenBehind": "落后时胜率",
+        "ofFights": "{pct}% 的团战",
+        "behind": "落后",
+        "even": "持平",
+        "ahead": "占优",
+        "distributionCaption": "你进入团战时的状态频率...",
+        "winrateCaption": "按终极技能优势划分的胜率",
+        "bucketBehind2": "落后 2+",
+        "bucketBehind1": "落后 1",
+        "bucketEven": "持平",
+        "bucketAhead1": "占优 1",
+        "bucketAhead2": "占优 2+",
+        "noFights": "无团战",
+        "fightsCount": "{count, plural, other {# 场团战}}",
+        "tempoCaption": "各团战的平均终极技能优势",
+        "fightTick": "第 {n} 场",
+        "tempoHint": "高于零表示你进入团战时持有的终极技能比敌方多。",
+        "shapeCaption": "按优势的团战数",
+        "fightsAxis": "团战"
       }
     }
   },

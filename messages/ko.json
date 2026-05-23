@@ -2643,6 +2643,33 @@
         "noEnemyUlts": "적 궁극기를 찾을 수 없습니다.",
         "flowSummary": "{ourHero}(으)로 {enemyHero}에 {count}회 대응 (승률 {winrate}%).",
         "noResponsesForHero": "이 적 궁극기에 대한 기록된 대응이 없습니다."
+      },
+      "ultAdvantage": {
+        "title": "궁극기 우위",
+        "description": "{maps}개 맵에서 교전 진입 시 우리 궁극기 보유량이 적과 비교해 어떤지 보여줍니다.",
+        "noData": "궁극기 우위를 추적하기에 충전 데이터가 충분하지 않습니다.",
+        "avgAdvantage": "평균 궁극기 우위",
+        "avgAdvantageSub": "교전 진입 시 적 대비 궁극기 수",
+        "winWhenAhead": "우위일 때 승률",
+        "winWhenBehind": "열세일 때 승률",
+        "ofFights": "교전의 {pct}%",
+        "behind": "열세",
+        "even": "동등",
+        "ahead": "우위",
+        "distributionCaption": "교전 진입 시 상태 빈도...",
+        "winrateCaption": "궁극기 우위별 승률",
+        "bucketBehind2": "2개 이상 열세",
+        "bucketBehind1": "1개 열세",
+        "bucketEven": "동등",
+        "bucketAhead1": "1개 우위",
+        "bucketAhead2": "2개 이상 우위",
+        "noFights": "교전 없음",
+        "fightsCount": "{count, plural, other {교전 #회}}",
+        "tempoCaption": "교전별 평균 궁극기 우위",
+        "fightTick": "{n}번째 교전",
+        "tempoHint": "0보다 높으면 적보다 많은 궁극기를 들고 교전에 진입했다는 의미입니다.",
+        "shapeCaption": "우위별 교전 수",
+        "fightsAxis": "교전"
       }
     }
   },
