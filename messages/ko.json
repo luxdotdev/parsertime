@@ -5358,6 +5358,11 @@
       "upgrade": "더 많은 기간을 보려면 업그레이드하세요",
       "pickDateRange": "날짜 범위 선택"
     },
+    "insufficientScrimsPlaceholder": {
+      "title": "스크림이 최소 2개 필요합니다",
+      "description": "팀 통계는 각 맵에서 우리 팀이 어느 진영으로 플레이했는지 안정적으로 식별하려면 스크림이 최소 2개 필요합니다. 현재 업로드된 스크림은 {count, plural, =0 {없습니다} other {#개입니다}}. 전체 통계 대시보드를 열려면 스크림을 하나 더 업로드하세요.",
+      "uploadScrim": "스크림 업로드"
+    },
     "ultimateEconomyCard": {
       "eyebrow": "궁극기 · 경제",
       "title": "궁극기 경제",

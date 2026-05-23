@@ -5358,6 +5358,11 @@
       "upgrade": "升级以查看更多时间范围",
       "pickDateRange": "选择日期范围"
     },
+    "insufficientScrimsPlaceholder": {
+      "title": "至少需要两场训练赛",
+      "description": "团队统计需要至少两场训练赛，才能可靠识别您的队伍在每张地图中所在的阵营。您当前已上传 {count, plural, =0 {0 场训练赛} other {# 场训练赛}}。再上传一场即可解锁完整统计仪表板。",
+      "uploadScrim": "上传训练赛"
+    },
     "ultimateEconomyCard": {
       "eyebrow": "终极技能 · 经济",
       "title": "终极技能经济",
