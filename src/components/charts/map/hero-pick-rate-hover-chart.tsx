@@ -13,6 +13,7 @@ import {
   getPatchesInRange,
   type OverwatchPatch,
 } from "@/types/overwatch-patches";
+import { useFormatter, useTranslations } from "next-intl";
 import * as React from "react";
 import {
   Area,
@@ -60,25 +61,61 @@ function shortSeasonLabel(name: string): string {
   return head.replace("Season ", "S");
 }
 
-function formatBucketLabel(date: string): string {
+function formatBucketLabel(
+  date: string,
+  formatter: ReturnType<typeof useFormatter>
+): string {
   const parsed = new Date(`${date}T00:00:00Z`);
-  return parsed.toLocaleDateString("en-US", {
+  return formatter.dateTime(parsed, {
     month: "short",
     day: "numeric",
     timeZone: "UTC",
   });
 }
 
-function formatPlaytime(seconds: number): string {
-  if (seconds <= 0) return "0m";
+function formatPlaytime(
+  seconds: number,
+  formatter: ReturnType<typeof useFormatter>,
+  t: ReturnType<typeof useTranslations>
+): string {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.round((seconds % 3600) / 60);
-  if (hours > 0) return `${hours}h ${minutes.toString().padStart(2, "0")}m`;
-  return `${minutes}m`;
+  if (hours > 0) {
+    return t("playtimeHoursMinutes", {
+      hours: formatter.number(hours),
+      minutes: formatter.number(minutes, {
+        minimumIntegerDigits: 2,
+        useGrouping: false,
+      }),
+    });
+  }
+  return t("playtimeMinutes", { minutes: formatter.number(minutes) });
 }
 
-function formatPercent(value: number, digits = 0): string {
-  return `${value.toFixed(digits)}%`;
+function formatPercent(
+  value: number,
+  formatter: ReturnType<typeof useFormatter>,
+  digits = 0
+): string {
+  return formatter.number(value / 100, {
+    style: "percent",
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  });
+}
+
+function formatPercentagePoints(
+  value: number,
+  formatter: ReturnType<typeof useFormatter>,
+  t: ReturnType<typeof useTranslations>
+): string {
+  return t("percentagePoints", {
+    value: formatter.number(value, {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+      signDisplay: "exceptZero",
+    }),
+  });
 }
 
 function pickRateTrendDelta(trend: MapHeroTrendPoint[]): number {
@@ -99,7 +136,8 @@ type ResolvedPatch = OverwatchPatch & { bucket: string; label: string };
 
 function resolvePatches(
   trend: MapHeroTrendPoint[],
-  patches: OverwatchPatch[]
+  patches: OverwatchPatch[],
+  formatter: ReturnType<typeof useFormatter>
 ): ResolvedPatch[] {
   const firstPoint = trend[0];
   if (!firstPoint) return [];
@@ -116,7 +154,7 @@ function resolvePatches(
       byBucket.set(bucket, {
         ...patch,
         bucket,
-        label: formatBucketLabel(bucket),
+        label: formatBucketLabel(bucket, formatter),
       });
     }
   }
@@ -127,36 +165,37 @@ function PickRateTooltip({
   active,
   payload,
   label,
-}: TooltipProps<ValueType, NameType>) {
+  intlFormatter,
+  t,
+}: TooltipProps<ValueType, NameType> & {
+  intlFormatter: ReturnType<typeof useFormatter>;
+  t: ReturnType<typeof useTranslations>;
+}) {
   if (!active || !payload?.length) return null;
   const datum = payload[0]?.payload as ChartDatum | undefined;
   if (!datum) return null;
   return (
     <div className="bg-popover text-popover-foreground border-border rounded-md border px-2.5 py-1.5 shadow-md">
       <p className="text-muted-foreground font-mono text-[10px] tracking-[0.14em] uppercase">
-        Week of {label}
+        {t("weekOf", { date: String(label ?? "") })}
       </p>
       <dl className="mt-1 space-y-0.5 text-xs">
         <div className="flex items-baseline justify-between gap-6">
-          <dt className="text-muted-foreground">Pick rate</dt>
+          <dt className="text-muted-foreground">{t("pickRate")}</dt>
           <dd className="font-mono tabular-nums">
-            {formatPercent(datum.pickRate, 1)}
+            {formatPercent(datum.pickRate, intlFormatter, 1)}
           </dd>
         </div>
         <div className="flex items-baseline justify-between gap-6">
-          <dt className="text-muted-foreground">Playtime</dt>
+          <dt className="text-muted-foreground">{t("playtime")}</dt>
           <dd className="font-mono tabular-nums">
-            {formatPlaytime(datum.playtime)}
+            {formatPlaytime(datum.playtime, intlFormatter, t)}
           </dd>
         </div>
       </dl>
     </div>
   );
 }
-
-const chartConfig = {
-  pickRate: { label: "Pick rate", color: "var(--primary)" },
-} satisfies ChartConfig;
 
 export function HeroPickRateHoverChart({
   heroLabel,
@@ -171,6 +210,8 @@ export function HeroPickRateHoverChart({
   pickRate: number;
   children: React.ReactNode;
 }) {
+  const t = useTranslations("chartComponents.heroPickRateHover");
+  const formatter = useFormatter();
   const firstPoint = trend[0];
   const lastPoint = trend[trend.length - 1];
   if (trend.length < 2 || !firstPoint || !lastPoint) {
@@ -179,12 +220,13 @@ export function HeroPickRateHoverChart({
 
   const data: ChartDatum[] = trend.map((point) => ({
     ...point,
-    label: formatBucketLabel(point.date),
+    label: formatBucketLabel(point.date, formatter),
   }));
 
   const patchPositions = resolvePatches(
     trend,
-    getPatchesInRange(firstPoint.date, lastPoint.date)
+    getPatchesInRange(firstPoint.date, lastPoint.date),
+    formatter
   );
 
   const trendDelta = pickRateTrendDelta(trend);
@@ -194,9 +236,12 @@ export function HeroPickRateHoverChart({
   const trendValue =
     Math.abs(trendDelta) < 0.1
       ? "—"
-      : `${trendDelta >= 0 ? "+" : "-"}${Math.abs(trendDelta).toFixed(1)}pp`;
+      : formatPercentagePoints(trendDelta, formatter, t);
 
   const yMax = Math.max(...trend.map((p) => p.pickRate), 5);
+  const chartConfig = {
+    pickRate: { label: t("pickRate"), color: "var(--primary)" },
+  } satisfies ChartConfig;
 
   return (
     <HoverCard openDelay={200} closeDelay={100}>
@@ -210,7 +255,7 @@ export function HeroPickRateHoverChart({
         <header className="border-border flex items-end justify-between gap-6 border-b px-4 py-3">
           <div className="min-w-0">
             <p className="text-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase">
-              Pick rate · Last 60 days
+              {t("eyebrow")}
             </p>
             <p className="mt-1 truncate text-sm leading-tight font-medium">
               {heroLabel}
@@ -224,13 +269,15 @@ export function HeroPickRateHoverChart({
           <dl className="flex shrink-0 items-baseline gap-5 font-mono tabular-nums">
             <div className="text-right">
               <dt className="text-muted-foreground text-[10px] tracking-[0.14em] uppercase">
-                Avg
+                {t("average")}
               </dt>
-              <dd className="text-sm">{formatPercent(pickRate, 1)}</dd>
+              <dd className="text-sm">
+                {formatPercent(pickRate, formatter, 1)}
+              </dd>
             </div>
             <div className="text-right">
               <dt className="text-muted-foreground text-[10px] tracking-[0.14em] uppercase">
-                Δ Window
+                {t("windowDelta")}
               </dt>
               <dd
                 className={cn(
@@ -285,14 +332,16 @@ export function HeroPickRateHoverChart({
                 axisLine={false}
                 width={36}
                 domain={[0, Math.ceil(yMax * 1.1)]}
-                tickFormatter={(value: number) => `${Math.round(value)}%`}
+                tickFormatter={(value: number) =>
+                  formatPercent(value, formatter)
+                }
               />
               <Tooltip
                 cursor={{
                   stroke: "var(--border)",
                   strokeWidth: 1,
                 }}
-                content={<PickRateTooltip />}
+                content={<PickRateTooltip intlFormatter={formatter} t={t} />}
               />
               {patchPositions.map((patch) => (
                 <ReferenceLine
@@ -335,9 +384,9 @@ export function HeroPickRateHoverChart({
 
         {patchPositions.length > 0 ? (
           <footer className="border-border text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-1 border-t px-4 py-2 font-mono text-[10px] tracking-[0.14em] uppercase">
-            <PatchLegendKey type="season" label="Season" />
-            <PatchLegendKey type="mid-season" label="Mid-cycle" />
-            <PatchLegendKey type="hotfix" label="Hotfix" />
+            <PatchLegendKey type="season" label={t("patches.season")} />
+            <PatchLegendKey type="mid-season" label={t("patches.midCycle")} />
+            <PatchLegendKey type="hotfix" label={t("patches.hotfix")} />
           </footer>
         ) : null}
       </HoverCardContent>

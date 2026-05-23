@@ -6115,6 +6115,24 @@
       "decreased": "降低"
     }
   },
+  "chartComponents": {
+    "heroPickRateHover": {
+      "weekOf": "{date} 当周",
+      "pickRate": "选择率",
+      "playtime": "游戏时间",
+      "eyebrow": "选择率 · 过去 60 天",
+      "average": "平均",
+      "windowDelta": "窗口变化",
+      "percentagePoints": "{value}pp",
+      "playtimeHoursMinutes": "{hours}小时 {minutes}分钟",
+      "playtimeMinutes": "{minutes}分钟",
+      "patches": {
+        "season": "赛季",
+        "midCycle": "季中",
+        "hotfix": "热修复"
+      }
+    }
+  },
   "reportsPage": {
     "metadata": {
       "title": "报告 | Parsertime",

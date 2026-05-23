@@ -6115,6 +6115,24 @@
       "decreased": "감소"
     }
   },
+  "chartComponents": {
+    "heroPickRateHover": {
+      "weekOf": "{date} 주",
+      "pickRate": "선택률",
+      "playtime": "플레이 시간",
+      "eyebrow": "선택률 · 최근 60일",
+      "average": "평균",
+      "windowDelta": "기간 변화",
+      "percentagePoints": "{value}pp",
+      "playtimeHoursMinutes": "{hours}시간 {minutes}분",
+      "playtimeMinutes": "{minutes}분",
+      "patches": {
+        "season": "시즌",
+        "midCycle": "중간 패치",
+        "hotfix": "핫픽스"
+      }
+    }
+  },
   "reportsPage": {
     "metadata": {
       "title": "보고서 | Parsertime",

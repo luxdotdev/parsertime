@@ -6114,6 +6114,24 @@
       "decreased": "decreased"
     }
   },
+  "chartComponents": {
+    "heroPickRateHover": {
+      "weekOf": "Week of {date}",
+      "pickRate": "Pick rate",
+      "playtime": "Playtime",
+      "eyebrow": "Pick rate · Last 60 days",
+      "average": "Avg",
+      "windowDelta": "Δ Window",
+      "percentagePoints": "{value}pp",
+      "playtimeHoursMinutes": "{hours}h {minutes}m",
+      "playtimeMinutes": "{minutes}m",
+      "patches": {
+        "season": "Season",
+        "midCycle": "Mid-cycle",
+        "hotfix": "Hotfix"
+      }
+    }
+  },
   "reportsPage": {
     "metadata": {
       "title": "Reports | Parsertime",
