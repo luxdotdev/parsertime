@@ -63,6 +63,7 @@ export type {
   PlayerUltRanking,
   FightOpeningHero,
   TeamUltStats,
+  UltCombosAnalysis,
 } from "./types";
 import type {
   ScenarioStats,
@@ -72,7 +73,9 @@ import type {
   PlayerUltRanking,
   FightOpeningHero,
   TeamUltStats,
+  UltCombosAnalysis,
 } from "./types";
+import { processUltCombos } from "./ult-combos";
 
 function emptyScenario(): ScenarioStats {
   return { fights: 0, wins: 0, losses: 0, winrate: 0 };
@@ -624,6 +627,11 @@ export type TeamUltServiceInterface = {
     teamId: number,
     dateRange?: TeamDateRange
   ) => Effect.Effect<TeamUltStats, TeamQueryError>;
+
+  readonly getTeamUltCombos: (
+    teamId: number,
+    dateRange?: TeamDateRange
+  ) => Effect.Effect<UltCombosAnalysis, TeamQueryError>;
 };
 
 export class TeamUltService extends Context.Tag(
@@ -748,6 +756,52 @@ export const make = Effect.gen(function* () {
     );
   }
 
+  function getTeamUltCombos(
+    teamId: number,
+    dateRange?: TeamDateRange
+  ): Effect.Effect<UltCombosAnalysis, TeamQueryError> {
+    const startTime = Date.now();
+    const wideEvent: Record<string, unknown> = {
+      teamId,
+      hasDateRange: !!dateRange,
+    };
+
+    return Effect.gen(function* () {
+      yield* Effect.annotateCurrentSpan("teamId", teamId);
+      const data = yield* shared.getExtendedTeamData(teamId, { dateRange });
+      const result = processUltCombos(data);
+      wideEvent.outcome = "success";
+      wideEvent.combo_count = result.combos.length;
+      wideEvent.response_count = result.responses.length;
+      yield* Metric.increment(ultQuerySuccessTotal);
+      return result;
+    }).pipe(
+      Effect.tapError((error) =>
+        Effect.sync(() => {
+          wideEvent.outcome = "error";
+          wideEvent.error_tag = error._tag;
+          wideEvent.error_message = error.message;
+        }).pipe(Effect.andThen(Metric.increment(ultQueryErrorTotal)))
+      ),
+      Effect.ensuring(
+        Effect.suspend(() => {
+          const durationMs = Date.now() - startTime;
+          wideEvent.duration_ms = durationMs;
+          wideEvent.outcome ??= "interrupted";
+          const log =
+            wideEvent.outcome === "error"
+              ? Effect.logError("team.ult.getTeamUltCombos")
+              : Effect.logInfo("team.ult.getTeamUltCombos");
+          return log.pipe(
+            Effect.annotateLogs(wideEvent),
+            Effect.andThen(ultQueryDuration(Effect.succeed(durationMs)))
+          );
+        })
+      ),
+      Effect.withSpan("team.ult.getTeamUltCombos")
+    );
+  }
+
   const CACHE_TTL = Duration.seconds(30);
   const CACHE_CAPACITY = 64;
 
@@ -785,6 +839,21 @@ export const make = Effect.gen(function* () {
     },
   });
 
+  const ultCombosCache = yield* Cache.make({
+    capacity: CACHE_CAPACITY,
+    timeToLive: CACHE_TTL,
+    lookup: (key: string) => {
+      const [teamIdStr, rest] = [
+        key.slice(0, key.indexOf(":")),
+        key.slice(key.indexOf(":") + 1),
+      ];
+      const dr = parseDateRangeFromCacheKey(rest);
+      return getTeamUltCombos(Number(teamIdStr), dr).pipe(
+        Effect.tap(() => Metric.increment(teamCacheMissTotal))
+      );
+    },
+  });
+
   return {
     getTeamUltImpact: (teamId: number, dateRange?: TeamDateRange) =>
       ultImpactCache
@@ -792,6 +861,10 @@ export const make = Effect.gen(function* () {
         .pipe(Effect.tap(() => Metric.increment(teamCacheRequestTotal))),
     getTeamUltStats: (teamId: number, dateRange?: TeamDateRange) =>
       ultStatsCache
+        .get(cacheKeyOf(teamId, dateRange))
+        .pipe(Effect.tap(() => Metric.increment(teamCacheRequestTotal))),
+    getTeamUltCombos: (teamId: number, dateRange?: TeamDateRange) =>
+      ultCombosCache
         .get(cacheKeyOf(teamId, dateRange))
         .pipe(Effect.tap(() => Metric.increment(teamCacheRequestTotal))),
   } satisfies TeamUltServiceInterface;

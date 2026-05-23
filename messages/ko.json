@@ -2610,6 +2610,40 @@
       "customRange": "사용자 지정",
       "upgrade": "더 많은 기간을 보려면 업그레이드하세요",
       "pickDateRange": "날짜 범위 선택"
+    },
+    "ultimatesTab": {
+      "combos": {
+        "title": "궁극기 콤보",
+        "description": "{maps}개 맵에서 서로 {window}초 이내에 함께 사용한 두 궁극기 콤보입니다.",
+        "noData": "아직 두 궁극기 콤보가 없습니다. 한 교전에서 {window}초 이내에 두 궁극기를 함께 사용하면 여기에 표시됩니다.",
+        "metricLabel": "콤보 지표",
+        "mostUsed": "최다 사용",
+        "winRate": "승률",
+        "captionMostUsed": "가장 많이 사용한 콤보",
+        "captionWinRate": "최고 승률 (최소 {min}회 사용)",
+        "winrateNeedsSamples": "아직 {min}회 이상 사용한 콤보가 없어 순위를 매길 승률이 없습니다.",
+        "rowSummary": "{heroA} + {heroB}: 교전 {count}회 사용, 승률 {winrate}%.",
+        "sampleSize": "n={count}",
+        "lowSampleNote": "{min}회 미만 사용한 콤보는 승률 순위에서 제외됩니다."
+      },
+      "responses": {
+        "title": "적 궁극기 대응",
+        "description": "{maps}개 맵에서 적 궁극기 사용 후 {window}초 이내에 우리 팀이 사용한 궁극기입니다.",
+        "noData": "아직 대응 궁극기가 없습니다. 우리 팀이 적 궁극기에 {window}초 이내로 대응하면 여기에 표시됩니다.",
+        "viewLabel": "대응 보기",
+        "matrix": "매트릭스",
+        "flow": "흐름",
+        "enemyAxis": "적 궁극기",
+        "ourAxis": "우리 대응",
+        "matrixHint": "칸 색이 진할수록 대응 빈도가 높습니다. 승률은 마우스를 올리면 표시됩니다.",
+        "cellSummary": "{ourHero}(으)로 {enemyHero}에 {count}회 대응, 승률 {winrate}%.",
+        "selectEnemyUlt": "적 궁극기",
+        "allEnemyUlts": "모든 적 궁극기",
+        "searchEnemyUlts": "적 궁극기 검색",
+        "noEnemyUlts": "적 궁극기를 찾을 수 없습니다.",
+        "flowSummary": "{ourHero}(으)로 {enemyHero}에 {count}회 대응 (승률 {winrate}%).",
+        "noResponsesForHero": "이 적 궁극기에 대한 기록된 대응이 없습니다."
+      }
     }
   },
   "targets": {

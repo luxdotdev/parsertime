@@ -2613,6 +2613,40 @@
       "customRange": "自定义范围",
       "upgrade": "升级以查看更多时间范围",
       "pickDateRange": "选择日期范围"
+    },
+    "ultimatesTab": {
+      "combos": {
+        "title": "终极技能连招",
+        "description": "在 {maps} 张地图中，彼此相隔 {window} 秒内连用的双终极技能连招。",
+        "noData": "暂无双终极技能连招。在一场团战中于 {window} 秒内连用两个终极技能后，将显示在此处。",
+        "metricLabel": "连招指标",
+        "mostUsed": "最常用",
+        "winRate": "胜率",
+        "captionMostUsed": "最常用的连招",
+        "captionWinRate": "最高胜率（至少 {min} 次）",
+        "winrateNeedsSamples": "暂无使用达到 {min} 次的连招，无法按胜率排名。",
+        "rowSummary": "{heroA} + {heroB}：使用 {count} 场团战，胜率 {winrate}%。",
+        "sampleSize": "n={count}",
+        "lowSampleNote": "使用少于 {min} 次的连招不计入胜率排名。"
+      },
+      "responses": {
+        "title": "应对敌方终极技能",
+        "description": "在 {maps} 张地图中，你的队伍在敌方终极技能后 {window} 秒内使用的终极技能。",
+        "noData": "暂无应对终极技能。当你的队伍在 {window} 秒内应对敌方终极技能时，将显示在此处。",
+        "viewLabel": "应对视图",
+        "matrix": "矩阵",
+        "flow": "流向",
+        "enemyAxis": "敌方终极技能",
+        "ourAxis": "我方应对",
+        "matrixHint": "格子颜色越深表示应对越频繁；悬停查看胜率。",
+        "cellSummary": "用 {ourHero} 应对 {enemyHero} {count} 次，胜率 {winrate}%。",
+        "selectEnemyUlt": "敌方终极技能",
+        "allEnemyUlts": "所有敌方终极技能",
+        "searchEnemyUlts": "搜索敌方终极技能",
+        "noEnemyUlts": "未找到敌方终极技能。",
+        "flowSummary": "用 {ourHero} 应对 {enemyHero} {count} 次（胜率 {winrate}%）。",
+        "noResponsesForHero": "没有针对该敌方终极技能的记录应对。"
+      }
     }
   },
   "targets": {

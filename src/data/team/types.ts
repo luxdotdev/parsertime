@@ -423,6 +423,51 @@ export type PlayerUltRanking = {
 
 export type FightOpeningHero = { hero: string; count: number };
 
+// ---------- ult-combos-service types ----------
+
+/** A two-ultimate combo: a pair of our heroes whose ults were used together. */
+export type UltComboStat = {
+  /** Heroes are stored alphabetically so heroA/heroB is a stable, order-free key. */
+  heroA: string;
+  heroB: string;
+  /** Number of fights in which both ults were used within the combo window. */
+  count: number;
+  wins: number;
+  losses: number;
+  /** Win rate of the fights this combo appeared in, 0-100. */
+  winrate: number;
+};
+
+/** One enemy ult and the ult our team answered it with. */
+export type UltResponseStat = {
+  enemyHero: string;
+  ourHero: string;
+  /** Fights in which we answered this enemy ult with this hero, within the window. */
+  count: number;
+  wins: number;
+  losses: number;
+  /** Win rate of the fights this response appeared in, 0-100. */
+  winrate: number;
+};
+
+export type UltCombosAnalysis = {
+  /** All combos, sorted by count (desc), then win rate (desc). */
+  combos: UltComboStat[];
+  /** Every enemy-ult to our-response pairing observed. */
+  responses: UltResponseStat[];
+  /** Enemy heroes we answered, sorted by total responses (desc). */
+  enemyHeroes: string[];
+  /** Our heroes used as responses, sorted by total uses (desc). */
+  responseHeroes: string[];
+  /** Sum of combo counts (fights containing a tracked combo). */
+  totalCombos: number;
+  /** Sum of response counts. */
+  totalResponses: number;
+  totalMaps: number;
+  /** Seconds within which two ults count as combined / a response. */
+  windowSeconds: number;
+};
+
 export type TeamUltStats = {
   totalUltsUsed: number;
   totalUltsEarned: number;

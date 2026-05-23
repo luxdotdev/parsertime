@@ -4395,6 +4395,38 @@
         "mapsPlayed": "Maps",
         "ultsPerMap": "Ults/Map",
         "fightOpener": "Fight Opener"
+      },
+      "combos": {
+        "title": "Ult combos",
+        "description": "Two-ult combos used within {window}s of each other, across {maps} maps.",
+        "noData": "No two-ult combos yet. Pair two ultimates within {window}s in a fight and they'll show up here.",
+        "metricLabel": "Combo metric",
+        "mostUsed": "Most used",
+        "winRate": "Win rate",
+        "captionMostUsed": "Most-used combos",
+        "captionWinRate": "Best win rate (min {min} uses)",
+        "winrateNeedsSamples": "No combo has been used at least {min} times yet, so there's no win rate to rank.",
+        "rowSummary": "{heroA} and {heroB}: used in {count} fights, {winrate}% win rate.",
+        "sampleSize": "n={count}",
+        "lowSampleNote": "Combos used fewer than {min} times are hidden from the win-rate ranking."
+      },
+      "responses": {
+        "title": "Answering enemy ults",
+        "description": "Which ults your team uses within {window}s after an enemy ult, across {maps} maps.",
+        "noData": "No counter-ults yet. When your team answers an enemy ultimate within {window}s, it'll show up here.",
+        "viewLabel": "Response view",
+        "matrix": "Matrix",
+        "flow": "Flow",
+        "enemyAxis": "Enemy ult",
+        "ourAxis": "Our response",
+        "matrixHint": "Cell shade shows how often you answered; hover for win rate.",
+        "cellSummary": "Answered {enemyHero} with {ourHero} {count} times, {winrate}% win rate.",
+        "selectEnemyUlt": "Enemy ult",
+        "allEnemyUlts": "All enemy ults",
+        "searchEnemyUlts": "Search enemy ults",
+        "noEnemyUlts": "No enemy ults found.",
+        "flowSummary": "{ourHero} answered {enemyHero} {count} times ({winrate}% win rate).",
+        "noResponsesForHero": "No tracked responses to this enemy ult."
       }
     },
     "swapsTab": {

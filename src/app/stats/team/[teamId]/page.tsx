@@ -27,6 +27,8 @@ import { TeamTsrStat } from "@/components/stats/team/team-tsr-stat";
 import { UltImpactAnalysisCard } from "@/components/stats/team/ult-impact-analysis-card";
 import { UltPlayerRankingsCard } from "@/components/stats/team/ult-player-rankings-card";
 import { UltRoleBreakdownCard } from "@/components/stats/team/ult-role-breakdown-card";
+import { UltCombosCard } from "@/components/stats/team/ult-combos-card";
+import { UltResponseCard } from "@/components/stats/team/ult-response-card";
 import { UltUsageOverviewCard } from "@/components/stats/team/ult-usage-overview-card";
 import { UltimateEconomyCard } from "@/components/stats/team/ultimate-economy-card";
 import { WinLossStreaksCard } from "@/components/stats/team/win-loss-streaks-card";
@@ -243,6 +245,7 @@ export default async function TeamStatsPage(
       mapModePerformance,
       quickStats,
       ultStats,
+      ultCombos,
       heroSwapStats,
       banImpactAnalysis,
       ultImpactAnalysis,
@@ -323,6 +326,9 @@ export default async function TeamStatsPage(
           ),
           ultStats: TeamUltService.pipe(
             Effect.flatMap((svc) => svc.getTeamUltStats(teamId, dateRange))
+          ),
+          ultCombos: TeamUltService.pipe(
+            Effect.flatMap((svc) => svc.getTeamUltCombos(teamId, dateRange))
           ),
           heroSwapStats: TeamHeroSwapService.pipe(
             Effect.flatMap((svc) => svc.getTeamHeroSwapStats(teamId, dateRange))
@@ -824,6 +830,8 @@ export default async function TeamStatsPage(
           {ultimateImpactToolEnabled && (
             <UltImpactAnalysisCard analysis={ultImpactAnalysis} />
           )}
+          <UltCombosCard analysis={ultCombos} />
+          <UltResponseCard analysis={ultCombos} />
           <UltimateEconomyCard fightStats={fightStats} />
           <UltRoleBreakdownCard ultStats={ultStats} />
           <UltPlayerRankingsCard ultStats={ultStats} />
