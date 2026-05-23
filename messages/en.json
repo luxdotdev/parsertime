@@ -4670,9 +4670,13 @@
       "loss": "L"
     },
     "rolePerformanceCard": {
+      "eyebrow": "Performance · Roles",
       "title": "Role Performance",
       "noDataAvailable": "No role performance data available yet.",
       "noData": "No data",
+      "stat": "Stat",
+      "durationHoursMinutes": "{hours}h {minutes}m",
+      "durationMinutes": "{minutes}m",
       "playtime": "Playtime",
       "maps": "Maps",
       "kd": "K/D",
@@ -4682,7 +4686,12 @@
       "ultEfficiency": "Ult Efficiency",
       "elims": "Elims",
       "deaths": "Deaths",
-      "assists": "Assists"
+      "assists": "Assists",
+      "roles": {
+        "Tank": "Tank",
+        "Damage": "Damage",
+        "Support": "Support"
+      }
     },
     "selector": {
       "select": "Select a team..."

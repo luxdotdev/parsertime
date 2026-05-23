@@ -3,7 +3,7 @@
 import { SectionHeader } from "@/components/stats/team/section-header";
 import type { RolePerformanceStats } from "@/data/team/types";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 
 type RolePerformanceCardProps = {
   roleStats: RolePerformanceStats;
@@ -12,22 +12,6 @@ type RolePerformanceCardProps = {
 type RoleKey = "Tank" | "Damage" | "Support";
 
 const ROLES: RoleKey[] = ["Tank", "Damage", "Support"];
-
-function formatTime(seconds: number): string {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  if (hours > 0) {
-    return `${hours}h ${minutes}m`;
-  }
-  return `${minutes}m`;
-}
-
-function formatPer10Min(value: number): string {
-  return value.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-}
 
 function kdClass(kd: number, hasData: boolean): string {
   if (!hasData) return "text-muted-foreground";
@@ -43,13 +27,32 @@ function deathsClass(deathsPer10Min: number, hasData: boolean): string {
 
 export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
   const t = useTranslations("teamStatsPage.rolePerformanceCard");
+  const format = useFormatter();
 
   const hasData = ROLES.some((role) => roleStats[role].totalPlaytime > 0);
+
+  function formatTime(seconds: number): string {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+
+    if (hours > 0) {
+      return t("durationHoursMinutes", { hours, minutes });
+    }
+
+    return t("durationMinutes", { minutes });
+  }
+
+  function formatDecimal(value: number, maximumFractionDigits = 2): string {
+    return format.number(value, {
+      minimumFractionDigits: maximumFractionDigits,
+      maximumFractionDigits,
+    });
+  }
 
   if (!hasData) {
     return (
       <section className="space-y-4">
-        <SectionHeader eyebrow="Performance · Roles" title={t("title")} />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <p className="text-muted-foreground text-sm">{t("noDataAvailable")}</p>
       </section>
     );
@@ -57,19 +60,19 @@ export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
 
   return (
     <section className="space-y-4">
-      <SectionHeader eyebrow="Performance · Roles" title={t("title")} />
+      <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
       <div className="border-border overflow-hidden rounded-md border">
         <table className="w-full text-sm">
           <thead className="bg-muted/30">
             <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-              <th className="px-4 py-2 text-left font-medium">Stat</th>
+              <th className="px-4 py-2 text-left font-medium">{t("stat")}</th>
               {ROLES.map((role) => (
                 <th
                   key={role}
                   className="px-4 py-2 text-right font-medium"
                   scope="col"
                 >
-                  {role}
+                  {t(`roles.${role}`)}
                 </th>
               ))}
             </tr>
@@ -141,7 +144,7 @@ export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
                       kdClass(stats.kd, has)
                     )}
                   >
-                    {has ? stats.kd.toFixed(2) : "—"}
+                    {has ? formatDecimal(stats.kd) : "—"}
                   </td>
                 );
               })}
@@ -165,7 +168,7 @@ export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
                       has ? "text-foreground" : "text-muted-foreground"
                     )}
                   >
-                    {has ? formatPer10Min(stats.damagePer10Min) : "—"}
+                    {has ? formatDecimal(stats.damagePer10Min) : "—"}
                   </td>
                 );
               })}
@@ -199,7 +202,7 @@ export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
                       has ? "text-foreground" : "text-muted-foreground"
                     )}
                   >
-                    {has ? formatPer10Min(stats.healingPer10Min) : "—"}
+                    {has ? formatDecimal(stats.healingPer10Min) : "—"}
                   </td>
                 );
               })}
@@ -223,7 +226,7 @@ export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
                       deathsClass(stats.deathsPer10Min, has)
                     )}
                   >
-                    {has ? formatPer10Min(stats.deathsPer10Min) : "—"}
+                    {has ? formatDecimal(stats.deathsPer10Min) : "—"}
                   </td>
                 );
               })}
@@ -247,7 +250,7 @@ export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
                       has ? "text-foreground" : "text-muted-foreground"
                     )}
                   >
-                    {has ? stats.ultEfficiency.toFixed(1) : "—"}
+                    {has ? formatDecimal(stats.ultEfficiency, 1) : "—"}
                   </td>
                 );
               })}
@@ -271,7 +274,7 @@ export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
                       has ? "text-foreground" : "text-muted-foreground"
                     )}
                   >
-                    {has ? stats.eliminations : "—"}
+                    {has ? format.number(stats.eliminations) : "—"}
                   </td>
                 );
               })}
@@ -295,7 +298,7 @@ export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
                       has ? "text-foreground" : "text-muted-foreground"
                     )}
                   >
-                    {has ? stats.deaths : "—"}
+                    {has ? format.number(stats.deaths) : "—"}
                   </td>
                 );
               })}
@@ -319,7 +322,7 @@ export function RolePerformanceCard({ roleStats }: RolePerformanceCardProps) {
                       has ? "text-foreground" : "text-muted-foreground"
                     )}
                   >
-                    {has ? stats.assists : "—"}
+                    {has ? format.number(stats.assists) : "—"}
                   </td>
                 );
               })}

@@ -3582,6 +3582,30 @@
       "keepMomentumGoing": "좋은 흐름을 계속 이어가세요!",
       "timeToBreakStreak": "흐름을 끊을 때입니다 - 최근 VOD를 다시 확인해 보세요"
     },
+    "rolePerformanceCard": {
+      "eyebrow": "성능 · 역할",
+      "title": "역할 성능",
+      "noDataAvailable": "아직 역할 성능 데이터가 없습니다.",
+      "noData": "데이터 없음",
+      "stat": "스탯",
+      "durationHoursMinutes": "{hours}시간 {minutes}분",
+      "durationMinutes": "{minutes}분",
+      "playtime": "플레이 시간",
+      "maps": "맵",
+      "kd": "K/D",
+      "damagePerMin": "피해량/10분",
+      "healingPerMin": "치유량/10분",
+      "deathsPerMin": "사망/10분",
+      "ultEfficiency": "궁극기 효율",
+      "elims": "처치",
+      "deaths": "사망",
+      "assists": "지원",
+      "roles": {
+        "Tank": "탱커",
+        "Damage": "딜러",
+        "Support": "지원"
+      }
+    },
     "ultimatesTab": {
       "combos": {
         "title": "궁극기 콤보",

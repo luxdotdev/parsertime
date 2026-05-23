@@ -3582,6 +3582,30 @@
       "keepMomentumGoing": "继续保持势头！",
       "timeToBreakStreak": "该终结连败了 - 复盘最近的 VOD"
     },
+    "rolePerformanceCard": {
+      "eyebrow": "表现 · 职责",
+      "title": "职责表现",
+      "noDataAvailable": "还没有职责表现数据。",
+      "noData": "无数据",
+      "stat": "数据",
+      "durationHoursMinutes": "{hours} 小时 {minutes} 分钟",
+      "durationMinutes": "{minutes} 分钟",
+      "playtime": "游戏时间",
+      "maps": "地图",
+      "kd": "K/D",
+      "damagePerMin": "伤害/10 分钟",
+      "healingPerMin": "治疗/10 分钟",
+      "deathsPerMin": "死亡/10 分钟",
+      "ultEfficiency": "终极技能效率",
+      "elims": "击杀",
+      "deaths": "死亡",
+      "assists": "助攻",
+      "roles": {
+        "Tank": "坦克",
+        "Damage": "输出",
+        "Support": "支援"
+      }
+    },
     "ultimatesTab": {
       "combos": {
         "title": "终极技能连招",
