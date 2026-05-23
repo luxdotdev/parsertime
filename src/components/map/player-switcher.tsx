@@ -224,7 +224,7 @@ type PlayerContextType = {
 
 export const SelectedPlayerContext = React.createContext<PlayerContextType>({
   selectedPlayer: {
-    label: "Default",
+    label: "default",
     value: "default",
   },
   setSelectedPlayer: () => {
@@ -237,8 +237,9 @@ export function SelectedPlayerProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const t = useTranslations("mapPage.playerSwitcher");
   const [selectedPlayer, setSelectedPlayer] = React.useState<Player>({
-    label: "Default",
+    label: t("default"),
     value: "default",
   });
 

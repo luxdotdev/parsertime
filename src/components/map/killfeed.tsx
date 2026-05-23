@@ -72,8 +72,8 @@ export async function Killfeed({
 
   const t = await getTranslations("mapPage.killfeed");
 
-  const team1Name = playerTeams?.team_1_name;
-  const team2Name = playerTeams?.team_2_name;
+  const team1Name = playerTeams?.team_1_name ?? t("team1");
+  const team2Name = playerTeams?.team_2_name ?? t("team2");
 
   let team1Kills = 0;
   let team2Kills = 0;
@@ -160,8 +160,8 @@ export async function Killfeed({
           fights={fights}
           ultimateData={ultimateData}
           roundEnds={roundEnds}
-          team1={team1Name ?? "Team 1"}
-          team2={team2Name ?? "Team 2"}
+          team1={team1Name}
+          team2={team2Name}
           team1Color={team1Color}
           team2Color={team2Color}
           calibrationData={calibrationData}

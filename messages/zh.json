@@ -2189,7 +2189,9 @@
       "kills": "击杀",
       "deaths": "死亡人数",
       "fightWins": "战斗胜利",
-      "title": "击杀记录"
+      "title": "击杀记录",
+      "team1": "队伍 1",
+      "team2": "队伍 2"
     },
     "killfeedTable": {
       "limitTest": "极限测试",

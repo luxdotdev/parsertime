@@ -2189,7 +2189,9 @@
       "kills": "처치",
       "deaths": "죽음",
       "fightWins": "전투 승리",
-      "title": "킬 피드"
+      "title": "킬 피드",
+      "team1": "팀 1",
+      "team2": "팀 2"
     },
     "killfeedTable": {
       "limitTest": "제한 테스트",

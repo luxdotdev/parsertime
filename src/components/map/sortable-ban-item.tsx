@@ -32,6 +32,7 @@ export function SortableBanItem({
 }) {
   const t = useTranslations("dashboard.scrimCreationForm");
   const tBans = useTranslations("scrimPage.addMap.heroBans");
+  const tCompare = useTranslations("mapPage.compare");
   const {
     attributes,
     listeners,
@@ -81,8 +82,12 @@ export function SortableBanItem({
           <SelectValue placeholder={t("selectTeam")} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="team1">{team1Name ?? "Team 1"}</SelectItem>
-          <SelectItem value="team2">{team2Name ?? "Team 2"}</SelectItem>
+          <SelectItem value="team1">
+            {team1Name ?? tCompare("team1")}
+          </SelectItem>
+          <SelectItem value="team2">
+            {team2Name ?? tCompare("team2")}
+          </SelectItem>
         </SelectContent>
       </Select>
       <div className="bg-muted text-foreground flex h-9 items-center justify-center rounded-md font-mono text-sm tabular-nums">

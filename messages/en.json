@@ -2189,7 +2189,9 @@
       "kills": "Kills",
       "deaths": "Deaths",
       "fightWins": "Fight Wins",
-      "title": "Killfeed"
+      "title": "Killfeed",
+      "team1": "Team 1",
+      "team2": "Team 2"
     },
     "killfeedTable": {
       "limitTest": "Limit Testing",
