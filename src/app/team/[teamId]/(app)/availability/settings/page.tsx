@@ -2,6 +2,7 @@ import { AvailabilitySettingsForm } from "@/components/availability/availability
 import { isTeamOwnerOrManager } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 type PageProps = { params: Promise<{ teamId: string }> };
 
@@ -9,6 +10,7 @@ export default async function AvailabilitySettingsPage({ params }: PageProps) {
   const { teamId: raw } = await params;
   const teamId = parseInt(raw);
   if (!Number.isFinite(teamId)) notFound();
+  const t = await getTranslations("availability.settingsPage");
 
   if (!(await isTeamOwnerOrManager(teamId))) {
     redirect(`/team/${teamId}/availability`);
@@ -35,10 +37,8 @@ export default async function AvailabilitySettingsPage({ params }: PageProps) {
   return (
     <div className="mx-auto max-w-3xl space-y-6 p-8">
       <div>
-        <h1 className="text-2xl font-bold">Availability settings</h1>
-        <p className="text-muted-foreground text-sm">
-          Configure how the shared availability calendar works for your team.
-        </p>
+        <h1 className="text-2xl font-bold">{t("title")}</h1>
+        <p className="text-muted-foreground text-sm">{t("description")}</p>
       </div>
       <AvailabilitySettingsForm teamId={teamId} initial={initial} />
     </div>

@@ -644,6 +644,24 @@
       "regional": "区域",
       "allTimezones": "所有时区"
     },
+    "indexPage": {
+      "title": "{teamName} — 可用时间",
+      "settings": "设置",
+      "notConfiguredManager": "这支队伍尚未配置可用时间。<setup>立即设置</setup>",
+      "notConfiguredViewer": "这支队伍尚未配置可用时间。请让所有者或管理员进行设置。",
+      "currentWeek": "本周：{start} – {end}",
+      "responsesSoFar": "目前已有 {count} 份回复。",
+      "openShareLink": "打开分享链接",
+      "pastWeeks": "过往周次",
+      "pastWeekRange": "{start} – {end}",
+      "pastWeekResponses": "（{count} 份回复）",
+      "view": "查看",
+      "startThisWeek": "开始本周"
+    },
+    "settingsPage": {
+      "title": "可用时间设置",
+      "description": "配置队伍共享可用时间日历的工作方式。"
+    },
     "settingsForm": {
       "slotGranularity": "时间段粒度",
       "slotMinutes": "{count} 分钟",

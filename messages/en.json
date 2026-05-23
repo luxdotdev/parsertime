@@ -644,6 +644,24 @@
       "regional": "Regional",
       "allTimezones": "All timezones"
     },
+    "indexPage": {
+      "title": "{teamName} — Availability",
+      "settings": "Settings",
+      "notConfiguredManager": "Availability is not configured for this team yet. <setup>Set it up</setup>",
+      "notConfiguredViewer": "Availability is not configured for this team yet. Ask an owner or manager to configure it.",
+      "currentWeek": "Current week: {start} – {end}",
+      "responsesSoFar": "{count, plural, one {# response} other {# responses}} so far.",
+      "openShareLink": "Open share link",
+      "pastWeeks": "Past weeks",
+      "pastWeekRange": "{start} – {end}",
+      "pastWeekResponses": "({count, plural, one {# response} other {# responses}})",
+      "view": "View",
+      "startThisWeek": "Start this week"
+    },
+    "settingsPage": {
+      "title": "Availability settings",
+      "description": "Configure how the shared availability calendar works for your team."
+    },
     "settingsForm": {
       "slotGranularity": "Slot granularity",
       "slotMinutes": "{count} minutes",
