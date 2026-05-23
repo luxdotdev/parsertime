@@ -15,7 +15,7 @@ import type {
 } from "@/data/intelligence/types";
 import { cn } from "@/lib/utils";
 import { ArrowDown, ArrowRight, ArrowUp, Info } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useMemo } from "react";
 
 type MapVetoAdvisorProps = {
@@ -28,6 +28,7 @@ export function MapVetoAdvisor({
   hasUserTeamLink,
 }: MapVetoAdvisorProps) {
   const t = useTranslations("scoutingPage.team.maps");
+  const formatter = useFormatter();
   const { matchupMatrix, trends, strengthWeightedWRs } = mapIntelligence;
 
   const { sortedByAdvantage, topPicks, topBans } = useMemo(() => {
@@ -59,14 +60,13 @@ export function MapVetoAdvisor({
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>Map Veto Advisor</CardTitle>
+                  <CardTitle>{t("advisorTitle")}</CardTitle>
                   <CardDescription>
-                    Maps sorted by net advantage. Pick from the top, ban from
-                    the bottom.
+                    {t("advisorDescription")}
                   </CardDescription>
                 </div>
                 <Badge variant="secondary" className="shrink-0">
-                  Cross-reference available
+                  {t("crossReferenceAvailable")}
                 </Badge>
               </div>
             </CardHeader>
@@ -74,7 +74,7 @@ export function MapVetoAdvisor({
               <div
                 className="space-y-1"
                 role="list"
-                aria-label="Map matchup matrix"
+                aria-label={t("matchupMatrixLabel")}
               >
                 {sortedByAdvantage.map((entry) => (
                   <MapMatchupBar
@@ -90,14 +90,14 @@ export function MapVetoAdvisor({
           {(topPicks.length > 0 || topBans.length > 0) && (
             <Card>
               <CardHeader>
-                <CardTitle>Veto Recommendation</CardTitle>
+                <CardTitle>{t("vetoRecommendation")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4 sm:grid-cols-2">
                   {topPicks.length > 0 && (
                     <div>
                       <p className="mb-2 text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                        Pick
+                        {t("pick")}
                       </p>
                       <ul className="space-y-1">
                         {topPicks.slice(0, 3).map((m) => (
@@ -107,7 +107,11 @@ export function MapVetoAdvisor({
                           >
                             <span className="font-medium">{m.mapName}</span>
                             <span className="text-muted-foreground tabular-nums">
-                              +{Math.round(m.netAdvantage!)}pp
+                              {formatSignedPercentagePoints(
+                                formatter,
+                                t,
+                                m.netAdvantage!
+                              )}
                             </span>
                           </li>
                         ))}
@@ -117,7 +121,7 @@ export function MapVetoAdvisor({
                   {topBans.length > 0 && (
                     <div>
                       <p className="mb-2 text-sm font-medium text-red-600 dark:text-red-400">
-                        Ban
+                        {t("ban")}
                       </p>
                       <ul className="space-y-1">
                         {topBans.slice(0, 3).map((m) => (
@@ -127,7 +131,11 @@ export function MapVetoAdvisor({
                           >
                             <span className="font-medium">{m.mapName}</span>
                             <span className="text-muted-foreground tabular-nums">
-                              {Math.round(m.netAdvantage!)}pp
+                              {formatSignedPercentagePoints(
+                                formatter,
+                                t,
+                                m.netAdvantage!
+                              )}
                             </span>
                           </li>
                         ))}
@@ -147,19 +155,18 @@ export function MapVetoAdvisor({
         <CardHeader>
           <CardTitle>{t("byMap")}</CardTitle>
           <CardDescription>
-            Opponent map performance with strength-weighted win rates and trend
-            indicators
+            {t("opponentPerformanceDescription")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {strengthWeightedWRs.length > 0 ? (
             <div className="space-y-0.5">
               <div className="text-muted-foreground grid grid-cols-[1fr_80px_80px_80px_40px] gap-2 px-2 pb-2 text-xs font-medium">
-                <span>Map</span>
-                <span className="text-right">Raw WR</span>
-                <span className="text-right">Wt. WR</span>
-                <span className="text-right">Played</span>
-                <span className="text-center">Trend</span>
+                <span>{t("map")}</span>
+                <span className="text-right">{t("rawWinRate")}</span>
+                <span className="text-right">{t("weightedWinRate")}</span>
+                <span className="text-right">{t("played")}</span>
+                <span className="text-center">{t("trend")}</span>
               </div>
               {strengthWeightedWRs.map((wr) => {
                 const trend = trendMap.get(wr.mapName);
@@ -183,10 +190,16 @@ export function MapVetoAdvisor({
                       </Badge>
                     </div>
                     <span className="text-muted-foreground text-right tabular-nums">
-                      {wr.rawWinRate.toFixed(0)}%
+                      {formatter.number(wr.rawWinRate / 100, {
+                        style: "percent",
+                        maximumFractionDigits: 0,
+                      })}
                     </span>
                     <span className="text-right font-medium tabular-nums">
-                      {wr.strengthWeightedWinRate.toFixed(0)}%
+                      {formatter.number(wr.strengthWeightedWinRate / 100, {
+                        style: "percent",
+                        maximumFractionDigits: 0,
+                      })}
                     </span>
                     <span className="text-muted-foreground text-right tabular-nums">
                       {wr.played}
@@ -218,6 +231,8 @@ function MapMatchupBar({
   entry: MapMatchupEntry;
   trend?: { trend: string; delta: number };
 }) {
+  const t = useTranslations("scoutingPage.team.maps");
+  const formatter = useFormatter();
   const advantage = entry.netAdvantage ?? 0;
   const maxAdvantage = 50;
   const barWidth = Math.min(Math.abs(advantage) / maxAdvantage, 1) * 50;
@@ -227,7 +242,10 @@ function MapMatchupBar({
     <div
       className="flex items-center gap-3 rounded-md px-2 py-1.5"
       role="listitem"
-      aria-label={`${entry.mapName}: ${isPositive ? "+" : ""}${Math.round(advantage)}pp net advantage`}
+      aria-label={t("netAdvantageLabel", {
+        map: entry.mapName,
+        advantage: formatSignedPercentagePoints(formatter, t, advantage),
+      })}
     >
       <div className="flex w-28 shrink-0 items-center gap-1.5">
         <span className="truncate text-sm font-medium">{entry.mapName}</span>
@@ -262,12 +280,18 @@ function MapMatchupBar({
       <div className="flex w-48 shrink-0 items-center gap-2 text-xs tabular-nums">
         <span className="text-muted-foreground w-12 text-right">
           {entry.userWinRate !== null
-            ? `${Math.round(entry.userWinRate)}%`
+            ? formatter.number(entry.userWinRate / 100, {
+                style: "percent",
+                maximumFractionDigits: 0,
+              })
             : "—"}
         </span>
-        <span className="text-muted-foreground">vs</span>
+        <span className="text-muted-foreground">{t("versus")}</span>
         <span className="text-muted-foreground w-12">
-          {Math.round(entry.opponentStrengthWeightedWR)}%
+          {formatter.number(entry.opponentStrengthWeightedWR / 100, {
+            style: "percent",
+            maximumFractionDigits: 0,
+          })}
         </span>
         <span
           className={cn(
@@ -277,8 +301,7 @@ function MapMatchupBar({
               : "text-red-600 dark:text-red-400"
           )}
         >
-          {isPositive ? "+" : ""}
-          {Math.round(advantage)}pp
+          {formatSignedPercentagePoints(formatter, t, advantage)}
         </span>
         <ConfidenceDot
           confidence={
@@ -299,11 +322,15 @@ function MapMatchupBar({
 }
 
 function TrendArrow({ trend, delta }: { trend: string; delta: number }) {
+  const t = useTranslations("scoutingPage.team.maps");
+  const formatter = useFormatter();
+  const formattedDelta = formatSignedPercentagePoints(formatter, t, delta);
+
   if (trend === "stable") {
     return (
       <ArrowRight
         className="text-muted-foreground h-3 w-3"
-        aria-label={`Stable trend (${delta > 0 ? "+" : ""}${Math.round(delta)}pp)`}
+        aria-label={t("stableTrend", { delta: formattedDelta })}
       />
     );
   }
@@ -311,31 +338,45 @@ function TrendArrow({ trend, delta }: { trend: string; delta: number }) {
     return (
       <ArrowUp
         className="h-3 w-3 text-red-500"
-        aria-label={`Improving (+${Math.round(delta)}pp recent) — caution`}
+        aria-label={t("improvingTrend", { delta: formattedDelta })}
       />
     );
   }
   return (
     <ArrowDown
       className="h-3 w-3 text-emerald-500"
-      aria-label={`Declining (${Math.round(delta)}pp recent) — opportunity`}
+      aria-label={t("decliningTrend", { delta: formattedDelta })}
     />
   );
 }
 
 function SelectTeamCTA() {
+  const t = useTranslations("scoutingPage.team.maps");
+
   return (
     <Card className="border-dashed">
       <CardContent className="flex flex-col items-center gap-3 py-8 text-center">
         <Info className="text-muted-foreground h-8 w-8" aria-hidden="true" />
         <div>
-          <p className="font-medium">Select your team to unlock map matchups</p>
+          <p className="font-medium">{t("selectTeamTitle")}</p>
           <p className="text-muted-foreground mt-1 text-sm">
-            Use the &ldquo;Scouting for&rdquo; picker above to select your team
-            and enable cross-referenced map veto analysis.
+            {t("selectTeamDescription")}
           </p>
         </div>
       </CardContent>
     </Card>
   );
+}
+
+function formatSignedPercentagePoints(
+  formatter: ReturnType<typeof useFormatter>,
+  t: ReturnType<typeof useTranslations>,
+  value: number
+) {
+  return t("percentagePoints", {
+    value: formatter.number(value, {
+      maximumFractionDigits: 0,
+      signDisplay: "exceptZero",
+    }),
+  });
 }
