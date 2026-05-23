@@ -3264,13 +3264,202 @@
         "description": "如果启用，模拟的 URL 将为生产环境生成。如果禁用，模拟的 URL 将为开发环境生成。"
       },
       "impersonate": "模拟用户",
-      "onSubmit": {
-        "title": "用户模拟成功",
-        "description": "模拟的 URL 已复制到您的剪贴板。",
-        "errorTitle": "错误",
-        "errorDescription": "模拟用户时发生错误。"
-      }
+  "onSubmit": {
+    "title": "用户模拟成功",
+    "description": "模拟的 URL 已复制到您的剪贴板。",
+    "errorTitle": "错误",
+    "errorDescription": "模拟用户时发生错误。"
+  },
+  "impersonateUser": {
+    "title": "模拟用户",
+    "description": "模拟某个用户，以该用户视角查看网站。",
+    "email": {
+      "title": "电子邮件",
+      "description": "这是您想要模拟的用户电子邮件地址。",
+      "message": "请输入有效的电子邮件地址。"
+    }
+  },
+  "audit-log": {
+    "title": "最近用户操作",
+    "action-types": "操作类型",
+    "filter-label": "按操作类型筛选",
+    "clear-filters": "全部清除",
+    "user-email": "用户邮箱：{userEmail}",
+    "target": "目标：{target}",
+    "search-user-email": "搜索用户邮箱",
+    "search-target": "搜索目标",
+    "download": {
+      "button": "下载 CSV",
+      "downloading": "正在下载...",
+      "filename": "audit-logs-{date}.csv",
+      "tooltip": "将当前筛选的审计日志下载为 CSV 文件。",
+      "error": "下载 CSV 时出错：{error}",
+      "unknown-error": "未知错误"
     },
+    "table": {
+      "user-email": "用户邮箱",
+      "action": "操作",
+      "target": "目标",
+      "details": "详情",
+      "date-time": "日期和时间",
+      "date-time-format": "{date} {time}",
+      "no-logs-found": "没有找到符合筛选条件的审计日志。",
+      "error-loading-logs": "加载审计日志时出错"
+    },
+    "showing-logs": "正在显示 {count} 条日志。",
+    "hover": {
+      "user-email": "用户邮箱",
+      "action": "操作",
+      "target": "目标",
+      "details": "详情",
+      "id": "ID：{id}",
+      "timestamp": "时间戳",
+      "auto-generated": "此操作由系统自动执行。"
+    }
+  },
+  "dashboard": {
+    "title": "管理员仪表盘",
+    "description": "管理用户和内容，并监控平台活动",
+    "user-search": {
+      "title": "用户搜索",
+      "description": "使用高级筛选选项搜索用户"
+    },
+    "audit-log": {
+      "title": "审计日志",
+      "description": "工作人员最近执行的操作"
+    },
+    "stats-cards": {
+      "total-users": {
+        "title": "用户总数",
+        "delta": "本月新增 {delta} 名用户"
+      },
+      "user-growth": {
+        "title": "用户增长",
+        "delta": "与上月 {lastMonth} 相比 {delta}"
+      },
+      "scrim-activity": {
+        "title": "训练赛活动",
+        "delta": "与上月 {lastMonth} 相比 {delta}"
+      },
+      "conversion-rate": {
+        "title": "转化率",
+        "delta": "{paidUsers} 名付费用户"
+      },
+      "monthly-chart": {
+        "title": "每月用户注册",
+        "description": "过去 12 个月的新用户注册趋势"
+      },
+      "low-trust-users": {
+        "title": "低信任用户",
+        "delta": "较上周 {delta}"
+      },
+      "pending-reports": {
+        "title": "待处理举报",
+        "delta": "较上周 {delta}"
+      },
+      "images-pending-review": {
+        "title": "待审核图片",
+        "delta": "较上周 {delta}"
+      }
+    }
+  },
+  "user-search": {
+    "metadata": {
+      "title": "用户搜索 — 管理员 | Enter Queue",
+      "description": "使用高级筛选选项搜索用户"
+    },
+    "title": "用户搜索",
+    "description": "使用高级筛选选项搜索用户",
+    "search-placeholder": "按用户名或电子邮件搜索...",
+    "filters": {
+      "title": "筛选",
+      "trust-score": "信任分范围",
+      "status": "用户状态",
+      "select-status": "选择状态",
+      "all-statuses": "所有状态",
+      "verification-status": "验证状态",
+      "select-verification-status": "选择验证状态",
+      "all-users": "所有用户",
+      "verified-only": "仅已验证",
+      "unverified-only": "仅未验证",
+      "billing-plan": "计费方案",
+      "select-billing-plan": "选择计费方案",
+      "all-plans": "所有方案",
+      "join-date-range": "加入日期范围",
+      "reset-filters": "重置筛选"
+    },
+    "table": {
+      "username": "用户名",
+      "email": "电子邮件",
+      "trust-score": "信任分",
+      "verification": "验证状态",
+      "join-date": "加入日期",
+      "actions": "操作",
+      "view-profile": "查看资料",
+      "edit-user": "编辑用户",
+      "adjust-trust-score": "调整信任分",
+      "ban-user": "封禁用户",
+      "unban-user": "解除封禁",
+      "no-users-found": "没有找到符合筛选条件的用户。",
+      "open-menu": "打开菜单",
+      "error-loading-users": "加载用户时出错",
+      "status": "状态",
+      "banned": "已封禁",
+      "active": "活跃",
+      "name": "姓名",
+      "billing-plan": "计费方案",
+      "role": "角色",
+      "email-verified": "邮箱已验证？",
+      "unverified": "未验证",
+      "verified": "已验证"
+    },
+    "showing-users": "正在显示 {count} 名用户。"
+  },
+  "analytics": {
+    "title": "分析",
+    "description": "查看用户活动和增长的详细分析与图表。",
+    "activeUsers": {
+      "title": "月活跃用户",
+      "description": "本月所在团队上传过训练赛的用户与其他用户对比"
+    },
+    "monthlyActiveUsers": {
+      "title": "活跃用户趋势",
+      "description": "过去 12 个月中，所在团队上传过训练赛的每月唯一用户"
+    },
+    "activeTeams": {
+      "title": "月活跃团队",
+      "description": "本月上传过训练赛的团队与所有团队对比"
+    },
+    "monthlyActiveTeams": {
+      "title": "活跃团队趋势",
+      "description": "过去 12 个月中每月上传过训练赛的唯一团队"
+    },
+    "userGrowth": {
+      "title": "用户增长趋势",
+      "description": "过去 12 个月的每月用户注册趋势"
+    },
+    "scrimActivity": {
+      "title": "训练赛活动",
+      "description": "过去 30 天的每日训练赛创建活动"
+    },
+    "teamCreations": {
+      "title": "团队创建",
+      "description": "过去 12 个月的每月团队创建趋势"
+    },
+    "teamManagerDistribution": {
+      "title": "用户角色分布",
+      "description": "普通用户与团队管理员的百分比分布"
+    },
+    "signupMethods": {
+      "title": "用户注册方式",
+      "description": "用户注册方式细分（OAuth 提供商与电子邮件）"
+    },
+    "billingPlans": {
+      "title": "计费方案分布",
+      "description": "按计费方案划分的用户分布（免费、Basic、Premium）"
+    }
+  }
+},
     "dangerZone": {
       "title": "危险区域",
       "description": "帐户删除是永久性的，无法撤销。您是否希望管理您的订阅？如果是，请点击 <Link>此处</Link>。"

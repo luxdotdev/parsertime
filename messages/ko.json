@@ -3264,13 +3264,202 @@
         "description": "활성화하면 가장 URL이 프로덕션 환경용으로 생성됩니다. 비활성화하면 개발 환경용으로 생성됩니다."
       },
       "impersonate": "사용자 가장하기",
-      "onSubmit": {
-        "title": "사용자 가장 완료",
-        "description": "가장 URL이 클립보드에 복사되었습니다.",
-        "errorTitle": "오류",
-        "errorDescription": "사용자를 가장하는 중 오류가 발생했습니다."
-      }
+  "onSubmit": {
+    "title": "사용자 가장 완료",
+    "description": "가장 URL이 클립보드에 복사되었습니다.",
+    "errorTitle": "오류",
+    "errorDescription": "사용자를 가장하는 중 오류가 발생했습니다."
+  },
+  "impersonateUser": {
+    "title": "사용자 가장하기",
+    "description": "해당 사용자의 관점에서 사이트를 확인하기 위해 사용자를 가장합니다.",
+    "email": {
+      "title": "이메일",
+      "description": "가장하려는 사용자의 이메일입니다.",
+      "message": "유효한 이메일 주소를 입력하세요."
+    }
+  },
+  "audit-log": {
+    "title": "최근 사용자 작업",
+    "action-types": "작업 유형",
+    "filter-label": "작업 유형으로 필터링",
+    "clear-filters": "모두 지우기",
+    "user-email": "사용자 이메일: {userEmail}",
+    "target": "대상: {target}",
+    "search-user-email": "사용자 이메일 검색",
+    "search-target": "대상 검색",
+    "download": {
+      "button": "CSV 다운로드",
+      "downloading": "다운로드 중...",
+      "filename": "audit-logs-{date}.csv",
+      "tooltip": "현재 필터링된 감사 로그를 CSV 파일로 다운로드합니다.",
+      "error": "CSV 다운로드 오류: {error}",
+      "unknown-error": "알 수 없는 오류"
     },
+    "table": {
+      "user-email": "사용자 이메일",
+      "action": "작업",
+      "target": "대상",
+      "details": "세부 정보",
+      "date-time": "날짜 및 시간",
+      "date-time-format": "{date} {time}",
+      "no-logs-found": "필터와 일치하는 감사 로그가 없습니다.",
+      "error-loading-logs": "감사 로그를 불러오는 중 오류가 발생했습니다."
+    },
+    "showing-logs": "{count}개의 로그 표시 중.",
+    "hover": {
+      "user-email": "사용자 이메일",
+      "action": "작업",
+      "target": "대상",
+      "details": "세부 정보",
+      "id": "ID: {id}",
+      "timestamp": "타임스탬프",
+      "auto-generated": "이 작업은 시스템에서 자동으로 수행되었습니다."
+    }
+  },
+  "dashboard": {
+    "title": "관리자 대시보드",
+    "description": "사용자와 콘텐츠를 관리하고 플랫폼 활동을 모니터링합니다.",
+    "user-search": {
+      "title": "사용자 검색",
+      "description": "고급 필터 옵션으로 사용자를 검색합니다."
+    },
+    "audit-log": {
+      "title": "감사 로그",
+      "description": "스태프 구성원이 수행한 최근 작업"
+    },
+    "stats-cards": {
+      "total-users": {
+        "title": "전체 사용자",
+        "delta": "이번 달 신규 사용자 {delta}명"
+      },
+      "user-growth": {
+        "title": "사용자 증가",
+        "delta": "지난달 {lastMonth}명 대비 {delta}"
+      },
+      "scrim-activity": {
+        "title": "스크림 활동",
+        "delta": "지난달 {lastMonth}개 대비 {delta}"
+      },
+      "conversion-rate": {
+        "title": "전환율",
+        "delta": "유료 사용자 {paidUsers}명"
+      },
+      "monthly-chart": {
+        "title": "월별 사용자 가입",
+        "description": "최근 12개월 신규 사용자 가입 추이"
+      },
+      "low-trust-users": {
+        "title": "낮은 신뢰도 사용자",
+        "delta": "지난주 대비 {delta}"
+      },
+      "pending-reports": {
+        "title": "대기 중인 신고",
+        "delta": "지난주 대비 {delta}"
+      },
+      "images-pending-review": {
+        "title": "검토 대기 이미지",
+        "delta": "지난주 대비 {delta}"
+      }
+    }
+  },
+  "user-search": {
+    "metadata": {
+      "title": "사용자 검색 — 관리자 | Enter Queue",
+      "description": "고급 필터 옵션으로 사용자를 검색합니다."
+    },
+    "title": "사용자 검색",
+    "description": "고급 필터 옵션으로 사용자를 검색합니다.",
+    "search-placeholder": "사용자 이름 또는 이메일로 검색...",
+    "filters": {
+      "title": "필터",
+      "trust-score": "신뢰 점수 범위",
+      "status": "사용자 상태",
+      "select-status": "상태 선택",
+      "all-statuses": "모든 상태",
+      "verification-status": "인증 상태",
+      "select-verification-status": "인증 상태 선택",
+      "all-users": "모든 사용자",
+      "verified-only": "인증된 사용자만",
+      "unverified-only": "미인증 사용자만",
+      "billing-plan": "결제 플랜",
+      "select-billing-plan": "결제 플랜 선택",
+      "all-plans": "모든 플랜",
+      "join-date-range": "가입일 범위",
+      "reset-filters": "필터 초기화"
+    },
+    "table": {
+      "username": "사용자 이름",
+      "email": "이메일",
+      "trust-score": "신뢰 점수",
+      "verification": "인증 상태",
+      "join-date": "가입일",
+      "actions": "작업",
+      "view-profile": "프로필 보기",
+      "edit-user": "사용자 편집",
+      "adjust-trust-score": "신뢰 점수 조정",
+      "ban-user": "사용자 차단",
+      "unban-user": "사용자 차단 해제",
+      "no-users-found": "필터와 일치하는 사용자가 없습니다.",
+      "open-menu": "메뉴 열기",
+      "error-loading-users": "사용자를 불러오는 중 오류가 발생했습니다.",
+      "status": "상태",
+      "banned": "차단됨",
+      "active": "활성",
+      "name": "이름",
+      "billing-plan": "결제 플랜",
+      "role": "역할",
+      "email-verified": "이메일 인증 여부",
+      "unverified": "미인증",
+      "verified": "인증됨"
+    },
+    "showing-users": "{count}명의 사용자 표시 중."
+  },
+  "analytics": {
+    "title": "분석",
+    "description": "사용자 활동과 성장에 대한 자세한 분석 및 차트를 확인합니다.",
+    "activeUsers": {
+      "title": "월간 활성 사용자",
+      "description": "이번 달 스크림을 업로드한 팀에 속한 사용자와 나머지 사용자 비교"
+    },
+    "monthlyActiveUsers": {
+      "title": "시간별 활성 사용자",
+      "description": "최근 12개월 동안 팀이 스크림을 업로드한 월별 고유 사용자"
+    },
+    "activeTeams": {
+      "title": "월간 활성 팀",
+      "description": "이번 달 스크림을 업로드한 팀과 전체 팀 비교"
+    },
+    "monthlyActiveTeams": {
+      "title": "시간별 활성 팀",
+      "description": "최근 12개월 동안 스크림을 업로드한 월별 고유 팀"
+    },
+    "userGrowth": {
+      "title": "시간별 사용자 증가",
+      "description": "최근 12개월 월별 사용자 가입 추이"
+    },
+    "scrimActivity": {
+      "title": "스크림 활동",
+      "description": "최근 30일간 일별 스크림 생성 활동"
+    },
+    "teamCreations": {
+      "title": "팀 생성",
+      "description": "최근 12개월 월별 팀 생성 추이"
+    },
+    "teamManagerDistribution": {
+      "title": "사용자 역할 분포",
+      "description": "일반 사용자와 팀 관리자 비율 분석"
+    },
+    "signupMethods": {
+      "title": "사용자 가입 방식",
+      "description": "가입 방식 분석(OAuth 제공자와 이메일)"
+    },
+    "billingPlans": {
+      "title": "결제 플랜 분포",
+      "description": "플랜별 사용자 분포(무료, Basic, Premium)"
+    }
+  }
+},
     "dangerZone": {
       "title": "위험 구역",
       "description": "계정 삭제는 영구적이며 되돌릴 수 없습니다. 구독을 관리하려면 <Link>여기</Link>를 클릭하세요."
