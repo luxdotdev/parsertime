@@ -2503,6 +2503,39 @@
         }
       },
       "players": {
+        "selectTeamTitle": "Select your team to unlock roster readiness",
+        "selectTeamDescription": "Use the “Scouting for” picker above to select your team. This tab cross-references your players’ hero depth with this opponent’s ban patterns to identify who is most at risk.",
+        "matchupSummary": "Showing <roster>your roster’s</roster> hero depth and vulnerabilities when facing <opponent>{opponentName}</opponent>. Players with narrow hero pools whose primary heroes are frequently banned by this opponent are flagged as at-risk.",
+        "thisOpponent": "this opponent",
+        "atRiskPlayers": "At-Risk Players",
+        "atRiskPlayersDescription": "Your players most vulnerable to this opponent’s ban strategy, ranked by hero pool depth and ban exposure",
+        "vulnerabilitySummary": "{role} · {hero} · {banRate} ban rate",
+        "rolePlayers": "Your {role} Players",
+        "roleDescription": "Hero depth and performance relative to your other {role} players",
+        "unknownHero": "Unknown",
+        "noSecondary": "No secondary",
+        "delta": "Delta: {value}",
+        "sigmaValue": "{sign}{value}σ",
+        "significantDropOff": "Significant drop-off",
+        "banExposure": "Ban exposure: <risk>{riskLevel}</risk>",
+        "banExposureDescription": "This opponent bans {hero} in {banRate} of their maps — if forced off their main, z-score drops by {delta}",
+        "unknownAmount": "an unknown amount",
+        "primaryBadge": "1st",
+        "roles": {
+          "tank": "Tank",
+          "damage": "Damage",
+          "support": "Support"
+        },
+        "riskLevels": {
+          "critical": "critical",
+          "high": "high",
+          "moderate": "moderate",
+          "low": "low"
+        },
+        "riskAriaCritical": "Critical vulnerability",
+        "riskAriaHigh": "High vulnerability",
+        "riskAriaModerate": "Moderate vulnerability",
+        "riskAriaLow": "Low vulnerability",
         "methodology": {
           "title": "How roster readiness is assessed",
           "points": {

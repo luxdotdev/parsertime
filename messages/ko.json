@@ -2643,6 +2643,39 @@
       }
     },
     "players": {
+      "selectTeamTitle": "로스터 준비도를 열려면 팀을 선택하세요",
+      "selectTeamDescription": "위의 “스카우팅 기준” 선택기에서 팀을 선택하세요. 이 탭은 우리 선수들의 영웅 깊이와 상대 밴 패턴을 교차 참조해 누가 가장 위험한지 식별합니다.",
+      "matchupSummary": "<roster>우리 로스터의</roster> 영웅 깊이와 취약성을 <opponent>{opponentName}</opponent> 상대 기준으로 보여줍니다. 주 영웅이 자주 밴되고 영웅 풀이 좁은 선수는 위험 대상으로 표시됩니다.",
+      "thisOpponent": "이 상대",
+      "atRiskPlayers": "위험 선수",
+      "atRiskPlayersDescription": "영웅 풀 깊이와 밴 노출도를 기준으로, 이 상대의 밴 전략에 가장 취약한 우리 선수들입니다",
+      "vulnerabilitySummary": "{role} · {hero} · 밴율 {banRate}",
+      "rolePlayers": "우리 {role} 선수",
+      "roleDescription": "다른 {role} 선수와 비교한 영웅 깊이 및 성과입니다",
+      "unknownHero": "알 수 없음",
+      "noSecondary": "보조 영웅 없음",
+      "delta": "차이: {value}",
+      "sigmaValue": "{sign}{value}σ",
+      "significantDropOff": "큰 하락",
+      "banExposure": "밴 노출: <risk>{riskLevel}</risk>",
+      "banExposureDescription": "이 상대는 {hero}를 맵의 {banRate}에서 밴합니다. 주 영웅에서 밀려나면 z-점수가 {delta}만큼 떨어집니다",
+      "unknownAmount": "알 수 없는 수치",
+      "primaryBadge": "1순위",
+      "roles": {
+        "tank": "탱커",
+        "damage": "딜러",
+        "support": "서포터"
+      },
+      "riskLevels": {
+        "critical": "치명",
+        "high": "높음",
+        "moderate": "보통",
+        "low": "낮음"
+      },
+      "riskAriaCritical": "치명적 취약성",
+      "riskAriaHigh": "높은 취약성",
+      "riskAriaModerate": "보통 취약성",
+      "riskAriaLow": "낮은 취약성",
       "methodology": {
         "title": "로스터 준비도를 평가하는 방법",
         "points": {

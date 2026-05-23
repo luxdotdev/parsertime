@@ -16,6 +16,7 @@ import type {
 } from "@/data/player/types";
 import { cn } from "@/lib/utils";
 import { AlertTriangle, CheckCircle2, Info, Shield, User } from "lucide-react";
+import { useFormatter, useTranslations } from "next-intl";
 import { useMemo } from "react";
 
 const EMPTY_DEPTHS: PlayerHeroDepth[] = [];
@@ -32,6 +33,7 @@ export function PlayerMatchups({
   hasUserTeamLink,
   opponentName,
 }: PlayerMatchupsProps) {
+  const t = useTranslations("scoutingPage.team.players");
   const playerDepths = playerIntelligence?.playerDepths ?? EMPTY_DEPTHS;
   const vulnerabilities = playerIntelligence?.vulnerabilities ?? EMPTY_VULNS;
 
@@ -51,13 +53,9 @@ export function PlayerMatchups({
         <CardContent className="flex flex-col items-center gap-3 py-12 text-center">
           <Info className="text-muted-foreground h-8 w-8" aria-hidden="true" />
           <div>
-            <p className="font-medium">
-              Select your team to unlock roster readiness
-            </p>
+            <p className="font-medium">{t("selectTeamTitle")}</p>
             <p className="text-muted-foreground mt-1 text-sm">
-              Use the &ldquo;Scouting for&rdquo; picker above to select your
-              team. This tab cross-references your players&apos; hero depth with
-              this opponent&apos;s ban patterns to identify who is most at risk.
+              {t("selectTeamDescription")}
             </p>
           </div>
         </CardContent>
@@ -70,16 +68,15 @@ export function PlayerMatchups({
       <Card className="bg-muted/30 border-dashed">
         <CardContent className="py-3">
           <p className="text-muted-foreground text-sm">
-            Showing{" "}
-            <span className="text-foreground font-medium">
-              your roster&apos;s
-            </span>{" "}
-            hero depth and vulnerabilities when facing{" "}
-            <span className="text-foreground font-medium">
-              {opponentName ?? "this opponent"}
-            </span>
-            . Players with narrow hero pools whose primary heroes are frequently
-            banned by this opponent are flagged as at-risk.
+            {t.rich("matchupSummary", {
+              roster: (chunks) => (
+                <span className="text-foreground font-medium">{chunks}</span>
+              ),
+              opponent: (chunks) => (
+                <span className="text-foreground font-medium">{chunks}</span>
+              ),
+              opponentName: opponentName ?? t("thisOpponent"),
+            })}
           </p>
         </CardContent>
       </Card>
@@ -109,14 +106,14 @@ function VulnerabilityOverview({
 }: {
   vulnerabilities: PlayerVulnerability[];
 }) {
+  const t = useTranslations("scoutingPage.team.players");
+  const formatter = useFormatter();
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>At-Risk Players</CardTitle>
-        <CardDescription>
-          Your players most vulnerable to this opponent&apos;s ban strategy,
-          ranked by hero pool depth and ban exposure
-        </CardDescription>
+        <CardTitle>{t("atRiskPlayers")}</CardTitle>
+        <CardDescription>{t("atRiskPlayersDescription")}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex flex-wrap gap-3">
@@ -136,8 +133,14 @@ function VulnerabilityOverview({
               <div>
                 <p className="text-sm font-medium">{v.playerName}</p>
                 <p className="text-muted-foreground text-xs">
-                  {v.role} · {v.primaryHero} · {Math.round(v.opponentBanRate)}%
-                  ban rate
+                  {t("vulnerabilitySummary", {
+                    role: roleLabel(t, v.role),
+                    hero: v.primaryHero,
+                    banRate: formatter.number(v.opponentBanRate / 100, {
+                      style: "percent",
+                      maximumFractionDigits: 0,
+                    }),
+                  })}
                 </p>
               </div>
             </div>
@@ -157,16 +160,18 @@ function RoleSection({
   players: PlayerHeroDepth[];
   vulnByPlayer: Map<string, PlayerVulnerability>;
 }) {
+  const t = useTranslations("scoutingPage.team.players");
+  const localizedRole = roleLabel(t, role);
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <User className="h-4 w-4" aria-hidden="true" />
-          Your {role} Players
+          {t("rolePlayers", { role: localizedRole })}
         </CardTitle>
         <CardDescription>
-          Hero depth and performance relative to your other {role.toLowerCase()}{" "}
-          players
+          {t("roleDescription", { role: localizedRole })}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -189,6 +194,8 @@ function PlayerProfile({
   player: PlayerHeroDepth;
   vulnerability?: PlayerVulnerability;
 }) {
+  const t = useTranslations("scoutingPage.team.players");
+  const formatter = useFormatter();
   const primary = player.heroes[0];
   const secondary = player.heroes[1];
 
@@ -198,7 +205,8 @@ function PlayerProfile({
         <div>
           <p className="text-sm font-semibold">{player.playerName}</p>
           <p className="text-muted-foreground text-xs">
-            {primary?.hero ?? "Unknown"} · {secondary?.hero ?? "No secondary"}
+            {primary?.hero ?? t("unknownHero")} ·{" "}
+            {secondary?.hero ?? t("noSecondary")}
           </p>
         </div>
         <ConfidenceIndicator confidence={player.confidence} size="sm" />
@@ -218,11 +226,23 @@ function PlayerProfile({
       {player.primarySecondaryDelta !== null && (
         <div className="mt-2">
           <p className="text-muted-foreground text-xs tabular-nums">
-            Delta: {player.primarySecondaryDelta > 0 ? "−" : "+"}
-            {Math.abs(player.primarySecondaryDelta).toFixed(1)}σ
+            {t("delta", {
+              value: t("sigmaValue", {
+                value: formatter.number(
+                  Math.abs(player.primarySecondaryDelta),
+                  {
+                    minimumFractionDigits: 1,
+                    maximumFractionDigits: 1,
+                    signDisplay:
+                      player.primarySecondaryDelta > 0 ? "never" : "exceptZero",
+                  }
+                ),
+                sign: player.primarySecondaryDelta > 0 ? "−" : "+",
+              }),
+            })}
             {player.primarySecondaryDelta > 1.5 && (
               <span className="ml-1 text-amber-600 dark:text-amber-400">
-                Significant drop-off
+                {t("significantDropOff")}
               </span>
             )}
           </p>
@@ -234,16 +254,35 @@ function PlayerProfile({
           <VulnerabilityIcon riskLevel={vulnerability.riskLevel} />
           <div>
             <p className="font-medium">
-              Ban exposure:{" "}
-              <span className="uppercase">{vulnerability.riskLevel}</span>
+              {t.rich("banExposure", {
+                risk: (chunks) => <span className="uppercase">{chunks}</span>,
+                riskLevel: riskLabel(t, vulnerability.riskLevel),
+              })}
             </p>
             <p className="text-muted-foreground">
-              This opponent bans {vulnerability.primaryHero} in{" "}
-              {Math.round(vulnerability.opponentBanRate)}% of their maps — if
-              forced off their main, z-score drops by{" "}
-              {player.primarySecondaryDelta !== null
-                ? `${Math.abs(player.primarySecondaryDelta).toFixed(1)}σ`
-                : "an unknown amount"}
+              {t("banExposureDescription", {
+                hero: vulnerability.primaryHero,
+                banRate: formatter.number(
+                  vulnerability.opponentBanRate / 100,
+                  {
+                    style: "percent",
+                    maximumFractionDigits: 0,
+                  }
+                ),
+                delta:
+                  player.primarySecondaryDelta !== null
+                    ? t("sigmaValue", {
+                        sign: "",
+                        value: formatter.number(
+                          Math.abs(player.primarySecondaryDelta),
+                          {
+                            minimumFractionDigits: 1,
+                            maximumFractionDigits: 1,
+                          }
+                        ),
+                      })
+                    : t("unknownAmount"),
+              })}
             </p>
           </div>
         </div>
@@ -261,6 +300,8 @@ function ZScoreBar({
   zScore: number;
   isPrimary: boolean;
 }) {
+  const t = useTranslations("scoutingPage.team.players");
+  const formatter = useFormatter();
   const maxZScore = 3;
   const normalizedWidth = Math.min(
     Math.max((zScore + maxZScore) / (2 * maxZScore), 0),
@@ -273,7 +314,7 @@ function ZScoreBar({
         <span className="truncate text-xs">{hero}</span>
         {isPrimary && (
           <Badge variant="outline" className="px-1 py-0 text-[9px]">
-            1st
+            {t("primaryBadge")}
           </Badge>
         )}
       </div>
@@ -288,8 +329,13 @@ function ZScoreBar({
         />
       </div>
       <span className="w-12 shrink-0 text-right text-xs font-medium tabular-nums">
-        {zScore >= 0 ? "+" : ""}
-        {zScore.toFixed(1)}σ
+        {t("sigmaValue", {
+          sign: zScore >= 0 ? "+" : "−",
+          value: formatter.number(Math.abs(zScore), {
+            minimumFractionDigits: 1,
+            maximumFractionDigits: 1,
+          }),
+        })}
       </span>
     </div>
   );
@@ -300,11 +346,13 @@ function VulnerabilityIcon({
 }: {
   riskLevel: PlayerVulnerability["riskLevel"];
 }) {
+  const t = useTranslations("scoutingPage.team.players");
+
   if (riskLevel === "critical") {
     return (
       <AlertTriangle
         className="h-3.5 w-3.5 shrink-0 text-red-600 dark:text-red-400"
-        aria-label="Critical vulnerability"
+        aria-label={t("riskAriaCritical")}
       />
     );
   }
@@ -312,7 +360,7 @@ function VulnerabilityIcon({
     return (
       <AlertTriangle
         className="h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-400"
-        aria-label="High vulnerability"
+        aria-label={t("riskAriaHigh")}
       />
     );
   }
@@ -320,16 +368,48 @@ function VulnerabilityIcon({
     return (
       <Shield
         className="text-muted-foreground h-3.5 w-3.5 shrink-0"
-        aria-label="Moderate vulnerability"
+        aria-label={t("riskAriaModerate")}
       />
     );
   }
   return (
     <CheckCircle2
       className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-400"
-      aria-label="Low vulnerability"
+      aria-label={t("riskAriaLow")}
     />
   );
+}
+
+function roleLabel(
+  t: ReturnType<typeof useTranslations>,
+  role: string
+): string {
+  switch (role) {
+    case "Tank":
+      return t("roles.tank");
+    case "Damage":
+      return t("roles.damage");
+    case "Support":
+      return t("roles.support");
+    default:
+      return role;
+  }
+}
+
+function riskLabel(
+  t: ReturnType<typeof useTranslations>,
+  riskLevel: PlayerVulnerability["riskLevel"]
+): string {
+  switch (riskLevel) {
+    case "critical":
+      return t("riskLevels.critical");
+    case "high":
+      return t("riskLevels.high");
+    case "moderate":
+      return t("riskLevels.moderate");
+    case "low":
+      return t("riskLevels.low");
+  }
 }
 
 function groupByRole(

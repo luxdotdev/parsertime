@@ -2643,6 +2643,39 @@
       }
     },
     "players": {
+      "selectTeamTitle": "选择你的队伍以解锁阵容准备度",
+      "selectTeamDescription": "使用上方“球探对象”选择器选择你的队伍。此标签会交叉引用你方选手的英雄深度和该对手的禁用模式，找出最容易被针对的人。",
+      "matchupSummary": "显示面对 <opponent>{opponentName}</opponent> 时 <roster>你方阵容</roster> 的英雄深度和弱点。英雄池较窄且主力英雄经常被该对手禁用的选手会被标记为高风险。",
+      "thisOpponent": "该对手",
+      "atRiskPlayers": "高风险选手",
+      "atRiskPlayersDescription": "按英雄池深度和禁用暴露度排序，列出最容易受到该对手禁用策略影响的选手",
+      "vulnerabilitySummary": "{role} · {hero} · 禁用率 {banRate}",
+      "rolePlayers": "你的 {role} 选手",
+      "roleDescription": "与其他 {role} 选手相比的英雄深度和表现",
+      "unknownHero": "未知",
+      "noSecondary": "无副选英雄",
+      "delta": "差值：{value}",
+      "sigmaValue": "{sign}{value}σ",
+      "significantDropOff": "明显下滑",
+      "banExposure": "禁用暴露：<risk>{riskLevel}</risk>",
+      "banExposureDescription": "该对手在 {banRate} 的地图中禁用 {hero}；如果被迫离开主英雄，z 分数会下降 {delta}",
+      "unknownAmount": "未知幅度",
+      "primaryBadge": "主力",
+      "roles": {
+        "tank": "坦克",
+        "damage": "输出",
+        "support": "支援"
+      },
+      "riskLevels": {
+        "critical": "关键",
+        "high": "高",
+        "moderate": "中等",
+        "low": "低"
+      },
+      "riskAriaCritical": "关键弱点",
+      "riskAriaHigh": "高风险弱点",
+      "riskAriaModerate": "中等弱点",
+      "riskAriaLow": "低风险弱点",
       "methodology": {
         "title": "如何评估阵容准备度",
         "points": {
