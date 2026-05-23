@@ -5533,6 +5533,123 @@
       "description": "팀 통계는 각 맵에서 우리 팀이 어느 진영으로 플레이했는지 안정적으로 식별하려면 스크림이 최소 2개 필요합니다. 현재 업로드된 스크림은 {count, plural, =0 {없습니다} other {#개입니다}}. 전체 통계 대시보드를 열려면 스크림을 하나 더 업로드하세요.",
       "uploadScrim": "스크림 업로드"
     },
+    "simulatorTab": {
+      "header": {
+        "eyebrow": "시뮬레이터 · 승리 확률",
+        "title": "승리 확률 시뮬레이터"
+      },
+      "noData": "선택한 기간에 사용할 게임 데이터가 없습니다. 스크림을 플레이하면 시뮬레이터를 사용할 수 있습니다.",
+      "stats": {
+        "mapsTracked": "추적한 맵",
+        "historicalSample": "기록 샘플",
+        "baseWinrate": "기준 승률",
+        "beforeScenario": "시나리오 적용 전",
+        "heroesScored": "평가된 영웅",
+        "mapsScored": "평가된 맵",
+        "availablePicks": "선택 가능"
+      },
+      "scenario": {
+        "eyebrow": "시뮬레이터 · 시나리오",
+        "title": "시나리오 설정",
+        "description": "밴, 맵, 조합을 설정해 예상 승률이 어떻게 바뀌는지 확인하세요.",
+        "reset": "초기화",
+        "resetAria": "모든 시나리오 입력 초기화",
+        "enemyBans": {
+          "label": "상대가 우리에게 거는 밴",
+          "description": "상대가 우리 영웅 풀에서 막는 영웅"
+        },
+        "ourBans": {
+          "label": "우리 밴",
+          "description": "우리가 상대에게 금지하는 영웅"
+        },
+        "ourComposition": {
+          "label": "우리 조합",
+          "description": "우리 팀 영웅을 최대 5명까지 선택"
+        },
+        "enemyComposition": {
+          "label": "상대 조합",
+          "description": "상대 팀 영웅을 최대 5명까지 선택"
+        }
+      },
+      "heroPicker": {
+        "addHero": "영웅 추가",
+        "label": "영웅 선택기",
+        "selectHero": "{hero} 선택",
+        "removeHero": "{hero} 제거",
+        "removeTooltip": "{hero} (클릭하여 제거)",
+        "roles": {
+          "Tank": "탱커",
+          "Damage": "딜러",
+          "Support": "지원"
+        }
+      },
+      "mapPicker": {
+        "label": "맵",
+        "description": "플레이할 맵을 선택하세요",
+        "selectAria": "맵 선택",
+        "placeholder": "맵 선택...",
+        "searchPlaceholder": "맵 검색...",
+        "noMapsFound": "맵을 찾을 수 없습니다.",
+        "noneSelected": "선택한 맵 없음",
+        "mapTypes": {
+          "Clash": "클래시",
+          "Control": "쟁탈",
+          "Escort": "호위",
+          "Flashpoint": "플래시포인트",
+          "Hybrid": "혼합",
+          "Push": "밀기"
+        }
+      },
+      "prediction": {
+        "eyebrow": "시뮬레이터 · 예측",
+        "title": "예상 승률",
+        "description": "팀의 과거 데이터 {count, plural, =0 {맵 없음} other {#개 맵}} 기준",
+        "estimatedWinRateAria": "예상 승률: {value}",
+        "confidence": {
+          "high": "높은 신뢰도",
+          "medium": "중간 신뢰도",
+          "low": "낮은 신뢰도"
+        },
+        "deltaVsBase": "기준({base}) 대비 {direction, select, positive {+{delta}pp} negative {-{delta}pp} other {{delta}pp}}",
+        "warningsLabel": "주의",
+        "emptyScenario": "왼쪽에서 시나리오를 설정하면 변수들이 승리 확률에 어떤 영향을 주는지 볼 수 있습니다.",
+        "warnings": {
+          "enemyBanLowSample": "{hero}은(는) {samples, plural, =0 {밴된 적이 없습니다} other {#회만 밴되었습니다}}. 영향 추정치가 불안정할 수 있습니다",
+          "ourBanLowSample": "{hero}을(를) {samples, plural, =0 {밴한 적이 없습니다} other {#회만 밴했습니다}}. 영향 추정치가 불안정할 수 있습니다",
+          "mapLowSample": "{map}에서 플레이한 게임이 {samples, plural, =0 {없습니다} other {#개뿐입니다}}. 맵 영향 추정치가 불안정할 수 있습니다",
+          "mapModeFallback": "{map} 데이터가 없어 {mapType} 모드 평균을 대신 사용합니다",
+          "rosterLowSample": "이 로스터 조합은 기록된 게임이 {games, plural, =0 {없습니다} other {#개뿐입니다}}",
+          "enemyHeroLowSample": "상대 {hero}를 상대한 게임이 {samples, plural, =0 {없습니다} other {#개뿐입니다}}. 영향 추정치가 불안정할 수 있습니다"
+        },
+        "insights": {
+          "enemyBanHurts": "<strong>{hero}</strong> 밴은 우리 팀 승률을 {delta}% 낮춥니다",
+          "ourBanHelps": "<strong>{hero}</strong> 밴은 +{delta}%를 더해 주는 가장 강한 밴입니다",
+          "mapStrength": "<strong>{map}</strong>은(는) 우리 팀에게 {direction, select, strong {강한 맵} weak {약한 맵} other {보통 맵}}입니다 ({delta}%)",
+          "compositionImpact": "우리 조합은 승리 가능성을 {direction, select, boosts {높여} reduces {낮춰} other {바꿔}} {delta}% 만듭니다",
+          "enemyCompositionImpact": "상대 조합은 우리에게 {direction, select, favors {유리하게} challenges {불리하게} other {영향을 주게}} {delta}% 작용합니다"
+        },
+        "mapTypes": {
+          "Clash": "클래시",
+          "Control": "쟁탈",
+          "Escort": "호위",
+          "Flashpoint": "플래시포인트",
+          "Hybrid": "혼합",
+          "Push": "밀기"
+        }
+      },
+      "breakdown": {
+        "heading": "분석",
+        "listAria": "승률 분석",
+        "baseWinrate": "기준 승률",
+        "enemyBanImpact": "상대 밴 영향",
+        "ourBans": "우리 밴",
+        "map": "맵",
+        "composition": "조합",
+        "enemyComp": "상대 조합",
+        "impactPercent": "{direction, select, positive {+{value}%} negative {-{value}%} other {{value}%}}",
+        "barScale": "막대 기준: 최대 ±{scale}pp. 막대는 ±{max}pp에서 제한됩니다."
+      }
+    },
     "ultimateEconomyCard": {
       "eyebrow": "궁극기 · 경제",
       "title": "궁극기 경제",

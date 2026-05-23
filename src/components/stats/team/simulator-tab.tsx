@@ -26,6 +26,7 @@ import type { SimulatorContext } from "@/data/team/types";
 import { determineRole } from "@/lib/player-table-data";
 import {
   computePrediction,
+  type PredictionMessage,
   type PredictionResult,
   type PredictionScenario,
 } from "@/lib/prediction-engine";
@@ -45,6 +46,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import Image from "next/image";
+import { useFormatter, useTranslations } from "next-intl";
 import { useMemo, useReducer, useState } from "react";
 
 type SimulatorTabProps = {
@@ -133,6 +135,8 @@ function scenarioReducer(
 }
 
 export function SimulatorTab({ ctx }: SimulatorTabProps) {
+  const t = useTranslations("teamStatsPage.simulatorTab");
+  const formatter = useFormatter();
   const [scenario, dispatch] = useReducer(scenarioReducer, {
     ...EMPTY_SCENARIO,
   });
@@ -153,43 +157,44 @@ export function SimulatorTab({ ctx }: SimulatorTabProps) {
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Simulator · Win probability"
-          title="Win probability simulator"
+          eyebrow={t("header.eyebrow")}
+          title={t("header.title")}
         />
-        <p className="text-muted-foreground text-sm">
-          No game data available for the selected time period. Play some scrims
-          to unlock the simulator.
-        </p>
+        <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
   }
 
-  const basePct = (ctx.baseWinrate * 100).toFixed(1);
+  const basePct = formatter.number(ctx.baseWinrate, {
+    style: "percent",
+    maximumFractionDigits: 1,
+    minimumFractionDigits: 1,
+  });
 
   return (
     <div className="space-y-12">
       <StatRibbon
         cells={[
           {
-            label: "Maps tracked",
+            label: t("stats.mapsTracked"),
             value: String(ctx.totalGames),
-            sub: "historical sample",
+            sub: t("stats.historicalSample"),
             emphasis: true,
           },
           {
-            label: "Base winrate",
-            value: `${basePct}%`,
-            sub: "before scenario",
+            label: t("stats.baseWinrate"),
+            value: basePct,
+            sub: t("stats.beforeScenario"),
           },
           {
-            label: "Heroes scored",
+            label: t("stats.heroesScored"),
             value: String(ctx.availableHeroes.length),
-            sub: "available picks",
+            sub: t("stats.availablePicks"),
           },
           {
-            label: "Maps scored",
+            label: t("stats.mapsScored"),
             value: String(ctx.availableMaps.length),
-            sub: "available picks",
+            sub: t("stats.availablePicks"),
           },
         ]}
         columns={4}
@@ -229,32 +234,33 @@ function ScenarioPanel({
   dispatch,
   hasAnyInput,
 }: ScenarioPanelProps) {
+  const t = useTranslations("teamStatsPage.simulatorTab.scenario");
   const heroNames = useHeroNames();
 
   return (
     <section className="space-y-6">
       <SectionHeader
-        eyebrow="Simulator · Scenario"
-        title="Scenario setup"
-        description="Configure bans, map, and composition to see how your estimated win rate changes."
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        description={t("description")}
         rightSlot={
           hasAnyInput ? (
             <Button
               variant="ghost"
               size="sm"
               onClick={() => dispatch({ type: "RESET" })}
-              aria-label="Reset all scenario inputs"
+              aria-label={t("resetAria")}
             >
               <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
-              Reset
+              {t("reset")}
             </Button>
           ) : null
         }
       />
       <div className="space-y-6">
         <BanSection
-          label="Enemy bans against us"
-          description="Heroes the opponent is banning from your pool"
+          label={t("enemyBans.label")}
+          description={t("enemyBans.description")}
           icon={<ShieldOff className="text-muted-foreground h-4 w-4" />}
           selected={scenario.enemyBansAgainstUs}
           onAdd={(hero) => dispatch({ type: "ADD_ENEMY_BAN", hero })}
@@ -266,8 +272,8 @@ function ScenarioPanel({
         />
 
         <BanSection
-          label="Our bans"
-          description="Heroes you are banning from the opponent"
+          label={t("ourBans.label")}
+          description={t("ourBans.description")}
           icon={<Swords className="text-muted-foreground h-4 w-4" />}
           selected={scenario.ourBans}
           onAdd={(hero) => dispatch({ type: "ADD_OUR_BAN", hero })}
@@ -288,8 +294,8 @@ function ScenarioPanel({
         />
 
         <CompositionSection
-          label="Our composition"
-          description="Select up to 5 heroes for your team"
+          label={t("ourComposition.label")}
+          description={t("ourComposition.description")}
           selected={scenario.ourComposition}
           onAdd={(hero) => dispatch({ type: "ADD_COMP_HERO", hero })}
           onRemove={(hero) => dispatch({ type: "REMOVE_COMP_HERO", hero })}
@@ -299,8 +305,8 @@ function ScenarioPanel({
         />
 
         <CompositionSection
-          label="Enemy composition"
-          description="Select up to 5 heroes for the enemy team"
+          label={t("enemyComposition.label")}
+          description={t("enemyComposition.description")}
           selected={scenario.enemyComposition}
           onAdd={(hero) => dispatch({ type: "ADD_ENEMY_COMP_HERO", hero })}
           onRemove={(hero) =>
@@ -438,6 +444,7 @@ type HeroSlotProps = {
 };
 
 function HeroSlot({ hero, heroNames, onRemove }: HeroSlotProps) {
+  const t = useTranslations("teamStatsPage.simulatorTab.heroPicker");
   const slug = toHero(hero);
   const displayName = heroNames.get(slug) ?? hero;
 
@@ -447,7 +454,7 @@ function HeroSlot({ hero, heroNames, onRemove }: HeroSlotProps) {
         <button
           type="button"
           onClick={onRemove}
-          aria-label={`Remove ${displayName}`}
+          aria-label={t("removeHero", { hero: displayName })}
           className="group focus-visible:ring-destructive hover:ring-destructive/70 relative h-11 w-11 overflow-hidden rounded-md border border-transparent transition-all duration-150 ease-out hover:ring-2 focus-visible:ring-2 focus-visible:outline-none"
         >
           <Image
@@ -463,7 +470,7 @@ function HeroSlot({ hero, heroNames, onRemove }: HeroSlotProps) {
         </button>
       </TooltipTrigger>
       <TooltipContent side="bottom">
-        {displayName} (click to remove)
+        {t("removeTooltip", { hero: displayName })}
       </TooltipContent>
     </Tooltip>
   );
@@ -482,6 +489,7 @@ function HeroPickerSlot({
   heroNames,
   onSelect,
 }: HeroPickerSlotProps) {
+  const t = useTranslations("teamStatsPage.simulatorTab.heroPicker");
   const excludedSet = new Set(excluded);
   const pickable = available.filter((h) => !excludedSet.has(h));
 
@@ -502,7 +510,7 @@ function HeroPickerSlot({
       <PopoverTrigger asChild>
         <button
           type="button"
-          aria-label="Add hero"
+          aria-label={t("addHero")}
           className={cn(
             "focus-visible:ring-ring border-border hover:border-muted-foreground/40 flex h-11 w-11 items-center justify-center rounded-md border-2 border-dashed transition-colors duration-150 focus-visible:ring-2 focus-visible:outline-none",
             "text-muted-foreground hover:text-foreground"
@@ -514,7 +522,7 @@ function HeroPickerSlot({
       <PopoverContent
         className="w-80 p-3"
         align="start"
-        aria-label="Hero picker"
+        aria-label={t("label")}
       >
         <ScrollArea className="h-72">
           <div className="space-y-3 pr-2">
@@ -523,7 +531,7 @@ function HeroPickerSlot({
               return (
                 <div key={role}>
                   <p className="text-muted-foreground mb-1.5 font-mono text-[10px] tracking-[0.16em] uppercase">
-                    {role}
+                    {t(`roles.${role}`)}
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {byRole[role].map((hero) => {
@@ -534,7 +542,9 @@ function HeroPickerSlot({
                           <TooltipTrigger asChild>
                             <button
                               type="button"
-                              aria-label={`Select ${displayName}`}
+                              aria-label={t("selectHero", {
+                                hero: displayName,
+                              })}
                               onClick={() => onSelect(hero)}
                               className="group focus-visible:ring-ring relative h-9 w-9 overflow-hidden rounded transition-all duration-150 ease-out hover:scale-110 hover:shadow-md focus-visible:ring-2 focus-visible:outline-none"
                             >
@@ -564,15 +574,6 @@ function HeroPickerSlot({
   );
 }
 
-const MAP_TYPE_LABELS: Record<$Enums.MapType, string> = {
-  Control: "Control",
-  Escort: "Escort",
-  Hybrid: "Hybrid",
-  Flashpoint: "Flashpoint",
-  Push: "Push",
-  Clash: "Clash",
-};
-
 const MAP_TYPE_ORDER: $Enums.MapType[] = [
   $Enums.MapType.Control,
   $Enums.MapType.Escort,
@@ -593,6 +594,7 @@ function MapCombobox({
   selectedMap,
   onSelect,
 }: MapComboboxProps) {
+  const t = useTranslations("teamStatsPage.simulatorTab.mapPicker");
   const [open, setOpen] = useState(false);
 
   const byType = useMemo(() => {
@@ -613,11 +615,9 @@ function MapCombobox({
   return (
     <div className="space-y-2">
       <span className="font-mono text-[11px] tracking-[0.16em] uppercase">
-        Map
+        {t("label")}
       </span>
-      <p className="text-muted-foreground text-xs">
-        Select the map being played
-      </p>
+      <p className="text-muted-foreground text-xs">{t("description")}</p>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -625,18 +625,18 @@ function MapCombobox({
             role="combobox"
             aria-expanded={open}
             aria-controls="map-combobox-listbox"
-            aria-label="Select a map"
+            aria-label={t("selectAria")}
             className="w-full justify-between font-normal"
           >
-            <span className="truncate">{selectedMap ?? "Select a map..."}</span>
+            <span className="truncate">{selectedMap ?? t("placeholder")}</span>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-72 p-0" align="start">
           <Command>
-            <CommandInput placeholder="Search maps..." />
+            <CommandInput placeholder={t("searchPlaceholder")} />
             <CommandList id="map-combobox-listbox">
-              <CommandEmpty>No maps found.</CommandEmpty>
+              <CommandEmpty>{t("noMapsFound")}</CommandEmpty>
               <CommandItem
                 value="none"
                 onSelect={() => {
@@ -650,13 +650,13 @@ function MapCombobox({
                     selectedMap === null ? "opacity-100" : "opacity-0"
                   )}
                 />
-                No map selected
+                {t("noneSelected")}
               </CommandItem>
               {MAP_TYPE_ORDER.map((type) => {
                 const maps = byType.get(type);
                 if (!maps || maps.length === 0) return null;
                 return (
-                  <CommandGroup key={type} heading={MAP_TYPE_LABELS[type]}>
+                  <CommandGroup key={type} heading={t(`mapTypes.${type}`)}>
                     {maps.map((map) => (
                       <CommandItem
                         key={map}
@@ -697,36 +697,44 @@ function PredictionResultPanel({
   ctx,
   hasInput,
 }: PredictionResultPanelProps) {
-  const pct = (result.estimatedWinrate * 100).toFixed(1);
-  const basePct = (ctx.baseWinrate * 100).toFixed(1);
+  const t = useTranslations("teamStatsPage.simulatorTab.prediction");
+  const formatter = useFormatter();
+  const pct = formatter.number(result.estimatedWinrate, {
+    style: "percent",
+    maximumFractionDigits: 1,
+    minimumFractionDigits: 1,
+  });
+  const basePct = formatter.number(ctx.baseWinrate, {
+    style: "percent",
+    maximumFractionDigits: 1,
+    minimumFractionDigits: 1,
+  });
   const delta = result.estimatedWinrate - ctx.baseWinrate;
-  const deltaSign = delta >= 0 ? "+" : "";
+  const deltaPct = formatter.number(Math.abs(delta) * 100, {
+    maximumFractionDigits: 1,
+    minimumFractionDigits: 1,
+  });
 
   const confidenceTone: Record<string, string> = {
     high: "bg-primary/15 text-primary",
     medium: "bg-muted text-muted-foreground",
     low: "bg-destructive/15 text-destructive",
   };
-  const confidenceLabel: Record<string, string> = {
-    high: "High confidence",
-    medium: "Medium confidence",
-    low: "Low confidence",
-  };
 
   return (
     <section className="space-y-6">
       <SectionHeader
-        eyebrow="Simulator · Prediction"
-        title="Predicted win rate"
-        description={`Based on your team's historical data across ${ctx.totalGames} maps`}
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        description={t("description", { count: ctx.totalGames })}
       />
       <div className="space-y-4">
         <div className="flex items-baseline gap-3">
           <span
             className="text-primary font-mono text-5xl leading-none font-semibold tabular-nums"
-            aria-label={`Estimated win rate: ${pct}%`}
+            aria-label={t("estimatedWinRateAria", { value: pct })}
           >
-            {pct}%
+            {pct}
           </span>
           <div className="space-y-1">
             <span
@@ -735,12 +743,15 @@ function PredictionResultPanel({
                 confidenceTone[result.confidence]
               )}
             >
-              {confidenceLabel[result.confidence]}
+              {t(`confidence.${result.confidence}`)}
             </span>
             {hasInput && (
               <p className="text-muted-foreground font-mono text-xs tabular-nums">
-                {deltaSign}
-                {(delta * 100).toFixed(1)}pp vs base ({basePct}%)
+                {t("deltaVsBase", {
+                  direction: delta >= 0 ? "positive" : "negative",
+                  delta: deltaPct,
+                  base: basePct,
+                })}
               </p>
             )}
           </div>
@@ -749,7 +760,9 @@ function PredictionResultPanel({
         {result.topInsight && (
           <div className="text-muted-foreground flex items-start gap-2 text-sm">
             <Info className="mt-0.5 h-4 w-4 shrink-0" />
-            <span className="text-foreground">{result.topInsight}</span>
+            <span className="text-foreground">
+              {renderPredictionInsight(t, result.topInsight)}
+            </span>
           </div>
         )}
       </div>
@@ -759,13 +772,18 @@ function PredictionResultPanel({
       {result.warnings.length > 0 && (
         <div className="space-y-2">
           <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-            Warnings
+            {t("warningsLabel")}
           </p>
           <ul className="space-y-1.5">
             {result.warnings.map((warning) => (
-              <li key={warning} className="flex items-start gap-1.5 text-xs">
+              <li
+                key={`${warning.key}-${Object.values(warning.values).join("-")}`}
+                className="flex items-start gap-1.5 text-xs"
+              >
                 <AlertTriangle className="text-primary mt-0.5 h-3.5 w-3.5 shrink-0" />
-                <span className="text-muted-foreground">{warning}</span>
+                <span className="text-muted-foreground">
+                  {formatPredictionWarning(t, warning)}
+                </span>
               </li>
             ))}
           </ul>
@@ -773,10 +791,7 @@ function PredictionResultPanel({
       )}
 
       {!hasInput && (
-        <p className="text-muted-foreground text-sm">
-          Configure a scenario on the left to see how parameters affect your win
-          probability.
-        </p>
+        <p className="text-muted-foreground text-sm">{t("emptyScenario")}</p>
       )}
     </section>
   );
@@ -790,6 +805,8 @@ type BreakdownTableProps = {
 const MAX_BAR_DELTA_PP = 30;
 
 function BreakdownTable({ result, hasInput }: BreakdownTableProps) {
+  const t = useTranslations("teamStatsPage.simulatorTab.breakdown");
+  const formatter = useFormatter();
   const { breakdown } = result;
 
   const rows: {
@@ -799,12 +816,12 @@ function BreakdownTable({ result, hasInput }: BreakdownTableProps) {
     icon?: React.ReactNode;
   }[] = [
     {
-      label: "Base win rate",
+      label: t("baseWinrate"),
       value: breakdown.baseWinrate,
       isBase: true,
     },
     {
-      label: "Enemy ban impact",
+      label: t("enemyBanImpact"),
       value: breakdown.banImpact,
       icon:
         breakdown.banImpact < -0.005 ? (
@@ -814,7 +831,7 @@ function BreakdownTable({ result, hasInput }: BreakdownTableProps) {
         ) : null,
     },
     {
-      label: "Our bans",
+      label: t("ourBans"),
       value: breakdown.ourBanImpact,
       icon:
         breakdown.ourBanImpact > 0.005 ? (
@@ -822,7 +839,7 @@ function BreakdownTable({ result, hasInput }: BreakdownTableProps) {
         ) : null,
     },
     {
-      label: "Map",
+      label: t("map"),
       value: breakdown.mapImpact,
       icon:
         breakdown.mapImpact > 0.005 ? (
@@ -832,7 +849,7 @@ function BreakdownTable({ result, hasInput }: BreakdownTableProps) {
         ) : null,
     },
     {
-      label: "Composition",
+      label: t("composition"),
       value: breakdown.compositionImpact,
       icon:
         breakdown.compositionImpact > 0.005 ? (
@@ -842,7 +859,7 @@ function BreakdownTable({ result, hasInput }: BreakdownTableProps) {
         ) : null,
     },
     {
-      label: "Enemy comp",
+      label: t("enemyComp"),
       value: breakdown.enemyCompositionImpact,
       icon:
         breakdown.enemyCompositionImpact > 0.005 ? (
@@ -861,12 +878,14 @@ function BreakdownTable({ result, hasInput }: BreakdownTableProps) {
   return (
     <div className="space-y-3">
       <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-        Breakdown
+        {t("heading")}
       </p>
-      <div className="space-y-1.5" role="list" aria-label="Win rate breakdown">
+      <div className="space-y-1.5" role="list" aria-label={t("listAria")}>
         {rows.map((row) => {
           if (row.isBase) {
-            return <BaseRow key={row.label} value={row.value} />;
+            return (
+              <BaseRow key={row.label} label={row.label} value={row.value} />
+            );
           }
 
           const isActive = Math.abs(row.value) > 0.001;
@@ -925,7 +944,13 @@ function BreakdownTable({ result, hasInput }: BreakdownTableProps) {
                   )}
                 >
                   {isActive
-                    ? `${isPositive ? "+" : ""}${(row.value * 100).toFixed(1)}%`
+                    ? t("impactPercent", {
+                        direction: isPositive ? "positive" : "negative",
+                        value: formatter.number(Math.abs(row.value * 100), {
+                          maximumFractionDigits: 1,
+                          minimumFractionDigits: 1,
+                        }),
+                      })
                     : "—"}
                 </span>
               </div>
@@ -934,22 +959,23 @@ function BreakdownTable({ result, hasInput }: BreakdownTableProps) {
         })}
       </div>
       <p className="text-muted-foreground text-xs">
-        Bar scale: ±{Math.ceil(scale)}pp max. Bars are capped at ±
-        {MAX_BAR_DELTA_PP}pp.
+        {t("barScale", {
+          scale: Math.ceil(scale),
+          max: MAX_BAR_DELTA_PP,
+        })}
       </p>
     </div>
   );
 }
 
-function BaseRow({ value }: { value: number }) {
+function BaseRow({ label, value }: { label: string; value: number }) {
+  const formatter = useFormatter();
   return (
     <div
       role="listitem"
       className="flex items-center gap-2 rounded-sm px-2 py-1.5"
     >
-      <div className="text-muted-foreground w-28 shrink-0 text-xs">
-        Base win rate
-      </div>
+      <div className="text-muted-foreground w-28 shrink-0 text-xs">{label}</div>
       <div className="flex flex-1 items-center gap-2">
         <div className="bg-muted relative h-1.5 flex-1 overflow-hidden rounded-full">
           <div
@@ -959,9 +985,54 @@ function BaseRow({ value }: { value: number }) {
           />
         </div>
         <span className="text-muted-foreground w-14 text-right font-mono text-xs font-medium tabular-nums">
-          {(value * 100).toFixed(1)}%
+          {formatter.number(value, {
+            style: "percent",
+            maximumFractionDigits: 1,
+            minimumFractionDigits: 1,
+          })}
         </span>
       </div>
     </div>
   );
+}
+
+function formatPredictionWarning(
+  t: ReturnType<typeof useTranslations>,
+  message: PredictionMessage
+) {
+  switch (message.key) {
+    case "warnings.enemyBanLowSample":
+    case "warnings.ourBanLowSample":
+    case "warnings.mapLowSample":
+    case "warnings.rosterLowSample":
+    case "warnings.enemyHeroLowSample":
+      return t(message.key, message.values);
+    case "warnings.mapModeFallback":
+      return t(message.key, {
+        map: message.values.map,
+        mapType: t(`mapTypes.${message.values.mapType}`),
+      });
+    default:
+      return null;
+  }
+}
+
+function renderPredictionInsight(
+  t: ReturnType<typeof useTranslations>,
+  message: PredictionMessage
+) {
+  function strong(chunks: React.ReactNode) {
+    return <span className="text-foreground font-medium">{chunks}</span>;
+  }
+
+  switch (message.key) {
+    case "insights.enemyBanHurts":
+    case "insights.ourBanHelps":
+    case "insights.mapStrength":
+    case "insights.compositionImpact":
+    case "insights.enemyCompositionImpact":
+      return t.rich(message.key, { ...message.values, strong });
+    default:
+      return null;
+  }
 }

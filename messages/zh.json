@@ -5533,6 +5533,123 @@
       "description": "团队统计需要至少两场训练赛，才能可靠识别您的队伍在每张地图中所在的阵营。您当前已上传 {count, plural, =0 {0 场训练赛} other {# 场训练赛}}。再上传一场即可解锁完整统计仪表板。",
       "uploadScrim": "上传训练赛"
     },
+    "simulatorTab": {
+      "header": {
+        "eyebrow": "模拟器 · 胜率",
+        "title": "胜率模拟器"
+      },
+      "noData": "所选时间段内没有游戏数据。进行一些训练赛后即可解锁模拟器。",
+      "stats": {
+        "mapsTracked": "已追踪地图",
+        "historicalSample": "历史样本",
+        "baseWinrate": "基础胜率",
+        "beforeScenario": "场景应用前",
+        "heroesScored": "已评分英雄",
+        "mapsScored": "已评分地图",
+        "availablePicks": "可选项"
+      },
+      "scenario": {
+        "eyebrow": "模拟器 · 场景",
+        "title": "场景设置",
+        "description": "配置禁用、地图和阵容，查看预计胜率如何变化。",
+        "reset": "重置",
+        "resetAria": "重置所有场景输入",
+        "enemyBans": {
+          "label": "敌方针对我方的禁用",
+          "description": "对手从你的英雄池中禁用的英雄"
+        },
+        "ourBans": {
+          "label": "我方禁用",
+          "description": "你方针对对手禁用的英雄"
+        },
+        "ourComposition": {
+          "label": "我方阵容",
+          "description": "最多选择 5 名我方英雄"
+        },
+        "enemyComposition": {
+          "label": "敌方阵容",
+          "description": "最多选择 5 名敌方英雄"
+        }
+      },
+      "heroPicker": {
+        "addHero": "添加英雄",
+        "label": "英雄选择器",
+        "selectHero": "选择 {hero}",
+        "removeHero": "移除 {hero}",
+        "removeTooltip": "{hero}（点击移除）",
+        "roles": {
+          "Tank": "坦克",
+          "Damage": "输出",
+          "Support": "支援"
+        }
+      },
+      "mapPicker": {
+        "label": "地图",
+        "description": "选择正在进行的地图",
+        "selectAria": "选择地图",
+        "placeholder": "选择地图...",
+        "searchPlaceholder": "搜索地图...",
+        "noMapsFound": "未找到地图。",
+        "noneSelected": "未选择地图",
+        "mapTypes": {
+          "Clash": "攻防争锋",
+          "Control": "占领要点",
+          "Escort": "运载目标",
+          "Flashpoint": "闪点作战",
+          "Hybrid": "攻击/护送",
+          "Push": "机动推进"
+        }
+      },
+      "prediction": {
+        "eyebrow": "模拟器 · 预测",
+        "title": "预计胜率",
+        "description": "基于你方 {count, plural, =0 {无地图} other {# 张地图}} 的历史数据",
+        "estimatedWinRateAria": "预计胜率：{value}",
+        "confidence": {
+          "high": "高置信度",
+          "medium": "中等置信度",
+          "low": "低置信度"
+        },
+        "deltaVsBase": "相对基础值（{base}）{direction, select, positive {+{delta}pp} negative {-{delta}pp} other {{delta}pp}}",
+        "warningsLabel": "警告",
+        "emptyScenario": "在左侧配置场景，即可查看各参数如何影响你的获胜概率。",
+        "warnings": {
+          "enemyBanLowSample": "{hero} 只被禁用了 {samples, plural, =0 {0 次} other {# 次}}，影响估计可能不稳定",
+          "ourBanLowSample": "你方只禁用过 {hero} {samples, plural, =0 {0 次} other {# 次}}，影响估计可能不稳定",
+          "mapLowSample": "{map} 只有 {samples, plural, =0 {0 场比赛} other {# 场比赛}}，地图影响估计可能不稳定",
+          "mapModeFallback": "没有 {map} 的数据，改用 {mapType} 模式平均值",
+          "rosterLowSample": "该阵容组合只有 {games, plural, =0 {0 场记录比赛} other {# 场记录比赛}}",
+          "enemyHeroLowSample": "对阵敌方 {hero} 只有 {samples, plural, =0 {0 场比赛} other {# 场比赛}}，影响估计可能不稳定"
+        },
+        "insights": {
+          "enemyBanHurts": "<strong>{hero}</strong> 被对手禁用会让你方胜率降低 {delta}%",
+          "ourBanHelps": "禁用 <strong>{hero}</strong> 可带来 +{delta}%，是你方最强禁用选择",
+          "mapStrength": "<strong>{map}</strong> 对你的队伍来说是{direction, select, strong {强势地图} weak {弱势地图} other {普通地图}}（{delta}%）",
+          "compositionImpact": "我方阵容会让获胜机会{direction, select, boosts {提高} reduces {降低} other {变化}} {delta}%",
+          "enemyCompositionImpact": "敌方阵容会让局面对你方{direction, select, favors {更有利} challenges {更不利} other {产生影响}} {delta}%"
+        },
+        "mapTypes": {
+          "Clash": "攻防争锋",
+          "Control": "占领要点",
+          "Escort": "运载目标",
+          "Flashpoint": "闪点作战",
+          "Hybrid": "攻击/护送",
+          "Push": "机动推进"
+        }
+      },
+      "breakdown": {
+        "heading": "细分",
+        "listAria": "胜率细分",
+        "baseWinrate": "基础胜率",
+        "enemyBanImpact": "敌方禁用影响",
+        "ourBans": "我方禁用",
+        "map": "地图",
+        "composition": "阵容",
+        "enemyComp": "敌方阵容",
+        "impactPercent": "{direction, select, positive {+{value}%} negative {-{value}%} other {{value}%}}",
+        "barScale": "柱状比例：最大 ±{scale}pp。柱状条上限为 ±{max}pp。"
+      }
+    },
     "ultimateEconomyCard": {
       "eyebrow": "终极技能 · 经济",
       "title": "终极技能经济",

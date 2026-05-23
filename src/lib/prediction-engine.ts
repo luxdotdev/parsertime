@@ -23,9 +23,55 @@ export type PredictionResult = {
   estimatedWinrate: number;
   confidence: "low" | "medium" | "high";
   breakdown: PredictionBreakdown;
-  warnings: string[];
-  topInsight: string | null;
+  warnings: PredictionMessage[];
+  topInsight: PredictionMessage | null;
 };
+
+export type PredictionMessage =
+  | {
+      key: "warnings.enemyBanLowSample";
+      values: { hero: string; samples: number };
+    }
+  | {
+      key: "warnings.ourBanLowSample";
+      values: { hero: string; samples: number };
+    }
+  | {
+      key: "warnings.mapLowSample";
+      values: { map: string; samples: number };
+    }
+  | {
+      key: "warnings.mapModeFallback";
+      values: { map: string; mapType: string };
+    }
+  | {
+      key: "warnings.rosterLowSample";
+      values: { games: number };
+    }
+  | {
+      key: "warnings.enemyHeroLowSample";
+      values: { hero: string; samples: number };
+    }
+  | {
+      key: "insights.enemyBanHurts";
+      values: { hero: string; delta: string };
+    }
+  | {
+      key: "insights.ourBanHelps";
+      values: { hero: string; delta: string };
+    }
+  | {
+      key: "insights.mapStrength";
+      values: { map: string; direction: "strong" | "weak"; delta: string };
+    }
+  | {
+      key: "insights.compositionImpact";
+      values: { direction: "boosts" | "reduces"; delta: string };
+    }
+  | {
+      key: "insights.enemyCompositionImpact";
+      values: { direction: "favors" | "challenges"; delta: string };
+    };
 
 const MIN_SAMPLES_HIGH = 5;
 const MIN_SAMPLES_MEDIUM = 3;
@@ -66,14 +112,17 @@ function buildTopInsight(
   breakdown: PredictionBreakdown,
   scenario: PredictionScenario,
   ctx: SimulatorContext
-): string | null {
-  const candidates: { label: string; value: number }[] = [];
+): PredictionMessage | null {
+  const candidates: { message: PredictionMessage; value: number }[] = [];
 
   for (const hero of scenario.enemyBansAgainstUs) {
     const delta = ctx.heroBanDeltas[hero];
     if (delta !== undefined && delta > 0) {
       candidates.push({
-        label: `${hero} being banned against you hurts by ${(delta * 100).toFixed(1)}%`,
+        message: {
+          key: "insights.enemyBanHurts",
+          values: { hero, delta: (delta * 100).toFixed(1) },
+        },
         value: delta,
       });
     }
@@ -83,7 +132,10 @@ function buildTopInsight(
     const delta = ctx.ourBanDeltas[hero];
     if (delta !== undefined && delta > 0) {
       candidates.push({
-        label: `Banning ${hero} adds +${(delta * 100).toFixed(1)}% — your strongest ban`,
+        message: {
+          key: "insights.ourBanHelps",
+          values: { hero, delta: (delta * 100).toFixed(1) },
+        },
         value: Math.abs(delta),
       });
     }
@@ -97,7 +149,14 @@ function buildTopInsight(
     if (Math.abs(delta) >= 0.05) {
       const direction = delta >= 0 ? "strong" : "weak";
       candidates.push({
-        label: `${scenario.selectedMap} is a ${direction} map for your team (${delta >= 0 ? "+" : ""}${(delta * 100).toFixed(1)}%)`,
+        message: {
+          key: "insights.mapStrength",
+          values: {
+            map: scenario.selectedMap,
+            direction,
+            delta: `${delta >= 0 ? "+" : ""}${(delta * 100).toFixed(1)}`,
+          },
+        },
         value: Math.abs(delta),
       });
     }
@@ -106,7 +165,13 @@ function buildTopInsight(
   if (breakdown.compositionImpact !== 0) {
     const delta = breakdown.compositionImpact;
     candidates.push({
-      label: `Your composition ${delta >= 0 ? "boosts" : "reduces"} your odds by ${delta >= 0 ? "+" : ""}${(delta * 100).toFixed(1)}%`,
+      message: {
+        key: "insights.compositionImpact",
+        values: {
+          direction: delta >= 0 ? "boosts" : "reduces",
+          delta: `${delta >= 0 ? "+" : ""}${(delta * 100).toFixed(1)}`,
+        },
+      },
       value: Math.abs(delta),
     });
   }
@@ -114,7 +179,13 @@ function buildTopInsight(
   if (breakdown.enemyCompositionImpact !== 0) {
     const delta = breakdown.enemyCompositionImpact;
     candidates.push({
-      label: `The enemy composition ${delta >= 0 ? "favors" : "challenges"} you by ${delta >= 0 ? "+" : ""}${(delta * 100).toFixed(1)}%`,
+      message: {
+        key: "insights.enemyCompositionImpact",
+        values: {
+          direction: delta >= 0 ? "favors" : "challenges",
+          delta: `${delta >= 0 ? "+" : ""}${(delta * 100).toFixed(1)}`,
+        },
+      },
       value: Math.abs(delta),
     });
   }
@@ -122,14 +193,14 @@ function buildTopInsight(
   if (candidates.length === 0) return null;
 
   candidates.sort((a, b) => b.value - a.value);
-  return candidates[0].label;
+  return candidates[0].message;
 }
 
 export function computePrediction(
   ctx: SimulatorContext,
   scenario: PredictionScenario
 ): PredictionResult {
-  const warnings: string[] = [];
+  const warnings: PredictionMessage[] = [];
   const activeSampleSizes: number[] = [];
 
   let banImpact = 0;
@@ -140,9 +211,10 @@ export function computePrediction(
       const samples = ctx.heroBanSampleSizes[hero] ?? 0;
       activeSampleSizes.push(samples);
       if (samples < MIN_SAMPLES_MEDIUM) {
-        warnings.push(
-          `${hero} has only been banned ${samples} time${samples === 1 ? "" : "s"} — impact estimate may be unreliable`
-        );
+        warnings.push({
+          key: "warnings.enemyBanLowSample",
+          values: { hero, samples },
+        });
       }
     }
   }
@@ -155,9 +227,10 @@ export function computePrediction(
       const samples = ctx.ourBanSampleSizes[hero] ?? 0;
       activeSampleSizes.push(samples);
       if (samples < MIN_SAMPLES_MEDIUM) {
-        warnings.push(
-          `You've only banned ${hero} ${samples} time${samples === 1 ? "" : "s"} — impact estimate may be unreliable`
-        );
+        warnings.push({
+          key: "warnings.ourBanLowSample",
+          values: { hero, samples },
+        });
       }
     }
   }
@@ -170,9 +243,10 @@ export function computePrediction(
       const samples = ctx.mapSampleSizes[scenario.selectedMap] ?? 0;
       activeSampleSizes.push(samples);
       if (samples < MIN_SAMPLES_MEDIUM) {
-        warnings.push(
-          `Only ${samples} game${samples === 1 ? "" : "s"} on ${scenario.selectedMap} — map impact estimate may be unreliable`
-        );
+        warnings.push({
+          key: "warnings.mapLowSample",
+          values: { map: scenario.selectedMap, samples },
+        });
       }
     } else {
       const mapType =
@@ -183,9 +257,10 @@ export function computePrediction(
         const modeWinrate = ctx.mapModeWinrates[mapType];
         if (modeWinrate !== undefined) {
           mapImpact = modeWinrate - ctx.baseWinrate;
-          warnings.push(
-            `No data for ${scenario.selectedMap} — using ${mapType} mode average instead`
-          );
+          warnings.push({
+            key: "warnings.mapModeFallback",
+            values: { map: scenario.selectedMap, mapType },
+          });
         }
       }
     }
@@ -201,9 +276,10 @@ export function computePrediction(
       compositionImpact = matchingTrio.winrate / 100 - ctx.baseWinrate;
       activeSampleSizes.push(matchingTrio.gamesPlayed);
       if (matchingTrio.gamesPlayed < MIN_SAMPLES_MEDIUM) {
-        warnings.push(
-          `This roster combination has only ${matchingTrio.gamesPlayed} recorded game${matchingTrio.gamesPlayed === 1 ? "" : "s"}`
-        );
+        warnings.push({
+          key: "warnings.rosterLowSample",
+          values: { games: matchingTrio.gamesPlayed },
+        });
       }
     } else {
       let heroImpactSum = 0;
@@ -248,9 +324,10 @@ export function computePrediction(
         activeSampleSizes.push(ctx.enemyHeroSampleSizes[hero] ?? 0);
         const samples = ctx.enemyHeroSampleSizes[hero] ?? 0;
         if (samples < MIN_SAMPLES_MEDIUM) {
-          warnings.push(
-            `Only ${samples} game${samples === 1 ? "" : "s"} against enemy ${hero} — impact estimate may be unreliable`
-          );
+          warnings.push({
+            key: "warnings.enemyHeroLowSample",
+            values: { hero, samples },
+          });
         }
       }
     }

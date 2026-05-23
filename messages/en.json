@@ -5549,6 +5549,123 @@
       "description": "Team stats need at least two scrims to reliably identify which side your team played on each map. You currently have {count, plural, =0 {no scrims} =1 {# scrim} other {# scrims}} uploaded. Upload another to unlock the full stats dashboard.",
       "uploadScrim": "Upload a scrim"
     },
+    "simulatorTab": {
+      "header": {
+        "eyebrow": "Simulator · Win probability",
+        "title": "Win probability simulator"
+      },
+      "noData": "No game data available for the selected time period. Play some scrims to unlock the simulator.",
+      "stats": {
+        "mapsTracked": "Maps tracked",
+        "historicalSample": "historical sample",
+        "baseWinrate": "Base winrate",
+        "beforeScenario": "before scenario",
+        "heroesScored": "Heroes scored",
+        "mapsScored": "Maps scored",
+        "availablePicks": "available picks"
+      },
+      "scenario": {
+        "eyebrow": "Simulator · Scenario",
+        "title": "Scenario setup",
+        "description": "Configure bans, map, and composition to see how your estimated win rate changes.",
+        "reset": "Reset",
+        "resetAria": "Reset all scenario inputs",
+        "enemyBans": {
+          "label": "Enemy bans against us",
+          "description": "Heroes the opponent is banning from your pool"
+        },
+        "ourBans": {
+          "label": "Our bans",
+          "description": "Heroes you are banning from the opponent"
+        },
+        "ourComposition": {
+          "label": "Our composition",
+          "description": "Select up to 5 heroes for your team"
+        },
+        "enemyComposition": {
+          "label": "Enemy composition",
+          "description": "Select up to 5 heroes for the enemy team"
+        }
+      },
+      "heroPicker": {
+        "addHero": "Add hero",
+        "label": "Hero picker",
+        "selectHero": "Select {hero}",
+        "removeHero": "Remove {hero}",
+        "removeTooltip": "{hero} (click to remove)",
+        "roles": {
+          "Tank": "Tank",
+          "Damage": "Damage",
+          "Support": "Support"
+        }
+      },
+      "mapPicker": {
+        "label": "Map",
+        "description": "Select the map being played",
+        "selectAria": "Select a map",
+        "placeholder": "Select a map...",
+        "searchPlaceholder": "Search maps...",
+        "noMapsFound": "No maps found.",
+        "noneSelected": "No map selected",
+        "mapTypes": {
+          "Clash": "Clash",
+          "Control": "Control",
+          "Escort": "Escort",
+          "Flashpoint": "Flashpoint",
+          "Hybrid": "Hybrid",
+          "Push": "Push"
+        }
+      },
+      "prediction": {
+        "eyebrow": "Simulator · Prediction",
+        "title": "Predicted win rate",
+        "description": "Based on your team's historical data across {count, plural, =0 {no maps} =1 {# map} other {# maps}}",
+        "estimatedWinRateAria": "Estimated win rate: {value}",
+        "confidence": {
+          "high": "High confidence",
+          "medium": "Medium confidence",
+          "low": "Low confidence"
+        },
+        "deltaVsBase": "{direction, select, positive {+{delta}pp} negative {-{delta}pp} other {{delta}pp}} vs base ({base})",
+        "warningsLabel": "Warnings",
+        "emptyScenario": "Configure a scenario on the left to see how parameters affect your win probability.",
+        "warnings": {
+          "enemyBanLowSample": "{hero} has only been banned {samples, plural, =0 {0 times} =1 {# time} other {# times}} — impact estimate may be unreliable",
+          "ourBanLowSample": "You've only banned {hero} {samples, plural, =0 {0 times} =1 {# time} other {# times}} — impact estimate may be unreliable",
+          "mapLowSample": "Only {samples, plural, =0 {0 games} =1 {# game} other {# games}} on {map} — map impact estimate may be unreliable",
+          "mapModeFallback": "No data for {map} — using {mapType} mode average instead",
+          "rosterLowSample": "This roster combination has only {games, plural, =0 {0 recorded games} =1 {# recorded game} other {# recorded games}}",
+          "enemyHeroLowSample": "Only {samples, plural, =0 {0 games} =1 {# game} other {# games}} against enemy {hero} — impact estimate may be unreliable"
+        },
+        "insights": {
+          "enemyBanHurts": "<strong>{hero}</strong> being banned against you hurts by {delta}%",
+          "ourBanHelps": "Banning <strong>{hero}</strong> adds +{delta}% — your strongest ban",
+          "mapStrength": "<strong>{map}</strong> is a {direction, select, strong {strong map} weak {weak map} other {map}} for your team ({delta}%)",
+          "compositionImpact": "Your composition {direction, select, boosts {boosts} reduces {reduces} other {changes}} your odds by {delta}%",
+          "enemyCompositionImpact": "The enemy composition {direction, select, favors {favors} challenges {challenges} other {changes}} you by {delta}%"
+        },
+        "mapTypes": {
+          "Clash": "Clash",
+          "Control": "Control",
+          "Escort": "Escort",
+          "Flashpoint": "Flashpoint",
+          "Hybrid": "Hybrid",
+          "Push": "Push"
+        }
+      },
+      "breakdown": {
+        "heading": "Breakdown",
+        "listAria": "Win rate breakdown",
+        "baseWinrate": "Base win rate",
+        "enemyBanImpact": "Enemy ban impact",
+        "ourBans": "Our bans",
+        "map": "Map",
+        "composition": "Composition",
+        "enemyComp": "Enemy comp",
+        "impactPercent": "{direction, select, positive {+{value}%} negative {-{value}%} other {{value}%}}",
+        "barScale": "Bar scale: ±{scale}pp max. Bars are capped at ±{max}pp."
+      }
+    },
     "roleBalanceRadar": {
       "eyebrow": "Overview · Role balance",
       "title": "Role Balance",
