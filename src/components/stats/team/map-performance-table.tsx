@@ -2,7 +2,7 @@
 
 import { SectionHeader } from "@/components/stats/team/section-header";
 import { cn, toKebabCase, toTimestampWithHours } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import Image from "next/image";
 
 type MapRow = {
@@ -32,13 +32,21 @@ export function MapPerformanceTable({
   mapNames,
 }: MapPerformanceTableProps) {
   const t = useTranslations("teamStatsPage.topMapsCard");
+  const format = useFormatter();
+
+  function formatPercent(value: number) {
+    return format.number(value / 100, {
+      style: "percent",
+      maximumFractionDigits: 0,
+    });
+  }
 
   if (topMaps.length === 0) {
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Overview · Map performance"
-          title="Map performance"
+          eyebrow={t("performanceEyebrow")}
+          title={t("performanceTitle")}
         />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
@@ -63,20 +71,32 @@ export function MapPerformanceTable({
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Overview · Map performance"
-        title="Map performance"
-        description="Most-played maps with winrate alongside playtime."
+        eyebrow={t("performanceEyebrow")}
+        title={t("performanceTitle")}
+        description={t("performanceDescription")}
       />
       <div className="border-border overflow-hidden rounded-md border">
         <table className="w-full text-sm">
           <thead className="bg-muted/30">
             <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-              <th className="px-4 py-2 text-left font-medium">Map</th>
-              <th className="px-4 py-2 text-right font-medium">Games</th>
-              <th className="px-4 py-2 text-right font-medium">Playtime</th>
-              <th className="px-4 py-2 text-right font-medium">Winrate</th>
-              <th className="px-4 py-2 text-left font-medium">Distribution</th>
-              <th className="w-24 px-4 py-2 text-right font-medium">Tag</th>
+              <th className="px-4 py-2 text-left font-medium">
+                {t("columns.map")}
+              </th>
+              <th className="px-4 py-2 text-right font-medium">
+                {t("columns.games")}
+              </th>
+              <th className="px-4 py-2 text-right font-medium">
+                {t("columns.playtime")}
+              </th>
+              <th className="px-4 py-2 text-right font-medium">
+                {t("columns.winrate")}
+              </th>
+              <th className="px-4 py-2 text-left font-medium">
+                {t("columns.distribution")}
+              </th>
+              <th className="w-24 px-4 py-2 text-right font-medium">
+                {t("columns.tag")}
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--border)]">
@@ -108,7 +128,7 @@ export function MapPerformanceTable({
                     </div>
                   </td>
                   <td className="px-4 py-3 text-right font-mono tabular-nums">
-                    {totalGames}
+                    {format.number(totalGames)}
                   </td>
                   <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
                     {toTimestampWithHours(row.playtime)}
@@ -120,7 +140,7 @@ export function MapPerformanceTable({
                       isBlind && "text-destructive"
                     )}
                   >
-                    {totalGames > 0 ? `${row.winrate.toFixed(0)}%` : "—"}
+                    {totalGames > 0 ? formatPercent(row.winrate) : "—"}
                   </td>
                   <td className="px-4 py-3">
                     <div className="bg-muted h-1.5 w-full max-w-[140px] overflow-hidden rounded-full">
@@ -133,11 +153,11 @@ export function MapPerformanceTable({
                   <td className="px-4 py-3 text-right">
                     {isBest ? (
                       <span className="bg-primary/15 text-primary rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase">
-                        Strongest
+                        {t("tags.strongest")}
                       </span>
                     ) : isBlind ? (
                       <span className="bg-destructive/15 text-destructive rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase">
-                        Bleed
+                        {t("tags.bleed")}
                       </span>
                     ) : null}
                   </td>

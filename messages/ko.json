@@ -3691,6 +3691,26 @@
       "playerTargets": "플레이어 목표",
       "noData": "아직 로스터 데이터가 없습니다. 플레이어는 경기에 참여하면 여기에 표시됩니다."
     },
+    "topMapsCard": {
+      "eyebrow": "개요 · 플레이한 맵",
+      "title": "플레이 시간 상위 맵",
+      "noData": "아직 맵 데이터가 없습니다.",
+      "performanceEyebrow": "개요 · 맵 성과",
+      "performanceTitle": "맵 성과",
+      "performanceDescription": "가장 많이 플레이한 맵과 승률, 플레이 시간을 함께 보여줍니다.",
+      "columns": {
+        "map": "맵",
+        "games": "경기",
+        "playtime": "플레이 시간",
+        "winrate": "승률",
+        "distribution": "분포",
+        "tag": "태그"
+      },
+      "tags": {
+        "strongest": "강점",
+        "bleed": "취약"
+      }
+    },
     "quickStatsCard": {
       "eyebrow": "개요 · 신호",
       "title": "빠른 통계",

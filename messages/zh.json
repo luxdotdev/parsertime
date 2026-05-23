@@ -3691,6 +3691,26 @@
       "playerTargets": "玩家目标",
       "noData": "还没有阵容数据。玩家参加比赛后会显示在这里。"
     },
+    "topMapsCard": {
+      "eyebrow": "概览 · 已游玩地图",
+      "title": "按游玩时间排名的热门地图",
+      "noData": "还没有地图数据。",
+      "performanceEyebrow": "概览 · 地图表现",
+      "performanceTitle": "地图表现",
+      "performanceDescription": "显示最常游玩的地图，并同时展示胜率和游玩时间。",
+      "columns": {
+        "map": "地图",
+        "games": "比赛",
+        "playtime": "游玩时间",
+        "winrate": "胜率",
+        "distribution": "分布",
+        "tag": "标签"
+      },
+      "tags": {
+        "strongest": "强项",
+        "bleed": "短板"
+      }
+    },
     "quickStatsCard": {
       "eyebrow": "概览 · 信号",
       "title": "快速数据",

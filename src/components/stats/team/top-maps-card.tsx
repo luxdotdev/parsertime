@@ -2,7 +2,7 @@
 
 import { SectionHeader } from "@/components/stats/team/section-header";
 import { toKebabCase, toTimestampWithHours } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import Image from "next/image";
 
 type TopMapsCardProps = {
@@ -23,11 +23,19 @@ type TopMapsCardProps = {
 
 export function TopMapsCard({ topMaps, winrates, mapNames }: TopMapsCardProps) {
   const t = useTranslations("teamStatsPage.topMapsCard");
+  const format = useFormatter();
+
+  function formatPercent(value: number) {
+    return format.number(value / 100, {
+      style: "percent",
+      maximumFractionDigits: 1,
+    });
+  }
 
   if (topMaps.length === 0) {
     return (
       <section className="space-y-4">
-        <SectionHeader eyebrow="Overview · Maps played" title={t("title")} />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
@@ -37,7 +45,7 @@ export function TopMapsCard({ topMaps, winrates, mapNames }: TopMapsCardProps) {
 
   return (
     <section className="space-y-4">
-      <SectionHeader eyebrow="Overview · Maps played" title={t("title")} />
+      <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
       <div className="space-y-4">
         {topMaps.map((map, index) => {
           const kebabName = toKebabCase(map.name);
@@ -67,7 +75,7 @@ export function TopMapsCard({ topMaps, winrates, mapNames }: TopMapsCardProps) {
                     <div className="flex items-center gap-3 text-xs">
                       {winrateData && (
                         <span className="text-foreground font-mono font-semibold tabular-nums">
-                          {winrate.toFixed(1)}%
+                          {formatPercent(winrate)}
                         </span>
                       )}
                       <span className="text-muted-foreground font-mono tabular-nums">
