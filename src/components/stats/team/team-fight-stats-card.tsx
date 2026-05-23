@@ -1,7 +1,7 @@
 import { SectionHeader } from "@/components/stats/team/section-header";
 import type { TeamFightStats } from "@/data/team/types";
 import { cn, round } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 
 type TeamFightStatsCardProps = {
   fightStats: TeamFightStats;
@@ -16,11 +16,19 @@ type FightCell = {
 
 export function TeamFightStatsCard({ fightStats }: TeamFightStatsCardProps) {
   const t = useTranslations("teamStats.fightStats");
+  const format = useFormatter();
+
+  function formatPercent(value: number): string {
+    return format.number(value / 100, {
+      style: "percent",
+      maximumFractionDigits: 0,
+    });
+  }
 
   if (fightStats.totalFights === 0) {
     return (
       <section className="space-y-4">
-        <SectionHeader eyebrow="Teamfights · Fight stats" title={t("title")} />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
@@ -34,7 +42,7 @@ export function TeamFightStatsCard({ fightStats }: TeamFightStatsCardProps) {
   const cells: FightCell[] = [
     {
       label: t("overallWinrate"),
-      value: `${round(fightStats.overallWinrate)}%`,
+      value: formatPercent(fightStats.overallWinrate),
       sub: t("record", {
         wins: fightStats.fightsWon,
         losses: fightStats.fightsLost,
@@ -46,7 +54,7 @@ export function TeamFightStatsCard({ fightStats }: TeamFightStatsCardProps) {
   if (fightStats.firstPickFights > 0) {
     cells.push({
       label: t("firstPickWinrate"),
-      value: `${round(fightStats.firstPickWinrate)}%`,
+      value: formatPercent(fightStats.firstPickWinrate),
       sub: t("firstPickCount", { count: fightStats.firstPickFights }),
     });
   }
@@ -54,7 +62,7 @@ export function TeamFightStatsCard({ fightStats }: TeamFightStatsCardProps) {
   if (fightStats.firstDeathFights > 0) {
     cells.push({
       label: t("firstDeathWinrate"),
-      value: `${round(fightStats.firstDeathWinrate)}%`,
+      value: formatPercent(fightStats.firstDeathWinrate),
       sub: t("firstDeathCount", { count: fightStats.firstDeathFights }),
     });
   }
@@ -62,24 +70,24 @@ export function TeamFightStatsCard({ fightStats }: TeamFightStatsCardProps) {
   if (fightStats.firstUltFights > 0) {
     cells.push({
       label: t("firstUltWinrate"),
-      value: `${round(fightStats.firstUltWinrate)}%`,
+      value: formatPercent(fightStats.firstUltWinrate),
       sub: t("firstUltCount", { count: fightStats.firstUltFights }),
     });
   }
 
   cells.push({
     label: t("dryFights"),
-    value: `${round(dryFightPercentage)}%`,
+    value: formatPercent(dryFightPercentage),
     sub: t("dryFightDetails", {
       count: fightStats.dryFights,
-      winrate: round(fightStats.dryFightWinrate),
+      winrate: formatPercent(fightStats.dryFightWinrate),
     }),
   });
 
   if (fightStats.nonDryFights > 0) {
     cells.push({
       label: t("avgUltsPerFight"),
-      value: `${round(fightStats.avgUltsPerNonDryFight)}`,
+      value: format.number(round(fightStats.avgUltsPerNonDryFight)),
       sub: t("avgUltsDescription", {
         count: fightStats.nonDryFights,
       }),
@@ -89,7 +97,7 @@ export function TeamFightStatsCard({ fightStats }: TeamFightStatsCardProps) {
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Teamfights · Fight stats"
+        eyebrow={t("eyebrow")}
         title={t("title")}
         description={t("description", { count: fightStats.totalFights })}
       />

@@ -4416,21 +4416,22 @@
   },
   "teamStats": {
     "fightStats": {
+      "eyebrow": "Teamfights · Fight stats",
       "title": "Team Fight Statistics",
-      "description": "Analyzed across {count} total fights",
+      "description": "Analyzed across {count, plural, =0 {no fights} =1 {1 total fight} other {# total fights}}",
       "noData": "No fight data available yet. Upload scrims to see team fight statistics.",
       "overallWinrate": "Overall Fight Winrate",
       "record": "{wins}W - {losses}L",
       "firstPickWinrate": "First Pick Winrate",
-      "firstPickCount": "In {count} fights with first pick",
+      "firstPickCount": "In {count, plural, =0 {no fights} =1 {1 fight} other {# fights}} with first pick",
       "firstDeathWinrate": "First Death Winrate",
-      "firstDeathCount": "In {count} fights losing first pick",
+      "firstDeathCount": "In {count, plural, =0 {no fights} =1 {1 fight} other {# fights}} losing first pick",
       "firstUltWinrate": "First Ultimate Winrate",
-      "firstUltCount": "In {count} fights using first ult",
+      "firstUltCount": "In {count, plural, =0 {no fights} =1 {1 fight} other {# fights}} using first ult",
       "dryFights": "Dry Fight Rate",
-      "dryFightDetails": "{count} dry fights ({winrate}% winrate)",
+      "dryFightDetails": "{count, plural, =0 {no dry fights} =1 {1 dry fight} other {# dry fights}} ({winrate} winrate)",
       "avgUltsPerFight": "Avg Ults Per Fight",
-      "avgUltsDescription": "In {count} non-dry fights"
+      "avgUltsDescription": "In {count, plural, =0 {no non-dry fights} =1 {1 non-dry fight} other {# non-dry fights}}"
     }
   },
   "teamStatsPage": {

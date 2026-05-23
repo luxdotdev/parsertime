@@ -3895,6 +3895,26 @@
       }
     }
   },
+  "teamStats": {
+    "fightStats": {
+      "eyebrow": "团战 · 团战统计",
+      "title": "团队团战统计",
+      "description": "已分析 {count, plural, =0 {无团战} other {# 场团战}}",
+      "noData": "还没有团战数据。上传训练赛后即可查看团队团战统计。",
+      "overallWinrate": "整体团战胜率",
+      "record": "{wins}胜 - {losses}负",
+      "firstPickWinrate": "首杀胜率",
+      "firstPickCount": "取得首杀的团战 {count, plural, =0 {无} other {# 场}}",
+      "firstDeathWinrate": "先阵亡后胜率",
+      "firstDeathCount": "先失首杀的团战 {count, plural, =0 {无} other {# 场}}",
+      "firstUltWinrate": "先用终极技能胜率",
+      "firstUltCount": "先使用终极技能的团战 {count, plural, =0 {无} other {# 场}}",
+      "dryFights": "无终极技能团战比例",
+      "dryFightDetails": "无终极技能团战 {count, plural, =0 {无} other {# 场}}（胜率 {winrate}）",
+      "avgUltsPerFight": "每场团战平均终极技能",
+      "avgUltsDescription": "基于 {count, plural, =0 {无使用终极技能的团战} other {# 场使用终极技能的团战}}"
+    }
+  },
   "targets": {
     "title": "选手目标",
     "premiumRequired": "选手目标需要高级计划。",
