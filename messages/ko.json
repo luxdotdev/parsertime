@@ -1015,6 +1015,20 @@
           "title": "맵 그룹을 만들지 못했습니다"
         }
       }
+    },
+    "mapCard": {
+      "ariaLabel": "{map} 맵 카드",
+      "ariaLabelSelected": "{map} 맵 카드, 비교 대상으로 선택됨",
+      "altText": "{map} 로딩 화면 아트.",
+      "selected": "선택됨",
+      "copiedCode": "리플레이 코드를 복사했습니다!",
+      "contextMenu": {
+        "title": "맵 작업",
+        "selectForComparison": "비교 대상으로 선택",
+        "addToMapGroup": "맵 그룹에 추가",
+        "viewDetails": "맵 상세 보기",
+        "copyCode": "리플레이 코드 복사"
+      }
     }
   },
   "comparePage": {

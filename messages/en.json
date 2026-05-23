@@ -1051,6 +1051,8 @@
       }
     },
     "mapCard": {
+      "ariaLabel": "{map} map card",
+      "ariaLabelSelected": "{map} map card, selected for comparison",
       "altText": "The loading screen art for {map}.",
       "selected": "Selected",
       "copiedCode": "Copied replay code!",

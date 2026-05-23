@@ -97,7 +97,11 @@ function MapCardWithSelectionComponent({
         isSelected && "ring-primary shadow-lg ring-2"
       )}
       role="article"
-      aria-label={`${displayName} map card${isSelected ? ", selected for comparison" : ""}`}
+      aria-label={
+        isSelected
+          ? t("ariaLabelSelected", { map: displayName })
+          : t("ariaLabel", { map: displayName })
+      }
     >
       <Link
         href={`/${teamId}/scrim/${scrimId}/map/${map.id}` as Route}

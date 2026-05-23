@@ -1015,6 +1015,20 @@
           "title": "创建地图组失败"
         }
       }
+    },
+    "mapCard": {
+      "ariaLabel": "{map} 地图卡片",
+      "ariaLabelSelected": "{map} 地图卡片，已选择用于比较",
+      "altText": "{map} 的加载界面美术图。",
+      "selected": "已选择",
+      "copiedCode": "已复制回放代码！",
+      "contextMenu": {
+        "title": "地图操作",
+        "selectForComparison": "选择用于比较",
+        "addToMapGroup": "添加到地图组",
+        "viewDetails": "查看地图详情",
+        "copyCode": "复制回放代码"
+      }
     }
   },
   "comparePage": {
