@@ -5319,6 +5319,12 @@
     "progress": "Progress",
     "baseline": "Baseline",
     "target": "Target",
+    "trend": "Trend",
+    "baselineValue": "Baseline: {value}",
+    "targetValue": "Target: {value}",
+    "clickToIsolate": "Click to isolate",
+    "baselineTargetSummary": "Baseline: {baseline} | Target: {target}",
+    "chartSummary": "Average: <value>{average}</value> | Max: <value>{max}</value> | Min: <value>{min}</value>",
     "targetAchieved": "Target achieved!",
     "coachNote": "Coach's note",
     "progressSummary": {
