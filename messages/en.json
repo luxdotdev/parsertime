@@ -2028,6 +2028,9 @@
       "healedMore": "<color>{teamName}</color> healed more this map.",
       "title": "Overview",
       "round": "Round {number}",
+      "team1": "Team 1",
+      "team2": "Team 2",
+      "notAvailable": "N/A",
       "analysis": {
         "title": "Analysis",
         "tabFirstDeaths": "First Deaths",

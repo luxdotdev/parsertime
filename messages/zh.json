@@ -2028,6 +2028,9 @@
       "healedMore": "<color>{teamName}</color> 在这张地图上提供了更多的治疗。",
       "title": "概述",
       "round": "回合 {number}",
+      "team1": "队伍 1",
+      "team2": "队伍 2",
+      "notAvailable": "不可用",
       "analysis": {
         "title": "分析",
         "tabFirstDeaths": "首杀",

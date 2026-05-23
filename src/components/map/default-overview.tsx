@@ -174,9 +174,9 @@ export async function DefaultOverview({
       case $Enums.MapType.Hybrid:
         return `${payloadMapScore.team1} - ${payloadMapScore.team2}`;
       case $Enums.MapType.Push:
-        return "N/A";
+        return t("notAvailable");
       default:
-        return "N/A";
+        return t("notAvailable");
     }
   }
 
@@ -244,8 +244,8 @@ export async function DefaultOverview({
     (kill) => kill.attacker_team === matchDetails?.team_2_name
   ).length;
 
-  const team1Name = matchDetails?.team_1_name ?? "Team 1";
-  const team2Name = matchDetails?.team_2_name ?? "Team 2";
+  const team1Name = matchDetails?.team_1_name ?? t("team1");
+  const team2Name = matchDetails?.team_2_name ?? t("team2");
 
   const positionalEnabled = positionalDataOverride ?? (await positionalData());
 

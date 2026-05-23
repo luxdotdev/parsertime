@@ -2028,6 +2028,9 @@
       "healedMore": "<color>{teamName}</color>이(가) 이 맵에서 더 많은 치유를 제공했습니다.",
       "title": "개요",
       "round": "라운드 {number}",
+      "team1": "팀 1",
+      "team2": "팀 2",
+      "notAvailable": "해당 없음",
       "analysis": {
         "title": "분석",
         "tabFirstDeaths": "첫 번째 사망",
