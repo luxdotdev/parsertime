@@ -399,6 +399,9 @@
       "oldToNew": "从旧到新",
       "newToOld": "从新到旧",
       "search": "搜索...",
+      "noScrimsFound": "没有找到符合筛选条件的训练赛。",
+      "tryAdjustingFilters": "请尝试调整搜索词或筛选条件。",
+      "searchDescription": "<strong>提示：</strong> 使用 <code>team:队伍名</code>、<code>creator:用户名</code> 语法可以改善搜索结果。",
       "searchInfoLabel": "搜索帮助"
     },
     "pagination": {
