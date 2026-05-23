@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 export function CollapsibleCard({
@@ -17,6 +18,7 @@ export function CollapsibleCard({
   header: React.ReactNode;
   children: React.ReactNode;
 }) {
+  const t = useTranslations("scrimPage.overviewTabs.actions");
   const [open, setOpen] = useState(true);
 
   return (
@@ -27,7 +29,7 @@ export function CollapsibleCard({
             <div className="min-w-0 flex-1">{header}</div>
             <CollapsibleTrigger
               className="text-muted-foreground hover:text-foreground -mr-1 shrink-0 rounded-md p-1.5 transition-colors"
-              aria-label={open ? "Collapse overview" : "Expand overview"}
+              aria-label={open ? t("collapseOverview") : t("expandOverview")}
             >
               <ChevronDown
                 className={cn(

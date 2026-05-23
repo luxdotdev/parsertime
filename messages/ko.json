@@ -931,7 +931,9 @@
       },
       "actions": {
         "collapseAll": "모두 접기",
-        "expandAll": "모두 펼치기"
+        "expandAll": "모두 펼치기",
+        "collapseOverview": "개요 접기",
+        "expandOverview": "개요 펼치기"
       },
       "sections": {
         "players": "플레이어 성과",

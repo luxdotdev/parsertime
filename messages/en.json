@@ -931,7 +931,9 @@
       },
       "actions": {
         "collapseAll": "Collapse all",
-        "expandAll": "Expand all"
+        "expandAll": "Expand all",
+        "collapseOverview": "Collapse overview",
+        "expandOverview": "Expand overview"
       },
       "sections": {
         "players": "Player Performance",

@@ -931,7 +931,9 @@
       },
       "actions": {
         "collapseAll": "全部收起",
-        "expandAll": "全部展开"
+        "expandAll": "全部展开",
+        "collapseOverview": "收起概览",
+        "expandOverview": "展开概览"
       },
       "sections": {
         "players": "玩家表现",
