@@ -3201,6 +3201,12 @@
     "owner": "(Owner)",
     "you": "(You)",
     "addMember": "Add a member...",
+    "empty": {
+      "title": "No Teams",
+      "joinInvite": "Click here to join a team from an invite code.",
+      "createPrompt": "Or, create a new team by clicking the button below.",
+      "createTeam": "Create Team"
+    },
     "join": {
       "enterToken": "Enter Your Invite Token",
       "joinTeam": "Join Team",

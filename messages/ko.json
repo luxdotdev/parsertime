@@ -2487,6 +2487,12 @@
     "owner": "(소유자)",
     "you": "(나)",
     "addMember": "멤버 추가...",
+    "empty": {
+      "title": "팀 없음",
+      "joinInvite": "초대 코드로 팀에 가입하려면 여기를 클릭하세요.",
+      "createPrompt": "또는 아래 버튼을 클릭해 새 팀을 만드세요.",
+      "createTeam": "팀 만들기"
+    },
     "join": {
       "enterToken": "초대 토큰 입력",
       "joinTeam": "팀 가입",

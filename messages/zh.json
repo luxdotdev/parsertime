@@ -2487,6 +2487,12 @@
     "owner": "（所有者）",
     "you": "（您）",
     "addMember": "添加成员...",
+    "empty": {
+      "title": "没有团队",
+      "joinInvite": "点击这里使用邀请码加入团队。",
+      "createPrompt": "或者点击下方按钮创建新团队。",
+      "createTeam": "创建团队"
+    },
     "join": {
       "enterToken": "输入您的邀请令牌",
       "joinTeam": "加入团队",
