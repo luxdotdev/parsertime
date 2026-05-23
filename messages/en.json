@@ -2446,6 +2446,7 @@
         "selectionEnd": "Selection end",
         "previousFight": "Previous fight",
         "nextFight": "Next fight",
+        "even": "Even",
         "noData": "Not enough data to display tempo."
       }
     },

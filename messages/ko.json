@@ -2446,6 +2446,7 @@
         "selectionEnd": "선택 끝",
         "previousFight": "이전 전투",
         "nextFight": "다음 전투",
+        "even": "동등",
         "noData": "템포를 표시할 데이터가 충분하지 않습니다."
       }
     },
