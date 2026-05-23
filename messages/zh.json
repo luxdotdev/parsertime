@@ -739,6 +739,105 @@
           "swaps": "次更换"
         }
       }
+    },
+    "overviewSummary": {
+      "ariaLabel": "训练赛概览",
+      "recordAria": "战绩：{wins} 胜，{losses} 负，{draws} 平",
+      "winRate": "{winRate}% 胜率",
+      "keyInsights": "关键洞察",
+      "record": {
+        "wins": "{count}胜",
+        "losses": "{count}负",
+        "draws": "{count}平"
+      },
+      "stats": {
+        "maps": "地图",
+        "teamKd": "团队 K/D",
+        "totalDamage": "总伤害",
+        "totalHealing": "总治疗",
+        "record": "{wins}胜 · {losses}负",
+        "elims": "{count} 次击杀",
+        "heroDamage": "英雄伤害",
+        "healingDealt": "治疗量"
+      }
+    },
+    "playerPerformance": {
+      "columns": {
+        "player": "玩家",
+        "maps": "地图",
+        "kd": "K/D",
+        "elimsPer10": "击杀/10",
+        "damagePer10": "伤害/10",
+        "firstDeath": "首死",
+        "teamFirstDeath": "团队首死",
+        "trend": "趋势",
+        "outliers": "异常项"
+      },
+      "trend": {
+        "improving": "提升中",
+        "declining": "下降中",
+        "stable": "稳定",
+        "improvingAria": "提升中：{count} 项指标上升",
+        "decliningAria": "下降中：{count} 项指标下降",
+        "stableAria": "表现稳定"
+      },
+      "outlier": {
+        "elite": "顶尖",
+        "belowAverage": "低于平均",
+        "aria": "{label} 位于数据库第 {percentile} 百分位（{status}）",
+        "tooltip": "{label}：数据库第 {percentile} 百分位（{status}）"
+      },
+      "fallback": {
+        "unknownPlayer": "未知玩家",
+        "unknownHero": "未知英雄"
+      }
+    },
+    "addToMapGroupDialog": {
+      "title": {
+        "add": "添加到地图组",
+        "create": "创建新地图组"
+      },
+      "description": {
+        "add": "选择一个现有地图组来添加 {mapName}，或创建一个新地图组。",
+        "create": "创建一个新地图组并添加 {mapName}。"
+      },
+      "selectGroup": "选择地图组",
+      "mapCount": "{count} 张地图",
+      "empty": {
+        "title": "未找到地图组。",
+        "description": "在下方创建你的第一个地图组。"
+      },
+      "createNew": "创建新地图组",
+      "backToSelection": "返回选择",
+      "cancel": "取消",
+      "addToGroup": "添加到组",
+      "createAndAdd": "创建并添加",
+      "form": {
+        "name": "名称",
+        "namePlaceholder": "例如：控制图",
+        "description": "描述",
+        "descriptionPlaceholder": "该组的可选描述",
+        "category": "分类",
+        "categoryPlaceholder": "例如：地图类型、打法"
+      },
+      "toast": {
+        "unknownError": "未知错误",
+        "nameRequired": "请输入地图组名称",
+        "added": {
+          "title": "已添加到地图组",
+          "description": "{mapName} 已添加到 {groupName}"
+        },
+        "addFailed": {
+          "title": "添加到地图组失败"
+        },
+        "created": {
+          "title": "地图组已创建",
+          "description": "已创建“{groupName}”并添加 {mapName}"
+        },
+        "createFailed": {
+          "title": "创建地图组失败"
+        }
+      }
     }
   },
   "mapPage": {

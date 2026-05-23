@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/tooltip";
 import type { PlayerScrimPerformance } from "@/data/scrim/types";
 import { cn, format, toHero } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 function toDisplayText(value: unknown, fallback: string): string {
   if (typeof value !== "string") return fallback;
@@ -32,6 +33,7 @@ export function TrendIndicator({
   trend,
   trendData,
 }: Pick<PlayerScrimPerformance, "trend" | "trendData">) {
+  const t = useTranslations("scrimPage.playerPerformance");
   const improving = trendData?.improvingMetrics.length ?? 0;
   const declining = trendData?.decliningMetrics.length ?? 0;
 
@@ -39,9 +41,9 @@ export function TrendIndicator({
     return (
       <span
         className="font-mono text-xs leading-none text-emerald-600 tabular-nums dark:text-emerald-400"
-        aria-label={`Improving: ${improving} metrics trending up`}
+        aria-label={t("trend.improvingAria", { count: improving })}
       >
-        ↑<span className="sr-only">Improving</span>
+        ↑<span className="sr-only">{t("trend.improving")}</span>
       </span>
     );
   }
@@ -49,18 +51,18 @@ export function TrendIndicator({
     return (
       <span
         className="font-mono text-xs leading-none text-rose-600 tabular-nums dark:text-rose-400"
-        aria-label={`Declining: ${declining} metrics trending down`}
+        aria-label={t("trend.decliningAria", { count: declining })}
       >
-        ↓<span className="sr-only">Declining</span>
+        ↓<span className="sr-only">{t("trend.declining")}</span>
       </span>
     );
   }
   return (
     <span
       className="text-muted-foreground/60 font-mono text-xs leading-none"
-      aria-label="Stable performance"
+      aria-label={t("trend.stableAria")}
     >
-      ·<span className="sr-only">Stable</span>
+      ·<span className="sr-only">{t("trend.stable")}</span>
     </span>
   );
 }
@@ -70,7 +72,10 @@ export function OutlierBadge({
 }: {
   outlier: PlayerScrimPerformance["outliers"][number];
 }) {
+  const t = useTranslations("scrimPage.playerPerformance");
   const isPositive = outlier.direction === "high";
+  const status = isPositive ? t("outlier.elite") : t("outlier.belowAverage");
+
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -82,15 +87,22 @@ export function OutlierBadge({
               : "border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-400"
           )}
           variant="outline"
-          aria-label={`${outlier.label} at ${outlier.percentile}th percentile vs database`}
+          aria-label={t("outlier.aria", {
+            label: outlier.label,
+            percentile: outlier.percentile,
+            status,
+          })}
         >
           {outlier.label}
         </Badge>
       </TooltipTrigger>
       <TooltipContent>
         <p>
-          {outlier.label}: {outlier.percentile}th %ile vs database
-          {isPositive ? " (elite)" : " (below avg)"}
+          {t("outlier.tooltip", {
+            label: outlier.label,
+            percentile: outlier.percentile,
+            status,
+          })}
         </p>
       </TooltipContent>
     </Tooltip>
@@ -104,10 +116,17 @@ function PlayerRow({
   player: PlayerScrimPerformance;
   index: number;
 }) {
+  const t = useTranslations("scrimPage.playerPerformance");
   const topOutliers = player.outliers.slice(0, 2);
   const heroCount = Array.isArray(player.heroes) ? player.heroes.length : 0;
-  const playerDisplayName = toDisplayText(player.playerName, "Unknown Player");
-  const primaryHeroDisplay = toDisplayText(player.primaryHero, "Unknown Hero");
+  const playerDisplayName = toDisplayText(
+    player.playerName,
+    t("fallback.unknownPlayer")
+  );
+  const primaryHeroDisplay = toDisplayText(
+    player.primaryHero,
+    t("fallback.unknownHero")
+  );
   const heroImageSlug = toSafeHeroImageSlug(primaryHeroDisplay);
 
   return (
@@ -172,6 +191,8 @@ export function PlayerPerformanceTable({
 }: {
   players: PlayerScrimPerformance[];
 }) {
+  const t = useTranslations("scrimPage.playerPerformance");
+
   if (players.length === 0) return null;
 
   return (
@@ -183,15 +204,15 @@ export function PlayerPerformanceTable({
             COLS
           )}
         >
-          <div>Player</div>
-          <div className="text-right">Maps</div>
-          <div className="text-right">K/D</div>
-          <div className="text-right">Elims/10</div>
-          <div className="text-right">Dmg/10</div>
-          <div className="text-right">1st Death</div>
-          <div className="text-right">Team 1st Death</div>
-          <div className="text-center">Trend</div>
-          <div>Outliers</div>
+          <div>{t("columns.player")}</div>
+          <div className="text-right">{t("columns.maps")}</div>
+          <div className="text-right">{t("columns.kd")}</div>
+          <div className="text-right">{t("columns.elimsPer10")}</div>
+          <div className="text-right">{t("columns.damagePer10")}</div>
+          <div className="text-right">{t("columns.firstDeath")}</div>
+          <div className="text-right">{t("columns.teamFirstDeath")}</div>
+          <div className="text-center">{t("columns.trend")}</div>
+          <div>{t("columns.outliers")}</div>
         </div>
         <ul>
           {players.map((player, index) => (

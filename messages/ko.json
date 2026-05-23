@@ -739,6 +739,105 @@
           "swaps": "교체"
         }
       }
+    },
+    "overviewSummary": {
+      "ariaLabel": "스크림 개요",
+      "recordAria": "전적: {wins}승, {losses}패, {draws}무",
+      "winRate": "{winRate}% 승률",
+      "keyInsights": "주요 인사이트",
+      "record": {
+        "wins": "{count}승",
+        "losses": "{count}패",
+        "draws": "{count}무"
+      },
+      "stats": {
+        "maps": "맵",
+        "teamKd": "팀 K/D",
+        "totalDamage": "총 피해",
+        "totalHealing": "총 치유",
+        "record": "{wins}승 · {losses}패",
+        "elims": "{count} 처치",
+        "heroDamage": "영웅 피해",
+        "healingDealt": "치유량"
+      }
+    },
+    "playerPerformance": {
+      "columns": {
+        "player": "플레이어",
+        "maps": "맵",
+        "kd": "K/D",
+        "elimsPer10": "처치/10",
+        "damagePer10": "피해/10",
+        "firstDeath": "첫 사망",
+        "teamFirstDeath": "팀 첫 사망",
+        "trend": "추세",
+        "outliers": "이상치"
+      },
+      "trend": {
+        "improving": "개선 중",
+        "declining": "하락 중",
+        "stable": "안정적",
+        "improvingAria": "개선 중: {count}개 지표 상승",
+        "decliningAria": "하락 중: {count}개 지표 하락",
+        "stableAria": "안정적인 성과"
+      },
+      "outlier": {
+        "elite": "상위권",
+        "belowAverage": "평균 이하",
+        "aria": "{label}: 데이터베이스 {percentile}번째 백분위 ({status})",
+        "tooltip": "{label}: 데이터베이스 {percentile}번째 백분위 ({status})"
+      },
+      "fallback": {
+        "unknownPlayer": "알 수 없는 플레이어",
+        "unknownHero": "알 수 없는 영웅"
+      }
+    },
+    "addToMapGroupDialog": {
+      "title": {
+        "add": "맵 그룹에 추가",
+        "create": "새 맵 그룹 만들기"
+      },
+      "description": {
+        "add": "{mapName}을 추가할 기존 맵 그룹을 선택하거나 새로 만드세요.",
+        "create": "새 맵 그룹을 만들고 {mapName}을 추가하세요."
+      },
+      "selectGroup": "맵 그룹 선택",
+      "mapCount": "{count}개 맵",
+      "empty": {
+        "title": "맵 그룹을 찾을 수 없습니다.",
+        "description": "아래에서 첫 맵 그룹을 만드세요."
+      },
+      "createNew": "새 맵 그룹 만들기",
+      "backToSelection": "선택으로 돌아가기",
+      "cancel": "취소",
+      "addToGroup": "그룹에 추가",
+      "createAndAdd": "만들고 추가",
+      "form": {
+        "name": "이름",
+        "namePlaceholder": "예: 컨트롤 맵",
+        "description": "설명",
+        "descriptionPlaceholder": "이 그룹에 대한 선택 설명",
+        "category": "카테고리",
+        "categoryPlaceholder": "예: 맵 유형, 플레이스타일"
+      },
+      "toast": {
+        "unknownError": "알 수 없는 오류",
+        "nameRequired": "맵 그룹 이름을 입력하세요",
+        "added": {
+          "title": "맵 그룹에 추가됨",
+          "description": "{mapName}이(가) {groupName}에 추가되었습니다"
+        },
+        "addFailed": {
+          "title": "맵 그룹에 추가하지 못했습니다"
+        },
+        "created": {
+          "title": "맵 그룹 생성됨",
+          "description": "\"{groupName}\"을(를) 만들고 {mapName}을(를) 추가했습니다"
+        },
+        "createFailed": {
+          "title": "맵 그룹을 만들지 못했습니다"
+        }
+      }
     }
   },
   "mapPage": {

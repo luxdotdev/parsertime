@@ -862,6 +862,105 @@
         }
       }
     },
+    "overviewSummary": {
+      "ariaLabel": "Scrim overview",
+      "recordAria": "Record: {wins, plural, one {# win} other {# wins}}, {losses, plural, one {# loss} other {# losses}}, {draws, plural, one {# draw} other {# draws}}",
+      "winRate": "{winRate}% win rate",
+      "keyInsights": "Key Insights",
+      "record": {
+        "wins": "{count}W",
+        "losses": "{count}L",
+        "draws": "{count}D"
+      },
+      "stats": {
+        "maps": "Maps",
+        "teamKd": "Team K/D",
+        "totalDamage": "Total Damage",
+        "totalHealing": "Total Healing",
+        "record": "{wins}W · {losses}L",
+        "elims": "{count, plural, one {# elim} other {# elims}}",
+        "heroDamage": "hero damage",
+        "healingDealt": "healing dealt"
+      }
+    },
+    "playerPerformance": {
+      "columns": {
+        "player": "Player",
+        "maps": "Maps",
+        "kd": "K/D",
+        "elimsPer10": "Elims/10",
+        "damagePer10": "Dmg/10",
+        "firstDeath": "1st Death",
+        "teamFirstDeath": "Team 1st Death",
+        "trend": "Trend",
+        "outliers": "Outliers"
+      },
+      "trend": {
+        "improving": "Improving",
+        "declining": "Declining",
+        "stable": "Stable",
+        "improvingAria": "Improving: {count, plural, one {# metric} other {# metrics}} trending up",
+        "decliningAria": "Declining: {count, plural, one {# metric} other {# metrics}} trending down",
+        "stableAria": "Stable performance"
+      },
+      "outlier": {
+        "elite": "elite",
+        "belowAverage": "below avg",
+        "aria": "{label} at {percentile}th percentile vs database ({status})",
+        "tooltip": "{label}: {percentile}th %ile vs database ({status})"
+      },
+      "fallback": {
+        "unknownPlayer": "Unknown Player",
+        "unknownHero": "Unknown Hero"
+      }
+    },
+    "addToMapGroupDialog": {
+      "title": {
+        "add": "Add to Map Group",
+        "create": "Create New Map Group"
+      },
+      "description": {
+        "add": "Select an existing map group to add {mapName} to, or create a new one.",
+        "create": "Create a new map group and add {mapName} to it."
+      },
+      "selectGroup": "Select a map group",
+      "mapCount": "{count, plural, one {# map} other {# maps}}",
+      "empty": {
+        "title": "No map groups found.",
+        "description": "Create your first map group below."
+      },
+      "createNew": "Create New Map Group",
+      "backToSelection": "Back to Selection",
+      "cancel": "Cancel",
+      "addToGroup": "Add to Group",
+      "createAndAdd": "Create and Add",
+      "form": {
+        "name": "Name",
+        "namePlaceholder": "e.g., Control Maps",
+        "description": "Description",
+        "descriptionPlaceholder": "Optional description for this group",
+        "category": "Category",
+        "categoryPlaceholder": "e.g., Map Type, Playstyle"
+      },
+      "toast": {
+        "unknownError": "Unknown error",
+        "nameRequired": "Please enter a name for the map group",
+        "added": {
+          "title": "Added to map group",
+          "description": "{mapName} added to {groupName}"
+        },
+        "addFailed": {
+          "title": "Failed to add to map group"
+        },
+        "created": {
+          "title": "Map group created",
+          "description": "Created \"{groupName}\" and added {mapName}"
+        },
+        "createFailed": {
+          "title": "Failed to create map group"
+        }
+      }
+    },
     "mapCard": {
       "altText": "The loading screen art for {map}.",
       "selected": "Selected",

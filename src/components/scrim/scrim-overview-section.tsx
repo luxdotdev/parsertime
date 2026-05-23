@@ -10,6 +10,7 @@ import {
   LightningBoltIcon,
   StarFilledIcon,
 } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 
 export function WinLossBadge({
   wins,
@@ -20,23 +21,25 @@ export function WinLossBadge({
   losses: number;
   draws: number;
 }) {
+  const t = useTranslations("scrimPage.overviewSummary");
+
   return (
     <div
       className="flex items-center gap-2"
-      aria-label={`Record: ${wins} wins, ${losses} losses, ${draws} draws`}
+      aria-label={t("recordAria", { wins, losses, draws })}
     >
       <span className="text-sm font-semibold text-emerald-600 tabular-nums dark:text-emerald-400">
-        {wins}W
+        {t("record.wins", { count: wins })}
       </span>
       <span className="text-muted-foreground text-sm">·</span>
       <span className="text-sm font-semibold text-rose-600 tabular-nums dark:text-rose-400">
-        {losses}L
+        {t("record.losses", { count: losses })}
       </span>
       {draws > 0 && (
         <>
           <span className="text-muted-foreground text-sm">·</span>
           <span className="text-muted-foreground text-sm font-semibold tabular-nums">
-            {draws}D
+            {t("record.draws", { count: draws })}
           </span>
         </>
       )}
@@ -51,10 +54,12 @@ export function WinRateBadge({
   wins: number;
   mapCount: number;
 }) {
+  const t = useTranslations("scrimPage.overviewSummary");
   const winRate = mapCount > 0 ? Math.round((wins / mapCount) * 100) : 0;
+
   return (
     <Badge variant="secondary" className="tabular-nums">
-      {winRate}% win rate
+      {t("winRate", { winRate })}
     </Badge>
   );
 }
@@ -111,6 +116,8 @@ function InsightIcon({ type }: { type: ScrimInsight["type"] }) {
 }
 
 export function ScrimOverviewSection({ data }: { data: ScrimOverviewData }) {
+  const t = useTranslations("scrimPage.overviewSummary");
+
   if (data.mapCount === 0 || data.teamPlayers.length === 0) {
     return null;
   }
@@ -121,37 +128,37 @@ export function ScrimOverviewSection({ data }: { data: ScrimOverviewData }) {
   const totalDamage = teamTotals.heroDamage;
 
   return (
-    <section aria-label="Scrim overview" className="space-y-5">
+    <section aria-label={t("ariaLabel")} className="space-y-5">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <StatSummaryCell
-          label="Maps"
+          label={t("stats.maps")}
           value={String(mapCount)}
-          sub={`${wins}W · ${losses}L`}
+          sub={t("stats.record", { wins, losses })}
         />
         <span className="bg-border h-4 w-px shrink-0" aria-hidden />
         <StatSummaryCell
-          label="Team K/D"
+          label={t("stats.teamKd")}
           value={kdDisplay}
-          sub={`${totalElims} elims`}
+          sub={t("stats.elims", { count: totalElims })}
         />
         <span className="bg-border h-4 w-px shrink-0" aria-hidden />
         <StatSummaryCell
-          label="Total Damage"
+          label={t("stats.totalDamage")}
           value={format(Math.round(totalDamage))}
-          sub="hero damage"
+          sub={t("stats.heroDamage")}
         />
         <span className="bg-border h-4 w-px shrink-0" aria-hidden />
         <StatSummaryCell
-          label="Total Healing"
+          label={t("stats.totalHealing")}
           value={format(Math.round(teamTotals.healing))}
-          sub="healing dealt"
+          sub={t("stats.healingDealt")}
         />
       </div>
 
       {insights.length > 0 && (
         <div>
           <h2 className="text-muted-foreground mb-2 font-mono text-[11px] tracking-[0.14em] uppercase">
-            Key Insights
+            {t("keyInsights")}
           </h2>
           <ul className="space-y-1.5">
             {insights.map((insight) => (

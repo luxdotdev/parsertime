@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { FormattedMapGroup } from "@/types/map-group";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -90,6 +91,7 @@ export function AddToMapGroupDialog({
   const [newGroupDescription, setNewGroupDescription] = useState("");
   const [newGroupCategory, setNewGroupCategory] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const t = useTranslations("scrimPage.addToMapGroupDialog");
 
   const queryClient = useQueryClient();
 
@@ -114,8 +116,11 @@ export function AddToMapGroupDialog({
       const result = await addMapToGroup(selectedGroupId, combinedMapIds);
 
       if (result.success) {
-        toast.success("Added to map group", {
-          description: `${mapName} added to ${group.name}`,
+        toast.success(t("toast.added.title"), {
+          description: t("toast.added.description", {
+            mapName,
+            groupName: group.name,
+          }),
         });
         await queryClient.invalidateQueries({
           queryKey: ["mapGroups", teamId],
@@ -123,13 +128,14 @@ export function AddToMapGroupDialog({
         onOpenChange(false);
         setSelectedGroupId(null);
       } else {
-        toast.error("Failed to add to map group", {
+        toast.error(t("toast.addFailed.title"), {
           description: result.error,
         });
       }
     } catch (error) {
-      toast.error("Failed to add to map group", {
-        description: error instanceof Error ? error.message : "Unknown error",
+      toast.error(t("toast.addFailed.title"), {
+        description:
+          error instanceof Error ? error.message : t("toast.unknownError"),
       });
     } finally {
       setIsSubmitting(false);
@@ -138,7 +144,7 @@ export function AddToMapGroupDialog({
 
   async function handleCreateNew() {
     if (!newGroupName.trim()) {
-      toast.error("Please enter a name for the map group");
+      toast.error(t("toast.nameRequired"));
       return;
     }
 
@@ -153,8 +159,11 @@ export function AddToMapGroupDialog({
       });
 
       if (result.success) {
-        toast.success("Map group created", {
-          description: `Created "${newGroupName}" and added ${mapName}`,
+        toast.success(t("toast.created.title"), {
+          description: t("toast.created.description", {
+            groupName: newGroupName,
+            mapName,
+          }),
         });
         await queryClient.invalidateQueries({
           queryKey: ["mapGroups", teamId],
@@ -165,13 +174,14 @@ export function AddToMapGroupDialog({
         setNewGroupCategory("");
         setMode("select");
       } else {
-        toast.error("Failed to create map group", {
+        toast.error(t("toast.createFailed.title"), {
           description: result.error,
         });
       }
     } catch (error) {
-      toast.error("Failed to create map group", {
-        description: error instanceof Error ? error.message : "Unknown error",
+      toast.error(t("toast.createFailed.title"), {
+        description:
+          error instanceof Error ? error.message : t("toast.unknownError"),
       });
     } finally {
       setIsSubmitting(false);
@@ -192,12 +202,12 @@ export function AddToMapGroupDialog({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>
-            {mode === "select" ? "Add to Map Group" : "Create New Map Group"}
+            {mode === "select" ? t("title.add") : t("title.create")}
           </DialogTitle>
           <DialogDescription>
             {mode === "select"
-              ? `Select an existing map group to add ${mapName} to, or create a new one.`
-              : `Create a new map group and add ${mapName} to it.`}
+              ? t("description.add", { mapName })
+              : t("description.create", { mapName })}
           </DialogDescription>
         </DialogHeader>
 
@@ -209,7 +219,7 @@ export function AddToMapGroupDialog({
               </div>
             ) : mapGroups && mapGroups.length > 0 ? (
               <div className="space-y-2">
-                <Label>Select a map group</Label>
+                <Label>{t("selectGroup")}</Label>
                 <div className="max-h-[300px] overflow-y-auto rounded-md border">
                   {mapGroups.map((group) => (
                     <button
@@ -227,8 +237,7 @@ export function AddToMapGroupDialog({
                         </div>
                       )}
                       <div className="text-muted-foreground mt-1 text-xs">
-                        {group.mapIds.length} map
-                        {group.mapIds.length !== 1 ? "s" : ""}
+                        {t("mapCount", { count: group.mapIds.length })}
                         {group.category && ` · ${group.category}`}
                       </div>
                     </button>
@@ -237,8 +246,8 @@ export function AddToMapGroupDialog({
               </div>
             ) : (
               <div className="text-muted-foreground py-8 text-center">
-                <p>No map groups found.</p>
-                <p className="text-sm">Create your first map group below.</p>
+                <p>{t("empty.title")}</p>
+                <p className="text-sm">{t("empty.description")}</p>
               </div>
             )}
 
@@ -248,18 +257,18 @@ export function AddToMapGroupDialog({
               onClick={() => setMode("create")}
             >
               <Plus className="mr-2 h-4 w-4" />
-              Create New Map Group
+              {t("createNew")}
             </Button>
           </div>
         ) : (
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">
-                Name <span className="text-destructive">*</span>
+                {t("form.name")} <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="name"
-                placeholder="e.g., Control Maps"
+                placeholder={t("form.namePlaceholder")}
                 value={newGroupName}
                 onChange={(e) => setNewGroupName(e.target.value)}
                 maxLength={100}
@@ -267,10 +276,10 @@ export function AddToMapGroupDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">{t("form.description")}</Label>
               <Textarea
                 id="description"
-                placeholder="Optional description for this group"
+                placeholder={t("form.descriptionPlaceholder")}
                 value={newGroupDescription}
                 onChange={(e) => setNewGroupDescription(e.target.value)}
                 maxLength={500}
@@ -279,10 +288,10 @@ export function AddToMapGroupDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
+              <Label htmlFor="category">{t("form.category")}</Label>
               <Input
                 id="category"
-                placeholder="e.g., Map Type, Playstyle"
+                placeholder={t("form.categoryPlaceholder")}
                 value={newGroupCategory}
                 onChange={(e) => setNewGroupCategory(e.target.value)}
                 maxLength={50}
@@ -294,14 +303,14 @@ export function AddToMapGroupDialog({
               className="w-full"
               onClick={() => setMode("select")}
             >
-              Back to Selection
+              {t("backToSelection")}
             </Button>
           </div>
         )}
 
         <DialogFooter>
           <Button variant="outline" onClick={handleClose}>
-            Cancel
+            {t("cancel")}
           </Button>
           {mode === "select" ? (
             <Button
@@ -311,7 +320,7 @@ export function AddToMapGroupDialog({
               {isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Add to Group
+              {t("addToGroup")}
             </Button>
           ) : (
             <Button
@@ -321,7 +330,7 @@ export function AddToMapGroupDialog({
               {isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Create and Add
+              {t("createAndAdd")}
             </Button>
           )}
         </DialogFooter>
