@@ -531,6 +531,52 @@
   "updateModal": {
     "dismiss": "Dismiss"
   },
+  "availability": {
+    "timezoneSelect": {
+      "searchPlaceholder": "시간대 검색...",
+      "empty": "시간대를 찾을 수 없습니다.",
+      "detected": "감지됨",
+      "teamDefault": "팀 기본값",
+      "regional": "지역",
+      "allTimezones": "모든 시간대"
+    },
+    "settingsForm": {
+      "slotGranularity": "슬롯 간격",
+      "slotMinutes": "{count}분",
+      "defaultTimezone": "기본 시간대(보기용)",
+      "startHour": "시작 시간(0-23)",
+      "endHour": "종료 시간(1-24)",
+      "midnightHint": "24 = 자정",
+      "weeklyReminder": "주간 Discord 리마인더",
+      "weeklyReminderDescription": "봇이 매주 시작될 때 작성 링크와 함께 역할을 멘션합니다.",
+      "day": "요일",
+      "hour": "시",
+      "minute": "분",
+      "roleId": "멘션할 Discord 역할 ID",
+      "guildId": "서버 ID(재정의)",
+      "channelId": "채널 ID(재정의)",
+      "botConfigPlaceholder": "비워두면 봇 설정 사용",
+      "saving": "저장 중...",
+      "save": "설정 저장",
+      "days": {
+        "sunday": "일요일",
+        "monday": "월요일",
+        "tuesday": "화요일",
+        "wednesday": "수요일",
+        "thursday": "목요일",
+        "friday": "금요일",
+        "saturday": "토요일"
+      },
+      "toast": {
+        "saveFailed": "설정을 저장하지 못했습니다",
+        "saved": "설정이 저장되었습니다"
+      },
+      "validation": {
+        "endAfterStart": "종료 시간은 시작 시간보다 뒤여야 합니다",
+        "evenSlots": "시간 범위는 슬롯 분 단위로 나누어떨어져야 합니다"
+      }
+    }
+  },
   "scrimPage": {
     "metadata": {
       "scrim": "스크림",

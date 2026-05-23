@@ -630,6 +630,52 @@
     "monthYear": "{date, date, ::MMMM yyyy}",
     "weekday": "{weekday, date, ::E}"
   },
+  "availability": {
+    "timezoneSelect": {
+      "searchPlaceholder": "Search timezone...",
+      "empty": "No timezone found.",
+      "detected": "Detected",
+      "teamDefault": "Team default",
+      "regional": "Regional",
+      "allTimezones": "All timezones"
+    },
+    "settingsForm": {
+      "slotGranularity": "Slot granularity",
+      "slotMinutes": "{count} minutes",
+      "defaultTimezone": "Default timezone (for viewing)",
+      "startHour": "Start hour (0-23)",
+      "endHour": "End hour (1-24)",
+      "midnightHint": "24 = midnight",
+      "weeklyReminder": "Weekly Discord reminder",
+      "weeklyReminderDescription": "Bot pings a role with the fill link at the start of each week.",
+      "day": "Day",
+      "hour": "Hour",
+      "minute": "Minute",
+      "roleId": "Discord role ID to ping",
+      "guildId": "Guild ID (override)",
+      "channelId": "Channel ID (override)",
+      "botConfigPlaceholder": "leave blank to use bot config",
+      "saving": "Saving...",
+      "save": "Save settings",
+      "days": {
+        "sunday": "Sunday",
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday"
+      },
+      "toast": {
+        "saveFailed": "Failed to save settings",
+        "saved": "Settings saved"
+      },
+      "validation": {
+        "endAfterStart": "End hour must be after start hour",
+        "evenSlots": "Window must divide evenly into slot minutes"
+      }
+    }
+  },
   "scrimPage": {
     "metadata": {
       "scrim": "Scrim",

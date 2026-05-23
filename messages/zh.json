@@ -531,6 +531,52 @@
   "updateModal": {
     "dismiss": "关闭"
   },
+  "availability": {
+    "timezoneSelect": {
+      "searchPlaceholder": "搜索时区...",
+      "empty": "未找到时区。",
+      "detected": "已检测",
+      "teamDefault": "队伍默认",
+      "regional": "区域",
+      "allTimezones": "所有时区"
+    },
+    "settingsForm": {
+      "slotGranularity": "时间段粒度",
+      "slotMinutes": "{count} 分钟",
+      "defaultTimezone": "默认时区（用于查看）",
+      "startHour": "开始小时（0-23）",
+      "endHour": "结束小时（1-24）",
+      "midnightHint": "24 = 午夜",
+      "weeklyReminder": "每周 Discord 提醒",
+      "weeklyReminderDescription": "机器人会在每周开始时用填写链接提醒指定身份组。",
+      "day": "星期",
+      "hour": "小时",
+      "minute": "分钟",
+      "roleId": "要提醒的 Discord 身份组 ID",
+      "guildId": "服务器 ID（覆盖）",
+      "channelId": "频道 ID（覆盖）",
+      "botConfigPlaceholder": "留空以使用机器人配置",
+      "saving": "正在保存...",
+      "save": "保存设置",
+      "days": {
+        "sunday": "星期日",
+        "monday": "星期一",
+        "tuesday": "星期二",
+        "wednesday": "星期三",
+        "thursday": "星期四",
+        "friday": "星期五",
+        "saturday": "星期六"
+      },
+      "toast": {
+        "saveFailed": "保存设置失败",
+        "saved": "设置已保存"
+      },
+      "validation": {
+        "endAfterStart": "结束小时必须晚于开始小时",
+        "evenSlots": "可用时间窗口必须能被时间段分钟数整除"
+      }
+    }
+  },
   "scrimPage": {
     "metadata": {
       "scrim": "训练赛",

@@ -21,35 +21,38 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-const schema = z
-  .object({
-    slotMinutes: z.union([z.literal(15), z.literal(30), z.literal(60)]),
-    hoursStart: z.number().int().min(0).max(23),
-    hoursEnd: z.number().int().min(1).max(24),
-    timezone: z.string().min(1),
-    reminderEnabled: z.boolean(),
-    reminderDayOfWeek: z.number().int().min(0).max(6),
-    reminderHour: z.number().int().min(0).max(23),
-    reminderMinute: z.number().int().min(0).max(59),
-    reminderRoleId: z.string().optional(),
-    reminderGuildId: z.string().optional(),
-    reminderChannelId: z.string().optional(),
-  })
-  .refine((v) => v.hoursEnd > v.hoursStart, {
-    path: ["hoursEnd"],
-    message: "End hour must be after start hour",
-  })
-  .refine((v) => ((v.hoursEnd - v.hoursStart) * 60) % v.slotMinutes === 0, {
-    path: ["slotMinutes"],
-    message: "Window must divide evenly into slot minutes",
-  });
+function createSchema(t: ReturnType<typeof useTranslations>) {
+  return z
+    .object({
+      slotMinutes: z.union([z.literal(15), z.literal(30), z.literal(60)]),
+      hoursStart: z.number().int().min(0).max(23),
+      hoursEnd: z.number().int().min(1).max(24),
+      timezone: z.string().min(1),
+      reminderEnabled: z.boolean(),
+      reminderDayOfWeek: z.number().int().min(0).max(6),
+      reminderHour: z.number().int().min(0).max(23),
+      reminderMinute: z.number().int().min(0).max(59),
+      reminderRoleId: z.string().optional(),
+      reminderGuildId: z.string().optional(),
+      reminderChannelId: z.string().optional(),
+    })
+    .refine((v) => v.hoursEnd > v.hoursStart, {
+      path: ["hoursEnd"],
+      message: t("validation.endAfterStart"),
+    })
+    .refine((v) => ((v.hoursEnd - v.hoursStart) * 60) % v.slotMinutes === 0, {
+      path: ["slotMinutes"],
+      message: t("validation.evenSlots"),
+    });
+}
 
-type Values = z.infer<typeof schema>;
+type Values = z.infer<ReturnType<typeof createSchema>>;
 
 const DAYS = [
   "Sunday",
@@ -68,9 +71,10 @@ export function AvailabilitySettingsForm({
   teamId: number;
   initial: Values;
 }) {
+  const t = useTranslations("availability.settingsForm");
   const router = useRouter();
   const form = useForm<Values>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(createSchema(t)),
     defaultValues: initial,
   });
 
@@ -86,10 +90,10 @@ export function AvailabilitySettingsForm({
       }),
     });
     if (!res.ok) {
-      toast.error("Failed to save settings");
+      toast.error(t("toast.saveFailed"));
       return;
     }
-    toast.success("Settings saved");
+    toast.success(t("toast.saved"));
     router.refresh();
   }
 
@@ -102,7 +106,7 @@ export function AvailabilitySettingsForm({
             name="slotMinutes"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Slot granularity</FormLabel>
+                <FormLabel>{t("slotGranularity")}</FormLabel>
                 <Select
                   value={String(field.value)}
                   onValueChange={(v) =>
@@ -115,9 +119,15 @@ export function AvailabilitySettingsForm({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="15">15 minutes</SelectItem>
-                    <SelectItem value="30">30 minutes</SelectItem>
-                    <SelectItem value="60">60 minutes</SelectItem>
+                    <SelectItem value="15">
+                      {t("slotMinutes", { count: 15 })}
+                    </SelectItem>
+                    <SelectItem value="30">
+                      {t("slotMinutes", { count: 30 })}
+                    </SelectItem>
+                    <SelectItem value="60">
+                      {t("slotMinutes", { count: 60 })}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -130,7 +140,7 @@ export function AvailabilitySettingsForm({
             name="timezone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Default timezone (for viewing)</FormLabel>
+                <FormLabel>{t("defaultTimezone")}</FormLabel>
                 <FormControl>
                   <TimezoneSelect
                     value={field.value}
@@ -147,7 +157,7 @@ export function AvailabilitySettingsForm({
             name="hoursStart"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Start hour (0–23)</FormLabel>
+                <FormLabel>{t("startHour")}</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -167,7 +177,7 @@ export function AvailabilitySettingsForm({
             name="hoursEnd"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>End hour (1–24)</FormLabel>
+                <FormLabel>{t("endHour")}</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -177,7 +187,7 @@ export function AvailabilitySettingsForm({
                     onChange={(e) => field.onChange(Number(e.target.value))}
                   />
                 </FormControl>
-                <FormDescription>24 = midnight</FormDescription>
+                <FormDescription>{t("midnightHint")}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -191,10 +201,9 @@ export function AvailabilitySettingsForm({
             render={({ field }) => (
               <FormItem className="flex items-center justify-between">
                 <div>
-                  <FormLabel>Weekly Discord reminder</FormLabel>
+                  <FormLabel>{t("weeklyReminder")}</FormLabel>
                   <FormDescription>
-                    Bot pings a role with the fill link at the start of each
-                    week.
+                    {t("weeklyReminderDescription")}
                   </FormDescription>
                 </div>
                 <FormControl>
@@ -213,7 +222,7 @@ export function AvailabilitySettingsForm({
               name="reminderDayOfWeek"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Day</FormLabel>
+                  <FormLabel>{t("day")}</FormLabel>
                   <Select
                     value={String(field.value)}
                     onValueChange={(v) => field.onChange(Number(v))}
@@ -226,7 +235,7 @@ export function AvailabilitySettingsForm({
                     <SelectContent>
                       {DAYS.map((d, i) => (
                         <SelectItem key={d} value={String(i)}>
-                          {d}
+                          {t(`days.${d.toLowerCase()}`)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -240,7 +249,7 @@ export function AvailabilitySettingsForm({
               name="reminderHour"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Hour</FormLabel>
+                  <FormLabel>{t("hour")}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -259,7 +268,7 @@ export function AvailabilitySettingsForm({
               name="reminderMinute"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Minute</FormLabel>
+                  <FormLabel>{t("minute")}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -280,7 +289,7 @@ export function AvailabilitySettingsForm({
               name="reminderRoleId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Discord role ID to ping</FormLabel>
+                  <FormLabel>{t("roleId")}</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="123456789012345678"
@@ -296,10 +305,10 @@ export function AvailabilitySettingsForm({
               name="reminderGuildId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Guild ID (override)</FormLabel>
+                  <FormLabel>{t("guildId")}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="leave blank to use bot config"
+                      placeholder={t("botConfigPlaceholder")}
                       value={field.value ?? ""}
                       onChange={field.onChange}
                     />
@@ -312,10 +321,10 @@ export function AvailabilitySettingsForm({
               name="reminderChannelId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Channel ID (override)</FormLabel>
+                  <FormLabel>{t("channelId")}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="leave blank to use bot config"
+                      placeholder={t("botConfigPlaceholder")}
                       value={field.value ?? ""}
                       onChange={field.onChange}
                     />
@@ -327,7 +336,7 @@ export function AvailabilitySettingsForm({
         </div>
 
         <Button type="submit" disabled={form.formState.isSubmitting}>
-          {form.formState.isSubmitting ? "Saving…" : "Save settings"}
+          {form.formState.isSubmitting ? t("saving") : t("save")}
         </Button>
       </form>
     </Form>
