@@ -104,14 +104,17 @@ export function TeamOverviewEnhanced({
         {winsAbove1500 !== null && strengthRating && (
           <Card size="sm">
             <CardHeader>
-              <CardTitle>Record Quality</CardTitle>
+              <CardTitle>{t("recordQuality")}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-2xl font-bold tabular-nums">
-                {winsAbove1500.wins} of {overview.wins}
+                {t("recordQualityValue", {
+                  wins: winsAbove1500.wins,
+                  total: overview.wins,
+                })}
               </p>
               <p className="text-muted-foreground text-sm">
-                wins came against teams rated above 1500
+                {t("recordQualityDescription")}
               </p>
             </CardContent>
           </Card>
@@ -167,6 +170,8 @@ function StrengthRatingCard({
   rating: TeamStrengthRating;
   percentile: number | null;
 }) {
+  const t = useTranslations("scoutingPage.team.overview");
+  const formatter = useFormatter();
   const isProvisional = rating.matchesRated < 5;
   const ratingConfidence = assessConfidence(rating.matchesRated);
 
@@ -174,7 +179,7 @@ function StrengthRatingCard({
     <Card size="sm" className={cn(isProvisional && "border-dashed opacity-80")}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          Strength Rating
+          {t("strengthRating")}
           <ConfidenceIndicator
             confidence={ratingConfidence}
             showLabel={false}
@@ -182,7 +187,7 @@ function StrengthRatingCard({
           />
         </CardTitle>
         {isProvisional && (
-          <CardDescription>Provisional — fewer than 5 matches</CardDescription>
+          <CardDescription>{t("provisionalRating")}</CardDescription>
         )}
       </CardHeader>
       <CardContent>
@@ -190,12 +195,17 @@ function StrengthRatingCard({
           <p className="text-2xl font-bold tabular-nums">{rating.rating}</p>
           {percentile !== null && (
             <Badge variant="secondary" className="tabular-nums">
-              Top {100 - percentile}%
+              {t("topPercentile", {
+                value: formatter.number((100 - percentile) / 100, {
+                  style: "percent",
+                  maximumFractionDigits: 0,
+                }),
+              })}
             </Badge>
           )}
         </div>
         <p className="text-muted-foreground mt-1 text-sm tabular-nums">
-          {rating.matchesRated} matches rated
+          {t("matchesRated", { count: rating.matchesRated })}
         </p>
       </CardContent>
     </Card>
@@ -203,15 +213,16 @@ function StrengthRatingCard({
 }
 
 function NoCompetitiveDataCard() {
+  const t = useTranslations("scoutingPage.team.overview");
+
   return (
     <Card size="sm" className="border-dashed">
       <CardHeader>
-        <CardTitle>Strength Rating</CardTitle>
+        <CardTitle>{t("strengthRating")}</CardTitle>
       </CardHeader>
       <CardContent>
         <p className="text-muted-foreground text-sm">
-          No competitive match data available. Tag scrims with an opponent to
-          enable cross-referenced analytics.
+          {t("noCompetitiveData")}
         </p>
       </CardContent>
     </Card>
@@ -219,6 +230,9 @@ function NoCompetitiveDataCard() {
 }
 
 function WinRateSparkline({ form }: { form: MatchResult[] }) {
+  const t = useTranslations("scoutingPage.team.overview");
+  const formatter = useFormatter();
+
   if (form.length < 3) return null;
 
   const points = form
@@ -253,7 +267,13 @@ function WinRateSparkline({ form }: { form: MatchResult[] }) {
       height={height}
       viewBox={`0 0 ${width} ${height}`}
       className="ml-auto shrink-0"
-      aria-label={`Win rate trend: ${Math.round(trending * 100)}% over last ${points.length} matches`}
+      aria-label={t("winRateTrend", {
+        value: formatter.number(trending, {
+          style: "percent",
+          maximumFractionDigits: 0,
+        }),
+        count: points.length,
+      })}
       role="img"
     >
       <path
