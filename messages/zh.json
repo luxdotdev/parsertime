@@ -406,6 +406,41 @@
       "next": "下一页",
       "morePages": "更多页面"
     },
+    "tour": {
+      "title": "仪表盘导览",
+      "step1": {
+        "title": "欢迎使用 Parsertime！",
+        "description": "此导览将带你了解仪表盘的主要功能。我们开始吧！"
+      },
+      "step2": {
+        "title": "第一步",
+        "description": "一切都从这里开始！点击创建训练赛按钮来设置你的第一个场次。别担心，下一步会引导你完成上传流程！"
+      },
+      "step3": {
+        "title": "命名训练赛",
+        "description": "给训练赛起个名字！可以使用类似“Team A vs Team B”的名称，方便整理。"
+      },
+      "step4": {
+        "title": "分配队伍",
+        "description": "选择要共享此训练赛的队伍。如果还没有创建队伍，可以前往队伍页面创建。"
+      },
+      "step5": {
+        "title": "设置日期",
+        "description": "选择训练赛进行的日期。这有助于按时间顺序整理训练赛。"
+      },
+      "step6": {
+        "title": "上传第一张地图",
+        "description": "在这里上传 Workshop Log（.xlsx 或 .txt）。我们会处理数据并创建你的训练赛。"
+      },
+      "step7": {
+        "title": "英雄禁用（可选）",
+        "description": "如果训练赛中有英雄禁用，可以在这里添加。这有助于在复盘训练赛时提供背景信息。"
+      },
+      "step8": {
+        "title": "全部就绪！",
+        "description": "你已经可以开始分析训练赛数据了！"
+      }
+    },
     "mainNav": {
       "dashboard": "仪表盘",
       "stats": "统计数据",
