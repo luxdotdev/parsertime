@@ -968,6 +968,27 @@
           "opponentUltFirst": "상대 궁극기 선사용",
           "winRate": "승률",
           "tooltipWinRate": "승률 {winrate}"
+        },
+        "abilityTiming": {
+          "noData": "이 스크림에서 영향도가 큰 능력이 감지되지 않았습니다.",
+          "phase": {
+            "preFight": "교전 전",
+            "early": "초반",
+            "mid": "중반",
+            "late": "후반",
+            "cleanup": "정리"
+          },
+          "negativeOutlier": "<ability>{abilityName}</ability>을(를) {phase}에 사용하면 승률이 <negativeRate>{phaseWinrate}</negativeRate>이며, {bestPhase}에 사용할 때의 <positiveRate>{bestPhaseWinrate}</positiveRate>보다 낮습니다.",
+          "positiveOutlier": "<ability>{abilityName}</ability>을(를) {phase}에 사용하면 <positiveRate>{phaseWinrate}</positiveRate> 승률과 연관됩니다. 강한 {pattern} 패턴입니다.",
+          "patternInitiation": "개시",
+          "patternTiming": "타이밍",
+          "cellTitle": "승률 {winrate} ({fights, plural, other {교전 #회}} 중 {wins, number}승 {losses, number}패)",
+          "fewerThanFights": "교전 {count, plural, other {#회}} 미만",
+          "legendWinRate": "승률:",
+          "legendBadTiming": "나쁜 타이밍",
+          "legendGoodTiming": "좋은 타이밍",
+          "hoverDetail": "<ability>{abilityName}</ability> {phase} 사용: <rate>승률 {winrate}</rate>, {fights, plural, other {교전 #회}}에서 {wins, number}승 {losses, number}패",
+          "info": "셀은 해당 교전 단계에서 능력을 사용했을 때의 승률을 보여줍니다. “—”는 교전 {count, plural, other {#회}} 미만을 의미합니다. 자세히 보려면 마우스를 올리세요."
         }
       },
       "ultimates": {

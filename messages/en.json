@@ -968,6 +968,27 @@
           "opponentUltFirst": "Opp Ult First",
           "winRate": "Win Rate",
           "tooltipWinRate": "{winrate} win rate"
+        },
+        "abilityTiming": {
+          "noData": "No high-impact abilities detected in this scrim.",
+          "phase": {
+            "preFight": "Pre-fight",
+            "early": "Early",
+            "mid": "Mid",
+            "late": "Late",
+            "cleanup": "Cleanup"
+          },
+          "negativeOutlier": "<ability>{abilityName}</ability> used {phase} has <negativeRate>{phaseWinrate} winrate</negativeRate> vs <positiveRate>{bestPhaseWinrate}</positiveRate> when used {bestPhase}",
+          "positiveOutlier": "<ability>{abilityName}</ability> in {phase} correlates with <positiveRate>{phaseWinrate} winrate</positiveRate> — strong {pattern} pattern",
+          "patternInitiation": "initiation",
+          "patternTiming": "timing",
+          "cellTitle": "{winrate} win rate ({wins, number}W {losses, number}L from {fights, plural, =1 {# fight} other {# fights}})",
+          "fewerThanFights": "Fewer than {count, plural, =1 {# fight} other {# fights}}",
+          "legendWinRate": "Win rate:",
+          "legendBadTiming": "Bad timing",
+          "legendGoodTiming": "Good timing",
+          "hoverDetail": "<ability>{abilityName}</ability> used {phase}: <rate>{winrate} win rate</rate> across {fights, plural, =1 {# fight} other {# fights}} ({wins, number}W {losses, number}L)",
+          "info": "Cells show win rate when ability is used in that fight phase. “—” = fewer than {count, plural, =1 {# fight} other {# fights}}. Hover for details."
         }
       },
       "ultimates": {

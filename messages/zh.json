@@ -968,6 +968,27 @@
           "opponentUltFirst": "对手率先开大",
           "winRate": "胜率",
           "tooltipWinRate": "{winrate} 胜率"
+        },
+        "abilityTiming": {
+          "noData": "本次训练赛未检测到高影响技能。",
+          "phase": {
+            "preFight": "战斗前",
+            "early": "前期",
+            "mid": "中期",
+            "late": "后期",
+            "cleanup": "收尾"
+          },
+          "negativeOutlier": "<ability>{abilityName}</ability> 在{phase}使用时胜率为 <negativeRate>{phaseWinrate}</negativeRate>，低于在{bestPhase}使用时的 <positiveRate>{bestPhaseWinrate}</positiveRate>。",
+          "positiveOutlier": "<ability>{abilityName}</ability> 在{phase}使用时对应 <positiveRate>{phaseWinrate}</positiveRate> 胜率，呈现强{pattern}模式。",
+          "patternInitiation": "开战",
+          "patternTiming": "时机",
+          "cellTitle": "{winrate} 胜率（{fights, plural, other {# 场战斗}}中 {wins, number}胜 {losses, number}负）",
+          "fewerThanFights": "少于 {count, plural, other {# 场战斗}}",
+          "legendWinRate": "胜率：",
+          "legendBadTiming": "不佳时机",
+          "legendGoodTiming": "良好时机",
+          "hoverDetail": "<ability>{abilityName}</ability> 在{phase}使用：<rate>{winrate} 胜率</rate>，{fights, plural, other {# 场战斗}}中 {wins, number}胜 {losses, number}负",
+          "info": "单元格显示技能在对应战斗阶段使用时的胜率。“—”表示少于 {count, plural, other {# 场战斗}}。悬停可查看详情。"
         }
       },
       "ultimates": {

@@ -13,6 +13,7 @@ import {
 } from "@radix-ui/react-icons";
 import { Info } from "lucide-react";
 import Image from "next/image";
+import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 
 const PHASE_ORDER: FightPhase[] = [
@@ -23,12 +24,12 @@ const PHASE_ORDER: FightPhase[] = [
   "cleanup",
 ];
 
-const PHASE_LABELS: Record<FightPhase, string> = {
-  "pre-fight": "Pre-fight",
-  early: "Early",
-  mid: "Mid",
-  late: "Late",
-  cleanup: "Cleanup",
+const PHASE_KEYS: Record<FightPhase, string> = {
+  "pre-fight": "preFight",
+  early: "early",
+  mid: "mid",
+  late: "late",
+  cleanup: "cleanup",
 };
 
 const MIN_FIGHTS = 3;
@@ -65,12 +66,20 @@ function getOutlierBorder(
     : "ring-2 ring-green-500";
 }
 
-function phaseLabel(phase: FightPhase): string {
-  return PHASE_LABELS[phase];
-}
-
 function OutlierInsight({ outlier }: { outlier: AbilityTimingOutlier }) {
+  const t = useTranslations("scrimPage.overviewSections.fights.abilityTiming");
+  const formatter = useFormatter();
   const isNegative = outlier.type === "negative";
+  const phase = t(`phase.${PHASE_KEYS[outlier.phase]}`);
+  const bestPhase = t(`phase.${PHASE_KEYS[outlier.bestPhase]}`);
+  const phaseWinrate = formatter.number(outlier.phaseWinrate / 100, {
+    maximumFractionDigits: 0,
+    style: "percent",
+  });
+  const bestPhaseWinrate = formatter.number(outlier.bestPhaseWinrate / 100, {
+    maximumFractionDigits: 0,
+    style: "percent",
+  });
 
   return (
     <div className="bg-muted/60 border-border flex min-w-0 flex-1 items-start gap-2 rounded-lg border p-3">
@@ -82,29 +91,44 @@ function OutlierInsight({ outlier }: { outlier: AbilityTimingOutlier }) {
         )}
       </span>
       <p className="text-foreground min-w-0 text-xs leading-relaxed">
-        <span className="font-semibold">{outlier.abilityName}</span>{" "}
-        {isNegative ? (
-          <>
-            used {phaseLabel(outlier.phase).toLowerCase()} has{" "}
-            <span className="font-semibold text-rose-600 dark:text-rose-400">
-              {Math.round(outlier.phaseWinrate)}% winrate
-            </span>{" "}
-            vs{" "}
-            <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-              {Math.round(outlier.bestPhaseWinrate)}%
-            </span>{" "}
-            when used {phaseLabel(outlier.bestPhase).toLowerCase()}
-          </>
-        ) : (
-          <>
-            in {phaseLabel(outlier.phase).toLowerCase()} correlates with{" "}
-            <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-              {Math.round(outlier.phaseWinrate)}% winrate
-            </span>{" "}
-            — strong {outlier.phase === "pre-fight" ? "initiation" : "timing"}{" "}
-            pattern
-          </>
-        )}
+        {isNegative
+          ? t.rich("negativeOutlier", {
+              abilityName: outlier.abilityName,
+              phase,
+              phaseWinrate,
+              bestPhase,
+              bestPhaseWinrate,
+              ability: (chunks) => (
+                <span className="font-semibold">{chunks}</span>
+              ),
+              negativeRate: (chunks) => (
+                <span className="font-semibold text-rose-600 dark:text-rose-400">
+                  {chunks}
+                </span>
+              ),
+              positiveRate: (chunks) => (
+                <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                  {chunks}
+                </span>
+              ),
+            })
+          : t.rich("positiveOutlier", {
+              abilityName: outlier.abilityName,
+              phase,
+              phaseWinrate,
+              pattern:
+                outlier.phase === "pre-fight"
+                  ? t("patternInitiation")
+                  : t("patternTiming"),
+              ability: (chunks) => (
+                <span className="font-semibold">{chunks}</span>
+              ),
+              positiveRate: (chunks) => (
+                <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                  {chunks}
+                </span>
+              ),
+            })}
       </p>
     </div>
   );
@@ -121,12 +145,14 @@ export function ScrimAbilityTimingSection({
 }: {
   analysis: AbilityTimingAnalysis;
 }) {
+  const t = useTranslations("scrimPage.overviewSections.fights.abilityTiming");
+  const formatter = useFormatter();
   const [hoveredCell, setHoveredCell] = useState<HoveredCell | null>(null);
 
   if (analysis.rows.length === 0) {
     return (
       <div className="text-muted-foreground py-8 text-center text-sm">
-        No high-impact abilities detected in this scrim.
+        {t("noData")}
       </div>
     );
   }
@@ -169,7 +195,7 @@ export function ScrimAbilityTimingSection({
                 key={phase}
                 className="text-muted-foreground px-2 pb-2 text-center font-mono text-[11px] tracking-[0.06em] uppercase"
               >
-                {PHASE_LABELS[phase]}
+                {t(`phase.${PHASE_KEYS[phase]}`)}
               </div>
             ))}
 
@@ -223,12 +249,25 @@ export function ScrimAbilityTimingSection({
                       onMouseLeave={() => setHoveredCell(null)}
                       title={
                         hasFights
-                          ? `${Math.round(stats.winrate)}% win rate (${stats.wins}W ${stats.losses}L from ${stats.fights} fights)`
-                          : `Fewer than ${MIN_FIGHTS} fights`
+                          ? t("cellTitle", {
+                              winrate: formatter.number(stats.winrate / 100, {
+                                maximumFractionDigits: 0,
+                                style: "percent",
+                              }),
+                              wins: stats.wins,
+                              losses: stats.losses,
+                              fights: stats.fights,
+                            })
+                          : t("fewerThanFights", { count: MIN_FIGHTS })
                       }
                     >
                       <span className="text-xs font-bold tabular-nums">
-                        {hasFights ? `${Math.round(stats.winrate)}%` : "—"}
+                        {hasFights
+                          ? formatter.number(stats.winrate / 100, {
+                              maximumFractionDigits: 0,
+                              style: "percent",
+                            })
+                          : "—"}
                       </span>
                     </div>
                   );
@@ -241,7 +280,9 @@ export function ScrimAbilityTimingSection({
 
       {/* Legend */}
       <div className="border-border flex flex-wrap items-center gap-x-3 gap-y-1 border-t pt-3">
-        <span className="text-muted-foreground text-xs">Win rate:</span>
+        <span className="text-muted-foreground text-xs">
+          {t("legendWinRate")}
+        </span>
         <div className="flex items-center gap-1">
           <div className="h-3 w-3 rounded-sm bg-red-900" />
           <span className="text-muted-foreground text-xs">&lt;45%</span>
@@ -261,24 +302,38 @@ export function ScrimAbilityTimingSection({
         <span className="bg-border mx-1 h-3 w-px" />
         <div className="flex items-center gap-1">
           <div className="h-3 w-3 rounded-sm ring-2 ring-red-500" />
-          <span className="text-muted-foreground text-xs">Bad timing</span>
+          <span className="text-muted-foreground text-xs">
+            {t("legendBadTiming")}
+          </span>
         </div>
         <div className="flex items-center gap-1">
           <div className="h-3 w-3 rounded-sm ring-2 ring-green-500" />
-          <span className="text-muted-foreground text-xs">Good timing</span>
+          <span className="text-muted-foreground text-xs">
+            {t("legendGoodTiming")}
+          </span>
         </div>
       </div>
 
       {/* Hover detail / info */}
       {hoveredCell && hoveredStats && hoveredStats.fights >= MIN_FIGHTS ? (
         <div className="bg-muted rounded-lg p-3 text-sm">
-          <span className="font-semibold">{hoveredCell.abilityName}</span> used{" "}
-          {phaseLabel(hoveredCell.phase).toLowerCase()}:{" "}
-          <span className="font-semibold tabular-nums">
-            {Math.round(hoveredStats.winrate)}% win rate
-          </span>{" "}
-          across {hoveredStats.fights} fights ({hoveredStats.wins}W{" "}
-          {hoveredStats.losses}L)
+          {t.rich("hoverDetail", {
+            abilityName: hoveredCell.abilityName,
+            phase: t(`phase.${PHASE_KEYS[hoveredCell.phase]}`),
+            winrate: formatter.number(hoveredStats.winrate / 100, {
+              maximumFractionDigits: 0,
+              style: "percent",
+            }),
+            fights: hoveredStats.fights,
+            wins: hoveredStats.wins,
+            losses: hoveredStats.losses,
+            ability: (chunks) => (
+              <span className="font-semibold">{chunks}</span>
+            ),
+            rate: (chunks) => (
+              <span className="font-semibold tabular-nums">{chunks}</span>
+            ),
+          })}
         </div>
       ) : (
         <div className="flex items-center gap-1.5">
@@ -287,8 +342,7 @@ export function ScrimAbilityTimingSection({
             aria-hidden
           />
           <p className="text-muted-foreground text-xs">
-            Cells show win rate when ability is used in that fight phase.
-            &ldquo;—&rdquo; = fewer than {MIN_FIGHTS} fights. Hover for details.
+            {t("info", { count: MIN_FIGHTS })}
           </p>
         </div>
       )}
