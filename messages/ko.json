@@ -3468,6 +3468,15 @@
     "createTournament": "토너먼트 만들기",
     "matchmaker": "Matchmaker"
   },
+  "coaching": {
+    "mapSelector": {
+      "placeholder": "맵 선택",
+      "search": "맵 검색...",
+      "noResults": "맵을 찾을 수 없습니다.",
+      "subMapPlaceholder": "지점 선택",
+      "label": "맵"
+    }
+  },
   "demoPage": {
     "metadata": {
       "title": "{mapName} 데모 | Parsertime",

@@ -3468,6 +3468,15 @@
     "createTournament": "创建锦标赛",
     "matchmaker": "Matchmaker"
   },
+  "coaching": {
+    "mapSelector": {
+      "placeholder": "选择地图",
+      "search": "搜索地图...",
+      "noResults": "未找到地图。",
+      "subMapPlaceholder": "选择点位",
+      "label": "地图"
+    }
+  },
   "demoPage": {
     "metadata": {
       "title": "{mapName} 演示 | Parsertime",
