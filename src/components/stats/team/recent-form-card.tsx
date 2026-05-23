@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import type { RecentForm } from "@/data/team/types";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 
 type RecentFormCardProps = {
@@ -19,6 +19,7 @@ type RecentFormCardProps = {
 
 export function RecentFormCard({ recentForm }: RecentFormCardProps) {
   const t = useTranslations("teamStatsPage.recentFormCard");
+  const format = useFormatter();
   const [view, setView] = useState<"5" | "10" | "20">("5");
 
   const matches =
@@ -33,6 +34,14 @@ export function RecentFormCard({ recentForm }: RecentFormCardProps) {
       : view === "10"
         ? recentForm.last10Winrate
         : recentForm.last20Winrate;
+
+  function formatWinrate(value: number): string {
+    return format.number(value / 100, {
+      style: "percent",
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+  }
 
   const viewSelect = (
     <Select value={view} onValueChange={(v) => setView(v as "5" | "10" | "20")}>
@@ -51,7 +60,7 @@ export function RecentFormCard({ recentForm }: RecentFormCardProps) {
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Trends · Recent form"
+          eyebrow={t("eyebrow")}
           title={t("title")}
           rightSlot={viewSelect}
         />
@@ -80,12 +89,12 @@ export function RecentFormCard({ recentForm }: RecentFormCardProps) {
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Trends · Recent form"
+        eyebrow={t("eyebrow")}
         title={t("title")}
         description={t("winsLosses", {
           wins,
           losses,
-          winrate: winrate.toFixed(1),
+          winrate: formatWinrate(winrate),
         })}
         rightSlot={viewSelect}
       />
@@ -100,7 +109,7 @@ export function RecentFormCard({ recentForm }: RecentFormCardProps) {
           {formLabel}
         </span>
         <span className="text-foreground font-mono text-sm font-semibold tabular-nums">
-          {winrate.toFixed(1)}%
+          {formatWinrate(winrate)}
         </span>
       </div>
 
@@ -108,10 +117,14 @@ export function RecentFormCard({ recentForm }: RecentFormCardProps) {
         <table className="w-full text-sm">
           <thead className="bg-muted/30">
             <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-              <th className="w-20 px-4 py-2 text-left font-medium">Result</th>
-              <th className="px-4 py-2 text-left font-medium">Scrim</th>
-              <th className="px-4 py-2 text-left font-medium">Map</th>
-              <th className="w-28 px-4 py-2 text-right font-medium">Date</th>
+              <th className="w-20 px-4 py-2 text-left font-medium">
+                {t("result")}
+              </th>
+              <th className="px-4 py-2 text-left font-medium">{t("scrim")}</th>
+              <th className="px-4 py-2 text-left font-medium">{t("map")}</th>
+              <th className="w-28 px-4 py-2 text-right font-medium">
+                {t("date")}
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--border)]">
@@ -139,7 +152,7 @@ export function RecentFormCard({ recentForm }: RecentFormCardProps) {
                   {match.mapName}
                 </td>
                 <td className="text-muted-foreground px-4 py-3 text-right font-mono text-xs tabular-nums">
-                  {match.date.toLocaleDateString("en-US", {
+                  {format.dateTime(match.date, {
                     month: "short",
                     day: "numeric",
                   })}
@@ -158,7 +171,10 @@ export function RecentFormCard({ recentForm }: RecentFormCardProps) {
               "h-2 flex-1 rounded-sm",
               match.result === "win" ? "bg-primary/70" : "bg-destructive/70"
             )}
-            title={`${match.scrimName} - ${match.result === "win" ? t("win") : t("loss")}`}
+            title={t("indicatorTitle", {
+              scrimName: match.scrimName,
+              result: match.result === "win" ? t("win") : t("loss"),
+            })}
           />
         ))}
       </div>

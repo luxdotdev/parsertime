@@ -3715,6 +3715,25 @@
         "withUlts": "使用终极技能"
       }
     },
+    "recentFormCard": {
+      "eyebrow": "趋势 · 近期状态",
+      "title": "近期状态",
+      "noData": "没有可显示的近期比赛。",
+      "winsLosses": "{wins}胜 - {losses}负 • 胜率 {winrate}",
+      "last5": "最近 5 场",
+      "last10": "最近 10 场",
+      "last20": "最近 20 场",
+      "strongRecentPerformance": "近期表现强势",
+      "strugglingRecently": "近期表现低迷",
+      "averagePerformance": "表现一般",
+      "result": "结果",
+      "scrim": "训练赛",
+      "map": "地图",
+      "date": "日期",
+      "indicatorTitle": "{scrimName} - {result}",
+      "win": "胜",
+      "loss": "负"
+    },
     "ultimatesTab": {
       "combos": {
         "title": "终极技能连招",

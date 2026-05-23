@@ -3715,6 +3715,25 @@
         "withUlts": "궁극기 사용"
       }
     },
+    "recentFormCard": {
+      "eyebrow": "추세 · 최근 흐름",
+      "title": "최근 흐름",
+      "noData": "표시할 최근 경기가 없습니다.",
+      "winsLosses": "{wins}승 - {losses}패 • 승률 {winrate}",
+      "last5": "최근 5경기",
+      "last10": "최근 10경기",
+      "last20": "최근 20경기",
+      "strongRecentPerformance": "최근 성과 좋음",
+      "strugglingRecently": "최근 부진",
+      "averagePerformance": "평균 성과",
+      "result": "결과",
+      "scrim": "스크림",
+      "map": "맵",
+      "date": "날짜",
+      "indicatorTitle": "{scrimName} - {result}",
+      "win": "승",
+      "loss": "패"
+    },
     "ultimatesTab": {
       "combos": {
         "title": "궁극기 콤보",

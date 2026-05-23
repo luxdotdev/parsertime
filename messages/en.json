@@ -4664,15 +4664,21 @@
       "noData": "No data"
     },
     "recentFormCard": {
+      "eyebrow": "Trends · Recent form",
       "title": "Recent Form",
       "noData": "No recent matches to display.",
-      "winsLosses": "{wins}W - {losses}L • {winrate}% winrate",
+      "winsLosses": "{wins}W - {losses}L • {winrate} winrate",
       "last5": "Last 5",
       "last10": "Last 10",
       "last20": "Last 20",
       "strongRecentPerformance": "Strong recent performance",
       "strugglingRecently": "Struggling recently",
       "averagePerformance": "Average performance",
+      "result": "Result",
+      "scrim": "Scrim",
+      "map": "Map",
+      "date": "Date",
+      "indicatorTitle": "{scrimName} - {result}",
       "win": "W",
       "loss": "L"
     },
