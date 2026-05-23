@@ -3,7 +3,7 @@
 import { SectionHeader } from "@/components/stats/team/section-header";
 import type { TeamFightStats } from "@/data/team/types";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 
 type UltimateEconomyCardProps = {
   fightStats: TeamFightStats;
@@ -11,11 +11,27 @@ type UltimateEconomyCardProps = {
 
 export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
   const t = useTranslations("teamStatsPage.ultimateEconomyCard");
+  const format = useFormatter();
+
+  function formatDecimal(value: number) {
+    return format.number(value, {
+      maximumFractionDigits: 1,
+      minimumFractionDigits: 1,
+    });
+  }
+
+  function formatPercent(value: number) {
+    return format.number(value / 100, {
+      maximumFractionDigits: 1,
+      minimumFractionDigits: 1,
+      style: "percent",
+    });
+  }
 
   if (fightStats.totalFights === 0 || fightStats.totalUltsUsed === 0) {
     return (
       <section className="space-y-4">
-        <SectionHeader eyebrow="Ultimates · Economy" title={t("title")} />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
@@ -42,7 +58,10 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
   const economyRows = [
     {
       label: t("ultimateEfficiency"),
-      value: fightStats.ultimateEfficiency.toFixed(2),
+      value: format.number(fightStats.ultimateEfficiency, {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 2,
+      }),
       sub: t("fightsWonPerUltUsed"),
       emphasis: true,
       tag: t(efficiencyRating),
@@ -55,16 +74,16 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
     },
     {
       label: t("wastedUltimates"),
-      value: String(fightStats.wastedUltimates),
+      value: format.number(fightStats.wastedUltimates),
       sub: t("wastePercentage", {
-        percentage: wastePercentage.toFixed(1),
+        percentage: formatPercent(wastePercentage),
       }),
     },
     {
       label: t("totalUltimates"),
-      value: String(fightStats.totalUltsUsed),
+      value: format.number(fightStats.totalUltsUsed),
       sub: t("ultimatesPerFight", {
-        ultimates: ultsPerFight.toFixed(1),
+        ultimates: formatDecimal(ultsPerFight),
       }),
     },
   ] as const;
@@ -79,7 +98,7 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
   return (
     <section className="space-y-6">
       <SectionHeader
-        eyebrow="Ultimates · Economy"
+        eyebrow={t("eyebrow")}
         title={t("title")}
         description={t("description")}
       />
@@ -131,12 +150,18 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
           <table className="w-full text-sm">
             <thead className="bg-muted/30">
               <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-                <th className="px-4 py-2 text-left font-medium">Outcome</th>
-                <th className="px-4 py-2 text-right font-medium">Fights</th>
-                <th className="px-4 py-2 text-right font-medium">
-                  Avg ults used
+                <th className="px-4 py-2 text-left font-medium">
+                  {t("outcome")}
                 </th>
-                <th className="px-4 py-2 text-left font-medium">Detail</th>
+                <th className="px-4 py-2 text-right font-medium">
+                  {t("fightsHeader")}
+                </th>
+                <th className="px-4 py-2 text-right font-medium">
+                  {t("avgUltsUsedHeader")}
+                </th>
+                <th className="px-4 py-2 text-left font-medium">
+                  {t("detail")}
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border)]">
@@ -145,7 +170,7 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
                   {t("winningFights")}
                 </td>
                 <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
-                  {fightStats.fightsWon}
+                  {format.number(fightStats.fightsWon)}
                 </td>
                 <td
                   className={cn(
@@ -153,7 +178,7 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
                     goodDiscipline ? "text-primary" : "text-foreground"
                   )}
                 >
-                  {fightStats.avgUltsInWonFights.toFixed(1)}
+                  {formatDecimal(fightStats.avgUltsInWonFights)}
                 </td>
                 <td className="text-muted-foreground px-4 py-3 text-xs">
                   {t("averageUltsUsed")}
@@ -164,7 +189,7 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
                   {t("losingFights")}
                 </td>
                 <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
-                  {fightStats.fightsLost}
+                  {format.number(fightStats.fightsLost)}
                 </td>
                 <td
                   className={cn(
@@ -172,7 +197,7 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
                     goodDiscipline ? "text-foreground" : "text-destructive"
                   )}
                 >
-                  {fightStats.avgUltsInLostFights.toFixed(1)}
+                  {formatDecimal(fightStats.avgUltsInLostFights)}
                 </td>
                 <td className="text-muted-foreground px-4 py-3 text-xs">
                   {t("averageUltsUsed")}
@@ -190,8 +215,10 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
                     {chunks}
                   </span>
                 ),
-                ultsInWonFights: fightStats.avgUltsInWonFights.toFixed(1),
-                ultsInLostFights: fightStats.avgUltsInLostFights.toFixed(1),
+                ultsInWonFights: formatDecimal(fightStats.avgUltsInWonFights),
+                ultsInLostFights: formatDecimal(
+                  fightStats.avgUltsInLostFights
+                ),
               })}
             </>
           ) : (
@@ -202,8 +229,10 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
                     {chunks}
                   </span>
                 ),
-                ultsInLostFights: fightStats.avgUltsInLostFights.toFixed(1),
-                ultsInWonFights: fightStats.avgUltsInWonFights.toFixed(1),
+                ultsInLostFights: formatDecimal(
+                  fightStats.avgUltsInLostFights
+                ),
+                ultsInWonFights: formatDecimal(fightStats.avgUltsInWonFights),
               })}
             </>
           )}
@@ -219,11 +248,17 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
             <table className="w-full text-sm">
               <thead className="bg-muted/30">
                 <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-                  <th className="px-4 py-2 text-left font-medium">Bucket</th>
-                  <th className="px-4 py-2 text-right font-medium">Fights</th>
-                  <th className="px-4 py-2 text-right font-medium">Winrate</th>
+                  <th className="px-4 py-2 text-left font-medium">
+                    {t("bucket")}
+                  </th>
                   <th className="px-4 py-2 text-right font-medium">
-                    Reversals
+                    {t("fightsHeader")}
+                  </th>
+                  <th className="px-4 py-2 text-right font-medium">
+                    {t("winrate")}
+                  </th>
+                  <th className="px-4 py-2 text-right font-medium">
+                    {t("reversals")}
                   </th>
                 </tr>
               </thead>
@@ -231,18 +266,19 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
                 {fightStats.dryFights > 0 && (
                   <tr className="hover:bg-muted/30 transition-colors">
                     <td className="text-foreground px-4 py-3 font-medium">
-                      Dry fights
+                      {t("dryFightsRow")}
                     </td>
                     <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
-                      {fightStats.dryFights}
+                      {format.number(fightStats.dryFights)}
                     </td>
                     <td className="text-foreground px-4 py-3 text-right font-mono tabular-nums">
-                      {fightStats.dryFightWinrate.toFixed(1)}%
+                      {formatPercent(fightStats.dryFightWinrate)}
                     </td>
                     <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
-                      {fightStats.dryFightReversalRate.toFixed(1)}%
+                      {formatPercent(fightStats.dryFightReversalRate)}
                       <span className="ml-1 text-xs">
-                        ({fightStats.dryFightReversals}/{fightStats.dryFights})
+                        ({format.number(fightStats.dryFightReversals)}/
+                        {format.number(fightStats.dryFights)})
                       </span>
                     </td>
                   </tr>
@@ -250,22 +286,22 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
                 {fightStats.nonDryFights > 0 && (
                   <tr className="hover:bg-muted/30 transition-colors">
                     <td className="text-foreground px-4 py-3 font-medium">
-                      Ult fights
+                      {t("ultFightsRow")}
                     </td>
                     <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
-                      {fightStats.nonDryFights}
+                      {format.number(fightStats.nonDryFights)}
                     </td>
                     <td className="text-foreground px-4 py-3 text-right font-mono tabular-nums">
-                      {fightStats.avgUltsPerNonDryFight.toFixed(1)}
+                      {formatDecimal(fightStats.avgUltsPerNonDryFight)}
                       <span className="text-muted-foreground ml-1 text-xs">
-                        avg
+                        {t("avgAbbreviation")}
                       </span>
                     </td>
                     <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
-                      {fightStats.nonDryFightReversalRate.toFixed(1)}%
+                      {formatPercent(fightStats.nonDryFightReversalRate)}
                       <span className="ml-1 text-xs">
-                        ({fightStats.nonDryFightReversals}/
-                        {fightStats.nonDryFights})
+                        ({format.number(fightStats.nonDryFightReversals)}/
+                        {format.number(fightStats.nonDryFights)})
                       </span>
                     </td>
                   </tr>
@@ -278,12 +314,16 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
               {fightStats.nonDryFightReversalRate >
               fightStats.dryFightReversalRate
                 ? t("reversalInsightUltReliant", {
-                    nonDryRate: fightStats.nonDryFightReversalRate.toFixed(1),
-                    dryRate: fightStats.dryFightReversalRate.toFixed(1),
+                    nonDryRate: formatPercent(
+                      fightStats.nonDryFightReversalRate
+                    ),
+                    dryRate: formatPercent(fightStats.dryFightReversalRate),
                   })
                 : t("reversalInsightMechanical", {
-                    dryRate: fightStats.dryFightReversalRate.toFixed(1),
-                    nonDryRate: fightStats.nonDryFightReversalRate.toFixed(1),
+                    dryRate: formatPercent(fightStats.dryFightReversalRate),
+                    nonDryRate: formatPercent(
+                      fightStats.nonDryFightReversalRate
+                    ),
                   })}
             </p>
           )}
