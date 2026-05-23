@@ -985,6 +985,41 @@
         "allDamagePer10StdDev": "伤害标准差",
         "consistencyScore": "稳定性分数"
       }
+    },
+    "consistency": {
+      "title": "表现稳定性",
+      "subtitle": "衡量不同地图和情境下表现是否可靠。方差越低，说明发挥越稳定、越可靠。",
+      "consistencyScore": "稳定性分数",
+      "highlyConsistent": "高度稳定",
+      "highlyConsistentDescription": "所有地图上的表现都非常稳定",
+      "consistent": "稳定",
+      "consistentDescription": "表现可靠，仅有轻微波动",
+      "moderatelyConsistent": "中等稳定",
+      "moderatelyConsistentDescription": "表现会随情境有所变化",
+      "variablePerformance": "表现波动",
+      "variablePerformanceDescription": "不同地图之间存在明显表现差异",
+      "meanStdDev": "平均值 ± 标准差",
+      "performanceAcrossMaps": "各地图表现",
+      "mapName": "地图 {number}",
+      "metricPer10": "每 10 分钟{metric}",
+      "understanding": {
+        "title": "理解稳定性指标",
+        "stdDev": "<strong>标准差：</strong>衡量表现分布的离散程度。数值越低，表现越稳定。",
+        "cv": "<strong>变异系数：</strong>标准化后的离散程度指标，可用于比较不同量级的指标。",
+        "score": "<strong>稳定性分数：</strong>整体可靠性指标（0-100）。分数越高，说明表现越稳定、越可靠。"
+      },
+      "metrics": {
+        "eliminations": "击杀",
+        "deaths": "死亡",
+        "damage": "伤害",
+        "damageK": "伤害（千）",
+        "healing": "治疗",
+        "healingK": "治疗（千）",
+        "mean": "平均值",
+        "stdDev": "± 标准差",
+        "range": "范围",
+        "variation": "波动"
+      }
     }
   },
   "mapPage": {

@@ -985,6 +985,41 @@
         "allDamagePer10StdDev": "피해 표준편차",
         "consistencyScore": "일관성 점수"
       }
+    },
+    "consistency": {
+      "title": "성능 일관성",
+      "subtitle": "서로 다른 맵과 상황에서 성능이 얼마나 안정적인지 측정합니다. 변동이 낮을수록 더 일관적이고 신뢰할 수 있는 플레이를 의미합니다.",
+      "consistencyScore": "일관성 점수",
+      "highlyConsistent": "매우 일관적",
+      "highlyConsistentDescription": "모든 맵에서 매우 안정적인 성능입니다",
+      "consistent": "일관적",
+      "consistentDescription": "작은 변동만 있는 신뢰할 수 있는 성능입니다",
+      "moderatelyConsistent": "보통 수준으로 일관적",
+      "moderatelyConsistentDescription": "상황에 따라 성능이 달라집니다",
+      "variablePerformance": "변동이 큰 성능",
+      "variablePerformanceDescription": "맵마다 성능 차이가 크게 나타납니다",
+      "meanStdDev": "평균 ± 표준편차",
+      "performanceAcrossMaps": "맵별 성능",
+      "mapName": "맵 {number}",
+      "metricPer10": "10분당 {metric}",
+      "understanding": {
+        "title": "일관성 지표 이해하기",
+        "stdDev": "<strong>표준편차:</strong> 성능이 얼마나 퍼져 있는지 측정합니다. 값이 낮을수록 더 일관적입니다.",
+        "cv": "<strong>변동계수:</strong> 분산을 정규화한 지표입니다. 서로 다른 단위의 지표를 비교할 수 있습니다.",
+        "score": "<strong>일관성 점수:</strong> 전체 신뢰도 지표(0-100)입니다. 점수가 높을수록 안정적이고 꾸준한 성능을 의미합니다."
+      },
+      "metrics": {
+        "eliminations": "처치",
+        "deaths": "사망",
+        "damage": "피해",
+        "damageK": "피해 (천)",
+        "healing": "치유",
+        "healingK": "치유 (천)",
+        "mean": "평균",
+        "stdDev": "± 표준편차",
+        "range": "범위",
+        "variation": "변동"
+      }
     }
   },
   "mapPage": {
