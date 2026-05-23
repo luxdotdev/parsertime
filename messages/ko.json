@@ -1648,6 +1648,18 @@
           "round": "라운드 {round}",
           "dmgDone": "가한 피해",
           "dmgTaken": "받은 피해"
+        },
+        "mvpScore": {
+          "title": "MVP 점수",
+          "footer": "MVP 점수는 같은 영웅을 스크림에서 플레이한 다른 모든 플레이어의 평균과 플레이어 통계를 비교해 계산합니다. 이 카드 위에 마우스를 올리면 계산 방식을 볼 수 있습니다.",
+          "totalScore": "총점: {score}",
+          "pointsUnit": "점",
+          "heroIconAlt": "{hero} 아이콘",
+          "per10Value": "10분당 {per10Value} · 평균 {heroAverage}",
+          "zScore": "{score}σ",
+          "percentile": "{percentile}번째 백분위",
+          "noData": "사용 가능한 데이터 없음",
+          "explanation": "MVP 점수는 같은 영웅을 플레이한 비슷한 플레이어들과 비교해 이 플레이어의 성과를 이해하는 데 사용할 수 있습니다. 팀원 대비 성과는 반영하지 않으며, 해당 영웅의 전체 평균 대비 두드러진 성과를 보여주는 지표입니다. MVP 점수는 보통 -100에서 +100 사이이며 0을 중심으로 분포합니다."
         }
       },
       "charts": {

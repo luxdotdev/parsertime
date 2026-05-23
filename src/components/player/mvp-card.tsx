@@ -10,7 +10,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { MVPScoreResult } from "@/lib/mvp-score";
 import { toHero } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import Image from "next/image";
 
 type MVPCardProps = {
@@ -27,8 +27,23 @@ function formatStatName(stat: string): string {
 
 export function MVPCard({ playerName, mvpScores }: MVPCardProps) {
   const t = useTranslations("mapPage.player.analytics");
+  const format = useFormatter();
 
   const playerScore = mvpScores?.find((s) => s.playerName === playerName);
+  function formatDecimal(value: number, digits: number) {
+    return format.number(value, {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
+    });
+  }
+
+  function formatSignedDecimal(value: number, digits: number) {
+    return format.number(value, {
+      signDisplay: "exceptZero",
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
+    });
+  }
 
   return (
     <HoverCard>
@@ -47,9 +62,9 @@ export function MVPCard({ playerName, mvpScores }: MVPCardProps) {
           }
           value={
             <>
-              {playerScore ? playerScore.totalScore.toFixed(2) : "—"}
+              {playerScore ? formatDecimal(playerScore.totalScore, 2) : "—"}
               <span className="text-muted-foreground ml-1 text-base font-normal">
-                pts
+                {t("mvpScore.pointsUnit")}
               </span>
             </>
           }
@@ -65,7 +80,7 @@ export function MVPCard({ playerName, mvpScores }: MVPCardProps) {
               </div>
               <div className="text-muted-foreground text-xs">
                 {t("mvpScore.totalScore", {
-                  score: playerScore.totalScore.toFixed(2),
+                  score: formatDecimal(playerScore.totalScore, 2),
                 })}
               </div>
             </div>
@@ -86,7 +101,9 @@ export function MVPCard({ playerName, mvpScores }: MVPCardProps) {
                         <span className="flex items-center gap-2 font-medium">
                           <Image
                             src={`/heroes/${toHero(contribution.hero)}.png`}
-                            alt={`${contribution.hero} icon`}
+                            alt={t("mvpScore.heroIconAlt", {
+                              hero: contribution.hero,
+                            })}
                             width={256}
                             height={256}
                             className="h-4 w-4 rounded"
@@ -105,26 +122,33 @@ export function MVPCard({ playerName, mvpScores }: MVPCardProps) {
                                 : "font-semibold text-red-500"
                           }
                         >
-                          {contribution.pointsAwarded > 0 ? "+" : ""}
-                          {contribution.pointsAwarded.toFixed(1)} pts
+                          {formatSignedDecimal(contribution.pointsAwarded, 1)}{" "}
+                          {t("mvpScore.pointsUnit")}
                         </span>
                       </div>
                       <div className="text-muted-foreground space-x-2 text-[10px]">
                         <span>
                           {t("mvpScore.per10Value", {
-                            per10Value: contribution.per10Value.toFixed(1),
-                            heroAverage: contribution.heroAverage.toFixed(1),
+                            per10Value: formatDecimal(
+                              contribution.per10Value,
+                              1
+                            ),
+                            heroAverage: formatDecimal(
+                              contribution.heroAverage,
+                              1
+                            ),
                           })}
                         </span>
                         <span>•</span>
                         <span>
-                          {contribution.zScore > 0 ? "+" : ""}
-                          {contribution.zScore.toFixed(2)}σ
+                          {t("mvpScore.zScore", {
+                            score: formatSignedDecimal(contribution.zScore, 2),
+                          })}
                         </span>
                         <span>•</span>
                         <span>
                           {t("mvpScore.percentile", {
-                            percentile: contribution.percentile.toFixed(0),
+                            percentile: Math.round(contribution.percentile),
                           })}
                         </span>
                       </div>
@@ -134,7 +158,9 @@ export function MVPCard({ playerName, mvpScores }: MVPCardProps) {
             </ScrollArea>
           </div>
         ) : (
-          <div className="text-muted-foreground text-sm">No data available</div>
+          <div className="text-muted-foreground text-sm">
+            {t("mvpScore.noData")}
+          </div>
         )}
 
         <p className="text-muted-foreground max-w-prose pt-2 text-xs">

@@ -1648,6 +1648,18 @@
           "round": "回合 {round}",
           "dmgDone": "造成伤害",
           "dmgTaken": "承受伤害"
+        },
+        "mvpScore": {
+          "title": "MVP 分数",
+          "footer": "MVP 分数会将玩家统计与其他在训练赛中使用同一英雄的玩家平均值进行比较。悬停此卡片可查看计算方式。",
+          "totalScore": "总分：{score}",
+          "pointsUnit": "分",
+          "heroIconAlt": "{hero} 图标",
+          "per10Value": "每 10 分钟 {per10Value} · 平均 {heroAverage}",
+          "zScore": "{score}σ",
+          "percentile": "第 {percentile} 百分位",
+          "noData": "暂无可用数据",
+          "explanation": "MVP 分数可用于了解玩家相对同英雄相似玩家的表现。该指标不会比较玩家与队友之间的表现，而是显示其相对该英雄全局平均值是否突出。MVP 分数通常在 -100 到 +100 之间，并以 0 为中心分布。"
         }
       },
       "charts": {
