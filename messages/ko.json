@@ -512,6 +512,8 @@
       "noTeamFound": "팀을 찾을 수 없습니다.",
       "individual": "개인",
       "teams": "팀",
+      "selectTeam": "팀 선택",
+      "loading": "불러오는 중...",
       "createTeam": "팀 생성"
     },
     "createTeam": {

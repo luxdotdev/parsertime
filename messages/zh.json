@@ -512,6 +512,8 @@
       "noTeamFound": "未找到团队。",
       "individual": "个人",
       "teams": "团队",
+      "selectTeam": "选择团队",
+      "loading": "正在加载...",
       "createTeam": "创建团队"
     },
     "createTeam": {

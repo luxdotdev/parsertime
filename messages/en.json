@@ -477,6 +477,8 @@
       "noTeamFound": "No team found.",
       "individual": "Individual",
       "teams": "Teams",
+      "selectTeam": "Select a team",
+      "loading": "Loading...",
       "createTeam": "Create Team"
     },
     "createTeam": {

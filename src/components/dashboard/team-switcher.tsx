@@ -110,7 +110,7 @@ export function TeamSwitcher({
             role="combobox"
             aria-expanded={open}
             aria-controls="team-switcher-listbox"
-            aria-label="Select a team"
+            aria-label={t("selectTeam")}
             className={cn("w-[200px] justify-between", className)}
           >
             <Avatar className="mr-2 h-5 w-5">
@@ -135,7 +135,7 @@ export function TeamSwitcher({
               {groups.map((group) => (
                 <CommandGroup key={group.label} heading={group.label}>
                   {isLoading ? (
-                    <CommandItem>Loading...</CommandItem>
+                    <CommandItem>{t("loading")}</CommandItem>
                   ) : (
                     (group.teams ?? []).map((team) => (
                       <CommandItem
