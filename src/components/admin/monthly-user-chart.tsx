@@ -6,6 +6,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
 type ChartConfig = {
@@ -28,16 +29,12 @@ type MonthlyUserChartProps = {
   historical: MonthlyUserData[];
 };
 
-const chartConfig: ChartConfig = {
-  users: {
-    label: "Users",
-    color: "var(--chart-1)",
-  },
-};
-
-function renderChart(data: MonthlyUserData[], opts: { shortTicks: boolean }) {
+function renderChart(
+  data: MonthlyUserData[],
+  opts: { chartConfig: ChartConfig; shortTicks: boolean }
+) {
   return (
-    <ChartContainer config={chartConfig} className="h-[200px] w-full">
+    <ChartContainer config={opts.chartConfig} className="h-[200px] w-full">
       <BarChart accessibilityLayer data={data}>
         <CartesianGrid vertical={false} />
         <XAxis
@@ -62,17 +59,25 @@ export function MonthlyUserChart({
   twelveMonth,
   historical,
 }: MonthlyUserChartProps) {
+  const t = useTranslations("settingsPage.admin.analytics.charts");
+  const chartConfig: ChartConfig = {
+    users: {
+      label: t("users"),
+      color: "var(--chart-1)",
+    },
+  };
+
   return (
     <Tabs defaultValue="twelve-months" className="w-full">
       <TabsList className="mb-4">
-        <TabsTrigger value="twelve-months">Last 12 months</TabsTrigger>
-        <TabsTrigger value="historical">All time</TabsTrigger>
+        <TabsTrigger value="twelve-months">{t("last12Months")}</TabsTrigger>
+        <TabsTrigger value="historical">{t("allTime")}</TabsTrigger>
       </TabsList>
       <TabsContent value="twelve-months">
-        {renderChart(twelveMonth, { shortTicks: true })}
+        {renderChart(twelveMonth, { chartConfig, shortTicks: true })}
       </TabsContent>
       <TabsContent value="historical">
-        {renderChart(historical, { shortTicks: false })}
+        {renderChart(historical, { chartConfig, shortTicks: false })}
       </TabsContent>
     </Tabs>
   );

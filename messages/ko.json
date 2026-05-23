@@ -3916,6 +3916,14 @@
     "billingPlans": {
       "title": "결제 플랜 분포",
       "description": "플랜별 사용자 분포(무료, Basic, Premium)"
+    },
+    "charts": {
+      "last12Months": "최근 12개월",
+      "allTime": "전체 기간",
+      "users": "사용자",
+      "activeUsers": "활성 사용자",
+      "activeTeams": "활성 팀",
+      "teamsCreated": "생성된 팀"
     }
   }
 },

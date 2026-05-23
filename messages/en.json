@@ -4003,6 +4003,14 @@
         "billingPlans": {
           "title": "Billing Plan Distribution",
           "description": "Breakdown of users by billing plan (Free, Basic, Premium)"
+        },
+        "charts": {
+          "last12Months": "Last 12 months",
+          "allTime": "All time",
+          "users": "Users",
+          "activeUsers": "Active Users",
+          "activeTeams": "Active Teams",
+          "teamsCreated": "Teams Created"
         }
       },
       "title": "Admin Settings",

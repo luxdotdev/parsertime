@@ -6,6 +6,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTranslations } from "next-intl";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
 type ChartConfig = {
@@ -28,19 +29,12 @@ type MonthlyActiveUsersChartProps = {
   historical: MonthlyActiveUsersData[];
 };
 
-const chartConfig: ChartConfig = {
-  activeUsers: {
-    label: "Active Users",
-    color: "var(--chart-2)",
-  },
-};
-
 function renderChart(
   data: MonthlyActiveUsersData[],
-  opts: { shortTicks: boolean }
+  opts: { chartConfig: ChartConfig; shortTicks: boolean }
 ) {
   return (
-    <ChartContainer config={chartConfig} className="h-[200px] w-full">
+    <ChartContainer config={opts.chartConfig} className="h-[200px] w-full">
       <LineChart
         accessibilityLayer
         data={data}
@@ -82,17 +76,25 @@ export function MonthlyActiveUsersChart({
   twelveMonth,
   historical,
 }: MonthlyActiveUsersChartProps) {
+  const t = useTranslations("settingsPage.admin.analytics.charts");
+  const chartConfig: ChartConfig = {
+    activeUsers: {
+      label: t("activeUsers"),
+      color: "var(--chart-2)",
+    },
+  };
+
   return (
     <Tabs defaultValue="twelve-months" className="w-full">
       <TabsList className="mb-4">
-        <TabsTrigger value="twelve-months">Last 12 months</TabsTrigger>
-        <TabsTrigger value="historical">All time</TabsTrigger>
+        <TabsTrigger value="twelve-months">{t("last12Months")}</TabsTrigger>
+        <TabsTrigger value="historical">{t("allTime")}</TabsTrigger>
       </TabsList>
       <TabsContent value="twelve-months">
-        {renderChart(twelveMonth, { shortTicks: true })}
+        {renderChart(twelveMonth, { chartConfig, shortTicks: true })}
       </TabsContent>
       <TabsContent value="historical">
-        {renderChart(historical, { shortTicks: false })}
+        {renderChart(historical, { chartConfig, shortTicks: false })}
       </TabsContent>
     </Tabs>
   );

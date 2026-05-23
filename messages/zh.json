@@ -3916,6 +3916,14 @@
     "billingPlans": {
       "title": "计费方案分布",
       "description": "按计费方案划分的用户分布（免费、Basic、Premium）"
+    },
+    "charts": {
+      "last12Months": "过去 12 个月",
+      "allTime": "全部时间",
+      "users": "用户",
+      "activeUsers": "活跃用户",
+      "activeTeams": "活跃团队",
+      "teamsCreated": "已创建团队"
     }
   }
 },
