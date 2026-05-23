@@ -622,6 +622,10 @@
   "updateModal": {
     "dismiss": "Dismiss"
   },
+  "calendar": {
+    "monthYear": "{date, date, ::yyyy년 MMMM}",
+    "weekday": "{weekday, date, ::E}"
+  },
   "availability": {
     "timezoneSelect": {
       "searchPlaceholder": "시간대 검색...",

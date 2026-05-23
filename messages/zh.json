@@ -622,6 +622,10 @@
   "updateModal": {
     "dismiss": "关闭"
   },
+  "calendar": {
+    "monthYear": "{date, date, ::yyyy年MMMM}",
+    "weekday": "{weekday, date, ::E}"
+  },
   "availability": {
     "timezoneSelect": {
       "searchPlaceholder": "搜索时区...",
