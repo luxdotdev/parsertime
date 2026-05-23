@@ -886,6 +886,64 @@
       }
     }
   },
+  "comparePage": {
+    "detailedStats": {
+      "title": "상세 통계",
+      "subtitle": "공정한 비교를 위해 모든 지표를 10분당 값 또는 비율로 정규화했습니다",
+      "exportCsv": "CSV 내보내기",
+      "statName": "통계",
+      "mapCount": "{count}개 맵",
+      "priority": "우선 지표",
+      "note": "참고: 모든 통계는 서로 다른 플레이 시간을 공정하게 비교할 수 있도록 정규화되었습니다(10분당, 비율 또는 평균).",
+      "categories": {
+        "all": "전체 통계",
+        "combat": "전투",
+        "damage": "피해",
+        "support": "지원",
+        "defense": "방어",
+        "assists": "어시스트",
+        "ultimate": "궁극기",
+        "impact": "영향",
+        "consistency": "일관성"
+      },
+      "stats": {
+        "eliminationsPer10": "10분당 처치",
+        "finalBlowsPer10": "10분당 결정타",
+        "soloKillsPer10": "10분당 솔로 킬",
+        "deathsPer10": "10분당 사망",
+        "kdRatio": "K/D 비율",
+        "allDamagePer10": "10분당 총 피해",
+        "heroDamagePer10": "10분당 영웅 피해",
+        "barrierDamagePer10": "10분당 방벽 피해",
+        "healingDealtPer10": "10분당 치유",
+        "healingReceivedPer10": "10분당 받은 치유",
+        "selfHealingPer10": "10분당 자가 치유",
+        "damageTakenPer10": "10분당 받은 피해",
+        "damageBlockedPer10": "10분당 막은 피해",
+        "offensiveAssistsPer10": "10분당 공격 어시스트",
+        "defensiveAssistsPer10": "10분당 방어 어시스트",
+        "ultimatesEarnedPer10": "10분당 획득 궁극기",
+        "ultimatesUsedPer10": "10분당 사용 궁극기",
+        "averageUltChargeTime": "평균 궁극기 충전 시간",
+        "averageTimeToUseUlt": "평균 궁극기 사용까지 시간",
+        "killsPerUltimate": "궁극기당 처치",
+        "averageDroughtTime": "평균 처치 공백 시간",
+        "firstPickPercentage": "첫 처치 %",
+        "firstPicksPer10": "10분당 첫 처치",
+        "firstDeathPercentage": "첫 사망 %",
+        "firstDeathsPer10": "10분당 첫 사망",
+        "fletaDeadliftPercentage": "플레타 데드리프트 %",
+        "mvpScore": "MVP 점수",
+        "mapMvpRate": "맵 MVP 비율",
+        "duelWinratePercentage": "대결 승률 %",
+        "fightReversalPercentage": "교전 역전률 %",
+        "eliminationsPer10StdDev": "처치 표준편차",
+        "deathsPer10StdDev": "사망 표준편차",
+        "allDamagePer10StdDev": "피해 표준편차",
+        "consistencyScore": "일관성 점수"
+      }
+    }
+  },
   "mapPage": {
     "mapMetadata": {
       "title": "{mapName} 개요 | Parsertime",

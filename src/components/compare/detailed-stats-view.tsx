@@ -412,7 +412,7 @@ export function DetailedStatsView({ stats }: DetailedStatsViewProps) {
     : filteredStats;
 
   function handleExportCSV() {
-    const headers = ["Stat", ...stats.map((s) => s.playerName)];
+    const headers = [t("statName"), ...stats.map((s) => s.playerName)];
     const rows = filteredStats.map((stat) => [
       stat.label,
       ...stats.map((s) => formatStatValue(s.aggregated[stat.key], stat.format)),
@@ -525,7 +525,7 @@ export function DetailedStatsView({ stats }: DetailedStatsViewProps) {
                         )}
                       </div>
                       <div className="text-muted-foreground text-xs font-normal">
-                        {stat.mapCount} {t("maps")}
+                        {t("mapCount", { count: stat.mapCount })}
                       </div>
                     </TableHead>
                   ))}

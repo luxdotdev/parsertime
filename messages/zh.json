@@ -886,6 +886,64 @@
       }
     }
   },
+  "comparePage": {
+    "detailedStats": {
+      "title": "详细统计",
+      "subtitle": "所有指标按每 10 分钟或百分比标准化，便于公平比较",
+      "exportCsv": "导出 CSV",
+      "statName": "统计",
+      "mapCount": "{count} 张地图",
+      "priority": "重点",
+      "note": "注意：所有统计都已标准化（每 10 分钟、百分比或平均值），以便公平比较不同游戏时长。",
+      "categories": {
+        "all": "全部统计",
+        "combat": "战斗",
+        "damage": "伤害",
+        "support": "辅助",
+        "defense": "防御",
+        "assists": "助攻",
+        "ultimate": "终极技能",
+        "impact": "影响",
+        "consistency": "稳定性"
+      },
+      "stats": {
+        "eliminationsPer10": "每 10 分钟击杀",
+        "finalBlowsPer10": "每 10 分钟最后击杀",
+        "soloKillsPer10": "每 10 分钟单杀",
+        "deathsPer10": "每 10 分钟死亡",
+        "kdRatio": "K/D 比",
+        "allDamagePer10": "每 10 分钟总伤害",
+        "heroDamagePer10": "每 10 分钟英雄伤害",
+        "barrierDamagePer10": "每 10 分钟屏障伤害",
+        "healingDealtPer10": "每 10 分钟治疗量",
+        "healingReceivedPer10": "每 10 分钟受到治疗",
+        "selfHealingPer10": "每 10 分钟自我治疗",
+        "damageTakenPer10": "每 10 分钟承受伤害",
+        "damageBlockedPer10": "每 10 分钟阻挡伤害",
+        "offensiveAssistsPer10": "每 10 分钟进攻助攻",
+        "defensiveAssistsPer10": "每 10 分钟防守助攻",
+        "ultimatesEarnedPer10": "每 10 分钟获得终极技能",
+        "ultimatesUsedPer10": "每 10 分钟使用终极技能",
+        "averageUltChargeTime": "平均终极技能充能时间",
+        "averageTimeToUseUlt": "平均终极技能持有时间",
+        "killsPerUltimate": "每个终极技能击杀",
+        "averageDroughtTime": "平均击杀间隔",
+        "firstPickPercentage": "首杀 %",
+        "firstPicksPer10": "每 10 分钟首杀",
+        "firstDeathPercentage": "首死 %",
+        "firstDeathsPer10": "每 10 分钟首死",
+        "fletaDeadliftPercentage": "Fleta 扛队率 %",
+        "mvpScore": "MVP 分数",
+        "mapMvpRate": "地图 MVP 率",
+        "duelWinratePercentage": "对位胜率 %",
+        "fightReversalPercentage": "团战逆转率 %",
+        "eliminationsPer10StdDev": "击杀标准差",
+        "deathsPer10StdDev": "死亡标准差",
+        "allDamagePer10StdDev": "伤害标准差",
+        "consistencyScore": "稳定性分数"
+      }
+    }
+  },
   "mapPage": {
     "mapMetadata": {
       "title": "{mapName} 概览 | Parsertime",

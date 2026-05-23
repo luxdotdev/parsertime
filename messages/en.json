@@ -1070,7 +1070,7 @@
       "subtitle": "All metrics normalized per 10 minutes or as percentages for fair comparison",
       "exportCsv": "Export CSV",
       "statName": "Stat",
-      "maps": "maps",
+      "mapCount": "{count, plural, one {# map} other {# maps}}",
       "priority": "Priority",
       "note": "Note: All statistics are normalized (per 10 minutes, percentages, or averages) to enable fair comparison across different playtimes.",
       "categories": {
