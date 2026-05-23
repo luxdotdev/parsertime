@@ -4780,7 +4780,9 @@
       "needsImprovement": "Needs improvement"
     },
     "teamRosterGrid": {
+      "eyebrow": "Overview · Roster",
       "title": "Team Roster",
+      "playerTargets": "Player Targets",
       "noData": "No roster data available. Players will appear here once they've played in matches."
     },
     "topMapsCard": {

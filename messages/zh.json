@@ -3685,6 +3685,12 @@
         "Push": "机动推进"
       }
     },
+    "teamRosterGrid": {
+      "eyebrow": "概览 · 阵容",
+      "title": "团队阵容",
+      "playerTargets": "玩家目标",
+      "noData": "还没有阵容数据。玩家参加比赛后会显示在这里。"
+    },
     "quickStatsCard": {
       "eyebrow": "概览 · 信号",
       "title": "快速数据",

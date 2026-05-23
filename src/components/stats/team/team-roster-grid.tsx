@@ -39,7 +39,7 @@ export async function TeamRosterGrid({ roster, teamId }: TeamRosterGridProps) {
       className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 font-mono text-[11px] tracking-[0.16em] uppercase transition-colors"
     >
       <Target className="size-3.5" />
-      Player Targets
+      {t("playerTargets")}
     </Link>
   );
 
@@ -47,7 +47,7 @@ export async function TeamRosterGrid({ roster, teamId }: TeamRosterGridProps) {
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Overview · Roster"
+          eyebrow={t("eyebrow")}
           title={t("title")}
           rightSlot={playerTargetsLink}
         />
@@ -70,7 +70,7 @@ export async function TeamRosterGrid({ roster, teamId }: TeamRosterGridProps) {
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Overview · Roster"
+        eyebrow={t("eyebrow")}
         title={t("title")}
         rightSlot={playerTargetsLink}
       />

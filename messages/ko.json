@@ -3685,6 +3685,12 @@
         "Push": "밀기"
       }
     },
+    "teamRosterGrid": {
+      "eyebrow": "개요 · 로스터",
+      "title": "팀 로스터",
+      "playerTargets": "플레이어 목표",
+      "noData": "아직 로스터 데이터가 없습니다. 플레이어는 경기에 참여하면 여기에 표시됩니다."
+    },
     "quickStatsCard": {
       "eyebrow": "개요 · 신호",
       "title": "빠른 통계",
