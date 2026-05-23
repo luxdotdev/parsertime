@@ -27,7 +27,7 @@ export function HeroPoolOverviewCard({ heroPool }: HeroPoolOverviewCardProps) {
   if (!hasData) {
     return (
       <section className="space-y-4">
-        <SectionHeader eyebrow="Heroes · Pool overview" title={t("title")} />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
@@ -43,7 +43,7 @@ export function HeroPoolOverviewCard({ heroPool }: HeroPoolOverviewCardProps) {
   return (
     <div className="space-y-8">
       <section className="space-y-4">
-        <SectionHeader eyebrow="Heroes · Pool overview" title={t("title")} />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <div className="grid gap-4 md:grid-cols-4">
           <div className="space-y-1">
             <div className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
@@ -90,7 +90,7 @@ export function HeroPoolOverviewCard({ heroPool }: HeroPoolOverviewCardProps) {
       <div className="grid gap-8 md:grid-cols-2">
         <section className="space-y-4">
           <SectionHeader
-            eyebrow="Heroes · Most played by role"
+            eyebrow={t("mostPlayedByRoleEyebrow")}
             title={t("mostPlayedByRole")}
           />
           <div className="space-y-4">
@@ -105,7 +105,7 @@ export function HeroPoolOverviewCard({ heroPool }: HeroPoolOverviewCardProps) {
                   <div className="mb-3 flex items-center gap-2">
                     <Icon className="text-muted-foreground size-4" />
                     <h4 className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-                      {role}
+                      {t(`roles.${role}`)}
                     </h4>
                   </div>
                   <div className="space-y-2">

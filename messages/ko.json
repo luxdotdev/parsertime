@@ -3421,6 +3421,34 @@
         "Push": "밀기"
       }
     },
+    "heroPoolOverviewCard": {
+      "eyebrow": "영웅 · 풀 개요",
+      "title": "영웅 풀 개요",
+      "noData": "아직 영웅 풀 데이터가 없습니다.",
+      "excellent": "훌륭함",
+      "good": "좋음",
+      "average": "보통",
+      "limited": "제한적",
+      "totalHeroes": "전체 영웅",
+      "effectivePool": "유효 영웅 풀",
+      "diversityScore": "다양성 점수",
+      "minGames": "3경기 이상",
+      "specialists": "전문가",
+      "minOwnership": "점유율 30% 이상",
+      "mostPlayedByRoleEyebrow": "영웅 · 역할별 최다 플레이",
+      "mostPlayedByRole": "역할별 최다 플레이",
+      "gamesPlayed": "{count, plural, =0 {경기 없음} other {#경기}}",
+      "players": "{count, plural, =0 {플레이어 없음} other {#명 플레이}}",
+      "roleDistribution": "역할 분포",
+      "tankHeroes": "탱커 영웅",
+      "dpsHeroes": "딜러 영웅",
+      "supportHeroes": "지원 영웅",
+      "roles": {
+        "Tank": "탱커",
+        "Damage": "딜러",
+        "Support": "지원"
+      }
+    },
     "ultimatesTab": {
       "combos": {
         "title": "궁극기 콤보",

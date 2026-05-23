@@ -4481,6 +4481,7 @@
       "pickDateRange": "Pick a date range"
     },
     "heroPoolOverviewCard": {
+      "eyebrow": "Heroes · Pool overview",
       "title": "Hero Pool Overview",
       "noData": "No hero pool data available yet.",
       "excellent": "Excellent",
@@ -4493,13 +4494,19 @@
       "minGames": "3+ games",
       "specialists": "Specialists",
       "minOwnership": "30%+ ownership",
+      "mostPlayedByRoleEyebrow": "Heroes · Most played by role",
       "mostPlayedByRole": "Most Played by Role",
       "gamesPlayed": "{count, plural, =0 {no games} =1 {1 game} other {# games}}",
       "players": "{count, plural, =0 {no players} =1 {1 player} other {# players}}",
       "roleDistribution": "Role Distribution",
       "tankHeroes": "Tank Heroes",
       "dpsHeroes": "Damage Heroes",
-      "supportHeroes": "Support Heroes"
+      "supportHeroes": "Support Heroes",
+      "roles": {
+        "Tank": "Tank",
+        "Damage": "Damage",
+        "Support": "Support"
+      }
     },
     "heroWinratesCard": {
       "title": "Top Hero Winrates",

@@ -3421,6 +3421,34 @@
         "Push": "机动推进"
       }
     },
+    "heroPoolOverviewCard": {
+      "eyebrow": "英雄 · 英雄池概览",
+      "title": "英雄池概览",
+      "noData": "还没有英雄池数据。",
+      "excellent": "优秀",
+      "good": "良好",
+      "average": "一般",
+      "limited": "有限",
+      "totalHeroes": "英雄总数",
+      "effectivePool": "有效英雄池",
+      "diversityScore": "多样性分数",
+      "minGames": "3 场以上",
+      "specialists": "专精英雄",
+      "minOwnership": "30% 以上使用占比",
+      "mostPlayedByRoleEyebrow": "英雄 · 按职责最常使用",
+      "mostPlayedByRole": "按职责最常使用",
+      "gamesPlayed": "{count, plural, =0 {无比赛} other {# 场比赛}}",
+      "players": "{count, plural, =0 {无玩家} other {# 名玩家}}",
+      "roleDistribution": "职责分布",
+      "tankHeroes": "坦克英雄",
+      "dpsHeroes": "输出英雄",
+      "supportHeroes": "支援英雄",
+      "roles": {
+        "Tank": "坦克",
+        "Damage": "输出",
+        "Support": "支援"
+      }
+    },
     "ultimatesTab": {
       "combos": {
         "title": "终极技能连招",
