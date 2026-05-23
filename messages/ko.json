@@ -3650,6 +3650,12 @@
         "Support": "지원"
       }
     },
+    "heroWinratesCard": {
+      "eyebrow": "영웅 · 최고 승률",
+      "title": "영웅별 최고 승률",
+      "noData": "영웅 승률을 계산할 만큼 플레이한 게임이 아직 부족합니다(영웅당 3게임 이상 필요).",
+      "winsAndLosses": "{wins}승 - {losses}패 • {games, plural, =0 {게임 없음} other {#게임}}"
+    },
     "mapModePerformanceCard": {
       "eyebrow": "맵 · 모드 성능",
       "winrate": "승률: <span>{winrate}</span>",

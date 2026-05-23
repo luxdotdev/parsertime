@@ -3650,6 +3650,12 @@
         "Support": "支援"
       }
     },
+    "heroWinratesCard": {
+      "eyebrow": "英雄 · 最高胜率",
+      "title": "英雄最高胜率",
+      "noData": "游戏场次还不足，无法计算英雄胜率（每个英雄至少需要 3 场）。",
+      "winsAndLosses": "{wins}胜 - {losses}负 • {games, plural, =0 {无比赛} other {# 场比赛}}"
+    },
     "mapModePerformanceCard": {
       "eyebrow": "地图 · 模式表现",
       "winrate": "胜率：<span>{winrate}</span>",

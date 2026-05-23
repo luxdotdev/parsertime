@@ -3,7 +3,7 @@
 import { SectionHeader } from "@/components/stats/team/section-header";
 import type { HeroPoolAnalysis } from "@/data/team/types";
 import { cn, toHero, useHeroNames } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import Image from "next/image";
 
 type HeroWinratesCardProps = {
@@ -12,13 +12,22 @@ type HeroWinratesCardProps = {
 
 export function HeroWinratesCard({ heroPool }: HeroWinratesCardProps) {
   const t = useTranslations("teamStatsPage.heroWinratesCard");
+  const format = useFormatter();
   const heroNames = useHeroNames();
   const topHeroes = heroPool.topHeroWinrates;
+
+  function formatPercent(value: number) {
+    return format.number(value / 100, {
+      style: "percent",
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+  }
 
   if (topHeroes.length === 0) {
     return (
       <section className="space-y-4">
-        <SectionHeader eyebrow="Heroes · Top winrates" title={t("title")} />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
@@ -26,7 +35,7 @@ export function HeroWinratesCard({ heroPool }: HeroWinratesCardProps) {
 
   return (
     <section className="space-y-4">
-      <SectionHeader eyebrow="Heroes · Top winrates" title={t("title")} />
+      <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
       <div className="space-y-2">
         {topHeroes.map((hero, idx) => (
           <div
@@ -62,7 +71,7 @@ export function HeroWinratesCard({ heroPool }: HeroWinratesCardProps) {
               </div>
             </div>
             <span className="text-foreground font-mono text-sm font-semibold tabular-nums">
-              {hero.winrate.toFixed(1)}%
+              {formatPercent(hero.winrate)}
             </span>
           </div>
         ))}
