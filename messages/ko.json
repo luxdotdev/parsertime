@@ -60,6 +60,12 @@
       "title": "사이드바",
       "mobileDescription": "모바일 사이드바를 표시합니다.",
       "toggle": "사이드바 전환"
+    },
+    "opponentSearch": {
+      "placeholder": "OWCS 팀 검색…",
+      "clearSelection": "상대 선택 지우기",
+      "teams": "OWCS 팀",
+      "noTeamsFound": "팀을 찾을 수 없습니다."
     }
   },
   "heroes": {
@@ -652,7 +658,9 @@
       "cancel": "취소",
       "autoAssignTeamNames": "팀 이름 자동 할당",
       "autoAssignTeamNamesDescription": "팀 이름을 자동으로 바꾸고 팀 위치를 정규화하여 내 팀이 항상 Team 1이 되도록 합니다.",
-      "autoAssignDisabledDescription": "자동 할당을 활성화하려면 팀을 선택하세요."
+      "autoAssignDisabledDescription": "자동 할당을 활성화하려면 팀을 선택하세요.",
+      "opponentName": "OWCS 상대",
+      "opponentDescription": "선택 사항입니다. OWCS 스카우팅 분석에 연결합니다."
     }
   },
   "updateModal": {
@@ -866,10 +874,15 @@
         "title": "게스트 모드 활성화",
         "description": "활성화하면 스크림에 로그인한 모든 사용자가 접근할 수 있습니다. 비활성화하면 팀 멤버만 스크림에 접근할 수 있습니다."
       },
+      "opponent": {
+        "title": "상대 (OWCS)",
+        "description": "이 스크림을 OWCS 상대와 연결하여 교차 참조 스카우팅 분석을 활성화합니다."
+      },
       "maps": {
         "title": "맵",
         "replayCodeLabel": "{map}의 리플레이 코드",
         "replayCode": "리플레이 코드",
+        "heroBans": "영웅 밴",
         "delete": "맵 삭제",
         "deleteDialog": {
           "title": "정말 확실합니까?",

@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { Cross2Icon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import Fuse from "fuse.js";
+import { useTranslations } from "next-intl";
 import { useCallback, useId, useMemo, useRef, useState } from "react";
 
 type OpponentOption = {
@@ -23,6 +24,7 @@ export function OpponentSearchField({
   onChange,
   id,
 }: OpponentSearchFieldProps) {
+  const t = useTranslations("ui.opponentSearch");
   const selectedTeam = options.find((o) => o.abbreviation === value) ?? null;
 
   const [query, setQuery] = useState(selectedTeam?.fullName ?? "");
@@ -174,7 +176,7 @@ export function OpponentSearchField({
           aria-autocomplete="list"
           autoComplete="off"
           spellCheck={false}
-          placeholder="Search OWCS teams…"
+          placeholder={t("placeholder")}
           value={query}
           onChange={handleInputChange}
           onFocus={() => setIsFocused(true)}
@@ -185,7 +187,7 @@ export function OpponentSearchField({
         {isSelected && (
           <button
             type="button"
-            aria-label="Clear opponent selection"
+            aria-label={t("clearSelection")}
             onClick={clearSelection}
             className="text-muted-foreground hover:text-foreground shrink-0 transition-colors"
           >
@@ -199,7 +201,7 @@ export function OpponentSearchField({
           ref={listRef}
           id={listboxId}
           role="listbox"
-          aria-label="OWCS teams"
+          aria-label={t("teams")}
           className={cn(
             "border-input bg-background absolute right-0 left-0 z-50",
             "overflow-y-auto rounded-b-md border border-t-0 shadow-md",
@@ -235,7 +237,7 @@ export function OpponentSearchField({
             ))
           ) : (
             <li className="text-muted-foreground px-3 py-4 text-center text-sm">
-              No teams found.
+              {t("noTeamsFound")}
             </li>
           )}
         </ul>

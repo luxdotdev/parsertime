@@ -60,6 +60,12 @@
       "title": "侧边栏",
       "mobileDescription": "显示移动端侧边栏。",
       "toggle": "切换侧边栏"
+    },
+    "opponentSearch": {
+      "placeholder": "搜索 OWCS 队伍…",
+      "clearSelection": "清除对手选择",
+      "teams": "OWCS 队伍",
+      "noTeamsFound": "未找到队伍。"
     }
   },
   "heroes": {
@@ -652,7 +658,9 @@
       "cancel": "取消",
       "autoAssignTeamNames": "自动分配队伍名称",
       "autoAssignTeamNamesDescription": "自动重命名队伍并规范队伍位置，使你的队伍始终为 Team 1。",
-      "autoAssignDisabledDescription": "选择队伍以启用自动分配。"
+      "autoAssignDisabledDescription": "选择队伍以启用自动分配。",
+      "opponentName": "OWCS 对手",
+      "opponentDescription": "可选。关联到 OWCS 侦察分析。"
     }
   },
   "updateModal": {
@@ -866,10 +874,15 @@
         "title": "启用访客模式",
         "description": "启用后，任何登录用户都可以访问此训练赛。禁用后，只有您的队伍成员可以访问此训练赛。"
       },
+      "opponent": {
+        "title": "对手 (OWCS)",
+        "description": "将此训练赛关联到 OWCS 对手，以启用交叉引用的侦察分析。"
+      },
       "maps": {
         "title": "地图",
         "replayCodeLabel": "{map} 的重播代码",
         "replayCode": "重播代码",
+        "heroBans": "英雄禁用",
         "delete": "删除地图",
         "deleteDialog": {
           "title": "您确定吗？",

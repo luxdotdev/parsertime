@@ -60,6 +60,12 @@
       "title": "Sidebar",
       "mobileDescription": "Displays the mobile sidebar.",
       "toggle": "Toggle Sidebar"
+    },
+    "opponentSearch": {
+      "placeholder": "Search OWCS teams…",
+      "clearSelection": "Clear opponent selection",
+      "teams": "OWCS teams",
+      "noTeamsFound": "No teams found."
     }
   },
   "heroes": {
@@ -652,7 +658,9 @@
       "cancel": "Cancel",
       "autoAssignTeamNames": "Auto-assign team names",
       "autoAssignTeamNamesDescription": "Automatically rename teams and normalize team positions so your team is always Team 1.",
-      "autoAssignDisabledDescription": "Select a team to enable auto-assign."
+      "autoAssignDisabledDescription": "Select a team to enable auto-assign.",
+      "opponentName": "OWCS opponent",
+      "opponentDescription": "Optional. Links to OWCS scouting analytics."
     }
   },
   "updateModal": {
@@ -866,10 +874,15 @@
         "title": "Enable Guest Mode",
         "description": "If enabled, the scrim will be accessible to any logged in user. If disabled, only your team members will be able to access the scrim."
       },
+      "opponent": {
+        "title": "Opponent (OWCS)",
+        "description": "Link this scrim to an OWCS opponent to enable cross-referenced scouting analytics."
+      },
       "maps": {
         "title": "Maps",
         "replayCodeLabel": "Replay Code for {map}",
         "replayCode": "Replay Code",
+        "heroBans": "Hero Bans",
         "delete": "Delete Map",
         "deleteDialog": {
           "title": "Are you absolutely sure?",

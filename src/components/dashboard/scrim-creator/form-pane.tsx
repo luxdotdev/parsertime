@@ -254,7 +254,9 @@ export function FormPane({
               name="opponentTeamAbbr"
               render={({ field }) => (
                 <Field>
-                  <FieldLabel htmlFor={field.name}>OWCS opponent</FieldLabel>
+                  <FieldLabel htmlFor={field.name}>
+                    {t("opponentName")}
+                  </FieldLabel>
                   <OpponentSearchField
                     id={field.name}
                     options={scoutingTeams}
@@ -262,7 +264,7 @@ export function FormPane({
                     onChange={field.onChange}
                   />
                   <FieldDescription>
-                    Optional. Links to OWCS scouting analytics.
+                    {t("opponentDescription")}
                   </FieldDescription>
                 </Field>
               )}

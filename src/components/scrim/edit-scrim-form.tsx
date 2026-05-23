@@ -280,7 +280,7 @@ export function EditScrimForm({
               name="opponentTeamAbbr"
               render={({ field }) => (
                 <FormItem className="max-w-lg">
-                  <FormLabel>Opponent (OWCS)</FormLabel>
+                  <FormLabel>{t("opponent.title")}</FormLabel>
                   <FormControl>
                     <OpponentSearchField
                       options={scoutingTeams}
@@ -288,10 +288,7 @@ export function EditScrimForm({
                       onChange={field.onChange}
                     />
                   </FormControl>
-                  <FormDescription>
-                    Link this scrim to an OWCS opponent to enable
-                    cross-referenced scouting analytics.
-                  </FormDescription>
+                  <FormDescription>{t("opponent.description")}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -470,7 +467,7 @@ export function EditScrimForm({
 
                           return (
                             <FormItem>
-                              <FormLabel>Hero Bans</FormLabel>
+                              <FormLabel>{t("maps.heroBans")}</FormLabel>
                               <div className="space-y-2">
                                 <DndContext
                                   sensors={sensors}
