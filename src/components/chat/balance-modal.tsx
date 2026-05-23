@@ -19,6 +19,7 @@ import {
   formatCents,
 } from "@/lib/chat-pricing";
 import { useQueryClient } from "@tanstack/react-query";
+import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 
 type Props = {
@@ -27,6 +28,8 @@ type Props = {
 };
 
 export function BalanceModal({ open, onOpenChange }: Props) {
+  const t = useTranslations("credits");
+  const formatter = useFormatter();
   const queryClient = useQueryClient();
   const { data: balance } = useCreditBalance({ enabled: open });
 
@@ -37,7 +40,9 @@ export function BalanceModal({ open, onOpenChange }: Props) {
 
   async function submitTopup(amountCents: number) {
     if (amountCents < TOPUP_MIN_CENTS) {
-      setErrorMessage(`Minimum top-up is ${formatCents(TOPUP_MIN_CENTS)}.`);
+      setErrorMessage(
+        t("minimumTopup", { amount: formatCents(TOPUP_MIN_CENTS) })
+      );
       return;
     }
     setErrorMessage(null);
@@ -50,7 +55,7 @@ export function BalanceModal({ open, onOpenChange }: Props) {
       });
       const data = (await res.json()) as { url?: string; error?: string };
       if (!res.ok || !data.url) {
-        setErrorMessage(data.error ?? "Failed to start checkout.");
+        setErrorMessage(data.error ?? t("checkoutError"));
         return;
       }
       window.location.href = data.url;
@@ -73,7 +78,7 @@ export function BalanceModal({ open, onOpenChange }: Props) {
       });
       if (!res.ok) {
         const data = (await res.json()) as { error?: string };
-        setErrorMessage(data.error ?? "Failed to update auto-refill.");
+        setErrorMessage(data.error ?? t("autoRefillUpdateError"));
         return;
       }
       await queryClient.invalidateQueries({ queryKey: ["credits", "balance"] });
@@ -95,22 +100,23 @@ export function BalanceModal({ open, onOpenChange }: Props) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>AI chat credits</DialogTitle>
+          <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription>
-            Pay-as-you-go balance for the AI analyst. Top up any time — $5
-            minimum.
+            {t("description", { minimum: formatCents(TOPUP_MIN_CENTS) })}
           </DialogDescription>
         </DialogHeader>
 
         <div className="flex items-baseline gap-2">
-          <span className="text-muted-foreground text-sm">Current balance</span>
+          <span className="text-muted-foreground text-sm">
+            {t("currentBalance")}
+          </span>
           <span className="text-2xl font-semibold tabular-nums">
             {balance ? formatCents(balance.balanceCents) : "—"}
           </span>
         </div>
 
         <div className="space-y-2">
-          <p className="text-sm font-medium">Add credits</p>
+          <p className="text-sm font-medium">{t("addCredits")}</p>
           <div className="grid grid-cols-4 gap-2">
             {TOPUP_PRESETS_CENTS.map((cents) => (
               <Button
@@ -126,7 +132,7 @@ export function BalanceModal({ open, onOpenChange }: Props) {
           </div>
           <div className="flex items-center gap-2">
             <Label htmlFor="custom-amount" className="text-xs">
-              Custom
+              {t("custom")}
             </Label>
             <Input
               id="custom-amount"
@@ -144,13 +150,13 @@ export function BalanceModal({ open, onOpenChange }: Props) {
               onClick={() => {
                 const parsed = Number(customAmount);
                 if (!Number.isFinite(parsed)) {
-                  setErrorMessage("Enter a valid dollar amount.");
+                  setErrorMessage(t("invalidDollarAmount"));
                   return;
                 }
                 void submitTopup(Math.round(parsed * 100));
               }}
             >
-              Top up
+              {t("topUp")}
             </Button>
           </div>
           {errorMessage && (
@@ -162,11 +168,10 @@ export function BalanceModal({ open, onOpenChange }: Props) {
           <div className="flex items-center justify-between gap-2">
             <div className="space-y-0.5">
               <Label htmlFor="auto-refill-toggle" className="text-sm">
-                Auto-refill
+                {t("autoRefill")}
               </Label>
               <p className="text-muted-foreground text-xs">
-                Charge your saved card when the balance drops below the
-                threshold.
+                {t("autoRefillDescription")}
               </p>
             </div>
             <Switch
@@ -180,14 +185,14 @@ export function BalanceModal({ open, onOpenChange }: Props) {
           </div>
           {!balance?.hasPaymentMethod && (
             <p className="text-muted-foreground text-xs">
-              Add credits once to save a payment method for auto-refill.
+              {t("savePaymentMethodHint")}
             </p>
           )}
           {balance?.hasPaymentMethod && (
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
                 <Label className="text-xs" htmlFor="auto-refill-threshold">
-                  Refill when below
+                  {t("refillWhenBelow")}
                 </Label>
                 <Input
                   id="auto-refill-threshold"
@@ -207,7 +212,7 @@ export function BalanceModal({ open, onOpenChange }: Props) {
               </div>
               <div className="space-y-1">
                 <Label className="text-xs" htmlFor="auto-refill-amount">
-                  Refill amount
+                  {t("refillAmount")}
                 </Label>
                 <Input
                   id="auto-refill-amount"
@@ -230,11 +235,16 @@ export function BalanceModal({ open, onOpenChange }: Props) {
         </div>
 
         <div className="border-border space-y-1 rounded-md border p-3 text-xs">
-          <p className="font-medium">Pricing</p>
+          <p className="font-medium">{t("pricing")}</p>
           <p className="text-muted-foreground">
-            {formatCents(effectiveInputPerM)} per million input tokens,{" "}
-            {formatCents(effectiveOutputPerM)} per million output tokens.
-            Includes a 10% platform fee over the underlying model rate.
+            {t("pricingDescription", {
+              input: formatCents(effectiveInputPerM),
+              output: formatCents(effectiveOutputPerM),
+              fee: formatter.number(CHAT_MODEL_PRICING.markupBps / 10_000, {
+                style: "percent",
+                maximumFractionDigits: 0,
+              }),
+            })}
           </p>
         </div>
       </DialogContent>

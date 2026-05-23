@@ -4528,6 +4528,31 @@
       "instructions": "{zoom} · 滚动缩放 · 拖动平移 · 点击放置"
     }
   },
+  "credits": {
+    "title": "AI 聊天额度",
+    "description": "AI 分析师的即用即付余额。可随时充值，最低 {minimum}。",
+    "settingsDescription": "AI 分析师的即用即付余额。",
+    "currentBalance": "当前余额",
+    "balance": "余额",
+    "addCredits": "添加额度",
+    "custom": "自定义",
+    "topUp": "充值",
+    "manage": "管理",
+    "autoRefill": "自动充值",
+    "autoRefillDescription": "余额低于阈值时，使用已保存的银行卡扣款。",
+    "savePaymentMethodHint": "先添加一次额度，即可保存用于自动充值的付款方式。",
+    "refillWhenBelow": "低于此金额时充值",
+    "refillAmount": "充值金额",
+    "pricing": "价格",
+    "pricingDescription": "输入 token 每百万 {input}，输出 token 每百万 {output}。包含基于底层模型费率的 {fee} 平台费用。",
+    "minimumTopup": "最低充值金额为 {amount}。",
+    "checkoutError": "无法开始结账。",
+    "autoRefillUpdateError": "更新自动充值失败。",
+    "invalidDollarAmount": "请输入有效的美元金额。",
+    "autoRefillSummary": " · 低于 {threshold} 时自动充值 {amount}",
+    "recentActivity": "近期活动",
+    "noTransactions": "暂无交易。可从 AI 聊天页面充值，或点击管理。"
+  },
   "coaching": {
     "title": "教练画布",
     "subtitle": "在地图上标注英雄站位、绘图和战术笔记。",

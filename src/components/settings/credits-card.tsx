@@ -13,6 +13,7 @@ import { useCreditBalance } from "@/hooks/use-credits";
 import { formatCents } from "@/lib/chat-pricing";
 import type { CreditTransactionType } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 type Transaction = {
@@ -34,6 +35,7 @@ async function fetchTransactions(): Promise<Transaction[]> {
 }
 
 export function CreditsCard() {
+  const t = useTranslations("credits");
   const [modalOpen, setModalOpen] = useState(false);
   const { data: balance } = useCreditBalance();
   const { data: transactions } = useQuery({
@@ -46,31 +48,33 @@ export function CreditsCard() {
       <Card>
         <CardHeader className="flex flex-row items-start justify-between gap-4">
           <div>
-            <CardTitle>AI chat credits</CardTitle>
-            <CardDescription>
-              Pay-as-you-go balance for the AI analyst.
-            </CardDescription>
+            <CardTitle>{t("title")}</CardTitle>
+            <CardDescription>{t("settingsDescription")}</CardDescription>
           </div>
           <Button size="sm" onClick={() => setModalOpen(true)}>
-            Manage
+            {t("manage")}
           </Button>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-baseline gap-2">
-            <span className="text-muted-foreground text-sm">Balance</span>
+            <span className="text-muted-foreground text-sm">
+              {t("balance")}
+            </span>
             <span className="text-2xl font-semibold tabular-nums">
               {balance ? formatCents(Math.max(0, balance.balanceCents)) : "—"}
             </span>
             {balance?.autoRefillEnabled && (
               <span className="text-muted-foreground text-xs">
-                · Auto-refill {formatCents(balance.autoRefillAmountCents)} at{" "}
-                {formatCents(balance.autoRefillThresholdCents)}
+                {t("autoRefillSummary", {
+                  amount: formatCents(balance.autoRefillAmountCents),
+                  threshold: formatCents(balance.autoRefillThresholdCents),
+                })}
               </span>
             )}
           </div>
 
           <div className="space-y-1">
-            <p className="text-sm font-medium">Recent activity</p>
+            <p className="text-sm font-medium">{t("recentActivity")}</p>
             {transactions && transactions.length > 0 ? (
               <ul className="text-sm">
                 {transactions.map((t) => (
@@ -96,8 +100,7 @@ export function CreditsCard() {
               </ul>
             ) : (
               <p className="text-muted-foreground text-xs">
-                No transactions yet. Top up from the AI chat page or click
-                Manage.
+                {t("noTransactions")}
               </p>
             )}
           </div>

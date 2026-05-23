@@ -4606,6 +4606,31 @@
       "instructions": "{zoom} · Scroll to zoom · Drag to pan · Click to place"
     }
   },
+  "credits": {
+    "title": "AI chat credits",
+    "description": "Pay-as-you-go balance for the AI analyst. Top up any time — {minimum} minimum.",
+    "settingsDescription": "Pay-as-you-go balance for the AI analyst.",
+    "currentBalance": "Current balance",
+    "balance": "Balance",
+    "addCredits": "Add credits",
+    "custom": "Custom",
+    "topUp": "Top up",
+    "manage": "Manage",
+    "autoRefill": "Auto-refill",
+    "autoRefillDescription": "Charge your saved card when the balance drops below the threshold.",
+    "savePaymentMethodHint": "Add credits once to save a payment method for auto-refill.",
+    "refillWhenBelow": "Refill when below",
+    "refillAmount": "Refill amount",
+    "pricing": "Pricing",
+    "pricingDescription": "{input} per million input tokens, {output} per million output tokens. Includes a {fee} platform fee over the underlying model rate.",
+    "minimumTopup": "Minimum top-up is {amount}.",
+    "checkoutError": "Failed to start checkout.",
+    "autoRefillUpdateError": "Failed to update auto-refill.",
+    "invalidDollarAmount": "Enter a valid dollar amount.",
+    "autoRefillSummary": " · Auto-refill {amount} at {threshold}",
+    "recentActivity": "Recent activity",
+    "noTransactions": "No transactions yet. Top up from the AI chat page or click Manage."
+  },
   "demoPage": {
     "metadata": {
       "title": "{mapName} Demo | Parsertime",

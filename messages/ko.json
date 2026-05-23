@@ -4528,6 +4528,31 @@
       "instructions": "{zoom} · 스크롤로 확대/축소 · 드래그로 이동 · 클릭으로 배치"
     }
   },
+  "credits": {
+    "title": "AI 채팅 크레딧",
+    "description": "AI 분석가용 종량제 잔액입니다. 언제든 충전할 수 있으며 최소 금액은 {minimum}입니다.",
+    "settingsDescription": "AI 분석가용 종량제 잔액입니다.",
+    "currentBalance": "현재 잔액",
+    "balance": "잔액",
+    "addCredits": "크레딧 추가",
+    "custom": "직접 입력",
+    "topUp": "충전",
+    "manage": "관리",
+    "autoRefill": "자동 충전",
+    "autoRefillDescription": "잔액이 기준 아래로 떨어지면 저장된 카드로 결제합니다.",
+    "savePaymentMethodHint": "크레딧을 한 번 추가하면 자동 충전에 사용할 결제 수단이 저장됩니다.",
+    "refillWhenBelow": "이 금액 미만이면 충전",
+    "refillAmount": "충전 금액",
+    "pricing": "요금",
+    "pricingDescription": "입력 토큰 100만 개당 {input}, 출력 토큰 100만 개당 {output}입니다. 기본 모델 요금에 {fee} 플랫폼 수수료가 포함됩니다.",
+    "minimumTopup": "최소 충전 금액은 {amount}입니다.",
+    "checkoutError": "결제를 시작하지 못했습니다.",
+    "autoRefillUpdateError": "자동 충전을 업데이트하지 못했습니다.",
+    "invalidDollarAmount": "유효한 달러 금액을 입력하세요.",
+    "autoRefillSummary": " · {threshold}에서 {amount} 자동 충전",
+    "recentActivity": "최근 활동",
+    "noTransactions": "아직 거래가 없습니다. AI 채팅 페이지에서 충전하거나 관리를 클릭하세요."
+  },
   "coaching": {
     "title": "코칭 캔버스",
     "subtitle": "맵에 영웅 배치, 그림, 전략 노트를 표시하세요.",
