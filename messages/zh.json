@@ -3288,6 +3288,40 @@
     "target": "目标：{target}",
     "search-user-email": "搜索用户邮箱",
     "search-target": "搜索目标",
+    "date-range": {
+      "select": "选择日期范围",
+      "from": "从 {date}",
+      "until": "直到 {date}",
+      "range": "{from} - {to}"
+    },
+    "actions": {
+      "USER_BAN": "封禁用户",
+      "USER_UNBAN": "解除封禁",
+      "USER_AVATAR_UPDATED": "用户头像已更新",
+      "USER_ACCOUNT_DELETED": "用户账号已删除",
+      "USER_NAME_UPDATED": "用户名已更新",
+      "TRUST_SCORE_ADJUST": "调整信任分",
+      "IMPERSONATE_USER": "模拟用户",
+      "SUSPICIOUS_ACTIVITY_DETECTED": "检测到可疑活动",
+      "TEAM_CREATED": "团队已创建",
+      "TEAM_UPDATED": "团队已更新",
+      "TEAM_DELETED": "团队已删除",
+      "TEAM_AVATAR_UPDATED": "团队头像已更新",
+      "TEAM_INVITE_SENT": "团队邀请已发送",
+      "TEAM_JOINED": "加入团队",
+      "TEAM_LEFT": "离开团队",
+      "TEAM_MEMBER_PROMOTED": "团队成员已提升",
+      "TEAM_MEMBER_DEMOTED": "团队成员已降级",
+      "TEAM_MEMBER_REMOVED": "团队成员已移除",
+      "TEAM_OWNERSHIP_TRANSFERRED": "团队所有权已转移",
+      "SCRIM_CREATED": "训练赛已创建",
+      "SCRIM_UPDATED": "训练赛已更新",
+      "SCRIM_DELETED": "训练赛已删除",
+      "MAP_CREATED": "地图已创建",
+      "MAP_UPDATED": "地图已更新",
+      "MAP_DELETED": "地图已删除",
+      "BUG_REPORT_SUBMITTED": "错误报告已提交"
+    },
     "download": {
       "button": "下载 CSV",
       "downloading": "正在下载...",
@@ -3386,7 +3420,17 @@
       "select-billing-plan": "选择计费方案",
       "all-plans": "所有方案",
       "join-date-range": "加入日期范围",
+      "select-join-date-range": "选择加入日期范围",
+      "date-range-from": "从 {date}",
+      "date-range-until": "直到 {date}",
+      "date-range": "{from} - {to}",
       "reset-filters": "重置筛选"
+    },
+    "plans": {
+      "free": "免费",
+      "basic": "Basic",
+      "premium": "Premium",
+      "unknown": "未知"
     },
     "table": {
       "username": "用户名",

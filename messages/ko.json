@@ -3288,6 +3288,40 @@
     "target": "대상: {target}",
     "search-user-email": "사용자 이메일 검색",
     "search-target": "대상 검색",
+    "date-range": {
+      "select": "날짜 범위 선택",
+      "from": "{date}부터",
+      "until": "{date}까지",
+      "range": "{from} - {to}"
+    },
+    "actions": {
+      "USER_BAN": "사용자 차단",
+      "USER_UNBAN": "사용자 차단 해제",
+      "USER_AVATAR_UPDATED": "사용자 아바타 업데이트",
+      "USER_ACCOUNT_DELETED": "사용자 계정 삭제",
+      "USER_NAME_UPDATED": "사용자 이름 업데이트",
+      "TRUST_SCORE_ADJUST": "신뢰 점수 조정",
+      "IMPERSONATE_USER": "사용자 가장",
+      "SUSPICIOUS_ACTIVITY_DETECTED": "의심스러운 활동 감지",
+      "TEAM_CREATED": "팀 생성",
+      "TEAM_UPDATED": "팀 업데이트",
+      "TEAM_DELETED": "팀 삭제",
+      "TEAM_AVATAR_UPDATED": "팀 아바타 업데이트",
+      "TEAM_INVITE_SENT": "팀 초대 전송",
+      "TEAM_JOINED": "팀 가입",
+      "TEAM_LEFT": "팀 탈퇴",
+      "TEAM_MEMBER_PROMOTED": "팀원 승격",
+      "TEAM_MEMBER_DEMOTED": "팀원 강등",
+      "TEAM_MEMBER_REMOVED": "팀원 제거",
+      "TEAM_OWNERSHIP_TRANSFERRED": "팀 소유권 이전",
+      "SCRIM_CREATED": "스크림 생성",
+      "SCRIM_UPDATED": "스크림 업데이트",
+      "SCRIM_DELETED": "스크림 삭제",
+      "MAP_CREATED": "맵 생성",
+      "MAP_UPDATED": "맵 업데이트",
+      "MAP_DELETED": "맵 삭제",
+      "BUG_REPORT_SUBMITTED": "버그 신고 제출"
+    },
     "download": {
       "button": "CSV 다운로드",
       "downloading": "다운로드 중...",
@@ -3386,7 +3420,17 @@
       "select-billing-plan": "결제 플랜 선택",
       "all-plans": "모든 플랜",
       "join-date-range": "가입일 범위",
+      "select-join-date-range": "가입일 범위 선택",
+      "date-range-from": "{date}부터",
+      "date-range-until": "{date}까지",
+      "date-range": "{from} - {to}",
       "reset-filters": "필터 초기화"
+    },
+    "plans": {
+      "free": "무료",
+      "basic": "Basic",
+      "premium": "Premium",
+      "unknown": "알 수 없음"
     },
     "table": {
       "username": "사용자 이름",

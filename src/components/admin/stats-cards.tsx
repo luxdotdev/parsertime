@@ -7,10 +7,16 @@ import {
   TrendingUp,
   Users,
 } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getFormatter, getTranslations } from "next-intl/server";
 
-function formatDelta(delta: number) {
-  return delta > 0 ? `+${delta}` : delta;
+function formatDelta(
+  formatter: Awaited<ReturnType<typeof getFormatter>>,
+  delta: number
+) {
+  return formatter.number(delta, {
+    maximumFractionDigits: 0,
+    signDisplay: "exceptZero",
+  });
 }
 
 async function getUserStats() {
@@ -113,6 +119,7 @@ async function getConversionStats() {
 
 export async function StatsCards() {
   const t = await getTranslations("settingsPage.admin.dashboard.stats-cards");
+  const formatter = await getFormatter();
 
   const [userStats, scrimStats, conversionStats] = await Promise.all([
     getUserStats(),
@@ -149,11 +156,11 @@ export async function StatsCards() {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {totalUsers.toLocaleString()}
+            {formatter.number(totalUsers)}
           </div>
           <p className="text-muted-foreground text-xs">
             {t("total-users.delta", {
-              delta: formatDelta(monthlyGrowth),
+              delta: formatDelta(formatter, monthlyGrowth),
             })}
           </p>
         </CardContent>
@@ -175,12 +182,12 @@ export async function StatsCards() {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {usersThisMonth.toLocaleString()}
+            {formatter.number(usersThisMonth)}
           </div>
           <p className="text-muted-foreground text-xs">
             {t("user-growth.delta", {
-              delta: formatDelta(userGrowthComparison),
-              lastMonth: usersLastMonth.toLocaleString(),
+              delta: formatDelta(formatter, userGrowthComparison),
+              lastMonth: formatter.number(usersLastMonth),
             })}
           </p>
         </CardContent>
@@ -202,12 +209,12 @@ export async function StatsCards() {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {scrimsThisMonth.toLocaleString()}
+            {formatter.number(scrimsThisMonth)}
           </div>
           <p className="text-muted-foreground text-xs">
             {t("scrim-activity.delta", {
-              delta: formatDelta(scrimGrowthComparison),
-              lastMonth: scrimsLastMonth.toLocaleString(),
+              delta: formatDelta(formatter, scrimGrowthComparison),
+              lastMonth: formatter.number(scrimsLastMonth),
             })}
           </p>
         </CardContent>
@@ -220,10 +227,16 @@ export async function StatsCards() {
           <CreditCard className="text-muted-foreground h-4 w-4" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{conversionRate.toFixed(1)}%</div>
+          <div className="text-2xl font-bold">
+            {formatter.number(conversionRate / 100, {
+              maximumFractionDigits: 1,
+              minimumFractionDigits: 1,
+              style: "percent",
+            })}
+          </div>
           <p className="text-muted-foreground text-xs">
             {t("conversion-rate.delta", {
-              paidUsers: paidUsers.toLocaleString(),
+              paidUsers: formatter.number(paidUsers),
             })}
           </p>
         </CardContent>

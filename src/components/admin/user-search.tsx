@@ -30,7 +30,6 @@ import {
 import { cn } from "@/lib/utils";
 import type { User } from "@prisma/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
 import {
   CalendarIcon,
   CheckCircle,
@@ -40,7 +39,7 @@ import {
   Search,
   X,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { useDebounce } from "use-debounce";
@@ -61,6 +60,7 @@ export function UserSearch({
   height = "max-h-[500px]",
 }: UserSearchProps) {
   const t = useTranslations("settingsPage.admin.user-search");
+  const formatter = useFormatter();
   const loadMoreRef = useRef<HTMLTableRowElement>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -141,44 +141,54 @@ export function UserSearch({
   function getBillingPlanBadge(score: string) {
     if (score === "FREE")
       return (
-        <Badge className="bg-blue-400 text-white dark:bg-blue-600">FREE</Badge>
+        <Badge className="bg-blue-400 text-white dark:bg-blue-600">
+          {t("plans.free")}
+        </Badge>
       );
     if (score === "BASIC")
       return (
         <Badge className="bg-purple-400 text-white dark:bg-purple-600">
-          BASIC
+          {t("plans.basic")}
         </Badge>
       );
     if (score === "PREMIUM")
       return (
         <Badge className="bg-gradient-to-r from-pink-600 to-purple-600 text-white">
-          PREMIUM
+          {t("plans.premium")}
         </Badge>
       );
-    return <Badge className="bg-red-500">UNKNOWN</Badge>;
+    return <Badge className="bg-red-500">{t("plans.unknown")}</Badge>;
   }
 
   function formatJoinDateRange() {
-    if (!joinDateRange) return "Select join date range";
+    if (!joinDateRange) return t("filters.select-join-date-range");
 
     if (joinDateRange.from && joinDateRange.to) {
+      const from = formatter.dateTime(joinDateRange.from, {
+        dateStyle: "medium",
+      });
+      const to = formatter.dateTime(joinDateRange.to, { dateStyle: "medium" });
       if (
         joinDateRange.from.toDateString() === joinDateRange.to.toDateString()
       ) {
-        return format(joinDateRange.from, "PPP");
+        return from;
       }
-      return `${format(joinDateRange.from, "PP")} - ${format(joinDateRange.to, "PP")}`;
+      return t("filters.date-range", { from, to });
     }
 
     if (joinDateRange.from) {
-      return `From ${format(joinDateRange.from, "PP")}`;
+      return t("filters.date-range-from", {
+        date: formatter.dateTime(joinDateRange.from, { dateStyle: "medium" }),
+      });
     }
 
     if (joinDateRange.to) {
-      return `Until ${format(joinDateRange.to, "PP")}`;
+      return t("filters.date-range-until", {
+        date: formatter.dateTime(joinDateRange.to, { dateStyle: "medium" }),
+      });
     }
 
-    return "Select join date range";
+    return t("filters.select-join-date-range");
   }
 
   function clearFilters() {
@@ -355,7 +365,9 @@ export function UserSearch({
                       </TableCell>
                       <TableCell>
                         <span className="text-muted-foreground text-sm">
-                          {format(new Date(user.createdAt), "PPP")}
+                          {formatter.dateTime(new Date(user.createdAt), {
+                            dateStyle: "medium",
+                          })}
                         </span>
                       </TableCell>
 
