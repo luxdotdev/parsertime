@@ -319,6 +319,10 @@
       "signOut": "退出登录",
       "profile": "个人资料"
     },
+    "guestNav": {
+      "guestUser": "访客用户",
+      "signIn": "登录"
+    },
     "commandMenu": {
       "searchPlaceholder": "输入命令或搜索...",
       "searchResult": "未找到结果。",
@@ -450,6 +454,7 @@
     },
     "mainNav": {
       "dashboard": "仪表盘",
+      "toggleMenu": "切换菜单",
       "stats": "统计数据",
       "teams": "团队",
       "settings": "设置",

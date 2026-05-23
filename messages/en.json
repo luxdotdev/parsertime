@@ -319,6 +319,10 @@
       "signOut": "Sign Out",
       "profile": "Profile"
     },
+    "guestNav": {
+      "guestUser": "Guest User",
+      "signIn": "Sign In"
+    },
     "commandMenu": {
       "searchPlaceholder": "Type a command or search...",
       "searchResult": "No results found.",
@@ -415,6 +419,7 @@
     },
     "mainNav": {
       "dashboard": "Dashboard",
+      "toggleMenu": "Toggle Menu",
       "stats": "Stats",
       "teams": "Teams",
       "settings": "Settings",

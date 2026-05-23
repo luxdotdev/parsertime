@@ -319,6 +319,10 @@
       "signOut": "로그아웃",
       "profile": "프로필"
     },
+    "guestNav": {
+      "guestUser": "게스트 사용자",
+      "signIn": "로그인"
+    },
     "commandMenu": {
       "searchPlaceholder": "명령어 입력 또는 검색...",
       "searchResult": "결과가 없습니다.",
@@ -450,6 +454,7 @@
     },
     "mainNav": {
       "dashboard": "대시보드",
+      "toggleMenu": "메뉴 전환",
       "stats": "통계",
       "teams": "팀",
       "settings": "설정",
