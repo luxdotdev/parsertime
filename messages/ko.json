@@ -37,6 +37,31 @@
     "throne-of-anubis": "아누비스의 왕좌",
     "watchpoint-gibraltar": "감시 기지: 지브롤터"
   },
+  "ui": {
+    "pagination": {
+      "ariaLabel": "페이지네이션",
+      "previousPage": "이전 페이지로 이동",
+      "nextPage": "다음 페이지로 이동",
+      "previous": "이전",
+      "next": "다음",
+      "morePages": "더 많은 페이지"
+    },
+    "carousel": {
+      "previousSlide": "이전 슬라이드",
+      "nextSlide": "다음 슬라이드"
+    },
+    "dialog": {
+      "close": "닫기"
+    },
+    "sheet": {
+      "close": "닫기"
+    },
+    "sidebar": {
+      "title": "사이드바",
+      "mobileDescription": "모바일 사이드바를 표시합니다.",
+      "toggle": "사이드바 전환"
+    }
+  },
   "heroes": {
     "ana": "아나",
     "anran": "안란",

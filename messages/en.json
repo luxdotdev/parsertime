@@ -37,6 +37,31 @@
     "throne-of-anubis": "Throne of Anubis",
     "watchpoint-gibraltar": "Watchpoint: Gibraltar"
   },
+  "ui": {
+    "pagination": {
+      "ariaLabel": "pagination",
+      "previousPage": "Go to previous page",
+      "nextPage": "Go to next page",
+      "previous": "Previous",
+      "next": "Next",
+      "morePages": "More pages"
+    },
+    "carousel": {
+      "previousSlide": "Previous slide",
+      "nextSlide": "Next slide"
+    },
+    "dialog": {
+      "close": "Close"
+    },
+    "sheet": {
+      "close": "Close"
+    },
+    "sidebar": {
+      "title": "Sidebar",
+      "mobileDescription": "Displays the mobile sidebar.",
+      "toggle": "Toggle Sidebar"
+    }
+  },
   "heroes": {
     "ana": "Ana",
     "anran": "Anran",

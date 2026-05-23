@@ -37,6 +37,31 @@
     "throne-of-anubis": "阿努比斯王座",
     "watchpoint-gibraltar": "监测站：直布罗陀"
   },
+  "ui": {
+    "pagination": {
+      "ariaLabel": "分页",
+      "previousPage": "前往上一页",
+      "nextPage": "前往下一页",
+      "previous": "上一页",
+      "next": "下一页",
+      "morePages": "更多页面"
+    },
+    "carousel": {
+      "previousSlide": "上一张幻灯片",
+      "nextSlide": "下一张幻灯片"
+    },
+    "dialog": {
+      "close": "关闭"
+    },
+    "sheet": {
+      "close": "关闭"
+    },
+    "sidebar": {
+      "title": "侧边栏",
+      "mobileDescription": "显示移动端侧边栏。",
+      "toggle": "切换侧边栏"
+    }
+  },
   "heroes": {
     "ana": "安娜",
     "anran": "安燃",
