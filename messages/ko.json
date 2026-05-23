@@ -5693,6 +5693,37 @@
       "noData": "영웅 승률을 계산할 만큼 플레이한 게임이 아직 부족합니다(영웅당 3게임 이상 필요).",
       "winsAndLosses": "{wins}승 - {losses}패 • {games, plural, =0 {게임 없음} other {#게임}}"
     },
+    "heroBanCards": {
+      "received": {
+        "eyebrow": "영웅 · 밴 영향",
+        "emptyTitle": "영웅 밴 영향",
+        "title": "가장 많이 밴당한 영웅",
+        "noData": "선택한 기간에 사용할 영웅 밴 데이터가 없습니다.",
+        "description": "{maps, number}개 맵에서 상대가 우리 팀을 상대로 가장 자주 밴한 영웅입니다. 약점 태그는 해당 영웅이 없을 때 승률이 떨어지는 경우를 표시합니다."
+      },
+      "outgoing": {
+        "eyebrow": "영웅 · 우리 밴",
+        "title": "우리 팀 밴 전략",
+        "noData": "선택한 기간에 사용할 우리 팀 밴 데이터가 없습니다.",
+        "description": "{maps, number}개 맵에서 우리 팀이 가장 자주 밴한 영웅입니다. 고가치 태그는 승률을 가장 많이 끌어올린 밴을 표시합니다."
+      },
+      "table": {
+        "hero": "영웅",
+        "bans": "밴",
+        "distribution": "분포",
+        "banRate": "밴 비율",
+        "wrWith": "있을 때 승률",
+        "wrWithout": "없을 때 승률",
+        "wrBanned": "밴 시 승률",
+        "wrNotBanned": "밴 안 함 승률",
+        "wrDelta": "승률 차이",
+        "tag": "태그"
+      },
+      "tags": {
+        "weakPoint": "약점",
+        "highValue": "고가치"
+      }
+    },
     "mapModePerformanceCard": {
       "eyebrow": "맵 · 모드 성능",
       "winrate": "승률: <span>{winrate}</span>",

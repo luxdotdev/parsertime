@@ -5495,6 +5495,37 @@
       "noData": "Not enough games played to calculate hero winrates (need 3+ games per hero).",
       "winsAndLosses": "{wins}W - {losses}L • {games, plural, =0 {no games} =1 {1 game} other {# games}}"
     },
+    "heroBanCards": {
+      "received": {
+        "eyebrow": "Heroes · Ban impact",
+        "emptyTitle": "Hero Ban Impact",
+        "title": "Most Banned Heroes",
+        "noData": "No hero ban data available for the selected time period.",
+        "description": "Heroes most frequently banned against your team across {maps, plural, =1 {# map} other {# maps}}. Weak point tags mark heroes whose absence drops your win rate."
+      },
+      "outgoing": {
+        "eyebrow": "Heroes · Our bans",
+        "title": "Our Ban Strategy",
+        "noData": "No outgoing ban data available for the selected time period.",
+        "description": "Heroes your team bans most frequently across {maps, plural, =1 {# map} other {# maps}}. High value tags mark bans that lift your win rate the most."
+      },
+      "table": {
+        "hero": "Hero",
+        "bans": "Bans",
+        "distribution": "Distribution",
+        "banRate": "Ban Rate",
+        "wrWith": "WR With",
+        "wrWithout": "WR Without",
+        "wrBanned": "WR Banned",
+        "wrNotBanned": "WR Not Banned",
+        "wrDelta": "WR Delta",
+        "tag": "Tag"
+      },
+      "tags": {
+        "weakPoint": "Weak point",
+        "highValue": "High value"
+      }
+    },
     "mapModePerformanceCard": {
       "eyebrow": "Maps · Mode performance",
       "winrate": "Winrate: <span>{winrate}</span>",

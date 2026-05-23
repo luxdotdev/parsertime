@@ -4,6 +4,7 @@ import { SectionHeader } from "@/components/stats/team/section-header";
 import type { TeamOurBanAnalysis } from "@/data/team/types";
 import { cn, toHero, useHeroNames } from "@/lib/utils";
 import Image from "next/image";
+import { useFormatter, useTranslations } from "next-intl";
 
 type HeroOurBansCardProps = {
   outgoing: TeamOurBanAnalysis;
@@ -11,7 +12,23 @@ type HeroOurBansCardProps = {
 
 const MAX_ROWS = 10;
 
+function formatPercent(
+  value: number,
+  formatter: ReturnType<typeof useFormatter>,
+  digits = 0,
+  showSign = false
+) {
+  return formatter.number(value, {
+    style: "percent",
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+    signDisplay: showSign ? "exceptZero" : "auto",
+  });
+}
+
 export function HeroOurBansCard({ outgoing }: HeroOurBansCardProps) {
+  const t = useTranslations("teamStatsPage.heroBanCards");
+  const formatter = useFormatter();
   const heroNames = useHeroNames();
 
   if (
@@ -20,10 +37,11 @@ export function HeroOurBansCard({ outgoing }: HeroOurBansCardProps) {
   ) {
     return (
       <section className="space-y-4">
-        <SectionHeader eyebrow="Heroes · Our bans" title="Our Ban Strategy" />
-        <p className="text-muted-foreground text-sm">
-          No outgoing ban data available for the selected time period.
-        </p>
+        <SectionHeader
+          eyebrow={t("outgoing.eyebrow")}
+          title={t("outgoing.title")}
+        />
+        <p className="text-muted-foreground text-sm">{t("outgoing.noData")}</p>
       </section>
     );
   }
@@ -39,40 +57,47 @@ export function HeroOurBansCard({ outgoing }: HeroOurBansCardProps) {
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Heroes · Our bans"
-        title="Our Ban Strategy"
-        description={`Heroes your team bans most frequently across ${outgoing.totalMapsAnalyzed} maps. High value tags mark bans that lift your win rate the most.`}
+        eyebrow={t("outgoing.eyebrow")}
+        title={t("outgoing.title")}
+        description={t("outgoing.description", {
+          maps: outgoing.totalMapsAnalyzed,
+        })}
       />
       <div className="border-border overflow-hidden rounded-md border">
         <table className="w-full text-sm">
           <thead className="bg-muted/30">
             <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-              <th className="px-4 py-2 text-left font-medium">Hero</th>
-              <th className="px-4 py-2 text-right font-medium">Bans</th>
-              <th className="w-32 px-4 py-2 text-left font-medium">
-                Distribution
+              <th className="px-4 py-2 text-left font-medium">
+                {t("table.hero")}
               </th>
-              <th className="px-4 py-2 text-right font-medium">Ban Rate</th>
-              <th className="px-4 py-2 text-right font-medium">WR Banned</th>
               <th className="px-4 py-2 text-right font-medium">
-                WR Not Banned
+                {t("table.bans")}
               </th>
-              <th className="px-4 py-2 text-right font-medium">WR Delta</th>
-              <th className="w-28 px-4 py-2 text-right font-medium">Tag</th>
+              <th className="w-32 px-4 py-2 text-left font-medium">
+                {t("table.distribution")}
+              </th>
+              <th className="px-4 py-2 text-right font-medium">
+                {t("table.banRate")}
+              </th>
+              <th className="px-4 py-2 text-right font-medium">
+                {t("table.wrBanned")}
+              </th>
+              <th className="px-4 py-2 text-right font-medium">
+                {t("table.wrNotBanned")}
+              </th>
+              <th className="px-4 py-2 text-right font-medium">
+                {t("table.wrDelta")}
+              </th>
+              <th className="w-28 px-4 py-2 text-right font-medium">
+                {t("table.tag")}
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--border)]">
             {rows.map((impact) => {
               const heroSlug = toHero(impact.hero);
               const displayName = heroNames.get(heroSlug) ?? impact.hero;
-              const banRatePercent = (impact.banRate * 100).toFixed(1);
-              const bannedPercent = (impact.winRateWhenBanned * 100).toFixed(0);
-              const notBannedPercent = (
-                impact.winRateWhenNotBanned * 100
-              ).toFixed(0);
-              const deltaValue = impact.winRateDelta * 100;
-              const deltaSign = deltaValue > 0 ? "+" : "";
-              const deltaPercent = `${deltaSign}${deltaValue.toFixed(1)}%`;
+              const deltaValue = impact.winRateDelta;
               const isStrongBan = strongBanSet.has(impact.hero);
 
               return (
@@ -94,7 +119,7 @@ export function HeroOurBansCard({ outgoing }: HeroOurBansCardProps) {
                     </div>
                   </td>
                   <td className="px-4 py-3 text-right font-mono tabular-nums">
-                    {impact.totalBans}
+                    {formatter.number(impact.totalBans)}
                   </td>
                   <td className="px-4 py-3">
                     <div className="bg-muted h-1.5 w-full max-w-[120px] overflow-hidden rounded-full">
@@ -107,13 +132,13 @@ export function HeroOurBansCard({ outgoing }: HeroOurBansCardProps) {
                     </div>
                   </td>
                   <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
-                    {banRatePercent}%
+                    {formatPercent(impact.banRate, formatter, 1)}
                   </td>
                   <td className="px-4 py-3 text-right font-mono tabular-nums">
-                    {bannedPercent}%
+                    {formatPercent(impact.winRateWhenBanned, formatter)}
                   </td>
                   <td className="px-4 py-3 text-right font-mono tabular-nums">
-                    {notBannedPercent}%
+                    {formatPercent(impact.winRateWhenNotBanned, formatter)}
                   </td>
                   <td
                     className={cn(
@@ -123,12 +148,12 @@ export function HeroOurBansCard({ outgoing }: HeroOurBansCardProps) {
                       deltaValue === 0 && "text-muted-foreground"
                     )}
                   >
-                    {deltaPercent}
+                    {formatPercent(deltaValue, formatter, 1, true)}
                   </td>
                   <td className="px-4 py-3 text-right">
                     {isStrongBan ? (
                       <span className="bg-primary/15 text-primary rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase">
-                        High value
+                        {t("tags.highValue")}
                       </span>
                     ) : null}
                   </td>

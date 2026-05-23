@@ -5693,6 +5693,37 @@
       "noData": "游戏场次还不足，无法计算英雄胜率（每个英雄至少需要 3 场）。",
       "winsAndLosses": "{wins}胜 - {losses}负 • {games, plural, =0 {无比赛} other {# 场比赛}}"
     },
+    "heroBanCards": {
+      "received": {
+        "eyebrow": "英雄 · 禁用影响",
+        "emptyTitle": "英雄禁用影响",
+        "title": "最常被禁英雄",
+        "noData": "所选时间段内暂无英雄禁用数据。",
+        "description": "在 {maps, number} 张地图中，对手最常针对您队伍禁用的英雄。弱点标签表示该英雄缺席时您的胜率会下降。"
+      },
+      "outgoing": {
+        "eyebrow": "英雄 · 我方禁用",
+        "title": "我方禁用策略",
+        "noData": "所选时间段内暂无我方禁用数据。",
+        "description": "在 {maps, number} 张地图中，您的队伍最常禁用的英雄。高价值标签表示最能提升胜率的禁用选择。"
+      },
+      "table": {
+        "hero": "英雄",
+        "bans": "禁用",
+        "distribution": "分布",
+        "banRate": "禁用率",
+        "wrWith": "有该英雄胜率",
+        "wrWithout": "无该英雄胜率",
+        "wrBanned": "禁用时胜率",
+        "wrNotBanned": "未禁用时胜率",
+        "wrDelta": "胜率差",
+        "tag": "标签"
+      },
+      "tags": {
+        "weakPoint": "弱点",
+        "highValue": "高价值"
+      }
+    },
     "mapModePerformanceCard": {
       "eyebrow": "地图 · 模式表现",
       "winrate": "胜率：<span>{winrate}</span>",
