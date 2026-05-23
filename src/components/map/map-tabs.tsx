@@ -1,6 +1,7 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTranslations } from "next-intl";
 import { parseAsFloat, parseAsString, useQueryState } from "nuqs";
 import { useCallback, type ReactNode } from "react";
 
@@ -18,6 +19,7 @@ type MapTabsProps = {
 };
 
 export function MapTabs({ tabs }: MapTabsProps) {
+  const t = useTranslations("mapPage");
   const [tab, setTab] = useQueryState(
     "tab",
     parseAsString.withDefault("overview")
@@ -25,7 +27,7 @@ export function MapTabs({ tabs }: MapTabsProps) {
 
   return (
     <Tabs value={tab} onValueChange={setTab} className="space-y-4">
-      <TabsList aria-label="Map sections">
+      <TabsList aria-label={t("tabsLabel")}>
         {tabs.map((t) =>
           t.hidden ? null : (
             <TabsTrigger key={t.value} value={t.value} className={t.className}>

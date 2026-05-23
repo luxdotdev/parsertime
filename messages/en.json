@@ -1615,6 +1615,7 @@
     },
     "back": "Back to scrim overview",
     "dashboard": "Dashboard",
+    "tabsLabel": "Map sections",
     "mobileBanner": {
       "message": "For the best experience, we recommend using a larger screen.",
       "dismiss": "Dismiss"
@@ -2361,6 +2362,10 @@
         "snapToFights": "Snap to fights",
         "fightLabel": "Fight {number}",
         "allFights": "All fights",
+        "selectionStart": "Selection start",
+        "selectionEnd": "Selection end",
+        "previousFight": "Previous fight",
+        "nextFight": "Next fight",
         "noData": "Not enough data to display tempo."
       }
     },

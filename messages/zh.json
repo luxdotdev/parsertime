@@ -1615,6 +1615,7 @@
     },
     "back": "返回比赛概览",
     "dashboard": "仪表板",
+    "tabsLabel": "地图分区",
     "mobileBanner": {
       "message": "为了获得最佳体验，建议使用更大的屏幕。",
       "dismiss": "关闭"
@@ -2361,6 +2362,10 @@
         "snapToFights": "对齐战斗",
         "fightLabel": "战斗 {number}",
         "allFights": "所有战斗",
+        "selectionStart": "选择起点",
+        "selectionEnd": "选择终点",
+        "previousFight": "上一场战斗",
+        "nextFight": "下一场战斗",
         "noData": "数据不足，无法显示节奏。"
       }
     },

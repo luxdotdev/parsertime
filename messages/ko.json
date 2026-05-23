@@ -1615,6 +1615,7 @@
     },
     "back": "스크림 개요로 돌아가기",
     "dashboard": "대시보드",
+    "tabsLabel": "맵 섹션",
     "mobileBanner": {
       "message": "최상의 경험을 위해 더 큰 화면 사용을 권장합니다.",
       "dismiss": "닫기"
@@ -2361,6 +2362,10 @@
         "snapToFights": "전투에 맞추기",
         "fightLabel": "전투 {number}",
         "allFights": "모든 전투",
+        "selectionStart": "선택 시작",
+        "selectionEnd": "선택 끝",
+        "previousFight": "이전 전투",
+        "nextFight": "다음 전투",
         "noData": "템포를 표시할 데이터가 충분하지 않습니다."
       }
     },

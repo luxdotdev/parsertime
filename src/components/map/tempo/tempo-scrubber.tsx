@@ -509,7 +509,7 @@ export function TempoScrubber({
             onKeyDown={handleHandleKeyDown("left")}
             tabIndex={0}
             role="slider"
-            aria-label="Selection start"
+            aria-label={t("selectionStart")}
             aria-valuemin={matchStart}
             aria-valuemax={matchEnd}
             aria-valuenow={range[0]}
@@ -548,7 +548,7 @@ export function TempoScrubber({
             onKeyDown={handleHandleKeyDown("right")}
             tabIndex={0}
             role="slider"
-            aria-label="Selection end"
+            aria-label={t("selectionEnd")}
             aria-valuemin={matchStart}
             aria-valuemax={matchEnd}
             aria-valuenow={range[1]}
@@ -617,7 +617,7 @@ export function TempoScrubber({
               onClick={goToPrevFight}
               disabled={currentFightIndex === 0}
               className={transportBtnClass}
-              aria-label="Previous fight"
+              aria-label={t("previousFight")}
             >
               <PrevIcon />
             </button>
@@ -637,7 +637,7 @@ export function TempoScrubber({
               onClick={goToNextFight}
               disabled={currentFightIndex === fightBoundaries.length - 1}
               className={transportBtnClass}
-              aria-label="Next fight"
+              aria-label={t("nextFight")}
             >
               <NextIcon />
             </button>
