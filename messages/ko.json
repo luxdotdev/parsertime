@@ -3815,6 +3815,24 @@
       "gamesHeader": "경기",
       "tagHeader": "태그"
     },
+    "heroPickrateHeatmap": {
+      "eyebrow": "영웅 · 픽률",
+      "title": "영웅 픽률 히트맵",
+      "noData": "아직 영웅 픽률 데이터가 없습니다.",
+      "description": "팀 전체에서 가장 많이 플레이한 상위 15개 영웅",
+      "total": "합계",
+      "saturationNote": "단일 색상 채도 범위이며 색각 이상 사용자에게도 안전합니다.",
+      "noPlaytime": "플레이 시간 없음",
+      "durationHoursShort": "{hours}시간",
+      "durationMinutesShort": "{minutes}분",
+      "durationLong": "{hours}시간 {minutes}분 {seconds}초",
+      "cellTitle": "{playerName} - {heroName}: {playtime}",
+      "playerTotalTitle": "{playerName} 합계: {playtime}",
+      "heroTotalTitle": "{heroName}: {playtime}",
+      "allHeroesTotalTitle": "전체 영웅 합계: {playtime}",
+      "hoverText": "<player>{playerName}</player>님의 <hero>{heroName}</hero>: {playtime}",
+      "hoverTextDescription": "셀에 마우스를 올리면 해당 영웅의 플레이어 픽률을 볼 수 있습니다."
+    },
     "ultimatesTab": {
       "combos": {
         "title": "궁극기 콤보",

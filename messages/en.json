@@ -4512,9 +4512,20 @@
       "playMoreGames": "Play more games to see your best roster combinations"
     },
     "heroPickrateHeatmap": {
+      "eyebrow": "Heroes · Pickrate",
       "title": "Hero Pickrate Heatmap",
       "noData": "No hero pickrate data available yet.",
       "description": "Top 15 most played heroes across the team",
+      "total": "Total",
+      "saturationNote": "Single-hue saturation ramp; colorblind safe.",
+      "noPlaytime": "No playtime",
+      "durationHoursShort": "{hours}h",
+      "durationMinutesShort": "{minutes}m",
+      "durationLong": "{hours}h {minutes}m {seconds}s",
+      "cellTitle": "{playerName} - {heroName}: {playtime}",
+      "playerTotalTitle": "{playerName} total: {playtime}",
+      "heroTotalTitle": "{heroName}: {playtime}",
+      "allHeroesTotalTitle": "All heroes total: {playtime}",
       "hoverText": "<player>{playerName}</player> on <hero>{heroName}</hero>: {playtime}",
       "hoverTextDescription": "Hover over a cell to see the player's pickrate for that hero."
     },

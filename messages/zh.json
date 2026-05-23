@@ -3815,6 +3815,24 @@
       "gamesHeader": "比赛",
       "tagHeader": "标签"
     },
+    "heroPickrateHeatmap": {
+      "eyebrow": "英雄 · 选用率",
+      "title": "英雄选用率热力图",
+      "noData": "还没有英雄选用率数据。",
+      "description": "全队最常使用的前 15 名英雄",
+      "total": "总计",
+      "saturationNote": "单色饱和度渐变；对色觉障碍用户友好。",
+      "noPlaytime": "无游戏时间",
+      "durationHoursShort": "{hours} 小时",
+      "durationMinutesShort": "{minutes} 分钟",
+      "durationLong": "{hours} 小时 {minutes} 分钟 {seconds} 秒",
+      "cellTitle": "{playerName} - {heroName}：{playtime}",
+      "playerTotalTitle": "{playerName} 总计：{playtime}",
+      "heroTotalTitle": "{heroName}：{playtime}",
+      "allHeroesTotalTitle": "所有英雄总计：{playtime}",
+      "hoverText": "<player>{playerName}</player> 使用 <hero>{heroName}</hero>：{playtime}",
+      "hoverTextDescription": "将鼠标悬停在单元格上，查看该玩家对此英雄的选用率。"
+    },
     "ultimatesTab": {
       "combos": {
         "title": "终极技能连招",

@@ -2,9 +2,9 @@
 
 import { SectionHeader } from "@/components/stats/team/section-header";
 import type { HeroPickrateMatrix } from "@/data/team/types";
-import { cn, toHero, toTimestampWithHours, useHeroNames } from "@/lib/utils";
+import { cn, toHero, useHeroNames } from "@/lib/utils";
 import { heroPriority, heroRoleMapping } from "@/types/heroes";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import Image from "next/image";
 import { Fragment, useState } from "react";
 
@@ -14,17 +14,9 @@ type HeroPickrateHeatmapProps = {
 
 const RAMP_STOPS = [0, 25, 50, 75, 100];
 
-function formatPlaytimeShort(seconds: number): string {
-  if (seconds <= 0) return "—";
-  const hours = seconds / 3600;
-  if (hours >= 10) return `${Math.round(hours)}h`;
-  if (hours >= 1) return `${hours.toFixed(1)}h`;
-  const minutes = Math.round(seconds / 60);
-  return `${minutes}m`;
-}
-
 export function HeroPickrateHeatmap({ data }: HeroPickrateHeatmapProps) {
   const t = useTranslations("teamStatsPage.heroPickrateHeatmap");
+  const format = useFormatter();
   const heroNames = useHeroNames();
 
   const [hoveredCell, setHoveredCell] = useState<{
@@ -32,10 +24,51 @@ export function HeroPickrateHeatmap({ data }: HeroPickrateHeatmapProps) {
     hero: string;
   } | null>(null);
 
+  function formatPercent(value: number, maximumFractionDigits = 0): string {
+    return format.number(value / 100, {
+      style: "percent",
+      maximumFractionDigits,
+    });
+  }
+
+  function formatPlaytimeShort(seconds: number): string {
+    if (seconds <= 0) return "—";
+    const hours = seconds / 3600;
+    if (hours >= 10) {
+      return t("durationHoursShort", {
+        hours: format.number(Math.round(hours)),
+      });
+    }
+    if (hours >= 1) {
+      return t("durationHoursShort", {
+        hours: format.number(hours, {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        }),
+      });
+    }
+    return t("durationMinutesShort", {
+      minutes: format.number(Math.round(seconds / 60)),
+    });
+  }
+
+  function formatPlaytimeLong(seconds: number): string {
+    if (seconds <= 0) return t("noPlaytime");
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = Math.round(seconds % 60);
+
+    return t("durationLong", {
+      hours,
+      minutes,
+      seconds: remainingSeconds,
+    });
+  }
+
   if (data.players.length === 0) {
     return (
       <section className="space-y-4">
-        <SectionHeader eyebrow="Heroes · Pickrate" title={t("title")} />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
@@ -110,7 +143,7 @@ export function HeroPickrateHeatmap({ data }: HeroPickrateHeatmapProps) {
 
   const legend = (
     <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.16em] uppercase">
-      <span className="text-muted-foreground">0%</span>
+      <span className="text-muted-foreground">{formatPercent(0)}</span>
       <div className="flex items-center gap-px">
         {RAMP_STOPS.map((stop) => (
           <span
@@ -126,14 +159,14 @@ export function HeroPickrateHeatmap({ data }: HeroPickrateHeatmapProps) {
           />
         ))}
       </div>
-      <span className="text-muted-foreground">100%</span>
+      <span className="text-muted-foreground">{formatPercent(100)}</span>
     </div>
   );
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Heroes · Pickrate"
+        eyebrow={t("eyebrow")}
         title={t("title")}
         description={t("description")}
         rightSlot={legend}
@@ -172,7 +205,7 @@ export function HeroPickrateHeatmap({ data }: HeroPickrateHeatmapProps) {
               </div>
             ))}
             <div className="text-muted-foreground flex items-end justify-end pr-1 pb-2 font-mono text-[10px] tracking-[0.16em] uppercase">
-              Total
+              {t("total")}
             </div>
 
             {data.players.map((player) => (
@@ -202,14 +235,20 @@ export function HeroPickrateHeatmap({ data }: HeroPickrateHeatmapProps) {
                         })
                       }
                       onMouseLeave={() => setHoveredCell(null)}
-                      title={`${player.playerName} - ${heroName}: ${toTimestampWithHours(playtime)}`}
+                      title={t("cellTitle", {
+                        playerName: player.playerName,
+                        heroName: heroNames.get(toHero(heroName)) ?? heroName,
+                        playtime: formatPlaytimeLong(playtime),
+                      })}
                     >
                       {playtime > 0 && (
                         <span
                           className="font-mono text-[10px] font-semibold tabular-nums"
                           style={{ color: heatmapStyle.color }}
                         >
-                          {Math.round((playtime / player.totalPlaytime) * 100)}%
+                          {formatPercent(
+                            (playtime / player.totalPlaytime) * 100
+                          )}
                         </span>
                       )}
                     </div>
@@ -217,7 +256,10 @@ export function HeroPickrateHeatmap({ data }: HeroPickrateHeatmapProps) {
                 })}
                 <div
                   className="text-foreground flex h-9 items-center justify-end pr-1 pl-2 font-mono text-[11px] font-semibold tabular-nums"
-                  title={toTimestampWithHours(player.totalPlaytime)}
+                  title={t("playerTotalTitle", {
+                    playerName: player.playerName,
+                    playtime: formatPlaytimeLong(player.totalPlaytime),
+                  })}
                 >
                   {formatPlaytimeShort(player.totalPlaytime)}
                 </div>
@@ -225,7 +267,7 @@ export function HeroPickrateHeatmap({ data }: HeroPickrateHeatmapProps) {
             ))}
 
             <div className="text-muted-foreground flex h-9 items-center pt-1 pr-2 font-mono text-[10px] tracking-[0.16em] uppercase">
-              Total
+              {t("total")}
             </div>
             {topHeroes.map((heroName) => {
               const total =
@@ -239,14 +281,17 @@ export function HeroPickrateHeatmap({ data }: HeroPickrateHeatmapProps) {
                   key={`total-${heroName}`}
                   className="relative flex h-9 w-full items-center justify-center rounded-[2px]"
                   style={{ backgroundColor: heatmapStyle.backgroundColor }}
-                  title={`${heroName}: ${toTimestampWithHours(total)}`}
+                  title={t("heroTotalTitle", {
+                    heroName: heroNames.get(toHero(heroName)) ?? heroName,
+                    playtime: formatPlaytimeLong(total),
+                  })}
                 >
                   {total > 0 && (
                     <span
                       className="font-mono text-[10px] font-semibold tabular-nums"
                       style={{ color: heatmapStyle.color }}
                     >
-                      {share}%
+                      {formatPercent(share)}
                     </span>
                   )}
                 </div>
@@ -254,7 +299,9 @@ export function HeroPickrateHeatmap({ data }: HeroPickrateHeatmapProps) {
             })}
             <div
               className="text-foreground flex h-9 items-center justify-end pt-1 pr-1 pl-2 font-mono text-[11px] font-semibold tabular-nums"
-              title={toTimestampWithHours(heroTotalSum)}
+              title={t("allHeroesTotalTitle", {
+                playtime: formatPlaytimeLong(heroTotalSum),
+              })}
             >
               {formatPlaytimeShort(heroTotalSum)}
             </div>
@@ -263,7 +310,7 @@ export function HeroPickrateHeatmap({ data }: HeroPickrateHeatmapProps) {
       </div>
 
       <p className="text-muted-foreground font-mono text-[10px] tracking-[0.14em] uppercase">
-        Single-hue saturation ramp; colorblind safe.
+        {t("saturationNote")}
       </p>
 
       {hoveredCell ? (
@@ -278,7 +325,7 @@ export function HeroPickrateHeatmap({ data }: HeroPickrateHeatmapProps) {
             ),
             heroName:
               heroNames.get(toHero(hoveredCell.hero)) ?? hoveredCell.hero,
-            playtime: toTimestampWithHours(
+            playtime: formatPlaytimeLong(
               getPlaytime(hoveredCell.player, hoveredCell.hero)
             ),
           })}
