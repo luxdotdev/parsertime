@@ -4822,7 +4822,59 @@
       "loadMore": "Load more",
       "activeCount": "{visible, number} of {total, number} active",
       "inactive": "Inactive",
-      "recentMatchesWindow": "{count, number} · {days, number}d"
+      "recentMatchesWindow": "{count, number} · {days, number}d",
+      "detail": {
+        "selectedMeta": "Selected · {region} · Peak {tier}",
+        "rating": "Rating",
+        "matchRecord": "Match record",
+        "wins": "Wins",
+        "losses": "Losses",
+        "winRate": "Win rate",
+        "lastNDays": "Last {days, number}d",
+        "recordSummary": "{wins, number}W · {losses, number}L",
+        "tierBreakdown": "Tier breakdown",
+        "contributingFactors": "Contributing factors",
+        "factorRadarName": "Factors",
+        "factorDescription": "Normalized 0 to 1 within reasonable population bounds. Recency weighted with a {days, number}-day half-life.",
+        "topSwings": "Top swings",
+        "recentMatches": "Recent matches",
+        "won": "Won",
+        "lost": "Lost",
+        "score": "{first, number}-{second, number}",
+        "emptyTitle": "Detail panel",
+        "emptyDescription": "Pick a player to see what shaped their rating: tier ladder, match record, contributing factors, and the matches that moved the needle.",
+        "regions": {
+          "na": "NA",
+          "emea": "EMEA"
+        },
+        "tiers": {
+          "open": "Open",
+          "cah": "CAH",
+          "advanced": "Advanced",
+          "expert": "Expert",
+          "masters": "Masters",
+          "owcs": "OWCS"
+        },
+        "factors": {
+          "winRate": "Win rate",
+          "recentActivity": "Recent activity",
+          "tierStrength": "Tier strength",
+          "marginOfVictory": "Win margin",
+          "matchVolume": "Match volume"
+        },
+        "factorRaw": {
+          "recentActivity": "{count, number} in last {days, number}d",
+          "averageTier": "Avg tier {tier}",
+          "averageMultiplier": "{value}x avg",
+          "matches": "{count, plural, one {# match} other {# matches}}"
+        },
+        "tierLadder": {
+          "title": "Tier ladder",
+          "scale": "1-{max, number}",
+          "description": "Visualization zooms to {min, number}-{max, number}, the empirical band where active tournament players actually sit. The full scale runs 1 to {fullMax, number}.",
+          "ratingAria": "Rating {rating, number}"
+        }
+      }
     }
   },
   "teamStats": {

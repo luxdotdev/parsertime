@@ -4423,7 +4423,59 @@
       "loadMore": "더 불러오기",
       "activeCount": "활성 {total, number}명 중 {visible, number}명",
       "inactive": "비활성",
-      "recentMatchesWindow": "{count, number} · 최근 {days, number}일"
+      "recentMatchesWindow": "{count, number} · 최근 {days, number}일",
+      "detail": {
+        "selectedMeta": "선택됨 · {region} · 최고 {tier}",
+        "rating": "평점",
+        "matchRecord": "경기 전적",
+        "wins": "승",
+        "losses": "패",
+        "winRate": "승률",
+        "lastNDays": "최근 {days, number}일",
+        "recordSummary": "{wins, number}승 · {losses, number}패",
+        "tierBreakdown": "티어 분포",
+        "contributingFactors": "기여 요인",
+        "factorRadarName": "요인",
+        "factorDescription": "합리적인 모집단 범위 안에서 0부터 1까지 정규화했습니다. 최근성에는 {days, number}일 반감기를 적용했습니다.",
+        "topSwings": "가장 큰 변동",
+        "recentMatches": "최근 경기",
+        "won": "승리",
+        "lost": "패배",
+        "score": "{first, number}-{second, number}",
+        "emptyTitle": "세부 패널",
+        "emptyDescription": "플레이어를 선택하면 티어 래더, 경기 전적, 기여 요인, 평점에 영향을 준 경기까지 확인할 수 있습니다.",
+        "regions": {
+          "na": "NA",
+          "emea": "EMEA"
+        },
+        "tiers": {
+          "open": "오픈",
+          "cah": "CAH",
+          "advanced": "어드밴스드",
+          "expert": "엑스퍼트",
+          "masters": "마스터즈",
+          "owcs": "OWCS"
+        },
+        "factors": {
+          "winRate": "승률",
+          "recentActivity": "최근 활동",
+          "tierStrength": "티어 강도",
+          "marginOfVictory": "승리 격차",
+          "matchVolume": "경기 수"
+        },
+        "factorRaw": {
+          "recentActivity": "최근 {days, number}일 {count, number}회",
+          "averageTier": "평균 티어 {tier}",
+          "averageMultiplier": "평균 {value}배",
+          "matches": "{count, number}경기"
+        },
+        "tierLadder": {
+          "title": "티어 래더",
+          "scale": "1-{max, number}",
+          "description": "시각화는 활성 토너먼트 플레이어가 실제로 분포하는 경험적 구간인 {min, number}-{max, number}으로 확대됩니다. 전체 척도는 1부터 {fullMax, number}까지입니다.",
+          "ratingAria": "평점 {rating, number}"
+        }
+      }
     }
   },
   "profilePage": {

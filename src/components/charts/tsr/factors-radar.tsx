@@ -18,6 +18,7 @@ import type {
 
 type Props = {
   factors: TsrBreakdownFactor[];
+  radarName: string;
 };
 
 function FactorTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
@@ -33,7 +34,7 @@ function FactorTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
   );
 }
 
-export function FactorsRadar({ factors }: Props) {
+export function FactorsRadar({ factors, radarName }: Props) {
   const data = factors.map((f) => ({ ...f, axis: f.label }));
   return (
     <div className="w-full">
@@ -50,7 +51,7 @@ export function FactorsRadar({ factors }: Props) {
           />
           <PolarRadiusAxis domain={[0, 1]} tick={false} axisLine={false} />
           <Radar
-            name="Factors"
+            name={radarName}
             dataKey="value"
             stroke="var(--primary)"
             fill="var(--primary)"

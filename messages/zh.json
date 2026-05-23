@@ -4423,7 +4423,59 @@
       "loadMore": "加载更多",
       "activeCount": "{visible, number} / {total, number} 名活跃玩家",
       "inactive": "非活跃",
-      "recentMatchesWindow": "{count, number} · 近 {days, number} 天"
+      "recentMatchesWindow": "{count, number} · 近 {days, number} 天",
+      "detail": {
+        "selectedMeta": "已选择 · {region} · 最高 {tier}",
+        "rating": "评分",
+        "matchRecord": "比赛记录",
+        "wins": "胜场",
+        "losses": "负场",
+        "winRate": "胜率",
+        "lastNDays": "近 {days, number} 天",
+        "recordSummary": "{wins, number}胜 · {losses, number}负",
+        "tierBreakdown": "级别分布",
+        "contributingFactors": "贡献因素",
+        "factorRadarName": "因素",
+        "factorDescription": "在合理的人群范围内归一化为 0 到 1。近期权重采用 {days, number} 天半衰期。",
+        "topSwings": "最大波动",
+        "recentMatches": "近期比赛",
+        "won": "胜",
+        "lost": "负",
+        "score": "{first, number}-{second, number}",
+        "emptyTitle": "详情面板",
+        "emptyDescription": "选择一名玩家即可查看影响其评分的内容：级别阶梯、比赛记录、贡献因素，以及推动评分变化的比赛。",
+        "regions": {
+          "na": "NA",
+          "emea": "EMEA"
+        },
+        "tiers": {
+          "open": "公开组",
+          "cah": "CAH",
+          "advanced": "高级组",
+          "expert": "专家组",
+          "masters": "大师组",
+          "owcs": "OWCS"
+        },
+        "factors": {
+          "winRate": "胜率",
+          "recentActivity": "近期活跃度",
+          "tierStrength": "级别强度",
+          "marginOfVictory": "胜场优势",
+          "matchVolume": "比赛数量"
+        },
+        "factorRaw": {
+          "recentActivity": "近 {days, number} 天 {count, number} 场",
+          "averageTier": "平均级别 {tier}",
+          "averageMultiplier": "平均 {value} 倍",
+          "matches": "{count, number} 场比赛"
+        },
+        "tierLadder": {
+          "title": "级别阶梯",
+          "scale": "1-{max, number}",
+          "description": "可视化会放大到 {min, number}-{max, number}，这是活跃锦标赛玩家实际所在的经验区间。完整量表为 1 到 {fullMax, number}。",
+          "ratingAria": "评分 {rating, number}"
+        }
+      }
     }
   },
   "profilePage": {

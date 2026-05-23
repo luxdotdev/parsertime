@@ -1,6 +1,7 @@
 import { TIER_FLOOR_MARKERS } from "@/lib/tsr/breakdown";
 import { cn } from "@/lib/utils";
-import type { FaceitTier } from "@prisma/client";
+import { FaceitTier } from "@prisma/client";
+import { useFormatter, useTranslations } from "next-intl";
 
 type Props = {
   rating: number;
@@ -20,7 +21,32 @@ type Props = {
 const LADDER_MIN = 1500;
 const LADDER_MAX = 4300;
 
+function getTierLabel(
+  value: FaceitTier,
+  t: ReturnType<typeof useTranslations>
+) {
+  switch (value) {
+    case FaceitTier.UNCLASSIFIED:
+      return "—";
+    case FaceitTier.OPEN:
+      return t("tiers.open");
+    case FaceitTier.CAH:
+      return t("tiers.cah");
+    case FaceitTier.ADVANCED:
+      return t("tiers.advanced");
+    case FaceitTier.EXPERT:
+      return t("tiers.expert");
+    case FaceitTier.MASTERS:
+      return t("tiers.masters");
+    case FaceitTier.OWCS:
+      return t("tiers.owcs");
+  }
+}
+
 export function TierLadder({ rating, maxTierReached, compact = false }: Props) {
+  const t = useTranslations("leaderboardPage.tsr");
+  const ladderT = useTranslations("leaderboardPage.tsr.detail.tierLadder");
+  const formatter = useFormatter();
   const range = LADDER_MAX - LADDER_MIN;
   const playerPct =
     ((Math.max(LADDER_MIN, Math.min(LADDER_MAX, rating)) - LADDER_MIN) /
@@ -50,13 +76,17 @@ export function TierLadder({ rating, maxTierReached, compact = false }: Props) {
       {!compact && (
         <>
           <div className="text-muted-foreground flex items-baseline justify-between font-mono text-[11px] tracking-[0.14em] uppercase">
-            <span>Tier ladder</span>
-            <span className="text-muted-foreground/70">1 – 5,000</span>
+            <span>{ladderT("title")}</span>
+            <span className="text-muted-foreground/70">
+              {ladderT("scale", { max: 5000 })}
+            </span>
           </div>
           <p className="text-muted-foreground/70 text-[11px] leading-relaxed">
-            Visualization zooms to {LADDER_MIN.toLocaleString()}–
-            {LADDER_MAX.toLocaleString()}, the empirical band where active
-            tournament players actually sit. The full scale runs 1 to 5,000.
+            {ladderT("description", {
+              min: LADDER_MIN,
+              max: LADDER_MAX,
+              fullMax: 5000,
+            })}
           </p>
         </>
       )}
@@ -85,7 +115,7 @@ export function TierLadder({ rating, maxTierReached, compact = false }: Props) {
         <div
           className="bg-primary absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2 ring-[var(--background)]"
           style={{ left: `${playerPct}%` }}
-          aria-label={`Rating ${rating}`}
+          aria-label={ladderT("ratingAria", { rating })}
         />
       </div>
 
@@ -118,7 +148,7 @@ export function TierLadder({ rating, maxTierReached, compact = false }: Props) {
                   active ? "text-primary" : "text-muted-foreground"
                 )}
               >
-                {m.label}
+                {getTierLabel(m.tier, t)}
               </div>
               <div
                 className={cn(
@@ -126,7 +156,7 @@ export function TierLadder({ rating, maxTierReached, compact = false }: Props) {
                   active ? "text-primary" : "text-muted-foreground/60"
                 )}
               >
-                {m.floor}
+                {formatter.number(m.floor)}
               </div>
             </div>
           );
