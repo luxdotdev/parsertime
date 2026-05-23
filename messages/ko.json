@@ -1101,7 +1101,16 @@
         "label": "영웅 교체 분석",
         "title": "영웅 교체 분석",
         "ourTopSwap": "가장 흔한 교체: <strong>{fromHero}</strong> → <strong>{toHero}</strong> (<n>{count}</n>{count, plural, other {회}}).",
-        "opponentTopSwap": "상대의 가장 흔한 교체: <strong>{fromHero}</strong> → <strong>{toHero}</strong> (<n>{count}</n>{count, plural, other {회}})."
+        "opponentTopSwap": "상대의 가장 흔한 교체: <strong>{fromHero}</strong> → <strong>{toHero}</strong> (<n>{count}</n>{count, plural, other {회}}).",
+        "summary": "우리 팀은 전체 맵에서 영웅 교체를 <n>{ourSwaps}</n>{ourSwaps, plural, other {회}} 했고 (맵당 <n>{ourPerMap}</n>회), 상대는 <n>{opponentSwaps}</n>회 (맵당 <n>{opponentPerMap}</n>회) 했습니다.",
+        "winrateComparison": "교체한 맵 승률: <swapRate>{swapWinrate}</swapRate> <muted>({swapWins, number}승 / {swapLosses, number}패)</muted>, 교체하지 않은 맵: <noSwapRate>{noSwapWinrate}</noSwapRate> <muted>({noSwapWins, number}승 / {noSwapLosses, number}패)</muted>.",
+        "winrateDelta": "교체 시 <deltaValue>{delta}%</deltaValue> 차이입니다.",
+        "avgHeroTimeBeforeSwap": "교체 전 한 영웅을 플레이한 평균 시간: <n>{seconds}초</n>.",
+        "topSwapper": "가장 활발한 교체자: <strong>{playerName}</strong>, <n>{maps}</n>{maps, plural, other {개 맵}}에서 <n>{swaps}</n>{swaps, plural, other {회 교체}}.",
+        "winrateBySwapCount": "교체 횟수별 승률:",
+        "swapCountBucket": "{label}: <rate>{winrate}</rate> <muted>({wins, number}승-{losses, number}패)</muted>",
+        "winrateBySwapTiming": "교체 타이밍별 승률:",
+        "swapTimingBucket": "{label}: <rate>{winrate}</rate> <muted>({maps, plural, other {#개 맵}})</muted>"
       }
     },
     "overviewSummary": {

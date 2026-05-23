@@ -1101,7 +1101,16 @@
         "label": "Hero swap analysis",
         "title": "Hero Swap Analysis",
         "ourTopSwap": "Your most common swap: <strong>{fromHero}</strong> → <strong>{toHero}</strong> (<n>{count}</n> {count, plural, one {time} other {times}}).",
-        "opponentTopSwap": "Opponent's most common swap: <strong>{fromHero}</strong> → <strong>{toHero}</strong> (<n>{count}</n> {count, plural, one {time} other {times}})."
+        "opponentTopSwap": "Opponent's most common swap: <strong>{fromHero}</strong> → <strong>{toHero}</strong> (<n>{count}</n> {count, plural, one {time} other {times}}).",
+        "summary": "Your team made <n>{ourSwaps}</n> hero {ourSwaps, plural, one {swap} other {swaps}} across all maps (<n>{ourPerMap}</n> per map) vs opponent's <n>{opponentSwaps}</n> (<n>{opponentPerMap}</n> per map).",
+        "winrateComparison": "Win rate on maps with swaps: <swapRate>{swapWinrate}</swapRate> <muted>({swapWins, number}W / {swapLosses, number}L)</muted> vs <noSwapRate>{noSwapWinrate}</noSwapRate> without swaps <muted>({noSwapWins, number}W / {noSwapLosses, number}L)</muted>.",
+        "winrateDelta": "That's a <deltaValue>{delta}%</deltaValue> difference when swapping.",
+        "avgHeroTimeBeforeSwap": "Average time on a hero before swapping: <n>{seconds}s</n>.",
+        "topSwapper": "Most active swapper: <strong>{playerName}</strong> with <n>{swaps}</n> {swaps, plural, one {swap} other {swaps}} across <n>{maps}</n> {maps, plural, one {map} other {maps}}.",
+        "winrateBySwapCount": "Win rate by swap count:",
+        "swapCountBucket": "{label}: <rate>{winrate}</rate> <muted>({wins, number}W-{losses, number}L)</muted>",
+        "winrateBySwapTiming": "Win rate by swap timing:",
+        "swapTimingBucket": "{label}: <rate>{winrate}</rate> <muted>({maps, plural, one {# map} other {# maps}})</muted>"
       }
     },
     "overviewSummary": {

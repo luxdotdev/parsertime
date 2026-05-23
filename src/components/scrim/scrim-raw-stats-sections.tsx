@@ -508,6 +508,40 @@ export function HeroSwapAnalysisSection({
     (b) => b.totalMaps > 0
   );
 
+  function strong(chunks: ReactNode) {
+    return <span className="font-semibold">{chunks}</span>;
+  }
+
+  function number(chunks: ReactNode) {
+    return <span className="font-semibold tabular-nums">{chunks}</span>;
+  }
+
+  function muted(chunks: ReactNode) {
+    return <span className="text-muted-foreground">{chunks}</span>;
+  }
+
+  function rate(value: number, favorable: boolean) {
+    function Rate(_chunks: ReactNode) {
+      return <HighlightedPct value={value} favorable={favorable} />;
+    }
+    return Rate;
+  }
+
+  function delta(chunks: ReactNode) {
+    return (
+      <span
+        className={cn(
+          "font-semibold tabular-nums",
+          winrateDelta > 0
+            ? "text-emerald-600 dark:text-emerald-400"
+            : "text-rose-600 dark:text-rose-400"
+        )}
+      >
+        {chunks}
+      </span>
+    );
+  }
+
   return (
     <>
       <Separator />
@@ -517,61 +551,41 @@ export function HeroSwapAnalysisSection({
         </h4>
         <ul className="text-foreground space-y-2 text-sm leading-relaxed">
           <li>
-            Your team made{" "}
-            <span className="font-semibold tabular-nums">
-              {analysis.ourSwaps}
-            </span>{" "}
-            hero swaps across all maps (
-            <span className="font-semibold tabular-nums">
-              {analysis.ourSwapsPerMap.toFixed(1)}
-            </span>{" "}
-            per map) vs opponent&apos;s{" "}
-            <span className="font-semibold tabular-nums">
-              {analysis.opponentSwaps}
-            </span>{" "}
-            (
-            <span className="font-semibold tabular-nums">
-              {analysis.opponentSwapsPerMap.toFixed(1)}
-            </span>{" "}
-            per map).
+            {t.rich("summary", {
+              ourSwaps: analysis.ourSwaps,
+              ourPerMap: analysis.ourSwapsPerMap.toFixed(1),
+              opponentSwaps: analysis.opponentSwaps,
+              opponentPerMap: analysis.opponentSwapsPerMap.toFixed(1),
+              n: number,
+            })}
           </li>
 
           {swapTotal > 0 && noSwapTotal > 0 && (
             <li>
-              Win rate on maps with swaps:{" "}
-              <HighlightedPct
-                value={analysis.swapWinrate}
-                favorable={analysis.swapWinrate >= 50}
-              />{" "}
-              <span className="text-muted-foreground">
-                ({analysis.swapWins}W / {analysis.swapLosses}L)
-              </span>{" "}
-              vs{" "}
-              <HighlightedPct
-                value={analysis.noSwapWinrate}
-                favorable={analysis.noSwapWinrate >= 50}
-              />{" "}
-              without swaps{" "}
-              <span className="text-muted-foreground">
-                ({analysis.noSwapWins}W / {analysis.noSwapLosses}L)
-              </span>
-              .
+              {t.rich("winrateComparison", {
+                swapWinrate: Math.round(analysis.swapWinrate),
+                swapWins: analysis.swapWins,
+                swapLosses: analysis.swapLosses,
+                noSwapWinrate: Math.round(analysis.noSwapWinrate),
+                noSwapWins: analysis.noSwapWins,
+                noSwapLosses: analysis.noSwapLosses,
+                swapRate: rate(
+                  analysis.swapWinrate,
+                  analysis.swapWinrate >= 50
+                ),
+                noSwapRate: rate(
+                  analysis.noSwapWinrate,
+                  analysis.noSwapWinrate >= 50
+                ),
+                muted,
+              })}
               {Math.abs(winrateDelta) >= 5 && (
                 <>
                   {" "}
-                  That&apos;s a{" "}
-                  <span
-                    className={cn(
-                      "font-semibold tabular-nums",
-                      winrateDelta > 0
-                        ? "text-emerald-600 dark:text-emerald-400"
-                        : "text-rose-600 dark:text-rose-400"
-                    )}
-                  >
-                    {winrateDelta > 0 ? "+" : ""}
-                    {winrateDelta.toFixed(0)}%
-                  </span>{" "}
-                  difference when swapping.
+                  {t.rich("winrateDelta", {
+                    delta: `${winrateDelta > 0 ? "+" : ""}${winrateDelta.toFixed(0)}`,
+                    deltaValue: delta,
+                  })}
                 </>
               )}
             </li>
@@ -579,11 +593,10 @@ export function HeroSwapAnalysisSection({
 
           {analysis.avgHeroTimeBeforeSwap > 0 && (
             <li>
-              Average time on a hero before swapping:{" "}
-              <span className="font-semibold tabular-nums">
-                {analysis.avgHeroTimeBeforeSwap.toFixed(0)}s
-              </span>
-              .
+              {t.rich("avgHeroTimeBeforeSwap", {
+                seconds: analysis.avgHeroTimeBeforeSwap.toFixed(0),
+                n: number,
+              })}
             </li>
           )}
 
@@ -593,12 +606,8 @@ export function HeroSwapAnalysisSection({
                 fromHero: analysis.ourTopSwap.from,
                 toHero: analysis.ourTopSwap.to,
                 count: analysis.ourTopSwap.count,
-                strong: (chunks: ReactNode) => (
-                  <span className="font-semibold">{chunks}</span>
-                ),
-                n: (chunks: ReactNode) => (
-                  <span className="font-semibold tabular-nums">{chunks}</span>
-                ),
+                strong,
+                n: number,
               })}
             </li>
           )}
@@ -609,48 +618,38 @@ export function HeroSwapAnalysisSection({
                 fromHero: analysis.opponentTopSwap.from,
                 toHero: analysis.opponentTopSwap.to,
                 count: analysis.opponentTopSwap.count,
-                strong: (chunks: ReactNode) => (
-                  <span className="font-semibold">{chunks}</span>
-                ),
-                n: (chunks: ReactNode) => (
-                  <span className="font-semibold tabular-nums">{chunks}</span>
-                ),
+                strong,
+                n: number,
               })}
             </li>
           )}
 
           {analysis.topSwapper && (
             <li>
-              Most active swapper:{" "}
-              <span className="font-semibold">
-                {analysis.topSwapper.playerName}
-              </span>{" "}
-              with{" "}
-              <span className="font-semibold tabular-nums">
-                {analysis.topSwapper.count}
-              </span>{" "}
-              swaps across{" "}
-              <span className="font-semibold tabular-nums">
-                {analysis.topSwapper.mapsCount}
-              </span>{" "}
-              {analysis.topSwapper.mapsCount === 1 ? "map" : "maps"}.
+              {t.rich("topSwapper", {
+                playerName: analysis.topSwapper.playerName,
+                swaps: analysis.topSwapper.count,
+                maps: analysis.topSwapper.mapsCount,
+                strong,
+                n: number,
+              })}
             </li>
           )}
 
           {countBucketsWithData.length > 0 && (
             <li>
-              Win rate by swap count:{" "}
+              {t("winrateBySwapCount")}{" "}
               {countBucketsWithData.map((bucket, i) => (
                 <span key={bucket.label}>
                   {i > 0 && ", "}
-                  {bucket.label}:{" "}
-                  <HighlightedPct
-                    value={bucket.winrate}
-                    favorable={bucket.winrate >= 50}
-                  />{" "}
-                  <span className="text-muted-foreground">
-                    ({bucket.wins}W-{bucket.losses}L)
-                  </span>
+                  {t.rich("swapCountBucket", {
+                    label: bucket.label,
+                    winrate: Math.round(bucket.winrate),
+                    wins: bucket.wins,
+                    losses: bucket.losses,
+                    rate: rate(bucket.winrate, bucket.winrate >= 50),
+                    muted,
+                  })}
                 </span>
               ))}
               .
@@ -659,19 +658,17 @@ export function HeroSwapAnalysisSection({
 
           {timingBucketsWithData.length > 0 && (
             <li>
-              Win rate by swap timing:{" "}
+              {t("winrateBySwapTiming")}{" "}
               {timingBucketsWithData.map((bucket, i) => (
                 <span key={bucket.label}>
                   {i > 0 && ", "}
-                  {bucket.label}:{" "}
-                  <HighlightedPct
-                    value={bucket.winrate}
-                    favorable={bucket.winrate >= 50}
-                  />{" "}
-                  <span className="text-muted-foreground">
-                    ({bucket.totalMaps}{" "}
-                    {bucket.totalMaps === 1 ? "map" : "maps"})
-                  </span>
+                  {t.rich("swapTimingBucket", {
+                    label: bucket.label,
+                    winrate: Math.round(bucket.winrate),
+                    maps: bucket.totalMaps,
+                    rate: rate(bucket.winrate, bucket.winrate >= 50),
+                    muted,
+                  })}
                 </span>
               ))}
               .

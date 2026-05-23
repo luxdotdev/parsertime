@@ -1101,7 +1101,16 @@
         "label": "英雄更换分析",
         "title": "英雄更换分析",
         "ourTopSwap": "你方最常见更换：<strong>{fromHero}</strong> → <strong>{toHero}</strong>（<n>{count}</n>{count, plural, other { 次}}）。",
-        "opponentTopSwap": "对手最常见更换：<strong>{fromHero}</strong> → <strong>{toHero}</strong>（<n>{count}</n>{count, plural, other { 次}}）。"
+        "opponentTopSwap": "对手最常见更换：<strong>{fromHero}</strong> → <strong>{toHero}</strong>（<n>{count}</n>{count, plural, other { 次}}）。",
+        "summary": "你方在所有地图中进行了 <n>{ourSwaps}</n>{ourSwaps, plural, other { 次英雄更换}}（每图 <n>{ourPerMap}</n> 次），对手为 <n>{opponentSwaps}</n> 次（每图 <n>{opponentPerMap}</n> 次）。",
+        "winrateComparison": "发生更换的地图胜率：<swapRate>{swapWinrate}</swapRate> <muted>（{swapWins, number}胜 / {swapLosses, number}负）</muted>，未更换时为 <noSwapRate>{noSwapWinrate}</noSwapRate> <muted>（{noSwapWins, number}胜 / {noSwapLosses, number}负）</muted>。",
+        "winrateDelta": "更换时相差 <deltaValue>{delta}%</deltaValue>。",
+        "avgHeroTimeBeforeSwap": "更换前单个英雄平均使用时间：<n>{seconds} 秒</n>。",
+        "topSwapper": "最活跃更换者：<strong>{playerName}</strong>，在 <n>{maps}</n>{maps, plural, other { 张地图}}中更换 <n>{swaps}</n>{swaps, plural, other { 次}}。",
+        "winrateBySwapCount": "按更换次数统计胜率：",
+        "swapCountBucket": "{label}：<rate>{winrate}</rate> <muted>（{wins, number}胜-{losses, number}负）</muted>",
+        "winrateBySwapTiming": "按更换时机统计胜率：",
+        "swapTimingBucket": "{label}：<rate>{winrate}</rate> <muted>（{maps, plural, other {# 张地图}}）</muted>"
       }
     },
     "overviewSummary": {
