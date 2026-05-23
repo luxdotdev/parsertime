@@ -1968,6 +1968,19 @@
       "team2": "队伍 2",
       "playerCard": {
         "title": "玩家统计",
+        "unplaced": "未定级",
+        "sr": "SR",
+        "maxScore": "最高分！",
+        "ranks": {
+          "bronze": "青铜",
+          "silver": "白银",
+          "gold": "黄金",
+          "platinum": "铂金",
+          "diamond": "钻石",
+          "master": "大师",
+          "grandmaster": "宗师",
+          "champion": "冠军"
+        },
         "allHeroes": {
           "title": "所有英雄",
           "timePlayed": "游戏时间",
@@ -2038,8 +2051,14 @@
           "healingDealtPer10Min": "每 10 分钟提供 {num} 点治疗",
           "healingReceived": "受到的治疗",
           "healingReceivedNum": "受到了 {num} 点治疗",
-          "healingReceivedPer10Min": "每 10 分钟受到 {num} 点治疗"
-        }
+          "healingReceivedPer10Min": "每 10 分钟受到 {num} 点治疗",
+          "ratingTooltip": "英雄 SR 根据地图表现计算。若要查看整体英雄 SR，请在地图概览页的统计表中悬停玩家名称。",
+          "unratedTooltip": "至少游玩 60 秒才会进入排名",
+          "unplaced": "未定级"
+        },
+        "percentile": "第 {percentile} 百分位",
+        "percentileExplanation": "{stat} 表现位于 {hero} 玩家前 {percent}%",
+        "vsAverage": "对比平均 {average}/10分钟"
       }
     }
   },

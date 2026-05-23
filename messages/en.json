@@ -2180,6 +2180,19 @@
       "team2": "Team 2",
       "playerCard": {
         "title": "Player Statistics",
+        "unplaced": "Unplaced",
+        "sr": "SR",
+        "maxScore": "Max score!",
+        "ranks": {
+          "bronze": "Bronze",
+          "silver": "Silver",
+          "gold": "Gold",
+          "platinum": "Platinum",
+          "diamond": "Diamond",
+          "master": "Master",
+          "grandmaster": "Grandmaster",
+          "champion": "Champion"
+        },
         "allHeroes": {
           "title": "All Heroes",
           "timePlayed": "Time Played",

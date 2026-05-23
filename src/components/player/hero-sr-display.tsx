@@ -27,6 +27,7 @@ function RatingTooltip({ children }: { children: React.ReactNode }) {
 
 export function HeroSRDisplay({ sr }: HeroSRDisplayProps) {
   const t = useTranslations("mapPage.compare.playerCard.specificHero");
+  const playerCardT = useTranslations("mapPage.compare.playerCard");
 
   if (sr === 0) {
     return (
@@ -52,12 +53,12 @@ export function HeroSRDisplay({ sr }: HeroSRDisplayProps) {
           <div className="inline-flex items-center gap-1 pl-4">
             <Image
               src="/ranks/bronze.png"
-              alt="Bronze"
+              alt={playerCardT("ranks.bronze")}
               width={20}
               height={20}
             />
             <span className="text-lg text-amber-900 dark:text-amber-700">
-              {sr} SR
+              {sr} {playerCardT("sr")}
             </span>
           </div>
         </RatingTooltip>
@@ -68,12 +69,12 @@ export function HeroSRDisplay({ sr }: HeroSRDisplayProps) {
           <div className="inline-flex items-center gap-1 pl-4">
             <Image
               src="/ranks/silver.png"
-              alt="Silver"
+              alt={playerCardT("ranks.silver")}
               width={20}
               height={20}
             />
             <span className="text-lg text-gray-500 dark:text-gray-400">
-              {sr} SR
+              {sr} {playerCardT("sr")}
             </span>
           </div>
         </RatingTooltip>
@@ -82,9 +83,14 @@ export function HeroSRDisplay({ sr }: HeroSRDisplayProps) {
       return (
         <RatingTooltip>
           <div className="inline-flex items-center gap-1 pl-4">
-            <Image src="/ranks/gold.png" alt="Gold" width={20} height={20} />
+            <Image
+              src="/ranks/gold.png"
+              alt={playerCardT("ranks.gold")}
+              width={20}
+              height={20}
+            />
             <span className="text-lg text-amber-500 dark:text-amber-400">
-              {sr} SR
+              {sr} {playerCardT("sr")}
             </span>
           </div>
         </RatingTooltip>
@@ -95,12 +101,12 @@ export function HeroSRDisplay({ sr }: HeroSRDisplayProps) {
           <div className="inline-flex items-center gap-1 pl-4">
             <Image
               src="/ranks/platinum.png"
-              alt="Platinum"
+              alt={playerCardT("ranks.platinum")}
               width={20}
               height={20}
             />
             <span className="text-lg text-gray-600 dark:text-gray-300">
-              {sr} SR
+              {sr} {playerCardT("sr")}
             </span>
           </div>
         </RatingTooltip>
@@ -111,12 +117,12 @@ export function HeroSRDisplay({ sr }: HeroSRDisplayProps) {
           <div className="inline-flex items-center gap-1 pl-4">
             <Image
               src="/ranks/diamond.png"
-              alt="Diamond"
+              alt={playerCardT("ranks.diamond")}
               width={20}
               height={20}
             />
             <span className="text-lg text-sky-400 dark:text-sky-300">
-              {sr} SR
+              {sr} {playerCardT("sr")}
             </span>
           </div>
         </RatingTooltip>
@@ -127,12 +133,12 @@ export function HeroSRDisplay({ sr }: HeroSRDisplayProps) {
           <div className="inline-flex items-center gap-1 pl-4">
             <Image
               src="/ranks/masters.png"
-              alt="Master"
+              alt={playerCardT("ranks.master")}
               width={20}
               height={20}
             />
             <span className="text-lg text-emerald-500 dark:text-emerald-400">
-              {sr} SR
+              {sr} {playerCardT("sr")}
             </span>
           </div>
         </RatingTooltip>
@@ -143,12 +149,12 @@ export function HeroSRDisplay({ sr }: HeroSRDisplayProps) {
           <div className="inline-flex items-center gap-1 pl-4">
             <Image
               src="/ranks/grandmaster.png"
-              alt="Grandmaster"
+              alt={playerCardT("ranks.grandmaster")}
               width={20}
               height={20}
             />
             <span className="text-lg text-indigo-500 dark:text-indigo-400">
-              {sr} SR
+              {sr} {playerCardT("sr")}
             </span>
           </div>
         </RatingTooltip>
@@ -159,12 +165,12 @@ export function HeroSRDisplay({ sr }: HeroSRDisplayProps) {
           <div className="inline-flex items-center gap-1 pl-4">
             <Image
               src="/ranks/champion.png"
-              alt="Champion"
+              alt={playerCardT("ranks.champion")}
               width={20}
               height={20}
             />
             <span className="text-lg text-violet-500 dark:text-violet-400">
-              {sr} SR
+              {sr} {playerCardT("sr")}
             </span>
           </div>
         </RatingTooltip>
@@ -173,7 +179,9 @@ export function HeroSRDisplay({ sr }: HeroSRDisplayProps) {
       return (
         <RatingTooltip>
           <div className="inline-flex items-center gap-1 pl-4">
-            <span className="text-muted-foreground text-lg">Unplaced</span>
+            <span className="text-muted-foreground text-lg">
+              {t("unplaced")}
+            </span>
           </div>
         </RatingTooltip>
       );

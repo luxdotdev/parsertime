@@ -1968,6 +1968,19 @@
       "team2": "팀 2",
       "playerCard": {
         "title": "플레이어 통계",
+        "unplaced": "미배치",
+        "sr": "SR",
+        "maxScore": "최고 점수!",
+        "ranks": {
+          "bronze": "브론즈",
+          "silver": "실버",
+          "gold": "골드",
+          "platinum": "플래티넘",
+          "diamond": "다이아몬드",
+          "master": "마스터",
+          "grandmaster": "그랜드마스터",
+          "champion": "챔피언"
+        },
         "allHeroes": {
           "title": "모든 영웅",
           "timePlayed": "플레이 시간",
@@ -2038,8 +2051,14 @@
           "healingDealtPer10Min": "10분당 {num} 치유 제공",
           "healingReceived": "받은 치유",
           "healingReceivedNum": "{num} 받은 치유",
-          "healingReceivedPer10Min": "10분당 {num} 받은 치유"
-        }
+          "healingReceivedPer10Min": "10분당 {num} 받은 치유",
+          "ratingTooltip": "영웅 SR은 맵 성과를 기준으로 계산됩니다. 전체 영웅 SR은 맵 개요 페이지의 통계 표에서 플레이어 이름 위에 마우스를 올리면 볼 수 있습니다.",
+          "unratedTooltip": "순위에 오르려면 최소 60초 이상 플레이해야 합니다",
+          "unplaced": "미배치"
+        },
+        "percentile": "{percentile}번째 백분위",
+        "percentileExplanation": "{hero} 플레이어 중 {stat} 성과 상위 {percent}%",
+        "vsAverage": "평균 대비 {average}/10분"
       }
     }
   },
