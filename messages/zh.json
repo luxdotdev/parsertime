@@ -1025,6 +1025,10 @@
         },
         "units": {
           "ults": "个大招"
+        },
+        "chart": {
+          "noPlayer": "无选手",
+          "ultCount": "{count, number} 个终极技能"
         }
       },
       "swaps": {

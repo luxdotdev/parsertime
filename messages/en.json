@@ -1025,6 +1025,10 @@
         },
         "units": {
           "ults": "ults"
+        },
+        "chart": {
+          "noPlayer": "No player",
+          "ultCount": "{count, plural, one {# ult} other {# ults}}"
         }
       },
       "swaps": {

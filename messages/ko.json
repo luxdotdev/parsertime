@@ -1025,6 +1025,10 @@
         },
         "units": {
           "ults": "궁"
+        },
+        "chart": {
+          "noPlayer": "선수 없음",
+          "ultCount": "{count, number}회"
         }
       },
       "swaps": {
