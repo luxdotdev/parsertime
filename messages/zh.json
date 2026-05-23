@@ -1762,6 +1762,49 @@
         "kills": "击杀"
       }
     },
+    "vod": {
+      "eyebrow": "录像复盘",
+      "title": "VOD",
+      "description": "关联 YouTube 或 Twitch 录像，以便结合数据复盘此地图。",
+      "addVod": "添加 VOD",
+      "changeVod": "更改 VOD",
+      "uploadVod": "上传 VOD",
+      "cancel": "取消",
+      "inputPlaceholder": "在此输入 VOD URL...",
+      "uploadVOD": "上传您的 VOD",
+      "noVod": "尚未关联 VOD。添加一个即可开始复盘。",
+      "vodSuccess": "VOD 已成功关联。",
+      "vodFail": "关联 VOD 失败",
+      "invalidUrl": "URL 必须来自 YouTube 或 Twitch",
+      "vodLabel": "请输入 VOD URL（YouTube 或 Twitch）。",
+      "vodRequired": "需要 VOD URL。"
+    },
+    "tiptap": {
+      "eyebrow": "地图笔记本",
+      "placeholder": "记录此地图的观察和后续事项。点击保存后笔记会被保存。",
+      "notes": "笔记",
+      "save": "保存",
+      "saving": "正在保存...",
+      "unsavedChanges": "未保存的更改",
+      "toolbar": {
+        "label": "笔记格式",
+        "undo": "撤销",
+        "redo": "重做",
+        "h1": "标题 1",
+        "h2": "标题 2",
+        "h3": "标题 3",
+        "bold": "加粗",
+        "italic": "斜体",
+        "strike": "删除线",
+        "codeBlock": "代码块",
+        "alignLeft": "左对齐",
+        "alignCenter": "居中对齐",
+        "alignRight": "右对齐",
+        "list": "项目符号列表",
+        "orderedList": "编号列表",
+        "highlight": "高亮"
+      }
+    },
     "overview": {
       "matchTime": "总比赛时间",
       "minutes": "{time} 分钟",

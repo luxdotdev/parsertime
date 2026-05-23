@@ -1762,6 +1762,49 @@
         "kills": "킬"
       }
     },
+    "vod": {
+      "eyebrow": "영상 리뷰",
+      "title": "VOD",
+      "description": "이 맵을 데이터와 함께 검토할 수 있도록 YouTube 또는 Twitch 녹화를 연결하세요.",
+      "addVod": "VOD 추가",
+      "changeVod": "VOD 변경",
+      "uploadVod": "VOD 업로드",
+      "cancel": "취소",
+      "inputPlaceholder": "VOD URL을 입력하세요...",
+      "uploadVOD": "VOD 업로드",
+      "noVod": "아직 연결된 VOD가 없습니다. 리뷰를 시작하려면 하나를 추가하세요.",
+      "vodSuccess": "VOD가 성공적으로 연결되었습니다.",
+      "vodFail": "VOD 연결에 실패했습니다",
+      "invalidUrl": "URL은 YouTube 또는 Twitch 주소여야 합니다",
+      "vodLabel": "VOD URL을 입력하세요(YouTube 또는 Twitch).",
+      "vodRequired": "VOD URL이 필요합니다."
+    },
+    "tiptap": {
+      "eyebrow": "맵 노트북",
+      "placeholder": "이 맵에 대한 관찰과 후속 작업을 기록하세요. 저장을 클릭하면 노트가 저장됩니다.",
+      "notes": "노트",
+      "save": "저장",
+      "saving": "저장 중...",
+      "unsavedChanges": "저장되지 않은 변경 사항",
+      "toolbar": {
+        "label": "노트 서식",
+        "undo": "실행 취소",
+        "redo": "다시 실행",
+        "h1": "제목 1",
+        "h2": "제목 2",
+        "h3": "제목 3",
+        "bold": "굵게",
+        "italic": "기울임",
+        "strike": "취소선",
+        "codeBlock": "코드 블록",
+        "alignLeft": "왼쪽 정렬",
+        "alignCenter": "가운데 정렬",
+        "alignRight": "오른쪽 정렬",
+        "list": "글머리 기호 목록",
+        "orderedList": "번호 매기기 목록",
+        "highlight": "강조"
+      }
+    },
     "overview": {
       "matchTime": "총 경기 시간",
       "minutes": "{time}분",
