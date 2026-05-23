@@ -24,6 +24,7 @@ import {
   Shield,
   Target,
 } from "lucide-react";
+import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 
 type BanStrategyProps = {
@@ -37,6 +38,8 @@ export function BanStrategy({
   banIntelligence,
   hasUserTeamLink,
 }: BanStrategyProps) {
+  const t = useTranslations("scoutingPage.team.heroBans");
+
   return (
     <div className="space-y-4">
       <DisruptionTargets rankings={banIntelligence.banDisruptionRanking} />
@@ -51,12 +54,9 @@ export function BanStrategy({
               aria-hidden="true"
             />
             <div>
-              <p className="font-medium">
-                Select your team to see their ban targets
-              </p>
+              <p className="font-medium">{t("selectTeamTitle")}</p>
               <p className="text-muted-foreground mt-1 text-sm">
-                Use the &ldquo;Scouting for&rdquo; picker above to select your
-                team and see which of your heroes the opponent targets.
+                {t("selectTeamDescription")}
               </p>
             </div>
           </CardContent>
@@ -69,6 +69,8 @@ export function BanStrategy({
 }
 
 function DisruptionTargets({ rankings }: { rankings: BanDisruptionEntry[] }) {
+  const t = useTranslations("scoutingPage.team.heroBans");
+  const formatter = useFormatter();
   const [showAll, setShowAll] = useState(false);
   const visible = showAll
     ? rankings
@@ -80,15 +82,13 @@ function DisruptionTargets({ rankings }: { rankings: BanDisruptionEntry[] }) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Target className="h-4 w-4" aria-hidden="true" />
-            Disruption Targets
+            {t("disruptionTargets")}
           </CardTitle>
-          <CardDescription>
-            Heroes to ban against them, ranked by expected disruption
-          </CardDescription>
+          <CardDescription>{t("disruptionTargetsEmptyDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground py-4 text-center text-sm">
-            Not enough ban data to calculate disruption scores.
+            {t("notEnoughBanData")}
           </p>
         </CardContent>
       </Card>
@@ -100,12 +100,9 @@ function DisruptionTargets({ rankings }: { rankings: BanDisruptionEntry[] }) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Target className="h-4 w-4" aria-hidden="true" />
-          Disruption Targets
+          {t("disruptionTargets")}
         </CardTitle>
-        <CardDescription>
-          Heroes to ban against them — higher disruption score means a bigger
-          impact on their win rate when banned
-        </CardDescription>
+        <CardDescription>{t("disruptionTargetsDescription")}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
@@ -124,16 +121,25 @@ function DisruptionTargets({ rankings }: { rankings: BanDisruptionEntry[] }) {
                 </div>
                 <div className="text-muted-foreground flex gap-3 text-xs tabular-nums">
                   <span>
-                    {entry.winRateDelta > 0 ? "−" : "+"}
-                    {Math.abs(Math.round(entry.winRateDelta))}pp when banned
+                    {t("deltaWhenBanned", {
+                      delta: t("percentagePoints", {
+                        value: formatBanDelta(formatter, entry.winRateDelta),
+                      }),
+                    })}
                   </span>
                   <span>
-                    {entry.mapsAvailable} available / {entry.mapsBanned} banned
+                    {t("availabilitySummary", {
+                      available: entry.mapsAvailable,
+                      banned: entry.mapsBanned,
+                    })}
                   </span>
                 </div>
               </div>
               <Badge variant="secondary" className="shrink-0 tabular-nums">
-                {entry.disruptionScore.toFixed(1)}
+                {formatter.number(entry.disruptionScore, {
+                  maximumFractionDigits: 1,
+                  minimumFractionDigits: 1,
+                })}
               </Badge>
             </div>
           ))}
@@ -145,8 +151,10 @@ function DisruptionTargets({ rankings }: { rankings: BanDisruptionEntry[] }) {
             onClick={() => setShowAll(!showAll)}
           >
             {showAll
-              ? "Show fewer"
-              : `Show ${rankings.length - MAX_DISRUPTION_TARGETS} more`}
+              ? t("showFewer")
+              : t("showMore", {
+                  count: rankings.length - MAX_DISRUPTION_TARGETS,
+                })}
           </button>
         )}
       </CardContent>
@@ -155,21 +163,21 @@ function DisruptionTargets({ rankings }: { rankings: BanDisruptionEntry[] }) {
 }
 
 function TheirBanTargets({ exposures }: { exposures: HeroExposure[] }) {
+  const t = useTranslations("scoutingPage.team.heroBans");
+
   if (exposures.length === 0) {
     return (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Eye className="h-4 w-4" aria-hidden="true" />
-            Their Ban Targets
+            {t("theirBanTargets")}
           </CardTitle>
-          <CardDescription>
-            How their ban patterns overlap with your most-played heroes
-          </CardDescription>
+          <CardDescription>{t("theirBanTargetsDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground py-4 text-center text-sm">
-            No overlap found between their bans and your hero pool.
+            {t("noBanTargetOverlap")}
           </p>
         </CardContent>
       </Card>
@@ -185,11 +193,9 @@ function TheirBanTargets({ exposures }: { exposures: HeroExposure[] }) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Eye className="h-4 w-4" aria-hidden="true" />
-          Their Ban Targets
+          {t("theirBanTargets")}
         </CardTitle>
-        <CardDescription>
-          Cross-references their ban patterns with your most-played heroes
-        </CardDescription>
+        <CardDescription>{t("theirBanTargetsActiveDescription")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {critical.length > 0 && (
@@ -211,24 +217,27 @@ function ExposureSection({
   level: "critical" | "watch" | "safe";
   exposures: HeroExposure[];
 }) {
+  const t = useTranslations("scoutingPage.team.heroBans");
+  const formatter = useFormatter();
+
   const config = {
     critical: {
       icon: AlertTriangle,
-      label: "Critical",
+      label: t("riskCritical"),
       className:
         "text-red-600 dark:text-red-400 bg-red-500/10 border-red-500/20",
       iconClassName: "text-red-600 dark:text-red-400",
     },
     watch: {
       icon: Eye,
-      label: "Watch",
+      label: t("riskWatch"),
       className:
         "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20",
       iconClassName: "text-amber-600 dark:text-amber-400",
     },
     safe: {
       icon: CheckCircle2,
-      label: "Safe",
+      label: t("riskSafe"),
       className:
         "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
       iconClassName: "text-emerald-600 dark:text-emerald-400",
@@ -254,8 +263,16 @@ function ExposureSection({
             <span className="font-medium">{e.hero}</span>
             <span className="text-muted-foreground">
               {" "}
-              — they ban it {Math.round(e.opponentBanRate)}% of maps; your team
-              plays it {Math.round(e.userPlayRate)}% of the time
+              {t("exposureSummary", {
+                opponentBanRate: formatter.number(e.opponentBanRate / 100, {
+                  style: "percent",
+                  maximumFractionDigits: 0,
+                }),
+                userPlayRate: formatter.number(e.userPlayRate / 100, {
+                  style: "percent",
+                  maximumFractionDigits: 0,
+                }),
+              })}
             </span>
           </div>
         ))}
@@ -265,6 +282,8 @@ function ExposureSection({
 }
 
 function ProtectedHeroesSection({ heroes }: { heroes: ProtectedHero[] }) {
+  const t = useTranslations("scoutingPage.team.heroBans");
+
   if (heroes.length === 0) return null;
 
   return (
@@ -272,11 +291,9 @@ function ProtectedHeroesSection({ heroes }: { heroes: ProtectedHero[] }) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Shield className="h-4 w-4" aria-hidden="true" />
-          Protected Heroes
+          {t("protectedHeroes")}
         </CardTitle>
-        <CardDescription>
-          Heroes this team rarely bans — expect them to appear in compositions
-        </CardDescription>
+        <CardDescription>{t("protectedHeroesDescription")}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex flex-wrap gap-2">
@@ -289,4 +306,15 @@ function ProtectedHeroesSection({ heroes }: { heroes: ProtectedHero[] }) {
       </CardContent>
     </Card>
   );
+}
+
+function formatBanDelta(
+  formatter: ReturnType<typeof useFormatter>,
+  delta: number
+) {
+  const sign = delta > 0 ? "−" : "+";
+  const value = formatter.number(Math.abs(delta), {
+    maximumFractionDigits: 0,
+  });
+  return `${sign}${value}`;
 }
