@@ -1097,6 +1097,19 @@
         "trend": "Trend",
         "outliers": "Outliers"
       },
+      "hover": {
+        "showTrendChart": "Show {playerName} performance trend chart",
+        "description": "Performance across maps (% of avg) · Click a stat to focus",
+        "unavailable": "Performance chart unavailable for this player.",
+        "metrics": {
+          "kd": "K/D",
+          "elimsPer10": "Elims/10",
+          "damagePer10": "Dmg/10",
+          "healingPer10": "Healing/10",
+          "firstDeathRate": "1st Death %",
+          "teamFirstDeathRate": "Team 1st Death %"
+        }
+      },
       "trend": {
         "improving": "Improving",
         "declining": "Declining",

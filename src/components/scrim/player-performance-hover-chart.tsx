@@ -12,6 +12,7 @@ import { Logger } from "@/lib/logger";
 import type { HeroName } from "@/types/heroes";
 import { heroRoleMapping } from "@/types/heroes";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import * as React from "react";
 import {
   CartesianGrid,
@@ -57,6 +58,15 @@ type Props = {
   heroImageSlug: string;
   heroCount: number;
   perMapPerformance: PlayerMapPerformance[];
+};
+
+type ChartLabels = {
+  kd: string;
+  elimsPer10: string;
+  damagePer10: string;
+  healingPer10: string;
+  firstDeathRate: string;
+  teamFirstDeathRate: string;
 };
 
 type ChartErrorBoundaryProps = {
@@ -141,11 +151,12 @@ function PerformanceTooltip({
 
 function buildChartModel(
   primaryHero: HeroName,
-  perMapPerformance: PlayerMapPerformance[]
+  perMapPerformance: PlayerMapPerformance[],
+  labels: ChartLabels
 ): ChartModel {
   const role = heroRoleMapping[primaryHero];
   const isSupport = role === "Support";
-  const thirdStatLabel = isSupport ? "Healing/10" : "Dmg/10";
+  const thirdStatLabel = isSupport ? labels.healingPer10 : labels.damagePer10;
 
   const len = perMapPerformance.length;
   const avgKd = perMapPerformance.reduce((sum, m) => sum + m.kdRatio, 0) / len;
@@ -183,11 +194,11 @@ function buildChartModel(
   }));
 
   const chartConfig = {
-    kd: { label: "K/D", color: "#3b82f6" },
-    elims: { label: "Elims/10", color: "#10b981" },
+    kd: { label: labels.kd, color: "#3b82f6" },
+    elims: { label: labels.elimsPer10, color: "#10b981" },
     thirdStat: { label: thirdStatLabel, color: "#f59e0b" },
-    firstDeath: { label: "1st Death %", color: "#f43f5e" },
-    teamFirstDeath: { label: "Team 1st Death %", color: "#8b5cf6" },
+    firstDeath: { label: labels.firstDeathRate, color: "#f43f5e" },
+    teamFirstDeath: { label: labels.teamFirstDeathRate, color: "#8b5cf6" },
   } satisfies ChartConfig;
 
   return {
@@ -207,6 +218,16 @@ export function PlayerPerformanceHoverChart({
   heroCount,
   perMapPerformance,
 }: Props) {
+  const t = useTranslations("scrimPage.playerPerformance.hover");
+  const labels: ChartLabels = {
+    kd: t("metrics.kd"),
+    elimsPer10: t("metrics.elimsPer10"),
+    damagePer10: t("metrics.damagePer10"),
+    healingPer10: t("metrics.healingPer10"),
+    firstDeathRate: t("metrics.firstDeathRate"),
+    teamFirstDeathRate: t("metrics.teamFirstDeathRate"),
+  };
+
   const identity = (
     <div className="flex min-w-0 items-center gap-3">
       <div className="border-border/70 bg-muted relative h-9 w-9 shrink-0 overflow-hidden rounded-[4px] border">
@@ -240,7 +261,7 @@ export function PlayerPerformanceHoverChart({
 
   let model: ChartModel;
   try {
-    model = buildChartModel(primaryHero, perMapPerformance);
+    model = buildChartModel(primaryHero, perMapPerformance, labels);
   } catch (error) {
     Logger.error("[scrim-overview] player hover chart model failed", {
       playerName,
@@ -257,7 +278,7 @@ export function PlayerPerformanceHoverChart({
         <button
           type="button"
           className="w-full cursor-pointer text-left"
-          aria-label={`Show ${playerName} performance trend chart`}
+          aria-label={t("showTrendChart", { playerName })}
         >
           {identity}
         </button>
@@ -266,14 +287,12 @@ export function PlayerPerformanceHoverChart({
         <div className="space-y-3">
           <div>
             <p className="text-sm font-medium">{playerName}</p>
-            <p className="text-muted-foreground text-xs">
-              Performance across maps (% of avg) &middot; Click a stat to focus
-            </p>
+            <p className="text-muted-foreground text-xs">{t("description")}</p>
           </div>
           <ChartErrorBoundary
             fallback={
               <p className="text-muted-foreground text-xs">
-                Performance chart unavailable for this player.
+                {t("unavailable")}
               </p>
             }
           >
@@ -307,7 +326,7 @@ export function PlayerPerformanceHoverChart({
                 <Tooltip content={<PerformanceTooltip />} />
                 <Line
                   type="monotone"
-                  name="K/D"
+                  name={labels.kd}
                   dataKey="kd"
                   stroke="var(--color-kd)"
                   strokeWidth={2}
@@ -321,7 +340,7 @@ export function PlayerPerformanceHoverChart({
                 />
                 <Line
                   type="monotone"
-                  name="Elims/10"
+                  name={labels.elimsPer10}
                   dataKey="elims"
                   stroke="var(--color-elims)"
                   strokeWidth={2}
@@ -350,7 +369,7 @@ export function PlayerPerformanceHoverChart({
                 {model.avgFirstDeath > 0 && (
                   <Line
                     type="monotone"
-                    name="1st Death %"
+                    name={labels.firstDeathRate}
                     dataKey="firstDeath"
                     stroke="var(--color-firstDeath)"
                     strokeWidth={2}
@@ -367,7 +386,7 @@ export function PlayerPerformanceHoverChart({
                 {model.avgTeamFirstDeath > 0 && (
                   <Line
                     type="monotone"
-                    name="Team 1st Death %"
+                    name={labels.teamFirstDeathRate}
                     dataKey="teamFirstDeath"
                     stroke="var(--color-teamFirstDeath)"
                     strokeWidth={2}

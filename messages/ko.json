@@ -1097,6 +1097,19 @@
         "trend": "추세",
         "outliers": "이상치"
       },
+      "hover": {
+        "showTrendChart": "{playerName} 성과 추세 차트 보기",
+        "description": "맵별 성과(평균 대비 %) · 지표를 클릭해 집중 보기",
+        "unavailable": "이 선수의 성과 차트를 표시할 수 없습니다.",
+        "metrics": {
+          "kd": "K/D",
+          "elimsPer10": "처치/10",
+          "damagePer10": "피해/10",
+          "healingPer10": "치유/10",
+          "firstDeathRate": "첫 사망 %",
+          "teamFirstDeathRate": "팀 첫 사망 %"
+        }
+      },
       "trend": {
         "improving": "개선 중",
         "declining": "하락 중",

@@ -1097,6 +1097,19 @@
         "trend": "趋势",
         "outliers": "异常项"
       },
+      "hover": {
+        "showTrendChart": "显示 {playerName} 的表现趋势图",
+        "description": "各地图表现（相对平均值 %）· 点击指标聚焦",
+        "unavailable": "此玩家的表现图表暂不可用。",
+        "metrics": {
+          "kd": "K/D",
+          "elimsPer10": "击杀/10",
+          "damagePer10": "伤害/10",
+          "healingPer10": "治疗/10",
+          "firstDeathRate": "首死 %",
+          "teamFirstDeathRate": "团队首死 %"
+        }
+      },
       "trend": {
         "improving": "提升中",
         "declining": "下降中",
