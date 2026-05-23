@@ -146,9 +146,11 @@ function KillMethodRadar({
   title: string;
   methods: { method: string; count: number }[];
 }) {
+  const t = useTranslations("scoutingPage.player.analytics.killAnalysis");
+
   const chartConfig: ChartConfig = {
     count: {
-      label: "Count",
+      label: t("count"),
       color: "var(--chart-3)",
     },
   };

@@ -19,7 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { ScoutingMatchHistoryEntry } from "@/data/scouting/types";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 
 type MatchHistoryTableProps = {
@@ -30,13 +30,14 @@ const PAGE_SIZE = 10;
 
 export function MatchHistoryTable({ matches }: MatchHistoryTableProps) {
   const t = useTranslations("scoutingPage.team.overview");
+  const formatter = useFormatter();
   const [page, setPage] = useState(0);
 
   const totalPages = Math.max(1, Math.ceil(matches.length / PAGE_SIZE));
   const pageMatches = matches.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   function formatDate(date: Date) {
-    return new Date(date).toLocaleDateString("en-US", {
+    return formatter.dateTime(date, {
       year: "numeric",
       month: "short",
       day: "numeric",

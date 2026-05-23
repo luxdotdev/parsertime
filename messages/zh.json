@@ -2440,6 +2440,7 @@
         "topThreats": "主要威胁",
         "killMethods": "击杀方式",
         "roleDistribution": "职责分布",
+        "count": "数量",
         "kills": "{count} 次击杀",
         "deaths": "{count} 次死亡",
         "methodology": "击杀和死亡数据来自 Parsertime 训练赛日志。主要目标和威胁展示总数最高的 5 个被击杀英雄和导致该选手死亡的英雄。击杀方式按技能类型分组。职责分布根据所有训练赛中的英雄使用时间，反映 Tank、Damage 和 Support 的占比。"
@@ -2479,10 +2480,16 @@
       "report": "报告",
       "recommendations": "建议"
     },
+    "picker": {
+      "label": "球探对象：",
+      "placeholder": "选择你的队伍",
+      "noTeam": "未选择队伍"
+    },
     "overview": {
       "record": "战绩",
       "winRate": "胜率",
       "weightedWinRate": "加权胜率",
+      "weightedPercent": "{value} 加权",
       "weightedWinRateTooltip": "按时间新近程度加权的胜率；近期比赛权重高于较早比赛。",
       "recentForm": "近期状态",
       "recentFormDescription": "最近 10 场比赛结果",
@@ -2601,6 +2608,18 @@
       }
     },
     "report": {
+      "title": "赛前简报：对阵 {opponent}",
+      "scrimOnly": "仅有训练赛数据 — 暂无正式比赛历史",
+      "selectTeamTitle": "选择你的队伍以查看完整报告",
+      "selectTeamDescription": "地图对局和选手弱点等交叉引用洞察，需要先在上方“球探对象”选择器中选择你的队伍。下方仅显示对手单方洞察。",
+      "topInsights": "重点洞察",
+      "additionalFindings": "{count} 条其他发现",
+      "noDataTitle": "数据仍然不足",
+      "noDataDescription": "记录更多比赛后再回来查看。可靠洞察需要满足最低样本量。",
+      "competitiveMaps": "{formattedCount} 张正式比赛地图",
+      "scrimMaps": "{formattedCount} 张训练赛地图",
+      "basedOn": "基于 {sources}",
+      "sourceJoin": "{first} 和 {second}",
       "methodology": {
         "title": "报告如何生成",
         "points": {

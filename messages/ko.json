@@ -2440,6 +2440,7 @@
         "topThreats": "주요 위협",
         "killMethods": "처치 방식",
         "roleDistribution": "역할 분포",
+        "count": "횟수",
         "kills": "{count}킬",
         "deaths": "{count}사망",
         "methodology": "처치 및 사망 데이터는 Parsertime 스크림 로그에서 가져옵니다. 주요 대상과 위협은 총량 기준으로 가장 많이 처치한 영웅과 가장 많이 사망한 상대 영웅 상위 5개를 보여줍니다. 처치 방식은 스킬 유형별로 그룹화됩니다. 역할 분포는 모든 스크림의 영웅 플레이 시간을 기준으로 Tank, Damage, Support 비율을 반영합니다."
@@ -2479,10 +2480,16 @@
       "report": "리포트",
       "recommendations": "추천"
     },
+    "picker": {
+      "label": "스카우팅 기준:",
+      "placeholder": "팀 선택",
+      "noTeam": "선택된 팀 없음"
+    },
     "overview": {
       "record": "전적",
       "winRate": "승률",
       "weightedWinRate": "가중 승률",
+      "weightedPercent": "{value} 가중",
       "weightedWinRateTooltip": "최근 경기에 더 높은 비중을 두는 최신성 가중 승률입니다.",
       "recentForm": "최근 폼",
       "recentFormDescription": "최근 10경기 결과",
@@ -2601,6 +2608,18 @@
       }
     },
     "report": {
+      "title": "경기 전 브리프: vs. {opponent}",
+      "scrimOnly": "스크림 데이터만 있음 — 경쟁전 이력이 없습니다",
+      "selectTeamTitle": "전체 리포트를 보려면 팀을 선택하세요",
+      "selectTeamDescription": "맵 매치업과 선수 취약성 같은 교차 참조 인사이트는 위의 “스카우팅 기준” 선택기에서 팀을 선택해야 표시됩니다. 아래에는 상대 전용 인사이트만 표시됩니다.",
+      "topInsights": "주요 인사이트",
+      "additionalFindings": "{count}개 추가 발견",
+      "noDataTitle": "아직 데이터가 부족합니다",
+      "noDataDescription": "더 많은 경기가 기록된 뒤 다시 확인하세요. 신뢰할 수 있는 인사이트에는 최소 표본 크기가 필요합니다.",
+      "competitiveMaps": "{formattedCount}개 경쟁전 맵",
+      "scrimMaps": "{formattedCount}개 스크림 맵",
+      "basedOn": "{sources} 기준",
+      "sourceJoin": "{first} 및 {second}",
       "methodology": {
         "title": "리포트를 생성하는 방법",
         "points": {

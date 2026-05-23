@@ -2340,10 +2340,16 @@
         "report": "Report",
         "recommendations": "Recommendations"
       },
+      "picker": {
+        "label": "Scouting for:",
+        "placeholder": "Select your team",
+        "noTeam": "No team selected"
+      },
       "overview": {
         "record": "Record",
         "winRate": "Win Rate",
         "weightedWinRate": "Weighted WR",
+        "weightedPercent": "{value} weighted",
         "weightedWinRateTooltip": "Win rate weighted by recency — recent matches count more than older ones.",
         "recentForm": "Recent Form",
         "recentFormDescription": "Last 10 match results",
@@ -2356,7 +2362,7 @@
         "tournament": "Tournament",
         "win": "W",
         "loss": "L",
-        "matchCount": "{count, plural, one {match} other {matches}}",
+        "matchCount": "{count, plural, one {# match} other {# matches}}",
         "allTime": "All-time win rate",
         "noMatches": "No matches found for this team.",
         "previousPage": "Previous",
@@ -2462,6 +2468,18 @@
         }
       },
       "report": {
+        "title": "Pre-Match Brief: vs. {opponent}",
+        "scrimOnly": "Scrim data only — no competitive history available",
+        "selectTeamTitle": "Select your team for the full report",
+        "selectTeamDescription": "Cross-referenced insights (map matchups, player vulnerabilities) require selecting your team with the “Scouting for” picker above. Opponent-only insights are shown below.",
+        "topInsights": "Top Insights",
+        "additionalFindings": "{count, plural, one {Additional Finding (#)} other {Additional Findings (#)}}",
+        "noDataTitle": "Not enough data yet",
+        "noDataDescription": "Check back after more matches are played. Insights require a minimum sample size to be reliable.",
+        "competitiveMaps": "{count, plural, one {{formattedCount} competitive map} other {{formattedCount} competitive maps}}",
+        "scrimMaps": "{count, plural, one {{formattedCount} scrim map} other {{formattedCount} scrim maps}}",
+        "basedOn": "Based on {sources}",
+        "sourceJoin": "{first} and {second}",
         "methodology": {
           "title": "How the report is generated",
           "points": {
@@ -2593,6 +2611,7 @@
           "topThreats": "Top Threats",
           "killMethods": "Kill Methods",
           "roleDistribution": "Role Distribution",
+          "count": "Count",
           "kills": "{count, plural, one {# kill} other {# kills}}",
           "deaths": "{count, plural, one {# death} other {# deaths}}",
           "methodology": "Kill and death data is sourced from Parsertime scrim logs. Top targets and threats show the 5 most-eliminated and most-died-to heroes by total count. Kill methods are grouped by ability type. Role distribution reflects the percentage of playtime on Tank, Damage, and Support based on hero time across all scrims."

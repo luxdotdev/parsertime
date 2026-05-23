@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import type { MatchResult, ScoutingTeamOverview } from "@/data/scouting/types";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 
 type TeamOverviewCardsProps = {
   overview: ScoutingTeamOverview;
@@ -17,6 +17,7 @@ type TeamOverviewCardsProps = {
 
 export function TeamOverviewCards({ overview }: TeamOverviewCardsProps) {
   const t = useTranslations("scoutingPage.team.overview");
+  const formatter = useFormatter();
 
   return (
     <div className="space-y-4">
@@ -27,10 +28,11 @@ export function TeamOverviewCards({ overview }: TeamOverviewCardsProps) {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold tabular-nums">
-              {overview.wins}W &ndash; {overview.losses}L
+              {overview.wins}
+              {t("win")} &ndash; {overview.losses}
+              {t("loss")}
             </p>
             <p className="text-muted-foreground text-sm tabular-nums">
-              {overview.totalMatches}{" "}
               {t("matchCount", { count: overview.totalMatches })}
             </p>
           </CardContent>
@@ -42,7 +44,11 @@ export function TeamOverviewCards({ overview }: TeamOverviewCardsProps) {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold tabular-nums">
-              {overview.winRate.toFixed(1)}%
+              {formatter.number(overview.winRate / 100, {
+                style: "percent",
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1,
+              })}
             </p>
             <p className="text-muted-foreground text-sm">{t("allTime")}</p>
           </CardContent>
@@ -55,7 +61,11 @@ export function TeamOverviewCards({ overview }: TeamOverviewCardsProps) {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold tabular-nums">
-              {overview.weightedWinRate.toFixed(1)}%
+              {formatter.number(overview.weightedWinRate / 100, {
+                style: "percent",
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1,
+              })}
             </p>
           </CardContent>
         </Card>
@@ -74,21 +84,24 @@ export function TeamOverviewCards({ overview }: TeamOverviewCardsProps) {
               aria-label={t("recentForm")}
             >
               {recentFormWithKeys(overview.recentForm).map(
-                ({ key, result }) => (
-                  <span
-                    key={key}
-                    role="listitem"
-                    aria-label={result === "win" ? t("win") : t("loss")}
-                    className={cn(
-                      "flex h-8 w-8 items-center justify-center rounded-md text-xs font-bold",
-                      result === "win"
-                        ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
-                        : "bg-red-500/15 text-red-600 dark:text-red-400"
-                    )}
-                  >
-                    {result === "win" ? "W" : "L"}
-                  </span>
-                )
+                ({ key, result }) => {
+                  const resultLabel = result === "win" ? t("win") : t("loss");
+                  return (
+                    <span
+                      key={key}
+                      role="listitem"
+                      aria-label={resultLabel}
+                      className={cn(
+                        "flex h-8 w-8 items-center justify-center rounded-md text-xs font-bold",
+                        result === "win"
+                          ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                          : "bg-red-500/15 text-red-600 dark:text-red-400"
+                      )}
+                    >
+                      {resultLabel}
+                    </span>
+                  );
+                }
               )}
             </div>
           ) : (

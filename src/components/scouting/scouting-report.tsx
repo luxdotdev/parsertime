@@ -13,6 +13,7 @@ import type { DataAvailabilityProfile } from "@/lib/data-availability";
 import type { InsightReport } from "@/lib/insights";
 import { cn } from "@/lib/utils";
 import { ChevronDown, Info } from "lucide-react";
+import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 
 type ScoutingReportProps = {
@@ -28,6 +29,7 @@ export function ScoutingReport({
   hasUserTeamLink,
   dataAvailability,
 }: ScoutingReportProps) {
+  const t = useTranslations("scoutingPage.team.report");
   const [secondaryOpen, setSecondaryOpen] = useState(false);
 
   const isScrimOnly = dataAvailability?.opponentDataSource === "scrim";
@@ -38,7 +40,7 @@ export function ScoutingReport({
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-3">
           <h2 className="text-xl font-bold tracking-tight">
-            Pre-Match Brief: vs. {opponentAbbr}
+            {t("title", { opponent: opponentAbbr })}
           </h2>
           <ConfidenceIndicator confidence={report.overallConfidence} />
         </div>
@@ -49,7 +51,7 @@ export function ScoutingReport({
               variant="secondary"
               className="border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400"
             >
-              Scrim data only — no competitive history available
+              {t("scrimOnly")}
             </Badge>
           )}
         </div>
@@ -63,13 +65,9 @@ export function ScoutingReport({
               aria-hidden="true"
             />
             <div>
-              <p className="text-sm font-medium">
-                Select your team for the full report
-              </p>
+              <p className="text-sm font-medium">{t("selectTeamTitle")}</p>
               <p className="text-muted-foreground text-xs">
-                Cross-referenced insights (map matchups, player vulnerabilities)
-                require selecting your team with the &ldquo;Scouting for&rdquo;
-                picker above. Opponent-only insights are shown below.
+                {t("selectTeamDescription")}
               </p>
             </div>
           </CardContent>
@@ -79,9 +77,9 @@ export function ScoutingReport({
       {hasInsights ? (
         <>
           {report.primary.length > 0 && (
-            <section aria-label="Top insights">
+            <section aria-label={t("topInsights")}>
               <h3 className="text-muted-foreground mb-3 text-sm font-semibold tracking-wider uppercase">
-                Top Insights
+                {t("topInsights")}
               </h3>
               <div className="grid gap-4 md:grid-cols-2">
                 {report.primary.map((insight, i) => (
@@ -97,11 +95,13 @@ export function ScoutingReport({
                 <ChevronDown
                   className={cn(
                     "h-4 w-4 transition-transform",
-                    secondaryOpen && "rotate-180"
+                  secondaryOpen && "rotate-180"
                   )}
                   aria-hidden="true"
                 />
-                Additional Findings ({report.secondary.length})
+                {t("additionalFindings", {
+                  count: report.secondary.length,
+                })}
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -120,10 +120,9 @@ export function ScoutingReport({
               className="text-muted-foreground mx-auto mb-3 h-8 w-8"
               aria-hidden="true"
             />
-            <p className="font-medium">Not enough data yet</p>
+            <p className="font-medium">{t("noDataTitle")}</p>
             <p className="text-muted-foreground mt-1 text-sm">
-              Check back after more matches are played. Insights require a
-              minimum sample size to be reliable.
+              {t("noDataDescription")}
             </p>
           </CardContent>
         </Card>
@@ -137,6 +136,9 @@ function SourceLabel({
 }: {
   dataAvailability?: DataAvailabilityProfile;
 }) {
+  const t = useTranslations("scoutingPage.team.report");
+  const formatter = useFormatter();
+
   if (!dataAvailability) return null;
 
   const { opponentOwcsMaps, opponentScrimMaps, opponentDataSource } =
@@ -145,12 +147,18 @@ function SourceLabel({
   const labelParts: string[] = [];
   if (opponentDataSource === "owcs" || opponentDataSource === "owcs+scrim") {
     labelParts.push(
-      `${opponentOwcsMaps} competitive ${opponentOwcsMaps === 1 ? "map" : "maps"}`
+      t("competitiveMaps", {
+        count: opponentOwcsMaps,
+        formattedCount: formatter.number(opponentOwcsMaps),
+      })
     );
   }
   if (opponentDataSource === "scrim" || opponentDataSource === "owcs+scrim") {
     labelParts.push(
-      `${opponentScrimMaps} scrim ${opponentScrimMaps === 1 ? "map" : "maps"}`
+      t("scrimMaps", {
+        count: opponentScrimMaps,
+        formattedCount: formatter.number(opponentScrimMaps),
+      })
     );
   }
 
@@ -158,7 +166,15 @@ function SourceLabel({
 
   return (
     <span className="text-muted-foreground text-sm tabular-nums">
-      Based on {labelParts.join(" and ")}
+      {t("basedOn", {
+        sources:
+          labelParts.length === 2
+            ? t("sourceJoin", {
+                first: labelParts[0],
+                second: labelParts[1],
+              })
+            : labelParts[0],
+      })}
     </span>
   );
 }

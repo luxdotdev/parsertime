@@ -22,7 +22,7 @@ import { scoutingTool } from "@/lib/flags";
 import { generateInsights } from "@/lib/insights";
 import prisma from "@/lib/prisma";
 import { ArrowLeft } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getFormatter, getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -85,6 +85,7 @@ export default async function ScoutingTeamPage(
   ]);
   const teamAbbr = decodeURIComponent(params.teamAbbr);
   const t = await getTranslations("scoutingPage.team");
+  const formatter = await getFormatter();
 
   const profile = await AppRuntime.runPromise(
     ScoutingService.pipe(
@@ -188,16 +189,31 @@ export default async function ScoutingTeamPage(
           </div>
           <div className="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-1 text-sm tabular-nums">
             <span>
-              {overview.wins}W &ndash; {overview.losses}L
+              {overview.wins}
+              {t("overview.win")} &ndash; {overview.losses}
+              {t("overview.loss")}
             </span>
             <span className="font-medium">
-              {overview.winRate.toFixed(1)}% {t("overview.winRate")}
+              {formatter.number(overview.winRate / 100, {
+                style: "percent",
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1,
+              })}{" "}
+              {t("overview.winRate")}
             </span>
             <span>
-              {overview.weightedWinRate.toFixed(1)}%{" "}
+              {formatter.number(overview.weightedWinRate / 100, {
+                style: "percent",
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1,
+              })}{" "}
               {t("overview.weightedWinRate")}
             </span>
-            <FormStreak form={overview.recentForm} />
+            <FormStreak
+              form={overview.recentForm}
+              winLabel={t("overview.win")}
+              lossLabel={t("overview.loss")}
+            />
           </div>
         </header>
       </div>
@@ -262,7 +278,15 @@ export default async function ScoutingTeamPage(
   );
 }
 
-function FormStreak({ form }: { form: ("win" | "loss")[] }) {
+function FormStreak({
+  form,
+  winLabel,
+  lossLabel,
+}: {
+  form: ("win" | "loss")[];
+  winLabel: string;
+  lossLabel: string;
+}) {
   if (form.length === 0) return null;
 
   let streak = 1;
@@ -272,7 +296,7 @@ function FormStreak({ form }: { form: ("win" | "loss")[] }) {
     else break;
   }
 
-  const label = currentResult === "win" ? "W" : "L";
+  const label = currentResult === "win" ? winLabel : lossLabel;
 
   return (
     <span
