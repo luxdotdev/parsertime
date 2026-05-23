@@ -3521,6 +3521,58 @@
       "cancel": "취소"
     }
   },
+  "dataLabeling": {
+    "title": "데이터 라벨링",
+    "subtitle": "OWCS 토너먼트 경기의 팀 조합을 라벨링하세요.",
+    "metadata": {
+      "title": "데이터 라벨링 | Parsertime",
+      "description": "OWCS 토너먼트 경기의 팀 조합을 라벨링하세요."
+    },
+    "matchList": {
+      "title": "라벨링되지 않은 경기",
+      "date": "날짜",
+      "teams": "팀",
+      "score": "스코어",
+      "tournament": "토너먼트",
+      "progress": "진행 상황",
+      "previousPage": "이전",
+      "nextPage": "다음",
+      "pageInfo": "{total}페이지 중 {current}페이지",
+      "noMatches": "VOD가 있는 라벨링되지 않은 경기를 찾을 수 없습니다.",
+      "vs": "대"
+    },
+    "labeling": {
+      "backToList": "경기 목록으로 돌아가기",
+      "map": "맵 {number}",
+      "mapTabs": "맵",
+      "labeled": "라벨링됨",
+      "unlabeled": "미라벨링",
+      "heroBans": "영웅 밴",
+      "noBans": "이 맵에는 밴이 없습니다.",
+      "team1Comp": "{team} 조합",
+      "team2Comp": "{team} 조합",
+      "tank": "탱커",
+      "damage": "딜러",
+      "support": "지원",
+      "save": "저장",
+      "reset": "초기화",
+      "saveAll": "모든 맵 저장",
+      "saving": "저장 중...",
+      "saved": "저장됨!",
+      "saveSuccess": "팀 조합을 저장했습니다.",
+      "saveError": "팀 조합 저장에 실패했습니다.",
+      "roleConstraint": "탱커 1명, 딜러 2명, 지원 2명을 선택하세요",
+      "heroBanned": "밴됨",
+      "playerAssignments": "{team} 플레이어 배정",
+      "assignPlayer": "{hero} 플레이어 배정",
+      "selectPlayer": "플레이어 선택...",
+      "instructions": {
+        "title": "리뷰어 안내",
+        "body": "VOD를 보면서 오른쪽 패널을 사용해 각 맵의 영웅 조합을 기록하세요. 각 영웅에는 맵 시작 시 해당 영웅을 플레이한 선수를 배정하세요.",
+        "swapNote": "초기 픽만 기록하세요. 맵 중간 영웅 교체는 기록하지 않아도 됩니다. 이 작업은 매치업에 따른 교체가 아니라 각 팀의 시작 조합을 파악하기 위한 것입니다."
+      }
+    }
+  },
   "demoPage": {
     "metadata": {
       "title": "{mapName} 데모 | Parsertime",

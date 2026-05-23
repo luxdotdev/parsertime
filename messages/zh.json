@@ -3521,6 +3521,58 @@
       "cancel": "取消"
     }
   },
+  "dataLabeling": {
+    "title": "数据标注",
+    "subtitle": "为 OWCS 锦标赛比赛标注团队阵容。",
+    "metadata": {
+      "title": "数据标注 | Parsertime",
+      "description": "为 OWCS 锦标赛比赛标注团队阵容。"
+    },
+    "matchList": {
+      "title": "未标注比赛",
+      "date": "日期",
+      "teams": "队伍",
+      "score": "比分",
+      "tournament": "锦标赛",
+      "progress": "进度",
+      "previousPage": "上一页",
+      "nextPage": "下一页",
+      "pageInfo": "第 {current} 页，共 {total} 页",
+      "noMatches": "未找到带 VOD 的未标注比赛。",
+      "vs": "对阵"
+    },
+    "labeling": {
+      "backToList": "返回比赛列表",
+      "map": "地图 {number}",
+      "mapTabs": "地图",
+      "labeled": "已标注",
+      "unlabeled": "未标注",
+      "heroBans": "英雄禁用",
+      "noBans": "此地图没有禁用英雄。",
+      "team1Comp": "{team} 阵容",
+      "team2Comp": "{team} 阵容",
+      "tank": "坦克",
+      "damage": "输出",
+      "support": "支援",
+      "save": "保存",
+      "reset": "重置",
+      "saveAll": "保存所有地图",
+      "saving": "正在保存...",
+      "saved": "已保存！",
+      "saveSuccess": "团队阵容已成功保存。",
+      "saveError": "保存团队阵容失败。",
+      "roleConstraint": "选择 1 名坦克、2 名输出、2 名支援",
+      "heroBanned": "已禁用",
+      "playerAssignments": "{team} 玩家分配",
+      "assignPlayer": "为 {hero} 分配玩家",
+      "selectPlayer": "选择玩家...",
+      "instructions": {
+        "title": "审核说明",
+        "body": "观看 VOD，并使用右侧面板记录每张地图的英雄阵容。对于每个英雄，请分配地图开始时使用该英雄的玩家。",
+        "swapNote": "只记录初始选择。地图中途的英雄更换无需记录，因为我们关注的是每支队伍的开局阵容，而不是根据对局做出的换人。"
+      }
+    }
+  },
   "demoPage": {
     "metadata": {
       "title": "{mapName} 演示 | Parsertime",
