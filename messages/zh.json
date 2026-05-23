@@ -930,6 +930,35 @@
     }
   },
   "comparePage": {
+    "metadata": {
+      "title": "地图比较 | Parsertime",
+      "description": "比较多张地图中的玩家表现"
+    },
+    "title": "地图比较",
+    "subtitle": "分析所选地图中的玩家表现",
+    "comparingMaps": "{count, plural, =1 {正在比较 1 张地图} other {正在比较 # 张地图}}",
+    "loading": "正在加载比较数据...",
+    "emptyStates": {
+      "noMaps": {
+        "title": "未选择地图",
+        "description": "请从训练赛页面选择地图，开始比较玩家表现。"
+      },
+      "noMapGroups": {
+        "title": "未选择地图组",
+        "description": "请在下方选择一个或多个地图组，开始比较玩家表现。"
+      },
+      "noPlayer": {
+        "title": "未选择玩家",
+        "description": "请选择一名玩家，开始比较其跨地图表现。"
+      },
+      "noData": {
+        "title": "无可用数据",
+        "description": "{player} 未参与所选地图。"
+      },
+      "noTeamData": {
+        "description": "所选地图没有团队数据。"
+      }
+    },
     "detailedStats": {
       "title": "详细统计",
       "subtitle": "所有指标按每 10 分钟或百分比标准化，便于公平比较",
@@ -984,6 +1013,85 @@
         "deathsPer10StdDev": "死亡标准差",
         "allDamagePer10StdDev": "伤害标准差",
         "consistencyScore": "稳定性分数"
+      }
+    },
+    "impactMetrics": {
+      "subtitle": "{count, plural, =1 {已分析 1 张地图} other {已分析 # 张地图}}",
+      "consistency": "稳定性",
+      "keyStrengths": "主要优势",
+      "developmentAreas": "可改进方向",
+      "detailedMetrics": "详细影响指标",
+      "stats": {
+        "mvpScore": "MVP 分数",
+        "firstPickRate": "首杀率",
+        "killsPerUlt": "每个终极技能击杀",
+        "firstPicks": "首杀",
+        "firstDeaths": "首死",
+        "duelWinrate": "对位胜率",
+        "fightReversal": "团战逆转",
+        "fletaDeadlift": "团队影响",
+        "mapMvpRate": "地图 MVP 率"
+      }
+    },
+    "views": {
+      "sideBySide": "并排比较",
+      "delta": "差异",
+      "trends": "趋势",
+      "charts": "图表",
+      "consistency": "稳定性",
+      "detailedStats": "详细统计",
+      "impactMetrics": "影响指标"
+    },
+    "filters": {
+      "title": "比较筛选",
+      "resetAll": "全部重置",
+      "playerLabel": "玩家",
+      "heroesLabel": "英雄",
+      "player": "玩家",
+      "heroesCount": "{count, plural, =1 {1 个英雄} other {# 个英雄}}"
+    },
+    "playerSelector": {
+      "placeholder": "选择玩家...",
+      "search": "搜索玩家...",
+      "noPlayerFound": "未找到玩家。",
+      "loading": "正在加载...",
+      "mapCount": "{count, plural, =1 {1 张地图} other {# 张地图}}"
+    },
+    "sideBySide": {
+      "requiresTwoMaps": "并排比较需要恰好 2 张地图。",
+      "statComparison": "统计比较",
+      "stats": {
+        "eliminations": "击杀",
+        "deaths": "死亡",
+        "damage": "伤害",
+        "healing": "治疗",
+        "mitigated": "减伤",
+        "eliminationsPer10": "每 10 分钟击杀",
+        "deathsPer10": "每 10 分钟死亡",
+        "damagePer10": "每 10 分钟伤害",
+        "healingPer10": "每 10 分钟治疗",
+        "mitigatedPer10": "每 10 分钟减伤"
+      }
+    },
+    "delta": {
+      "requiresTwoMaps": "差异视图需要恰好 2 张地图。",
+      "from": "从",
+      "to": "到",
+      "previous": "之前",
+      "significant": "显著",
+      "summary": "显著变化摘要",
+      "noSignificantChanges": "未检测到显著变化（阈值：±10%）",
+      "stats": {
+        "eliminations": "击杀",
+        "deaths": "死亡",
+        "damage": "伤害",
+        "healing": "治疗",
+        "mitigated": "减伤",
+        "eliminationsPer10": "每 10 分钟击杀",
+        "deathsPer10": "每 10 分钟死亡",
+        "damagePer10": "每 10 分钟伤害",
+        "healingPer10": "每 10 分钟治疗",
+        "mitigatedPer10": "每 10 分钟减伤"
       }
     },
     "consistency": {
@@ -1089,6 +1197,66 @@
       "averagePerformance": "平均表现",
       "errorRange": "范围",
       "stdDev": "标准差"
+    },
+    "comparisonMode": {
+      "label": "比较模式",
+      "player": "玩家",
+      "team": "队伍",
+      "playerDescription": "比较单个玩家在多张地图中的表现",
+      "teamDescription": "比较我方队伍与敌方队伍在多张地图中的表现"
+    },
+    "mapSelectionMode": {
+      "label": "地图选择",
+      "individual": "单张地图",
+      "groups": "地图组",
+      "individualDescription": "使用单独选择的地图进行比较",
+      "groupsDescription": "使用预设地图组进行比较（例如：团战地图、开放地图）",
+      "selectGroups": "选择地图组",
+      "selectGroupsPlaceholder": "选择要比较的地图组...",
+      "manageGroups": "管理地图组",
+      "groupsHint": "你可以在地图组页面创建和管理地图组",
+      "individualMapsSelected": "{count, plural, =1 {从训练赛页面选择了 1 张地图} other {从训练赛页面选择了 # 张地图}}"
+    },
+    "mapGroupSelector": {
+      "title": "选择要比较的地图组",
+      "description": "最多选择 2 个地图组来比较表现。你可以比较不同地图类型、打法或时间段。",
+      "noGroups": {
+        "title": "没有可用地图组",
+        "description": "创建地图组来整理并比较队伍表现",
+        "createButton": "创建地图组"
+      },
+      "hint": {
+        "selectGroups": "至少选择一个地图组以继续",
+        "selectOneMore": "可再选择一个地图组进行比较（可选）",
+        "readyToCompare": "已准备好比较所选地图组"
+      },
+      "compareButton": "比较"
+    },
+    "teamComparison": {
+      "myTeam": "我方队伍",
+      "enemyTeam": "敌方队伍",
+      "players": "{count, plural, =1 {1 名玩家} other {# 名玩家}}",
+      "comparingMaps": "{count, plural, =1 {正在比较 1 张地图} other {正在比较 # 张地图}}",
+      "categories": {
+        "combat": "战斗表现",
+        "damage": "伤害与生存",
+        "support": "支援与防御",
+        "ultimate": "终极技能经济"
+      },
+      "stats": {
+        "eliminationsPer10": "每 10 分钟击杀",
+        "finalBlowsPer10": "每 10 分钟最后击杀",
+        "deathsPer10": "每 10 分钟死亡",
+        "firstPickPercentage": "首杀 %",
+        "firstDeathPercentage": "首死 %",
+        "heroDamagePer10": "每 10 分钟英雄伤害",
+        "damageTakenPer10": "每 10 分钟承受伤害",
+        "healingDealtPer10": "每 10 分钟治疗量",
+        "damageBlockedPer10": "每 10 分钟阻挡伤害",
+        "ultimatesEarnedPer10": "每 10 分钟获得终极技能",
+        "averageUltChargeTime": "平均终极技能充能时间",
+        "killsPerUltimate": "每个终极技能击杀"
+      }
     }
   },
   "mapPage": {

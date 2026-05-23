@@ -930,6 +930,35 @@
     }
   },
   "comparePage": {
+    "metadata": {
+      "title": "맵 비교 | Parsertime",
+      "description": "여러 맵에 걸친 플레이어 성능 비교"
+    },
+    "title": "맵 비교",
+    "subtitle": "선택한 맵에서 플레이어 성능을 분석하세요",
+    "comparingMaps": "{count, plural, =1 {맵 1개 비교 중} other {맵 #개 비교 중}}",
+    "loading": "비교 데이터 로드 중...",
+    "emptyStates": {
+      "noMaps": {
+        "title": "선택된 맵 없음",
+        "description": "스크림 페이지에서 맵을 선택해 플레이어 성능 비교를 시작하세요."
+      },
+      "noMapGroups": {
+        "title": "선택된 맵 그룹 없음",
+        "description": "아래에서 하나 이상의 맵 그룹을 선택해 플레이어 성능 비교를 시작하세요."
+      },
+      "noPlayer": {
+        "title": "선택된 플레이어 없음",
+        "description": "맵 간 성능 비교를 시작하려면 플레이어를 선택하세요."
+      },
+      "noData": {
+        "title": "사용 가능한 데이터 없음",
+        "description": "{player}은(는) 선택한 맵에 참여하지 않았습니다."
+      },
+      "noTeamData": {
+        "description": "선택한 맵에 대한 팀 데이터가 없습니다."
+      }
+    },
     "detailedStats": {
       "title": "상세 통계",
       "subtitle": "공정한 비교를 위해 모든 지표를 10분당 값 또는 비율로 정규화했습니다",
@@ -984,6 +1013,85 @@
         "deathsPer10StdDev": "사망 표준편차",
         "allDamagePer10StdDev": "피해 표준편차",
         "consistencyScore": "일관성 점수"
+      }
+    },
+    "impactMetrics": {
+      "subtitle": "{count, plural, =1 {맵 1개에서 분석됨} other {맵 #개에서 분석됨}}",
+      "consistency": "일관성",
+      "keyStrengths": "주요 강점",
+      "developmentAreas": "고려할 영역",
+      "detailedMetrics": "상세 영향 지표",
+      "stats": {
+        "mvpScore": "MVP 점수",
+        "firstPickRate": "첫 처치 비율",
+        "killsPerUlt": "궁극기당 처치",
+        "firstPicks": "첫 처치",
+        "firstDeaths": "첫 사망",
+        "duelWinrate": "대결 승률",
+        "fightReversal": "교전 역전",
+        "fletaDeadlift": "팀 영향",
+        "mapMvpRate": "맵 MVP 비율"
+      }
+    },
+    "views": {
+      "sideBySide": "나란히 보기",
+      "delta": "변화량",
+      "trends": "추세",
+      "charts": "차트",
+      "consistency": "일관성",
+      "detailedStats": "상세 통계",
+      "impactMetrics": "영향 지표"
+    },
+    "filters": {
+      "title": "비교 필터",
+      "resetAll": "모두 초기화",
+      "playerLabel": "플레이어",
+      "heroesLabel": "영웅",
+      "player": "플레이어",
+      "heroesCount": "{count, plural, =1 {영웅 1명} other {영웅 #명}}"
+    },
+    "playerSelector": {
+      "placeholder": "플레이어 선택...",
+      "search": "플레이어 검색...",
+      "noPlayerFound": "플레이어를 찾을 수 없습니다.",
+      "loading": "로딩 중...",
+      "mapCount": "{count, plural, =1 {맵 1개} other {맵 #개}}"
+    },
+    "sideBySide": {
+      "requiresTwoMaps": "나란히 비교하려면 정확히 2개의 맵이 필요합니다.",
+      "statComparison": "통계 비교",
+      "stats": {
+        "eliminations": "처치",
+        "deaths": "사망",
+        "damage": "피해",
+        "healing": "치유",
+        "mitigated": "막은 피해",
+        "eliminationsPer10": "10분당 처치",
+        "deathsPer10": "10분당 사망",
+        "damagePer10": "10분당 피해",
+        "healingPer10": "10분당 치유",
+        "mitigatedPer10": "10분당 경감"
+      }
+    },
+    "delta": {
+      "requiresTwoMaps": "변화량 보기는 정확히 2개의 맵이 필요합니다.",
+      "from": "이전",
+      "to": "이후",
+      "previous": "이전",
+      "significant": "유의미",
+      "summary": "유의미한 변화 요약",
+      "noSignificantChanges": "유의미한 변화가 감지되지 않았습니다(임계값: ±10%)",
+      "stats": {
+        "eliminations": "처치",
+        "deaths": "사망",
+        "damage": "피해",
+        "healing": "치유",
+        "mitigated": "막은 피해",
+        "eliminationsPer10": "10분당 처치",
+        "deathsPer10": "10분당 사망",
+        "damagePer10": "10분당 피해",
+        "healingPer10": "10분당 치유",
+        "mitigatedPer10": "10분당 경감"
       }
     },
     "consistency": {
@@ -1089,6 +1197,66 @@
       "averagePerformance": "평균 성능",
       "errorRange": "범위",
       "stdDev": "표준편차"
+    },
+    "comparisonMode": {
+      "label": "비교 모드",
+      "player": "플레이어",
+      "team": "팀",
+      "playerDescription": "맵별 개별 플레이어 성능 비교",
+      "teamDescription": "우리 팀과 상대 팀의 맵별 성능 비교"
+    },
+    "mapSelectionMode": {
+      "label": "맵 선택",
+      "individual": "개별 맵",
+      "groups": "맵 그룹",
+      "individualDescription": "개별로 선택한 맵으로 비교",
+      "groupsDescription": "미리 정의된 맵 그룹으로 비교(예: 러시 맵, 오픈 맵)",
+      "selectGroups": "맵 그룹 선택",
+      "selectGroupsPlaceholder": "비교할 맵 그룹 선택...",
+      "manageGroups": "그룹 관리",
+      "groupsHint": "맵 그룹 페이지에서 맵 그룹을 만들고 관리할 수 있습니다",
+      "individualMapsSelected": "{count, plural, =1 {스크림 페이지에서 선택한 맵 1개} other {스크림 페이지에서 선택한 맵 #개}}"
+    },
+    "mapGroupSelector": {
+      "title": "비교할 맵 그룹 선택",
+      "description": "성능을 비교할 맵 그룹을 최대 2개까지 선택하세요. 서로 다른 맵 유형, 플레이스타일 또는 기간을 비교할 수 있습니다.",
+      "noGroups": {
+        "title": "사용 가능한 맵 그룹 없음",
+        "description": "맵 그룹을 만들어 팀 성능을 정리하고 비교하세요",
+        "createButton": "맵 그룹 만들기"
+      },
+      "hint": {
+        "selectGroups": "계속하려면 맵 그룹을 하나 이상 선택하세요",
+        "selectOneMore": "비교를 위해 그룹을 하나 더 선택하세요(선택 사항)",
+        "readyToCompare": "선택한 그룹을 비교할 준비가 되었습니다"
+      },
+      "compareButton": "비교"
+    },
+    "teamComparison": {
+      "myTeam": "우리 팀",
+      "enemyTeam": "상대 팀",
+      "players": "{count, plural, =1 {플레이어 1명} other {플레이어 #명}}",
+      "comparingMaps": "{count, plural, =1 {맵 1개 비교 중} other {맵 #개 비교 중}}",
+      "categories": {
+        "combat": "전투 성능",
+        "damage": "피해 및 생존력",
+        "support": "지원 및 방어",
+        "ultimate": "궁극기 경제"
+      },
+      "stats": {
+        "eliminationsPer10": "10분당 처치",
+        "finalBlowsPer10": "10분당 결정타",
+        "deathsPer10": "10분당 사망",
+        "firstPickPercentage": "첫 처치 %",
+        "firstDeathPercentage": "첫 사망 %",
+        "heroDamagePer10": "10분당 영웅 피해",
+        "damageTakenPer10": "10분당 받은 피해",
+        "healingDealtPer10": "10분당 치유",
+        "damageBlockedPer10": "10분당 막은 피해",
+        "ultimatesEarnedPer10": "10분당 획득 궁극기",
+        "averageUltChargeTime": "평균 궁극기 충전 시간",
+        "killsPerUltimate": "궁극기당 처치"
+      }
     }
   },
   "mapPage": {
