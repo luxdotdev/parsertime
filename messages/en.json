@@ -1067,7 +1067,13 @@
     "rawStatsSections": {
       "fights": {
         "label": "Fight analysis",
-        "title": "Fight Analysis"
+        "title": "Fight Analysis",
+        "overallWinRate": "Overall fight win rate: <rate>{winrate}</rate> <muted>({won, number}W / {lost, number}L across {total, plural, one {# fight} other {# fights}})</muted>",
+        "teamFirstDeath": "Your team died first in <rate>{rateValue}</rate> of fights.",
+        "teamFirstDeathComparison": "When you died first, you still won <firstDeathRate>{firstDeathWinrate}</firstDeathRate> of those fights vs <firstPickRate>{firstPickWinrate}</firstPickRate> when you got first pick.",
+        "firstPick": "Your team got first pick in <pickRate>{firstPickRate}</pickRate> of fights, winning <winRate>{firstPickWinrate}</winRate> of them.",
+        "firstUlt": "When your team used ultimates first, you won <rate>{winrate}</rate> of those fights.",
+        "opponentFirstUlt": "When the opponent used ultimates first, your win rate {hasFirstUlt, select, yes {dropped to} other {was}} <rate>{winrate}</rate>."
       },
       "ultimates": {
         "label": "Ultimate analysis",

@@ -1067,7 +1067,13 @@
     "rawStatsSections": {
       "fights": {
         "label": "团战分析",
-        "title": "团战分析"
+        "title": "团战分析",
+        "overallWinRate": "整体团战胜率：<rate>{winrate}</rate> <muted>（共 {total, plural, other {# 场团战}}，{won, number} 胜 / {lost, number} 负）</muted>",
+        "teamFirstDeath": "你方在 <rate>{rateValue}</rate> 的团战中率先阵亡。",
+        "teamFirstDeathComparison": "率先阵亡时仍赢下 <firstDeathRate>{firstDeathWinrate}</firstDeathRate> 的团战；拿到首杀时赢下 <firstPickRate>{firstPickWinrate}</firstPickRate>。",
+        "firstPick": "你方在 <pickRate>{firstPickRate}</pickRate> 的团战中拿到首杀，并赢下其中 <winRate>{firstPickWinrate}</winRate>。",
+        "firstUlt": "你方率先使用终极技能时，赢下 <rate>{winrate}</rate> 的团战。",
+        "opponentFirstUlt": "对手率先使用终极技能时，你方胜率{hasFirstUlt, select, yes {降至} other {为}} <rate>{winrate}</rate>。"
       },
       "ultimates": {
         "label": "终极技能分析",

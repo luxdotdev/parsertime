@@ -1067,7 +1067,13 @@
     "rawStatsSections": {
       "fights": {
         "label": "전투 분석",
-        "title": "전투 분석"
+        "title": "전투 분석",
+        "overallWinRate": "전체 전투 승률: <rate>{winrate}</rate> <muted>({total, plural, other {전투 #회}} 중 {won, number}승 / {lost, number}패)</muted>",
+        "teamFirstDeath": "우리 팀이 전투에서 먼저 사망한 비율은 <rate>{rateValue}</rate>입니다.",
+        "teamFirstDeathComparison": "먼저 사망했을 때도 해당 전투의 <firstDeathRate>{firstDeathWinrate}</firstDeathRate>를 이겼고, 첫 처치를 냈을 때는 <firstPickRate>{firstPickWinrate}</firstPickRate>를 이겼습니다.",
+        "firstPick": "우리 팀은 전투의 <pickRate>{firstPickRate}</pickRate>에서 첫 처치를 냈고, 그중 <winRate>{firstPickWinrate}</winRate>를 이겼습니다.",
+        "firstUlt": "우리 팀이 궁극기를 먼저 사용한 전투에서 <rate>{winrate}</rate>를 이겼습니다.",
+        "opponentFirstUlt": "상대가 궁극기를 먼저 사용했을 때 우리 팀 승률은 {hasFirstUlt, select, yes {하락해 } other {}}<rate>{winrate}</rate>였습니다."
       },
       "ultimates": {
         "label": "궁극기 분석",

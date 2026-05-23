@@ -42,6 +42,16 @@ export function FightAnalysisSection({
   if (analysis.totalFights === 0) return null;
 
   const fightsLost = analysis.totalFights - analysis.fightsWon;
+  function rate(value: number, favorable: boolean) {
+    function Rate(_chunks: ReactNode) {
+      return <HighlightedPct value={value} favorable={favorable} />;
+    }
+    return Rate;
+  }
+
+  function muted(chunks: ReactNode) {
+    return <span className="text-muted-foreground">{chunks}</span>;
+  }
 
   return (
     <>
@@ -52,56 +62,58 @@ export function FightAnalysisSection({
         </h4>
         <ul className="text-foreground space-y-2 text-sm leading-relaxed">
           <li>
-            Overall fight win rate:{" "}
-            <HighlightedPct
-              value={analysis.fightWinrate}
-              favorable={analysis.fightWinrate >= 50}
-            />{" "}
-            <span className="text-muted-foreground">
-              ({analysis.fightsWon}W / {fightsLost}L across{" "}
-              {analysis.totalFights} fights)
-            </span>
+            {t.rich("overallWinRate", {
+              winrate: Math.round(analysis.fightWinrate),
+              won: analysis.fightsWon,
+              lost: fightsLost,
+              total: analysis.totalFights,
+              rate: rate(analysis.fightWinrate, analysis.fightWinrate >= 50),
+              muted,
+            })}
           </li>
 
           <li>
-            Your team died first in{" "}
-            <HighlightedPct
-              value={analysis.teamFirstDeathRate}
-              favorable={analysis.teamFirstDeathRate < 50}
-            />{" "}
-            of fights.
+            {t.rich("teamFirstDeath", {
+              rateValue: Math.round(analysis.teamFirstDeathRate),
+              rate: rate(
+                analysis.teamFirstDeathRate,
+                analysis.teamFirstDeathRate < 50
+              ),
+            })}
             {analysis.teamFirstDeathCount > 0 &&
               analysis.firstPickCount > 0 && (
                 <>
                   {" "}
-                  When you died first, you still won{" "}
-                  <HighlightedPct
-                    value={analysis.firstDeathWinrate}
-                    favorable={analysis.firstDeathWinrate >= 50}
-                  />{" "}
-                  of those fights vs{" "}
-                  <HighlightedPct
-                    value={analysis.firstPickWinrate}
-                    favorable={analysis.firstPickWinrate >= 50}
-                  />{" "}
-                  when you got first pick.
+                  {t.rich("teamFirstDeathComparison", {
+                    firstDeathWinrate: Math.round(analysis.firstDeathWinrate),
+                    firstPickWinrate: Math.round(analysis.firstPickWinrate),
+                    firstDeathRate: rate(
+                      analysis.firstDeathWinrate,
+                      analysis.firstDeathWinrate >= 50
+                    ),
+                    firstPickRate: rate(
+                      analysis.firstPickWinrate,
+                      analysis.firstPickWinrate >= 50
+                    ),
+                  })}
                 </>
               )}
           </li>
 
           {analysis.firstPickCount > 0 && (
             <li>
-              Your team got first pick in{" "}
-              <HighlightedPct
-                value={analysis.firstPickRate}
-                favorable={analysis.firstPickRate >= 50}
-              />{" "}
-              of fights, winning{" "}
-              <HighlightedPct
-                value={analysis.firstPickWinrate}
-                favorable={analysis.firstPickWinrate >= 50}
-              />{" "}
-              of them.
+              {t.rich("firstPick", {
+                firstPickRate: Math.round(analysis.firstPickRate),
+                firstPickWinrate: Math.round(analysis.firstPickWinrate),
+                pickRate: rate(
+                  analysis.firstPickRate,
+                  analysis.firstPickRate >= 50
+                ),
+                winRate: rate(
+                  analysis.firstPickWinrate,
+                  analysis.firstPickWinrate >= 50
+                ),
+              })}
             </li>
           )}
 
@@ -110,12 +122,13 @@ export function FightAnalysisSection({
             <li>
               {analysis.firstUltCount > 0 ? (
                 <>
-                  When your team used ultimates first, you won{" "}
-                  <HighlightedPct
-                    value={analysis.firstUltWinrate}
-                    favorable={analysis.firstUltWinrate >= 50}
-                  />{" "}
-                  of those fights.
+                  {t.rich("firstUlt", {
+                    winrate: Math.round(analysis.firstUltWinrate),
+                    rate: rate(
+                      analysis.firstUltWinrate,
+                      analysis.firstUltWinrate >= 50
+                    ),
+                  })}
                 </>
               ) : null}
               {analysis.firstUltCount > 0 && analysis.opponentFirstUltCount > 0
@@ -123,13 +136,14 @@ export function FightAnalysisSection({
                 : null}
               {analysis.opponentFirstUltCount > 0 ? (
                 <>
-                  When the opponent used ultimates first, your win rate
-                  {analysis.firstUltCount > 0 ? " dropped to " : " was "}
-                  <HighlightedPct
-                    value={analysis.opponentFirstUltWinrate}
-                    favorable={analysis.opponentFirstUltWinrate >= 50}
-                  />
-                  .
+                  {t.rich("opponentFirstUlt", {
+                    hasFirstUlt: analysis.firstUltCount > 0 ? "yes" : "no",
+                    winrate: Math.round(analysis.opponentFirstUltWinrate),
+                    rate: rate(
+                      analysis.opponentFirstUltWinrate,
+                      analysis.opponentFirstUltWinrate >= 50
+                    ),
+                  })}
                 </>
               ) : null}
             </li>
