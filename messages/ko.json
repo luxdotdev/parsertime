@@ -5031,30 +5031,174 @@
     "TOP_3_TIME_PLAYED-description": "플레이 시간 리더보드 상위 3위에 오른 사용자에게 수여됩니다. 밖에도 나가세요!"
   },
   "matchmaker": {
-    "title": "Scrim matchmaker",
-    "subtitle": "Find a team near your skill level",
-    "no-snapshot-title": "No Team TSR yet",
-    "no-snapshot-description": "Your team needs a Team TSR before you can search for scrim partners. Play in tracked tournaments or wait for the next daily refresh.",
-    "back-to-team": "Back to team",
-    "no-candidates-title": "No nearby teams right now",
-    "no-candidates-description": "Try again later — the candidate pool refreshes daily.",
-    "requests-remaining": "{count} of 10 daily requests remaining",
-    "send-button": "Send scrim request",
-    "send-button-cooldown": "Available in {duration}",
-    "send-button-limit": "Daily limit reached, resets in {duration}",
-    "send-button-not-manager": "Only managers can send scrim requests",
+    "title": "스크림 매치메이커",
+    "subtitle": "비슷한 실력대의 팀 찾기",
+    "metadata": {
+      "title": "매치메이커 | Parsertime",
+      "description": "팀 페이지와 같은 실력 평점인 TSR을 기반으로 비슷한 수준의 스크림 상대를 찾으세요."
+    },
+    "hub": {
+      "eyebrow": "매치메이커",
+      "title": "스크림 상대 찾기",
+      "description": "내 로스터와 비슷한 실력대의 팀을 비교하고, 상대가 브래킷 사다리 어디에 있는지 확인한 뒤 정해진 소개 메시지 하나를 보낼 수 있습니다. 팀 페이지와 같은 Team TSR 척도를 사용합니다.",
+      "mechanicsEyebrow": "작동 방식 · 개요",
+      "mechanicsTitle": "실력 기준, 가볍고 남용 방지",
+      "mechanicsDescription": "매치메이커는 예약 시스템이 아니라 소개 라우팅입니다. 팀을 둘러보고, 정해진 요청 하나를 보내면 상대 팀이 앱과 Discord에서 확인합니다.",
+      "ranking": {
+        "label": "매칭 순위 기준",
+        "sameRegion": "같은 TSR 지역 우선(NA / EMEA)",
+        "closestDistance": "절대 TSR 차이가 가까운 팀 우선",
+        "sameBracket": "같은 스크림 브래킷, 그다음 인접 브래킷 밴드",
+        "availabilityBonus": "이번 주 가능 시간이 겹치면 보너스",
+        "cooldownPenalty": "최근 메시지를 보낸 팀은 아래로 이동"
+      },
+      "sent": {
+        "label": "전송되는 내용",
+        "message": "팀의 브래킷과 TSR이 포함된 수정 불가 메시지",
+        "roster": "로스터 상위 5명의 BattleTag와 TSR",
+        "delivery": "팀 소유자와 매니저에게 앱 내 전달, 설정된 경우 Discord에도 전달"
+      },
+      "rateLimits": {
+        "label": "요청 제한",
+        "perPair": "팀 쌍과 방향마다 24시간에 요청 1회",
+        "daily": "팀당 24시간 동안 최대 10개의 발신 요청"
+      },
+      "teamPickerEyebrow": "팀 선택 · 시작",
+      "teamPickerTitle": "어떤 로스터로 검색할까요?",
+      "teamPickerDescription": "소속된 각 팀은 자체 Team TSR을 가집니다. 스크림에 사용할 팀을 선택하세요. Team TSR이 있는 팀만 검색을 시작할 수 있습니다.",
+      "teamTsr": "TSR {rating, number}",
+      "noTeamTsr": "아직 Team TSR 없음",
+      "searchAs": "{teamName}(으)로 검색",
+      "ineligibleTitle": "매치메이킹 전에 Team TSR이 필요합니다",
+      "notEligible": "아직 사용 불가",
+      "emptyTitle": "아직 소속된 팀이 없습니다",
+      "emptyDescription": "먼저 팀에 가입하거나 팀을 만든 뒤 이곳으로 돌아와 스크림 상대를 찾으세요.",
+      "manageTeams": "팀 관리 →",
+      "bracketWithBand": "{band} {tier}",
+      "bands": {
+        "low": "하위",
+        "mid": "중위",
+        "high": "상위"
+      },
+      "tiers": {
+        "unclassified": "미분류",
+        "open": "오픈",
+        "cah": "CAH",
+        "advanced": "어드밴스드",
+        "expert": "엑스퍼트",
+        "masters": "마스터즈",
+        "owcs": "OWCS"
+      }
+    },
+    "no-snapshot-title": "아직 Team TSR 없음",
+    "no-snapshot-description": "스크림 상대를 검색하려면 팀에 Team TSR이 필요합니다. 추적되는 토너먼트에 참가하거나 다음 일일 갱신을 기다려 주세요.",
+    "back-to-team": "팀으로 돌아가기",
+    "back-to-candidates": "← 후보로 돌아가기",
+    "no-candidates-title": "지금은 가까운 팀이 없습니다",
+    "no-candidates-description": "나중에 다시 시도하세요. 후보 풀은 매일 갱신됩니다.",
+    "requests-remaining": "일일 요청 {count} / 10개 남음",
+    "searchingAs": "<team>{teamName}</team>(으)로 검색 중",
+    "send-button": "스크림 요청 보내기",
+    "send-button-cooldown": "{duration} 후 사용 가능",
+    "send-button-limit": "일일 한도에 도달했습니다. {duration} 후 초기화됩니다",
+    "send-button-limit-short": "일일 한도 도달, 24시간 후 초기화",
+    "send-button-not-manager": "매니저만 스크림 요청을 보낼 수 있습니다",
+    "send-button-recent": "최근 24시간 안에 이미 메시지를 보냈습니다",
     "delta-positive": "+{value}",
     "delta-negative": "−{value}",
     "delta-zero": "±0",
-    "skill-deviation": "Skill deviation",
-    "availability-overlap": "{hours}h overlap this week",
-    "no-availability": "No shared availability data",
-    "roster": "Roster",
-    "send-success": "Scrim request sent",
-    "send-error-409": "You already messaged this team recently. Try again in 24 hours.",
-    "send-error-422": "One of the teams no longer has a Team TSR.",
-    "send-error-429": "Daily limit reached. Resets in 24 hours.",
-    "send-error-generic": "Couldn't send scrim request. Try again."
+    "skill-deviation": "실력 차이",
+    "bracket-comparison": "{from} 대 {to}",
+    "your-team": "내 팀",
+    "their-team": "상대 팀",
+    "detail-eyebrow": "매치메이커 · 스크림",
+    "availability-overlap-title": "가능 시간 겹침",
+    "availability-overlap": "이번 주 {hours}시간 겹침",
+    "availability-overlap-short": "{hours}시간 겹침",
+    "availability-overlap-detail": "두 팀은 이번 주에 <value>{hours}시간</value>의 공통 가능 시간이 있습니다.",
+    "no-availability": "공통 가능 시간 데이터 없음",
+    "sent-relative": "{when} 전송",
+    "relative": {
+      "justNow": "방금 전",
+      "minutesAgo": "{count}분 전",
+      "hoursAgo": "{count}시간 전",
+      "daysAgo": "{count}일 전"
+    },
+    "message-preview": "메시지 미리보기",
+    "request-message": "{fromTeamName} ({fromBracketLabel} · TSR {fromTsr, number}) 팀이 스크림을 찾고 있습니다. 내 로스터와의 TSR 차이는 {delta}입니다.",
+    "roster": "로스터",
+    "send-success": "스크림 요청을 보냈습니다",
+    "send-error-409": "최근 이 팀에 이미 메시지를 보냈습니다. 24시간 후 다시 시도하세요.",
+    "send-error-422": "두 팀 중 하나에 더 이상 팀 TSR이 없습니다.",
+    "send-error-429": "일일 한도에 도달했습니다. 24시간 후 초기화됩니다.",
+    "send-error-generic": "스크림 요청을 보낼 수 없습니다. 다시 시도하세요.",
+    "bracket-with-band": "{band} {tier}",
+    "bands": {
+      "low": "하위",
+      "mid": "중위",
+      "high": "상위"
+    },
+    "tiers": {
+      "unclassified": "미분류",
+      "open": "오픈",
+      "cah": "CAH",
+      "advanced": "어드밴스드",
+      "expert": "엑스퍼트",
+      "masters": "마스터즈",
+      "owcs": "OWCS"
+    }
+  },
+  "teamTsr": {
+    "teamTsr": "팀 TSR",
+    "teamCsr": "팀 CSR",
+    "title": "로스터 실력 평점",
+    "meta": "{ratingLabel} · {rosterSize, number}명 중 {rated, number}명 평점 있음 · 플레이 시간 {playtimeShare, number, percent} 반영",
+    "sources": {
+      "tsr": "실제 TSR",
+      "predicted": "예측",
+      "csrFallback": "CSR 대체값"
+    },
+    "sourceCopy": {
+      "tsr": "활성 선발 전원의 토너먼트 평점을 플레이 시간으로 가중 평균했습니다.",
+      "predicted": "평점이 있는 플레이어는 실제 TSR을, 나머지는 팀 CSR 오프셋으로 예측했습니다. 스크림 플레이 시간으로 가중합니다.",
+      "csrFallback": "TSR을 계산할 평점 기반 플레이 시간이 부족합니다. 플레이 시간 가중 영웅별 CSR을 표시하며 TSR과 같은 척도는 아닙니다."
+    },
+    "confidence": {
+      "high": "높은 신뢰도",
+      "medium": "중간 신뢰도",
+      "low": "낮은 신뢰도"
+    },
+    "contribution": {
+      "tsr": "TSR",
+      "predicted": "예측",
+      "csr": "CSR",
+      "none": "—"
+    },
+    "offsetSpread": "오프셋 분산 σ {value, number}.",
+    "empty": "로스터 평점을 계산하려면 BattleTag가 연결된 팀원을 추가하세요.",
+    "scrimBracket": "스크림 브래킷",
+    "findScrims": "스크림 찾기 →",
+    "playerTsr": "TSR {rating, number}",
+    "playerCsr": " · CSR {rating, number}",
+    "noTsr": "TSR 없음",
+    "playtimeSummary": "{percent, number, percent} · {playtime}",
+    "playtimeHours": "{hours}시간",
+    "playtimeMinutes": "{minutes, number}분",
+    "bracketWithBand": "{band} {tier}",
+    "bands": {
+      "low": "하위",
+      "mid": "중위",
+      "high": "상위"
+    },
+    "tiers": {
+      "unclassified": "미분류",
+      "open": "오픈",
+      "cah": "CAH",
+      "advanced": "어드밴스드",
+      "expert": "엑스퍼트",
+      "masters": "마스터즈",
+      "owcs": "OWCS"
+    }
   },
   "teamStatsPage": {
     "layoutMetadata": {

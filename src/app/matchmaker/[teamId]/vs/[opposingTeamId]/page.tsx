@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { Route } from "next";
 import { computeTeamTsr } from "@/lib/tsr/team";
-import { renderScrimRequestMessage } from "@/lib/matchmaker/messages";
 import { getTierBucket } from "@/lib/tsr/tier-bucket";
 import {
   computeAvailabilityOverlapHours,
@@ -13,7 +12,8 @@ import {
 import { SkillDeviation } from "@/components/matchmaker/skill-deviation";
 import { SendRequestButton } from "@/components/matchmaker/send-request-button";
 import { TeamTsrCard } from "@/components/team/team-tsr-card";
-import { UserRole } from "@prisma/client";
+import { FaceitTier, UserRole } from "@prisma/client";
+import { getFormatter, getTranslations } from "next-intl/server";
 
 type PageProps = {
   params: Promise<{ teamId: string; opposingTeamId: string }>;
@@ -23,6 +23,10 @@ const COOLDOWN_HOURS = 24;
 const DAILY_LIMIT = 10;
 
 export default async function MatchmakerDetailPage({ params }: PageProps) {
+  const [t, formatter] = await Promise.all([
+    getTranslations("matchmaker"),
+    getFormatter(),
+  ]);
   const { teamId: rawFromId, opposingTeamId: rawToId } = await params;
   const fromTeamId = parseInt(rawFromId, 10);
   const toTeamId = parseInt(rawToId, 10);
@@ -119,25 +123,25 @@ export default async function MatchmakerDetailPage({ params }: PageProps) {
   });
 
   const fromBucket = getTierBucket(fromSnap.rating);
-  const cannedMessage = renderScrimRequestMessage({
+  const cannedMessage = t("request-message", {
     fromTeamName: fromTeam.name,
-    fromBracketLabel: fromBucket.label,
+    fromBracketLabel: getBracketLabel(fromBucket.band, fromBucket.tier, t),
     fromTsr: fromSnap.rating,
-    toTsr: toSnap.rating,
+    delta: formatSignedDelta(fromSnap.rating - toSnap.rating, formatter, t),
   });
 
   let disabledReason: string | null = null;
-  if (!isManager) disabledReason = "Only managers can send scrim requests";
-  else if (recentToTarget) disabledReason = "Already messaged in last 24h";
+  if (!isManager) disabledReason = t("send-button-not-manager");
+  else if (recentToTarget) disabledReason = t("send-button-recent");
   else if (sentToday >= DAILY_LIMIT)
-    disabledReason = "Daily limit reached, resets in 24h";
+    disabledReason = t("send-button-limit-short");
 
   return (
     <div className="container mx-auto max-w-5xl space-y-6 p-6">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <div>
           <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-            Matchmaker · Scrim
+            {t("detail-eyebrow")}
           </p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight">
             {fromTeam.name} vs {toTeam.name}
@@ -147,20 +151,20 @@ export default async function MatchmakerDetailPage({ params }: PageProps) {
           href={`/matchmaker/${fromTeamId}` as Route}
           className="text-muted-foreground hover:text-foreground font-mono text-[11px] tracking-[0.16em] uppercase"
         >
-          ← Back to candidates
+          {t("back-to-candidates")}
         </Link>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <p className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-            Your team
+            {t("your-team")}
           </p>
           <TeamTsrCard result={fromTsrDetail} teamId={fromTeamId} />
         </div>
         <div className="space-y-2">
           <p className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-            Their team
+            {t("their-team")}
           </p>
           <TeamTsrCard result={toTsrDetail} teamId={toTeamId} />
         </div>
@@ -171,14 +175,17 @@ export default async function MatchmakerDetailPage({ params }: PageProps) {
       {overlapHours > 0 && (
         <div className="border-border bg-card rounded-xl border p-6">
           <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-            Availability overlap
+            {t("availability-overlap-title")}
           </p>
           <p className="mt-2 text-sm leading-relaxed">
-            Both teams have{" "}
-            <span className="font-mono font-semibold tabular-nums">
-              {overlapHours}
-            </span>{" "}
-            shared {overlapHours === 1 ? "hour" : "hours"} this week.
+            {t.rich("availability-overlap-detail", {
+              hours: overlapHours,
+              value: (chunks) => (
+                <span className="font-mono font-semibold tabular-nums">
+                  {chunks}
+                </span>
+              ),
+            })}
           </p>
         </div>
       )}
@@ -186,7 +193,7 @@ export default async function MatchmakerDetailPage({ params }: PageProps) {
       <section className="border-border bg-card space-y-5 rounded-xl border p-6">
         <div>
           <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-            Message preview
+            {t("message-preview")}
           </p>
           <p className="text-foreground mt-2 text-sm leading-relaxed">
             {cannedMessage}
@@ -200,4 +207,66 @@ export default async function MatchmakerDetailPage({ params }: PageProps) {
       </section>
     </div>
   );
+}
+
+function formatSignedDelta(
+  delta: number,
+  formatter: Awaited<ReturnType<typeof getFormatter>>,
+  t: Awaited<ReturnType<typeof getTranslations>>
+) {
+  const value = formatter.number(Math.abs(delta));
+  if (delta > 0) return t("delta-positive", { value });
+  if (delta < 0) return t("delta-negative", { value });
+  return t("delta-zero");
+}
+
+function getBracketLabel(
+  band: string | null,
+  tier: FaceitTier,
+  t: Awaited<ReturnType<typeof getTranslations>>
+) {
+  const tierLabel = getTierLabel(tier, t);
+  if (!band) return tierLabel;
+  return t("bracket-with-band", {
+    band: getBandLabel(band, t),
+    tier: tierLabel,
+  });
+}
+
+function getTierLabel(
+  tier: FaceitTier,
+  t: Awaited<ReturnType<typeof getTranslations>>
+) {
+  switch (tier) {
+    case FaceitTier.UNCLASSIFIED:
+      return t("tiers.unclassified");
+    case FaceitTier.OPEN:
+      return t("tiers.open");
+    case FaceitTier.CAH:
+      return t("tiers.cah");
+    case FaceitTier.ADVANCED:
+      return t("tiers.advanced");
+    case FaceitTier.EXPERT:
+      return t("tiers.expert");
+    case FaceitTier.MASTERS:
+      return t("tiers.masters");
+    case FaceitTier.OWCS:
+      return t("tiers.owcs");
+  }
+}
+
+function getBandLabel(
+  band: string,
+  t: Awaited<ReturnType<typeof getTranslations>>
+) {
+  switch (band) {
+    case "Low":
+      return t("bands.low");
+    case "Mid":
+      return t("bands.mid");
+    case "High":
+      return t("bands.high");
+    default:
+      return band;
+  }
 }

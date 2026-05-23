@@ -1,12 +1,16 @@
+import { useTranslations } from "next-intl";
+
 type Props = { hours: number };
 
 const HOURS_PER_WEEK = 168;
 
 export function AvailabilityOverlapBar({ hours }: Props) {
+  const t = useTranslations("matchmaker");
+
   if (hours === 0) {
     return (
       <span className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-        No shared availability
+        {t("no-availability")}
       </span>
     );
   }
@@ -20,7 +24,7 @@ export function AvailabilityOverlapBar({ hours }: Props) {
         />
       </div>
       <span className="text-muted-foreground font-mono text-[10px] tracking-[0.08em] uppercase tabular-nums">
-        {hours}h overlap
+        {t("availability-overlap-short", { hours })}
       </span>
     </div>
   );

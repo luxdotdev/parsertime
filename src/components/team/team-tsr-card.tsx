@@ -15,33 +15,8 @@ import { getTierBucket } from "@/lib/tsr/tier-bucket";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import type { Route } from "next";
-
-const SOURCE_LABEL: Record<TeamTsrSource, string> = {
-  tsr: "Real TSR",
-  predicted: "Predicted",
-  csr_fallback: "CSR fallback",
-};
-
-const SOURCE_COPY: Record<TeamTsrSource, string> = {
-  tsr: "Playtime-weighted mean of every active starter's tournament rating.",
-  predicted:
-    "Real TSR for rated players; the rest predicted from team CSR offset. Weighted by scrim playtime.",
-  csr_fallback:
-    "Not enough rated playtime for TSR. Showing playtime-weighted per-hero CSR — not on the same scale as TSR.",
-};
-
-const CONFIDENCE_LABEL: Record<TeamTsrConfidence, string> = {
-  high: "High confidence",
-  medium: "Medium confidence",
-  low: "Low confidence",
-};
-
-const CONTRIBUTION_LABEL: Record<TeamTsrMember["contributionType"], string> = {
-  tsr: "TSR",
-  predicted: "Predicted",
-  csr: "CSR",
-  none: "—",
-};
+import { FaceitTier } from "@prisma/client";
+import { useFormatter, useTranslations } from "next-intl";
 
 function ratingToneClass(rating: number, source: TeamTsrSource): string {
   if (source === "csr_fallback") return "text-foreground";
@@ -58,12 +33,22 @@ function displayName(member: TeamTsrMember): string {
   return handle.split("#")[0] || handle;
 }
 
-function formatPlaytime(seconds: number): string {
+function formatPlaytime(
+  seconds: number,
+  formatter: ReturnType<typeof useFormatter>,
+  t: ReturnType<typeof useTranslations>
+): string {
   if (seconds <= 0) return "—";
   const hours = seconds / 3600;
-  if (hours >= 1) return `${hours.toFixed(1)}h`;
+  if (hours >= 1)
+    return t("playtimeHours", {
+      hours: formatter.number(hours, {
+        maximumFractionDigits: 1,
+        minimumFractionDigits: 1,
+      }),
+    });
   const minutes = Math.round(seconds / 60);
-  return `${minutes}m`;
+  return t("playtimeMinutes", { minutes });
 }
 
 type Props = {
@@ -72,10 +57,11 @@ type Props = {
 };
 
 export function TeamTsrCard({ result, teamId }: Props) {
+  const t = useTranslations("teamTsr");
+  const formatter = useFormatter();
   const ratingLabel =
-    result.source === "csr_fallback" ? "Team CSR" : "Team TSR";
+    result.source === "csr_fallback" ? t("teamCsr") : t("teamTsr");
   const noData = result.value === null;
-  const playtimeShare = Math.round(result.playtimeBackedShare * 100);
 
   return (
     <Card>
@@ -83,11 +69,15 @@ export function TeamTsrCard({ result, teamId }: Props) {
         <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
           <div>
             <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-              {ratingLabel} · {result.ratedCount} of {result.rosterSize} rated ·{" "}
-              {playtimeShare}% playtime backed
+              {t("meta", {
+                ratingLabel,
+                rated: result.ratedCount,
+                rosterSize: result.rosterSize,
+                playtimeShare: result.playtimeBackedShare,
+              })}
             </p>
             <h3 className="mt-1 text-base font-semibold tracking-tight">
-              Roster skill rating
+              {t("title")}
             </h3>
           </div>
           <div className="text-right">
@@ -99,12 +89,12 @@ export function TeamTsrCard({ result, teamId }: Props) {
                   : ratingToneClass(result.value!, result.source)
               )}
             >
-              {noData ? "—" : result.value!.toLocaleString()}
+              {noData ? "—" : formatter.number(result.value!)}
             </div>
             <div className="text-muted-foreground mt-0.5 flex items-center justify-end gap-2 font-mono text-[10px] tracking-wider uppercase">
-              <span>{SOURCE_LABEL[result.source]}</span>
+              <span>{getSourceLabel(result.source, t)}</span>
               <span aria-hidden>·</span>
-              <span>{CONFIDENCE_LABEL[result.confidence]}</span>
+              <span>{getConfidenceLabel(result.confidence, t)}</span>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <span className="text-muted-foreground/60 normal-case">
@@ -112,9 +102,11 @@ export function TeamTsrCard({ result, teamId }: Props) {
                   </span>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-xs">
-                  {SOURCE_COPY[result.source]}
+                  {getSourceCopy(result.source, t)}
                   {result.offsetStdev !== null
-                    ? ` Offset spread σ ${Math.round(result.offsetStdev)}.`
+                    ? ` ${t("offsetSpread", {
+                        value: Math.round(result.offsetStdev),
+                      })}`
                     : ""}
                 </TooltipContent>
               </Tooltip>
@@ -128,9 +120,7 @@ export function TeamTsrCard({ result, teamId }: Props) {
           <ScrimBracket rating={result.value!} teamId={teamId} />
         )}
         {result.members.length === 0 ? (
-          <p className="text-muted-foreground text-sm">
-            Add team members with linked BattleTags to compute a roster rating.
-          </p>
+          <p className="text-muted-foreground text-sm">{t("empty")}</p>
         ) : (
           <ul className="divide-border divide-y">
             {result.members.map((m) => (
@@ -144,22 +134,23 @@ export function TeamTsrCard({ result, teamId }: Props) {
 }
 
 function ScrimBracket({ rating, teamId }: { rating: number; teamId: number }) {
+  const t = useTranslations("teamTsr");
   const bucket = getTierBucket(rating);
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
         <span className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-          Scrim bracket
+          {t("scrimBracket")}
         </span>
         <div className="flex flex-wrap items-baseline gap-3">
           <Link
             href={`/matchmaker/${teamId}` as Route}
             className="text-primary font-mono text-[11px] tracking-[0.16em] uppercase hover:underline"
           >
-            Find scrims →
+            {t("findScrims")}
           </Link>
           <span className="font-mono text-sm font-semibold tracking-[0.08em] uppercase">
-            {bucket.label}
+            {getBracketLabel(bucket.band, bucket.tier, t)}
           </span>
         </div>
       </div>
@@ -169,9 +160,11 @@ function ScrimBracket({ rating, teamId }: { rating: number; teamId: number }) {
 }
 
 function MemberRow({ member }: { member: TeamTsrMember }) {
+  const t = useTranslations("teamTsr");
+  const formatter = useFormatter();
   const noPlaytime = member.playtimeSeconds <= 0;
   const noContribution = member.contribution === null;
-  const weightPct = Math.round(member.playtimeWeight * 100);
+  const weightPct = member.playtimeWeight;
   return (
     <li
       className={cn(
@@ -183,12 +176,12 @@ function MemberRow({ member }: { member: TeamTsrMember }) {
         <div className="truncate font-medium">{displayName(member)}</div>
         <div className="text-muted-foreground mt-0.5 flex items-center gap-2 font-mono text-[10px] tracking-wider uppercase">
           {member.tsr !== null ? (
-            <span>TSR {member.tsr.toLocaleString()}</span>
+            <span>{t("playerTsr", { rating: member.tsr })}</span>
           ) : (
-            <span>No TSR</span>
+            <span>{t("noTsr")}</span>
           )}
           {member.compositeCsr !== null ? (
-            <span>· CSR {member.compositeCsr.toLocaleString()}</span>
+            <span>{t("playerCsr", { rating: member.compositeCsr })}</span>
           ) : null}
         </div>
       </div>
@@ -196,13 +189,16 @@ function MemberRow({ member }: { member: TeamTsrMember }) {
         <div className="bg-muted h-1.5 flex-1 overflow-hidden rounded-full">
           <div
             className="bg-primary/70 h-full"
-            style={{ width: `${weightPct}%` }}
+            style={{ width: `${Math.round(weightPct * 100)}%` }}
           />
         </div>
         <span className="text-muted-foreground w-14 text-right font-mono text-[10px] tabular-nums">
           {noPlaytime
             ? "—"
-            : `${weightPct}% · ${formatPlaytime(member.playtimeSeconds)}`}
+            : t("playtimeSummary", {
+                percent: weightPct,
+                playtime: formatPlaytime(member.playtimeSeconds, formatter, t),
+              })}
         </span>
       </div>
       <div
@@ -211,11 +207,114 @@ function MemberRow({ member }: { member: TeamTsrMember }) {
           noContribution && "text-muted-foreground"
         )}
       >
-        {noContribution ? "—" : member.contribution!.toLocaleString()}
+        {noContribution ? "—" : formatter.number(member.contribution!)}
       </div>
       <div className="text-muted-foreground text-right font-mono text-[10px] tracking-wider uppercase">
-        {CONTRIBUTION_LABEL[member.contributionType]}
+        {getContributionLabel(member.contributionType, t)}
       </div>
     </li>
   );
+}
+
+function getSourceLabel(
+  source: TeamTsrSource,
+  t: ReturnType<typeof useTranslations>
+) {
+  switch (source) {
+    case "tsr":
+      return t("sources.tsr");
+    case "predicted":
+      return t("sources.predicted");
+    case "csr_fallback":
+      return t("sources.csrFallback");
+  }
+}
+
+function getSourceCopy(
+  source: TeamTsrSource,
+  t: ReturnType<typeof useTranslations>
+) {
+  switch (source) {
+    case "tsr":
+      return t("sourceCopy.tsr");
+    case "predicted":
+      return t("sourceCopy.predicted");
+    case "csr_fallback":
+      return t("sourceCopy.csrFallback");
+  }
+}
+
+function getConfidenceLabel(
+  confidence: TeamTsrConfidence,
+  t: ReturnType<typeof useTranslations>
+) {
+  switch (confidence) {
+    case "high":
+      return t("confidence.high");
+    case "medium":
+      return t("confidence.medium");
+    case "low":
+      return t("confidence.low");
+  }
+}
+
+function getContributionLabel(
+  contributionType: TeamTsrMember["contributionType"],
+  t: ReturnType<typeof useTranslations>
+) {
+  switch (contributionType) {
+    case "tsr":
+      return t("contribution.tsr");
+    case "predicted":
+      return t("contribution.predicted");
+    case "csr":
+      return t("contribution.csr");
+    case "none":
+      return t("contribution.none");
+  }
+}
+
+function getBracketLabel(
+  band: string | null,
+  tier: FaceitTier,
+  t: ReturnType<typeof useTranslations>
+) {
+  const tierLabel = getTierLabel(tier, t);
+  if (!band) return tierLabel;
+  return t("bracketWithBand", {
+    band: getBandLabel(band, t),
+    tier: tierLabel,
+  });
+}
+
+function getTierLabel(tier: FaceitTier, t: ReturnType<typeof useTranslations>) {
+  switch (tier) {
+    case FaceitTier.UNCLASSIFIED:
+      return t("tiers.unclassified");
+    case FaceitTier.OPEN:
+      return t("tiers.open");
+    case FaceitTier.CAH:
+      return t("tiers.cah");
+    case FaceitTier.ADVANCED:
+      return t("tiers.advanced");
+    case FaceitTier.EXPERT:
+      return t("tiers.expert");
+    case FaceitTier.MASTERS:
+      return t("tiers.masters");
+    case FaceitTier.OWCS:
+      return t("tiers.owcs");
+  }
+}
+
+function getBandLabel(band: string, t: ReturnType<typeof useTranslations>) {
+  switch (band) {
+    case "Low":
+      return t("bands.low");
+    case "Mid":
+      return t("bands.mid");
+    case "High":
+      return t("bands.high");
+    default:
+      return band;
+  }
 }

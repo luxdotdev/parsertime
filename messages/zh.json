@@ -5031,30 +5031,174 @@
     "TOP_3_TIME_PLAYED-description": "授予进入游戏时长排行榜前三名的用户。出去走走吧！"
   },
   "matchmaker": {
-    "title": "Scrim matchmaker",
-    "subtitle": "Find a team near your skill level",
-    "no-snapshot-title": "No Team TSR yet",
-    "no-snapshot-description": "Your team needs a Team TSR before you can search for scrim partners. Play in tracked tournaments or wait for the next daily refresh.",
-    "back-to-team": "Back to team",
-    "no-candidates-title": "No nearby teams right now",
-    "no-candidates-description": "Try again later — the candidate pool refreshes daily.",
-    "requests-remaining": "{count} of 10 daily requests remaining",
-    "send-button": "Send scrim request",
-    "send-button-cooldown": "Available in {duration}",
-    "send-button-limit": "Daily limit reached, resets in {duration}",
-    "send-button-not-manager": "Only managers can send scrim requests",
+    "title": "训练赛匹配工具",
+    "subtitle": "查找接近你实力水平的队伍",
+    "metadata": {
+      "title": "匹配工具 | Parsertime",
+      "description": "寻找阵容 TSR 接近的训练赛伙伴，使用与你在团队页面看到的同一套技术评分。"
+    },
+    "hub": {
+      "eyebrow": "匹配工具",
+      "title": "寻找训练赛伙伴",
+      "description": "将你的阵容与实力相近的队伍匹配，查看他们在级别阶梯中的位置，并发送一条固定介绍消息。基于 Team TSR，与你在团队页面看到的量表一致。",
+      "mechanicsEyebrow": "机制 · 工作方式",
+      "mechanicsTitle": "按实力匹配、轻量、抗滥用",
+      "mechanicsDescription": "匹配工具是引荐通道，不是预约系统。你浏览队伍，发送一条固定请求，对方团队会在应用内和 Discord 上收到。",
+      "ranking": {
+        "label": "匹配排序依据",
+        "sameRegion": "优先相同 TSR 地区（NA / EMEA）",
+        "closestDistance": "TSR 绝对差距越小越靠前",
+        "sameBracket": "优先相同训练赛级别，其次相邻级别段",
+        "availabilityBonus": "本周可用时间重叠时加权",
+        "cooldownPenalty": "最近联系过的队伍会排到更后"
+      },
+      "sent": {
+        "label": "发送内容",
+        "message": "一条不可自定义的消息，包含你的队伍级别和 TSR",
+        "roster": "阵容中前五名玩家的 BattleTag 和 TSR",
+        "delivery": "发送到所有者和管理员的应用内收件箱；如已配置，也会发送到 Discord"
+      },
+      "rateLimits": {
+        "label": "频率限制",
+        "perPair": "每对队伍、每个方向每 24 小时 1 次请求",
+        "daily": "每支队伍每 24 小时最多 10 个发出请求"
+      },
+      "teamPickerEyebrow": "选择队伍 · 开始",
+      "teamPickerTitle": "你要用哪套阵容搜索？",
+      "teamPickerDescription": "你所属的每支队伍都有自己的 Team TSR。选择要进行训练赛的队伍；只有拥有 Team TSR 的队伍才能开始搜索。",
+      "teamTsr": "TSR {rating, number}",
+      "noTeamTsr": "尚无 Team TSR",
+      "searchAs": "以 {teamName} 搜索",
+      "ineligibleTitle": "匹配前需要 Team TSR",
+      "notEligible": "暂不可用",
+      "emptyTitle": "你还不在任何队伍中",
+      "emptyDescription": "先加入或创建一支队伍，然后回到这里寻找训练赛伙伴。",
+      "manageTeams": "管理队伍 →",
+      "bracketWithBand": "{band}{tier}",
+      "bands": {
+        "low": "低",
+        "mid": "中",
+        "high": "高"
+      },
+      "tiers": {
+        "unclassified": "未分级",
+        "open": "公开组",
+        "cah": "CAH",
+        "advanced": "高级组",
+        "expert": "专家组",
+        "masters": "大师组",
+        "owcs": "OWCS"
+      }
+    },
+    "no-snapshot-title": "尚无 Team TSR",
+    "no-snapshot-description": "搜索训练赛伙伴前，你的队伍需要 Team TSR。请参加已跟踪的锦标赛，或等待下一次每日刷新。",
+    "back-to-team": "返回队伍",
+    "back-to-candidates": "← 返回候选队伍",
+    "no-candidates-title": "当前没有接近的队伍",
+    "no-candidates-description": "稍后再试，候选池每天刷新。",
+    "requests-remaining": "今日还剩 {count} / 10 个请求",
+    "searchingAs": "正在以 <team>{teamName}</team> 搜索",
+    "send-button": "发送训练赛请求",
+    "send-button-cooldown": "{duration} 后可用",
+    "send-button-limit": "已达到每日限制，将在 {duration} 后重置",
+    "send-button-limit-short": "已达到每日限制，24 小时后重置",
+    "send-button-not-manager": "只有管理员可以发送训练赛请求",
+    "send-button-recent": "过去 24 小时内已联系过",
     "delta-positive": "+{value}",
     "delta-negative": "−{value}",
     "delta-zero": "±0",
-    "skill-deviation": "Skill deviation",
-    "availability-overlap": "{hours}h overlap this week",
-    "no-availability": "No shared availability data",
-    "roster": "Roster",
-    "send-success": "Scrim request sent",
-    "send-error-409": "You already messaged this team recently. Try again in 24 hours.",
-    "send-error-422": "One of the teams no longer has a Team TSR.",
-    "send-error-429": "Daily limit reached. Resets in 24 hours.",
-    "send-error-generic": "Couldn't send scrim request. Try again."
+    "skill-deviation": "实力差距",
+    "bracket-comparison": "{from} 对 {to}",
+    "your-team": "你的队伍",
+    "their-team": "对方队伍",
+    "detail-eyebrow": "匹配工具 · 训练赛",
+    "availability-overlap-title": "可用时间重叠",
+    "availability-overlap": "本周重叠 {hours} 小时",
+    "availability-overlap-short": "重叠 {hours} 小时",
+    "availability-overlap-detail": "两支队伍本周有 <value>{hours} 小时</value> 的共同可用时间。",
+    "no-availability": "没有共同可用时间数据",
+    "sent-relative": "{when}已发送",
+    "relative": {
+      "justNow": "刚刚",
+      "minutesAgo": "{count}分钟前",
+      "hoursAgo": "{count}小时前",
+      "daysAgo": "{count}天前"
+    },
+    "message-preview": "消息预览",
+    "request-message": "{fromTeamName}（{fromBracketLabel} · TSR {fromTsr, number}）正在寻找训练赛。与贵队阵容的 TSR 差距为 {delta}。",
+    "roster": "阵容",
+    "send-success": "训练赛请求已发送",
+    "send-error-409": "你最近已经联系过这支队伍。请 24 小时后再试。",
+    "send-error-422": "其中一支队伍不再拥有队伍 TSR。",
+    "send-error-429": "已达到每日限制。24 小时后重置。",
+    "send-error-generic": "无法发送训练赛请求。请重试。",
+    "bracket-with-band": "{band}{tier}",
+    "bands": {
+      "low": "低",
+      "mid": "中",
+      "high": "高"
+    },
+    "tiers": {
+      "unclassified": "未分级",
+      "open": "公开组",
+      "cah": "CAH",
+      "advanced": "高级组",
+      "expert": "专家组",
+      "masters": "大师组",
+      "owcs": "OWCS"
+    }
+  },
+  "teamTsr": {
+    "teamTsr": "队伍 TSR",
+    "teamCsr": "队伍 CSR",
+    "title": "阵容技术评分",
+    "meta": "{ratingLabel} · {rosterSize, number} 人中 {rated, number} 人有评分 · {playtimeShare, number, percent} 上场时间有数据支撑",
+    "sources": {
+      "tsr": "真实 TSR",
+      "predicted": "预测",
+      "csrFallback": "CSR 兜底"
+    },
+    "sourceCopy": {
+      "tsr": "按上场时间加权平均每位活跃首发的锦标赛评分。",
+      "predicted": "有评分的玩家使用真实 TSR，其余玩家根据团队 CSR 偏移预测。按训练赛上场时间加权。",
+      "csrFallback": "TSR 评分上场时间不足。当前显示按上场时间加权的每英雄 CSR，且与 TSR 不在同一量表。"
+    },
+    "confidence": {
+      "high": "高置信度",
+      "medium": "中等置信度",
+      "low": "低置信度"
+    },
+    "contribution": {
+      "tsr": "TSR",
+      "predicted": "预测",
+      "csr": "CSR",
+      "none": "—"
+    },
+    "offsetSpread": "偏移离散度 σ {value, number}。",
+    "empty": "添加已关联 BattleTag 的队员以计算阵容评分。",
+    "scrimBracket": "训练赛级别",
+    "findScrims": "寻找训练赛 →",
+    "playerTsr": "TSR {rating, number}",
+    "playerCsr": " · CSR {rating, number}",
+    "noTsr": "无 TSR",
+    "playtimeSummary": "{percent, number, percent} · {playtime}",
+    "playtimeHours": "{hours}小时",
+    "playtimeMinutes": "{minutes, number}分钟",
+    "bracketWithBand": "{band}{tier}",
+    "bands": {
+      "low": "低",
+      "mid": "中",
+      "high": "高"
+    },
+    "tiers": {
+      "unclassified": "未分级",
+      "open": "公开组",
+      "cah": "CAH",
+      "advanced": "高级组",
+      "expert": "专家组",
+      "masters": "大师组",
+      "owcs": "OWCS"
+    }
   },
   "teamStatsPage": {
     "layoutMetadata": {

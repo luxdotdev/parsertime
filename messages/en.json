@@ -4666,28 +4666,172 @@
   "matchmaker": {
     "title": "Scrim matchmaker",
     "subtitle": "Find a team near your skill level",
+    "metadata": {
+      "title": "Matchmaker | Parsertime",
+      "description": "Find a scrim partner whose roster sits at a comparable TSR — built on the same skill rating you see on the team page."
+    },
+    "hub": {
+      "eyebrow": "Matchmaker",
+      "title": "Find a scrim partner",
+      "description": "Match your roster against teams at a comparable skill level, see where they sit on the bracket ladder, and send a single canned introduction. Built on Team TSR — same scale you see on the team page.",
+      "mechanicsEyebrow": "Mechanics · How it works",
+      "mechanicsTitle": "Skill-aligned, lightweight, abuse-resistant",
+      "mechanicsDescription": "The matchmaker is a routed introduction, not a booking system. You browse teams; you fire one canned request; the other team picks it up in-app and on Discord.",
+      "ranking": {
+        "label": "How matches are ranked",
+        "sameRegion": "Same TSR region preferred (NA / EMEA)",
+        "closestDistance": "Closest absolute TSR distance, lowest first",
+        "sameBracket": "Same scrim bracket, then adjacent bracket bands",
+        "availabilityBonus": "Bonus when this week's availability overlaps",
+        "cooldownPenalty": "Recently messaged teams sink to the bottom"
+      },
+      "sent": {
+        "label": "What gets sent",
+        "message": "A non-customizable message with your team's bracket and TSR",
+        "roster": "Top five rostered players' BattleTags and TSRs",
+        "delivery": "Delivered in-app to owners and managers, plus Discord if configured"
+      },
+      "rateLimits": {
+        "label": "Rate limits",
+        "perPair": "One request per pair, per direction, per 24 hours",
+        "daily": "Up to ten outgoing requests per team per 24 hours"
+      },
+      "teamPickerEyebrow": "Pick a team · Start",
+      "teamPickerTitle": "Which roster are you searching from?",
+      "teamPickerDescription": "Each team you belong to has its own Team TSR. Choose the one you want to scrim with — only teams with a Team TSR can be searched from.",
+      "teamTsr": "TSR {rating, number}",
+      "noTeamTsr": "No Team TSR yet",
+      "searchAs": "Search as {teamName}",
+      "ineligibleTitle": "Team needs a Team TSR before matchmaking",
+      "notEligible": "Not yet eligible",
+      "emptyTitle": "You're not on any teams yet",
+      "emptyDescription": "Join or create a team first, then return here to find scrim partners.",
+      "manageTeams": "Manage teams →",
+      "bracketWithBand": "{band} {tier}",
+      "bands": {
+        "low": "Low",
+        "mid": "Mid",
+        "high": "High"
+      },
+      "tiers": {
+        "unclassified": "Unclassified",
+        "open": "Open",
+        "cah": "CAH",
+        "advanced": "Advanced",
+        "expert": "Expert",
+        "masters": "Masters",
+        "owcs": "OWCS"
+      }
+    },
     "no-snapshot-title": "No Team TSR yet",
     "no-snapshot-description": "Your team needs a Team TSR before you can search for scrim partners. Play in tracked tournaments or wait for the next daily refresh.",
     "back-to-team": "Back to team",
+    "back-to-candidates": "← Back to candidates",
     "no-candidates-title": "No nearby teams right now",
     "no-candidates-description": "Try again later — the candidate pool refreshes daily.",
     "requests-remaining": "{count} of 10 daily requests remaining",
+    "searchingAs": "Searching as <team>{teamName}</team>",
     "send-button": "Send scrim request",
     "send-button-cooldown": "Available in {duration}",
     "send-button-limit": "Daily limit reached, resets in {duration}",
+    "send-button-limit-short": "Daily limit reached, resets in 24h",
     "send-button-not-manager": "Only managers can send scrim requests",
+    "send-button-recent": "Already messaged in last 24h",
     "delta-positive": "+{value}",
     "delta-negative": "−{value}",
     "delta-zero": "±0",
     "skill-deviation": "Skill deviation",
+    "bracket-comparison": "{from} vs {to}",
+    "your-team": "Your team",
+    "their-team": "Their team",
+    "detail-eyebrow": "Matchmaker · Scrim",
+    "availability-overlap-title": "Availability overlap",
     "availability-overlap": "{hours}h overlap this week",
+    "availability-overlap-short": "{hours, plural, one {#h overlap} other {#h overlap}}",
+    "availability-overlap-detail": "Both teams have <value>{hours, plural, one {# shared hour} other {# shared hours}}</value> this week.",
     "no-availability": "No shared availability data",
+    "sent-relative": "Sent {when}",
+    "relative": {
+      "justNow": "just now",
+      "minutesAgo": "{count, plural, one {#m ago} other {#m ago}}",
+      "hoursAgo": "{count, plural, one {#h ago} other {#h ago}}",
+      "daysAgo": "{count, plural, one {#d ago} other {#d ago}}"
+    },
+    "message-preview": "Message preview",
+    "request-message": "{fromTeamName} ({fromBracketLabel} · TSR {fromTsr, number}) is looking for a scrim. They're {delta} TSR from your roster.",
     "roster": "Roster",
     "send-success": "Scrim request sent",
     "send-error-409": "You already messaged this team recently. Try again in 24 hours.",
     "send-error-422": "One of the teams no longer has a Team TSR.",
     "send-error-429": "Daily limit reached. Resets in 24 hours.",
-    "send-error-generic": "Couldn't send scrim request. Try again."
+    "send-error-generic": "Couldn't send scrim request. Try again.",
+    "bracket-with-band": "{band} {tier}",
+    "bands": {
+      "low": "Low",
+      "mid": "Mid",
+      "high": "High"
+    },
+    "tiers": {
+      "unclassified": "Unclassified",
+      "open": "Open",
+      "cah": "CAH",
+      "advanced": "Advanced",
+      "expert": "Expert",
+      "masters": "Masters",
+      "owcs": "OWCS"
+    }
+  },
+  "teamTsr": {
+    "teamTsr": "Team TSR",
+    "teamCsr": "Team CSR",
+    "title": "Roster skill rating",
+    "meta": "{ratingLabel} · {rated, number} of {rosterSize, number} rated · {playtimeShare, number, percent} playtime backed",
+    "sources": {
+      "tsr": "Real TSR",
+      "predicted": "Predicted",
+      "csrFallback": "CSR fallback"
+    },
+    "sourceCopy": {
+      "tsr": "Playtime-weighted mean of every active starter's tournament rating.",
+      "predicted": "Real TSR for rated players; the rest predicted from team CSR offset. Weighted by scrim playtime.",
+      "csrFallback": "Not enough rated playtime for TSR. Showing playtime-weighted per-hero CSR — not on the same scale as TSR."
+    },
+    "confidence": {
+      "high": "High confidence",
+      "medium": "Medium confidence",
+      "low": "Low confidence"
+    },
+    "contribution": {
+      "tsr": "TSR",
+      "predicted": "Predicted",
+      "csr": "CSR",
+      "none": "—"
+    },
+    "offsetSpread": "Offset spread σ {value, number}.",
+    "empty": "Add team members with linked BattleTags to compute a roster rating.",
+    "scrimBracket": "Scrim bracket",
+    "findScrims": "Find scrims →",
+    "playerTsr": "TSR {rating, number}",
+    "playerCsr": " · CSR {rating, number}",
+    "noTsr": "No TSR",
+    "playtimeSummary": "{percent, number, percent} · {playtime}",
+    "playtimeHours": "{hours}h",
+    "playtimeMinutes": "{minutes, number}m",
+    "bracketWithBand": "{band} {tier}",
+    "bands": {
+      "low": "Low",
+      "mid": "Mid",
+      "high": "High"
+    },
+    "tiers": {
+      "unclassified": "Unclassified",
+      "open": "Open",
+      "cah": "CAH",
+      "advanced": "Advanced",
+      "expert": "Expert",
+      "masters": "Masters",
+      "owcs": "OWCS"
+    }
   },
   "dataCorruption": {
     "warning": {

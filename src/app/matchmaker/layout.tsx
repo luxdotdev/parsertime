@@ -1,11 +1,15 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Matchmaker | Parsertime",
-  description:
-    "Find a scrim partner whose roster sits at a comparable TSR — built on the same skill rating you see on the team page.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("matchmaker.metadata");
+
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
 
 export default function MatchmakerLayout({
   children,

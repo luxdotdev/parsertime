@@ -1,25 +1,16 @@
 import Link from "next/link";
-import { formatDistanceToNow } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { AvailabilityOverlapBar } from "./availability-overlap-bar";
 import type { MatchmakerCandidate } from "@/lib/matchmaker/candidates";
 import type { Route } from "next";
 import { cn } from "@/lib/utils";
+import { FaceitTier } from "@prisma/client";
+import { useFormatter, useTranslations } from "next-intl";
 
 type Props = {
   searcherTeamId: number;
   candidate: MatchmakerCandidate;
 };
-
-function bracketLabel(c: MatchmakerCandidate): string {
-  return c.bracketBand ? `${c.bracketBand} ${c.bracketTier}` : c.bracketTier;
-}
-
-function formatDelta(d: number): string {
-  if (d > 0) return `+${d}`;
-  if (d < 0) return `−${Math.abs(d)}`;
-  return "±0";
-}
 
 function deltaTone(d: number): string {
   const abs = Math.abs(d);
@@ -29,6 +20,8 @@ function deltaTone(d: number): string {
 }
 
 export function CandidateRow({ searcherTeamId, candidate }: Props) {
+  const t = useTranslations("matchmaker");
+  const formatter = useFormatter();
   const href = `/matchmaker/${searcherTeamId}/vs/${candidate.teamId}` as Route;
   const sentAt = candidate.cooledUntil
     ? new Date(candidate.cooledUntil.getTime() - 24 * 3_600_000)
@@ -49,14 +42,16 @@ export function CandidateRow({ searcherTeamId, candidate }: Props) {
             {candidate.teamName}
           </span>
           <Badge variant="outline" className="font-mono">
-            {bracketLabel(candidate)}
+            {getBracketLabel(candidate.bracketBand, candidate.bracketTier, t)}
           </Badge>
           <Badge variant="outline" className="font-mono">
             {candidate.region}
           </Badge>
           {candidate.cooldownActive && sentAt && (
             <Badge variant="secondary" className="font-mono">
-              Sent {formatDistanceToNow(sentAt, { addSuffix: true })}
+              {t("sent-relative", {
+                when: formatRelativePast(sentAt, t),
+              })}
             </Badge>
           )}
         </div>
@@ -64,7 +59,7 @@ export function CandidateRow({ searcherTeamId, candidate }: Props) {
       </div>
       <div className="text-right">
         <div className="font-mono text-xl font-semibold tabular-nums">
-          {candidate.rating.toLocaleString()}
+          {formatter.number(candidate.rating)}
         </div>
         <div
           className={cn(
@@ -72,9 +67,74 @@ export function CandidateRow({ searcherTeamId, candidate }: Props) {
             deltaTone(candidate.delta)
           )}
         >
-          {formatDelta(candidate.delta)}
+          {formatDelta(candidate.delta, formatter, t)}
         </div>
       </div>
     </Link>
   );
+}
+
+function formatDelta(
+  delta: number,
+  formatter: ReturnType<typeof useFormatter>,
+  t: ReturnType<typeof useTranslations>
+) {
+  const value = formatter.number(Math.abs(delta));
+  if (delta > 0) return t("delta-positive", { value });
+  if (delta < 0) return t("delta-negative", { value });
+  return t("delta-zero");
+}
+
+function formatRelativePast(date: Date, t: ReturnType<typeof useTranslations>) {
+  const minutes = Math.floor((Date.now() - date.getTime()) / 60_000);
+  if (minutes < 1) return t("relative.justNow");
+  if (minutes < 60) return t("relative.minutesAgo", { count: minutes });
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return t("relative.hoursAgo", { count: hours });
+  return t("relative.daysAgo", { count: Math.floor(hours / 24) });
+}
+
+function getBracketLabel(
+  band: string | null,
+  tier: FaceitTier,
+  t: ReturnType<typeof useTranslations>
+) {
+  const tierLabel = getTierLabel(tier, t);
+  if (!band) return tierLabel;
+  return t("bracket-with-band", {
+    band: getBandLabel(band, t),
+    tier: tierLabel,
+  });
+}
+
+function getTierLabel(tier: FaceitTier, t: ReturnType<typeof useTranslations>) {
+  switch (tier) {
+    case FaceitTier.UNCLASSIFIED:
+      return t("tiers.unclassified");
+    case FaceitTier.OPEN:
+      return t("tiers.open");
+    case FaceitTier.CAH:
+      return t("tiers.cah");
+    case FaceitTier.ADVANCED:
+      return t("tiers.advanced");
+    case FaceitTier.EXPERT:
+      return t("tiers.expert");
+    case FaceitTier.MASTERS:
+      return t("tiers.masters");
+    case FaceitTier.OWCS:
+      return t("tiers.owcs");
+  }
+}
+
+function getBandLabel(band: string, t: ReturnType<typeof useTranslations>) {
+  switch (band) {
+    case "Low":
+      return t("bands.low");
+    case "Mid":
+      return t("bands.mid");
+    case "High":
+      return t("bands.high");
+    default:
+      return band;
+  }
 }

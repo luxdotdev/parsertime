@@ -7,12 +7,15 @@ import {
 } from "@/components/matchmaker/matchmaker-hub";
 import { getTierBucket } from "@/lib/tsr/tier-bucket";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Matchmaker | Parsertime",
-  description:
-    "Find a scrim partner whose roster sits at a comparable TSR — built on the same skill rating you see on the team page.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("matchmaker.metadata");
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
 
 export default async function MatchmakerHubPage() {
   const session = await auth();
@@ -48,6 +51,7 @@ export default async function MatchmakerHubPage() {
         name: t.name,
         hasSnapshot: false,
         bracketLabel: null,
+        bracketBand: null,
         region: null,
         rating: null,
         bracketTier: null,
@@ -59,6 +63,7 @@ export default async function MatchmakerHubPage() {
       name: t.name,
       hasSnapshot: true,
       bracketLabel: bucket.label,
+      bracketBand: bucket.band,
       region: snap.region,
       rating: snap.rating,
       bracketTier: snap.bracketTier,

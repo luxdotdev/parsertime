@@ -4,12 +4,15 @@ import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import type { Route } from "next";
 import type { FaceitTier, TsrRegion } from "@prisma/client";
+import { useTranslations } from "next-intl";
+import type { TierBand } from "@/lib/tsr/tier-bucket";
 
 export type HubTeam = {
   id: number;
   name: string;
   hasSnapshot: boolean;
   bracketLabel: string | null;
+  bracketBand: TierBand | null;
   region: TsrRegion | null;
   rating: number | null;
   bracketTier: FaceitTier | null;
@@ -20,62 +23,53 @@ type Props = {
 };
 
 export function MatchmakerHub({ teams }: Props) {
+  const t = useTranslations("matchmaker.hub");
+
   return (
     <div className="px-6 pt-8 pb-16 sm:px-10">
       <header className="border-border border-b pb-6">
         <p className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
-          Matchmaker
+          {t("eyebrow")}
         </p>
         <h1 className="mt-3 text-4xl leading-none font-semibold tracking-tight">
-          Find a scrim partner
+          {t("title")}
         </h1>
         <p className="text-muted-foreground mt-3 max-w-prose text-sm leading-relaxed">
-          Match your roster against teams at a comparable skill level, see where
-          they sit on the bracket ladder, and send a single canned introduction.
-          Built on Team TSR — same scale you see on the team page.
+          {t("description")}
         </p>
       </header>
 
       <section className="grid gap-x-10 gap-y-6 py-10 sm:py-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
         <div>
           <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-            Mechanics · How it works
+            {t("mechanicsEyebrow")}
           </p>
           <h2 className="mt-3 text-2xl font-semibold tracking-tight">
-            Skill-aligned, lightweight, abuse-resistant
+            {t("mechanicsTitle")}
           </h2>
           <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
-            The matchmaker is a routed introduction, not a booking system. You
-            browse teams; you fire one canned request; the other team picks it
-            up in-app and on Discord.
+            {t("mechanicsDescription")}
           </p>
         </div>
 
         <div className="space-y-6">
           <BulletGroup
-            label="How matches are ranked"
+            label={t("ranking.label")}
             items={[
-              "Same TSR region preferred (NA / EMEA)",
-              "Closest absolute TSR distance, lowest first",
-              "Same scrim bracket, then adjacent bracket bands",
-              "Bonus when this week's availability overlaps",
-              "Recently messaged teams sink to the bottom",
+              t("ranking.sameRegion"),
+              t("ranking.closestDistance"),
+              t("ranking.sameBracket"),
+              t("ranking.availabilityBonus"),
+              t("ranking.cooldownPenalty"),
             ]}
           />
           <BulletGroup
-            label="What gets sent"
-            items={[
-              "A non-customizable message with your team's bracket and TSR",
-              "Top five rostered players' battletags and TSRs",
-              "Delivered in-app to owners and managers, plus Discord if configured",
-            ]}
+            label={t("sent.label")}
+            items={[t("sent.message"), t("sent.roster"), t("sent.delivery")]}
           />
           <BulletGroup
-            label="Rate limits"
-            items={[
-              "One request per pair, per direction, per 24 hours",
-              "Up to ten outgoing requests per team per 24 hours",
-            ]}
+            label={t("rateLimits.label")}
+            items={[t("rateLimits.perPair"), t("rateLimits.daily")]}
           />
         </div>
       </section>
@@ -84,15 +78,13 @@ export function MatchmakerHub({ teams }: Props) {
         <div className="grid gap-x-10 gap-y-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
           <div>
             <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-              Pick a team · Start
+              {t("teamPickerEyebrow")}
             </p>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight">
-              Which roster are you searching from?
+              {t("teamPickerTitle")}
             </h2>
             <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
-              Each team you belong to has its own Team TSR. Choose the one you
-              want to scrim with — only teams with a Team TSR can be searched
-              from.
+              {t("teamPickerDescription")}
             </p>
           </div>
 
@@ -114,8 +106,13 @@ export function MatchmakerHub({ teams }: Props) {
 }
 
 function TeamRow({ team }: { team: HubTeam }) {
+  const t = useTranslations("matchmaker.hub");
   const eligible = team.hasSnapshot;
   const href = `/matchmaker/${team.id}` as Route;
+  const bracketLabel =
+    team.bracketTier !== null
+      ? getBracketLabel(team.bracketBand, team.bracketTier, t)
+      : null;
 
   return (
     <li className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
@@ -124,9 +121,9 @@ function TeamRow({ team }: { team: HubTeam }) {
           <span className="truncate font-medium tracking-tight">
             {team.name}
           </span>
-          {team.bracketLabel ? (
+          {bracketLabel ? (
             <Badge variant="outline" className="font-mono">
-              {team.bracketLabel}
+              {bracketLabel}
             </Badge>
           ) : null}
           {team.region ? (
@@ -137,18 +134,18 @@ function TeamRow({ team }: { team: HubTeam }) {
         </div>
         {team.rating !== null ? (
           <div className="text-muted-foreground mt-1 font-mono text-[11px] tracking-[0.08em] uppercase tabular-nums">
-            TSR {team.rating.toLocaleString()}
+            {t("teamTsr", { rating: team.rating })}
           </div>
         ) : (
           <div className="text-muted-foreground mt-1 font-mono text-[11px] tracking-[0.16em] uppercase">
-            No Team TSR yet
+            {t("noTeamTsr")}
           </div>
         )}
       </div>
       {eligible ? (
         <Button asChild size="sm" className="h-9 rounded-md px-3 text-sm">
           <Link href={href}>
-            Search as {team.name}
+            {t("searchAs", { teamName: team.name })}
             <ArrowRightIcon className="ml-1.5 size-3.5" aria-hidden />
           </Link>
         </Button>
@@ -158,9 +155,9 @@ function TeamRow({ team }: { team: HubTeam }) {
           size="sm"
           disabled
           className="h-9 rounded-md px-3 text-sm"
-          title="Team needs a Team TSR before matchmaking"
+          title={t("ineligibleTitle")}
         >
-          Not yet eligible
+          {t("notEligible")}
         </Button>
       )}
     </li>
@@ -168,22 +165,67 @@ function TeamRow({ team }: { team: HubTeam }) {
 }
 
 function EmptyState() {
+  const t = useTranslations("matchmaker.hub");
+
   return (
     <div className="border-border bg-card rounded-xl border p-8 text-center">
       <h3 className="text-base font-semibold tracking-tight">
-        You&apos;re not on any teams yet
+        {t("emptyTitle")}
       </h3>
       <p className="text-muted-foreground mx-auto mt-2 max-w-sm text-sm leading-relaxed">
-        Join or create a team first, then return here to find scrim partners.
+        {t("emptyDescription")}
       </p>
       <Link
         href={"/team" as Route}
         className="text-primary mt-5 inline-block font-mono text-[11px] tracking-[0.16em] uppercase hover:underline"
       >
-        Manage teams →
+        {t("manageTeams")}
       </Link>
     </div>
   );
+}
+
+function getBracketLabel(
+  band: TierBand | null,
+  tier: FaceitTier,
+  t: ReturnType<typeof useTranslations>
+) {
+  const tierLabel = getTierLabel(tier, t);
+  if (!band) return tierLabel;
+  return t("bracketWithBand", {
+    band: getBandLabel(band, t),
+    tier: tierLabel,
+  });
+}
+
+function getTierLabel(tier: FaceitTier, t: ReturnType<typeof useTranslations>) {
+  switch (tier) {
+    case "UNCLASSIFIED":
+      return t("tiers.unclassified");
+    case "OPEN":
+      return t("tiers.open");
+    case "CAH":
+      return t("tiers.cah");
+    case "ADVANCED":
+      return t("tiers.advanced");
+    case "EXPERT":
+      return t("tiers.expert");
+    case "MASTERS":
+      return t("tiers.masters");
+    case "OWCS":
+      return t("tiers.owcs");
+  }
+}
+
+function getBandLabel(band: TierBand, t: ReturnType<typeof useTranslations>) {
+  switch (band) {
+    case "Low":
+      return t("bands.low");
+    case "Mid":
+      return t("bands.mid");
+    case "High":
+      return t("bands.high");
+  }
 }
 
 function BulletGroup({ label, items }: { label: string; items: string[] }) {
