@@ -5320,8 +5320,13 @@
     "progress": "진행도",
     "baseline": "기준값",
     "target": "목표",
-    "targetAchieved": "목표 달성!",
-    "coachNote": "코치 메모",
+  "targetAchieved": "목표 달성!",
+  "coachNote": "코치 메모",
+  "progressSummary": {
+    "onTrack": "<countValue>{count}</countValue>개 순조로움",
+    "inProgress": "<countValue>{count}</countValue>개 진행 중",
+    "behind": "<countValue>{count}</countValue>개 뒤처짐"
+  },
     "form": {
       "title": "{playerName}의 목표 설정",
       "editTitle": "{playerName}의 목표 수정",
@@ -5349,10 +5354,12 @@
       "healing_dealt": "치유량/10분",
       "ultimates_earned": "궁극기 획득/10분"
     },
-    "narrative": {
-      "changed": "{stat}이(가) 최근 {window} 스크림에서 {percent}% {direction}했습니다.",
-      "progressToward": "목표 {targetDirection}{targetPercent}%까지 {percent}% 달성했습니다.",
-      "increased": "증가",
+  "narrative": {
+    "changed": "{stat}이(가) 최근 {window} 스크림에서 {percent}% {direction}했습니다.",
+    "changedRich": "{stat}이(가) 최근 {window} 스크림에서 <percentValue>{percent}</percentValue> {direction}했습니다.",
+    "progressToward": "목표 {targetDirection}{targetPercent}%까지 {percent}% 달성했습니다.",
+    "progressTowardRich": "목표 {targetDirection}{targetPercent}까지 <percentValue>{percent}</percentValue> 달성했습니다.",
+    "increased": "증가",
       "decreased": "감소"
     }
   },

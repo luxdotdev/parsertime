@@ -5320,8 +5320,13 @@
     "progress": "进度",
     "baseline": "基准值",
     "target": "目标",
-    "targetAchieved": "目标达成！",
-    "coachNote": "教练备注",
+  "targetAchieved": "目标达成！",
+  "coachNote": "教练备注",
+  "progressSummary": {
+    "onTrack": "<countValue>{count}</countValue> 个正常",
+    "inProgress": "<countValue>{count}</countValue> 个进行中",
+    "behind": "<countValue>{count}</countValue> 个落后"
+  },
     "form": {
       "title": "为 {playerName} 设定目标",
       "editTitle": "编辑 {playerName} 的目标",
@@ -5349,10 +5354,12 @@
       "healing_dealt": "治疗量/10分钟",
       "ultimates_earned": "终极技能获取/10分钟"
     },
-    "narrative": {
-      "changed": "您的{stat}在最近{window}场训练赛中{direction}了{percent}%。",
-      "progressToward": "您已达成目标{targetDirection}{targetPercent}%的{percent}%。",
-      "increased": "提高",
+  "narrative": {
+    "changed": "您的{stat}在最近{window}场训练赛中{direction}了{percent}%。",
+    "changedRich": "您的{stat}在最近 {window} 场训练赛中{direction}了 <percentValue>{percent}</percentValue>。",
+    "progressToward": "您已达成目标{targetDirection}{targetPercent}%的{percent}%。",
+    "progressTowardRich": "您已完成目标 {targetDirection}{targetPercent} 的 <percentValue>{percent}</percentValue>。",
+    "increased": "提高",
       "decreased": "降低"
     }
   },

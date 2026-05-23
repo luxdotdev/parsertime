@@ -5321,6 +5321,11 @@
     "target": "Target",
     "targetAchieved": "Target achieved!",
     "coachNote": "Coach's note",
+    "progressSummary": {
+      "onTrack": "<countValue>{count}</countValue> on track",
+      "inProgress": "<countValue>{count}</countValue> in progress",
+      "behind": "<countValue>{count}</countValue> behind"
+    },
     "form": {
       "title": "Set Target for {playerName}",
       "editTitle": "Edit Target for {playerName}",
@@ -5350,7 +5355,9 @@
     },
     "narrative": {
       "changed": "Your {stat} has {direction} by {percent}% over the last {window} scrims.",
+      "changedRich": "Your {stat} has {direction} by <percentValue>{percent}</percentValue> over the last {window} scrims.",
       "progressToward": "You're {percent}% of the way to your target of {targetDirection}{targetPercent}%.",
+      "progressTowardRich": "You're <percentValue>{percent}</percentValue> of the way to your target of {targetDirection}{targetPercent}.",
       "increased": "increased",
       "decreased": "decreased"
     }

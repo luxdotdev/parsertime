@@ -2,12 +2,15 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { TargetProgress } from "@/data/player/types";
+import { useFormatter, useTranslations } from "next-intl";
 
 type Props = {
   progress: TargetProgress[];
 };
 
 export function TargetProgressCard({ progress }: Props) {
+  const t = useTranslations("targets");
+  const formatter = useFormatter();
   const onTrack = progress.filter((p) => p.progressPercent >= 75).length;
   const mixed = progress.filter(
     (p) => p.progressPercent >= 25 && p.progressPercent < 75
@@ -23,7 +26,7 @@ export function TargetProgressCard({ progress }: Props) {
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-base">Target Progress</CardTitle>
+        <CardTitle className="text-base">{t("targetProgress")}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex items-center gap-4">
@@ -60,21 +63,38 @@ export function TargetProgressCard({ progress }: Props) {
               className="absolute inset-0 flex items-center justify-center text-xs font-bold"
               style={{ fontVariantNumeric: "tabular-nums" }}
             >
-              {Math.round(overallPercent)}%
+              {formatter.number(overallPercent / 100, {
+                style: "percent",
+                maximumFractionDigits: 0,
+              })}
             </span>
           </div>
           <div className="space-y-1 text-sm">
             <p>
-              <span className="font-semibold text-green-500">{onTrack}</span> on
-              track
+              {t.rich("progressSummary.onTrack", {
+                count: onTrack,
+                countValue: (chunks) => (
+                  <span className="font-semibold text-green-500">{chunks}</span>
+                ),
+              })}
             </p>
             <p>
-              <span className="font-semibold text-yellow-500">{mixed}</span> in
-              progress
+              {t.rich("progressSummary.inProgress", {
+                count: mixed,
+                countValue: (chunks) => (
+                  <span className="font-semibold text-yellow-500">
+                    {chunks}
+                  </span>
+                ),
+              })}
             </p>
             <p>
-              <span className="font-semibold text-red-500">{behind}</span>{" "}
-              behind
+              {t.rich("progressSummary.behind", {
+                count: behind,
+                countValue: (chunks) => (
+                  <span className="font-semibold text-red-500">{chunks}</span>
+                ),
+              })}
             </p>
           </div>
         </div>
