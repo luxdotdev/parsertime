@@ -1081,7 +1081,21 @@
         "ourTopFightInitiator": "가장 자주 전투를 연 궁극기: <strong>{hero}</strong> (<n>{count}</n>{count, plural, other {회 전투}}).",
         "opponentTopFightInitiator": "상대가 가장 자주 전투를 연 궁극기: <strong>{hero}</strong> (<n>{count}</n>{count, plural, other {회 전투}}).",
         "goodDiscipline": "좋은 궁극기 관리 — 패배한 전투보다 승리한 전투에서 궁극기를 더 많이 사용했습니다.",
-        "roomForImprovement": "개선 여지 — 승리한 전투보다 패배한 전투에서 궁극기를 더 많이 사용했습니다."
+        "roomForImprovement": "개선 여지 — 승리한 전투보다 패배한 전투에서 궁극기를 더 많이 사용했습니다.",
+        "ultUsage": "우리 팀은 궁극기를 <n>{ourCount}</n>{ourCount, plural, other {회}} 사용했고, 상대는 <n>{opponentCount}</n>회 사용했습니다.",
+        "roleUltUsage": "{role} 궁극기: 우리 팀 <n>{ourCount}</n>회, 상대 <n>{opponentCount}</n>회.",
+        "roleFirstUlt": "{role} 궁극기를 전투의 <rate>{rateValue}</rate>에서 먼저 사용했습니다.",
+        "subroleTiming": "{subrole}: <n>{count}</n>{count, plural, other {회 궁극기}} ({pct}%) — <init>개시 {initiation}회</init>, <mid>중반 {midfight}회</mid>, <lateText>후반 {late}회</lateText>",
+        "fightInitiations": "궁극기로 전투를 연 비율은 <rate>{rateValue}</rate>입니다 (<n>{initiations}</n> / <n>{total}</n>).",
+        "topUltUser": "최다 궁극기 사용자: <strong>{playerName}</strong> ({hero}), <n>{count}</n>{count, plural, other {회}} 사용.",
+        "avgChargeAndHold": "우리 팀은 평균 <n>{chargeTime}초</n>에 궁극기를 충전했고, 사용 전 평균 <n>{holdTime}초</n> 동안 보유했습니다.",
+        "avgCharge": "우리 팀은 평균 <n>{chargeTime}초</n>에 궁극기를 충전했습니다.",
+        "avgHold": "우리 팀은 궁극기를 사용하기 전 평균 <n>{holdTime}초</n> 동안 보유했습니다.",
+        "ultimateEfficiency": "궁극기 효율: 궁극기 1회 사용당 승리 전투 <n>{value}</n>회 ({rating}).",
+        "averageUltsPerFight": "승리한 전투에서는 평균 <wonValue>{won}</wonValue>회, 패배한 전투에서는 평균 <lostValue>{lost}</lostValue>회 궁극기를 사용했습니다. {discipline}",
+        "wastedUltimates": "<n>{count}</n>{count, plural, other {회}}의 궁극기를 낭비했습니다 (전체의 <n>{percent}%</n>). 이는 불리한 상황(3명 이상 열세)에서 사용되었습니다.",
+        "dryNonDryFights": "궁극기를 쓰지 않은 드라이 전투 <n>{dryCount}</n>{dryCount, plural, other {회}}의 승률은 <n>{dryRate}%</n>였고, 궁극기를 사용한 전투 <n>{nonDryCount}</n>{nonDryCount, plural, other {회}}의 승률은 <n>{nonDryRate}%</n>였습니다.",
+        "fightReversal": "역전 승률(2킬 이상 뒤진 뒤 승리): 드라이 전투 <n>{dryRate}%</n>, 궁극기 사용 전투 <n>{nonDryRate}%</n>.{insight, select, comeback { 궁극기는 이 팀의 핵심 역전 도구입니다.} mechanics { 이 팀은 순수 교전력으로도 전투를 뒤집을 수 있습니다.} other {}}"
       },
       "swaps": {
         "label": "영웅 교체 분석",

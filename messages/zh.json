@@ -1081,7 +1081,21 @@
         "ourTopFightInitiator": "你方最常用的开战终极技能：<strong>{hero}</strong>（<n>{count}</n>{count, plural, other { 场战斗}}）。",
         "opponentTopFightInitiator": "对手最常用的开战终极技能：<strong>{hero}</strong>（<n>{count}</n>{count, plural, other { 场战斗}}）。",
         "goodDiscipline": "终极技能纪律良好 — 胜利团战中使用的终极技能多于失败团战。",
-        "roomForImprovement": "仍有改进空间 — 失败团战中使用的终极技能多于胜利团战。"
+        "roomForImprovement": "仍有改进空间 — 失败团战中使用的终极技能多于胜利团战。",
+        "ultUsage": "你方使用了 <n>{ourCount}</n>{ourCount, plural, other { 个终极技能}}，对手使用了 <n>{opponentCount}</n> 个。",
+        "roleUltUsage": "{role} 终极技能：你方使用 <n>{ourCount}</n> 个，对手使用 <n>{opponentCount}</n> 个。",
+        "roleFirstUlt": "你方在 <rate>{rateValue}</rate> 的团战中率先使用 {role} 终极技能。",
+        "subroleTiming": "{subrole}：<n>{count}</n>{count, plural, other { 个终极技能}}（{pct}%）— <init>开战 {initiation}</init>，<mid>中期 {midfight}</mid>，<lateText>后期 {late}</lateText>",
+        "fightInitiations": "你方在 <rate>{rateValue}</rate> 的终极技能团战中用终极技能开战（<n>{initiations}</n> / <n>{total}</n>）。",
+        "topUltUser": "使用终极技能最多：<strong>{playerName}</strong>（{hero}），使用 <n>{count}</n>{count, plural, other { 个}}。",
+        "avgChargeAndHold": "你方平均 <n>{chargeTime} 秒</n>充满终极技能，并在使用前平均持有 <n>{holdTime} 秒</n>。",
+        "avgCharge": "你方平均 <n>{chargeTime} 秒</n>充满终极技能。",
+        "avgHold": "你方在使用终极技能前平均持有 <n>{holdTime} 秒</n>。",
+        "ultimateEfficiency": "终极技能效率：每个终极技能赢下 <n>{value}</n> 场团战（{rating}）。",
+        "averageUltsPerFight": "胜利团战平均使用 <wonValue>{won}</wonValue> 个终极技能，失败团战平均使用 <lostValue>{lost}</lostValue> 个。{discipline}",
+        "wastedUltimates": "浪费了 <n>{count}</n>{count, plural, other { 个终极技能}}（占总数 <n>{percent}%</n>），这些终极技能用于已失利局面（落后 3 人以上）。",
+        "dryNonDryFights": "<n>{dryCount}</n>{dryCount, plural, other { 场干团}}（未使用终极技能）的胜率为 <n>{dryRate}%</n>，另有 <n>{nonDryCount}</n>{nonDryCount, plural, other { 场}}使用终极技能的团战（<n>{nonDryRate}%</n> 胜率）。",
+        "fightReversal": "逆转率（落后 2 个以上击杀后获胜）：干团 <n>{dryRate}%</n>，使用终极技能时 <n>{nonDryRate}%</n>。{insight, select, comeback {终极技能是这支队伍的关键翻盘工具。} mechanics {这支队伍也能凭借硬实力逆转团战。} other {}}"
       },
       "swaps": {
         "label": "英雄更换分析",

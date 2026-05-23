@@ -1081,7 +1081,21 @@
         "ourTopFightInitiator": "Your most common fight-opening ultimate: <strong>{hero}</strong> (<n>{count}</n> {count, plural, one {fight} other {fights}}).",
         "opponentTopFightInitiator": "Opponent's most common fight-opening ultimate: <strong>{hero}</strong> (<n>{count}</n> {count, plural, one {fight} other {fights}}).",
         "goodDiscipline": "Good ultimate discipline — more ultimates used in wins than losses.",
-        "roomForImprovement": "Room for improvement — more ultimates used in losses than wins."
+        "roomForImprovement": "Room for improvement — more ultimates used in losses than wins.",
+        "ultUsage": "Your team used <n>{ourCount}</n> {ourCount, plural, one {ultimate} other {ultimates}} vs opponent's <n>{opponentCount}</n>.",
+        "roleUltUsage": "{role} ultimates: your team used <n>{ourCount}</n> vs opponent's <n>{opponentCount}</n>.",
+        "roleFirstUlt": "You used {role} ultimates first in <rate>{rateValue}</rate> of fights.",
+        "subroleTiming": "{subrole}: <n>{count}</n> {count, plural, one {ultimate} other {ultimates}} ({pct}%) — <init>{initiation} initiation</init>, <mid>{midfight} midfight</mid>, <lateText>{late} late</lateText>",
+        "fightInitiations": "Your team initiated fights with ultimates in <rate>{rateValue}</rate> of ultimate-involved fights (<n>{initiations}</n> of <n>{total}</n>).",
+        "topUltUser": "Top ultimate user: <strong>{playerName}</strong> ({hero}) with <n>{count}</n> {count, plural, one {ultimate} other {ultimates}} used.",
+        "avgChargeAndHold": "Your team charged ultimates in an average of <n>{chargeTime}s</n> and held them for an average of <n>{holdTime}s</n> before using.",
+        "avgCharge": "Your team charged ultimates in an average of <n>{chargeTime}s</n>.",
+        "avgHold": "Your team held ultimates for an average of <n>{holdTime}s</n> before using.",
+        "ultimateEfficiency": "Ultimate Efficiency: <n>{value}</n> fights won per ultimate used ({rating}).",
+        "averageUltsPerFight": "Used an average of <wonValue>{won}</wonValue> ultimates per won fight vs <lostValue>{lost}</lostValue> per lost fight. {discipline}",
+        "wastedUltimates": "<n>{count}</n> wasted {count, plural, one {ultimate} other {ultimates}} (<n>{percent}%</n> of total) used in lost situations (3+ player disadvantage).",
+        "dryNonDryFights": "<n>{dryCount}</n> dry {dryCount, plural, one {fight} other {fights}} (no ultimates used) with a <n>{dryRate}%</n> win rate, plus <n>{nonDryCount}</n> {nonDryCount, plural, one {fight} other {fights}} where ultimates were used (<n>{nonDryRate}%</n> WR).",
+        "fightReversal": "Fight reversal rate (won after being down 2+ kills): <n>{dryRate}%</n> in dry fights vs <n>{nonDryRate}%</n> when ultimates were used.{insight, select, comeback { Ultimates are a key comeback tool for this team.} mechanics { This team can reverse fights through raw mechanics.} other {}}"
       },
       "swaps": {
         "label": "Hero swap analysis",

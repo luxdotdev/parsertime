@@ -182,6 +182,44 @@ export function UltAnalysisSection({
     allOurTimings.length > 0 || allOpponentTimings.length > 0;
   const hasCharts = hasComparisons || hasTimingData;
 
+  function strong(chunks: ReactNode) {
+    return <span className="font-semibold">{chunks}</span>;
+  }
+
+  function number(chunks: ReactNode) {
+    return <span className="font-semibold tabular-nums">{chunks}</span>;
+  }
+
+  function greenNumber(chunks: ReactNode) {
+    return (
+      <span className="font-semibold text-green-600 tabular-nums dark:text-green-400">
+        {chunks}
+      </span>
+    );
+  }
+
+  function redNumber(chunks: ReactNode) {
+    return (
+      <span className="font-semibold text-red-600 tabular-nums dark:text-red-400">
+        {chunks}
+      </span>
+    );
+  }
+
+  function colored(className: string) {
+    function Colored(chunks: ReactNode) {
+      return <span className={className}>{chunks}</span>;
+    }
+    return Colored;
+  }
+
+  function rate(value: number, favorable: boolean) {
+    function Rate(_chunks: ReactNode) {
+      return <HighlightedPct value={value} favorable={favorable} />;
+    }
+    return Rate;
+  }
+
   return (
     <>
       <Separator />
@@ -197,15 +235,11 @@ export function UltAnalysisSection({
         >
           <ul className="text-foreground space-y-2 text-sm leading-relaxed">
             <li>
-              Your team used{" "}
-              <span className="font-semibold tabular-nums">
-                {analysis.ourUltsUsed}
-              </span>{" "}
-              ultimates vs opponent&apos;s{" "}
-              <span className="font-semibold tabular-nums">
-                {analysis.opponentUltsUsed}
-              </span>
-              .
+              {t.rich("ultUsage", {
+                ourCount: analysis.ourUltsUsed,
+                opponentCount: analysis.opponentUltsUsed,
+                n: number,
+              })}
             </li>
 
             {analysis.ultsByRole
@@ -217,48 +251,46 @@ export function UltAnalysisSection({
                 );
                 return (
                   <li key={r.role}>
-                    {r.role} ultimates: your team used{" "}
-                    <span className="font-semibold tabular-nums">
-                      {r.ourCount}
-                    </span>{" "}
-                    vs opponent&apos;s{" "}
-                    <span className="font-semibold tabular-nums">
-                      {r.opponentCount}
-                    </span>
-                    .
+                    {t.rich("roleUltUsage", {
+                      role: r.role,
+                      ourCount: r.ourCount,
+                      opponentCount: r.opponentCount,
+                      n: number,
+                    })}
                     {r.ourFirstRate > 0 && (
                       <>
                         {" "}
-                        You used {r.role.toLowerCase()} ultimates first in{" "}
-                        <HighlightedPct
-                          value={r.ourFirstRate}
-                          favorable={r.ourFirstRate >= 50}
-                        />{" "}
-                        of fights.
+                        {t.rich("roleFirstUlt", {
+                          role: r.role.toLowerCase(),
+                          rateValue: Math.round(r.ourFirstRate),
+                          rate: rate(r.ourFirstRate, r.ourFirstRate >= 50),
+                        })}
                       </>
                     )}
                     {r.ourSubroleTimings.length > 0 && (
                       <ul className="text-muted-foreground mt-1 ml-4 space-y-0.5 text-xs">
                         {r.ourSubroleTimings.map((sr) => (
                           <li key={sr.subrole}>
-                            {sr.subrole}:{" "}
-                            <span className="text-foreground font-semibold tabular-nums">
-                              {sr.count}
-                            </span>{" "}
-                            {sr.count === 1 ? "ultimate" : "ultimates"} (
-                            {totalSubroleUlts > 0
-                              ? ((sr.count / totalSubroleUlts) * 100).toFixed(0)
-                              : 0}
-                            %) &mdash;{" "}
-                            <span className="text-green-500">
-                              {sr.initiation} initiation
-                            </span>
-                            ,{" "}
-                            <span className="text-yellow-500">
-                              {sr.midfight} midfight
-                            </span>
-                            ,{" "}
-                            <span className="text-red-500">{sr.late} late</span>
+                            {t.rich("subroleTiming", {
+                              subrole: sr.subrole,
+                              count: sr.count,
+                              pct:
+                                totalSubroleUlts > 0
+                                  ? (
+                                      (sr.count / totalSubroleUlts) *
+                                      100
+                                    ).toFixed(0)
+                                  : 0,
+                              initiation: sr.initiation,
+                              midfight: sr.midfight,
+                              late: sr.late,
+                              n: colored(
+                                "text-foreground font-semibold tabular-nums"
+                              ),
+                              init: colored("text-green-500"),
+                              mid: colored("text-yellow-500"),
+                              lateText: colored("text-red-500"),
+                            })}
                           </li>
                         ))}
                       </ul>
@@ -270,40 +302,29 @@ export function UltAnalysisSection({
             {analysis.fightsWithUlts > 0 && (
               <>
                 <li>
-                  Your team initiated fights with ultimates in{" "}
-                  <HighlightedPct
-                    value={
+                  {t.rich("fightInitiations", {
+                    rateValue: Math.round(
                       (analysis.ourFightInitiations / analysis.fightsWithUlts) *
-                      100
-                    }
-                    favorable={
+                        100
+                    ),
+                    initiations: analysis.ourFightInitiations,
+                    total: analysis.fightsWithUlts,
+                    rate: rate(
+                      (analysis.ourFightInitiations / analysis.fightsWithUlts) *
+                        100,
                       analysis.ourFightInitiations >=
-                      analysis.opponentFightInitiations
-                    }
-                  />{" "}
-                  of ultimate-involved fights (
-                  <span className="font-semibold tabular-nums">
-                    {analysis.ourFightInitiations}
-                  </span>{" "}
-                  of{" "}
-                  <span className="font-semibold tabular-nums">
-                    {analysis.fightsWithUlts}
-                  </span>
-                  ).
+                        analysis.opponentFightInitiations
+                    ),
+                    n: number,
+                  })}
                 </li>
                 {analysis.ourTopFightInitiator && (
                   <li>
                     {t.rich("ourTopFightInitiator", {
                       hero: analysis.ourTopFightInitiator.hero,
                       count: analysis.ourTopFightInitiator.count,
-                      strong: (chunks: ReactNode) => (
-                        <span className="font-semibold">{chunks}</span>
-                      ),
-                      n: (chunks: ReactNode) => (
-                        <span className="font-semibold tabular-nums">
-                          {chunks}
-                        </span>
-                      ),
+                      strong,
+                      n: number,
                     })}
                   </li>
                 )}
@@ -312,14 +333,8 @@ export function UltAnalysisSection({
                     {t.rich("opponentTopFightInitiator", {
                       hero: analysis.opponentTopFightInitiator.hero,
                       count: analysis.opponentTopFightInitiator.count,
-                      strong: (chunks: ReactNode) => (
-                        <span className="font-semibold">{chunks}</span>
-                      ),
-                      n: (chunks: ReactNode) => (
-                        <span className="font-semibold tabular-nums">
-                          {chunks}
-                        </span>
-                      ),
+                      strong,
+                      n: number,
                     })}
                   </li>
                 )}
@@ -328,148 +343,114 @@ export function UltAnalysisSection({
 
             {analysis.topUltUser && (
               <li>
-                Top ultimate user:{" "}
-                <span className="font-semibold">
-                  {analysis.topUltUser.playerName}
-                </span>{" "}
-                ({analysis.topUltUser.hero}) with{" "}
-                <span className="font-semibold tabular-nums">
-                  {analysis.topUltUser.count}
-                </span>{" "}
-                ultimates used.
+                {t.rich("topUltUser", {
+                  playerName: analysis.topUltUser.playerName,
+                  hero: analysis.topUltUser.hero,
+                  count: analysis.topUltUser.count,
+                  strong,
+                  n: number,
+                })}
               </li>
             )}
 
             {(analysis.avgChargeTime > 0 || analysis.avgHoldTime > 0) && (
               <li>
-                {analysis.avgChargeTime > 0 && (
-                  <>
-                    Your team charged ultimates in an average of{" "}
-                    <span className="font-semibold tabular-nums">
-                      {analysis.avgChargeTime.toFixed(1)}s
-                    </span>
-                  </>
-                )}
-                {analysis.avgChargeTime > 0 &&
-                  analysis.avgHoldTime > 0 &&
-                  " and "}
-                {analysis.avgHoldTime > 0 && (
-                  <>
-                    held them for an average of{" "}
-                    <span className="font-semibold tabular-nums">
-                      {analysis.avgHoldTime.toFixed(1)}s
-                    </span>{" "}
-                    before using
-                  </>
-                )}
-                .
+                {analysis.avgChargeTime > 0 && analysis.avgHoldTime > 0
+                  ? t.rich("avgChargeAndHold", {
+                      chargeTime: analysis.avgChargeTime.toFixed(1),
+                      holdTime: analysis.avgHoldTime.toFixed(1),
+                      n: number,
+                    })
+                  : analysis.avgChargeTime > 0
+                    ? t.rich("avgCharge", {
+                        chargeTime: analysis.avgChargeTime.toFixed(1),
+                        n: number,
+                      })
+                    : t.rich("avgHold", {
+                        holdTime: analysis.avgHoldTime.toFixed(1),
+                        n: number,
+                      })}
               </li>
             )}
 
             {analysis.ultEfficiency.totalUltsUsedInFights > 0 && (
               <>
                 <li>
-                  Ultimate Efficiency:{" "}
-                  <span className="font-semibold tabular-nums">
-                    {analysis.ultEfficiency.ultimateEfficiency.toFixed(2)}
-                  </span>{" "}
-                  fights won per ultimate used (
-                  {analysis.ultEfficiency.ultimateEfficiency >= 0.4
-                    ? tRatings("excellent")
-                    : analysis.ultEfficiency.ultimateEfficiency >= 0.25
-                      ? tRatings("good")
-                      : analysis.ultEfficiency.ultimateEfficiency >= 0.15
-                        ? tRatings("average")
-                        : tRatings("poor")}
-                  ).
+                  {t.rich("ultimateEfficiency", {
+                    value: analysis.ultEfficiency.ultimateEfficiency.toFixed(2),
+                    rating:
+                      analysis.ultEfficiency.ultimateEfficiency >= 0.4
+                        ? tRatings("excellent")
+                        : analysis.ultEfficiency.ultimateEfficiency >= 0.25
+                          ? tRatings("good")
+                          : analysis.ultEfficiency.ultimateEfficiency >= 0.15
+                            ? tRatings("average")
+                            : tRatings("poor"),
+                    n: number,
+                  })}
                 </li>
                 <li>
-                  Used an average of{" "}
-                  <span className="font-semibold text-green-600 tabular-nums dark:text-green-400">
-                    {analysis.ultEfficiency.avgUltsInWonFights.toFixed(1)}
-                  </span>{" "}
-                  ultimates per won fight vs{" "}
-                  <span className="font-semibold text-red-600 tabular-nums dark:text-red-400">
-                    {analysis.ultEfficiency.avgUltsInLostFights.toFixed(1)}
-                  </span>{" "}
-                  per lost fight.{" "}
-                  {analysis.ultEfficiency.avgUltsInWonFights >
-                  analysis.ultEfficiency.avgUltsInLostFights
-                    ? t("goodDiscipline")
-                    : t("roomForImprovement")}
+                  {t.rich("averageUltsPerFight", {
+                    won: analysis.ultEfficiency.avgUltsInWonFights.toFixed(1),
+                    lost: analysis.ultEfficiency.avgUltsInLostFights.toFixed(1),
+                    discipline:
+                      analysis.ultEfficiency.avgUltsInWonFights >
+                      analysis.ultEfficiency.avgUltsInLostFights
+                        ? t("goodDiscipline")
+                        : t("roomForImprovement"),
+                    wonValue: greenNumber,
+                    lostValue: redNumber,
+                  })}
                 </li>
                 {analysis.ultEfficiency.wastedUltimates > 0 && (
                   <li>
-                    <span className="font-semibold tabular-nums">
-                      {analysis.ultEfficiency.wastedUltimates}
-                    </span>{" "}
-                    wasted{" "}
-                    {analysis.ultEfficiency.wastedUltimates === 1
-                      ? "ultimate"
-                      : "ultimates"}{" "}
-                    (
-                    <span className="font-semibold tabular-nums">
-                      {(
+                    {t.rich("wastedUltimates", {
+                      count: analysis.ultEfficiency.wastedUltimates,
+                      percent: (
                         (analysis.ultEfficiency.wastedUltimates /
                           analysis.ultEfficiency.totalUltsUsedInFights) *
                         100
-                      ).toFixed(1)}
-                      %
-                    </span>{" "}
-                    of total) used in lost situations (3+ player disadvantage).
+                      ).toFixed(1),
+                      n: number,
+                    })}
                   </li>
                 )}
                 <li>
-                  <span className="font-semibold tabular-nums">
-                    {analysis.ultEfficiency.dryFights}
-                  </span>{" "}
-                  dry{" "}
-                  {analysis.ultEfficiency.dryFights === 1 ? "fight" : "fights"}{" "}
-                  (no ultimates used) with a{" "}
-                  <span className="font-semibold tabular-nums">
-                    {analysis.ultEfficiency.dryFightWinrate.toFixed(1)}%
-                  </span>{" "}
-                  win rate, plus{" "}
-                  <span className="font-semibold tabular-nums">
-                    {analysis.ultEfficiency.nonDryFights}
-                  </span>{" "}
-                  {analysis.ultEfficiency.nonDryFights === 1
-                    ? "fight"
-                    : "fights"}{" "}
-                  where ultimates were used (
-                  <span className="font-semibold tabular-nums">
-                    {analysis.ultEfficiency.nonDryFights > 0
-                      ? (
-                          (analysis.ultEfficiency.fightsWon /
-                            analysis.ultEfficiency.nonDryFights) *
-                          100
-                        ).toFixed(1)
-                      : "0.0"}
-                    %
-                  </span>{" "}
-                  WR).
+                  {t.rich("dryNonDryFights", {
+                    dryCount: analysis.ultEfficiency.dryFights,
+                    dryRate: analysis.ultEfficiency.dryFightWinrate.toFixed(1),
+                    nonDryCount: analysis.ultEfficiency.nonDryFights,
+                    nonDryRate:
+                      analysis.ultEfficiency.nonDryFights > 0
+                        ? (
+                            (analysis.ultEfficiency.fightsWon /
+                              analysis.ultEfficiency.nonDryFights) *
+                            100
+                          ).toFixed(1)
+                        : "0.0",
+                    n: number,
+                  })}
                 </li>
                 {(analysis.ultEfficiency.dryFights > 0 ||
                   analysis.ultEfficiency.nonDryFights > 0) && (
                   <li>
-                    Fight reversal rate (won after being down 2+ kills):{" "}
-                    <span className="font-semibold tabular-nums">
-                      {analysis.ultEfficiency.dryFightReversalRate.toFixed(1)}%
-                    </span>{" "}
-                    in dry fights vs{" "}
-                    <span className="font-semibold tabular-nums">
-                      {analysis.ultEfficiency.nonDryFightReversalRate.toFixed(
-                        1
-                      )}
-                      %
-                    </span>{" "}
-                    when ultimates were used.
-                    {analysis.ultEfficiency.dryFights > 0 &&
-                      analysis.ultEfficiency.nonDryFights > 0 &&
-                      (analysis.ultEfficiency.nonDryFightReversalRate >
-                      analysis.ultEfficiency.dryFightReversalRate
-                        ? " Ultimates are a key comeback tool for this team."
-                        : " This team can reverse fights through raw mechanics.")}
+                    {t.rich("fightReversal", {
+                      dryRate:
+                        analysis.ultEfficiency.dryFightReversalRate.toFixed(1),
+                      nonDryRate:
+                        analysis.ultEfficiency.nonDryFightReversalRate.toFixed(
+                          1
+                        ),
+                      insight:
+                        analysis.ultEfficiency.dryFights > 0 &&
+                        analysis.ultEfficiency.nonDryFights > 0
+                          ? analysis.ultEfficiency.nonDryFightReversalRate >
+                            analysis.ultEfficiency.dryFightReversalRate
+                            ? "comeback"
+                            : "mechanics"
+                          : "none",
+                      n: number,
+                    })}
                   </li>
                 )}
               </>
