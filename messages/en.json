@@ -674,6 +674,49 @@
         "endAfterStart": "End hour must be after start hour",
         "evenSlots": "Window must divide evenly into slot minutes"
       }
+    },
+    "fillView": {
+      "title": "{teamName} availability",
+      "weekIntro": "Week of {date} - pick the times you're free.",
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "password": "Password ({required, select, true {required} other {optional}})",
+      "passwordRequiredPlaceholder": "Enter your password",
+      "passwordOptionalPlaceholder": "Set a password",
+      "viewingTimezone": "Viewing timezone",
+      "yourAvailability": "Your availability",
+      "saving": "Saving...",
+      "save": "Save my availability",
+      "clear": "Clear",
+      "timezoneMismatch": "<label>Heads up:</label> the team's calendar is set to <teamTimezone>{teamTz}</teamTimezone>, but you're in <localTimezone>{localTz}</localTimezone>. Pick slots in your local time - we'll translate to the team's timezone automatically.",
+      "localTimezone": "Selecting in your local time: {timezone}",
+      "groupAvailability": "Group availability",
+      "responseCount": " ({count, plural, one {# response} other {# responses}})",
+      "hoverPrompt": "Hover a cell to see who's available",
+      "availabilityRatio": "{available} / {total}",
+      "namesSuffix": " - {names}",
+      "unavailable": "Unavailable: {names}",
+      "toast": {
+        "nameRequired": "Please enter your name",
+        "passwordRequired": "Password required to edit this name",
+        "incorrectPassword": "Incorrect password",
+        "saveFailed": "Failed to save availability",
+        "saved": "Availability saved"
+      },
+      "promo": {
+        "title": "Scrim analytics and team tools for Overwatch",
+        "description": "Parsertime turns raw Workshop Log data into skill ratings, trend lines, and coaching insights - plus team management tools like the availability calendar you're using right now.",
+        "bullets": {
+          "instantReview": "<strong>Instant review.</strong> Upload a scrim, see per-player stats, maps, and teamfights in minutes - no spreadsheets.",
+          "csrRatings": "<strong>CSR ratings.</strong> Objective 1-5000 hero skill ratings across role-specific metrics.",
+          "trends": "<strong>Trends.</strong> Watch players improve across weeks and seasons, not just single matches.",
+          "coachingCanvas": "<strong>Coaching canvas.</strong> Draw up strats on a shared whiteboard and keep them alongside the scrims they came from.",
+          "teamAvailability": "<strong>Team availability.</strong> This calendar, plus Discord reminders that ping your role at the start of each week.",
+          "freeToStart": "<strong>Free to start.</strong> Two teams and five members on the free tier, no credit card."
+        },
+        "signIn": "Sign in to see your team's scrims",
+        "learnMore": "Learn more about Parsertime"
+      }
     }
   },
   "scrimPage": {

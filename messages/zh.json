@@ -575,6 +575,49 @@
         "endAfterStart": "结束小时必须晚于开始小时",
         "evenSlots": "可用时间窗口必须能被时间段分钟数整除"
       }
+    },
+    "fillView": {
+      "title": "{teamName} 可用时间",
+      "weekIntro": "{date} 当周 - 请选择你有空的时间。",
+      "name": "姓名",
+      "namePlaceholder": "你的姓名",
+      "password": "密码（{required, select, true {必填} other {可选}}）",
+      "passwordRequiredPlaceholder": "输入你的密码",
+      "passwordOptionalPlaceholder": "设置密码",
+      "viewingTimezone": "查看时区",
+      "yourAvailability": "你的可用时间",
+      "saving": "正在保存...",
+      "save": "保存我的可用时间",
+      "clear": "清除",
+      "timezoneMismatch": "<label>提示：</label>队伍日历设置为 <teamTimezone>{teamTz}</teamTimezone>，但你当前位于 <localTimezone>{localTz}</localTimezone>。请按本地时间选择时间段，我们会自动转换为队伍时区。",
+      "localTimezone": "正在按你的本地时间选择：{timezone}",
+      "groupAvailability": "小组可用时间",
+      "responseCount": "（{count, plural, one {# 条回复} other {# 条回复}}）",
+      "hoverPrompt": "将鼠标悬停在单元格上查看谁有空",
+      "availabilityRatio": "{available} / {total}",
+      "namesSuffix": " - {names}",
+      "unavailable": "不可用：{names}",
+      "toast": {
+        "nameRequired": "请输入你的姓名",
+        "passwordRequired": "编辑此姓名需要密码",
+        "incorrectPassword": "密码不正确",
+        "saveFailed": "保存可用时间失败",
+        "saved": "可用时间已保存"
+      },
+      "promo": {
+        "title": "面向《守望先锋》的训练赛分析和队伍工具",
+        "description": "Parsertime 会将原始 Workshop Log 数据转换为技能评分、趋势线和执教洞察，并提供你正在使用的可用时间日历等队伍管理工具。",
+        "bullets": {
+          "instantReview": "<strong>即时复盘。</strong> 上传训练赛后，几分钟内即可查看每位选手的统计、地图和团战，无需电子表格。",
+          "csrRatings": "<strong>CSR 评分。</strong> 基于角色专属指标的客观 1-5000 英雄技能评分。",
+          "trends": "<strong>趋势。</strong> 观察选手跨周和跨赛季的进步，而不只看单场比赛。",
+          "coachingCanvas": "<strong>执教画布。</strong> 在共享白板上绘制战术，并与对应训练赛保存在一起。",
+          "teamAvailability": "<strong>队伍可用时间。</strong> 此日历加上 Discord 提醒，可在每周开始时提醒你的身份组。",
+          "freeToStart": "<strong>免费开始。</strong> 免费层级支持两个队伍和五名成员，无需信用卡。"
+        },
+        "signIn": "登录以查看队伍训练赛",
+        "learnMore": "进一步了解 Parsertime"
+      }
     }
   },
   "scrimPage": {

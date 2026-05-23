@@ -575,6 +575,49 @@
         "endAfterStart": "종료 시간은 시작 시간보다 뒤여야 합니다",
         "evenSlots": "시간 범위는 슬롯 분 단위로 나누어떨어져야 합니다"
       }
+    },
+    "fillView": {
+      "title": "{teamName} 가용 시간",
+      "weekIntro": "{date} 주 - 가능한 시간을 선택하세요.",
+      "name": "이름",
+      "namePlaceholder": "이름",
+      "password": "비밀번호 ({required, select, true {필수} other {선택}})",
+      "passwordRequiredPlaceholder": "비밀번호 입력",
+      "passwordOptionalPlaceholder": "비밀번호 설정",
+      "viewingTimezone": "보기 시간대",
+      "yourAvailability": "내 가용 시간",
+      "saving": "저장 중...",
+      "save": "내 가용 시간 저장",
+      "clear": "지우기",
+      "timezoneMismatch": "<label>알림:</label> 팀 캘린더는 <teamTimezone>{teamTz}</teamTimezone> 시간대로 설정되어 있지만, 현재 위치는 <localTimezone>{localTz}</localTimezone>입니다. 현지 시간으로 슬롯을 선택하면 팀 시간대로 자동 변환됩니다.",
+      "localTimezone": "현지 시간으로 선택 중: {timezone}",
+      "groupAvailability": "그룹 가용 시간",
+      "responseCount": " ({count, plural, one {응답 #개} other {응답 #개}})",
+      "hoverPrompt": "셀 위에 마우스를 올리면 가능한 사람을 볼 수 있습니다",
+      "availabilityRatio": "{available} / {total}",
+      "namesSuffix": " - {names}",
+      "unavailable": "불가능: {names}",
+      "toast": {
+        "nameRequired": "이름을 입력하세요",
+        "passwordRequired": "이 이름을 편집하려면 비밀번호가 필요합니다",
+        "incorrectPassword": "비밀번호가 올바르지 않습니다",
+        "saveFailed": "가용 시간을 저장하지 못했습니다",
+        "saved": "가용 시간이 저장되었습니다"
+      },
+      "promo": {
+        "title": "오버워치 스크림 분석과 팀 도구",
+        "description": "Parsertime은 Workshop Log 원본 데이터를 스킬 레이팅, 추세선, 코칭 인사이트로 바꾸고 지금 사용하는 가용 시간 캘린더 같은 팀 관리 도구도 제공합니다.",
+        "bullets": {
+          "instantReview": "<strong>즉시 리뷰.</strong> 스크림을 업로드하면 선수별 통계, 맵, 한타를 몇 분 안에 확인할 수 있습니다. 스프레드시트는 필요 없습니다.",
+          "csrRatings": "<strong>CSR 레이팅.</strong> 역할별 지표를 바탕으로 한 객관적인 1-5000 영웅 스킬 레이팅입니다.",
+          "trends": "<strong>추세.</strong> 단일 경기만이 아니라 여러 주와 시즌에 걸친 선수 성장을 확인하세요.",
+          "coachingCanvas": "<strong>코칭 캔버스.</strong> 공유 화이트보드에 전략을 그리고 해당 스크림과 함께 보관하세요.",
+          "teamAvailability": "<strong>팀 가용 시간.</strong> 이 캘린더와 매주 시작할 때 역할을 멘션하는 Discord 리마인더를 제공합니다.",
+          "freeToStart": "<strong>무료 시작.</strong> 무료 티어에서 팀 2개와 멤버 5명까지 사용할 수 있으며 신용카드는 필요 없습니다."
+        },
+        "signIn": "로그인해서 팀 스크림 보기",
+        "learnMore": "Parsertime 더 알아보기"
+      }
     }
   },
   "scrimPage": {
