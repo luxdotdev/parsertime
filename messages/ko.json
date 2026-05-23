@@ -867,7 +867,8 @@
       "onClick": {
         "title": "클립보드에 복사되었습니다!",
         "description": "리플레이 코드가 클립보드에 복사되었습니다."
-      }
+      },
+      "code": "리플레이 코드: {replayCode}"
     },
     "overviewTabs": {
       "team": {
@@ -1071,7 +1072,8 @@
       "compareNow": "지금 비교",
       "addToMapGroup": "맵 그룹에 추가",
       "clear": "초기화"
-    }
+    },
+    "viewStats": "팀 통계 보기"
   },
   "mapGroupsPage": {
     "metadata": {
@@ -2149,6 +2151,8 @@
     }
   },
   "scoutingPage": {
+    "title": "스카우팅",
+    "subtitle": "OWCS 팀을 검색하고 토너먼트 성과를 분석하세요.",
     "metadata": {
       "title": "스카우팅 | Parsertime",
       "description": "OWCS 팀을 스카우팅하세요. 이름으로 검색하고 경기 기록, 승률, 토너먼트 성과를 확인할 수 있습니다.",
@@ -2651,6 +2655,8 @@
     "viewTeams": "내 팀 보기",
     "teams": "팀",
     "admin": "관리자 보기",
+    "viewStats": "통계 보기",
+    "viewAvailability": "가능 시간",
     "search": {
       "placeholder": "팀 검색...",
       "filters": "필터",
@@ -3720,12 +3726,48 @@
     "mark-all-as-read-error": "모두 읽음으로 표시 실패",
     "mark-as-read-error": "읽음으로 표시 실패",
     "error-loading": "알림 로딩 오류",
+    "error-loading-description": "페이지를 새로고침해 보세요.",
+    "no-notifications-description": "알림이 도착하면 여기에 표시됩니다.",
     "marking-all-as-read": "업데이트 중...",
     "mark-as-read": "읽음으로 표시",
     "delete": "삭제",
     "delete-error": "알림 삭제 실패",
     "notification-created": "알림 생성 성공",
     "create-notification-error": "알림 생성 실패"
+  },
+  "titles": {
+    "DEVELOPER": "Parsertime 개발자",
+    "DEVELOPER-description": "Parsertime 개발에 기여한 사용자에게 수여됩니다.",
+    "EMPLOYEE": "lux.dev 직원",
+    "EMPLOYEE-description": "lux.dev LLC의 직원인 사용자에게 수여됩니다.",
+    "BETA_TESTER": "베타 테스터",
+    "BETA_TESTER-description": "베타 테스터 목록에 추가된 사용자에게 수여됩니다.",
+    "DAY_ONE_USER": "처음부터 함께한 사용자",
+    "DAY_ONE_USER-description": "처음부터 함께한 사용자에게 수여됩니다. 출시일(2024년 4월 14일) 이전에 가입한 사용자에게 주어집니다.",
+    "BASIC_PLAN_SUBSCRIBER": "서포터",
+    "BASIC_PLAN_SUBSCRIBER-description": "베이직 플랜을 구독한 사용자에게 수여됩니다. 구독자는 이름 옆에 분홍색 하트 아이콘도 받습니다.",
+    "PREMIUM_PLAN_SUBSCRIBER": "프리미엄 서포터",
+    "PREMIUM_PLAN_SUBSCRIBER-description": "프리미엄 플랜을 구독한 사용자에게 수여됩니다. 구독자는 이름 옆에 금색 하트 아이콘도 받습니다.",
+    "VIP": "VIP",
+    "VIP-description": "Parsertime 커뮤니티에 크게 기여한 사용자에게 수여됩니다.",
+    "HIGHEST_RANK_ON_A_HERO": "위대함 달성",
+    "HIGHEST_RANK_ON_A_HERO-description": "한 영웅에서 최고 랭크를 달성한 사용자에게 수여됩니다.",
+    "HIGHEST_AJAX_COUNT": "에이잭스 왕",
+    "HIGHEST_AJAX_COUNT-description": "가장 많은 에이잭스를 기록한 사용자에게 수여됩니다.",
+    "HIGHEST_FLETA_DEADLIFT_PERCENTAGE": "플레타의 제자",
+    "HIGHEST_FLETA_DEADLIFT_PERCENTAGE-description": "가장 높은 플레타 데드리프트 비율을 달성한 사용자에게 수여됩니다.",
+    "TOP_3_KILLS": "연쇄 처치자",
+    "TOP_3_KILLS-description": "처치 리더보드 상위 3위에 오른 사용자에게 수여됩니다.",
+    "TOP_3_DAMAGE_DEALT": "대미지 딜러",
+    "TOP_3_DAMAGE_DEALT-description": "가한 피해 리더보드 상위 3위에 오른 사용자에게 수여됩니다.",
+    "TOP_3_HEALING": "궁극의 메딕",
+    "TOP_3_HEALING-description": "치유 리더보드 상위 3위에 오른 사용자에게 수여됩니다.",
+    "TOP_3_DAMAGE_BLOCKED": "피해 흡수자",
+    "TOP_3_DAMAGE_BLOCKED-description": "막은 피해 리더보드 상위 3위에 오른 사용자에게 수여됩니다.",
+    "TOP_3_DEATHS": "피더",
+    "TOP_3_DEATHS-description": "사망 리더보드 상위 3위에 오른 사용자에게 수여됩니다.",
+    "TOP_3_TIME_PLAYED": "만성 온라인",
+    "TOP_3_TIME_PLAYED-description": "플레이 시간 리더보드 상위 3위에 오른 사용자에게 수여됩니다. 밖에도 나가세요!"
   },
   "matchmaker": {
     "title": "Scrim matchmaker",
@@ -3761,6 +3803,9 @@
       "ogTitle": "{teamName} 통계 | Parsertime",
       "ogDescription": "Parsertime에서 {teamName}의 통계입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
       "ogImage": "{teamName} 통계"
+    },
+    "selector": {
+      "select": "팀 선택..."
     },
     "rangePicker": {
       "selectTimeframe": "기간 선택",

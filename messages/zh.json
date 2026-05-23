@@ -867,7 +867,8 @@
       "onClick": {
         "title": "已复制到剪贴板！",
         "description": "重播代码已复制到剪贴板。"
-      }
+      },
+      "code": "重播代码：{replayCode}"
     },
     "overviewTabs": {
       "team": {
@@ -1071,7 +1072,8 @@
       "compareNow": "立即比较",
       "addToMapGroup": "添加到地图组",
       "clear": "清除"
-    }
+    },
+    "viewStats": "查看团队统计"
   },
   "mapGroupsPage": {
     "metadata": {
@@ -2149,6 +2151,8 @@
     }
   },
   "scoutingPage": {
+    "title": "球探",
+    "subtitle": "搜索 OWCS 团队并分析他们的赛事表现。",
     "metadata": {
       "title": "球探 | Parsertime",
       "description": "球探 OWCS 团队：按名称搜索，查看比赛历史、胜率和赛事表现。",
@@ -2651,6 +2655,8 @@
     "viewTeams": "查看您的团队",
     "teams": "团队",
     "admin": "管理员视图",
+    "viewStats": "查看统计",
+    "viewAvailability": "可用时间",
     "search": {
       "placeholder": "搜索团队...",
       "filters": "筛选",
@@ -3720,12 +3726,48 @@
     "mark-all-as-read-error": "标记全部已读失败",
     "mark-as-read-error": "标记已读失败",
     "error-loading": "加载通知失败",
+    "error-loading-description": "请尝试刷新页面。",
+    "no-notifications-description": "通知到达时会显示在这里。",
     "marking-all-as-read": "更新中...",
     "mark-as-read": "标记已读",
     "delete": "删除",
     "delete-error": "删除通知失败",
     "notification-created": "通知创建成功",
     "create-notification-error": "创建通知失败"
+  },
+  "titles": {
+    "DEVELOPER": "Parsertime 开发者",
+    "DEVELOPER-description": "授予为 Parsertime 开发做出贡献的用户。",
+    "EMPLOYEE": "lux.dev 员工",
+    "EMPLOYEE-description": "授予 lux.dev LLC 的员工。",
+    "BETA_TESTER": "Beta 测试员",
+    "BETA_TESTER-description": "授予已加入 Beta 测试名单的用户。",
+    "DAY_ONE_USER": "从一开始就在",
+    "DAY_ONE_USER-description": "授予从一开始就与我们同行的用户。此称号授予在发布日期（2024 年 4 月 14 日）之前注册的用户。",
+    "BASIC_PLAN_SUBSCRIBER": "支持者",
+    "BASIC_PLAN_SUBSCRIBER-description": "授予订阅基础方案的用户。订阅者还会在名称旁获得粉色爱心图标。",
+    "PREMIUM_PLAN_SUBSCRIBER": "高级支持者",
+    "PREMIUM_PLAN_SUBSCRIBER-description": "授予订阅高级方案的用户。订阅者还会在名称旁获得金色爱心图标。",
+    "VIP": "VIP",
+    "VIP-description": "授予对 Parsertime 社区做出重大贡献的用户。",
+    "HIGHEST_RANK_ON_A_HERO": "成就伟大",
+    "HIGHEST_RANK_ON_A_HERO-description": "授予在某位英雄上达到最高排名的用户。",
+    "HIGHEST_AJAX_COUNT": "Ajax 之王",
+    "HIGHEST_AJAX_COUNT-description": "授予达到最高 Ajax 次数的用户。",
+    "HIGHEST_FLETA_DEADLIFT_PERCENTAGE": "Fleta 的门徒",
+    "HIGHEST_FLETA_DEADLIFT_PERCENTAGE-description": "授予达到最高 Fleta deadlift 百分比的用户。",
+    "TOP_3_KILLS": "连续击杀者",
+    "TOP_3_KILLS-description": "授予进入击杀排行榜前三名的用户。",
+    "TOP_3_DAMAGE_DEALT": "伤害输出者",
+    "TOP_3_DAMAGE_DEALT-description": "授予进入造成伤害排行榜前三名的用户。",
+    "TOP_3_HEALING": "终极医护",
+    "TOP_3_HEALING-description": "授予进入治疗量排行榜前三名的用户。",
+    "TOP_3_DAMAGE_BLOCKED": "伤害海绵",
+    "TOP_3_DAMAGE_BLOCKED-description": "授予进入阻挡伤害排行榜前三名的用户。",
+    "TOP_3_DEATHS": "送头王",
+    "TOP_3_DEATHS-description": "授予进入死亡次数排行榜前三名的用户。",
+    "TOP_3_TIME_PLAYED": "长期在线",
+    "TOP_3_TIME_PLAYED-description": "授予进入游戏时长排行榜前三名的用户。出去走走吧！"
   },
   "matchmaker": {
     "title": "Scrim matchmaker",
@@ -3761,6 +3803,9 @@
       "ogTitle": "{teamName} 统计 | Parsertime",
       "ogDescription": "Parsertime 上 {teamName} 的统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
       "ogImage": "{teamName} 统计"
+    },
+    "selector": {
+      "select": "选择团队..."
     },
     "rangePicker": {
       "selectTimeframe": "选择时间范围",
