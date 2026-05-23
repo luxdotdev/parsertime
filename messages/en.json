@@ -5054,30 +5054,37 @@
     },
     "swapsTab": {
       "overview": {
+        "eyebrow": "Swaps · Overview",
         "title": "Hero Swap Overview",
         "noData": "No hero swap data available yet.",
         "description": "Aggregated across {maps} maps",
         "totalSwaps": "Total Swaps",
         "swapsPerMap": "{count} per map average",
         "winrateDelta": "Win Rate Impact",
-        "winrateDeltaPositive": "+{delta}% when swapping",
-        "winrateDeltaNegative": "{delta}% when swapping",
+        "winrateDeltaPositive": "+{delta} when swapping",
+        "winrateDeltaNegative": "{delta} when swapping",
         "winrateDeltaNeutral": "No difference",
         "noSwapWinrate": "No-Swap Win Rate",
         "noSwapDetail": "{wins}W - {losses}L without swaps",
         "swapWinrate": "Swap Win Rate",
         "swapDetail": "{wins}W - {losses}L with swaps",
         "avgTimeBeforeSwap": "Avg Time on Hero",
-        "avgTimeDetail": "Average time on hero before swapping"
+        "avgTimeDetail": "Average time on hero before swapping",
+        "durationSeconds": "{seconds}s",
+        "durationMinutes": "{minutes}m {seconds}s"
       },
       "timing": {
+        "eyebrow": "Swaps · Timing",
         "title": "Swap Timing Distribution",
         "description": "When hero swaps occur during a match, as percentage of total match time",
         "noData": "No swap timing data available.",
-        "swapCount": "{count} swaps",
+        "swapCount": "{count, plural, one {# swap} other {# swaps}}",
+        "swapsLabel": "Swaps",
+        "matchTime": "Match time: {label}",
         "ofTotal": "{pct}% of all swaps"
       },
       "winrate": {
+        "eyebrow": "Swaps · Winrate impact",
         "title": "Win Rate by Swap Behavior",
         "descriptionCount": "How win rate changes based on the number of swaps per map",
         "descriptionTiming": "Win rate for maps containing early, mid, or late swaps",
@@ -5085,15 +5092,20 @@
         "byCount": "By Swap Count",
         "byTiming": "By Swap Timing",
         "maps": "{count} maps",
-        "winrate": "{pct}%"
+        "winrate": "{pct}",
+        "winRateLabel": "Win Rate"
       },
       "pairs": {
+        "eyebrow": "Swaps · Common pairs",
         "title": "Most Common Hero Swaps",
         "description": "Top hero-to-hero swap transitions across all maps",
         "noData": "No swap pair data available.",
-        "count": "{count} times"
+        "count": "{count, plural, one {# time} other {# times}}",
+        "times": "Times",
+        "timingLabel": "When in match"
       },
       "player": {
+        "eyebrow": "Swaps · Player breakdown",
         "title": "Player Swap Breakdown",
         "description": "Individual player swap statistics and win rate impact",
         "noData": "No player swap data available.",

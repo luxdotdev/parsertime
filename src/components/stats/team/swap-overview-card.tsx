@@ -3,26 +3,41 @@
 import { SectionHeader } from "@/components/stats/team/section-header";
 import type { TeamHeroSwapStats } from "@/data/team/types";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 
 type SwapOverviewCardProps = {
   swapStats: TeamHeroSwapStats;
 };
 
-function formatSeconds(seconds: number): string {
-  if (seconds < 60) return `${seconds.toFixed(0)}s`;
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.round(seconds % 60);
-  return `${mins}m ${secs}s`;
-}
-
 export function SwapOverviewCard({ swapStats }: SwapOverviewCardProps) {
   const t = useTranslations("teamStatsPage.swapsTab.overview");
+  const format = useFormatter();
+
+  function formatPercent(value: number) {
+    return format.number(value / 100, {
+      maximumFractionDigits: 1,
+      minimumFractionDigits: 1,
+      style: "percent",
+    });
+  }
+
+  function formatSeconds(seconds: number) {
+    if (seconds < 60) {
+      return t("durationSeconds", {
+        seconds: format.number(seconds, { maximumFractionDigits: 0 }),
+      });
+    }
+
+    return t("durationMinutes", {
+      minutes: format.number(Math.floor(seconds / 60)),
+      seconds: format.number(Math.round(seconds % 60)),
+    });
+  }
 
   if (swapStats.totalMaps === 0) {
     return (
       <section className="space-y-4">
-        <SectionHeader eyebrow="Swaps · Overview" title={t("title")} />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
@@ -35,7 +50,7 @@ export function SwapOverviewCard({ swapStats }: SwapOverviewCardProps) {
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Swaps · Overview"
+        eyebrow={t("eyebrow")}
         title={t("title")}
         description={t("description", { maps: swapStats.totalMaps })}
       />
@@ -45,11 +60,14 @@ export function SwapOverviewCard({ swapStats }: SwapOverviewCardProps) {
             {t("totalSwaps")}
           </h4>
           <p className="text-primary font-mono text-3xl leading-none font-bold tabular-nums">
-            {swapStats.totalSwaps}
+            {format.number(swapStats.totalSwaps)}
           </p>
           <p className="text-muted-foreground text-xs">
             {t("swapsPerMap", {
-              count: swapStats.swapsPerMap.toFixed(1),
+              count: format.number(swapStats.swapsPerMap, {
+                maximumFractionDigits: 1,
+                minimumFractionDigits: 1,
+              }),
             })}
           </p>
         </div>
@@ -61,12 +79,12 @@ export function SwapOverviewCard({ swapStats }: SwapOverviewCardProps) {
           {noSwapTotal > 0 ? (
             <>
               <p className="text-foreground font-mono text-3xl leading-none font-bold tabular-nums">
-                {swapStats.noSwapWinrate.toFixed(1)}%
+                {formatPercent(swapStats.noSwapWinrate)}
               </p>
               <p className="text-muted-foreground text-xs">
                 {t("noSwapDetail", {
-                  wins: swapStats.noSwapWins,
-                  losses: swapStats.noSwapLosses,
+                  wins: format.number(swapStats.noSwapWins),
+                  losses: format.number(swapStats.noSwapLosses),
                 })}
               </p>
             </>
@@ -82,12 +100,12 @@ export function SwapOverviewCard({ swapStats }: SwapOverviewCardProps) {
           {swapTotal > 0 ? (
             <>
               <p className="text-foreground font-mono text-3xl leading-none font-bold tabular-nums">
-                {swapStats.swapWinrate.toFixed(1)}%
+                {formatPercent(swapStats.swapWinrate)}
               </p>
               <p className="text-muted-foreground text-xs">
                 {t("swapDetail", {
-                  wins: swapStats.swapWins,
-                  losses: swapStats.swapLosses,
+                  wins: format.number(swapStats.swapWins),
+                  losses: format.number(swapStats.swapLosses),
                 })}
               </p>
             </>
@@ -129,9 +147,9 @@ export function SwapOverviewCard({ swapStats }: SwapOverviewCardProps) {
             )}
           >
             {delta > 0
-              ? t("winrateDeltaPositive", { delta: delta.toFixed(1) })
+              ? t("winrateDeltaPositive", { delta: formatPercent(delta) })
               : delta < 0
-                ? t("winrateDeltaNegative", { delta: delta.toFixed(1) })
+                ? t("winrateDeltaNegative", { delta: formatPercent(delta) })
                 : t("winrateDeltaNeutral")}
           </span>
         </p>

@@ -8,36 +8,28 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import type { TeamHeroSwapStats } from "@/data/team/types";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 type SwapWinrateImpactCardProps = {
   swapStats: TeamHeroSwapStats;
 };
 
-const countChartConfig: ChartConfig = {
-  winrate: {
-    label: "Win Rate",
-    color: "var(--chart-1)",
-  },
-};
-
-const timingChartConfig: ChartConfig = {
-  winrate: {
-    label: "Win Rate",
-    color: "var(--chart-3)",
-  },
-};
-
 type Bucket = {
   label: string;
   winrate: number;
-  maps: number;
+  mapsLabel: string;
   wins: number;
   losses: number;
 };
 
-function MicroStats({ entries }: { entries: Bucket[] }) {
+function MicroStats({
+  entries,
+  formatPercent,
+}: {
+  entries: Bucket[];
+  formatPercent: (value: number) => string;
+}) {
   const cols = entries.length <= 2 ? "grid-cols-2" : "grid-cols-3";
   return (
     <div
@@ -49,9 +41,11 @@ function MicroStats({ entries }: { entries: Bucket[] }) {
             {entry.label}
           </p>
           <p className="text-foreground font-mono text-lg leading-none font-semibold tabular-nums">
-            {entry.winrate.toFixed(1)}%
+            {formatPercent(entry.winrate)}
           </p>
-          <p className="text-muted-foreground text-[11px]">{entry.maps} maps</p>
+          <p className="text-muted-foreground text-[11px]">
+            {entry.mapsLabel}
+          </p>
         </div>
       ))}
     </div>
@@ -62,6 +56,29 @@ export function SwapWinrateImpactCard({
   swapStats,
 }: SwapWinrateImpactCardProps) {
   const t = useTranslations("teamStatsPage.swapsTab.winrate");
+  const format = useFormatter();
+
+  function formatPercent(value: number) {
+    return format.number(value / 100, {
+      maximumFractionDigits: 1,
+      minimumFractionDigits: 1,
+      style: "percent",
+    });
+  }
+
+  const countChartConfig: ChartConfig = {
+    winrate: {
+      label: t("winRateLabel"),
+      color: "var(--chart-1)",
+    },
+  };
+
+  const timingChartConfig: ChartConfig = {
+    winrate: {
+      label: t("winRateLabel"),
+      color: "var(--chart-3)",
+    },
+  };
 
   const hasCountData = swapStats.winrateBySwapCount.some(
     (b) => b.totalMaps > 0
@@ -71,7 +88,7 @@ export function SwapWinrateImpactCard({
   if (!hasCountData && !hasTimingData) {
     return (
       <section className="space-y-4">
-        <SectionHeader eyebrow="Swaps · Winrate impact" title={t("title")} />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
@@ -82,7 +99,7 @@ export function SwapWinrateImpactCard({
     .map((b) => ({
       label: b.label,
       winrate: Math.round(b.winrate * 10) / 10,
-      maps: b.totalMaps,
+      mapsLabel: t("maps", { count: format.number(b.totalMaps) }),
       wins: b.wins,
       losses: b.losses,
     }));
@@ -92,19 +109,19 @@ export function SwapWinrateImpactCard({
     .map((b) => ({
       label: b.label,
       winrate: Math.round(b.winrate * 10) / 10,
-      maps: b.totalMaps,
+      mapsLabel: t("maps", { count: format.number(b.totalMaps) }),
       wins: b.wins,
       losses: b.losses,
     }));
 
   return (
     <section className="space-y-4">
-      <SectionHeader eyebrow="Swaps · Winrate impact" title={t("title")} />
+      <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
       <div className="grid gap-x-8 gap-y-6 md:grid-cols-2">
         {hasCountData && (
           <div className="space-y-3">
             <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-              By count
+              {t("byCount")}
             </p>
             <ChartContainer
               config={countChartConfig}
@@ -126,14 +143,14 @@ export function SwapWinrateImpactCard({
                   tickLine={false}
                   axisLine={false}
                   domain={[0, 100]}
-                  tickFormatter={(v: number) => `${v}%`}
+                  tickFormatter={(v: number) => formatPercent(v)}
                   width={48}
                 />
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
                       labelFormatter={(label: string) => label}
-                      formatter={(value) => `${Number(value)}%`}
+                      formatter={(value) => formatPercent(Number(value))}
                     />
                   }
                 />
@@ -144,14 +161,14 @@ export function SwapWinrateImpactCard({
                 />
               </BarChart>
             </ChartContainer>
-            <MicroStats entries={countData} />
+            <MicroStats entries={countData} formatPercent={formatPercent} />
           </div>
         )}
 
         {hasTimingData && (
           <div className="space-y-3">
             <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-              By timing
+              {t("byTiming")}
             </p>
             <ChartContainer
               config={timingChartConfig}
@@ -173,14 +190,14 @@ export function SwapWinrateImpactCard({
                   tickLine={false}
                   axisLine={false}
                   domain={[0, 100]}
-                  tickFormatter={(v: number) => `${v}%`}
+                  tickFormatter={(v: number) => formatPercent(v)}
                   width={48}
                 />
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
                       labelFormatter={(label: string) => label}
-                      formatter={(value) => `${Number(value)}%`}
+                      formatter={(value) => formatPercent(Number(value))}
                     />
                   }
                 />
@@ -191,7 +208,7 @@ export function SwapWinrateImpactCard({
                 />
               </BarChart>
             </ChartContainer>
-            <MicroStats entries={timingData} />
+            <MicroStats entries={timingData} formatPercent={formatPercent} />
           </div>
         )}
       </div>

@@ -15,20 +15,19 @@ type SwapTimingCardProps = {
   swapStats: TeamHeroSwapStats;
 };
 
-const chartConfig: ChartConfig = {
-  count: {
-    label: "Swaps",
-    color: "var(--chart-1)",
-  },
-};
-
 export function SwapTimingCard({ swapStats }: SwapTimingCardProps) {
   const t = useTranslations("teamStatsPage.swapsTab.timing");
+  const chartConfig: ChartConfig = {
+    count: {
+      label: t("swapsLabel"),
+      color: "var(--chart-1)",
+    },
+  };
 
   if (swapStats.totalSwaps === 0 || swapStats.timingDistribution.length === 0) {
     return (
       <section className="space-y-4">
-        <SectionHeader eyebrow="Swaps · Timing" title={t("title")} />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
@@ -43,7 +42,7 @@ export function SwapTimingCard({ swapStats }: SwapTimingCardProps) {
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Swaps · Timing"
+        eyebrow={t("eyebrow")}
         title={t("title")}
         description={t("description")}
       />
@@ -70,10 +69,12 @@ export function SwapTimingCard({ swapStats }: SwapTimingCardProps) {
           <ChartTooltip
             content={
               <ChartTooltipContent
-                labelFormatter={(label: string) => `Match time: ${label}`}
+                labelFormatter={(label: string) =>
+                  t("matchTime", { label })
+                }
                 formatter={(value) => {
                   const n = Number(value);
-                  return `${n} swap${n !== 1 ? "s" : ""}`;
+                  return t("swapCount", { count: n });
                 }}
               />
             }

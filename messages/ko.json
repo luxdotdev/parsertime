@@ -4058,6 +4058,72 @@
         "fightsAxis": "교전"
       }
     },
+    "swapsTab": {
+      "overview": {
+        "eyebrow": "교체 · 개요",
+        "title": "영웅 교체 개요",
+        "noData": "아직 영웅 교체 데이터가 없습니다.",
+        "description": "{maps}개 맵에서 집계됨",
+        "totalSwaps": "총 교체",
+        "swapsPerMap": "맵당 평균 {count}회",
+        "winrateDelta": "승률 영향",
+        "winrateDeltaPositive": "교체 시 +{delta}",
+        "winrateDeltaNegative": "교체 시 {delta}",
+        "winrateDeltaNeutral": "차이 없음",
+        "noSwapWinrate": "교체 없음 승률",
+        "noSwapDetail": "교체 없이 {wins}승 - {losses}패",
+        "swapWinrate": "교체 승률",
+        "swapDetail": "교체 포함 {wins}승 - {losses}패",
+        "avgTimeBeforeSwap": "영웅 평균 플레이 시간",
+        "avgTimeDetail": "교체 전 영웅을 플레이한 평균 시간",
+        "durationSeconds": "{seconds}초",
+        "durationMinutes": "{minutes}분 {seconds}초"
+      },
+      "timing": {
+        "eyebrow": "교체 · 타이밍",
+        "title": "교체 타이밍 분포",
+        "description": "경기 전체 시간 대비 영웅 교체가 발생한 시점의 비율입니다",
+        "noData": "사용 가능한 교체 타이밍 데이터가 없습니다.",
+        "swapCount": "{count, plural, other {교체 #회}}",
+        "swapsLabel": "교체",
+        "matchTime": "경기 시간: {label}",
+        "ofTotal": "전체 교체의 {pct}%"
+      },
+      "winrate": {
+        "eyebrow": "교체 · 승률 영향",
+        "title": "교체 행동별 승률",
+        "descriptionCount": "맵당 교체 횟수에 따라 승률이 어떻게 달라지는지 보여줍니다",
+        "descriptionTiming": "초반, 중반, 후반 교체가 포함된 맵의 승률입니다",
+        "noData": "사용 가능한 교체 승률 데이터가 없습니다.",
+        "byCount": "교체 횟수별",
+        "byTiming": "교체 타이밍별",
+        "maps": "{count}개 맵",
+        "winrate": "{pct}",
+        "winRateLabel": "승률"
+      },
+      "pairs": {
+        "eyebrow": "교체 · 자주 쓰는 조합",
+        "title": "가장 흔한 영웅 교체",
+        "description": "모든 맵에서 가장 많이 발생한 영웅 간 교체 전환입니다",
+        "noData": "사용 가능한 교체 조합 데이터가 없습니다.",
+        "count": "{count, plural, other {#회}}",
+        "times": "횟수",
+        "timingLabel": "경기 내 시점"
+      },
+      "player": {
+        "eyebrow": "교체 · 플레이어 분석",
+        "title": "플레이어 교체 분석",
+        "description": "개별 플레이어의 교체 통계와 승률 영향입니다",
+        "noData": "사용 가능한 플레이어 교체 데이터가 없습니다.",
+        "tableLabel": "플레이어 교체 통계",
+        "player": "플레이어",
+        "swaps": "교체",
+        "mapsWithSwaps": "교체한 맵",
+        "winrateWith": "교체 시 승률",
+        "winrateWithout": "교체 없을 때 승률",
+        "topPair": "주요 교체"
+      }
+    },
     "roleBalanceRadar": {
       "eyebrow": "개요 · 역할 균형",
       "title": "역할 균형",

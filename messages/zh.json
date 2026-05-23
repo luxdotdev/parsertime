@@ -4058,6 +4058,72 @@
         "fightsAxis": "战斗"
       }
     },
+    "swapsTab": {
+      "overview": {
+        "eyebrow": "换人 · 概览",
+        "title": "英雄更换概览",
+        "noData": "暂无英雄更换数据。",
+        "description": "汇总自 {maps} 张地图",
+        "totalSwaps": "更换总数",
+        "swapsPerMap": "平均每张地图 {count} 次",
+        "winrateDelta": "胜率影响",
+        "winrateDeltaPositive": "更换时 +{delta}",
+        "winrateDeltaNegative": "更换时 {delta}",
+        "winrateDeltaNeutral": "无差异",
+        "noSwapWinrate": "未更换胜率",
+        "noSwapDetail": "未更换时 {wins}胜 - {losses}负",
+        "swapWinrate": "更换胜率",
+        "swapDetail": "有更换时 {wins}胜 - {losses}负",
+        "avgTimeBeforeSwap": "英雄平均使用时间",
+        "avgTimeDetail": "更换前使用该英雄的平均时间",
+        "durationSeconds": "{seconds} 秒",
+        "durationMinutes": "{minutes} 分 {seconds} 秒"
+      },
+      "timing": {
+        "eyebrow": "换人 · 时机",
+        "title": "更换时机分布",
+        "description": "英雄更换在比赛时间中的发生位置，以总比赛时间百分比表示",
+        "noData": "暂无更换时机数据。",
+        "swapCount": "{count, plural, other {# 次更换}}",
+        "swapsLabel": "更换",
+        "matchTime": "比赛时间：{label}",
+        "ofTotal": "占全部更换 {pct}%"
+      },
+      "winrate": {
+        "eyebrow": "换人 · 胜率影响",
+        "title": "按更换行为划分的胜率",
+        "descriptionCount": "根据每张地图的更换次数展示胜率变化",
+        "descriptionTiming": "包含早期、中期或后期更换的地图胜率",
+        "noData": "暂无更换胜率数据。",
+        "byCount": "按更换次数",
+        "byTiming": "按更换时机",
+        "maps": "{count} 张地图",
+        "winrate": "{pct}",
+        "winRateLabel": "胜率"
+      },
+      "pairs": {
+        "eyebrow": "换人 · 常见组合",
+        "title": "最常见英雄更换",
+        "description": "所有地图中最常见的英雄到英雄更换路径",
+        "noData": "暂无更换组合数据。",
+        "count": "{count, plural, other {# 次}}",
+        "times": "次数",
+        "timingLabel": "比赛内时机"
+      },
+      "player": {
+        "eyebrow": "换人 · 玩家分析",
+        "title": "玩家更换分析",
+        "description": "各玩家的英雄更换统计及其对胜率的影响",
+        "noData": "暂无玩家更换数据。",
+        "tableLabel": "玩家更换统计",
+        "player": "玩家",
+        "swaps": "更换",
+        "mapsWithSwaps": "有更换地图",
+        "winrateWith": "有更换胜率",
+        "winrateWithout": "无更换胜率",
+        "topPair": "主要更换"
+      }
+    },
     "roleBalanceRadar": {
       "eyebrow": "概览 · 职责平衡",
       "title": "职责平衡",

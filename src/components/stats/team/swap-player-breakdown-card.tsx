@@ -3,7 +3,7 @@
 import { SectionHeader } from "@/components/stats/team/section-header";
 import type { TeamHeroSwapStats } from "@/data/team/types";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 
 type SwapPlayerBreakdownCardProps = {
   swapStats: TeamHeroSwapStats;
@@ -19,12 +19,21 @@ export function SwapPlayerBreakdownCard({
   swapStats,
 }: SwapPlayerBreakdownCardProps) {
   const t = useTranslations("teamStatsPage.swapsTab.player");
+  const format = useFormatter();
+
+  function formatPercent(value: number) {
+    return format.number(value / 100, {
+      maximumFractionDigits: 1,
+      minimumFractionDigits: 1,
+      style: "percent",
+    });
+  }
 
   if (swapStats.playerBreakdown.length === 0) {
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Swaps · Player breakdown"
+          eyebrow={t("eyebrow")}
           title={t("title")}
           description={t("noData")}
         />
@@ -35,7 +44,7 @@ export function SwapPlayerBreakdownCard({
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Swaps · Player breakdown"
+        eyebrow={t("eyebrow")}
         title={t("title")}
         description={t("description")}
       />
@@ -68,10 +77,10 @@ export function SwapPlayerBreakdownCard({
                     {player.playerName}
                   </td>
                   <td className="text-foreground py-2.5 pr-3 text-right font-mono font-medium tabular-nums">
-                    {player.totalSwaps}
+                    {format.number(player.totalSwaps)}
                   </td>
                   <td className="text-muted-foreground py-2.5 pr-3 text-right font-mono tabular-nums">
-                    {player.mapsWithSwaps}
+                    {format.number(player.mapsWithSwaps)}
                   </td>
                   <td className="py-2.5 pr-3 text-right">
                     {hasSwapData ? (
@@ -81,7 +90,7 @@ export function SwapPlayerBreakdownCard({
                           getWinrateTagClass(player.winrateWithSwaps)
                         )}
                       >
-                        {player.winrateWithSwaps.toFixed(1)}%
+                        {formatPercent(player.winrateWithSwaps)}
                       </span>
                     ) : (
                       <span className="text-muted-foreground/60">—</span>
@@ -95,7 +104,7 @@ export function SwapPlayerBreakdownCard({
                           getWinrateTagClass(player.winrateWithoutSwaps)
                         )}
                       >
-                        {player.winrateWithoutSwaps.toFixed(1)}%
+                        {formatPercent(player.winrateWithoutSwaps)}
                       </span>
                     ) : (
                       <span className="text-muted-foreground/60">—</span>
@@ -107,7 +116,7 @@ export function SwapPlayerBreakdownCard({
                         {player.topSwapPair.fromHero} →{" "}
                         {player.topSwapPair.toHero}{" "}
                         <span className="font-mono tabular-nums">
-                          ({player.topSwapPairCount})
+                          ({format.number(player.topSwapPairCount)})
                         </span>
                       </span>
                     ) : (

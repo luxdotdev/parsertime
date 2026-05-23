@@ -85,13 +85,6 @@ function renderSwapPairTick(props: {
   );
 }
 
-const chartConfig: ChartConfig = {
-  count: {
-    label: "Times",
-    color: "var(--chart-2)",
-  },
-};
-
 function MiniTimingChart({ buckets }: { buckets: SwapTimingBucket[] }) {
   const maxCount = Math.max(...buckets.map((b) => b.count), 1);
 
@@ -128,12 +121,14 @@ function SwapPairTooltip({
   active,
   payload,
   timingByPair,
+  t,
 }: {
   active?: boolean;
   payload?: {
     payload: { pair: string; count: number };
   }[];
   timingByPair: Map<string, SwapTimingBucket[]>;
+  t: ReturnType<typeof useTranslations>;
 }) {
   if (!active || !payload?.length) return null;
 
@@ -145,12 +140,12 @@ function SwapPairTooltip({
     <div className="bg-popover text-popover-foreground border-border min-w-[160px] rounded-lg border px-3 py-2 shadow-md">
       <p className="text-foreground mb-1 text-sm font-semibold">{data.pair}</p>
       <p className="text-muted-foreground font-mono text-xs tabular-nums">
-        {data.count} {data.count === 1 ? "time" : "times"}
+        {t("count", { count: data.count })}
       </p>
       {timing && hasTimingData && (
         <div className="mt-2 border-t pt-2">
           <p className="text-muted-foreground mb-1 font-mono text-[10px] tracking-[0.16em] uppercase">
-            When in match
+            {t("timingLabel")}
           </p>
           <MiniTimingChart buckets={timing} />
           <div className="text-muted-foreground mt-1 flex justify-between font-mono text-[9px] tabular-nums">
@@ -166,11 +161,17 @@ function SwapPairTooltip({
 
 export function SwapPairsCard({ swapStats }: SwapPairsCardProps) {
   const t = useTranslations("teamStatsPage.swapsTab.pairs");
+  const chartConfig: ChartConfig = {
+    count: {
+      label: t("times"),
+      color: "var(--chart-2)",
+    },
+  };
 
   if (swapStats.topSwapPairs.length === 0) {
     return (
       <section className="space-y-4">
-        <SectionHeader eyebrow="Swaps · Common pairs" title={t("title")} />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
@@ -194,7 +195,7 @@ export function SwapPairsCard({ swapStats }: SwapPairsCardProps) {
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Swaps · Common pairs"
+        eyebrow={t("eyebrow")}
         title={t("title")}
         description={t("description")}
       />
@@ -225,7 +226,7 @@ export function SwapPairsCard({ swapStats }: SwapPairsCardProps) {
             allowDecimals={false}
           />
           <ChartTooltip
-            content={<SwapPairTooltip timingByPair={timingByPair} />}
+            content={<SwapPairTooltip timingByPair={timingByPair} t={t} />}
           />
           <Bar
             dataKey="count"
