@@ -5,6 +5,7 @@ import { TargetNarrative } from "@/components/targets/target-narrative";
 import { TargetProgressCard } from "@/components/targets/target-progress-card";
 import type { ScrimStatPoint, TargetProgress } from "@/data/player/types";
 import { getStatsForRole, type RoleName } from "@/lib/target-stats";
+import { useTranslations } from "next-intl";
 
 type Props = {
   playerRole: RoleName;
@@ -13,14 +14,13 @@ type Props = {
 };
 
 export function PlayerTargetsTab({ playerRole, scrimStats, progress }: Props) {
+  const t = useTranslations("targets");
   const roleStats = getStatsForRole(playerRole);
 
   if (progress.length === 0) {
     return (
       <div className="bg-card rounded-xl border p-8 text-center shadow">
-        <p className="text-muted-foreground">
-          No targets have been set by your coach yet.
-        </p>
+        <p className="text-muted-foreground">{t("noTargets")}</p>
       </div>
     );
   }

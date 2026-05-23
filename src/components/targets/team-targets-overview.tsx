@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import type { PlayerTarget } from "@prisma/client";
 import { Lock } from "lucide-react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 type PlayerOverview = {
@@ -52,6 +53,7 @@ const statusColors = {
 };
 
 export function TeamTargetsOverview({ players, teamId, hasPerms }: Props) {
+  const t = useTranslations("targets");
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
 
   const selected = players.find((p) => p.name === selectedPlayer && p.isOnTeam);
@@ -119,7 +121,7 @@ export function TeamTargetsOverview({ players, teamId, hasPerms }: Props) {
                   </div>
                   <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
                     <Lock className="h-3 w-3" />
-                    <span>Add this player to your team to set targets</span>
+                    <span>{t("addPlayerToSetTargets")}</span>
                   </div>
                 </div>
               </CardContent>

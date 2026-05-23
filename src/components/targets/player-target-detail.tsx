@@ -10,6 +10,7 @@ import { type RoleName, getStatsForRole } from "@/lib/target-stats";
 import type { PlayerTarget } from "@prisma/client";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 type Props = {
@@ -35,6 +36,7 @@ export function PlayerTargetDetail({
   hasPerms,
   onBack,
 }: Props) {
+  const t = useTranslations("targets");
   const router = useRouter();
   const [deleting, setDeleting] = useState<number | null>(null);
 
@@ -56,7 +58,7 @@ export function PlayerTargetDetail({
         {onBack && (
           <Button variant="ghost" size="sm" onClick={onBack}>
             <ArrowLeft className="mr-1 h-4 w-4" />
-            Back
+            {t("back")}
           </Button>
         )}
         <h3 className="text-xl font-semibold">{playerName}</h3>
