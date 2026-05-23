@@ -3509,6 +3509,19 @@
         "Push": "机动推进"
       }
     },
+    "heroPoolContainer": {
+      "selectTimeframe": "选择时间范围",
+      "lastWeek": "过去一周",
+      "last2Weeks": "过去两周",
+      "lastMonth": "过去一个月",
+      "last3Months": "过去三个月",
+      "last6Months": "过去六个月",
+      "lastYear": "过去一年",
+      "allTime": "所有时间",
+      "customRange": "自定义范围",
+      "upgrade": "升级以查看更多时间范围",
+      "pickDateRange": "选择日期范围"
+    },
     "heroPoolOverviewCard": {
       "eyebrow": "英雄 · 英雄池概览",
       "title": "英雄池概览",
