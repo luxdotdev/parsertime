@@ -2619,7 +2619,12 @@
       "reset": "Reset",
       "strokeWidth": "Stroke width",
       "team1Color": "Team 1 color",
-      "team2Color": "Team 2 color"
+      "team2Color": "Team 2 color",
+      "neutralColors": {
+        "white": "White",
+        "black": "Black",
+        "yellow": "Yellow"
+      }
     },
     "mapSelector": {
       "placeholder": "Select a map",

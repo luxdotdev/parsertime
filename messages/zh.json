@@ -3476,12 +3476,49 @@
     "matchmaker": "Matchmaker"
   },
   "coaching": {
+    "title": "教练画布",
+    "subtitle": "在地图上标注英雄站位、绘图和战术笔记。",
+    "metadata": {
+      "title": "教练画布 | Parsertime",
+      "description": "在地图上标注英雄站位和战术绘图。"
+    },
+    "sidebar": {
+      "team1": "队伍 1",
+      "team2": "队伍 2",
+      "tank": "坦克",
+      "damage": "输出",
+      "support": "支援"
+    },
+    "toolbar": {
+      "select": "选择",
+      "pen": "画笔",
+      "arrow": "箭头",
+      "circle": "圆形",
+      "eraser": "橡皮擦",
+      "undo": "撤销",
+      "redo": "重做",
+      "reset": "重置",
+      "strokeWidth": "线条宽度",
+      "team1Color": "队伍 1 颜色",
+      "team2Color": "队伍 2 颜色",
+      "neutralColors": {
+        "white": "白色",
+        "black": "黑色",
+        "yellow": "黄色"
+      }
+    },
     "mapSelector": {
       "placeholder": "选择地图",
       "search": "搜索地图...",
       "noResults": "未找到地图。",
       "subMapPlaceholder": "选择点位",
       "label": "地图"
+    },
+    "reset": {
+      "title": "重置画布？",
+      "description": "这会清除所有英雄站位和绘图。此操作无法撤销。",
+      "confirm": "重置",
+      "cancel": "取消"
     }
   },
   "demoPage": {

@@ -3476,12 +3476,49 @@
     "matchmaker": "Matchmaker"
   },
   "coaching": {
+    "title": "코칭 캔버스",
+    "subtitle": "맵에 영웅 배치, 그림, 전략 노트를 표시하세요.",
+    "metadata": {
+      "title": "코칭 캔버스 | Parsertime",
+      "description": "영웅 배치와 전략 그림을 맵에 표시하세요."
+    },
+    "sidebar": {
+      "team1": "팀 1",
+      "team2": "팀 2",
+      "tank": "탱커",
+      "damage": "딜러",
+      "support": "지원"
+    },
+    "toolbar": {
+      "select": "선택",
+      "pen": "펜",
+      "arrow": "화살표",
+      "circle": "원",
+      "eraser": "지우개",
+      "undo": "실행 취소",
+      "redo": "다시 실행",
+      "reset": "초기화",
+      "strokeWidth": "선 굵기",
+      "team1Color": "팀 1 색상",
+      "team2Color": "팀 2 색상",
+      "neutralColors": {
+        "white": "흰색",
+        "black": "검정",
+        "yellow": "노랑"
+      }
+    },
     "mapSelector": {
       "placeholder": "맵 선택",
       "search": "맵 검색...",
       "noResults": "맵을 찾을 수 없습니다.",
       "subMapPlaceholder": "지점 선택",
       "label": "맵"
+    },
+    "reset": {
+      "title": "캔버스를 초기화할까요?",
+      "description": "모든 영웅 배치와 그림이 지워집니다. 이 작업은 되돌릴 수 없습니다.",
+      "confirm": "초기화",
+      "cancel": "취소"
     }
   },
   "demoPage": {

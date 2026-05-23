@@ -45,10 +45,10 @@ const TOOLS: { value: Tool; icon: LucideIcon; labelKey: string }[] = [
   { value: "eraser", icon: EraserIcon, labelKey: "eraser" },
 ];
 
-const NEUTRAL_COLORS: { value: string; label: string }[] = [
-  { value: "#ffffff", label: "White" },
-  { value: "#000000", label: "Black" },
-  { value: "#facc15", label: "Yellow" },
+const NEUTRAL_COLORS: { value: string; labelKey: string }[] = [
+  { value: "#ffffff", labelKey: "neutralColors.white" },
+  { value: "#000000", labelKey: "neutralColors.black" },
+  { value: "#facc15", labelKey: "neutralColors.yellow" },
 ];
 
 export function CanvasToolbar() {
@@ -80,7 +80,10 @@ export function CanvasToolbar() {
   const colorPresets = [
     { value: team1, label: t("team1Color") },
     { value: team2, label: t("team2Color") },
-    ...NEUTRAL_COLORS,
+    ...NEUTRAL_COLORS.map(({ value, labelKey }) => ({
+      value,
+      label: t(labelKey),
+    })),
   ];
 
   return (
