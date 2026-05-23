@@ -808,7 +808,7 @@ export default async function TeamStatsPage(
           <StatRibbon
             cells={[
               {
-                label: "Total ults",
+                label: "Total ultimates",
                 value: String(ultStats.totalUltsUsed),
                 sub: `${ultStats.ultsPerMap.toFixed(1)} per map`,
                 emphasis: true,
