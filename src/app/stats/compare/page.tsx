@@ -119,7 +119,7 @@ export default function ComparePage() {
       <header className="border-border flex flex-wrap items-end justify-between gap-x-10 gap-y-4 border-b pb-6">
         <div>
           <p className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
-            Stats · Player comparison
+            {t("eyebrow")}
           </p>
           <h1 className="mt-3 text-4xl leading-none font-semibold tracking-tight">
             {t("title")}

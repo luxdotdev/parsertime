@@ -3015,6 +3015,7 @@
       }
     },
     "compareStats": {
+      "eyebrow": "Stats · Player comparison",
       "title": "Compare Player Statistics",
       "enterPlayerNames": "Enter Player Names",
       "player1": "Player 1",

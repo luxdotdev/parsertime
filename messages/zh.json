@@ -2242,6 +2242,24 @@
       "ogDescription": "Parsertime 上 {hero} 的统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
       "ogImage": "{hero}的统计数据"
     },
+    "compareStats": {
+      "eyebrow": "统计 · 玩家对比",
+      "title": "比较玩家统计数据",
+      "enterPlayerNames": "输入玩家名称",
+      "player1": "玩家 1",
+      "player2": "玩家 2",
+      "player1Placeholder": "输入第一位玩家名称",
+      "player2Placeholder": "输入第二位玩家名称",
+      "compare": "比较",
+      "reset": "重置",
+      "loading": "正在加载玩家统计数据...",
+      "errorLoading": "加载玩家数据时出错",
+      "errorPlayer1": "无法加载玩家 1 数据",
+      "errorPlayer2": "无法加载玩家 2 数据",
+      "errorBoth": " 和 ",
+      "enterPlayersPrompt": "在上方输入两位玩家名称以比较他们的统计数据",
+      "filters": "筛选"
+    },
     "title": "统计数据",
     "searchbar": {
       "placeholder": "输入球员姓名...",
@@ -2946,6 +2964,23 @@
       },
       "planUpgrade": "升级您的计划",
       "manageSubscription": "管理您的订阅"
+    },
+    "billing": {
+      "title": "账单",
+      "description": "管理您的账单设置和偏好。",
+      "planDescription": "您当前的方案是 <plan>{billingPlan}</plan>。",
+      "billingPlan": {
+        "FREE": "免费",
+        "BASIC": "基本",
+        "PREMIUM": "高级"
+      },
+      "planUpgrade": "升级您的方案",
+      "manageSubscription": "管理您的订阅",
+      "teamCount": "团队",
+      "teamMemberCount": "团队成员",
+      "scrimCount": "训练赛",
+      "viewOtherPlans": "查看其他方案",
+      "usage": "已使用 {current} / {allowed}"
     },
     "profileForm": {
       "minMessage": "姓名必须至少包含 2 个字符。",

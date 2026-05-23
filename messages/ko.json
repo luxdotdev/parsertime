@@ -2242,6 +2242,24 @@
       "ogDescription": "Parsertime에서 {hero}의 통계입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
       "ogImage": "{hero}의 통계"
     },
+    "compareStats": {
+      "eyebrow": "통계 · 플레이어 비교",
+      "title": "플레이어 통계 비교",
+      "enterPlayerNames": "플레이어 이름 입력",
+      "player1": "플레이어 1",
+      "player2": "플레이어 2",
+      "player1Placeholder": "첫 번째 플레이어 이름 입력",
+      "player2Placeholder": "두 번째 플레이어 이름 입력",
+      "compare": "비교",
+      "reset": "초기화",
+      "loading": "플레이어 통계 로드 중...",
+      "errorLoading": "플레이어 데이터를 불러오는 중 오류가 발생했습니다",
+      "errorPlayer1": "플레이어 1 데이터를 불러오지 못했습니다",
+      "errorPlayer2": "플레이어 2 데이터를 불러오지 못했습니다",
+      "errorBoth": " 및 ",
+      "enterPlayersPrompt": "통계를 비교하려면 위에 두 플레이어 이름을 입력하세요",
+      "filters": "필터"
+    },
     "title": "통계",
     "searchbar": {
       "placeholder": "플레이어 이름을 입력하세요...",
@@ -2946,6 +2964,23 @@
       },
       "planUpgrade": "요금제 업그레이드",
       "manageSubscription": "구독 관리"
+    },
+    "billing": {
+      "title": "청구",
+      "description": "청구 설정과 환경설정을 관리하세요.",
+      "planDescription": "현재 사용 중인 요금제는 <plan>{billingPlan}</plan> 요금제입니다.",
+      "billingPlan": {
+        "FREE": "무료",
+        "BASIC": "기본",
+        "PREMIUM": "프리미엄"
+      },
+      "planUpgrade": "요금제 업그레이드",
+      "manageSubscription": "구독 관리",
+      "teamCount": "팀",
+      "teamMemberCount": "팀 멤버",
+      "scrimCount": "스크림",
+      "viewOtherPlans": "다른 요금제 보기",
+      "usage": "{allowed}개 중 {current}개 사용됨"
     },
     "profileForm": {
       "minMessage": "이름은 최소 2자 이상이어야 합니다.",
