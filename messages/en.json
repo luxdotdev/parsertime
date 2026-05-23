@@ -781,6 +781,87 @@
       },
       "code": "Replay code: {replayCode}"
     },
+    "overviewTabs": {
+      "team": {
+        "yourTeam": "Your Team",
+        "opponent": "Opponent"
+      },
+      "tabs": {
+        "visualizations": "Visualizations",
+        "rawStats": "Raw Stats"
+      },
+      "actions": {
+        "collapseAll": "Collapse all",
+        "expandAll": "Expand all"
+      },
+      "sections": {
+        "players": "Player Performance",
+        "fights": "Fights",
+        "abilities": "Ability Timing",
+        "ultimates": "Ultimates",
+        "ultAdvantage": "Ultimate Advantage",
+        "swaps": "Hero Swaps"
+      }
+    },
+    "overviewSections": {
+      "fights": {
+        "noData": "No fight data available for this scrim.",
+        "summary": "Won <b>{winrate}%</b> of <b>{total}</b> {total, plural, one {fight} other {fights}} ({won}W - {lost}L)",
+        "firstUlt": "Used ults first in <b>{count}</b> {count, plural, one {fight} other {fights}} (<b>{winrate}%</b> WR).",
+        "opponentFirstUlt": "Opponent used ults first in <b>{count}</b> {count, plural, one {fight} other {fights}} (<b>{winrate}%</b> WR).",
+        "labels": {
+          "fightsWon": "Fights Won",
+          "firstPickRate": "First Pick Rate",
+          "firstDeathRate": "First Death Rate"
+        },
+        "headings": {
+          "conditionalWinRates": "Conditional Win Rates"
+        },
+        "units": {
+          "fights": "fights",
+          "firstDeaths": "first deaths"
+        }
+      },
+      "ultimates": {
+        "noData": "No ultimate data available for this scrim.",
+        "efficiency": "Ultimate efficiency: <b>{value}</b> fights won per ult ({rating})",
+        "ratings": {
+          "excellent": "Excellent",
+          "good": "Good",
+          "average": "Average",
+          "poor": "Poor"
+        },
+        "labels": {
+          "totalUltimatesUsed": "Total Ultimates Used",
+          "roleUltimates": "{role} Ultimates"
+        },
+        "headings": {
+          "usageBySubrole": "Ultimate Usage by Subrole",
+          "timingBreakdown": "Ultimate Timing Breakdown"
+        },
+        "units": {
+          "ults": "ults"
+        }
+      },
+      "swaps": {
+        "noData": "No hero swap data available for this scrim.",
+        "summary": "<b>{swaps}</b> {swaps, plural, one {swap} other {swaps}} across all maps (<b>{perMap}/map</b>) vs opponent's <b>{opponentSwaps}</b>",
+        "topSwap": "Top swap: <b>{fromHero}</b> -> <b>{toHero}</b> (<n>{count}x</n>)",
+        "topSwapper": "Most active swapper: <b>{playerName}</b> (<n>{swaps} {swaps, plural, one {swap} other {swaps}}, {maps} {maps, plural, one {map} other {maps}}</n>)",
+        "labels": {
+          "totalHeroSwaps": "Total Hero Swaps",
+          "swapVsNoSwapWinRate": "Swap vs No-Swap Win Rate",
+          "withSwaps": "With Swaps",
+          "withoutSwaps": "Without Swaps"
+        },
+        "headings": {
+          "winRateBySwapCountTiming": "Win Rate by Swap Count & Timing"
+        },
+        "units": {
+          "swaps": "swaps"
+        }
+      }
+    },
     "mapCard": {
       "altText": "The loading screen art for {map}.",
       "selected": "Selected",
@@ -4581,6 +4662,27 @@
       "progressToward": "You're {percent}% of the way to your target of {targetDirection}{targetPercent}%.",
       "increased": "increased",
       "decreased": "decreased"
+    }
+  },
+  "reportsPage": {
+    "metadata": {
+      "title": "Reports | Parsertime",
+      "description": "View shared AI-generated scrim analysis reports."
+    },
+    "list": {
+      "title": "Reports",
+      "description": "AI-generated analysis reports from your chat conversations.",
+      "searchPlaceholder": "Search reports...",
+      "reportCount": "{count, plural, =0 {No reports} =1 {# report} other {# reports}}",
+      "emptyTitle": "No reports yet",
+      "emptyDescription": "Reports are created from Analyst conversations. Ask the Analyst to generate a report and it will appear here.",
+      "startChat": "Start a chat",
+      "noMatches": "No reports match \"{query}\"",
+      "pageStatus": "Page {currentPage} of {totalPages}",
+      "previousPage": "Previous page",
+      "previous": "Previous",
+      "nextPage": "Next page",
+      "next": "Next"
     }
   }
 }

@@ -15,22 +15,23 @@ import {
   Search,
 } from "lucide-react";
 import type { Route } from "next";
+import { useFormatter, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
 const PAGE_SIZE = 12;
 
 type ReportWithUser = ChatReport & { user: { name: string | null } };
 
-function formatRelativeDate(date: Date): string {
+function formatRelativeDate(
+  date: Date,
+  format: ReturnType<typeof useFormatter>
+): string {
   const now = new Date();
   const diff = now.getTime() - date.getTime();
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-  if (days === 0) return "Today";
-  if (days === 1) return "Yesterday";
-  if (days < 7) return `${days} days ago`;
-  if (days < 30) return `${Math.floor(days / 7)} weeks ago`;
-  return date.toLocaleDateString("en-US", {
+  if (days < 30) return format.relativeTime(date);
+  return format.dateTime(date, {
     month: "short",
     day: "numeric",
     year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
@@ -53,6 +54,7 @@ function extractPreview(content: string): string {
 }
 
 function ReportCard({ report }: { report: ReportWithUser }) {
+  const format = useFormatter();
   const preview = useMemo(
     () => extractPreview(report.content),
     [report.content]
@@ -72,7 +74,7 @@ function ReportCard({ report }: { report: ReportWithUser }) {
             <div className="text-muted-foreground flex items-center gap-2">
               <CalendarIcon className="h-3.5 w-3.5 shrink-0" />
               <span className="font-medium" suppressHydrationWarning>
-                {formatRelativeDate(report.createdAt)}
+                {formatRelativeDate(report.createdAt, format)}
               </span>
             </div>
           </div>
@@ -89,6 +91,7 @@ function ReportCard({ report }: { report: ReportWithUser }) {
 }
 
 export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
+  const t = useTranslations("reportsPage.list");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
@@ -119,10 +122,10 @@ export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
           </div>
           <div>
             <h2 className="text-2xl leading-none font-bold tracking-tight">
-              Reports
+              {t("title")}
             </h2>
             <p className="text-muted-foreground mt-1 text-sm">
-              AI-generated analysis reports from your chat conversations.
+              {t("description")}
             </p>
           </div>
         </div>
@@ -135,7 +138,7 @@ export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
             <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search reports…"
+              placeholder={t("searchPlaceholder")}
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
@@ -148,7 +151,7 @@ export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
             />
           </div>
           <Badge variant="secondary" className="tabular-nums">
-            {filtered.length} report{filtered.length !== 1 ? "s" : ""}
+            {t("reportCount", { count: filtered.length })}
           </Badge>
         </div>
       )}
@@ -159,22 +162,21 @@ export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
           <div className="bg-muted flex size-14 items-center justify-center rounded-full">
             <MessageSquareText className="text-muted-foreground size-7" />
           </div>
-          <h3 className="mt-4 text-sm font-semibold">No reports yet</h3>
+          <h3 className="mt-4 text-sm font-semibold">{t("emptyTitle")}</h3>
           <p className="text-muted-foreground mt-1 max-w-xs text-center text-sm">
-            Reports are created from Analyst conversations. Ask the Analyst to
-            generate a report and it will appear here.
+            {t("emptyDescription")}
           </p>
           <Link
             href="/chat"
             className="bg-primary text-primary-foreground hover:bg-primary/90 mt-4 inline-flex h-9 items-center rounded-md px-4 text-sm font-medium no-underline transition-colors"
           >
-            Start a chat
+            {t("startChat")}
           </Link>
         </div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16">
           <p className="text-muted-foreground text-sm">
-            No reports match &ldquo;{search}&rdquo;
+            {t("noMatches", { query: search })}
           </p>
         </div>
       ) : (
@@ -188,7 +190,7 @@ export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-2">
               <p className="text-muted-foreground text-sm tabular-nums">
-                Page {currentPage} of {totalPages}
+                {t("pageStatus", { currentPage, totalPages })}
               </p>
               <div className="flex items-center gap-1">
                 <Button
@@ -196,19 +198,19 @@ export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
                   size="sm"
                   disabled={currentPage <= 1}
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  aria-label="Previous page"
+                  aria-label={t("previousPage")}
                 >
                   <ChevronLeft className="size-4" />
-                  <span className="hidden sm:inline">Previous</span>
+                  <span className="hidden sm:inline">{t("previous")}</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   disabled={currentPage >= totalPages}
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  aria-label="Next page"
+                  aria-label={t("nextPage")}
                 >
-                  <span className="hidden sm:inline">Next</span>
+                  <span className="hidden sm:inline">{t("next")}</span>
                   <ChevronRight className="size-4" />
                 </Button>
               </div>

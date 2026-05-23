@@ -1,10 +1,15 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Reports | Parsertime",
-  description: "View shared AI-generated scrim analysis reports.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("reportsPage.metadata");
+
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
 
 export default function ReportsLayout({
   children,

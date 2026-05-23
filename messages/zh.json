@@ -658,6 +658,87 @@
         "title": "已复制到剪贴板！",
         "description": "重播代码已复制到剪贴板。"
       }
+    },
+    "overviewTabs": {
+      "team": {
+        "yourTeam": "你的队伍",
+        "opponent": "对手"
+      },
+      "tabs": {
+        "visualizations": "可视化",
+        "rawStats": "原始数据"
+      },
+      "actions": {
+        "collapseAll": "全部收起",
+        "expandAll": "全部展开"
+      },
+      "sections": {
+        "players": "玩家表现",
+        "fights": "团战",
+        "abilities": "技能时机",
+        "ultimates": "终极技能",
+        "ultAdvantage": "终极技能优势",
+        "swaps": "英雄更换"
+      }
+    },
+    "overviewSections": {
+      "fights": {
+        "noData": "本次训练赛暂无团战数据。",
+        "summary": "赢下 <b>{winrate}%</b>，共 <b>{total}</b> 场团战（{won}胜 - {lost}负）",
+        "firstUlt": "率先使用终极技能 <b>{count}</b> 次（<b>{winrate}%</b> 胜率）。",
+        "opponentFirstUlt": "对手率先使用终极技能 <b>{count}</b> 次（<b>{winrate}%</b> 胜率）。",
+        "labels": {
+          "fightsWon": "赢下团战",
+          "firstPickRate": "首杀率",
+          "firstDeathRate": "首死率"
+        },
+        "headings": {
+          "conditionalWinRates": "条件胜率"
+        },
+        "units": {
+          "fights": "场团战",
+          "firstDeaths": "次首死"
+        }
+      },
+      "ultimates": {
+        "noData": "本次训练赛暂无终极技能数据。",
+        "efficiency": "终极技能效率：<b>{value}</b> 每个终极技能赢下的团战数（{rating}）",
+        "ratings": {
+          "excellent": "优秀",
+          "good": "良好",
+          "average": "一般",
+          "poor": "较差"
+        },
+        "labels": {
+          "totalUltimatesUsed": "终极技能总使用数",
+          "roleUltimates": "{role} 终极技能"
+        },
+        "headings": {
+          "usageBySubrole": "按副职责统计终极技能使用",
+          "timingBreakdown": "终极技能时机细分"
+        },
+        "units": {
+          "ults": "个大招"
+        }
+      },
+      "swaps": {
+        "noData": "本次训练赛暂无英雄更换数据。",
+        "summary": "所有地图共 <b>{swaps}</b> 次英雄更换（<b>{perMap}/图</b>），对手为 <b>{opponentSwaps}</b> 次",
+        "topSwap": "最常见更换：<b>{fromHero}</b> -> <b>{toHero}</b>（<n>{count}次</n>）",
+        "topSwapper": "最活跃更换者：<b>{playerName}</b>（<n>{swaps} 次更换，{maps} 张地图</n>）",
+        "labels": {
+          "totalHeroSwaps": "英雄更换总数",
+          "swapVsNoSwapWinRate": "更换与不更换胜率",
+          "withSwaps": "发生更换",
+          "withoutSwaps": "未发生更换"
+        },
+        "headings": {
+          "winRateBySwapCountTiming": "按更换次数与时机统计胜率"
+        },
+        "units": {
+          "swaps": "次更换"
+        }
+      }
     }
   },
   "mapPage": {
@@ -2746,6 +2827,27 @@
       "progressToward": "您已达成目标{targetDirection}{targetPercent}%的{percent}%。",
       "increased": "提高",
       "decreased": "降低"
+    }
+  },
+  "reportsPage": {
+    "metadata": {
+      "title": "报告 | Parsertime",
+      "description": "查看共享的 AI 训练赛分析报告。"
+    },
+    "list": {
+      "title": "报告",
+      "description": "来自聊天对话的 AI 分析报告。",
+      "searchPlaceholder": "搜索报告...",
+      "reportCount": "{count, plural, =0 {没有报告} other {# 份报告}}",
+      "emptyTitle": "暂无报告",
+      "emptyDescription": "报告由 Analyst 对话创建。让 Analyst 生成报告后，它会显示在这里。",
+      "startChat": "开始聊天",
+      "noMatches": "没有与 \"{query}\" 匹配的报告",
+      "pageStatus": "第 {currentPage} 页，共 {totalPages} 页",
+      "previousPage": "上一页",
+      "previous": "上一页",
+      "nextPage": "下一页",
+      "next": "下一页"
     }
   }
 }

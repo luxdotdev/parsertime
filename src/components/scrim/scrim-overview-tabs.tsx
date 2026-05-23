@@ -33,9 +33,11 @@ import {
   Users,
   Zap,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
+  const t = useTranslations("scrimPage.overviewTabs");
   const hasAbilityData = data.abilityTimingAnalysis.rows.length > 0;
   const hasUltEconomy = data.ultEconomy.totalFights > 0;
   const allSections = [
@@ -58,11 +60,11 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
   }
 
   const team1 = {
-    name: data.ourTeamName || "Your Team",
+    name: data.ourTeamName || t("team.yourTeam"),
     color: team1Color,
   };
   const team2 = {
-    name: data.opponentTeamName || "Opponent",
+    name: data.opponentTeamName || t("team.opponent"),
     color: team2Color,
   };
   const teamNames = [team1.name, team2.name] as const;
@@ -71,8 +73,10 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
     <Tabs value={activeTab} onValueChange={setActiveTab}>
       <div className="flex items-center justify-between">
         <TabsList>
-          <TabsTrigger value="visualizations">Visualizations</TabsTrigger>
-          <TabsTrigger value="raw-stats">Raw Stats</TabsTrigger>
+          <TabsTrigger value="visualizations">
+            {t("tabs.visualizations")}
+          </TabsTrigger>
+          <TabsTrigger value="raw-stats">{t("tabs.rawStats")}</TabsTrigger>
         </TabsList>
         {activeTab === "visualizations" && (
           <button
@@ -83,12 +87,12 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
             {allExpanded ? (
               <>
                 <ChevronsDownUp className="size-3.5" aria-hidden="true" />
-                Collapse all
+                {t("actions.collapseAll")}
               </>
             ) : (
               <>
                 <ChevronsUpDown className="size-3.5" aria-hidden="true" />
-                Expand all
+                {t("actions.expandAll")}
               </>
             )}
           </button>
@@ -108,7 +112,7 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
                   className="text-muted-foreground size-4"
                   aria-hidden="true"
                 />
-                Player Performance
+                {t("sections.players")}
               </span>
             </AccordionTrigger>
             <AccordionContent className="h-auto">
@@ -123,7 +127,7 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
                   className="text-muted-foreground size-4"
                   aria-hidden="true"
                 />
-                Fights
+                {t("sections.fights")}
               </span>
             </AccordionTrigger>
             <AccordionContent className="h-auto">
@@ -143,7 +147,7 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
                     className="text-muted-foreground size-4"
                     aria-hidden="true"
                   />
-                  Ability Timing
+                  {t("sections.abilities")}
                 </span>
               </AccordionTrigger>
               <AccordionContent className="h-auto">
@@ -161,7 +165,7 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
                   className="text-muted-foreground size-4"
                   aria-hidden="true"
                 />
-                Ultimates
+                {t("sections.ultimates")}
               </span>
             </AccordionTrigger>
             <AccordionContent className="h-auto">
@@ -181,7 +185,7 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
                     className="text-muted-foreground size-4"
                     aria-hidden="true"
                   />
-                  Ultimate Advantage
+                  {t("sections.ultAdvantage")}
                 </span>
               </AccordionTrigger>
               <AccordionContent className="h-auto">
@@ -197,7 +201,7 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
                   className="text-muted-foreground size-4"
                   aria-hidden="true"
                 />
-                Hero Swaps
+                {t("sections.swaps")}
               </span>
             </AccordionTrigger>
             <AccordionContent className="h-auto">

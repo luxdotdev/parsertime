@@ -15,6 +15,8 @@ import type {
   ScrimUltAnalysis,
 } from "@/data/scrim/types";
 import { ArrowRightLeft, Swords, Users, Zap } from "lucide-react";
+import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 
 type TeamPair = {
   team1: { name: string; color: string };
@@ -26,68 +28,70 @@ export function ScrimFightsSection({
   team1,
   team2,
 }: TeamPair & { analysis: ScrimFightAnalysis }) {
+  const t = useTranslations("scrimPage.overviewSections.fights");
+
   if (analysis.totalFights === 0) {
     return (
-      <p className="text-muted-foreground text-sm text-pretty">
-        No fight data available for this scrim.
-      </p>
+      <p className="text-muted-foreground text-sm text-pretty">{t("noData")}</p>
     );
   }
 
   const fightsLost = analysis.totalFights - analysis.fightsWon;
 
+  function b(chunks: ReactNode) {
+    return <span className="font-semibold tabular-nums">{chunks}</span>;
+  }
+
   return (
     <div className="space-y-4">
       <Callout icon={<Swords className="size-4" />}>
-        Won{" "}
-        <span className="font-semibold tabular-nums">
-          {Math.round(analysis.fightWinrate)}%
-        </span>{" "}
-        of{" "}
-        <span className="font-semibold tabular-nums">
-          {analysis.totalFights}
-        </span>{" "}
-        fights ({analysis.fightsWon}W &ndash; {fightsLost}L)
+        {t.rich("summary", {
+          b,
+          winrate: Math.round(analysis.fightWinrate),
+          total: analysis.totalFights,
+          won: analysis.fightsWon,
+          lost: fightsLost,
+        })}
       </Callout>
 
       <HeadToHeadBar
-        label="Fights Won"
+        label={t("labels.fightsWon")}
         team1Value={analysis.fightsWon}
         team2Value={fightsLost}
         team1Name={team1.name}
         team2Name={team2.name}
         team1Color={team1.color}
         team2Color={team2.color}
-        unit="fights"
+        unit={t("units.fights")}
       />
 
       {analysis.firstPickCount > 0 && (
         <HeadToHeadBar
-          label="First Pick Rate"
+          label={t("labels.firstPickRate")}
           team1Value={analysis.firstPickCount}
           team2Value={analysis.totalFights - analysis.firstPickCount}
           team1Name={team1.name}
           team2Name={team2.name}
           team1Color={team1.color}
           team2Color={team2.color}
-          unit="fights"
+          unit={t("units.fights")}
         />
       )}
 
       <HeadToHeadBar
-        label="First Death Rate"
+        label={t("labels.firstDeathRate")}
         team1Value={analysis.teamFirstDeathCount}
         team2Value={analysis.totalFights - analysis.teamFirstDeathCount}
         team1Name={team1.name}
         team2Name={team2.name}
         team1Color={team1.color}
         team2Color={team2.color}
-        unit="first deaths"
+        unit={t("units.firstDeaths")}
       />
 
       <div>
         <h4 className="text-muted-foreground mb-2 text-xs font-medium tracking-wider uppercase">
-          Conditional Win Rates
+          {t("headings.conditionalWinRates")}
         </h4>
         <FightWinRateChart analysis={analysis} />
       </div>
@@ -96,15 +100,11 @@ export function ScrimFightsSection({
         <Callout icon={<Zap className="size-4" />}>
           {analysis.firstUltCount > 0 && (
             <>
-              Used ults first in{" "}
-              <span className="font-semibold tabular-nums">
-                {analysis.firstUltCount}
-              </span>{" "}
-              fights (
-              <span className="font-semibold tabular-nums">
-                {Math.round(analysis.firstUltWinrate)}%
-              </span>{" "}
-              WR).
+              {t.rich("firstUlt", {
+                b,
+                count: analysis.firstUltCount,
+                winrate: Math.round(analysis.firstUltWinrate),
+              })}
             </>
           )}
           {analysis.firstUltCount > 0 &&
@@ -112,15 +112,11 @@ export function ScrimFightsSection({
             " "}
           {analysis.opponentFirstUltCount > 0 && (
             <>
-              Opponent used ults first in{" "}
-              <span className="font-semibold tabular-nums">
-                {analysis.opponentFirstUltCount}
-              </span>{" "}
-              fights (
-              <span className="font-semibold tabular-nums">
-                {Math.round(analysis.opponentFirstUltWinrate)}%
-              </span>{" "}
-              WR).
+              {t.rich("opponentFirstUlt", {
+                b,
+                count: analysis.opponentFirstUltCount,
+                winrate: Math.round(analysis.opponentFirstUltWinrate),
+              })}
             </>
           )}
         </Callout>
@@ -134,11 +130,11 @@ export function ScrimUltimatesSection({
   team1,
   team2,
 }: TeamPair & { analysis: ScrimUltAnalysis }) {
+  const t = useTranslations("scrimPage.overviewSections.ultimates");
+
   if (analysis.ourUltsUsed === 0 && analysis.opponentUltsUsed === 0) {
     return (
-      <p className="text-muted-foreground text-sm text-pretty">
-        No ultimate data available for this scrim.
-      </p>
+      <p className="text-muted-foreground text-sm text-pretty">{t("noData")}</p>
     );
   }
 
@@ -152,36 +148,40 @@ export function ScrimUltimatesSection({
     allOurTimings.length > 0 || allOpponentTimings.length > 0;
   const teamNames = [team1.name, team2.name] as const;
 
+  function b(chunks: ReactNode) {
+    return <span className="font-semibold tabular-nums">{chunks}</span>;
+  }
+
   const ratingLabel =
     eff.ultimateEfficiency >= 0.4
-      ? "Excellent"
+      ? t("ratings.excellent")
       : eff.ultimateEfficiency >= 0.25
-        ? "Good"
+        ? t("ratings.good")
         : eff.ultimateEfficiency >= 0.15
-          ? "Average"
-          : "Poor";
+          ? t("ratings.average")
+          : t("ratings.poor");
 
   return (
     <div className="space-y-4">
       {eff.totalUltsUsedInFights > 0 && (
         <Callout icon={<Zap className="size-4" />}>
-          Ultimate efficiency:{" "}
-          <span className="font-semibold tabular-nums">
-            {eff.ultimateEfficiency.toFixed(2)}
-          </span>{" "}
-          fights won per ult ({ratingLabel})
+          {t.rich("efficiency", {
+            b,
+            value: eff.ultimateEfficiency.toFixed(2),
+            rating: ratingLabel,
+          })}
         </Callout>
       )}
 
       <HeadToHeadBar
-        label="Total Ultimates Used"
+        label={t("labels.totalUltimatesUsed")}
         team1Value={analysis.ourUltsUsed}
         team2Value={analysis.opponentUltsUsed}
         team1Name={team1.name}
         team2Name={team2.name}
         team1Color={team1.color}
         team2Color={team2.color}
-        unit="ults"
+        unit={t("units.ults")}
       />
 
       {analysis.ultsByRole
@@ -189,14 +189,14 @@ export function ScrimUltimatesSection({
         .map((r) => (
           <HeadToHeadBar
             key={r.role}
-            label={`${r.role} Ultimates`}
+            label={t("labels.roleUltimates", { role: r.role })}
             team1Value={r.ourCount}
             team2Value={r.opponentCount}
             team1Name={team1.name}
             team2Name={team2.name}
             team1Color={team1.color}
             team2Color={team2.color}
-            unit="ults"
+            unit={t("units.ults")}
           />
         ))}
 
@@ -211,7 +211,7 @@ export function ScrimUltimatesSection({
       {hasComparisons && (
         <div>
           <h4 className="text-muted-foreground mb-2 text-xs font-medium tracking-wider uppercase">
-            Ultimate Usage by Subrole
+            {t("headings.usageBySubrole")}
           </h4>
           <UltComparisonChart
             comparisons={analysis.playerComparisons}
@@ -223,7 +223,7 @@ export function ScrimUltimatesSection({
       {hasTimingData && (
         <div>
           <h4 className="text-muted-foreground mb-2 text-xs font-medium tracking-wider uppercase">
-            Ultimate Timing Breakdown
+            {t("headings.timingBreakdown")}
           </h4>
           <UltTimingChart
             team1Timings={allOurTimings}
@@ -241,49 +241,50 @@ export function ScrimSwapsSection({
   team1,
   team2,
 }: TeamPair & { analysis: ScrimSwapAnalysis }) {
+  const t = useTranslations("scrimPage.overviewSections.swaps");
+
   if (analysis.ourSwaps === 0 && analysis.opponentSwaps === 0) {
     return (
-      <p className="text-muted-foreground text-sm text-pretty">
-        No hero swap data available for this scrim.
-      </p>
+      <p className="text-muted-foreground text-sm text-pretty">{t("noData")}</p>
     );
   }
 
   const swapTotal = analysis.swapWins + analysis.swapLosses;
   const noSwapTotal = analysis.noSwapWins + analysis.noSwapLosses;
 
+  function b(chunks: ReactNode) {
+    return <span className="font-semibold tabular-nums">{chunks}</span>;
+  }
+
   return (
     <div className="space-y-4">
       <Callout icon={<ArrowRightLeft className="size-4" />}>
-        <span className="font-semibold tabular-nums">{analysis.ourSwaps}</span>{" "}
-        swaps across all maps (
-        <span className="tabular-nums">
-          {analysis.ourSwapsPerMap.toFixed(1)}/map
-        </span>
-        ) vs opponent&apos;s{" "}
-        <span className="font-semibold tabular-nums">
-          {analysis.opponentSwaps}
-        </span>
+        {t.rich("summary", {
+          b,
+          swaps: analysis.ourSwaps,
+          perMap: analysis.ourSwapsPerMap.toFixed(1),
+          opponentSwaps: analysis.opponentSwaps,
+        })}
       </Callout>
 
       <HeadToHeadBar
-        label="Total Hero Swaps"
+        label={t("labels.totalHeroSwaps")}
         team1Value={analysis.ourSwaps}
         team2Value={analysis.opponentSwaps}
         team1Name={team1.name}
         team2Name={team2.name}
         team1Color={team1.color}
         team2Color={team2.color}
-        unit="swaps"
+        unit={t("units.swaps")}
       />
 
       {swapTotal > 0 && noSwapTotal > 0 && (
         <HeadToHeadBar
-          label="Swap vs No-Swap Win Rate"
+          label={t("labels.swapVsNoSwapWinRate")}
           team1Value={analysis.swapWinrate}
           team2Value={analysis.noSwapWinrate}
-          team1Name="With Swaps"
-          team2Name="Without Swaps"
+          team1Name={t("labels.withSwaps")}
+          team2Name={t("labels.withoutSwaps")}
           team1Color={team1.color}
           team2Color={team2.color}
           format="percentage"
@@ -292,7 +293,7 @@ export function ScrimSwapsSection({
 
       <div>
         <h4 className="text-muted-foreground mb-2 text-xs font-medium tracking-wider uppercase">
-          Win Rate by Swap Count &amp; Timing
+          {t("headings.winRateBySwapCountTiming")}
         </h4>
         <SwapWinRateChart
           swapCountBuckets={analysis.winrateBySwapCount}
@@ -303,25 +304,24 @@ export function ScrimSwapsSection({
       <div className="grid gap-3 sm:grid-cols-2">
         {analysis.ourTopSwap && (
           <Callout icon={<ArrowRightLeft className="size-4" />}>
-            Top swap:{" "}
-            <span className="font-semibold">{analysis.ourTopSwap.from}</span>{" "}
-            &rarr;{" "}
-            <span className="font-semibold">{analysis.ourTopSwap.to}</span> (
-            <span className="tabular-nums">{analysis.ourTopSwap.count}x</span>)
+            {t.rich("topSwap", {
+              b: (chunks) => <span className="font-semibold">{chunks}</span>,
+              n: (chunks) => <span className="tabular-nums">{chunks}</span>,
+              fromHero: analysis.ourTopSwap.from,
+              toHero: analysis.ourTopSwap.to,
+              count: analysis.ourTopSwap.count,
+            })}
           </Callout>
         )}
         {analysis.topSwapper && (
           <Callout icon={<Users className="size-4" />}>
-            Most active swapper:{" "}
-            <span className="font-semibold">
-              {analysis.topSwapper.playerName}
-            </span>{" "}
-            (
-            <span className="tabular-nums">
-              {analysis.topSwapper.count} swaps, {analysis.topSwapper.mapsCount}{" "}
-              {analysis.topSwapper.mapsCount === 1 ? "map" : "maps"}
-            </span>
-            )
+            {t.rich("topSwapper", {
+              b: (chunks) => <span className="font-semibold">{chunks}</span>,
+              n: (chunks) => <span className="tabular-nums">{chunks}</span>,
+              playerName: analysis.topSwapper.playerName,
+              swaps: analysis.topSwapper.count,
+              maps: analysis.topSwapper.mapsCount,
+            })}
           </Callout>
         )}
       </div>

@@ -658,6 +658,87 @@
         "title": "클립보드에 복사되었습니다!",
         "description": "리플레이 코드가 클립보드에 복사되었습니다."
       }
+    },
+    "overviewTabs": {
+      "team": {
+        "yourTeam": "내 팀",
+        "opponent": "상대"
+      },
+      "tabs": {
+        "visualizations": "시각화",
+        "rawStats": "원시 통계"
+      },
+      "actions": {
+        "collapseAll": "모두 접기",
+        "expandAll": "모두 펼치기"
+      },
+      "sections": {
+        "players": "플레이어 성과",
+        "fights": "교전",
+        "abilities": "능력 타이밍",
+        "ultimates": "궁극기",
+        "ultAdvantage": "궁극기 우위",
+        "swaps": "영웅 교체"
+      }
+    },
+    "overviewSections": {
+      "fights": {
+        "noData": "이 스크림에는 교전 데이터가 없습니다.",
+        "summary": "교전 <b>{total}</b>회 중 <b>{winrate}%</b> 승리 ({won}승 - {lost}패)",
+        "firstUlt": "궁극기를 먼저 사용한 교전 <b>{count}</b>회 (<b>{winrate}%</b> 승률).",
+        "opponentFirstUlt": "상대가 궁극기를 먼저 사용한 교전 <b>{count}</b>회 (<b>{winrate}%</b> 승률).",
+        "labels": {
+          "fightsWon": "승리한 교전",
+          "firstPickRate": "첫 처치 비율",
+          "firstDeathRate": "첫 사망 비율"
+        },
+        "headings": {
+          "conditionalWinRates": "조건별 승률"
+        },
+        "units": {
+          "fights": "교전",
+          "firstDeaths": "첫 사망"
+        }
+      },
+      "ultimates": {
+        "noData": "이 스크림에는 궁극기 데이터가 없습니다.",
+        "efficiency": "궁극기 효율: <b>{value}</b> 궁극기당 승리 교전 수 ({rating})",
+        "ratings": {
+          "excellent": "매우 좋음",
+          "good": "좋음",
+          "average": "보통",
+          "poor": "낮음"
+        },
+        "labels": {
+          "totalUltimatesUsed": "총 궁극기 사용",
+          "roleUltimates": "{role} 궁극기"
+        },
+        "headings": {
+          "usageBySubrole": "하위 역할별 궁극기 사용",
+          "timingBreakdown": "궁극기 타이밍 분석"
+        },
+        "units": {
+          "ults": "궁"
+        }
+      },
+      "swaps": {
+        "noData": "이 스크림에는 영웅 교체 데이터가 없습니다.",
+        "summary": "전체 맵에서 <b>{swaps}</b>회 교체 (<b>{perMap}/맵</b>), 상대는 <b>{opponentSwaps}</b>회",
+        "topSwap": "최다 교체: <b>{fromHero}</b> -> <b>{toHero}</b> (<n>{count}회</n>)",
+        "topSwapper": "가장 활발한 교체자: <b>{playerName}</b> (<n>{swaps}회 교체, {maps}맵</n>)",
+        "labels": {
+          "totalHeroSwaps": "총 영웅 교체",
+          "swapVsNoSwapWinRate": "교체 vs 비교체 승률",
+          "withSwaps": "교체 있음",
+          "withoutSwaps": "교체 없음"
+        },
+        "headings": {
+          "winRateBySwapCountTiming": "교체 횟수 및 타이밍별 승률"
+        },
+        "units": {
+          "swaps": "교체"
+        }
+      }
     }
   },
   "mapPage": {
@@ -2743,6 +2824,27 @@
       "progressToward": "목표 {targetDirection}{targetPercent}%까지 {percent}% 달성했습니다.",
       "increased": "증가",
       "decreased": "감소"
+    }
+  },
+  "reportsPage": {
+    "metadata": {
+      "title": "보고서 | Parsertime",
+      "description": "공유된 AI 스크림 분석 보고서를 확인하세요."
+    },
+    "list": {
+      "title": "보고서",
+      "description": "채팅 대화에서 생성된 AI 분석 보고서입니다.",
+      "searchPlaceholder": "보고서 검색...",
+      "reportCount": "{count, plural, =0 {보고서 없음} other {보고서 #개}}",
+      "emptyTitle": "아직 보고서가 없습니다",
+      "emptyDescription": "보고서는 Analyst 대화에서 생성됩니다. Analyst에게 보고서 생성을 요청하면 여기에 표시됩니다.",
+      "startChat": "채팅 시작",
+      "noMatches": "\"{query}\"와 일치하는 보고서가 없습니다",
+      "pageStatus": "{currentPage}/{totalPages}페이지",
+      "previousPage": "이전 페이지",
+      "previous": "이전",
+      "nextPage": "다음 페이지",
+      "next": "다음"
     }
   }
 }
