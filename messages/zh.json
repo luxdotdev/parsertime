@@ -3784,6 +3784,18 @@
       "blindSpot": "短板地图",
       "needsImprovement": "需要改进"
     },
+    "winrateOverTimeChart": {
+      "eyebrow": "趋势 · 胜率变化",
+      "title": "胜率变化",
+      "noData": "数据不足，暂时无法显示胜率趋势。",
+      "average": "平均：{avgWinrate} • <span>{trend} {trendValue}</span>",
+      "weekly": "每周",
+      "monthly": "每月",
+      "winrateLabel": "胜率 (%)",
+      "50PercentLine": "50% 基准线",
+      "winrate": "胜率：<span>{winrate}</span>",
+      "winsAndLosses": "{wins}胜 - {losses}负"
+    },
     "ultimatesTab": {
       "combos": {
         "title": "终极技能连招",

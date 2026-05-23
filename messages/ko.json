@@ -3784,6 +3784,18 @@
       "blindSpot": "취약 맵",
       "needsImprovement": "개선 필요"
     },
+    "winrateOverTimeChart": {
+      "eyebrow": "추세 · 시간별 승률",
+      "title": "시간별 승률",
+      "noData": "아직 승률 추세를 표시할 데이터가 부족합니다.",
+      "average": "평균: {avgWinrate} • <span>{trend} {trendValue}</span>",
+      "weekly": "주별",
+      "monthly": "월별",
+      "winrateLabel": "승률 (%)",
+      "50PercentLine": "50% 기준선",
+      "winrate": "승률: <span>{winrate}</span>",
+      "winsAndLosses": "{wins}승 - {losses}패"
+    },
     "ultimatesTab": {
       "combos": {
         "title": "궁극기 콤보",
