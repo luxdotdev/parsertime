@@ -2280,7 +2280,7 @@
       "helperText": "Search for an OWCS team by name or abbreviation.",
       "resultsLabel": "Team search results",
       "matchCount": "{count, plural, one {# match} other {# matches}}",
-      "winRate": "WR",
+      "winRate": "{winRate} WR",
       "noResults": "No teams found."
     },
     "team": {

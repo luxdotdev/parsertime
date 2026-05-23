@@ -2043,6 +2043,17 @@
       }
     }
   },
+  "scoutingPage": {
+    "search": {
+      "label": "搜索团队",
+      "placeholder": "搜索团队...",
+      "helperText": "按名称或缩写搜索 OWCS 团队。",
+      "resultsLabel": "团队搜索结果",
+      "matchCount": "{count, plural, =1 {1 场比赛} other {# 场比赛}}",
+      "winRate": "{winRate} 胜率",
+      "noResults": "未找到团队。"
+    }
+  },
   "statsPage": {
     "layoutMetadata": {
       "title": "统计数据 | Parsertime",

@@ -2043,6 +2043,17 @@
       }
     }
   },
+  "scoutingPage": {
+    "search": {
+      "label": "팀 검색",
+      "placeholder": "팀 검색...",
+      "helperText": "이름이나 약어로 OWCS 팀을 검색하세요.",
+      "resultsLabel": "팀 검색 결과",
+      "matchCount": "{count, plural, =1 {경기 1개} other {경기 #개}}",
+      "winRate": "{winRate} 승률",
+      "noResults": "팀을 찾을 수 없습니다."
+    }
+  },
   "statsPage": {
     "layoutMetadata": {
       "title": "통계 | Parsertime",
