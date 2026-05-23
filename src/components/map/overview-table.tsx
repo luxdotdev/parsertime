@@ -44,7 +44,7 @@ import type { PlayerStat } from "@prisma/client";
 import { StarFilledIcon } from "@radix-ui/react-icons";
 import { GeistMono } from "geist/font/mono";
 import type { Route } from "next";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 
 export type FirstDeathStats = Map<
@@ -149,11 +149,7 @@ export function OverviewTable({
                   <MVPScoreBreakdown
                     playerName={playerName}
                     mvpScores={mvpScores}
-                    teamName={
-                      playerName === team1MVP
-                        ? `${team1Name} MVP`
-                        : `${team2Name} MVP`
-                    }
+                    teamName={playerName === team1MVP ? team1Name : team2Name}
                   />
                 </TooltipContent>
               </Tooltip>
@@ -588,10 +584,14 @@ function MVPScoreBreakdown({
   mvpScores?: MVPScoreResult[];
   teamName: string;
 }) {
+  const t = useTranslations("mapPage.overviewTable.mvpBreakdown");
+  const formatter = useFormatter();
   const playerScore = mvpScores?.find((s) => s.playerName === playerName);
 
   if (!playerScore) {
-    return <div className="text-sm font-semibold">{teamName}</div>;
+    return (
+      <div className="text-sm font-semibold">{t("mvpTitle", { teamName })}</div>
+    );
   }
 
   const topContributions = [...playerScore.contributions]
@@ -599,22 +599,26 @@ function MVPScoreBreakdown({
     .slice(0, 5);
 
   function formatStatName(stat: string): string {
-    return stat
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+    return t(`stats.${stat}`);
   }
 
   return (
     <div className="space-y-2">
       <div className="border-b pb-2">
-        <div className="text-sm font-semibold">{teamName}</div>
+        <div className="text-sm font-semibold">
+          {t("mvpTitle", { teamName })}
+        </div>
         <div className="text-muted-foreground text-xs">
-          Total Score: {playerScore.totalScore.toFixed(2)}
+          {t("totalScore", {
+            score: formatter.number(playerScore.totalScore, {
+              maximumFractionDigits: 2,
+              minimumFractionDigits: 2,
+            }),
+          })}
         </div>
       </div>
       <div className="space-y-1.5">
-        <div className="text-xs font-medium">Top Contributions:</div>
+        <div className="text-xs font-medium">{t("topContributions")}</div>
         {topContributions.map((contribution) => (
           <div key={contribution.stat} className="space-y-0.5 text-xs">
             <div className="flex items-center justify-between">
@@ -629,29 +633,52 @@ function MVPScoreBreakdown({
                     : "text-rose-600 dark:text-rose-400"
                 )}
               >
-                {contribution.pointsAwarded > 0 ? "+" : ""}
-                {contribution.pointsAwarded.toFixed(1)} pts
+                {t("points", {
+                  sign: contribution.pointsAwarded > 0 ? "+" : "",
+                  points: formatter.number(contribution.pointsAwarded, {
+                    maximumFractionDigits: 1,
+                    minimumFractionDigits: 1,
+                  }),
+                })}
               </span>
             </div>
             <div className="text-muted-foreground space-x-2 text-[10px]">
               <span>
-                {contribution.per10Value.toFixed(1)}/10min vs avg{" "}
-                {contribution.heroAverage.toFixed(1)}
+                {t("per10VsAverage", {
+                  value: formatter.number(contribution.per10Value, {
+                    maximumFractionDigits: 1,
+                    minimumFractionDigits: 1,
+                  }),
+                  average: formatter.number(contribution.heroAverage, {
+                    maximumFractionDigits: 1,
+                    minimumFractionDigits: 1,
+                  }),
+                })}
               </span>
               <span>•</span>
               <span>
                 {contribution.zScore > 0 ? "+" : ""}
-                {contribution.zScore.toFixed(2)}σ
+                {formatter.number(contribution.zScore, {
+                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 2,
+                })}
+                σ
               </span>
               <span>•</span>
-              <span>{contribution.percentile.toFixed(0)}th percentile</span>
+              <span>
+                {t("percentile", {
+                  percentile: formatter.number(contribution.percentile, {
+                    maximumFractionDigits: 0,
+                  }),
+                })}
+              </span>
             </div>
           </div>
         ))}
       </div>
       {playerScore.contributions.length > 5 && (
         <div className="text-muted-foreground border-t pt-1 text-[10px]">
-          + {playerScore.contributions.length - 5} more stats calculated
+          {t("moreStats", { count: playerScore.contributions.length - 5 })}
         </div>
       )}
     </div>

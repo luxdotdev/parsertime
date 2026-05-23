@@ -27,10 +27,13 @@ type AddToMapGroupDialogProps = {
   mapName: string;
 };
 
-async function fetchMapGroups(teamId: number): Promise<FormattedMapGroup[]> {
+async function fetchMapGroups(
+  teamId: number,
+  errorMessage: string
+): Promise<FormattedMapGroup[]> {
   const response = await fetch(`/api/compare/map-groups?teamId=${teamId}`);
   if (!response.ok) {
-    throw new Error("Failed to fetch map groups");
+    throw new Error(errorMessage);
   }
   const data = (await response.json()) as {
     success: boolean;
@@ -97,7 +100,7 @@ export function AddToMapGroupDialog({
 
   const { data: mapGroups, isLoading } = useQuery({
     queryKey: ["mapGroups", teamId],
-    queryFn: () => fetchMapGroups(teamId),
+    queryFn: () => fetchMapGroups(teamId, t("toast.fetchFailed")),
     enabled: open,
     staleTime: 5 * 60 * 1000,
   });

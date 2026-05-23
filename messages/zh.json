@@ -1208,6 +1208,7 @@
       },
       "toast": {
         "unknownError": "未知错误",
+        "fetchFailed": "获取地图组失败",
         "nameRequired": "请输入地图组名称",
         "added": {
           "title": "已添加到地图组",
@@ -2233,6 +2234,31 @@
         "dmgToHealsRatio": "玩家的伤害与接受治疗的比例。",
         "ultsCharged": "玩家累计充能的终极技能次数。",
         "ultsUsed": "玩家使用的终极技能次数。"
+      },
+      "mvpBreakdown": {
+        "mvpTitle": "{teamName} MVP",
+        "totalScore": "总分：{score}",
+        "topContributions": "主要贡献：",
+        "points": "{sign}{points} 分",
+        "per10VsAverage": "每 10 分钟 {value} / 平均 {average}",
+        "percentile": "第 {percentile} 百分位",
+        "moreStats": "+ 另有 {count, plural, other {# 项}}统计已计算",
+        "stats": {
+          "eliminations": "消灭",
+          "final_blows": "最后一击",
+          "deaths": "死亡",
+          "hero_damage_dealt": "英雄伤害",
+          "healing_dealt": "治疗量",
+          "healing_received": "接受治疗",
+          "damage_blocked": "格挡伤害",
+          "damage_taken": "承受伤害",
+          "solo_kills": "单杀",
+          "ultimates_earned": "终极技能获取",
+          "ultimates_used": "终极技能使用",
+          "objective_kills": "目标击杀",
+          "offensive_assists": "进攻助攻",
+          "defensive_assists": "防守助攻"
+        }
       }
     },
     "killfeed": {

@@ -1208,6 +1208,7 @@
       },
       "toast": {
         "unknownError": "알 수 없는 오류",
+        "fetchFailed": "맵 그룹을 가져오지 못했습니다",
         "nameRequired": "맵 그룹 이름을 입력하세요",
         "added": {
           "title": "맵 그룹에 추가됨",
@@ -2233,6 +2234,31 @@
         "dmgToHealsRatio": "플레이어의 가한 피해와 받은 치유 비율입니다.",
         "ultsCharged": "플레이어가 충전한 궁극기 수입니다.",
         "ultsUsed": "플레이어가 사용한 궁극기 수입니다."
+      },
+      "mvpBreakdown": {
+        "mvpTitle": "{teamName} MVP",
+        "totalScore": "총점: {score}",
+        "topContributions": "주요 기여:",
+        "points": "{sign}{points}점",
+        "per10VsAverage": "10분당 {value} / 평균 {average}",
+        "percentile": "상위 {percentile} 백분위",
+        "moreStats": "+ 추가 계산된 스탯 {count, plural, other {#개}}",
+        "stats": {
+          "eliminations": "처치",
+          "final_blows": "결정타",
+          "deaths": "사망",
+          "hero_damage_dealt": "영웅 피해량",
+          "healing_dealt": "치유량",
+          "healing_received": "받은 치유량",
+          "damage_blocked": "막은 피해량",
+          "damage_taken": "받은 피해량",
+          "solo_kills": "단독 처치",
+          "ultimates_earned": "궁극기 획득",
+          "ultimates_used": "궁극기 사용",
+          "objective_kills": "목표 처치",
+          "offensive_assists": "공격 지원",
+          "defensive_assists": "방어 지원"
+        }
       }
     },
     "killfeed": {

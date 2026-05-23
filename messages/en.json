@@ -1208,6 +1208,7 @@
       },
       "toast": {
         "unknownError": "Unknown error",
+        "fetchFailed": "Failed to fetch map groups",
         "nameRequired": "Please enter a name for the map group",
         "added": {
           "title": "Added to map group",
@@ -2233,6 +2234,31 @@
         "dmgToHealsRatio": "The player's damage dealt to healing received ratio.",
         "ultsCharged": "The number of ultimates the player charged.",
         "ultsUsed": "The number of ultimates the player used."
+      },
+      "mvpBreakdown": {
+        "mvpTitle": "{teamName} MVP",
+        "totalScore": "Total Score: {score}",
+        "topContributions": "Top Contributions:",
+        "points": "{sign}{points} pts",
+        "per10VsAverage": "{value}/10min vs avg {average}",
+        "percentile": "{percentile}th percentile",
+        "moreStats": "+ {count, plural, =1 {# more stat} other {# more stats}} calculated",
+        "stats": {
+          "eliminations": "Eliminations",
+          "final_blows": "Final Blows",
+          "deaths": "Deaths",
+          "hero_damage_dealt": "Hero Damage Dealt",
+          "healing_dealt": "Healing Dealt",
+          "healing_received": "Healing Received",
+          "damage_blocked": "Damage Blocked",
+          "damage_taken": "Damage Taken",
+          "solo_kills": "Solo Kills",
+          "ultimates_earned": "Ultimates Earned",
+          "ultimates_used": "Ultimates Used",
+          "objective_kills": "Objective Kills",
+          "offensive_assists": "Offensive Assists",
+          "defensive_assists": "Defensive Assists"
+        }
       }
     },
     "killfeed": {
