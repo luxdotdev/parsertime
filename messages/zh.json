@@ -5169,6 +5169,8 @@
   "teamTsr": {
     "teamTsr": "队伍 TSR",
     "teamCsr": "队伍 CSR",
+    "tsrShort": "TSR",
+    "ratingShort": "评分",
     "title": "阵容技术评分",
     "meta": "{ratingLabel} · {rosterSize, number} 人中 {rated, number} 人有评分 · {playtimeShare, number, percent} 上场时间有数据支撑",
     "sources": {
@@ -5189,10 +5191,14 @@
     "contribution": {
       "tsr": "TSR",
       "predicted": "预测",
+      "predictedShort": "预测",
       "csr": "CSR",
       "none": "—"
     },
     "offsetSpread": "偏移离散度 σ {value, number}。",
+    "offsetSigma": "偏移 σ",
+    "rated": "已评分",
+    "backed": "有数据",
     "empty": "添加已关联 BattleTag 的队员以计算阵容评分。",
     "scrimBracket": "训练赛级别",
     "findScrims": "寻找训练赛 →",

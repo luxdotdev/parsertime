@@ -4802,6 +4802,8 @@
   "teamTsr": {
     "teamTsr": "Team TSR",
     "teamCsr": "Team CSR",
+    "tsrShort": "TSR",
+    "ratingShort": "Rating",
     "title": "Roster skill rating",
     "meta": "{ratingLabel} · {rated, number} of {rosterSize, number} rated · {playtimeShare, number, percent} playtime backed",
     "sources": {
@@ -4822,10 +4824,14 @@
     "contribution": {
       "tsr": "TSR",
       "predicted": "Predicted",
+      "predictedShort": "PRED",
       "csr": "CSR",
       "none": "—"
     },
     "offsetSpread": "Offset spread σ {value, number}.",
+    "offsetSigma": "Offset σ",
+    "rated": "Rated",
+    "backed": "Backed",
     "empty": "Add team members with linked BattleTags to compute a roster rating.",
     "scrimBracket": "Scrim bracket",
     "findScrims": "Find scrims →",

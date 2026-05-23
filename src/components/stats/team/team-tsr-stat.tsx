@@ -12,45 +12,29 @@ import type {
   TeamTsrSource,
 } from "@/lib/tsr/team";
 import { cn } from "@/lib/utils";
-
-const SOURCE_LABEL: Record<TeamTsrSource, string> = {
-  tsr: "Real TSR",
-  predicted: "Predicted",
-  csr_fallback: "CSR fallback",
-};
-
-const SOURCE_COPY: Record<TeamTsrSource, string> = {
-  tsr: "Playtime-weighted mean of every active starter's tournament rating.",
-  predicted:
-    "Real TSR for rated players; the rest predicted from team CSR offset, weighted by scrim playtime.",
-  csr_fallback:
-    "Not enough rated playtime for TSR. Showing playtime-weighted per-hero CSR.",
-};
-
-const CONFIDENCE_LABEL: Record<TeamTsrConfidence, string> = {
-  high: "High confidence",
-  medium: "Medium confidence",
-  low: "Low confidence",
-};
-
-const CONTRIBUTION_LABEL: Record<TeamTsrMember["contributionType"], string> = {
-  tsr: "TSR",
-  predicted: "PRED",
-  csr: "CSR",
-  none: "—",
-};
+import { useFormatter, useTranslations } from "next-intl";
 
 function displayName(member: TeamTsrMember): string {
   const handle = member.battletag ?? member.name;
   return handle.split("#")[0] || handle;
 }
 
-function formatPlaytime(seconds: number): string {
+function formatPlaytime(
+  seconds: number,
+  formatter: ReturnType<typeof useFormatter>,
+  t: ReturnType<typeof useTranslations>
+): string {
   if (seconds <= 0) return "—";
   const hours = seconds / 3600;
-  if (hours >= 1) return `${hours.toFixed(1)}h`;
+  if (hours >= 1)
+    return t("playtimeHours", {
+      hours: formatter.number(hours, {
+        maximumFractionDigits: 1,
+        minimumFractionDigits: 1,
+      }),
+    });
   const minutes = Math.round(seconds / 60);
-  return `${minutes}m`;
+  return t("playtimeMinutes", { minutes });
 }
 
 type Props = {
@@ -58,9 +42,11 @@ type Props = {
 };
 
 export function TeamTsrStat({ result }: Props) {
+  const t = useTranslations("teamTsr");
+  const formatter = useFormatter();
   const noData = result.value === null;
-  const ratingLabel = result.source === "csr_fallback" ? "Rating" : "TSR";
-  const playtimeShare = Math.round(result.playtimeBackedShare * 100);
+  const ratingLabel =
+    result.source === "csr_fallback" ? t("ratingShort") : t("tsrShort");
 
   return (
     <HoverCard openDelay={150} closeDelay={75}>
@@ -78,7 +64,7 @@ export function TeamTsrStat({ result }: Props) {
               noData ? "text-muted-foreground" : "text-foreground"
             )}
           >
-            {noData ? "—" : result.value!.toLocaleString()}
+            {noData ? "—" : formatter.number(result.value!)}
           </span>
         </button>
       </HoverCardTrigger>
@@ -87,46 +73,48 @@ export function TeamTsrStat({ result }: Props) {
           <div className="flex items-baseline justify-between gap-3">
             <div>
               <p className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-                {SOURCE_LABEL[result.source]} ·{" "}
-                {CONFIDENCE_LABEL[result.confidence]}
+                {getSourceLabel(result.source, t)} ·{" "}
+                {getConfidenceLabel(result.confidence, t)}
               </p>
-              <p className="text-base font-semibold">Roster skill rating</p>
+              <p className="text-base font-semibold">{t("title")}</p>
             </div>
             <span className="text-foreground font-mono text-2xl font-semibold tabular-nums">
-              {noData ? "—" : result.value!.toLocaleString()}
+              {noData ? "—" : formatter.number(result.value!)}
             </span>
           </div>
 
           <p className="text-muted-foreground text-xs leading-relaxed">
-            {SOURCE_COPY[result.source]}
+            {getSourceCopy(result.source, t)}
           </p>
 
           <dl className="grid grid-cols-2 gap-x-4 gap-y-1 font-mono text-[10px] tracking-[0.16em] uppercase">
             <div className="flex justify-between gap-2">
-              <dt className="text-muted-foreground">Rated</dt>
+              <dt className="text-muted-foreground">{t("rated")}</dt>
               <dd className="tabular-nums">
                 {result.ratedCount}/{result.rosterSize}
               </dd>
             </div>
             <div className="flex justify-between gap-2">
-              <dt className="text-muted-foreground">Backed</dt>
-              <dd className="tabular-nums">{playtimeShare}%</dd>
+              <dt className="text-muted-foreground">{t("backed")}</dt>
+              <dd className="tabular-nums">
+                {formatter.number(result.playtimeBackedShare, {
+                  style: "percent",
+                  maximumFractionDigits: 0,
+                })}
+              </dd>
             </div>
             {result.offsetStdev !== null ? (
               <div className="col-span-2 flex justify-between gap-2">
-                <dt className="text-muted-foreground">Offset σ</dt>
+                <dt className="text-muted-foreground">{t("offsetSigma")}</dt>
                 <dd className="tabular-nums">
-                  {Math.round(result.offsetStdev)}
+                  {formatter.number(Math.round(result.offsetStdev))}
                 </dd>
               </div>
             ) : null}
           </dl>
 
           {result.members.length === 0 ? (
-            <p className="text-muted-foreground text-xs">
-              Add team members with linked BattleTags to compute a roster
-              rating.
-            </p>
+            <p className="text-muted-foreground text-xs">{t("empty")}</p>
           ) : (
             <ul className="divide-border divide-y border-t border-[var(--border)]">
               {result.members.slice(0, 6).map((m) => (
@@ -139,18 +127,18 @@ export function TeamTsrStat({ result }: Props) {
                 >
                   <span className="truncate font-medium">{displayName(m)}</span>
                   <span className="text-muted-foreground font-mono text-[10px] tabular-nums">
-                    {formatPlaytime(m.playtimeSeconds)}
+                    {formatPlaytime(m.playtimeSeconds, formatter, t)}
                   </span>
                   <span className="font-mono tabular-nums">
                     {m.contribution === null ? (
                       <span className="text-muted-foreground">
-                        {CONTRIBUTION_LABEL[m.contributionType]}
+                        {getContributionLabel(m.contributionType, t)}
                       </span>
                     ) : (
                       <>
-                        {m.contribution.toLocaleString()}
+                        {formatter.number(m.contribution)}
                         <span className="text-muted-foreground ml-1.5 text-[9px] tracking-[0.16em] uppercase">
-                          {CONTRIBUTION_LABEL[m.contributionType]}
+                          {getContributionLabel(m.contributionType, t)}
                         </span>
                       </>
                     )}
@@ -163,4 +151,62 @@ export function TeamTsrStat({ result }: Props) {
       </HoverCardContent>
     </HoverCard>
   );
+}
+
+function getSourceLabel(
+  source: TeamTsrSource,
+  t: ReturnType<typeof useTranslations>
+) {
+  switch (source) {
+    case "tsr":
+      return t("sources.tsr");
+    case "predicted":
+      return t("sources.predicted");
+    case "csr_fallback":
+      return t("sources.csrFallback");
+  }
+}
+
+function getSourceCopy(
+  source: TeamTsrSource,
+  t: ReturnType<typeof useTranslations>
+) {
+  switch (source) {
+    case "tsr":
+      return t("sourceCopy.tsr");
+    case "predicted":
+      return t("sourceCopy.predicted");
+    case "csr_fallback":
+      return t("sourceCopy.csrFallback");
+  }
+}
+
+function getConfidenceLabel(
+  confidence: TeamTsrConfidence,
+  t: ReturnType<typeof useTranslations>
+) {
+  switch (confidence) {
+    case "high":
+      return t("confidence.high");
+    case "medium":
+      return t("confidence.medium");
+    case "low":
+      return t("confidence.low");
+  }
+}
+
+function getContributionLabel(
+  contributionType: TeamTsrMember["contributionType"],
+  t: ReturnType<typeof useTranslations>
+) {
+  switch (contributionType) {
+    case "tsr":
+      return t("contribution.tsr");
+    case "predicted":
+      return t("contribution.predictedShort");
+    case "csr":
+      return t("contribution.csr");
+    case "none":
+      return t("contribution.none");
+  }
 }

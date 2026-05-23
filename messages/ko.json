@@ -5169,6 +5169,8 @@
   "teamTsr": {
     "teamTsr": "팀 TSR",
     "teamCsr": "팀 CSR",
+    "tsrShort": "TSR",
+    "ratingShort": "평점",
     "title": "로스터 실력 평점",
     "meta": "{ratingLabel} · {rosterSize, number}명 중 {rated, number}명 평점 있음 · 플레이 시간 {playtimeShare, number, percent} 반영",
     "sources": {
@@ -5189,10 +5191,14 @@
     "contribution": {
       "tsr": "TSR",
       "predicted": "예측",
+      "predictedShort": "예측",
       "csr": "CSR",
       "none": "—"
     },
     "offsetSpread": "오프셋 분산 σ {value, number}.",
+    "offsetSigma": "오프셋 σ",
+    "rated": "평점 있음",
+    "backed": "반영",
     "empty": "로스터 평점을 계산하려면 BattleTag가 연결된 팀원을 추가하세요.",
     "scrimBracket": "스크림 브래킷",
     "findScrims": "스크림 찾기 →",
