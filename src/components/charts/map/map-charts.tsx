@@ -1,6 +1,7 @@
 import { DamageByRoundChart } from "@/components/charts/map/damage-by-round-chart";
 import { KillsByFightChart } from "@/components/charts/map/kills-by-fight-chart";
 import { KillsByRoleChart } from "@/components/charts/map/kills-by-role-chart";
+import { MapUltAdvantageCard } from "@/components/charts/map/map-ult-advantage";
 import { TempoChartServer } from "@/components/map/tempo/tempo-chart-server";
 import { Link } from "@/components/ui/link";
 import { Separator } from "@/components/ui/separator";
@@ -9,6 +10,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { getMapUltAdvantage } from "@/data/map/ult-advantage";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import type { Kill } from "@prisma/client";
@@ -136,6 +138,8 @@ export async function MapCharts({
 
   const fights = await groupKillsByInterval(id, 15);
 
+  const ultAdvantage = await getMapUltAdvantage(id, team1Name);
+
   const team1Kills = await prisma.kill.findMany({
     where: {
       MapDataId: mapDataId,
@@ -201,6 +205,28 @@ export async function MapCharts({
       >
         <KillsByFightChart fights={fights} teamNames={teamNames} />
       </ChartSection>
+
+      {ultAdvantage.timeline.length > 0 && (
+        <>
+          <Separator />
+
+          <ChartSection
+            id="ult-advantage"
+            eyebrow={t("ultAdvantage.eyebrow")}
+            title={t("ultAdvantage.title")}
+            description={t("ultAdvantage.description", { team: team1Name })}
+          >
+            <MapUltAdvantageCard
+              timeline={ultAdvantage.timeline}
+              analysis={ultAdvantage.analysis}
+              team1Name={team1Name}
+              team2Name={team2Name}
+              team1Color={team1Color}
+              team2Color={team2Color}
+            />
+          </ChartSection>
+        </>
+      )}
 
       <Separator />
 

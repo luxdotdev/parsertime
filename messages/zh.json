@@ -1121,6 +1121,21 @@
         "eyebrow": "比赛流向",
         "title": "比赛节奏",
         "description": "以叠加曲线呈现击杀和终极技能。拖动图表下方的滑块以聚焦某场战斗或阶段。"
+      },
+      "ultAdvantage": {
+        "eyebrow": "终极技能",
+        "title": "终极技能优势",
+        "description": "进入每场团战时哪支队伍持有更多终极技能。零线以上的柱形表示 {team} 占优。",
+        "noData": "本地图未记录终极技能充能数据。",
+        "teamAhead": "{team} 占优",
+        "teamAheadBy": "{team} +{n}",
+        "teamAheadByMore": "{team} +{n} 及以上",
+        "even": "持平",
+        "breakdownCaption": "按终极技能优势划分的团战",
+        "fight": "第 {n} 场",
+        "fightResult": "{team} 赢得团战",
+        "fightsCount": "{count, plural, other {# 场团战}}",
+        "noFights": "无团战"
       }
     },
     "events": {

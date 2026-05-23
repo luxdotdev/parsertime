@@ -8,6 +8,10 @@ import {
   ScrimAbilityTimingServiceLive,
 } from "@/data/scrim/ability-timing-service";
 import { filterUtilityRoundStartSwaps } from "@/data/team/hero-swap-service";
+import {
+  aggregateFightAdvantages,
+  processUltEconomy,
+} from "@/data/team/ult-economy";
 import type {
   SwapRecord,
   SwapTimingOutcome,
@@ -345,6 +349,7 @@ function emptyOverviewData(): ScrimOverviewData {
     },
     fightAnalysis: emptyFightAnalysis(),
     ultAnalysis: emptyUltAnalysis(),
+    ultEconomy: aggregateFightAdvantages([], 0),
     swapAnalysis: emptySwapAnalysis(),
     abilityTimingAnalysis: { rows: [], outliers: [] },
   };
@@ -1608,6 +1613,7 @@ export const make: Effect.Effect<
         allHeroSwaps,
         allRoundStarts,
         allMatchEnds,
+        allUltimateCharges,
       ] = yield* Effect.tryPromise({
         try: () =>
           Promise.all([
@@ -1700,6 +1706,15 @@ export const make: Effect.Effect<
             prisma.matchEnd.findMany({
               where: { MapDataId: { in: mapDataIds } },
               select: { match_time: true, MapDataId: true },
+            }),
+            prisma.ultimateCharged.findMany({
+              where: { MapDataId: { in: mapDataIds } },
+              select: {
+                player_team: true,
+                player_name: true,
+                match_time: true,
+                MapDataId: true,
+              },
             }),
           ]),
         catch: (error) =>
@@ -1892,6 +1907,18 @@ export const make: Effect.Effect<
         ourTeamNameByMap,
         calculatedStats,
         scrimPlayers
+      );
+
+      const ultEconomy = processUltEconomy(
+        {
+          teamRosterSet,
+          mapDataIds,
+          allPlayerStats: finalRoundStats,
+          allKills,
+          allRezzes,
+          allUltimates,
+        },
+        allUltimateCharges
       );
 
       // Determine W/L/D for each map
@@ -2271,6 +2298,7 @@ export const make: Effect.Effect<
         teamTotals,
         fightAnalysis,
         ultAnalysis,
+        ultEconomy,
         swapAnalysis,
         abilityTimingAnalysis,
       };

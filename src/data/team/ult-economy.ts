@@ -27,6 +27,33 @@ export type UltChargedRecord = {
   MapDataId: number | null;
 };
 
+/**
+ * The fields the ult-bank model needs. `ExtendedTeamData` satisfies this, but
+ * so can scrim- or map-scoped data, which is why it's a narrow structural type.
+ */
+export type UltEconomySource = Pick<
+  ExtendedTeamData,
+  | "teamRosterSet"
+  | "mapDataIds"
+  | "allPlayerStats"
+  | "allKills"
+  | "allRezzes"
+  | "allUltimates"
+>;
+
+/** One fight, with the ult-bank advantage our team held entering it. */
+export type FightAdvantage = {
+  mapDataId: number;
+  /** 1-based position of the fight within its map. */
+  fightNumber: number;
+  /** match_time (seconds) of the fight's first event. */
+  start: number;
+  ourBank: number;
+  enemyBank: number;
+  advantage: number;
+  won: boolean;
+};
+
 type BankEvent = { time: number; player: string; team: string; gain: boolean };
 type FightInfo = { start: number; won: boolean };
 
@@ -74,7 +101,7 @@ type RezEvent = {
 
 /** Segment kills + rezzes into fights and decide each fight's winner. */
 function buildFights(
-  kills: ExtendedTeamData["allKills"],
+  kills: UltEconomySource["allKills"],
   rezzes: RezEvent[],
   ourTeamName: string
 ): FightInfo[] {
@@ -122,19 +149,89 @@ function buildFights(
 }
 
 /**
- * Models each team's ult bank from charge/use events, then measures how often
- * a team enters fights ahead, even, or behind on ultimates, the win rate of
- * each case, and the average advantage over the course of a map.
- *
- * A team's bank at a moment is the number of its players holding a charged but
- * unused ultimate. The advantage entering a fight is `our bank − enemy bank`
- * just before its first kill. Ties count as losses, matching the rest of the
- * fight analysis.
+ * Per-fight ult-bank advantage for a single map, from `ourTeamName`'s
+ * perspective. The bank is how many of a team's players hold a charged, unused
+ * ultimate; the advantage entering a fight is `our bank − enemy bank` just
+ * before its first kill.
  */
-export function processUltEconomy(
-  sharedData: ExtendedTeamData,
+export function computeSingleMapAdvantages(params: {
+  mapDataId: number;
+  ourTeamName: string;
+  kills: UltEconomySource["allKills"];
+  rezzes: RezEvent[];
+  ults: { match_time: number; player_team: string; player_name: string }[];
+  charged: { match_time: number; player_team: string; player_name: string }[];
+}): FightAdvantage[] {
+  const { mapDataId, ourTeamName, kills, rezzes, ults, charged } = params;
+
+  const fights = buildFights(kills, rezzes, ourTeamName);
+  if (fights.length === 0) return [];
+
+  const bankEvents: BankEvent[] = [
+    ...charged.map((c) => ({
+      time: c.match_time,
+      player: c.player_name,
+      team: c.player_team,
+      gain: true,
+    })),
+    ...ults.map((u) => ({
+      time: u.match_time,
+      player: u.player_name,
+      team: u.player_team,
+      gain: false,
+    })),
+  ].sort(
+    (a, b) => a.time - b.time || (a.gain === b.gain ? 0 : a.gain ? -1 : 1)
+  );
+
+  const hasUlt = new Set<string>();
+  let ourBank = 0;
+  let enemyBank = 0;
+  let ptr = 0;
+  const result: FightAdvantage[] = [];
+
+  fights.forEach((fight, index) => {
+    while (ptr < bankEvents.length && bankEvents[ptr].time < fight.start) {
+      const e = bankEvents[ptr++];
+      const isOurs = e.team === ourTeamName;
+      if (e.gain) {
+        if (!hasUlt.has(e.player)) {
+          hasUlt.add(e.player);
+          if (isOurs) ourBank++;
+          else enemyBank++;
+        }
+      } else if (hasUlt.has(e.player)) {
+        hasUlt.delete(e.player);
+        if (isOurs) ourBank--;
+        else enemyBank--;
+      }
+    }
+
+    result.push({
+      mapDataId,
+      fightNumber: index + 1,
+      start: fight.start,
+      ourBank,
+      enemyBank,
+      advantage: ourBank - enemyBank,
+      won: fight.won,
+    });
+  });
+
+  return result;
+}
+
+/**
+ * Walks each map's charge/use events to model the ult bank, and returns the
+ * advantage our team held entering every fight (chronological per map).
+ *
+ * Ties count as losses, matching the rest of the fight analysis. Maps with no
+ * recorded charges are skipped.
+ */
+export function computeFightAdvantages(
+  source: UltEconomySource,
   charged: UltChargedRecord[]
-): UltEconomyAnalysis {
+): FightAdvantage[] {
   const {
     teamRosterSet,
     mapDataIds,
@@ -142,9 +239,9 @@ export function processUltEconomy(
     allKills,
     allRezzes,
     allUltimates,
-  } = sharedData;
+  } = source;
 
-  if (mapDataIds.length === 0) return emptyAnalysis(0);
+  if (mapDataIds.length === 0) return [];
 
   const teamNameByMapId = new Map<number, string>();
   for (const mapDataId of mapDataIds) {
@@ -169,6 +266,37 @@ export function processUltEconomy(
   for (const r of allRezzes)
     if (r.MapDataId) pushToBucket(rezzesByMap, r.MapDataId, r);
 
+  const result: FightAdvantage[] = [];
+
+  for (const mapDataId of mapDataIds) {
+    const ourTeamName = teamNameByMapId.get(mapDataId);
+    if (!ourTeamName) continue;
+
+    const mapCharged = chargedByMap.get(mapDataId) ?? [];
+    if (mapCharged.length === 0) continue; // map didn't record ult charges
+
+    result.push(
+      ...computeSingleMapAdvantages({
+        mapDataId,
+        ourTeamName,
+        kills: killsByMap.get(mapDataId) ?? [],
+        rezzes: rezzesByMap.get(mapDataId) ?? [],
+        ults: ultsByMap.get(mapDataId) ?? [],
+        charged: mapCharged,
+      })
+    );
+  }
+
+  return result;
+}
+
+/** Rolls per-fight advantages up into buckets, shares, win rates, and tempo. */
+export function aggregateFightAdvantages(
+  fights: FightAdvantage[],
+  totalMaps: number
+): UltEconomyAnalysis {
+  if (fights.length === 0) return emptyAnalysis(totalMaps);
+
   const bucketAcc = new Map<
     UltAdvantageBucketKey,
     { fights: number; wins: number }
@@ -181,87 +309,31 @@ export function processUltEconomy(
     behind: { f: 0, w: 0 },
   };
   const tempoAcc = new Map<number, { sum: number; samples: number }>();
-  let totalFights = 0;
   let advantageSum = 0;
 
-  for (const mapDataId of mapDataIds) {
-    const ourTeamName = teamNameByMapId.get(mapDataId);
-    if (!ourTeamName) continue;
+  for (const fight of fights) {
+    const { advantage, won, fightNumber } = fight;
 
-    const mapCharged = chargedByMap.get(mapDataId) ?? [];
-    if (mapCharged.length === 0) continue; // map didn't record ult charges
+    const bucket = bucketAcc.get(bucketKey(advantage))!;
+    bucket.fights++;
+    if (won) bucket.wins++;
 
-    const fights = buildFights(
-      killsByMap.get(mapDataId) ?? [],
-      rezzesByMap.get(mapDataId) ?? [],
-      ourTeamName
-    );
-    if (fights.length === 0) continue;
+    const signGroup =
+      advantage > 0 ? sign.ahead : advantage < 0 ? sign.behind : sign.even;
+    signGroup.f++;
+    if (won) signGroup.w++;
 
-    const bankEvents: BankEvent[] = [
-      ...mapCharged.map((c) => ({
-        time: c.match_time,
-        player: c.player_name,
-        team: c.player_team,
-        gain: true,
-      })),
-      ...(ultsByMap.get(mapDataId) ?? []).map((u) => ({
-        time: u.match_time,
-        player: u.player_name,
-        team: u.player_team,
-        gain: false,
-      })),
-    ].sort(
-      (a, b) => a.time - b.time || (a.gain === b.gain ? 0 : a.gain ? -1 : 1)
-    );
+    advantageSum += advantage;
 
-    const hasUlt = new Set<string>();
-    let ourBank = 0;
-    let enemyBank = 0;
-    let ptr = 0;
-
-    fights.forEach((fight, index) => {
-      while (ptr < bankEvents.length && bankEvents[ptr].time < fight.start) {
-        const e = bankEvents[ptr++];
-        const isOurs = e.team === ourTeamName;
-        if (e.gain) {
-          if (!hasUlt.has(e.player)) {
-            hasUlt.add(e.player);
-            if (isOurs) ourBank++;
-            else enemyBank++;
-          }
-        } else if (hasUlt.has(e.player)) {
-          hasUlt.delete(e.player);
-          if (isOurs) ourBank--;
-          else enemyBank--;
-        }
-      }
-
-      const advantage = ourBank - enemyBank;
-      const bucket = bucketAcc.get(bucketKey(advantage))!;
-      bucket.fights++;
-      if (fight.won) bucket.wins++;
-
-      const signGroup =
-        advantage > 0 ? sign.ahead : advantage < 0 ? sign.behind : sign.even;
-      signGroup.f++;
-      if (fight.won) signGroup.w++;
-
-      totalFights++;
-      advantageSum += advantage;
-
-      const fightNumber = index + 1;
-      if (fightNumber <= MAX_TEMPO_FIGHTS) {
-        const tp = tempoAcc.get(fightNumber) ?? { sum: 0, samples: 0 };
-        tp.sum += advantage;
-        tp.samples++;
-        tempoAcc.set(fightNumber, tp);
-      }
-    });
+    if (fightNumber <= MAX_TEMPO_FIGHTS) {
+      const tp = tempoAcc.get(fightNumber) ?? { sum: 0, samples: 0 };
+      tp.sum += advantage;
+      tp.samples++;
+      tempoAcc.set(fightNumber, tp);
+    }
   }
 
-  if (totalFights === 0) return emptyAnalysis(mapDataIds.length);
-
+  const totalFights = fights.length;
   function pct(n: number, d: number) {
     return d > 0 ? (n / d) * 100 : 0;
   }
@@ -296,6 +368,21 @@ export function processUltEconomy(
     winrateBehind: pct(sign.behind.w, sign.behind.f),
     avgAdvantage: advantageSum / totalFights,
     tempo,
-    totalMaps: mapDataIds.length,
+    totalMaps,
   };
+}
+
+/**
+ * Aggregate ult-advantage analysis for a team across maps: how often it enters
+ * fights ahead / even / behind on ultimates, the win rate of each case, and the
+ * average advantage over the course of a map.
+ */
+export function processUltEconomy(
+  source: UltEconomySource,
+  charged: UltChargedRecord[]
+): UltEconomyAnalysis {
+  return aggregateFightAdvantages(
+    computeFightAdvantages(source, charged),
+    source.mapDataIds.length
+  );
 }

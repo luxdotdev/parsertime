@@ -13,6 +13,7 @@ import {
   ScrimUltimatesSection,
 } from "@/components/scrim/scrim-overview-sections";
 import { ScrimAbilityTimingSection } from "@/components/scrim/scrim-ability-timing-section";
+import { UltEconomyCard } from "@/components/stats/team/ult-economy-card";
 import {
   Accordion,
   AccordionContent,
@@ -27,19 +28,24 @@ import {
   ArrowRightLeft,
   ChevronsDownUp,
   ChevronsUpDown,
+  Gauge,
   Swords,
   Users,
   Zap,
 } from "lucide-react";
 import { useState } from "react";
 
-const BASE_SECTIONS = ["players", "fights", "ultimates", "swaps"];
-
 export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
   const hasAbilityData = data.abilityTimingAnalysis.rows.length > 0;
-  const allSections = hasAbilityData
-    ? ["players", "fights", "abilities", "ultimates", "swaps"]
-    : BASE_SECTIONS;
+  const hasUltEconomy = data.ultEconomy.totalFights > 0;
+  const allSections = [
+    "players",
+    "fights",
+    ...(hasAbilityData ? ["abilities"] : []),
+    "ultimates",
+    ...(hasUltEconomy ? ["ult-advantage"] : []),
+    "swaps",
+  ];
 
   const [activeTab, setActiveTab] = useState("visualizations");
   const [openSections, setOpenSections] = useState<string[]>(["players"]);
@@ -166,6 +172,23 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
               />
             </AccordionContent>
           </AccordionItem>
+
+          {hasUltEconomy && (
+            <AccordionItem value="ult-advantage">
+              <AccordionTrigger>
+                <span className="flex items-center gap-2">
+                  <Gauge
+                    className="text-muted-foreground size-4"
+                    aria-hidden="true"
+                  />
+                  Ultimate Advantage
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="h-auto">
+                <UltEconomyCard analysis={data.ultEconomy} />
+              </AccordionContent>
+            </AccordionItem>
+          )}
 
           <AccordionItem value="swaps">
             <AccordionTrigger>

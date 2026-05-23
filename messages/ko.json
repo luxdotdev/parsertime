@@ -1121,6 +1121,21 @@
         "eyebrow": "경기 흐름",
         "title": "경기 템포",
         "description": "처치와 궁극기를 겹치는 곡선으로 표현합니다. 차트 아래의 스크러버를 드래그해 특정 전투나 단계에 집중하세요."
+      },
+      "ultAdvantage": {
+        "eyebrow": "궁극기",
+        "title": "궁극기 우위",
+        "description": "각 교전 진입 시 어느 팀이 더 많은 궁극기를 보유했는지 보여줍니다. 0보다 높은 막대는 {team}의 우위를 의미합니다.",
+        "noData": "이 맵에 기록된 궁극기 충전 데이터가 없습니다.",
+        "teamAhead": "{team} 우위",
+        "teamAheadBy": "{team} +{n}",
+        "teamAheadByMore": "{team} +{n} 이상",
+        "even": "동등",
+        "breakdownCaption": "궁극기 우위별 교전",
+        "fight": "{n}번째 교전",
+        "fightResult": "{team} 교전 승리",
+        "fightsCount": "{count, plural, other {교전 #회}}",
+        "noFights": "교전 없음"
       }
     },
     "events": {

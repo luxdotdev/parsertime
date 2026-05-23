@@ -1755,6 +1755,21 @@
         "eyebrow": "Match Flow",
         "title": "Match Tempo",
         "description": "Kills and ultimates traced as overlapping curves. Drag the scrubber below the chart to focus on a fight or phase."
+      },
+      "ultAdvantage": {
+        "eyebrow": "Ultimates",
+        "title": "Ultimate advantage",
+        "description": "Which team held more ultimates entering each fight. Bars above zero mean {team} had the advantage.",
+        "noData": "No ultimate charge data recorded for this map.",
+        "teamAhead": "{team} ahead",
+        "teamAheadBy": "{team} +{n}",
+        "teamAheadByMore": "{team} +{n} or more",
+        "even": "Even",
+        "breakdownCaption": "Fights by ultimate advantage",
+        "fight": "Fight {n}",
+        "fightResult": "{team} won the fight",
+        "fightsCount": "{count, plural, one {# fight} other {# fights}}",
+        "noFights": "No fights"
       }
     },
     "events": {

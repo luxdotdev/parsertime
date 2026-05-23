@@ -1,5 +1,9 @@
 import type { TrendsAnalysis } from "@/data/comparison/types";
-import type { SwapTimingOutcome, SwapWinrateBucket } from "@/data/team/types";
+import type {
+  SwapTimingOutcome,
+  SwapWinrateBucket,
+  UltEconomyAnalysis,
+} from "@/data/team/types";
 import type { ValidStatColumn } from "@/lib/stat-percentiles";
 import type { HeroName, RoleName } from "@/types/heroes";
 import type { MapType } from "@prisma/client";
@@ -284,6 +288,7 @@ export type ScrimOverviewData = {
   teamTotals: ScrimTeamTotals;
   fightAnalysis: ScrimFightAnalysis;
   ultAnalysis: ScrimUltAnalysis;
+  ultEconomy: UltEconomyAnalysis;
   swapAnalysis: ScrimSwapAnalysis;
   abilityTimingAnalysis: AbilityTimingAnalysis;
 };
