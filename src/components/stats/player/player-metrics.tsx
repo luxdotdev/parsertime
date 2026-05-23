@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 
 type PlayerMetricsProps = {
   metrics: {
@@ -21,6 +21,32 @@ type PlayerMetricsProps = {
 
 export function PlayerMetrics({ metrics }: PlayerMetricsProps) {
   const t = useTranslations("statsPage.playerMetrics");
+  const format = useFormatter();
+
+  function formatPercent(value: number): string {
+    return format.number(value / 100, {
+      style: "percent",
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+  }
+
+  function formatDecimal(value: number, digits: number): string {
+    return format.number(value, {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
+    });
+  }
+
+  function formatSeconds(value: number): string {
+    return format.number(value, {
+      style: "unit",
+      unit: "second",
+      unitDisplay: "short",
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+  }
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -30,7 +56,7 @@ export function PlayerMetrics({ metrics }: PlayerMetricsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {metrics.mvpScore.toFixed(1)}
+            {formatDecimal(metrics.mvpScore, 1)}
           </div>
         </CardContent>
       </Card>
@@ -42,7 +68,7 @@ export function PlayerMetrics({ metrics }: PlayerMetricsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {metrics.fletaDeadliftPercentage.toFixed(1)}%
+            {formatPercent(metrics.fletaDeadliftPercentage)}
           </div>
         </CardContent>
       </Card>
@@ -54,10 +80,10 @@ export function PlayerMetrics({ metrics }: PlayerMetricsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {metrics.firstPickPercentage.toFixed(1)}%
+            {formatPercent(metrics.firstPickPercentage)}
           </div>
           <p className="text-muted-foreground text-xs">
-            {metrics.firstPickCount} total first picks
+            {t("totalFirstPicks", { count: metrics.firstPickCount })}
           </p>
         </CardContent>
       </Card>
@@ -69,10 +95,10 @@ export function PlayerMetrics({ metrics }: PlayerMetricsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {metrics.firstDeathPercentage.toFixed(1)}%
+            {formatPercent(metrics.firstDeathPercentage)}
           </div>
           <p className="text-muted-foreground text-xs">
-            {metrics.firstDeathCount} total first deaths
+            {t("totalFirstDeaths", { count: metrics.firstDeathCount })}
           </p>
         </CardContent>
       </Card>
@@ -84,7 +110,7 @@ export function PlayerMetrics({ metrics }: PlayerMetricsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {metrics.fightReversalPercentage.toFixed(1)}%
+            {formatPercent(metrics.fightReversalPercentage)}
           </div>
         </CardContent>
       </Card>
@@ -96,7 +122,7 @@ export function PlayerMetrics({ metrics }: PlayerMetricsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {metrics.killsPerUltimate.toFixed(2)}
+            {formatDecimal(metrics.killsPerUltimate, 2)}
           </div>
         </CardContent>
       </Card>
@@ -108,7 +134,7 @@ export function PlayerMetrics({ metrics }: PlayerMetricsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {metrics.averageUltChargeTime.toFixed(1)}s
+            {formatSeconds(metrics.averageUltChargeTime)}
           </div>
         </CardContent>
       </Card>
@@ -120,7 +146,7 @@ export function PlayerMetrics({ metrics }: PlayerMetricsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {metrics.droughtTime.toFixed(1)}s
+            {formatSeconds(metrics.droughtTime)}
           </div>
         </CardContent>
       </Card>
@@ -131,7 +157,9 @@ export function PlayerMetrics({ metrics }: PlayerMetricsProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{metrics.mapMVPCount}</div>
+          <div className="text-2xl font-bold">
+            {format.number(metrics.mapMVPCount)}
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -2479,6 +2479,19 @@
         "notRanked": "该英雄的同行数据还不够（每位玩家至少需要 10 张地图且每张至少 60 秒）。",
         "explainer": "CSR 基于上方所选时间范围的数据计算。点击玩家可查看其完整资料。"
       }
+    },
+    "playerMetrics": {
+      "mvpScore": "平均 MVP 分数",
+      "fletaDeadliftPercentage": "Fleta Deadlift %",
+      "firstPickPercentage": "首杀 %",
+      "totalFirstPicks": "{count, plural, =0 {无首杀} other {共 # 次首杀}}",
+      "firstDeathPercentage": "先阵亡 %",
+      "totalFirstDeaths": "{count, plural, =0 {无先阵亡} other {共 # 次先阵亡}}",
+      "fightReversalPercentage": "团战逆转 %",
+      "killsPerUltimate": "每次终极技能击杀",
+      "averageUltChargeTime": "平均终极技能充能时间",
+      "droughtTime": "平均击杀空窗时间",
+      "mapMVPCount": "地图 MVP 总数"
     }
   },
   "teamPage": {
