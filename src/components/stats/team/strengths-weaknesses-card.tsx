@@ -1,9 +1,9 @@
 "use client";
 
 import { SectionHeader } from "@/components/stats/team/section-header";
-import { toKebabCase, toTimestampWithHours } from "@/lib/utils";
+import { toKebabCase } from "@/lib/utils";
 import { TrendingDown, TrendingUp } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import Image from "next/image";
 
 type StrengthsWeaknessesCardProps = {
@@ -26,11 +26,32 @@ export function StrengthsWeaknessesCard({
   mapNames,
 }: StrengthsWeaknessesCardProps) {
   const t = useTranslations("teamStatsPage.strengthsWeaknessesCard");
+  const format = useFormatter();
+
+  function formatPercent(value: number): string {
+    return format.number(value / 100, {
+      style: "percent",
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+  }
+
+  function formatPlaytime(seconds: number): string {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = Math.round(seconds % 60);
+
+    return t("durationHoursMinutesSeconds", {
+      hours,
+      minutes,
+      seconds: remainingSeconds,
+    });
+  }
 
   if (!bestMap && !blindSpot) {
     return (
       <section className="space-y-4">
-        <SectionHeader eyebrow="Overview · Best & worst" title={t("title")} />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
@@ -38,7 +59,7 @@ export function StrengthsWeaknessesCard({
 
   return (
     <section className="space-y-4">
-      <SectionHeader eyebrow="Overview · Best & worst" title={t("title")} />
+      <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
       <div className="grid gap-6 md:grid-cols-2">
         {bestMap && (
           <div className="space-y-3">
@@ -66,14 +87,14 @@ export function StrengthsWeaknessesCard({
                       bestMap.mapName}
                   </h4>
                   <span className="rounded-sm bg-white/15 px-2 py-0.5 font-mono text-[10px] font-bold tracking-[0.16em] text-white uppercase tabular-nums backdrop-blur-sm">
-                    {bestMap.winrate.toFixed(1)}%
+                    {formatPercent(bestMap.winrate)}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-white/90">
                     {t("playtime", {
-                      time: toTimestampWithHours(bestMap.playtime),
+                      time: formatPlaytime(bestMap.playtime),
                     })}
                   </span>
                   <span className="text-xs text-white/70">
@@ -112,14 +133,14 @@ export function StrengthsWeaknessesCard({
                       blindSpot.mapName}
                   </h4>
                   <span className="rounded-sm bg-white/15 px-2 py-0.5 font-mono text-[10px] font-bold tracking-[0.16em] text-white uppercase tabular-nums backdrop-blur-sm">
-                    {blindSpot.winrate.toFixed(1)}%
+                    {formatPercent(blindSpot.winrate)}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-white/90">
                     {t("playtime", {
-                      time: toTimestampWithHours(blindSpot.playtime),
+                      time: formatPlaytime(blindSpot.playtime),
                     })}
                   </span>
                   <span className="text-xs text-white/70">

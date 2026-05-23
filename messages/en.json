@@ -4724,11 +4724,13 @@
       "select": "Select a team..."
     },
     "strengthsWeaknessesCard": {
+      "eyebrow": "Overview · Best & worst",
       "title": "Strengths & Weaknesses",
       "noData": "Not enough data to determine strengths and weaknesses yet.",
       "strongestMap": "Strongest Map",
       "bestPerformance": "Best performance",
       "playtime": "{time} played",
+      "durationHoursMinutesSeconds": "{hours}h {minutes}m {seconds}s",
       "blindSpot": "Blind Spot",
       "needsImprovement": "Needs improvement"
     },

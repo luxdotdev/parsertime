@@ -3773,6 +3773,17 @@
       "winRateValue": "승률 {winrate}",
       "playMoreGames": "더 많은 경기를 플레이하면 최고의 로스터 조합을 볼 수 있습니다"
     },
+    "strengthsWeaknessesCard": {
+      "eyebrow": "개요 · 최고/최저",
+      "title": "강점 및 약점",
+      "noData": "아직 강점과 약점을 판단할 데이터가 부족합니다.",
+      "strongestMap": "가장 강한 맵",
+      "bestPerformance": "최고 성능",
+      "playtime": "{time} 플레이",
+      "durationHoursMinutesSeconds": "{hours}시간 {minutes}분 {seconds}초",
+      "blindSpot": "취약 맵",
+      "needsImprovement": "개선 필요"
+    },
     "ultimatesTab": {
       "combos": {
         "title": "궁극기 콤보",

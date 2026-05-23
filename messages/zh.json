@@ -3773,6 +3773,17 @@
       "winRateValue": "胜率 {winrate}",
       "playMoreGames": "进行更多比赛后即可查看你的最佳阵容组合"
     },
+    "strengthsWeaknessesCard": {
+      "eyebrow": "概览 · 最佳与最差",
+      "title": "优势与弱点",
+      "noData": "数据不足，暂时无法判断优势与弱点。",
+      "strongestMap": "最强地图",
+      "bestPerformance": "最佳表现",
+      "playtime": "已游玩 {time}",
+      "durationHoursMinutesSeconds": "{hours} 小时 {minutes} 分钟 {seconds} 秒",
+      "blindSpot": "短板地图",
+      "needsImprovement": "需要改进"
+    },
     "ultimatesTab": {
       "combos": {
         "title": "终极技能连招",
