@@ -33,35 +33,23 @@ import {
   useHeroNames,
   useMapNames,
 } from "@/lib/utils";
-import {
-  SUBROLE_DISPLAY_NAMES,
-  SUBROLE_ORDER,
-  type RoleName,
-  type SubroleName,
-} from "@/types/heroes";
+import { SUBROLE_ORDER, type RoleName, type SubroleName } from "@/types/heroes";
 import { $Enums } from "@prisma/client";
 import { CheckIcon, ChevronsUpDownIcon, LayersIcon } from "lucide-react";
 import Image from "next/image";
+import { useFormatter, useTranslations } from "next-intl";
 import { useId, useMemo, useState } from "react";
 
 type RoleFilter = "All" | RoleName | SubroleName;
 type SortKey = "playtime" | "pickRate" | "winrate" | "trend";
 
-const primaryRoles: { value: RoleFilter; label: string }[] = [
-  { value: "All", label: "All" },
-  { value: "Tank", label: "Tank" },
-  { value: "Damage", label: "Damage" },
-  { value: "Support", label: "Support" },
-];
+const primaryRoleValues: RoleFilter[] = ["All", "Tank", "Damage", "Support"];
 
-const subroleFilters: { value: RoleFilter; label: string }[] =
-  SUBROLE_ORDER.map((s) => ({ value: s, label: SUBROLE_DISPLAY_NAMES[s] }));
-
-const sortOptions: { value: SortKey; label: string }[] = [
-  { value: "pickRate", label: "Pick rate" },
-  { value: "playtime", label: "Playtime" },
-  { value: "winrate", label: "Winrate" },
-  { value: "trend", label: "Trend" },
+const sortOptions: { value: SortKey; key: string }[] = [
+  { value: "pickRate", key: "sort.pickRate" },
+  { value: "playtime", key: "sort.playtime" },
+  { value: "winrate", key: "sort.winrate" },
+  { value: "trend", key: "sort.trend" },
 ];
 
 const MAP_TYPE_ORDER: $Enums.MapType[] = [
@@ -73,15 +61,35 @@ const MAP_TYPE_ORDER: $Enums.MapType[] = [
   $Enums.MapType.Clash,
 ];
 
-function formatPlaytime(seconds: number): string {
+function formatPlaytime(
+  seconds: number,
+  formatter: ReturnType<typeof useFormatter>,
+  t: ReturnType<typeof useTranslations>
+): string {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.round((seconds % 3600) / 60);
-  if (hours > 0) return `${hours}h ${minutes.toString().padStart(2, "0")}m`;
-  return `${minutes}m`;
+  if (hours > 0) {
+    return t("playtimeHoursMinutes", {
+      hours: formatter.number(hours),
+      minutes: formatter.number(minutes, {
+        minimumIntegerDigits: 2,
+        useGrouping: false,
+      }),
+    });
+  }
+  return t("playtimeMinutes", { minutes: formatter.number(minutes) });
 }
 
-function formatPercent(value: number, digits = 0): string {
-  return `${value.toFixed(digits)}%`;
+function formatPercent(
+  value: number,
+  formatter: ReturnType<typeof useFormatter>,
+  digits = 0
+): string {
+  return formatter.number(value / 100, {
+    style: "percent",
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  });
 }
 
 const COLS =
@@ -94,6 +102,8 @@ export function MapHeroTrends({
   allMaps: MapHeroTrendGroup;
   perMap: MapHeroTrendGroup[];
 }) {
+  const t = useTranslations("statsPage.mapHeroTrends");
+  const formatter = useFormatter();
   const heroNames = useHeroNames();
   const mapNames = useMapNames();
   const [selectedMap, setSelectedMap] = useState<string | null>(null);
@@ -144,18 +154,26 @@ export function MapHeroTrends({
   }, [roleFilter, selectedGroup, sortKey]);
 
   const isAllMaps = selectedMap === null;
+  const primaryRoles = primaryRoleValues.map((value) => ({
+    value,
+    label: getRoleFilterLabel(value, t),
+  }));
+  const subroleFilters = SUBROLE_ORDER.map((value) => ({
+    value,
+    label: getRoleFilterLabel(value, t),
+  }));
 
   if (perMap.length === 0) {
     return (
       <div className="px-6 pt-10 pb-16 sm:px-10">
         <p className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
-          Map Meta · Last 60 days
+          {t("eyebrow")}
         </p>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight">
-          No recent map data
+          {t("empty.title")}
         </h1>
         <p className="text-muted-foreground mt-2 max-w-prose text-sm">
-          Upload a scrim in the last 60 days to populate this view.
+          {t("empty.description")}
         </p>
       </div>
     );
@@ -166,17 +184,33 @@ export function MapHeroTrends({
       <header className="border-border flex flex-wrap items-end justify-between gap-x-10 gap-y-4 border-b pb-6">
         <div>
           <p className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
-            Map Meta · Last 60 days
-            {isAllMaps ? ` · ${perMap.length} unique maps` : null}
+            {isAllMaps
+              ? t("eyebrowWithCount", { count: perMap.length })
+              : t("eyebrow")}
           </p>
           <h1 className="mt-3 text-4xl leading-none font-semibold tracking-tight">
-            {selectedGroup.mapName}
+            {isAllMaps
+              ? t("allMaps")
+              : (mapNames.get(toKebabCase(selectedGroup.mapName)) ??
+                selectedGroup.mapName)}
           </h1>
         </div>
         <dl className="flex flex-wrap items-baseline gap-x-8 gap-y-2 font-mono">
-          <Stat label="Scrims" value={selectedGroup.scrimsAnalyzed} />
-          <Stat label="Maps" value={selectedGroup.mapsAnalyzed} />
-          <Stat label="Heroes" value={selectedGroup.heroes.length} />
+          <Stat
+            label={t("stats.scrims")}
+            value={selectedGroup.scrimsAnalyzed}
+            formatter={formatter}
+          />
+          <Stat
+            label={t("stats.maps")}
+            value={selectedGroup.mapsAnalyzed}
+            formatter={formatter}
+          />
+          <Stat
+            label={t("stats.heroes")}
+            value={selectedGroup.heroes.length}
+            formatter={formatter}
+          />
         </dl>
       </header>
 
@@ -195,7 +229,7 @@ export function MapHeroTrends({
                   <span className="bg-muted text-muted-foreground flex h-5 w-9 items-center justify-center rounded-sm">
                     <LayersIcon className="size-3.5" />
                   </span>
-                  <span className="truncate">All maps</span>
+                  <span className="truncate">{t("allMaps")}</span>
                 </div>
               ) : (
                 <div className="flex min-w-0 items-center gap-2">
@@ -224,12 +258,12 @@ export function MapHeroTrends({
             align="start"
           >
             <Command>
-              <CommandInput placeholder="Search maps..." />
+              <CommandInput placeholder={t("searchMaps")} />
               <CommandList>
-                <CommandEmpty>No maps found.</CommandEmpty>
+                <CommandEmpty>{t("noMapsFound")}</CommandEmpty>
                 <CommandGroup>
                   <CommandItem
-                    value="All maps"
+                    value={t("allMaps")}
                     onSelect={() => {
                       setSelectedMap(null);
                       setMapPickerOpen(false);
@@ -244,14 +278,14 @@ export function MapHeroTrends({
                     <span className="bg-muted text-muted-foreground mr-2 flex h-5 w-9 items-center justify-center rounded-sm">
                       <LayersIcon className="size-3.5" />
                     </span>
-                    <span>All maps</span>
+                    <span>{t("allMaps")}</span>
                   </CommandItem>
                 </CommandGroup>
                 {MAP_TYPE_ORDER.map((type) => {
                   const mapsInType = mapsByType.byType.get(type);
                   if (!mapsInType || mapsInType.length === 0) return null;
                   return (
-                    <CommandGroup key={type} heading={type}>
+                    <CommandGroup key={type} heading={getMapTypeLabel(type, t)}>
                       {mapsInType.map((g) => (
                         <MapCommandItem
                           key={g.mapName}
@@ -270,7 +304,7 @@ export function MapHeroTrends({
                   );
                 })}
                 {mapsByType.other.length > 0 ? (
-                  <CommandGroup heading="Other">
+                  <CommandGroup heading={t("mapTypes.other")}>
                     {mapsByType.other.map((g) => (
                       <MapCommandItem
                         key={g.mapName}
@@ -296,11 +330,12 @@ export function MapHeroTrends({
           filters={primaryRoles}
           value={roleFilter}
           onChange={setRoleFilter}
+          label={t("roleFilter")}
         />
 
         <div className="ml-auto flex items-center gap-2">
           <span className="text-muted-foreground hidden font-mono text-[11px] tracking-wider uppercase sm:inline">
-            Sort
+            {t("sortLabel")}
           </span>
           <Select
             value={sortKey}
@@ -312,7 +347,7 @@ export function MapHeroTrends({
             <SelectContent>
               {sortOptions.map((o) => (
                 <SelectItem key={o.value} value={o.value}>
-                  {o.label}
+                  {t(o.key)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -349,18 +384,18 @@ export function MapHeroTrends({
           )}
         >
           <div>#</div>
-          <div>Hero</div>
-          <div>Role</div>
-          <div className="text-right">Playtime</div>
-          <div className="text-right">Pick</div>
-          <div className="text-right">Winrate</div>
-          <div className="text-right">Sample</div>
-          <div className="text-right">Δ 30d</div>
+          <div>{t("table.hero")}</div>
+          <div>{t("table.role")}</div>
+          <div className="text-right">{t("table.playtime")}</div>
+          <div className="text-right">{t("table.pick")}</div>
+          <div className="text-right">{t("table.winrate")}</div>
+          <div className="text-right">{t("table.sample")}</div>
+          <div className="text-right">{t("table.trend")}</div>
         </div>
 
         {heroes.length === 0 ? (
           <div className="text-muted-foreground py-12 text-center text-sm">
-            No heroes match the selected filter.
+            {t("noHeroesMatch")}
           </div>
         ) : (
           <ul key={selectedMap ?? "all-maps"}>
@@ -370,6 +405,7 @@ export function MapHeroTrends({
                 index={index}
                 hero={hero}
                 name={heroNames.get(toHero(hero.hero)) ?? hero.hero}
+                formatter={formatter}
               />
             ))}
           </ul>
@@ -408,13 +444,23 @@ function MapCommandItem({
   );
 }
 
-function Stat({ label, value }: { label: string; value: number }) {
+function Stat({
+  label,
+  value,
+  formatter,
+}: {
+  label: string;
+  value: number;
+  formatter: ReturnType<typeof useFormatter>;
+}) {
   return (
     <div className="flex items-baseline gap-2">
       <dt className="text-muted-foreground text-[11px] tracking-wider uppercase">
         {label}
       </dt>
-      <dd className="text-lg font-medium tabular-nums">{value}</dd>
+      <dd className="text-lg font-medium tabular-nums">
+        {formatter.number(value)}
+      </dd>
     </div>
   );
 }
@@ -423,15 +469,17 @@ function FilterPills({
   filters,
   value,
   onChange,
+  label,
 }: {
   filters: { value: RoleFilter; label: string }[];
   value: RoleFilter;
   onChange: (v: RoleFilter) => void;
+  label: string;
 }) {
   return (
     <div
       role="radiogroup"
-      aria-label="Role filter"
+      aria-label={label}
       className="border-border bg-card flex rounded-md border p-0.5"
     >
       {filters.map((f) => {
@@ -476,11 +524,14 @@ function HeroRow({
   index,
   hero,
   name,
+  formatter,
 }: {
   index: number;
   hero: HeroRowData;
   name: string;
+  formatter: ReturnType<typeof useFormatter>;
 }) {
+  const t = useTranslations("statsPage.mapHeroTrends");
   const isTop = index === 0;
   const rank = String(index + 1).padStart(2, "0");
   const games = hero.wins + hero.losses;
@@ -509,14 +560,14 @@ function HeroRow({
 
       <HeroPickRateHoverChart
         heroLabel={name}
-        subrole={hero.subrole ? SUBROLE_DISPLAY_NAMES[hero.subrole] : null}
+        subrole={hero.subrole ? getRoleFilterLabel(hero.subrole, t) : null}
         trend={hero.trend}
         pickRate={hero.pickRate}
       >
         <button
           type="button"
           className="-mx-1 flex min-w-0 cursor-pointer items-center gap-3 rounded-sm px-1 py-0.5 text-left focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:outline-none"
-          aria-label={`Show pick rate trend for ${name}`}
+          aria-label={t("showPickRateTrend", { hero: name })}
         >
           <Image
             src={`/heroes/${toHero(hero.hero)}.png`}
@@ -536,7 +587,7 @@ function HeroRow({
             </div>
             {hero.subrole ? (
               <div className="text-muted-foreground font-mono text-[10px] tracking-wider uppercase">
-                {SUBROLE_DISPLAY_NAMES[hero.subrole]}
+                {getRoleFilterLabel(hero.subrole, t)}
               </div>
             ) : null}
           </div>
@@ -544,30 +595,30 @@ function HeroRow({
       </HeroPickRateHoverChart>
 
       <div className="text-muted-foreground font-mono text-[11px] tracking-wider uppercase">
-        {hero.role}
+        {getRoleFilterLabel(hero.role as RoleName, t)}
       </div>
 
       <div className="text-right font-mono text-sm tabular-nums">
-        {formatPlaytime(hero.totalPlaytime)}
+        {formatPlaytime(hero.totalPlaytime, formatter, t)}
       </div>
 
       <div className="text-right font-mono text-sm tabular-nums">
-        {formatPercent(hero.pickRate)}
+        {formatPercent(hero.pickRate, formatter)}
       </div>
 
       <div className="text-right">
         <div className="font-mono text-sm tabular-nums">
-          {games > 0 ? formatPercent(hero.winrate) : "—"}
+          {games > 0 ? formatPercent(hero.winrate, formatter) : "—"}
         </div>
         {games > 0 ? (
           <div className="text-muted-foreground font-mono text-[10px] tabular-nums">
-            {hero.wins}W · {hero.losses}L
+            {t("record", { wins: hero.wins, losses: hero.losses })}
           </div>
         ) : null}
       </div>
 
       <div className="text-muted-foreground text-right font-mono text-sm tabular-nums">
-        {hero.samples.toLocaleString("en-US")}
+        {formatter.number(hero.samples)}
       </div>
 
       <div
@@ -581,9 +632,61 @@ function HeroRow({
           {trendUp ? "↑" : trendDown ? "↓" : "·"}
         </span>
         <span>
-          {Math.abs(trend) < 0.5 ? "—" : `${Math.round(Math.abs(trend))}%`}
+          {Math.abs(trend) < 0.5
+            ? "—"
+            : formatPercent(Math.abs(trend), formatter)}
         </span>
       </div>
     </li>
   );
+}
+
+function getRoleFilterLabel(
+  value: RoleFilter,
+  t: ReturnType<typeof useTranslations>
+) {
+  switch (value) {
+    case "All":
+      return t("roles.all");
+    case "Tank":
+      return t("roles.tank");
+    case "Damage":
+      return t("roles.damage");
+    case "Support":
+      return t("roles.support");
+    case "GroundTank":
+      return t("subroles.groundTank");
+    case "DiveTank":
+      return t("subroles.diveTank");
+    case "HitscanDamage":
+      return t("subroles.hitscanDamage");
+    case "FlexDamage":
+      return t("subroles.flexDamage");
+    case "FlexSupport":
+      return t("subroles.flexSupport");
+    case "MainSupport":
+      return t("subroles.mainSupport");
+  }
+}
+
+function getMapTypeLabel(
+  value: $Enums.MapType,
+  t: ReturnType<typeof useTranslations>
+) {
+  switch (value) {
+    case $Enums.MapType.Control:
+      return t("mapTypes.control");
+    case $Enums.MapType.Escort:
+      return t("mapTypes.escort");
+    case $Enums.MapType.Hybrid:
+      return t("mapTypes.hybrid");
+    case $Enums.MapType.Push:
+      return t("mapTypes.push");
+    case $Enums.MapType.Flashpoint:
+      return t("mapTypes.flashpoint");
+    case $Enums.MapType.Clash:
+      return t("mapTypes.clash");
+    default:
+      return value;
+  }
 }

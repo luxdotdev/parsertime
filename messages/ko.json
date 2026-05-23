@@ -2796,6 +2796,67 @@
       "ogDescription": "Parsertime에서 {hero}의 통계입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
       "ogImage": "{hero}의 통계"
     },
+    "mapHeroTrends": {
+      "eyebrow": "맵 메타 · 최근 60일",
+      "eyebrowWithCount": "맵 메타 · 최근 60일 · 고유 맵 {count, number}개",
+      "empty": {
+        "title": "최근 맵 데이터가 없습니다",
+        "description": "최근 60일 안에 스크림을 업로드하면 이 보기가 채워집니다."
+      },
+      "stats": {
+        "scrims": "스크림",
+        "maps": "맵",
+        "heroes": "영웅"
+      },
+      "allMaps": "모든 맵",
+      "searchMaps": "맵 검색...",
+      "noMapsFound": "맵을 찾을 수 없습니다.",
+      "sortLabel": "정렬",
+      "roleFilter": "역할 필터",
+      "noHeroesMatch": "선택한 필터와 일치하는 영웅이 없습니다.",
+      "showPickRateTrend": "{hero} 선택률 추세 보기",
+      "record": "{wins, number}승 · {losses, number}패",
+      "playtimeHoursMinutes": "{hours}시간 {minutes}분",
+      "playtimeMinutes": "{minutes}분",
+      "roles": {
+        "all": "전체",
+        "tank": "탱커",
+        "damage": "딜러",
+        "support": "지원"
+      },
+      "subroles": {
+        "hitscanDamage": "히트스캔 딜러",
+        "flexDamage": "플렉스 딜러",
+        "groundTank": "그라운드 탱커",
+        "diveTank": "다이브 탱커",
+        "flexSupport": "플렉스 지원가",
+        "mainSupport": "메인 지원가"
+      },
+      "mapTypes": {
+        "control": "쟁탈",
+        "escort": "호위",
+        "hybrid": "혼합",
+        "push": "밀기",
+        "flashpoint": "플래시포인트",
+        "clash": "격돌",
+        "other": "기타"
+      },
+      "sort": {
+        "pickRate": "선택률",
+        "playtime": "플레이 시간",
+        "winrate": "승률",
+        "trend": "추세"
+      },
+      "table": {
+        "hero": "영웅",
+        "role": "역할",
+        "playtime": "플레이 시간",
+        "pick": "선택",
+        "winrate": "승률",
+        "sample": "표본",
+        "trend": "30일 변화"
+      }
+    },
     "compareStats": {
       "eyebrow": "통계 · 플레이어 비교",
       "title": "플레이어 통계 비교",

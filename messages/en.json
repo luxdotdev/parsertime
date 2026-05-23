@@ -2901,6 +2901,67 @@
       "ogDescription": "Stats for {hero} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
       "ogImage": "Stats for {hero}"
     },
+    "mapHeroTrends": {
+      "eyebrow": "Map Meta · Last 60 days",
+      "eyebrowWithCount": "Map Meta · Last 60 days · {count, plural, one {# unique map} other {# unique maps}}",
+      "empty": {
+        "title": "No recent map data",
+        "description": "Upload a scrim in the last 60 days to populate this view."
+      },
+      "stats": {
+        "scrims": "Scrims",
+        "maps": "Maps",
+        "heroes": "Heroes"
+      },
+      "allMaps": "All maps",
+      "searchMaps": "Search maps...",
+      "noMapsFound": "No maps found.",
+      "sortLabel": "Sort",
+      "roleFilter": "Role filter",
+      "noHeroesMatch": "No heroes match the selected filter.",
+      "showPickRateTrend": "Show pick rate trend for {hero}",
+      "record": "{wins, number}W · {losses, number}L",
+      "playtimeHoursMinutes": "{hours}h {minutes}m",
+      "playtimeMinutes": "{minutes}m",
+      "roles": {
+        "all": "All",
+        "tank": "Tank",
+        "damage": "Damage",
+        "support": "Support"
+      },
+      "subroles": {
+        "hitscanDamage": "Hitscan DPS",
+        "flexDamage": "Flex DPS",
+        "groundTank": "Ground Tank",
+        "diveTank": "Dive Tank",
+        "flexSupport": "Flex Support",
+        "mainSupport": "Main Support"
+      },
+      "mapTypes": {
+        "control": "Control",
+        "escort": "Escort",
+        "hybrid": "Hybrid",
+        "push": "Push",
+        "flashpoint": "Flashpoint",
+        "clash": "Clash",
+        "other": "Other"
+      },
+      "sort": {
+        "pickRate": "Pick rate",
+        "playtime": "Playtime",
+        "winrate": "Winrate",
+        "trend": "Trend"
+      },
+      "table": {
+        "hero": "Hero",
+        "role": "Role",
+        "playtime": "Playtime",
+        "pick": "Pick",
+        "winrate": "Winrate",
+        "sample": "Sample",
+        "trend": "Δ 30d"
+      }
+    },
     "title": "Stats",
     "searchbar": {
       "placeholder": "Enter a player name...",

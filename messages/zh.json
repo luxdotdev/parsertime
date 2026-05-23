@@ -2796,6 +2796,67 @@
       "ogDescription": "Parsertime 上 {hero} 的统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
       "ogImage": "{hero}的统计数据"
     },
+    "mapHeroTrends": {
+      "eyebrow": "地图环境 · 过去 60 天",
+      "eyebrowWithCount": "地图环境 · 过去 60 天 · {count, number} 张唯一地图",
+      "empty": {
+        "title": "暂无近期地图数据",
+        "description": "上传过去 60 天内的训练赛后，此视图会显示数据。"
+      },
+      "stats": {
+        "scrims": "训练赛",
+        "maps": "地图",
+        "heroes": "英雄"
+      },
+      "allMaps": "所有地图",
+      "searchMaps": "搜索地图...",
+      "noMapsFound": "未找到地图。",
+      "sortLabel": "排序",
+      "roleFilter": "职责筛选",
+      "noHeroesMatch": "没有英雄符合所选筛选条件。",
+      "showPickRateTrend": "显示 {hero} 的选择率趋势",
+      "record": "{wins, number}胜 · {losses, number}负",
+      "playtimeHoursMinutes": "{hours}小时 {minutes}分钟",
+      "playtimeMinutes": "{minutes}分钟",
+      "roles": {
+        "all": "全部",
+        "tank": "坦克",
+        "damage": "输出",
+        "support": "支援"
+      },
+      "subroles": {
+        "hitscanDamage": "长枪输出",
+        "flexDamage": "自由输出",
+        "groundTank": "地面坦克",
+        "diveTank": "机动坦克",
+        "flexSupport": "自由支援",
+        "mainSupport": "主支援"
+      },
+      "mapTypes": {
+        "control": "控制",
+        "escort": "运载",
+        "hybrid": "混合",
+        "push": "机动推进",
+        "flashpoint": "闪点作战",
+        "clash": "冲突",
+        "other": "其他"
+      },
+      "sort": {
+        "pickRate": "选择率",
+        "playtime": "游戏时间",
+        "winrate": "胜率",
+        "trend": "趋势"
+      },
+      "table": {
+        "hero": "英雄",
+        "role": "职责",
+        "playtime": "游戏时间",
+        "pick": "选择",
+        "winrate": "胜率",
+        "sample": "样本",
+        "trend": "30 天变化"
+      }
+    },
     "compareStats": {
       "eyebrow": "统计 · 玩家对比",
       "title": "比较玩家统计数据",
