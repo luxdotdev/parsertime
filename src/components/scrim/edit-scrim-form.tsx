@@ -68,8 +68,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { HeroBan, Map, Scrim, Team } from "@prisma/client";
 import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -104,6 +103,7 @@ export function EditScrimForm({
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const t = useTranslations("scrimPage.editScrim");
+  const formatter = useFormatter();
   const mapNames = useMapNames();
   const queryClient = useQueryClient();
 
@@ -350,7 +350,9 @@ export function EditScrimForm({
                         )}
                       >
                         {field.value ? (
-                          format(new Date(field.value), "PPP")
+                          formatter.dateTime(new Date(field.value), {
+                            dateStyle: "long",
+                          })
                         ) : (
                           <span>{t("date.edit")}</span>
                         )}

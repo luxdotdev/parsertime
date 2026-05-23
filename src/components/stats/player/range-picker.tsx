@@ -24,9 +24,9 @@ import { cn } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";
 import type { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { SelectGroup } from "@radix-ui/react-select";
-import { addMonths, addWeeks, addYears, format } from "date-fns";
+import { addMonths, addWeeks, addYears } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import type { DateRange } from "react-day-picker";
 
@@ -58,6 +58,7 @@ export function RangePicker({
   deaths: Kill[];
 }) {
   const t = useTranslations("statsPage.playerStats.rangePicker");
+  const formatter = useFormatter();
 
   const TODAY = new Date();
   const LAST_WEEK = addWeeks(TODAY, -1);
@@ -178,11 +179,24 @@ export function RangePicker({
                 {date?.from ? (
                   date.to ? (
                     <>
-                      {format(date.from, "LLL dd, y")} -{" "}
-                      {format(date.to, "LLL dd, y")}
+                      {formatter.dateTime(date.from, {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}{" "}
+                      -{" "}
+                      {formatter.dateTime(date.to, {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
                     </>
                   ) : (
-                    format(date.from, "LLL dd, y")
+                    formatter.dateTime(date.from, {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })
                   )
                 ) : (
                   <span>{t("pickDate")}</span>

@@ -20,10 +20,10 @@ import {
 } from "@/components/ui/select";
 import type { Timeframe } from "@/lib/timeframe";
 import { cn } from "@/lib/utils";
-import { addMonths, addWeeks, addYears, format } from "date-fns";
+import { addMonths, addWeeks, addYears } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import type { Route } from "next";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
 import type { DateRange } from "react-day-picker";
@@ -36,6 +36,7 @@ export function TeamRangePicker({
   defaultTimeframe?: Timeframe;
 }) {
   const t = useTranslations("teamStatsPage.rangePicker");
+  const formatter = useFormatter();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -188,11 +189,24 @@ export function TeamRangePicker({
               {date?.from ? (
                 date.to ? (
                   <>
-                    {format(date.from, "LLL dd, y")} -{" "}
-                    {format(date.to, "LLL dd, y")}
+                    {formatter.dateTime(date.from, {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}{" "}
+                    -{" "}
+                    {formatter.dateTime(date.to, {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
                   </>
                 ) : (
-                  format(date.from, "LLL dd, y")
+                  formatter.dateTime(date.from, {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })
                 )
               ) : (
                 <span>{t("pickDateRange")}</span>
