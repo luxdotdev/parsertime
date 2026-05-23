@@ -3,6 +3,7 @@
 import type { LoadedCalibration } from "@/lib/map-calibration/load-calibration";
 import type { PlayerState } from "@/lib/replay/build-player-timeline";
 import { worldToImage } from "@/lib/map-calibration/world-to-image";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ReplayPlayerMarker } from "./replay-player-marker";
 
@@ -43,6 +44,7 @@ export function ReplayMap({
   onSelectPlayerAction,
   recentKill,
 }: ReplayMapProps) {
+  const t = useTranslations("mapPage.replay.map");
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({
     width: 800,
@@ -243,7 +245,7 @@ export function ReplayMap({
         // oxlint-disable-next-line @next/next/no-img-element
         <img
           src={imagePresignedUrl}
-          alt="Map"
+          alt={t("mapAlt")}
           style={imgStyle}
           draggable={false}
           className="pointer-events-none max-w-none select-none"
@@ -252,7 +254,7 @@ export function ReplayMap({
 
       {!imageLoaded && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <p className="text-muted-foreground">Loading map image...</p>
+          <p className="text-muted-foreground">{t("loadingImage")}</p>
         </div>
       )}
 
@@ -303,7 +305,7 @@ export function ReplayMap({
 
       {/* Zoom indicator */}
       <div className="bg-popover/95 text-muted-foreground absolute right-2 bottom-2 rounded-md border px-2.5 py-1.5 text-xs">
-        {Math.round(view.zoom * 100)}% · Scroll to zoom · Drag to pan
+        {t("zoomHint", { zoom: Math.round(view.zoom * 100) })}
       </div>
     </div>
   );

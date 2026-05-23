@@ -1868,6 +1868,11 @@
         "ultEnded": "终极技能已结束",
         "roundStart": "第 {round, number} 回合开始",
         "roundEnd": "第 {round, number} 回合结束"
+      },
+      "map": {
+        "mapAlt": "地图",
+        "loadingImage": "正在加载地图图片...",
+        "zoomHint": "{zoom, number}% · 滚动缩放 · 拖动平移"
       }
     },
     "heatmap": {
@@ -1877,6 +1882,15 @@
         "damage": "伤害",
         "healing": "治疗",
         "kills": "击杀"
+      },
+      "canvas": {
+        "canvasLabel": "地图图片上的团战热力图叠层。拖动平移，滚动缩放。使用加号和减号缩放，方向键平移，0 键重置。",
+        "total": "共 {count, number} 个",
+        "killEvents": "{count, number} 个击杀事件",
+        "killEvent": "{attackerName}（{attackerHero}）在 {time} 击杀了 {victimName}（{victimHero}）",
+        "loadingImage": "正在加载地图图片...",
+        "zoomHint": "{zoom, number}% · 滚动缩放 · 拖动平移",
+        "primaryFire": "主要攻击"
       }
     },
     "vod": {

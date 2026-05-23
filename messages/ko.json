@@ -1868,6 +1868,11 @@
         "ultEnded": "궁극기 종료",
         "roundStart": "{round, number}라운드 시작",
         "roundEnd": "{round, number}라운드 종료"
+      },
+      "map": {
+        "mapAlt": "맵",
+        "loadingImage": "맵 이미지를 불러오는 중...",
+        "zoomHint": "{zoom, number}% · 스크롤로 확대/축소 · 드래그로 이동"
       }
     },
     "heatmap": {
@@ -1877,6 +1882,15 @@
         "damage": "피해",
         "healing": "치유",
         "kills": "킬"
+      },
+      "canvas": {
+        "canvasLabel": "맵 이미지 위 전투 히트맵 오버레이입니다. 드래그로 이동하고 스크롤로 확대/축소하세요. 더하기/빼기 키로 확대/축소하고, 화살표 키로 이동하며, 0 키로 초기화합니다.",
+        "total": "총 {count, number}개",
+        "killEvents": "킬 이벤트 {count, number}개",
+        "killEvent": "{attackerName}({attackerHero})이 {time}에 {victimName}({victimHero})을 처치",
+        "loadingImage": "맵 이미지를 불러오는 중...",
+        "zoomHint": "{zoom, number}% · 스크롤로 확대/축소 · 드래그로 이동",
+        "primaryFire": "기본 공격"
       }
     },
     "vod": {

@@ -10,6 +10,7 @@ import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import { toHero, toTimestamp } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import Image from "next/image";
+import { useFormatter, useTranslations } from "next-intl";
 import {
   useCallback,
   useEffect,
@@ -54,6 +55,8 @@ export function HeatmapCanvas({
   killPoints,
   labels,
 }: HeatmapCanvasProps) {
+  const t = useTranslations("mapPage.heatmap.canvas");
+  const format = useFormatter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
@@ -435,12 +438,12 @@ export function HeatmapCanvas({
           >
             {label}
             <span className="ml-1 font-mono tabular-nums opacity-60">
-              ({count.toLocaleString()})
+              ({format.number(count)})
             </span>
           </button>
         ))}
         <span className="text-muted-foreground font-mono text-xs tabular-nums">
-          {activePoints.length.toLocaleString()} total
+          {t("total", { count: activePoints.length })}
         </span>
       </div>
       <div
@@ -454,7 +457,7 @@ export function HeatmapCanvas({
       >
         <canvas
           ref={canvasRef}
-          aria-label="Fight heatmap overlay on map image. Drag to pan, scroll to zoom. Use plus and minus to zoom, arrow keys to pan, zero to reset."
+          aria-label={t("canvasLabel")}
           role="img"
           style={{ width: canvasSize.width, height: canvasSize.height }}
           className={`active:cursor-grabbing ${hoveredKill ? "cursor-pointer" : "cursor-grab"}`}
@@ -467,20 +470,26 @@ export function HeatmapCanvas({
           <ul
             id={srListId}
             className="sr-only"
-            aria-label={`${killPoints.length} kill events`}
+            aria-label={t("killEvents", { count: killPoints.length })}
           >
             {killPoints.map((kp) => (
               <li
                 key={`${kp.matchTime}-${kp.attackerName}-${kp.attackerHero}-${kp.victimName}-${kp.victimHero}`}
               >
-                {`${kp.attackerName} (${kp.attackerHero}) eliminated ${kp.victimName} (${kp.victimHero}) at ${toTimestamp(kp.matchTime)}`}
+                {t("killEvent", {
+                  attackerName: kp.attackerName,
+                  attackerHero: kp.attackerHero,
+                  victimName: kp.victimName,
+                  victimHero: kp.victimHero,
+                  time: toTimestamp(kp.matchTime),
+                })}
               </li>
             ))}
           </ul>
         )}
         {!imageLoaded && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-muted-foreground">Loading map image...</p>
+            <p className="text-muted-foreground">{t("loadingImage")}</p>
           </div>
         )}
         {hoveredKill && (
@@ -493,7 +502,7 @@ export function HeatmapCanvas({
           />
         )}
         <div className="bg-popover/95 text-muted-foreground absolute right-2 bottom-2 rounded-md border px-2.5 py-1.5 text-xs">
-          {Math.round(view.zoom * 100)}% · Scroll to zoom · Drag to pan
+          {t("zoomHint", { zoom: Math.round(view.zoom * 100) })}
         </div>
       </div>
     </div>
@@ -513,6 +522,7 @@ function KillTooltip({
   team1Color: string;
   team2Color: string;
 }) {
+  const t = useTranslations("mapPage.heatmap.canvas");
   const color = kill.team === 1 ? team1Color : team2Color;
 
   return (
@@ -551,7 +561,7 @@ function KillTooltip({
       <div className="text-muted-foreground mt-1 flex items-center gap-2">
         <span>{toTimestamp(kill.matchTime)}</span>
         <span>·</span>
-        <span>{kill.ability === "0" ? "Primary Fire" : kill.ability}</span>
+        <span>{kill.ability === "0" ? t("primaryFire") : kill.ability}</span>
       </div>
     </div>
   );

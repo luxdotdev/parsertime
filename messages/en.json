@@ -1868,6 +1868,11 @@
         "ultEnded": "ult ended",
         "roundStart": "Round {round, number} Start",
         "roundEnd": "Round {round, number} End"
+      },
+      "map": {
+        "mapAlt": "Map",
+        "loadingImage": "Loading map image...",
+        "zoomHint": "{zoom, number}% · Scroll to zoom · Drag to pan"
       }
     },
     "heatmap": {
@@ -1877,6 +1882,15 @@
         "damage": "Damage",
         "healing": "Healing",
         "kills": "Kills"
+      },
+      "canvas": {
+        "canvasLabel": "Fight heatmap overlay on map image. Drag to pan, scroll to zoom. Use plus and minus to zoom, arrow keys to pan, zero to reset.",
+        "total": "{count, number} total",
+        "killEvents": "{count, plural, one {# kill event} other {# kill events}}",
+        "killEvent": "{attackerName} ({attackerHero}) eliminated {victimName} ({victimHero}) at {time}",
+        "loadingImage": "Loading map image...",
+        "zoomHint": "{zoom, number}% · Scroll to zoom · Drag to pan",
+        "primaryFire": "Primary Fire"
       }
     },
     "vod": {
