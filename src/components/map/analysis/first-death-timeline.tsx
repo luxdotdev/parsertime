@@ -6,6 +6,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toTimestamp } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 export type FightFirstDeath = {
   fightNumber: number;
@@ -43,6 +44,7 @@ export function FirstDeathTimeline({
   team1,
   team2,
 }: FirstDeathTimelineProps) {
+  const t = useTranslations("mapPage.overview.analysis.deaths");
   if (fights.length === 0) return null;
 
   // Compute running differential: positive = team1 has more first deaths (bad for team1)
@@ -71,8 +73,10 @@ export function FirstDeathTimeline({
       {/* Fight strip */}
       <div>
         <div className="text-muted-foreground mb-1.5 flex items-center justify-between font-mono text-[10px] tracking-[0.06em] uppercase">
-          <span>Fight-by-fight first deaths</span>
-          <span className="tabular-nums">{fights.length} fights</span>
+          <span>{t("fightStripHeading")}</span>
+          <span className="tabular-nums">
+            {t("fightCount", { count: fights.length })}
+          </span>
         </div>
         <div className="flex gap-0.5">
           {fights.map((f) => {
@@ -85,7 +89,12 @@ export function FirstDeathTimeline({
                     type="button"
                     className="focus-visible:ring-ring focus-visible:ring-offset-background relative h-6 min-w-0 flex-1 rounded-sm transition-[opacity] hover:opacity-80 focus-visible:ring-2 focus-visible:ring-offset-1 motion-reduce:transition-none"
                     style={{ backgroundColor: color }}
-                    aria-label={`Fight ${f.fightNumber}: ${f.victimName} (${f.victimHero}) died first for ${teamName}`}
+                    aria-label={t("fightAriaLabel", {
+                      fight: f.fightNumber,
+                      playerName: f.victimName,
+                      hero: f.victimHero,
+                      teamName,
+                    })}
                   >
                     {fights.length <= 20 && (
                       <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-white tabular-nums [text-shadow:0_0_2px_rgba(0,0,0,0.5)]">
@@ -97,15 +106,23 @@ export function FirstDeathTimeline({
                 <TooltipContent>
                   <div className="space-y-0.5">
                     <div className="font-semibold">
-                      Fight {f.fightNumber}{" "}
+                      {t("fightTooltipFight", { fight: f.fightNumber })}{" "}
                       <span className="text-muted-foreground font-normal">
                         {toTimestamp(f.matchTime)}
                       </span>
                     </div>
                     <div>
-                      <span style={{ color }}>{teamName}</span> first death:{" "}
-                      <span className="font-semibold">{f.victimName}</span> (
-                      {f.victimHero})
+                      {t.rich("fightTooltipFirstDeath", {
+                        teamName,
+                        playerName: f.victimName,
+                        hero: f.victimHero,
+                        team: (chunks) => (
+                          <span style={{ color }}>{chunks}</span>
+                        ),
+                        player: (chunks) => (
+                          <span className="font-semibold">{chunks}</span>
+                        ),
+                      })}
                     </div>
                   </div>
                 </TooltipContent>
@@ -120,14 +137,14 @@ export function FirstDeathTimeline({
               className="inline-block size-2 rounded-sm"
               style={{ backgroundColor: team1.color }}
             />
-            {team1.name} died first
+            {t("team1DiedFirst", { teamName: team1.name })}
           </span>
           <span className="flex items-center gap-1">
             <span
               className="inline-block size-2 rounded-sm"
               style={{ backgroundColor: team2.color }}
             />
-            {team2.name} died first
+            {t("team2DiedFirst", { teamName: team2.name })}
           </span>
         </div>
       </div>
@@ -135,7 +152,7 @@ export function FirstDeathTimeline({
       {/* Momentum chart */}
       <div>
         <div className="text-muted-foreground mb-1.5 font-mono text-[10px] tracking-[0.06em] uppercase">
-          First death momentum
+          {t("momentumHeading")}
         </div>
         <div className="bg-muted/30 border-border relative h-16 w-full overflow-hidden rounded-md border">
           {/* Center line */}
@@ -145,13 +162,13 @@ export function FirstDeathTimeline({
             className="absolute top-1 left-2 text-[9px] font-medium opacity-50"
             style={{ color: team1.color }}
           >
-            {team1.name} dying more
+            {t("team1DyingMore", { teamName: team1.name })}
           </div>
           <div
             className="absolute bottom-1 left-2 text-[9px] font-medium opacity-50"
             style={{ color: team2.color }}
           >
-            {team2.name} dying more
+            {t("team2DyingMore", { teamName: team2.name })}
           </div>
           {/* SVG line */}
           <svg
@@ -187,15 +204,21 @@ export function FirstDeathTimeline({
       {/* Streak callout */}
       {worstStreak.count >= 3 && (
         <p className="text-muted-foreground text-xs">
-          Longest first death streak:{" "}
-          <span className="font-semibold" style={{ color: worstStreak.color }}>
-            {worstStreak.team}
-          </span>{" "}
-          died first in{" "}
-          <span className="font-semibold tabular-nums">
-            {worstStreak.count}
-          </span>{" "}
-          consecutive fights
+          {t.rich("streakCallout", {
+            teamName: worstStreak.team,
+            count: worstStreak.count,
+            team: (chunks) => (
+              <span
+                className="font-semibold"
+                style={{ color: worstStreak.color }}
+              >
+                {chunks}
+              </span>
+            ),
+            num: (chunks) => (
+              <span className="font-semibold tabular-nums">{chunks}</span>
+            ),
+          })}
         </p>
       )}
     </div>

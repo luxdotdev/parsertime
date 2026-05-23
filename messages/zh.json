@@ -1857,7 +1857,118 @@
         "ultNeedsDiscipline": "有待改进——失败时使用更多终极技能。",
         "ultWasted": "<b>{count}</b> 个浪费的终极技能（占总数 <b>{percentage}</b>%）——在劣势情况下（3名以上劣势）使用。",
         "ultDryFights": "<b>{dryCount}</b> 场无终极技能战斗，胜率 <b>{winrate}</b>%。另有 <b>{nonDryCount}</b> 场战斗使用了终极技能（胜率 <b>{nonDryWinrate}</b>%）。",
-        "ultReversalRate": "战斗逆转率（落后2人以上后获胜）：无终极技能时 <b>{dryRate}</b>% vs 使用终极技能时 <b>{nonDryRate}</b>%。"
+        "ultReversalRate": "战斗逆转率（落后2人以上后获胜）：无终极技能时 <b>{dryRate}</b>% vs 使用终极技能时 <b>{nonDryRate}</b>%。",
+        "swapOverview": "<span1>{team1Name}</span1> 进行了 <b>{team1Count}</b> 次英雄更换，<span2>{team2Name}</span2> 进行了 <b>{team2Count}</b> 次。",
+        "swapTopPairTeam": "<span>{teamName}</span> 最常见的更换：<b>{fromHero}</b> → <b>{toHero}</b>（<n>{count}</n> 次）。",
+        "swapTopSwapperTeam": "<span>{teamName}</span> 最活跃的更换者：<b>{playerName}</b>，共 <n>{count}</n> 次更换。",
+        "tabAbilityTiming": "技能时机",
+        "footerAbilityTiming": "胜率按战斗阶段（战前、前期、中期、后期、收尾）计算。每个单元格至少需要 3 场战斗数据；当某阶段胜率与该技能最佳阶段存在明显差异时，会高亮异常项。",
+        "collapseAll": "全部折叠",
+        "expandAll": "全部展开",
+        "mobileLabel": {
+          "deaths": "阵亡",
+          "ults": "终极",
+          "timing": "时机",
+          "efficiency": "效率",
+          "swaps": "更换",
+          "rotation": "轮转",
+          "abilities": "技能"
+        },
+        "deaths": {
+          "headToHeadLabel": "首次阵亡率",
+          "headToHeadUnit": "首次阵亡",
+          "topPlayerCallout": "首次阵亡最多的玩家：<player>{playerName}</player> <num>（{total} 场战斗中 {count} 次）</num>",
+          "ajaxCallout": "<player>{playerName}</player> 使用卢西奥并出现了 <num>{count}</num> 次 Ajax。",
+          "fightStripHeading": "逐战首次阵亡",
+          "fightCount": "{count} 场战斗",
+          "team1DiedFirst": "{teamName} 率先阵亡",
+          "team2DiedFirst": "{teamName} 率先阵亡",
+          "momentumHeading": "首次阵亡走势",
+          "team1DyingMore": "{teamName} 阵亡更多",
+          "team2DyingMore": "{teamName} 阵亡更多",
+          "streakCallout": "最长首次阵亡连续纪录：<team>{teamName}</team> 连续 <num>{count}</num> 场战斗率先阵亡",
+          "fightAriaLabel": "战斗 {fight}：{playerName}（{hero}）为 {teamName} 率先阵亡",
+          "fightTooltipFight": "战斗 {fight}",
+          "fightTooltipFirstDeath": "<team>{teamName}</team> 首次阵亡：<player>{playerName}</player>（{hero}）"
+        },
+        "ultimates": {
+          "headToHeadLabel": "终极技能使用总数",
+          "headToHeadUnit": "终极技能",
+          "roleHeadToHeadLabel": "{role}：率先使用终极技能",
+          "roleHeadToHeadUnit": "战斗",
+          "topUltUserLabel": "最多终极技能使用者：",
+          "topFightOpenerLabel": "最多战斗开场：",
+          "fightCount": "{count} 场战斗",
+          "subroleChartHeading": "按副职责统计终极技能使用"
+        },
+        "timing": {
+          "empty": "这张地图没有时机数据。",
+          "comparisonCallout": "<team1>{team1Name}</team1> 有 <pct1>{team1Pct}%</pct1> 的终极技能用于开战，<team2>{team2Name}</team2> 为 <pct2>{team2Pct}%</pct2>。",
+          "breakdownHeading": "终极技能时机细分"
+        },
+        "efficiency": {
+          "empty": "这张地图没有效率数据。",
+          "avgChargeTimeLabel": "平均终极技能充能时间",
+          "avgHoldTimeLabel": "平均终极技能持有时间",
+          "scorecard": {
+            "wonFights": "获胜战斗",
+            "lostFights": "失败战斗",
+            "wasted": "浪费",
+            "dryFights": "无终极战斗",
+            "winRate": "胜率",
+            "reversal": "逆转",
+            "ultsPerFight": "每场 {count} 个终极技能",
+            "excellent": "优秀",
+            "good": "良好",
+            "average": "一般",
+            "poor": "较差"
+          }
+        },
+        "swaps": {
+          "empty": "这张地图没有记录到英雄更换。",
+          "headToHeadLabel": "英雄更换总数",
+          "headToHeadUnit": "更换",
+          "tableTopSwap": "最多更换",
+          "tableMostActive": "最活跃",
+          "tableEmpty": "-",
+          "topPair": "{from} → {to}（{count}次）",
+          "topSwapper": "{name}（{count}次更换）"
+        },
+        "rotationDeaths": {
+          "empty": "这张地图没有可用于轮转阵亡分析的坐标数据。",
+          "noEvents": "这张地图未检测到轮转阵亡。",
+          "headToHeadLabel": "轮转阵亡",
+          "headToHeadUnit": "阵亡",
+          "topPlayerCallout": "轮转中最常被抓的玩家：<player>{playerName}</player> <num>（{totalDeaths} 次阵亡中 {rotationCount} 次，{rate}%）</num>",
+          "topKillerCallout": "轮转抓人最多的英雄：<heroname>{hero}</heroname> <num>（{count} 次击杀）</num>",
+          "tablePlayer": "玩家",
+          "tableRotationDeaths": "轮转阵亡",
+          "tableTotalDeaths": "总阵亡",
+          "tableRate": "比例",
+          "eventsHeading": "轮转阵亡事件（{count}）"
+        },
+        "abilityTiming": {
+          "phase": {
+            "preFight": "战前",
+            "early": "前期",
+            "mid": "中期",
+            "late": "后期",
+            "cleanup": "收尾"
+          },
+          "noTeamData": "{teamName} 没有高影响技能数据。",
+          "negativeOutlier": "<ability>{abilityName}</ability> 在{phase}使用时胜率为 <negativeRate>{phaseWinrate}</negativeRate>，低于在{bestPhase}使用时的 <positiveRate>{bestPhaseWinrate}</positiveRate>。",
+          "positiveOutlier": "<ability>{abilityName}</ability> 在{phase}使用与 <positiveRate>{phaseWinrate}</positiveRate> 胜率相关：呈现明显的{pattern}模式。",
+          "patternInitiation": "开战",
+          "patternTiming": "时机",
+          "cellTitle": "{winrate} 胜率（{fights} 场战斗，{wins}胜 {losses}负）",
+          "fewerThanFights": "少于 {count} 场战斗",
+          "empty": "这张地图未检测到高影响技能。",
+          "legendWinRate": "胜率：",
+          "legendBadTiming": "不佳时机",
+          "legendGoodTiming": "良好时机",
+          "hoverDetail": "<ability>{abilityName}</ability> 在{phase}使用：<rate>{winrate}</rate> 胜率，覆盖 {fights} 场战斗（{wins}胜 {losses}负）",
+          "info": "胜率按各队视角计算。短横线表示少于 {count} 场战斗。悬停可查看详情。"
+        }
       }
     },
     "overviewTable": {
@@ -1928,6 +2039,7 @@
       "method": "方式",
       "start": "开始",
       "end": "结束",
+      "viewInReplay": "在回放中查看",
       "fightWinner": "战斗胜者",
       "abilities": {
         "primary-fire": "主武器",

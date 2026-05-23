@@ -1014,6 +1014,8 @@ export async function DefaultOverview({
           footerEfficiency: t("analysis.footerEfficiency"),
           footerSwaps: t("analysis.footerSwaps"),
           footerRotationDeaths: t("analysis.footerRotationDeaths"),
+          tabAbilityTiming: t("analysis.tabAbilityTiming"),
+          footerAbilityTiming: t("analysis.footerAbilityTiming"),
         }}
       />
     </section>

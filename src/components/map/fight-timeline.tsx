@@ -412,6 +412,7 @@ export function FightTimeline({
               team1={team1}
               team1Color={team1Color}
               team2Color={team2Color}
+              t={t}
               tUlt={tUlt}
               replayEnabled={!!calibrationData}
             />
@@ -746,7 +747,7 @@ function KillEventRow({
             GeistMono.className
           )}
           style={{ width: "4.5rem" }}
-          aria-label="View in Replay"
+          aria-label={t("viewInReplay")}
           onClick={(e) => {
             e.stopPropagation();
             goToReplay(kill.match_time);
@@ -860,6 +861,7 @@ function UltEventRow({
   team1,
   team1Color,
   team2Color,
+  t,
   tUlt,
   replayEnabled,
 }: {
@@ -868,6 +870,7 @@ function UltEventRow({
   team1: string;
   team1Color: string;
   team2Color: string;
+  t: ReturnType<typeof useTranslations>;
   tUlt: ReturnType<typeof useTranslations>;
   replayEnabled: boolean;
 }) {
@@ -917,7 +920,7 @@ function UltEventRow({
             GeistMono.className
           )}
           style={{ width: "4.5rem" }}
-          aria-label="View in Replay"
+          aria-label={t("viewInReplay")}
           onClick={() => goToReplay(getEventTime(event))}
         >
           {toTimestamp(getEventTime(event))}

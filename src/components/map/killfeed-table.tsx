@@ -473,7 +473,7 @@ function KillRow({
           <button
             type="button"
             className="hover:text-foreground text-muted-foreground cursor-pointer underline-offset-2 hover:underline"
-            aria-label="View in Replay"
+            aria-label={t("viewInReplay")}
             onClick={() => goToReplay(kill.match_time)}
           >
             {kill.match_time.toFixed(2)}{" "}

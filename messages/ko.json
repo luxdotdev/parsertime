@@ -1857,7 +1857,118 @@
         "ultNeedsDiscipline": "개선 필요 — 승리보다 패배 시 더 많은 궁극기 사용.",
         "ultWasted": "<b>{count}</b>회 낭비된 궁극기 (전체의 <b>{percentage}</b>%) — 불리한 상황(3명 이상 열세)에서 사용.",
         "ultDryFights": "<b>{dryCount}</b>회 드라이 전투 (궁극기 미사용), 승률 <b>{winrate}</b>%. <b>{nonDryCount}</b>회 전투에서 궁극기 사용 (승률 <b>{nonDryWinrate}</b>%).",
-        "ultReversalRate": "전투 역전 비율 (2명 이상 열세 후 승리): 드라이 전투 <b>{dryRate}</b>% vs 궁극기 사용 시 <b>{nonDryRate}</b>%."
+        "ultReversalRate": "전투 역전 비율 (2명 이상 열세 후 승리): 드라이 전투 <b>{dryRate}</b>% vs 궁극기 사용 시 <b>{nonDryRate}</b>%.",
+        "swapOverview": "<span1>{team1Name}</span1>은(는) 영웅 교체를 <b>{team1Count}</b>회 했고, <span2>{team2Name}</span2>은(는) <b>{team2Count}</b>회 했습니다.",
+        "swapTopPairTeam": "<span>{teamName}</span>의 가장 흔한 교체: <b>{fromHero}</b> → <b>{toHero}</b> (<n>{count}</n>회).",
+        "swapTopSwapperTeam": "<span>{teamName}</span>의 가장 활발한 교체 선수: <b>{playerName}</b>, <n>{count}</n>회 교체.",
+        "tabAbilityTiming": "스킬 타이밍",
+        "footerAbilityTiming": "승률은 전투 단계(교전 전, 초반, 중반, 후반, 정리)별로 계산됩니다. 셀은 최소 3전투 이상의 데이터가 필요하며, 해당 스킬의 최적 단계와 단계 승률이 의미 있게 차이 나는 경우 이상치로 강조됩니다.",
+        "collapseAll": "모두 접기",
+        "expandAll": "모두 펼치기",
+        "mobileLabel": {
+          "deaths": "사망",
+          "ults": "궁",
+          "timing": "타이밍",
+          "efficiency": "효율",
+          "swaps": "교체",
+          "rotation": "로테이션",
+          "abilities": "스킬"
+        },
+        "deaths": {
+          "headToHeadLabel": "첫 사망 비율",
+          "headToHeadUnit": "첫 사망",
+          "topPlayerCallout": "첫 사망이 가장 많은 선수: <player>{playerName}</player> <num>({total}전투 중 {count}회)</num>",
+          "ajaxCallout": "<player>{playerName}</player>은(는) 루시우를 플레이하며 <num>{count}</num>회 Ajax를 기록했습니다.",
+          "fightStripHeading": "전투별 첫 사망",
+          "fightCount": "{count}전투",
+          "team1DiedFirst": "{teamName} 첫 사망",
+          "team2DiedFirst": "{teamName} 첫 사망",
+          "momentumHeading": "첫 사망 흐름",
+          "team1DyingMore": "{teamName} 사망 증가",
+          "team2DyingMore": "{teamName} 사망 증가",
+          "streakCallout": "최장 첫 사망 연속 기록: <team>{teamName}</team>이(가) <num>{count}</num>전투 연속으로 먼저 사망",
+          "fightAriaLabel": "전투 {fight}: {playerName} ({hero})이(가) {teamName}에서 먼저 사망",
+          "fightTooltipFight": "전투 {fight}",
+          "fightTooltipFirstDeath": "<team>{teamName}</team> 첫 사망: <player>{playerName}</player> ({hero})"
+        },
+        "ultimates": {
+          "headToHeadLabel": "총 사용 궁극기",
+          "headToHeadUnit": "궁극기",
+          "roleHeadToHeadLabel": "{role}: 선궁 사용",
+          "roleHeadToHeadUnit": "전투",
+          "topUltUserLabel": "최다 궁극기 사용자:",
+          "topFightOpenerLabel": "최다 전투 개시:",
+          "fightCount": "{count}전투",
+          "subroleChartHeading": "서브역할별 궁극기 사용"
+        },
+        "timing": {
+          "empty": "이 맵에는 타이밍 데이터가 없습니다.",
+          "comparisonCallout": "<team1>{team1Name}</team1>은(는) 궁극기의 <pct1>{team1Pct}%</pct1>를 개시 타이밍에 사용했고, <team2>{team2Name}</team2>은(는) <pct2>{team2Pct}%</pct2>입니다.",
+          "breakdownHeading": "궁극기 타이밍 분석"
+        },
+        "efficiency": {
+          "empty": "이 맵에는 효율성 데이터가 없습니다.",
+          "avgChargeTimeLabel": "평균 궁극기 충전 시간",
+          "avgHoldTimeLabel": "평균 궁극기 보유 시간",
+          "scorecard": {
+            "wonFights": "승리 전투",
+            "lostFights": "패배 전투",
+            "wasted": "낭비",
+            "dryFights": "드라이 전투",
+            "winRate": "승률",
+            "reversal": "역전",
+            "ultsPerFight": "전투당 궁극기 {count}회",
+            "excellent": "우수",
+            "good": "양호",
+            "average": "보통",
+            "poor": "미흡"
+          }
+        },
+        "swaps": {
+          "empty": "이 맵에는 기록된 영웅 교체가 없습니다.",
+          "headToHeadLabel": "총 영웅 교체",
+          "headToHeadUnit": "교체",
+          "tableTopSwap": "최다 교체",
+          "tableMostActive": "최다 활동",
+          "tableEmpty": "-",
+          "topPair": "{from} → {to} ({count}회)",
+          "topSwapper": "{name} ({count}회 교체)"
+        },
+        "rotationDeaths": {
+          "empty": "이 맵에는 로테이션 사망 분석을 위한 좌표 데이터가 없습니다.",
+          "noEvents": "이 맵에서는 로테이션 사망이 감지되지 않았습니다.",
+          "headToHeadLabel": "로테이션 사망",
+          "headToHeadUnit": "사망",
+          "topPlayerCallout": "로테이션 중 가장 자주 끊긴 선수: <player>{playerName}</player> <num>({totalDeaths}번 사망 중 {rotationCount}회, {rate}%)</num>",
+          "topKillerCallout": "로테이션 픽을 가장 많이 만든 영웅: <heroname>{hero}</heroname> <num>({count}킬)</num>",
+          "tablePlayer": "선수",
+          "tableRotationDeaths": "로테이션 사망",
+          "tableTotalDeaths": "총 사망",
+          "tableRate": "비율",
+          "eventsHeading": "로테이션 사망 이벤트 ({count})"
+        },
+        "abilityTiming": {
+          "phase": {
+            "preFight": "교전 전",
+            "early": "초반",
+            "mid": "중반",
+            "late": "후반",
+            "cleanup": "정리"
+          },
+          "noTeamData": "{teamName}의 고영향 스킬 데이터가 없습니다.",
+          "negativeOutlier": "<ability>{abilityName}</ability>을(를) {phase}에 사용하면 승률이 <negativeRate>{phaseWinrate}</negativeRate>이며, {bestPhase}에 사용했을 때의 <positiveRate>{bestPhaseWinrate}</positiveRate>보다 낮습니다.",
+          "positiveOutlier": "<ability>{abilityName}</ability>을(를) {phase}에 사용했을 때 <positiveRate>{phaseWinrate}</positiveRate> 승률과 연관됩니다: 강한 {pattern} 패턴.",
+          "patternInitiation": "개시",
+          "patternTiming": "타이밍",
+          "cellTitle": "승률 {winrate} ({fights}전투 중 {wins}승 {losses}패)",
+          "fewerThanFights": "{count}전투 미만",
+          "empty": "이 맵에서는 고영향 스킬이 감지되지 않았습니다.",
+          "legendWinRate": "승률:",
+          "legendBadTiming": "나쁜 타이밍",
+          "legendGoodTiming": "좋은 타이밍",
+          "hoverDetail": "<ability>{abilityName}</ability> {phase} 사용: <rate>{winrate}</rate> 승률, {fights}전투 ({wins}승 {losses}패)",
+          "info": "승률은 각 팀의 관점에서 계산됩니다. 대시는 {count}전투 미만을 의미합니다. 자세한 내용은 마우스를 올려 확인하세요."
+        }
       }
     },
     "overviewTable": {
@@ -1928,6 +2039,7 @@
       "method": "방법",
       "start": "시작",
       "end": "종료",
+      "viewInReplay": "리플레이에서 보기",
       "fightWinner": "전투 승리자",
       "abilities": {
         "primary-fire": "기본 발사",

@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import type { UltEfficiency } from "@/data/scrim/types";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 
 type EfficiencyScorecardProps = {
   teamName: string;
@@ -50,11 +50,12 @@ export function EfficiencyScorecard({
   efficiency: eff,
 }: EfficiencyScorecardProps) {
   const t = useTranslations("mapPage.overview.analysis.efficiency.scorecard");
+  const formatter = useFormatter();
   const rating = getEfficiencyRatingKey(eff.ultimateEfficiency);
   const nonDryWinrate =
     eff.nonDryFights > 0
-      ? ((eff.fightsWon / eff.nonDryFights) * 100).toFixed(1)
-      : "0.0";
+      ? eff.fightsWon / eff.nonDryFights
+      : 0;
 
   return (
     <div className="bg-muted/30 ring-foreground/10 rounded-lg p-3 shadow-xs ring-1">
@@ -64,7 +65,10 @@ export function EfficiencyScorecard({
         </span>
         <div className="flex items-center gap-2">
           <span className="font-mono text-lg font-bold tabular-nums">
-            {eff.ultimateEfficiency.toFixed(2)}
+            {formatter.number(eff.ultimateEfficiency, {
+              maximumFractionDigits: 2,
+              minimumFractionDigits: 2,
+            })}
           </span>
           <Badge variant={rating.variant} className="text-[10px]">
             {t(rating.key)}
@@ -75,23 +79,46 @@ export function EfficiencyScorecard({
         <StatCell
           label={t("wonFights")}
           value={t("ultsPerFight", {
-            count: eff.avgUltsInWonFights.toFixed(1),
+            count: formatter.number(eff.avgUltsInWonFights, {
+              maximumFractionDigits: 1,
+              minimumFractionDigits: 1,
+            }),
           })}
           className="text-emerald-600 dark:text-emerald-400"
         />
         <StatCell
           label={t("lostFights")}
           value={t("ultsPerFight", {
-            count: eff.avgUltsInLostFights.toFixed(1),
+            count: formatter.number(eff.avgUltsInLostFights, {
+              maximumFractionDigits: 1,
+              minimumFractionDigits: 1,
+            }),
           })}
           className="text-rose-600 dark:text-rose-400"
         />
-        <StatCell label={t("wasted")} value={String(eff.wastedUltimates)} />
-        <StatCell label={t("dryFights")} value={String(eff.dryFights)} />
-        <StatCell label={t("winRate")} value={`${nonDryWinrate}%`} />
+        <StatCell
+          label={t("wasted")}
+          value={formatter.number(eff.wastedUltimates)}
+        />
+        <StatCell
+          label={t("dryFights")}
+          value={formatter.number(eff.dryFights)}
+        />
+        <StatCell
+          label={t("winRate")}
+          value={formatter.number(nonDryWinrate, {
+            maximumFractionDigits: 1,
+            minimumFractionDigits: 1,
+            style: "percent",
+          })}
+        />
         <StatCell
           label={t("reversal")}
-          value={`${eff.nonDryFightReversalRate.toFixed(1)}%`}
+          value={formatter.number(eff.nonDryFightReversalRate / 100, {
+            maximumFractionDigits: 1,
+            minimumFractionDigits: 1,
+            style: "percent",
+          })}
         />
       </div>
     </div>

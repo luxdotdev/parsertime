@@ -697,7 +697,7 @@ function RotationDeathRow({
         <button
           type="button"
           className="text-muted-foreground hover:text-foreground w-14 shrink-0 cursor-pointer text-xs tabular-nums underline-offset-2 hover:underline"
-          title="View in Replay"
+          title={t("viewInReplay")}
           onClick={(e) => {
             e.stopPropagation();
             goToReplay(kill.match_time);

@@ -1880,16 +1880,16 @@
           "topPlayerCallout": "Player with most first deaths: <player>{playerName}</player> <num>({count} of {total} fights)</num>",
           "ajaxCallout": "<player>{playerName}</player> played Lúcio and Ajaxed <num>{count}</num> {count, plural, one {time} other {times}}",
           "fightStripHeading": "Fight-by-fight first deaths",
-          "fightCount": "{count} fights",
+          "fightCount": "{count, plural, one {# fight} other {# fights}}",
           "team1DiedFirst": "{teamName} died first",
           "team2DiedFirst": "{teamName} died first",
           "momentumHeading": "First death momentum",
           "team1DyingMore": "{teamName} dying more",
           "team2DyingMore": "{teamName} dying more",
-          "streakCallout": "Longest first death streak: <team>{teamName}</team> died first in <count>{count}</count> consecutive fights",
+          "streakCallout": "Longest first death streak: <team>{teamName}</team> died first in <num>{count}</num> consecutive fights",
           "fightAriaLabel": "Fight {fight}: {playerName} ({hero}) died first for {teamName}",
           "fightTooltipFight": "Fight {fight}",
-          "fightTooltipFirstDeath": "{teamName} first death: {playerName} ({hero})"
+          "fightTooltipFirstDeath": "<team>{teamName}</team> first death: <player>{playerName}</player> ({hero})"
         },
         "ultimates": {
           "headToHeadLabel": "Total Ultimates Used",
@@ -1932,7 +1932,7 @@
           "tableMostActive": "Most Active",
           "tableEmpty": "-",
           "topPair": "{from} → {to} ({count}x)",
-          "topSwapper": "{name} ({count} swaps)"
+          "topSwapper": "{name} ({count, plural, one {# swap} other {# swaps}})"
         },
         "rotationDeaths": {
           "empty": "No coordinate data available for rotation death analysis on this map.",
@@ -1946,6 +1946,28 @@
           "tableTotalDeaths": "Total Deaths",
           "tableRate": "Rate",
           "eventsHeading": "Rotation death events ({count})"
+        },
+        "abilityTiming": {
+          "phase": {
+            "preFight": "Pre-fight",
+            "early": "Early",
+            "mid": "Mid",
+            "late": "Late",
+            "cleanup": "Cleanup"
+          },
+          "noTeamData": "No high-impact ability data for {teamName}.",
+          "negativeOutlier": "<ability>{abilityName}</ability> used {phase} has <negativeRate>{phaseWinrate}</negativeRate> win rate vs <positiveRate>{bestPhaseWinrate}</positiveRate> when used {bestPhase}.",
+          "positiveOutlier": "<ability>{abilityName}</ability> in {phase} correlates with <positiveRate>{phaseWinrate}</positiveRate> win rate: strong {pattern} pattern.",
+          "patternInitiation": "initiation",
+          "patternTiming": "timing",
+          "cellTitle": "{winrate} win rate ({wins}W {losses}L from {fights, plural, one {# fight} other {# fights}})",
+          "fewerThanFights": "Fewer than {count, plural, one {# fight} other {# fights}}",
+          "empty": "No high-impact abilities detected in this map.",
+          "legendWinRate": "Win rate:",
+          "legendBadTiming": "Bad timing",
+          "legendGoodTiming": "Good timing",
+          "hoverDetail": "<ability>{abilityName}</ability> used {phase}: <rate>{winrate}</rate> win rate across {fights, plural, one {# fight} other {# fights}} ({wins}W {losses}L)",
+          "info": "Win rates are from each team's perspective. Dash means fewer than {count} fights. Hover for details."
         }
       }
     },
@@ -2017,6 +2039,7 @@
       "method": "Method",
       "start": "Start",
       "end": "End",
+      "viewInReplay": "View in Replay",
       "fightWinner": "Fight Winner",
       "abilities": {
         "primary-fire": "Primary Fire",
