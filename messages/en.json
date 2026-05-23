@@ -3458,6 +3458,8 @@
       "enterPlayerNames": "Enter Player Names",
       "player1": "Player 1",
       "player2": "Player 2",
+      "playerA": "Player A",
+      "playerB": "Player B",
       "player1Placeholder": "Enter first player name",
       "player2Placeholder": "Enter second player name",
       "compare": "Compare",

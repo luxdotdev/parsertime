@@ -3060,6 +3060,8 @@
       "enterPlayerNames": "输入玩家名称",
       "player1": "玩家 1",
       "player2": "玩家 2",
+      "playerA": "玩家 A",
+      "playerB": "玩家 B",
       "player1Placeholder": "输入第一位玩家名称",
       "player2Placeholder": "输入第二位玩家名称",
       "compare": "比较",

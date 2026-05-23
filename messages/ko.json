@@ -3060,6 +3060,8 @@
       "enterPlayerNames": "플레이어 이름 입력",
       "player1": "플레이어 1",
       "player2": "플레이어 2",
+      "playerA": "플레이어 A",
+      "playerB": "플레이어 B",
       "player1Placeholder": "첫 번째 플레이어 이름 입력",
       "player2Placeholder": "두 번째 플레이어 이름 입력",
       "compare": "비교",

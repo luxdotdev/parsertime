@@ -55,6 +55,7 @@ export function ComparisonView({
   player2Data,
 }: ComparisonViewProps) {
   const tRange = useTranslations("statsPage.playerStats.rangePicker");
+  const tCompare = useTranslations("statsPage.compareStats");
   const formatter = useFormatter();
   const TODAY = new Date();
   const LAST_WEEK = addWeeks(TODAY, -1);
@@ -217,7 +218,7 @@ export function ComparisonView({
       </div>
 
       <div className="grid grid-cols-1 gap-x-10 gap-y-12 xl:grid-cols-2">
-        <PlayerColumn label="Player A" name={player1Data.playerName}>
+        <PlayerColumn label={tCompare("playerA")} name={player1Data.playerName}>
           <Statistics
             timeframe={timeframe}
             date={date}
@@ -231,7 +232,7 @@ export function ComparisonView({
           />
         </PlayerColumn>
 
-        <PlayerColumn label="Player B" name={player2Data.playerName}>
+        <PlayerColumn label={tCompare("playerB")} name={player2Data.playerName}>
           <Statistics
             timeframe={timeframe}
             date={date}
