@@ -4747,6 +4747,82 @@
       "ogTitle": "Leaderboard | Parsertime",
       "ogDescription": "View the highest ranked players for each hero.",
       "ogImage": "Leaderboard"
+    },
+    "subnav": {
+      "ariaLabel": "Leaderboard variant"
+    },
+    "heroSelector": {
+      "selectHero": "Select hero...",
+      "searchHero": "Search hero...",
+      "noHeroFound": "No hero found.",
+      "roles": {
+        "tank": "Tank",
+        "damage": "Damage",
+        "support": "Support"
+      }
+    },
+    "tsr": {
+      "eyebrow": "Leaderboard",
+      "eyebrowComputed": "Leaderboard · Computed {computedAt}",
+      "title": "Tournament Skill Rating",
+      "description": "Elo-style rating from FACEIT-hosted Overwatch 2 tournament results. Recency weighted, anchored at peak tier reached.",
+      "stats": {
+        "active": "Active",
+        "trackedPlayers": "Tracked players",
+        "trackedMatches": "Tracked matches",
+        "topRating": "Top rating"
+      },
+      "regions": {
+        "allRegions": "All regions",
+        "na": "NA",
+        "emea": "EMEA",
+        "other": "Other"
+      },
+      "tiers": {
+        "allTiers": "All tiers",
+        "open": "Open",
+        "cah": "CAH",
+        "advanced": "Advanced",
+        "expert": "Expert",
+        "masters": "Masters",
+        "owcs": "OWCS"
+      },
+      "sortOptions": {
+        "rating": "Rating",
+        "totalMatches": "Total matches",
+        "recentActivity": "Recent activity"
+      },
+      "columns": {
+        "player": "Player",
+        "region": "Region",
+        "peakTier": "Peak tier",
+        "rating": "Rating",
+        "matches": "Matches",
+        "lastSeen": "Last seen"
+      },
+      "relative": {
+        "today": "today",
+        "days": "{count, plural, one {#d} other {#d}}",
+        "weeks": "{count, plural, one {#w} other {#w}}",
+        "months": "{count, plural, one {#mo} other {#mo}}",
+        "years": "{count, plural, one {#y} other {#y}}",
+        "justNow": "just now",
+        "minutesAgo": "{count, plural, one {#m ago} other {#m ago}}",
+        "hoursAgo": "{count, plural, one {#h ago} other {#h ago}}",
+        "daysAgo": "{count, plural, one {#d ago} other {#d ago}}"
+      },
+      "regionFilter": "Region filter",
+      "searchPlaceholder": "Search BattleTag or nickname",
+      "searchAria": "Search players",
+      "sort": "Sort",
+      "loading": "Loading...",
+      "noPlayersForQuery": "No players match \"{query}\".",
+      "noActivePlayers": "No active players match the selected filters.",
+      "showing": "Showing {visible, number} of {total, number}",
+      "loadMore": "Load more",
+      "activeCount": "{visible, number} of {total, number} active",
+      "inactive": "Inactive",
+      "recentMatchesWindow": "{count, number} · {days, number}d"
     }
   },
   "teamStats": {

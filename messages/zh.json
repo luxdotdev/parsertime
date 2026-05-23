@@ -4348,6 +4348,82 @@
       "ogTitle": "排行榜 | Parsertime",
       "ogDescription": "查看每位英雄排名最高的玩家。",
       "ogImage": "排行榜"
+    },
+    "subnav": {
+      "ariaLabel": "排行榜类型"
+    },
+    "heroSelector": {
+      "selectHero": "选择英雄...",
+      "searchHero": "搜索英雄...",
+      "noHeroFound": "未找到英雄。",
+      "roles": {
+        "tank": "重装",
+        "damage": "输出",
+        "support": "支援"
+      }
+    },
+    "tsr": {
+      "eyebrow": "排行榜",
+      "eyebrowComputed": "排行榜 · 计算于 {computedAt}",
+      "title": "锦标赛技术评分",
+      "description": "基于 FACEIT 举办的《守望先锋 2》锦标赛结果计算的 Elo 风格评分。按近期表现加权，并以达到过的最高级别校准。",
+      "stats": {
+        "active": "活跃",
+        "trackedPlayers": "已跟踪玩家",
+        "trackedMatches": "已跟踪比赛",
+        "topRating": "最高评分"
+      },
+      "regions": {
+        "allRegions": "所有地区",
+        "na": "NA",
+        "emea": "EMEA",
+        "other": "其他"
+      },
+      "tiers": {
+        "allTiers": "所有级别",
+        "open": "公开组",
+        "cah": "CAH",
+        "advanced": "高级组",
+        "expert": "专家组",
+        "masters": "大师组",
+        "owcs": "OWCS"
+      },
+      "sortOptions": {
+        "rating": "评分",
+        "totalMatches": "总比赛数",
+        "recentActivity": "近期活跃度"
+      },
+      "columns": {
+        "player": "玩家",
+        "region": "地区",
+        "peakTier": "最高级别",
+        "rating": "评分",
+        "matches": "比赛",
+        "lastSeen": "最近出现"
+      },
+      "relative": {
+        "today": "今天",
+        "days": "{count}天",
+        "weeks": "{count}周",
+        "months": "{count}个月",
+        "years": "{count}年",
+        "justNow": "刚刚",
+        "minutesAgo": "{count}分钟前",
+        "hoursAgo": "{count}小时前",
+        "daysAgo": "{count}天前"
+      },
+      "regionFilter": "地区筛选",
+      "searchPlaceholder": "搜索 BattleTag 或昵称",
+      "searchAria": "搜索玩家",
+      "sort": "排序",
+      "loading": "正在加载...",
+      "noPlayersForQuery": "没有玩家匹配“{query}”。",
+      "noActivePlayers": "没有活跃玩家匹配所选筛选条件。",
+      "showing": "显示 {visible, number} / {total, number}",
+      "loadMore": "加载更多",
+      "activeCount": "{visible, number} / {total, number} 名活跃玩家",
+      "inactive": "非活跃",
+      "recentMatchesWindow": "{count, number} · 近 {days, number} 天"
     }
   },
   "profilePage": {

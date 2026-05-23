@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import { FaceitTier, TsrRegion } from "@prisma/client";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useTransition } from "react";
 
 type Props = {
@@ -30,63 +31,110 @@ type Props = {
 
 type RegionFilter = "All" | TsrRegion;
 type TierFilter = "All" | FaceitTier;
+type TsrMessages = ReturnType<typeof useTranslations>;
 
-const REGION_PILLS: { value: RegionFilter; label: string }[] = [
-  { value: "All", label: "All regions" },
-  { value: TsrRegion.NA, label: "NA" },
-  { value: TsrRegion.EMEA, label: "EMEA" },
-  { value: TsrRegion.OTHER, label: "Other" },
+const REGION_PILLS: { value: RegionFilter }[] = [
+  { value: "All" },
+  { value: TsrRegion.NA },
+  { value: TsrRegion.EMEA },
+  { value: TsrRegion.OTHER },
 ];
 
-const TIER_PILLS: { value: TierFilter; label: string }[] = [
-  { value: "All", label: "All tiers" },
-  { value: FaceitTier.OWCS, label: "OWCS" },
-  { value: FaceitTier.MASTERS, label: "Masters" },
-  { value: FaceitTier.EXPERT, label: "Expert" },
-  { value: FaceitTier.ADVANCED, label: "Advanced" },
-  { value: FaceitTier.OPEN, label: "Open" },
-  { value: FaceitTier.CAH, label: "CAH" },
+const TIER_PILLS: { value: TierFilter }[] = [
+  { value: "All" },
+  { value: FaceitTier.OWCS },
+  { value: FaceitTier.MASTERS },
+  { value: FaceitTier.EXPERT },
+  { value: FaceitTier.ADVANCED },
+  { value: FaceitTier.OPEN },
+  { value: FaceitTier.CAH },
 ];
 
-const SORT_OPTIONS: { value: TsrSortKey; label: string }[] = [
-  { value: "rating", label: "Rating" },
-  { value: "matches", label: "Total matches" },
-  { value: "recent", label: "Recent activity" },
+const SORT_OPTIONS: { value: TsrSortKey }[] = [
+  { value: "rating" },
+  { value: "matches" },
+  { value: "recent" },
 ];
-
-const TIER_LABEL: Record<FaceitTier, string> = {
-  UNCLASSIFIED: "—",
-  OPEN: "Open",
-  CAH: "CAH",
-  ADVANCED: "Advanced",
-  EXPERT: "Expert",
-  MASTERS: "Masters",
-  OWCS: "OWCS",
-};
 
 const COLS =
   "grid-cols-[3rem_minmax(0,1fr)_4rem_5.5rem_5.5rem_5.5rem] sm:grid-cols-[3rem_minmax(0,1fr)_4.5rem_6rem_6rem_5.5rem_6.5rem]";
 
 const PAGE_SIZE = 50;
 
-function formatRelativeDate(d: Date | null): string {
+function formatRelativeDate(d: Date | null, t: TsrMessages): string {
   if (!d) return "—";
   const days = Math.floor((Date.now() - d.getTime()) / 86_400_000);
-  if (days < 1) return "today";
-  if (days < 7) return `${days}d`;
-  if (days < 30) return `${Math.floor(days / 7)}w`;
-  if (days < 365) return `${Math.floor(days / 30)}mo`;
-  return `${Math.floor(days / 365)}y`;
+  if (days < 1) return t("relative.today");
+  if (days < 7) return t("relative.days", { count: days });
+  if (days < 30) return t("relative.weeks", { count: Math.floor(days / 7) });
+  if (days < 365) return t("relative.months", { count: Math.floor(days / 30) });
+  return t("relative.years", { count: Math.floor(days / 365) });
 }
 
-function formatComputedAt(d: Date | null): string | null {
+function formatComputedAt(d: Date | null, t: TsrMessages): string | null {
   if (!d) return null;
   const minutes = Math.floor((Date.now() - d.getTime()) / 60_000);
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 1) return t("relative.justNow");
+  if (minutes < 60) return t("relative.minutesAgo", { count: minutes });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  return `${Math.floor(hours / 24)}d ago`;
+  if (hours < 24) return t("relative.hoursAgo", { count: hours });
+  return t("relative.daysAgo", { count: Math.floor(hours / 24) });
+}
+
+function getRegionLabel(value: RegionFilter, t: TsrMessages) {
+  switch (value) {
+    case "All":
+      return t("regions.allRegions");
+    case TsrRegion.NA:
+      return t("regions.na");
+    case TsrRegion.EMEA:
+      return t("regions.emea");
+    case TsrRegion.OTHER:
+      return t("regions.other");
+  }
+}
+
+function getRegionDisplay(value: TsrRegion, t: TsrMessages) {
+  switch (value) {
+    case TsrRegion.NA:
+      return t("regions.na");
+    case TsrRegion.EMEA:
+      return t("regions.emea");
+    case TsrRegion.OTHER:
+      return "—";
+  }
+}
+
+function getTierLabel(value: TierFilter, t: TsrMessages) {
+  switch (value) {
+    case "All":
+      return t("tiers.allTiers");
+    case FaceitTier.UNCLASSIFIED:
+      return "—";
+    case FaceitTier.OPEN:
+      return t("tiers.open");
+    case FaceitTier.CAH:
+      return t("tiers.cah");
+    case FaceitTier.ADVANCED:
+      return t("tiers.advanced");
+    case FaceitTier.EXPERT:
+      return t("tiers.expert");
+    case FaceitTier.MASTERS:
+      return t("tiers.masters");
+    case FaceitTier.OWCS:
+      return t("tiers.owcs");
+  }
+}
+
+function getSortLabel(value: TsrSortKey, t: TsrMessages) {
+  switch (value) {
+    case "rating":
+      return t("sortOptions.rating");
+    case "matches":
+      return t("sortOptions.totalMatches");
+    case "recent":
+      return t("sortOptions.recentActivity");
+  }
 }
 
 function useDebounced<T>(value: T, delay = 250): T {
@@ -130,6 +178,8 @@ async function fetchSnapshot(
 }
 
 export function TsrLeaderboard({ initialSnapshot }: Props) {
+  const t = useTranslations("leaderboardPage.tsr");
+  const formatter = useFormatter();
   const [region, setRegion] = useState<RegionFilter>("All");
   const [tier, setTier] = useState<TierFilter>("All");
   const [sortKey, setSortKey] = useState<TsrSortKey>("rating");
@@ -187,7 +237,7 @@ export function TsrLeaderboard({ initialSnapshot }: Props) {
     }
   }, [result.data, offset]);
 
-  const computedAt = formatComputedAt(snapshot.meta.computedAt);
+  const computedAt = formatComputedAt(snapshot.meta.computedAt, t);
   const showInactive = debouncedQuery.trim() !== "";
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -213,35 +263,33 @@ export function TsrLeaderboard({ initialSnapshot }: Props) {
       <header className="border-border flex flex-wrap items-end justify-between gap-x-10 gap-y-4 border-b pb-6">
         <div>
           <p className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
-            Leaderboard
-            {computedAt ? ` · Computed ${computedAt}` : null}
+            {computedAt ? t("eyebrowComputed", { computedAt }) : t("eyebrow")}
           </p>
           <h1 className="mt-3 text-4xl leading-none font-semibold tracking-tight">
-            Tournament Skill Rating
+            {t("title")}
           </h1>
           <p className="text-muted-foreground mt-2 max-w-prose text-sm">
-            Elo-style rating from FACEIT-hosted Overwatch 2 tournament results.
-            Recency weighted, anchored at peak tier reached.
+            {t("description")}
           </p>
         </div>
         <dl className="flex flex-wrap items-baseline gap-x-8 gap-y-2 font-mono">
           <Stat
-            label="Active"
-            value={snapshot.meta.totalActive.toLocaleString()}
+            label={t("stats.active")}
+            value={formatter.number(snapshot.meta.totalActive)}
           />
           <Stat
-            label="Tracked players"
-            value={snapshot.meta.totalAll.toLocaleString()}
+            label={t("stats.trackedPlayers")}
+            value={formatter.number(snapshot.meta.totalAll)}
           />
           <Stat
-            label="Tracked matches"
-            value={snapshot.meta.totalTrackedMatches.toLocaleString()}
+            label={t("stats.trackedMatches")}
+            value={formatter.number(snapshot.meta.totalTrackedMatches)}
           />
           <Stat
-            label="Top rating"
+            label={t("stats.topRating")}
             value={
               snapshot.meta.topRating
-                ? snapshot.meta.topRating.toLocaleString()
+                ? formatter.number(snapshot.meta.topRating)
                 : "—"
             }
           />
@@ -254,17 +302,19 @@ export function TsrLeaderboard({ initialSnapshot }: Props) {
           value={region}
           onChange={setRegion}
           options={REGION_PILLS}
+          label={t("regionFilter")}
+          getLabel={(option) => getRegionLabel(option.value, t)}
         />
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search BattleTag or nickname"
+          placeholder={t("searchPlaceholder")}
           className="h-9 w-full sm:w-[220px]"
-          aria-label="Search players"
+          aria-label={t("searchAria")}
         />
         <div className="ml-auto flex items-center gap-2">
           <span className="text-muted-foreground hidden font-mono text-[11px] tracking-wider uppercase sm:inline">
-            Sort
+            {t("sort")}
           </span>
           <Select
             value={sortKey}
@@ -276,7 +326,7 @@ export function TsrLeaderboard({ initialSnapshot }: Props) {
             <SelectContent>
               {SORT_OPTIONS.map((o) => (
                 <SelectItem key={o.value} value={o.value}>
-                  {o.label}
+                  {getSortLabel(o.value, t)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -299,7 +349,7 @@ export function TsrLeaderboard({ initialSnapshot }: Props) {
                   : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
               )}
             >
-              {p.label}
+              {getTierLabel(p.value, t)}
             </button>
           );
         })}
@@ -314,23 +364,25 @@ export function TsrLeaderboard({ initialSnapshot }: Props) {
             )}
           >
             <div>#</div>
-            <div>Player</div>
-            <div className="text-right">Region</div>
-            <div className="hidden sm:block">Peak tier</div>
-            <div className="text-right">Rating</div>
-            <div className="text-right">Matches</div>
-            <div className="hidden text-right sm:block">Last seen</div>
+            <div>{t("columns.player")}</div>
+            <div className="text-right">{t("columns.region")}</div>
+            <div className="hidden sm:block">{t("columns.peakTier")}</div>
+            <div className="text-right">{t("columns.rating")}</div>
+            <div className="text-right">{t("columns.matches")}</div>
+            <div className="hidden text-right sm:block">
+              {t("columns.lastSeen")}
+            </div>
           </div>
 
           {result.isLoading && accumulated.length === 0 ? (
             <div className="text-muted-foreground py-12 text-center text-sm">
-              Loading…
+              {t("loading")}
             </div>
           ) : accumulated.length === 0 ? (
             <div className="text-muted-foreground py-12 text-center text-sm">
               {showInactive
-                ? `No players match "${debouncedQuery}".`
-                : "No active players match the selected filters."}
+                ? t("noPlayersForQuery", { query: debouncedQuery })
+                : t("noActivePlayers")}
             </div>
           ) : (
             <ul>
@@ -341,6 +393,8 @@ export function TsrLeaderboard({ initialSnapshot }: Props) {
                   selected={selectedId === row.faceitPlayerId}
                   onSelect={() => setSelectedId(row.faceitPlayerId)}
                   showInactive={showInactive}
+                  t={t}
+                  formatter={formatter}
                 />
               ))}
             </ul>
@@ -349,7 +403,10 @@ export function TsrLeaderboard({ initialSnapshot }: Props) {
           {snapshot.meta.hasMore ? (
             <div className="mt-4 flex items-center justify-between gap-4">
               <span className="text-muted-foreground font-mono text-[11px] tracking-wider uppercase">
-                Showing {accumulated.length} of {snapshot.meta.matchedCount}
+                {t("showing", {
+                  visible: accumulated.length,
+                  total: snapshot.meta.matchedCount,
+                })}
               </span>
               <Button
                 variant="outline"
@@ -357,12 +414,15 @@ export function TsrLeaderboard({ initialSnapshot }: Props) {
                 onClick={() => setOffset((o) => o + PAGE_SIZE)}
                 disabled={result.isFetching}
               >
-                {result.isFetching ? "Loading…" : "Load more"}
+                {result.isFetching ? t("loading") : t("loadMore")}
               </Button>
             </div>
           ) : accumulated.length > 0 && !showInactive ? (
             <div className="text-muted-foreground mt-4 text-center font-mono text-[11px] tracking-wider uppercase">
-              {accumulated.length} of {snapshot.meta.matchedCount} active
+              {t("activeCount", {
+                visible: accumulated.length,
+                total: snapshot.meta.matchedCount,
+              })}
             </div>
           ) : null}
         </section>
@@ -390,15 +450,19 @@ function FilterPills<T extends string>({
   value,
   onChange,
   options,
+  label,
+  getLabel,
 }: {
   value: T;
   onChange: (v: T) => void;
-  options: { value: T; label: string }[];
+  options: { value: T }[];
+  label: string;
+  getLabel: (option: { value: T }) => string;
 }) {
   return (
     <div
       role="radiogroup"
-      aria-label="Region filter"
+      aria-label={label}
       className="border-border bg-card flex rounded-md border p-0.5"
     >
       {options.map((o) => {
@@ -417,7 +481,7 @@ function FilterPills<T extends string>({
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
-            {o.label}
+            {getLabel(o)}
           </button>
         );
       })}
@@ -430,11 +494,15 @@ function PlayerRow({
   selected,
   onSelect,
   showInactive,
+  t,
+  formatter,
 }: {
   row: TsrLeaderboardRow;
   selected: boolean;
   onSelect: () => void;
   showInactive: boolean;
+  t: TsrMessages;
+  formatter: ReturnType<typeof useFormatter>;
 }) {
   const isTop = row.rank === 1;
   const rank = String(row.rank).padStart(2, "0");
@@ -488,21 +556,21 @@ function PlayerRow({
           ) : null}
           {showInactive && row.inactive ? (
             <span className="text-muted-foreground/80 font-mono text-[10px] tracking-wider uppercase">
-              Inactive
+              {t("inactive")}
             </span>
           ) : null}
           <span className="font-mono text-[10px] tracking-wider uppercase sm:hidden">
-            {TIER_LABEL[row.maxTierReached]}
+            {getTierLabel(row.maxTierReached, t)}
           </span>
         </div>
       </div>
 
       <div className="text-muted-foreground text-right font-mono text-[11px] tracking-wider uppercase">
-        {row.region === TsrRegion.OTHER ? "—" : row.region}
+        {getRegionDisplay(row.region, t)}
       </div>
 
       <div className="text-muted-foreground hidden font-mono text-[11px] tracking-wider uppercase sm:block">
-        {TIER_LABEL[row.maxTierReached]}
+        {getTierLabel(row.maxTierReached, t)}
       </div>
 
       <div
@@ -511,18 +579,23 @@ function PlayerRow({
           isTop ? "text-primary font-semibold" : "font-medium"
         )}
       >
-        {row.rating.toLocaleString()}
+        {formatter.number(row.rating)}
       </div>
 
       <div className="text-right">
-        <div className="font-mono text-sm tabular-nums">{row.matchCount}</div>
+        <div className="font-mono text-sm tabular-nums">
+          {formatter.number(row.matchCount)}
+        </div>
         <div className="text-muted-foreground font-mono text-[10px] tabular-nums">
-          {row.recentMatchCount365d} · 365d
+          {t("recentMatchesWindow", {
+            count: row.recentMatchCount365d,
+            days: 365,
+          })}
         </div>
       </div>
 
       <div className="text-muted-foreground hidden text-right font-mono text-sm tabular-nums sm:block">
-        {formatRelativeDate(row.lastMatchAt)}
+        {formatRelativeDate(row.lastMatchAt, t)}
       </div>
     </li>
   );

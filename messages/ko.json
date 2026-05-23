@@ -4348,6 +4348,82 @@
       "ogTitle": "리더보드 | Parsertime",
       "ogDescription": "각 영웅의 최고 랭킹 플레이어를 확인하세요.",
       "ogImage": "리더보드"
+    },
+    "subnav": {
+      "ariaLabel": "리더보드 유형"
+    },
+    "heroSelector": {
+      "selectHero": "영웅 선택...",
+      "searchHero": "영웅 검색...",
+      "noHeroFound": "영웅을 찾을 수 없습니다.",
+      "roles": {
+        "tank": "탱커",
+        "damage": "공격",
+        "support": "지원"
+      }
+    },
+    "tsr": {
+      "eyebrow": "리더보드",
+      "eyebrowComputed": "리더보드 · {computedAt} 계산됨",
+      "title": "토너먼트 실력 평점",
+      "description": "FACEIT에서 주최한 Overwatch 2 토너먼트 결과로 계산한 Elo 방식 평점입니다. 최근 경기 가중치를 적용하고 도달한 최고 티어를 기준으로 보정합니다.",
+      "stats": {
+        "active": "활성",
+        "trackedPlayers": "추적 플레이어",
+        "trackedMatches": "추적 경기",
+        "topRating": "최고 평점"
+      },
+      "regions": {
+        "allRegions": "모든 지역",
+        "na": "NA",
+        "emea": "EMEA",
+        "other": "기타"
+      },
+      "tiers": {
+        "allTiers": "모든 티어",
+        "open": "오픈",
+        "cah": "CAH",
+        "advanced": "어드밴스드",
+        "expert": "엑스퍼트",
+        "masters": "마스터즈",
+        "owcs": "OWCS"
+      },
+      "sortOptions": {
+        "rating": "평점",
+        "totalMatches": "전체 경기",
+        "recentActivity": "최근 활동"
+      },
+      "columns": {
+        "player": "플레이어",
+        "region": "지역",
+        "peakTier": "최고 티어",
+        "rating": "평점",
+        "matches": "경기",
+        "lastSeen": "최근 경기"
+      },
+      "relative": {
+        "today": "오늘",
+        "days": "{count}일",
+        "weeks": "{count}주",
+        "months": "{count}개월",
+        "years": "{count}년",
+        "justNow": "방금 전",
+        "minutesAgo": "{count}분 전",
+        "hoursAgo": "{count}시간 전",
+        "daysAgo": "{count}일 전"
+      },
+      "regionFilter": "지역 필터",
+      "searchPlaceholder": "BattleTag 또는 닉네임 검색",
+      "searchAria": "플레이어 검색",
+      "sort": "정렬",
+      "loading": "불러오는 중...",
+      "noPlayersForQuery": "\"{query}\"와 일치하는 플레이어가 없습니다.",
+      "noActivePlayers": "선택한 필터와 일치하는 활성 플레이어가 없습니다.",
+      "showing": "{total, number}명 중 {visible, number}명 표시",
+      "loadMore": "더 불러오기",
+      "activeCount": "활성 {total, number}명 중 {visible, number}명",
+      "inactive": "비활성",
+      "recentMatchesWindow": "{count, number} · 최근 {days, number}일"
     }
   },
   "profilePage": {

@@ -4,13 +4,15 @@ import { LEADERBOARD_METRICS } from "@/lib/leaderboard/registry";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export function LeaderboardSubnav() {
+  const t = useTranslations("leaderboardPage.subnav");
   const pathname = usePathname();
   return (
     <nav
       role="tablist"
-      aria-label="Leaderboard variant"
+      aria-label={t("ariaLabel")}
       className="border-border bg-card inline-flex rounded-md border p-0.5"
     >
       {LEADERBOARD_METRICS.map((m) => {
