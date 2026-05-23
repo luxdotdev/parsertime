@@ -959,6 +959,15 @@
         "units": {
           "fights": "场团战",
           "firstDeaths": "次首死"
+        },
+        "chart": {
+          "overall": "整体",
+          "firstPick": "率先击杀",
+          "diedFirst": "率先阵亡",
+          "usedUltFirst": "率先开大",
+          "opponentUltFirst": "对手率先开大",
+          "winRate": "胜率",
+          "tooltipWinRate": "{winrate} 胜率"
         }
       },
       "ultimates": {

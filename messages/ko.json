@@ -959,6 +959,15 @@
         "units": {
           "fights": "교전",
           "firstDeaths": "첫 사망"
+        },
+        "chart": {
+          "overall": "전체",
+          "firstPick": "첫 처치",
+          "diedFirst": "먼저 사망",
+          "usedUltFirst": "궁극기 선사용",
+          "opponentUltFirst": "상대 궁극기 선사용",
+          "winRate": "승률",
+          "tooltipWinRate": "승률 {winrate}"
         }
       },
       "ultimates": {

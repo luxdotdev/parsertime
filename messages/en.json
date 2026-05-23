@@ -959,6 +959,15 @@
         "units": {
           "fights": "fights",
           "firstDeaths": "first deaths"
+        },
+        "chart": {
+          "overall": "Overall",
+          "firstPick": "First Pick",
+          "diedFirst": "Died First",
+          "usedUltFirst": "Used Ult First",
+          "opponentUltFirst": "Opp Ult First",
+          "winRate": "Win Rate",
+          "tooltipWinRate": "{winrate} win rate"
         }
       },
       "ultimates": {

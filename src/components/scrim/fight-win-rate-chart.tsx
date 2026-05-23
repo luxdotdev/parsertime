@@ -17,6 +17,7 @@ import type {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
+import { useFormatter, useTranslations } from "next-intl";
 
 type ChartDatum = {
   label: string;
@@ -31,17 +32,38 @@ function fillForRate(rate: number) {
   return rate >= 50 ? FAVORABLE_COLOR : UNFAVORABLE_COLOR;
 }
 
+function formatPercent(
+  value: number,
+  formatter: ReturnType<typeof useFormatter>,
+  digits = 0
+) {
+  return formatter.number(value / 100, {
+    style: "percent",
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  });
+}
+
 function WinRateTooltip({
   active,
   payload,
   label,
-}: TooltipProps<ValueType, NameType>) {
+  intlFormatter,
+  t,
+}: TooltipProps<ValueType, NameType> & {
+  intlFormatter: ReturnType<typeof useFormatter>;
+  t: ReturnType<typeof useTranslations>;
+}) {
   if (!active || !payload?.length) return null;
   const value = payload[0]?.value as number;
   return (
     <div className="bg-popover text-popover-foreground border-border z-50 overflow-hidden rounded-md border px-3 py-1.5 text-xs shadow-md">
       <p className="font-medium">{label}</p>
-      <p className="tabular-nums">{value.toFixed(1)}% win rate</p>
+      <p className="tabular-nums">
+        {t("chart.tooltipWinRate", {
+          winrate: formatPercent(value, intlFormatter, 1),
+        })}
+      </p>
     </div>
   );
 }
@@ -51,17 +73,19 @@ export function FightWinRateChart({
 }: {
   analysis: ScrimFightAnalysis;
 }) {
+  const t = useTranslations("scrimPage.overviewSections.fights");
+  const formatter = useFormatter();
   const data: ChartDatum[] = [];
 
   data.push({
-    label: "Overall",
+    label: t("chart.overall"),
     winrate: analysis.fightWinrate,
     fill: fillForRate(analysis.fightWinrate),
   });
 
   if (analysis.firstPickCount > 0) {
     data.push({
-      label: "First Pick",
+      label: t("chart.firstPick"),
       winrate: analysis.firstPickWinrate,
       fill: fillForRate(analysis.firstPickWinrate),
     });
@@ -69,7 +93,7 @@ export function FightWinRateChart({
 
   if (analysis.teamFirstDeathCount > 0) {
     data.push({
-      label: "Died First",
+      label: t("chart.diedFirst"),
       winrate: analysis.firstDeathWinrate,
       fill: fillForRate(analysis.firstDeathWinrate),
     });
@@ -77,7 +101,7 @@ export function FightWinRateChart({
 
   if (analysis.firstUltCount > 0) {
     data.push({
-      label: "Used Ult First",
+      label: t("chart.usedUltFirst"),
       winrate: analysis.firstUltWinrate,
       fill: fillForRate(analysis.firstUltWinrate),
     });
@@ -85,7 +109,7 @@ export function FightWinRateChart({
 
   if (analysis.opponentFirstUltCount > 0) {
     data.push({
-      label: "Opp Ult First",
+      label: t("chart.opponentUltFirst"),
       winrate: analysis.opponentFirstUltWinrate,
       fill: fillForRate(analysis.opponentFirstUltWinrate),
     });
@@ -112,7 +136,7 @@ export function FightWinRateChart({
         />
         <YAxis
           domain={[0, 100]}
-          tickFormatter={(v: number) => `${v}%`}
+          tickFormatter={(v: number) => formatPercent(v, formatter)}
           allowDecimals={false}
           tick={{
             fontSize: 10,
@@ -131,8 +155,8 @@ export function FightWinRateChart({
             fill: "var(--muted-foreground)",
           }}
         />
-        <Tooltip content={<WinRateTooltip />} />
-        <Bar dataKey="winrate" name="Win Rate" radius={[4, 4, 0, 0]}>
+        <Tooltip content={<WinRateTooltip intlFormatter={formatter} t={t} />} />
+        <Bar dataKey="winrate" name={t("chart.winRate")} radius={[4, 4, 0, 0]}>
           {data.map((entry) => (
             <Cell key={entry.label} fill={entry.fill} />
           ))}
