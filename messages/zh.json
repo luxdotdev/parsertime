@@ -3391,6 +3391,36 @@
       "upgrade": "升级以查看更多时间范围",
       "pickDateRange": "选择日期范围"
     },
+    "mapWinrateGallery": {
+      "eyebrow": "地图 · 胜率图库",
+      "title": "地图表现",
+      "noData": "还没有地图数据。进行一些比赛后即可查看队伍的地图表现！",
+      "mapFilters": "地图筛选",
+      "clearFilters": "清除筛选",
+      "searchMaps": "搜索地图",
+      "searchMapNames": "搜索地图名称...",
+      "mapType": "地图类型",
+      "allTypes": "所有类型",
+      "sortBy": "排序方式",
+      "sortByPlaceholder": "选择排序方式...",
+      "highestWinrate": "最高胜率",
+      "mostPlayed": "最多游玩",
+      "alphabetical": "按字母顺序",
+      "showingMaps": "显示 {count} / {total} 张地图",
+      "noMapsMatchFilters": "没有地图符合当前筛选条件。请尝试调整搜索或筛选。",
+      "gamesLabel": "{count, plural, =0 {未进行比赛} other {已进行 # 场比赛}}",
+      "clickToSeeRosterPerformance": "点击任意地图查看阵容表现详情",
+      "winsShort": "{count}胜",
+      "lossesShort": "{count}负",
+      "mapTypes": {
+        "Clash": "攻防争锋",
+        "Control": "占领要点",
+        "Escort": "运载目标",
+        "Flashpoint": "闪点作战",
+        "Hybrid": "攻击/护送",
+        "Push": "机动推进"
+      }
+    },
     "ultimatesTab": {
       "combos": {
         "title": "终极技能连招",

@@ -4533,6 +4533,7 @@
       "smallSample": "Small sample"
     },
     "mapWinrateGallery": {
+      "eyebrow": "Maps · Winrate gallery",
       "title": "Map Performance",
       "noData": "No map data available yet. Play some matches to see your team's map performance!",
       "mapFilters": "Map Filters",
@@ -4549,7 +4550,17 @@
       "showingMaps": "Showing {count} of {total} maps",
       "noMapsMatchFilters": "No maps match your current filters. Try adjusting your search or filters.",
       "gamesLabel": "{count, plural, =0 {no games} =1 {1 game} other {# games}} played",
-      "clickToSeeRosterPerformance": "Click on any map to see roster performance details"
+      "clickToSeeRosterPerformance": "Click on any map to see roster performance details",
+      "winsShort": "{count}W",
+      "lossesShort": "{count}L",
+      "mapTypes": {
+        "Clash": "Clash",
+        "Control": "Control",
+        "Escort": "Escort",
+        "Flashpoint": "Flashpoint",
+        "Hybrid": "Hybrid",
+        "Push": "Push"
+      }
     },
     "playerMapPerformanceCard": {
       "title": "Player Map Performance Matrix",

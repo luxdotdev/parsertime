@@ -3391,6 +3391,36 @@
       "upgrade": "더 많은 기간을 보려면 업그레이드하세요",
       "pickDateRange": "날짜 범위 선택"
     },
+    "mapWinrateGallery": {
+      "eyebrow": "맵 · 승률 갤러리",
+      "title": "맵 성능",
+      "noData": "아직 맵 데이터가 없습니다. 경기를 플레이하면 팀의 맵 성능을 확인할 수 있습니다!",
+      "mapFilters": "맵 필터",
+      "clearFilters": "필터 지우기",
+      "searchMaps": "맵 검색",
+      "searchMapNames": "맵 이름 검색...",
+      "mapType": "맵 유형",
+      "allTypes": "모든 유형",
+      "sortBy": "정렬 기준",
+      "sortByPlaceholder": "정렬 기준...",
+      "highestWinrate": "최고 승률",
+      "mostPlayed": "가장 많이 플레이",
+      "alphabetical": "가나다순",
+      "showingMaps": "총 {total}개 중 {count}개 맵 표시",
+      "noMapsMatchFilters": "현재 필터와 일치하는 맵이 없습니다. 검색어나 필터를 조정해 보세요.",
+      "gamesLabel": "{count, plural, =0 {플레이한 경기 없음} other {#경기 플레이}}",
+      "clickToSeeRosterPerformance": "맵을 클릭하면 로스터 성능 세부정보를 볼 수 있습니다",
+      "winsShort": "{count}승",
+      "lossesShort": "{count}패",
+      "mapTypes": {
+        "Clash": "클래시",
+        "Control": "쟁탈",
+        "Escort": "호위",
+        "Flashpoint": "플래시포인트",
+        "Hybrid": "혼합",
+        "Push": "밀기"
+      }
+    },
     "ultimatesTab": {
       "combos": {
         "title": "궁극기 콤보",

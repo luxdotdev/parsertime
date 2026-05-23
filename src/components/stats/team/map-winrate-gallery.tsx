@@ -157,10 +157,14 @@ export function MapWinrateGallery({
     filterMapType !== "all" ||
     sortBy !== "winrate";
 
+  function formatMapType(mapType: $Enums.MapType) {
+    return t(`mapTypes.${mapType}`);
+  }
+
   if (mapEntries.length === 0) {
     return (
       <section className="space-y-4">
-        <SectionHeader eyebrow="Maps · Winrate gallery" title={t("title")} />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
@@ -177,7 +181,7 @@ export function MapWinrateGallery({
     <>
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Maps · Winrate gallery"
+          eyebrow={t("eyebrow")}
           title={t("title")}
           rightSlot={filtersRightSlot}
         />
@@ -207,7 +211,7 @@ export function MapWinrateGallery({
                 <SelectItem value="all">{t("allTypes")}</SelectItem>
                 {availableMapTypes.map((type) => (
                   <SelectItem key={type} value={type}>
-                    {type}
+                    {formatMapType(type)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -249,7 +253,9 @@ export function MapWinrateGallery({
             })}
           </span>
           {filterMapType !== "all" && (
-            <Badge variant="secondary">{filterMapType}</Badge>
+            <Badge variant="secondary">
+              {formatMapType(filterMapType as $Enums.MapType)}
+            </Badge>
           )}
         </div>
 
@@ -282,7 +288,7 @@ export function MapWinrateGallery({
                   {mapType && (
                     <div className="absolute top-4 left-4 z-10">
                       <span className="bg-muted text-muted-foreground rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase">
-                        {mapType}
+                        {formatMapType(mapType)}
                       </span>
                     </div>
                   )}
@@ -309,9 +315,11 @@ export function MapWinrateGallery({
                   <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/80 to-transparent p-4 pt-8">
                     <div className="flex items-center justify-between text-sm text-white">
                       <div className="flex gap-3 font-mono tabular-nums">
-                        <span className="font-semibold">{data.totalWins}W</span>
                         <span className="font-semibold">
-                          {data.totalLosses}L
+                          {t("winsShort", { count: data.totalWins })}
+                        </span>
+                        <span className="font-semibold">
+                          {t("lossesShort", { count: data.totalLosses })}
                         </span>
                       </div>
                       <span className="font-mono text-xs text-white/70 tabular-nums">
