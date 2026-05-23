@@ -1028,6 +1028,20 @@
         },
         "units": {
           "swaps": "교체"
+        },
+        "chart": {
+          "tooltipWinRate": "승률 {winrate}",
+          "detail": "{wins, number}승–{losses, number}패 ({maps, plural, other {#맵}})",
+          "winRate": "승률",
+          "buckets": {
+            "zeroSwaps": "교체 0회",
+            "oneSwap": "교체 1회",
+            "twoSwaps": "교체 2회",
+            "threePlusSwaps": "교체 3회 이상",
+            "early": "초반 (0-33%)",
+            "mid": "중반 (33-66%)",
+            "late": "후반 (66-100%)"
+          }
         }
       }
     },

@@ -1028,6 +1028,20 @@
         },
         "units": {
           "swaps": "次更换"
+        },
+        "chart": {
+          "tooltipWinRate": "{winrate} 胜率",
+          "detail": "{wins, number}胜–{losses, number}负（{maps, plural, other {# 张地图}}）",
+          "winRate": "胜率",
+          "buckets": {
+            "zeroSwaps": "0 次更换",
+            "oneSwap": "1 次更换",
+            "twoSwaps": "2 次更换",
+            "threePlusSwaps": "3 次以上更换",
+            "early": "前期（0-33%）",
+            "mid": "中期（33-66%）",
+            "late": "后期（66-100%）"
+          }
         }
       }
     },

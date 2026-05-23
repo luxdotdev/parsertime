@@ -1028,6 +1028,20 @@
         },
         "units": {
           "swaps": "swaps"
+        },
+        "chart": {
+          "tooltipWinRate": "{winrate} win rate",
+          "detail": "{wins, number}W–{losses, number}L ({maps, plural, =1 {# map} other {# maps}})",
+          "winRate": "Win Rate",
+          "buckets": {
+            "zeroSwaps": "0 swaps",
+            "oneSwap": "1 swap",
+            "twoSwaps": "2 swaps",
+            "threePlusSwaps": "3+ swaps",
+            "early": "Early (0-33%)",
+            "mid": "Mid (33-66%)",
+            "late": "Late (66-100%)"
+          }
         }
       }
     },
