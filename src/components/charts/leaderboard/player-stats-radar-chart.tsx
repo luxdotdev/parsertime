@@ -15,6 +15,7 @@ import type {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
+import { useFormatter, useTranslations } from "next-intl";
 
 type LeaderboardPlayer = {
   composite_sr: number;
@@ -59,6 +60,9 @@ function calculateZScore(
 }
 
 function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
+  const t = useTranslations("leaderboardPage.csr.stats");
+  const formatter = useFormatter();
+
   if (active && payload?.length) {
     const data = payload[0];
     const payloadData = data.payload as RadarDataPoint;
@@ -67,7 +71,13 @@ function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
       <div className="bg-popover text-popover-foreground border-border rounded-md border px-3 py-2 text-xs shadow-xs">
         <p className="text-foreground font-medium">{payloadData.stat}</p>
         <p className="text-muted-foreground mt-0.5 font-mono tabular-nums">
-          Z-score <span className="text-foreground">{zScore.toFixed(2)}</span>
+          {t("zScore")}{" "}
+          <span className="text-foreground">
+            {formatter.number(zScore, {
+              maximumFractionDigits: 2,
+              minimumFractionDigits: 2,
+            })}
+          </span>
         </p>
       </div>
     );
@@ -76,6 +86,8 @@ function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
 }
 
 export function PlayerStatsRadarChart({ player, leaderboardData }: Props) {
+  const t = useTranslations("leaderboardPage.csr.stats");
+
   const radarData = useMemo(() => {
     const role = player.role;
     const data: RadarDataPoint[] = [];
@@ -86,7 +98,7 @@ export function PlayerStatsRadarChart({ player, leaderboardData }: Props) {
         .filter((v): v is number => v !== undefined);
       const zScore = calculateZScore(player.elims_per10, values);
       data.push({
-        stat: "Eliminations",
+        stat: t("per10.eliminations"),
         value: zScore,
         fullMark: 3,
       });
@@ -96,7 +108,7 @@ export function PlayerStatsRadarChart({ player, leaderboardData }: Props) {
       const values = leaderboardData.map((p) => p.deaths_per10);
       const zScore = calculateZScore(player.deaths_per10, values, true);
       data.push({
-        stat: "Deaths",
+        stat: t("per10.deaths"),
         value: zScore,
         fullMark: 3,
       });
@@ -106,7 +118,7 @@ export function PlayerStatsRadarChart({ player, leaderboardData }: Props) {
       const values = leaderboardData.map((p) => p.damage_per10);
       const zScore = calculateZScore(player.damage_per10, values);
       data.push({
-        stat: "Damage",
+        stat: t("per10.damage"),
         value: zScore,
         fullMark: 3,
       });
@@ -119,7 +131,7 @@ export function PlayerStatsRadarChart({ player, leaderboardData }: Props) {
       if (values.length > 0) {
         const zScore = calculateZScore(player.healing_per10, values);
         data.push({
-          stat: "Healing",
+          stat: t("per10.healing"),
           value: zScore,
           fullMark: 3,
         });
@@ -133,7 +145,7 @@ export function PlayerStatsRadarChart({ player, leaderboardData }: Props) {
       if (values.length > 0) {
         const zScore = calculateZScore(player.blocked_per10, values);
         data.push({
-          stat: "Damage Blocked",
+          stat: t("per10.blocked"),
           value: zScore,
           fullMark: 3,
         });
@@ -147,7 +159,7 @@ export function PlayerStatsRadarChart({ player, leaderboardData }: Props) {
       if (values.length > 0) {
         const zScore = calculateZScore(player.fb_per10, values);
         data.push({
-          stat: "Final Blows",
+          stat: t("per10.finalBlows"),
           value: zScore,
           fullMark: 3,
         });
@@ -161,7 +173,7 @@ export function PlayerStatsRadarChart({ player, leaderboardData }: Props) {
       if (values.length > 0) {
         const zScore = calculateZScore(player.solo_per10, values);
         data.push({
-          stat: "Solo Kills",
+          stat: t("per10.soloKills"),
           value: zScore,
           fullMark: 3,
         });
@@ -169,7 +181,7 @@ export function PlayerStatsRadarChart({ player, leaderboardData }: Props) {
     }
 
     return data;
-  }, [player, leaderboardData]);
+  }, [player, leaderboardData, t]);
 
   return (
     <div className="w-full">

@@ -4349,6 +4349,76 @@
       "ogDescription": "查看每位英雄排名最高的玩家。",
       "ogImage": "排行榜"
     },
+    "csr": {
+      "table": {
+        "player": "玩家",
+        "maps": "地图",
+        "time": "时间",
+        "elimsPer10": "消灭/10 分钟",
+        "damagePer10": "伤害/10 分钟",
+        "healPer10": "治疗/10 分钟",
+        "blockPer10": "格挡/10 分钟",
+        "noPlayers": "未找到玩家。"
+      },
+      "stats": {
+        "selectedMeta": "已选择 · 第 {rank, number} 名 · {role}",
+        "roles": {
+          "tank": "重装",
+          "damage": "输出",
+          "support": "支援"
+        },
+        "snapshot": "快照",
+        "percentileLabel": "百分位",
+        "maps": "地图",
+        "time": "时间",
+        "minutes": "{count, number} 分钟",
+        "hero": "英雄",
+        "srDistribution": "SR 分布",
+        "distributionDescription": "{playerName} 在该英雄钟形曲线中的位置。",
+        "performanceBreakdown": "表现分析",
+        "performanceDescription": "相对于排行榜平均值的 Z 分数。0 表示平均，正数高于平均，负数低于平均。大多数玩家位于 -2 到 +2 之间。",
+        "per10Minutes": "每 10 分钟",
+        "emptyTitle": "详情面板",
+        "emptyDescription": "选择一名玩家即可查看其 SR 分布、表现分析，以及相对于排行榜平均值的每 10 分钟数据。",
+        "zScore": "Z 分数",
+        "percentile": {
+          "top1": "前 1% · 精英",
+          "top5": "前 5% · 卓越",
+          "top10": "前 10% · 优秀",
+          "top25": "前 25% · 很好",
+          "aboveAverage": "高于平均",
+          "average": "平均",
+          "belowAverage": "低于平均"
+        },
+        "per10": {
+          "eliminations": "消灭",
+          "finalBlows": "最后一击",
+          "soloKills": "单杀",
+          "deaths": "死亡",
+          "damage": "伤害",
+          "healing": "治疗",
+          "blocked": "格挡",
+          "ultimates": "终极技能"
+        }
+      },
+      "distributionChart": {
+        "sr": "SR",
+        "rank": "排名",
+        "percentile": "百分位",
+        "notEnoughData": "数据不足，无法生成有意义的分布。至少需要 3 名玩家。",
+        "skillRatingAxis": "技术评分（SR）",
+        "frequencyAxis": "频率",
+        "achievedPotential": "已达成 · 潜力",
+        "distribution": "分布",
+        "meanLabel": "平均值（{value, number}）",
+        "otherPlayers": "其他玩家",
+        "selectedPlayer": "选中玩家",
+        "meanSr": "平均 SR",
+        "standardDeviation": "标准差",
+        "plusMinus": "±{value, number}",
+        "selectedPlayerSr": "选中玩家 SR"
+      }
+    },
     "subnav": {
       "ariaLabel": "排行榜类型"
     },

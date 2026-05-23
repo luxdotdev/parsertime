@@ -3,6 +3,7 @@
 import { PlayerHoverCard } from "@/components/player/hover-card";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useFormatter, useTranslations } from "next-intl";
 
 type LeaderboardPlayer = {
   composite_sr: number;
@@ -41,9 +42,15 @@ export function LeaderboardTable({
   selectedPlayer,
   onPlayerSelect,
 }: Props) {
+  const t = useTranslations("leaderboardPage.csr.table");
+  const formatter = useFormatter();
   const cols = role === "Damage" ? COLS_FOUR : COLS_FIVE;
   const extraColLabel =
-    role === "Support" ? "Heal/10" : role === "Tank" ? "Block/10" : null;
+    role === "Support"
+      ? t("healPer10")
+      : role === "Tank"
+        ? t("blockPer10")
+        : null;
 
   return (
     <section>
@@ -54,12 +61,12 @@ export function LeaderboardTable({
         )}
       >
         <div>#</div>
-        <div>Player</div>
+        <div>{t("player")}</div>
         <div className="text-right">SR</div>
-        <div className="text-right">Maps</div>
-        <div className="hidden text-right sm:block">Time</div>
-        <div className="text-right">Elims/10</div>
-        <div className="text-right">Dmg/10</div>
+        <div className="text-right">{t("maps")}</div>
+        <div className="hidden text-right sm:block">{t("time")}</div>
+        <div className="text-right">{t("elimsPer10")}</div>
+        <div className="text-right">{t("damagePer10")}</div>
         {extraColLabel ? (
           <div className="hidden text-right sm:block">{extraColLabel}</div>
         ) : null}
@@ -67,7 +74,7 @@ export function LeaderboardTable({
 
       {data.length === 0 ? (
         <div className="text-muted-foreground py-12 text-center text-sm">
-          No players found.
+          {t("noPlayers")}
         </div>
       ) : (
         <ul>
@@ -80,6 +87,7 @@ export function LeaderboardTable({
               cols={cols}
               selected={selectedPlayer?.player_name === row.player_name}
               onSelect={() => onPlayerSelect(row)}
+              formatter={formatter}
             />
           ))}
         </ul>
@@ -95,6 +103,7 @@ function Row({
   cols,
   selected,
   onSelect,
+  formatter,
 }: {
   row: LeaderboardPlayer;
   index: number;
@@ -102,6 +111,7 @@ function Row({
   cols: string;
   selected: boolean;
   onSelect: () => void;
+  formatter: ReturnType<typeof useFormatter>;
 }) {
   const isTop = index === 0;
   const rank = String(row.rank).padStart(2, "0");
@@ -160,33 +170,38 @@ function Row({
           isTop ? "text-primary font-semibold" : "font-medium"
         )}
       >
-        {row.composite_sr}
+        {formatter.number(row.composite_sr)}
       </div>
 
       <div className="text-right font-mono text-sm tabular-nums">
-        {row.maps}
+        {formatter.number(row.maps)}
       </div>
 
       <div className="text-muted-foreground hidden text-right font-mono text-sm tabular-nums sm:block">
-        {Math.round(row.minutes_played)}
+        {formatter.number(Math.round(row.minutes_played))}
       </div>
 
       <div className="text-right font-mono text-sm tabular-nums">
-        {row.elims_per10?.toFixed(2) ?? "—"}
+        {row.elims_per10 !== undefined
+          ? formatter.number(row.elims_per10, {
+              maximumFractionDigits: 2,
+              minimumFractionDigits: 2,
+            })
+          : "—"}
       </div>
 
       <div className="text-right font-mono text-sm tabular-nums">
-        {Math.round(row.damage_per10).toLocaleString()}
+        {formatter.number(Math.round(row.damage_per10))}
       </div>
 
       {role === "Support" ? (
         <div className="hidden text-right font-mono text-sm tabular-nums sm:block">
-          {Math.round(row.healing_per10 ?? 0).toLocaleString()}
+          {formatter.number(Math.round(row.healing_per10 ?? 0))}
         </div>
       ) : null}
       {role === "Tank" ? (
         <div className="hidden text-right font-mono text-sm tabular-nums sm:block">
-          {Math.round(row.blocked_per10 ?? 0).toLocaleString()}
+          {formatter.number(Math.round(row.blocked_per10 ?? 0))}
         </div>
       ) : null}
     </li>

@@ -4748,6 +4748,76 @@
       "ogDescription": "View the highest ranked players for each hero.",
       "ogImage": "Leaderboard"
     },
+    "csr": {
+      "table": {
+        "player": "Player",
+        "maps": "Maps",
+        "time": "Time",
+        "elimsPer10": "Elims/10",
+        "damagePer10": "Dmg/10",
+        "healPer10": "Heal/10",
+        "blockPer10": "Block/10",
+        "noPlayers": "No players found."
+      },
+      "stats": {
+        "selectedMeta": "Selected · Rank {rank, number} · {role}",
+        "roles": {
+          "tank": "Tank",
+          "damage": "Damage",
+          "support": "Support"
+        },
+        "snapshot": "Snapshot",
+        "percentileLabel": "Percentile",
+        "maps": "Maps",
+        "time": "Time",
+        "minutes": "{count, number}m",
+        "hero": "Hero",
+        "srDistribution": "SR distribution",
+        "distributionDescription": "Where {playerName} sits in the bell curve for this hero.",
+        "performanceBreakdown": "Performance breakdown",
+        "performanceDescription": "Z-scores against the leaderboard average. 0 is the average; positive is above, negative is below. Most players fall between -2 and +2.",
+        "per10Minutes": "Per 10 minutes",
+        "emptyTitle": "Detail panel",
+        "emptyDescription": "Pick a player to see their SR distribution, performance breakdown, and per-10 stats against the leaderboard average.",
+        "zScore": "Z-score",
+        "percentile": {
+          "top1": "Top 1% · Elite",
+          "top5": "Top 5% · Exceptional",
+          "top10": "Top 10% · Excellent",
+          "top25": "Top 25% · Very good",
+          "aboveAverage": "Above average",
+          "average": "Average",
+          "belowAverage": "Below average"
+        },
+        "per10": {
+          "eliminations": "Eliminations",
+          "finalBlows": "Final blows",
+          "soloKills": "Solo kills",
+          "deaths": "Deaths",
+          "damage": "Damage",
+          "healing": "Healing",
+          "blocked": "Blocked",
+          "ultimates": "Ultimates"
+        }
+      },
+      "distributionChart": {
+        "sr": "SR",
+        "rank": "Rank",
+        "percentile": "Percentile",
+        "notEnoughData": "Not enough data to generate a meaningful distribution. At least 3 players are needed.",
+        "skillRatingAxis": "Skill Rating (SR)",
+        "frequencyAxis": "Frequency",
+        "achievedPotential": "Achieved · Potential",
+        "distribution": "Distribution",
+        "meanLabel": "Mean ({value, number})",
+        "otherPlayers": "Other players",
+        "selectedPlayer": "Selected player",
+        "meanSr": "Mean SR",
+        "standardDeviation": "Standard deviation",
+        "plusMinus": "±{value, number}",
+        "selectedPlayerSr": "Selected player SR"
+      }
+    },
     "subnav": {
       "ariaLabel": "Leaderboard variant"
     },

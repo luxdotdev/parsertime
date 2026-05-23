@@ -2,6 +2,7 @@
 
 import { PlayerStatsRadarChart } from "@/components/charts/leaderboard/player-stats-radar-chart";
 import { SRDistributionChart } from "@/components/charts/leaderboard/sr-distribution-chart";
+import { useFormatter, useTranslations } from "next-intl";
 
 type LeaderboardPlayer = {
   composite_sr: number;
@@ -27,14 +28,17 @@ type Props = {
   leaderboardData: LeaderboardPlayer[];
 };
 
-function getPercentileDescription(pct: number): string {
-  if (pct >= 99) return "Top 1% · Elite";
-  if (pct >= 95) return "Top 5% · Exceptional";
-  if (pct >= 90) return "Top 10% · Excellent";
-  if (pct >= 75) return "Top 25% · Very good";
-  if (pct >= 50) return "Above average";
-  if (pct >= 25) return "Average";
-  return "Below average";
+function getPercentileDescription(
+  pct: number,
+  t: ReturnType<typeof useTranslations>
+): string {
+  if (pct >= 99) return t("percentile.top1");
+  if (pct >= 95) return t("percentile.top5");
+  if (pct >= 90) return t("percentile.top10");
+  if (pct >= 75) return t("percentile.top25");
+  if (pct >= 50) return t("percentile.aboveAverage");
+  if (pct >= 25) return t("percentile.average");
+  return t("percentile.belowAverage");
 }
 
 const PER_10_FIELDS: {
@@ -49,37 +53,52 @@ const PER_10_FIELDS: {
     | "blocked_per10"
     | "ults_per10"
   >;
-  label: string;
-  format: (v: number) => string;
+  labelKey:
+    | "eliminations"
+    | "finalBlows"
+    | "soloKills"
+    | "deaths"
+    | "damage"
+    | "healing"
+    | "blocked"
+    | "ultimates";
+  format: (v: number, formatter: ReturnType<typeof useFormatter>) => string;
   rolesOnly?: ("Tank" | "Damage" | "Support")[];
 }[] = [
-  { key: "elims_per10", label: "Eliminations", format: (v) => v.toFixed(2) },
-  { key: "fb_per10", label: "Final blows", format: (v) => v.toFixed(2) },
-  { key: "solo_per10", label: "Solo kills", format: (v) => v.toFixed(2) },
-  { key: "deaths_per10", label: "Deaths", format: (v) => v.toFixed(2) },
+  {
+    key: "elims_per10",
+    labelKey: "eliminations",
+    format: formatDecimal,
+  },
+  { key: "fb_per10", labelKey: "finalBlows", format: formatDecimal },
+  { key: "solo_per10", labelKey: "soloKills", format: formatDecimal },
+  { key: "deaths_per10", labelKey: "deaths", format: formatDecimal },
   {
     key: "damage_per10",
-    label: "Damage",
-    format: (v) => Math.round(v).toLocaleString(),
+    labelKey: "damage",
+    format: formatRounded,
   },
   {
     key: "healing_per10",
-    label: "Healing",
-    format: (v) => Math.round(v).toLocaleString(),
+    labelKey: "healing",
+    format: formatRounded,
     rolesOnly: ["Support"],
   },
   {
     key: "blocked_per10",
-    label: "Blocked",
-    format: (v) => Math.round(v).toLocaleString(),
+    labelKey: "blocked",
+    format: formatRounded,
     rolesOnly: ["Tank"],
   },
-  { key: "ults_per10", label: "Ultimates", format: (v) => v.toFixed(2) },
+  { key: "ults_per10", labelKey: "ultimates", format: formatDecimal },
 ];
 
 export function PlayerStatsColumn({ player, leaderboardData }: Props) {
+  const t = useTranslations("leaderboardPage.csr.stats");
+  const formatter = useFormatter();
+
   if (!player) {
-    return <EmptyState />;
+    return <EmptyState t={t} />;
   }
 
   const percentile = parseFloat(player.percentile);
@@ -89,7 +108,10 @@ export function PlayerStatsColumn({ player, leaderboardData }: Props) {
     <div className="space-y-8">
       <header className="border-border border-b pb-5">
         <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-          Selected · Rank {player.rank} · {player.role}
+          {t("selectedMeta", {
+            rank: player.rank,
+            role: getRoleLabel(player.role, t),
+          })}
         </p>
         <div className="mt-2 flex items-baseline justify-between gap-4">
           <h2 className="text-2xl leading-tight font-semibold tracking-tight">
@@ -97,7 +119,7 @@ export function PlayerStatsColumn({ player, leaderboardData }: Props) {
           </h2>
           <div className="text-right">
             <div className="font-mono text-3xl font-semibold tabular-nums">
-              {player.composite_sr.toLocaleString()}
+              {formatter.number(player.composite_sr)}
             </div>
             <div className="text-muted-foreground font-mono text-[10px] tracking-wider uppercase">
               SR
@@ -110,47 +132,49 @@ export function PlayerStatsColumn({ player, leaderboardData }: Props) {
       </header>
 
       <section className="space-y-3">
-        <SectionLabel>Snapshot</SectionLabel>
+        <SectionLabel>{t("snapshot")}</SectionLabel>
         <div className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4">
           <RecordCell
-            label="Percentile"
-            value={`${percentile.toFixed(1)}%`}
-            sub={getPercentileDescription(percentile)}
+            label={t("percentileLabel")}
+            value={formatter.number(percentile / 100, {
+              style: "percent",
+              maximumFractionDigits: 1,
+            })}
+            sub={getPercentileDescription(percentile, t)}
           />
-          <RecordCell label="Maps" value={player.maps} />
+          <RecordCell label={t("maps")} value={formatter.number(player.maps)} />
           <RecordCell
-            label="Time"
-            value={`${Math.round(player.minutes_played)}m`}
+            label={t("time")}
+            value={t("minutes", { count: Math.round(player.minutes_played) })}
           />
-          <RecordCell label="Hero" value={player.hero} />
+          <RecordCell label={t("hero")} value={player.hero} />
         </div>
       </section>
 
       <section className="space-y-3">
-        <SectionLabel>SR distribution</SectionLabel>
+        <SectionLabel>{t("srDistribution")}</SectionLabel>
         <SRDistributionChart
           leaderboardData={leaderboardData}
           selectedPlayer={player}
         />
         <p className="text-muted-foreground/70 text-[11px] leading-relaxed">
-          Where {player.player_name} sits in the bell curve for this hero.
+          {t("distributionDescription", { playerName: player.player_name })}
         </p>
       </section>
 
       <section className="space-y-4">
-        <SectionLabel>Performance breakdown</SectionLabel>
+        <SectionLabel>{t("performanceBreakdown")}</SectionLabel>
         <PlayerStatsRadarChart
           player={player}
           leaderboardData={leaderboardData}
         />
         <p className="text-muted-foreground/70 text-[11px] leading-relaxed">
-          Z-scores against the leaderboard average. 0 is the average; positive
-          is above, negative is below. Most players fall between -2 and +2.
+          {t("performanceDescription")}
         </p>
       </section>
 
       <section className="space-y-3">
-        <SectionLabel>Per 10 minutes</SectionLabel>
+        <SectionLabel>{t("per10Minutes")}</SectionLabel>
         <ul className="grid grid-cols-1 gap-x-10 gap-y-2.5 text-sm sm:grid-cols-2">
           {PER_10_FIELDS.map((field) => {
             if (field.rolesOnly && !field.rolesOnly.includes(role)) return null;
@@ -161,9 +185,11 @@ export function PlayerStatsColumn({ player, leaderboardData }: Props) {
                 key={field.key}
                 className="border-border/60 flex items-baseline justify-between gap-6 border-b py-1.5 last:border-b-0"
               >
-                <span className="text-muted-foreground">{field.label}</span>
+                <span className="text-muted-foreground">
+                  {t(`per10.${field.labelKey}`)}
+                </span>
                 <span className="text-foreground font-mono tabular-nums">
-                  {field.format(raw)}
+                  {field.format(raw, formatter)}
                 </span>
               </li>
             );
@@ -204,18 +230,47 @@ function RecordCell({
   );
 }
 
-function EmptyState() {
+function EmptyState({ t }: { t: ReturnType<typeof useTranslations> }) {
   return (
     <div className="border-border bg-muted/20 flex h-full min-h-[280px] items-center justify-center rounded-lg border border-dashed p-8">
       <div className="max-w-xs text-center">
         <p className="text-muted-foreground font-mono text-[11px] tracking-[0.14em] uppercase">
-          Detail panel
+          {t("emptyTitle")}
         </p>
         <p className="text-foreground mt-3 text-sm leading-relaxed">
-          Pick a player to see their SR distribution, performance breakdown, and
-          per-10 stats against the leaderboard average.
+          {t("emptyDescription")}
         </p>
       </div>
     </div>
   );
+}
+
+function formatDecimal(
+  value: number,
+  formatter: ReturnType<typeof useFormatter>
+) {
+  return formatter.number(value, {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 2,
+  });
+}
+
+function formatRounded(
+  value: number,
+  formatter: ReturnType<typeof useFormatter>
+) {
+  return formatter.number(Math.round(value));
+}
+
+function getRoleLabel(role: string, t: ReturnType<typeof useTranslations>) {
+  switch (role) {
+    case "Tank":
+      return t("roles.tank");
+    case "Damage":
+      return t("roles.damage");
+    case "Support":
+      return t("roles.support");
+    default:
+      return role;
+  }
 }
