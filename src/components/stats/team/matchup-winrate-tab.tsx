@@ -20,6 +20,7 @@ import { cn, toHero, useHeroNames } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";
 import { Info, RotateCcw } from "lucide-react";
 import Image from "next/image";
+import { useFormatter, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import {
   CartesianGrid,
@@ -41,6 +42,8 @@ type MatchupWinrateTabProps = {
 };
 
 export function MatchupWinrateTab({ data }: MatchupWinrateTabProps) {
+  const t = useTranslations("teamStatsPage.matchupWinrateTab");
+  const formatter = useFormatter();
   const heroNames = useHeroNames();
   const [selectedOurHeroes, setSelectedOurHeroes] = useState<HeroName[]>([]);
   const [selectedEnemyHeroes, setSelectedEnemyHeroes] = useState<HeroName[]>(
@@ -77,8 +80,8 @@ export function MatchupWinrateTab({ data }: MatchupWinrateTabProps) {
   }, [data.maps]);
 
   const trendData = useMemo(
-    () => computePerMapTrend(filteredMaps),
-    [filteredMaps]
+    () => computePerMapTrend(filteredMaps, formatter),
+    [filteredMaps, formatter]
   );
 
   const bestComps = useMemo(
@@ -123,13 +126,10 @@ export function MatchupWinrateTab({ data }: MatchupWinrateTabProps) {
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Winrates · Matchups"
-          title="Hero matchup winrates"
+          eyebrow={t("header.eyebrow")}
+          title={t("header.title")}
         />
-        <p className="text-muted-foreground text-sm">
-          No game data available for the selected time period. Play some scrims
-          to unlock matchup analysis.
-        </p>
+        <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
   }
@@ -139,29 +139,45 @@ export function MatchupWinrateTab({ data }: MatchupWinrateTabProps) {
       <StatRibbon
         cells={[
           {
-            label: "Scrims tracked",
+            label: t("stats.scrimsTracked"),
             value: String(orientationStats.scrimCount),
-            sub: `${data.maps.length} maps`,
+            sub: t("stats.maps", { count: data.maps.length }),
             emphasis: true,
           },
           {
-            label: "Best matchup",
+            label: t("stats.bestMatchup"),
             value: orientationStats.best
-              ? `${orientationStats.best.winrate.toFixed(0)}%`
+              ? formatter.number(orientationStats.best.winrate / 100, {
+                  style: "percent",
+                  maximumFractionDigits: 0,
+                })
               : "—",
-            sub: orientationStats.best?.label ?? "Need 3+ shared maps",
+            sub: orientationStats.best
+              ? t("stats.matchupLabel", {
+                  hero: orientationStats.best.heroName,
+                  count: orientationStats.best.games,
+                })
+              : t("stats.needSharedMaps"),
           },
           {
-            label: "Worst matchup",
+            label: t("stats.worstMatchup"),
             value: orientationStats.worst
-              ? `${orientationStats.worst.winrate.toFixed(0)}%`
+              ? formatter.number(orientationStats.worst.winrate / 100, {
+                  style: "percent",
+                  maximumFractionDigits: 0,
+                })
               : "—",
-            sub: orientationStats.worst?.label ?? "Need 3+ shared maps",
+            sub: orientationStats.worst
+              ? t("stats.matchupLabel", {
+                  hero: orientationStats.worst.heroName,
+                  count: orientationStats.worst.games,
+                })
+              : t("stats.needSharedMaps"),
           },
           {
-            label: "Compositions",
+            label: t("stats.compositions"),
             value: String(orientationStats.compositionCount),
-            sub: "unique five-stacks",
+            sub: t("stats.uniqueFiveStacks"),
           },
         ]}
         columns={4}
@@ -169,27 +185,27 @@ export function MatchupWinrateTab({ data }: MatchupWinrateTabProps) {
 
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Winrates · Matchups"
-          title="Hero matchup explorer"
-          description="Select heroes on each side to scope the analysis. All selected heroes must be present in a map for it to count."
+          eyebrow={t("explorer.eyebrow")}
+          title={t("explorer.title")}
+          description={t("explorer.description")}
           rightSlot={
             hasAnySelection ? (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={clearAll}
-                aria-label="Clear all hero selections"
+                aria-label={t("explorer.clearAria")}
               >
                 <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
-                Clear
+                {t("explorer.clear")}
               </Button>
             ) : null
           }
         />
         <div className="grid gap-6 sm:grid-cols-[1fr_auto_1fr] sm:items-start">
           <HeroMultiSelect
-            label="Our heroes"
-            description="Heroes your team played"
+            label={t("explorer.ourHeroes")}
+            description={t("explorer.ourHeroesDescription")}
             selected={selectedOurHeroes}
             available={data.allOurHeroes}
             onAdd={addOurHero}
@@ -200,13 +216,13 @@ export function MatchupWinrateTab({ data }: MatchupWinrateTabProps) {
 
           <div className="hidden items-center self-stretch sm:flex">
             <span className="text-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase">
-              vs
+              {t("explorer.versus")}
             </span>
           </div>
 
           <HeroMultiSelect
-            label="Enemy heroes"
-            description="Heroes the opponent played"
+            label={t("explorer.enemyHeroes")}
+            description={t("explorer.enemyHeroesDescription")}
             selected={selectedEnemyHeroes}
             available={data.allEnemyHeroes}
             onAdd={addEnemyHero}
@@ -219,12 +235,20 @@ export function MatchupWinrateTab({ data }: MatchupWinrateTabProps) {
 
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Winrates · Matchup summary"
-          title={hasAnySelection ? "Filtered matchup" : "Overall record"}
+          eyebrow={t("summary.eyebrow")}
+          title={
+            hasAnySelection
+              ? t("summary.filteredTitle")
+              : t("summary.overallTitle")
+          }
           description={
             hasAnySelection
-              ? `Based on ${summary.gamesPlayed} matching map${summary.gamesPlayed === 1 ? "" : "s"}`
-              : `Across all ${summary.gamesPlayed} tracked maps`
+              ? t("summary.filteredDescription", {
+                  count: summary.gamesPlayed,
+                })
+              : t("summary.overallDescription", {
+                  count: summary.gamesPlayed,
+                })
           }
         />
         <div className="grid gap-x-10 gap-y-8 lg:grid-cols-12">
@@ -238,8 +262,8 @@ export function MatchupWinrateTab({ data }: MatchupWinrateTabProps) {
             ) : (
               <p className="text-muted-foreground text-sm">
                 {hasAnySelection
-                  ? "No maps found for this matchup combination."
-                  : "Select heroes above to explore matchup data."}
+                  ? t("summary.noFilteredMaps")
+                  : t("summary.selectPrompt")}
               </p>
             )}
           </div>
@@ -327,6 +351,7 @@ type HeroSlotProps = {
 };
 
 function HeroSlot({ hero, heroNames, onRemove }: HeroSlotProps) {
+  const t = useTranslations("teamStatsPage.matchupWinrateTab.heroPicker");
   const slug = toHero(hero);
   const displayName = heroNames.get(slug) ?? hero;
 
@@ -336,7 +361,7 @@ function HeroSlot({ hero, heroNames, onRemove }: HeroSlotProps) {
         <button
           type="button"
           onClick={onRemove}
-          aria-label={`Remove ${displayName}`}
+          aria-label={t("removeHero", { hero: displayName })}
           className="group focus-visible:ring-destructive hover:ring-destructive/70 relative h-11 w-11 overflow-hidden rounded-md border border-transparent transition-all duration-150 ease-out hover:ring-2 focus-visible:ring-2 focus-visible:outline-none"
         >
           <Image
@@ -352,7 +377,7 @@ function HeroSlot({ hero, heroNames, onRemove }: HeroSlotProps) {
         </button>
       </TooltipTrigger>
       <TooltipContent side="bottom">
-        {displayName} (click to remove)
+        {t("removeTooltip", { hero: displayName })}
       </TooltipContent>
     </Tooltip>
   );
@@ -379,6 +404,7 @@ function HeroPickerSlot({
   heroNames,
   onSelect,
 }: HeroPickerSlotProps) {
+  const t = useTranslations("teamStatsPage.matchupWinrateTab.heroPicker");
   const excludedSet = new Set(excluded);
   const pickable = available.filter((h) => !excludedSet.has(h));
 
@@ -427,7 +453,7 @@ function HeroPickerSlot({
       <PopoverTrigger asChild>
         <button
           type="button"
-          aria-label="Add hero"
+          aria-label={t("addHero")}
           className={cn(
             "focus-visible:ring-ring border-border hover:border-muted-foreground/40 flex h-11 w-11 items-center justify-center rounded-md border-2 border-dashed transition-colors duration-150 focus-visible:ring-2 focus-visible:outline-none",
             "text-muted-foreground hover:text-foreground"
@@ -439,7 +465,7 @@ function HeroPickerSlot({
       <PopoverContent
         className="w-80 p-3"
         align="start"
-        aria-label="Hero picker"
+        aria-label={t("label")}
       >
         <ScrollArea className="h-72">
           <div className="space-y-3 pr-2">
@@ -449,10 +475,10 @@ function HeroPickerSlot({
               return (
                 <div key={role} className={isFull ? "opacity-40" : ""}>
                   <p className="text-muted-foreground mb-1.5 font-mono text-[10px] tracking-[0.16em] uppercase">
-                    {role}
+                    {t(`roles.${role}`)}
                     {isFull && (
                       <span className="ml-1 text-[10px] font-normal normal-case">
-                        (full)
+                        {t("full")}
                       </span>
                     )}
                   </p>
@@ -467,8 +493,11 @@ function HeroPickerSlot({
                               type="button"
                               aria-label={
                                 isFull
-                                  ? `${displayName} (${role} slot full)`
-                                  : `Select ${displayName}`
+                                  ? t("slotFullAria", {
+                                      hero: displayName,
+                                      role: t(`roles.${role}`),
+                                    })
+                                  : t("selectHero", { hero: displayName })
                               }
                               onClick={() => {
                                 if (!isFull) onSelect(hero);
@@ -492,7 +521,10 @@ function HeroPickerSlot({
                           </TooltipTrigger>
                           <TooltipContent side="bottom">
                             {isFull
-                              ? `${displayName} (${role} slot full)`
+                              ? t("slotFullTooltip", {
+                                  hero: displayName,
+                                  role: t(`roles.${role}`),
+                                })
                               : displayName}
                           </TooltipContent>
                         </Tooltip>
@@ -525,8 +557,14 @@ function MatchupSummaryDetail({
   baseWinrate,
   hasSelection,
 }: MatchupSummaryDetailProps) {
+  const t = useTranslations("teamStatsPage.matchupWinrateTab.summary");
+  const formatter = useFormatter();
   const delta = summary.winrate - baseWinrate;
-  const pct = summary.winrate.toFixed(1);
+  const pct = formatter.number(summary.winrate / 100, {
+    style: "percent",
+    maximumFractionDigits: 1,
+    minimumFractionDigits: 1,
+  });
 
   const confidence =
     summary.gamesPlayed >= 5
@@ -541,20 +579,14 @@ function MatchupSummaryDetail({
     low: "bg-destructive/15 text-destructive",
   };
 
-  const confidenceLabel: Record<string, string> = {
-    high: "High confidence",
-    medium: "Medium confidence",
-    low: "Low confidence",
-  };
-
   return (
     <div className="space-y-4">
       <div className="flex items-baseline gap-3">
         <span
           className="text-primary font-mono text-5xl leading-none font-semibold tabular-nums"
-          aria-label={`Win rate: ${pct}%`}
+          aria-label={t("winRateAria", { value: pct })}
         >
-          {pct}%
+          {pct}
         </span>
         <div className="space-y-1">
           <span
@@ -563,10 +595,14 @@ function MatchupSummaryDetail({
               confidenceTone[confidence]
             )}
           >
-            {confidenceLabel[confidence]}
+            {t(`confidence.${confidence}`)}
           </span>
           <p className="text-muted-foreground font-mono text-xs tabular-nums">
-            {summary.wins}W / {summary.losses}L ({summary.gamesPlayed} maps)
+            {t("record", {
+              wins: summary.wins,
+              losses: summary.losses,
+              count: summary.gamesPlayed,
+            })}
           </p>
         </div>
       </div>
@@ -576,8 +612,17 @@ function MatchupSummaryDetail({
           <Info className="mt-0.5 h-4 w-4 shrink-0" />
           <span className="text-foreground">
             {Math.abs(delta) < 1
-              ? "Roughly equal to your base winrate"
-              : `${delta > 0 ? "+" : ""}${delta.toFixed(0)}pp ${delta > 0 ? "above" : "below"} base (${baseWinrate.toFixed(0)}%)`}
+              ? t("roughlyEqual")
+              : t("deltaVsBase", {
+                  direction: delta > 0 ? "above" : "below",
+                  delta: formatter.number(Math.abs(delta), {
+                    maximumFractionDigits: 0,
+                  }),
+                  base: formatter.number(baseWinrate / 100, {
+                    style: "percent",
+                    maximumFractionDigits: 0,
+                  }),
+                })}
           </span>
         </div>
       )}
@@ -621,21 +666,40 @@ function CustomTooltip({
   payload,
   label,
 }: TooltipProps<ValueType, NameType>) {
+  const t = useTranslations("teamStatsPage.matchupWinrateTab.trend");
+  const formatter = useFormatter();
+
   if (active && payload?.length) {
     const data = payload[0].payload as TrendDataPoint;
     return (
       <div className="bg-popover text-popover-foreground border-border z-50 overflow-hidden rounded-md border px-3 py-2 shadow-xl">
         <p className="text-sm font-semibold">{label}</p>
         <p className="text-sm">
-          Cumulative:{" "}
-          <span className="font-bold">{data.runningWinrate.toFixed(1)}%</span>
+          {t("cumulative")}:{" "}
+          <span className="font-bold">
+            {formatter.number(data.runningWinrate / 100, {
+              style: "percent",
+              maximumFractionDigits: 1,
+              minimumFractionDigits: 1,
+            })}
+          </span>
           <span className="text-muted-foreground ml-1 text-xs">
-            ({data.totalWins}W / {data.totalLosses}L)
+            {t("recordShort", {
+              wins: data.totalWins,
+              losses: data.totalLosses,
+            })}
           </span>
         </p>
         <p className="text-muted-foreground text-xs">
-          {data.scrimName}: {data.scrimWins}W / {data.scrimLosses}L (
-          {data.scrimWinrate.toFixed(0)}%)
+          {t("scrimRecord", {
+            scrimName: data.scrimName,
+            wins: data.scrimWins,
+            losses: data.scrimLosses,
+            winrate: formatter.number(data.scrimWinrate / 100, {
+              style: "percent",
+              maximumFractionDigits: 0,
+            }),
+          })}
         </p>
       </div>
     );
@@ -648,6 +712,8 @@ type MatchupTrendChartProps = {
 };
 
 function MatchupTrendChart({ trendData }: MatchupTrendChartProps) {
+  const t = useTranslations("teamStatsPage.matchupWinrateTab.trend");
+  const formatter = useFormatter();
   const hasEnoughData = trendData.length >= 2;
 
   const currentWinrate =
@@ -662,18 +728,30 @@ function MatchupTrendChart({ trendData }: MatchupTrendChartProps) {
     <div className="space-y-3">
       <div className="flex flex-wrap items-baseline justify-between gap-x-3">
         <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-          Cumulative winrate trend
+          {t("heading")}
         </p>
         {hasEnoughData && (
           <p className="text-muted-foreground font-mono text-xs tabular-nums">
-            Now {currentWinrate.toFixed(1)}%{" "}
+            {t("now", {
+              winrate: formatter.number(currentWinrate / 100, {
+                style: "percent",
+                maximumFractionDigits: 1,
+                minimumFractionDigits: 1,
+              }),
+            })}{" "}
             <span
               className={
                 trend > 0 ? "text-primary" : trend < 0 ? "text-destructive" : ""
               }
             >
-              ({trend > 0 ? "+" : ""}
-              {trend.toFixed(1)}pp trending)
+              {t("trendDelta", {
+                direction:
+                  trend > 0 ? "positive" : trend < 0 ? "negative" : "neutral",
+                delta: formatter.number(Math.abs(trend), {
+                  maximumFractionDigits: 1,
+                  minimumFractionDigits: 1,
+                }),
+              })}
             </span>
           </p>
         )}
@@ -706,7 +784,7 @@ function MatchupTrendChart({ trendData }: MatchupTrendChartProps) {
               }}
               stroke="var(--border)"
               label={{
-                value: "Win %",
+                value: t("winPercentAxis"),
                 angle: -90,
                 position: "insideLeft",
                 style: {
@@ -735,7 +813,7 @@ function MatchupTrendChart({ trendData }: MatchupTrendChartProps) {
               strokeWidth={2}
               strokeOpacity={0.5}
               strokeDasharray="8 4"
-              name="Trend"
+              name={t("trendName")}
               dot={false}
               connectNulls
             />
@@ -744,16 +822,14 @@ function MatchupTrendChart({ trendData }: MatchupTrendChartProps) {
               dataKey="runningWinrate"
               stroke="var(--chart-1)"
               strokeWidth={2}
-              name="Cumulative Winrate"
+              name={t("cumulativeWinrateName")}
               dot={<CustomDot />}
               activeDot={{ r: 7, strokeWidth: 2 }}
             />
           </ComposedChart>
         </ResponsiveContainer>
       ) : (
-        <p className="text-muted-foreground text-sm">
-          Not enough data to show a trend. Need at least 2 scrims.
-        </p>
+        <p className="text-muted-foreground text-sm">{t("notEnoughData")}</p>
       )}
     </div>
   );
@@ -776,22 +852,33 @@ function BestCompositionsSection({
   comps,
   heroNames,
 }: BestCompositionsSectionProps) {
+  const t = useTranslations("teamStatsPage.matchupWinrateTab.compositions");
+  const formatter = useFormatter();
+
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Winrates · Compositions"
-        title="Best compositions"
-        description="Top performing five-stacks for this matchup (min. 2 games)."
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        description={t("description")}
       />
       {comps.length > 0 ? (
         <div className="border-border overflow-hidden rounded-md border">
-          <table className="w-full text-sm" aria-label="Best compositions">
+          <table className="w-full text-sm" aria-label={t("tableAria")}>
             <thead className="bg-muted/30">
               <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-                <th className="w-12 px-4 py-2 text-left font-medium">Rank</th>
-                <th className="px-4 py-2 text-left font-medium">Composition</th>
-                <th className="px-4 py-2 text-right font-medium">Winrate</th>
-                <th className="px-4 py-2 text-right font-medium">Record</th>
+                <th className="w-12 px-4 py-2 text-left font-medium">
+                  {t("rank")}
+                </th>
+                <th className="px-4 py-2 text-left font-medium">
+                  {t("composition")}
+                </th>
+                <th className="px-4 py-2 text-right font-medium">
+                  {t("winrate")}
+                </th>
+                <th className="px-4 py-2 text-right font-medium">
+                  {t("record")}
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border)]">
@@ -836,10 +923,16 @@ function BestCompositionsSection({
                       comp.winrate <= 40 && "text-destructive"
                     )}
                   >
-                    {comp.winrate.toFixed(0)}%
+                    {formatter.number(comp.winrate / 100, {
+                      style: "percent",
+                      maximumFractionDigits: 0,
+                    })}
                   </td>
                   <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
-                    {comp.wins}W / {comp.losses}L
+                    {t("winsLosses", {
+                      wins: comp.wins,
+                      losses: comp.losses,
+                    })}
                   </td>
                 </tr>
               ))}
@@ -847,9 +940,7 @@ function BestCompositionsSection({
           </table>
         </div>
       ) : (
-        <p className="text-muted-foreground text-sm">
-          Not enough data to identify top compositions.
-        </p>
+        <p className="text-muted-foreground text-sm">{t("noData")}</p>
       )}
     </section>
   );
@@ -861,12 +952,15 @@ type MatchupResultsTableProps = {
 };
 
 function MatchupResultsTable({ maps, heroNames }: MatchupResultsTableProps) {
+  const t = useTranslations("teamStatsPage.matchupWinrateTab.results");
+  const formatter = useFormatter();
+
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Winrates · Match results"
-        title="Match results"
-        description="Individual map outcomes for this matchup."
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        description={t("description")}
       />
       {maps.length > 0 ? (
         <ScrollArea className="h-[420px]">
@@ -874,21 +968,29 @@ function MatchupResultsTable({ maps, heroNames }: MatchupResultsTableProps) {
             <table className="w-full text-sm" role="table">
               <thead className="bg-muted/30">
                 <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-                  <th className="px-4 py-2 text-left font-medium">Date</th>
-                  <th className="px-4 py-2 text-left font-medium">Scrim</th>
-                  <th className="px-4 py-2 text-left font-medium">Map</th>
-                  <th className="px-4 py-2 text-left font-medium">Result</th>
+                  <th className="px-4 py-2 text-left font-medium">
+                    {t("date")}
+                  </th>
+                  <th className="px-4 py-2 text-left font-medium">
+                    {t("scrim")}
+                  </th>
+                  <th className="px-4 py-2 text-left font-medium">
+                    {t("map")}
+                  </th>
+                  <th className="px-4 py-2 text-left font-medium">
+                    {t("result")}
+                  </th>
                   <th
                     className="px-4 py-2 text-left font-medium"
                     style={{ color: "var(--team-1-off)" }}
                   >
-                    Our heroes
+                    {t("ourHeroes")}
                   </th>
                   <th
                     className="px-4 py-2 text-left font-medium"
                     style={{ color: "var(--team-2-off)" }}
                   >
-                    Enemy heroes
+                    {t("enemyHeroes")}
                   </th>
                 </tr>
               </thead>
@@ -899,7 +1001,10 @@ function MatchupResultsTable({ maps, heroNames }: MatchupResultsTableProps) {
                     className="hover:bg-muted/30 transition-colors"
                   >
                     <td className="text-muted-foreground px-4 py-3 font-mono tabular-nums">
-                      {formatDate(map.date)}
+                      {formatter.dateTime(new Date(map.date), {
+                        month: "short",
+                        day: "numeric",
+                      })}
                     </td>
                     <td className="text-foreground max-w-[140px] truncate px-4 py-3">
                       {map.scrimName}
@@ -914,7 +1019,7 @@ function MatchupResultsTable({ maps, heroNames }: MatchupResultsTableProps) {
                             : "bg-destructive/15 text-destructive"
                         )}
                       >
-                        {map.isWin ? "W" : "L"}
+                        {map.isWin ? t("winShort") : t("lossShort")}
                       </span>
                     </td>
                     <td className="px-4 py-3">
@@ -936,7 +1041,7 @@ function MatchupResultsTable({ maps, heroNames }: MatchupResultsTableProps) {
           </div>
         </ScrollArea>
       ) : (
-        <p className="text-muted-foreground text-sm">No matching maps found.</p>
+        <p className="text-muted-foreground text-sm">{t("noMaps")}</p>
       )}
     </section>
   );
@@ -974,7 +1079,10 @@ function HeroImageRow({ heroes, heroNames }: HeroImageRowProps) {
   );
 }
 
-function computePerMapTrend(maps: MatchupMapResult[]): TrendDataPoint[] {
+function computePerMapTrend(
+  maps: MatchupMapResult[],
+  formatter: ReturnType<typeof useFormatter>
+): TrendDataPoint[] {
   if (maps.length === 0) return [];
 
   const scrimMap = new Map<
@@ -1029,7 +1137,7 @@ function computePerMapTrend(maps: MatchupMapResult[]): TrendDataPoint[] {
     const scrimTotal = scrim.wins + scrim.losses;
 
     return {
-      period: scrim.date.toLocaleDateString("en-US", {
+      period: formatter.dateTime(scrim.date, {
         month: "short",
         day: "numeric",
       }),
@@ -1105,8 +1213,8 @@ function computeBestCompositions(maps: MatchupMapResult[]): CompEntry[] {
 type OrientationStats = {
   scrimCount: number;
   compositionCount: number;
-  best: { label: string; winrate: number; games: number } | null;
-  worst: { label: string; winrate: number; games: number } | null;
+  best: { heroName: string; winrate: number; games: number } | null;
+  worst: { heroName: string; winrate: number; games: number } | null;
 };
 
 function computeOrientationStats(maps: MatchupMapResult[]): OrientationStats {
@@ -1164,7 +1272,7 @@ function computeOrientationStats(maps: MatchupMapResult[]): OrientationStats {
     compositionCount: compMap.size,
     best: best
       ? {
-          label: `vs ${best.heroName} (${best.games}m)`,
+          heroName: best.heroName,
           winrate: best.winrate,
           games: best.games,
         }
@@ -1172,18 +1280,10 @@ function computeOrientationStats(maps: MatchupMapResult[]): OrientationStats {
     worst:
       worst && worst !== best
         ? {
-            label: `vs ${worst.heroName} (${worst.games}m)`,
+            heroName: worst.heroName,
             winrate: worst.winrate,
             games: worst.games,
           }
         : null,
   };
-}
-
-function formatDate(isoString: string): string {
-  const date = new Date(isoString);
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
 }

@@ -5932,6 +5932,106 @@
         "saturday": "토요일"
       }
     },
+    "matchupWinrateTab": {
+      "header": {
+        "eyebrow": "승률 · 매치업",
+        "title": "영웅 매치업 승률"
+      },
+      "noData": "선택한 기간에 사용할 게임 데이터가 없습니다. 스크림을 플레이하면 매치업 분석을 볼 수 있습니다.",
+      "stats": {
+        "scrimsTracked": "추적한 스크림",
+        "maps": "{count, plural, =0 {맵 없음} other {#개 맵}}",
+        "bestMatchup": "최고 매치업",
+        "worstMatchup": "최악 매치업",
+        "matchupLabel": "{hero} 상대 ({count, plural, other {#개 맵}})",
+        "needSharedMaps": "공통 맵 3개 이상 필요",
+        "compositions": "조합",
+        "uniqueFiveStacks": "고유 5인 조합"
+      },
+      "explorer": {
+        "eyebrow": "승률 · 매치업",
+        "title": "영웅 매치업 탐색",
+        "description": "양쪽 영웅을 선택해 분석 범위를 좁히세요. 선택한 모든 영웅이 한 맵에 있어야 집계됩니다.",
+        "clear": "지우기",
+        "clearAria": "모든 영웅 선택 지우기",
+        "ourHeroes": "우리 영웅",
+        "ourHeroesDescription": "우리 팀이 플레이한 영웅",
+        "enemyHeroes": "상대 영웅",
+        "enemyHeroesDescription": "상대가 플레이한 영웅",
+        "versus": "vs"
+      },
+      "heroPicker": {
+        "addHero": "영웅 추가",
+        "label": "영웅 선택기",
+        "selectHero": "{hero} 선택",
+        "removeHero": "{hero} 제거",
+        "removeTooltip": "{hero} (클릭하여 제거)",
+        "full": "(가득 참)",
+        "slotFullAria": "{hero} ({role} 슬롯 가득 참)",
+        "slotFullTooltip": "{hero} ({role} 슬롯 가득 참)",
+        "roles": {
+          "Tank": "탱커",
+          "Damage": "딜러",
+          "Support": "지원"
+        }
+      },
+      "summary": {
+        "eyebrow": "승률 · 매치업 요약",
+        "filteredTitle": "필터된 매치업",
+        "overallTitle": "전체 기록",
+        "filteredDescription": "{count, plural, =0 {일치하는 맵 없음} other {일치하는 맵 #개}} 기준",
+        "overallDescription": "추적한 {count, plural, =0 {맵 없음} other {#개 맵}} 전체 기준",
+        "noFilteredMaps": "이 매치업 조합과 일치하는 맵이 없습니다.",
+        "selectPrompt": "위에서 영웅을 선택해 매치업 데이터를 탐색하세요.",
+        "winRateAria": "승률: {value}",
+        "confidence": {
+          "high": "높은 신뢰도",
+          "medium": "중간 신뢰도",
+          "low": "낮은 신뢰도"
+        },
+        "record": "{wins}승 / {losses}패 ({count, plural, =0 {맵 없음} other {#개 맵}})",
+        "roughlyEqual": "기준 승률과 거의 같습니다",
+        "deltaVsBase": "기준({base}) 대비 {direction, select, above {+{delta}pp 높음} below {-{delta}pp 낮음} other {{delta}pp}}"
+      },
+      "trend": {
+        "heading": "누적 승률 추세",
+        "now": "현재 {winrate}",
+        "trendDelta": "{direction, select, positive {(+{delta}pp 추세)} negative {(-{delta}pp 추세)} other {({delta}pp 추세)}}",
+        "cumulative": "누적",
+        "recordShort": "({wins}승 / {losses}패)",
+        "scrimRecord": "{scrimName}: {wins}승 / {losses}패 ({winrate})",
+        "winPercentAxis": "승률 %",
+        "trendName": "추세",
+        "cumulativeWinrateName": "누적 승률",
+        "notEnoughData": "추세를 표시할 데이터가 부족합니다. 스크림이 최소 2개 필요합니다."
+      },
+      "compositions": {
+        "eyebrow": "승률 · 조합",
+        "title": "최고 조합",
+        "description": "이 매치업에서 가장 좋은 5인 조합입니다(최소 2게임).",
+        "tableAria": "최고 조합",
+        "rank": "순위",
+        "composition": "조합",
+        "winrate": "승률",
+        "record": "기록",
+        "winsLosses": "{wins}승 / {losses}패",
+        "noData": "상위 조합을 식별할 만큼 데이터가 충분하지 않습니다."
+      },
+      "results": {
+        "eyebrow": "승률 · 매치 결과",
+        "title": "매치 결과",
+        "description": "이 매치업의 개별 맵 결과입니다.",
+        "date": "날짜",
+        "scrim": "스크림",
+        "map": "맵",
+        "result": "결과",
+        "ourHeroes": "우리 영웅",
+        "enemyHeroes": "상대 영웅",
+        "winShort": "승",
+        "lossShort": "패",
+        "noMaps": "일치하는 맵이 없습니다."
+      }
+    },
     "mapWinrateGallery": {
       "eyebrow": "맵 · 승률 갤러리",
       "title": "맵 성능",

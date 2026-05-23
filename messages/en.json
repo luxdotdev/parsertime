@@ -5722,6 +5722,106 @@
         "saturday": "Saturday"
       }
     },
+    "matchupWinrateTab": {
+      "header": {
+        "eyebrow": "Winrates · Matchups",
+        "title": "Hero matchup winrates"
+      },
+      "noData": "No game data available for the selected time period. Play some scrims to unlock matchup analysis.",
+      "stats": {
+        "scrimsTracked": "Scrims tracked",
+        "maps": "{count, plural, =0 {no maps} =1 {# map} other {# maps}}",
+        "bestMatchup": "Best matchup",
+        "worstMatchup": "Worst matchup",
+        "matchupLabel": "vs {hero} ({count, plural, =1 {# map} other {# maps}})",
+        "needSharedMaps": "Need 3+ shared maps",
+        "compositions": "Compositions",
+        "uniqueFiveStacks": "unique five-stacks"
+      },
+      "explorer": {
+        "eyebrow": "Winrates · Matchups",
+        "title": "Hero matchup explorer",
+        "description": "Select heroes on each side to scope the analysis. All selected heroes must be present in a map for it to count.",
+        "clear": "Clear",
+        "clearAria": "Clear all hero selections",
+        "ourHeroes": "Our heroes",
+        "ourHeroesDescription": "Heroes your team played",
+        "enemyHeroes": "Enemy heroes",
+        "enemyHeroesDescription": "Heroes the opponent played",
+        "versus": "vs"
+      },
+      "heroPicker": {
+        "addHero": "Add hero",
+        "label": "Hero picker",
+        "selectHero": "Select {hero}",
+        "removeHero": "Remove {hero}",
+        "removeTooltip": "{hero} (click to remove)",
+        "full": "(full)",
+        "slotFullAria": "{hero} ({role} slot full)",
+        "slotFullTooltip": "{hero} ({role} slot full)",
+        "roles": {
+          "Tank": "Tank",
+          "Damage": "Damage",
+          "Support": "Support"
+        }
+      },
+      "summary": {
+        "eyebrow": "Winrates · Matchup summary",
+        "filteredTitle": "Filtered matchup",
+        "overallTitle": "Overall record",
+        "filteredDescription": "Based on {count, plural, =0 {no matching maps} =1 {# matching map} other {# matching maps}}",
+        "overallDescription": "Across all {count, plural, =0 {tracked maps} =1 {# tracked map} other {# tracked maps}}",
+        "noFilteredMaps": "No maps found for this matchup combination.",
+        "selectPrompt": "Select heroes above to explore matchup data.",
+        "winRateAria": "Win rate: {value}",
+        "confidence": {
+          "high": "High confidence",
+          "medium": "Medium confidence",
+          "low": "Low confidence"
+        },
+        "record": "{wins}W / {losses}L ({count, plural, =0 {no maps} =1 {# map} other {# maps}})",
+        "roughlyEqual": "Roughly equal to your base winrate",
+        "deltaVsBase": "{direction, select, above {+{delta}pp above} below {-{delta}pp below} other {{delta}pp vs}} base ({base})"
+      },
+      "trend": {
+        "heading": "Cumulative winrate trend",
+        "now": "Now {winrate}",
+        "trendDelta": "{direction, select, positive {(+{delta}pp trending)} negative {(-{delta}pp trending)} other {({delta}pp trending)}}",
+        "cumulative": "Cumulative",
+        "recordShort": "({wins}W / {losses}L)",
+        "scrimRecord": "{scrimName}: {wins}W / {losses}L ({winrate})",
+        "winPercentAxis": "Win %",
+        "trendName": "Trend",
+        "cumulativeWinrateName": "Cumulative Winrate",
+        "notEnoughData": "Not enough data to show a trend. Need at least 2 scrims."
+      },
+      "compositions": {
+        "eyebrow": "Winrates · Compositions",
+        "title": "Best compositions",
+        "description": "Top performing five-stacks for this matchup (min. 2 games).",
+        "tableAria": "Best compositions",
+        "rank": "Rank",
+        "composition": "Composition",
+        "winrate": "Winrate",
+        "record": "Record",
+        "winsLosses": "{wins}W / {losses}L",
+        "noData": "Not enough data to identify top compositions."
+      },
+      "results": {
+        "eyebrow": "Winrates · Match results",
+        "title": "Match results",
+        "description": "Individual map outcomes for this matchup.",
+        "date": "Date",
+        "scrim": "Scrim",
+        "map": "Map",
+        "result": "Result",
+        "ourHeroes": "Our heroes",
+        "enemyHeroes": "Enemy heroes",
+        "winShort": "W",
+        "lossShort": "L",
+        "noMaps": "No matching maps found."
+      }
+    },
     "bestRoleTriosCard": {
       "eyebrow": "Performance · Best trios",
       "title": "Best Role Trios",

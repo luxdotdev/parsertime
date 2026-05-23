@@ -5932,6 +5932,106 @@
         "saturday": "星期六"
       }
     },
+    "matchupWinrateTab": {
+      "header": {
+        "eyebrow": "胜率 · 对局",
+        "title": "英雄对局胜率"
+      },
+      "noData": "所选时间段内没有游戏数据。进行一些训练赛后即可解锁对局分析。",
+      "stats": {
+        "scrimsTracked": "已追踪训练赛",
+        "maps": "{count, plural, =0 {无地图} other {# 张地图}}",
+        "bestMatchup": "最佳对局",
+        "worstMatchup": "最差对局",
+        "matchupLabel": "对阵 {hero}（{count, plural, other {# 张地图}}）",
+        "needSharedMaps": "需要 3 张以上共同地图",
+        "compositions": "阵容",
+        "uniqueFiveStacks": "不同五人阵容"
+      },
+      "explorer": {
+        "eyebrow": "胜率 · 对局",
+        "title": "英雄对局探索器",
+        "description": "选择双方英雄来限定分析范围。所选英雄必须同时出现在同一张地图中才会计入。",
+        "clear": "清除",
+        "clearAria": "清除所有英雄选择",
+        "ourHeroes": "我方英雄",
+        "ourHeroesDescription": "你的队伍使用过的英雄",
+        "enemyHeroes": "敌方英雄",
+        "enemyHeroesDescription": "对手使用过的英雄",
+        "versus": "vs"
+      },
+      "heroPicker": {
+        "addHero": "添加英雄",
+        "label": "英雄选择器",
+        "selectHero": "选择 {hero}",
+        "removeHero": "移除 {hero}",
+        "removeTooltip": "{hero}（点击移除）",
+        "full": "（已满）",
+        "slotFullAria": "{hero}（{role}位置已满）",
+        "slotFullTooltip": "{hero}（{role}位置已满）",
+        "roles": {
+          "Tank": "坦克",
+          "Damage": "输出",
+          "Support": "支援"
+        }
+      },
+      "summary": {
+        "eyebrow": "胜率 · 对局摘要",
+        "filteredTitle": "筛选后对局",
+        "overallTitle": "整体战绩",
+        "filteredDescription": "基于 {count, plural, =0 {无匹配地图} other {# 张匹配地图}}",
+        "overallDescription": "基于全部 {count, plural, =0 {无已追踪地图} other {# 张已追踪地图}}",
+        "noFilteredMaps": "没有找到符合此对局组合的地图。",
+        "selectPrompt": "在上方选择英雄以探索对局数据。",
+        "winRateAria": "胜率：{value}",
+        "confidence": {
+          "high": "高置信度",
+          "medium": "中等置信度",
+          "low": "低置信度"
+        },
+        "record": "{wins}胜 / {losses}负（{count, plural, =0 {无地图} other {# 张地图}}）",
+        "roughlyEqual": "与基础胜率大致相同",
+        "deltaVsBase": "相对基础值（{base}）{direction, select, above {高 +{delta}pp} below {低 -{delta}pp} other {{delta}pp}}"
+      },
+      "trend": {
+        "heading": "累计胜率趋势",
+        "now": "当前 {winrate}",
+        "trendDelta": "{direction, select, positive {（+{delta}pp 趋势）} negative {（-{delta}pp 趋势）} other {（{delta}pp 趋势）}}",
+        "cumulative": "累计",
+        "recordShort": "（{wins}胜 / {losses}负）",
+        "scrimRecord": "{scrimName}：{wins}胜 / {losses}负（{winrate}）",
+        "winPercentAxis": "胜率 %",
+        "trendName": "趋势",
+        "cumulativeWinrateName": "累计胜率",
+        "notEnoughData": "数据不足，无法显示趋势。至少需要 2 场训练赛。"
+      },
+      "compositions": {
+        "eyebrow": "胜率 · 阵容",
+        "title": "最佳阵容",
+        "description": "此对局中表现最好的五人阵容（至少 2 场）。",
+        "tableAria": "最佳阵容",
+        "rank": "排名",
+        "composition": "阵容",
+        "winrate": "胜率",
+        "record": "战绩",
+        "winsLosses": "{wins}胜 / {losses}负",
+        "noData": "数据不足，无法识别最佳阵容。"
+      },
+      "results": {
+        "eyebrow": "胜率 · 比赛结果",
+        "title": "比赛结果",
+        "description": "此对局的单张地图结果。",
+        "date": "日期",
+        "scrim": "训练赛",
+        "map": "地图",
+        "result": "结果",
+        "ourHeroes": "我方英雄",
+        "enemyHeroes": "敌方英雄",
+        "winShort": "胜",
+        "lossShort": "负",
+        "noMaps": "未找到匹配地图。"
+      }
+    },
     "mapWinrateGallery": {
       "eyebrow": "地图 · 胜率图库",
       "title": "地图表现",
