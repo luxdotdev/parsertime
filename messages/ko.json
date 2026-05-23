@@ -5788,6 +5788,39 @@
       "smallSample": "{hero}의 표본이 작아 결과가 통계적으로 유의하지 않을 수 있습니다.",
       "selectHeroPrompt": "영웅을 선택하면 해당 능력이 전투 결과를 어떻게 바꾸는지 볼 수 있습니다."
     },
+    "ultImpactAnalysisCard": {
+      "eyebrow": "궁극기 · 영향 분석",
+      "title": "궁극기 영향",
+      "description": "특정 영웅 궁극기가 여러 상황에서 전투 결과에 어떤 영향을 주는지 보여줍니다.",
+      "selectHero": "영웅 선택",
+      "searchHeroes": "영웅 검색",
+      "noHeroesFound": "영웅을 찾을 수 없습니다.",
+      "roles": {
+        "Tank": "탱커",
+        "Damage": "딜러",
+        "Support": "지원"
+      },
+      "scenarios": {
+        "uncontestedOurs": "상대 대응 없음 (우리)",
+        "uncontestedTheirs": "우리 대응 없음 (상대)",
+        "mirrorOursFirst": "미러전, 우리 선사용",
+        "mirrorTheirsFirst": "미러전, 상대 선사용"
+      },
+      "table": {
+        "hero": "영웅",
+        "scenario": "상황",
+        "fights": "전투",
+        "wins": "승",
+        "losses": "패",
+        "winrate": "승률",
+        "tag": "태그"
+      },
+      "tags": {
+        "keyUlt": "핵심 궁극기"
+      },
+      "smallSample": "{hero}에 대해 분석된 전투가 {count, plural, other {#회}}뿐이라 결과가 통계적으로 유의하지 않을 수 있습니다.",
+      "selectHeroPrompt": "영웅을 선택하면 해당 궁극기가 전투 결과에 어떤 영향을 주는지 볼 수 있습니다."
+    },
     "mapModePerformanceCard": {
       "eyebrow": "맵 · 모드 성능",
       "winrate": "승률: <span>{winrate}</span>",

@@ -24,6 +24,7 @@ import { cn, toHero } from "@/lib/utils";
 import { roleHeroMapping } from "@/types/heroes";
 import { AlertTriangle, Check, ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
+import { useFormatter, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
 type UltImpactAnalysisCardProps = {
@@ -40,7 +41,6 @@ type ScenarioKey =
 
 type ScenarioRow = {
   key: ScenarioKey;
-  label: string;
   perspective: "ours" | "theirs";
   fights: number;
   wins: number;
@@ -50,27 +50,22 @@ type ScenarioRow = {
 
 const SCENARIO_DEFS: {
   key: ScenarioKey;
-  label: string;
   perspective: "ours" | "theirs";
 }[] = [
   {
     key: "uncontestedOurs",
-    label: "Uncontested (ours)",
     perspective: "ours",
   },
   {
     key: "uncontestedTheirs",
-    label: "Uncontested (enemy)",
     perspective: "theirs",
   },
   {
     key: "mirrorOursFirst",
-    label: "Mirror, ours first",
     perspective: "ours",
   },
   {
     key: "mirrorTheirsFirst",
-    label: "Mirror, theirs first",
     perspective: "theirs",
   },
 ];
@@ -91,7 +86,6 @@ function buildRows(heroData: HeroUltImpact): ScenarioRow[] {
     const stats = def.perspective === "theirs" ? flipStats(raw) : raw;
     return {
       key: def.key,
-      label: def.label,
       perspective: def.perspective,
       fights: stats.fights,
       wins: stats.wins,
@@ -112,6 +106,16 @@ function getWinrateClass(
   return "text-foreground";
 }
 
+function formatPercent(
+  value: number,
+  formatter: ReturnType<typeof useFormatter>
+) {
+  return formatter.number(value / 100, {
+    style: "percent",
+    maximumFractionDigits: 0,
+  });
+}
+
 function HeroCombobox({
   availableHeroes,
   selectedHero,
@@ -121,6 +125,7 @@ function HeroCombobox({
   selectedHero: string | null;
   onSelect: (hero: string | null) => void;
 }) {
+  const t = useTranslations("teamStatsPage.ultImpactAnalysisCard");
   const [open, setOpen] = useState(false);
   const availableSet = useMemo(
     () => new Set(availableHeroes),
@@ -146,7 +151,7 @@ function HeroCombobox({
           role="combobox"
           aria-expanded={open}
           aria-controls="ult-hero-combobox-listbox"
-          aria-label="Select a hero"
+          aria-label={t("selectHero")}
           className="w-full justify-between font-normal md:w-64"
         >
           <span className="flex items-center gap-2 truncate">
@@ -162,7 +167,7 @@ function HeroCombobox({
                 {selectedHero}
               </>
             ) : (
-              "Select a hero"
+              t("selectHero")
             )}
           </span>
           <ChevronsUpDown
@@ -179,14 +184,14 @@ function HeroCombobox({
             return normalized.includes(normalizedSearch) ? 1 : 0;
           }}
         >
-          <CommandInput placeholder="Search heroes" />
+          <CommandInput placeholder={t("searchHeroes")} />
           <CommandList id="ult-hero-combobox-listbox">
-            <CommandEmpty>No heroes found.</CommandEmpty>
+            <CommandEmpty>{t("noHeroesFound")}</CommandEmpty>
             {ROLE_ORDER.map((role) => {
               const heroes = byRole[role];
               if (!heroes || heroes.length === 0) return null;
               return (
-                <CommandGroup key={role} heading={role}>
+                <CommandGroup key={role} heading={t(`roles.${role}`)}>
                   {heroes.map((hero) => (
                     <CommandItem
                       key={hero}
@@ -226,6 +231,8 @@ function HeroCombobox({
 export function UltImpactAnalysisCard({
   analysis,
 }: UltImpactAnalysisCardProps) {
+  const t = useTranslations("teamStatsPage.ultImpactAnalysisCard");
+  const formatter = useFormatter();
   const [selectedHero, setSelectedHero] = useState<string | null>(null);
 
   const resolvedHero = useMemo(() => {
@@ -255,9 +262,9 @@ export function UltImpactAnalysisCard({
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Ultimates · Impact analysis"
-        title="Ultimate impact"
-        description="How specific hero ultimates affect fight outcomes across scenarios."
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        description={t("description")}
         rightSlot={
           <HeroCombobox
             availableHeroes={analysis.availableHeroes}
@@ -273,13 +280,27 @@ export function UltImpactAnalysisCard({
             <table className="w-full text-sm">
               <thead className="bg-muted/30">
                 <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-                  <th className="px-4 py-2 text-left font-medium">Hero</th>
-                  <th className="px-4 py-2 text-left font-medium">Scenario</th>
-                  <th className="px-4 py-2 text-right font-medium">Fights</th>
-                  <th className="px-4 py-2 text-right font-medium">Wins</th>
-                  <th className="px-4 py-2 text-right font-medium">Losses</th>
-                  <th className="px-4 py-2 text-right font-medium">Winrate</th>
-                  <th className="w-28 px-4 py-2 text-right font-medium">Tag</th>
+                  <th className="px-4 py-2 text-left font-medium">
+                    {t("table.hero")}
+                  </th>
+                  <th className="px-4 py-2 text-left font-medium">
+                    {t("table.scenario")}
+                  </th>
+                  <th className="px-4 py-2 text-right font-medium">
+                    {t("table.fights")}
+                  </th>
+                  <th className="px-4 py-2 text-right font-medium">
+                    {t("table.wins")}
+                  </th>
+                  <th className="px-4 py-2 text-right font-medium">
+                    {t("table.losses")}
+                  </th>
+                  <th className="px-4 py-2 text-right font-medium">
+                    {t("table.winrate")}
+                  </th>
+                  <th className="w-28 px-4 py-2 text-right font-medium">
+                    {t("table.tag")}
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)]">
@@ -304,16 +325,18 @@ export function UltImpactAnalysisCard({
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-foreground">{row.label}</span>
+                        <span className="text-foreground">
+                          {t(`scenarios.${row.key}`)}
+                        </span>
                       </td>
                       <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
-                        {noData ? "—" : row.fights}
+                        {noData ? "—" : formatter.number(row.fights)}
                       </td>
                       <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
-                        {noData ? "—" : row.wins}
+                        {noData ? "—" : formatter.number(row.wins)}
                       </td>
                       <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
-                        {noData ? "—" : row.losses}
+                        {noData ? "—" : formatter.number(row.losses)}
                       </td>
                       <td
                         className={cn(
@@ -323,12 +346,12 @@ export function UltImpactAnalysisCard({
                             : getWinrateClass(row.winrate, row.perspective)
                         )}
                       >
-                        {noData ? "—" : `${row.winrate.toFixed(0)}%`}
+                        {noData ? "—" : formatPercent(row.winrate, formatter)}
                       </td>
                       <td className="px-4 py-3 text-right">
                         {isKey ? (
                           <span className="bg-primary/15 text-primary rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase">
-                            Key ult
+                            {t("tags.keyUlt")}
                           </span>
                         ) : null}
                       </td>
@@ -342,16 +365,15 @@ export function UltImpactAnalysisCard({
           {heroData.totalFightsAnalyzed < 10 && (
             <p className="text-muted-foreground flex items-center gap-1.5 font-mono text-[10px] tracking-[0.16em] uppercase">
               <AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" />
-              Only {heroData.totalFightsAnalyzed} fight
-              {heroData.totalFightsAnalyzed === 1 ? "" : "s"} analyzed for{" "}
-              {heroData.hero}, results may not be statistically significant.
+              {t("smallSample", {
+                count: heroData.totalFightsAnalyzed,
+                hero: heroData.hero,
+              })}
             </p>
           )}
         </>
       ) : (
-        <p className="text-muted-foreground text-sm">
-          Select a hero to see how their ultimate impacts fight outcomes.
-        </p>
+        <p className="text-muted-foreground text-sm">{t("selectHeroPrompt")}</p>
       )}
     </section>
   );

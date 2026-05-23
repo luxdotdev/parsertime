@@ -5590,6 +5590,39 @@
       "smallSample": "Small sample for {hero}, results may not be statistically significant.",
       "selectHeroPrompt": "Select a hero to see how their abilities shift fight outcomes."
     },
+    "ultImpactAnalysisCard": {
+      "eyebrow": "Ultimates · Impact analysis",
+      "title": "Ultimate impact",
+      "description": "How specific hero ultimates affect fight outcomes across scenarios.",
+      "selectHero": "Select a hero",
+      "searchHeroes": "Search heroes",
+      "noHeroesFound": "No heroes found.",
+      "roles": {
+        "Tank": "Tank",
+        "Damage": "Damage",
+        "Support": "Support"
+      },
+      "scenarios": {
+        "uncontestedOurs": "Uncontested (ours)",
+        "uncontestedTheirs": "Uncontested (enemy)",
+        "mirrorOursFirst": "Mirror, ours first",
+        "mirrorTheirsFirst": "Mirror, theirs first"
+      },
+      "table": {
+        "hero": "Hero",
+        "scenario": "Scenario",
+        "fights": "Fights",
+        "wins": "Wins",
+        "losses": "Losses",
+        "winrate": "Winrate",
+        "tag": "Tag"
+      },
+      "tags": {
+        "keyUlt": "Key ult"
+      },
+      "smallSample": "Only {count, plural, =1 {# fight} other {# fights}} analyzed for {hero}, results may not be statistically significant.",
+      "selectHeroPrompt": "Select a hero to see how their ultimate impacts fight outcomes."
+    },
     "mapModePerformanceCard": {
       "eyebrow": "Maps · Mode performance",
       "winrate": "Winrate: <span>{winrate}</span>",
