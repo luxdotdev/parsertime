@@ -496,8 +496,31 @@
       "createdScrim": {
         "title": "스크림 생성 완료",
         "description": "스크림이 성공적으로 생성되었습니다.",
-        "errorTitle": "오류",
+        "primary": "완료",
+        "secondary": "하나 더 만들기",
+        "errorTitle": "스크림을 만들 수 없습니다",
+        "errorReassurance": "입력한 내용은 그대로 남아 있습니다.",
+        "errorFallback": "잘못된 로그 형식",
+        "errorEscape": "다시 시도해도 해결되지 않으면 아래 리소스가 도움이 될 수 있습니다.",
+        "errorResourceLabel": "도움이 필요하신가요?",
+        "errorResourceSchema": "스키마",
+        "errorResourceDebug": "디버그 팁",
+        "errorResourceDiscord": "Discord",
+        "errorRetry": "다시 시도",
+        "errorBack": "폼으로 돌아가기",
         "errorDescription": "오류가 발생했습니다: {res}. <here>여기</here>에서 문서를 읽고 오류를 해결할 수 있는지 확인하세요."
+      },
+      "dataCorruption": {
+        "warning": {
+          "title": "데이터 손상 감지됨",
+          "baseDescription": "손상된 데이터가 감지되었습니다. 자동 수정을 시도합니다:",
+          "invalidMercyRez": "잘못된 mercy_rez 줄은 제거됩니다",
+          "asteriskValues": "별표 값은 0으로 대체됩니다"
+        },
+        "success": {
+          "title": "스크림 생성 완료",
+          "description": "손상된 데이터가 자동으로 수정되었고 스크림이 성공적으로 생성되었습니다."
+        }
       },
       "scrimName": "스크림 이름",
       "scrimPlaceholder": "새 스크림",
@@ -521,11 +544,28 @@
       "dateRequiredError": "스크림 날짜가 필요합니다.",
       "mapName": "첫 번째 맵",
       "mapDescription": "스크림의 첫 번째 맵을 업로드하세요. .xlsx 및 .txt 파일만 허용되며, 최대 파일 크기는 1MB입니다. 스크림 생성 후 더 많은 맵을 추가할 수 있습니다.",
+      "mapDropTitle": "Workshop 로그를 여기에 놓으세요",
+      "mapDropSubtitle": "또는 클릭하여 찾아보기",
+      "mapDropParsing": "스크림 데이터 파싱 중…",
+      "mapDropParsed": "파싱 완료",
+      "mapDropReplace": "교체",
+      "mapDropTeamSeparator": "vs",
       "submit": "제출",
       "submitting": "제출 중...",
-      "autoAssignTeamNames": "Auto-assign team names",
-      "autoAssignTeamNamesDescription": "Automatically rename teams and normalize team positions so your team is always Team 1.",
-      "autoAssignDisabledDescription": "Select a team to enable auto-assign."
+      "heroBansName": "영웅 밴",
+      "heroBansDescription": "각 팀이 밴한 영웅을 추가하세요. 밴 순서는 유지됩니다.",
+      "addHeroBan": "영웅 밴 추가",
+      "orderName": "순서",
+      "selectTeam": "팀 선택",
+      "team": "팀",
+      "hero": "영웅",
+      "selectHero": "영웅 선택",
+      "heroBanRequiredError": "밴할 영웅이 필요합니다.",
+      "banPositionRequiredError": "밴 순서가 필요합니다.",
+      "cancel": "취소",
+      "autoAssignTeamNames": "팀 이름 자동 할당",
+      "autoAssignTeamNamesDescription": "팀 이름을 자동으로 바꾸고 팀 위치를 정규화하여 내 팀이 항상 Team 1이 되도록 합니다.",
+      "autoAssignDisabledDescription": "자동 할당을 활성화하려면 팀을 선택하세요."
     }
   },
   "updateModal": {

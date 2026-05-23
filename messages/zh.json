@@ -496,8 +496,31 @@
       "createdScrim": {
         "title": "比赛创建成功",
         "description": "您的比赛已成功创建。",
-        "errorTitle": "错误",
-        "errorDescription": "发生错误：{res}。请查看文档 (<here>) 以解决可能的问题。"
+        "primary": "完成",
+        "secondary": "再创建一个",
+        "errorTitle": "无法创建训练赛",
+        "errorReassurance": "你的表单内容仍在，没有丢失。",
+        "errorFallback": "日志格式无效",
+        "errorEscape": "如果重试后仍无法解决，下面的资源可以帮助你排查。",
+        "errorResourceLabel": "需要帮助？",
+        "errorResourceSchema": "架构",
+        "errorResourceDebug": "调试提示",
+        "errorResourceDiscord": "Discord",
+        "errorRetry": "重试",
+        "errorBack": "返回表单",
+        "errorDescription": "发生错误：{res}。请查看<here>文档</here>以确认是否可以解决该错误。"
+      },
+      "dataCorruption": {
+        "warning": {
+          "title": "检测到数据损坏",
+          "baseDescription": "检测到损坏数据，正在尝试自动修复：",
+          "invalidMercyRez": "无效的 mercy_rez 行将被移除",
+          "asteriskValues": "星号值将替换为 0"
+        },
+        "success": {
+          "title": "训练赛创建成功",
+          "description": "损坏数据已自动修复，训练赛已成功创建。"
+        }
       },
       "scrimName": "比赛名称",
       "scrimPlaceholder": "新训练赛",
@@ -521,11 +544,28 @@
       "dateRequiredError": "比赛日期不能为空。",
       "mapName": "第一张地图",
       "mapDescription": "请上传第一张比赛地图文件。支持 .xlsx 和 .txt 文件，文件大小不得超过 1MB。比赛创建后可以添加更多地图。",
+      "mapDropTitle": "将 Workshop 日志拖放到这里",
+      "mapDropSubtitle": "或点击浏览",
+      "mapDropParsing": "正在解析训练赛数据…",
+      "mapDropParsed": "已解析",
+      "mapDropReplace": "替换",
+      "mapDropTeamSeparator": "vs",
       "submit": "提交",
       "submitting": "提交中...",
-      "autoAssignTeamNames": "Auto-assign team names",
-      "autoAssignTeamNamesDescription": "Automatically rename teams and normalize team positions so your team is always Team 1.",
-      "autoAssignDisabledDescription": "Select a team to enable auto-assign."
+      "heroBansName": "英雄禁用",
+      "heroBansDescription": "添加每支队伍禁用的英雄。禁用顺序会被保留。",
+      "addHeroBan": "添加英雄禁用",
+      "orderName": "顺序",
+      "selectTeam": "选择队伍",
+      "team": "队伍",
+      "hero": "英雄",
+      "selectHero": "选择英雄",
+      "heroBanRequiredError": "需要选择要禁用的英雄。",
+      "banPositionRequiredError": "需要填写禁用顺序。",
+      "cancel": "取消",
+      "autoAssignTeamNames": "自动分配队伍名称",
+      "autoAssignTeamNamesDescription": "自动重命名队伍并规范队伍位置，使你的队伍始终为 Team 1。",
+      "autoAssignDisabledDescription": "选择队伍以启用自动分配。"
     }
   },
   "updateModal": {
