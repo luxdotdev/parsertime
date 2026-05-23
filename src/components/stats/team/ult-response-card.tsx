@@ -62,7 +62,7 @@ export function UltResponseCard({ analysis }: UltResponseCardProps) {
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Ultimates · Enemy responses"
+          eyebrow={t("eyebrow")}
           title={t("title")}
         />
         <p className="text-muted-foreground text-sm">
@@ -75,7 +75,7 @@ export function UltResponseCard({ analysis }: UltResponseCardProps) {
   return (
     <section className="space-y-5">
       <SectionHeader
-        eyebrow="Ultimates · Enemy responses"
+        eyebrow={t("eyebrow")}
         title={t("title")}
         description={t("description", {
           window: analysis.windowSeconds,

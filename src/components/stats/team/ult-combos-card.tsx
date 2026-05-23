@@ -52,7 +52,7 @@ export function UltCombosCard({ analysis }: UltCombosCardProps) {
   if (analysis.combos.length === 0) {
     return (
       <section className="space-y-4">
-        <SectionHeader eyebrow="Ultimates · Combos" title={t("title")} />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <p className="text-muted-foreground text-sm">
           {t("noData", { window: analysis.windowSeconds })}
         </p>
@@ -63,7 +63,7 @@ export function UltCombosCard({ analysis }: UltCombosCardProps) {
   return (
     <section className="space-y-5">
       <SectionHeader
-        eyebrow="Ultimates · Combos"
+        eyebrow={t("eyebrow")}
         title={t("title")}
         description={t("description", {
           window: analysis.windowSeconds,

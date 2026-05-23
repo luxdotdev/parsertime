@@ -4939,6 +4939,7 @@
     },
     "ultimatesTab": {
       "overview": {
+        "eyebrow": "Ultimates · Usage overview",
         "title": "Ultimate Usage Overview",
         "noData": "No ultimate usage data available yet.",
         "description": "Aggregated across {maps} maps",
@@ -4954,18 +4955,29 @@
         "holdTimeSlow": "Holding too long — use ults sooner",
         "fightInitiation": "Fight Initiation Rate",
         "fightInitiationDetail": "{count} of {total} ult fights",
+        "metric": "Metric",
+        "value": "Value",
+        "read": "Read",
+        "fightOpenings": "Fight openings",
+        "topFightOpeners": "Top fight openers",
         "topOpenersLabel": "Top fight opener: <span>{top}</span> ({count} fights)"
       },
       "roleBreakdown": {
+        "eyebrow": "Ultimates · Role breakdown",
         "title": "Ultimate Usage by Role",
         "noData": "No ultimate usage data available yet.",
         "description": "How ultimates are distributed across roles and when they are used in fights",
         "percentage": "{value}% of total",
+        "role": "Role",
+        "ultsUsed": "Ults used",
+        "share": "Share",
+        "subroles": "Subroles",
         "timingTitle": "Ultimate Timing Distribution",
         "timingDescription": "When ultimates are used within fights: initiation (first third), midfight (middle third), or late (final third)",
         "yourTeam": "Your Team"
       },
       "playerRankings": {
+        "eyebrow": "Ultimates · Player rankings",
         "title": "Player Ultimate Rankings",
         "noData": "No player data available yet.",
         "description": "Individual player ultimate usage across all scrims",
@@ -4978,6 +4990,7 @@
         "fightOpener": "Fight Opener"
       },
       "combos": {
+        "eyebrow": "Ultimates · Combos",
         "title": "Ultimate combos",
         "description": "Two-ultimate combos used within {window}s of each other, across {maps} maps.",
         "noData": "No two-ultimate combos yet. Pair two ultimates within {window}s in a fight and they'll show up here.",
@@ -4992,6 +5005,7 @@
         "lowSampleNote": "Combos used fewer than {min} times are hidden from the win-rate ranking."
       },
       "responses": {
+        "eyebrow": "Ultimates · Enemy responses",
         "title": "Answering enemy ultimates",
         "description": "Which ultimates your team uses within {window}s after an enemy ultimate, across {maps} maps.",
         "noData": "No counter-ultimates yet. When your team answers an enemy ultimate within {window}s, it'll show up here.",
@@ -5010,6 +5024,7 @@
         "noResponsesForHero": "No tracked responses to this enemy ultimate."
       },
       "ultAdvantage": {
+        "eyebrow": "Ultimates · Advantage",
         "title": "Ultimate advantage",
         "description": "How your ultimate bank stacks up against the enemy entering fights, across {maps} maps.",
         "noData": "Not enough ultimate charge data yet to track ultimate advantage.",

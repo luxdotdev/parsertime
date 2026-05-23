@@ -46,7 +46,7 @@ export function UltEconomyCard({ analysis }: UltEconomyCardProps) {
   if (analysis.totalFights === 0) {
     return (
       <section className="space-y-4">
-        <SectionHeader eyebrow="Ultimates · Advantage" title={t("title")} />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
@@ -115,7 +115,7 @@ export function UltEconomyCard({ analysis }: UltEconomyCardProps) {
   return (
     <section className="space-y-6">
       <SectionHeader
-        eyebrow="Ultimates · Advantage"
+        eyebrow={t("eyebrow")}
         title={t("title")}
         description={t("description", { maps: analysis.totalMaps })}
       />

@@ -16,7 +16,7 @@ export function UltRoleBreakdownCard({ ultStats }: UltRoleBreakdownCardProps) {
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Ultimates · Role breakdown"
+          eyebrow={t("eyebrow")}
           title={t("title")}
           description={t("noData")}
         />
@@ -30,7 +30,7 @@ export function UltRoleBreakdownCard({ ultStats }: UltRoleBreakdownCardProps) {
   return (
     <section className="space-y-6">
       <SectionHeader
-        eyebrow="Ultimates · Role breakdown"
+        eyebrow={t("eyebrow")}
         title={t("title")}
         description={t("description")}
       />
@@ -39,10 +39,16 @@ export function UltRoleBreakdownCard({ ultStats }: UltRoleBreakdownCardProps) {
         <table className="w-full text-sm">
           <thead className="bg-muted/30">
             <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-              <th className="px-4 py-2 text-left font-medium">Role</th>
-              <th className="px-4 py-2 text-right font-medium">Ults used</th>
-              <th className="px-4 py-2 text-right font-medium">Share</th>
-              <th className="px-4 py-2 text-left font-medium">Subroles</th>
+              <th className="px-4 py-2 text-left font-medium">{t("role")}</th>
+              <th className="px-4 py-2 text-right font-medium">
+                {t("ultsUsed")}
+              </th>
+              <th className="px-4 py-2 text-right font-medium">
+                {t("share")}
+              </th>
+              <th className="px-4 py-2 text-left font-medium">
+                {t("subroles")}
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--border)]">

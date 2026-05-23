@@ -62,21 +62,20 @@ function renderHeroTick(props: {
   );
 }
 
-const chartConfig: ChartConfig = {
-  count: {
-    label: "Fight openings",
-    color: "var(--chart-1)",
-  },
-};
-
 export function UltUsageOverviewCard({ ultStats }: UltUsageOverviewCardProps) {
   const t = useTranslations("teamStatsPage.ultimatesTab.overview");
+  const chartConfig: ChartConfig = {
+    count: {
+      label: t("fightOpenings"),
+      color: "var(--chart-1)",
+    },
+  };
 
   if (ultStats.totalUltsUsed === 0) {
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Ultimates · Usage overview"
+          eyebrow={t("eyebrow")}
           title={t("title")}
         />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
@@ -122,7 +121,7 @@ export function UltUsageOverviewCard({ ultStats }: UltUsageOverviewCardProps) {
   return (
     <section className="space-y-6">
       <SectionHeader
-        eyebrow="Ultimates · Usage overview"
+        eyebrow={t("eyebrow")}
         title={t("title")}
         description={t("description", { maps: ultStats.totalMaps })}
       />
@@ -132,9 +131,15 @@ export function UltUsageOverviewCard({ ultStats }: UltUsageOverviewCardProps) {
           <table className="w-full text-sm">
             <thead className="bg-muted/30">
               <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-                <th className="px-4 py-2 text-left font-medium">Metric</th>
-                <th className="px-4 py-2 text-right font-medium">Value</th>
-                <th className="px-4 py-2 text-left font-medium">Read</th>
+                <th className="px-4 py-2 text-left font-medium">
+                  {t("metric")}
+                </th>
+                <th className="px-4 py-2 text-right font-medium">
+                  {t("value")}
+                </th>
+                <th className="px-4 py-2 text-left font-medium">
+                  {t("read")}
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border)]">
@@ -161,7 +166,7 @@ export function UltUsageOverviewCard({ ultStats }: UltUsageOverviewCardProps) {
         <div className="space-y-3">
           <div className="flex items-baseline justify-between gap-3">
             <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-              Top fight openers
+              {t("topFightOpeners")}
             </p>
             <p className="text-muted-foreground font-mono text-xs tabular-nums">
               {t.rich("topOpenersLabel", {

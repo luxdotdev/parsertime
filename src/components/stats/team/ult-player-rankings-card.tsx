@@ -17,7 +17,7 @@ export function UltPlayerRankingsCard({
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Ultimates · Player rankings"
+          eyebrow={t("eyebrow")}
           title={t("title")}
           description={t("noData")}
         />
@@ -28,7 +28,7 @@ export function UltPlayerRankingsCard({
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Ultimates · Player rankings"
+        eyebrow={t("eyebrow")}
         title={t("title")}
         description={t("description")}
       />
