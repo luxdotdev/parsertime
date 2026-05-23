@@ -1066,6 +1066,7 @@
     },
     "compareButton": {
       "selected": "{count, plural, =1 {1 map selected} other {# maps selected}}",
+      "selectedMapName": "{count, plural, =1 {1 selected map} other {# selected maps}}",
       "fromScrims": "{count, plural, =1 {from 1 scrim} other {from # scrims}}",
       "compare": "Compare Selected",
       "compareNow": "Compare Now",

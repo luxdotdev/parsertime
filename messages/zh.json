@@ -1029,6 +1029,15 @@
         "viewDetails": "查看地图详情",
         "copyCode": "复制回放代码"
       }
+    },
+    "compareButton": {
+      "selected": "{count, plural, =1 {已选择 1 张地图} other {已选择 # 张地图}}",
+      "selectedMapName": "{count, plural, =1 {1 张已选地图} other {# 张已选地图}}",
+      "fromScrims": "{count, plural, =1 {来自 1 场训练赛} other {来自 # 场训练赛}}",
+      "compare": "比较已选地图",
+      "compareNow": "立即比较",
+      "addToMapGroup": "添加到地图组",
+      "clear": "清除"
     }
   },
   "comparePage": {

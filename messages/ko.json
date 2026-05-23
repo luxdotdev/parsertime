@@ -1029,6 +1029,15 @@
         "viewDetails": "맵 상세 보기",
         "copyCode": "리플레이 코드 복사"
       }
+    },
+    "compareButton": {
+      "selected": "{count, plural, =1 {맵 1개 선택됨} other {맵 #개 선택됨}}",
+      "selectedMapName": "{count, plural, =1 {선택한 맵 1개} other {선택한 맵 #개}}",
+      "fromScrims": "{count, plural, =1 {스크림 1개에서} other {스크림 #개에서}}",
+      "compare": "선택한 맵 비교",
+      "compareNow": "지금 비교",
+      "addToMapGroup": "맵 그룹에 추가",
+      "clear": "초기화"
     }
   },
   "comparePage": {

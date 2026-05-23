@@ -99,7 +99,7 @@ export function CompareSelectedButton({ teamId }: CompareSelectedButtonProps) {
         onOpenChange={setIsMapGroupDialogOpen}
         teamId={teamId}
         mapIds={selectedMapIds}
-        mapName={`${selectionCount} selected map${selectionCount !== 1 ? "s" : ""}`}
+        mapName={t("selectedMapName", { count: selectionCount })}
       />
       <motion.div
         className="bg-card ring-foreground/10 fixed inset-x-3 bottom-3 z-50 flex items-center justify-between gap-2 rounded-lg p-4 shadow-lg ring-1 sm:inset-x-auto sm:right-6 sm:bottom-6 sm:justify-start"
