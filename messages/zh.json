@@ -3796,6 +3796,25 @@
       "winrate": "胜率：<span>{winrate}</span>",
       "winsAndLosses": "{wins}胜 - {losses}负"
     },
+    "mapRosterDetailsSheet": {
+      "eyebrow": "地图 · 阵容拆解",
+      "overall": "整体：{wins}胜 - {losses}负（胜率 {winrate}）• {games, plural, =0 {未进行比赛} other {已进行 # 场比赛}}",
+      "noData": "此地图还没有阵容数据。",
+      "rosterPerformance": "阵容表现（{count, plural, =0 {无阵容} other {# 套阵容}}）",
+      "bestLineup": "最佳阵容",
+      "winsLossesRecord": "{wins}胜 - {losses}负",
+      "gamesLabel": "{count, plural, =0 {未进行比赛} other {已进行 # 场比赛}}",
+      "smallSample": "样本较小",
+      "recordLabel": "战绩",
+      "winrateLabel": "胜率",
+      "overallLabel": "整体",
+      "lineupsLabel": "阵容",
+      "distinctLabel": "不同阵容",
+      "lineupsEyebrow": "地图 · 阵容",
+      "lineupHeader": "阵容",
+      "gamesHeader": "比赛",
+      "tagHeader": "标签"
+    },
     "ultimatesTab": {
       "combos": {
         "title": "终极技能连招",

@@ -8,7 +8,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { cn, toKebabCase } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import Image from "next/image";
 
 type RosterVariant = {
@@ -47,6 +47,7 @@ export function MapRosterDetailsSheet({
   rosterVariants,
 }: MapRosterDetailsSheetProps) {
   const t = useTranslations("teamStatsPage.mapRosterDetailsSheet");
+  const format = useFormatter();
 
   const sortedRosters = [...rosterVariants].sort(
     (a, b) => b.winrate - a.winrate
@@ -54,12 +55,20 @@ export function MapRosterDetailsSheet({
 
   const totalGames = totalWins + totalLosses;
 
+  function formatPercent(value: number): string {
+    return format.number(value / 100, {
+      style: "percent",
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+  }
+
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent className="w-full overflow-y-auto p-6 sm:max-w-2xl">
         <SheetHeader className="space-y-3 p-0">
           <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-            Maps · Roster breakdown
+            {t("eyebrow")}
           </p>
           <SheetTitle className="flex items-center gap-4 text-2xl tracking-tight">
             <div className="border-border relative h-12 w-12 shrink-0 overflow-hidden rounded border">
@@ -76,7 +85,7 @@ export function MapRosterDetailsSheet({
             {t("overall", {
               wins: totalWins,
               losses: totalLosses,
-              winrate: totalWinrate.toFixed(1),
+              winrate: formatPercent(totalWinrate),
               games: totalGames,
             })}
           </SheetDescription>
@@ -85,10 +94,10 @@ export function MapRosterDetailsSheet({
         <dl className="border-border mt-4 grid grid-cols-3 divide-x divide-[var(--border)] border-y">
           <div className="flex flex-col gap-1 px-4 py-3">
             <dt className="text-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase">
-              Record
+              {t("recordLabel")}
             </dt>
             <dd className="text-foreground font-mono text-xl leading-none font-semibold tabular-nums">
-              {totalWins}–{totalLosses}
+              {t("winsLossesRecord", { wins: totalWins, losses: totalLosses })}
             </dd>
             <dd className="text-muted-foreground text-xs">
               {t("gamesLabel", { count: totalGames })}
@@ -96,7 +105,7 @@ export function MapRosterDetailsSheet({
           </div>
           <div className="flex flex-col gap-1 px-4 py-3">
             <dt className="text-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase">
-              Winrate
+              {t("winrateLabel")}
             </dt>
             <dd
               className={cn(
@@ -104,25 +113,29 @@ export function MapRosterDetailsSheet({
                 winrateClass(totalWinrate, totalGames > 0)
               )}
             >
-              {totalGames > 0 ? `${totalWinrate.toFixed(1)}%` : "—"}
+              {totalGames > 0 ? formatPercent(totalWinrate) : "—"}
             </dd>
-            <dd className="text-muted-foreground text-xs">overall</dd>
+            <dd className="text-muted-foreground text-xs">
+              {t("overallLabel")}
+            </dd>
           </div>
           <div className="flex flex-col gap-1 px-4 py-3">
             <dt className="text-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase">
-              Lineups
+              {t("lineupsLabel")}
             </dt>
             <dd className="text-foreground font-mono text-xl leading-none font-semibold tabular-nums">
-              {sortedRosters.length}
+              {format.number(sortedRosters.length)}
             </dd>
-            <dd className="text-muted-foreground text-xs">distinct</dd>
+            <dd className="text-muted-foreground text-xs">
+              {t("distinctLabel")}
+            </dd>
           </div>
         </dl>
 
         <section className="mt-6 space-y-3">
           <div>
             <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-              Maps · Lineups
+              {t("lineupsEyebrow")}
             </p>
             <h3 className="mt-1 text-lg font-semibold tracking-tight">
               {t("rosterPerformance", { count: sortedRosters.length })}
@@ -136,14 +149,20 @@ export function MapRosterDetailsSheet({
               <table className="w-full text-sm">
                 <thead className="bg-muted/30">
                   <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-                    <th className="px-4 py-2 text-left font-medium">Lineup</th>
-                    <th className="px-4 py-2 text-right font-medium">Games</th>
-                    <th className="px-4 py-2 text-right font-medium">Record</th>
+                    <th className="px-4 py-2 text-left font-medium">
+                      {t("lineupHeader")}
+                    </th>
                     <th className="px-4 py-2 text-right font-medium">
-                      Winrate
+                      {t("gamesHeader")}
+                    </th>
+                    <th className="px-4 py-2 text-right font-medium">
+                      {t("recordLabel")}
+                    </th>
+                    <th className="px-4 py-2 text-right font-medium">
+                      {t("winrateLabel")}
                     </th>
                     <th className="w-24 px-4 py-2 text-right font-medium">
-                      Tag
+                      {t("tagHeader")}
                     </th>
                   </tr>
                 </thead>
@@ -171,10 +190,13 @@ export function MapRosterDetailsSheet({
                           </div>
                         </td>
                         <td className="px-4 py-3 text-right font-mono tabular-nums">
-                          {games}
+                          {format.number(games)}
                         </td>
                         <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
-                          {roster.wins}–{roster.losses}
+                          {t("winsLossesRecord", {
+                            wins: roster.wins,
+                            losses: roster.losses,
+                          })}
                         </td>
                         <td
                           className={cn(
@@ -182,7 +204,7 @@ export function MapRosterDetailsSheet({
                             winrateClass(roster.winrate, games > 0)
                           )}
                         >
-                          {games > 0 ? `${roster.winrate.toFixed(1)}%` : "—"}
+                          {games > 0 ? formatPercent(roster.winrate) : "—"}
                         </td>
                         <td className="px-4 py-3 text-right">
                           {isBest ? (

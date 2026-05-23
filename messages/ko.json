@@ -3796,6 +3796,25 @@
       "winrate": "승률: <span>{winrate}</span>",
       "winsAndLosses": "{wins}승 - {losses}패"
     },
+    "mapRosterDetailsSheet": {
+      "eyebrow": "맵 · 로스터 분석",
+      "overall": "전체: {wins}승 - {losses}패 (승률 {winrate}) • {games, plural, =0 {플레이한 경기 없음} other {#경기 플레이}}",
+      "noData": "아직 이 맵의 로스터 데이터가 없습니다.",
+      "rosterPerformance": "로스터 성능 ({count, plural, =0 {라인업 없음} other {#개 라인업}})",
+      "bestLineup": "최고 라인업",
+      "winsLossesRecord": "{wins}승 - {losses}패",
+      "gamesLabel": "{count, plural, =0 {플레이한 경기 없음} other {#경기 플레이}}",
+      "smallSample": "표본 적음",
+      "recordLabel": "전적",
+      "winrateLabel": "승률",
+      "overallLabel": "전체",
+      "lineupsLabel": "라인업",
+      "distinctLabel": "고유",
+      "lineupsEyebrow": "맵 · 라인업",
+      "lineupHeader": "라인업",
+      "gamesHeader": "경기",
+      "tagHeader": "태그"
+    },
     "ultimatesTab": {
       "combos": {
         "title": "궁극기 콤보",

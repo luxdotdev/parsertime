@@ -4591,13 +4591,23 @@
       }
     },
     "mapRosterDetailsSheet": {
-      "overall": "Overall: {wins}W - {losses}L ({winrate}% winrate) • {games, plural, =0 {no games} =1 {1 game} other {# games}} played",
+      "eyebrow": "Maps · Roster breakdown",
+      "overall": "Overall: {wins}W - {losses}L ({winrate} winrate) • {games, plural, =0 {no games} =1 {1 game} other {# games}} played",
       "noData": "No roster data available for this map yet.",
       "rosterPerformance": "Roster Performance ({count, plural, =0 {no lineups} =1 {1 lineup} other {# lineups}})",
       "bestLineup": "Best Lineup",
       "winsLossesRecord": "{wins}W - {losses}L",
       "gamesLabel": "{count, plural, =0 {no games} =1 {1 game} other {# games}} played",
-      "smallSample": "Small sample"
+      "smallSample": "Small sample",
+      "recordLabel": "Record",
+      "winrateLabel": "Winrate",
+      "overallLabel": "overall",
+      "lineupsLabel": "Lineups",
+      "distinctLabel": "distinct",
+      "lineupsEyebrow": "Maps · Lineups",
+      "lineupHeader": "Lineup",
+      "gamesHeader": "Games",
+      "tagHeader": "Tag"
     },
     "mapWinrateGallery": {
       "eyebrow": "Maps · Winrate gallery",
