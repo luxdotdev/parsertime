@@ -454,8 +454,21 @@
       "mapStats": "맵 통계",
       "compareStats": "플레이어 비교",
       "teamStats": "팀 통계",
+      "scouting": "스카우팅",
+      "scoutPlayer": "플레이어 스카우트",
+      "scoutTeam": "팀 스카우트",
+      "dataLabeling": "데이터 라벨링",
+      "dataTools": "데이터 도구",
+      "mapCalibration": "맵 보정",
+      "chat": "애널리스트",
+      "chatNew": "새 대화",
+      "chatReports": "보고서",
       "tournaments": "토너먼트",
-      "matchmaker": "Matchmaker"
+      "coaching": "코칭",
+      "coachingCanvas": "캔버스",
+      "yourTeams": "내 팀",
+      "availability": "가능 시간",
+      "matchmaker": "매치메이커"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "팀 검색...",

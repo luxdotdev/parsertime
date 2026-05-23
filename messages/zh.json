@@ -454,8 +454,21 @@
       "mapStats": "地图统计",
       "compareStats": "玩家对比",
       "teamStats": "团队统计",
+      "scouting": "侦察",
+      "scoutPlayer": "侦察玩家",
+      "scoutTeam": "侦察队伍",
+      "dataLabeling": "数据标注",
+      "dataTools": "数据工具",
+      "mapCalibration": "地图校准",
+      "chat": "分析师",
+      "chatNew": "新对话",
+      "chatReports": "报告",
       "tournaments": "锦标赛",
-      "matchmaker": "Matchmaker"
+      "coaching": "教练",
+      "coachingCanvas": "画布",
+      "yourTeams": "你的队伍",
+      "availability": "可用时间",
+      "matchmaker": "匹配工具"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "搜索团队...",
