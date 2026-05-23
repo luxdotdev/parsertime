@@ -2785,6 +2785,10 @@
       "previousPage": "Previous",
       "nextPage": "Next",
       "pageInfo": "Page {current} of {total}",
+      "matchCount": "{count, plural, one {# match} other {# matches}}",
+      "fetchError": "Failed to fetch matches",
+      "errorLoading": "Error loading matches: {message}",
+      "unknownError": "Unknown error",
       "noMatches": "No unlabeled matches with VODs found.",
       "vs": "vs"
     },
@@ -2806,6 +2810,7 @@
       "saveAll": "Save All Maps",
       "saving": "Saving...",
       "saved": "Saved!",
+      "saveFailed": "Save failed",
       "saveSuccess": "Team compositions saved successfully.",
       "saveError": "Failed to save team compositions.",
       "roleConstraint": "Select 1 Tank, 2 Damage, 2 Support",
@@ -2813,6 +2818,8 @@
       "playerAssignments": "{team} Player Assignments",
       "assignPlayer": "Assign player for {hero}",
       "selectPlayer": "Select player...",
+      "twitchVodTitle": "Twitch VOD",
+      "noVodAvailable": "No VOD available",
       "instructions": {
         "title": "Reviewer Instructions",
         "body": "Watch the VOD and use the panel on the right to record the hero composition for each map. For each hero, assign the player who was playing that hero at the start of the map.",

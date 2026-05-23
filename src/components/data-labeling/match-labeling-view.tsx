@@ -106,7 +106,7 @@ const VodPanel = memo(function VodPanel({
             <div className="aspect-video">
               <iframe
                 src={`https://player.twitch.tv/?video=${vod.url.split("/videos/")[1].split("?")[0]}&parent=${parentDomain}`}
-                title="Twitch VOD"
+                title={t("twitchVodTitle")}
                 className="h-full w-full border-0"
                 allowFullScreen
               />
@@ -118,7 +118,7 @@ const VodPanel = memo(function VodPanel({
       {(!vod || !vodSource) && (
         <Card>
           <CardContent className="flex aspect-video items-center justify-center">
-            <span className="text-muted-foreground">No VOD available</span>
+            <span className="text-muted-foreground">{t("noVodAvailable")}</span>
           </CardContent>
         </Card>
       )}
@@ -279,7 +279,7 @@ export function MatchLabelingView({ match }: MatchLabelingViewProps) {
 
         if (!res.ok) {
           const data = (await res.json()) as { error?: string };
-          throw new Error(data.error ?? "Save failed");
+          throw new Error(data.error ?? t("saveFailed"));
         }
 
         setMapStates((prev) => ({
