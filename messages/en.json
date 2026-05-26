@@ -3080,6 +3080,7 @@
   "coaching": {
     "title": "Coaching Canvas",
     "subtitle": "Annotate maps with hero placements, drawings, and strategy notes.",
+    "eyebrow": "Tactical board",
     "metadata": {
       "title": "Coaching Canvas | Parsertime",
       "description": "Annotate maps with hero placements and strategy drawings."

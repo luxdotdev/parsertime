@@ -5301,6 +5301,7 @@
   "coaching": {
     "title": "코칭 캔버스",
     "subtitle": "맵에 영웅 배치, 그림, 전략 노트를 표시하세요.",
+    "eyebrow": "전술 보드",
     "metadata": {
       "title": "코칭 캔버스 | Parsertime",
       "description": "영웅 배치와 전략 그림을 맵에 표시하세요."

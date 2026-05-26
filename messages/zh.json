@@ -5301,6 +5301,7 @@
   "coaching": {
     "title": "教练画布",
     "subtitle": "在地图上标注英雄站位、绘图和战术笔记。",
+    "eyebrow": "战术板",
     "metadata": {
       "title": "教练画布 | Parsertime",
       "description": "在地图上标注英雄站位和战术绘图。"
