@@ -1,4 +1,117 @@
 {
+  "analyst": {
+    "metadata": {
+      "title": "Analyst | Parsertime",
+      "description": "Your AI analyst for Overwatch scrim data, player performance, and team trends."
+    },
+    "eyebrow": "Analyst",
+    "empty": {
+      "title": "Read your scrim data, fast.",
+      "description": "Ask about team performance, fight breakdowns, map win rates, and player trends. I pull straight from your uploaded scrims.",
+      "tryAsking": "Try asking",
+      "suggestions": [
+        "How did my team perform in our last scrim?",
+        "Which maps do we have the best win rate on?",
+        "What are our performance trends this month?",
+        "Who had the most outlier stats recently?"
+      ],
+      "blocked": {
+        "description": "Add credits to start a conversation. Analyst is pay-as-you-go, $5 minimum.",
+        "addCredits": "Add credits"
+      }
+    },
+    "composer": {
+      "placeholder": "Ask about your team's performance…",
+      "placeholderBlocked": "Add credits to continue chatting…",
+      "send": "Send message",
+      "stop": "Stop generating"
+    },
+    "blockedBanner": {
+      "message": "Your balance is too low to send a new message. Add credits to keep chatting; past conversations stay visible in read-only mode.",
+      "addCredits": "Add credits"
+    },
+    "edit": {
+      "cancel": "Cancel",
+      "resend": "Resend"
+    },
+    "actions": {
+      "copy": "Copy",
+      "regenerate": "Regenerate",
+      "edit": "Edit"
+    },
+    "newConversation": "New conversation",
+    "sidebar": {
+      "heading": "Chats",
+      "newChat": "New chat",
+      "deleteConversation": "Delete conversation: {title}",
+      "empty": "No conversations yet"
+    },
+    "balanceChip": {
+      "balanceLabel": "AI chat balance",
+      "addCreditsLabel": "Add credits to continue"
+    },
+    "cards": {
+      "record": {
+        "wins": "{count}W",
+        "losses": "{count}L",
+        "draws": "{count}D",
+        "winsLosses": "{wins}W · {losses}L"
+      },
+      "loading": {
+        "writingReport": "Writing report"
+      },
+      "scrimAnalysis": {
+        "eyebrow": "Scrim analysis",
+        "vs": "vs",
+        "acrossMaps": "across {count} maps",
+        "fightWr": "Fight WR",
+        "fightsWon": "Fights won",
+        "totalFights": "Total fights",
+        "players": "Players",
+        "insights": "Insights"
+      },
+      "mapPerformance": {
+        "eyebrow": "Map performance",
+        "overall": "{winrate}% overall"
+      },
+      "teamTrends": {
+        "eyebrow": "Performance trends",
+        "winStreak": "{count}-win streak",
+        "lossStreak": "{count}-loss streak",
+        "noStreak": "No active streak",
+        "weeklyWinRate": "Weekly win rate",
+        "last5": "Last 5",
+        "last10": "Last 10",
+        "last20": "Last 20"
+      },
+      "player": {
+        "eyebrow": "Player",
+        "summary": "{mapCount} maps on {heroes}",
+        "kd": "K/D",
+        "elims": "Elims/10",
+        "deaths": "Deaths/10",
+        "damage": "Dmg/10",
+        "healing": "Heal/10"
+      },
+      "report": {
+        "eyebrow": "Report created",
+        "viewReport": "View report"
+      },
+      "teamOverview": {
+        "scrims": "{count} scrims"
+      },
+      "scrimList": {
+        "eyebrow": "Recent scrims",
+        "found": "{count} found",
+        "maps": "{count} maps"
+      },
+      "trend": {
+        "up": "Up",
+        "down": "Down",
+        "stable": "Stable"
+      }
+    }
+  },
   "maps": {
     "aatlis": "Aatlis",
     "antarctic-peninsula": "Antarctic Peninsula",

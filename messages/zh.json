@@ -1,4 +1,117 @@
 {
+  "analyst": {
+    "metadata": {
+      "title": "分析师 | Parsertime",
+      "description": "为《守望先锋》训练赛数据、球员表现和团队趋势打造的 AI 分析师。"
+    },
+    "eyebrow": "分析师",
+    "empty": {
+      "title": "快速读懂你的训练赛数据。",
+      "description": "询问团队表现、团战拆解、地图胜率和球员趋势。我会直接从你上传的训练赛中提取数据。",
+      "tryAsking": "试着问问",
+      "suggestions": [
+        "我们队在上一场训练赛中表现如何？",
+        "我们在哪些地图上的胜率最高？",
+        "本月我们的表现趋势怎么样？",
+        "最近谁的数据最为突出？"
+      ],
+      "blocked": {
+        "description": "添加额度以开始对话。分析师采用即用即付，最低 $5。",
+        "addCredits": "添加额度"
+      }
+    },
+    "composer": {
+      "placeholder": "询问你团队的表现……",
+      "placeholderBlocked": "添加额度以继续对话……",
+      "send": "发送消息",
+      "stop": "停止生成"
+    },
+    "blockedBanner": {
+      "message": "余额过低，无法发送新消息。添加额度即可继续对话；过往对话仍以只读方式显示。",
+      "addCredits": "添加额度"
+    },
+    "edit": {
+      "cancel": "取消",
+      "resend": "重新发送"
+    },
+    "actions": {
+      "copy": "复制",
+      "regenerate": "重新生成",
+      "edit": "编辑"
+    },
+    "newConversation": "新对话",
+    "sidebar": {
+      "heading": "对话",
+      "newChat": "新对话",
+      "deleteConversation": "删除对话：{title}",
+      "empty": "暂无对话"
+    },
+    "balanceChip": {
+      "balanceLabel": "AI 聊天余额",
+      "addCreditsLabel": "添加额度以继续"
+    },
+    "cards": {
+      "record": {
+        "wins": "{count}胜",
+        "losses": "{count}负",
+        "draws": "{count}平",
+        "winsLosses": "{wins}胜 · {losses}负"
+      },
+      "loading": {
+        "writingReport": "正在生成报告"
+      },
+      "scrimAnalysis": {
+        "eyebrow": "训练赛分析",
+        "vs": "vs",
+        "acrossMaps": "共 {count} 张地图",
+        "fightWr": "团战胜率",
+        "fightsWon": "团战胜场",
+        "totalFights": "团战总数",
+        "players": "球员",
+        "insights": "要点"
+      },
+      "mapPerformance": {
+        "eyebrow": "地图表现",
+        "overall": "总体 {winrate}%"
+      },
+      "teamTrends": {
+        "eyebrow": "表现趋势",
+        "winStreak": "{count} 连胜",
+        "lossStreak": "{count} 连败",
+        "noStreak": "暂无连胜或连败",
+        "weeklyWinRate": "每周胜率",
+        "last5": "最近 5 场",
+        "last10": "最近 10 场",
+        "last20": "最近 20 场"
+      },
+      "player": {
+        "eyebrow": "球员",
+        "summary": "{heroes} · {mapCount} 张地图",
+        "kd": "K/D",
+        "elims": "击杀/10",
+        "deaths": "死亡/10",
+        "damage": "伤害/10",
+        "healing": "治疗/10"
+      },
+      "report": {
+        "eyebrow": "报告已生成",
+        "viewReport": "查看报告"
+      },
+      "teamOverview": {
+        "scrims": "{count} 场训练赛"
+      },
+      "scrimList": {
+        "eyebrow": "近期训练赛",
+        "found": "找到 {count} 个",
+        "maps": "{count} 张地图"
+      },
+      "trend": {
+        "up": "上升",
+        "down": "下降",
+        "stable": "稳定"
+      }
+    }
+  },
   "maps": {
     "aatlis": "阿特拉斯",
     "antarctic-peninsula": "南极半岛",

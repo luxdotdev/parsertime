@@ -6,9 +6,11 @@ import { useCreditBalance } from "@/hooks/use-credits";
 import { MIN_BALANCE_TO_CHAT_CENTS, formatCents } from "@/lib/chat-pricing";
 import { cn } from "@/lib/utils";
 import { AlertTriangleIcon, CoinsIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 export function BalanceChip() {
+  const t = useTranslations("analyst.balanceChip");
   const [open, setOpen] = useState(false);
   const { data: balance, isLoading } = useCreditBalance();
 
@@ -22,11 +24,11 @@ export function BalanceChip() {
         size="sm"
         onClick={() => setOpen(true)}
         className={cn(
-          "gap-1.5 font-medium tabular-nums",
+          "gap-1.5 font-mono font-medium tabular-nums",
           blocked &&
-            "border-amber-500/40 bg-amber-500/10 text-amber-700 hover:bg-amber-500/15 dark:text-amber-400"
+            "border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
         )}
-        aria-label={blocked ? "Add credits to continue" : "AI chat balance"}
+        aria-label={blocked ? t("addCreditsLabel") : t("balanceLabel")}
       >
         {blocked ? (
           <AlertTriangleIcon className="size-3.5" aria-hidden />

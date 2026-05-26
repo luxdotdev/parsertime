@@ -1,4 +1,117 @@
 {
+  "analyst": {
+    "metadata": {
+      "title": "분석가 | Parsertime",
+      "description": "오버워치 스크림 데이터, 플레이어 성과, 팀 추세를 위한 AI 분석가입니다."
+    },
+    "eyebrow": "분석가",
+    "empty": {
+      "title": "스크림 데이터를 빠르게 확인하세요.",
+      "description": "팀 성과, 교전 분석, 맵 승률, 플레이어 추세에 대해 물어보세요. 업로드한 스크림에서 바로 가져옵니다.",
+      "tryAsking": "이렇게 물어보세요",
+      "suggestions": [
+        "지난 스크림에서 우리 팀은 어떻게 했나요?",
+        "어떤 맵에서 승률이 가장 좋나요?",
+        "이번 달 성과 추세는 어떤가요?",
+        "최근 가장 이례적인 스탯을 기록한 선수는 누구인가요?"
+      ],
+      "blocked": {
+        "description": "대화를 시작하려면 크레딧을 추가하세요. 분석가는 종량제이며 최소 금액은 $5입니다.",
+        "addCredits": "크레딧 추가"
+      }
+    },
+    "composer": {
+      "placeholder": "팀의 성과에 대해 물어보세요…",
+      "placeholderBlocked": "계속 대화하려면 크레딧을 추가하세요…",
+      "send": "메시지 보내기",
+      "stop": "생성 중지"
+    },
+    "blockedBanner": {
+      "message": "잔액이 부족해 새 메시지를 보낼 수 없습니다. 계속 대화하려면 크레딧을 추가하세요. 이전 대화는 읽기 전용으로 계속 표시됩니다.",
+      "addCredits": "크레딧 추가"
+    },
+    "edit": {
+      "cancel": "취소",
+      "resend": "다시 보내기"
+    },
+    "actions": {
+      "copy": "복사",
+      "regenerate": "다시 생성",
+      "edit": "편집"
+    },
+    "newConversation": "새 대화",
+    "sidebar": {
+      "heading": "대화",
+      "newChat": "새 대화",
+      "deleteConversation": "대화 삭제: {title}",
+      "empty": "아직 대화가 없습니다"
+    },
+    "balanceChip": {
+      "balanceLabel": "AI 채팅 잔액",
+      "addCreditsLabel": "계속하려면 크레딧 추가"
+    },
+    "cards": {
+      "record": {
+        "wins": "{count}승",
+        "losses": "{count}패",
+        "draws": "{count}무",
+        "winsLosses": "{wins}승 · {losses}패"
+      },
+      "loading": {
+        "writingReport": "리포트 작성 중"
+      },
+      "scrimAnalysis": {
+        "eyebrow": "스크림 분석",
+        "vs": "vs",
+        "acrossMaps": "맵 {count}개",
+        "fightWr": "교전 승률",
+        "fightsWon": "교전 승리",
+        "totalFights": "총 교전",
+        "players": "플레이어",
+        "insights": "인사이트"
+      },
+      "mapPerformance": {
+        "eyebrow": "맵 성과",
+        "overall": "전체 {winrate}%"
+      },
+      "teamTrends": {
+        "eyebrow": "성과 추세",
+        "winStreak": "{count}연승",
+        "lossStreak": "{count}연패",
+        "noStreak": "진행 중인 연승/연패 없음",
+        "weeklyWinRate": "주별 승률",
+        "last5": "최근 5경기",
+        "last10": "최근 10경기",
+        "last20": "최근 20경기"
+      },
+      "player": {
+        "eyebrow": "플레이어",
+        "summary": "{heroes} · 맵 {mapCount}개",
+        "kd": "K/D",
+        "elims": "처치/10",
+        "deaths": "사망/10",
+        "damage": "피해/10",
+        "healing": "치유/10"
+      },
+      "report": {
+        "eyebrow": "리포트 생성됨",
+        "viewReport": "리포트 보기"
+      },
+      "teamOverview": {
+        "scrims": "스크림 {count}개"
+      },
+      "scrimList": {
+        "eyebrow": "최근 스크림",
+        "found": "{count}개 발견",
+        "maps": "맵 {count}개"
+      },
+      "trend": {
+        "up": "상승",
+        "down": "하락",
+        "stable": "유지"
+      }
+    }
+  },
   "maps": {
     "aatlis": "아틸리스",
     "antarctic-peninsula": "남극 반도",

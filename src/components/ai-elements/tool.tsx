@@ -55,13 +55,19 @@ const statusLabels: Record<ToolPart["state"], string> = {
 };
 
 const statusIcons: Record<ToolPart["state"], ReactNode> = {
-  "approval-requested": <ClockIcon className="size-4 text-yellow-600" />,
-  "approval-responded": <CheckCircleIcon className="size-4 text-blue-600" />,
-  "input-available": <ClockIcon className="size-4 animate-pulse" />,
-  "input-streaming": <CircleIcon className="size-4" />,
-  "output-available": <CheckCircleIcon className="size-4 text-green-600" />,
-  "output-denied": <XCircleIcon className="size-4 text-orange-600" />,
-  "output-error": <XCircleIcon className="size-4 text-red-600" />,
+  "approval-requested": (
+    <ClockIcon className="text-muted-foreground size-4" />
+  ),
+  "approval-responded": (
+    <CheckCircleIcon className="text-muted-foreground size-4" />
+  ),
+  "input-available": (
+    <ClockIcon className="text-muted-foreground size-4 animate-pulse" />
+  ),
+  "input-streaming": <CircleIcon className="text-muted-foreground size-4" />,
+  "output-available": <CheckCircleIcon className="text-primary size-4" />,
+  "output-denied": <XCircleIcon className="text-muted-foreground size-4" />,
+  "output-error": <XCircleIcon className="text-destructive size-4" />,
 };
 
 export const getStatusBadge = (status: ToolPart["state"]) => (
@@ -118,7 +124,7 @@ export type ToolInputProps = ComponentProps<"div"> & {
 
 export const ToolInput = ({ className, input, ...props }: ToolInputProps) => (
   <div className={cn("space-y-2 overflow-hidden", className)} {...props}>
-    <h4 className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+    <h4 className="text-muted-foreground font-mono text-[10px] font-medium tracking-[0.14em] uppercase">
       Parameters
     </h4>
     <div className="bg-muted/50 rounded-md">
@@ -154,7 +160,7 @@ export const ToolOutput = ({
 
   return (
     <div className={cn("space-y-2", className)} {...props}>
-      <h4 className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+      <h4 className="text-muted-foreground font-mono text-[10px] font-medium tracking-[0.14em] uppercase">
         {errorText ? "Error" : "Result"}
       </h4>
       <div

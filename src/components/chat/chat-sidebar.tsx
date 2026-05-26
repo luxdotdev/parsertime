@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { PlusIcon, Trash2Icon } from "lucide-react";
 import type { Route } from "next";
+import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 
 type ConversationSummary = {
@@ -21,6 +22,7 @@ async function fetchConversations(): Promise<ConversationSummary[]> {
 }
 
 export function ChatSidebar({ className }: { className?: string }) {
+  const t = useTranslations("analyst");
   const pathname = usePathname();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -54,8 +56,8 @@ export function ChatSidebar({ className }: { className?: string }) {
       className={cn("flex h-full w-64 shrink-0 flex-col border-r", className)}
     >
       <div className="flex items-center justify-between px-3 py-3">
-        <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-          Chats
+        <span className="text-muted-foreground font-mono text-[11px] font-medium tracking-[0.16em] uppercase">
+          {t("sidebar.heading")}
         </span>
         <Button
           variant="ghost"
@@ -63,7 +65,7 @@ export function ChatSidebar({ className }: { className?: string }) {
           className="size-8 active:scale-[0.96]"
           asChild
         >
-          <Link href="/chat" aria-label="New chat">
+          <Link href="/chat" aria-label={t("sidebar.newChat")}>
             <PlusIcon className="size-4" aria-hidden="true" />
           </Link>
         </Button>
@@ -90,7 +92,7 @@ export function ChatSidebar({ className }: { className?: string }) {
               size="icon"
               className="text-muted-foreground hover:text-destructive mr-1 size-7 shrink-0 opacity-0 transition-opacity duration-100 group-hover:opacity-100 active:scale-[0.96]"
               onClick={() => deleteMutation.mutate(conv.id)}
-              aria-label={`Delete conversation: ${conv.title}`}
+              aria-label={t("sidebar.deleteConversation", { title: conv.title })}
             >
               <Trash2Icon className="size-3.5" aria-hidden="true" />
             </Button>
@@ -98,7 +100,7 @@ export function ChatSidebar({ className }: { className?: string }) {
         ))}
         {conversations.length === 0 && (
           <p className="text-muted-foreground px-2 py-6 text-center text-xs">
-            No conversations yet
+            {t("sidebar.empty")}
           </p>
         )}
       </nav>
