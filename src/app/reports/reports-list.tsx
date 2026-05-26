@@ -67,7 +67,7 @@ function ReportRow({ report }: { report: ReportWithUser }) {
   return (
     <NextLink
       href={`/reports/${report.id}` as Route}
-      className="group hover:bg-muted/40 focus-visible:ring-ring/50 flex items-start gap-4 px-4 py-3.5 no-underline outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-inset"
+      className="group hover:bg-muted/40 focus-visible:ring-ring/50 flex items-start gap-4 px-4 py-3.5 no-underline transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-inset"
     >
       <div className="min-w-0 flex-1 space-y-1">
         <h3 className="text-foreground truncate text-sm font-semibold">
