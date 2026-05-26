@@ -61,10 +61,7 @@ export function UltResponseCard({ analysis }: UltResponseCardProps) {
   if (analysis.responses.length === 0) {
     return (
       <section className="space-y-4">
-        <SectionHeader
-          eyebrow={t("eyebrow")}
-          title={t("title")}
-        />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <p className="text-muted-foreground text-sm">
           {t("noData", { window: analysis.windowSeconds })}
         </p>

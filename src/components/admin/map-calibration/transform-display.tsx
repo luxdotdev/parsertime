@@ -36,9 +36,13 @@ export function TransformDisplay({
       </div>
       <div className="grid grid-cols-2 gap-x-4 gap-y-1 font-mono text-xs">
         <span className="text-muted-foreground">{t("scaleX")}</span>
-        <span>{t("pixelsPerUnit", { value: formatDecimal(formatter, scaleX, 4) })}</span>
+        <span>
+          {t("pixelsPerUnit", { value: formatDecimal(formatter, scaleX, 4) })}
+        </span>
         <span className="text-muted-foreground">{t("scaleY")}</span>
-        <span>{t("pixelsPerUnit", { value: formatDecimal(formatter, scaleY, 4) })}</span>
+        <span>
+          {t("pixelsPerUnit", { value: formatDecimal(formatter, scaleY, 4) })}
+        </span>
         <span className="text-muted-foreground">{t("determinant")}</span>
         <span>{formatDecimal(formatter, det, 4)}</span>
         <span className="text-muted-foreground">{t("avgError")}</span>
@@ -62,9 +66,7 @@ export function TransformDisplay({
         </span>
       </div>
       {errorPct <= 5 ? (
-        <p className="text-muted-foreground text-xs">
-          {t("withinTolerance")}
-        </p>
+        <p className="text-muted-foreground text-xs">{t("withinTolerance")}</p>
       ) : null}
     </div>
   );

@@ -2675,408 +2675,408 @@
       "ogDescription": "OWCS 팀을 스카우팅하세요. 이름으로 검색하고 경기 기록, 승률, 토너먼트 성과를 확인할 수 있습니다.",
       "ogImage": "스카우팅"
     },
-  "search": {
-    "label": "팀 검색",
-    "placeholder": "팀 검색...",
-    "helperText": "이름이나 약어로 OWCS 팀을 검색하세요.",
-    "resultsLabel": "팀 검색 결과",
-    "matchCount": "{count, plural, =1 {경기 1개} other {경기 #개}}",
-    "winRate": "{winRate} 승률",
-    "noResults": "팀을 찾을 수 없습니다."
-  },
-  "player": {
-    "title": "선수 스카우트",
-    "subtitle": "프로 선수를 검색하고 경쟁 이력을 분석하세요.",
-    "metadata": {
-      "title": "선수 스카우트 | Parsertime",
-      "description": "프로 Overwatch 선수를 검색하고 경쟁 이력, 영웅 풀, 토너먼트 성과를 확인하세요.",
-      "ogTitle": "선수 스카우트 | Parsertime",
-      "ogDescription": "프로 Overwatch 선수를 검색하고 경쟁 이력, 영웅 풀, 토너먼트 성과를 확인하세요.",
-      "ogImage": "선수 스카우트"
-    },
     "search": {
-      "label": "선수 검색",
-      "placeholder": "선수 검색...",
-      "helperText": "이름, 팀, 역할로 프로 선수를 검색하세요.",
-      "resultsLabel": "선수 검색 결과",
-      "noResults": "선수를 찾을 수 없습니다."
+      "label": "팀 검색",
+      "placeholder": "팀 검색...",
+      "helperText": "이름이나 약어로 OWCS 팀을 검색하세요.",
+      "resultsLabel": "팀 검색 결과",
+      "matchCount": "{count, plural, =1 {경기 1개} other {경기 #개}}",
+      "winRate": "{winRate} 승률",
+      "noResults": "팀을 찾을 수 없습니다."
     },
-    "profile": {
+    "player": {
+      "title": "선수 스카우트",
+      "subtitle": "프로 선수를 검색하고 경쟁 이력을 분석하세요.",
       "metadata": {
-        "title": "{player} | 선수 스카우트 | Parsertime",
-        "description": "{player} 스카우트 — 영웅 풀, 토너먼트 이력, 경쟁 성과를 확인하세요.",
-        "ogTitle": "{player} | 선수 스카우트 | Parsertime",
-        "ogDescription": "{player} 스카우트 — 영웅 풀, 토너먼트 이력, 경쟁 성과를 확인하세요."
+        "title": "선수 스카우트 | Parsertime",
+        "description": "프로 Overwatch 선수를 검색하고 경쟁 이력, 영웅 풀, 토너먼트 성과를 확인하세요.",
+        "ogTitle": "선수 스카우트 | Parsertime",
+        "ogDescription": "프로 Overwatch 선수를 검색하고 경쟁 이력, 영웅 풀, 토너먼트 성과를 확인하세요.",
+        "ogImage": "선수 스카우트"
+      },
+      "search": {
+        "label": "선수 검색",
+        "placeholder": "선수 검색...",
+        "helperText": "이름, 팀, 역할로 프로 선수를 검색하세요.",
+        "resultsLabel": "선수 검색 결과",
+        "noResults": "선수를 찾을 수 없습니다."
+      },
+      "profile": {
+        "metadata": {
+          "title": "{player} | 선수 스카우트 | Parsertime",
+          "description": "{player} 스카우트 — 영웅 풀, 토너먼트 이력, 경쟁 성과를 확인하세요.",
+          "ogTitle": "{player} | 선수 스카우트 | Parsertime",
+          "ogDescription": "{player} 스카우트 — 영웅 풀, 토너먼트 이력, 경쟁 성과를 확인하세요."
+        },
+        "backToSearch": "검색으로 돌아가기",
+        "liquipediaProfile": "Liquipedia에서 보기",
+        "careerWinnings": "커리어 상금",
+        "signatureHeroes": "대표 영웅",
+        "tournamentAppearances": "토너먼트 출전",
+        "competitiveMaps": "경쟁전 맵",
+        "tournaments": "{count}개 토너먼트",
+        "maps": "{count}개 맵",
+        "heroPool": "영웅 풀",
+        "knownFor": "주요 특징",
+        "knownForSource": "Liquipedia 출처",
+        "observedInCompetition": "대회에서 관찰됨",
+        "heroMaps": "{count}개 맵",
+        "noHeroData": "아직 경쟁 영웅 데이터가 없습니다.",
+        "tournamentHistory": "토너먼트 이력",
+        "team": "팀",
+        "role": "역할",
+        "record": "전적",
+        "winRate": "승률",
+        "noTournamentData": "아직 토너먼트 데이터가 없습니다.",
+        "matchDetails": "경기 세부 정보",
+        "opponent": "상대",
+        "score": "점수",
+        "result": "결과",
+        "heroes": "영웅",
+        "win": "승",
+        "loss": "패"
+      },
+      "analytics": {
+        "scrimOverview": {
+          "title": "스크림 성과",
+          "description": "Parsertime 스크림 데이터의 핵심 지표입니다.",
+          "mvpScore": "MVP 점수",
+          "kdRatio": "K/D 비율",
+          "firstPickRate": "첫 픽 비율",
+          "firstDeathRate": "첫 사망 비율",
+          "fightReversalRate": "전투 역전율",
+          "killsPerUltimate": "궁극기당 처치",
+          "consistencyScore": "일관성",
+          "mapsPlayed": "플레이한 맵",
+          "firstPicks": "첫 픽 {count}회",
+          "firstDeaths": "첫 사망 {count}회",
+          "outOf100": "/ 100",
+          "methodology": {
+            "mvpScore": "글로벌 영웅 평균과 비교한 10분당 지표 기반 점수입니다. 각 지표는 중요도에 따라 최대 ±10점까지 기여합니다(표준편차당 4점). 일반적인 범위는 −100에서 +100입니다.",
+            "kdRatio": "기록된 모든 스크림에서 총 처치를 총 사망으로 나눈 값입니다. 처치에는 최종 타격과 지원이 모두 포함됩니다.",
+            "firstPickRate": "이 선수가 개막 처치를 기록한 팀 전투의 비율입니다. 맵별로 측정한 뒤 전체 맵 평균을 사용합니다.",
+            "firstDeathRate": "이 선수가 전투에서 가장 먼저 사망한 팀 전투의 비율입니다. 높은 값은 공격적인 포지셔닝 또는 집중 견제를 의미할 수 있습니다.",
+            "fightReversalRate": "이 선수의 팀이 먼저 2명 이상 잃은 뒤 승리한 전투의 비율입니다. 클러치 잠재력을 보여줍니다.",
+            "killsPerUltimate": "사용한 궁극기당 평균 처치 수입니다. 값이 높을수록 궁극기 활용 효율이 좋다는 뜻입니다.",
+            "consistencyScore": "맵별 10분당 지표가 얼마나 안정적인지 0-100으로 점수화합니다. 처치, 사망, 피해, 치유의 평균 변동계수 역수로 계산하며 75 이상은 매우 일관적입니다.",
+            "mapsPlayed": "Parsertime에 기록된 이 선수의 스크림 맵 총수입니다. 모든 스크림 기반 지표의 표본 크기입니다."
+          }
+        },
+        "performanceRadar": {
+          "title": "성과 프로필",
+          "description": "전체 Parsertime 선수의 글로벌 영웅 평균 대비 z-점수입니다.",
+          "aboveAverage": "평균 이상",
+          "belowAverage": "평균 이하",
+          "noData": "레이더 차트에 사용할 스크림 데이터가 없습니다.",
+          "methodology": "각 축은 이 선수의 10분당 지표가 동일 영웅 글로벌 평균에서 표준편차(σ) 기준으로 얼마나 떨어져 있는지 보여줍니다. 같은 영웅을 플레이한 모든 Parsertime 선수의 최소 3맵 이상 데이터를 기준선으로 사용합니다."
+        },
+        "heroZScores": {
+          "title": "영웅 성과",
+          "description": "글로벌 기준선과 비교한 영웅별 종합 z-점수입니다.",
+          "primary": "주 영웅",
+          "maps": "{count}개 맵",
+          "delta": "차이",
+          "significantDropOff": "큰 하락",
+          "noData": "영웅 성과 데이터가 없습니다.",
+          "methodology": "종합 z-점수는 각 영웅의 지표별 z-점수(처치, 사망, 피해, 치유, 방어)를 가중 평균한 값입니다. 개별 z-점수는 이 선수의 10분당 지표를 해당 영웅의 글로벌 평균 및 표준편차와 비교합니다. 차이는 주 영웅과 보조 영웅 숙련도 간 격차를 보여줍니다."
+        },
+        "mapWinrates": {
+          "title": "맵 성과",
+          "description": "대회 경기의 승률입니다.",
+          "byMapType": "맵 유형별",
+          "byMap": "맵별",
+          "competitive": "대회",
+          "scrims": "스크림",
+          "played": "플레이",
+          "won": "승리",
+          "noData": "경쟁 맵 데이터가 없습니다.",
+          "methodologyMapType": "맵 유형별 승률은 이 선수의 팀이 참가한 모든 대회 경기 결과에서 계산됩니다. 비율은 각 게임 모드(Control, Escort, Hybrid, Push, Flashpoint)에서 승리 ÷ 총 플레이 맵입니다.",
+          "methodologyByMap": "개별 맵 승률은 대회 경기 결과에서 계산됩니다. 테두리는 색으로 구분됩니다: 승률 60% 이상은 초록, 40% 이하는 빨강, 그 외는 중립입니다."
+        },
+        "killAnalysis": {
+          "title": "전투 패턴",
+          "description": "스크림 데이터의 처치 및 사망 분석입니다.",
+          "topTargets": "주요 대상",
+          "topThreats": "주요 위협",
+          "killMethods": "처치 방식",
+          "roleDistribution": "역할 분포",
+          "count": "횟수",
+          "kills": "{count}킬",
+          "deaths": "{count}사망",
+          "methodology": "처치 및 사망 데이터는 Parsertime 스크림 로그에서 가져옵니다. 주요 대상과 위협은 총량 기준으로 가장 많이 처치한 영웅과 가장 많이 사망한 상대 영웅 상위 5개를 보여줍니다. 처치 방식은 스킬 유형별로 그룹화됩니다. 역할 분포는 모든 스크림의 영웅 플레이 시간을 기준으로 Tank, Damage, Support 비율을 반영합니다."
+        },
+        "strengthsWeaknesses": {
+          "title": "스카우팅 인사이트",
+          "description": "대회 및 스크림 데이터에서 자동 생성된 강점과 약점입니다.",
+          "strengths": "강점",
+          "weaknesses": "약점",
+          "noStrengths": "강점을 식별하기에 데이터가 부족합니다.",
+          "noWeaknesses": "뚜렷한 약점이 식별되지 않았습니다.",
+          "methodology": "인사이트는 z-점수(글로벌 평균 대비 영웅 성과), 대회 맵 승률, 첫 픽/첫 사망 비율, 일관성 점수, 영웅 풀 깊이를 분석해 자동 생성됩니다. 강점은 긍정 임계값을 넘을 때, 약점은 부정 임계값에 도달할 때 표시됩니다. 모든 데이터 소스를 결합해 종합적인 관점을 제공합니다."
+        },
+        "noScrimData": "이 선수는 아직 Parsertime 스크림 데이터가 없습니다. 대회 분석과 토너먼트 이력은 계속 사용할 수 있습니다.",
+        "statLabels": {
+          "eliminations": "처치",
+          "deaths": "사망",
+          "hero_damage_dealt": "영웅 피해",
+          "healing_dealt": "치유",
+          "damage_blocked": "방어한 피해"
+        }
+      }
+    },
+    "team": {
+      "metadata": {
+        "title": "{team} 스카우팅 | Parsertime",
+        "description": "{team} 스카우트 — 경기 이력, 영웅 밴, 맵 성과, 전략 추천을 확인하세요.",
+        "ogTitle": "{team} 스카우팅 | Parsertime",
+        "ogDescription": "{team} 스카우트 — 경기 이력, 영웅 밴, 맵 성과, 전략 추천을 확인하세요."
       },
       "backToSearch": "검색으로 돌아가기",
-      "liquipediaProfile": "Liquipedia에서 보기",
-      "careerWinnings": "커리어 상금",
-      "signatureHeroes": "대표 영웅",
-      "tournamentAppearances": "토너먼트 출전",
-      "competitiveMaps": "경쟁전 맵",
-      "tournaments": "{count}개 토너먼트",
-      "maps": "{count}개 맵",
-      "heroPool": "영웅 풀",
-      "knownFor": "주요 특징",
-      "knownForSource": "Liquipedia 출처",
-      "observedInCompetition": "대회에서 관찰됨",
-      "heroMaps": "{count}개 맵",
-      "noHeroData": "아직 경쟁 영웅 데이터가 없습니다.",
-      "tournamentHistory": "토너먼트 이력",
-      "team": "팀",
-      "role": "역할",
-      "record": "전적",
-      "winRate": "승률",
-      "noTournamentData": "아직 토너먼트 데이터가 없습니다.",
-      "matchDetails": "경기 세부 정보",
-      "opponent": "상대",
-      "score": "점수",
-      "result": "결과",
-      "heroes": "영웅",
-      "win": "승",
-      "loss": "패"
-    },
-    "analytics": {
-      "scrimOverview": {
-        "title": "스크림 성과",
-        "description": "Parsertime 스크림 데이터의 핵심 지표입니다.",
-        "mvpScore": "MVP 점수",
-        "kdRatio": "K/D 비율",
-        "firstPickRate": "첫 픽 비율",
-        "firstDeathRate": "첫 사망 비율",
-        "fightReversalRate": "전투 역전율",
-        "killsPerUltimate": "궁극기당 처치",
-        "consistencyScore": "일관성",
-        "mapsPlayed": "플레이한 맵",
-        "firstPicks": "첫 픽 {count}회",
-        "firstDeaths": "첫 사망 {count}회",
-        "outOf100": "/ 100",
+      "tabs": {
+        "overview": "개요",
+        "heroBans": "영웅 밴",
+        "maps": "맵",
+        "players": "로스터 준비",
+        "report": "리포트",
+        "recommendations": "추천"
+      },
+      "picker": {
+        "label": "스카우팅 기준:",
+        "placeholder": "팀 선택",
+        "noTeam": "선택된 팀 없음"
+      },
+      "overview": {
+        "record": "전적",
+        "winRate": "승률",
+        "weightedWinRate": "가중 승률",
+        "weightedPercent": "{value} 가중",
+        "weightedWinRateTooltip": "최근 경기에 더 높은 비중을 두는 최신성 가중 승률입니다.",
+        "recordQuality": "전적 품질",
+        "recordQualityValue": "{total}승 중 {wins}승",
+        "recordQualityDescription": "1500점 이상 팀을 상대로 거둔 승리입니다",
+        "strengthRating": "전력 등급",
+        "provisionalRating": "임시 등급 — 5경기 미만",
+        "topPercentile": "상위 {value}",
+        "matchesRated": "{count}경기 평가됨",
+        "noCompetitiveData": "사용 가능한 경쟁전 경기 데이터가 없습니다. 상대를 지정해 스크림을 태그하면 교차 참조 분석을 사용할 수 있습니다.",
+        "winRateTrend": "승률 추세: 최근 {count}경기 기준 {value}",
+        "recentForm": "최근 폼",
+        "recentFormDescription": "최근 10경기 결과",
+        "matchHistory": "경기 이력",
+        "matchHistoryDescription": "기록된 모든 경기, 최신순",
+        "date": "날짜",
+        "opponent": "상대",
+        "score": "점수",
+        "result": "결과",
+        "tournament": "토너먼트",
+        "win": "승",
+        "loss": "패",
+        "matchCount": "{count}경기",
+        "allTime": "전체 승률",
+        "noMatches": "이 팀의 경기를 찾을 수 없습니다.",
+        "previousPage": "이전",
+        "nextPage": "다음",
+        "pageInfo": "{current}/{total} 페이지",
         "methodology": {
-          "mvpScore": "글로벌 영웅 평균과 비교한 10분당 지표 기반 점수입니다. 각 지표는 중요도에 따라 최대 ±10점까지 기여합니다(표준편차당 4점). 일반적인 범위는 −100에서 +100입니다.",
-          "kdRatio": "기록된 모든 스크림에서 총 처치를 총 사망으로 나눈 값입니다. 처치에는 최종 타격과 지원이 모두 포함됩니다.",
-          "firstPickRate": "이 선수가 개막 처치를 기록한 팀 전투의 비율입니다. 맵별로 측정한 뒤 전체 맵 평균을 사용합니다.",
-          "firstDeathRate": "이 선수가 전투에서 가장 먼저 사망한 팀 전투의 비율입니다. 높은 값은 공격적인 포지셔닝 또는 집중 견제를 의미할 수 있습니다.",
-          "fightReversalRate": "이 선수의 팀이 먼저 2명 이상 잃은 뒤 승리한 전투의 비율입니다. 클러치 잠재력을 보여줍니다.",
-          "killsPerUltimate": "사용한 궁극기당 평균 처치 수입니다. 값이 높을수록 궁극기 활용 효율이 좋다는 뜻입니다.",
-          "consistencyScore": "맵별 10분당 지표가 얼마나 안정적인지 0-100으로 점수화합니다. 처치, 사망, 피해, 치유의 평균 변동계수 역수로 계산하며 75 이상은 매우 일관적입니다.",
-          "mapsPlayed": "Parsertime에 기록된 이 선수의 스크림 맵 총수입니다. 모든 스크림 기반 지표의 표본 크기입니다."
+          "title": "이 통계를 계산하는 방법",
+          "points": {
+            "0": "승률은 이 팀의 기록된 모든 OWCS 경기에서 계산됩니다.",
+            "1": "가중 승률은 90일 반감기의 지수 감쇠를 사용합니다. 90일 전 경기는 오늘 경기의 절반만큼 반영됩니다.",
+            "2": "최근 폼은 최근 10경기 결과를 최신순으로 보여줍니다. 스파크라인은 해당 경기들의 승패 흐름을 보여줍니다.",
+            "3": "Strength Rating은 1500을 중심으로 한 Elo 방식 점수입니다. 강한 상대를 이기면 약한 상대를 이길 때보다 더 많이 상승합니다. 5경기 미만이면 임시 등급으로 표시됩니다.",
+            "4": "Record Quality는 1500점 이상 팀을 상대로 얻은 승리 수를 집계해 좋은 전적이 강한 경쟁에서 나온 것인지 보여줍니다.",
+            "5": "경기 데이터는 Liquipedia에서 가져오며 최근 1년 OWCS 토너먼트를 다룹니다. 팀 선택기를 사용하면 업로드한 스크림 데이터도 반영됩니다."
+          }
         }
       },
-      "performanceRadar": {
-        "title": "성과 프로필",
-        "description": "전체 Parsertime 선수의 글로벌 영웅 평균 대비 z-점수입니다.",
-        "aboveAverage": "평균 이상",
-        "belowAverage": "평균 이하",
-        "noData": "레이더 차트에 사용할 스크림 데이터가 없습니다.",
-        "methodology": "각 축은 이 선수의 10분당 지표가 동일 영웅 글로벌 평균에서 표준편차(σ) 기준으로 얼마나 떨어져 있는지 보여줍니다. 같은 영웅을 플레이한 모든 Parsertime 선수의 최소 3맵 이상 데이터를 기준선으로 사용합니다."
+      "heroBans": {
+        "bansAgainstTeam": "상대가 이 팀에게 한 밴",
+        "bansAgainstDescription": "상대가 이 팀을 상대할 때 밴하는 영웅입니다. 인식된 강점을 보여줍니다.",
+        "bansByTeam": "이 팀의 밴",
+        "bansByDescription": "이 팀이 밴하는 영웅입니다. 상대에게 허용하고 싶지 않은 것을 보여줍니다.",
+        "hero": "영웅",
+        "count": "횟수",
+        "weighted": "가중",
+        "noBans": "사용 가능한 영웅 밴 데이터가 없습니다.",
+        "selectTeamTitle": "상대 밴 대상을 보려면 팀을 선택하세요",
+        "selectTeamDescription": "위의 “스카우팅 기준” 선택기에서 팀을 선택하면 상대가 우리 팀의 어떤 영웅을 노리는지 확인할 수 있습니다.",
+        "disruptionTargets": "방해 대상",
+        "disruptionTargetsEmptyDescription": "예상 방해 효과 기준으로 정렬한 상대 밴 후보입니다",
+        "disruptionTargetsDescription": "상대를 상대로 밴할 영웅입니다. 방해 점수가 높을수록 밴했을 때 상대 승률에 더 큰 영향을 줍니다.",
+        "notEnoughBanData": "방해 점수를 계산하기에 밴 데이터가 부족합니다.",
+        "percentagePoints": "{value}pp",
+        "deltaWhenBanned": "밴 시 {delta}",
+        "availabilitySummary": "사용 가능 {available}맵 / 밴 {banned}맵",
+        "showFewer": "간단히 보기",
+        "showMore": "{count}개 더 보기",
+        "theirBanTargets": "상대의 밴 대상",
+        "theirBanTargetsDescription": "상대 밴 패턴과 우리 팀의 주력 영웅이 얼마나 겹치는지 보여줍니다",
+        "theirBanTargetsActiveDescription": "상대 밴 패턴과 우리 팀의 주력 영웅을 교차 참조합니다",
+        "noBanTargetOverlap": "상대 밴과 우리 영웅 풀 사이에 겹치는 항목이 없습니다.",
+        "riskCritical": "치명",
+        "riskWatch": "주의",
+        "riskSafe": "안전",
+        "exposureSummary": "— 상대는 이 영웅을 맵의 {opponentBanRate}에서 밴하고, 우리 팀은 {userPlayRate}의 시간 동안 플레이합니다",
+        "protectedHeroes": "보호된 영웅",
+        "protectedHeroesDescription": "이 팀이 거의 밴하지 않는 영웅입니다. 조합에 등장할 가능성이 높습니다.",
+        "methodology": {
+          "title": "영웅 밴을 분석하는 방법",
+          "points": {
+            "0": "각 OWCS 맵에서는 팀마다 영웅을 하나씩 밴할 수 있습니다. 이 팀이 밴한 영웅과 이 팀을 상대로 밴된 영웅을 모든 맵에서 추적합니다.",
+            "1": "가중 횟수는 90일 반감기의 지수 감쇠를 적용해 오래된 패턴보다 최근 밴 패턴을 우선합니다.",
+            "2": "Disruption Score는 특정 영웅 밴이 상대에게 얼마나 큰 피해를 주는지 측정합니다. 승률 차이와 표본 신뢰도를 결합하며 10 초과는 의미 있고 20 초과는 고영향 밴 대상입니다.",
+            "3": "Win-Rate Delta(pp)는 퍼센트포인트 단위입니다. 예를 들어 '밴 시 −22pp'는 해당 영웅이 없을 때 상대 승률이 22퍼센트포인트 감소한다는 뜻입니다.",
+            "4": "Their Ban Targets는 상대의 밴 이력과 우리 팀이 많이 플레이한 영웅을 교차 참조합니다. Critical은 상대가 맵의 30% 이상에서 밴하고 우리 팀이 10% 이상 플레이한 경우입니다.",
+            "5": "Protected Heroes는 이 팀이 맵의 5% 미만에서만 밴하는 영웅입니다. 이들은 조합의 핵심이라 열어두고 싶어 하는 영웅일 수 있습니다."
+          }
+        }
       },
-      "heroZScores": {
-        "title": "영웅 성과",
-        "description": "글로벌 기준선과 비교한 영웅별 종합 z-점수입니다.",
-        "primary": "주 영웅",
-        "maps": "{count}개 맵",
-        "delta": "차이",
-        "significantDropOff": "큰 하락",
-        "noData": "영웅 성과 데이터가 없습니다.",
-        "methodology": "종합 z-점수는 각 영웅의 지표별 z-점수(처치, 사망, 피해, 치유, 방어)를 가중 평균한 값입니다. 개별 z-점수는 이 선수의 10분당 지표를 해당 영웅의 글로벌 평균 및 표준편차와 비교합니다. 차이는 주 영웅과 보조 영웅 숙련도 간 격차를 보여줍니다."
-      },
-      "mapWinrates": {
-        "title": "맵 성과",
-        "description": "대회 경기의 승률입니다.",
-        "byMapType": "맵 유형별",
-        "byMap": "맵별",
-        "competitive": "대회",
-        "scrims": "스크림",
+      "maps": {
+        "byMapType": "맵 유형별 승률",
+        "byMapTypeDescription": "게임 모드별 성과 분석",
+        "byMap": "맵별 성과",
+        "byMapDescription": "개별 맵 승률",
+        "mapType": "모드",
+        "map": "맵",
         "played": "플레이",
         "won": "승리",
-        "noData": "경쟁 맵 데이터가 없습니다.",
-        "methodologyMapType": "맵 유형별 승률은 이 선수의 팀이 참가한 모든 대회 경기 결과에서 계산됩니다. 비율은 각 게임 모드(Control, Escort, Hybrid, Push, Flashpoint)에서 승리 ÷ 총 플레이 맵입니다.",
-        "methodologyByMap": "개별 맵 승률은 대회 경기 결과에서 계산됩니다. 테두리는 색으로 구분됩니다: 승률 60% 이상은 초록, 40% 이하는 빨강, 그 외는 중립입니다."
+        "winRate": "승률",
+        "rawWinRate": "원 승률",
+        "weightedWinRate": "가중 승률",
+        "trend": "추세",
+        "noMaps": "사용 가능한 맵 데이터가 없습니다.",
+        "advisorTitle": "맵 밴픽 어드바이저",
+        "advisorDescription": "순이점 기준으로 맵을 정렬합니다. 위쪽 맵은 선택하고 아래쪽 맵은 밴하세요.",
+        "crossReferenceAvailable": "교차 참조 가능",
+        "matchupMatrixLabel": "맵 매치업 매트릭스",
+        "vetoRecommendation": "밴픽 추천",
+        "pick": "선택",
+        "ban": "밴",
+        "opponentPerformanceDescription": "상대 맵 성과, 전력 가중 승률, 추세 지표입니다",
+        "percentagePoints": "{value}pp",
+        "netAdvantageLabel": "{map}: 순이점 {advantage}",
+        "versus": "대",
+        "stableTrend": "안정 추세({delta})",
+        "improvingTrend": "최근 개선({delta}) — 주의",
+        "decliningTrend": "최근 하락({delta}) — 기회",
+        "selectTeamTitle": "맵 매치업을 열려면 팀을 선택하세요",
+        "selectTeamDescription": "위의 “스카우팅 기준” 선택기에서 팀을 선택하면 교차 참조 맵 밴픽 분석을 사용할 수 있습니다.",
+        "methodology": {
+          "title": "맵 성과와 매치업을 측정하는 방법",
+          "points": {
+            "0": "맵별 승률은 시리즈 승패가 아니라 각 시리즈 안의 개별 맵 결과로 계산됩니다.",
+            "1": "전력 가중 승률은 Elo 등급을 사용해 상대 수준을 보정합니다. 상위권 팀 상대로 60% 승률은 하위권 팀 상대로 80%보다 더 가치 있을 수 있습니다.",
+            "2": "순이점(pp)은 우리 맵 승률과 상대의 전력 가중 승률 사이의 퍼센트포인트 차이입니다.",
+            "3": "추세 화살표는 최근 10맵과 전체 전적을 비교합니다. +10pp 초과는 개선, −10pp 미만은 하락, 그 외는 안정입니다.",
+            "4": "신뢰도 점은 표본 크기를 나타냅니다. 초록 채움은 20맵 이상, 주황은 10-19맵, 흐림은 5-9맵입니다.",
+            "5": "팀 선택기를 사용하면 우리 팀의 스크림 맵 데이터가 상대의 OWCS 데이터와 결합됩니다. 둘 다 같은 방식으로 감쇠 가중됩니다."
+          }
+        }
       },
-      "killAnalysis": {
-        "title": "전투 패턴",
-        "description": "스크림 데이터의 처치 및 사망 분석입니다.",
-        "topTargets": "주요 대상",
-        "topThreats": "주요 위협",
-        "killMethods": "처치 방식",
-        "roleDistribution": "역할 분포",
-        "count": "횟수",
-        "kills": "{count}킬",
-        "deaths": "{count}사망",
-        "methodology": "처치 및 사망 데이터는 Parsertime 스크림 로그에서 가져옵니다. 주요 대상과 위협은 총량 기준으로 가장 많이 처치한 영웅과 가장 많이 사망한 상대 영웅 상위 5개를 보여줍니다. 처치 방식은 스킬 유형별로 그룹화됩니다. 역할 분포는 모든 스크림의 영웅 플레이 시간을 기준으로 Tank, Damage, Support 비율을 반영합니다."
+      "recommendations": {
+        "title": "전략 추천",
+        "description": "이 팀의 최신성 가중 성과 분석을 기반으로 한 실행 가능한 인사이트입니다.",
+        "heroesToBan": "밴할 영웅",
+        "heroesToBanDescription": "상대가 이 팀을 상대로 가장 자주 밴하는 영웅입니다. 이 팀의 인식된 강점입니다.",
+        "mapsToPick": "선택할 맵",
+        "mapsToPickDescription": "이 팀의 가중 승률이 가장 낮은 맵입니다. 약점을 공략하세요.",
+        "mapsToAvoid": "피할 맵",
+        "mapsToAvoidDescription": "이 팀의 가중 승률이 가장 높은 맵입니다. 강점을 피하세요.",
+        "weightedWinRate": "가중 승률",
+        "sampleSize": "{count}경기",
+        "noRecommendations": "추천을 생성하기에 데이터가 부족합니다.",
+        "confidence": {
+          "high": "높은 신뢰도",
+          "medium": "중간 신뢰도",
+          "low": "낮은 신뢰도",
+          "insufficient": "데이터 부족"
+        },
+        "methodology": {
+          "title": "추천을 생성하는 방법",
+          "points": {
+            "0": "밴할 영웅은 상대들이 이 팀을 상대로 가장 자주 밴한 영웅입니다. 이를 밴하면 이 팀의 인식된 강점을 차단합니다.",
+            "1": "선택할 맵은 이 팀의 최신성 가중 승률이 가장 낮은 맵입니다(최소 3경기).",
+            "2": "피할 맵은 이 팀의 최신성 가중 승률이 가장 높은 맵입니다.",
+            "3": "신뢰도는 표본 크기를 기준으로 합니다. 높음은 10경기 이상, 중간은 5-9경기, 낮음은 5경기 미만입니다.",
+            "4": "모든 지표는 90일 반감기의 지수 감쇠를 사용해 오래된 결과보다 현재 메타를 반영합니다."
+          }
+        }
       },
-      "strengthsWeaknesses": {
-        "title": "스카우팅 인사이트",
-        "description": "대회 및 스크림 데이터에서 자동 생성된 강점과 약점입니다.",
-        "strengths": "강점",
-        "weaknesses": "약점",
-        "noStrengths": "강점을 식별하기에 데이터가 부족합니다.",
-        "noWeaknesses": "뚜렷한 약점이 식별되지 않았습니다.",
-        "methodology": "인사이트는 z-점수(글로벌 평균 대비 영웅 성과), 대회 맵 승률, 첫 픽/첫 사망 비율, 일관성 점수, 영웅 풀 깊이를 분석해 자동 생성됩니다. 강점은 긍정 임계값을 넘을 때, 약점은 부정 임계값에 도달할 때 표시됩니다. 모든 데이터 소스를 결합해 종합적인 관점을 제공합니다."
+      "players": {
+        "selectTeamTitle": "로스터 준비도를 열려면 팀을 선택하세요",
+        "selectTeamDescription": "위의 “스카우팅 기준” 선택기에서 팀을 선택하세요. 이 탭은 우리 선수들의 영웅 깊이와 상대 밴 패턴을 교차 참조해 누가 가장 위험한지 식별합니다.",
+        "matchupSummary": "<roster>우리 로스터의</roster> 영웅 깊이와 취약성을 <opponent>{opponentName}</opponent> 상대 기준으로 보여줍니다. 주 영웅이 자주 밴되고 영웅 풀이 좁은 선수는 위험 대상으로 표시됩니다.",
+        "thisOpponent": "이 상대",
+        "atRiskPlayers": "위험 선수",
+        "atRiskPlayersDescription": "영웅 풀 깊이와 밴 노출도를 기준으로, 이 상대의 밴 전략에 가장 취약한 우리 선수들입니다",
+        "vulnerabilitySummary": "{role} · {hero} · 밴율 {banRate}",
+        "rolePlayers": "우리 {role} 선수",
+        "roleDescription": "다른 {role} 선수와 비교한 영웅 깊이 및 성과입니다",
+        "unknownHero": "알 수 없음",
+        "noSecondary": "보조 영웅 없음",
+        "delta": "차이: {value}",
+        "sigmaValue": "{sign}{value}σ",
+        "significantDropOff": "큰 하락",
+        "banExposure": "밴 노출: <risk>{riskLevel}</risk>",
+        "banExposureDescription": "이 상대는 {hero}를 맵의 {banRate}에서 밴합니다. 주 영웅에서 밀려나면 z-점수가 {delta}만큼 떨어집니다",
+        "unknownAmount": "알 수 없는 수치",
+        "primaryBadge": "1순위",
+        "roles": {
+          "tank": "탱커",
+          "damage": "딜러",
+          "support": "서포터"
+        },
+        "riskLevels": {
+          "critical": "치명",
+          "high": "높음",
+          "moderate": "보통",
+          "low": "낮음"
+        },
+        "riskAriaCritical": "치명적 취약성",
+        "riskAriaHigh": "높은 취약성",
+        "riskAriaModerate": "보통 취약성",
+        "riskAriaLow": "낮은 취약성",
+        "methodology": {
+          "title": "로스터 준비도를 평가하는 방법",
+          "points": {
+            "0": "이 탭은 특정 상대를 기준으로 우리 로스터의 준비도를 보여줍니다. 영웅 깊이와 상대 밴 패턴을 바탕으로 위험한 선수를 식별합니다.",
+            "1": "Z-점수는 각 영웅의 10분당 지표가 로스터 내 같은 역할의 모든 영웅 성과와 어떻게 비교되는지 측정합니다.",
+            "2": "지표는 역할별로 가중됩니다. Tank: 사망(30% 역산), 처치(20%), 피해(20%). Damage: 처치(30%), 피해(30%), 사망(20% 역산). Support: 치유(35%), 사망(25% 역산), 피해(14%), 처치(10%).",
+            "3": "주/보조 영웅 차이는 선수의 최고 영웅과 두 번째 영웅 간 z-점수 격차입니다. 1.5σ를 넘으면 주 영웅에서 밀려났을 때 큰 하락이 발생합니다.",
+            "4": "Vulnerability Index = 영웅 깊이 차이 × 상대 밴율입니다. 0.5 초과는 치명, 0.25-0.5는 높음, 0.1-0.25는 보통, 0.1 미만은 낮음입니다.",
+            "5": "포함되려면 영웅은 최소 3맵과 2분 이상의 플레이 시간이 필요합니다. 의미 있는 신뢰도에는 선수당 최소 5맵이 필요합니다."
+          }
+        }
       },
-      "noScrimData": "이 선수는 아직 Parsertime 스크림 데이터가 없습니다. 대회 분석과 토너먼트 이력은 계속 사용할 수 있습니다.",
-      "statLabels": {
-        "eliminations": "처치",
-        "deaths": "사망",
-        "hero_damage_dealt": "영웅 피해",
-        "healing_dealt": "치유",
-        "damage_blocked": "방어한 피해"
-      }
+      "report": {
+        "title": "경기 전 브리프: vs. {opponent}",
+        "scrimOnly": "스크림 데이터만 있음 — 경쟁전 이력이 없습니다",
+        "selectTeamTitle": "전체 리포트를 보려면 팀을 선택하세요",
+        "selectTeamDescription": "맵 매치업과 선수 취약성 같은 교차 참조 인사이트는 위의 “스카우팅 기준” 선택기에서 팀을 선택해야 표시됩니다. 아래에는 상대 전용 인사이트만 표시됩니다.",
+        "topInsights": "주요 인사이트",
+        "additionalFindings": "{count}개 추가 발견",
+        "noDataTitle": "아직 데이터가 부족합니다",
+        "noDataDescription": "더 많은 경기가 기록된 뒤 다시 확인하세요. 신뢰할 수 있는 인사이트에는 최소 표본 크기가 필요합니다.",
+        "competitiveMaps": "{formattedCount}개 경쟁전 맵",
+        "scrimMaps": "{formattedCount}개 스크림 맵",
+        "basedOn": "{sources} 기준",
+        "sourceJoin": "{first} 및 {second}",
+        "methodology": {
+          "title": "리포트를 생성하는 방법",
+          "points": {
+            "0": "인사이트는 우리 팀이 업로드한 스크림 데이터와 상대의 OWCS 대회 이력을 교차 참조해 생성됩니다.",
+            "1": "맵 매치업 인사이트는 우리 승률과 상대 전력 가중 승률의 순이점이 ±15pp를 넘을 때 표시됩니다.",
+            "2": "밴 방해 인사이트는 특정 영웅 밴이 상대 승률을 크게 떨어뜨릴 때 표시됩니다.",
+            "3": "선수 취약성 인사이트는 주 영웅이 보조 영웅보다 크게 좋고, 그 영웅이 상대에게 자주 밴될 때 표시됩니다.",
+            "4": "각 인사이트는 이점의 크기, 신뢰도, 실행 가능성을 결합한 1-100 우선순위 점수를 가집니다.",
+            "5": "신뢰도 단계 — 높음: 20맵 이상. 중간: 10-19. 낮음: 5-9. 부족: 5 미만. 스크림 전용 데이터는 더 엄격한 기준을 사용합니다.",
+            "6": "각 인사이트에는 데이터 출처가 표시됩니다. 'Competitive'는 OWCS 경기만, 'Scrim'은 업로드한 스크림 데이터만, 'Competitive + Scrim'은 둘 다 사용한 것입니다."
+          }
+        }
+      },
+      "empty": "이 팀에 사용할 수 있는 스카우팅 데이터가 없습니다."
     }
   },
-  "team": {
-    "metadata": {
-      "title": "{team} 스카우팅 | Parsertime",
-      "description": "{team} 스카우트 — 경기 이력, 영웅 밴, 맵 성과, 전략 추천을 확인하세요.",
-      "ogTitle": "{team} 스카우팅 | Parsertime",
-      "ogDescription": "{team} 스카우트 — 경기 이력, 영웅 밴, 맵 성과, 전략 추천을 확인하세요."
-    },
-    "backToSearch": "검색으로 돌아가기",
-    "tabs": {
-      "overview": "개요",
-      "heroBans": "영웅 밴",
-      "maps": "맵",
-      "players": "로스터 준비",
-      "report": "리포트",
-      "recommendations": "추천"
-    },
-    "picker": {
-      "label": "스카우팅 기준:",
-      "placeholder": "팀 선택",
-      "noTeam": "선택된 팀 없음"
-    },
-    "overview": {
-      "record": "전적",
-      "winRate": "승률",
-      "weightedWinRate": "가중 승률",
-      "weightedPercent": "{value} 가중",
-      "weightedWinRateTooltip": "최근 경기에 더 높은 비중을 두는 최신성 가중 승률입니다.",
-      "recordQuality": "전적 품질",
-      "recordQualityValue": "{total}승 중 {wins}승",
-      "recordQualityDescription": "1500점 이상 팀을 상대로 거둔 승리입니다",
-      "strengthRating": "전력 등급",
-      "provisionalRating": "임시 등급 — 5경기 미만",
-      "topPercentile": "상위 {value}",
-      "matchesRated": "{count}경기 평가됨",
-      "noCompetitiveData": "사용 가능한 경쟁전 경기 데이터가 없습니다. 상대를 지정해 스크림을 태그하면 교차 참조 분석을 사용할 수 있습니다.",
-      "winRateTrend": "승률 추세: 최근 {count}경기 기준 {value}",
-      "recentForm": "최근 폼",
-      "recentFormDescription": "최근 10경기 결과",
-      "matchHistory": "경기 이력",
-      "matchHistoryDescription": "기록된 모든 경기, 최신순",
-      "date": "날짜",
-      "opponent": "상대",
-      "score": "점수",
-      "result": "결과",
-      "tournament": "토너먼트",
-      "win": "승",
-      "loss": "패",
-      "matchCount": "{count}경기",
-      "allTime": "전체 승률",
-      "noMatches": "이 팀의 경기를 찾을 수 없습니다.",
-      "previousPage": "이전",
-      "nextPage": "다음",
-      "pageInfo": "{current}/{total} 페이지",
-      "methodology": {
-        "title": "이 통계를 계산하는 방법",
-        "points": {
-          "0": "승률은 이 팀의 기록된 모든 OWCS 경기에서 계산됩니다.",
-          "1": "가중 승률은 90일 반감기의 지수 감쇠를 사용합니다. 90일 전 경기는 오늘 경기의 절반만큼 반영됩니다.",
-          "2": "최근 폼은 최근 10경기 결과를 최신순으로 보여줍니다. 스파크라인은 해당 경기들의 승패 흐름을 보여줍니다.",
-          "3": "Strength Rating은 1500을 중심으로 한 Elo 방식 점수입니다. 강한 상대를 이기면 약한 상대를 이길 때보다 더 많이 상승합니다. 5경기 미만이면 임시 등급으로 표시됩니다.",
-          "4": "Record Quality는 1500점 이상 팀을 상대로 얻은 승리 수를 집계해 좋은 전적이 강한 경쟁에서 나온 것인지 보여줍니다.",
-          "5": "경기 데이터는 Liquipedia에서 가져오며 최근 1년 OWCS 토너먼트를 다룹니다. 팀 선택기를 사용하면 업로드한 스크림 데이터도 반영됩니다."
-        }
-      }
-    },
-    "heroBans": {
-      "bansAgainstTeam": "상대가 이 팀에게 한 밴",
-      "bansAgainstDescription": "상대가 이 팀을 상대할 때 밴하는 영웅입니다. 인식된 강점을 보여줍니다.",
-      "bansByTeam": "이 팀의 밴",
-      "bansByDescription": "이 팀이 밴하는 영웅입니다. 상대에게 허용하고 싶지 않은 것을 보여줍니다.",
-      "hero": "영웅",
-      "count": "횟수",
-      "weighted": "가중",
-      "noBans": "사용 가능한 영웅 밴 데이터가 없습니다.",
-      "selectTeamTitle": "상대 밴 대상을 보려면 팀을 선택하세요",
-      "selectTeamDescription": "위의 “스카우팅 기준” 선택기에서 팀을 선택하면 상대가 우리 팀의 어떤 영웅을 노리는지 확인할 수 있습니다.",
-      "disruptionTargets": "방해 대상",
-      "disruptionTargetsEmptyDescription": "예상 방해 효과 기준으로 정렬한 상대 밴 후보입니다",
-      "disruptionTargetsDescription": "상대를 상대로 밴할 영웅입니다. 방해 점수가 높을수록 밴했을 때 상대 승률에 더 큰 영향을 줍니다.",
-      "notEnoughBanData": "방해 점수를 계산하기에 밴 데이터가 부족합니다.",
-      "percentagePoints": "{value}pp",
-      "deltaWhenBanned": "밴 시 {delta}",
-      "availabilitySummary": "사용 가능 {available}맵 / 밴 {banned}맵",
-      "showFewer": "간단히 보기",
-      "showMore": "{count}개 더 보기",
-      "theirBanTargets": "상대의 밴 대상",
-      "theirBanTargetsDescription": "상대 밴 패턴과 우리 팀의 주력 영웅이 얼마나 겹치는지 보여줍니다",
-      "theirBanTargetsActiveDescription": "상대 밴 패턴과 우리 팀의 주력 영웅을 교차 참조합니다",
-      "noBanTargetOverlap": "상대 밴과 우리 영웅 풀 사이에 겹치는 항목이 없습니다.",
-      "riskCritical": "치명",
-      "riskWatch": "주의",
-      "riskSafe": "안전",
-      "exposureSummary": "— 상대는 이 영웅을 맵의 {opponentBanRate}에서 밴하고, 우리 팀은 {userPlayRate}의 시간 동안 플레이합니다",
-      "protectedHeroes": "보호된 영웅",
-      "protectedHeroesDescription": "이 팀이 거의 밴하지 않는 영웅입니다. 조합에 등장할 가능성이 높습니다.",
-      "methodology": {
-        "title": "영웅 밴을 분석하는 방법",
-        "points": {
-          "0": "각 OWCS 맵에서는 팀마다 영웅을 하나씩 밴할 수 있습니다. 이 팀이 밴한 영웅과 이 팀을 상대로 밴된 영웅을 모든 맵에서 추적합니다.",
-          "1": "가중 횟수는 90일 반감기의 지수 감쇠를 적용해 오래된 패턴보다 최근 밴 패턴을 우선합니다.",
-          "2": "Disruption Score는 특정 영웅 밴이 상대에게 얼마나 큰 피해를 주는지 측정합니다. 승률 차이와 표본 신뢰도를 결합하며 10 초과는 의미 있고 20 초과는 고영향 밴 대상입니다.",
-          "3": "Win-Rate Delta(pp)는 퍼센트포인트 단위입니다. 예를 들어 '밴 시 −22pp'는 해당 영웅이 없을 때 상대 승률이 22퍼센트포인트 감소한다는 뜻입니다.",
-          "4": "Their Ban Targets는 상대의 밴 이력과 우리 팀이 많이 플레이한 영웅을 교차 참조합니다. Critical은 상대가 맵의 30% 이상에서 밴하고 우리 팀이 10% 이상 플레이한 경우입니다.",
-          "5": "Protected Heroes는 이 팀이 맵의 5% 미만에서만 밴하는 영웅입니다. 이들은 조합의 핵심이라 열어두고 싶어 하는 영웅일 수 있습니다."
-        }
-      }
-    },
-    "maps": {
-      "byMapType": "맵 유형별 승률",
-      "byMapTypeDescription": "게임 모드별 성과 분석",
-      "byMap": "맵별 성과",
-      "byMapDescription": "개별 맵 승률",
-      "mapType": "모드",
-      "map": "맵",
-      "played": "플레이",
-      "won": "승리",
-      "winRate": "승률",
-      "rawWinRate": "원 승률",
-      "weightedWinRate": "가중 승률",
-      "trend": "추세",
-      "noMaps": "사용 가능한 맵 데이터가 없습니다.",
-      "advisorTitle": "맵 밴픽 어드바이저",
-      "advisorDescription": "순이점 기준으로 맵을 정렬합니다. 위쪽 맵은 선택하고 아래쪽 맵은 밴하세요.",
-      "crossReferenceAvailable": "교차 참조 가능",
-      "matchupMatrixLabel": "맵 매치업 매트릭스",
-      "vetoRecommendation": "밴픽 추천",
-      "pick": "선택",
-      "ban": "밴",
-      "opponentPerformanceDescription": "상대 맵 성과, 전력 가중 승률, 추세 지표입니다",
-      "percentagePoints": "{value}pp",
-      "netAdvantageLabel": "{map}: 순이점 {advantage}",
-      "versus": "대",
-      "stableTrend": "안정 추세({delta})",
-      "improvingTrend": "최근 개선({delta}) — 주의",
-      "decliningTrend": "최근 하락({delta}) — 기회",
-      "selectTeamTitle": "맵 매치업을 열려면 팀을 선택하세요",
-      "selectTeamDescription": "위의 “스카우팅 기준” 선택기에서 팀을 선택하면 교차 참조 맵 밴픽 분석을 사용할 수 있습니다.",
-      "methodology": {
-        "title": "맵 성과와 매치업을 측정하는 방법",
-        "points": {
-          "0": "맵별 승률은 시리즈 승패가 아니라 각 시리즈 안의 개별 맵 결과로 계산됩니다.",
-          "1": "전력 가중 승률은 Elo 등급을 사용해 상대 수준을 보정합니다. 상위권 팀 상대로 60% 승률은 하위권 팀 상대로 80%보다 더 가치 있을 수 있습니다.",
-          "2": "순이점(pp)은 우리 맵 승률과 상대의 전력 가중 승률 사이의 퍼센트포인트 차이입니다.",
-          "3": "추세 화살표는 최근 10맵과 전체 전적을 비교합니다. +10pp 초과는 개선, −10pp 미만은 하락, 그 외는 안정입니다.",
-          "4": "신뢰도 점은 표본 크기를 나타냅니다. 초록 채움은 20맵 이상, 주황은 10-19맵, 흐림은 5-9맵입니다.",
-          "5": "팀 선택기를 사용하면 우리 팀의 스크림 맵 데이터가 상대의 OWCS 데이터와 결합됩니다. 둘 다 같은 방식으로 감쇠 가중됩니다."
-        }
-      }
-    },
-    "recommendations": {
-      "title": "전략 추천",
-      "description": "이 팀의 최신성 가중 성과 분석을 기반으로 한 실행 가능한 인사이트입니다.",
-      "heroesToBan": "밴할 영웅",
-      "heroesToBanDescription": "상대가 이 팀을 상대로 가장 자주 밴하는 영웅입니다. 이 팀의 인식된 강점입니다.",
-      "mapsToPick": "선택할 맵",
-      "mapsToPickDescription": "이 팀의 가중 승률이 가장 낮은 맵입니다. 약점을 공략하세요.",
-      "mapsToAvoid": "피할 맵",
-      "mapsToAvoidDescription": "이 팀의 가중 승률이 가장 높은 맵입니다. 강점을 피하세요.",
-      "weightedWinRate": "가중 승률",
-      "sampleSize": "{count}경기",
-      "noRecommendations": "추천을 생성하기에 데이터가 부족합니다.",
-      "confidence": {
-        "high": "높은 신뢰도",
-        "medium": "중간 신뢰도",
-        "low": "낮은 신뢰도",
-        "insufficient": "데이터 부족"
-      },
-      "methodology": {
-        "title": "추천을 생성하는 방법",
-        "points": {
-          "0": "밴할 영웅은 상대들이 이 팀을 상대로 가장 자주 밴한 영웅입니다. 이를 밴하면 이 팀의 인식된 강점을 차단합니다.",
-          "1": "선택할 맵은 이 팀의 최신성 가중 승률이 가장 낮은 맵입니다(최소 3경기).",
-          "2": "피할 맵은 이 팀의 최신성 가중 승률이 가장 높은 맵입니다.",
-          "3": "신뢰도는 표본 크기를 기준으로 합니다. 높음은 10경기 이상, 중간은 5-9경기, 낮음은 5경기 미만입니다.",
-          "4": "모든 지표는 90일 반감기의 지수 감쇠를 사용해 오래된 결과보다 현재 메타를 반영합니다."
-        }
-      }
-    },
-    "players": {
-      "selectTeamTitle": "로스터 준비도를 열려면 팀을 선택하세요",
-      "selectTeamDescription": "위의 “스카우팅 기준” 선택기에서 팀을 선택하세요. 이 탭은 우리 선수들의 영웅 깊이와 상대 밴 패턴을 교차 참조해 누가 가장 위험한지 식별합니다.",
-      "matchupSummary": "<roster>우리 로스터의</roster> 영웅 깊이와 취약성을 <opponent>{opponentName}</opponent> 상대 기준으로 보여줍니다. 주 영웅이 자주 밴되고 영웅 풀이 좁은 선수는 위험 대상으로 표시됩니다.",
-      "thisOpponent": "이 상대",
-      "atRiskPlayers": "위험 선수",
-      "atRiskPlayersDescription": "영웅 풀 깊이와 밴 노출도를 기준으로, 이 상대의 밴 전략에 가장 취약한 우리 선수들입니다",
-      "vulnerabilitySummary": "{role} · {hero} · 밴율 {banRate}",
-      "rolePlayers": "우리 {role} 선수",
-      "roleDescription": "다른 {role} 선수와 비교한 영웅 깊이 및 성과입니다",
-      "unknownHero": "알 수 없음",
-      "noSecondary": "보조 영웅 없음",
-      "delta": "차이: {value}",
-      "sigmaValue": "{sign}{value}σ",
-      "significantDropOff": "큰 하락",
-      "banExposure": "밴 노출: <risk>{riskLevel}</risk>",
-      "banExposureDescription": "이 상대는 {hero}를 맵의 {banRate}에서 밴합니다. 주 영웅에서 밀려나면 z-점수가 {delta}만큼 떨어집니다",
-      "unknownAmount": "알 수 없는 수치",
-      "primaryBadge": "1순위",
-      "roles": {
-        "tank": "탱커",
-        "damage": "딜러",
-        "support": "서포터"
-      },
-      "riskLevels": {
-        "critical": "치명",
-        "high": "높음",
-        "moderate": "보통",
-        "low": "낮음"
-      },
-      "riskAriaCritical": "치명적 취약성",
-      "riskAriaHigh": "높은 취약성",
-      "riskAriaModerate": "보통 취약성",
-      "riskAriaLow": "낮은 취약성",
-      "methodology": {
-        "title": "로스터 준비도를 평가하는 방법",
-        "points": {
-          "0": "이 탭은 특정 상대를 기준으로 우리 로스터의 준비도를 보여줍니다. 영웅 깊이와 상대 밴 패턴을 바탕으로 위험한 선수를 식별합니다.",
-          "1": "Z-점수는 각 영웅의 10분당 지표가 로스터 내 같은 역할의 모든 영웅 성과와 어떻게 비교되는지 측정합니다.",
-          "2": "지표는 역할별로 가중됩니다. Tank: 사망(30% 역산), 처치(20%), 피해(20%). Damage: 처치(30%), 피해(30%), 사망(20% 역산). Support: 치유(35%), 사망(25% 역산), 피해(14%), 처치(10%).",
-          "3": "주/보조 영웅 차이는 선수의 최고 영웅과 두 번째 영웅 간 z-점수 격차입니다. 1.5σ를 넘으면 주 영웅에서 밀려났을 때 큰 하락이 발생합니다.",
-          "4": "Vulnerability Index = 영웅 깊이 차이 × 상대 밴율입니다. 0.5 초과는 치명, 0.25-0.5는 높음, 0.1-0.25는 보통, 0.1 미만은 낮음입니다.",
-          "5": "포함되려면 영웅은 최소 3맵과 2분 이상의 플레이 시간이 필요합니다. 의미 있는 신뢰도에는 선수당 최소 5맵이 필요합니다."
-        }
-      }
-    },
-    "report": {
-      "title": "경기 전 브리프: vs. {opponent}",
-      "scrimOnly": "스크림 데이터만 있음 — 경쟁전 이력이 없습니다",
-      "selectTeamTitle": "전체 리포트를 보려면 팀을 선택하세요",
-      "selectTeamDescription": "맵 매치업과 선수 취약성 같은 교차 참조 인사이트는 위의 “스카우팅 기준” 선택기에서 팀을 선택해야 표시됩니다. 아래에는 상대 전용 인사이트만 표시됩니다.",
-      "topInsights": "주요 인사이트",
-      "additionalFindings": "{count}개 추가 발견",
-      "noDataTitle": "아직 데이터가 부족합니다",
-      "noDataDescription": "더 많은 경기가 기록된 뒤 다시 확인하세요. 신뢰할 수 있는 인사이트에는 최소 표본 크기가 필요합니다.",
-      "competitiveMaps": "{formattedCount}개 경쟁전 맵",
-      "scrimMaps": "{formattedCount}개 스크림 맵",
-      "basedOn": "{sources} 기준",
-      "sourceJoin": "{first} 및 {second}",
-      "methodology": {
-        "title": "리포트를 생성하는 방법",
-        "points": {
-          "0": "인사이트는 우리 팀이 업로드한 스크림 데이터와 상대의 OWCS 대회 이력을 교차 참조해 생성됩니다.",
-          "1": "맵 매치업 인사이트는 우리 승률과 상대 전력 가중 승률의 순이점이 ±15pp를 넘을 때 표시됩니다.",
-          "2": "밴 방해 인사이트는 특정 영웅 밴이 상대 승률을 크게 떨어뜨릴 때 표시됩니다.",
-          "3": "선수 취약성 인사이트는 주 영웅이 보조 영웅보다 크게 좋고, 그 영웅이 상대에게 자주 밴될 때 표시됩니다.",
-          "4": "각 인사이트는 이점의 크기, 신뢰도, 실행 가능성을 결합한 1-100 우선순위 점수를 가집니다.",
-          "5": "신뢰도 단계 — 높음: 20맵 이상. 중간: 10-19. 낮음: 5-9. 부족: 5 미만. 스크림 전용 데이터는 더 엄격한 기준을 사용합니다.",
-          "6": "각 인사이트에는 데이터 출처가 표시됩니다. 'Competitive'는 OWCS 경기만, 'Scrim'은 업로드한 스크림 데이터만, 'Competitive + Scrim'은 둘 다 사용한 것입니다."
-        }
-      }
-    },
-    "empty": "이 팀에 사용할 수 있는 스카우팅 데이터가 없습니다."
-  }
-},
   "statsPage": {
     "layoutMetadata": {
       "title": "통계 | Parsertime",
@@ -4079,254 +4079,254 @@
         "description": "활성화하면 가장 URL이 프로덕션 환경용으로 생성됩니다. 비활성화하면 개발 환경용으로 생성됩니다."
       },
       "impersonate": "사용자 가장하기",
-  "onSubmit": {
-    "title": "사용자 가장 완료",
-    "description": "가장 URL이 클립보드에 복사되었습니다.",
-    "errorTitle": "오류",
-    "errorDescription": "사용자를 가장하는 중 오류가 발생했습니다."
-  },
-  "impersonateUser": {
-    "title": "사용자 가장하기",
-    "description": "해당 사용자의 관점에서 사이트를 확인하기 위해 사용자를 가장합니다.",
-    "email": {
-      "title": "이메일",
-      "description": "가장하려는 사용자의 이메일입니다.",
-      "message": "유효한 이메일 주소를 입력하세요."
-    }
-  },
-  "audit-log": {
-    "title": "최근 사용자 작업",
-    "action-types": "작업 유형",
-    "filter-label": "작업 유형으로 필터링",
-    "clear-filters": "모두 지우기",
-    "user-email": "사용자 이메일: {userEmail}",
-    "target": "대상: {target}",
-    "search-user-email": "사용자 이메일 검색",
-    "search-target": "대상 검색",
-    "date-range": {
-      "select": "날짜 범위 선택",
-      "from": "{date}부터",
-      "until": "{date}까지",
-      "range": "{from} - {to}"
-    },
-    "actions": {
-      "USER_BAN": "사용자 차단",
-      "USER_UNBAN": "사용자 차단 해제",
-      "USER_AVATAR_UPDATED": "사용자 아바타 업데이트",
-      "USER_ACCOUNT_DELETED": "사용자 계정 삭제",
-      "USER_NAME_UPDATED": "사용자 이름 업데이트",
-      "TRUST_SCORE_ADJUST": "신뢰 점수 조정",
-      "IMPERSONATE_USER": "사용자 가장",
-      "SUSPICIOUS_ACTIVITY_DETECTED": "의심스러운 활동 감지",
-      "TEAM_CREATED": "팀 생성",
-      "TEAM_UPDATED": "팀 업데이트",
-      "TEAM_DELETED": "팀 삭제",
-      "TEAM_AVATAR_UPDATED": "팀 아바타 업데이트",
-      "TEAM_INVITE_SENT": "팀 초대 전송",
-      "TEAM_JOINED": "팀 가입",
-      "TEAM_LEFT": "팀 탈퇴",
-      "TEAM_MEMBER_PROMOTED": "팀원 승격",
-      "TEAM_MEMBER_DEMOTED": "팀원 강등",
-      "TEAM_MEMBER_REMOVED": "팀원 제거",
-      "TEAM_OWNERSHIP_TRANSFERRED": "팀 소유권 이전",
-      "SCRIM_CREATED": "스크림 생성",
-      "SCRIM_UPDATED": "스크림 업데이트",
-      "SCRIM_DELETED": "스크림 삭제",
-      "MAP_CREATED": "맵 생성",
-      "MAP_UPDATED": "맵 업데이트",
-      "MAP_DELETED": "맵 삭제",
-      "BUG_REPORT_SUBMITTED": "버그 신고 제출"
-    },
-    "download": {
-      "button": "CSV 다운로드",
-      "downloading": "다운로드 중...",
-      "filename": "audit-logs-{date}.csv",
-      "tooltip": "현재 필터링된 감사 로그를 CSV 파일로 다운로드합니다.",
-      "error": "CSV 다운로드 오류: {error}",
-      "unknown-error": "알 수 없는 오류"
-    },
-    "table": {
-      "user-email": "사용자 이메일",
-      "action": "작업",
-      "target": "대상",
-      "details": "세부 정보",
-      "date-time": "날짜 및 시간",
-      "date-time-format": "{date} {time}",
-      "no-logs-found": "필터와 일치하는 감사 로그가 없습니다.",
-      "error-loading-logs": "감사 로그를 불러오는 중 오류가 발생했습니다."
-    },
-    "showing-logs": "{count}개의 로그 표시 중.",
-    "hover": {
-      "user-email": "사용자 이메일",
-      "action": "작업",
-      "target": "대상",
-      "details": "세부 정보",
-      "id": "ID: {id}",
-      "timestamp": "타임스탬프",
-      "auto-generated": "이 작업은 시스템에서 자동으로 수행되었습니다."
-    }
-  },
-  "dashboard": {
-    "title": "관리자 대시보드",
-    "description": "사용자와 콘텐츠를 관리하고 플랫폼 활동을 모니터링합니다.",
-    "user-search": {
-      "title": "사용자 검색",
-      "description": "고급 필터 옵션으로 사용자를 검색합니다."
-    },
-    "audit-log": {
-      "title": "감사 로그",
-      "description": "스태프 구성원이 수행한 최근 작업"
-    },
-    "stats-cards": {
-      "total-users": {
-        "title": "전체 사용자",
-        "delta": "이번 달 신규 사용자 {delta}명"
+      "onSubmit": {
+        "title": "사용자 가장 완료",
+        "description": "가장 URL이 클립보드에 복사되었습니다.",
+        "errorTitle": "오류",
+        "errorDescription": "사용자를 가장하는 중 오류가 발생했습니다."
       },
-      "user-growth": {
-        "title": "사용자 증가",
-        "delta": "지난달 {lastMonth}명 대비 {delta}"
+      "impersonateUser": {
+        "title": "사용자 가장하기",
+        "description": "해당 사용자의 관점에서 사이트를 확인하기 위해 사용자를 가장합니다.",
+        "email": {
+          "title": "이메일",
+          "description": "가장하려는 사용자의 이메일입니다.",
+          "message": "유효한 이메일 주소를 입력하세요."
+        }
       },
-      "scrim-activity": {
-        "title": "스크림 활동",
-        "delta": "지난달 {lastMonth}개 대비 {delta}"
+      "audit-log": {
+        "title": "최근 사용자 작업",
+        "action-types": "작업 유형",
+        "filter-label": "작업 유형으로 필터링",
+        "clear-filters": "모두 지우기",
+        "user-email": "사용자 이메일: {userEmail}",
+        "target": "대상: {target}",
+        "search-user-email": "사용자 이메일 검색",
+        "search-target": "대상 검색",
+        "date-range": {
+          "select": "날짜 범위 선택",
+          "from": "{date}부터",
+          "until": "{date}까지",
+          "range": "{from} - {to}"
+        },
+        "actions": {
+          "USER_BAN": "사용자 차단",
+          "USER_UNBAN": "사용자 차단 해제",
+          "USER_AVATAR_UPDATED": "사용자 아바타 업데이트",
+          "USER_ACCOUNT_DELETED": "사용자 계정 삭제",
+          "USER_NAME_UPDATED": "사용자 이름 업데이트",
+          "TRUST_SCORE_ADJUST": "신뢰 점수 조정",
+          "IMPERSONATE_USER": "사용자 가장",
+          "SUSPICIOUS_ACTIVITY_DETECTED": "의심스러운 활동 감지",
+          "TEAM_CREATED": "팀 생성",
+          "TEAM_UPDATED": "팀 업데이트",
+          "TEAM_DELETED": "팀 삭제",
+          "TEAM_AVATAR_UPDATED": "팀 아바타 업데이트",
+          "TEAM_INVITE_SENT": "팀 초대 전송",
+          "TEAM_JOINED": "팀 가입",
+          "TEAM_LEFT": "팀 탈퇴",
+          "TEAM_MEMBER_PROMOTED": "팀원 승격",
+          "TEAM_MEMBER_DEMOTED": "팀원 강등",
+          "TEAM_MEMBER_REMOVED": "팀원 제거",
+          "TEAM_OWNERSHIP_TRANSFERRED": "팀 소유권 이전",
+          "SCRIM_CREATED": "스크림 생성",
+          "SCRIM_UPDATED": "스크림 업데이트",
+          "SCRIM_DELETED": "스크림 삭제",
+          "MAP_CREATED": "맵 생성",
+          "MAP_UPDATED": "맵 업데이트",
+          "MAP_DELETED": "맵 삭제",
+          "BUG_REPORT_SUBMITTED": "버그 신고 제출"
+        },
+        "download": {
+          "button": "CSV 다운로드",
+          "downloading": "다운로드 중...",
+          "filename": "audit-logs-{date}.csv",
+          "tooltip": "현재 필터링된 감사 로그를 CSV 파일로 다운로드합니다.",
+          "error": "CSV 다운로드 오류: {error}",
+          "unknown-error": "알 수 없는 오류"
+        },
+        "table": {
+          "user-email": "사용자 이메일",
+          "action": "작업",
+          "target": "대상",
+          "details": "세부 정보",
+          "date-time": "날짜 및 시간",
+          "date-time-format": "{date} {time}",
+          "no-logs-found": "필터와 일치하는 감사 로그가 없습니다.",
+          "error-loading-logs": "감사 로그를 불러오는 중 오류가 발생했습니다."
+        },
+        "showing-logs": "{count}개의 로그 표시 중.",
+        "hover": {
+          "user-email": "사용자 이메일",
+          "action": "작업",
+          "target": "대상",
+          "details": "세부 정보",
+          "id": "ID: {id}",
+          "timestamp": "타임스탬프",
+          "auto-generated": "이 작업은 시스템에서 자동으로 수행되었습니다."
+        }
       },
-      "conversion-rate": {
-        "title": "전환율",
-        "delta": "유료 사용자 {paidUsers}명"
+      "dashboard": {
+        "title": "관리자 대시보드",
+        "description": "사용자와 콘텐츠를 관리하고 플랫폼 활동을 모니터링합니다.",
+        "user-search": {
+          "title": "사용자 검색",
+          "description": "고급 필터 옵션으로 사용자를 검색합니다."
+        },
+        "audit-log": {
+          "title": "감사 로그",
+          "description": "스태프 구성원이 수행한 최근 작업"
+        },
+        "stats-cards": {
+          "total-users": {
+            "title": "전체 사용자",
+            "delta": "이번 달 신규 사용자 {delta}명"
+          },
+          "user-growth": {
+            "title": "사용자 증가",
+            "delta": "지난달 {lastMonth}명 대비 {delta}"
+          },
+          "scrim-activity": {
+            "title": "스크림 활동",
+            "delta": "지난달 {lastMonth}개 대비 {delta}"
+          },
+          "conversion-rate": {
+            "title": "전환율",
+            "delta": "유료 사용자 {paidUsers}명"
+          },
+          "monthly-chart": {
+            "title": "월별 사용자 가입",
+            "description": "최근 12개월 신규 사용자 가입 추이"
+          },
+          "low-trust-users": {
+            "title": "낮은 신뢰도 사용자",
+            "delta": "지난주 대비 {delta}"
+          },
+          "pending-reports": {
+            "title": "대기 중인 신고",
+            "delta": "지난주 대비 {delta}"
+          },
+          "images-pending-review": {
+            "title": "검토 대기 이미지",
+            "delta": "지난주 대비 {delta}"
+          }
+        }
       },
-      "monthly-chart": {
-        "title": "월별 사용자 가입",
-        "description": "최근 12개월 신규 사용자 가입 추이"
+      "user-search": {
+        "metadata": {
+          "title": "사용자 검색 — 관리자 | Enter Queue",
+          "description": "고급 필터 옵션으로 사용자를 검색합니다."
+        },
+        "title": "사용자 검색",
+        "description": "고급 필터 옵션으로 사용자를 검색합니다.",
+        "search-placeholder": "사용자 이름 또는 이메일로 검색...",
+        "filters": {
+          "title": "필터",
+          "trust-score": "신뢰 점수 범위",
+          "status": "사용자 상태",
+          "select-status": "상태 선택",
+          "all-statuses": "모든 상태",
+          "verification-status": "인증 상태",
+          "select-verification-status": "인증 상태 선택",
+          "all-users": "모든 사용자",
+          "verified-only": "인증된 사용자만",
+          "unverified-only": "미인증 사용자만",
+          "billing-plan": "결제 플랜",
+          "select-billing-plan": "결제 플랜 선택",
+          "all-plans": "모든 플랜",
+          "join-date-range": "가입일 범위",
+          "select-join-date-range": "가입일 범위 선택",
+          "date-range-from": "{date}부터",
+          "date-range-until": "{date}까지",
+          "date-range": "{from} - {to}",
+          "reset-filters": "필터 초기화"
+        },
+        "plans": {
+          "free": "무료",
+          "basic": "Basic",
+          "premium": "Premium",
+          "unknown": "알 수 없음"
+        },
+        "table": {
+          "username": "사용자 이름",
+          "email": "이메일",
+          "trust-score": "신뢰 점수",
+          "verification": "인증 상태",
+          "join-date": "가입일",
+          "actions": "작업",
+          "view-profile": "프로필 보기",
+          "edit-user": "사용자 편집",
+          "adjust-trust-score": "신뢰 점수 조정",
+          "ban-user": "사용자 차단",
+          "unban-user": "사용자 차단 해제",
+          "no-users-found": "필터와 일치하는 사용자가 없습니다.",
+          "open-menu": "메뉴 열기",
+          "error-loading-users": "사용자를 불러오는 중 오류가 발생했습니다.",
+          "status": "상태",
+          "banned": "차단됨",
+          "active": "활성",
+          "name": "이름",
+          "billing-plan": "결제 플랜",
+          "role": "역할",
+          "email-verified": "이메일 인증 여부",
+          "unverified": "미인증",
+          "verified": "인증됨"
+        },
+        "showing-users": "{count}명의 사용자 표시 중."
       },
-      "low-trust-users": {
-        "title": "낮은 신뢰도 사용자",
-        "delta": "지난주 대비 {delta}"
-      },
-      "pending-reports": {
-        "title": "대기 중인 신고",
-        "delta": "지난주 대비 {delta}"
-      },
-      "images-pending-review": {
-        "title": "검토 대기 이미지",
-        "delta": "지난주 대비 {delta}"
+      "analytics": {
+        "title": "분석",
+        "description": "사용자 활동과 성장에 대한 자세한 분석 및 차트를 확인합니다.",
+        "activeUsers": {
+          "title": "월간 활성 사용자",
+          "description": "이번 달 스크림을 업로드한 팀에 속한 사용자와 나머지 사용자 비교"
+        },
+        "monthlyActiveUsers": {
+          "title": "시간별 활성 사용자",
+          "description": "최근 12개월 동안 팀이 스크림을 업로드한 월별 고유 사용자"
+        },
+        "activeTeams": {
+          "title": "월간 활성 팀",
+          "description": "이번 달 스크림을 업로드한 팀과 전체 팀 비교"
+        },
+        "monthlyActiveTeams": {
+          "title": "시간별 활성 팀",
+          "description": "최근 12개월 동안 스크림을 업로드한 월별 고유 팀"
+        },
+        "userGrowth": {
+          "title": "시간별 사용자 증가",
+          "description": "최근 12개월 월별 사용자 가입 추이"
+        },
+        "scrimActivity": {
+          "title": "스크림 활동",
+          "description": "최근 30일간 일별 스크림 생성 활동"
+        },
+        "teamCreations": {
+          "title": "팀 생성",
+          "description": "최근 12개월 월별 팀 생성 추이"
+        },
+        "teamManagerDistribution": {
+          "title": "사용자 역할 분포",
+          "description": "일반 사용자와 팀 관리자 비율 분석"
+        },
+        "signupMethods": {
+          "title": "사용자 가입 방식",
+          "description": "가입 방식 분석(OAuth 제공자와 이메일)"
+        },
+        "billingPlans": {
+          "title": "결제 플랜 분포",
+          "description": "플랜별 사용자 분포(무료, Basic, Premium)"
+        },
+        "charts": {
+          "last12Months": "최근 12개월",
+          "allTime": "전체 기간",
+          "users": "사용자",
+          "activeUsers": "활성 사용자",
+          "activeTeams": "활성 팀",
+          "teamsCreated": "생성된 팀"
+        }
       }
-    }
-  },
-  "user-search": {
-    "metadata": {
-      "title": "사용자 검색 — 관리자 | Enter Queue",
-      "description": "고급 필터 옵션으로 사용자를 검색합니다."
     },
-    "title": "사용자 검색",
-    "description": "고급 필터 옵션으로 사용자를 검색합니다.",
-    "search-placeholder": "사용자 이름 또는 이메일로 검색...",
-    "filters": {
-      "title": "필터",
-      "trust-score": "신뢰 점수 범위",
-      "status": "사용자 상태",
-      "select-status": "상태 선택",
-      "all-statuses": "모든 상태",
-      "verification-status": "인증 상태",
-      "select-verification-status": "인증 상태 선택",
-      "all-users": "모든 사용자",
-      "verified-only": "인증된 사용자만",
-      "unverified-only": "미인증 사용자만",
-      "billing-plan": "결제 플랜",
-      "select-billing-plan": "결제 플랜 선택",
-      "all-plans": "모든 플랜",
-      "join-date-range": "가입일 범위",
-      "select-join-date-range": "가입일 범위 선택",
-      "date-range-from": "{date}부터",
-      "date-range-until": "{date}까지",
-      "date-range": "{from} - {to}",
-      "reset-filters": "필터 초기화"
-    },
-    "plans": {
-      "free": "무료",
-      "basic": "Basic",
-      "premium": "Premium",
-      "unknown": "알 수 없음"
-    },
-    "table": {
-      "username": "사용자 이름",
-      "email": "이메일",
-      "trust-score": "신뢰 점수",
-      "verification": "인증 상태",
-      "join-date": "가입일",
-      "actions": "작업",
-      "view-profile": "프로필 보기",
-      "edit-user": "사용자 편집",
-      "adjust-trust-score": "신뢰 점수 조정",
-      "ban-user": "사용자 차단",
-      "unban-user": "사용자 차단 해제",
-      "no-users-found": "필터와 일치하는 사용자가 없습니다.",
-      "open-menu": "메뉴 열기",
-      "error-loading-users": "사용자를 불러오는 중 오류가 발생했습니다.",
-      "status": "상태",
-      "banned": "차단됨",
-      "active": "활성",
-      "name": "이름",
-      "billing-plan": "결제 플랜",
-      "role": "역할",
-      "email-verified": "이메일 인증 여부",
-      "unverified": "미인증",
-      "verified": "인증됨"
-    },
-    "showing-users": "{count}명의 사용자 표시 중."
-  },
-  "analytics": {
-    "title": "분석",
-    "description": "사용자 활동과 성장에 대한 자세한 분석 및 차트를 확인합니다.",
-    "activeUsers": {
-      "title": "월간 활성 사용자",
-      "description": "이번 달 스크림을 업로드한 팀에 속한 사용자와 나머지 사용자 비교"
-    },
-    "monthlyActiveUsers": {
-      "title": "시간별 활성 사용자",
-      "description": "최근 12개월 동안 팀이 스크림을 업로드한 월별 고유 사용자"
-    },
-    "activeTeams": {
-      "title": "월간 활성 팀",
-      "description": "이번 달 스크림을 업로드한 팀과 전체 팀 비교"
-    },
-    "monthlyActiveTeams": {
-      "title": "시간별 활성 팀",
-      "description": "최근 12개월 동안 스크림을 업로드한 월별 고유 팀"
-    },
-    "userGrowth": {
-      "title": "시간별 사용자 증가",
-      "description": "최근 12개월 월별 사용자 가입 추이"
-    },
-    "scrimActivity": {
-      "title": "스크림 활동",
-      "description": "최근 30일간 일별 스크림 생성 활동"
-    },
-    "teamCreations": {
-      "title": "팀 생성",
-      "description": "최근 12개월 월별 팀 생성 추이"
-    },
-    "teamManagerDistribution": {
-      "title": "사용자 역할 분포",
-      "description": "일반 사용자와 팀 관리자 비율 분석"
-    },
-    "signupMethods": {
-      "title": "사용자 가입 방식",
-      "description": "가입 방식 분석(OAuth 제공자와 이메일)"
-    },
-    "billingPlans": {
-      "title": "결제 플랜 분포",
-      "description": "플랜별 사용자 분포(무료, Basic, Premium)"
-    },
-    "charts": {
-      "last12Months": "최근 12개월",
-      "allTime": "전체 기간",
-      "users": "사용자",
-      "activeUsers": "활성 사용자",
-      "activeTeams": "활성 팀",
-      "teamsCreated": "생성된 팀"
-    }
-  }
-},
     "dangerZone": {
       "title": "위험 구역",
       "description": "계정 삭제는 영구적이며 되돌릴 수 없습니다. 구독을 관리하려면 <Link>여기</Link>를 클릭하세요."
@@ -5358,14 +5358,14 @@
       "score": "스코어",
       "tournament": "토너먼트",
       "progress": "진행 상황",
-    "previousPage": "이전",
-    "nextPage": "다음",
-    "pageInfo": "{total}페이지 중 {current}페이지",
-    "matchCount": "{count}경기",
-    "fetchError": "경기를 가져오지 못했습니다",
-    "errorLoading": "경기 로드 오류: {message}",
-    "unknownError": "알 수 없는 오류",
-    "noMatches": "VOD가 있는 라벨링되지 않은 경기를 찾을 수 없습니다.",
+      "previousPage": "이전",
+      "nextPage": "다음",
+      "pageInfo": "{total}페이지 중 {current}페이지",
+      "matchCount": "{count}경기",
+      "fetchError": "경기를 가져오지 못했습니다",
+      "errorLoading": "경기 로드 오류: {message}",
+      "unknownError": "알 수 없는 오류",
+      "noMatches": "VOD가 있는 라벨링되지 않은 경기를 찾을 수 없습니다.",
       "vs": "대"
     },
     "labeling": {
@@ -5384,19 +5384,19 @@
       "save": "저장",
       "reset": "초기화",
       "saveAll": "모든 맵 저장",
-    "saving": "저장 중...",
-    "saved": "저장됨!",
-    "saveFailed": "저장 실패",
-    "saveSuccess": "팀 조합을 저장했습니다.",
+      "saving": "저장 중...",
+      "saved": "저장됨!",
+      "saveFailed": "저장 실패",
+      "saveSuccess": "팀 조합을 저장했습니다.",
       "saveError": "팀 조합 저장에 실패했습니다.",
       "roleConstraint": "탱커 1명, 딜러 2명, 지원 2명을 선택하세요",
       "heroBanned": "밴됨",
-    "playerAssignments": "{team} 플레이어 배정",
-    "assignPlayer": "{hero} 플레이어 배정",
-    "selectPlayer": "플레이어 선택...",
-    "twitchVodTitle": "Twitch VOD",
-    "noVodAvailable": "사용 가능한 VOD가 없습니다",
-    "instructions": {
+      "playerAssignments": "{team} 플레이어 배정",
+      "assignPlayer": "{hero} 플레이어 배정",
+      "selectPlayer": "플레이어 선택...",
+      "twitchVodTitle": "Twitch VOD",
+      "noVodAvailable": "사용 가능한 VOD가 없습니다",
+      "instructions": {
         "title": "리뷰어 안내",
         "body": "VOD를 보면서 오른쪽 패널을 사용해 각 맵의 영웅 조합을 기록하세요. 각 영웅에는 맵 시작 시 해당 영웅을 플레이한 선수를 배정하세요.",
         "swapNote": "초기 픽만 기록하세요. 맵 중간 영웅 교체는 기록하지 않아도 됩니다. 이 작업은 매치업에 따른 교체가 아니라 각 팀의 시작 조합을 파악하기 위한 것입니다."
@@ -6662,16 +6662,16 @@
     }
   },
   "targets": {
-  "title": "선수 목표",
-  "signInRequired": "목표를 보려면 로그인하세요.",
-  "teamNotFound": "팀을 찾을 수 없습니다.",
-  "premiumFeature": "프리미엄 기능",
-  "premiumRequired": "선수 목표는 프리미엄 플랜이 필요합니다.",
+    "title": "선수 목표",
+    "signInRequired": "목표를 보려면 로그인하세요.",
+    "teamNotFound": "팀을 찾을 수 없습니다.",
+    "premiumFeature": "프리미엄 기능",
+    "premiumRequired": "선수 목표는 프리미엄 플랜이 필요합니다.",
     "upgradePrompt": "업그레이드하여 선수들의 측정 가능한 개선 목표를 설정하세요.",
     "viewPricing": "가격 보기",
-  "noTargets": "아직 코치가 설정한 목표가 없습니다.",
-  "noTeamMembers": "팀원을 찾을 수 없습니다.",
-  "addPlayerToSetTargets": "목표를 설정하려면 이 선수를 팀에 추가하세요",
+    "noTargets": "아직 코치가 설정한 목표가 없습니다.",
+    "noTeamMembers": "팀원을 찾을 수 없습니다.",
+    "addPlayerToSetTargets": "목표를 설정하려면 이 선수를 팀에 추가하세요",
     "setTarget": "목표 설정",
     "editTarget": "목표 수정",
     "createTarget": "목표 생성",
@@ -6683,22 +6683,22 @@
     "onTrack": "순조로움",
     "inProgress": "진행 중",
     "behind": "뒤처짐",
-  "progress": "진행도",
-  "baseline": "기준값",
-  "target": "목표",
-  "trend": "추세",
-  "baselineValue": "기준값: {value}",
-  "targetValue": "목표: {value}",
-  "clickToIsolate": "클릭하여 분리",
-  "baselineTargetSummary": "기준값: {baseline} | 목표: {target}",
-  "chartSummary": "평균: <value>{average}</value> | 최대: <value>{max}</value> | 최소: <value>{min}</value>",
-  "targetAchieved": "목표 달성!",
-  "coachNote": "코치 메모",
-  "progressSummary": {
-    "onTrack": "<countValue>{count}</countValue>개 순조로움",
-    "inProgress": "<countValue>{count}</countValue>개 진행 중",
-    "behind": "<countValue>{count}</countValue>개 뒤처짐"
-  },
+    "progress": "진행도",
+    "baseline": "기준값",
+    "target": "목표",
+    "trend": "추세",
+    "baselineValue": "기준값: {value}",
+    "targetValue": "목표: {value}",
+    "clickToIsolate": "클릭하여 분리",
+    "baselineTargetSummary": "기준값: {baseline} | 목표: {target}",
+    "chartSummary": "평균: <value>{average}</value> | 최대: <value>{max}</value> | 최소: <value>{min}</value>",
+    "targetAchieved": "목표 달성!",
+    "coachNote": "코치 메모",
+    "progressSummary": {
+      "onTrack": "<countValue>{count}</countValue>개 순조로움",
+      "inProgress": "<countValue>{count}</countValue>개 진행 중",
+      "behind": "<countValue>{count}</countValue>개 뒤처짐"
+    },
     "form": {
       "title": "{playerName}의 목표 설정",
       "editTitle": "{playerName}의 목표 수정",
@@ -6726,12 +6726,12 @@
       "healing_dealt": "치유량/10분",
       "ultimates_earned": "궁극기 획득/10분"
     },
-  "narrative": {
-    "changed": "{stat}이(가) 최근 {window} 스크림에서 {percent}% {direction}했습니다.",
-    "changedRich": "{stat}이(가) 최근 {window} 스크림에서 <percentValue>{percent}</percentValue> {direction}했습니다.",
-    "progressToward": "목표 {targetDirection}{targetPercent}%까지 {percent}% 달성했습니다.",
-    "progressTowardRich": "목표 {targetDirection}{targetPercent}까지 <percentValue>{percent}</percentValue> 달성했습니다.",
-    "increased": "증가",
+    "narrative": {
+      "changed": "{stat}이(가) 최근 {window} 스크림에서 {percent}% {direction}했습니다.",
+      "changedRich": "{stat}이(가) 최근 {window} 스크림에서 <percentValue>{percent}</percentValue> {direction}했습니다.",
+      "progressToward": "목표 {targetDirection}{targetPercent}%까지 {percent}% 달성했습니다.",
+      "progressTowardRich": "목표 {targetDirection}{targetPercent}까지 <percentValue>{percent}</percentValue> 달성했습니다.",
+      "increased": "증가",
       "decreased": "감소"
     }
   },

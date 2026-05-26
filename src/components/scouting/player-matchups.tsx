@@ -262,13 +262,10 @@ function PlayerProfile({
             <p className="text-muted-foreground">
               {t("banExposureDescription", {
                 hero: vulnerability.primaryHero,
-                banRate: formatter.number(
-                  vulnerability.opponentBanRate / 100,
-                  {
-                    style: "percent",
-                    maximumFractionDigits: 0,
-                  }
-                ),
+                banRate: formatter.number(vulnerability.opponentBanRate / 100, {
+                  style: "percent",
+                  maximumFractionDigits: 0,
+                }),
                 delta:
                   player.primarySecondaryDelta !== null
                     ? t("sigmaValue", {

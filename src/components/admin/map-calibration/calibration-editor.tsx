@@ -248,9 +248,7 @@ export function CalibrationEditor({
       <div className="space-y-6">
         <Header mapName={mapName} />
         <div className="flex min-h-[400px] flex-col items-center justify-center gap-4 rounded-lg border border-dashed">
-          <p className="text-muted-foreground">
-            {t("noImageUploaded")}
-          </p>
+          <p className="text-muted-foreground">{t("noImageUploaded")}</p>
           <MapImageUpload
             mapName={mapName}
             onUploadComplete={handleImageUpload}

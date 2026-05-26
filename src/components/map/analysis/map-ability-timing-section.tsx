@@ -92,44 +92,42 @@ function OutlierInsight({ outlier }: { outlier: AbilityTimingOutlier }) {
         )}
       </span>
       <p className="text-foreground min-w-0 text-xs leading-relaxed">
-        {isNegative ? (
-          t.rich("negativeOutlier", {
-            abilityName: outlier.abilityName,
-            phase,
-            phaseWinrate,
-            bestPhase,
-            bestPhaseWinrate,
-            ability: (chunks) => (
-              <span className="font-semibold">{chunks}</span>
-            ),
-            negativeRate: (chunks) => (
-              <span className="text-destructive font-semibold">{chunks}</span>
-            ),
-            positiveRate: (chunks) => (
-              <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                {chunks}
-              </span>
-            ),
-          })
-        ) : (
-          t.rich("positiveOutlier", {
-            abilityName: outlier.abilityName,
-            phase,
-            phaseWinrate,
-            pattern:
-              outlier.phase === "pre-fight"
-                ? t("patternInitiation")
-                : t("patternTiming"),
-            ability: (chunks) => (
-              <span className="font-semibold">{chunks}</span>
-            ),
-            positiveRate: (chunks) => (
-              <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                {chunks}
-              </span>
-            ),
-          })
-        )}
+        {isNegative
+          ? t.rich("negativeOutlier", {
+              abilityName: outlier.abilityName,
+              phase,
+              phaseWinrate,
+              bestPhase,
+              bestPhaseWinrate,
+              ability: (chunks) => (
+                <span className="font-semibold">{chunks}</span>
+              ),
+              negativeRate: (chunks) => (
+                <span className="text-destructive font-semibold">{chunks}</span>
+              ),
+              positiveRate: (chunks) => (
+                <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                  {chunks}
+                </span>
+              ),
+            })
+          : t.rich("positiveOutlier", {
+              abilityName: outlier.abilityName,
+              phase,
+              phaseWinrate,
+              pattern:
+                outlier.phase === "pre-fight"
+                  ? t("patternInitiation")
+                  : t("patternTiming"),
+              ability: (chunks) => (
+                <span className="font-semibold">{chunks}</span>
+              ),
+              positiveRate: (chunks) => (
+                <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                  {chunks}
+                </span>
+              ),
+            })}
       </p>
     </div>
   );

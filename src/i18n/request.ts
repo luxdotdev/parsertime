@@ -6,9 +6,8 @@ type MessagesModule = { default: Messages };
 
 export default getRequestConfig(async () => {
   const locale = await getUserLocale();
-  const { default: defaultMessages } = (await import(
-    "../../messages/en.json"
-  )) as MessagesModule;
+  const { default: defaultMessages } =
+    (await import("../../messages/en.json")) as MessagesModule;
   const localeMessages =
     locale === "en"
       ? defaultMessages

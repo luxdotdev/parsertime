@@ -2675,408 +2675,408 @@
       "ogDescription": "球探 OWCS 团队：按名称搜索，查看比赛历史、胜率和赛事表现。",
       "ogImage": "球探"
     },
-  "search": {
-    "label": "搜索团队",
-    "placeholder": "搜索团队...",
-    "helperText": "按名称或缩写搜索 OWCS 团队。",
-    "resultsLabel": "团队搜索结果",
-    "matchCount": "{count, plural, =1 {1 场比赛} other {# 场比赛}}",
-    "winRate": "{winRate} 胜率",
-    "noResults": "未找到团队。"
-  },
-  "player": {
-    "title": "球探选手",
-    "subtitle": "搜索职业选手并分析他们的赛事历史。",
-    "metadata": {
-      "title": "球探选手 | Parsertime",
-      "description": "搜索职业《守望先锋》选手，查看他们的赛事历史、英雄池和锦标赛表现。",
-      "ogTitle": "球探选手 | Parsertime",
-      "ogDescription": "搜索职业《守望先锋》选手，查看他们的赛事历史、英雄池和锦标赛表现。",
-      "ogImage": "球探选手"
-    },
     "search": {
-      "label": "搜索选手",
-      "placeholder": "搜索选手...",
-      "helperText": "按姓名、队伍或职责搜索职业选手。",
-      "resultsLabel": "选手搜索结果",
-      "noResults": "未找到选手。"
+      "label": "搜索团队",
+      "placeholder": "搜索团队...",
+      "helperText": "按名称或缩写搜索 OWCS 团队。",
+      "resultsLabel": "团队搜索结果",
+      "matchCount": "{count, plural, =1 {1 场比赛} other {# 场比赛}}",
+      "winRate": "{winRate} 胜率",
+      "noResults": "未找到团队。"
     },
-    "profile": {
+    "player": {
+      "title": "球探选手",
+      "subtitle": "搜索职业选手并分析他们的赛事历史。",
       "metadata": {
-        "title": "{player} | 球探选手 | Parsertime",
-        "description": "球探 {player} — 查看英雄池、锦标赛历史和竞技表现。",
-        "ogTitle": "{player} | 球探选手 | Parsertime",
-        "ogDescription": "球探 {player} — 查看英雄池、锦标赛历史和竞技表现。"
+        "title": "球探选手 | Parsertime",
+        "description": "搜索职业《守望先锋》选手，查看他们的赛事历史、英雄池和锦标赛表现。",
+        "ogTitle": "球探选手 | Parsertime",
+        "ogDescription": "搜索职业《守望先锋》选手，查看他们的赛事历史、英雄池和锦标赛表现。",
+        "ogImage": "球探选手"
+      },
+      "search": {
+        "label": "搜索选手",
+        "placeholder": "搜索选手...",
+        "helperText": "按姓名、队伍或职责搜索职业选手。",
+        "resultsLabel": "选手搜索结果",
+        "noResults": "未找到选手。"
+      },
+      "profile": {
+        "metadata": {
+          "title": "{player} | 球探选手 | Parsertime",
+          "description": "球探 {player} — 查看英雄池、锦标赛历史和竞技表现。",
+          "ogTitle": "{player} | 球探选手 | Parsertime",
+          "ogDescription": "球探 {player} — 查看英雄池、锦标赛历史和竞技表现。"
+        },
+        "backToSearch": "返回搜索",
+        "liquipediaProfile": "在 Liquipedia 查看",
+        "careerWinnings": "职业奖金",
+        "signatureHeroes": "代表英雄",
+        "tournamentAppearances": "锦标赛出场",
+        "competitiveMaps": "竞技地图",
+        "tournaments": "{count} 项锦标赛",
+        "maps": "{count} 张地图",
+        "heroPool": "英雄池",
+        "knownFor": "知名特点",
+        "knownForSource": "来自 Liquipedia",
+        "observedInCompetition": "比赛中观察到",
+        "heroMaps": "{count} 张地图",
+        "noHeroData": "暂无竞技英雄数据。",
+        "tournamentHistory": "锦标赛历史",
+        "team": "队伍",
+        "role": "职责",
+        "record": "战绩",
+        "winRate": "胜率",
+        "noTournamentData": "暂无锦标赛数据。",
+        "matchDetails": "比赛详情",
+        "opponent": "对手",
+        "score": "比分",
+        "result": "结果",
+        "heroes": "英雄",
+        "win": "胜",
+        "loss": "负"
+      },
+      "analytics": {
+        "scrimOverview": {
+          "title": "训练赛表现",
+          "description": "来自 Parsertime 训练赛数据的关键指标。",
+          "mvpScore": "MVP 分数",
+          "kdRatio": "K/D 比",
+          "firstPickRate": "首杀率",
+          "firstDeathRate": "首死率",
+          "fightReversalRate": "团战逆转率",
+          "killsPerUltimate": "每大招击杀",
+          "consistencyScore": "稳定性",
+          "mapsPlayed": "已打地图",
+          "firstPicks": "{count} 次首杀",
+          "firstDeaths": "{count} 次首死",
+          "outOf100": "/ 100",
+          "methodology": {
+            "mvpScore": "基于积分的分数，将每 10 分钟数据与全局英雄平均值进行比较。每项数据按重要性最多贡献 ±10 分（每个标准差 4 分）。通常范围为 −100 到 +100。",
+            "kdRatio": "所有已记录训练赛中的总消灭数除以总死亡数。消灭包括最后一击和助攻。",
+            "firstPickRate": "该选手取得开场击杀的团战比例。按地图测量，并在所有地图上取平均。",
+            "firstDeathRate": "该选手在团战中率先阵亡的比例。较高数值可能表示站位激进或被重点针对。",
+            "fightReversalRate": "该选手所在队伍在先损失 2 名或更多队员后仍赢下团战的比例，体现关键局能力。",
+            "killsPerUltimate": "每次使用终极技能取得的平均消灭数。数值越高说明终极技能使用效率越好。",
+            "consistencyScore": "根据各地图每 10 分钟数据的稳定程度给出 0-100 分。由消灭、死亡、伤害和治疗的平均变异系数倒数计算；75 以上表示非常稳定。",
+            "mapsPlayed": "Parsertime 中记录的该选手训练赛地图总数，是所有训练赛指标的样本量。"
+          }
+        },
+        "performanceRadar": {
+          "title": "表现画像",
+          "description": "与所有 Parsertime 选手的全局英雄平均值相比的 z 分数。",
+          "aboveAverage": "高于平均",
+          "belowAverage": "低于平均",
+          "noData": "暂无可用于雷达图的训练赛数据。",
+          "methodology": "每个轴表示该选手每 10 分钟数据距离同英雄全局平均值多少个标准差（σ）。基线来自所有 Parsertime 选手在同一英雄上的数据，且至少需要 3 张地图。"
+        },
+        "heroZScores": {
+          "title": "英雄表现",
+          "description": "与全局基线相比的各英雄综合 z 分数。",
+          "primary": "主力",
+          "maps": "{count} 张地图",
+          "delta": "差值",
+          "significantDropOff": "明显下滑",
+          "noData": "暂无英雄表现数据。",
+          "methodology": "综合 z 分数是每个英雄各项数据 z 分数（消灭、死亡、伤害、治疗、承伤）的加权平均。单项 z 分数将该选手每 10 分钟数据与该英雄的全局平均值和标准差比较。差值显示主力英雄与第二英雄熟练度之间的差距。"
+        },
+        "mapWinrates": {
+          "title": "地图表现",
+          "description": "来自正式比赛的胜率。",
+          "byMapType": "按地图类型",
+          "byMap": "按地图",
+          "competitive": "正式比赛",
+          "scrims": "训练赛",
+          "played": "已打",
+          "won": "获胜",
+          "noData": "暂无竞技地图数据。",
+          "methodologyMapType": "地图类型胜率根据该选手所在队伍参与的所有正式比赛结果计算。百分比为每种模式（Control、Escort、Hybrid、Push、Flashpoint）的胜场数 ÷ 总地图数。",
+          "methodologyByMap": "单张地图胜率根据正式比赛结果计算。边框按颜色区分：胜率 ≥60% 为绿色，≤40% 为红色，其余为中性。"
+        },
+        "killAnalysis": {
+          "title": "战斗模式",
+          "description": "来自训练赛数据的击杀和死亡分析。",
+          "topTargets": "主要目标",
+          "topThreats": "主要威胁",
+          "killMethods": "击杀方式",
+          "roleDistribution": "职责分布",
+          "count": "数量",
+          "kills": "{count} 次击杀",
+          "deaths": "{count} 次死亡",
+          "methodology": "击杀和死亡数据来自 Parsertime 训练赛日志。主要目标和威胁展示总数最高的 5 个被击杀英雄和导致该选手死亡的英雄。击杀方式按技能类型分组。职责分布根据所有训练赛中的英雄使用时间，反映 Tank、Damage 和 Support 的占比。"
+        },
+        "strengthsWeaknesses": {
+          "title": "球探洞察",
+          "description": "根据正式比赛和训练赛数据自动生成的优势与弱点。",
+          "strengths": "优势",
+          "weaknesses": "弱点",
+          "noStrengths": "数据不足，无法识别优势。",
+          "noWeaknesses": "未发现明显弱点。",
+          "methodology": "洞察通过分析 z 分数（相对全局平均的英雄表现）、正式比赛地图胜率、首杀/首死率、稳定性分数和英雄池深度自动生成。指标超过正向阈值时触发优势，达到负向阈值时触发弱点。系统会结合所有数据来源提供整体视角。"
+        },
+        "noScrimData": "该选手尚无 Parsertime 训练赛数据。正式比赛分析和锦标赛历史仍可查看。",
+        "statLabels": {
+          "eliminations": "消灭",
+          "deaths": "死亡",
+          "hero_damage_dealt": "英雄伤害",
+          "healing_dealt": "治疗",
+          "damage_blocked": "承受伤害"
+        }
+      }
+    },
+    "team": {
+      "metadata": {
+        "title": "{team} 球探 | Parsertime",
+        "description": "球探 {team} — 查看比赛历史、英雄禁用、地图表现和策略建议。",
+        "ogTitle": "{team} 球探 | Parsertime",
+        "ogDescription": "球探 {team} — 查看比赛历史、英雄禁用、地图表现和策略建议。"
       },
       "backToSearch": "返回搜索",
-      "liquipediaProfile": "在 Liquipedia 查看",
-      "careerWinnings": "职业奖金",
-      "signatureHeroes": "代表英雄",
-      "tournamentAppearances": "锦标赛出场",
-      "competitiveMaps": "竞技地图",
-      "tournaments": "{count} 项锦标赛",
-      "maps": "{count} 张地图",
-      "heroPool": "英雄池",
-      "knownFor": "知名特点",
-      "knownForSource": "来自 Liquipedia",
-      "observedInCompetition": "比赛中观察到",
-      "heroMaps": "{count} 张地图",
-      "noHeroData": "暂无竞技英雄数据。",
-      "tournamentHistory": "锦标赛历史",
-      "team": "队伍",
-      "role": "职责",
-      "record": "战绩",
-      "winRate": "胜率",
-      "noTournamentData": "暂无锦标赛数据。",
-      "matchDetails": "比赛详情",
-      "opponent": "对手",
-      "score": "比分",
-      "result": "结果",
-      "heroes": "英雄",
-      "win": "胜",
-      "loss": "负"
-    },
-    "analytics": {
-      "scrimOverview": {
-        "title": "训练赛表现",
-        "description": "来自 Parsertime 训练赛数据的关键指标。",
-        "mvpScore": "MVP 分数",
-        "kdRatio": "K/D 比",
-        "firstPickRate": "首杀率",
-        "firstDeathRate": "首死率",
-        "fightReversalRate": "团战逆转率",
-        "killsPerUltimate": "每大招击杀",
-        "consistencyScore": "稳定性",
-        "mapsPlayed": "已打地图",
-        "firstPicks": "{count} 次首杀",
-        "firstDeaths": "{count} 次首死",
-        "outOf100": "/ 100",
+      "tabs": {
+        "overview": "概述",
+        "heroBans": "英雄禁用",
+        "maps": "地图",
+        "players": "阵容准备",
+        "report": "报告",
+        "recommendations": "建议"
+      },
+      "picker": {
+        "label": "球探对象：",
+        "placeholder": "选择你的队伍",
+        "noTeam": "未选择队伍"
+      },
+      "overview": {
+        "record": "战绩",
+        "winRate": "胜率",
+        "weightedWinRate": "加权胜率",
+        "weightedPercent": "{value} 加权",
+        "weightedWinRateTooltip": "按时间新近程度加权的胜率；近期比赛权重高于较早比赛。",
+        "recordQuality": "战绩质量",
+        "recordQualityValue": "{total} 胜中的 {wins} 胜",
+        "recordQualityDescription": "来自击败 1500 分以上队伍的胜场",
+        "strengthRating": "实力评分",
+        "provisionalRating": "临时评分 — 少于 5 场比赛",
+        "topPercentile": "前 {value}",
+        "matchesRated": "已评定 {count} 场比赛",
+        "noCompetitiveData": "暂无正式比赛数据。为训练赛标记对手后即可启用交叉引用分析。",
+        "winRateTrend": "胜率趋势：最近 {count} 场为 {value}",
+        "recentForm": "近期状态",
+        "recentFormDescription": "最近 10 场比赛结果",
+        "matchHistory": "比赛历史",
+        "matchHistoryDescription": "所有已记录比赛，按最近时间排序",
+        "date": "日期",
+        "opponent": "对手",
+        "score": "比分",
+        "result": "结果",
+        "tournament": "锦标赛",
+        "win": "胜",
+        "loss": "负",
+        "matchCount": "{count} 场比赛",
+        "allTime": "总胜率",
+        "noMatches": "未找到该队伍的比赛。",
+        "previousPage": "上一页",
+        "nextPage": "下一页",
+        "pageInfo": "第 {current} 页，共 {total} 页",
         "methodology": {
-          "mvpScore": "基于积分的分数，将每 10 分钟数据与全局英雄平均值进行比较。每项数据按重要性最多贡献 ±10 分（每个标准差 4 分）。通常范围为 −100 到 +100。",
-          "kdRatio": "所有已记录训练赛中的总消灭数除以总死亡数。消灭包括最后一击和助攻。",
-          "firstPickRate": "该选手取得开场击杀的团战比例。按地图测量，并在所有地图上取平均。",
-          "firstDeathRate": "该选手在团战中率先阵亡的比例。较高数值可能表示站位激进或被重点针对。",
-          "fightReversalRate": "该选手所在队伍在先损失 2 名或更多队员后仍赢下团战的比例，体现关键局能力。",
-          "killsPerUltimate": "每次使用终极技能取得的平均消灭数。数值越高说明终极技能使用效率越好。",
-          "consistencyScore": "根据各地图每 10 分钟数据的稳定程度给出 0-100 分。由消灭、死亡、伤害和治疗的平均变异系数倒数计算；75 以上表示非常稳定。",
-          "mapsPlayed": "Parsertime 中记录的该选手训练赛地图总数，是所有训练赛指标的样本量。"
+          "title": "这些统计如何计算",
+          "points": {
+            "0": "胜率根据该队伍所有已记录 OWCS 比赛计算。",
+            "1": "加权胜率使用 90 天半衰期的指数衰减；90 天前的比赛权重约为今天比赛的一半。",
+            "2": "近期状态展示最近 10 场比赛结果，按最近优先排列。迷你趋势线展示这些比赛的胜负走势。",
+            "3": "Strength Rating 是以 1500 为中心的 Elo 风格评分。击败高评分对手会比击败低评分对手提升更多。少于 5 场比赛时标记为临时评分。",
+            "4": "Record Quality 统计有多少胜利来自击败 1500 分以上队伍，用于判断好战绩是否来自强竞争。",
+            "5": "比赛数据来自 Liquipedia，覆盖过去一年 OWCS 锦标赛。使用队伍选择器选择你的队伍后，也会纳入你的训练赛数据。"
+          }
         }
       },
-      "performanceRadar": {
-        "title": "表现画像",
-        "description": "与所有 Parsertime 选手的全局英雄平均值相比的 z 分数。",
-        "aboveAverage": "高于平均",
-        "belowAverage": "低于平均",
-        "noData": "暂无可用于雷达图的训练赛数据。",
-        "methodology": "每个轴表示该选手每 10 分钟数据距离同英雄全局平均值多少个标准差（σ）。基线来自所有 Parsertime 选手在同一英雄上的数据，且至少需要 3 张地图。"
+      "heroBans": {
+        "bansAgainstTeam": "针对他们的禁用",
+        "bansAgainstDescription": "对手面对该队伍时禁用的英雄，反映外界认为的强点。",
+        "bansByTeam": "他们的禁用",
+        "bansByDescription": "该队伍禁用的英雄，反映他们想限制对手的内容。",
+        "hero": "英雄",
+        "count": "次数",
+        "weighted": "加权",
+        "noBans": "暂无英雄禁用数据。",
+        "selectTeamTitle": "选择你的队伍以查看他们的禁用目标",
+        "selectTeamDescription": "使用上方“球探对象”选择器选择你的队伍，即可查看对手会针对你队哪些英雄。",
+        "disruptionTargets": "干扰目标",
+        "disruptionTargetsEmptyDescription": "按预期干扰效果排序的对手禁用目标",
+        "disruptionTargetsDescription": "建议针对他们禁用的英雄；干扰分越高，禁用后对其胜率影响越大。",
+        "notEnoughBanData": "禁用数据不足，无法计算干扰分。",
+        "percentagePoints": "{value}pp",
+        "deltaWhenBanned": "禁用时 {delta}",
+        "availabilitySummary": "{available} 张可用 / {banned} 张被禁",
+        "showFewer": "收起",
+        "showMore": "再显示 {count} 个",
+        "theirBanTargets": "他们的禁用目标",
+        "theirBanTargetsDescription": "展示他们的禁用模式与你队最常使用英雄的重叠情况",
+        "theirBanTargetsActiveDescription": "交叉引用他们的禁用模式与你队最常使用的英雄",
+        "noBanTargetOverlap": "他们的禁用与英雄池之间没有发现重叠。",
+        "riskCritical": "关键",
+        "riskWatch": "关注",
+        "riskSafe": "安全",
+        "exposureSummary": "— 他们在 {opponentBanRate} 的地图中禁用该英雄；你的队伍有 {userPlayRate} 的时间使用它",
+        "protectedHeroes": "受保护英雄",
+        "protectedHeroesDescription": "该队伍很少禁用的英雄；预计会出现在阵容中",
+        "methodology": {
+          "title": "我们如何分析英雄禁用",
+          "points": {
+            "0": "每张 OWCS 地图每队可禁用一个英雄。我们追踪该队伍禁用和被针对禁用的英雄。",
+            "1": "加权次数使用 90 天半衰期的指数衰减，因此近期禁用模式优先于旧模式。",
+            "2": "Disruption Score 衡量禁用某英雄对对手造成的影响，结合胜率差和样本可靠性。10 以上有意义，20 以上是高影响禁用目标。",
+            "3": "Win-Rate Delta(pp) 使用百分点。例如“禁用时 −22pp”表示该英雄不可用时对手胜率下降 22 个百分点。",
+            "4": "Their Ban Targets 会把对手禁用历史与你队最常使用的英雄交叉比对。Critical 表示他们在 30% 以上地图禁用，且你的队伍使用率 10% 以上。",
+            "5": "Protected Heroes 是该队伍在少于 5% 地图中禁用的英雄，可能是他们希望保留的阵容核心。"
+          }
+        }
       },
-      "heroZScores": {
-        "title": "英雄表现",
-        "description": "与全局基线相比的各英雄综合 z 分数。",
-        "primary": "主力",
-        "maps": "{count} 张地图",
-        "delta": "差值",
-        "significantDropOff": "明显下滑",
-        "noData": "暂无英雄表现数据。",
-        "methodology": "综合 z 分数是每个英雄各项数据 z 分数（消灭、死亡、伤害、治疗、承伤）的加权平均。单项 z 分数将该选手每 10 分钟数据与该英雄的全局平均值和标准差比较。差值显示主力英雄与第二英雄熟练度之间的差距。"
-      },
-      "mapWinrates": {
-        "title": "地图表现",
-        "description": "来自正式比赛的胜率。",
-        "byMapType": "按地图类型",
-        "byMap": "按地图",
-        "competitive": "正式比赛",
-        "scrims": "训练赛",
+      "maps": {
+        "byMapType": "按地图类型统计胜率",
+        "byMapTypeDescription": "按游戏模式拆分表现",
+        "byMap": "单地图表现",
+        "byMapDescription": "各地图胜率",
+        "mapType": "模式",
+        "map": "地图",
         "played": "已打",
         "won": "获胜",
-        "noData": "暂无竞技地图数据。",
-        "methodologyMapType": "地图类型胜率根据该选手所在队伍参与的所有正式比赛结果计算。百分比为每种模式（Control、Escort、Hybrid、Push、Flashpoint）的胜场数 ÷ 总地图数。",
-        "methodologyByMap": "单张地图胜率根据正式比赛结果计算。边框按颜色区分：胜率 ≥60% 为绿色，≤40% 为红色，其余为中性。"
+        "winRate": "胜率",
+        "rawWinRate": "原始胜率",
+        "weightedWinRate": "加权胜率",
+        "trend": "趋势",
+        "noMaps": "暂无地图数据。",
+        "advisorTitle": "地图禁选顾问",
+        "advisorDescription": "按净优势排序地图。从顶部选择，从底部禁用。",
+        "crossReferenceAvailable": "可进行交叉引用",
+        "matchupMatrixLabel": "地图对局矩阵",
+        "vetoRecommendation": "禁选建议",
+        "pick": "选择",
+        "ban": "禁用",
+        "opponentPerformanceDescription": "对手地图表现，包含强度加权胜率和趋势指标",
+        "percentagePoints": "{value}pp",
+        "netAdvantageLabel": "{map}：净优势 {advantage}",
+        "versus": "对",
+        "stableTrend": "趋势稳定（{delta}）",
+        "improvingTrend": "近期提升（{delta}）— 谨慎",
+        "decliningTrend": "近期下滑（{delta}）— 机会",
+        "selectTeamTitle": "选择你的队伍以解锁地图对局",
+        "selectTeamDescription": "使用上方“球探对象”选择器选择你的队伍，即可启用交叉引用地图禁选分析。",
+        "methodology": {
+          "title": "我们如何衡量地图表现和对局关系",
+          "points": {
+            "0": "每张地图胜率根据系列赛中的单地图结果计算，而不仅是系列赛胜负。",
+            "1": "强度加权胜率使用 Elo 评分校正对手强度。面对顶级队伍的 60% 胜率可能比面对弱队的 80% 更有价值。",
+            "2": "净优势(pp) 是你的地图胜率与对手强度加权胜率之间的百分点差。",
+            "3": "趋势箭头将最近 10 张地图与整体记录比较。高于 +10pp 为改善，低于 −10pp 为下滑，其余为稳定。",
+            "4": "置信度点表示样本量：绿色实心为 20+ 地图，琥珀色为 10-19，淡色为 5-9。",
+            "5": "通过队伍选择器选择你的队伍后，你的训练赛地图数据会与对手 OWCS 数据合并，并使用相同的衰减加权。"
+          }
+        }
       },
-      "killAnalysis": {
-        "title": "战斗模式",
-        "description": "来自训练赛数据的击杀和死亡分析。",
-        "topTargets": "主要目标",
-        "topThreats": "主要威胁",
-        "killMethods": "击杀方式",
-        "roleDistribution": "职责分布",
-        "count": "数量",
-        "kills": "{count} 次击杀",
-        "deaths": "{count} 次死亡",
-        "methodology": "击杀和死亡数据来自 Parsertime 训练赛日志。主要目标和威胁展示总数最高的 5 个被击杀英雄和导致该选手死亡的英雄。击杀方式按技能类型分组。职责分布根据所有训练赛中的英雄使用时间，反映 Tank、Damage 和 Support 的占比。"
+      "recommendations": {
+        "title": "策略建议",
+        "description": "基于该队伍近期加权表现分析的可执行洞察。",
+        "heroesToBan": "建议禁用英雄",
+        "heroesToBanDescription": "对手面对该队伍时最常禁用的英雄，代表他们被认为的强点。",
+        "mapsToPick": "建议选择地图",
+        "mapsToPickDescription": "该队伍加权胜率最低的地图，可利用这些弱点。",
+        "mapsToAvoid": "建议避开地图",
+        "mapsToAvoidDescription": "该队伍加权胜率最高的地图，避免让他们发挥强项。",
+        "weightedWinRate": "加权胜率",
+        "sampleSize": "{count} 场比赛",
+        "noRecommendations": "数据不足，无法生成建议。",
+        "confidence": {
+          "high": "高置信度",
+          "medium": "中等置信度",
+          "low": "低置信度",
+          "insufficient": "数据不足"
+        },
+        "methodology": {
+          "title": "我们如何生成建议",
+          "points": {
+            "0": "建议禁用英雄是对手最常针对该队伍禁用的英雄，禁用它们可以限制其被认为的强点。",
+            "1": "建议选择地图是该队伍近期加权胜率最低的地图（至少打过 3 场）。",
+            "2": "建议避开地图是该队伍近期加权胜率最高的地图。",
+            "3": "置信度基于样本量：高为 10+ 场，中为 5-9 场，低为少于 5 场。",
+            "4": "所有指标都使用 90 天半衰期指数衰减，使建议反映当前版本环境而非过时结果。"
+          }
+        }
       },
-      "strengthsWeaknesses": {
-        "title": "球探洞察",
-        "description": "根据正式比赛和训练赛数据自动生成的优势与弱点。",
-        "strengths": "优势",
-        "weaknesses": "弱点",
-        "noStrengths": "数据不足，无法识别优势。",
-        "noWeaknesses": "未发现明显弱点。",
-        "methodology": "洞察通过分析 z 分数（相对全局平均的英雄表现）、正式比赛地图胜率、首杀/首死率、稳定性分数和英雄池深度自动生成。指标超过正向阈值时触发优势，达到负向阈值时触发弱点。系统会结合所有数据来源提供整体视角。"
+      "players": {
+        "selectTeamTitle": "选择你的队伍以解锁阵容准备度",
+        "selectTeamDescription": "使用上方“球探对象”选择器选择你的队伍。此标签会交叉引用你方选手的英雄深度和该对手的禁用模式，找出最容易被针对的人。",
+        "matchupSummary": "显示面对 <opponent>{opponentName}</opponent> 时 <roster>你方阵容</roster> 的英雄深度和弱点。英雄池较窄且主力英雄经常被该对手禁用的选手会被标记为高风险。",
+        "thisOpponent": "该对手",
+        "atRiskPlayers": "高风险选手",
+        "atRiskPlayersDescription": "按英雄池深度和禁用暴露度排序，列出最容易受到该对手禁用策略影响的选手",
+        "vulnerabilitySummary": "{role} · {hero} · 禁用率 {banRate}",
+        "rolePlayers": "你的 {role} 选手",
+        "roleDescription": "与其他 {role} 选手相比的英雄深度和表现",
+        "unknownHero": "未知",
+        "noSecondary": "无副选英雄",
+        "delta": "差值：{value}",
+        "sigmaValue": "{sign}{value}σ",
+        "significantDropOff": "明显下滑",
+        "banExposure": "禁用暴露：<risk>{riskLevel}</risk>",
+        "banExposureDescription": "该对手在 {banRate} 的地图中禁用 {hero}；如果被迫离开主英雄，z 分数会下降 {delta}",
+        "unknownAmount": "未知幅度",
+        "primaryBadge": "主力",
+        "roles": {
+          "tank": "坦克",
+          "damage": "输出",
+          "support": "支援"
+        },
+        "riskLevels": {
+          "critical": "关键",
+          "high": "高",
+          "moderate": "中等",
+          "low": "低"
+        },
+        "riskAriaCritical": "关键弱点",
+        "riskAriaHigh": "高风险弱点",
+        "riskAriaModerate": "中等弱点",
+        "riskAriaLow": "低风险弱点",
+        "methodology": {
+          "title": "如何评估阵容准备度",
+          "points": {
+            "0": "此标签展示你的阵容面对特定对手时的准备度，并基于英雄深度和对手禁用模式识别高风险选手。",
+            "1": "Z 分数衡量选手每个英雄的每 10 分钟数据，与阵容内同职责所有英雄表现相比如何。",
+            "2": "数据按职责加权 — Tank：死亡（30% 反向）、消灭（20%）、伤害（20%）。Damage：消灭（30%）、伤害（30%）、死亡（20% 反向）。Support：治疗（35%）、死亡（25% 反向）、伤害（14%）、消灭（10%）。",
+            "3": "主/副英雄差值是选手最佳英雄与第二英雄之间的 z 分数差。超过 1.5σ 表示被迫离开主英雄时会明显下滑。",
+            "4": "Vulnerability Index = 英雄深度差值 × 对手禁用率。0.5 以上为关键，0.25-0.5 为高，0.1-0.25 为中等，0.1 以下为低。",
+            "5": "英雄至少需要 3 张地图且使用时间超过 2 分钟才会纳入。选手至少需要 5 张总地图才有有意义的置信度。"
+          }
+        }
       },
-      "noScrimData": "该选手尚无 Parsertime 训练赛数据。正式比赛分析和锦标赛历史仍可查看。",
-      "statLabels": {
-        "eliminations": "消灭",
-        "deaths": "死亡",
-        "hero_damage_dealt": "英雄伤害",
-        "healing_dealt": "治疗",
-        "damage_blocked": "承受伤害"
-      }
+      "report": {
+        "title": "赛前简报：对阵 {opponent}",
+        "scrimOnly": "仅有训练赛数据 — 暂无正式比赛历史",
+        "selectTeamTitle": "选择你的队伍以查看完整报告",
+        "selectTeamDescription": "地图对局和选手弱点等交叉引用洞察，需要先在上方“球探对象”选择器中选择你的队伍。下方仅显示对手单方洞察。",
+        "topInsights": "重点洞察",
+        "additionalFindings": "{count} 条其他发现",
+        "noDataTitle": "数据仍然不足",
+        "noDataDescription": "记录更多比赛后再回来查看。可靠洞察需要满足最低样本量。",
+        "competitiveMaps": "{formattedCount} 张正式比赛地图",
+        "scrimMaps": "{formattedCount} 张训练赛地图",
+        "basedOn": "基于 {sources}",
+        "sourceJoin": "{first} 和 {second}",
+        "methodology": {
+          "title": "报告如何生成",
+          "points": {
+            "0": "洞察通过交叉引用你队上传的训练赛数据与对手 OWCS 正式比赛历史生成。",
+            "1": "地图对局洞察会在你的胜率与对手强度加权胜率之间的净优势超过 ±15pp 时显示。",
+            "2": "禁用干扰洞察会标记禁用后让对手胜率显著下降的英雄。",
+            "3": "选手弱点洞察会标记主英雄明显强于副英雄且经常被对手禁用的选手。",
+            "4": "每条洞察都有 1-100 的优先级分数，结合优势幅度、置信度和可执行性。",
+            "5": "置信度层级 — 高：20+ 地图；中：10-19；低：5-9；不足（隐藏）：少于 5。纯训练赛数据使用更严格阈值。",
+            "6": "每条洞察都会显示数据来源：“Competitive”代表仅 OWCS 比赛，“Scrim”代表仅上传的训练赛数据，“Competitive + Scrim”代表两者结合。"
+          }
+        }
+      },
+      "empty": "该队伍暂无可用球探数据。"
     }
   },
-  "team": {
-    "metadata": {
-      "title": "{team} 球探 | Parsertime",
-      "description": "球探 {team} — 查看比赛历史、英雄禁用、地图表现和策略建议。",
-      "ogTitle": "{team} 球探 | Parsertime",
-      "ogDescription": "球探 {team} — 查看比赛历史、英雄禁用、地图表现和策略建议。"
-    },
-    "backToSearch": "返回搜索",
-    "tabs": {
-      "overview": "概述",
-      "heroBans": "英雄禁用",
-      "maps": "地图",
-      "players": "阵容准备",
-      "report": "报告",
-      "recommendations": "建议"
-    },
-    "picker": {
-      "label": "球探对象：",
-      "placeholder": "选择你的队伍",
-      "noTeam": "未选择队伍"
-    },
-    "overview": {
-      "record": "战绩",
-      "winRate": "胜率",
-      "weightedWinRate": "加权胜率",
-      "weightedPercent": "{value} 加权",
-      "weightedWinRateTooltip": "按时间新近程度加权的胜率；近期比赛权重高于较早比赛。",
-      "recordQuality": "战绩质量",
-      "recordQualityValue": "{total} 胜中的 {wins} 胜",
-      "recordQualityDescription": "来自击败 1500 分以上队伍的胜场",
-      "strengthRating": "实力评分",
-      "provisionalRating": "临时评分 — 少于 5 场比赛",
-      "topPercentile": "前 {value}",
-      "matchesRated": "已评定 {count} 场比赛",
-      "noCompetitiveData": "暂无正式比赛数据。为训练赛标记对手后即可启用交叉引用分析。",
-      "winRateTrend": "胜率趋势：最近 {count} 场为 {value}",
-      "recentForm": "近期状态",
-      "recentFormDescription": "最近 10 场比赛结果",
-      "matchHistory": "比赛历史",
-      "matchHistoryDescription": "所有已记录比赛，按最近时间排序",
-      "date": "日期",
-      "opponent": "对手",
-      "score": "比分",
-      "result": "结果",
-      "tournament": "锦标赛",
-      "win": "胜",
-      "loss": "负",
-      "matchCount": "{count} 场比赛",
-      "allTime": "总胜率",
-      "noMatches": "未找到该队伍的比赛。",
-      "previousPage": "上一页",
-      "nextPage": "下一页",
-      "pageInfo": "第 {current} 页，共 {total} 页",
-      "methodology": {
-        "title": "这些统计如何计算",
-        "points": {
-          "0": "胜率根据该队伍所有已记录 OWCS 比赛计算。",
-          "1": "加权胜率使用 90 天半衰期的指数衰减；90 天前的比赛权重约为今天比赛的一半。",
-          "2": "近期状态展示最近 10 场比赛结果，按最近优先排列。迷你趋势线展示这些比赛的胜负走势。",
-          "3": "Strength Rating 是以 1500 为中心的 Elo 风格评分。击败高评分对手会比击败低评分对手提升更多。少于 5 场比赛时标记为临时评分。",
-          "4": "Record Quality 统计有多少胜利来自击败 1500 分以上队伍，用于判断好战绩是否来自强竞争。",
-          "5": "比赛数据来自 Liquipedia，覆盖过去一年 OWCS 锦标赛。使用队伍选择器选择你的队伍后，也会纳入你的训练赛数据。"
-        }
-      }
-    },
-    "heroBans": {
-      "bansAgainstTeam": "针对他们的禁用",
-      "bansAgainstDescription": "对手面对该队伍时禁用的英雄，反映外界认为的强点。",
-      "bansByTeam": "他们的禁用",
-      "bansByDescription": "该队伍禁用的英雄，反映他们想限制对手的内容。",
-      "hero": "英雄",
-      "count": "次数",
-      "weighted": "加权",
-      "noBans": "暂无英雄禁用数据。",
-      "selectTeamTitle": "选择你的队伍以查看他们的禁用目标",
-      "selectTeamDescription": "使用上方“球探对象”选择器选择你的队伍，即可查看对手会针对你队哪些英雄。",
-      "disruptionTargets": "干扰目标",
-      "disruptionTargetsEmptyDescription": "按预期干扰效果排序的对手禁用目标",
-      "disruptionTargetsDescription": "建议针对他们禁用的英雄；干扰分越高，禁用后对其胜率影响越大。",
-      "notEnoughBanData": "禁用数据不足，无法计算干扰分。",
-      "percentagePoints": "{value}pp",
-      "deltaWhenBanned": "禁用时 {delta}",
-      "availabilitySummary": "{available} 张可用 / {banned} 张被禁",
-      "showFewer": "收起",
-      "showMore": "再显示 {count} 个",
-      "theirBanTargets": "他们的禁用目标",
-      "theirBanTargetsDescription": "展示他们的禁用模式与你队最常使用英雄的重叠情况",
-      "theirBanTargetsActiveDescription": "交叉引用他们的禁用模式与你队最常使用的英雄",
-      "noBanTargetOverlap": "他们的禁用与英雄池之间没有发现重叠。",
-      "riskCritical": "关键",
-      "riskWatch": "关注",
-      "riskSafe": "安全",
-      "exposureSummary": "— 他们在 {opponentBanRate} 的地图中禁用该英雄；你的队伍有 {userPlayRate} 的时间使用它",
-      "protectedHeroes": "受保护英雄",
-      "protectedHeroesDescription": "该队伍很少禁用的英雄；预计会出现在阵容中",
-      "methodology": {
-        "title": "我们如何分析英雄禁用",
-        "points": {
-          "0": "每张 OWCS 地图每队可禁用一个英雄。我们追踪该队伍禁用和被针对禁用的英雄。",
-          "1": "加权次数使用 90 天半衰期的指数衰减，因此近期禁用模式优先于旧模式。",
-          "2": "Disruption Score 衡量禁用某英雄对对手造成的影响，结合胜率差和样本可靠性。10 以上有意义，20 以上是高影响禁用目标。",
-          "3": "Win-Rate Delta(pp) 使用百分点。例如“禁用时 −22pp”表示该英雄不可用时对手胜率下降 22 个百分点。",
-          "4": "Their Ban Targets 会把对手禁用历史与你队最常使用的英雄交叉比对。Critical 表示他们在 30% 以上地图禁用，且你的队伍使用率 10% 以上。",
-          "5": "Protected Heroes 是该队伍在少于 5% 地图中禁用的英雄，可能是他们希望保留的阵容核心。"
-        }
-      }
-    },
-    "maps": {
-      "byMapType": "按地图类型统计胜率",
-      "byMapTypeDescription": "按游戏模式拆分表现",
-      "byMap": "单地图表现",
-      "byMapDescription": "各地图胜率",
-      "mapType": "模式",
-      "map": "地图",
-      "played": "已打",
-      "won": "获胜",
-      "winRate": "胜率",
-      "rawWinRate": "原始胜率",
-      "weightedWinRate": "加权胜率",
-      "trend": "趋势",
-      "noMaps": "暂无地图数据。",
-      "advisorTitle": "地图禁选顾问",
-      "advisorDescription": "按净优势排序地图。从顶部选择，从底部禁用。",
-      "crossReferenceAvailable": "可进行交叉引用",
-      "matchupMatrixLabel": "地图对局矩阵",
-      "vetoRecommendation": "禁选建议",
-      "pick": "选择",
-      "ban": "禁用",
-      "opponentPerformanceDescription": "对手地图表现，包含强度加权胜率和趋势指标",
-      "percentagePoints": "{value}pp",
-      "netAdvantageLabel": "{map}：净优势 {advantage}",
-      "versus": "对",
-      "stableTrend": "趋势稳定（{delta}）",
-      "improvingTrend": "近期提升（{delta}）— 谨慎",
-      "decliningTrend": "近期下滑（{delta}）— 机会",
-      "selectTeamTitle": "选择你的队伍以解锁地图对局",
-      "selectTeamDescription": "使用上方“球探对象”选择器选择你的队伍，即可启用交叉引用地图禁选分析。",
-      "methodology": {
-        "title": "我们如何衡量地图表现和对局关系",
-        "points": {
-          "0": "每张地图胜率根据系列赛中的单地图结果计算，而不仅是系列赛胜负。",
-          "1": "强度加权胜率使用 Elo 评分校正对手强度。面对顶级队伍的 60% 胜率可能比面对弱队的 80% 更有价值。",
-          "2": "净优势(pp) 是你的地图胜率与对手强度加权胜率之间的百分点差。",
-          "3": "趋势箭头将最近 10 张地图与整体记录比较。高于 +10pp 为改善，低于 −10pp 为下滑，其余为稳定。",
-          "4": "置信度点表示样本量：绿色实心为 20+ 地图，琥珀色为 10-19，淡色为 5-9。",
-          "5": "通过队伍选择器选择你的队伍后，你的训练赛地图数据会与对手 OWCS 数据合并，并使用相同的衰减加权。"
-        }
-      }
-    },
-    "recommendations": {
-      "title": "策略建议",
-      "description": "基于该队伍近期加权表现分析的可执行洞察。",
-      "heroesToBan": "建议禁用英雄",
-      "heroesToBanDescription": "对手面对该队伍时最常禁用的英雄，代表他们被认为的强点。",
-      "mapsToPick": "建议选择地图",
-      "mapsToPickDescription": "该队伍加权胜率最低的地图，可利用这些弱点。",
-      "mapsToAvoid": "建议避开地图",
-      "mapsToAvoidDescription": "该队伍加权胜率最高的地图，避免让他们发挥强项。",
-      "weightedWinRate": "加权胜率",
-      "sampleSize": "{count} 场比赛",
-      "noRecommendations": "数据不足，无法生成建议。",
-      "confidence": {
-        "high": "高置信度",
-        "medium": "中等置信度",
-        "low": "低置信度",
-        "insufficient": "数据不足"
-      },
-      "methodology": {
-        "title": "我们如何生成建议",
-        "points": {
-          "0": "建议禁用英雄是对手最常针对该队伍禁用的英雄，禁用它们可以限制其被认为的强点。",
-          "1": "建议选择地图是该队伍近期加权胜率最低的地图（至少打过 3 场）。",
-          "2": "建议避开地图是该队伍近期加权胜率最高的地图。",
-          "3": "置信度基于样本量：高为 10+ 场，中为 5-9 场，低为少于 5 场。",
-          "4": "所有指标都使用 90 天半衰期指数衰减，使建议反映当前版本环境而非过时结果。"
-        }
-      }
-    },
-    "players": {
-      "selectTeamTitle": "选择你的队伍以解锁阵容准备度",
-      "selectTeamDescription": "使用上方“球探对象”选择器选择你的队伍。此标签会交叉引用你方选手的英雄深度和该对手的禁用模式，找出最容易被针对的人。",
-      "matchupSummary": "显示面对 <opponent>{opponentName}</opponent> 时 <roster>你方阵容</roster> 的英雄深度和弱点。英雄池较窄且主力英雄经常被该对手禁用的选手会被标记为高风险。",
-      "thisOpponent": "该对手",
-      "atRiskPlayers": "高风险选手",
-      "atRiskPlayersDescription": "按英雄池深度和禁用暴露度排序，列出最容易受到该对手禁用策略影响的选手",
-      "vulnerabilitySummary": "{role} · {hero} · 禁用率 {banRate}",
-      "rolePlayers": "你的 {role} 选手",
-      "roleDescription": "与其他 {role} 选手相比的英雄深度和表现",
-      "unknownHero": "未知",
-      "noSecondary": "无副选英雄",
-      "delta": "差值：{value}",
-      "sigmaValue": "{sign}{value}σ",
-      "significantDropOff": "明显下滑",
-      "banExposure": "禁用暴露：<risk>{riskLevel}</risk>",
-      "banExposureDescription": "该对手在 {banRate} 的地图中禁用 {hero}；如果被迫离开主英雄，z 分数会下降 {delta}",
-      "unknownAmount": "未知幅度",
-      "primaryBadge": "主力",
-      "roles": {
-        "tank": "坦克",
-        "damage": "输出",
-        "support": "支援"
-      },
-      "riskLevels": {
-        "critical": "关键",
-        "high": "高",
-        "moderate": "中等",
-        "low": "低"
-      },
-      "riskAriaCritical": "关键弱点",
-      "riskAriaHigh": "高风险弱点",
-      "riskAriaModerate": "中等弱点",
-      "riskAriaLow": "低风险弱点",
-      "methodology": {
-        "title": "如何评估阵容准备度",
-        "points": {
-          "0": "此标签展示你的阵容面对特定对手时的准备度，并基于英雄深度和对手禁用模式识别高风险选手。",
-          "1": "Z 分数衡量选手每个英雄的每 10 分钟数据，与阵容内同职责所有英雄表现相比如何。",
-          "2": "数据按职责加权 — Tank：死亡（30% 反向）、消灭（20%）、伤害（20%）。Damage：消灭（30%）、伤害（30%）、死亡（20% 反向）。Support：治疗（35%）、死亡（25% 反向）、伤害（14%）、消灭（10%）。",
-          "3": "主/副英雄差值是选手最佳英雄与第二英雄之间的 z 分数差。超过 1.5σ 表示被迫离开主英雄时会明显下滑。",
-          "4": "Vulnerability Index = 英雄深度差值 × 对手禁用率。0.5 以上为关键，0.25-0.5 为高，0.1-0.25 为中等，0.1 以下为低。",
-          "5": "英雄至少需要 3 张地图且使用时间超过 2 分钟才会纳入。选手至少需要 5 张总地图才有有意义的置信度。"
-        }
-      }
-    },
-    "report": {
-      "title": "赛前简报：对阵 {opponent}",
-      "scrimOnly": "仅有训练赛数据 — 暂无正式比赛历史",
-      "selectTeamTitle": "选择你的队伍以查看完整报告",
-      "selectTeamDescription": "地图对局和选手弱点等交叉引用洞察，需要先在上方“球探对象”选择器中选择你的队伍。下方仅显示对手单方洞察。",
-      "topInsights": "重点洞察",
-      "additionalFindings": "{count} 条其他发现",
-      "noDataTitle": "数据仍然不足",
-      "noDataDescription": "记录更多比赛后再回来查看。可靠洞察需要满足最低样本量。",
-      "competitiveMaps": "{formattedCount} 张正式比赛地图",
-      "scrimMaps": "{formattedCount} 张训练赛地图",
-      "basedOn": "基于 {sources}",
-      "sourceJoin": "{first} 和 {second}",
-      "methodology": {
-        "title": "报告如何生成",
-        "points": {
-          "0": "洞察通过交叉引用你队上传的训练赛数据与对手 OWCS 正式比赛历史生成。",
-          "1": "地图对局洞察会在你的胜率与对手强度加权胜率之间的净优势超过 ±15pp 时显示。",
-          "2": "禁用干扰洞察会标记禁用后让对手胜率显著下降的英雄。",
-          "3": "选手弱点洞察会标记主英雄明显强于副英雄且经常被对手禁用的选手。",
-          "4": "每条洞察都有 1-100 的优先级分数，结合优势幅度、置信度和可执行性。",
-          "5": "置信度层级 — 高：20+ 地图；中：10-19；低：5-9；不足（隐藏）：少于 5。纯训练赛数据使用更严格阈值。",
-          "6": "每条洞察都会显示数据来源：“Competitive”代表仅 OWCS 比赛，“Scrim”代表仅上传的训练赛数据，“Competitive + Scrim”代表两者结合。"
-        }
-      }
-    },
-    "empty": "该队伍暂无可用球探数据。"
-  }
-},
   "statsPage": {
     "layoutMetadata": {
       "title": "统计数据 | Parsertime",
@@ -4079,254 +4079,254 @@
         "description": "如果启用，模拟的 URL 将为生产环境生成。如果禁用，模拟的 URL 将为开发环境生成。"
       },
       "impersonate": "模拟用户",
-  "onSubmit": {
-    "title": "用户模拟成功",
-    "description": "模拟的 URL 已复制到您的剪贴板。",
-    "errorTitle": "错误",
-    "errorDescription": "模拟用户时发生错误。"
-  },
-  "impersonateUser": {
-    "title": "模拟用户",
-    "description": "模拟某个用户，以该用户视角查看网站。",
-    "email": {
-      "title": "电子邮件",
-      "description": "这是您想要模拟的用户电子邮件地址。",
-      "message": "请输入有效的电子邮件地址。"
-    }
-  },
-  "audit-log": {
-    "title": "最近用户操作",
-    "action-types": "操作类型",
-    "filter-label": "按操作类型筛选",
-    "clear-filters": "全部清除",
-    "user-email": "用户邮箱：{userEmail}",
-    "target": "目标：{target}",
-    "search-user-email": "搜索用户邮箱",
-    "search-target": "搜索目标",
-    "date-range": {
-      "select": "选择日期范围",
-      "from": "从 {date}",
-      "until": "直到 {date}",
-      "range": "{from} - {to}"
-    },
-    "actions": {
-      "USER_BAN": "封禁用户",
-      "USER_UNBAN": "解除封禁",
-      "USER_AVATAR_UPDATED": "用户头像已更新",
-      "USER_ACCOUNT_DELETED": "用户账号已删除",
-      "USER_NAME_UPDATED": "用户名已更新",
-      "TRUST_SCORE_ADJUST": "调整信任分",
-      "IMPERSONATE_USER": "模拟用户",
-      "SUSPICIOUS_ACTIVITY_DETECTED": "检测到可疑活动",
-      "TEAM_CREATED": "团队已创建",
-      "TEAM_UPDATED": "团队已更新",
-      "TEAM_DELETED": "团队已删除",
-      "TEAM_AVATAR_UPDATED": "团队头像已更新",
-      "TEAM_INVITE_SENT": "团队邀请已发送",
-      "TEAM_JOINED": "加入团队",
-      "TEAM_LEFT": "离开团队",
-      "TEAM_MEMBER_PROMOTED": "团队成员已提升",
-      "TEAM_MEMBER_DEMOTED": "团队成员已降级",
-      "TEAM_MEMBER_REMOVED": "团队成员已移除",
-      "TEAM_OWNERSHIP_TRANSFERRED": "团队所有权已转移",
-      "SCRIM_CREATED": "训练赛已创建",
-      "SCRIM_UPDATED": "训练赛已更新",
-      "SCRIM_DELETED": "训练赛已删除",
-      "MAP_CREATED": "地图已创建",
-      "MAP_UPDATED": "地图已更新",
-      "MAP_DELETED": "地图已删除",
-      "BUG_REPORT_SUBMITTED": "错误报告已提交"
-    },
-    "download": {
-      "button": "下载 CSV",
-      "downloading": "正在下载...",
-      "filename": "audit-logs-{date}.csv",
-      "tooltip": "将当前筛选的审计日志下载为 CSV 文件。",
-      "error": "下载 CSV 时出错：{error}",
-      "unknown-error": "未知错误"
-    },
-    "table": {
-      "user-email": "用户邮箱",
-      "action": "操作",
-      "target": "目标",
-      "details": "详情",
-      "date-time": "日期和时间",
-      "date-time-format": "{date} {time}",
-      "no-logs-found": "没有找到符合筛选条件的审计日志。",
-      "error-loading-logs": "加载审计日志时出错"
-    },
-    "showing-logs": "正在显示 {count} 条日志。",
-    "hover": {
-      "user-email": "用户邮箱",
-      "action": "操作",
-      "target": "目标",
-      "details": "详情",
-      "id": "ID：{id}",
-      "timestamp": "时间戳",
-      "auto-generated": "此操作由系统自动执行。"
-    }
-  },
-  "dashboard": {
-    "title": "管理员仪表盘",
-    "description": "管理用户和内容，并监控平台活动",
-    "user-search": {
-      "title": "用户搜索",
-      "description": "使用高级筛选选项搜索用户"
-    },
-    "audit-log": {
-      "title": "审计日志",
-      "description": "工作人员最近执行的操作"
-    },
-    "stats-cards": {
-      "total-users": {
-        "title": "用户总数",
-        "delta": "本月新增 {delta} 名用户"
+      "onSubmit": {
+        "title": "用户模拟成功",
+        "description": "模拟的 URL 已复制到您的剪贴板。",
+        "errorTitle": "错误",
+        "errorDescription": "模拟用户时发生错误。"
       },
-      "user-growth": {
-        "title": "用户增长",
-        "delta": "与上月 {lastMonth} 相比 {delta}"
+      "impersonateUser": {
+        "title": "模拟用户",
+        "description": "模拟某个用户，以该用户视角查看网站。",
+        "email": {
+          "title": "电子邮件",
+          "description": "这是您想要模拟的用户电子邮件地址。",
+          "message": "请输入有效的电子邮件地址。"
+        }
       },
-      "scrim-activity": {
-        "title": "训练赛活动",
-        "delta": "与上月 {lastMonth} 相比 {delta}"
+      "audit-log": {
+        "title": "最近用户操作",
+        "action-types": "操作类型",
+        "filter-label": "按操作类型筛选",
+        "clear-filters": "全部清除",
+        "user-email": "用户邮箱：{userEmail}",
+        "target": "目标：{target}",
+        "search-user-email": "搜索用户邮箱",
+        "search-target": "搜索目标",
+        "date-range": {
+          "select": "选择日期范围",
+          "from": "从 {date}",
+          "until": "直到 {date}",
+          "range": "{from} - {to}"
+        },
+        "actions": {
+          "USER_BAN": "封禁用户",
+          "USER_UNBAN": "解除封禁",
+          "USER_AVATAR_UPDATED": "用户头像已更新",
+          "USER_ACCOUNT_DELETED": "用户账号已删除",
+          "USER_NAME_UPDATED": "用户名已更新",
+          "TRUST_SCORE_ADJUST": "调整信任分",
+          "IMPERSONATE_USER": "模拟用户",
+          "SUSPICIOUS_ACTIVITY_DETECTED": "检测到可疑活动",
+          "TEAM_CREATED": "团队已创建",
+          "TEAM_UPDATED": "团队已更新",
+          "TEAM_DELETED": "团队已删除",
+          "TEAM_AVATAR_UPDATED": "团队头像已更新",
+          "TEAM_INVITE_SENT": "团队邀请已发送",
+          "TEAM_JOINED": "加入团队",
+          "TEAM_LEFT": "离开团队",
+          "TEAM_MEMBER_PROMOTED": "团队成员已提升",
+          "TEAM_MEMBER_DEMOTED": "团队成员已降级",
+          "TEAM_MEMBER_REMOVED": "团队成员已移除",
+          "TEAM_OWNERSHIP_TRANSFERRED": "团队所有权已转移",
+          "SCRIM_CREATED": "训练赛已创建",
+          "SCRIM_UPDATED": "训练赛已更新",
+          "SCRIM_DELETED": "训练赛已删除",
+          "MAP_CREATED": "地图已创建",
+          "MAP_UPDATED": "地图已更新",
+          "MAP_DELETED": "地图已删除",
+          "BUG_REPORT_SUBMITTED": "错误报告已提交"
+        },
+        "download": {
+          "button": "下载 CSV",
+          "downloading": "正在下载...",
+          "filename": "audit-logs-{date}.csv",
+          "tooltip": "将当前筛选的审计日志下载为 CSV 文件。",
+          "error": "下载 CSV 时出错：{error}",
+          "unknown-error": "未知错误"
+        },
+        "table": {
+          "user-email": "用户邮箱",
+          "action": "操作",
+          "target": "目标",
+          "details": "详情",
+          "date-time": "日期和时间",
+          "date-time-format": "{date} {time}",
+          "no-logs-found": "没有找到符合筛选条件的审计日志。",
+          "error-loading-logs": "加载审计日志时出错"
+        },
+        "showing-logs": "正在显示 {count} 条日志。",
+        "hover": {
+          "user-email": "用户邮箱",
+          "action": "操作",
+          "target": "目标",
+          "details": "详情",
+          "id": "ID：{id}",
+          "timestamp": "时间戳",
+          "auto-generated": "此操作由系统自动执行。"
+        }
       },
-      "conversion-rate": {
-        "title": "转化率",
-        "delta": "{paidUsers} 名付费用户"
+      "dashboard": {
+        "title": "管理员仪表盘",
+        "description": "管理用户和内容，并监控平台活动",
+        "user-search": {
+          "title": "用户搜索",
+          "description": "使用高级筛选选项搜索用户"
+        },
+        "audit-log": {
+          "title": "审计日志",
+          "description": "工作人员最近执行的操作"
+        },
+        "stats-cards": {
+          "total-users": {
+            "title": "用户总数",
+            "delta": "本月新增 {delta} 名用户"
+          },
+          "user-growth": {
+            "title": "用户增长",
+            "delta": "与上月 {lastMonth} 相比 {delta}"
+          },
+          "scrim-activity": {
+            "title": "训练赛活动",
+            "delta": "与上月 {lastMonth} 相比 {delta}"
+          },
+          "conversion-rate": {
+            "title": "转化率",
+            "delta": "{paidUsers} 名付费用户"
+          },
+          "monthly-chart": {
+            "title": "每月用户注册",
+            "description": "过去 12 个月的新用户注册趋势"
+          },
+          "low-trust-users": {
+            "title": "低信任用户",
+            "delta": "较上周 {delta}"
+          },
+          "pending-reports": {
+            "title": "待处理举报",
+            "delta": "较上周 {delta}"
+          },
+          "images-pending-review": {
+            "title": "待审核图片",
+            "delta": "较上周 {delta}"
+          }
+        }
       },
-      "monthly-chart": {
-        "title": "每月用户注册",
-        "description": "过去 12 个月的新用户注册趋势"
+      "user-search": {
+        "metadata": {
+          "title": "用户搜索 — 管理员 | Enter Queue",
+          "description": "使用高级筛选选项搜索用户"
+        },
+        "title": "用户搜索",
+        "description": "使用高级筛选选项搜索用户",
+        "search-placeholder": "按用户名或电子邮件搜索...",
+        "filters": {
+          "title": "筛选",
+          "trust-score": "信任分范围",
+          "status": "用户状态",
+          "select-status": "选择状态",
+          "all-statuses": "所有状态",
+          "verification-status": "验证状态",
+          "select-verification-status": "选择验证状态",
+          "all-users": "所有用户",
+          "verified-only": "仅已验证",
+          "unverified-only": "仅未验证",
+          "billing-plan": "计费方案",
+          "select-billing-plan": "选择计费方案",
+          "all-plans": "所有方案",
+          "join-date-range": "加入日期范围",
+          "select-join-date-range": "选择加入日期范围",
+          "date-range-from": "从 {date}",
+          "date-range-until": "直到 {date}",
+          "date-range": "{from} - {to}",
+          "reset-filters": "重置筛选"
+        },
+        "plans": {
+          "free": "免费",
+          "basic": "Basic",
+          "premium": "Premium",
+          "unknown": "未知"
+        },
+        "table": {
+          "username": "用户名",
+          "email": "电子邮件",
+          "trust-score": "信任分",
+          "verification": "验证状态",
+          "join-date": "加入日期",
+          "actions": "操作",
+          "view-profile": "查看资料",
+          "edit-user": "编辑用户",
+          "adjust-trust-score": "调整信任分",
+          "ban-user": "封禁用户",
+          "unban-user": "解除封禁",
+          "no-users-found": "没有找到符合筛选条件的用户。",
+          "open-menu": "打开菜单",
+          "error-loading-users": "加载用户时出错",
+          "status": "状态",
+          "banned": "已封禁",
+          "active": "活跃",
+          "name": "姓名",
+          "billing-plan": "计费方案",
+          "role": "角色",
+          "email-verified": "邮箱已验证？",
+          "unverified": "未验证",
+          "verified": "已验证"
+        },
+        "showing-users": "正在显示 {count} 名用户。"
       },
-      "low-trust-users": {
-        "title": "低信任用户",
-        "delta": "较上周 {delta}"
-      },
-      "pending-reports": {
-        "title": "待处理举报",
-        "delta": "较上周 {delta}"
-      },
-      "images-pending-review": {
-        "title": "待审核图片",
-        "delta": "较上周 {delta}"
+      "analytics": {
+        "title": "分析",
+        "description": "查看用户活动和增长的详细分析与图表。",
+        "activeUsers": {
+          "title": "月活跃用户",
+          "description": "本月所在团队上传过训练赛的用户与其他用户对比"
+        },
+        "monthlyActiveUsers": {
+          "title": "活跃用户趋势",
+          "description": "过去 12 个月中，所在团队上传过训练赛的每月唯一用户"
+        },
+        "activeTeams": {
+          "title": "月活跃团队",
+          "description": "本月上传过训练赛的团队与所有团队对比"
+        },
+        "monthlyActiveTeams": {
+          "title": "活跃团队趋势",
+          "description": "过去 12 个月中每月上传过训练赛的唯一团队"
+        },
+        "userGrowth": {
+          "title": "用户增长趋势",
+          "description": "过去 12 个月的每月用户注册趋势"
+        },
+        "scrimActivity": {
+          "title": "训练赛活动",
+          "description": "过去 30 天的每日训练赛创建活动"
+        },
+        "teamCreations": {
+          "title": "团队创建",
+          "description": "过去 12 个月的每月团队创建趋势"
+        },
+        "teamManagerDistribution": {
+          "title": "用户角色分布",
+          "description": "普通用户与团队管理员的百分比分布"
+        },
+        "signupMethods": {
+          "title": "用户注册方式",
+          "description": "用户注册方式细分（OAuth 提供商与电子邮件）"
+        },
+        "billingPlans": {
+          "title": "计费方案分布",
+          "description": "按计费方案划分的用户分布（免费、Basic、Premium）"
+        },
+        "charts": {
+          "last12Months": "过去 12 个月",
+          "allTime": "全部时间",
+          "users": "用户",
+          "activeUsers": "活跃用户",
+          "activeTeams": "活跃团队",
+          "teamsCreated": "已创建团队"
+        }
       }
-    }
-  },
-  "user-search": {
-    "metadata": {
-      "title": "用户搜索 — 管理员 | Enter Queue",
-      "description": "使用高级筛选选项搜索用户"
     },
-    "title": "用户搜索",
-    "description": "使用高级筛选选项搜索用户",
-    "search-placeholder": "按用户名或电子邮件搜索...",
-    "filters": {
-      "title": "筛选",
-      "trust-score": "信任分范围",
-      "status": "用户状态",
-      "select-status": "选择状态",
-      "all-statuses": "所有状态",
-      "verification-status": "验证状态",
-      "select-verification-status": "选择验证状态",
-      "all-users": "所有用户",
-      "verified-only": "仅已验证",
-      "unverified-only": "仅未验证",
-      "billing-plan": "计费方案",
-      "select-billing-plan": "选择计费方案",
-      "all-plans": "所有方案",
-      "join-date-range": "加入日期范围",
-      "select-join-date-range": "选择加入日期范围",
-      "date-range-from": "从 {date}",
-      "date-range-until": "直到 {date}",
-      "date-range": "{from} - {to}",
-      "reset-filters": "重置筛选"
-    },
-    "plans": {
-      "free": "免费",
-      "basic": "Basic",
-      "premium": "Premium",
-      "unknown": "未知"
-    },
-    "table": {
-      "username": "用户名",
-      "email": "电子邮件",
-      "trust-score": "信任分",
-      "verification": "验证状态",
-      "join-date": "加入日期",
-      "actions": "操作",
-      "view-profile": "查看资料",
-      "edit-user": "编辑用户",
-      "adjust-trust-score": "调整信任分",
-      "ban-user": "封禁用户",
-      "unban-user": "解除封禁",
-      "no-users-found": "没有找到符合筛选条件的用户。",
-      "open-menu": "打开菜单",
-      "error-loading-users": "加载用户时出错",
-      "status": "状态",
-      "banned": "已封禁",
-      "active": "活跃",
-      "name": "姓名",
-      "billing-plan": "计费方案",
-      "role": "角色",
-      "email-verified": "邮箱已验证？",
-      "unverified": "未验证",
-      "verified": "已验证"
-    },
-    "showing-users": "正在显示 {count} 名用户。"
-  },
-  "analytics": {
-    "title": "分析",
-    "description": "查看用户活动和增长的详细分析与图表。",
-    "activeUsers": {
-      "title": "月活跃用户",
-      "description": "本月所在团队上传过训练赛的用户与其他用户对比"
-    },
-    "monthlyActiveUsers": {
-      "title": "活跃用户趋势",
-      "description": "过去 12 个月中，所在团队上传过训练赛的每月唯一用户"
-    },
-    "activeTeams": {
-      "title": "月活跃团队",
-      "description": "本月上传过训练赛的团队与所有团队对比"
-    },
-    "monthlyActiveTeams": {
-      "title": "活跃团队趋势",
-      "description": "过去 12 个月中每月上传过训练赛的唯一团队"
-    },
-    "userGrowth": {
-      "title": "用户增长趋势",
-      "description": "过去 12 个月的每月用户注册趋势"
-    },
-    "scrimActivity": {
-      "title": "训练赛活动",
-      "description": "过去 30 天的每日训练赛创建活动"
-    },
-    "teamCreations": {
-      "title": "团队创建",
-      "description": "过去 12 个月的每月团队创建趋势"
-    },
-    "teamManagerDistribution": {
-      "title": "用户角色分布",
-      "description": "普通用户与团队管理员的百分比分布"
-    },
-    "signupMethods": {
-      "title": "用户注册方式",
-      "description": "用户注册方式细分（OAuth 提供商与电子邮件）"
-    },
-    "billingPlans": {
-      "title": "计费方案分布",
-      "description": "按计费方案划分的用户分布（免费、Basic、Premium）"
-    },
-    "charts": {
-      "last12Months": "过去 12 个月",
-      "allTime": "全部时间",
-      "users": "用户",
-      "activeUsers": "活跃用户",
-      "activeTeams": "活跃团队",
-      "teamsCreated": "已创建团队"
-    }
-  }
-},
     "dangerZone": {
       "title": "危险区域",
       "description": "帐户删除是永久性的，无法撤销。您是否希望管理您的订阅？如果是，请点击 <Link>此处</Link>。"
@@ -5358,14 +5358,14 @@
       "score": "比分",
       "tournament": "锦标赛",
       "progress": "进度",
-    "previousPage": "上一页",
-    "nextPage": "下一页",
-    "pageInfo": "第 {current} 页，共 {total} 页",
-    "matchCount": "{count} 场比赛",
-    "fetchError": "获取比赛失败",
-    "errorLoading": "加载比赛出错：{message}",
-    "unknownError": "未知错误",
-    "noMatches": "未找到带 VOD 的未标注比赛。",
+      "previousPage": "上一页",
+      "nextPage": "下一页",
+      "pageInfo": "第 {current} 页，共 {total} 页",
+      "matchCount": "{count} 场比赛",
+      "fetchError": "获取比赛失败",
+      "errorLoading": "加载比赛出错：{message}",
+      "unknownError": "未知错误",
+      "noMatches": "未找到带 VOD 的未标注比赛。",
       "vs": "对阵"
     },
     "labeling": {
@@ -5384,19 +5384,19 @@
       "save": "保存",
       "reset": "重置",
       "saveAll": "保存所有地图",
-    "saving": "正在保存...",
-    "saved": "已保存！",
-    "saveFailed": "保存失败",
-    "saveSuccess": "团队阵容已成功保存。",
+      "saving": "正在保存...",
+      "saved": "已保存！",
+      "saveFailed": "保存失败",
+      "saveSuccess": "团队阵容已成功保存。",
       "saveError": "保存团队阵容失败。",
       "roleConstraint": "选择 1 名坦克、2 名输出、2 名支援",
       "heroBanned": "已禁用",
-    "playerAssignments": "{team} 玩家分配",
-    "assignPlayer": "为 {hero} 分配玩家",
-    "selectPlayer": "选择玩家...",
-    "twitchVodTitle": "Twitch VOD",
-    "noVodAvailable": "暂无可用 VOD",
-    "instructions": {
+      "playerAssignments": "{team} 玩家分配",
+      "assignPlayer": "为 {hero} 分配玩家",
+      "selectPlayer": "选择玩家...",
+      "twitchVodTitle": "Twitch VOD",
+      "noVodAvailable": "暂无可用 VOD",
+      "instructions": {
         "title": "审核说明",
         "body": "观看 VOD，并使用右侧面板记录每张地图的英雄阵容。对于每个英雄，请分配地图开始时使用该英雄的玩家。",
         "swapNote": "只记录初始选择。地图中途的英雄更换无需记录，因为我们关注的是每支队伍的开局阵容，而不是根据对局做出的换人。"
@@ -6662,16 +6662,16 @@
     }
   },
   "targets": {
-  "title": "选手目标",
-  "signInRequired": "请登录以查看目标。",
-  "teamNotFound": "未找到队伍。",
-  "premiumFeature": "高级功能",
-  "premiumRequired": "选手目标需要高级计划。",
+    "title": "选手目标",
+    "signInRequired": "请登录以查看目标。",
+    "teamNotFound": "未找到队伍。",
+    "premiumFeature": "高级功能",
+    "premiumRequired": "选手目标需要高级计划。",
     "upgradePrompt": "升级以为您的选手设定可衡量的改进目标。",
     "viewPricing": "查看价格",
-  "noTargets": "教练尚未设定任何目标。",
-  "noTeamMembers": "未找到队员。",
-  "addPlayerToSetTargets": "将此选手加入你的队伍以设置目标",
+    "noTargets": "教练尚未设定任何目标。",
+    "noTeamMembers": "未找到队员。",
+    "addPlayerToSetTargets": "将此选手加入你的队伍以设置目标",
     "setTarget": "设定目标",
     "editTarget": "编辑目标",
     "createTarget": "创建目标",
@@ -6683,22 +6683,22 @@
     "onTrack": "正常",
     "inProgress": "进行中",
     "behind": "落后",
-  "progress": "进度",
-  "baseline": "基准值",
-  "target": "目标",
-  "trend": "趋势",
-  "baselineValue": "基准值：{value}",
-  "targetValue": "目标：{value}",
-  "clickToIsolate": "点击以单独查看",
-  "baselineTargetSummary": "基准值：{baseline} | 目标：{target}",
-  "chartSummary": "平均值：<value>{average}</value> | 最大值：<value>{max}</value> | 最小值：<value>{min}</value>",
-  "targetAchieved": "目标达成！",
-  "coachNote": "教练备注",
-  "progressSummary": {
-    "onTrack": "<countValue>{count}</countValue> 个正常",
-    "inProgress": "<countValue>{count}</countValue> 个进行中",
-    "behind": "<countValue>{count}</countValue> 个落后"
-  },
+    "progress": "进度",
+    "baseline": "基准值",
+    "target": "目标",
+    "trend": "趋势",
+    "baselineValue": "基准值：{value}",
+    "targetValue": "目标：{value}",
+    "clickToIsolate": "点击以单独查看",
+    "baselineTargetSummary": "基准值：{baseline} | 目标：{target}",
+    "chartSummary": "平均值：<value>{average}</value> | 最大值：<value>{max}</value> | 最小值：<value>{min}</value>",
+    "targetAchieved": "目标达成！",
+    "coachNote": "教练备注",
+    "progressSummary": {
+      "onTrack": "<countValue>{count}</countValue> 个正常",
+      "inProgress": "<countValue>{count}</countValue> 个进行中",
+      "behind": "<countValue>{count}</countValue> 个落后"
+    },
     "form": {
       "title": "为 {playerName} 设定目标",
       "editTitle": "编辑 {playerName} 的目标",
@@ -6726,12 +6726,12 @@
       "healing_dealt": "治疗量/10分钟",
       "ultimates_earned": "终极技能获取/10分钟"
     },
-  "narrative": {
-    "changed": "您的{stat}在最近{window}场训练赛中{direction}了{percent}%。",
-    "changedRich": "您的{stat}在最近 {window} 场训练赛中{direction}了 <percentValue>{percent}</percentValue>。",
-    "progressToward": "您已达成目标{targetDirection}{targetPercent}%的{percent}%。",
-    "progressTowardRich": "您已完成目标 {targetDirection}{targetPercent} 的 <percentValue>{percent}</percentValue>。",
-    "increased": "提高",
+    "narrative": {
+      "changed": "您的{stat}在最近{window}场训练赛中{direction}了{percent}%。",
+      "changedRich": "您的{stat}在最近 {window} 场训练赛中{direction}了 <percentValue>{percent}</percentValue>。",
+      "progressToward": "您已达成目标{targetDirection}{targetPercent}%的{percent}%。",
+      "progressTowardRich": "您已完成目标 {targetDirection}{targetPercent} 的 <percentValue>{percent}</percentValue>。",
+      "increased": "提高",
       "decreased": "降低"
     }
   },

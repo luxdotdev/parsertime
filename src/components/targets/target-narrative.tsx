@@ -19,7 +19,9 @@ export function TargetNarrative({ progress }: Props) {
   const changeFromBaseline =
     ((currentValue - target.baselineValue) / target.baselineValue) * 100;
   const changeDirection =
-    changeFromBaseline >= 0 ? t("narrative.increased") : t("narrative.decreased");
+    changeFromBaseline >= 0
+      ? t("narrative.increased")
+      : t("narrative.decreased");
   const percentClassName =
     trending === "toward"
       ? "text-green-500"

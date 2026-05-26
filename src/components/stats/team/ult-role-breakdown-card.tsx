@@ -43,9 +43,7 @@ export function UltRoleBreakdownCard({ ultStats }: UltRoleBreakdownCardProps) {
               <th className="px-4 py-2 text-right font-medium">
                 {t("ultsUsed")}
               </th>
-              <th className="px-4 py-2 text-right font-medium">
-                {t("share")}
-              </th>
+              <th className="px-4 py-2 text-right font-medium">{t("share")}</th>
               <th className="px-4 py-2 text-left font-medium">
                 {t("subroles")}
               </th>

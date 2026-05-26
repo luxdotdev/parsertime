@@ -1,12 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import {
@@ -56,10 +51,7 @@ export function ToolLoading({ toolName }: { toolName: string }) {
       <CardHeader>
         <span className={cn("flex items-center gap-1.5", eyebrow)}>
           {isReport && (
-            <FileTextIcon
-              className="size-3 animate-pulse"
-              aria-hidden="true"
-            />
+            <FileTextIcon className="size-3 animate-pulse" aria-hidden="true" />
           )}
           {isReport ? t("loading.writingReport") : toolName}
         </span>
@@ -195,9 +187,7 @@ export function ScrimAnalysisCard({
         <span className={eyebrow}>{t("scrimAnalysis.eyebrow")}</span>
         <CardTitle className="text-sm">
           {ourTeamName}{" "}
-          <span className="text-muted-foreground">
-            {t("scrimAnalysis.vs")}
-          </span>{" "}
+          <span className="text-muted-foreground">{t("scrimAnalysis.vs")}</span>{" "}
           {opponentTeamName}
         </CardTitle>
         <p className="font-mono text-xs tabular-nums">
@@ -418,7 +408,9 @@ export function TeamTrendsCard({
               }
             >
               {streak.currentStreak.type === "win"
-                ? t("teamTrends.winStreak", { count: streak.currentStreak.count })
+                ? t("teamTrends.winStreak", {
+                    count: streak.currentStreak.count,
+                  })
                 : t("teamTrends.lossStreak", {
                     count: streak.currentStreak.count,
                   })}
@@ -522,7 +514,10 @@ export function PlayerPerformanceCard({
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {aggregated.kdRatio != null && (
-            <StatTile label={t("player.kd")} value={aggregated.kdRatio.toFixed(2)} />
+            <StatTile
+              label={t("player.kd")}
+              value={aggregated.kdRatio.toFixed(2)}
+            />
           )}
           {aggregated.eliminationsPer10 != null && (
             <StatTile
@@ -574,7 +569,9 @@ export function ReportCard({
   return (
     <Card size="sm" className={cardClass}>
       <CardHeader>
-        <span className={cn("flex items-center gap-1.5 whitespace-nowrap", eyebrow)}>
+        <span
+          className={cn("flex items-center gap-1.5 whitespace-nowrap", eyebrow)}
+        >
           <FileTextIcon className="size-3 shrink-0" aria-hidden="true" />
           {t("report.eyebrow")}
         </span>

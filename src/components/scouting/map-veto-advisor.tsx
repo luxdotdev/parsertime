@@ -61,9 +61,7 @@ export function MapVetoAdvisor({
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle>{t("advisorTitle")}</CardTitle>
-                  <CardDescription>
-                    {t("advisorDescription")}
-                  </CardDescription>
+                  <CardDescription>{t("advisorDescription")}</CardDescription>
                 </div>
                 <Badge variant="secondary" className="shrink-0">
                   {t("crossReferenceAvailable")}

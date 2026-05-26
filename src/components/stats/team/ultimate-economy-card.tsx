@@ -216,9 +216,7 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
                   </span>
                 ),
                 ultsInWonFights: formatDecimal(fightStats.avgUltsInWonFights),
-                ultsInLostFights: formatDecimal(
-                  fightStats.avgUltsInLostFights
-                ),
+                ultsInLostFights: formatDecimal(fightStats.avgUltsInLostFights),
               })}
             </>
           ) : (
@@ -229,9 +227,7 @@ export function UltimateEconomyCard({ fightStats }: UltimateEconomyCardProps) {
                     {chunks}
                   </span>
                 ),
-                ultsInLostFights: formatDecimal(
-                  fightStats.avgUltsInLostFights
-                ),
+                ultsInLostFights: formatDecimal(fightStats.avgUltsInLostFights),
                 ultsInWonFights: formatDecimal(fightStats.avgUltsInWonFights),
               })}
             </>

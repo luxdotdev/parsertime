@@ -64,7 +64,9 @@ export function UnlabeledMatchList() {
       <Card>
         <CardContent className="flex items-center justify-center py-12">
           <p className="text-muted-foreground">
-            {t("errorLoading", { message: error?.message ?? t("unknownError") })}
+            {t("errorLoading", {
+              message: error?.message ?? t("unknownError"),
+            })}
           </p>
         </CardContent>
       </Card>

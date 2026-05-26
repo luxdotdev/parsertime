@@ -74,10 +74,7 @@ export function UltUsageOverviewCard({ ultStats }: UltUsageOverviewCardProps) {
   if (ultStats.totalUltsUsed === 0) {
     return (
       <section className="space-y-4">
-        <SectionHeader
-          eyebrow={t("eyebrow")}
-          title={t("title")}
-        />
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
         <p className="text-muted-foreground text-sm">{t("noData")}</p>
       </section>
     );
@@ -137,9 +134,7 @@ export function UltUsageOverviewCard({ ultStats }: UltUsageOverviewCardProps) {
                 <th className="px-4 py-2 text-right font-medium">
                   {t("value")}
                 </th>
-                <th className="px-4 py-2 text-left font-medium">
-                  {t("read")}
-                </th>
+                <th className="px-4 py-2 text-left font-medium">{t("read")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border)]">

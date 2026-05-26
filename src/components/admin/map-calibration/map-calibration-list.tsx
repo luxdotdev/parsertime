@@ -75,7 +75,9 @@ const CALIBRATION_MAPS: { name: string; type: string }[] = [
   { name: "Watchpoint: Gibraltar", type: "Escort" },
 ];
 
-function getCalibrationStatus(calibration: CalibrationWithAnchors | undefined):
+function getCalibrationStatus(
+  calibration: CalibrationWithAnchors | undefined
+):
   | { key: "noImage"; count?: never; variant: "destructive" }
   | { key: "calibrated"; count?: never; variant: "default" }
   | { key: "anchors"; count: number; variant: "secondary" }

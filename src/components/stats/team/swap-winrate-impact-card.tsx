@@ -43,9 +43,7 @@ function MicroStats({
           <p className="text-foreground font-mono text-lg leading-none font-semibold tabular-nums">
             {formatPercent(entry.winrate)}
           </p>
-          <p className="text-muted-foreground text-[11px]">
-            {entry.mapsLabel}
-          </p>
+          <p className="text-muted-foreground text-[11px]">{entry.mapsLabel}</p>
         </div>
       ))}
     </div>

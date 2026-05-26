@@ -92,7 +92,9 @@ export function ChatSidebar({ className }: { className?: string }) {
               size="icon"
               className="text-muted-foreground hover:text-destructive mr-1 size-7 shrink-0 opacity-0 transition-opacity duration-100 group-hover:opacity-100 active:scale-[0.96]"
               onClick={() => deleteMutation.mutate(conv.id)}
-              aria-label={t("sidebar.deleteConversation", { title: conv.title })}
+              aria-label={t("sidebar.deleteConversation", {
+                title: conv.title,
+              })}
             >
               <Trash2Icon className="size-3.5" aria-hidden="true" />
             </Button>

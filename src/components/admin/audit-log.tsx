@@ -525,9 +525,7 @@ export function AuditLog({
               <X
                 className="h-3 w-3 cursor-pointer"
                 onClick={() =>
-                  setSelectedActions((prev) =>
-                    prev.filter((a) => a !== action)
-                  )
+                  setSelectedActions((prev) => prev.filter((a) => a !== action))
                 }
               />
             </Badge>
@@ -587,7 +585,7 @@ export function AuditLog({
               ) : logs.length > 0 ? (
                 <>
                   {logs.map((log) => (
-            <AuditLogHoverCard key={log.id.toString()} log={log} />
+                    <AuditLogHoverCard key={log.id.toString()} log={log} />
                   ))}
                   {hasNextPage && (
                     <TableRow ref={loadMoreRef}>

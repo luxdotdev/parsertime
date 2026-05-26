@@ -110,9 +110,7 @@ export function MapImageUpload({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
-          <DialogDescription>
-            {t("description", { mapName })}
-          </DialogDescription>
+          <DialogDescription>{t("description", { mapName })}</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <input

@@ -84,7 +84,9 @@ function DisruptionTargets({ rankings }: { rankings: BanDisruptionEntry[] }) {
             <Target className="h-4 w-4" aria-hidden="true" />
             {t("disruptionTargets")}
           </CardTitle>
-          <CardDescription>{t("disruptionTargetsEmptyDescription")}</CardDescription>
+          <CardDescription>
+            {t("disruptionTargetsEmptyDescription")}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground py-4 text-center text-sm">
@@ -195,7 +197,9 @@ function TheirBanTargets({ exposures }: { exposures: HeroExposure[] }) {
           <Eye className="h-4 w-4" aria-hidden="true" />
           {t("theirBanTargets")}
         </CardTitle>
-        <CardDescription>{t("theirBanTargetsActiveDescription")}</CardDescription>
+        <CardDescription>
+          {t("theirBanTargetsActiveDescription")}
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {critical.length > 0 && (

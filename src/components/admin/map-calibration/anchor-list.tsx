@@ -59,7 +59,8 @@ export function AnchorList({ anchors, onDelete }: AnchorListProps) {
               )}
             </TableCell>
             <TableCell className="font-mono text-xs">
-              ({formatter.number(anchor.worldX, {
+              (
+              {formatter.number(anchor.worldX, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}

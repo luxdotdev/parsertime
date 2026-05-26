@@ -95,7 +95,7 @@ export function ScoutingReport({
                 <ChevronDown
                   className={cn(
                     "h-4 w-4 transition-transform",
-                  secondaryOpen && "rotate-180"
+                    secondaryOpen && "rotate-180"
                   )}
                   aria-hidden="true"
                 />

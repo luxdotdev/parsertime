@@ -53,9 +53,7 @@ export function EfficiencyScorecard({
   const formatter = useFormatter();
   const rating = getEfficiencyRatingKey(eff.ultimateEfficiency);
   const nonDryWinrate =
-    eff.nonDryFights > 0
-      ? eff.fightsWon / eff.nonDryFights
-      : 0;
+    eff.nonDryFights > 0 ? eff.fightsWon / eff.nonDryFights : 0;
 
   return (
     <div className="bg-muted/30 ring-foreground/10 rounded-lg p-3 shadow-xs ring-1">

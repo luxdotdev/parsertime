@@ -69,9 +69,7 @@ export function SwapTimingCard({ swapStats }: SwapTimingCardProps) {
           <ChartTooltip
             content={
               <ChartTooltipContent
-                labelFormatter={(label: string) =>
-                  t("matchTime", { label })
-                }
+                labelFormatter={(label: string) => t("matchTime", { label })}
                 formatter={(value) => {
                   const n = Number(value);
                   return t("swapCount", { count: n });
