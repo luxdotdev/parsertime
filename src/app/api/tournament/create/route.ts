@@ -29,23 +29,52 @@ const bestOfSchema = z
     message: "Best-of must be an odd number",
   });
 
-const createTournamentSchema = z.object({
-  name: z.string().min(2).max(50),
-  format: z.nativeEnum(TournamentFormat),
-  bestOf: bestOfSchema,
-  playoffBestOf: bestOfSchema.optional(),
-  advancingTeams: z.number().int().min(2).optional(),
-  teams: z
-    .array(
-      z.object({
-        name: z.string().min(1).max(50),
-        teamId: z.number().int().optional(),
-        seed: z.number().int().min(1),
-      })
-    )
-    .min(2)
-    .max(64),
-});
+const createTournamentSchema = z
+  .object({
+    name: z.string().min(2).max(50),
+    format: z.nativeEnum(TournamentFormat),
+    bestOf: bestOfSchema,
+    playoffBestOf: bestOfSchema.optional(),
+    advancingTeams: z.number().int().min(2).optional(),
+    teams: z
+      .array(
+        z.object({
+          name: z.string().min(1).max(50),
+          teamId: z.number().int().optional(),
+          seed: z.number().int().min(1),
+        })
+      )
+      .min(2)
+      .max(64),
+  })
+  .superRefine((value, ctx) => {
+    const teamCount = value.teams.length;
+    if (value.format === TournamentFormat.DOUBLE_ELIMINATION && teamCount < 4) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["teams"],
+        message: "Double elimination requires at least 4 teams.",
+      });
+    }
+    if (value.format === TournamentFormat.ROUND_ROBIN_SE && teamCount < 3) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["teams"],
+        message: "Round robin requires at least 3 teams.",
+      });
+    }
+    if (
+      value.format === TournamentFormat.ROUND_ROBIN_SE &&
+      value.advancingTeams !== undefined &&
+      value.advancingTeams > teamCount
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["advancingTeams"],
+        message: "Advancing teams cannot exceed the team count.",
+      });
+    }
+  });
 
 export type CreateTournamentRequestData = z.infer<
   typeof createTournamentSchema
