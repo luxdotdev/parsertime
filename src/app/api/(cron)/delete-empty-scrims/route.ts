@@ -5,18 +5,40 @@ import {
 } from "@/lib/axiom/metrics";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
+import { timingSafeEqual } from "node:crypto";
 import type { NextRequest } from "next/server";
 
-function isCronAuthorized(req: NextRequest) {
+type CronAuthResult =
+  | { ok: true }
+  | { ok: false; status: number; body: string };
+
+function authorizeCron(req: NextRequest): CronAuthResult {
   const secret = process.env.CRON_SECRET;
-  return (
-    Boolean(secret) && req.headers.get("Authorization") === `Bearer ${secret}`
-  );
+  if (!secret) {
+    return { ok: false, status: 500, body: "Server misconfigured" };
+  }
+
+  const header = req.headers.get("Authorization");
+  const provided = header?.startsWith("Bearer ") ? header.slice(7) : null;
+  if (!provided || provided.length !== secret.length) {
+    return { ok: false, status: 401, body: "Unauthorized" };
+  }
+
+  try {
+    if (timingSafeEqual(Buffer.from(provided), Buffer.from(secret))) {
+      return { ok: true };
+    }
+  } catch {
+    // Fall through to the unauthorized response.
+  }
+
+  return { ok: false, status: 401, body: "Unauthorized" };
 }
 
 export async function DELETE(req: NextRequest) {
-  if (!isCronAuthorized(req)) {
-    return new Response("Unauthorized", { status: 401 });
+  const auth = authorizeCron(req);
+  if (!auth.ok) {
+    return new Response(auth.body, { status: auth.status });
   }
 
   const start = performance.now();
