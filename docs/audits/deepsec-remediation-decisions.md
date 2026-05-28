@@ -9,6 +9,7 @@ Date: 2026-05-28
 - Changed tournament broadcast data from public cacheable output to authenticated, private, no-store output. Tournament creators, admins, and members/managers/owners of linked tournament teams can view it.
 - Rejected completed tournament map winner/deletion changes rather than attempting automatic bracket rollback. Correct rollback semantics need an explicit product design before re-enabling historical edits.
 - Enforced one `AppSettings` row per user with a deduping migration and unique index, then switched first-read and update paths to upsert by `userId`.
+- Disabled raw Discord role mentions in availability reminders until roles can be bound to a verified guild. Reminder guild/channel overrides are only accepted when they match an existing verified bot notification configuration for that team.
 
 ## Operational Notes
 

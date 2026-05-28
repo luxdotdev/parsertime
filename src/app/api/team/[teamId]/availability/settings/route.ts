@@ -4,6 +4,8 @@ import prisma from "@/lib/prisma";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
 
+const DiscordSnowflakeSchema = z.string().regex(/^\d{17,20}$/);
+
 const SettingsSchema = z.object({
   slotMinutes: z.union([z.literal(15), z.literal(30), z.literal(60)]),
   hoursStart: z.number().int().min(0).max(23),
@@ -13,9 +15,9 @@ const SettingsSchema = z.object({
   reminderDayOfWeek: z.number().int().min(0).max(6),
   reminderHour: z.number().int().min(0).max(23),
   reminderMinute: z.number().int().min(0).max(59),
-  reminderRoleId: z.string().nullable().optional(),
-  reminderGuildId: z.string().nullable().optional(),
-  reminderChannelId: z.string().nullable().optional(),
+  reminderRoleId: DiscordSnowflakeSchema.nullable().optional(),
+  reminderGuildId: DiscordSnowflakeSchema.nullable().optional(),
+  reminderChannelId: DiscordSnowflakeSchema.nullable().optional(),
 });
 
 type RouteCtx = { params: Promise<{ teamId: string }> };
@@ -76,10 +78,41 @@ export async function PUT(req: NextRequest, ctx: RouteCtx) {
     );
   }
 
+  if (data.reminderRoleId) {
+    return Response.json(
+      { error: "Reminder role mentions require verified role binding" },
+      { status: 400 }
+    );
+  }
+
+  if (data.reminderGuildId || data.reminderChannelId) {
+    if (!data.reminderGuildId || !data.reminderChannelId) {
+      return Response.json(
+        { error: "reminderGuildId and reminderChannelId must be set together" },
+        { status: 400 }
+      );
+    }
+
+    const verifiedConfig = await prisma.botNotificationConfig.findFirst({
+      where: {
+        guildId: data.reminderGuildId,
+        channelId: data.reminderChannelId,
+        teamIds: { has: teamId },
+      },
+      select: { id: true },
+    });
+    if (!verifiedConfig) {
+      return Response.json(
+        { error: "Reminder channel is not verified for this team" },
+        { status: 403 }
+      );
+    }
+  }
+
   const settings = await prisma.teamAvailabilitySettings.upsert({
     where: { teamId },
-    create: { teamId, ...data },
-    update: data,
+    create: { teamId, ...data, reminderRoleId: null },
+    update: { ...data, reminderRoleId: null },
   });
 
   return Response.json({ settings });
