@@ -18,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
 import {
   Table,
   TableBody,
@@ -64,7 +63,6 @@ export function UserSearch({
   const loadMoreRef = useRef<HTMLTableRowElement>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [trustRange, setTrustRange] = useState([0, 100]);
   const [billingPlanFilter, setBillingPlanFilter] = useState<string>("all");
   const [joinDateRange, setJoinDateRange] = useState<DateRange | undefined>();
   const [showFilters, setShowFilters] = useState(false);
@@ -81,7 +79,6 @@ export function UserSearch({
     queryKey: [
       "users",
       debouncedSearch,
-      trustRange,
       billingPlanFilter,
       joinDateRange,
       limit,
@@ -93,8 +90,6 @@ export function UserSearch({
       params.set("limit", limit.toString());
 
       if (debouncedSearch) params.set("search", debouncedSearch);
-      params.set("trustScoreMin", trustRange[0].toString());
-      params.set("trustScoreMax", trustRange[1].toString());
       if (billingPlanFilter !== "all")
         params.set("billingPlan", billingPlanFilter);
 
@@ -193,7 +188,6 @@ export function UserSearch({
 
   function clearFilters() {
     setSearchQuery("");
-    setTrustRange([0, 100]);
     setBillingPlanFilter("all");
     setJoinDateRange(undefined);
   }
@@ -222,26 +216,7 @@ export function UserSearch({
       </div>
 
       {showFilters && (
-        <div className="grid gap-4 rounded-lg border p-4 md:grid-cols-2 lg:grid-cols-4">
-          <div className="space-y-2">
-            <Label htmlFor="trust-score">{t("filters.trust-score")}</Label>
-            <div className="pt-4">
-              <Slider
-                id="trust-score"
-                defaultValue={[0, 100]}
-                min={0}
-                max={100}
-                step={1}
-                value={trustRange}
-                onValueChange={setTrustRange}
-              />
-            </div>
-            <div className="text-muted-foreground flex justify-between text-xs">
-              <span>{trustRange[0]}</span>
-              <span>{trustRange[1]}</span>
-            </div>
-          </div>
-
+        <div className="grid gap-4 rounded-lg border p-4 md:grid-cols-2 lg:grid-cols-3">
           <div className="space-y-2">
             <Label htmlFor="billing-plan">{t("filters.billing-plan")}</Label>
             <Select
