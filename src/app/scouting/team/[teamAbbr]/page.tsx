@@ -100,23 +100,28 @@ export default async function ScoutingTeamPage(
   const userTeamId = resolveScoutForTeamId(searchParams.scoutFor, userTeams);
   const hasUserTeamLink = userTeamId !== null;
 
-  const [{ strengthRating, strengthPercentile }, dataAvailability] =
-    await Promise.all([
-      AppRuntime.runPromise(
-        Effect.all(
-          {
-            strengthRating: OpponentStrengthService.pipe(
-              Effect.flatMap((svc) => svc.getTeamStrengthRating(teamAbbr))
-            ),
-            strengthPercentile: OpponentStrengthService.pipe(
-              Effect.flatMap((svc) => svc.getTeamStrengthPercentile(teamAbbr))
-            ),
-          },
-          { concurrency: "unbounded" }
-        )
-      ),
-      resolveDataAvailability(teamAbbr, userTeamId),
-    ]);
+  const [
+    { strengthRating, strengthPercentile, teamStrengthRatings },
+    dataAvailability,
+  ] = await Promise.all([
+    AppRuntime.runPromise(
+      Effect.all(
+        {
+          teamStrengthRatings: OpponentStrengthService.pipe(
+            Effect.flatMap((svc) => svc.getTeamStrengthRatings())
+          ),
+          strengthRating: OpponentStrengthService.pipe(
+            Effect.flatMap((svc) => svc.getTeamStrengthRating(teamAbbr))
+          ),
+          strengthPercentile: OpponentStrengthService.pipe(
+            Effect.flatMap((svc) => svc.getTeamStrengthPercentile(teamAbbr))
+          ),
+        },
+        { concurrency: "unbounded" }
+      )
+    ),
+    resolveDataAvailability(teamAbbr, userTeamId),
+  ]);
 
   const [mapIntelligence, banIntelligence, playerIntelligence] =
     await AppRuntime.runPromise(
@@ -232,6 +237,7 @@ export default async function ScoutingTeamPage(
             overview={overview}
             strengthRating={strengthRating}
             strengthPercentile={strengthPercentile}
+            teamStrengthRatings={teamStrengthRatings}
             matchHistory={profile.matchHistory}
           />
           <MatchHistoryTable matches={profile.matchHistory} />

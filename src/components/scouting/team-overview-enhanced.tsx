@@ -24,6 +24,7 @@ type EnhancedOverviewProps = {
   overview: ScoutingTeamOverview;
   strengthRating: TeamStrengthRating | null;
   strengthPercentile: number | null;
+  teamStrengthRatings: TeamStrengthRating[];
   matchHistory: ScoutingMatchHistoryEntry[];
 };
 
@@ -31,17 +32,15 @@ export function TeamOverviewEnhanced({
   overview,
   strengthRating,
   strengthPercentile,
+  teamStrengthRatings,
   matchHistory,
 }: EnhancedOverviewProps) {
   const t = useTranslations("scoutingPage.team.overview");
   const formatter = useFormatter();
 
   const winsAbove1500 = useMemo(
-    () =>
-      strengthRating
-        ? countWinsAboveRating(matchHistory, strengthRating, 1500)
-        : null,
-    [matchHistory, strengthRating]
+    () => countWinsAboveRating(matchHistory, teamStrengthRatings, 1500),
+    [matchHistory, teamStrengthRatings]
   );
 
   return (
@@ -291,13 +290,12 @@ function WinRateSparkline({ form }: { form: MatchResult[] }) {
 
 function countWinsAboveRating(
   matches: ScoutingMatchHistoryEntry[],
-  strengthRating: TeamStrengthRating,
+  teamStrengthRatings: TeamStrengthRating[],
   threshold: number
 ): { wins: number; totalWins: number } {
-  const ratingMap = new Map<string, number>();
-  for (const entry of strengthRating.ratingHistory) {
-    ratingMap.set(`${entry.date.toISOString().slice(0, 10)}`, entry.rating);
-  }
+  const ratingsByTeam = new Map(
+    teamStrengthRatings.map((rating) => [rating.teamAbbr, rating])
+  );
 
   let wins = 0;
   let totalWins = 0;
@@ -305,13 +303,34 @@ function countWinsAboveRating(
   for (const match of matches) {
     if (match.result !== "win") continue;
     totalWins++;
-    const lastKnownRating = strengthRating.rating;
-    if (lastKnownRating >= threshold) {
+    const opponentRating = getRatingAtDate(
+      ratingsByTeam.get(match.opponent),
+      match.date
+    );
+    if (opponentRating !== null && opponentRating >= threshold) {
       wins++;
     }
   }
 
   return { wins, totalWins };
+}
+
+function getRatingAtDate(
+  strengthRating: TeamStrengthRating | undefined,
+  date: Date
+): number | null {
+  if (!strengthRating) return null;
+
+  let ratingAtDate: number | null = null;
+  let ratingDate = -Infinity;
+  for (const entry of strengthRating.ratingHistory) {
+    const entryTime = entry.date.getTime();
+    if (entryTime > date.getTime() || entryTime <= ratingDate) continue;
+    ratingAtDate = entry.rating;
+    ratingDate = entryTime;
+  }
+
+  return ratingAtDate;
 }
 
 function recentFormWithKeys(form: MatchResult[]) {
