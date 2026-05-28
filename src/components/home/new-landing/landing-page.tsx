@@ -135,6 +135,11 @@ export async function NewLandingPage() {
   ]);
 
   const isLoggedIn = !!session?.user;
+  const hasLatestUpdates =
+    typeof latestUpdates?.title === "string" &&
+    latestUpdates.title.trim().length > 0 &&
+    typeof latestUpdates?.url === "string" &&
+    latestUpdates.url.trim().length > 0;
 
   const statsData = [
     {
@@ -177,8 +182,10 @@ export async function NewLandingPage() {
             getStarted={t("hero.getStarted")}
             liveDemo={t("hero.liveDemo")}
             latestUpdatesLabel={t("hero.latestUpdates")}
-            latestUpdatesTitle={latestUpdates!.title}
-            latestUpdatesUrl={latestUpdates!.url}
+            latestUpdatesTitle={
+              hasLatestUpdates ? latestUpdates.title : undefined
+            }
+            latestUpdatesUrl={hasLatestUpdates ? latestUpdates.url : undefined}
             teamCount={teamCount}
             isLoggedIn={isLoggedIn}
           />

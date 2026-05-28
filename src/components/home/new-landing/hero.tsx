@@ -15,8 +15,8 @@ type HeroProps = {
   getStarted: string;
   liveDemo: string;
   latestUpdatesLabel: string;
-  latestUpdatesTitle: string;
-  latestUpdatesUrl: string;
+  latestUpdatesTitle?: string;
+  latestUpdatesUrl?: string;
   teamCount: number;
   isLoggedIn: boolean;
 };
@@ -107,25 +107,27 @@ export function Hero({
           {/* Hero content */}
           <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
             {/* Latest updates badge */}
-            <motion.div
-              initial={shouldAnimate ? { opacity: 0, y: 16 } : false}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.5 }}
-            >
-              <Link
-                href={latestUpdatesUrl as Route}
-                target="_blank"
-                className="mb-8 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm text-white/80 backdrop-blur-sm transition-colors hover:bg-white/10"
-                onClick={() =>
-                  track("badge-click", { title: latestUpdatesTitle })
-                }
+            {latestUpdatesTitle && latestUpdatesUrl ? (
+              <motion.div
+                initial={shouldAnimate ? { opacity: 0, y: 16 } : false}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1, duration: 0.5 }}
               >
-                <span className="rounded-full bg-amber-400/20 px-2 py-0.5 text-xs font-semibold text-amber-200">
-                  {latestUpdatesLabel}
-                </span>
-                <span>{latestUpdatesTitle}</span>
-              </Link>
-            </motion.div>
+                <Link
+                  href={latestUpdatesUrl as Route}
+                  target="_blank"
+                  className="mb-8 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm text-white/80 backdrop-blur-sm transition-colors hover:bg-white/10"
+                  onClick={() =>
+                    track("badge-click", { title: latestUpdatesTitle })
+                  }
+                >
+                  <span className="rounded-full bg-amber-400/20 px-2 py-0.5 text-xs font-semibold text-amber-200">
+                    {latestUpdatesLabel}
+                  </span>
+                  <span>{latestUpdatesTitle}</span>
+                </Link>
+              </motion.div>
+            ) : null}
 
             {/* Headline */}
             <motion.h1
