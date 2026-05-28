@@ -103,6 +103,8 @@ export default async function StatsPage() {
       "Kill" k
       INNER JOIN "UltimateEnd" ue ON k.victim_name = ue.player_name
         AND k.match_time = ue.match_time
+        AND k."MapDataId" = ue."MapDataId"
+        AND k."scrimId" = ue."scrimId"
     WHERE
       k.victim_hero = 'Lúcio'
       AND ue.player_hero = 'Lúcio'
