@@ -38,7 +38,8 @@ async function getTop3Heroes(player: string) {
     ),
   });
 
-  const response = await fetch(`/api/player/top-3-heroes?player=${player}`);
+  const params = new URLSearchParams({ player });
+  const response = await fetch(`/api/player/top-3-heroes?${params}`);
   const data = await response.json();
 
   const parsedData = resultSchema.safeParse(data);
@@ -197,7 +198,9 @@ export function PlayerHoverCard({
         </div>
         {/* Add a lighter color card section with a link to the player's profile */}
         <div className="bg-muted text-primary p-2 text-center">
-          <Link href={`/profile/${player}` as Route}>{t("viewProfile")}</Link>
+          <Link href={`/profile/${encodeURIComponent(player)}` as Route}>
+            {t("viewProfile")}
+          </Link>
         </div>
       </HoverCardContent>
     </HoverCard>
