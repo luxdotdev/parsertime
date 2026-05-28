@@ -5,6 +5,10 @@ import type { NextRequest } from "next/server";
 import { z } from "zod";
 
 const DiscordSnowflakeSchema = z.string().regex(/^\d{17,20}$/);
+const OptionalDiscordSnowflakeSchema = z.preprocess(
+  (value) => (typeof value === "string" && value.trim() === "" ? null : value),
+  DiscordSnowflakeSchema.nullable().optional()
+);
 
 const SettingsSchema = z.object({
   slotMinutes: z.union([z.literal(15), z.literal(30), z.literal(60)]),
@@ -15,9 +19,9 @@ const SettingsSchema = z.object({
   reminderDayOfWeek: z.number().int().min(0).max(6),
   reminderHour: z.number().int().min(0).max(23),
   reminderMinute: z.number().int().min(0).max(59),
-  reminderRoleId: DiscordSnowflakeSchema.nullable().optional(),
-  reminderGuildId: DiscordSnowflakeSchema.nullable().optional(),
-  reminderChannelId: DiscordSnowflakeSchema.nullable().optional(),
+  reminderRoleId: OptionalDiscordSnowflakeSchema,
+  reminderGuildId: OptionalDiscordSnowflakeSchema,
+  reminderChannelId: OptionalDiscordSnowflakeSchema,
 });
 
 type RouteCtx = { params: Promise<{ teamId: string }> };

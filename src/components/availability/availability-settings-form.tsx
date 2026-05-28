@@ -64,6 +64,12 @@ const DAYS = [
   "Saturday",
 ];
 
+function blankToNull(value: string | undefined) {
+  const trimmed = value?.trim();
+  if (!trimmed) return null;
+  return trimmed;
+}
+
 export function AvailabilitySettingsForm({
   teamId,
   initial,
@@ -84,9 +90,9 @@ export function AvailabilitySettingsForm({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...values,
-        reminderRoleId: values.reminderRoleId ?? null,
-        reminderGuildId: values.reminderGuildId ?? null,
-        reminderChannelId: values.reminderChannelId ?? null,
+        reminderRoleId: blankToNull(values.reminderRoleId),
+        reminderGuildId: blankToNull(values.reminderGuildId),
+        reminderChannelId: blankToNull(values.reminderChannelId),
       }),
     });
     if (!res.ok) {
