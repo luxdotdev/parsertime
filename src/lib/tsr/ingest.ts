@@ -163,6 +163,15 @@ export async function upsertMatch(
       affectedPlayerIds: [],
     };
   }
+  if (!match.competition_id) {
+    return {
+      matchId: match.match_id,
+      ingested: false,
+      reason: "missing-competition-id",
+      affectedPlayerIds: [],
+    };
+  }
+  const competitionId = match.competition_id;
 
   const allRoster = [...f1, ...f2];
   const affected = allRoster.map((r) => r.player_id);
@@ -204,7 +213,7 @@ export async function upsertMatch(
       where: { faceitMatchId: match.match_id },
       create: {
         faceitMatchId: match.match_id,
-        championshipId: match.competition_id!,
+        championshipId: competitionId,
         organizerId: match.organizer_id!,
         bestOf,
         team1Score: s1 ?? 0,
@@ -217,7 +226,7 @@ export async function upsertMatch(
         rawRegion: match.region ?? "",
       },
       update: {
-        championshipId: match.competition_id!,
+        championshipId: competitionId,
         organizerId: match.organizer_id!,
         bestOf,
         team1Score: s1 ?? 0,
