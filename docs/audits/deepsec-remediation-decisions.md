@@ -10,6 +10,7 @@ Date: 2026-05-28
 - Rejected completed tournament map winner/deletion changes rather than attempting automatic bracket rollback. Correct rollback semantics need an explicit product design before re-enabling historical edits.
 - Enforced one `AppSettings` row per user with a deduping migration and unique index, then switched first-read and update paths to upsert by `userId`.
 - Disabled raw Discord role mentions in availability reminders until roles can be bound to a verified guild. Reminder guild/channel overrides are only accepted when they match an existing verified bot notification configuration for that team.
+- Accepted self-entered BattleTag matching for TSR attribution as a product tradeoff. Verified BattleTag linking remains difficult with the current data sources, so BattleTags continue to be user-editable identity hints for TSR rather than a security boundary.
 
 ## Operational Notes
 
