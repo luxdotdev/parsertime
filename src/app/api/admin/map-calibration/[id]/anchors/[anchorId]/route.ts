@@ -1,7 +1,4 @@
-import { Effect } from "effect";
-import { AppRuntime } from "@/data/runtime";
-import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { getCurrentUser, isAdminUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { dataLabeling } from "@/lib/flags";
@@ -34,13 +31,9 @@ export async function PUT(req: Request, props: Params) {
   };
 
   try {
-    const session = await auth();
-    if (!session) unauthorized();
-
-    const user = await AppRuntime.runPromise(
-      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
-    );
+    const user = await getCurrentUser();
     if (!user) unauthorized();
+    if (!isAdminUser(user)) forbidden();
 
     const enabled = await dataLabeling();
     if (!enabled) forbidden();
@@ -68,7 +61,13 @@ export async function PUT(req: Request, props: Params) {
 
     const anchor = await prisma.mapCalibrationAnchor.update({
       where: { id: parseInt(anchorId, 10) },
-      data: body,
+      data: {
+        worldX: body.worldX,
+        worldY: body.worldY,
+        imageU: body.imageU,
+        imageV: body.imageV,
+        label: body.label,
+      },
     });
 
     wideEvent.status_code = 200;
@@ -98,13 +97,9 @@ export async function DELETE(_req: Request, props: Params) {
   };
 
   try {
-    const session = await auth();
-    if (!session) unauthorized();
-
-    const user = await AppRuntime.runPromise(
-      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
-    );
+    const user = await getCurrentUser();
     if (!user) unauthorized();
+    if (!isAdminUser(user)) forbidden();
 
     const enabled = await dataLabeling();
     if (!enabled) forbidden();

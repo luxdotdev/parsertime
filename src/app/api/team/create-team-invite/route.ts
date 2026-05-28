@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { auth, canManageTeam, getCurrentUser } from "@/lib/auth";
 import { generateRandomToken } from "@/lib/invite-token";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
@@ -8,16 +8,10 @@ import type { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
-  const token = req.headers.get("Authorization");
 
-  const testingEmail = "lucas@lux.dev";
-
-  if (!session) {
-    if (token !== process.env.DEV_TOKEN) {
-      Logger.warn("Unauthorized request to create team invite");
-      unauthorized();
-    }
-    Logger.log("Authorized request to create team invite using dev token");
+  if (!session?.user?.email) {
+    Logger.warn("Unauthorized request to create team invite");
+    unauthorized();
   }
 
   const teamId = req.nextUrl.searchParams.get("id")
@@ -34,6 +28,11 @@ export async function POST(req: NextRequest) {
     select: { users: true, ownerId: true },
   });
   if (!teamData) return new Response("Team not found", { status: 404 });
+
+  const user = await getCurrentUser();
+  if (!(await canManageTeam(teamId, user))) {
+    return new Response("Forbidden", { status: 403 });
+  }
 
   const teamCreator = await prisma.user.findFirst({
     where: { id: teamData.ownerId },
@@ -87,7 +86,7 @@ export async function POST(req: NextRequest) {
     data: {
       token: inviteToken,
       teamId,
-      email: session?.user?.email ?? testingEmail,
+      email: session.user.email,
       expires: new Date(expiresAt),
     },
   });

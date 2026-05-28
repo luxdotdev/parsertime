@@ -702,6 +702,7 @@ export async function createNewMap(data: CreateNewMapArgs, session: Session) {
     await calculateStatsForMap(mapData.id, data.scrimId);
 
     event.outcome = "success";
+    return { mapId: map.id, mapDataId: mapData.id };
   } catch (error) {
     if (!event.outcome) {
       event.outcome = "error";

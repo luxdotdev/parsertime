@@ -1,50 +1,18 @@
-import { Effect } from "effect";
-import { AppRuntime } from "@/data/runtime";
-import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { canManageTeam, getCurrentUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { Ratelimit } from "@upstash/ratelimit";
 import { track } from "@vercel/analytics/server";
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { kv } from "@vercel/kv";
-import { unauthorized } from "next/navigation";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  const session = await auth();
-  if (!session?.user) unauthorized();
-
-  const userId = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
-  );
-  if (!userId) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
-  }
-
   const body = (await request.json()) as HandleUploadBody;
 
   const teamId = request.nextUrl.searchParams.get("teamId");
   if (!teamId) {
     return NextResponse.json({ error: "teamId is required" }, { status: 400 });
-  }
-
-  // Create a new ratelimiter, that allows 5 requests per 1 minute
-  const ratelimit = new Ratelimit({
-    redis: kv,
-    limiter: Ratelimit.slidingWindow(5, "1 m"),
-    analytics: true,
-  });
-
-  // Limit the requests to 5 per minute per user
-  const identifier = `api/image-upload/${userId.id}`;
-  const { success } = await ratelimit.limit(identifier);
-
-  if (!success) {
-    Logger.warn(
-      `Rate limit exceeded for team: ${teamId} for user: ${userId.id}`
-    );
-    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
   }
 
   Logger.info(`Uploading avatar for team: ${teamId}`);
@@ -58,12 +26,35 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         // Generate a client token for the browser to upload the file
         // ⚠️ Authenticate and authorize users before generating the token.
         // Otherwise, you're allowing anonymous uploads.
+        const authedUser = await getCurrentUser();
+        if (!authedUser) throw new Error("Unauthorized");
+
+        const parsedTeamId = parseInt(teamId);
+        if (!(await canManageTeam(parsedTeamId, authedUser))) {
+          throw new Error("Forbidden");
+        }
+
+        const ratelimit = new Ratelimit({
+          redis: kv,
+          limiter: Ratelimit.slidingWindow(5, "1 m"),
+          analytics: true,
+        });
+        const { success } = await ratelimit.limit(
+          `api/image-upload/${authedUser.id}`
+        );
+        if (!success) throw new Error("Rate limit exceeded");
+
         const team = await prisma.team.findUnique({
-          where: { id: parseInt(teamId) },
+          where: { id: parsedTeamId },
         });
         if (!team) throw new Error("Team not found");
 
-        return { tokenPayload: JSON.stringify({ teamId: team.id }) };
+        return {
+          tokenPayload: JSON.stringify({
+            teamId: team.id,
+            authorizedUserId: authedUser.id,
+          }),
+        };
       },
       onUploadCompleted: async ({ blob, tokenPayload }) => {
         // Get notified of client upload completion
@@ -75,10 +66,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
         try {
           // Run any logic after the file upload completed
-          const { teamId } = JSON.parse(tokenPayload!) as { teamId: string };
+          const { teamId } = JSON.parse(tokenPayload!) as { teamId: number };
 
           const team = await prisma.team.findUnique({
-            where: { id: parseInt(teamId) },
+            where: { id: teamId },
           });
           if (!team) throw new Error("Team not found");
 

@@ -6,12 +6,24 @@ import {
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { del, list } from "@vercel/blob";
+import type { NextRequest } from "next/server";
 
 const VALID_IMAGE_URL_HOSTS = {
   vercel_blob: "public.blob.vercel-storage.com",
 };
 
-export async function DELETE() {
+function isCronAuthorized(req: NextRequest) {
+  const secret = process.env.CRON_SECRET;
+  return (
+    Boolean(secret) && req.headers.get("Authorization") === `Bearer ${secret}`
+  );
+}
+
+export async function DELETE(req: NextRequest) {
+  if (!isCronAuthorized(req)) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   const start = performance.now();
   cronJobCounter.add(1, { job: "delete-unused-blobs" });
 
@@ -62,6 +74,6 @@ export async function DELETE() {
 }
 
 // This is necessary for using Vercel Cron Jobs
-export async function GET() {
-  return await DELETE();
+export async function GET(req: NextRequest) {
+  return await DELETE(req);
 }

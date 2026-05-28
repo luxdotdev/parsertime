@@ -1,5 +1,5 @@
 import { auditLog } from "@/lib/audit-logs";
-import { auth } from "@/lib/auth";
+import { auth, canEditScrim, getCurrentUser } from "@/lib/auth";
 import { mapAddedCounter, scrimParsingDuration } from "@/lib/axiom/metrics";
 import { Logger } from "@/lib/logger";
 import { createNewMap } from "@/lib/parser";
@@ -7,7 +7,6 @@ import prisma from "@/lib/prisma";
 import { normalizeMapForScrim } from "@/lib/team-normalization";
 import type { ParserData } from "@/types/parser";
 import { track } from "@vercel/analytics/server";
-import { unauthorized } from "next/navigation";
 import { after, type NextRequest } from "next/server";
 
 export type AddMapRequestData = {
@@ -39,14 +38,26 @@ export async function POST(req: NextRequest) {
     if (!session?.user?.email) {
       event.outcome = "unauthorized";
       event.status_code = 401;
-      unauthorized();
+      return new Response("Unauthorized", { status: 401 });
     }
 
     event.user_email = session.user.email;
 
     const scrimId = parseInt(id);
+    if (!Number.isInteger(scrimId)) {
+      event.outcome = "invalid_scrim_id";
+      event.status_code = 400;
+      return new Response("Invalid scrim ID", { status: 400 });
+    }
     event.scrim_id = scrimId;
     let mapData = data.map;
+
+    const user = await getCurrentUser();
+    if (!(await canEditScrim(scrimId, user))) {
+      event.outcome = "forbidden";
+      event.status_code = 403;
+      return new Response("Forbidden", { status: 403 });
+    }
 
     const scrim = await prisma.scrim.findUnique({
       where: { id: scrimId },

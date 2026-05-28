@@ -22,6 +22,7 @@ export async function GET() {
   const userId = await AppRuntime.runPromise(
     UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
   );
+  if (!userId) unauthorized();
 
   const teams = await prisma.team.findMany({
     where: {

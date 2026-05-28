@@ -1,17 +1,12 @@
-import { Effect } from "effect";
-import { AppRuntime } from "@/data/runtime";
-import { UserService } from "@/data/user";
 import { auditLog } from "@/lib/audit-logs";
-import { auth } from "@/lib/auth";
+import { auth, getCurrentUser, isAdminUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { $Enums } from "@prisma/client";
 import { forbidden, unauthorized } from "next/navigation";
 import { after, type NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   const params = req.nextUrl.searchParams;
-  const token = req.headers.get("Authorization");
 
   const id = parseInt(params.get("id") ?? "");
   if (!id) return new Response("Missing ID", { status: 400 });
@@ -21,36 +16,24 @@ export async function POST(req: NextRequest) {
 
   const session = await auth();
 
-  if (!session) {
-    if (token !== process.env.DEV_TOKEN) {
-      Logger.warn("Unauthorized request to remove team: ", id);
-      unauthorized();
-    }
-    Logger.log("Authorized removal of team with dev token");
+  if (!session?.user?.email) {
+    Logger.warn("Unauthorized request to transfer team: ", id);
+    unauthorized();
   }
 
-  const user = await AppRuntime.runPromise(
-    UserService.pipe(
-      Effect.flatMap((svc) =>
-        svc.getUser(session?.user?.email ?? "lucas@lux.dev")
-      )
-    )
-  );
+  const user = await getCurrentUser();
   if (!user) return new Response("User not found", { status: 404 });
 
   const team = await prisma.team.findFirst({ where: { id } });
   if (!team) return new Response("Team not found", { status: 404 });
 
   const hasPerms =
-    user.role === $Enums.UserRole.ADMIN || // Admins can transfer anything
-    user.role === $Enums.UserRole.MANAGER || // Managers can transfer anything
+    isAdminUser(user) || // Admins can transfer anything
     user.id === team.ownerId; // Creators can transfer their own teams
 
   if (!hasPerms) forbidden();
 
-  const newOwner = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(owner)))
-  );
+  const newOwner = await prisma.user.findUnique({ where: { email: owner } });
   if (!newOwner) return new Response("New owner not found", { status: 404 });
 
   await prisma.team.update({

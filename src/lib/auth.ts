@@ -143,7 +143,7 @@ export const config = {
       const allowedUsers = (await get<string[]>("allowedUsers")) ?? [];
 
       // allow all lux.dev emails
-      if (user.email.includes("lux.dev")) return true;
+      if (user.email.toLowerCase().endsWith("@lux.dev")) return true;
       if (allowedUsers.includes(user.email)) return true;
 
       Logger.warn(`User not authorized for private access: ${user.email}`);
@@ -255,6 +255,79 @@ export const config = {
 
 export const { handlers, auth, signIn, signOut } = NextAuth(config);
 
+export async function getCurrentUser() {
+  const session = await auth();
+  if (!session?.user?.email) return null;
+
+  return await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+  );
+}
+
+export function isAdminUser(user: Pick<User, "role"> | null | undefined) {
+  return user?.role === $Enums.UserRole.ADMIN;
+}
+
+export async function canManageTeam(
+  teamId: number | null | undefined,
+  user: Pick<User, "id" | "role"> | null | undefined
+) {
+  if (!teamId || !user) return false;
+  if (isAdminUser(user)) return true;
+
+  const team = await prisma.team.findFirst({
+    where: { id: teamId },
+    select: {
+      ownerId: true,
+      managers: { where: { userId: user.id }, select: { id: true } },
+    },
+  });
+  if (!team) return false;
+
+  return team.ownerId === user.id || team.managers.length > 0;
+}
+
+export async function canViewTeam(
+  teamId: number | null | undefined,
+  user: Pick<User, "id" | "role"> | null | undefined
+) {
+  if (!teamId || !user) return false;
+  if (isAdminUser(user)) return true;
+
+  const team = await prisma.team.findFirst({
+    where: { id: teamId },
+    select: {
+      ownerId: true,
+      users: { where: { id: user.id }, select: { id: true } },
+      managers: { where: { userId: user.id }, select: { id: true } },
+    },
+  });
+  if (!team) return false;
+
+  return (
+    team.ownerId === user.id ||
+    team.users.length > 0 ||
+    team.managers.length > 0
+  );
+}
+
+export async function canEditScrim(
+  scrimId: number,
+  user: Pick<User, "id" | "role"> | null | undefined
+) {
+  if (!user) return false;
+  if (isAdminUser(user)) return true;
+
+  const scrim = await prisma.scrim.findUnique({
+    where: { id: scrimId },
+    select: { creatorId: true, teamId: true },
+  });
+  if (!scrim) return false;
+  if (scrim.creatorId === user.id) return true;
+
+  return await canManageTeam(scrim.teamId, user);
+}
+
 export async function isAuthedToViewScrim(id: number) {
   const session = await auth();
 
@@ -332,22 +405,6 @@ export async function isAuthedToViewScrim(id: number) {
 }
 
 export async function isAuthedToViewMap(scrimId: number, mapId: number) {
-  const session = await auth();
-
-  const user = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
-  );
-
-  // if user is admin return true
-  if (user !== null && user?.role === $Enums.UserRole.ADMIN) {
-    return true;
-  }
-
-  const scrim = await AppRuntime.runPromise(
-    ScrimService.pipe(Effect.flatMap((svc) => svc.getScrim(scrimId)))
-  );
-  if (!scrim) return false;
-
   const scrimMaps = await prisma.map.findMany({
     where: {
       scrimId,
@@ -360,15 +417,7 @@ export async function isAuthedToViewMap(scrimId: number, mapId: number) {
 
   if (!map) return false;
 
-  if (scrim.guestMode) return true;
-
-  if (!session) {
-    return false;
-  }
-
-  if (!user) return false;
-
-  return true;
+  return await isAuthedToViewScrim(scrimId);
 }
 
 export async function isTeamOwnerOrManager(id: number) {
@@ -395,34 +444,9 @@ export async function isTeamOwnerOrManager(id: number) {
 }
 
 export async function isAuthedToViewTeam(id: number) {
-  const session = await auth();
-  if (!session) {
-    return false;
-  }
+  const user = await getCurrentUser();
 
-  const user = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
-  );
-
-  if (!user) {
-    return false;
-  }
-
-  if (user.role === $Enums.UserRole.ADMIN) {
-    return true;
-  }
-
-  const teamMembersById = await prisma.team.findFirst({
-    where: { id },
-    select: {
-      users: true,
-    },
-  });
-
-  if (teamMembersById?.users?.some((u) => u.id === user.id)) {
-    return true;
-  }
-  return false;
+  return await canViewTeam(id, user);
 }
 
 /**
@@ -453,9 +477,7 @@ export async function getImpersonateUrl(email: string, isProd = true) {
     token,
   });
 
-  Logger.info(
-    `Impersonation URL generated for user: ${email}: ${callbackUrl}/api/auth/callback/email?${params.toString()}`
-  );
+  Logger.info(`Impersonation URL generated for user: ${email}`);
 
   return `${callbackUrl}/api/auth/callback/email?${params.toString()}`;
 }

@@ -1,7 +1,4 @@
-import { Effect } from "effect";
-import { AppRuntime } from "@/data/runtime";
-import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { getCurrentUser, isAdminUser } from "@/lib/auth";
 import { dataLabeling } from "@/lib/flags";
 import { Logger } from "@/lib/logger";
 import { r2 } from "@/lib/r2";
@@ -9,6 +6,12 @@ import { forbidden, unauthorized } from "next/navigation";
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
+
+const ALLOWED_IMAGE_CONTENT_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+]);
 
 export async function POST(request: Request): Promise<NextResponse> {
   const startTime = Date.now();
@@ -19,13 +22,9 @@ export async function POST(request: Request): Promise<NextResponse> {
   };
 
   try {
-    const session = await auth();
-    if (!session?.user) unauthorized();
-
-    const user = await AppRuntime.runPromise(
-      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
-    );
+    const user = await getCurrentUser();
     if (!user) unauthorized();
+    if (!isAdminUser(user)) forbidden();
 
     const enabled = await dataLabeling();
     if (!enabled) forbidden();
@@ -38,6 +37,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     };
 
     const { mapName, contentType } = body;
+    const uploadContentType = contentType ?? "image/png";
 
     if (!mapName || typeof mapName !== "string" || mapName.trim() === "") {
       wideEvent.status_code = 400;
@@ -45,6 +45,16 @@ export async function POST(request: Request): Promise<NextResponse> {
       wideEvent.error = { message: "Missing or invalid mapName field" };
       return NextResponse.json(
         { error: "Missing or invalid mapName field" },
+        { status: 400 }
+      );
+    }
+
+    if (!ALLOWED_IMAGE_CONTENT_TYPES.has(uploadContentType)) {
+      wideEvent.status_code = 400;
+      wideEvent.outcome = "error";
+      wideEvent.error = { message: "Unsupported contentType field" };
+      return NextResponse.json(
+        { error: "Unsupported content type" },
         { status: 400 }
       );
     }
@@ -58,7 +68,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     const uploadUrl = await r2.getPresignedUploadUrl({
       key: rawKey,
-      contentType: contentType ?? "application/octet-stream",
+      contentType: uploadContentType,
       expiresIn: 3600,
     });
 
@@ -84,8 +94,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(
       {
-        error:
-          error instanceof Error ? error.message : "An unknown error occurred",
+        error: "An unknown error occurred",
       },
       { status: 500 }
     );

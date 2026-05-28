@@ -1,11 +1,6 @@
-import { Effect } from "effect";
-import { AppRuntime } from "@/data/runtime";
-import { UserService } from "@/data/user";
-import { ScrimService } from "@/data/scrim";
 import { auditLog } from "@/lib/audit-logs";
-import { auth } from "@/lib/auth";
+import { auth, canEditScrim, canManageTeam, getCurrentUser } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { $Enums } from "@prisma/client";
 import { unauthorized } from "next/navigation";
 import { after, type NextRequest } from "next/server";
 import { z } from "zod";
@@ -44,65 +39,81 @@ export async function POST(req: NextRequest) {
   const body = UpdateScrimSchema.safeParse(await req.json());
   if (!body.success) return new Response("Invalid request", { status: 400 });
 
-  const user = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
-  );
+  const user = await getCurrentUser();
   if (!user) unauthorized();
 
-  const userIsManager = await prisma.teamManager.findFirst({
-    where: { userId: user.id },
+  const scrim = await prisma.scrim.findUnique({
+    where: { id: body.data.scrimId },
+    select: { id: true, name: true, teamId: true, creatorId: true },
   });
-
-  const scrim = await AppRuntime.runPromise(
-    ScrimService.pipe(Effect.flatMap((svc) => svc.getScrim(body.data.scrimId)))
-  );
   if (!scrim) return new Response("Scrim not found", { status: 404 });
 
-  const hasPerms =
-    userIsManager !== null || // user is a manager of the team
-    user.id === scrim.creatorId || // user created the scrim
-    user.role === $Enums.UserRole.ADMIN || // user is an admin
-    user.role === $Enums.UserRole.MANAGER; // user is a manager
+  if (!(await canEditScrim(scrim.id, user))) unauthorized();
 
-  if (!hasPerms) unauthorized();
+  const targetTeamId = parseInt(body.data.teamId);
+  if (!Number.isInteger(targetTeamId)) {
+    return new Response("Invalid team ID", { status: 400 });
+  }
 
-  await prisma.scrim.update({
-    where: { id: body.data.scrimId },
-    data: {
-      name: body.data.name,
-      teamId: parseInt(body.data.teamId),
-      date: new Date(body.data.date),
-      guestMode: body.data.guestMode,
-      opponentTeamAbbr: body.data.opponentTeamAbbr ?? null,
-    },
+  if (targetTeamId !== 0 && !(await canManageTeam(targetTeamId, user))) {
+    return new Response("Forbidden target team", { status: 403 });
+  }
+
+  const mapIds = body.data.maps.map((map) => map.id);
+  const maps = await prisma.map.findMany({
+    where: { id: { in: mapIds }, scrimId: body.data.scrimId },
+    select: { id: true, mapData: { select: { id: true }, take: 1 } },
   });
+  if (maps.length !== new Set(mapIds).size) {
+    return new Response("Invalid map IDs", { status: 400 });
+  }
 
-  if (body.data.maps && body.data.maps.length > 0) {
+  const mapDataIdsByMapId = new Map(
+    maps.map((map) => [map.id, map.mapData[0]?.id])
+  );
+  if ([...mapDataIdsByMapId.values()].some((id) => id === undefined)) {
+    return new Response("Map data not found", { status: 400 });
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.scrim.update({
+      where: { id: body.data.scrimId },
+      data: {
+        name: body.data.name,
+        teamId: targetTeamId === 0 ? null : targetTeamId,
+        date: new Date(body.data.date),
+        guestMode: body.data.guestMode,
+        opponentTeamAbbr: body.data.opponentTeamAbbr ?? null,
+      },
+    });
+
     for (const mapUpdate of body.data.maps) {
-      await prisma.map.update({
+      await tx.map.update({
         where: { id: mapUpdate.id },
         data: { replayCode: mapUpdate.replayCode },
       });
 
       if (mapUpdate.heroBans) {
-        await prisma.heroBan.deleteMany({
-          where: { MapDataId: mapUpdate.id },
+        const mapDataId = mapDataIdsByMapId.get(mapUpdate.id)!;
+
+        await tx.heroBan.deleteMany({
+          where: { MapDataId: mapDataId },
         });
 
         if (mapUpdate.heroBans.length > 0) {
-          await prisma.heroBan.createMany({
+          await tx.heroBan.createMany({
             data: mapUpdate.heroBans.map((ban) => ({
               scrimId: body.data.scrimId,
               hero: ban.hero,
               team: ban.team,
               banPosition: ban.banPosition,
-              MapDataId: mapUpdate.id,
+              MapDataId: mapDataId,
             })),
           });
         }
       }
     }
-  }
+  });
 
   after(async () => {
     await auditLog.createAuditLog({

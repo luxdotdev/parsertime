@@ -2,7 +2,7 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auditLog } from "@/lib/audit-logs";
-import { auth } from "@/lib/auth";
+import { auth, canManageTeam } from "@/lib/auth";
 import { setRequestContext } from "@/lib/axiom/baggage";
 import {
   rateLimitHitCounter,
@@ -145,6 +145,11 @@ export async function POST(request: NextRequest) {
 
     const teamId = parseInt(data.team) === 0 ? null : parseInt(data.team);
     event.team_id = teamId;
+    if (teamId && !(await canManageTeam(teamId, user))) {
+      event.outcome = "forbidden_team";
+      event.status_code = 403;
+      return new Response("Forbidden", { status: 403 });
+    }
 
     if (data.autoAssignTeamNames && teamId && data.team1Name) {
       event.normalized_teams = true;

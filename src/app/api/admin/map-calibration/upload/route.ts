@@ -1,7 +1,4 @@
-import { Effect } from "effect";
-import { AppRuntime } from "@/data/runtime";
-import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { getCurrentUser, isAdminUser } from "@/lib/auth";
 import { dataLabeling } from "@/lib/flags";
 import { Logger } from "@/lib/logger";
 import { r2 } from "@/lib/r2";
@@ -12,6 +9,8 @@ import sharp from "sharp";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
+const MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
+
 export async function POST(request: Request): Promise<NextResponse> {
   const startTime = Date.now();
   const wideEvent: Record<string, unknown> = {
@@ -21,13 +20,9 @@ export async function POST(request: Request): Promise<NextResponse> {
   };
 
   try {
-    const session = await auth();
-    if (!session?.user) unauthorized();
-
-    const user = await AppRuntime.runPromise(
-      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
-    );
+    const user = await getCurrentUser();
     if (!user) unauthorized();
+    if (!isAdminUser(user)) forbidden();
 
     const enabled = await dataLabeling();
     if (!enabled) forbidden();
@@ -66,6 +61,15 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     const buffer = await r2.download(rawKey);
     wideEvent.file_size = buffer.length;
+    if (buffer.length > MAX_UPLOAD_BYTES) {
+      wideEvent.status_code = 413;
+      wideEvent.outcome = "error";
+      wideEvent.error = { message: "Image upload is too large" };
+      return NextResponse.json(
+        { error: "Image upload is too large" },
+        { status: 413 }
+      );
+    }
 
     const metadata = await sharp(buffer).metadata();
     const imageWidth = metadata.width;
@@ -137,8 +141,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     return NextResponse.json(
       {
-        error:
-          error instanceof Error ? error.message : "An unknown error occurred",
+        error: "An unknown error occurred",
       },
       { status: 500 }
     );

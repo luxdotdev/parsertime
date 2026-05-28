@@ -44,6 +44,11 @@ export async function POST(
 
     const data = (await req.json()) as AddTournamentMapRequest;
     event.gameNumber = data.gameNumber;
+    if (!Number.isInteger(data.gameNumber) || data.gameNumber < 1) {
+      event.outcome = "invalid_game_number";
+      event.statusCode = 400;
+      return Response.json({ error: "Invalid game number" }, { status: 400 });
+    }
     if (!data.map) {
       event.outcome = "invalid_map_data";
       event.statusCode = 400;
@@ -69,6 +74,13 @@ export async function POST(
 
     event.tournamentId = match.tournamentId;
 
+    const bestOf = match.round.bestOf ?? match.tournament.bestOf;
+    if (data.gameNumber > bestOf) {
+      event.outcome = "invalid_game_number";
+      event.statusCode = 400;
+      return Response.json({ error: "Invalid game number" }, { status: 400 });
+    }
+
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
       select: { id: true, role: true },
@@ -83,6 +95,15 @@ export async function POST(
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    if (match.maps.some((map) => map.gameNumber === data.gameNumber)) {
+      event.outcome = "duplicate_game_number";
+      event.statusCode = 409;
+      return Response.json(
+        { error: "A map already exists for this game number" },
+        { status: 409 }
+      );
+    }
+
     if (!match.scrimId) {
       event.outcome = "no_scrim";
       event.statusCode = 500;
@@ -92,7 +113,7 @@ export async function POST(
       );
     }
 
-    await createNewMap(
+    const createdMap = await createNewMap(
       {
         map: data.map,
         scrimId: match.scrimId,
@@ -101,9 +122,8 @@ export async function POST(
       session
     );
 
-    const newMap = await prisma.map.findFirst({
-      where: { scrimId: match.scrimId },
-      orderBy: { createdAt: "desc" },
+    const newMap = await prisma.map.findUnique({
+      where: { id: createdMap.mapId },
       include: {
         mapData: {
           include: {

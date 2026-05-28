@@ -1,7 +1,4 @@
-import { Effect } from "effect";
-import { AppRuntime } from "@/data/runtime";
-import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { getCurrentUser, isAdminUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { dataLabeling } from "@/lib/flags";
@@ -20,13 +17,10 @@ export async function GET(_req: Request, props: Params) {
   };
 
   try {
-    const [session, { id }] = await Promise.all([auth(), props.params]);
-    if (!session) unauthorized();
-
-    const user = await AppRuntime.runPromise(
-      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
-    );
+    const { id } = await props.params;
+    const user = await getCurrentUser();
     if (!user) unauthorized();
+    if (!isAdminUser(user)) forbidden();
 
     const enabled = await dataLabeling();
     if (!enabled) forbidden();
@@ -85,8 +79,7 @@ export async function PUT(req: Request, props: Params) {
   };
 
   try {
-    const [session, { id }, body] = await Promise.all([
-      auth(),
+    const [{ id }, body] = await Promise.all([
       props.params,
       req.json() as Promise<{
         affineA?: number | null;
@@ -101,17 +94,26 @@ export async function PUT(req: Request, props: Params) {
         displayImageKey?: string;
       }>,
     ]);
-    if (!session) unauthorized();
-
-    const user = await AppRuntime.runPromise(
-      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
-    );
+    const user = await getCurrentUser();
     if (!user) unauthorized();
+    if (!isAdminUser(user)) forbidden();
 
     const enabled = await dataLabeling();
     if (!enabled) forbidden();
 
     const numericId = parseInt(id, 10);
+    const updateData = {
+      affineA: body.affineA,
+      affineB: body.affineB,
+      affineC: body.affineC,
+      affineD: body.affineD,
+      affineTx: body.affineTx,
+      affineTy: body.affineTy,
+      imageUrl: body.imageUrl,
+      imageWidth: body.imageWidth,
+      imageHeight: body.imageHeight,
+      displayImageKey: body.displayImageKey,
+    };
     wideEvent.user = { id: user.id, email: user.email };
     wideEvent.calibration_id = numericId;
 
@@ -138,7 +140,7 @@ export async function PUT(req: Request, props: Params) {
         return tx.mapCalibration.update({
           where: { id: numericId },
           data: {
-            ...body,
+            ...updateData,
             affineA: null,
             affineB: null,
             affineC: null,
@@ -160,7 +162,7 @@ export async function PUT(req: Request, props: Params) {
 
     const calibration = await prisma.mapCalibration.update({
       where: { id: numericId },
-      data: body,
+      data: updateData,
       include: { anchors: true },
     });
 
@@ -192,13 +194,10 @@ export async function DELETE(_req: Request, props: Params) {
   };
 
   try {
-    const [session, { id }] = await Promise.all([auth(), props.params]);
-    if (!session) unauthorized();
-
-    const user = await AppRuntime.runPromise(
-      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
-    );
+    const { id } = await props.params;
+    const user = await getCurrentUser();
     if (!user) unauthorized();
+    if (!isAdminUser(user)) forbidden();
 
     const enabled = await dataLabeling();
     if (!enabled) forbidden();
