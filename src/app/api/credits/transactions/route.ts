@@ -18,7 +18,11 @@ export async function GET(request: NextRequest) {
   );
   if (!user) unauthorized();
 
-  const requested = Number(request.nextUrl.searchParams.get("limit"));
+  const rawLimit = request.nextUrl.searchParams.get("limit");
+  const requested =
+    rawLimit === null || rawLimit.trim() === ""
+      ? DEFAULT_LIMIT
+      : Number(rawLimit);
   const limit = Number.isFinite(requested)
     ? Math.min(Math.max(1, Math.trunc(requested)), MAX_LIMIT)
     : DEFAULT_LIMIT;
