@@ -212,15 +212,25 @@ export async function calculateMVPScore({
     )
   );
 
-  if (playerStats.length === 0) {
-    return null;
-  }
+  return calculateMVPScoreFromStats({
+    playerStats,
+    playerName,
+    minMaps,
+    minTimeSeconds,
+  });
+}
+
+export async function calculateMVPScoreFromStats({
+  playerStats,
+  playerName,
+  minMaps = 5,
+  minTimeSeconds = 300,
+}: Omit<CalculateMVPScoreParams, "mapId"> & { playerStats: PlayerStat[] }) {
+  if (playerStats.length === 0) return null;
 
   const validStats = playerStats.filter((s) => s.hero_time_played >= 60);
 
-  if (validStats.length === 0) {
-    return null;
-  }
+  if (validStats.length === 0) return null;
 
   // Only evaluate the most-played hero to avoid bias towards frequent swaps
   const mostPlayedRow = validStats.reduce((prev, current) =>
@@ -298,6 +308,30 @@ export async function getMVPForMap(
     minTimeSeconds
   );
   return results[0] || null;
+}
+
+export async function getMVPForFinalRoundStats(
+  allStats: PlayerStat[],
+  minMaps = 5,
+  minTimeSeconds = 300
+): Promise<MVPScoreResult | null> {
+  const uniquePlayerNames = new Set(allStats.map((stat) => stat.player_name));
+  const results = await Promise.all(
+    Array.from(uniquePlayerNames).map((playerName) =>
+      calculateMVPScoreFromStats({
+        playerStats: allStats.filter((stat) => stat.player_name === playerName),
+        playerName,
+        minMaps,
+        minTimeSeconds,
+      })
+    )
+  );
+
+  return (
+    results
+      .filter((result): result is MVPScoreResult => result !== null)
+      .sort((a, b) => b.totalScore - a.totalScore)[0] ?? null
+  );
 }
 
 export type { CalculateMVPScoreParams, MVPScoreResult, StatContribution };

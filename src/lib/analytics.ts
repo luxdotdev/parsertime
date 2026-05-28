@@ -2,13 +2,25 @@ import { AppRuntime } from "@/data/runtime";
 import { ScrimService } from "@/data/scrim";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
-import { groupKillsIntoFights, removeDuplicateRows, round } from "@/lib/utils";
+import {
+  groupKillsIntoFights,
+  groupKillsIntoFightsByMapDataId,
+  removeDuplicateRows,
+  round,
+} from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import type { RoundEnd, UltimateCharged, UltimateStart } from "@prisma/client";
 import { Effect } from "effect";
 
 export async function getAverageUltChargeTime(id: number, playerName: string) {
   const mapDataId = await resolveMapDataId(id);
+  return getAverageUltChargeTimeForMapData(mapDataId, playerName);
+}
+
+export async function getAverageUltChargeTimeForMapData(
+  mapDataId: number,
+  playerName: string
+) {
   const [ultimatesCharged, ultimateEnds] = await Promise.all([
     prisma.ultimateCharged.findMany({
       where: { MapDataId: mapDataId, player_name: playerName },
@@ -79,6 +91,13 @@ function assignRoundNumbersToUltimates(
 
 export async function getAverageTimeToUseUlt(id: number, playerName: string) {
   const mapDataId = await resolveMapDataId(id);
+  return getAverageTimeToUseUltForMapData(mapDataId, playerName);
+}
+
+export async function getAverageTimeToUseUltForMapData(
+  mapDataId: number,
+  playerName: string
+) {
   const [ultimatesCharged, ultimateStarts, roundEnds] = await Promise.all([
     prisma.ultimateCharged.findMany({
       where: { MapDataId: mapDataId, player_name: playerName },
@@ -134,6 +153,13 @@ export async function getAverageTimeToUseUlt(id: number, playerName: string) {
 
 export async function getKillsPerUltimate(id: number, playerName: string) {
   const mapDataId = await resolveMapDataId(id);
+  return getKillsPerUltimateForMapData(mapDataId, playerName);
+}
+
+export async function getKillsPerUltimateForMapData(
+  mapDataId: number,
+  playerName: string
+) {
   const [ultimatesCharged, ultKills] = await Promise.all([
     prisma.ultimateCharged.findMany({
       where: { MapDataId: mapDataId, player_name: playerName },
@@ -153,6 +179,14 @@ export async function getKillsPerUltimate(id: number, playerName: string) {
 }
 
 export async function getDuelWinrates(id: number, playerName: string) {
+  const mapDataId = await resolveMapDataId(id);
+  return getDuelWinratesForMapData(mapDataId, playerName);
+}
+
+export async function getDuelWinratesForMapData(
+  mapDataId: number,
+  playerName: string
+) {
   type AggregatedDuel = {
     player_name: string;
     player_hero: string;
@@ -164,7 +198,6 @@ export async function getDuelWinrates(id: number, playerName: string) {
     enemy_deaths: number;
   };
 
-  const mapDataId = await resolveMapDataId(id);
   const [playerKills, playerDeaths] = await Promise.all([
     prisma.kill.findMany({
       where: { MapDataId: mapDataId, attacker_name: playerName },
@@ -413,7 +446,21 @@ export async function calculateXFactor(mapId: number, playerName: string) {
 
 export async function calculateDroughtTime(id: number, playerName: string) {
   const fights = await groupKillsIntoFights(id);
+  return calculateDroughtTimeFromFights(fights, playerName);
+}
 
+export async function calculateDroughtTimeForMapData(
+  mapDataId: number,
+  playerName: string
+) {
+  const fights = await groupKillsIntoFightsByMapDataId(mapDataId);
+  return calculateDroughtTimeFromFights(fights, playerName);
+}
+
+function calculateDroughtTimeFromFights(
+  fights: Awaited<ReturnType<typeof groupKillsIntoFights>>,
+  playerName: string
+) {
   const playerKills = fights
     .map((fight) =>
       fight.kills.filter((kill) => kill.attacker_name === playerName)
@@ -436,6 +483,13 @@ export async function calculateDroughtTime(id: number, playerName: string) {
 
 export async function getAjaxes(id: number, playerName: string) {
   const mapDataId = await resolveMapDataId(id);
+  return getAjaxesForMapData(mapDataId, playerName);
+}
+
+export async function getAjaxesForMapData(
+  mapDataId: number,
+  playerName: string
+) {
   const [kills, ultimateEnds] = await Promise.all([
     prisma.kill.findMany({
       where: {

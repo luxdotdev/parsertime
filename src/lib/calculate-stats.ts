@@ -1,25 +1,33 @@
-import { AppRuntime } from "@/data/runtime";
-import { ScrimService } from "@/data/scrim";
-import { Effect } from "effect";
 import {
-  calculateDroughtTime,
-  getAjaxes,
-  getAverageTimeToUseUlt,
-  getAverageUltChargeTime,
-  getDuelWinrates,
-  getKillsPerUltimate,
+  calculateDroughtTimeForMapData,
+  getAjaxesForMapData,
+  getAverageTimeToUseUltForMapData,
+  getAverageUltChargeTimeForMapData,
+  getDuelWinratesForMapData,
+  getKillsPerUltimateForMapData,
 } from "@/lib/analytics";
-import { calculateMVPScore, getMVPForMap } from "@/lib/mvp-score";
-import { groupKillsIntoFights, removeDuplicateRows, round } from "@/lib/utils";
-import { type HeroName, heroRoleMapping } from "@/types/heroes";
+import {
+  calculateMVPScoreFromStats,
+  getMVPForFinalRoundStats,
+} from "@/lib/mvp-score";
+import {
+  groupKillsIntoFightsByMapDataId,
+  removeDuplicateRows,
+  round,
+} from "@/lib/utils";
+import { heroPriority, type HeroName, heroRoleMapping } from "@/types/heroes";
+import type { PlayerStat } from "@prisma/client";
 import prisma from "./prisma";
 
 export async function calculateStats(mapDataId: number, playerName: string) {
+  const finalRoundStats = await getFinalRoundStatsByMapDataId(mapDataId);
+  const playerFinalRoundStats = finalRoundStats.filter(
+    (stat) => stat.player_name === playerName
+  );
+
   const [
-    playerStats,
     fights,
     finalRound,
-    playerStatsByFinalRound,
     averageUltChargeTime,
     averageTimeToUseUlt,
     killsPerUltimate,
@@ -29,36 +37,25 @@ export async function calculateStats(mapDataId: number, playerName: string) {
     playerMvpScore,
     mapMVP,
   ] = await Promise.all([
-    AppRuntime.runPromise(
-      ScrimService.pipe(
-        Effect.flatMap((svc) =>
-          svc.getFinalRoundStatsForPlayer(mapDataId, playerName)
-        )
-      )
-    ),
-    groupKillsIntoFights(mapDataId),
+    groupKillsIntoFightsByMapDataId(mapDataId),
     prisma.roundEnd.findFirst({
       where: { MapDataId: mapDataId },
       orderBy: { round_number: "desc" },
     }),
-    AppRuntime.runPromise(
-      ScrimService.pipe(
-        Effect.flatMap((svc) =>
-          svc.getFinalRoundStatsForPlayer(mapDataId, playerName)
-        )
-      )
-    ),
-    getAverageUltChargeTime(mapDataId, playerName),
-    getAverageTimeToUseUlt(mapDataId, playerName),
-    getKillsPerUltimate(mapDataId, playerName),
-    calculateDroughtTime(mapDataId, playerName),
-    getDuelWinrates(mapDataId, playerName),
-    getAjaxes(mapDataId, playerName),
-    calculateMVPScore({ mapId: mapDataId, playerName }),
-    getMVPForMap(mapDataId),
+    getAverageUltChargeTimeForMapData(mapDataId, playerName),
+    getAverageTimeToUseUltForMapData(mapDataId, playerName),
+    getKillsPerUltimateForMapData(mapDataId, playerName),
+    calculateDroughtTimeForMapData(mapDataId, playerName),
+    getDuelWinratesForMapData(mapDataId, playerName),
+    getAjaxesForMapData(mapDataId, playerName),
+    calculateMVPScoreFromStats({
+      playerStats: playerFinalRoundStats,
+      playerName,
+    }),
+    getMVPForFinalRoundStats(finalRoundStats),
   ]);
 
-  const mostPlayedHero = playerStats.sort(
+  const mostPlayedHero = playerFinalRoundStats.sort(
     (a, b) => b.hero_time_played - a.hero_time_played
   )[0].player_hero;
 
@@ -80,7 +77,7 @@ export async function calculateStats(mapDataId: number, playerName: string) {
     (playerFirstDeaths.length / fights.length) * 100
   );
 
-  const team = playerStatsByFinalRound[0]?.player_team;
+  const team = playerFinalRoundStats[0]?.player_team;
 
   const teamFinalBlows = removeDuplicateRows(
     await prisma.playerStat.findMany({
@@ -102,7 +99,7 @@ export async function calculateStats(mapDataId: number, playerName: string) {
     0
   );
 
-  const playerFinalBlows = playerStatsByFinalRound.reduce(
+  const playerFinalBlows = playerFinalRoundStats.reduce(
     (acc, { final_blows }) => acc + final_blows,
     0
   );
@@ -144,4 +141,34 @@ export async function calculateStats(mapDataId: number, playerName: string) {
     duels,
     fightReversalPercentage: round(fightReversalPercentage),
   };
+}
+
+async function getFinalRoundStatsByMapDataId(
+  mapDataId: number
+): Promise<PlayerStat[]> {
+  const rawStats = await prisma.$queryRaw<PlayerStat[]>`
+    WITH maxTime AS (
+      SELECT
+        MAX("match_time") AS max_time
+      FROM
+        "PlayerStat"
+      WHERE
+        "MapDataId" = ${mapDataId}
+    )
+    SELECT
+      ps.*
+    FROM
+      "PlayerStat" ps
+      INNER JOIN maxTime m ON ps."match_time" = m.max_time
+    WHERE
+      ps."MapDataId" = ${mapDataId}`;
+
+  return removeDuplicateRows(rawStats)
+    .sort((a, b) => a.player_name.localeCompare(b.player_name))
+    .sort(
+      (a, b) =>
+        heroPriority[heroRoleMapping[a.player_hero as HeroName]] -
+        heroPriority[heroRoleMapping[b.player_hero as HeroName]]
+    )
+    .sort((a, b) => a.player_team.localeCompare(b.player_team));
 }

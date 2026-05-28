@@ -280,6 +280,10 @@ export function ultimateStartToKillEvent(
 
 export async function groupKillsIntoFights(mapId: number) {
   const mapDataId = await resolveMapDataId(mapId);
+  return groupKillsIntoFightsByMapDataId(mapDataId);
+}
+
+export async function groupKillsIntoFightsByMapDataId(mapDataId: number) {
   const [killsByMapId, rezzesByMapId] = await Promise.all([
     prisma.kill.findMany({ where: { MapDataId: mapDataId } }),
     prisma.mercyRez.findMany({ where: { MapDataId: mapDataId } }),
