@@ -237,13 +237,6 @@ export default async function ProfilePage(
     }
   });
 
-  const calculatedStats = await prisma.calculatedStat.findMany({
-    where: {
-      playerName: { equals: name, mode: "insensitive" },
-      scrimId: { in: viewableScrimIds },
-    },
-  });
-
   const allScrims = await prisma.scrim.findMany({
     where: { id: { in: viewableScrimIds } },
   });
@@ -292,6 +285,23 @@ export default async function ProfilePage(
       : "one-month";
 
   const permittedScrimIds = data[permitted].map((scrim) => scrim.id);
+  const responseScrims = {
+    "one-week": data["one-week"],
+    "two-weeks": data["two-weeks"],
+    "one-month": data["one-month"],
+    "three-months": timeframe2 || timeframe3 ? data["three-months"] : [],
+    "six-months": timeframe2 || timeframe3 ? data["six-months"] : [],
+    "one-year": timeframe3 ? data["one-year"] : [],
+    "all-time": timeframe3 ? data["all-time"] : [],
+    custom: [],
+  };
+
+  const calculatedStats = await prisma.calculatedStat.findMany({
+    where: {
+      playerName: { equals: name, mode: "insensitive" },
+      scrimId: { in: permittedScrimIds },
+    },
+  });
 
   const { stats, kills, deaths, mapWinrates } = await AppRuntime.runPromise(
     Effect.all(
@@ -355,14 +365,7 @@ export default async function ProfilePage(
   let playerPrimaryRole: RoleName = "Damage";
 
   if (canViewTargets) {
-    let targetTeamId = user?.teamId ?? null;
-    if (!targetTeamId) {
-      const anyTarget = await prisma.playerTarget.findFirst({
-        where: { playerName: { equals: name, mode: "insensitive" } },
-        select: { teamId: true },
-      });
-      targetTeamId = anyTarget?.teamId ?? null;
-    }
+    const targetTeamId = user?.teamId ?? null;
 
     if (targetTeamId) {
       if (allHeroesData.length > 0) {
@@ -686,7 +689,7 @@ export default async function ProfilePage(
           <RangePicker
             playerName={name}
             permissions={permissions}
-            data={data}
+            data={responseScrims}
             stats={stats}
             kills={kills}
             mapWinrates={mapWinrates}

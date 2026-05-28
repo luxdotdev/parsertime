@@ -37,7 +37,7 @@ export function CalculatedStatsBlock({ calculatedStats, permissions }: Props) {
     ? "one-week"
     : permissions["stats-timeframe-2"]
       ? "three-months"
-      : "all-time";
+      : "one-month";
 
   const [timeframe, setTimeframe] = useState<Timeframe>(initial);
 
