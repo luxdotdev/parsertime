@@ -8,6 +8,8 @@ const REQUIRED_ENV_VARS = [
   "CLOUDFLARE_R2_SECRET_ACCESS_KEY",
   "CLOUDFLARE_R2_BUCKET_NAME",
 ] as const;
+const VERCEL_BLOB_HOST_SUFFIX = ".public.blob.vercel-storage.com";
+const MAX_IMAGE_BYTES = 20 * 1024 * 1024;
 
 function checkEnvVars() {
   const missing = REQUIRED_ENV_VARS.filter((key) => !process.env[key]);
@@ -19,15 +21,62 @@ function checkEnvVars() {
   }
 }
 
-function isVercelBlobUrl(url: string): boolean {
-  return (
-    url.startsWith("https://") &&
-    url.includes(".public.blob.vercel-storage.com")
-  );
+function parseVercelBlobUrl(urlString: string): URL | null {
+  try {
+    const url = new URL(urlString);
+    if (
+      url.protocol !== "https:" ||
+      !url.hostname.endsWith(VERCEL_BLOB_HOST_SUFFIX)
+    ) {
+      return null;
+    }
+    return url;
+  } catch {
+    return null;
+  }
 }
 
 function toSlug(mapName: string): string {
   return mapName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+}
+
+async function readCappedBody(response: Response): Promise<Buffer> {
+  const contentLength = response.headers.get("content-length");
+  if (contentLength && Number(contentLength) > MAX_IMAGE_BYTES) {
+    throw new Error(`Image is larger than ${MAX_IMAGE_BYTES} bytes`);
+  }
+
+  const reader = response.body?.getReader();
+  if (!reader) throw new Error("Response body is empty");
+
+  const chunks: Uint8Array[] = [];
+  let totalBytes = 0;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    totalBytes += value.byteLength;
+    if (totalBytes > MAX_IMAGE_BYTES) {
+      throw new Error(`Image is larger than ${MAX_IMAGE_BYTES} bytes`);
+    }
+    chunks.push(value);
+  }
+
+  return Buffer.concat(chunks, totalBytes);
+}
+
+async function downloadImage(url: URL): Promise<Buffer> {
+  const response = await fetch(url, { redirect: "manual" });
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status} ${response.statusText}`);
+  }
+
+  const contentType = response.headers.get("content-type")?.toLowerCase();
+  if (!contentType?.startsWith("image/")) {
+    throw new Error(`Unexpected content type: ${contentType ?? "unknown"}`);
+  }
+
+  return readCappedBody(response);
 }
 
 async function main() {
@@ -72,7 +121,8 @@ async function main() {
     const record = records[i];
     const index = i + 1;
 
-    if (!isVercelBlobUrl(record.imageUrl)) {
+    const sourceUrl = parseVercelBlobUrl(record.imageUrl);
+    if (!sourceUrl) {
       console.log(
         `[${index}/${total}] Skipping "${record.mapName}" — not a Vercel Blob URL`
       );
@@ -84,12 +134,7 @@ async function main() {
       let originalBuffer: Buffer | null = null;
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
-          const response = await fetch(record.imageUrl);
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status} ${response.statusText}`);
-          }
-          const arrayBuffer = await response.arrayBuffer();
-          originalBuffer = Buffer.from(arrayBuffer);
+          originalBuffer = await downloadImage(sourceUrl);
           break;
         } catch (fetchErr) {
           if (attempt < 2) {
@@ -109,17 +154,22 @@ async function main() {
       const originalKey = `map-images/${slug}/original.png`;
       const displayKey = `map-images/${slug}/display.png`;
 
-      await upload(originalKey, originalBuffer, "image/png");
-
       const metadata = await sharp(originalBuffer).metadata();
+      if (!metadata.width || !metadata.height) {
+        throw new Error("Downloaded file is not a readable image");
+      }
+
+      const originalPngBuffer = await sharp(originalBuffer).png().toBuffer();
+      await upload(originalKey, originalPngBuffer, "image/png");
+
       let displayBuffer: Buffer;
-      if (metadata.width && metadata.width > 2560) {
+      if (metadata.width > 2560) {
         displayBuffer = await sharp(originalBuffer)
           .resize(2560)
           .png()
           .toBuffer();
       } else {
-        displayBuffer = originalBuffer;
+        displayBuffer = originalPngBuffer;
       }
 
       await upload(displayKey, displayBuffer, "image/png");
