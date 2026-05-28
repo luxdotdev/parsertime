@@ -11,54 +11,33 @@ export default async function TokenPage(
   const session = await auth();
   const token = params.token;
 
-  if (!session) redirect(`/sign-in?callbackUrl=/team/join/${token}`);
+  if (!session?.user?.email)
+    redirect(`/sign-in?callbackUrl=/team/join/${token}`);
 
-  try {
-    const teamCreatedAt = new Date(atob(token));
-
-    const team = await prisma.team.findFirst({
-      where: { createdAt: teamCreatedAt },
-    });
-
-    if (!team) {
-      Logger.error("Team not found for date token");
-      redirect("/team/join?error=invalid-token");
-    }
-
-    await prisma.team.update({
-      where: { id: team.id },
-      data: { users: { connect: { email: session?.user?.email ?? "" } } },
-    });
-
-    Logger.info(`User now belongs to team: ${JSON.stringify(team)}`);
-  } catch {
-    const teamInviteToken = await prisma.teamInviteToken.findUnique({
+  const joinedTeam = await prisma.$transaction(async (tx) => {
+    const teamInviteToken = await tx.teamInviteToken.findUnique({
       where: { token },
     });
 
-    if (!teamInviteToken) {
-      Logger.error("Invalid or expired token provided to join team");
-      redirect("/team/join?error=invalid-token");
-    }
+    if (!teamInviteToken || teamInviteToken.expires <= new Date()) return null;
 
-    await prisma.team.update({
+    const deleted = await tx.teamInviteToken.deleteMany({
+      where: { token, expires: { gt: new Date() } },
+    });
+    if (deleted.count !== 1) return null;
+
+    return await tx.team.update({
       where: { id: teamInviteToken.teamId },
-      data: { users: { connect: { email: session?.user?.email ?? "" } } },
+      data: { users: { connect: { email: session.user.email } } },
+      select: { id: true },
     });
+  });
 
-    await prisma.teamInviteToken.delete({ where: { token } });
-
-    Logger.info(
-      `User ${session?.user?.email} joined team ${teamInviteToken.teamId}`
-    );
-
-    const teams = await prisma.team.findMany({
-      where: { users: { some: { email: session?.user?.email } } },
-    });
-
-    Logger.info(`User now belongs to team: ${JSON.stringify(teams)}`);
-    redirect("/team/join/success");
+  if (!joinedTeam) {
+    Logger.error("Invalid or expired token provided to join team");
+    redirect("/team/join?error=invalid-token");
   }
 
+  Logger.info(`User ${session.user.email} joined team ${joinedTeam.id}`);
   redirect("/team/join/success");
 }
