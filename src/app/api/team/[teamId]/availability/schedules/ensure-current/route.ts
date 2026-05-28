@@ -1,6 +1,10 @@
 import { authenticateBotSecret } from "@/lib/bot-auth";
 import { isTeamOwnerOrManager } from "@/lib/auth";
-import { weekEndInTz, weekStartInTz } from "@/lib/availability/tz";
+import {
+  isValidTimeZone,
+  weekEndInTz,
+  weekStartInTz,
+} from "@/lib/availability/tz";
 import prisma from "@/lib/prisma";
 import type { NextRequest } from "next/server";
 
@@ -24,6 +28,9 @@ export async function POST(req: NextRequest, ctx: RouteCtx) {
     create: { teamId },
     update: {},
   });
+  if (!isValidTimeZone(settings.timezone)) {
+    return new Response("Invalid team timezone", { status: 400 });
+  }
 
   const now = new Date();
   const weekStart = weekStartInTz(now, settings.timezone);
