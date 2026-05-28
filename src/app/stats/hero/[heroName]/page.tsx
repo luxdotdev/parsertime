@@ -8,7 +8,7 @@ import { HeroService } from "@/data/hero";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { auth, getViewableScrimIds } from "@/lib/auth";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { translateHeroName } from "@/lib/utils";
@@ -86,7 +86,10 @@ export default async function HeroStats(
     distinct: ["scrimId"],
   });
 
-  const scrimIds = heroScrims.map((scrim) => scrim.scrimId);
+  const scrimIds = await getViewableScrimIds(
+    heroScrims.map((scrim) => scrim.scrimId),
+    user
+  );
 
   const allScrims = await prisma.scrim.findMany({
     where: { id: { in: scrimIds } },

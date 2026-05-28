@@ -8,7 +8,7 @@ import { ScrimService } from "@/data/scrim";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { auth, getViewableScrimIds } from "@/lib/auth";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
@@ -82,7 +82,10 @@ export default async function PlayerStats(
     distinct: ["scrimId"],
   });
 
-  const scrimIds = playerScrims.map((scrim) => scrim.scrimId);
+  const scrimIds = await getViewableScrimIds(
+    playerScrims.map((scrim) => scrim.scrimId),
+    user
+  );
 
   const allScrims = await prisma.scrim.findMany({
     where: { id: { in: scrimIds } },
