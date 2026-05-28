@@ -21,7 +21,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const jsonResponse = await handleUpload({
       body,
       request,
-      onBeforeGenerateToken: async () => /* clientPayload?: string, */
+      onBeforeGenerateToken: async (pathname) => /* clientPayload?: string, */
       {
         // Generate a client token for the browser to upload the file
         // ⚠️ Authenticate and authorize users before generating the token.
@@ -29,7 +29,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         const authedUser = await getCurrentUser();
         if (!authedUser) throw new Error("Unauthorized");
 
-        const parsedTeamId = parseInt(teamId);
+        const parsedTeamId = parseInt(teamId, 10);
+        if (!Number.isInteger(parsedTeamId)) throw new Error("Invalid team ID");
         if (!(await canManageTeam(parsedTeamId, authedUser))) {
           throw new Error("Forbidden");
         }
@@ -48,12 +49,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           where: { id: parsedTeamId },
         });
         if (!team) throw new Error("Team not found");
+        if (pathname !== `team-avatars/${team.id}.png`) {
+          throw new Error("Invalid upload path");
+        }
 
         return {
           tokenPayload: JSON.stringify({
             teamId: team.id,
             authorizedUserId: authedUser.id,
           }),
+          allowedContentTypes: ["image/png", "image/jpeg", "image/webp"],
+          maximumSizeInBytes: 5 * 1024 * 1024,
         };
       },
       onUploadCompleted: async ({ blob, tokenPayload }) => {
