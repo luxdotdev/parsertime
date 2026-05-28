@@ -695,7 +695,6 @@ export type SimulatorContext = {
   mapWinrates: Record<string, number>;
   mapSampleSizes: Record<string, number>;
   mapModeWinrates: Record<string, number>;
-  roleTrioWinrates: RoleTrio[];
   heroPoolWinrates: Record<string, number>;
   heroPoolSampleSizes: Record<string, number>;
   enemyHeroWinrates: Record<string, number>;
