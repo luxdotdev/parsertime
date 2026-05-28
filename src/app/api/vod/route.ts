@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { auth, canEditScrim } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import z from "zod";
@@ -48,6 +48,17 @@ export async function POST(req: Request) {
   }
 
   const { mapId, vodUrl } = body.data;
+
+  const map = await prisma.map.findUnique({
+    where: { id: mapId },
+    select: { scrimId: true },
+  });
+  if (!map?.scrimId) {
+    return new NextResponse("Map not found", { status: 404 });
+  }
+  if (!(await canEditScrim(map.scrimId, user))) {
+    return new NextResponse("Forbidden", { status: 403 });
+  }
 
   const updatedVod = await prisma.map.update({
     where: { id: mapId },

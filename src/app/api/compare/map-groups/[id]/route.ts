@@ -1,11 +1,9 @@
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
-import { UserService } from "@/data/user";
 import { MapGroupService } from "@/data/map";
-import { auth } from "@/lib/auth";
+import { auth, canManageTeam, getCurrentUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { $Enums } from "@prisma/client";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -44,9 +42,7 @@ export async function PUT(
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const user = await AppRuntime.runPromise(
-      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
-    );
+    const user = await getCurrentUser();
     if (!user) {
       wideEvent.status_code = 404;
       wideEvent.outcome = "user_not_found";
@@ -95,15 +91,7 @@ export async function PUT(
     const group = await prisma.mapGroup.findUnique({
       where: { id: groupId },
       include: {
-        team: {
-          select: {
-            ownerId: true,
-            users: {
-              where: { id: user.id },
-              select: { id: true },
-            },
-          },
-        },
+        team: { select: { id: true, ownerId: true } },
       },
     });
 
@@ -120,40 +108,45 @@ export async function PUT(
       );
     }
 
-    const isOwner = group.createdBy === user.id;
-    const isTeamOwner = group.team.ownerId === user.id;
-    const isAdmin =
-      user.role === $Enums.UserRole.ADMIN ||
-      user.role === $Enums.UserRole.MANAGER;
+    const canManage = await canManageTeam(group.team.id, user);
 
-    if (!isOwner && !isTeamOwner && !isAdmin) {
+    if (!canManage) {
       wideEvent.status_code = 403;
       wideEvent.outcome = "forbidden";
       wideEvent.error = {
         message: "User does not have permission to update this group",
       };
       wideEvent.permissions = {
-        is_owner: isOwner,
-        is_team_owner: isTeamOwner,
-        is_admin: isAdmin,
+        can_manage_team: canManage,
       };
       return NextResponse.json(
         {
           success: false,
-          error:
-            "You must be the group creator, team owner, or admin to update this group",
+          error: "You must manage this team to update this group",
         },
         { status: 403 }
       );
     }
 
     wideEvent.permissions = {
-      is_owner: isOwner,
-      is_team_owner: isTeamOwner,
-      is_admin: isAdmin,
+      can_manage_team: canManage,
     };
 
     const { name, description, mapIds, category } = validatedData.data;
+    if (mapIds) {
+      const validMaps = await prisma.map.count({
+        where: {
+          id: { in: mapIds },
+          Scrim: { teamId: group.team.id },
+        },
+      });
+      if (validMaps !== new Set(mapIds).size) {
+        return NextResponse.json(
+          { success: false, error: "Map IDs must belong to the team" },
+          { status: 400 }
+        );
+      }
+    }
 
     const updatedGroup = await AppRuntime.runPromise(
       MapGroupService.pipe(
@@ -244,9 +237,7 @@ export async function DELETE(
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const user = await AppRuntime.runPromise(
-      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
-    );
+    const user = await getCurrentUser();
     if (!user) {
       wideEvent.status_code = 404;
       wideEvent.outcome = "user_not_found";
@@ -271,15 +262,7 @@ export async function DELETE(
     const group = await prisma.mapGroup.findUnique({
       where: { id: groupId },
       include: {
-        team: {
-          select: {
-            ownerId: true,
-            users: {
-              where: { id: user.id },
-              select: { id: true },
-            },
-          },
-        },
+        team: { select: { id: true, ownerId: true } },
       },
     });
 
@@ -296,39 +279,28 @@ export async function DELETE(
       );
     }
 
-    const isOwner = group.createdBy === user.id;
-    const isTeamOwner = group.team.ownerId === user.id;
-    const isAdmin =
-      user.role === $Enums.UserRole.ADMIN ||
-      user.role === $Enums.UserRole.MANAGER;
-    const isTeamMember = group.team.users.length > 0;
+    const canManage = await canManageTeam(group.team.id, user);
 
-    if (!isOwner && !isTeamOwner && !isAdmin) {
+    if (!canManage) {
       wideEvent.status_code = 403;
       wideEvent.outcome = "forbidden";
       wideEvent.error = {
         message: "User does not have permission to delete this group",
       };
       wideEvent.permissions = {
-        is_owner: isOwner,
-        is_team_owner: isTeamOwner,
-        is_admin: isAdmin,
-        is_team_member: isTeamMember,
+        can_manage_team: canManage,
       };
       return NextResponse.json(
         {
           success: false,
-          error:
-            "You must be the group creator, team owner, or admin to delete this group",
+          error: "You must manage this team to delete this group",
         },
         { status: 403 }
       );
     }
 
     wideEvent.permissions = {
-      is_owner: isOwner,
-      is_team_owner: isTeamOwner,
-      is_admin: isAdmin,
+      can_manage_team: canManage,
     };
 
     await AppRuntime.runPromise(

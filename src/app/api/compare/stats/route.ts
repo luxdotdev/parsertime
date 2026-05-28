@@ -1,8 +1,7 @@
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
-import { UserService } from "@/data/user";
 import { ComparisonAggregationService } from "@/data/comparison";
-import { auth } from "@/lib/auth";
+import { auth, canViewMaps, getCurrentUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import type { HeroName } from "@/types/heroes";
 import type { NextRequest } from "next/server";
@@ -32,9 +31,7 @@ export async function GET(request: NextRequest) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const user = await AppRuntime.runPromise(
-      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
-    );
+    const user = await getCurrentUser();
     if (!user) {
       wideEvent.status_code = 404;
       wideEvent.outcome = "user_not_found";
@@ -84,6 +81,13 @@ export async function GET(request: NextRequest) {
       return new Response(validMapIds.error.message, {
         status: 400,
       });
+    }
+
+    if (!(await canViewMaps(validMapIds.data, user))) {
+      wideEvent.status_code = 403;
+      wideEvent.outcome = "forbidden";
+      wideEvent.error = { message: "User cannot view one or more maps" };
+      return new Response("Forbidden", { status: 403 });
     }
 
     const validPlayerName = PlayerNameSchema.safeParse(playerName);

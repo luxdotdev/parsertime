@@ -1,7 +1,4 @@
-import { Effect } from "effect";
-import { AppRuntime } from "@/data/runtime";
-import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { auth, getCurrentUser, isAdminUser } from "@/lib/auth";
 import { dataLabeling } from "@/lib/flags";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
@@ -32,14 +29,17 @@ export async function GET(request: NextRequest) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const user = await AppRuntime.runPromise(
-      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
-    );
+    const user = await getCurrentUser();
     if (!user) {
       wideEvent.status_code = 404;
       wideEvent.outcome = "user_not_found";
       wideEvent.error = { message: "User not found" };
       return new Response("User not found", { status: 404 });
+    }
+    if (!isAdminUser(user)) {
+      wideEvent.status_code = 403;
+      wideEvent.outcome = "forbidden";
+      return new Response("Forbidden", { status: 403 });
     }
 
     wideEvent.user = { id: user.id, email: user.email };

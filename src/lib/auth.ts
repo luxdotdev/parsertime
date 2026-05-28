@@ -1,7 +1,6 @@
 import MagicLinkEmail from "@/components/email/magic-link";
 import UserOnboardingEmail from "@/components/email/onboarding";
 import { AppRuntime } from "@/data/runtime";
-import { ScrimService } from "@/data/scrim";
 import { UserService } from "@/data/user";
 import {
   authNewUserCounter,
@@ -328,45 +327,23 @@ export async function canEditScrim(
   return await canManageTeam(scrim.teamId, user);
 }
 
-export async function isAuthedToViewScrim(id: number) {
-  const session = await auth();
-
-  const user = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
-  );
-
-  // if user is admin return true
-  if (user !== null && user?.role === $Enums.UserRole.ADMIN) {
-    return true;
-  }
-
-  const scrim = await AppRuntime.runPromise(
-    ScrimService.pipe(Effect.flatMap((svc) => svc.getScrim(id)))
-  );
+export async function canViewScrim(
+  scrimId: number,
+  user: Pick<User, "id" | "role"> | null | undefined
+) {
+  const scrim = await prisma.scrim.findUnique({
+    where: { id: scrimId },
+    select: { id: true, creatorId: true, teamId: true, guestMode: true },
+  });
   if (!scrim) return false;
-
   if (scrim.guestMode) return true;
-
-  if (!session) {
-    return false;
-  }
-
   if (!user) return false;
+  if (isAdminUser(user)) return true;
+  if (scrim.creatorId === user.id) return true;
+  if (await canViewTeam(scrim.teamId, user)) return true;
 
-  const listOfViewableScrims = await AppRuntime.runPromise(
-    ScrimService.pipe(
-      Effect.flatMap((svc) => svc.getUserViewableScrims(user.id))
-    )
-  );
-
-  if (listOfViewableScrims.some((scrim) => scrim.id === id)) {
-    return true;
-  }
-
-  // Check if this is a tournament synthetic scrim — allow access if the user
-  // is the tournament creator or a member of a participating team
   const tournamentMatch = await prisma.tournamentMatch.findFirst({
-    where: { scrimId: id },
+    where: { scrimId },
     select: {
       tournament: {
         select: {
@@ -377,31 +354,72 @@ export async function isAuthedToViewScrim(id: number) {
     },
   });
 
-  if (tournamentMatch) {
-    if (tournamentMatch.tournament.creatorId === user.id) return true;
+  if (!tournamentMatch) return false;
+  if (tournamentMatch.tournament.creatorId === user.id) return true;
 
-    const participatingTeamIds = tournamentMatch.tournament.teams
-      .map((t) => t.teamId)
-      .filter((id): id is number => id !== null);
+  const participatingTeamIds = tournamentMatch.tournament.teams
+    .map((team) => team.teamId)
+    .filter((id): id is number => id !== null);
+  if (participatingTeamIds.length === 0) return false;
 
-    if (participatingTeamIds.length > 0) {
-      const userTeams = await prisma.team.findMany({
-        where: {
-          id: { in: participatingTeamIds },
-          users: { some: { id: user.id } },
-        },
-        select: { id: true },
-      });
-      if (userTeams.length > 0) return true;
-    }
-  }
+  const userTeams = await prisma.team.count({
+    where: {
+      id: { in: participatingTeamIds },
+      users: { some: { id: user.id } },
+    },
+  });
+  return userTeams > 0;
+}
 
-  // Return false if the user fails all checks:
-  // - not an admin
-  // - not in the list of viewable scrims
-  // - scrim is not in guest mode
-  // - not a tournament participant/creator
-  return false;
+export async function getViewableScrimIds(
+  scrimIds: number[],
+  user: Pick<User, "id" | "role"> | null | undefined
+) {
+  const uniqueIds = [...new Set(scrimIds)];
+  const checks = await Promise.all(
+    uniqueIds.map(async (id) => ({
+      id,
+      canView: await canViewScrim(id, user),
+    }))
+  );
+  return checks.filter((check) => check.canView).map((check) => check.id);
+}
+
+export async function canViewMapData(
+  mapDataId: number,
+  user: Pick<User, "id" | "role"> | null | undefined
+) {
+  const mapData = await prisma.mapData.findUnique({
+    where: { id: mapDataId },
+    select: { scrimId: true },
+  });
+  if (!mapData) return false;
+  return await canViewScrim(mapData.scrimId, user);
+}
+
+export async function canViewMaps(
+  mapIds: number[],
+  user: Pick<User, "id" | "role"> | null | undefined
+) {
+  const uniqueIds = [...new Set(mapIds)];
+  const maps = await prisma.map.findMany({
+    where: { id: { in: uniqueIds } },
+    select: { id: true, scrimId: true },
+  });
+  if (maps.length !== uniqueIds.length) return false;
+
+  const scrimIds = maps
+    .map((map) => map.scrimId)
+    .filter((id): id is number => id !== null);
+  if (scrimIds.length !== maps.length) return false;
+
+  const viewableScrimIds = new Set(await getViewableScrimIds(scrimIds, user));
+  return maps.every((map) => map.scrimId && viewableScrimIds.has(map.scrimId));
+}
+
+export async function isAuthedToViewScrim(id: number) {
+  const user = await getCurrentUser();
+  return await canViewScrim(id, user);
 }
 
 export async function isAuthedToViewMap(scrimId: number, mapId: number) {

@@ -1,5 +1,5 @@
 import { MapCalibrationList } from "@/components/admin/map-calibration/map-calibration-list";
-import { auth } from "@/lib/auth";
+import { getCurrentUser, isAdminUser } from "@/lib/auth";
 import { dataLabeling } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import { getTranslations } from "next-intl/server";
@@ -10,10 +10,11 @@ export default async function MapCalibrationPage() {
   if (!enabled) notFound();
   const t = await getTranslations("mapCalibrationPage");
 
-  const session = await auth();
-  if (!session?.user) {
+  const user = await getCurrentUser();
+  if (!user) {
     redirect("/sign-in");
   }
+  if (!isAdminUser(user)) notFound();
 
   const calibrations = await prisma.mapCalibration.findMany({
     include: { anchors: true },

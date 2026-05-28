@@ -1,8 +1,7 @@
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
-import { UserService } from "@/data/user";
 import { ComparisonAggregationService } from "@/data/comparison";
-import { auth } from "@/lib/auth";
+import { auth, canViewMaps, canViewTeam, getCurrentUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
@@ -24,9 +23,7 @@ export async function GET(request: NextRequest) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const user = await AppRuntime.runPromise(
-      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
-    );
+    const user = await getCurrentUser();
     if (!user) {
       wideEvent.status_code = 404;
       wideEvent.outcome = "user_not_found";
@@ -50,6 +47,13 @@ export async function GET(request: NextRequest) {
       wideEvent.outcome = "invalid_team_id";
       wideEvent.error = { message: "Invalid team ID" };
       return new Response("Invalid team ID", { status: 400 });
+    }
+
+    if (!(await canViewTeam(teamId, user))) {
+      wideEvent.status_code = 403;
+      wideEvent.outcome = "forbidden";
+      wideEvent.error = { message: "User cannot view team" };
+      return new Response("Forbidden", { status: 403 });
     }
 
     wideEvent.team = { id: teamId };
@@ -77,6 +81,13 @@ export async function GET(request: NextRequest) {
         wideEvent.error = { message: "Map IDs must be valid JSON" };
         return new Response("Map IDs must be valid JSON", { status: 400 });
       }
+    }
+
+    if (mapIds && !(await canViewMaps(mapIds, user))) {
+      wideEvent.status_code = 403;
+      wideEvent.outcome = "forbidden_maps";
+      wideEvent.error = { message: "User cannot view one or more maps" };
+      return new Response("Forbidden", { status: 403 });
     }
 
     const players = await AppRuntime.runPromise(

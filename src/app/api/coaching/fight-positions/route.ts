@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { auth, canViewMapData, getCurrentUser } from "@/lib/auth";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
@@ -32,6 +32,20 @@ export async function GET(request: Request) {
   const id = await resolveMapDataId(parseInt(mapDataId));
   const fightStart = parseFloat(start);
   const fightEnd = parseFloat(end);
+  if (
+    !Number.isFinite(id) ||
+    !Number.isFinite(fightStart) ||
+    !Number.isFinite(fightEnd) ||
+    fightEnd < fightStart ||
+    fightEnd - fightStart > 120
+  ) {
+    return NextResponse.json({ error: "Invalid time range" }, { status: 400 });
+  }
+
+  const user = await getCurrentUser();
+  if (!(await canViewMapData(id, user))) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   const [kills, damage, healing, ability1, ability2] = await Promise.all([
     prisma.kill.findMany({

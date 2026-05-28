@@ -1,5 +1,5 @@
 import { CalibrationEditor } from "@/components/admin/map-calibration/calibration-editor";
-import { auth } from "@/lib/auth";
+import { getCurrentUser, isAdminUser } from "@/lib/auth";
 import { dataLabeling } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import { r2 } from "@/lib/r2";
@@ -10,15 +10,16 @@ export default async function MapCalibrationEditorPage({
 }: {
   params: Promise<{ mapName: string }>;
 }) {
-  const [enabled, session, { mapName }] = await Promise.all([
+  const [enabled, user, { mapName }] = await Promise.all([
     dataLabeling(),
-    auth(),
+    getCurrentUser(),
     params,
   ]);
   if (!enabled) notFound();
-  if (!session?.user) {
+  if (!user) {
     redirect("/sign-in");
   }
+  if (!isAdminUser(user)) notFound();
 
   const decodedMapName = decodeURIComponent(mapName);
 
