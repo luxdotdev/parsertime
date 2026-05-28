@@ -260,6 +260,7 @@ export async function getDuelWinratesForMapData(
 
 async function calculateAverageDuelWinrate(id: number, playerName: string) {
   const duels = await getDuelWinrates(id, playerName);
+  if (duels.length === 0) return 0;
 
   const winrates = duels.map((duel) => {
     const totalKills = duel.enemy_kills + duel.enemy_deaths;
@@ -314,9 +315,11 @@ export async function calculateXFactor(mapId: number, playerName: string) {
   );
   const mostPlayedHero = playerStats.sort(
     (a, b) => b.hero_time_played - a.hero_time_played
-  )[0].player_hero;
+  )[0]?.player_hero;
+  if (!mostPlayedHero) return 0;
 
   const heroRole = heroRoleMapping[mostPlayedHero as HeroName];
+  if (!heroRole) return 0;
 
   const fights = await groupKillsIntoFights(mapId);
 
@@ -415,10 +418,14 @@ export async function calculateXFactor(mapId: number, playerName: string) {
     GROUP BY
         "player_name"`;
 
+  const deathsPer10Raw = dPer10[0]?.deaths_per_10 ?? 0;
+  const normalizedDeathsPer10 = Number.isFinite(deathsPer10Raw)
+    ? deathsPer10Raw
+    : 0;
   const deathsPer10 =
-    dPer10[0].deaths_per_10 > 5
-      ? 0 - dPer10[0].deaths_per_10 // If the player has more than 5 deaths per 10 minutes, they should be penalized
-      : 1 + dPer10[0].deaths_per_10; // If the player has less than 5 deaths per 10 minutes, they should be rewarded
+    normalizedDeathsPer10 > 5
+      ? 0 - normalizedDeathsPer10 // If the player has more than 5 deaths per 10 minutes, they should be penalized
+      : 1 + normalizedDeathsPer10; // If the player has less than 5 deaths per 10 minutes, they should be rewarded
 
   let xFactor = 0;
   switch (heroRole) {
