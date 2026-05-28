@@ -24,7 +24,7 @@ import {
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { auth, getViewableScrimIds } from "@/lib/auth";
 import { getCompositeSRLeaderboard } from "@/lib/hero-rating";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
@@ -33,7 +33,7 @@ import type { RoleName } from "@/lib/target-stats";
 import { cn, toHero, toTimestampWithHours } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import type { PagePropsWithLocale } from "@/types/next";
-import { $Enums, type Scrim } from "@prisma/client";
+import { $Enums, Prisma, type Scrim } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
@@ -61,6 +61,10 @@ export default async function ProfilePage(
   const params = await props.params;
   const name = decodeURIComponent(params.playerName);
   const t = await getTranslations("heroes");
+  const session = await auth();
+  const sessionUser = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
 
   const user = await prisma.user.findFirst({
     where: {
@@ -70,6 +74,15 @@ export default async function ProfilePage(
       ],
     },
   });
+
+  const playerScrims = await prisma.playerStat.findMany({
+    where: { player_name: { equals: name, mode: "insensitive" } },
+    select: { scrimId: true },
+    distinct: ["scrimId"],
+  });
+  const scrimIds = playerScrims.map((scrim) => scrim.scrimId);
+  const viewableScrimIds = await getViewableScrimIds(scrimIds, sessionUser);
+  const canUseFullProfileRatings = viewableScrimIds.length === scrimIds.length;
 
   const [timeframe1, timeframe2, timeframe3] = await Promise.all([
     new Permission("stats-timeframe-1").check(),
@@ -105,7 +118,10 @@ export default async function ProfilePage(
     total_time_played: number;
   };
 
-  const heroesPlayed = await prisma.$queryRaw<HeroPlayTime[]>`
+  const heroesPlayed =
+    viewableScrimIds.length === 0
+      ? []
+      : await prisma.$queryRaw<HeroPlayTime[]>`
     WITH final_rows AS (
       SELECT DISTINCT ON ("MapDataId", player_name, player_hero)
         player_hero,
@@ -114,6 +130,7 @@ export default async function ProfilePage(
         "PlayerStat"
       WHERE
         player_name ILIKE ${name}
+        AND "scrimId" IN (${Prisma.join(viewableScrimIds)})
         AND hero_time_played > 0
       ORDER BY
         "MapDataId",
@@ -135,11 +152,13 @@ export default async function ProfilePage(
 
   const heroRatings = await Promise.all(
     heroesPlayed.map(async (hero) => {
-      const compositeLeaderboard = await getCompositeSRLeaderboard({
-        hero: hero.player_hero as HeroName,
-        player: name,
-        limit: 300,
-      });
+      const compositeLeaderboard = canUseFullProfileRatings
+        ? await getCompositeSRLeaderboard({
+            hero: hero.player_hero as HeroName,
+            player: name,
+            limit: 300,
+          })
+        : null;
 
       if (!compositeLeaderboard) {
         const mapsPlayed = await prisma.playerStat.groupBy({
@@ -148,6 +167,7 @@ export default async function ProfilePage(
             player_name: { equals: name, mode: "insensitive" },
             player_hero: hero.player_hero as HeroName,
             hero_time_played: { gt: 60 },
+            scrimId: { in: viewableScrimIds },
           },
         });
 
@@ -218,19 +238,14 @@ export default async function ProfilePage(
   });
 
   const calculatedStats = await prisma.calculatedStat.findMany({
-    where: { playerName: { equals: name, mode: "insensitive" } },
+    where: {
+      playerName: { equals: name, mode: "insensitive" },
+      scrimId: { in: viewableScrimIds },
+    },
   });
-
-  const playerScrims = await prisma.playerStat.findMany({
-    where: { player_name: { equals: name, mode: "insensitive" } },
-    select: { scrimId: true },
-    distinct: ["scrimId"],
-  });
-
-  const scrimIds = playerScrims.map((scrim) => scrim.scrimId);
 
   const allScrims = await prisma.scrim.findMany({
-    where: { id: { in: scrimIds } },
+    where: { id: { in: viewableScrimIds } },
   });
 
   const oneWeek = new Date();
@@ -325,10 +340,6 @@ export default async function ProfilePage(
     allScrims.map((s) => new Date(s.date).toISOString().split("T")[0])
   ).size;
 
-  const session = await auth();
-  const sessionUser = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
-  );
   const isOwnProfile =
     user && session?.user?.email && session.user.email === user.email;
   const isAdmin = sessionUser?.role === $Enums.UserRole.ADMIN;
