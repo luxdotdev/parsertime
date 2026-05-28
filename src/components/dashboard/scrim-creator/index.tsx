@@ -145,6 +145,7 @@ export function ScrimCreationForm({
   async function handleFile(file: File | null) {
     if (!file) {
       scrimCreatorStore.trigger.fileCleared();
+      form.setValue("map", undefined);
       return;
     }
 
@@ -165,6 +166,7 @@ export function ScrimCreationForm({
     }
 
     scrimCreatorStore.trigger.fileSelected({ file });
+    form.setValue("map", undefined);
 
     try {
       const corruption = await detectFileCorruption(file);
@@ -188,16 +190,25 @@ export function ScrimCreationForm({
         mapData: parsed,
         hasCorruption: corruption.isCorrupted,
       });
+      form.setValue("map", parsed, { shouldValidate: true });
     } catch {
       scrimCreatorStore.trigger.parsingFailed();
+      form.setValue("map", undefined);
+      toast.error(t("createdScrim.errorFallback"));
     }
   }
 
   async function onSubmit(data: FormValues) {
-    scrimCreatorStore.trigger.submitStarted();
+    if (!mapData) {
+      scrimCreatorStore.trigger.submitFailed({
+        cause: t("createdScrim.errorFallback"),
+      });
+      return;
+    }
 
     data.map = mapData;
     data.name = data.name.trim();
+    scrimCreatorStore.trigger.submitStarted();
 
     const resolvedTeam1Name =
       autoAssignTeamNames && !isIndividual
@@ -257,6 +268,7 @@ export function ScrimCreationForm({
 
   const showOpponent = scoutingEnabled && scoutingTeams.length > 0;
   const isLocked = submitState !== "idle";
+  const isSubmitDisabled = isLocked || parsing || !mapData;
 
   return (
     <form
@@ -285,6 +297,7 @@ export function ScrimCreationForm({
             isIndividual={isIndividual}
             sensors={sensors}
             isLocked={isLocked}
+            isSubmitDisabled={isSubmitDisabled}
             onCancel={() => setOpen(false)}
           />
         )}

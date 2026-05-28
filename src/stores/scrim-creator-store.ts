@@ -29,6 +29,8 @@ export const scrimCreatorStore = createStore({
     fileSelected: (context: ScrimCreatorContext, event: { file: File }) => ({
       ...context,
       selectedFile: event.file,
+      mapData: undefined,
+      hasCorruptedData: false,
       parsing: true,
     }),
 
@@ -51,6 +53,8 @@ export const scrimCreatorStore = createStore({
 
     parsingFailed: (context: ScrimCreatorContext) => ({
       ...context,
+      mapData: undefined,
+      hasCorruptedData: false,
       parsing: false,
     }),
 

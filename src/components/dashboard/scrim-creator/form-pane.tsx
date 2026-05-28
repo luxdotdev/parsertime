@@ -56,6 +56,7 @@ type Props = {
   isIndividual: boolean;
   sensors: ReturnType<typeof useSensors>;
   isLocked: boolean;
+  isSubmitDisabled: boolean;
   onCancel: () => void;
 };
 
@@ -76,6 +77,7 @@ export function FormPane({
   isIndividual,
   sensors,
   isLocked,
+  isSubmitDisabled,
   onCancel,
 }: Props) {
   const t = useTranslations("dashboard.scrimCreationForm");
@@ -307,7 +309,7 @@ export function FormPane({
             type="submit"
             id="docs-demo-step8"
             onClick={() => track("Create Scrim", { location: "Dashboard" })}
-            disabled={isLocked}
+            disabled={isSubmitDisabled}
           >
             {t("submit")}
           </Button>
