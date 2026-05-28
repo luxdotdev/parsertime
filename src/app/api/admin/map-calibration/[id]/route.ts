@@ -5,8 +5,22 @@ import { dataLabeling } from "@/lib/flags";
 import { r2 } from "@/lib/r2";
 import { forbidden, unauthorized } from "next/navigation";
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
 type Params = { params: Promise<{ id: string }> };
+
+const UpdateMapCalibrationSchema = z.object({
+  affineA: z.number().finite().nullable().optional(),
+  affineB: z.number().finite().nullable().optional(),
+  affineC: z.number().finite().nullable().optional(),
+  affineD: z.number().finite().nullable().optional(),
+  affineTx: z.number().finite().nullable().optional(),
+  affineTy: z.number().finite().nullable().optional(),
+  imageUrl: z.string().min(1).max(2048).optional(),
+  imageWidth: z.number().int().positive().optional(),
+  imageHeight: z.number().int().positive().optional(),
+  displayImageKey: z.string().min(1).max(2048).optional(),
+});
 
 export async function GET(_req: Request, props: Params) {
   const startTime = Date.now();
@@ -79,21 +93,16 @@ export async function PUT(req: Request, props: Params) {
   };
 
   try {
-    const [{ id }, body] = await Promise.all([
-      props.params,
-      req.json() as Promise<{
-        affineA?: number | null;
-        affineB?: number | null;
-        affineC?: number | null;
-        affineD?: number | null;
-        affineTx?: number | null;
-        affineTy?: number | null;
-        imageUrl?: string;
-        imageWidth?: number;
-        imageHeight?: number;
-        displayImageKey?: string;
-      }>,
-    ]);
+    const [{ id }, rawBody] = await Promise.all([props.params, req.json()]);
+    const parsedBody = UpdateMapCalibrationSchema.safeParse(rawBody);
+    if (!parsedBody.success) {
+      wideEvent.status_code = 400;
+      wideEvent.outcome = "validation_error";
+      return NextResponse.json(
+        { error: "Invalid request", details: parsedBody.error.flatten() },
+        { status: 400 }
+      );
+    }
     const user = await getCurrentUser();
     if (!user) unauthorized();
     if (!isAdminUser(user)) forbidden();
@@ -102,6 +111,7 @@ export async function PUT(req: Request, props: Params) {
     if (!enabled) forbidden();
 
     const numericId = parseInt(id, 10);
+    const body = parsedBody.data;
     const updateData = {
       affineA: body.affineA,
       affineB: body.affineB,
