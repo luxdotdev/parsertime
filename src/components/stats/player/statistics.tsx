@@ -90,18 +90,15 @@ export function Statistics({
     timeframe === "custom" ? customScrims : scrims[timeframe];
 
   useEffect(() => {
-    if (timeframe === "custom") {
-      const from = date?.from;
-      const to = date?.to;
-
-      if (from && to) {
-        setCustomScrims(
-          scrims["all-time"].filter(
-            (scrim) => scrim.date >= from && scrim.date <= to
-          )
-        );
-      }
+    if (timeframe !== "custom" || !date?.from || !date.to) {
+      setCustomScrims([]);
+      return;
     }
+
+    const { from, to } = date;
+    setCustomScrims(
+      scrims["all-time"].filter((scrim) => scrim.date >= from && scrim.date <= to)
+    );
   }, [timeframe, date, scrims]);
 
   useEffect(() => {
@@ -138,6 +135,8 @@ export function Statistics({
   useEffect(() => {
     if (timeframe === "all-time") {
       setFilteredWins(mapWinrates);
+    } else if (timeframe === "custom" && (!date?.from || !date.to)) {
+      setFilteredWins([]);
     } else {
       setFilteredWins(
         mapWinrates.filter((win) => {
