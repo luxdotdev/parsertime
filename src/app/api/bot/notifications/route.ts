@@ -1,9 +1,22 @@
-import { auth } from "@/lib/auth";
-import { verifyTeamAccess } from "@/lib/bot-auth";
+import { auth, canManageTeam } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { context, propagation } from "@opentelemetry/api";
 import type { NextRequest } from "next/server";
+import { z } from "zod";
+
+const DiscordSnowflakeSchema = z.string().regex(/^\d{17,20}$/);
+
+const CreateConfigSchema = z.object({
+  guildId: DiscordSnowflakeSchema,
+  channelId: DiscordSnowflakeSchema,
+  teamIds: z.array(z.number().int().positive()).min(1).max(25),
+});
+
+const UpdateConfigSchema = z.object({
+  configId: z.string().min(1),
+  teamIds: z.array(z.number().int().positive()).min(1).max(25),
+});
 
 async function verifyUserInGuild(
   discordUserId: string,
@@ -37,6 +50,43 @@ async function verifyUserInGuild(
 
   const data = (await response.json()) as { member?: boolean };
   return data.member ? { ok: true } : { ok: false, reason: "forbidden" };
+}
+
+async function verifyUserCanUseChannel(
+  discordUserId: string,
+  guildId: string,
+  channelId: string
+): Promise<
+  { ok: true } | { ok: false; reason: "misconfigured" | "forbidden" }
+> {
+  const botApiUrl = process.env.BOT_API_URL;
+  const botSecret = process.env.BOT_SECRET;
+
+  if (!botApiUrl || !botSecret) {
+    return { ok: false, reason: "misconfigured" };
+  }
+
+  const traceHeaders: Record<string, string> = {};
+  propagation.inject(context.active(), traceHeaders);
+
+  const response = await fetch(
+    `${botApiUrl}/api/guilds/${encodeURIComponent(guildId)}/channels?userId=${encodeURIComponent(discordUserId)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${botSecret}`,
+        ...traceHeaders,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    return { ok: false, reason: "forbidden" };
+  }
+
+  const channels = (await response.json()) as { id?: string }[];
+  return channels.some((channel) => channel.id === channelId)
+    ? { ok: true }
+    : { ok: false, reason: "forbidden" };
 }
 
 export async function GET() {
@@ -122,6 +172,7 @@ export async function POST(request: NextRequest) {
       where: { email: session.user.email },
       select: {
         id: true,
+        role: true,
         accounts: {
           where: { provider: "discord" },
           select: { providerAccountId: true },
@@ -153,13 +204,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = (await request.json()) as {
-      guildId?: string;
-      channelId?: string;
-      teamIds?: number[];
-    };
-
-    if (!body.guildId || !body.channelId || !body.teamIds?.length) {
+    const parsed = CreateConfigSchema.safeParse(await request.json());
+    if (!parsed.success) {
       wideEvent.outcome = "bad_request";
       wideEvent.status_code = 400;
       return Response.json(
@@ -170,6 +216,11 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    const body = {
+      ...parsed.data,
+      teamIds: [...new Set(parsed.data.teamIds)],
+    };
 
     const membership = await verifyUserInGuild(
       discordAccount.providerAccountId,
@@ -192,8 +243,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const channelAccess = await verifyUserCanUseChannel(
+      discordAccount.providerAccountId,
+      body.guildId,
+      body.channelId
+    );
+    if (!channelAccess.ok) {
+      if (channelAccess.reason === "misconfigured") {
+        wideEvent.outcome = "misconfigured";
+        wideEvent.status_code = 503;
+        return Response.json(
+          { success: false, error: "Bot service not configured" },
+          { status: 503 }
+        );
+      }
+      wideEvent.outcome = "forbidden";
+      wideEvent.status_code = 403;
+      return Response.json(
+        { success: false, error: "You cannot use that channel" },
+        { status: 403 }
+      );
+    }
+
     for (const teamId of body.teamIds) {
-      const hasAccess = await verifyTeamAccess(user.id, teamId);
+      const hasAccess = await canManageTeam(teamId, user);
       if (!hasAccess) {
         wideEvent.outcome = "forbidden";
         wideEvent.status_code = 403;
@@ -259,7 +332,7 @@ export async function PATCH(request: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { id: true },
+      select: { id: true, role: true },
     });
 
     if (!user) {
@@ -271,12 +344,8 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const body = (await request.json()) as {
-      configId?: string;
-      teamIds?: number[];
-    };
-
-    if (!body.configId || !body.teamIds?.length) {
+    const parsed = UpdateConfigSchema.safeParse(await request.json());
+    if (!parsed.success) {
       wideEvent.outcome = "bad_request";
       wideEvent.status_code = 400;
       return Response.json(
@@ -284,6 +353,11 @@ export async function PATCH(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    const body = {
+      ...parsed.data,
+      teamIds: [...new Set(parsed.data.teamIds)],
+    };
 
     const existing = await prisma.botNotificationConfig.findFirst({
       where: { id: body.configId, createdBy: user.id },
@@ -299,7 +373,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     for (const teamId of body.teamIds) {
-      const hasAccess = await verifyTeamAccess(user.id, teamId);
+      const hasAccess = await canManageTeam(teamId, user);
       if (!hasAccess) {
         wideEvent.outcome = "forbidden";
         wideEvent.status_code = 403;
