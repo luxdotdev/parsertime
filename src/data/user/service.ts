@@ -111,24 +111,30 @@ export const make: Effect.Effect<UserServiceInterface> = Effect.gen(
       return Effect.gen(function* () {
         yield* Effect.annotateCurrentSpan("email", email ?? "undefined");
         const user = yield* getUser(email);
+        if (!user) {
+          wideEvent.team_count = 0;
+          wideEvent.outcome = "success";
+          yield* Metric.increment(getTeamsSuccessTotal);
+          return [];
+        }
 
         const teams = yield* Effect.tryPromise({
           try: () =>
             prisma.team.findMany({
               where: {
                 OR: [
-                  { ownerId: user?.id },
+                  { ownerId: user.id },
                   {
                     users: {
                       some: {
-                        id: user?.id,
+                        id: user.id,
                         role: {
                           in: [$Enums.UserRole.MANAGER, $Enums.UserRole.ADMIN],
                         },
                       },
                     },
                   },
-                  { managers: { some: { userId: user?.id } } },
+                  { managers: { some: { userId: user.id } } },
                 ],
                 id: { not: 0 },
               },
@@ -140,7 +146,7 @@ export const make: Effect.Effect<UserServiceInterface> = Effect.gen(
             }),
         }).pipe(
           Effect.withSpan("user.findTeamsWithPerms", {
-            attributes: { userId: user?.id ?? "unknown" },
+            attributes: { userId: user.id },
           })
         );
 
