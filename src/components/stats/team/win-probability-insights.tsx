@@ -187,7 +187,7 @@ export function WinProbabilityInsights({
         }),
         delta: formatDelta(diff),
       }),
-      tone: toneFromDelta(-diff, 0.5),
+      tone: toneFromDelta(diff, 0.5),
     });
   }
 
