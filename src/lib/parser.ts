@@ -271,7 +271,7 @@ export async function parseDataFromTXT(file: File) {
   //
   // In this case, we need to replace the attacker team, name, and hero with the victim's team, name, and hero.
   // This is because we want to show this as a standard Environmental kill.
-  for (const kill of categorizedData["kill"]) {
+  for (const kill of categorizedData["kill"] ?? []) {
     if (kill[2] === "All Teams") {
       kill[2] = kill[5]; // Set attacker team to victim team
       kill[3] = kill[6]; // Set attacker name to victim name
@@ -1533,8 +1533,7 @@ export async function createPlayerStatRows(
 ) {
   if (
     typeof data.player_stat === "undefined" ||
-    data.player_stat.length === 0 ||
-    !data.kill
+    data.player_stat.length === 0
   ) {
     Logger.log("No player stats found for map: ", mapId, "scrim: ", scrim.id);
     return [];
