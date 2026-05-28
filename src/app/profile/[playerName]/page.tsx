@@ -332,7 +332,7 @@ export default async function ProfilePage(
   const isOwnProfile =
     user && session?.user?.email && session.user.email === user.email;
   const isAdmin = sessionUser?.role === $Enums.UserRole.ADMIN;
-  const canViewTargets = isOwnProfile ?? isAdmin;
+  const canViewTargets = [isOwnProfile, isAdmin].some(Boolean);
 
   let targetProgress: TargetProgress[] = [];
   let targetScrimStats: {
