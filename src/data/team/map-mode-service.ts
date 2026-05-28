@@ -185,6 +185,8 @@ export function processMapModePerformance(
       team2PointProgress: team2PointProgressMap.get(mapDataId) ?? [],
     });
 
+    if (winner === "N/A") continue;
+
     const isWin = winner === teamName;
     const playtime = matchEndMap.get(mapDataId) ?? 0;
 
