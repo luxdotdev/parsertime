@@ -978,7 +978,7 @@ export const make = Effect.gen(function* () {
           const results = processTeamMatchResults(
             baseData,
             baseData.mapDataRecords
-          );
+          ).sort((a, b) => b.date.getTime() - a.date.getTime());
           wideEvent.match_count = results.length;
           return results;
         })
